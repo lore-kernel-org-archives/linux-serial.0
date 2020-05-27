@@ -2,173 +2,177 @@ Return-Path: <SRS0=pZl0=7J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 060D7C433DF
-	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 00:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E0EC433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 07:56:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D927B20870
-	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 00:23:36 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=wdc.com header.i=@wdc.com header.b="REzZao1l";
-	dkim=pass (1024-bit key) header.d=sharedspace.onmicrosoft.com header.i=@sharedspace.onmicrosoft.com header.b="mov/6WSS"
+	by mail.kernel.org (Postfix) with ESMTP id F05E320C56
+	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 07:56:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1590566168;
+	bh=bZIirAmpiGuqFhImuidBeKEkuGqmy+azz9K1A09JtMo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=cpgab5t0FMi34sw/n8OSujE+eUW0mXDk/jtrvJbSk0VfJou8HIZjNlFu98itLYr2p
+	 Wku6pRAGbMrAJbiL82qXEBx5iBkHrg/gL/JOjkNHnuPA/Cbq6ZbEaClLSmmrbbZz0r
+	 uJ75s/xsTugpF3qze8mXkCekwmAJUHuYi9GhDvo8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgE0AXg (ORCPT
+        id S2387552AbgE0H4H (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 May 2020 20:23:36 -0400
-Received: from esa5.hgst.iphmx.com ([216.71.153.144]:6095 "EHLO
-        esa5.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726857AbgE0AXf (ORCPT
+        Wed, 27 May 2020 03:56:07 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:35784 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387566AbgE0H4H (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 May 2020 20:23:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1590539015; x=1622075015;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=T+XX72NM0evWLhAQu55bnnX5Y00pEt9zE7eGK0MnvIo=;
-  b=REzZao1lK0VUQcrUFA+xStHM4ksbMZ0pe9tntl0+yxuOmCcBlnNGJRzD
-   eDHF8lskdfHYW50UnzV3tduAZFu2wvzC36YmBQqDcoymZ+l1+iGgrwL79
-   //bMCaqpWIOlGccecQTPTcadsTiS0GUBLPp9Ai5bcfDHGcQaAtG4dTqoj
-   6qq/GLuslYDSbYyZEgxluuUPJ5GJfhEMlx2WyxL2zjiVc61mM0gPQaAci
-   SJpq9UDQQj0TaCZrYr1Gjd213XsM8tTME8Z8qAU9/Ku7KvYNyhMsM1Igy
-   mJEt0af0kgrUyreCceFwyTTx5YmTX1l6JDXlkxi/oNEcMt3tmuMM8Wppo
-   Q==;
-IronPort-SDR: wWG+WLjbkKtaBxbjrufUhtjnWT2dUK9U/OX59UWGgKAeR9RG/DHT707UBD0nMWAMoCNzVqUDP9
- 2kpVOvyClFmh8env/Tg7u/OS7TAqVZLY/z2CtJg//A0yLSEDzRjICllurTYZe2luk3Iq5qrTzf
- sqft9oRU9gJ6fUirHpRxXaESvBEn+vlVrOR+lVzBBbttIqNoWCVVtOlSZOZXRnP/99MSj+ntBm
- 07YbTPP/ZlQmOYdk9zomUvthsrr9yUuGNMxdcVTbrVOCHR7I3sGR57uzNTTEg5DqnMTPhdqM4N
- KUE=
-X-IronPort-AV: E=Sophos;i="5.73,439,1583164800"; 
-   d="scan'208";a="138893950"
-Received: from mail-mw2nam10lp2102.outbound.protection.outlook.com (HELO NAM10-MW2-obe.outbound.protection.outlook.com) ([104.47.55.102])
-  by ob1.hgst.iphmx.com with ESMTP; 27 May 2020 08:23:34 +0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K8wVxUnGi1Gu98/B5VWsgpQNBQ8oiRn7r/HNf+Cu2pJFl6K/UyHx5YmFNtXqL75TFa537nKTfy7zTRySzdmiotK+Ujo1FBRiJxg/LDjyq9HLq7W5jbzgltZq+7XnfL/Kh8z4FSmChF3eVYUD7Lr930WFwfyWvr/OGrGE5a3ywzY0o1T7BaffMotPzIFbO6+SzuT7xVWCGRKtMj/ISvJ+GExL2omPIRqH8ElA1nuEGiPxm3wwXuoS42q+FhZCxT/793lEUhC70+3JFTn4EgNEbOj93H3yTcVcwFcm/9nxIOnDz8yiAnpISxpnC3if9bMV9ph4zf+wv+x1Bexygp7yKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uOcYvFe6IGZ/cmUiIpAKQVV6rD8BhKM1SEA6Udqgn84=;
- b=IfhFyf31T9L5sgSXoujrOaxy0tK8LOw9vBTWy4y5UsZiR9rx+9caRBWHmArv9Z6pMoBvHswSNr0Wd3uZO2lv4Tn/rLSkHQ1Pv6NXhE4a+9Fl5h5+2OYSNObiEsDPiBj/ZagSaslD8CDGF8KJlHpu28Wb/vI2aoCnT8/ByCQ3MtaUQ0yxENof0Lh9rGpr2+xz8GUynLh7bIxflgpIixffwhXPXDGVaGyMOTpmqVOiJb6ZAlP6cmZpk8sXbJFN2xvTET4g9AHBfLnYtI8UmG0ZQDMLC3Emje5bO55M/EVBqm/2BslavJSpJbZtXkRrPDc6GEQc3tA6qxT15LUotaOs8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=wdc.com; dmarc=pass action=none header.from=wdc.com; dkim=pass
- header.d=wdc.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=sharedspace.onmicrosoft.com; s=selector2-sharedspace-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uOcYvFe6IGZ/cmUiIpAKQVV6rD8BhKM1SEA6Udqgn84=;
- b=mov/6WSSHP+niuABnwC0KgynVpvoWpkmq4kPJPSbwn9Gf51Cg33N7b2SEsBTHu5q9Lu6eTPxYTJ4Uc7o672pYB6D/7XxfslncuCVM6MkEk9h2jMUtLGQDI6P9W7d9K1U4fi0bu25mus0eyk6NPCfCd3D73hMfrnomrk1+8h0FcU=
-Received: from BYAPR04MB5176.namprd04.prod.outlook.com (2603:10b6:a03:ce::25)
- by BYAPR04MB3816.namprd04.prod.outlook.com (2603:10b6:a02:ac::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Wed, 27 May
- 2020 00:23:32 +0000
-Received: from BYAPR04MB5176.namprd04.prod.outlook.com
- ([fe80::893b:8b7:4e88:1466]) by BYAPR04MB5176.namprd04.prod.outlook.com
- ([fe80::893b:8b7:4e88:1466%7]) with mapi id 15.20.3021.029; Wed, 27 May 2020
- 00:23:32 +0000
-From:   "Maciej W. Rozycki" <macro@wdc.com>
-To:     Mikulas Patocka <mpatocka@redhat.com>
-CC:     Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        "Maciej W. Rozycki" <macro@linux-mips.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>
-Subject: Re: [PATCH v5] alpha: fix memory barriers so that they conform to the
- specification
-Thread-Topic: [PATCH v5] alpha: fix memory barriers so that they conform to
- the specification
-Thread-Index: AQHWMSF3DuFqYbubD0KT3K6x/SG/Xqi3VCwAgAGCAgCAAA3VgIAAE0iAgAAMfgCAAXN7gIAAoJCA
-Date:   Wed, 27 May 2020 00:23:32 +0000
-Message-ID: <alpine.DEB.2.20.2005270119170.1027@tpp.orcam.me.uk>
-References: <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
- <alpine.LRH.2.02.2005220920020.20970@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005221344530.11126@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005230623410.22664@file01.intranet.prod.int.rdu2.redhat.com>
- <20200523151027.GA10128@mail.rc.ru>
- <alpine.LRH.2.02.2005231131480.10727@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005231134590.10727@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005241500230.21168@redsun52.ssa.fujisawa.hgst.com>
- <alpine.LRH.2.02.2005250944210.26265@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005251500420.21168@redsun52.ssa.fujisawa.hgst.com>
- <alpine.LRH.2.02.2005251149540.4135@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005251729110.21168@redsun52.ssa.fujisawa.hgst.com>
- <alpine.LRH.2.02.2005261044440.29117@file01.intranet.prod.int.rdu2.redhat.com>
-In-Reply-To: <alpine.LRH.2.02.2005261044440.29117@file01.intranet.prod.int.rdu2.redhat.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Alpine 2.20 (DEB 67 2015-01-07)
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=wdc.com;
-x-originating-ip: [129.253.240.244]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 3839b2d1-6839-4c93-5d59-08d801d43037
-x-ms-traffictypediagnostic: BYAPR04MB3816:
-x-microsoft-antispam-prvs: <BYAPR04MB38165782A1AEF4F0E7FB1075B7B10@BYAPR04MB3816.namprd04.prod.outlook.com>
-wdcipoutbound: EOP-TRUE
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 04163EF38A
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: cmNRh1WqZihgi81RWGURqH1ni9TqJMpYepf/CMKMwmjx4G5upEKAQXwGHa/JiJquUHfbFq9DIAdsHx92wOqanskONjhhPtqfiOwBmK248yg01NncGMTtCLHZuYR9arfWYYqEhxLMgj92vcB7v6VerHEgD1H4PuTpR2EI4A2nSk9h5G/cocIwlL+GIJYM60TM1QHi3wr0apKH+1ytn59c7EOhGeMDMiSrwdQH6qKPhAI/YU015VQmoutv1BpyG5l2v0miW3hT+BARb973/qTbAdSB0qVe4zwhoGYleYIQdZUjMl57LdXdVl7cpABgr+Q4
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR04MB5176.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(366004)(39860400002)(346002)(396003)(136003)(8936002)(4326008)(8676002)(6506007)(4744005)(478600001)(6512007)(6486002)(186003)(9686003)(64756008)(66476007)(76116006)(91956017)(66946007)(66556008)(26005)(316002)(7416002)(54906003)(66446008)(86362001)(6916009)(71200400001)(2906002)(5660300002)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: Qjs0LOZ0RwaZErm62Caxqi2W+pJQWoW3q2bFGvWI+aA4uM039fs+EuKdS/qMVRFfGuptJEi6Z7uH9j23DfzT4fSk3vXL4FD6k/HTl6iRh/5A202HtHBXupRpTaHaaPLdJyuIAzXik4ztnzmaIjmCK+aa73a+TSos+tYESMZIcBLlfFN0oLP0czcDKMwpAqiLZap0+W6EraiKMcyxYlVbm6+IyCNoWLIW8ADFcF+4gp7HaiXl6V2ns8/CPGwSgroQHwUB3sTCXXkVdOMvmonIBn3opQIVDdwD+K7UU/MhnB54s8eYLRA//w5EbLyC+HhJUFUVUDSeBIvluQkt2uyGl/H6GSf1jRwr5bcy9ruPmkR2RKwkBsByke4OIEDfIWJCfZnc9vGtgpzG9ri4OSrMnycJUZPEuCFeBxWelgDXpNd6Aa2DZkEBowLOzHPuN25GA9G/M8vo3OPRMvoIHbLfE/QfQdNXWjwdugIfURvdG80=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <D30F3CB55E483D4AB73C5C54DDD22A17@namprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Wed, 27 May 2020 03:56:07 -0400
+Received: by mail-lj1-f195.google.com with SMTP id c11so25587060ljn.2
+        for <linux-serial@vger.kernel.org>; Wed, 27 May 2020 00:56:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UYSwRqyIuSQLXzgHbexnHEtP7o+bjSyMWu1nDj6YOm8=;
+        b=ke0oAoVKO6ERAv6GdKbqtUqik1oqmQJbrilwIQA26bBM1X91Mg4lIVN16FGuqlHG2o
+         6L1mp9ClTTq40BePyvdkNet8liiYcsAJyYpEODTVkS1Lv36ABoBSrj30ln2YQRXgAqgf
+         lWielYsHOd/+a3IHcKfjKvtY7Wa1n68eaaZOh8Py5YyC2awmvShhiB691NJ3r9BBprUy
+         ePyiu3FR/zhtBA7Kwdyu4Tk8GzMIHusFILbh/pGH22Z8ZXjCPbNfDeNpRnwooartTxsl
+         fZ8gmUkavObbrcc6nr3sg0gzXhHgV4RMEscJzj1zyB76/MKN4c0X6aAuSCyRcJrduZZL
+         Fk7g==
+X-Gm-Message-State: AOAM533KXQQXrZMginskmAq6tGnqBjyv7WuT6P/hYVJy1o3tfRGP6AH0
+        4GNANgYpq6XJOwK1EHZYQjI=
+X-Google-Smtp-Source: ABdhPJzrmdNZMdhFcI0EnhOXGe+nOK9S5aa8zAJj1coOTyCAo4MlmPMKy+xSf2FF4QZ7ql6kNP0cKQ==
+X-Received: by 2002:a2e:9818:: with SMTP id a24mr2356937ljj.161.1590566162486;
+        Wed, 27 May 2020 00:56:02 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id q15sm625168lfc.44.2020.05.27.00.56.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2020 00:56:01 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1jdquo-0003lp-Ba; Wed, 27 May 2020 09:55:54 +0200
+Date:   Wed, 27 May 2020 09:55:54 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Denis Ahrens <denis@h3q.com>
+Cc:     linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH] 16C950 UART enable Hardware Flow Control
+Message-ID: <20200527075554.GG5276@localhost>
+References: <BACA4F76-3D51-4854-894B-2E69272B5676@h3q.com>
+ <20200525082750.GB5276@localhost>
+ <B7715399-667F-4DB7-A19D-4CB037ECE64A@h3q.com>
 MIME-Version: 1.0
-X-OriginatorOrg: wdc.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3839b2d1-6839-4c93-5d59-08d801d43037
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2020 00:23:32.5105
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b61c8803-16f3-4c35-9b17-6f65f441df86
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: G07HQRMf9lfcFbBaf6Hfj1V/8Ahz4Jbwr8KNP2HrSAz8TzqiaIWjcBVfqq1I/EjT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR04MB3816
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <B7715399-667F-4DB7-A19D-4CB037ECE64A@h3q.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 26 May 2020, Mikulas Patocka wrote:
+[ Adding Pavel who disabled EFR at one point to CC. ]
 
-> >  Thanks, I'll have a look.  And now that you have this update, please r=
-un=20
-> > `size' on ALPHA_GENERIC `vmlinux', preferably monolithic, to see what t=
-he=20
-> > difference is between `read*_relaxed' handlers `static inline' and keye=
-d=20
-> > with `*trivial_rw_*'.
-> >=20
-> >   Maciej
->=20
-> The patch with static inline:
->    text    data     bss     dec     hex filename
-> 124207762       75953010        5426432 205587204       c410304 vmlinux
->=20
-> The patch with extern inline:
->    text    data     bss     dec     hex filename
-> 124184422       75953474        5426432 205564328       c40a9a8 vmlinux
+On Mon, May 25, 2020 at 07:49:54PM +0200, Denis Ahrens wrote:
+> 
+> 
+> > On 25. May 2020, at 10:27, Johan Hovold <johan@kernel.org> wrote:
+> > 
+> > On Sun, May 24, 2020 at 06:31:44PM +0200, Denis Ahrens wrote:
+> >> From: Denis Ahrens <denis@h3q.com>
+> >> 
+> >> Enable Automatic RTS/CTS flow control for the 16C950 UART in Enhanced Mode
+> >> like described in the Data Sheet Revision 1.2 page 28 and 29.
+> >> 
+> >> Without this change normal console output works, but everything putting
+> >> a little more pressure on the UART simply overruns the FIFO.
+> >> 
+> >> Signed-off-by: Denis Ahrens <denis@h3q.com>
+> >> ---
+> >> 
+> >> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> >> index f77bf820b7a3..024235946f4d 100644
+> >> --- a/drivers/tty/serial/8250/8250_port.c
+> >> +++ b/drivers/tty/serial/8250/8250_port.c
+> >> @@ -2168,7 +2168,9 @@ int serial8250_do_startup(struct uart_port *port)
+> >>                serial_port_out(port, UART_LCR, 0);
+> >>                serial_icr_write(up, UART_CSR, 0); /* Reset the UART */
+> >>                serial_port_out(port, UART_LCR, UART_LCR_CONF_MODE_B);
+> >> -               serial_port_out(port, UART_EFR, UART_EFR_ECB);
+> >> +               serial_port_out(port, UART_EFR, UART_EFR_ECB |
+> >> +                                               UART_EFR_RTS |
+> >> +                                               UART_EFR_CTS);
+> >>                serial_port_out(port, UART_LCR, 0);
+> >>        }
+> > 
+> > This doesn't look right as you're now enabling automatic flow control
+> > for everyone.
+> > 
+> > Try adding this to set_termios() instead when enabling flow control.
+> 
+> The part in set_termios() is never reached because the UART_CAP_EFR
+> capability was removed ca. 10 years ago. The code fails to preserve
+> the UART_EFR_ECB bit which is in the same register as UART_EFR_CTS.
+> Also for some reason UART_EFR_RTS is not set.
 
- I'm not sure why data grew, but still the gain in size is maybe small,=20
-yet it is there.
+The EFR capability was added by commit 7a56aa45982b ("serial: add
+UART_CAP_EFR and UART_CAP_SLEEP flags to 16C950 UARTs definition") and
+then removed half a year later by commit 0694e2aeb81 ("serial: unbreak
+billionton CF card") -- you should mention that in the commit message
+too.
 
-> (I've sent version 7 of the patch because I misnamed the "write_relaxed"=
-=20
-> function in version 6).
+I guess you need to determine how to enable this feature without
+breaking something else.
 
- I have reviewed v7 now, thanks for your effort!
+> So lets fix the code instead of disabling a feature.
+> 
+> I could write a patch which adds UART_CAP_EFR back to the 16C950 and
+> fixes the code in set_termios only for the 16C950. I would also add
+> another line which adds RTS hardware flow control only for the 16C950.
 
-  Maciej=
+Nah, auto-RTS should probably have been enabled from the start.
+
+And just make sure not clear any other bits in that register when
+updating the flow-control settings for example by reading it back first.
+
+> The change would look like this:
+> (I will write another mail with a real patch if I get the OK)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index f77bf820b7a3..ac7efc43b392 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -122,8 +122,7 @@ static const struct serial8250_config uart_config[] = {
+>                 .fifo_size      = 128,
+>                 .tx_loadsz      = 128,
+>                 .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+> -               /* UART_CAP_EFR breaks billionon CF bluetooth card. */
+> -               .flags          = UART_CAP_FIFO | UART_CAP_SLEEP,
+> +               .flags          = UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
+>         },
+>         [PORT_16654] = {
+>                 .name           = "ST16654",
+> @@ -2723,13 +2722,18 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+>  
+>         if (up->capabilities & UART_CAP_EFR) {
+>                 unsigned char efr = 0;
+> +               if (port->type == PORT_16C950)
+> +                       efr |= UART_EFR_ECB;
+>                 /*
+>                  * TI16C752/Startech hardware flow control.  FIXME:
+>                  * - TI16C752 requires control thresholds to be set.
+>                  * - UART_MCR_RTS is ineffective if auto-RTS mode is enabled.
+>                  */
+> -               if (termios->c_cflag & CRTSCTS)
+> +               if (termios->c_cflag & CRTSCTS) {
+>                         efr |= UART_EFR_CTS;
+> +                       if (port->type == PORT_16C950)
+> +                               efr |= UART_EFR_RTS;
+> +               }
+>  
+>                 serial_port_out(port, UART_LCR, UART_LCR_CONF_MODE_B);
+>                 if (port->flags & UPF_EXAR_EFR)
+> 
+
+Johan
