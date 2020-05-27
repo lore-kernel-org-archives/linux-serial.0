@@ -2,72 +2,87 @@ Return-Path: <SRS0=pZl0=7J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD8FC433E1
-	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 08:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F76C433E3
+	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 10:04:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 19A3521501
-	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 08:46:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590569213;
-	bh=2P/iFP0J1Z8FTALnk4pEhSuziKCtu7sPf7Qz1B/J4f8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=hgOuQbOUYy6hkf+0BAeWZjurKrlIsDOC6/4daw5d/Qk99NYLvRHky8GWOIO5/0r4N
-	 vrlvYxw6a38+FZiI0ZCtMbNscEaIDlzQtti6whHgieWdw2/Pmb5TqEBMsZs91+LU/x
-	 LGMyp1HUjZnq6sos0jlE1kabq2gBCnU7vKPn08qk=
+	by mail.kernel.org (Postfix) with ESMTP id AF28620C56
+	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 10:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388277AbgE0Iqw (ORCPT
+        id S1728293AbgE0KEN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 May 2020 04:46:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48430 "EHLO mail.kernel.org"
+        Wed, 27 May 2020 06:04:13 -0400
+Received: from sauhun.de ([88.99.104.3]:54822 "EHLO pokefinder.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388107AbgE0Iqw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 May 2020 04:46:52 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 29FBB206F1;
-        Wed, 27 May 2020 08:46:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590569211;
-        bh=2P/iFP0J1Z8FTALnk4pEhSuziKCtu7sPf7Qz1B/J4f8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=S9BG8lqat+vffXT8uHIaTo94/pT6Z83+gHIjB1CBWUaRi+h21fNoDoFRR4xE5PBc9
-         IvPYTYD4kc8d/QbLsMEmVL9PcVZjrgS3p16wEXmSq/Q853iDNJA96icvD82d+xMnq3
-         lRMjEASAU6ka38Qb+0SPKq4FwaptSUdFriCigzcE=
-Date:   Wed, 27 May 2020 10:46:49 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
+        id S1726603AbgE0KEN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 27 May 2020 06:04:13 -0400
+Received: from localhost (p54b33011.dip0.t-ipconnect.de [84.179.48.17])
+        by pokefinder.org (Postfix) with ESMTPSA id D00ED2C2037;
+        Wed, 27 May 2020 12:04:09 +0200 (CEST)
+Date:   Wed, 27 May 2020 12:04:03 +0200
+From:   Wolfram Sang <wsa@the-dreams.de>
 To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, wsa@the-dreams.de,
-        broonie@kernel.org, mark.rutland@arm.com, robh+dt@kernel.org,
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
         linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         devicetree@vger.kernel.org, swboyd@chromium.org,
         mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
         dianders@chromium.org, msavaliy@codeaurora.org,
         evgreen@chromium.org
-Subject: Re: [PATCH V7 5/7] tty: serial: qcom_geni_serial: Add interconnect
- support
-Message-ID: <20200527084649.GA167630@kroah.com>
+Subject: Re: [PATCH V7 3/7] i2c: i2c-qcom-geni: Add interconnect support
+Message-ID: <20200527100403.GA1161@ninjato>
 References: <1590497690-29035-1-git-send-email-akashast@codeaurora.org>
- <1590497690-29035-6-git-send-email-akashast@codeaurora.org>
+ <1590497690-29035-4-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+HP7ph2BbKc20aGI"
 Content-Disposition: inline
-In-Reply-To: <1590497690-29035-6-git-send-email-akashast@codeaurora.org>
+In-Reply-To: <1590497690-29035-4-git-send-email-akashast@codeaurora.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 26, 2020 at 06:24:48PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for Uart based Serial Engine device
-> and vote according to the baud rate requirement of the driver.
-> 
+
+--+HP7ph2BbKc20aGI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, May 26, 2020 at 06:24:46PM +0530, Akash Asthana wrote:
+> Get the interconnect paths for I2C based Serial Engine device
+> and vote according to the bus speed of the driver.
+>=20
 > Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 > Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Wolfram Sang <wsa@kernel.org>
+
+
+--+HP7ph2BbKc20aGI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl7OOxAACgkQFA3kzBSg
+KbZevQ/+NcEUgwnmhUa8aEnp2UoVMX6Wlv05FuCrQxi0nZIjygKPEPZk37yJnfyV
+PoMmuHleWfVuj38hY6Uk4MTpqgXGk73gNVBQdl0rMCnVX3lfBZTkITpg/afYnO2w
+/xDD20Au2+yGZlax34Q0Ux1GMGmz5AgZTnz2BwM7T7BmnpEPRUNaibtUApL6gR4f
+2IT7IDmDcuQrt7yl5zjN4PJOQlzYX8k/ltAclkeySaJgs6Txo5qYHY/RK0VxTg/5
+VKyjrdpf6YC5/RoUJqEQaNxBFBSstgzqdTmqhjBkgR1cl0h42bywtcRYgH+2sFPs
+xAldHIfYLHIjJGYE67YLUAhUBpeZ9Q5oIvRd/e7d18OeKoKNOUES2GZIB5SUE3hZ
+p97DyqZPeDns/xwecSDimx6y7QlW82IFYgqprVV8DAE3psOhzjAm2qbe5POKIS70
+jb5sa4LX741rzItM9tW6krBVN3YZk76P5nOYfAb1dX55RwzfKR0nTIUNt/QzwMhh
+6ta1ZxHItJYB2BBNkOxle4KjIKlA2ic2lUBmBzoImL3UdZ7TYk9ggzvtIEN2DUyP
+YAzz9pwwIV7O52gv/WVqM/Lz69qS+Mflog/pGKVi0QrLg2swLvPHohRc4Li+mjWv
+YXd/cuH/u1lIbyEr0/8Al+HCHt8lsTKtUqGk4WZlOkbUxl43jqw=
+=POQo
+-----END PGP SIGNATURE-----
+
+--+HP7ph2BbKc20aGI--
