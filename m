@@ -2,124 +2,151 @@ Return-Path: <SRS0=pZl0=7J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8ACC433DF
-	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 19:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D50F2C433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 20:49:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 03B00207D3
-	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 19:28:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590607702;
-	bh=Z2GGB6Wt+dGToaBaYkxOJDivct59R520WSiT9oG7HOA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=UzvjjK811QlThpRLCSVKfbDsqXg9kE8DTtt7JdyLrAaYtwOuJYH/Pgt5re5PmgDm4
-	 Uqg2xnfP0nmlLq2f7Wj+QkPbFEyKVxA80n/noNkNnZCtDjw442HuTxF7AGtXEjDV0S
-	 uG4A6pOkwHNqSy1GCQYCHGG3TFqFGs5UHzyQ5fXk=
+	by mail.kernel.org (Postfix) with ESMTP id AE36C2084C
+	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 20:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726222AbgE0T2V (ORCPT
+        id S1726129AbgE0Utq convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 May 2020 15:28:21 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:35901 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725320AbgE0T2V (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 May 2020 15:28:21 -0400
-Received: by mail-io1-f65.google.com with SMTP id y18so6951703iow.3;
-        Wed, 27 May 2020 12:28:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bgk9XpqXSxucV5OMC4BoaIOWVkM3DvrsJIDo7nwW2GA=;
-        b=h6pSbWeXmTcoLy6Xah1Q2OBlmdmbgTl+hzps5MCINZD31132xk9WObg9EV5taIhJzA
-         /gnX5nVe7VGhxdz7+olrPf9xvAjp+pAZyqqIJ/GxbOLZ0C/ZGZxepVb0mNwYLx/mRHOz
-         btbjmwu18I3Au91kJpXVF177BUtfHV68otsZocHFXN8U0KQAPOjq1dhLY9rbIL75UEul
-         mMFzg9EDZLLNGsfIEvojwuTLAOWIbES+0ZAVYw3kf5eU7TLFiOcyYX8yzfSNQVFv3md8
-         iVytEb05A2BkvKPMy8n+4YWFXGIFLt8dZ+oJQo8ZdROEscJdVY+fPc4bKgBOq/dxYEYW
-         +yiA==
-X-Gm-Message-State: AOAM532ufOqeccsVwPmD1bUyXjfV9cWvNW3p7BQFNnglhtjK3vUagl5d
-        hF6WueRu8xg6umv/vQpPiA==
-X-Google-Smtp-Source: ABdhPJz2AR1rkipQGqnDMAjyexmb3CQOj9FvL6X/yiuBHdY+4XWSLol+S+ivS3k+KdxI0/RLJhY2Ww==
-X-Received: by 2002:a05:6602:2001:: with SMTP id y1mr12134767iod.94.1590607700123;
-        Wed, 27 May 2020 12:28:20 -0700 (PDT)
-Received: from xps15 ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id j15sm1989870ilk.0.2020.05.27.12.28.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2020 12:28:19 -0700 (PDT)
-Received: (nullmailer pid 2597176 invoked by uid 1000);
-        Wed, 27 May 2020 19:28:17 -0000
-Date:   Wed, 27 May 2020 13:28:17 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCH 3/6] dt-bindings: serdev: ngsm: Add binding for GNSS
- child node
-Message-ID: <20200527192817.GA2587830@bogus>
-References: <20200512214713.40501-1-tony@atomide.com>
- <20200512214713.40501-4-tony@atomide.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200512214713.40501-4-tony@atomide.com>
+        Wed, 27 May 2020 16:49:46 -0400
+Received: from mail.h3q.com ([213.73.89.199]:41478 "EHLO mail.h3q.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726482AbgE0Utq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 27 May 2020 16:49:46 -0400
+Received: (qmail 36698 invoked from network); 27 May 2020 20:49:45 -0000
+Received: from mail.h3q.com (HELO mail.h3q.com) (mail.h3q.com)
+  by mail.h3q.com with ESMTPS (ECDHE-RSA-AES256-GCM-SHA384 encrypted); 27 May 2020 20:49:45 -0000
+From:   Denis Ahrens <denis@h3q.com>
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.14\))
+Subject: Re: [PATCH] 16C950 UART enable Hardware Flow Control
+Message-Id: <E6FC8A25-70D3-4574-AECF-B0E8FC60A2F2@h3q.com>
+Date:   Wed, 27 May 2020 22:49:44 +0200
+To:     linux-serial@vger.kernel.org
+X-Mailer: Apple Mail (2.3445.104.14)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 12, 2020 at 02:47:10PM -0700, Tony Lindgren wrote:
-> For motorola modem case, we may have a GNSS device on channel 4.
-> Let's add that to the binding and example.
+
+
+> On 27. May 2020, at 09:55, Johan Hovold <johan@kernel.org> wrote:
 > 
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  .../devicetree/bindings/serdev/serdev-ngsm.yaml          | 9 +++++++++
->  1 file changed, 9 insertions(+)
+> [ Adding Pavel who disabled EFR at one point to CC. ]
 > 
-> diff --git a/Documentation/devicetree/bindings/serdev/serdev-ngsm.yaml b/Documentation/devicetree/bindings/serdev/serdev-ngsm.yaml
-> --- a/Documentation/devicetree/bindings/serdev/serdev-ngsm.yaml
-> +++ b/Documentation/devicetree/bindings/serdev/serdev-ngsm.yaml
-> @@ -42,6 +42,10 @@ allOf:
->            description: Name of the USB PHY
->            const: usb
->  
-> +        compatible:
-> +          description: GNSS receiver
-> +          const: motorola,mapphone-mdm6600-gnss
+> On Mon, May 25, 2020 at 07:49:54PM +0200, Denis Ahrens wrote:
+>> 
+>> 
+>>> On 25. May 2020, at 10:27, Johan Hovold <johan@kernel.org> wrote:
+>>> 
+>>> On Sun, May 24, 2020 at 06:31:44PM +0200, Denis Ahrens wrote:
+>>>> From: Denis Ahrens <denis@h3q.com>
+>>>> 
+>>>> Enable Automatic RTS/CTS flow control for the 16C950 UART in Enhanced Mode
+>>>> like described in the Data Sheet Revision 1.2 page 28 and 29.
+>>>> 
+>>>> Without this change normal console output works, but everything putting
+>>>> a little more pressure on the UART simply overruns the FIFO.
+>>> 
+>>> This doesn't look right as you're now enabling automatic flow control
+>>> for everyone.
+>>> 
+>>> Try adding this to set_termios() instead when enabling flow control.
+>> 
+>> The part in set_termios() is never reached because the UART_CAP_EFR
+>> capability was removed ca. 10 years ago. The code fails to preserve
+>> the UART_EFR_ECB bit which is in the same register as UART_EFR_CTS.
+>> Also for some reason UART_EFR_RTS is not set.
+> 
+> The EFR capability was added by commit 7a56aa45982b ("serial: add
+> UART_CAP_EFR and UART_CAP_SLEEP flags to 16C950 UARTs definition") and
+> then removed half a year later by commit 0694e2aeb81 ("serial: unbreak
+> billionton CF card") -- you should mention that in the commit message
+> too.
+> 
+> I guess you need to determine how to enable this feature without
+> breaking something else.
+> 
+>> So lets fix the code instead of disabling a feature.
+>> 
+>> I could write a patch which adds UART_CAP_EFR back to the 16C950 and
+>> fixes the code in set_termios only for the 16C950. I would also add
+>> another line which adds RTS hardware flow control only for the 16C950.
+> 
+> Nah, auto-RTS should probably have been enabled from the start.
 
-I'm not sure how this isn't failing on the example because it is wrong.
+UARTS with UART_CAP_EFR activates auto-RTS with UART_EFR_RTS and that is
+not used anywhere. Setting this bit fixes my problem.
 
-You're saying this compatible belongs at the same level as 
-phys/phy-names, but that would be the parent which already has a 
-compatible. You have to define a child node property (gnss@4) and have 
-'compatible' under it. At that point, this schema becomes very much 
-Motorola specific.
+> And just make sure not clear any other bits in that register when
+> updating the flow-control settings for example by reading it back first.
 
-> +
->        required:
->          - phys
->          - phy-names
-> @@ -61,4 +65,9 @@ examples:
->        phy-names = "usb";
->        #address-cells = <1>;
->        #size-cells = <0>;
-> +
-> +      gnss@4 {
-> +         compatible = "motorola,mapphone-mdm6600-gnss";
-> +         reg = <4>;
-> +      };
->      };
-> -- 
-> 2.26.2
+I can read the EFR register before using it (it was simply cleared before).
+But then I change things for the XR17V35x too. But I don’t want to touch
+that one because this UART has UART_CAP_AFE set and tries to set
+auto-RTSCTS in two places. But someone with access to that hardware should
+take a look, it seems it has the same problems. No auto-RTS and enhanced
+mode is disabled in set_termios().
+
+I think the code below is the safest way. It fixes things I can test
+and does not change anything else.
+
+summary for reviewers:
+
+1. this patch keeps the enhanced mode activated for the 16C950 instead
+of deactivating it in set_termios(). 
+2. it activates auto-RTS for the 16C950
+3. reenables UART_CAP_EFR for the 16C950 because of fix 1 and 2
+
+Denis
+
+> 
+>> The change would look like this:
+>> (I will write another mail with a real patch if I get the OK)
+>> 
+>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+>> index f77bf820b7a3..ac7efc43b392 100644
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -122,8 +122,7 @@ static const struct serial8250_config uart_config[] = {
+>>               .fifo_size      = 128,
+>>               .tx_loadsz      = 128,
+>>               .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
+>> -               /* UART_CAP_EFR breaks billionon CF bluetooth card. */
+>> -               .flags          = UART_CAP_FIFO | UART_CAP_SLEEP,
+>> +               .flags          = UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
+>>       },
+>>       [PORT_16654] = {
+>>               .name           = "ST16654",
+>> @@ -2723,13 +2722,18 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+>> 
+>>       if (up->capabilities & UART_CAP_EFR) {
+>>               unsigned char efr = 0;
+>> +               if (port->type == PORT_16C950)
+>> +                       efr |= UART_EFR_ECB;
+>>               /*
+>>                * TI16C752/Startech hardware flow control.  FIXME:
+>>                * - TI16C752 requires control thresholds to be set.
+>>                * - UART_MCR_RTS is ineffective if auto-RTS mode is enabled.
+>>                */
+>> -               if (termios->c_cflag & CRTSCTS)
+>> +               if (termios->c_cflag & CRTSCTS) {
+>>                       efr |= UART_EFR_CTS;
+>> +                       if (port->type == PORT_16C950)
+>> +                               efr |= UART_EFR_RTS;
+>> +               }
+>> 
+>>               serial_port_out(port, UART_LCR, UART_LCR_CONF_MODE_B);
+>>               if (port->flags & UPF_EXAR_EFR)
+>> 
+> 
+> Johan
