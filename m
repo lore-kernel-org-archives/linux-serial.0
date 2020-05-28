@@ -2,158 +2,119 @@ Return-Path: <SRS0=aTVb=7K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	LONGWORDS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB736C433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 05:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD00C433DF
+	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 08:24:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8D3602084C
-	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 05:58:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8B3AE20B80
+	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 08:24:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1590654277;
+	bh=1XpzYMmYZp/Qk1kJtW0aiug2LeRfEo1uHDMQ6LmkHPA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=Hubfucpo53XsMpV8+XCbv7o2PpNZOZVgcXsu62e+sX/5gE9fJGdFLYfaOq7P836TI
+	 Z7ss8YA6bi2S684SDum2hPkdz2NuXqlvkOvZbZcUz0SBMRUz+z875y6C8fZv/KMZLQ
+	 ELwGNM9EJwOrr3hGGINu7QIr/ecnr4NbuMz7LQTc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725984AbgE1F6T (ORCPT
+        id S1726803AbgE1IYd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 May 2020 01:58:19 -0400
-Received: from mga06.intel.com ([134.134.136.31]:28889 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725833AbgE1F6T (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 May 2020 01:58:19 -0400
-IronPort-SDR: 2eXUPsl0rXA2mA40PV9HJnVg6j0SY9wUvkxJGvB2lG4HPofrvymTIQxHfXKUH7p+dRuitQvPzH
- GY2XdVGknX1Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 22:58:17 -0700
-IronPort-SDR: jrMom2fRECI5ixLv1a3WpygCU9oUkrveinTi5bYiMqXIsfzl0Owl73qmhQxz2YePqm8GAioRR4
- fcdoL/9bHxsA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,443,1583222400"; 
-   d="scan'208";a="469019051"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 27 May 2020 22:58:16 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jeBYV-0008XN-Ms; Thu, 28 May 2020 13:58:15 +0800
-Date:   Thu, 28 May 2020 13:57:34 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- b86dab054059b970111b5516ae548efaae5b3aae
-Message-ID: <5ecf52ce.w1Cv7HnCJlgJvUIY%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 28 May 2020 04:24:33 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34427 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726612AbgE1IYd (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 28 May 2020 04:24:33 -0400
+Received: by mail-lj1-f193.google.com with SMTP id b6so32328787ljj.1;
+        Thu, 28 May 2020 01:24:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=htN54AV/Ihu6JzPNFvenMo8mjoWrRH1sjEjPiN8cCzk=;
+        b=ulMG+2s1laMLyaQ/fBjFjyudzzlg7UtXeIjTVIUmI7fAj+LV6xjDjYHVh+qMcwd4v5
+         AgsBTyX6iz8C5hSEm+tuhvyVEHEjBCuXAXMrj6Uzay/OKj47Rm2IUPzQ2aikMF04RAtL
+         YsupteV2O9uk6Pwz0+fGUg/RenlHSq9rRB18cWkHe/s6c39SPi/WY67QX6l4LDN+LxPz
+         3ZvUHO7/Hqz3ikBplcMMDmcS82XaxHYTUZzNt0jHn2qUwp+okOWo2UJV+sVYV9Lt3lnC
+         flgaCihZ0sYEarDkfTl1FXP415xHiOFJ8KxT+Kq89wuQfqQextNpo0M8kTM2Gncgq97y
+         4G0Q==
+X-Gm-Message-State: AOAM531fSwjDNtKbA6tqDDAVw7pJGHep1v1H8deLs5sDeoCcWeUrcRc+
+        keyA8rU+bB/nAPs25VGn6rs=
+X-Google-Smtp-Source: ABdhPJw0lfniAdlAI2ff5VOzb5wHTOW7tmV6sPriJoXUvYGZu9htTeK/qTi3Nk+AwKcKnzJOR4uUXA==
+X-Received: by 2002:a2e:a171:: with SMTP id u17mr953864ljl.225.1590654269229;
+        Thu, 28 May 2020 01:24:29 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id u16sm1292531lji.58.2020.05.28.01.24.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2020 01:24:28 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1jeDps-00035C-Ur; Thu, 28 May 2020 10:24:21 +0200
+Date:   Thu, 28 May 2020 10:24:20 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCHv6 0/4] n_gsm serdev support and protocol driver for
+ droid4 modem
+Message-ID: <20200528082420.GA10358@localhost>
+References: <20200421232752.3070-1-tony@atomide.com>
+ <20200423114326.GQ18608@localhost>
+ <20200423153756.GE37466@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20200423153756.GE37466@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: b86dab054059b970111b5516ae548efaae5b3aae  vt: keyboard: avoid signed integer overflow in k_ascii
+Hi Tony,
 
-elapsed time: 1173m
+Sorry about the late reply on this.
 
-configs tested: 91
-configs skipped: 1
+On Thu, Apr 23, 2020 at 08:37:56AM -0700, Tony Lindgren wrote:
+> * Johan Hovold <johan@kernel.org> [200423 11:44]:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> > I know the location of this driver has been up for discussion already,
+> > but drivers/tty/serdev/protocol still isn't right (e.g. we don't have an
+> > drivers/i2c/protocol directory where we stuff random i2c client
+> > drivers).
+> 
+> Argh, the location of driver again.. So we do have the custom motorola
+> layer to deal with on top of TS 27.010, but the custom handling is
+> contained within the driver. So maybe just drivers/serial for the
+> custom driver then.
 
-arm64                            allyesconfig
-arm64                               defconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-arm                                 defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-arm                               allnoconfig
-sh                           se7724_defconfig
-arm                            mmp2_defconfig
-mips                        maltaup_defconfig
-arm                        realview_defconfig
-arm                      footbridge_defconfig
-arm                      jornada720_defconfig
-i386                              allnoconfig
-i386                             allyesconfig
-i386                                defconfig
-i386                              debian-10.3
-ia64                              allnoconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                              allnoconfig
-m68k                             allmodconfig
-m68k                           sun3_defconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                            allyesconfig
-openrisc                         allyesconfig
-nds32                               defconfig
-nds32                             allnoconfig
-csky                             allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-h8300                            allmodconfig
-xtensa                              defconfig
-arc                                 defconfig
-arc                              allyesconfig
-sh                               allmodconfig
-sh                                allnoconfig
-microblaze                        allnoconfig
-nios2                               defconfig
-openrisc                            defconfig
-c6x                              allyesconfig
-c6x                               allnoconfig
-mips                             allyesconfig
-mips                              allnoconfig
-mips                             allmodconfig
-parisc                           allyesconfig
-parisc                           allmodconfig
-parisc                            allnoconfig
-parisc                              defconfig
-powerpc                             defconfig
-powerpc                          allyesconfig
-powerpc                          rhel-kconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-i386                 randconfig-a001-20200527
-i386                 randconfig-a004-20200527
-i386                 randconfig-a003-20200527
-i386                 randconfig-a006-20200527
-i386                 randconfig-a002-20200527
-i386                 randconfig-a005-20200527
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-s390                             allyesconfig
-s390                              allnoconfig
-s390                             allmodconfig
-s390                                defconfig
-sparc                            allyesconfig
-sparc                               defconfig
-sparc64                             defconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                          allmodconfig
-um                                allnoconfig
-um                               allyesconfig
-um                               allmodconfig
-um                                  defconfig
-x86_64                                   rhel
-x86_64                               rhel-7.6
-x86_64                    rhel-7.6-kselftests
-x86_64                         rhel-7.2-clear
-x86_64                                    lkp
-x86_64                              fedora-25
-x86_64                                  kexec
+Yeah, that should do for now; n_gsm is a serial driver (exposing tty
+devices) after all.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> > Last, it seems you've based the serdev-ngsm-motmdm.c chardev
+> > implementation on a more or less verbatim copy of drivers/gnss/core.c.
+> > I'd appreciate if you could mention that in the file header and
+> > reproduce the copyright notice if you end up keeping that interface.
+> 
+> Oh yes indeed, thanks for pointing that out. I'll add it to the next
+> version. The chardev code is for sure based on drivers/gnss.
+> 
+> To explain my ignorance, I added the chardev support initially as an
+> experiment to see if I can handle the motorola packet layer better
+> that way compared to the n_gsm ttys and userspace handling. It ended
+> up working quite nicely, so I kept it but then I accidentally left
+> out references to the source. Sorry about that.
+
+No worries.
+
+Johan
