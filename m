@@ -6,96 +6,79 @@ X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7647C433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 20:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65596C433E2
+	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 21:12:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7F1782088E
-	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 20:50:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 466DC2075F
+	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 21:12:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590699042;
-	bh=36x+FSxQLLXtZZ/ZrL/q8iSayQDTf9H3L9O43iR4vH0=;
+	s=default; t=1590700328;
+	bh=dqaXozkduhm1Z/vNbJCqzwNPEEkr9kjfYcm12V28GZ4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=mgOZ2eBrZPspgEOMLZRw5yB4yR4P8UnmwLgH9svZ7KU7428f2ReTbTTQLvh7OL6Na
-	 vIkvOgCUY8W6ZvdIXTzClQ+1V2R2xZ0CR1zmnV/Aa/zhwd9dhbKCM289fOLWsrE3ru
-	 zMrL/Lby8twD3SoLkGCiPYantArKgw3eNp1H+TdA=
+	b=VapVZhllIo6nIaOuK+HkfVF46FYca17TBc6GmLOzd7N70864Ewb0P+R72IqMqlHi7
+	 2aovhZbvGLcIGD3dJOg4Fn+wyf16KXxyJw1MH1kVrcKsITYaQ8HKROpWBYaVa5g6tm
+	 VJuntjrQfDoxLWPc3HjlcGY8pRIPue4ovG1SwyZw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407342AbgE1Uul (ORCPT
+        id S2407523AbgE1VMH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 May 2020 16:50:41 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:35986 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407344AbgE1Uuj (ORCPT
+        Thu, 28 May 2020 17:12:07 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:37949 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407473AbgE1VMG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 May 2020 16:50:39 -0400
-Received: by mail-io1-f68.google.com with SMTP id y18so11271566iow.3;
-        Thu, 28 May 2020 13:50:38 -0700 (PDT)
+        Thu, 28 May 2020 17:12:06 -0400
+Received: by mail-il1-f196.google.com with SMTP id q18so391791ilm.5;
+        Thu, 28 May 2020 14:12:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=0gpSBvU7Eq2fXFdQdQngmNs7MJbK+QnxcEs9pUZUM6U=;
-        b=tt2ioBPMqBOwQY8IQm2xOjIYeW8lFAmI2/T521eEp6ffC2LoL4n9NiZmq6yACBfZO+
-         ZgcjZKQw2Z5BDR4tCfXyYkWHfhHBnmh44di/0mumSXLKHQT9zmXBPtYUFhljsAxAfyEj
-         u6yuD+AKF4F5CLxi98hNY1w4cDcwdKwA/HR3ps2EgLCRoEBigVNrbiy5ctWk6xGgaZsP
-         Yr1xlJQekclgX14u/C6UuM6MG5tEUly+3Pe9nmTEJD2/AZp67d8Z+vTK8Vq3fvdD7wLS
-         YZDcGTdgCMPWHJd+89Xco0i8WlLjXq3BSPMTnwiwsr2oNm0mIojCejQxteVGe1lf0Ia/
-         PlIg==
-X-Gm-Message-State: AOAM531jUqisZDbliCbc/iBgtch25qGgsCijYySRdP5luDDTt8K32rWu
-        U3q1SllihuTUyb+kHaRvDQ==
-X-Google-Smtp-Source: ABdhPJyd8/DPXzsxw9RIxmjqQyQZlAxV9pIk6OfK0yzaA7cdcSEsZFdOcAC+qFs8Vp3LgSG0VWobGg==
-X-Received: by 2002:a02:3e06:: with SMTP id s6mr4201198jas.57.1590699038478;
-        Thu, 28 May 2020 13:50:38 -0700 (PDT)
+        bh=kwZcN1GUUx2LB8qBd4V2JckujeUBV5KSUJ8D+sfgEIM=;
+        b=YdtnIPbXTgF1huzoshCzew0wM00YStEYZrd/DtTYora7szokSyoFTj5puGOo+vs/Ut
+         9LCY4gW9Zkk+faNaGP6XA32kGNrbONu23o/CB8DbRxaIIjamBZMNBOoDdQ1GfDxw0QKj
+         X/g9Gu8+jGU8FQoxsx38ZhAsG4HgCy5/RtFl55jHV9ea/OeZzdGnKk/W3OQ/8D+Fbb2Z
+         pnmzRMJlEqPH6zlR7ap2t4Dt7Y9p4ETu+806SiTQS6NPhn05S0PiAW7EKCwSuKKkROqt
+         /MRIOQ3yGIIPR2sg++LQLnjIZq6HffggZpnWxtQ8zPn/fVTGeazVtpn79Ivzwlufdd6Q
+         dJjA==
+X-Gm-Message-State: AOAM530+sJ8vAhElCjECsVJayk5KLXAhb3bqHsVKgTbj8QOWZbx6CENB
+        kDUoeve6UqP/2JMaCY4GPHOsZuU=
+X-Google-Smtp-Source: ABdhPJzMurIzEmbcw6Qthl2UI2kxjYlhPgTQ3xPSEPNHj57GGAgGZIu/rPVmQSLdTiJ+JEIM1gK/ew==
+X-Received: by 2002:a92:8946:: with SMTP id n67mr4232884ild.215.1590700325259;
+        Thu, 28 May 2020 14:12:05 -0700 (PDT)
 Received: from xps15 ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id h5sm3614341ile.35.2020.05.28.13.50.37
+        by smtp.gmail.com with ESMTPSA id v13sm3857038ili.15.2020.05.28.14.12.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 13:50:37 -0700 (PDT)
-Received: (nullmailer pid 653204 invoked by uid 1000);
-        Thu, 28 May 2020 20:50:36 -0000
-Date:   Thu, 28 May 2020 14:50:36 -0600
+        Thu, 28 May 2020 14:12:04 -0700 (PDT)
+Received: (nullmailer pid 693042 invoked by uid 1000);
+        Thu, 28 May 2020 21:12:03 -0000
+Date:   Thu, 28 May 2020 15:12:03 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     devicetree@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christoph Muellner <christoph.muellner@theobroma-systems.com>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: Add binding for rs485 bus
- termination GPIO
-Message-ID: <20200528205036.GA653137@bogus>
-References: <cover.1589811297.git.lukas@wunner.de>
- <4f4411895dc52c846f766e7f7207ec412c4811b6.1589811297.git.lukas@wunner.de>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: serial: Add renesas,em-uart bindings
+Message-ID: <20200528211203.GA692986@bogus>
+References: <20200519080945.28798-1-geert+renesas@glider.be>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4f4411895dc52c846f766e7f7207ec412c4811b6.1589811297.git.lukas@wunner.de>
+In-Reply-To: <20200519080945.28798-1-geert+renesas@glider.be>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 18 May 2020 16:45:01 +0200, Lukas Wunner wrote:
-> Commit e8759ad17d41 ("serial: uapi: Add support for bus termination")
-> introduced the ability to enable rs485 bus termination from user space.
-> So far the feature is only used by a single driver, 8250_exar.c, using a
-> hardcoded GPIO pin specific to Siemens IOT2040 products.
+On Tue, 19 May 2020 10:09:45 +0200, Geert Uytterhoeven wrote:
+> Document Device Tree bindings for the Renesas EMMA Mobile UART
+> Interface.
 > 
-> Provide for a more generic solution by allowing specification of an
-> rs485 bus termination GPIO pin in the device tree.  An upcoming commit
-> implements support for this pin for any 8250 driver.  The binding is
-> used in device trees of the "Revolution Pi" PLCs offered by KUNBUS.
-> 
-> [Heiko Stuebner converted the binding to YAML, hence his Signed-off-by.]
-> 
-> Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
->  Documentation/devicetree/bindings/serial/rs485.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+>  .../bindings/serial/renesas,em-uart.yaml      | 49 +++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Applied, thanks!
