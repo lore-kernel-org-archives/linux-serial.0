@@ -2,481 +2,196 @@ Return-Path: <SRS0=aTVb=7K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2107EC433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 13:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED70BC433DF
+	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 14:48:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D9AC9206C3
-	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 13:07:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590671229;
-	bh=qe9giNOnyf//NAtRSq70OnN5NcBCUxexM76PqDeIO5Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=A6/oQYNFRLS30T28h29zZHsQNCmJQL6BhfxfM9fcBXvjzHg5z0RmVCHKl0pO40Pi/
-	 yDfZVoiWpUIqd6CEzDyAFUYe049sfZL/AmSMijY4N6FVP/KfqHPQl2u/7ufDTmj4Wi
-	 6ii9IE1evnOx3gqQEvIIEmFRym25USv9sbro6Jlg=
+	by mail.kernel.org (Postfix) with ESMTP id CEBF0207D3
+	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 14:48:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="rveLcDkQ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390119AbgE1NHH (ORCPT
+        id S1728568AbgE1OsJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 May 2020 09:07:07 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:46168 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390079AbgE1NHG (ORCPT
+        Thu, 28 May 2020 10:48:09 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:40778 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728539AbgE1OsF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 May 2020 09:07:06 -0400
-Received: by mail-lf1-f65.google.com with SMTP id r125so16486892lff.13;
-        Thu, 28 May 2020 06:07:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jkI1fSmr7NLokyM8fHRV6r1fVitlrGo+0RtUIbQpqRQ=;
-        b=VMIddiRVjk8AJxfPvNVEtCjssonFaedjjdAc/8J9i0rZkee/fDwf4q6nyxXzx6biK0
-         2CJewAx6eT5rZ26oAJMWbGMSnpiOlwWfnX0vY8cBDqvIUV+8r2todVOJfNG026+tM2Gy
-         4UI3wWEPLqC7iweaKfdHXAt1rlPmheLLZC0LDZqTBGb1cREKmK85LP+izw7+YWDtiVn1
-         J+qYW78hcud6AzrUM4kdMe4wcPbwWCN0lY+1lo9R23kIqNi/rXQAIdU+2q+pX2muvuJm
-         a7otQ13qyZnkB6r/kL55YGrnVX9jm+cSqbh+XYAf5er2RpTi+cbWsAsFF5/ggUltceQO
-         IjUA==
-X-Gm-Message-State: AOAM530JMPoiQ/aQJ5OO/diWT/bVkRwTCgzJFtbVmRl81u55UYy+vVfO
-        QOP1wxu7YYpvnc78CbF+9uI=
-X-Google-Smtp-Source: ABdhPJzd6zYpOIGMceQIThtWejSufuaPRYLPZvBs3R+p0dc1VKv/0d9grUaorSC0Lg5FfI839RqoqA==
-X-Received: by 2002:ac2:5cac:: with SMTP id e12mr1694160lfq.92.1590671221193;
-        Thu, 28 May 2020 06:07:01 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id f10sm1625387lfm.34.2020.05.28.06.06.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2020 06:06:59 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1jeIFJ-0004C6-2q; Thu, 28 May 2020 15:06:53 +0200
-Date:   Thu, 28 May 2020 15:06:53 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCH 5/6] gnss: motmdm: Add support for Motorola Mapphone
- MDM6600 modem
-Message-ID: <20200528130653.GG10358@localhost>
-References: <20200512214713.40501-1-tony@atomide.com>
- <20200512214713.40501-6-tony@atomide.com>
+        Thu, 28 May 2020 10:48:05 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04SEbbVa101207;
+        Thu, 28 May 2020 10:47:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=UkbfAtvEfXUxa95+1LdoiI+mLq8Rx3rpSz0ltaUwu8I=;
+ b=rveLcDkQKVDI8mst8gdty89143smgC7dB/bM4EBmyiicnMgvOG2fCJdEkVp6nZMDT6FT
+ 1WC80pBGqzyfVDCHeMuHh08lAlvYIT5PAiXNRGnkajSuZ43+asrFX3ewsU6ABn2AIrX1
+ 6uVZrwTw+itBQp/F2/JhXiKA4FwGol/Txc5bk4uBADTnPXkK9pi0aEIcwTDghir2juwk
+ kaOveRRPleyER/dZEkzkReWsKTL+x250H4W7a5cpuRFgJQM1ymjKYlhcdUWKv4UdpNhp
+ R+5KCuS9d85JFXILuXgM04MBSr/6Mu22/Mh8Rn3XGNWfVOLuL5TWgDfzf4wtpO1vBmNq hg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 31a9nbcbjr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 May 2020 10:47:46 -0400
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 04SEbgLj101542;
+        Thu, 28 May 2020 10:47:46 -0400
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 31a9nbcbj2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 May 2020 10:47:46 -0400
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 04SEjMIb030278;
+        Thu, 28 May 2020 14:47:44 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 316uf8a43u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 May 2020 14:47:44 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 04SElguG40632372
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 May 2020 14:47:42 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 49A9F4203F;
+        Thu, 28 May 2020 14:47:42 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AD6B042042;
+        Thu, 28 May 2020 14:47:39 +0000 (GMT)
+Received: from [9.163.54.87] (unknown [9.163.54.87])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 28 May 2020 14:47:39 +0000 (GMT)
+Subject: Re: [RFC PATCH v4] GCOV: profile by modules
+To:     gengcixi@gmail.com, gregkh@linuxfoundation.org, jslaby@suse.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     orsonzhai@gmail.com, zhang.lyra@gmail.com,
+        Cixi Geng <cixi.geng1@unisoc.com>
+References: <20200525100054.17700-1-gengcixi@gmail.com>
+From:   Peter Oberparleiter <oberpar@linux.ibm.com>
+Message-ID: <917da283-5f1e-3fdb-13bb-4251312dc77a@linux.ibm.com>
+Date:   Thu, 28 May 2020 16:47:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200512214713.40501-6-tony@atomide.com>
+In-Reply-To: <20200525100054.17700-1-gengcixi@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-05-28_03:2020-05-28,2020-05-28 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ mlxlogscore=999 spamscore=0 clxscore=1015 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 bulkscore=0 phishscore=0 priorityscore=1501
+ cotscore=-2147483648 suspectscore=1 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005280097
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 12, 2020 at 02:47:12PM -0700, Tony Lindgren wrote:
-> Motorola is using a custom TS 27.010 based serial port line discipline
-> for various devices on the modem. These devices can be accessed on
-> dedicated channels using Linux kernel serdev-ngsm driver.
+On 25.05.2020 12:00, gengcixi@gmail.com wrote:
+> From: Cixi Geng <cixi.geng1@unisoc.com>
 > 
-> For the GNSS on these devices, we need to kick the GNSS device at a
-> desired rate. Otherwise the GNSS device stops sending data after a
-> few minutes. The rate we poll data defaults to 1000 ms, and can be
-> specified with a module option rate_ms between 1 to 16 seconds.
+> The CONFIG_GCOV_PROFILE_ALL will compile kernel by profiling entire
+> kernel which will lead to kernel run slower.Use GCOV_PROFILE_PREREQS
+> to control part of the kernel modules to open gcov.
+
+Maybe rephrase the commit message to make the intention more obvious:
+
+Introduce new configuration option GCOV_PROFILE_PREREQS that can be used
+to check whether the prerequisites for enabling gcov profiling for
+specific files and directories are met.
+
 > 
-> Note that AGPS with xtra2.bin is not yet supported, so getting a fix
-> can take quite a while. And a recent gpsd is needed to parse the
-> $GNGNS output, and to properly handle the /dev/gnss0 character device.
-> I've confirmed it works properly with gpsd-3.20.
+> Only add SERIAL_GCOV for an example.
 > 
-> Tested-by: Pavel Machek <pavel@ucw.cz>
-> Reviewed-by: Pavel Machek <pavel@ucw.cz>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
 > ---
->  drivers/gnss/Kconfig  |   8 +
->  drivers/gnss/Makefile |   3 +
->  drivers/gnss/motmdm.c | 419 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 430 insertions(+)
->  create mode 100644 drivers/gnss/motmdm.c
+>  drivers/tty/serial/Kconfig  |  7 +++++++
+>  drivers/tty/serial/Makefile |  1 +
+>  kernel/gcov/Kconfig         | 14 ++++++++++++++
+>  3 files changed, 22 insertions(+)
 > 
-> diff --git a/drivers/gnss/Kconfig b/drivers/gnss/Kconfig
-> --- a/drivers/gnss/Kconfig
-> +++ b/drivers/gnss/Kconfig
-> @@ -13,6 +13,14 @@ menuconfig GNSS
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index adf9e80e7dc9..6df002370f18 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1566,3 +1566,10 @@ endmenu
 >  
->  if GNSS
->  
-> +config GNSS_MOTMDM
-> +	tristate "Motorola Modem TS 27.010 serdev GNSS receiver support"
-> +	depends on SERIAL_DEV_N_GSM
-> +	---help---
-> +	  Say Y here if you have a Motorola modem using TS 27.010 line
-> +	  discipline for GNSS such as a Motorola Mapphone series device
-> +	  like Droid 4.
-> +
->  config GNSS_SERIAL
+>  config SERIAL_MCTRL_GPIO
 >  	tristate
+> +
+> +config SERIAL_GCOV
+> +	bool "Enable profile gcov for serial directory"
+> +	depends on GCOV_PROFILE_PREREQS
+> +	help
+> +	  The SERIAL_GCOV will add Gcov profiling flags when kernel compiles.
+> +	  Say 'Y' here if you want the gcov data for the serial directory,
+> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+> index d056ee6cca33..17272733db95 100644
+> --- a/drivers/tty/serial/Makefile
+> +++ b/drivers/tty/serial/Makefile
+> @@ -3,6 +3,7 @@
+>  # Makefile for the kernel serial device drivers.
+>  #
 >  
-> diff --git a/drivers/gnss/Makefile b/drivers/gnss/Makefile
-> --- a/drivers/gnss/Makefile
-> +++ b/drivers/gnss/Makefile
-> @@ -6,6 +6,9 @@
->  obj-$(CONFIG_GNSS)			+= gnss.o
->  gnss-y := core.o
+> +GCOV_PROFILE := $(CONFIG_SERIAL_GCOV)
+>  obj-$(CONFIG_SERIAL_CORE) += serial_core.o
 >  
-> +obj-$(CONFIG_GNSS_MOTMDM)		+= gnss-motmdm.o
-> +gnss-motmdm-y := motmdm.o
-> +
->  obj-$(CONFIG_GNSS_SERIAL)		+= gnss-serial.o
->  gnss-serial-y := serial.o
+>  obj-$(CONFIG_SERIAL_EARLYCON) += earlycon.o
+> diff --git a/kernel/gcov/Kconfig b/kernel/gcov/Kconfig
+> index 3941a9c48f83..ea8b514f5676 100644
+> --- a/kernel/gcov/Kconfig
+> +++ b/kernel/gcov/Kconfig
+> @@ -51,6 +51,20 @@ config GCOV_PROFILE_ALL
+>  	larger and run slower. Also be sure to exclude files from profiling
+>  	which are not linked to the kernel image to prevent linker errors.
 >  
-> diff --git a/drivers/gnss/motmdm.c b/drivers/gnss/motmdm.c
-> new file mode 100644
-> --- /dev/null
-> +++ b/drivers/gnss/motmdm.c
-> @@ -0,0 +1,419 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Motorola Modem TS 27.010 serdev GNSS driver
-> + *
-> + * Copyright (C) 2018 - 2020 Tony Lindgren <tony@atomide.com>
-> + *
-> + * Based on drivers/gnss/sirf.c driver example:
-> + * Copyright (C) 2018 Johan Hovold <johan@kernel.org>
-> + */
+> +config GCOV_PROFILE_PREREQS
+> +	bool "Profile Kernel subsytem"
+> +	depends on !COMPILE_TEST
+> +	depends on GCOV_KERNEL
+> +	depends on !GCOV_PROFILE_ALL
+> +	help
+> +	  This options activates profiling for the specified kernel modules.
 > +
-> +#include <linux/errno.h>
-> +#include <linux/gnss.h>
-> +#include <linux/init.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/serdev-gsm.h>
-> +#include <linux/slab.h>
+> +	  When some modules need Gcov data, enable this config, then configure
+> +	  with gcov on the corresponding modules,The directories or files of
+> +	  these modules will be added profiling flags after kernel compile.
 > +
-> +#define MOTMDM_GNSS_TIMEOUT	1000
-> +#define MOTMDM_GNSS_RATE	1000
-> +
-> +/*
-> + * Motorola MDM GNSS device communicates over a dedicated TS 27.010 channel
-> + * using custom data packets. The packets look like AT commands embedded into
-> + * a Motorola invented packet using format like "U1234AT+MPDSTART=0,1,100,0".
-> + * But it's not an AT compatible serial interface, it's a packet interface
-> + * using AT like commands.
-> + */
+> +	  If unsure, say N.
 
-So this shouldn't depend on TS 27.010 and instead be a generic gnss
-serial driver. 
+This is not quite what I had in mind. A user still needs to manually
+select GCOV_PROFILE, then GCOV_PROFILE_PREREQS, then SERIAL_GCOV.
 
-What does the interface look like over the corresponding USB port?
-AT-commands without the U1234 prefix?
+My though was that you could provide an automatic config option that is
+invisible in the configuration dialog, and that is automatically
+selected when all prereqs for enabling GCOV in a module directory are met.
 
-> +#define MOTMDM_GNSS_HEADER_LEN	5				/* U1234 */
-> +#define MOTMDM_GNSS_RESP_LEN	(MOTMDM_GNSS_HEADER_LEN + 4)	/* U1234+MPD */
-> +#define MOTMDM_GNSS_DATA_LEN	(MOTMDM_GNSS_RESP_LEN + 1)	/* U1234~+MPD */
-> +#define MOTMDM_GNSS_STATUS_LEN	(MOTMDM_GNSS_DATA_LEN + 7)	/* STATUS= */
-> +#define MOTMDM_GNSS_NMEA_LEN	(MOTMDM_GNSS_DATA_LEN + 8)	/* NMEA=NN, */
-> +
-> +enum motmdm_gnss_status {
-> +	MOTMDM_GNSS_UNKNOWN,
-> +	MOTMDM_GNSS_INITIALIZED,
-> +	MOTMDM_GNSS_DATA_OR_TIMEOUT,
-> +	MOTMDM_GNSS_STARTED,
-> +	MOTMDM_GNSS_STOPPED,
-> +};
-> +
-> +struct motmdm_gnss_data {
-> +	struct gnss_device *gdev;
-> +	struct device *modem;
-> +	struct gsm_serdev_dlci dlci;
-> +	struct delayed_work restart_work;
-> +	struct mutex mutex;	/* For modem commands */
-> +	ktime_t last_update;
-> +	int status;
-> +	unsigned char *buf;
-> +	size_t len;
-> +	wait_queue_head_t read_queue;
-> +	unsigned int parsed:1;
-> +};
-> +
-> +static unsigned int rate_ms = MOTMDM_GNSS_RATE;
-> +module_param(rate_ms, uint, 0644);
-> +MODULE_PARM_DESC(rate_ms, "GNSS refresh rate between 1000 and 16000 ms (default 1000 ms)");
+Something like the following:
 
-No module parameters please. Either pick a good default or we need to
-come up with a generic (sysfs) interface for polled drivers like this
-one.
+config GCOV_PROFILE_PREREQS
+        bool
+        default y if GCOV_KERNEL && !COMPILE_TEST
+        default n
+
+There's no need to add GCOV_KERNEL_ALL here since that is about a user
+choice ("I want all code compiled with profiling") vs. this new symbol
+which is about an ability ("all prereqs for enabling profiling in
+specific directories are met).
+
 
 > +
-> +/*
-> + * Note that multiple commands can be sent in series with responses coming
-> + * out-of-order. For GNSS, we don't need to care about the out-of-order
-> + * responses, and can assume we have at most one command active at a time.
-> + * For the commands, can use just a jiffies base packet ID and let the modem
-> + * sort out the ID conflicts with the modem's unsolicited message ID
-> + * numbering.
-> + */
-> +static int motmdm_gnss_send_command(struct motmdm_gnss_data *ddata,
-> +				    const u8 *buf, int len)
-> +{
-> +	struct gnss_device *gdev = ddata->gdev;
-> +	const int timeout_ms = 1000;
-> +	unsigned char cmd[128];
-> +	int ret, cmdlen;
-> +
-> +	cmdlen = len + 5 + 1;
-> +	if (cmdlen > 128)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&ddata->mutex);
-> +	memset(ddata->buf, 0, ddata->len);
-> +	ddata->parsed = false;
-> +	snprintf(cmd, cmdlen, "U%04li%s", jiffies % 10000, buf);
-> +	ret = serdev_ngsm_write(ddata->modem, &ddata->dlci, cmd, cmdlen);
-> +	if (ret < 0)
-> +		goto out_unlock;
-> +
-> +	ret = wait_event_timeout(ddata->read_queue, ddata->parsed,
-> +				 msecs_to_jiffies(timeout_ms));
-> +	if (ret == 0) {
-> +		ret = -ETIMEDOUT;
-> +		goto out_unlock;
-> +	} else if (ret < 0) {
-> +		goto out_unlock;
-> +	}
-> +
-> +	if (!strstr(ddata->buf, ":OK")) {
-> +		dev_err(&gdev->dev, "command %s error %s\n",
-> +			cmd, ddata->buf);
-> +		ret = -EPIPE;
-> +	}
+>  choice
+>  	prompt "Specify GCOV format"
+>  	depends on GCOV_KERNEL
+> 
 
-I'm still not sure I like all this string parsing being done inside the
-kernel (and reimplemented in every driver using an AT interface).
 
-> +
-> +	ret = len;
-> +
-> +out_unlock:
-> +	mutex_unlock(&ddata->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +/*
-> + * Android uses AT+MPDSTART=0,1,100,0 which starts GNSS for a while,
-> + * and then GNSS needs to be kicked with an AT command based on a
-> + * status message.
-> + */
-> +static void motmdm_gnss_restart(struct work_struct *work)
-> +{
-> +	struct motmdm_gnss_data *ddata =
-> +		container_of(work, struct motmdm_gnss_data,
-> +			     restart_work.work);
-
-Split declaration and initialisation to avoid the line breaks.
-
-> +	struct gnss_device *gdev = ddata->gdev;
-> +	const unsigned char *cmd = "AT+MPDSTART=0,1,100,0";
-> +	int error;
-> +
-> +	ddata->last_update = ktime_get();
-> +
-> +	error = motmdm_gnss_send_command(ddata, cmd, strlen(cmd));
-> +	if (error < 0) {
-> +		/* Timeouts can happen, don't warn and try again */
-> +		if (error != -ETIMEDOUT)
-> +			dev_warn(&gdev->dev, "%s: could not start: %i\n",
-> +				 __func__, error);
-
-No function names in messages, please. Just spell out what went wrong.
-
-> +
-> +		schedule_delayed_work(&ddata->restart_work,
-> +				      msecs_to_jiffies(MOTMDM_GNSS_RATE));
-> +
-> +		return;
-> +	}
-> +}
-> +
-> +static void motmdm_gnss_start(struct gnss_device *gdev, int delay_ms)
-> +{
-> +	struct motmdm_gnss_data *ddata = gnss_get_drvdata(gdev);
-> +	ktime_t now, next, delta;
-> +	int next_ms;
-> +
-> +	now = ktime_get();
-> +	next = ktime_add_ms(ddata->last_update, delay_ms);
-> +	delta = ktime_sub(next, now);
-> +	next_ms = ktime_to_ms(delta);
-> +
-> +	if (next_ms < 0)
-> +		next_ms = 0;
-> +	if (next_ms > delay_ms)
-> +		next_ms = delay_ms;
-> +
-> +	schedule_delayed_work(&ddata->restart_work, msecs_to_jiffies(next_ms));
-> +}
-> +
-> +static int motmdm_gnss_stop(struct gnss_device *gdev)
-> +{
-> +	struct motmdm_gnss_data *ddata = gnss_get_drvdata(gdev);
-> +	const unsigned char *cmd = "AT+MPDSTOP";
-> +
-> +	cancel_delayed_work_sync(&ddata->restart_work);
-> +
-> +	return motmdm_gnss_send_command(ddata, cmd, strlen(cmd));
-> +}
-> +
-> +static int motmdm_gnss_init(struct gnss_device *gdev)
-> +{
-> +	struct motmdm_gnss_data *ddata = gnss_get_drvdata(gdev);
-> +	const unsigned char *cmd = "AT+MPDINIT=1";
-> +	int error;
-> +
-> +	error = motmdm_gnss_send_command(ddata, cmd, strlen(cmd));
-> +	if (error < 0)
-> +		return error;
-> +
-> +	motmdm_gnss_start(gdev, 0);
-> +
-> +	return 0;
-> +}
-> +
-> +static int motmdm_gnss_finish(struct gnss_device *gdev)
-> +{
-> +	struct motmdm_gnss_data *ddata = gnss_get_drvdata(gdev);
-> +	const unsigned char *cmd = "AT+MPDINIT=0";
-> +	int error;
-> +
-> +	error = motmdm_gnss_stop(gdev);
-> +	if (error < 0)
-> +		return error;
-> +
-> +	return motmdm_gnss_send_command(ddata, cmd, strlen(cmd));
-> +}
-> +
-> +static int motmdm_gnss_receive_data(struct gsm_serdev_dlci *dlci,
-> +				    const unsigned char *buf,
-> +				    size_t len)
-> +{
-> +	struct gnss_device *gdev = dlci->drvdata;
-> +	struct motmdm_gnss_data *ddata = gnss_get_drvdata(gdev);
-> +	const unsigned char *msg;
-> +	size_t msglen;
-> +	int error = 0;
-> +
-> +	if (len <= MOTMDM_GNSS_RESP_LEN)
-> +		return 0;
-> +
-> +	/* Handle U1234+MPD style command response */
-> +	if (buf[MOTMDM_GNSS_HEADER_LEN] != '~') {
-> +		msg = buf + MOTMDM_GNSS_RESP_LEN;
-> +		strncpy(ddata->buf, msg, len - MOTMDM_GNSS_RESP_LEN);
-> +		ddata->parsed = true;
-> +		wake_up(&ddata->read_queue);
-> +
-> +		return len;
-> +	}
-> +
-> +	if (len <= MOTMDM_GNSS_DATA_LEN)
-> +		return 0;
-> +
-> +	/* Handle U1234~+MPD style unsolicted message */
-> +	switch (buf[MOTMDM_GNSS_DATA_LEN]) {
-
-Shouldn't you check the command string?
-
-> +	case 'N':	/* UNNNN~+MPDNMEA=NN, */
-> +		msg = buf + MOTMDM_GNSS_NMEA_LEN;
-> +		msglen = len - MOTMDM_GNSS_NMEA_LEN;
-> +
-> +		/*
-> +		 * Firmware bug: Strip out extra duplicate line break always
-> +		 * in the data
-> +		 */
-> +		msglen--;
-> +
-> +		/*
-> +		 * Firmware bug: Strip out extra data based on an
-> +		 * earlier line break in the data
-> +		 */
-> +		if (msg[msglen - 5 - 1] == 0x0a)
-> +			msglen -= 5;
-> +
-> +		error = gnss_insert_raw(gdev, msg, msglen);
-> +		break;
-> +	case 'S':	/* UNNNN~+MPDSTATUS=N,NN */
-> +		msg = buf + MOTMDM_GNSS_STATUS_LEN;
-> +		msglen = len - MOTMDM_GNSS_STATUS_LEN;
-> +
-> +		switch (msg[0]) {
-> +		case '1':
-> +			ddata->status = MOTMDM_GNSS_INITIALIZED;
-> +			break;
-> +		case '2':
-> +			ddata->status = MOTMDM_GNSS_DATA_OR_TIMEOUT;
-> +			if (rate_ms < MOTMDM_GNSS_RATE)
-> +				rate_ms = MOTMDM_GNSS_RATE;
-> +			if (rate_ms > 16 * MOTMDM_GNSS_RATE)
-> +				rate_ms = 16 * MOTMDM_GNSS_RATE;
-> +			motmdm_gnss_start(gdev, rate_ms);
-> +			break;
-> +		case '3':
-> +			ddata->status = MOTMDM_GNSS_STARTED;
-> +			break;
-> +		case '4':
-> +			ddata->status = MOTMDM_GNSS_STOPPED;
-> +			break;
-> +		default:
-> +			ddata->status = MOTMDM_GNSS_UNKNOWN;
-> +			break;
-> +		}
-> +		break;
-> +	case 'X':	/* UNNNN~+MPDXREQ=N for updated xtra2.bin needed */
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return len;
-> +}
-> +
-> +static int motmdm_gnss_open(struct gnss_device *gdev)
-> +{
-> +	struct motmdm_gnss_data *ddata = gnss_get_drvdata(gdev);
-> +	struct gsm_serdev_dlci *dlci = &ddata->dlci;
-> +	int error;
-> +
-> +	dlci->drvdata = gdev;
-> +	dlci->receive_buf = motmdm_gnss_receive_data;
-> +
-> +	error = serdev_ngsm_register_dlci(ddata->modem, dlci);
-> +	if (error)
-> +		return error;
-> +
-> +	error = motmdm_gnss_init(gdev);
-> +	if (error) {
-> +		serdev_ngsm_unregister_dlci(ddata->modem, dlci);
-> +
-> +		return error;
-> +	}
-> +
-> +	return 0;
-> +}
-
-How does your "aggressive pm" gsmmux implementation work with the gps if
-there are no other clients keeping the modem awake? It seems the modem
-would be suspended after 600 milliseconds after being woken up every 10
-seconds or so by the polling gnss driver?
-
-What happens to the satellite lock in between? Does the request block
-until the gps has an updated position?
-
-Johan
+-- 
+Peter Oberparleiter
+Linux on Z Development - IBM Germany
