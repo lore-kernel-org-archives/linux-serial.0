@@ -2,110 +2,99 @@ Return-Path: <SRS0=aTVb=7K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B22FC433E2
-	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 15:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C11C433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 19:36:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7CFCB207D3
-	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 15:55:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b="o6VEYz6g"
+	by mail.kernel.org (Postfix) with ESMTP id 3D58D207BC
+	for <linux-serial@archiver.kernel.org>; Thu, 28 May 2020 19:36:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1590694617;
+	bh=/7kHFBqmcXUzywK3Zg26OL14ofFFyyZj6hSKx1od/WU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=hlx8+gpsQrp4vtMwNP78HdpdVoe3SdwX3KcZKEIe0+wGqZ5d8PqOfueqEt2fo1zTh
+	 sIk1URKr2I7qdWU7Rf5nV6JZK/Dhongm0hfnzk7q0hYbLYNN79mBy4ggEKmjgREIdB
+	 v7wuGAyqaBJg6rNREbcL0225kolKLQR1K6jhPdeU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404822AbgE1PzV (ORCPT
+        id S2406640AbgE1Tgt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 May 2020 11:55:21 -0400
-Received: from mx1.tq-group.com ([62.157.118.193]:51923 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404654AbgE1PzP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 May 2020 11:55:15 -0400
-X-Greylist: delayed 431 seconds by postgrey-1.27 at vger.kernel.org; Thu, 28 May 2020 11:55:14 EDT
-IronPort-SDR: ju0s3cShC548PVB0OFvt3B1Fc0gbVAl0k1p7+rfUk+DmeMA7RbHCHHzs7GnluNPf+DWNeWSTlH
- sKGVLoBDbvNaXuO4C4+rgqj3GGaweNazLeqp63Bpa4kLVzdl8je3Y8YIdTirQ8MNoU3xUQ1pKu
- AbgsDZyaGyeBgw5sRBAWVkmjdHASJK6fUuWysldp4G5F16BntA36+eNdq1Lpe/QtSyXYiNAk67
- r6K1/2RM8fUZLQbszihlFowdzT90Ms/NaSP/OfSu+ob4FDfSpxS25dkmICZVpcbvCNPeUGUpNj
- QwU=
-X-IronPort-AV: E=Sophos;i="5.73,445,1583190000"; 
-   d="scan'208";a="12467472"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 28 May 2020 17:48:01 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Thu, 28 May 2020 17:48:01 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Thu, 28 May 2020 17:48:01 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1590680881; x=1622216881;
-  h=from:to:cc:subject:date:message-id;
-  bh=Sw9zOSroZ9SJ13/VWfo6J3/CTkEe0YQ1ov3hXyiqHjU=;
-  b=o6VEYz6g2+uUCIm6pOwgrfz/+MQTuWCV+uE3fh0ueXURKM7vqkTT8p5l
-   39F1FyW06A7/wLOkN+fTggsyCXKENzJs4bqLpHhM19nzszD3NnIc6O/Nm
-   PcBl2zma1DqO1Bassg/NG89dUJNARNtjmJ7G89IPyFD7R6JYDegFdSUe3
-   FGQvgYDuxq1DOdVcQ58VEw38iRe6+KQxL2wpMOhdJ3P5ePGILrMkMgT/O
-   EFexqVCSgiI0G/JzSsrl+NOolvGWetWesUBh4fl9nd3bTr1DyBGDHL1nP
-   ZU4qNp4qs+X3TBLlBehL9i+X92JLq6Z5fwwdff8cKJNM8UirEwf6FNVD9
-   g==;
-IronPort-SDR: RrXTpHqHWtOzMSM6Sus6P6W4/PMG5G2AVnztXyMkjiMfLXzXgNWpNtue6Z0+Vi5LV5JTU0iYdi
- Xqv9zqfnfzB4jlhxvs/RNlqXSCV0/5aKNy6ykd54R4XYxNs29AyIPd8qOiZgzpa6cqpXXjq7Xw
- ctD8232wIvotrcu8wJClvJXpNUwDFiL5UfuNi8xvjhgbUSDNrMzfqVcXjZ9koDdqJ0QbSFJ7Q8
- 0VLiAYH/ulF+IxWGPssFJds4XldgSdM7Z0HPYT/RjUiMwcLceIdO3SG4MVe8PwLoN7PMsclkLN
- N3s=
-X-IronPort-AV: E=Sophos;i="5.73,445,1583190000"; 
-   d="scan'208";a="12467471"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 28 May 2020 17:48:00 +0200
-Received: from schifferm-ubuntu4.tq-net.de (unknown [10.117.49.26])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 90B93280065;
-        Thu, 28 May 2020 17:48:08 +0200 (CEST)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH tty-next] tty: serial: imx: clear Ageing Timer Interrupt in handler
-Date:   Thu, 28 May 2020 17:47:47 +0200
-Message-Id: <20200528154747.14201-1-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 28 May 2020 15:36:49 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:45740 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406319AbgE1Tgq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 28 May 2020 15:36:46 -0400
+Received: by mail-io1-f66.google.com with SMTP id y5so8596721iob.12;
+        Thu, 28 May 2020 12:36:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=anLARnrJJYeYAOB5KTKHSKOnzH0boPrtofWMELzWPU8=;
+        b=eszk8+Dr5DGsMPVkuuDZkT9s0FqOEuL1kSXDU6CHHdpAyv3w59G8WWWangxo2itI7P
+         gdqo/85HaK7KV1rX91Tm/xqSvCXUQIWJLGSWEOPsbfb9Jek0r5nY6Pd9cMomYu3b5QdG
+         TCkRoRjcXt5EzyBPYCfdagT+RCcARPRm1LhSEftBII4FSKFbwPF1ioV1QxX5kqHUsOh/
+         6BBQuE6OH7gMfQqJg965LiGH+xTj+M3aSWJKtro02rXNBHZf0eAYqhkqV3i3D2ikH2c2
+         espqQS17WeqLU0FNHkkk/Jy/i9yrNWyWmE9TOqorkJXyWlEU60T+zlJrqqdTW1NcJUUO
+         G6xA==
+X-Gm-Message-State: AOAM5331Wh+sRBbU3q3jArtjh/jDaaPjv5624qImiZdzwnCBUfJrKtjx
+        rbXVztGWDclvMpWfPr9eorkUj2k=
+X-Google-Smtp-Source: ABdhPJxAbgV9QaVK5dOC48fScjQWHA5Gld2FnTR86BVEq9Vbv9X4kGVbNWcHJZhyKd7pm6KmH4S+0Q==
+X-Received: by 2002:a5d:88d3:: with SMTP id i19mr3781474iol.194.1590694605038;
+        Thu, 28 May 2020 12:36:45 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id v2sm1938613iol.36.2020.05.28.12.36.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2020 12:36:44 -0700 (PDT)
+Received: (nullmailer pid 553763 invoked by uid 1000);
+        Thu, 28 May 2020 19:36:42 -0000
+Date:   Thu, 28 May 2020 13:36:42 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        linux-renesas-soc@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v2 03/10] dt-bindings: serial: renesas,scifa: Document
+ r8a7742 bindings
+Message-ID: <20200528193642.GA552811@bogus>
+References: <1588542414-14826-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1588542414-14826-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200512222056.GA7267@bogus>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200512222056.GA7267@bogus>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The AGTIM flag must be cleared explicitly, otherwise the IRQ handler
-will be called in an endless loop.
+On Tue, May 12, 2020 at 05:20:56PM -0500, Rob Herring wrote:
+> On Sun,  3 May 2020 22:46:47 +0100, Lad Prabhakar wrote:
+> > RZ/G1H (R8A7742) SoC also has the R-Car gen2 compatible SCIFA ports,
+> > so document the SoC specific bindings.
+> > 
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > ---
+> >  Documentation/devicetree/bindings/serial/renesas,scifa.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> 
+> Acked-by: Rob Herring <robh@kernel.org>
 
-Fortunately, this issue currently doesn't affect mainline kernels in
-practice, as the the RX FIFO trigger level is set to 1 in UFCR. When
-setting the trigger level to a higher number, the issue is trivially
-reproducible by any RX without DMA that doesn't fill the FIFO up to the
-configured level.
+Geert asked me to apply this one, so I have now.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
- drivers/tty/serial/imx.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 6b078e395931..1265e8d86d8a 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -909,6 +909,8 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 		usr2 &= ~USR2_ORE;
- 
- 	if (usr1 & (USR1_RRDY | USR1_AGTIM)) {
-+		imx_uart_writel(sport, USR1_AGTIM, USR1);
-+
- 		__imx_uart_rxint(irq, dev_id);
- 		ret = IRQ_HANDLED;
- 	}
--- 
-2.17.1
-
+Rob
