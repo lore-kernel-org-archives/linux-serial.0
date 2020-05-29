@@ -2,125 +2,168 @@ Return-Path: <SRS0=RakX=7L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CABDC433E0
-	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 12:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF542C433E2
+	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 15:50:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 401EE20776
-	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 12:04:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AFF1A206F0
+	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 15:50:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ID4REpDk"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cGUtShBa"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725865AbgE2MED (ORCPT
+        id S1727809AbgE2Pub (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 May 2020 08:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
+        Fri, 29 May 2020 11:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725775AbgE2MEC (ORCPT
+        with ESMTP id S1726971AbgE2Pu3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 May 2020 08:04:02 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F32C03E969;
-        Fri, 29 May 2020 05:04:02 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id c75so1413885pga.3;
-        Fri, 29 May 2020 05:04:02 -0700 (PDT)
+        Fri, 29 May 2020 11:50:29 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B00C03E969;
+        Fri, 29 May 2020 08:50:29 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id s19so2067098edt.12;
+        Fri, 29 May 2020 08:50:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Mnz73Vl3a4PfmC0Z2phyqbZVdHEOz6JLhDTMxB2wsIM=;
-        b=ID4REpDkr7y96phQaJslv9etO7e56tB1Fvs2pQVFThbt3OWxnE9cd6GOB4rfNCZKy9
-         SwmDBqEJwZh4h1516wBaUfJ5W0ErSpigoJo+K36t1tPn3Y1NrFHpmHJb5tCMcudzMvyv
-         TEgH2Mm0Tvj974phEVKJVRrjUnKCpqIQm9Z8bW5wIzbYafwg6tnpmNTemy8Uvw0guST4
-         Wv4LD8tAAcArg51qh6JzClmSlR2Qemwv5raR/846IhRnK84BKN6fnbwcKWf4h8uf2H9q
-         QxvInPyaI7jXvmtBaIeEZ6vUxQv8eXDeKzto41yIYFuVP30P/tA6/MaBD+7fhmmGXVvz
-         Fykg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EsMvt8EiZib5FGRRaF/qmPkTiPSrV02BKHt077M8wMI=;
+        b=cGUtShBaCi9MqoE1+GESbw69dKQPzfpBkPzL3us2slLVv6fyW3FzZR38Ss0xy1A4Yh
+         8iss/1gsa3WW9/xeUZSAv4euyAve2ASBsIjapI7OxHttUYUEEopFsOQr5gtW2x5K5DVv
+         xVcOJQyCfYgiQM0ZEi2S3hc4pTM0phT9t8mt4RPzVUv4RbiwbWMbTC4Xda9iJQ19GUFU
+         4Vuze25Dm/GfmaXfyvhPMotiRoRlhae3fCXG+9MqDgTLBwr0foE2cAwLI/LkEyRSuBXL
+         YPVTXNicS/KYigpGnlH14hS02GzJL0KIS5PDjXI8yWtoebKHBFfq3ifTgX2kWJOrJtmT
+         +e1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Mnz73Vl3a4PfmC0Z2phyqbZVdHEOz6JLhDTMxB2wsIM=;
-        b=Ok9Kf0XXaYLgyVk9nWpfl/Yal6oy3ZkQl0oFB5LO2pdM+vVd21gWMBJdqQILL9ky2l
-         1KhvGnPisXC42klf3Z8mOhev92TGjrzkPwD8mlz7Gt2UgCaFCyOKjWaNHwN4kI/Gk7Q1
-         X5Srwmq9krHAC5H43nqpQw1CuUfQgSI4BKVnF8X7Azosv6hEj9WPXQ9DRM0wWUcMKCQA
-         F601hP2IeB0i7hoZhEde9DccTnKD4mm20xPuI7/yA6o14XsQRetOb7vBLsovF5CElz1L
-         +UisuHggskjwg4paV/6njCd+XDViQlehW17fmRkgoNsW5GkIlRYJzHSEYccSfkR2JXg8
-         N0hg==
-X-Gm-Message-State: AOAM532EEBY48aQwRlVjOUcuBlvEaO1F52ICRh4hjk6v3hbV6jsvwoqc
-        +B2dpxIPPt/EwGprI1nAqLvkuqheltv6cY52d+0=
-X-Google-Smtp-Source: ABdhPJy3uKd3F67NcorbaDRpeFbpdAHqLp9X6qgyjdspi41F2UUGxJniR9HNoYQ1KudpdkBhWYdPVejNGSthnAiDc3A=
-X-Received: by 2002:a63:545a:: with SMTP id e26mr7868665pgm.4.1590753841885;
- Fri, 29 May 2020 05:04:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <89f6393934fc6d493f8b9e87c1a6e916642b6a18.1590749143.git.cristian.ciocaltea@gmail.com>
- <20200529113419.GA1631227@kroah.com> <4c40d6c1-47e8-b4ec-f2fd-e9767b03630c@suse.de>
-In-Reply-To: <4c40d6c1-47e8-b4ec-f2fd-e9767b03630c@suse.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 29 May 2020 15:03:50 +0300
-Message-ID: <CAHp75Vcz0a87LSnb6Ubt5_bSF3wUcs21GbP119trXER5KBDxbQ@mail.gmail.com>
-Subject: Re: [PATCH 1/1] tty: serial: owl: Initialize lock before registering port
-To:     =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cristian Ciocaltea <cristian.ciocaltea@gmail.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EsMvt8EiZib5FGRRaF/qmPkTiPSrV02BKHt077M8wMI=;
+        b=tOmhRHW3FDVQMULiSoDaRuLgnK1Sowcr/+B7aCUe+5k06e9p0OuCElPBvaWXKQLxxJ
+         q7wsggLyrtfxGRBoBJ/LIN/hCMvq7Ve66Ctyhb0p2MGX3QoHRCUSm01ea884ZBzv0e3O
+         CIQWYdTdj7juBqFWpwEe8IW39990bwGtqQPFrTmkwrQtIjGj/TTfuguWRoAkQ6G7pG95
+         KVXvT9a9FPVzwCSS7BtIcFKMG2PiwoLWoFO2ExLcYCZs7ijY1bPCVmD75hXOS6j2v7kj
+         D1YlAwQpqDVGtvZ88DzVGI7dkRcL1hm/8IYduc6LwSlyDujSnhin6HBuAMYDnQAGrlg8
+         +uwA==
+X-Gm-Message-State: AOAM532xkH56YbQlztNYW3NeYizuW1UX22HPrjLlXvMNpx4NRBlxTGzh
+        3S1Rgmj4z7EjjGOqmgffkC4=
+X-Google-Smtp-Source: ABdhPJx6DPMPIrVyjdcMp9A6H0ZgGz361F/QduvdG+yveRgopAM+PuB1Tb/x09hjpiea6VuHfcN3Iw==
+X-Received: by 2002:a50:bb41:: with SMTP id y59mr8736067ede.311.1590767427825;
+        Fri, 29 May 2020 08:50:27 -0700 (PDT)
+Received: from localhost.localdomain ([188.27.38.213])
+        by smtp.gmail.com with ESMTPSA id cz9sm7068103edb.18.2020.05.29.08.50.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 May 2020 08:50:27 -0700 (PDT)
+From:   Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+To:     =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-actions@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-actions@lists.infradead.org
+Subject: [PATCH 1/1] tty: serial: owl: Add support for kernel debugger
+Date:   Fri, 29 May 2020 18:50:25 +0300
+Message-Id: <6ee88060c129715980592a1ae33c93923916a14b.1590766726.git.cristian.ciocaltea@gmail.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 29, 2020 at 2:56 PM Andreas F=C3=A4rber <afaerber@suse.de> wrot=
-e:
->
-> Am 29.05.20 um 13:34 schrieb Greg Kroah-Hartman:
-> > On Fri, May 29, 2020 at 02:06:47PM +0300, Cristian Ciocaltea wrote:
-> >> Running a lockdep-enabled kernel leads to the following splat when
-> >> probing the owl-uart driver:
+Implement poll_put_char and poll_get_char callbacks in struct uart_ops
+that enables OWL UART to be used for KGDB debugging over serial line.
 
-...
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+---
+ drivers/tty/serial/owl-uart.c | 45 ++++++++++++++++++++++++++++++-----
+ 1 file changed, 39 insertions(+), 6 deletions(-)
 
-> >> Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial dev=
-ice for console")
-> >> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+index c2fa2f15d50a..26dcc374dec5 100644
+--- a/drivers/tty/serial/owl-uart.c
++++ b/drivers/tty/serial/owl-uart.c
+@@ -12,6 +12,7 @@
+ #include <linux/console.h>
+ #include <linux/delay.h>
+ #include <linux/io.h>
++#include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+@@ -20,13 +21,13 @@
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+ 
+-#define OWL_UART_PORT_NUM 7
+-#define OWL_UART_DEV_NAME "ttyOWL"
++#define OWL_UART_PORT_NUM		7
++#define OWL_UART_DEV_NAME		"ttyOWL"
+ 
+-#define OWL_UART_CTL	0x000
+-#define OWL_UART_RXDAT	0x004
+-#define OWL_UART_TXDAT	0x008
+-#define OWL_UART_STAT	0x00c
++#define OWL_UART_CTL			0x000
++#define OWL_UART_RXDAT			0x004
++#define OWL_UART_TXDAT			0x008
++#define OWL_UART_STAT			0x00c
+ 
+ #define OWL_UART_CTL_DWLS_MASK		GENMASK(1, 0)
+ #define OWL_UART_CTL_DWLS_5BITS		(0x0 << 0)
+@@ -461,6 +462,34 @@ static void owl_uart_config_port(struct uart_port *port, int flags)
+ 	}
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++
++static int owl_uart_poll_get_char(struct uart_port *port)
++{
++	u32 c = NO_POLL_CHAR;
++
++	if (!(owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_RFEM))
++		c = owl_uart_read(port, OWL_UART_RXDAT);
++
++	return c;
++}
++
++static void owl_uart_poll_put_char(struct uart_port *port, unsigned char c)
++{
++	/* Wait while TX FIFO is full */
++	while (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TFFU)
++		cpu_relax();
++
++	/* Send the character out */
++	owl_uart_write(port, c, OWL_UART_TXDAT);
++
++	/* Wait for transmitter to become empty */
++	while (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TRFL_MASK)
++		cpu_relax();
++}
++
++#endif /* CONFIG_CONSOLE_POLL */
++
+ static const struct uart_ops owl_uart_ops = {
+ 	.set_mctrl = owl_uart_set_mctrl,
+ 	.get_mctrl = owl_uart_get_mctrl,
+@@ -476,6 +505,10 @@ static const struct uart_ops owl_uart_ops = {
+ 	.request_port = owl_uart_request_port,
+ 	.release_port = owl_uart_release_port,
+ 	.verify_port = owl_uart_verify_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= owl_uart_poll_get_char,
++	.poll_put_char	= owl_uart_poll_put_char,
++#endif
+ };
+ 
+ #ifdef CONFIG_SERIAL_OWL_CONSOLE
+-- 
+2.26.2
 
-> >> +    spin_lock_init(&owl_port->port.lock);
-> >> +
-> >>      ret =3D uart_add_one_port(&owl_uart_driver, &owl_port->port);
-> >>      if (ret)
-> >>              owl_uart_ports[pdev->id] =3D NULL;
-> >
-> > Ugh, another one :(
-> >
-> > Thanks for this, will queue this up now.
->
-> Thanks. If this is the expected pattern now, I'll also have to update
-> in-flight patches, such as Sunplus.
-
-Expected is to register properly console via register_console() call.
-If you do so, you also need to initialize spin lock before coming to
-uart_add_one_port().
-It seems drivers (ab)used that feature.
-
-$ git grep -n -w register_console -- drivers/tty/serial/ | cut -f1 -d:
-| sort -u | wc -l
-    37
-$ git grep -n _CONSOLE -- drivers/tty/serial/ | cut -f1 -d:  | sort -u | wc=
- -l
-    77
-
-But as a quick fix this initialization is okay.
-
---=20
-With Best Regards,
-Andy Shevchenko
