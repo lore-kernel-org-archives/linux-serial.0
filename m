@@ -2,69 +2,88 @@ Return-Path: <SRS0=RakX=7L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5581C433E0
-	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 11:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE115C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 11:35:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AEC8920B80
-	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 11:34:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590752064;
-	bh=qiIfDGRDhLmCmqfNyI9oCVYYxVukeiaDUPgdXqd2ttw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=dK9qBy0JvAOXKLqjJixAID1euYRLIfV2or+JMwN4+YpLY4vgIbXPpNwAwakRS4T9N
-	 AJzB+Sl09f0MasMgTnVkKoXjRuAzhPSBKAEMfavEdLkF6YXgnkl04ADGRqGygd6F7H
-	 pRcDH0oHppwJ2PVwmoZFvr1YhcBmGPcqdaWbhXc0=
+	by mail.kernel.org (Postfix) with ESMTP id 8A277207F5
+	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 11:35:19 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QGTigm0C"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725775AbgE2LeY (ORCPT
+        id S1725775AbgE2LfT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 May 2020 07:34:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36226 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725306AbgE2LeY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 May 2020 07:34:24 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BD6AC2074D;
-        Fri, 29 May 2020 11:34:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590752062;
-        bh=qiIfDGRDhLmCmqfNyI9oCVYYxVukeiaDUPgdXqd2ttw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H99J23gA4rUUloXkwCU9gOqfAo95n70m/qWqJloLlyJ0MNKEGihGSXfdDyjUpjIjC
-         kGkXIYDKyZhyx8oP7VXbe3l+gh3iZnjGJ5WnXvxQ/ho4LQsN7SXqxtnnA364gJC4Fe
-         m/xFXsGiVaJaMfRFzJUjlISByDDGOeSPPILrP7lY=
-Date:   Fri, 29 May 2020 13:34:19 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Fri, 29 May 2020 07:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725562AbgE2LfS (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 29 May 2020 07:35:18 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8EAC03E969;
+        Fri, 29 May 2020 04:35:18 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id u5so1383590pgn.5;
+        Fri, 29 May 2020 04:35:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A/8AVUJdvOiynNLDMUmFl6p6jEKrS4pLsMpfZjizUzo=;
+        b=QGTigm0CR/xtCjAF6zk31bpGzHMwMEhvL6+EkHBzHlQTYEfY4EiVx7eQSPmWi0ApPl
+         xUquAByYBHSVw7efJZhPDaJJd4v3j7jVpN6AgJedKtZhugIEnqWVW/ETA6rkhdWlv18z
+         4dZNT1eBj1j6/ajGMynBde/egjpPh3ocCWxSKjt8WHByAebN4whWF5R4yiALOKeAXh8Z
+         kdEcH+fF3Kug2xI0QgKcxmEft7p++KTVBpMTl1BuhVTUYwEOO3wYjYdJzyIbIF0nzLLm
+         AUl0yb8OmmG6VO+Yb4AfWeIBCMIoAPlogQP5M/8q651hZtg+hZWcx5L0PQ1GxJB7FAWm
+         66gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A/8AVUJdvOiynNLDMUmFl6p6jEKrS4pLsMpfZjizUzo=;
+        b=XwCS+M3InNsrf7miZ2mu2JrjQg6L/+zWSVqCkKsl5OmL5qKbYO5EQP3ilnoqQ9z6wA
+         Wbuc9s0WkWceXVGVAN/1cA7OdEoI2rC6/ZdYgdycao6y+1TkXFN2O6KcrjTV7XR/rHNB
+         0TTaPmibR6BhBeQnqhLHGXggBtFOz3ODBuXxL8n43JKw5b5hrOgBXCloTD/Joe8JxJ0X
+         Vl4Wa47EB3cs99kBKDSh0TgXTadC32YBkGzY50Z6xLWfopo99qBSBstly0ZK1Dp7W551
+         yVww5aXVTIn7rHuWy5WQQrxFiqdrHrcmSC14Q6x6Tsv9yD62tv5jwtso0q1xbqVyym/s
+         8zRA==
+X-Gm-Message-State: AOAM533W7H0pzpxuzUnvgDkuGiGuF9u6IANbrnIgqKhQitS02x0JTf4+
+        8iMNVMIaiDjfos8v8RQjwhI+uzAUGbiBYutRdTQ=
+X-Google-Smtp-Source: ABdhPJzYg1wP5drwVOQXE/AqhepEFdY0IS9y17Jl1ma8d1oEIchfTEfggGDsztl/Yq0qVt+/oxT0++TDbK1cOrN36ao=
+X-Received: by 2002:a63:545a:: with SMTP id e26mr7770326pgm.4.1590752117594;
+ Fri, 29 May 2020 04:35:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <89f6393934fc6d493f8b9e87c1a6e916642b6a18.1590749143.git.cristian.ciocaltea@gmail.com>
+In-Reply-To: <89f6393934fc6d493f8b9e87c1a6e916642b6a18.1590749143.git.cristian.ciocaltea@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 29 May 2020 14:35:05 +0300
+Message-ID: <CAHp75Vf8xJ2yX-11JsTDnRvZQOK+16aePcB1AUzq=5oO-mFCGQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] tty: serial: owl: Initialize lock before registering port
 To:     Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
-Cc:     Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+Cc:     =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-actions@lists.infradead.org
-Subject: Re: [PATCH 1/1] tty: serial: owl: Initialize lock before registering
- port
-Message-ID: <20200529113419.GA1631227@kroah.com>
-References: <89f6393934fc6d493f8b9e87c1a6e916642b6a18.1590749143.git.cristian.ciocaltea@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <89f6393934fc6d493f8b9e87c1a6e916642b6a18.1590749143.git.cristian.ciocaltea@gmail.com>
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-actions@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 29, 2020 at 02:06:47PM +0300, Cristian Ciocaltea wrote:
+On Fri, May 29, 2020 at 2:09 PM Cristian Ciocaltea
+<cristian.ciocaltea@gmail.com> wrote:
+>
 > Running a lockdep-enabled kernel leads to the following splat when
 > probing the owl-uart driver:
-> 
+>
 > [    1.271784] b0124000.serial: ttyOWL2 at MMIO 0xb0124000 (irq = 22, base_baud = 1500000) is a owl-uart
 > [    1.281226] INFO: trying to register non-static key.
 > [    1.286179] the code is fine but needs lockdep annotation.
@@ -97,45 +116,50 @@ On Fri, May 29, 2020 at 02:06:47PM +0300, Cristian Ciocaltea wrote:
 > [    1.494002] dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
 > [    1.502162] dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
 > [    1.508914] printk: console [ttyOWL2] enabled
-> 
+>
 > The locking issue occurs in uart_configure_port() when trying to
 > guard the call to set_mctrl().
-> 
+>
 > uart_add_one_port() should normally initialize the spinlock via
 > uart_port_spin_lock_init(), but it never happens because the port is
 > detected as a console and, as a consequence, the spinlock is expected
 > to be already initialized.
-> 
+>
 > The commit a3cb39d258ef
 > ("serial: core: Allow detach and attach serial device for console")
 > changed the lock initialization logic to assume the spinlock is
 > initialized even if the console is not enabled.
-> 
+>
 > Therefore, initialize the lock explicitly in owl_uart_probe(), before
 > attempting to invoke uart_add_one_port().
-> 
+
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+You are faster than me, thanks!
+
 > Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
 > Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
 > ---
 >  drivers/tty/serial/owl-uart.c | 2 ++
 >  1 file changed, 2 insertions(+)
-> 
+>
 > diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
 > index c149f8c30007..c2fa2f15d50a 100644
 > --- a/drivers/tty/serial/owl-uart.c
 > +++ b/drivers/tty/serial/owl-uart.c
 > @@ -705,6 +705,8 @@ static int owl_uart_probe(struct platform_device *pdev)
->  	owl_uart_ports[pdev->id] = owl_port;
->  	platform_set_drvdata(pdev, owl_port);
->  
-> +	spin_lock_init(&owl_port->port.lock);
+>         owl_uart_ports[pdev->id] = owl_port;
+>         platform_set_drvdata(pdev, owl_port);
+>
+> +       spin_lock_init(&owl_port->port.lock);
 > +
->  	ret = uart_add_one_port(&owl_uart_driver, &owl_port->port);
->  	if (ret)
->  		owl_uart_ports[pdev->id] = NULL;
+>         ret = uart_add_one_port(&owl_uart_driver, &owl_port->port);
+>         if (ret)
+>                 owl_uart_ports[pdev->id] = NULL;
+> --
+> 2.26.2
+>
 
-Ugh, another one :(
 
-Thanks for this, will queue this up now.
-
-greg k-h
+-- 
+With Best Regards,
+Andy Shevchenko
