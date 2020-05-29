@@ -2,80 +2,85 @@ Return-Path: <SRS0=RakX=7L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E87C433E1
-	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 05:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FA4C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 10:17:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E82CD21508
-	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 05:51:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 479DC2075A
+	for <linux-serial@archiver.kernel.org>; Fri, 29 May 2020 10:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726334AbgE2FvI (ORCPT
+        id S1725928AbgE2KRR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 May 2020 01:51:08 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:56520 "EHLO mail.bugwerft.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725817AbgE2FvH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 May 2020 01:51:07 -0400
-Received: from zenbar.fritz.box (p57bc97c6.dip0.t-ipconnect.de [87.188.151.198])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 5C1194230C4;
-        Fri, 29 May 2020 05:51:05 +0000 (UTC)
-From:   Daniel Mack <daniel@zonque.org>
-To:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org, jslaby@suse.com,
-        jringle@gridpoint.com, m.brock@vanmierlo.com,
-        pascal.huerst@gmail.com, Daniel Mack <daniel@zonque.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 1/2] dt-bindings: sc16is7xx: Add flag to activate IrDA mode
-Date:   Fri, 29 May 2020 07:50:57 +0200
-Message-Id: <20200529055058.1606910-2-daniel@zonque.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200529055058.1606910-1-daniel@zonque.org>
-References: <20200529055058.1606910-1-daniel@zonque.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 29 May 2020 06:17:17 -0400
+Received: from alexa-out-blr-02.qualcomm.com ([103.229.18.198]:25634 "EHLO
+        alexa-out-blr-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725601AbgE2KRR (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 29 May 2020 06:17:17 -0400
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by alexa-out-blr-02.qualcomm.com with ESMTP/TLS/AES256-SHA; 29 May 2020 15:47:13 +0530
+Received: from c-skakit-linux.qualcomm.com ([10.242.50.210])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 29 May 2020 15:46:57 +0530
+Received: by c-skakit-linux.qualcomm.com (Postfix, from userid 2344709)
+        id 253E93D97; Fri, 29 May 2020 15:46:56 +0530 (IST)
+From:   satya priya <skakit@codeaurora.org>
+To:     gregkh@linuxfoundation.org
+Cc:     swboyd@chromium.org, mgautam@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        akashast@codeaurora.org, rojay@codeaurora.org,
+        msavaliy@qti.qualcomm.com, satya priya <skakit@codeaurora.org>
+Subject: [PATCH] tty: serial: qcom_geni_serial: Add 51.2MHz frequency support
+Date:   Fri, 29 May 2020 15:44:42 +0530
+Message-Id: <1590747282-5487-1-git-send-email-skakit@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Pascal Huerst <pascal.huerst@gmail.com>
+To support BT use case over UART at baud rate of 3.2 Mbps,
+we need SE clocks to run at 51.2MHz frequency. Previously this
+frequency was not available in clk src, so, we were requesting
+for 102.4 MHz and dividing it internally by 2 to get 51.2MHz.
 
-This series of uart controllers is able to work in IrDA mode.
-This adds a property to the device tree to enable that feature on
-selected ports if needed.
+As now 51.2MHz frequency is made available in clk src,
+adding this frequency to UART frequency table.
 
-Signed-off-by: Pascal Huerst <pascal.huerst@gmail.com>
-Signed-off-by: Daniel Mack <daniel@zonque.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
+We will save significant amount of power, if 51.2 is used
+because it belongs to LowSVS range whereas 102.4 fall into
+Nominal category.
+
+Signed-off-by: satya priya <skakit@codeaurora.org>
 ---
- Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-index c1091a923a89..0fa8e3e43bf8 100644
---- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-+++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-@@ -21,6 +21,8 @@ Optional properties:
-   the second cell is used to specify the GPIO polarity:
-     0 = active high,
-     1 = active low.
-+- irda-mode-ports: An array that lists the indices of the port that
-+		   should operate in IrDA mode.
+Note: This depend on clk patch https://patchwork.kernel.org/patch/11554073/
+
+ drivers/tty/serial/qcom_geni_serial.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 6119090..168e1c0 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -141,9 +141,10 @@ static void qcom_geni_serial_stop_rx(struct uart_port *uport);
+ static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop);
  
- Example:
-         sc16is750: sc16is750@51 {
-@@ -55,6 +57,8 @@ Optional properties:
-   the second cell is used to specify the GPIO polarity:
-     0 = active high,
-     1 = active low.
-+- irda-mode-ports: An array that lists the indices of the port that
-+		   should operate in IrDA mode.
+ static const unsigned long root_freq[] = {7372800, 14745600, 19200000, 29491200,
+-					32000000, 48000000, 64000000, 80000000,
+-					96000000, 100000000, 102400000,
+-					112000000, 120000000, 128000000};
++					32000000, 48000000, 51200000, 64000000,
++					80000000, 96000000, 100000000,
++					102400000, 112000000, 120000000,
++					128000000};
  
- Example:
- 	sc16is750: sc16is750@0 {
+ #define to_dev_port(ptr, member) \
+ 		container_of(ptr, struct qcom_geni_serial_port, member)
 -- 
-2.26.2
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
 
