@@ -2,95 +2,125 @@ Return-Path: <SRS0=qx80=7P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D773BC433E0
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 14:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D4CC433E0
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 15:34:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AB6CA2068D
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 14:48:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4E69C206E2
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 15:34:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UGYI0vDb"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XyxRObsg"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726214AbgFBOsm (ORCPT
+        id S1726162AbgFBPeY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Jun 2020 10:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33936 "EHLO
+        Tue, 2 Jun 2020 11:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbgFBOsm (ORCPT
+        with ESMTP id S1726112AbgFBPeX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Jun 2020 10:48:42 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED12C08C5C0;
-        Tue,  2 Jun 2020 07:48:41 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id h185so4147127pfg.2;
-        Tue, 02 Jun 2020 07:48:41 -0700 (PDT)
+        Tue, 2 Jun 2020 11:34:23 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BB6C08C5C0;
+        Tue,  2 Jun 2020 08:34:22 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id y18so1490078plr.4;
+        Tue, 02 Jun 2020 08:34:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M/pQ6/V+iIwxJgJX2XQUS9GZhFyupAHE1/NbSCr2rNA=;
-        b=UGYI0vDbfA2lLdAecfHXB6CsdyXOhyZGzBnrvjQQLMRxG9OTlewAjJ3OBimlkOu0e0
-         yb2hMRxrBmY9zZvmY9JphcOHZG/URyrAqOzwj20zlOg7ljEHkcuUkHAtypxZc4Wqclyn
-         zuddNyrhXbutdSvrAg4q2YYfQ8iTgobPVb0xoZ60ZNbcboT8/F/VOKMpFmG7JajS7pKg
-         qB4fHZr0SWwvTf4VD7mKKCWEFTHJhO4QfkzdER4U4nb37cRiqpeujdlapg2a9meKAa9a
-         n5kfaghXZLybcCKp3QGGcE6UqSv1dEGQ6A5rq70zw/v5zK7ZwNn8FTPxyE7dMx5G1sGC
-         hdKQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MU0MW0wjNs//zXQKIkp9U2Odwc0Dta290PoaIbMQMd4=;
+        b=XyxRObsgdYuhcaVLT7lAyUBOe15I/7IvPXSLP+eNysdLV+gksXxMClqCXODKHr6Cqp
+         +PMB0OHR3pObnA5STWXoVB3OXfhSl59ZVcUXQ6Xvu70XtiW+x9IGN66+oRoYP7mTdbZI
+         n64MB5GAmhslVfgHXlN4OJE435xozybPgd4du5JXrdjdS0cJZYlHDdrEd/mX7o12xo9/
+         vt0pxCXIY47be6cgXLoKZaqMN1COK0QZ3hQ7as/imeDypmc1CJ4MiADhl2g6LVIXclS8
+         SVo1/y9Qbs8H/obNDcm//PCqLEu1uJBz/GAFigaGnV8q4Y+ovyXPO92jM90wUyXOfdHg
+         f6zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M/pQ6/V+iIwxJgJX2XQUS9GZhFyupAHE1/NbSCr2rNA=;
-        b=DtDZ87+yxsb3w8vOTVk5M81qrjIz47niMqGS0WDoAr1+n5KAzm3fdluWvyftEjucOi
-         xLBFXlsajbuGA+joLX5tXmQIDfVjbHjjY5hsySflavdQZaRiRSCcOdsg0FftH9fNpyVD
-         DApy7D8jOJeg4RHT9QHrmW0VyNs426DpDz9H+7RtwuMXOPWoh3DdR2hxUqQh0aCmcqnE
-         URj6X5kzvhu4A3AKZWLuAe2FEJdH9V20W8fofLPJnx1Y3R+Iv0Zj/HBocWr83VUwoluV
-         oi/+mgrY570cRnsfUxDNE0drjS/u8My5ATlbyybau0BiT39Thj/cNO1aro0e+YxG2f9b
-         XoxQ==
-X-Gm-Message-State: AOAM533mBmmK6OR6yJpjMZWGk47qDr9qpxR8zCYBwzwqCEe+XAafaE8G
-        Qf9cXznOqX/uyHvOeJrfJ4F08pDXxYomuwUN2wI=
-X-Google-Smtp-Source: ABdhPJxyrRgrMBYC2nBmyIsXSR3S/B7csWevLL534lz2naW6/7vfXOMm7ZBhbW4ZMJezZvzG3Cka9xuailmbdxkZu0I=
-X-Received: by 2002:a63:ff52:: with SMTP id s18mr8270132pgk.203.1591109320582;
- Tue, 02 Jun 2020 07:48:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200602140058.3656-1-johan@kernel.org> <20200602140058.3656-3-johan@kernel.org>
-In-Reply-To: <20200602140058.3656-3-johan@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 2 Jun 2020 17:48:29 +0300
-Message-ID: <CAHp75VeXYn46wQ5EXkk_MOQ49ybtyTeoQS6BS1X9DkC6hbeF-w@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MU0MW0wjNs//zXQKIkp9U2Odwc0Dta290PoaIbMQMd4=;
+        b=mJpzx1RPBkX9gmBaaDGhoEI4xQCqMEXUeHfWZXh/sFoim+Tjjw9Vy9eeAhILRY+bSK
+         nzyR76naaZf+h2fnrHNWeSfPsq+errVfuk77sO+BgoH36a4VJweT/mDYRQmR+sCkFUYQ
+         Aovh1Xv/8uivnVNNUBLyfep3psCto3cXTWyr33ZEUbxlWVEwgxJDPLUVBuT6n3XfW5Il
+         WQK7pd8gsLYeVWMH5kJFabScFQDt0vXhRyDQAQJ/tQINwuw5jZFpOvRrIontULnm0V3o
+         7j4QsRh+428w0zefpDeUz5u24bh+40FWDl4MZUAiA8zfeS9WhADYM218drieFUCItNRI
+         zaPg==
+X-Gm-Message-State: AOAM532w9bFi7CR4sa+UQAkiiDqlpKeRBnetg6r02tjhcGe105x5ZUhi
+        wsYS7mtIwWraoOnKzbWzo+w=
+X-Google-Smtp-Source: ABdhPJzJoeSmatK65R/6VBJSUdG0R+dAnJjPWqT3iIbTmD4TKabyqzbccL5mf9lgGaXTEEMt88sVKQ==
+X-Received: by 2002:a17:90a:df16:: with SMTP id gp22mr6195976pjb.6.1591112061727;
+        Tue, 02 Jun 2020 08:34:21 -0700 (PDT)
+Received: from ?IPv6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id o20sm2654113pjw.19.2020.06.02.08.34.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Jun 2020 08:34:21 -0700 (PDT)
 Subject: Re: [PATCH 2/4] serial: core: fix broken sysrq port unlock
-To:     Johan Hovold <johan@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Johan Hovold <johan@kernel.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+References: <20200602140058.3656-1-johan@kernel.org>
+ <20200602140058.3656-3-johan@kernel.org>
+ <CAHp75VeXYn46wQ5EXkk_MOQ49ybtyTeoQS6BS1X9DkC6hbeF-w@mail.gmail.com>
+From:   Dmitry Safonov <0x7f454c46@gmail.com>
+Message-ID: <b016ad68-124a-5c98-f49b-f7286d995223@gmail.com>
+Date:   Tue, 2 Jun 2020 16:34:16 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <CAHp75VeXYn46wQ5EXkk_MOQ49ybtyTeoQS6BS1X9DkC6hbeF-w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 2, 2020 at 5:03 PM Johan Hovold <johan@kernel.org> wrote:
->
-> Commit d6e1935819db ("serial: core: Allow processing sysrq at port
-> unlock time") worked around a circular locking dependency by adding
-> helpers used to defer sysrq processing to when the port lock was
-> released.
->
-> A later commit unfortunately converted these inline helpers to exported
-> functions despite the fact that the unlock helper was restoring irq
-> flags, something which needs to be done in the same function that saved
-> them (e.g. on SPARC).
+On 6/2/20 3:48 PM, Andy Shevchenko wrote:
+> On Tue, Jun 2, 2020 at 5:03 PM Johan Hovold <johan@kernel.org> wrote:
+>>
+>> Commit d6e1935819db ("serial: core: Allow processing sysrq at port
+>> unlock time") worked around a circular locking dependency by adding
+>> helpers used to defer sysrq processing to when the port lock was
+>> released.
+>>
+>> A later commit unfortunately converted these inline helpers to exported
+>> functions despite the fact that the unlock helper was restoring irq
+>> flags, something which needs to be done in the same function that saved
+>> them (e.g. on SPARC).
+> 
+> I'm not familiar with sparc, can you elaborate a bit what is ABI /
+> architecture lock implementation background?
 
-I'm not familiar with sparc, can you elaborate a bit what is ABI /
-architecture lock implementation background?
+I remember that was a limitation a while ago to save/restore flags from
+the same function. Though, I vaguely remember the reason.
+I don't see this limitation in Documentation/*
 
--- 
-With Best Regards,
-Andy Shevchenko
+Google suggests that it's related to storage location:
+https://stackoverflow.com/a/34279032
+
+Which is definitely non-issue with tty drivers: they call
+spin_lock_irqsave() with local flags and pass them to
+uart_unlock_and_check_sysrq().
+
+Looking into arch/sparc I also can't catch if it's still a limitation.
+
+Also, looking around, xa_unlock_irqrestore() is called not from the same
+function. Maybe this issue is in history?
+
+Johan, is it a theoretical problem or something you observe?
+Also, some comments would be nice near functions in the header.
+
+Thanks,
+          Dmitry
