@@ -2,103 +2,94 @@ Return-Path: <SRS0=qx80=7P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE94FC433E0
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 13:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE4DC433E0
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 14:01:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A276D20663
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 13:37:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5A6CF2074B
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 14:01:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1591106489;
+	bh=QuaLTejg1IfE7nDnsO56NeBDKKncmnpeRkbGrce8NqI=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=vsoyI76F3+8J6FCWxcdRlgJV6qdZIucsI4/ScOve3JitDdLoGSkMdEqRNKINmHPa3
+	 jtyJX2I78ru7VbyNu0GujCQ9aKoQSgmRnFyCEQNNW1x1g2v2U7kETb65NyH4wiGVgN
+	 cMIwBHeRsa5W904pjNjGLUF2lY8I1nITfOlSqvfY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727788AbgFBNhF (ORCPT
+        id S1726112AbgFBOB3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Jun 2020 09:37:05 -0400
-Received: from muru.com ([72.249.23.125]:56698 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726922AbgFBNhE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Jun 2020 09:37:04 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 97A0D80C5;
-        Tue,  2 Jun 2020 13:37:53 +0000 (UTC)
-Date:   Tue, 2 Jun 2020 06:36:59 -0700
-From:   Tony Lindgren <tony@atomide.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Tue, 2 Jun 2020 10:01:29 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:45320 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725841AbgFBOB2 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 2 Jun 2020 10:01:28 -0400
+Received: by mail-lj1-f195.google.com with SMTP id z18so12674895lji.12;
+        Tue, 02 Jun 2020 07:01:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2GWIfNtzCugpdmUqQsZRd/8mo4Bw27Ep9qZG/S6V/g8=;
+        b=fdViPSblwRo3UhJL0C2d5x+BwIMt04XqTSU4EKCjbRcvCJXGEzyXgcjdJBi7s9rOcg
+         f0iIiWkkaxIKL+M6yPFZ4lTVBKHBfprM4jNyE4I9hxMAYCnHFoFWj7UW3+LOat3T4ejM
+         OQCw6CuzZkFKZVI156itfwJL6crrIDrZM03ekgBgEtjBqbOCS5RzR3QxzT7XtK1BaEJp
+         HynU9/XAORVCFl5nqYVe7r/zUkwAWdnx5gOID1YKK22WCNsUAIyIsyORV486SDHk6hik
+         YAzhCw5OvneeMlVGHVtVPKnqqtmasNGR2qx4e42Lvr4e+MB3Wq6dodgZo6lhGqKPrY0R
+         oaAw==
+X-Gm-Message-State: AOAM531xZbCkDVuI2RSit5ERxgmaGIUtAsLi3wCI2BrjG6xM2U9B7WFQ
+        UAhBNOoCaKCrRR4Pq3Qird0=
+X-Google-Smtp-Source: ABdhPJymTQM9Ny8rhRuuLH44YpMh03Mgg2hLv4ixzkGnxZxqRZqkzo7nc8Hdq3RuC9Y+E8yN45TrGg==
+X-Received: by 2002:a2e:1453:: with SMTP id 19mr4084338lju.155.1591106486007;
+        Tue, 02 Jun 2020 07:01:26 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id x23sm720423lfe.32.2020.06.02.07.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2020 07:01:25 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@xi.terra>)
+        id 1jg7Ti-0000xq-LH; Tue, 02 Jun 2020 16:01:18 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jslaby@suse.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH] serial: 8250_port: Fix imprecise external abort for
- mctrl if inactive
-Message-ID: <20200602133659.GD37466@atomide.com>
-References: <20200602001813.30459-1-tony@atomide.com>
- <20200602080811.GI19480@localhost>
- <CAHp75Vfi5nDgwT10J_EKYn90vGuiL1hyfre+t_w_OFREFY-Tqg@mail.gmail.com>
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 0/4] serial: core: fix up sysrq regressions
+Date:   Tue,  2 Jun 2020 16:00:54 +0200
+Message-Id: <20200602140058.3656-1-johan@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vfi5nDgwT10J_EKYn90vGuiL1hyfre+t_w_OFREFY-Tqg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Andy Shevchenko <andy.shevchenko@gmail.com> [200602 08:33]:
-> On Tue, Jun 2, 2020 at 11:09 AM Johan Hovold <johan@kernel.org> wrote:
-> > On Mon, Jun 01, 2020 at 05:18:13PM -0700, Tony Lindgren wrote:
-> 
-> ...
-> 
-> > There's shouldn't be anything fundamental preventing you from adding the
-> > missing resume calls to the mctrl paths even if it may require reworking
-> > (and fixing) the whole RPM implementation (which would be a good thing
-> > of course).
-> 
-> Yes, for serial core I have long standing patch series to implement
-> RPM (more or less?) properly.
+This series fixes a few regressions introduced by the recent sysrq
+rework that went into 5.6.
 
-Yeah let's try after the merge window.
+The port unlock fix is tagged for stable, and the fix for the
+unnecessary per-character overhead probably could be as well although
+it is a bit more intrusive.
 
-Not sure what else to do with the fix though. We currently have
-8250_port.c not really aware of the hardare state for PM runtime at
-least for the hang-up path.
+Johan
 
-> However, OMAP is a beast which prevents us to go due to a big hack
-> called pm_runtime_irq_safe().
-> Tony is aware of this and I think the above is somehow related to removal of it.
 
-Now that we can detach and reattach the kernel serial console,
-there should not be any need for pm_runtime_irq_safe() anymore :)
+Johan Hovold (4):
+  Revert "serial: core: Refactor uart_unlock_and_check_sysrq()"
+  serial: core: fix broken sysrq port unlock
+  serial: core: fix sysrq overhead regression
+  serial: core: drop redundant sysrq checks
 
-And the UART wake-up from deeper idle states can only happen with
-help of external hardware like GPIO controller or pinctrl controller.
+ drivers/tty/serial/serial_core.c |  96 +---------------------------
+ include/linux/serial_core.h      | 105 +++++++++++++++++++++++++++++--
+ 2 files changed, 103 insertions(+), 98 deletions(-)
 
-And for the always-on wake-up interrupt controllers we have the
-Linux generic wakeirqs to wake-up serial device on events.
+-- 
+2.26.2
 
-So I think the way to procedd with pm_runtime_irq_safe() removal
-for serial drivers is to block serial PM runtime unless we have a
-wakeirq configured for omaps in devicetree. In the worst case the
-regression is that PM runtime for serial won't work unless properly
-configured.
-
-And the UART wakeup latency will be a bit longer compared to
-pm_runtime_irq_safe() naturally.
-
-> But I completely agree that the goal is to get better runtime PM
-> implementation over all.
-
-Yes agreed.
-
-Regards,
-
-Tony
