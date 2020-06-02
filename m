@@ -2,301 +2,95 @@ Return-Path: <SRS0=qx80=7P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6764EC433DF
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 14:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D773BC433E0
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 14:48:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 48FFD2068D
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 14:47:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AB6CA2068D
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 14:48:46 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UGYI0vDb"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726217AbgFBOrn (ORCPT
+        id S1726214AbgFBOsm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Jun 2020 10:47:43 -0400
-Received: from mga12.intel.com ([192.55.52.136]:11471 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726214AbgFBOrm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Jun 2020 10:47:42 -0400
-IronPort-SDR: WF1dt7gOmu1USsZTwYbW38/7trS8zyPXoPmwhljHhfPoes8AB/mNb4xgc1w/uiVsAYyw5J9zNJ
- gOZkHoNDLUiA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2020 07:47:42 -0700
-IronPort-SDR: e/Rwfo91H9S27zZu8e6/vsJO0rb/JUJz7QTDW5ASLjRSGdtkk6UEcj5N5sNj0EU1oT+hM1nhEo
- BrDuGMSnzu1g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,464,1583222400"; 
-   d="scan'208";a="268721413"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 02 Jun 2020 07:47:41 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 559462D2; Tue,  2 Jun 2020 17:47:40 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] serial: core: make static analyzer happy about locks
-Date:   Tue,  2 Jun 2020 17:47:39 +0300
-Message-Id: <20200602144739.85566-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.27.0.rc2
+        Tue, 2 Jun 2020 10:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726073AbgFBOsm (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 2 Jun 2020 10:48:42 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED12C08C5C0;
+        Tue,  2 Jun 2020 07:48:41 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id h185so4147127pfg.2;
+        Tue, 02 Jun 2020 07:48:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M/pQ6/V+iIwxJgJX2XQUS9GZhFyupAHE1/NbSCr2rNA=;
+        b=UGYI0vDbfA2lLdAecfHXB6CsdyXOhyZGzBnrvjQQLMRxG9OTlewAjJ3OBimlkOu0e0
+         yb2hMRxrBmY9zZvmY9JphcOHZG/URyrAqOzwj20zlOg7ljEHkcuUkHAtypxZc4Wqclyn
+         zuddNyrhXbutdSvrAg4q2YYfQ8iTgobPVb0xoZ60ZNbcboT8/F/VOKMpFmG7JajS7pKg
+         qB4fHZr0SWwvTf4VD7mKKCWEFTHJhO4QfkzdER4U4nb37cRiqpeujdlapg2a9meKAa9a
+         n5kfaghXZLybcCKp3QGGcE6UqSv1dEGQ6A5rq70zw/v5zK7ZwNn8FTPxyE7dMx5G1sGC
+         hdKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M/pQ6/V+iIwxJgJX2XQUS9GZhFyupAHE1/NbSCr2rNA=;
+        b=DtDZ87+yxsb3w8vOTVk5M81qrjIz47niMqGS0WDoAr1+n5KAzm3fdluWvyftEjucOi
+         xLBFXlsajbuGA+joLX5tXmQIDfVjbHjjY5hsySflavdQZaRiRSCcOdsg0FftH9fNpyVD
+         DApy7D8jOJeg4RHT9QHrmW0VyNs426DpDz9H+7RtwuMXOPWoh3DdR2hxUqQh0aCmcqnE
+         URj6X5kzvhu4A3AKZWLuAe2FEJdH9V20W8fofLPJnx1Y3R+Iv0Zj/HBocWr83VUwoluV
+         oi/+mgrY570cRnsfUxDNE0drjS/u8My5ATlbyybau0BiT39Thj/cNO1aro0e+YxG2f9b
+         XoxQ==
+X-Gm-Message-State: AOAM533mBmmK6OR6yJpjMZWGk47qDr9qpxR8zCYBwzwqCEe+XAafaE8G
+        Qf9cXznOqX/uyHvOeJrfJ4F08pDXxYomuwUN2wI=
+X-Google-Smtp-Source: ABdhPJxyrRgrMBYC2nBmyIsXSR3S/B7csWevLL534lz2naW6/7vfXOMm7ZBhbW4ZMJezZvzG3Cka9xuailmbdxkZu0I=
+X-Received: by 2002:a63:ff52:: with SMTP id s18mr8270132pgk.203.1591109320582;
+ Tue, 02 Jun 2020 07:48:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200602140058.3656-1-johan@kernel.org> <20200602140058.3656-3-johan@kernel.org>
+In-Reply-To: <20200602140058.3656-3-johan@kernel.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 2 Jun 2020 17:48:29 +0300
+Message-ID: <CAHp75VeXYn46wQ5EXkk_MOQ49ybtyTeoQS6BS1X9DkC6hbeF-w@mail.gmail.com>
+Subject: Re: [PATCH 2/4] serial: core: fix broken sysrq port unlock
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Static analyzer can not see balanced locking if the lock is acquired and
-released conditionally.
+On Tue, Jun 2, 2020 at 5:03 PM Johan Hovold <johan@kernel.org> wrote:
+>
+> Commit d6e1935819db ("serial: core: Allow processing sysrq at port
+> unlock time") worked around a circular locking dependency by adding
+> helpers used to defer sysrq processing to when the port lock was
+> released.
+>
+> A later commit unfortunately converted these inline helpers to exported
+> functions despite the fact that the unlock helper was restoring irq
+> flags, something which needs to be done in the same function that saved
+> them (e.g. on SPARC).
 
- context imbalance in 'uart_stop' - unexpected unlock
- context imbalance in 'uart_start' - different lock contexts for basic block
- context imbalance in 'uart_port_startup' - different lock contexts for basic block
- context imbalance in 'uart_shutdown' - different lock contexts for basic block
- context imbalance in 'uart_put_char' - different lock contexts for basic block
- context imbalance in 'uart_write' - different lock contexts for basic block
- context imbalance in 'uart_write_room' - different lock contexts for basic block
- context imbalance in 'uart_chars_in_buffer' - different lock contexts for basic block
- context imbalance in 'uart_flush_buffer' - different lock contexts for basic block
+I'm not familiar with sparc, can you elaborate a bit what is ABI /
+architecture lock implementation background?
 
-Get rid of macros and implement their functionality in place. This will also
-help to enable runtime PM in cleaner way later on.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/serial_core.c | 106 +++++++++++++++++--------------
- 1 file changed, 58 insertions(+), 48 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 57840cf90388..b566127345c2 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -69,23 +69,6 @@ static inline void uart_port_deref(struct uart_port *uport)
- 		wake_up(&uport->state->remove_wait);
- }
- 
--#define uart_port_lock(state, flags)					\
--	({								\
--		struct uart_port *__uport = uart_port_ref(state);	\
--		if (__uport)						\
--			spin_lock_irqsave(&__uport->lock, flags);	\
--		__uport;						\
--	})
--
--#define uart_port_unlock(uport, flags)					\
--	({								\
--		struct uart_port *__uport = uport;			\
--		if (__uport) {						\
--			spin_unlock_irqrestore(&__uport->lock, flags);	\
--			uart_port_deref(__uport);			\
--		}							\
--	})
--
- static inline struct uart_port *uart_port_check(struct uart_state *state)
- {
- 	lockdep_assert_held(&state->port.mutex);
-@@ -113,10 +96,14 @@ static void uart_stop(struct tty_struct *tty)
- 	struct uart_port *port;
- 	unsigned long flags;
- 
--	port = uart_port_lock(state, flags);
--	if (port)
--		port->ops->stop_tx(port);
--	uart_port_unlock(port, flags);
-+	port = uart_port_ref(state);
-+	if (!port)
-+		return;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	port->ops->stop_tx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_deref(port);
- }
- 
- static void __uart_start(struct tty_struct *tty)
-@@ -134,9 +121,14 @@ static void uart_start(struct tty_struct *tty)
- 	struct uart_port *port;
- 	unsigned long flags;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref(state);
-+	if (!port)
-+		return;
-+
-+	spin_lock_irqsave(&port->lock, flags);
- 	__uart_start(tty);
--	uart_port_unlock(port, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_deref(port);
- }
- 
- static void
-@@ -186,7 +178,7 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- {
- 	struct uart_port *uport = uart_port_check(state);
- 	unsigned long page;
--	unsigned long flags = 0;
-+	unsigned long flags;
- 	int retval = 0;
- 
- 	if (uport->type == PORT_UNKNOWN)
-@@ -205,13 +197,14 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 	if (!page)
- 		return -ENOMEM;
- 
--	uart_port_lock(state, flags);
-+	spin_lock_irqsave(&uport->lock, flags);
- 	if (!state->xmit.buf) {
- 		state->xmit.buf = (unsigned char *) page;
- 		uart_circ_clear(&state->xmit);
--		uart_port_unlock(uport, flags);
-+		spin_unlock_irqrestore(&uport->lock, flags);
- 	} else {
--		uart_port_unlock(uport, flags);
-+		spin_unlock_irqrestore(&uport->lock, flags);
-+
- 		/*
- 		 * Do not free() the page under the port lock, see
- 		 * uart_shutdown().
-@@ -276,8 +269,8 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- {
- 	struct uart_port *uport = uart_port_check(state);
- 	struct tty_port *port = &state->port;
--	unsigned long flags = 0;
- 	char *xmit_buf = NULL;
-+	unsigned long flags;
- 
- 	/*
- 	 * Set the TTY IO error marker
-@@ -311,12 +304,12 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 	 * Do not free() the transmit buffer page under the port lock since
- 	 * this can create various circular locking scenarios. For instance,
- 	 * console driver may need to allocate/free a debug object, which
--	 * can endup in printk() recursion.
-+	 * can end up in printk() recursion.
- 	 */
--	uart_port_lock(state, flags);
-+	spin_lock_irqsave(&uport->lock, flags);
- 	xmit_buf = state->xmit.buf;
- 	state->xmit.buf = NULL;
--	uart_port_unlock(uport, flags);
-+	spin_unlock_irqrestore(&uport->lock, flags);
- 
- 	if (xmit_buf)
- 		free_page((unsigned long)xmit_buf);
-@@ -553,19 +546,19 @@ static int uart_put_char(struct tty_struct *tty, unsigned char c)
- 	unsigned long flags;
- 	int ret = 0;
- 
--	circ = &state->xmit;
--	port = uart_port_lock(state, flags);
--	if (!circ->buf) {
--		uart_port_unlock(port, flags);
-+	port = uart_port_ref(state);
-+	if (!port)
- 		return 0;
--	}
- 
--	if (port && uart_circ_chars_free(circ) != 0) {
-+	spin_lock_irqsave(&port->lock, flags);
-+	circ = &state->xmit;
-+	if (circ->buf && uart_circ_chars_free(circ) != 0) {
- 		circ->buf[circ->head] = c;
- 		circ->head = (circ->head + 1) & (UART_XMIT_SIZE - 1);
- 		ret = 1;
- 	}
--	uart_port_unlock(port, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_deref(port);
- 	return ret;
- }
- 
-@@ -592,13 +585,17 @@ static int uart_write(struct tty_struct *tty,
- 		return -EL3HLT;
- 	}
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref(state);
-+	if (!port)
-+		return 0;
-+
-+	spin_lock_irqsave(&port->lock, flags);
- 	circ = &state->xmit;
- 	if (!circ->buf) {
--		uart_port_unlock(port, flags);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+		uart_port_deref(port);
- 		return 0;
- 	}
--
- 	while (port) {
- 		c = CIRC_SPACE_TO_END(circ->head, circ->tail, UART_XMIT_SIZE);
- 		if (count < c)
-@@ -613,7 +610,8 @@ static int uart_write(struct tty_struct *tty,
- 	}
- 
- 	__uart_start(tty);
--	uart_port_unlock(port, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_deref(port);
- 	return ret;
- }
- 
-@@ -624,9 +622,14 @@ static int uart_write_room(struct tty_struct *tty)
- 	unsigned long flags;
- 	int ret;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref(state);
-+	if (!port)
-+		return uart_circ_chars_free(&state->xmit);
-+
-+	spin_lock_irqsave(&port->lock, flags);
- 	ret = uart_circ_chars_free(&state->xmit);
--	uart_port_unlock(port, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_deref(port);
- 	return ret;
- }
- 
-@@ -637,9 +640,14 @@ static int uart_chars_in_buffer(struct tty_struct *tty)
- 	unsigned long flags;
- 	int ret;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref(state);
-+	if (!port)
-+		return uart_circ_chars_pending(&state->xmit);
-+
-+	spin_lock_irqsave(&port->lock, flags);
- 	ret = uart_circ_chars_pending(&state->xmit);
--	uart_port_unlock(port, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_deref(port);
- 	return ret;
- }
- 
-@@ -660,13 +668,15 @@ static void uart_flush_buffer(struct tty_struct *tty)
- 
- 	pr_debug("uart_flush_buffer(%d) called\n", tty->index);
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref(state);
- 	if (!port)
- 		return;
-+	spin_lock_irqsave(&port->lock, flags);
- 	uart_circ_clear(&state->xmit);
- 	if (port->ops->flush_buffer)
- 		port->ops->flush_buffer(port);
--	uart_port_unlock(port, flags);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_deref(port);
- 	tty_port_tty_wakeup(&state->port);
- }
- 
 -- 
-2.27.0.rc2
-
+With Best Regards,
+Andy Shevchenko
