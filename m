@@ -2,125 +2,173 @@ Return-Path: <SRS0=qx80=7P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D4CC433E0
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 15:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CD5C433E2
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 18:55:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4E69C206E2
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 15:34:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XyxRObsg"
+	by mail.kernel.org (Postfix) with ESMTP id 1C64C20734
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 18:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726162AbgFBPeY (ORCPT
+        id S1726977AbgFBSzV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Jun 2020 11:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgFBPeX (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Jun 2020 11:34:23 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BB6C08C5C0;
-        Tue,  2 Jun 2020 08:34:22 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id y18so1490078plr.4;
-        Tue, 02 Jun 2020 08:34:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MU0MW0wjNs//zXQKIkp9U2Odwc0Dta290PoaIbMQMd4=;
-        b=XyxRObsgdYuhcaVLT7lAyUBOe15I/7IvPXSLP+eNysdLV+gksXxMClqCXODKHr6Cqp
-         +PMB0OHR3pObnA5STWXoVB3OXfhSl59ZVcUXQ6Xvu70XtiW+x9IGN66+oRoYP7mTdbZI
-         n64MB5GAmhslVfgHXlN4OJE435xozybPgd4du5JXrdjdS0cJZYlHDdrEd/mX7o12xo9/
-         vt0pxCXIY47be6cgXLoKZaqMN1COK0QZ3hQ7as/imeDypmc1CJ4MiADhl2g6LVIXclS8
-         SVo1/y9Qbs8H/obNDcm//PCqLEu1uJBz/GAFigaGnV8q4Y+ovyXPO92jM90wUyXOfdHg
-         f6zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MU0MW0wjNs//zXQKIkp9U2Odwc0Dta290PoaIbMQMd4=;
-        b=mJpzx1RPBkX9gmBaaDGhoEI4xQCqMEXUeHfWZXh/sFoim+Tjjw9Vy9eeAhILRY+bSK
-         nzyR76naaZf+h2fnrHNWeSfPsq+errVfuk77sO+BgoH36a4VJweT/mDYRQmR+sCkFUYQ
-         Aovh1Xv/8uivnVNNUBLyfep3psCto3cXTWyr33ZEUbxlWVEwgxJDPLUVBuT6n3XfW5Il
-         WQK7pd8gsLYeVWMH5kJFabScFQDt0vXhRyDQAQJ/tQINwuw5jZFpOvRrIontULnm0V3o
-         7j4QsRh+428w0zefpDeUz5u24bh+40FWDl4MZUAiA8zfeS9WhADYM218drieFUCItNRI
-         zaPg==
-X-Gm-Message-State: AOAM532w9bFi7CR4sa+UQAkiiDqlpKeRBnetg6r02tjhcGe105x5ZUhi
-        wsYS7mtIwWraoOnKzbWzo+w=
-X-Google-Smtp-Source: ABdhPJzJoeSmatK65R/6VBJSUdG0R+dAnJjPWqT3iIbTmD4TKabyqzbccL5mf9lgGaXTEEMt88sVKQ==
-X-Received: by 2002:a17:90a:df16:: with SMTP id gp22mr6195976pjb.6.1591112061727;
-        Tue, 02 Jun 2020 08:34:21 -0700 (PDT)
-Received: from ?IPv6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
-        by smtp.gmail.com with ESMTPSA id o20sm2654113pjw.19.2020.06.02.08.34.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Jun 2020 08:34:21 -0700 (PDT)
-Subject: Re: [PATCH 2/4] serial: core: fix broken sysrq port unlock
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tue, 2 Jun 2020 14:55:21 -0400
+Received: from muru.com ([72.249.23.125]:56784 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726139AbgFBSzU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 2 Jun 2020 14:55:20 -0400
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 5EB0680C5;
+        Tue,  2 Jun 2020 18:56:09 +0000 (UTC)
+Date:   Tue, 2 Jun 2020 11:55:15 -0700
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>
-References: <20200602140058.3656-1-johan@kernel.org>
- <20200602140058.3656-3-johan@kernel.org>
- <CAHp75VeXYn46wQ5EXkk_MOQ49ybtyTeoQS6BS1X9DkC6hbeF-w@mail.gmail.com>
-From:   Dmitry Safonov <0x7f454c46@gmail.com>
-Message-ID: <b016ad68-124a-5c98-f49b-f7286d995223@gmail.com>
-Date:   Tue, 2 Jun 2020 16:34:16 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: Re: [PATCH] serial: 8250_port: Fix imprecise external abort for
+ mctrl if inactive
+Message-ID: <20200602185515.GF37466@atomide.com>
+References: <20200602001813.30459-1-tony@atomide.com>
+ <20200602080811.GI19480@localhost>
+ <CAHp75Vfi5nDgwT10J_EKYn90vGuiL1hyfre+t_w_OFREFY-Tqg@mail.gmail.com>
+ <20200602133659.GD37466@atomide.com>
 MIME-Version: 1.0
-In-Reply-To: <CAHp75VeXYn46wQ5EXkk_MOQ49ybtyTeoQS6BS1X9DkC6hbeF-w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200602133659.GD37466@atomide.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 6/2/20 3:48 PM, Andy Shevchenko wrote:
-> On Tue, Jun 2, 2020 at 5:03 PM Johan Hovold <johan@kernel.org> wrote:
->>
->> Commit d6e1935819db ("serial: core: Allow processing sysrq at port
->> unlock time") worked around a circular locking dependency by adding
->> helpers used to defer sysrq processing to when the port lock was
->> released.
->>
->> A later commit unfortunately converted these inline helpers to exported
->> functions despite the fact that the unlock helper was restoring irq
->> flags, something which needs to be done in the same function that saved
->> them (e.g. on SPARC).
-> 
-> I'm not familiar with sparc, can you elaborate a bit what is ABI /
-> architecture lock implementation background?
+* Tony Lindgren <tony@atomide.com> [200602 13:38]:
+> * Andy Shevchenko <andy.shevchenko@gmail.com> [200602 08:33]:
+> Now that we can detach and reattach the kernel serial console,
+> there should not be any need for pm_runtime_irq_safe() anymore :)
 
-I remember that was a limitation a while ago to save/restore flags from
-the same function. Though, I vaguely remember the reason.
-I don't see this limitation in Documentation/*
+Below is a hastily tested RFC patch to remove pm_runtime_irq_safe()
+for 8250_omap.c that seems to work for idle use case :)
 
-Google suggests that it's related to storage location:
-https://stackoverflow.com/a/34279032
+> And the UART wake-up from deeper idle states can only happen with
+> help of external hardware like GPIO controller or pinctrl controller.
 
-Which is definitely non-issue with tty drivers: they call
-spin_lock_irqsave() with local flags and pass them to
-uart_unlock_and_check_sysrq().
+It does not yet include the check for configured wakeirq though.
+And omap-serial.c needs a similar patch or maybe we can attempt
+to just drop it this time as 8250_omap.c should be used nowadays.
+Or just drop PM from omap-serial.c if it can't be dropped.
 
-Looking into arch/sparc I also can't catch if it's still a limitation.
+Andy, is the change below the only remaining blocker now for
+your serial PM runtime changes?
 
-Also, looking around, xa_unlock_irqrestore() is called not from the same
-function. Maybe this issue is in history?
+Regards,
 
-Johan, is it a theoretical problem or something you observe?
-Also, some comments would be nice near functions in the header.
+Tony
 
-Thanks,
-          Dmitry
+8< -------------------------------
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -123,6 +123,7 @@ struct omap8250_priv {
+ 	spinlock_t rx_dma_lock;
+ 	bool rx_dma_broken;
+ 	bool throttled;
++	unsigned int active:1;
+ };
+ 
+ struct omap8250_dma_params {
+@@ -598,9 +599,13 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ {
+ 	struct uart_port *port = dev_id;
+ 	struct uart_8250_port *up = up_to_u8250p(port);
++	struct omap8250_priv *priv = up->port.private_data;
+ 	unsigned int iir;
+ 	int ret;
+ 
++	if (!priv->active)
++		return IRQ_NONE;
++
+ #ifdef CONFIG_SERIAL_8250_DMA
+ 	if (up->dma) {
+ 		ret = omap_8250_dma_handle_irq(port);
+@@ -608,10 +613,10 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ 	}
+ #endif
+ 
+-	serial8250_rpm_get(up);
+ 	iir = serial_port_in(port, UART_IIR);
+ 	ret = serial8250_handle_irq(port, iir);
+-	serial8250_rpm_put(up);
++
++	pm_runtime_mark_last_busy(port->dev);
+ 
+ 	return IRQ_RETVAL(ret);
+ }
+@@ -1110,13 +1115,9 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
+ 	unsigned long flags;
+ 	u8 iir;
+ 
+-	serial8250_rpm_get(up);
+-
+ 	iir = serial_port_in(port, UART_IIR);
+-	if (iir & UART_IIR_NO_INT) {
+-		serial8250_rpm_put(up);
++	if (iir & UART_IIR_NO_INT)
+ 		return IRQ_HANDLED;
+-	}
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+@@ -1144,7 +1145,7 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
+ 	}
+ 
+ 	uart_unlock_and_check_sysrq(port, flags);
+-	serial8250_rpm_put(up);
++
+ 	return 1;
+ }
+ 
+@@ -1329,11 +1330,10 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	if (!of_get_available_child_count(pdev->dev.of_node))
+ 		pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+ 
+-	pm_runtime_irq_safe(&pdev->dev);
+-
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
+ 	omap_serial_fill_features_erratas(&up, priv);
++	priv->active = pm_runtime_enabled(&pdev->dev);
+ 	up.port.handle_irq = omap8250_no_handle_irq;
+ 	priv->rx_trigger = RX_TRIGGER;
+ 	priv->tx_trigger = TX_TRIGGER;
+@@ -1517,6 +1517,8 @@ static int omap8250_runtime_suspend(struct device *dev)
+ 	if (!priv)
+ 		return 0;
+ 
++	priv->active = 0;
++
+ 	up = serial8250_get_port(priv->line);
+ 	/*
+ 	 * When using 'no_console_suspend', the console UART must not be
+@@ -1575,6 +1577,8 @@ static int omap8250_runtime_resume(struct device *dev)
+ 
+ 	pinctrl_pm_select_default_state(dev);
+ 
++	priv->active = 1;
++
+ 	return 0;
+ }
+ #endif
+-- 
+2.26.2
