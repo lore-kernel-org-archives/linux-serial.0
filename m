@@ -2,69 +2,30 @@ Return-Path: <SRS0=qx80=7P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8137DC433E0
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 08:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE94FC433E0
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 13:37:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5D66A2072F
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 08:32:08 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HmJGGygz"
+	by mail.kernel.org (Postfix) with ESMTP id A276D20663
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 13:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726239AbgFBIcH (ORCPT
+        id S1727788AbgFBNhF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Jun 2020 04:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60188 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725811AbgFBIcH (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Jun 2020 04:32:07 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697E0C061A0E;
-        Tue,  2 Jun 2020 01:32:06 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id a127so2702352pfa.12;
-        Tue, 02 Jun 2020 01:32:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9ZQUYgk2V7Mx0esfmh4y3mmfTGvC64s4iQn4Jh1H8G8=;
-        b=HmJGGygz1wL1O+w/dN5pG3C+kjX4bhh2rAcYhLaL4nrdg+aRCGL86aqPCKmDODTk0H
-         W6GnOC+vBXUbBT87WvAYn5flUU2VGCZxuEo+O9hDshlGMB7wKHIDIzNYs2k86cF4hwQO
-         Ki604kWSEjZcN1tfqdfjvbDUQmjMU+Rhv+DPPXRMRVS2T3zyLFjdS0sDOEW8PuZFoxOd
-         goc6foUxMpEkGQJkAyrofUhpaOE12U3LtRnCkhrdnRRcgd5ziD55wlen4lbG5sY70LYj
-         BNhjF1FIib1UbINzuK+MskR4KXmDzAtZOiMPUNA3Xu2v+17EiQRGofGcjTanOm2i6wc3
-         yuKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9ZQUYgk2V7Mx0esfmh4y3mmfTGvC64s4iQn4Jh1H8G8=;
-        b=IFDhJ9vwuFqUD1uh9Eb8ZxKiTo8dkfDdKMzfChf9t88y4YpP1s0HEwLPf+9rFRP/KW
-         K4OSc8BpSJfyzi/2aiEvsuEGNfyb/AqaDXPwJEZbTnKKsguJcWniNoWRY3F925Z1v4ew
-         a8tE5NI20Qk2zrANasuGbh5vXCljj9Pr41AkcNohWT9neNp0HCr6yW6hwL0moXTSP7zn
-         4xS7UcllhuIdLsnZqjPWhc+Liz1pO5g9HZNdWXAIxoKfTh7cTMTF11NuWB09yNeKsvbn
-         tF9WBBWKsg9NBaJpqGCXKhH7HavL+wESAZ6HBPqQwdwPe8ZpmK8EYjZwKjipC3yYkGAL
-         1bgQ==
-X-Gm-Message-State: AOAM532NdfEY4z9D4VI89oZ+mgK7MoLSdPndDCOYSpcp6DKuLLIRJVFD
-        eNatIRpRwWfpqFZpOnzWiTOUSSTnBfNPG9EZnPs=
-X-Google-Smtp-Source: ABdhPJwjAR6qWM3iADSoQUZxsvaZmkMb4RSf3zmVgzLNjjgc1H9ASyudk4ftkU45x4hKebGHa3tp9SwQoXYg0p/F9V8=
-X-Received: by 2002:a63:545a:: with SMTP id e26mr22582548pgm.4.1591086725894;
- Tue, 02 Jun 2020 01:32:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200602001813.30459-1-tony@atomide.com> <20200602080811.GI19480@localhost>
-In-Reply-To: <20200602080811.GI19480@localhost>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 2 Jun 2020 11:31:54 +0300
-Message-ID: <CAHp75Vfi5nDgwT10J_EKYn90vGuiL1hyfre+t_w_OFREFY-Tqg@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_port: Fix imprecise external abort for mctrl
- if inactive
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Tony Lindgren <tony@atomide.com>,
+        Tue, 2 Jun 2020 09:37:05 -0400
+Received: from muru.com ([72.249.23.125]:56698 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726922AbgFBNhE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 2 Jun 2020 09:37:04 -0400
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 97A0D80C5;
+        Tue,  2 Jun 2020 13:37:53 +0000 (UTC)
+Date:   Tue, 2 Jun 2020 06:36:59 -0700
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Johan Hovold <johan@kernel.org>,
         Peter Hurley <peter@hurleysoftware.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Vignesh Raghavendra <vigneshr@ti.com>,
@@ -73,33 +34,71 @@ Cc:     Tony Lindgren <tony@atomide.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>, Sebastian Reichel <sre@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Pavel Machek <pavel@ucw.cz>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: Re: [PATCH] serial: 8250_port: Fix imprecise external abort for
+ mctrl if inactive
+Message-ID: <20200602133659.GD37466@atomide.com>
+References: <20200602001813.30459-1-tony@atomide.com>
+ <20200602080811.GI19480@localhost>
+ <CAHp75Vfi5nDgwT10J_EKYn90vGuiL1hyfre+t_w_OFREFY-Tqg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vfi5nDgwT10J_EKYn90vGuiL1hyfre+t_w_OFREFY-Tqg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 2, 2020 at 11:09 AM Johan Hovold <johan@kernel.org> wrote:
-> On Mon, Jun 01, 2020 at 05:18:13PM -0700, Tony Lindgren wrote:
+* Andy Shevchenko <andy.shevchenko@gmail.com> [200602 08:33]:
+> On Tue, Jun 2, 2020 at 11:09 AM Johan Hovold <johan@kernel.org> wrote:
+> > On Mon, Jun 01, 2020 at 05:18:13PM -0700, Tony Lindgren wrote:
+> 
+> ...
+> 
+> > There's shouldn't be anything fundamental preventing you from adding the
+> > missing resume calls to the mctrl paths even if it may require reworking
+> > (and fixing) the whole RPM implementation (which would be a good thing
+> > of course).
+> 
+> Yes, for serial core I have long standing patch series to implement
+> RPM (more or less?) properly.
 
-...
+Yeah let's try after the merge window.
 
-> There's shouldn't be anything fundamental preventing you from adding the
-> missing resume calls to the mctrl paths even if it may require reworking
-> (and fixing) the whole RPM implementation (which would be a good thing
-> of course).
+Not sure what else to do with the fix though. We currently have
+8250_port.c not really aware of the hardare state for PM runtime at
+least for the hang-up path.
 
-Yes, for serial core I have long standing patch series to implement
-RPM (more or less?) properly.
+> However, OMAP is a beast which prevents us to go due to a big hack
+> called pm_runtime_irq_safe().
+> Tony is aware of this and I think the above is somehow related to removal of it.
 
-However, OMAP is a beast which prevents us to go due to a big hack
-called pm_runtime_irq_safe().
-Tony is aware of this and I think the above is somehow related to removal of it.
+Now that we can detach and reattach the kernel serial console,
+there should not be any need for pm_runtime_irq_safe() anymore :)
 
-But I completely agree that the goal is to get better runtime PM
-implementation over all.
+And the UART wake-up from deeper idle states can only happen with
+help of external hardware like GPIO controller or pinctrl controller.
 
--- 
-With Best Regards,
-Andy Shevchenko
+And for the always-on wake-up interrupt controllers we have the
+Linux generic wakeirqs to wake-up serial device on events.
+
+So I think the way to procedd with pm_runtime_irq_safe() removal
+for serial drivers is to block serial PM runtime unless we have a
+wakeirq configured for omaps in devicetree. In the worst case the
+regression is that PM runtime for serial won't work unless properly
+configured.
+
+And the UART wakeup latency will be a bit longer compared to
+pm_runtime_irq_safe() naturally.
+
+> But I completely agree that the goal is to get better runtime PM
+> implementation over all.
+
+Yes agreed.
+
+Regards,
+
+Tony
