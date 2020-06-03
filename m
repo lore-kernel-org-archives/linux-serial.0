@@ -2,136 +2,124 @@ Return-Path: <SRS0=mQbw=7Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20406C433DF
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Jun 2020 09:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD41C433E3
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Jun 2020 20:41:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0092C20734
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Jun 2020 09:13:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5C1162077D
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Jun 2020 20:41:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591175635;
-	bh=xNXxC1DIXNcTb1QzILCpNmMHezyUQs9NuZXa0nWZG/A=;
+	s=default; t=1591216914;
+	bh=SwtQdzOor59+vXHd3f6F9lk8585uAp3wtylcBGqMqQc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ay2QVVrY73OTUUIkn4i5GH43n4RNHm1N/oh3kbtfXpC6DU9/zr12FYlIQu2MXupQq
-	 zUh0owrhSRUEZw+0VPAAX/kpIDDhVv0yHZh5OrSpIC7POUqG/yuqai7y4bOqQTYbHz
-	 N4aCyB9Pqpd5BQpARL5R0K15agVce4FFGr7WiC4o=
+	b=YspTOXEdQQU9GsU4f4K3xfVndeXXhOG7rqVuiFR7YxK5n6c+uq++13yH3iHyJ2mbS
+	 x204fpiO/yyc53u9l0BJBrcFRyOU5HbpRqD0Dk/diEkuloR2Fc9cVZUfVJOLD+iXnX
+	 UGsMquRZ6UlxsvdaEprwMPrZmPSKsavL17RFqtq8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725881AbgFCJNv (ORCPT
+        id S1726195AbgFCUlu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 3 Jun 2020 05:13:51 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:34243 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgFCJNv (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 3 Jun 2020 05:13:51 -0400
-Received: by mail-lj1-f195.google.com with SMTP id b6so1803883ljj.1;
-        Wed, 03 Jun 2020 02:13:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aKmu2lju87/NQsXeppMhpEVDk/Ce6ci7zuwO5vzV0Bg=;
-        b=lT47t44r96qzrfPvrwR5RjwbIogaFCEgNzvAWo/H4Mn87VlHd9acUhKUgl1rkPE4hF
-         Mlo0FTbT54a2mJ2SAkjuvqUobUERUP9gDIYqjBlR5iWfZ7gQ7hWKjatxaOxsJjOdgq4t
-         6VX7bd+McRAcLVGCgfj4Tqg1v36E2W7XOIbWrIKWuvxv/YGIiPaKSbQuwcVxQCnSxn4h
-         22fjUFK4nlxNKKAlFE6v/uLQkCdLB9FqN8HLd80pSakBdCwuEP4F5nUXn9Wt39izyTfO
-         K1oyyjAvgR2v+S0eQATqz3Cx/zGDWVH6xrbkdYhElAdsnBLF6jswPt5hCBIFA6aeQYtH
-         Ifew==
-X-Gm-Message-State: AOAM532iqkmPAqZmNrxhes+iaxLGinxVF5RuGToiM2wJ78BUpQiubG98
-        lb+RiADfCaXakKcorx8qciI=
-X-Google-Smtp-Source: ABdhPJxxdspmCu2TjJoCX66VstB4xhHw4DnspYcf2pBQTVK3SqXdhtLAHR7XZphFuIZvVeHjg134mg==
-X-Received: by 2002:a05:651c:1195:: with SMTP id w21mr1765216ljo.464.1591175628744;
-        Wed, 03 Jun 2020 02:13:48 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id v28sm316693ljv.40.2020.06.03.02.13.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2020 02:13:48 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1jgPSs-0002O0-JY; Wed, 03 Jun 2020 11:13:38 +0200
-Date:   Wed, 3 Jun 2020 11:13:38 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Dmitry Safonov <0x7f454c46@gmail.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
+        Wed, 3 Jun 2020 16:41:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37318 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725922AbgFCUlu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 3 Jun 2020 16:41:50 -0400
+Received: from localhost (p5486cfa5.dip0.t-ipconnect.de [84.134.207.165])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7FD0B2074B;
+        Wed,  3 Jun 2020 20:41:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591216909;
+        bh=SwtQdzOor59+vXHd3f6F9lk8585uAp3wtylcBGqMqQc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kO8cFCe0Q0Bfo2MKvweLEp18Up8QwwJUUfy0MLA+laQLkKmkeSp8Hs9F96LhDicLo
+         KkN0wFE4WPkjAVyTAoNUXcGBpqBt/3TVfieXaFgF8SfkixATeezzEOOwQzJE+dFslx
+         e5dDGjeVYpL9n6tZ9xCpzkQ3js43EwtVQPhDGIOM=
+Date:   Wed, 3 Jun 2020 22:41:46 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Lubomir Rintel <lkundrak@v3.sk>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [PATCH 2/4] serial: core: fix broken sysrq port unlock
-Message-ID: <20200603091338.GK19480@localhost>
-References: <20200602140058.3656-1-johan@kernel.org>
- <20200602140058.3656-3-johan@kernel.org>
- <CAHp75VeXYn46wQ5EXkk_MOQ49ybtyTeoQS6BS1X9DkC6hbeF-w@mail.gmail.com>
- <b016ad68-124a-5c98-f49b-f7286d995223@gmail.com>
- <20200603084051.GJ19480@localhost>
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 22/28] dt-bindings: i2c: Convert i2c-pxa to json-schema
+Message-ID: <20200603204146.GB1347@ninjato>
+References: <20200317093922.20785-1-lkundrak@v3.sk>
+ <20200317093922.20785-23-lkundrak@v3.sk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4bRzO86E/ozDv8r1"
 Content-Disposition: inline
-In-Reply-To: <20200603084051.GJ19480@localhost>
+In-Reply-To: <20200317093922.20785-23-lkundrak@v3.sk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 03, 2020 at 10:40:51AM +0200, Johan Hovold wrote:
-> On Tue, Jun 02, 2020 at 04:34:16PM +0100, Dmitry Safonov wrote:
-> > On 6/2/20 3:48 PM, Andy Shevchenko wrote:
-> > > On Tue, Jun 2, 2020 at 5:03 PM Johan Hovold <johan@kernel.org> wrote:
-> > >>
-> > >> Commit d6e1935819db ("serial: core: Allow processing sysrq at port
-> > >> unlock time") worked around a circular locking dependency by adding
-> > >> helpers used to defer sysrq processing to when the port lock was
-> > >> released.
-> > >>
-> > >> A later commit unfortunately converted these inline helpers to exported
-> > >> functions despite the fact that the unlock helper was restoring irq
-> > >> flags, something which needs to be done in the same function that saved
-> > >> them (e.g. on SPARC).
-> > > 
-> > > I'm not familiar with sparc, can you elaborate a bit what is ABI /
-> > > architecture lock implementation background?
-> > 
-> > I remember that was a limitation a while ago to save/restore flags from
-> > the same function. Though, I vaguely remember the reason.
-> > I don't see this limitation in Documentation/*
-> 
-> It's described in both LDD3 and LKD, which is possibly where I first
-> picked it up too (admittedly a long time ago).
-> 
-> > Google suggests that it's related to storage location:
-> > https://stackoverflow.com/a/34279032
-> 
-> No, that was never the issue.
-> 
-> SPARC includes the current register window in those flags, which at
-> least had to be restored in the same stack frame.
-> 
-> > Looking into arch/sparc I also can't catch if it's still a limitation.
-> 
-> Yeah, looking closer at the current implementation it seems this is no
-> longer an issue on SPARC.
-> 
-> > Also, looking around, xa_unlock_irqrestore() is called not from the same
-> > function. Maybe this issue is in history?
-> 
-> xa_unlock_irqrestore() is just a macro for spin_unlock_irqsave() it
-> seems, so not a counter example.
->
-> > Also, some comments would be nice near functions in the header.
-> 
-> Agreed. Let me respin this and either merge this with the next patch or
-> at least amend the commit message.
 
-I stand corrected; this appears to longer be an issue (on any arch)
-as we these days have other common code passing the flags argument
-around like this.
+--4bRzO86E/ozDv8r1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I'll respin.
+On Tue, Mar 17, 2020 at 10:39:16AM +0100, Lubomir Rintel wrote:
+> A conversion of the i2c-pxa binding to DT schema format using json-schema.
+>=20
+> This also cleans ups some errors in the binding: The compatible string
+> description suggested that "mmp" in "mrvl,mmp-twsi" is to be substituted
+> with a processor model, which wouldn't be a right thing to do and indeed
+> nobody seems to have been doing that. There also was "Recommended
+> properties" section that included optional as well as mandatory
+> properties. Missing mandatory properties were added to the example.
+>=20
+> Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 
-Johan
+Waiting for an ack from someone with DT-YAML experience here.
+
+
+--4bRzO86E/ozDv8r1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl7YCwoACgkQFA3kzBSg
+KbbJvBAAhOSQEJ8IukeodYEjHMpjA4Dcx5fvpBnGvrxXQBvSIOKYdNTW/I/RitM2
+80cJ6nuKvdFbdxDZkK4QjMuBSMmhi8AgafJmuAlBmEGItG7pElyjQ90070ISZDPD
+tVY9epZq/e8RtcYayajUN8saNIdDpvGNeEdFn6t7aLa5Sww2SpfgtkIlozOp44/6
+Tf/fjBd9Ml87SWjsIwW1f6w0dQiF3ib6oqWZXE8fxH8v6LUs8M0mE2hX23NjttP5
+/w8oAV3OqgVGMn/ydUOtmuLRzBqQ8ONO3+pG6h8lYAnPuh0ZGmpaV0RxigcJDGSd
+yTAob0lzrFXKSkQ6Kl0keFn8aC9F56OknDWMf3wm8OME85QCls7fzeAwZhEclyf5
+NrSyInNZq0xj1JQjIkagcWSmLyWu+e0Er09iVm5T/6eqUm6mElu8VpOVkiIrlI9e
+4FX7Yj8D1ucGJzgiLN8lYzUUXMl78Ym+U9Il5h3fOP/FKINTq2bvBKxjpmHIxbZb
+sBIZPdGdjNSwZ5wA4Cf01Wy0ghmMuKNVkV6IDFXmLIjszXAA3ZCX+kBFyDuHWir/
+TqkYPD+GYP6n9f+xFUlit6Kf3Pv6tXxVBnyWsS0k0LyB3dGTV9dp2d6MaA3IGP5n
+m78a0tAD4l4HN1oWcH/QNOUH5YV4ZdWonkhaHbJYZiCcjtRq+lE=
+=Qlp8
+-----END PGP SIGNATURE-----
+
+--4bRzO86E/ozDv8r1--
