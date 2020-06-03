@@ -1,107 +1,129 @@
-Return-Path: <SRS0=qx80=7P=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=mQbw=7Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F94BC433DF
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 19:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2515EC433E0
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Jun 2020 08:41:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 445CA20734
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Jun 2020 19:41:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="E3gsKcsg"
+	by mail.kernel.org (Postfix) with ESMTP id EAFAB206C3
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Jun 2020 08:41:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1591173671;
+	bh=RgZUtVxKnCtVw5YOAOf1+p20ZhLDrmdlW/NiubsGS4Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=tfnxGso1uOR2mATo1SnB17bRimggnr13MeqaXM/MaMqa4LPxH4tVx2v90fRGR6VPR
+	 IWBNnNtQ3oMv0Y5xJC1tQ+5x3iufVbxZ6dHFp9q++DxexjUibFYl6HzWb52/J+jbcm
+	 sWjG10Vy133xbi8QlN/k0odDP2RKKPCi0Q3Cfwcc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727860AbgFBTlK (ORCPT
+        id S1725954AbgFCIlF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Jun 2020 15:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726922AbgFBTlK (ORCPT
+        Wed, 3 Jun 2020 04:41:05 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:38363 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725355AbgFCIlF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Jun 2020 15:41:10 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7B0C08C5C0
-        for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2020 12:41:10 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id 185so5635498pgb.10
-        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2020 12:41:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sErQwKMHt7iGLm2dkUe7i9Rye2SnJsz1zTCi4R7MuJo=;
-        b=E3gsKcsgv6/Srf1A1gu6zEoSliyxZlDuNhy/OP5M/2ndpyXT9P1dvGeDFz9AwT70TJ
-         d/tSrWWziiKlSy83j1afTohsy+zdSWBZzFVzEQdsovPTiWpvVFtk9OP/eAutFukZ7ee2
-         sx5oGL87Ca7tQTzPJ4xfAIMkNKn63dOaBGx2k=
+        Wed, 3 Jun 2020 04:41:05 -0400
+Received: by mail-lf1-f66.google.com with SMTP id 202so789914lfe.5;
+        Wed, 03 Jun 2020 01:41:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sErQwKMHt7iGLm2dkUe7i9Rye2SnJsz1zTCi4R7MuJo=;
-        b=UdKt/j9SW67jhI44xtqTLrl0Zxdd7c0GoLUE5UeCrcBrjV2QfAtPxKBGI36GkGvzh6
-         v0yX85GdK4BIDtylHM8xTjvVJr6xNH3pBL3BkreBkh7hu64ytDcb3AfPvC4JenAoV9tJ
-         K6xuibLfeQqZj3RZxFFF9hjcPdxGfaSFk66XC8CPlR9vlvupzoZcODKqhAjuPW+GRdJB
-         +sbSHwJ0T/EiTv+d6W4PapiKcTB3wDjSnoCPIHYbTwB3cAMIWcBrpsAKPIbPiMUDSDx5
-         hJUj2fP/2lIjbk2iL6hqnpR1I7s5QklF/CzA0THf5jbK3DF71kCLI2m/CcUoonrUtgwW
-         48rQ==
-X-Gm-Message-State: AOAM532Z14jBPodZsxCmUv1vul3CI7qGKP1oFhuTH7P3H+Zxz0Lagxi7
-        Ss6fpQgtDnZ/+dEmB4xYW7NzjQ==
-X-Google-Smtp-Source: ABdhPJzkajkv6lkdxaEr5KKelaECEixaFCdukA9P7kLW3mm4vqllhyX6Oxnj1ZYiAUVkLPzMFIO/Aw==
-X-Received: by 2002:a63:3859:: with SMTP id h25mr25618661pgn.370.1591126869771;
-        Tue, 02 Jun 2020 12:41:09 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
-        by smtp.gmail.com with ESMTPSA id gv4sm2998073pjb.6.2020.06.02.12.41.08
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y3+NZ002fR5cwFINbc/o3dpUhIJL9xPazQ2yRYvAcPI=;
+        b=hCKGaV93HEyfanQW2nAnEjNxbwDsgSYdkTODol6+PNwAyo+kuNPDUKiMhE80mpiu9o
+         zubbOA8qpI5QX647m0BK2AAWL2lLBQm7rYvJmni8wTFJcbW/j6/1sAT4blQrmczyWa21
+         PkFK/71ER6yi7IGo/HTGm+WmsJ9hVxb2jo4JUWEfKWbEmTqsb1ydZB/F5t96HyhSFqER
+         QoFFj2ZwrQbFgNU3p4BAFtONiYu36xAAAerV4jGEKj6ZMWvp209JFnOkw368Of8RLXku
+         WIXRMe7s/7BCS8M+TwOQUYOerldFaRTirFNp8LhCOdFqd2+oO6al5lxUaKw6hRKBvqH6
+         4jhw==
+X-Gm-Message-State: AOAM532MKL7xWBuCjQZLzHVIGx2++6Fs35TJgQGSNcVTihnQuXFP0jbB
+        aJ2N+y6DsKs3nMgmICIQOfI=
+X-Google-Smtp-Source: ABdhPJzoycNz0b42LjEGhqRPhb5Q3Xac6OiJOYqR8aXp9vwMshAsFIyQ9VYMEqnoKBUzsU0ot5PTsA==
+X-Received: by 2002:a19:434e:: with SMTP id m14mr1905473lfj.40.1591173662210;
+        Wed, 03 Jun 2020 01:41:02 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id w20sm298508lji.7.2020.06.03.01.41.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2020 12:41:09 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Douglas Anderson <dianders@chromium.org>,
+        Wed, 03 Jun 2020 01:41:01 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1jgOx9-0002Ai-OO; Wed, 03 Jun 2020 10:40:51 +0200
+Date:   Wed, 3 Jun 2020 10:40:51 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dmitry Safonov <0x7f454c46@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
         Jiri Slaby <jslaby@suse.com>,
-        kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH] serial: kgdboc: Fix bad line wrapping in comment
-Date:   Tue,  2 Jun 2020 12:40:48 -0700
-Message-Id: <20200602124044.1.Iee31247bc080d42a02e167454b1225a1b4283705@changeid>
-X-Mailer: git-send-email 2.27.0.rc2.251.g90737beb825-goog
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
+Subject: Re: [PATCH 2/4] serial: core: fix broken sysrq port unlock
+Message-ID: <20200603084051.GJ19480@localhost>
+References: <20200602140058.3656-1-johan@kernel.org>
+ <20200602140058.3656-3-johan@kernel.org>
+ <CAHp75VeXYn46wQ5EXkk_MOQ49ybtyTeoQS6BS1X9DkC6hbeF-w@mail.gmail.com>
+ <b016ad68-124a-5c98-f49b-f7286d995223@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b016ad68-124a-5c98-f49b-f7286d995223@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In commit a4912303ac6f ("serial: kgdboc: Allow earlycon initialization
-to be deferred") it looks like Daniel really took Linus's new
-suggestion about not needing to wrap at 80 columns to heart and he
-jammed two full lines of comments into one line.  Either that or he
-just somehow accidentally deleted a carriage return when doing final
-edits on the patch.  In either case let's make it look prettier.
+On Tue, Jun 02, 2020 at 04:34:16PM +0100, Dmitry Safonov wrote:
+> On 6/2/20 3:48 PM, Andy Shevchenko wrote:
+> > On Tue, Jun 2, 2020 at 5:03 PM Johan Hovold <johan@kernel.org> wrote:
+> >>
+> >> Commit d6e1935819db ("serial: core: Allow processing sysrq at port
+> >> unlock time") worked around a circular locking dependency by adding
+> >> helpers used to defer sysrq processing to when the port lock was
+> >> released.
+> >>
+> >> A later commit unfortunately converted these inline helpers to exported
+> >> functions despite the fact that the unlock helper was restoring irq
+> >> flags, something which needs to be done in the same function that saved
+> >> them (e.g. on SPARC).
+> > 
+> > I'm not familiar with sparc, can you elaborate a bit what is ABI /
+> > architecture lock implementation background?
+> 
+> I remember that was a limitation a while ago to save/restore flags from
+> the same function. Though, I vaguely remember the reason.
+> I don't see this limitation in Documentation/*
 
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+It's described in both LDD3 and LKD, which is possibly where I first
+picked it up too (admittedly a long time ago).
 
- drivers/tty/serial/kgdboc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> Google suggests that it's related to storage location:
+> https://stackoverflow.com/a/34279032
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 41396982e9e0..fe6ae98360a2 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -538,7 +538,8 @@ static int __init kgdboc_earlycon_init(char *opt)
- 
- 	if (!con) {
- 		/*
--		 * Both earlycon and kgdboc_earlycon are initialized during			 * early parameter parsing. We cannot guarantee earlycon gets
-+		 * Both earlycon and kgdboc_earlycon are initialized during
-+		 * early parameter parsing. We cannot guarantee earlycon gets
- 		 * in first and, in any case, on ACPI systems earlycon may
- 		 * defer its own initialization (usually to somewhere within
- 		 * setup_arch() ). To cope with either of these situations
--- 
-2.27.0.rc2.251.g90737beb825-goog
+No, that was never the issue.
 
+SPARC includes the current register window in those flags, which at
+least had to be restored in the same stack frame.
+
+> Looking into arch/sparc I also can't catch if it's still a limitation.
+
+Yeah, looking closer at the current implementation it seems this is no
+longer an issue on SPARC.
+
+> Also, looking around, xa_unlock_irqrestore() is called not from the same
+> function. Maybe this issue is in history?
+
+xa_unlock_irqrestore() is just a macro for spin_unlock_irqsave() it
+seems, so not a counter example.
+
+> Also, some comments would be nice near functions in the header.
+
+Agreed. Let me respin this and either merge this with the next patch or
+at least amend the commit message.
+
+Johan
