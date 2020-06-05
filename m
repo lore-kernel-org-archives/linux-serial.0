@@ -2,144 +2,99 @@ Return-Path: <SRS0=PQGG=7S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAFAFC433DF
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Jun 2020 12:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC0EC433E0
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Jun 2020 15:07:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 970D8206A2
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Jun 2020 12:52:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BDEB9206A2
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Jun 2020 15:07:41 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=gaireg.de header.i=@gaireg.de header.b="yyocm+GD"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbgFEMwF (ORCPT
+        id S1727806AbgFEPHl (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Jun 2020 08:52:05 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:37986 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726553AbgFEMwE (ORCPT
+        Fri, 5 Jun 2020 11:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726541AbgFEPHk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Jun 2020 08:52:04 -0400
-Received: by mail-oi1-f193.google.com with SMTP id c194so8108722oig.5;
-        Fri, 05 Jun 2020 05:52:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0l1qYzvXi/GO1NNvXjYET+2paPoc72Q4SdiakMSrAJE=;
-        b=NMiI0cxm3L5FK+XtkUqxfkfr16nI8LXlr6zv2XNGDXyMN5Rt1ttn0qhKXMEMtCpiIR
-         rvZZcqwQrQvaDVA2S1v2j1fvnG9+Qaxw40pcFFaFh/ERXgX5g9gOyw271xfoCNDQYy+l
-         CESBmJzj9C63rBx73CiXDS7QcW5TBOp4TFb274Byvj4DD01yLc6V3MVoGZa8Omgu4B86
-         Yv0lZ2KtbUceWzGjeq3vHYbw5kmV7pCNWrfPAw9UudKFtGSuqHarOOEC1EJMTTV+eJbf
-         GJefnoOypP8BsxzQWnWtC60fu9aVf4BXrD1EsfyPVjeosA2JNIYiqK1CzGf+bjeLVdPY
-         0Q0A==
-X-Gm-Message-State: AOAM530GlO5HQszfC6hPJUihsZSTy/zUCqltYggG3mFdx+k/oRH+8kEF
-        glM1aXIsqJrqs0swTMnhpGkt1Ab/sY9I3CoQZBgYok5Z
-X-Google-Smtp-Source: ABdhPJytYGDFbxN/XEq2VGE23sTUMKtd1U9+zTazCFQWHGPrv/2hO4eOc8uC8OCmgaeeBGlB90o3SnUqaReY8OrFTNk=
-X-Received: by 2002:aca:1a19:: with SMTP id a25mr1815274oia.54.1591361523495;
- Fri, 05 Jun 2020 05:52:03 -0700 (PDT)
+        Fri, 5 Jun 2020 11:07:40 -0400
+X-Greylist: delayed 574 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 Jun 2020 08:07:40 PDT
+Received: from gaireg.de (gaireg.de [IPv6:2a03:4000:9:30::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06DAC08C5C2;
+        Fri,  5 Jun 2020 08:07:40 -0700 (PDT)
+Received: from tyr.bvd.indurad.x (unknown [194.8.217.178])
+        by gaireg.de (Postfix) with ESMTPSA id D235C6A774E5;
+        Fri,  5 Jun 2020 16:58:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gaireg.de; s=mail;
+        t=1591369083; bh=at3sSlZvH4UsehI1oWFk8XESC8Y4Pf9dlbAMy8oNaps=;
+        h=From:To:Cc:Subject:Date;
+        b=yyocm+GDlU5JjRzWJcdgxzWKJWFpjfoEvorCdUe+Widox+nBvCMavW0ZGllRYpgCY
+         pw2cbQ/TIuRO7O3iYcHAcBXH/tvDhP0Hsg8ChrCPj/sNF890aHp9OjD7fGW8ZrXm5i
+         MN1BDdPyzagdhcL2ZqmyddAZUB6HC8aJ3lUs+ySc=
+From:   =?UTF-8?q?Randolph=20Maa=C3=9Fen?= <gaireg@gaireg.de>
+To:     Laxman Dewangan <ldewangan@nvidia.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Randolph=20Maa=C3=9Fen?= <gaireg@gaireg.de>
+Subject: [PATCH] serial: serial-tegra: reduce irq-latency after rx errors
+Date:   Fri,  5 Jun 2020 16:57:14 +0200
+Message-Id: <20200605145714.9964-1-gaireg@gaireg.de>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-References: <1588542414-14826-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1588542414-14826-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1588542414-14826-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 5 Jun 2020 14:51:52 +0200
-Message-ID: <CAMuHMdXgSWHd-w_vgv-2mrYwJ2trcdDNniKFGCDGbn3ts-CkjA@mail.gmail.com>
-Subject: Re: [PATCH v2 10/10] ARM: dts: r8a7742-iwg21d-q7: Add support for
- iWave G21D-Q7 board based on RZ/G1H
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Prabhakar,
+Since dev_err() calls can lead to synchronous writes to another serial
+console these calls can provide significant latency during irq-handling
+in tegra_uart_isr(). With this latency another interrupt is likely to
+apper during handling of the first interrupt, which might lock up the
+kernel completely.
 
-On Sun, May 3, 2020 at 11:47 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add support for iWave RainboW-G21D-Qseven board based on RZ/G1H.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+These errors are reported to the error counters so converting the
+dev_err() to dev_dbg() is appropriate.
 
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/r8a7742-iwg21d-q7.dts
-> @@ -0,0 +1,37 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Device Tree Source for the iWave-RZ/G1H Qseven board
-> + *
-> + * Copyright (C) 2020 Renesas Electronics Corp.
-> + */
-> +
-> +/dts-v1/;
-> +#include "r8a7742-iwg21m.dtsi"
-> +
-> +/ {
-> +       model = "iWave Systems RainboW-G21D-Qseven board based on RZ/G1H";
-> +       compatible = "iwave,g21d", "iwave,g21m", "renesas,r8a7742";
-> +
-> +       aliases {
-> +               serial2 = &scifa2;
-> +       };
-> +
-> +       chosen {
-> +               bootargs = "ignore_loglevel root=/dev/mmcblk0p1 rw rootwait";
-> +               stdout-path = "serial2:115200n8";
-> +       };
-> +};
-> +
-> +&pfc {
-> +       scifa2_pins: scifa2 {
-> +               groups = "scifa2_data_c";
+Signed-off-by: Randolph Maaßen <gaireg@gaireg.de>
+---
+ drivers/tty/serial/serial-tegra.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Upon second look, I think this group is wrong.  While labeled SCIFA2 in
-the SOM schematics, these signals seem to be connected to a debugging
-interface.
-
-The real UART2 seems to be present on the camera daughter board.  Those
-signals are labeled "SCIFA2" in the camera board schematics, but "SCIF2"
-in the SOM schematics.  This is OK, as "scif2_data" and "scifa2_data"
-share the same pins, so you can choose either SCIF2 or SCIFA2 to drive
-them.
-
-If I'm right, please change the group, and move all serial2 descriptions
-to the camera board DTS.
-
-> +               function = "scifa2";
-> +       };
-> +};
-> +
-> +&scifa2 {
-> +       pinctrl-0 = <&scifa2_pins>;
-> +       pinctrl-names = "default";
-> +
-> +       status = "okay";
-> +};
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 8de8bac9c6c7..d3fef5ab289a 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -439,16 +439,16 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
+ 			/* Overrrun error */
+ 			flag = TTY_OVERRUN;
+ 			tup->uport.icount.overrun++;
+-			dev_err(tup->uport.dev, "Got overrun errors\n");
++			dev_dbg(tup->uport.dev, "Got overrun errors\n");
+ 		} else if (lsr & UART_LSR_PE) {
+ 			/* Parity error */
+ 			flag = TTY_PARITY;
+ 			tup->uport.icount.parity++;
+-			dev_err(tup->uport.dev, "Got Parity errors\n");
++			dev_dbg(tup->uport.dev, "Got Parity errors\n");
+ 		} else if (lsr & UART_LSR_FE) {
+ 			flag = TTY_FRAME;
+ 			tup->uport.icount.frame++;
+-			dev_err(tup->uport.dev, "Got frame errors\n");
++			dev_dbg(tup->uport.dev, "Got frame errors\n");
+ 		} else if (lsr & UART_LSR_BI) {
+ 			/*
+ 			 * Break error
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.11.0
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
