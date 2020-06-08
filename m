@@ -2,115 +2,114 @@ Return-Path: <SRS0=jM0J=7V=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFF5C433E0
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Jun 2020 06:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4170C433E1
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Jun 2020 06:58:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 976A02076A
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Jun 2020 06:41:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591598474;
-	bh=BQCBgwFsMXSNTIHxvc5pCdzZe+VJ7aLilK0Z+i0lOhU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=TM79co/isxo0v8LQloKDSKbbPTde8K4No49PkaelHRJ3naVzUVZcQLhA6J7WnYFfj
-	 hfQ7i1Cp3viushclIbPB+moKSczaEEUua87rvRypsFrODsqhVtyEmBESQahixR+wS0
-	 9XZv5u8vnbLVvxRk885oE8KOFmY1nFS6rEZ5J00o=
+	by mail.kernel.org (Postfix) with ESMTP id A1E6F206A4
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Jun 2020 06:58:49 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="A+rZtV/m"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726929AbgFHGlO (ORCPT
+        id S1728970AbgFHG6s (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Jun 2020 02:41:14 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:45992 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728906AbgFHGlN (ORCPT
+        Mon, 8 Jun 2020 02:58:48 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55277 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728962AbgFHG6s (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Jun 2020 02:41:13 -0400
-Received: by mail-lj1-f194.google.com with SMTP id i27so8049651ljb.12;
-        Sun, 07 Jun 2020 23:41:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Z4UQh0Us0hQtEs1TDFqY5o6aN1qVDkFutQCZsE8JqaU=;
-        b=csQWcLndzxeF1KrldccUUCgN7uzZmNEptynzFIjfAjykqXPq0K25A1eJPkrBtnq2Xo
-         8LuQ5cvNIrTsEFXj8mfV0PVlbYL8PM0bX/oQTKgDZfq7YgnyRmZjKQvNH0Qcl1iQyhrl
-         XzifwteGq2Ukke6BV+PaPrECf+x9h0S+AVVGr0Wj3f1dfAzVqJ5dkhyN0it2VAsnLpM2
-         sMhwrM/q3algyoJEwqmltogYOxkgy7EOLwe8SNhNYizjmtu0qRoth1lpV7c0HbKs3GRp
-         YsZHRI5TyIAkr0Q1LRiZV0csdWn20+YZu0fsjXovAWb4T/oox0+6763EQdrQfxBtIOea
-         lTmg==
-X-Gm-Message-State: AOAM532DGYSVhK83OR1UL9HwTJ0z6cjd+60ljzawBnNMObWxCPswL3Aj
-        ugDYlW/uAEhxT5DumuOit34=
-X-Google-Smtp-Source: ABdhPJw7i0D0egd72cvg61t4dDEMZ5Zoy6Geiu+vS8eBA4Z7uYi/XVCKJRKsmx3xMFnlXhqh8YnFKw==
-X-Received: by 2002:a2e:8e27:: with SMTP id r7mr10196151ljk.382.1591598471669;
-        Sun, 07 Jun 2020 23:41:11 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id t26sm4169562lfk.61.2020.06.07.23.41.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2020 23:41:11 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1jiBSz-0003mQ-EB; Mon, 08 Jun 2020 08:41:05 +0200
-Date:   Mon, 8 Jun 2020 08:41:05 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: cpm_uart: Fix behaviour for non existing
- GPIOs
-Message-ID: <20200608064105.GL19480@localhost>
-References: <bafd8df9e743c433196c727293c5015620fae2b8.1591428452.git.christophe.leroy@csgroup.eu>
+        Mon, 8 Jun 2020 02:58:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591599526;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=90pUbKcDx3Wj1mJ+iFwQzzOYVJXR5MBr1hnJ0abQMTk=;
+        b=A+rZtV/mTL9x0NHnzngCG2RGT76ZccOe+Gb2NFH/h8koMnbx5AZr8mwwErGBZvRGNXKOA/
+        iY1nSeV6OX1aDHlW2Iv0oVnM2/qmmXcbX14PlcrJI2DmH8d1GaXNYUOJ7Qlpsi2FMFwzl6
+        JpiyOiTWOliJkudGgw350OMfuDSGb+Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-282-5stnW2U5NZa0lv_6z-rEew-1; Mon, 08 Jun 2020 02:58:44 -0400
+X-MC-Unique: 5stnW2U5NZa0lv_6z-rEew-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10110107ACCA;
+        Mon,  8 Jun 2020 06:58:42 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1B2E710013D0;
+        Mon,  8 Jun 2020 06:58:41 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 0586weMq015554;
+        Mon, 8 Jun 2020 02:58:40 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 0586wdUe015550;
+        Mon, 8 Jun 2020 02:58:39 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Mon, 8 Jun 2020 02:58:39 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     "Maciej W. Rozycki" <macro@wdc.com>
+cc:     Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        "Maciej W. Rozycki" <macro@linux-mips.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Matt Turner <mattst88@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>
+Subject: Re: [PATCH v7] alpha: fix memory barriers so that they conform to
+ the specification
+In-Reply-To: <alpine.DEB.2.20.2005270114380.1027@tpp.orcam.me.uk>
+Message-ID: <alpine.LRH.2.02.2006080256360.15393@file01.intranet.prod.int.rdu2.redhat.com>
+References: <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <20200513144128.GA16995@mail.rc.ru> <alpine.LRH.2.02.2005220920020.20970@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LRH.2.02.2005221344530.11126@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005230623410.22664@file01.intranet.prod.int.rdu2.redhat.com> <20200523151027.GA10128@mail.rc.ru> <alpine.LRH.2.02.2005231131480.10727@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LRH.2.02.2005231134590.10727@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LFD.2.21.2005241500230.21168@redsun52.ssa.fujisawa.hgst.com> <alpine.LRH.2.02.2005250944210.26265@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LFD.2.21.2005251500420.21168@redsun52.ssa.fujisawa.hgst.com>
+ <alpine.LRH.2.02.2005251151550.4135@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LRH.2.02.2005261046340.29117@file01.intranet.prod.int.rdu2.redhat.com> <alpine.DEB.2.20.2005270114380.1027@tpp.orcam.me.uk>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bafd8df9e743c433196c727293c5015620fae2b8.1591428452.git.christophe.leroy@csgroup.eu>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Jun 06, 2020 at 07:30:21AM +0000, Christophe Leroy wrote:
-> devm_gpiod_get_index() doesn't return NULL but -ENOENT when the
-> requested GPIO doesn't exist,  leading to the following messages:
-> 
-> [    2.742468] gpiod_direction_input: invalid GPIO (errorpointer)
-> [    2.748147] can't set direction for gpio #2: -2
-> [    2.753081] gpiod_direction_input: invalid GPIO (errorpointer)
-> [    2.758724] can't set direction for gpio #3: -2
-> [    2.763666] gpiod_direction_output: invalid GPIO (errorpointer)
-> [    2.769394] can't set direction for gpio #4: -2
-> [    2.774341] gpiod_direction_input: invalid GPIO (errorpointer)
-> [    2.779981] can't set direction for gpio #5: -2
-> [    2.784545] ff000a20.serial: ttyCPM1 at MMIO 0xfff00a20 (irq = 39, base_baud = 8250000) is a CPM UART
-> 
-> Use IS_ERR_OR_NULL() to properly check gpiod validity.
 
-Why check for NULL at all?
 
-> Fixes: 97cbaf2c829b ("tty: serial: cpm_uart: Convert to use GPIO descriptors")
-> Cc: stable@vger.kernel.org
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> ---
->  drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, 27 May 2020, Maciej W. Rozycki wrote:
+
+> On Tue, 26 May 2020, Mikulas Patocka wrote:
 > 
-> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-> index a04f74d2e854..3cbe24802296 100644
-> --- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-> @@ -1217,7 +1217,7 @@ static int cpm_uart_init_port(struct device_node *np,
->  
->  		gpiod = devm_gpiod_get_index(dev, NULL, i, GPIOD_ASIS);
->  
-> -		if (gpiod) {
-> +		if (!IS_ERR_OR_NULL(gpiod)) {
->  			if (i == GPIO_RTS || i == GPIO_DTR)
->  				ret = gpiod_direction_output(gpiod, 0);
->  			else
+> > This patch makes barriers confiorm to the specification.
+> > 
+> > 1. We add mb() before readX_relaxed and writeX_relaxed -
+> >    memory-barriers.txt claims that these functions must be ordered w.r.t.
+> >    each other. Alpha doesn't order them, so we need an explicit barrier.
+> > 2. We add mb() before reads from the I/O space - so that if there's a
+> >    write followed by a read, there should be a barrier between them.
+> > 
+> > Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+> > Fixes: cd0e00c10672 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering")
+> > Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
+> > Cc: stable@vger.kernel.org      # v4.17+
+> > Acked-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> 
+>  LGTM, thanks for persistence!
+> 
+> Reviewed-by: Maciej W. Rozycki <macro@linux-mips.org>
+> 
+>   Maciej
 
-Johan
+Hi
+
+Will you submit the patch to Linus' tree in this merge window?
+
+Mikulas
+
