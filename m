@@ -2,88 +2,102 @@ Return-Path: <SRS0=jM0J=7V=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56619C433DF
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Jun 2020 15:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25195C433E0
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Jun 2020 23:15:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2401B206A4
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Jun 2020 15:58:01 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WWWx+MuV"
+	by mail.kernel.org (Postfix) with ESMTP id EE5E320760
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Jun 2020 23:15:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1591658152;
+	bh=UC/hJa4X7QpfVijofanUa1kALbeXhRnw1dF4T3sBwyc=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=bAmcLW5uWvDYZaD7KEVhnAHZiDUv9YZWZyhiW+comqTRBX+zMtGSoMtqJElKbdV6+
+	 T2V5w+5dpwqVn+PktX/L2tXx67TQA8BJZBUoFOnVGW7a6EVmuNGsdjX0TKOT8zj1DP
+	 0eGc1e0exHN8W4sRpcf5G0rHsTtFtJT8zZzeT+NY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730359AbgFHP6A (ORCPT
+        id S1730105AbgFHXPu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Jun 2020 11:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730231AbgFHP6A (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Jun 2020 11:58:00 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A82DC08C5C2;
-        Mon,  8 Jun 2020 08:58:00 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id 82so10537266lfh.2;
-        Mon, 08 Jun 2020 08:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d2EOx3YuKGydCVyOfa4Jz+4LCU5cGxDsZmpPpNUfyB4=;
-        b=WWWx+MuV4d1OqEJZ3TAt/KAFq+ko1LDmQlZzyzrARjUpx0scfo+cCUbl+3ApejPNpY
-         JWJ8+8Yn70c0ZVroC9EF+DYz1va/clE6FLVoPsk3FzBpqJeGQjxRgyNELBt+rIX1hJAP
-         4rXRi7TXinK4Y/J0yVOkpn9kFTBnNPwlZk8jl9n2dFNliP+Z9L7Hc5+np/6VC5yIYd9y
-         Lby7yWtU4+YeayGP4Gsfk8XolAfznakjx4qg4rebLllTb4xp7QYrgLmGeAzuC9A5Oz/y
-         ETo2DIVwhGLRZi+D9cpA/4EFxqbKs3b5RRTDmE17cnmDw0xE+ae7wtqLMUz0pPMEHkG8
-         S6TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d2EOx3YuKGydCVyOfa4Jz+4LCU5cGxDsZmpPpNUfyB4=;
-        b=gemvzjWbP6KwalMTQiLLSMLtxrZHl+Dpc9S/9SQKc9Im7ADxO6PI7IfWtadfgcb9R/
-         qp/NV3/iw0KFj4r08wROwoxBgGWiNdNbYDaVNawX9INjkJQNS9TUepUJ3iY1lhiVjq8R
-         V5YtlVuT2Ap545MD0Y519RwKAzcZpW1XFHGQGXs4TIo8kpPrsN3g9UBtLtTYPwh7WliE
-         fAPqvIUYgdJnbytm6roDnLqfKED9gTlIm4KLubo8aAXeL7AWasTrVr+/7HvRDRHT4rw5
-         TVt3EKYCJTimGkLei8jA2905Ag4dKB2KNpMG/a8zVAvanFZ07ew9VKIHi9K1OmW91RLX
-         1gIA==
-X-Gm-Message-State: AOAM532CzujGCWo9PHk3rFZH0MStAKh4mbQLBZYL11s/YUHZCvQMglA2
-        RPKOByJSNRAF2fDd4PvcqcaWh8zkPdy+uOjwRCo=
-X-Google-Smtp-Source: ABdhPJyaTbwF/M5Q5hXihzMSg5dnjlz0G6HksHVd39PTe3Y0jMJK5DRcfCw/lVsikvk8HvdUt0QMNNEbeaHGp02sQKg=
-X-Received: by 2002:a19:8b06:: with SMTP id n6mr12882248lfd.66.1591631878121;
- Mon, 08 Jun 2020 08:57:58 -0700 (PDT)
+        Mon, 8 Jun 2020 19:15:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36924 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729052AbgFHXPt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:15:49 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D55612068D;
+        Mon,  8 Jun 2020 23:15:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591658148;
+        bh=UC/hJa4X7QpfVijofanUa1kALbeXhRnw1dF4T3sBwyc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CDJ0ANxCBfx9sk1d3mSPj/eAFgpg/jj7QF+h0IaeL2aK3t3DYF9JTEy15q5w9tLks
+         RPfVebBfMXwPzWCGH8O1zvbc3yfM0IXwEEIcenzGs2Ka9slI+xHBatVvg6Q1bH9l3m
+         OQhAtwEvj4dQxZLsVYPL7zYh4xhV0QqG9sgXV7xc=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Sagar Shrikant Kadam <sagar.kadam@sifive.com>,
+        Atish Patra <Atish.Patra@wdc.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.6 181/606] tty: serial: add missing spin_lock_init for SiFive serial console
+Date:   Mon,  8 Jun 2020 19:05:06 -0400
+Message-Id: <20200608231211.3363633-181-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
+References: <20200608231211.3363633-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20200608151012.7296-1-frieder.schrempf@kontron.de> <CAOMZO5BHF6ftHVgzKQ29o_G7Y+O6nrbDH1+J5+BYaONz==WebQ@mail.gmail.com>
-In-Reply-To: <CAOMZO5BHF6ftHVgzKQ29o_G7Y+O6nrbDH1+J5+BYaONz==WebQ@mail.gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Mon, 8 Jun 2020 12:57:46 -0300
-Message-ID: <CAOMZO5D0oifxM3H4WoLmJQ72Zo_2uj8X0RcpVadj4wLJYh6BgQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: imx: Fix handling of TC irq in combination with DMA
-To:     Schrempf Frieder <frieder.schrempf@kontron.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 8, 2020 at 12:51 PM Fabio Estevam <festevam@gmail.com> wrote:
->
-> On Mon, Jun 8, 2020 at 12:12 PM Schrempf Frieder
-> <frieder.schrempf@kontron.de> wrote:
->
-> >         if (port->rs485.flags & SER_RS485_ENABLED) {
-> >                 temp = readl(port->membase + UCR2);
-> > +
->
-> This looks like an unrelated change.
+From: Sagar Shrikant Kadam <sagar.kadam@sifive.com>
 
-Ah, ok, just realized this is a backport. In this case, it is fine then.
+commit 17b4efdf4e4867079012a48ca10d965fe9d68822 upstream.
+
+An uninitialised spin lock for sifive serial console raises a bad
+magic spin_lock error as reported and discussed here [1].
+Initialising the spin lock resolves the issue.
+
+The fix is tested on HiFive Unleashed A00 board with Linux 5.7-rc4
+and OpenSBI v0.7
+
+[1] https://lore.kernel.org/linux-riscv/b9fe49483a903f404e7acc15a6efbef756db28ae.camel@wdc.com
+
+Fixes: 45c054d0815b ("tty: serial: add driver for the SiFive UART")
+Reported-by: Atish Patra <Atish.Patra@wdc.com>
+Signed-off-by: Sagar Shrikant Kadam <sagar.kadam@sifive.com>
+Reviewed-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Acked-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1589019852-21505-2-git-send-email-sagar.kadam@sifive.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/sifive.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index d5f81b98e4d7..38133eba83a8 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -840,6 +840,7 @@ console_initcall(sifive_console_init);
+ 
+ static void __ssp_add_console_port(struct sifive_serial_port *ssp)
+ {
++	spin_lock_init(&ssp->port.lock);
+ 	sifive_serial_console_ports[ssp->port.line] = ssp;
+ }
+ 
+-- 
+2.25.1
+
