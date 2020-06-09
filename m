@@ -2,334 +2,154 @@ Return-Path: <SRS0=2Hcl=7W=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1476C433DF
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Jun 2020 00:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A2FC433DF
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Jun 2020 05:55:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 74CC8207ED
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Jun 2020 00:49:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591663755;
-	bh=4feggQIICT8RQYNX+beLsG7/+ks9mZ0RnqmMHiP5kB0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=x5QsEbOMAJNKhkEXQWalA1fjpQYEqib57hgPxMU3zq/H/ThARrTx5v56A/c6hF8t+
-	 RclhAyNz4NbCznsc7eVA0Ypx3Tb4ykdRHl0JGqo3FJzza7u0c7O7T9m1Qy4POphC1P
-	 Lsb5gFYd4eBUad6rwHvDhviNofR70HjP5CjqBaDY=
+	by mail.kernel.org (Postfix) with ESMTP id CC73A207F9
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Jun 2020 05:55:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="WyGLv1k3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728362AbgFIAtO (ORCPT
+        id S1727811AbgFIFz0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Jun 2020 20:49:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56988 "EHLO mail.kernel.org"
+        Tue, 9 Jun 2020 01:55:26 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:48606 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728758AbgFHXKq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:10:46 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        id S1727091AbgFIFz0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 9 Jun 2020 01:55:26 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1591682124; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=lHjRLmr48blxmZp5pC92pn0zhADcIvEhpmaowHJ/1Qo=; b=WyGLv1k380dXhwBMeOqD2bLU/qZGckSFdXmenB+QjBKUy5YCv8S3AJAf271AYZMNApaaBY9d
+ okcX6gAWnuVmzsqcg9/sjMkr9dAmZGnFkD26Lu1RwINk3dfI1x9N1YPxtAsI16ytziRuvVvx
+ Wg7X01tBmp6NNK7otQpLcNSt8k8=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n12.prod.us-east-1.postgun.com with SMTP id
+ 5edf24378cb42f3a2cdfd522 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 09 Jun 2020 05:55:03
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 76DDFC43387; Tue,  9 Jun 2020 05:55:02 +0000 (UTC)
+Received: from [192.168.43.98] (unknown [157.44.16.77])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 407E820C09;
-        Mon,  8 Jun 2020 23:10:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591657846;
-        bh=4feggQIICT8RQYNX+beLsG7/+ks9mZ0RnqmMHiP5kB0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EBAGcDTTrB0fePSh22zVmzrf/+a8BP7EsyMpqZcy8YqREJNsOzPt1s8l82t+4TCwH
-         DZUWr5DGbzi2KrOQ174rATyqCWvOBEgOndsXbzcfRSQZq0gy23HlPbcTvrwBBV8m1f
-         9UZzhJOppwdKoY1M/Rxh+k08FoZcUm2n/PQOram4=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 212/274] kgdboc: Use a platform device to handle tty drivers showing up late
-Date:   Mon,  8 Jun 2020 19:05:05 -0400
-Message-Id: <20200608230607.3361041-212-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608230607.3361041-1-sashal@kernel.org>
-References: <20200608230607.3361041-1-sashal@kernel.org>
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 64FA7C433CA;
+        Tue,  9 Jun 2020 05:54:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 64FA7C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V7 6/7] spi: spi-qcom-qspi: Add interconnect support
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        msavaliy@codeaurora.org, evgreen@chromium.org
+References: <1590497690-29035-1-git-send-email-akashast@codeaurora.org>
+ <1590497690-29035-7-git-send-email-akashast@codeaurora.org>
+ <20200526173613.GF4525@google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <6905b55b-772d-e027-0675-e1467445f40b@codeaurora.org>
+Date:   Tue, 9 Jun 2020 11:24:46 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200526173613.GF4525@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Douglas Anderson <dianders@chromium.org>
+Hi Matthias,
 
-[ Upstream commit 68e55f61c13842baf825958129698c5371db432c ]
+On 5/26/2020 11:06 PM, Matthias Kaehlcke wrote:
+> On Tue, May 26, 2020 at 06:24:49PM +0530, Akash Asthana wrote:
+>> Get the interconnect paths for QSPI device and vote according to the
+>> current bus speed of the driver.
+>>
+>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>> ---
+>> Changes in V2:
+>>   - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
+>>     path handle
+>>   - As per Matthias comment, added error handling for icc_set_bw call
+>>
+>> Changes in V3:
+>>   - No Change.
+>>
+>> Changes in V4:
+>>   - As per Mark's comment move peak_bw guess as twice of avg_bw if
+>>     nothing mentioned explicitly to ICC core.
+>>
+>> Changes in V5:
+>>   - Add icc_enable/disable to power on/off call.
+>>   - Save some non-zero avg/peak value to ICC core by calling geni_icc_set_bw
+>>     from probe so that when resume/icc_enable is called NOC are running at
+>>     some non-zero value.
+>>
+>> Changes in V6:
+>>   - As per Matthias's comment made print statement consistent across driver
+>>
+>> Changes in V7:
+>>   - As per Matthias's comment removed usage of peak_bw variable because we don't
+>>     have explicit peak requirement, we were voting peak = avg and this can be
+>>     tracked using single variable for avg bw.
+>>   - As per Matthias's comment improved print log.
+>>
+>>   drivers/spi/spi-qcom-qspi.c | 57 ++++++++++++++++++++++++++++++++++++++++++++-
+>>   1 file changed, 56 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/spi/spi-qcom-qspi.c b/drivers/spi/spi-qcom-qspi.c
+>> index 3c4f83b..092ac27 100644
+>> --- a/drivers/spi/spi-qcom-qspi.c
+>> +++ b/drivers/spi/spi-qcom-qspi.c
+>> @@ -2,6 +2,7 @@
+>>   // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
+>>   
+>>   #include <linux/clk.h>
+>> +#include <linux/interconnect.h>
+>>   #include <linux/interrupt.h>
+>>   #include <linux/io.h>
+>>   #include <linux/module.h>
+>> @@ -139,7 +140,9 @@ struct qcom_qspi {
+>>   	struct device *dev;
+>>   	struct clk_bulk_data *clks;
+>>   	struct qspi_xfer xfer;
+>> -	/* Lock to protect xfer and IRQ accessed registers */
+>> +	struct icc_path *icc_path_cpu_to_qspi;
+>> +	unsigned int avg_bw_cpu;
+> I should have noticed this earlier, but the field isn't needed now that
+> we have icc_enable/disable(). The bandwidth is set in
+> qcom_qspi_transfer_one() and that's it.
+>
+>  From my side it would be fine to remove the field in a follow up patch,
+> to avoid respinning the series yet another time just for this.
+>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 
-If you build CONFIG_KGDB_SERIAL_CONSOLE into the kernel then you
-should be able to have KGDB init itself at bootup by specifying the
-"kgdboc=..." kernel command line parameter.  This has worked OK for me
-for many years, but on a new device I switched to it stopped working.
+I will resend patch V7 with the suggested change.
 
-The problem is that on this new device the serial driver gets its
-probe deferred.  Now when kgdb initializes it can't find the tty
-driver and when it gives up it never tries again.
+Thankyou for reviewing
 
-We could try to find ways to move up the initialization of the serial
-driver and such a thing might be worthwhile, but it's nice to be
-robust against serial drivers that load late.  We could move kgdb to
-init itself later but that penalizes our ability to debug early boot
-code on systems where the driver inits early.  We could roll our own
-system of detecting when new tty drivers get loaded and then use that
-to figure out when kgdb can init, but that's ugly.
+Regards,
 
-Instead, let's jump on the -EPROBE_DEFER bandwagon.  We'll create a
-singleton instance of a "kgdboc" platform device.  If we can't find
-our tty device when the singleton "kgdboc" probes we'll return
--EPROBE_DEFER which means that the system will call us back later to
-try again when the tty device might be there.
+Akash
 
-We won't fully transition all of the kgdboc to a platform device
-because early kgdb initialization (via the "ekgdboc" kernel command
-line parameter) still runs before the platform device has been
-created.  The kgdb platform device is merely used as a convenient way
-to hook into the system's normal probe deferral mechanisms.
-
-As part of this, we'll ever-so-slightly change how the "kgdboc=..."
-kernel command line parameter works.  Previously if you booted up and
-kgdb couldn't find the tty driver then later reading
-'/sys/module/kgdboc/parameters/kgdboc' would return a blank string.
-Now kgdb will keep track of the string that came as part of the
-command line and give it back to you.  It's expected that this should
-be an OK change.
-
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Link: https://lore.kernel.org/r/20200507130644.v4.3.I4a493cfb0f9f740ce8fd2ab58e62dc92d18fed30@changeid
-[daniel.thompson@linaro.org: Make config_mutex static]
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/kgdboc.c | 126 +++++++++++++++++++++++++++++-------
- 1 file changed, 101 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index c9f94fa82be4..151256f70d37 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -20,6 +20,7 @@
- #include <linux/vt_kern.h>
- #include <linux/input.h>
- #include <linux/module.h>
-+#include <linux/platform_device.h>
- 
- #define MAX_CONFIG_LEN		40
- 
-@@ -27,6 +28,7 @@ static struct kgdb_io		kgdboc_io_ops;
- 
- /* -1 = init not run yet, 0 = unconfigured, 1 = configured. */
- static int configured		= -1;
-+static DEFINE_MUTEX(config_mutex);
- 
- static char config[MAX_CONFIG_LEN];
- static struct kparam_string kps = {
-@@ -38,6 +40,8 @@ static int kgdboc_use_kms;  /* 1 if we use kernel mode switching */
- static struct tty_driver	*kgdb_tty_driver;
- static int			kgdb_tty_line;
- 
-+static struct platform_device *kgdboc_pdev;
-+
- #ifdef CONFIG_KDB_KEYBOARD
- static int kgdboc_reset_connect(struct input_handler *handler,
- 				struct input_dev *dev,
-@@ -133,11 +137,13 @@ static void kgdboc_unregister_kbd(void)
- 
- static void cleanup_kgdboc(void)
- {
-+	if (configured != 1)
-+		return;
-+
- 	if (kgdb_unregister_nmi_console())
- 		return;
- 	kgdboc_unregister_kbd();
--	if (configured == 1)
--		kgdb_unregister_io_module(&kgdboc_io_ops);
-+	kgdb_unregister_io_module(&kgdboc_io_ops);
- }
- 
- static int configure_kgdboc(void)
-@@ -198,20 +204,79 @@ static int configure_kgdboc(void)
- 	kgdb_unregister_io_module(&kgdboc_io_ops);
- noconfig:
- 	kgdboc_unregister_kbd();
--	config[0] = 0;
- 	configured = 0;
--	cleanup_kgdboc();
- 
- 	return err;
- }
- 
-+static int kgdboc_probe(struct platform_device *pdev)
-+{
-+	int ret = 0;
-+
-+	mutex_lock(&config_mutex);
-+	if (configured != 1) {
-+		ret = configure_kgdboc();
-+
-+		/* Convert "no device" to "defer" so we'll keep trying */
-+		if (ret == -ENODEV)
-+			ret = -EPROBE_DEFER;
-+	}
-+	mutex_unlock(&config_mutex);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver kgdboc_platform_driver = {
-+	.probe = kgdboc_probe,
-+	.driver = {
-+		.name = "kgdboc",
-+		.suppress_bind_attrs = true,
-+	},
-+};
-+
- static int __init init_kgdboc(void)
- {
--	/* Already configured? */
--	if (configured == 1)
-+	int ret;
-+
-+	/*
-+	 * kgdboc is a little bit of an odd "platform_driver".  It can be
-+	 * up and running long before the platform_driver object is
-+	 * created and thus doesn't actually store anything in it.  There's
-+	 * only one instance of kgdb so anything is stored as global state.
-+	 * The platform_driver is only created so that we can leverage the
-+	 * kernel's mechanisms (like -EPROBE_DEFER) to call us when our
-+	 * underlying tty is ready.  Here we init our platform driver and
-+	 * then create the single kgdboc instance.
-+	 */
-+	ret = platform_driver_register(&kgdboc_platform_driver);
-+	if (ret)
-+		return ret;
-+
-+	kgdboc_pdev = platform_device_alloc("kgdboc", PLATFORM_DEVID_NONE);
-+	if (!kgdboc_pdev) {
-+		ret = -ENOMEM;
-+		goto err_did_register;
-+	}
-+
-+	ret = platform_device_add(kgdboc_pdev);
-+	if (!ret)
- 		return 0;
- 
--	return configure_kgdboc();
-+	platform_device_put(kgdboc_pdev);
-+
-+err_did_register:
-+	platform_driver_unregister(&kgdboc_platform_driver);
-+	return ret;
-+}
-+
-+static void exit_kgdboc(void)
-+{
-+	mutex_lock(&config_mutex);
-+	cleanup_kgdboc();
-+	mutex_unlock(&config_mutex);
-+
-+	platform_device_unregister(kgdboc_pdev);
-+	platform_driver_unregister(&kgdboc_platform_driver);
- }
- 
- static int kgdboc_get_char(void)
-@@ -234,24 +299,20 @@ static int param_set_kgdboc_var(const char *kmessage,
- 				const struct kernel_param *kp)
- {
- 	size_t len = strlen(kmessage);
-+	int ret = 0;
- 
- 	if (len >= MAX_CONFIG_LEN) {
- 		pr_err("config string too long\n");
- 		return -ENOSPC;
- 	}
- 
--	/* Only copy in the string if the init function has not run yet */
--	if (configured < 0) {
--		strcpy(config, kmessage);
--		return 0;
--	}
--
- 	if (kgdb_connected) {
- 		pr_err("Cannot reconfigure while KGDB is connected.\n");
--
- 		return -EBUSY;
- 	}
- 
-+	mutex_lock(&config_mutex);
-+
- 	strcpy(config, kmessage);
- 	/* Chop out \n char as a result of echo */
- 	if (len && config[len - 1] == '\n')
-@@ -260,8 +321,30 @@ static int param_set_kgdboc_var(const char *kmessage,
- 	if (configured == 1)
- 		cleanup_kgdboc();
- 
--	/* Go and configure with the new params. */
--	return configure_kgdboc();
-+	/*
-+	 * Configure with the new params as long as init already ran.
-+	 * Note that we can get called before init if someone loads us
-+	 * with "modprobe kgdboc kgdboc=..." or if they happen to use the
-+	 * the odd syntax of "kgdboc.kgdboc=..." on the kernel command.
-+	 */
-+	if (configured >= 0)
-+		ret = configure_kgdboc();
-+
-+	/*
-+	 * If we couldn't configure then clear out the config.  Note that
-+	 * specifying an invalid config on the kernel command line vs.
-+	 * through sysfs have slightly different behaviors.  If we fail
-+	 * to configure what was specified on the kernel command line
-+	 * we'll leave it in the 'config' and return -EPROBE_DEFER from
-+	 * our probe.  When specified through sysfs userspace is
-+	 * responsible for loading the tty driver before setting up.
-+	 */
-+	if (ret)
-+		config[0] = '\0';
-+
-+	mutex_unlock(&config_mutex);
-+
-+	return ret;
- }
- 
- static int dbg_restore_graphics;
-@@ -324,15 +407,8 @@ __setup("kgdboc=", kgdboc_option_setup);
- /* This is only available if kgdboc is a built in for early debugging */
- static int __init kgdboc_early_init(char *opt)
- {
--	/* save the first character of the config string because the
--	 * init routine can destroy it.
--	 */
--	char save_ch;
--
- 	kgdboc_option_setup(opt);
--	save_ch = config[0];
--	init_kgdboc();
--	config[0] = save_ch;
-+	configure_kgdboc();
- 	return 0;
- }
- 
-@@ -340,7 +416,7 @@ early_param("ekgdboc", kgdboc_early_init);
- #endif /* CONFIG_KGDB_SERIAL_CONSOLE */
- 
- module_init(init_kgdboc);
--module_exit(cleanup_kgdboc);
-+module_exit(exit_kgdboc);
- module_param_call(kgdboc, param_set_kgdboc_var, param_get_string, &kps, 0644);
- MODULE_PARM_DESC(kgdboc, "<serial_device>[,baud]");
- MODULE_DESCRIPTION("KGDB Console TTY Driver");
 -- 
-2.25.1
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
 
