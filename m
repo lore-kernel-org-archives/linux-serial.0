@@ -1,98 +1,108 @@
-Return-Path: <SRS0=YBLV=7Y=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=2C4M=7Z=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 750AAC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Jun 2020 11:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48828C433DF
+	for <linux-serial@archiver.kernel.org>; Fri, 12 Jun 2020 15:29:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 54B7A20760
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Jun 2020 11:18:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2196620801
+	for <linux-serial@archiver.kernel.org>; Fri, 12 Jun 2020 15:29:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591874313;
-	bh=u/ZlCVT4Qx9a6DnjKeW8PwPc4At2OeLBS8LztOanwJA=;
+	s=default; t=1591975766;
+	bh=2gcTLGQ/YAq3hCULFYWKp1jg32rkHtZfqYIP+dnmats=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=AhuKGxxc3NiAkX+FrgSVMkTRO2tu4VR5nHQLiAK1kO6whTvk9gBL+ZsD7DGb6Kttc
-	 5TwLfpRiYfa3dqFw30NlKMlWQuFxCT96ksHuxzFrY9Dejej/stTsjnGUhqIFXOePZ+
-	 fNMp6WhftVhBkX78VHBsY8MLX4zUKsjRyr6JxmNc=
+	b=kPTDanBVOt0FM6UUq60/3mtnFUKwvYhbLMdWDh+CFW6QSxp4WsVGZL6QhPRw6HRyL
+	 2Wbtfx6KfpubCCffgaenEuRUr5whclRGMGtjW1VXFGVJdyPnrOrlW1REI1ba13Chgu
+	 I89K88E+5f8DmceMM2xurQhIyAGAALKLIH7ojVA0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728002AbgFKLS3 (ORCPT
+        id S1726272AbgFLP3Z (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 11 Jun 2020 07:18:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44356 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727973AbgFKLS3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 11 Jun 2020 07:18:29 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 879852063A;
-        Thu, 11 Jun 2020 11:18:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591874307;
-        bh=u/ZlCVT4Qx9a6DnjKeW8PwPc4At2OeLBS8LztOanwJA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2D9UqhsOgj0plexSgeDKm4ci+JHy67vyEkz1ySN/W6tx09wPGf11LU2vEyxYh0A2x
-         wew1hii/5rPGYa2FtNkkNAp5ja1CC/tY9/LfZWuVFwq6GdPPurxw7czLbb00YB+H5i
-         Pg9W1PhzbuuKDQf7K2S/4tAF7fQWTpI4PmkN1pLk=
-Date:   Thu, 11 Jun 2020 13:18:20 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Schrempf Frieder <frieder.schrempf@kontron.de>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v2] serial: imx: Fix handling of TC irq in combination
- with DMA
-Message-ID: <20200611111820.GI3802953@kroah.com>
-References: <20200609072259.8259-1-frieder.schrempf@kontron.de>
+        Fri, 12 Jun 2020 11:29:25 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:41134 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726085AbgFLP3Z (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 12 Jun 2020 11:29:25 -0400
+Received: by mail-lj1-f194.google.com with SMTP id 9so11558356ljc.8;
+        Fri, 12 Jun 2020 08:29:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QuAjxxaqKlcJRQ0p/qwMZ0zHnlOSAqFpzmJBK0X5aP0=;
+        b=ev9mg2I4h0IJtr86/A5+dUEujlPr9enW3Pf4/EfAWGkf0rWsht+erpKC0yGhYMrALi
+         +ESH78IbWvHQPu9H/JlGgQS6+fjsN2qsyPE4bnx+gDkdfZQcHMIoYIg+nLTET5NDGAAq
+         4VpZcE4zDu4TYinLBYWMFxvw63f9Pzpdvu1ZdRr+3WDjzkywrmzGvLTP2cwXlk/8GB9L
+         qkLZ6zMouPjhH5NVbsHk1I32veyTQa0H0b/dWdvjHLULhVmJBmTEIOHTg31np/ugk9dr
+         oOIh/LhwKcgjQ4FIjIFW2ARE7yVqMBh7953VqIezzZAGvia1r+u/HjWo3jVqMFdVtd/4
+         e2Eg==
+X-Gm-Message-State: AOAM530YoXOEtjGm/sCEG9d3wR3t6oh+oo2NIA3/xHJFJ0g7n7Adu3Ez
+        dCSSn6xNuKryVUY7xOVcer8=
+X-Google-Smtp-Source: ABdhPJzNXjjcNDZ/7ULp47Al+CYcSlnN1Ku7GCqNvR32XQmRfp4aVCQT5OovsZ+JCAhxCKjZ405sCg==
+X-Received: by 2002:a2e:8901:: with SMTP id d1mr7378051lji.37.1591975761815;
+        Fri, 12 Jun 2020 08:29:21 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id w17sm2183199ljj.108.2020.06.12.08.29.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2020 08:29:20 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1jjlcP-0002oc-77; Fri, 12 Jun 2020 17:29:21 +0200
+Date:   Fri, 12 Jun 2020 17:29:21 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dmitry Safonov <0x7f454c46@gmail.com>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] serial: core: fix sysrq overhead regression
+Message-ID: <20200612152921.GP19480@localhost>
+References: <20200610152232.16925-1-johan@kernel.org>
+ <20200610152232.16925-3-johan@kernel.org>
+ <19008afb-bfbb-35e2-3bd5-e7fd1b7355cc@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200609072259.8259-1-frieder.schrempf@kontron.de>
+In-Reply-To: <19008afb-bfbb-35e2-3bd5-e7fd1b7355cc@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 09, 2020 at 07:23:40AM +0000, Schrempf Frieder wrote:
-> From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+On Wed, Jun 10, 2020 at 05:24:57PM +0100, Dmitry Safonov wrote:
+> Hi Johan,
 > 
-> commit 1866541492641c02874bf51f9d8712b5510f2c64 upstream
+> On 6/10/20 4:22 PM, Johan Hovold wrote:
+> > Commit 8e20fc391711 ("serial_core: Move sysrq functions from header
+> > file") converted the inline sysrq helpers to exported functions which
+> > are now called for every received character, interrupt and break signal
+> > also on systems without CONFIG_MAGIC_SYSRQ_SERIAL instead of being
+> > optimised away by the compiler.
 > 
-> When using RS485 half duplex the Transmitter Complete irq is needed to
-> determine the moment when the transmitter can be disabled. When using
-> DMA this irq must only be enabled when DMA has completed to transfer all
-> data. Otherwise the CPU might busily trigger this irq which is not
-> properly handled and so the also pending irq for the DMA transfer cannot
-> trigger.
+> The part with ifdeffing looks good to me.
 > 
-> Cc: <stable@vger.kernel.org> # v4.14.x
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> [Backport to v4.14]
-> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-> ---
-> When using RS485 with DMA enabled simply transmitting some data on our
-> i.MX6ULL based boards often freezes the system completely. The higher
-> the baudrate, the easier it is to reproduce the issue. To test this I
-> simply used:
+> > Inlining these helpers again also avoids the function call overhead when
+> > CONFIG_MAGIC_SYSRQ_SERIAL is enabled (e.g. when the port is not used as
+> > a console).
 > 
-> stty -F /dev/ttymxc1 speed 115200
-> while true; do echo TEST > /dev/ttymxc1; done
-> 
-> Without the patch this leads to an almost immediate system freeze,
-> with the patch applied, everything keeps working as expected. 
-> ---
->  drivers/tty/serial/imx.c | 22 ++++++++++++++++++----
->  1 file changed, 18 insertions(+), 4 deletions(-)
+> But this one, coul you add measures? (it will also help to understand if
+> it's a stable material).
 
-Now queued up, thanks.
+Interrupt processing takes 2-3% longer without the inlining with
+8250_omap on a beagleboard for example.
 
-greg k-h
+> If one function call actually matters here, than should
+> uart_insert_char() also go into header?
+
+Good question, it actually was originally intended to be inlined as all
+other per-character processing. Separate discussion though.
+
+The point is that we don't want a rarely used debugging feature to incur
+unnecessary additional overhead that can easily be avoided.
+
+Johan
