@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 483D0C433E1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D3E1C433E0
 	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1CE922067B
+	by mail.kernel.org (Postfix) with ESMTP id 3A9F220738
 	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729152AbgFOHvJ (ORCPT
+        id S1729150AbgFOHvJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 15 Jun 2020 03:51:09 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40052 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:40060 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728837AbgFOHtR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1728841AbgFOHtR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Mon, 15 Jun 2020 03:49:17 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 1A950B01C;
+        by mx2.suse.de (Postfix) with ESMTP id DAAC5AFB5;
         Mon, 15 Jun 2020 07:49:17 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 11/38] vt: use modern types in do_con_write
-Date:   Mon, 15 Jun 2020 09:48:43 +0200
-Message-Id: <20200615074910.19267-11-jslaby@suse.cz>
+Subject: [PATCH 15/38] vt: move rescan_last_byte label earlier
+Date:   Mon, 15 Jun 2020 09:48:47 +0200
+Message-Id: <20200615074910.19267-15-jslaby@suse.cz>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200615074910.19267-1-jslaby@suse.cz>
 References: <20200615074910.19267-1-jslaby@suse.cz>
@@ -41,73 +41,62 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use bools for rescan and inverse. And true/false accordingly.
+This removes duplicated initialization of variables (after reordering
+'c' initialization).
 
-Use u8 for width instead of uint8_t.
+It will also allow for eliminating whole translation into a separate
+function in the next patch.
+
+Note that vc_state, vc_utf etc. are checked with every rescan now. But
+they are immutable for non-control characters where rescan might be
+only necessary.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/vt.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/tty/vt/vt.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index b86639351dd2..a9e4924fa675 100644
+index bf171bb1d2fd..93ad7e004900 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -2581,10 +2581,10 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
- 	struct vc_data *vc;
- 	unsigned char vc_attr;
- 	struct vt_notifier_param param;
--	uint8_t rescan;
--	uint8_t inverse;
--	uint8_t width;
- 	u16 himask, charmask;
-+	u8 width;
-+	bool rescan;
-+	bool inverse;
+@@ -2717,10 +2717,11 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
  
- 	if (in_interrupt())
- 		return count;
-@@ -2620,8 +2620,8 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
+ 	while (!tty->stopped && count) {
+ 		int orig = *buf;
+-		c = orig;
  		buf++;
  		n++;
  		count--;
--		rescan = 0;
--		inverse = 0;
-+		rescan = false;
-+		inverse = false;
++rescan_last_byte:
++		c = orig;
+ 		rescan = false;
+ 		inverse = false;
  		width = 1;
- 
- 		/* Do no translation at all in control states */
-@@ -2660,7 +2660,7 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
- 			/* Single ASCII byte or first byte of a sequence received */
- 			if (vc->vc_utf_count) {
- 			    /* Continuation byte expected */
--			    rescan = 1;
-+			    rescan = true;
- 			    vc->vc_utf_count = 0;
- 			    c = 0xfffd;
- 			} else if (c > 0x7f) {
-@@ -2746,7 +2746,7 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
- 				    /* Display U+FFFD. If it's not found, display an inverse question mark. */
- 				    tc = conv_uni_to_pc(vc, 0xfffd);
- 				    if (tc < 0) {
--					inverse = 1;
-+					inverse = true;
- 					tc = conv_uni_to_pc(vc, '?');
- 					if (tc < 0) tc = '?';
- 				    }
-@@ -2807,8 +2807,8 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
+@@ -2729,7 +2730,6 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
+ 		if (vc->vc_state != ESnormal) {
+ 			tc = c;
+ 		} else if (vc->vc_utf && !vc->vc_disp_ctrl) {
+-rescan_last_byte:
+ 			tc = c = vc_translate_unicode(vc, c, &rescan);
+ 			if (tc == -1)
+ 				continue;
+@@ -2834,13 +2834,9 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
+ 			if (inverse)
  				con_flush(vc, draw_from, draw_to, &draw_x);
  
- 			if (rescan) {
--				rescan = 0;
--				inverse = 0;
-+				rescan = false;
-+				inverse = false;
- 				width = 1;
- 				c = orig;
+-			if (rescan) {
+-				rescan = false;
+-				inverse = false;
+-				width = 1;
+-				c = orig;
++			if (rescan)
  				goto rescan_last_byte;
+-			}
++
+ 			continue;
+ 		}
+ 		con_flush(vc, draw_from, draw_to, &draw_x);
 -- 
 2.27.0
 
