@@ -2,243 +2,112 @@ Return-Path: <SRS0=TTKI=74=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF31C433E1
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72727C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:49:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C7C982068E
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:27:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="EM1R07b5"
+	by mail.kernel.org (Postfix) with ESMTP id 4A23E2067B
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728624AbgFOH13 (ORCPT
+        id S1728180AbgFOHtB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Jun 2020 03:27:29 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:53638 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728422AbgFOH13 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Jun 2020 03:27:29 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1592206047; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=fEk7YP/LrCEAqKTSFo02hM8U5W6/ymF6qtRNJISca3Y=; b=EM1R07b5Da7PTxLCCgAClAEvMYLlG6j06IvoZb5HxMvlHG2ncINnp6/LTg3KQmcSaJPof0x5
- qoVPcZFFpBtVa90wSqliTMnPGT6hYNxu2HCVOZuwBKdAS3tbnxHpf3ZFQbOWW9NcK8GlRk1J
- 7l0+AykFEokqNbjc+fO6CeAWRL0=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
- 5ee722dda3d8a44743c2b31a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 15 Jun 2020 07:27:25
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 762AFC43391; Mon, 15 Jun 2020 07:27:24 +0000 (UTC)
-Received: from [192.168.0.12] (unknown [183.83.138.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DBBFAC433C8;
-        Mon, 15 Jun 2020 07:27:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DBBFAC433C8
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V7 RESEND 6/7] spi: spi-qcom-qspi: Add interconnect
- support
-To:     broonie@kernel.org
-Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org,
-        msavaliy@codeaurora.org
-References: <1591682194-32388-1-git-send-email-akashast@codeaurora.org>
- <1591682194-32388-7-git-send-email-akashast@codeaurora.org>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <2e299942-2a51-f023-ea6a-fa7822912d9e@codeaurora.org>
-Date:   Mon, 15 Jun 2020 12:57:12 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        Mon, 15 Jun 2020 03:49:01 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39800 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726111AbgFOHtA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Jun 2020 03:49:00 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id DA730AB76;
+        Mon, 15 Jun 2020 07:49:01 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Subject: [PATCH] um: line, remove put_char
+Date:   Mon, 15 Jun 2020 09:48:56 +0200
+Message-Id: <20200615074856.18949-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <1591682194-32388-7-git-send-email-akashast@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Mark,
+um's put_char only calls write. And the tty layer/disciplines do the
+same if put_char is NULL.
 
-Would you be able to review/ack this QSPI patch, you have already acked 
-"QUP SPI" patch from the series "[Patch V7 RESEND 4/7]"
+So we can safely remove this put_char wrapper.
 
-Putting a gentle reminder in-case this patch is missed.
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Jeff Dike <jdike@addtoit.com>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+---
+ arch/um/drivers/line.c          | 5 -----
+ arch/um/drivers/line.h          | 1 -
+ arch/um/drivers/ssl.c           | 1 -
+ arch/um/drivers/stdio_console.c | 1 -
+ 4 files changed, 8 deletions(-)
 
-Regards,
-
-Akash
-
-On 6/9/2020 11:26 AM, Akash Asthana wrote:
-> Get the interconnect paths for QSPI device and vote according to the
-> current bus speed of the driver.
->
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
-> Changes in V2:
->   - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->     path handle
->   - As per Matthias comment, added error handling for icc_set_bw call
->
-> Changes in V3:
->   - No Change.
->
-> Changes in V4:
->   - As per Mark's comment move peak_bw guess as twice of avg_bw if
->     nothing mentioned explicitly to ICC core.
->
-> Changes in V5:
->   - Add icc_enable/disable to power on/off call.
->   - Save some non-zero avg/peak value to ICC core by calling geni_icc_set_bw
->     from probe so that when resume/icc_enable is called NOC are running at
->     some non-zero value.
->
-> Changes in V6:
->   - As per Matthias's comment made print statement consistent across driver
->
-> Changes in V7:
->   - As per Matthias's comment removed usage of peak_bw variable because we don't
->     have explicit peak requirement, we were voting peak = avg and this can be
->     tracked using single variable for avg bw.
->   - As per Matthias's comment improved print log.
->
-> Changes in Resend V7:
->   - As per Matthias comment removed "unsigned int avg_bw_cpu" from
->     struct qcom_qspi as we are using that variable only once.
->
->   drivers/spi/spi-qcom-qspi.c | 56 ++++++++++++++++++++++++++++++++++++++++++++-
->   1 file changed, 55 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/spi/spi-qcom-qspi.c b/drivers/spi/spi-qcom-qspi.c
-> index 3c4f83b..b5b4cf6 100644
-> --- a/drivers/spi/spi-qcom-qspi.c
-> +++ b/drivers/spi/spi-qcom-qspi.c
-> @@ -2,6 +2,7 @@
->   // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
->   
->   #include <linux/clk.h>
-> +#include <linux/interconnect.h>
->   #include <linux/interrupt.h>
->   #include <linux/io.h>
->   #include <linux/module.h>
-> @@ -139,7 +140,8 @@ struct qcom_qspi {
->   	struct device *dev;
->   	struct clk_bulk_data *clks;
->   	struct qspi_xfer xfer;
-> -	/* Lock to protect xfer and IRQ accessed registers */
-> +	struct icc_path *icc_path_cpu_to_qspi;
-> +	/* Lock to protect data accessed by IRQs */
->   	spinlock_t lock;
->   };
->   
-> @@ -229,6 +231,7 @@ static int qcom_qspi_transfer_one(struct spi_master *master,
->   	int ret;
->   	unsigned long speed_hz;
->   	unsigned long flags;
-> +	unsigned int avg_bw_cpu;
->   
->   	speed_hz = slv->max_speed_hz;
->   	if (xfer->speed_hz)
-> @@ -241,6 +244,18 @@ static int qcom_qspi_transfer_one(struct spi_master *master,
->   		return ret;
->   	}
->   
-> +	/*
-> +	 * Set BW quota for CPU as driver supports FIFO mode only.
-> +	 * We don't have explicit peak requirement so keep it equal to avg_bw.
-> +	 */
-> +	avg_bw_cpu = Bps_to_icc(speed_hz);
-> +	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, avg_bw_cpu, avg_bw_cpu);
-> +	if (ret) {
-> +		dev_err(ctrl->dev, "%s: ICC BW voting failed for cpu: %d\n",
-> +			__func__, ret);
-> +		return ret;
-> +	}
-> +
->   	spin_lock_irqsave(&ctrl->lock, flags);
->   
->   	/* We are half duplex, so either rx or tx will be set */
-> @@ -458,6 +473,29 @@ static int qcom_qspi_probe(struct platform_device *pdev)
->   	if (ret)
->   		goto exit_probe_master_put;
->   
-> +	ctrl->icc_path_cpu_to_qspi = devm_of_icc_get(dev, "qspi-config");
-> +	if (IS_ERR(ctrl->icc_path_cpu_to_qspi)) {
-> +		ret = PTR_ERR(ctrl->icc_path_cpu_to_qspi);
-> +		if (ret != -EPROBE_DEFER)
-> +			dev_err(dev, "Failed to get cpu path: %d\n", ret);
-> +		goto exit_probe_master_put;
-> +	}
-> +	/* Set BW vote for register access */
-> +	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, Bps_to_icc(1000),
-> +				Bps_to_icc(1000));
-> +	if (ret) {
-> +		dev_err(ctrl->dev, "%s: ICC BW voting failed for cpu: %d\n",
-> +				__func__, ret);
-> +		goto exit_probe_master_put;
-> +	}
-> +
-> +	ret = icc_disable(ctrl->icc_path_cpu_to_qspi);
-> +	if (ret) {
-> +		dev_err(ctrl->dev, "%s: ICC disable failed for cpu: %d\n",
-> +				__func__, ret);
-> +		goto exit_probe_master_put;
-> +	}
-> +
->   	ret = platform_get_irq(pdev, 0);
->   	if (ret < 0)
->   		goto exit_probe_master_put;
-> @@ -511,9 +549,17 @@ static int __maybe_unused qcom_qspi_runtime_suspend(struct device *dev)
->   {
->   	struct spi_master *master = dev_get_drvdata(dev);
->   	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
-> +	int ret;
->   
->   	clk_bulk_disable_unprepare(QSPI_NUM_CLKS, ctrl->clks);
->   
-> +	ret = icc_disable(ctrl->icc_path_cpu_to_qspi);
-> +	if (ret) {
-> +		dev_err_ratelimited(ctrl->dev, "%s: ICC disable failed for cpu: %d\n",
-> +			__func__, ret);
-> +		return ret;
-> +	}
-> +
->   	return 0;
->   }
->   
-> @@ -521,6 +567,14 @@ static int __maybe_unused qcom_qspi_runtime_resume(struct device *dev)
->   {
->   	struct spi_master *master = dev_get_drvdata(dev);
->   	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
-> +	int ret;
-> +
-> +	ret = icc_enable(ctrl->icc_path_cpu_to_qspi);
-> +	if (ret) {
-> +		dev_err_ratelimited(ctrl->dev, "%s: ICC enable failed for cpu: %d\n",
-> +			__func__, ret);
-> +		return ret;
-> +	}
->   
->   	return clk_bulk_prepare_enable(QSPI_NUM_CLKS, ctrl->clks);
->   }
-
+diff --git a/arch/um/drivers/line.c b/arch/um/drivers/line.c
+index 4f2a4ac8a82b..14ad9f495fe6 100644
+--- a/arch/um/drivers/line.c
++++ b/arch/um/drivers/line.c
+@@ -184,11 +184,6 @@ void line_flush_chars(struct tty_struct *tty)
+ 	line_flush_buffer(tty);
+ }
+ 
+-int line_put_char(struct tty_struct *tty, unsigned char ch)
+-{
+-	return line_write(tty, &ch, sizeof(ch));
+-}
+-
+ int line_write(struct tty_struct *tty, const unsigned char *buf, int len)
+ {
+ 	struct line *line = tty->driver_data;
+diff --git a/arch/um/drivers/line.h b/arch/um/drivers/line.h
+index a151ff5155ef..01d21e76144f 100644
+--- a/arch/um/drivers/line.h
++++ b/arch/um/drivers/line.h
+@@ -66,7 +66,6 @@ extern int line_setup(char **conf, unsigned nlines, char **def,
+ 		      char *init, char *name);
+ extern int line_write(struct tty_struct *tty, const unsigned char *buf,
+ 		      int len);
+-extern int line_put_char(struct tty_struct *tty, unsigned char ch);
+ extern void line_set_termios(struct tty_struct *tty, struct ktermios * old);
+ extern int line_chars_in_buffer(struct tty_struct *tty);
+ extern void line_flush_buffer(struct tty_struct *tty);
+diff --git a/arch/um/drivers/ssl.c b/arch/um/drivers/ssl.c
+index 26c5716fac0f..6476b28d7c5e 100644
+--- a/arch/um/drivers/ssl.c
++++ b/arch/um/drivers/ssl.c
+@@ -95,7 +95,6 @@ static const struct tty_operations ssl_ops = {
+ 	.open 	 		= line_open,
+ 	.close 	 		= line_close,
+ 	.write 	 		= line_write,
+-	.put_char 		= line_put_char,
+ 	.write_room		= line_write_room,
+ 	.chars_in_buffer 	= line_chars_in_buffer,
+ 	.flush_buffer 		= line_flush_buffer,
+diff --git a/arch/um/drivers/stdio_console.c b/arch/um/drivers/stdio_console.c
+index 0021d7ffb528..37b127941e6f 100644
+--- a/arch/um/drivers/stdio_console.c
++++ b/arch/um/drivers/stdio_console.c
+@@ -102,7 +102,6 @@ static const struct tty_operations console_ops = {
+ 	.install		= con_install,
+ 	.close 	 		= line_close,
+ 	.write 	 		= line_write,
+-	.put_char 		= line_put_char,
+ 	.write_room		= line_write_room,
+ 	.chars_in_buffer 	= line_chars_in_buffer,
+ 	.flush_buffer 		= line_flush_buffer,
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+2.27.0
 
