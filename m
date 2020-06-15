@@ -4,32 +4,33 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E7BDC433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08205C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2E2D52067B
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D920C20738
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728677AbgFOHve (ORCPT
+        id S1728735AbgFOHve (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 15 Jun 2020 03:51:34 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39986 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:39988 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728823AbgFOHtQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1728809AbgFOHtQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Mon, 15 Jun 2020 03:49:16 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id D8288B019;
+        by mx2.suse.de (Postfix) with ESMTP id 17993AFDC;
         Mon, 15 Jun 2020 07:49:16 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 10/38] vt: move vc_translate to vt.c and rename it
-Date:   Mon, 15 Jun 2020 09:48:42 +0200
-Message-Id: <20200615074910.19267-10-jslaby@suse.cz>
+Subject: [PATCH 06/38] vt: convert vc_tab_stop to bitmap
+Date:   Mon, 15 Jun 2020 09:48:38 +0200
+Message-Id: <20200615074910.19267-6-jslaby@suse.cz>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200615074910.19267-1-jslaby@suse.cz>
 References: <20200615074910.19267-1-jslaby@suse.cz>
@@ -40,72 +41,130 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-vc_translate is used only in vt.c, so move the definition from a header
-there. Also, it used to be a macro, so be modern and make a static
-inline from it. This makes the code actually readable.
+vc_tab_stop is used as a bitmap, but defined as an unsigned int array.
+Switch it to bitmap and convert all users to the bitmap interface.
 
-And as a preparation for next patches, rename it to vc_translate_ascii.
-vc_translate will be a wrapper for both unicode and this one.
+Note the difference in behavior! We no longer mask the top 24 bits away
+from x, hence we do not wrap tabs at 256th column. Instead, we silently
+drop attempts to set a tab behind 256 columns. And we will also seek by
+'\t' to the rightmost column, when behind that boundary. I do not think
+the original behavior was desired and that someone relies on that. If
+this turns out to be the case, we can change the added 'if's back to
+masks here and there instead...
+
+(Or we can increase the limit as fb consoles now have 240 chars here.
+And they could have more with higher than my resolution, of course.)
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/vt.c     | 14 +++++++++++++-
- include/linux/vt_kern.h |  3 ---
- 2 files changed, 13 insertions(+), 4 deletions(-)
+ drivers/tty/vt/vt.c            | 44 ++++++++++++++--------------------
+ include/linux/console_struct.h |  3 ++-
+ 2 files changed, 20 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 8d9e532f050a..b86639351dd2 100644
+index 4e79cda0c2be..3adb7f409524 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -2560,6 +2560,18 @@ static void con_flush(struct vc_data *vc, unsigned long draw_from,
- 	*draw_x = -1;
- }
- 
-+static inline int vc_translate_ascii(const struct vc_data *vc, int c)
-+{
-+	if (IS_ENABLED(CONFIG_CONSOLE_TRANSLATIONS)) {
-+		if (vc->vc_toggle_meta)
-+			c |= 0x80;
-+
-+		return vc->vc_translate[c];
-+	}
-+
-+	return c;
-+}
-+
- /* acquires console_lock */
- static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int count)
+@@ -2052,6 +2052,8 @@ enum { ESnormal, ESesc, ESsquare, ESgetpars, ESfunckey,
+ /* console_lock is held (except via vc_init()) */
+ static void reset_terminal(struct vc_data *vc, int do_clear)
  {
-@@ -2687,7 +2699,7 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
- 			c = 0xfffd;
- 		    tc = c;
- 		} else {	/* no utf or alternate charset mode */
--		    tc = vc_translate(vc, c);
-+			tc = vc_translate_ascii(vc, c);
- 		}
++	unsigned int i;
++
+ 	vc->vc_top		= 0;
+ 	vc->vc_bottom		= vc->vc_rows;
+ 	vc->vc_state		= ESnormal;
+@@ -2082,14 +2084,9 @@ static void reset_terminal(struct vc_data *vc, int do_clear)
+ 	default_attr(vc);
+ 	update_attr(vc);
  
- 		param.c = tc;
-diff --git a/include/linux/vt_kern.h b/include/linux/vt_kern.h
-index abf5bccf906a..349e39c3ab60 100644
---- a/include/linux/vt_kern.h
-+++ b/include/linux/vt_kern.h
-@@ -74,8 +74,6 @@ int con_set_default_unimap(struct vc_data *vc);
- void con_free_unimap(struct vc_data *vc);
- int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc);
+-	vc->vc_tab_stop[0]	=
+-	vc->vc_tab_stop[1]	=
+-	vc->vc_tab_stop[2]	=
+-	vc->vc_tab_stop[3]	=
+-	vc->vc_tab_stop[4]	=
+-	vc->vc_tab_stop[5]	=
+-	vc->vc_tab_stop[6]	=
+-	vc->vc_tab_stop[7]	= 0x01010101;
++	bitmap_zero(vc->vc_tab_stop, VC_TABSTOPS_COUNT);
++	for (i = 0; i < VC_TABSTOPS_COUNT; i += 8)
++		set_bit(i, vc->vc_tab_stop);
  
--#define vc_translate(vc, c) ((vc)->vc_translate[(c) |			\
--					((vc)->vc_toggle_meta ? 0x80 : 0)])
- #else
- static inline int con_set_trans_old(unsigned char __user *table)
- {
-@@ -124,7 +122,6 @@ int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc)
- 	return 0;
- }
+ 	vc->vc_bell_pitch = DEFAULT_BELL_PITCH;
+ 	vc->vc_bell_duration = DEFAULT_BELL_DURATION;
+@@ -2147,11 +2144,13 @@ static void do_con_trol(struct tty_struct *tty, struct vc_data *vc, int c)
+ 		return;
+ 	case 9:
+ 		vc->vc_pos -= (vc->state.x << 1);
+-		while (vc->state.x < vc->vc_cols - 1) {
+-			vc->state.x++;
+-			if (vc->vc_tab_stop[7 & (vc->state.x >> 5)] & (1 << (vc->state.x & 31)))
+-				break;
+-		}
++
++		vc->state.x = find_next_bit(vc->vc_tab_stop,
++				min(vc->vc_cols - 1, VC_TABSTOPS_COUNT),
++				vc->state.x + 1);
++		if (vc->state.x >= VC_TABSTOPS_COUNT)
++			vc->state.x = vc->vc_cols - 1;
++
+ 		vc->vc_pos += (vc->state.x << 1);
+ 		notify_write(vc, '\t');
+ 		return;
+@@ -2210,7 +2209,8 @@ static void do_con_trol(struct tty_struct *tty, struct vc_data *vc, int c)
+ 			lf(vc);
+ 			return;
+ 		case 'H':
+-			vc->vc_tab_stop[7 & (vc->state.x >> 5)] |= (1 << (vc->state.x & 31));
++			if (vc->state.x < VC_TABSTOPS_COUNT)
++				set_bit(vc->state.x, vc->vc_tab_stop);
+ 			return;
+ 		case 'Z':
+ 			respond_ID(tty);
+@@ -2421,18 +2421,10 @@ static void do_con_trol(struct tty_struct *tty, struct vc_data *vc, int c)
+ 				respond_ID(tty);
+ 			return;
+ 		case 'g':
+-			if (!vc->vc_par[0])
+-				vc->vc_tab_stop[7 & (vc->state.x >> 5)] &= ~(1 << (vc->state.x & 31));
+-			else if (vc->vc_par[0] == 3) {
+-				vc->vc_tab_stop[0] =
+-					vc->vc_tab_stop[1] =
+-					vc->vc_tab_stop[2] =
+-					vc->vc_tab_stop[3] =
+-					vc->vc_tab_stop[4] =
+-					vc->vc_tab_stop[5] =
+-					vc->vc_tab_stop[6] =
+-					vc->vc_tab_stop[7] = 0;
+-			}
++			if (!vc->vc_par[0] && vc->state.x < VC_TABSTOPS_COUNT)
++				set_bit(vc->state.x, vc->vc_tab_stop);
++			else if (vc->vc_par[0] == 3)
++				bitmap_zero(vc->vc_tab_stop, VC_TABSTOPS_COUNT);
+ 			return;
+ 		case 'm':
+ 			csi_m(vc);
+diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
+index 623e86689c3a..81f7afcd061a 100644
+--- a/include/linux/console_struct.h
++++ b/include/linux/console_struct.h
+@@ -21,6 +21,7 @@ struct uni_pagedir;
+ struct uni_screen;
  
--#define vc_translate(vc, c) (c)
- #endif
+ #define NPAR 16
++#define VC_TABSTOPS_COUNT	256U
  
- /* vt.c */
+ enum vc_intensity {
+ 	VCI_HALF_BRIGHT,
+@@ -147,7 +148,7 @@ struct vc_data {
+ 	unsigned char	vc_utf		: 1;	/* Unicode UTF-8 encoding */
+ 	unsigned char	vc_utf_count;
+ 		 int	vc_utf_char;
+-	unsigned int	vc_tab_stop[8];		/* Tab stops. 256 columns. */
++	DECLARE_BITMAP(vc_tab_stop, VC_TABSTOPS_COUNT);	/* Tab stops. 256 columns. */
+ 	unsigned char   vc_palette[16*3];       /* Colour palette for VGA+ */
+ 	unsigned short * vc_translate;
+ 	unsigned int    vc_resize_user;         /* resize request from user */
 -- 
 2.27.0
 
