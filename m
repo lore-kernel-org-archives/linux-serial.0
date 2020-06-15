@@ -4,33 +4,32 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 168EFC433DF
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D609C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 01B57206D7
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8232C2067B
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729111AbgFOHut (ORCPT
+        id S1729155AbgFOHvK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Jun 2020 03:50:49 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40070 "EHLO mx2.suse.de"
+        Mon, 15 Jun 2020 03:51:10 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39996 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728846AbgFOHtS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Jun 2020 03:49:18 -0400
+        id S1728834AbgFOHtR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Jun 2020 03:49:17 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 3CAB4B02E;
+        by mx2.suse.de (Postfix) with ESMTP id 6B21FB031;
         Mon, 15 Jun 2020 07:49:18 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 17/38] vc: introduce struct vc_draw_region
-Date:   Mon, 15 Jun 2020 09:48:49 +0200
-Message-Id: <20200615074910.19267-17-jslaby@suse.cz>
+Subject: [PATCH 18/38] vc: extract detecting control characters from do_con_write
+Date:   Mon, 15 Jun 2020 09:48:50 +0200
+Message-Id: <20200615074910.19267-18-jslaby@suse.cz>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200615074910.19267-1-jslaby@suse.cz>
 References: <20200615074910.19267-1-jslaby@suse.cz>
@@ -41,119 +40,126 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-For passing of draw area among functions. This makes next patches
-simpler.
+Move the control characters detection to a separate function dubbed
+vc_is_control. It makes the 14 subexpressions a "bit" more readable. And
+also simplifies next patches.
+
+It moves also CTRL_ACTION and CTRL_ALWAYS to this new function, as they
+are used exclusively here. While at it, these are converted to static
+const variables.
+
+And we use "& BIT()" instead of ">>" and "& 1".
+
+Checked using symbolic execution (klee), that the old and new
+behaviors are the same.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/vt.c | 44 +++++++++++++++++++++++++-------------------
- 1 file changed, 25 insertions(+), 19 deletions(-)
+ drivers/tty/vt/vt.c | 71 ++++++++++++++++++++++++++++-----------------
+ 1 file changed, 45 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 0f61dc360067..0c663054ab79 100644
+index 0c663054ab79..45d32844e61b 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -2549,15 +2549,20 @@ static int is_double_width(uint32_t ucs)
- 			sizeof(struct interval), ucs_cmp) != NULL;
+@@ -127,14 +127,6 @@ struct con_driver {
+ static struct con_driver registered_con_driver[MAX_NR_CON_DRIVER];
+ const struct consw *conswitchp;
+ 
+-/* A bitmap for codes <32. A bit of 1 indicates that the code
+- * corresponding to that bit number invokes some special action
+- * (such as cursor movement) and should not be displayed as a
+- * glyph unless the disp_ctrl mode is explicitly enabled.
+- */
+-#define CTRL_ACTION 0x0d00ff81
+-#define CTRL_ALWAYS 0x0800f501	/* Cannot be overridden by disp_ctrl */
+-
+ /*
+  * Here is the default bell parameters: 750HZ, 1/8th of a second
+  */
+@@ -2691,13 +2683,56 @@ static inline unsigned char vc_invert_attr(const struct vc_data *vc)
+ 		((vc->vc_attr & 0x07) << 4);
  }
  
--static void con_flush(struct vc_data *vc, unsigned long draw_from,
--		unsigned long draw_to, int *draw_x)
-+struct vc_draw_region {
-+	unsigned long from, to;
-+	int x;
-+};
++static bool vc_is_control(struct vc_data *vc, int tc, int c)
++{
++	/*
++	 * A bitmap for codes <32. A bit of 1 indicates that the code
++	 * corresponding to that bit number invokes some special action (such
++	 * as cursor movement) and should not be displayed as a glyph unless
++	 * the disp_ctrl mode is explicitly enabled.
++	 */
++	static const u32 CTRL_ACTION = 0x0d00ff81;
++	/* Cannot be overridden by disp_ctrl */
++	static const u32 CTRL_ALWAYS = 0x0800f501;
 +
-+static void con_flush(struct vc_data *vc, struct vc_draw_region *draw)
- {
--	if (*draw_x < 0)
-+	if (draw->x < 0)
- 		return;
- 
--	vc->vc_sw->con_putcs(vc, (u16 *)draw_from,
--			(u16 *)draw_to - (u16 *)draw_from, vc->state.y, *draw_x);
--	*draw_x = -1;
-+	vc->vc_sw->con_putcs(vc, (u16 *)draw->from,
-+			(u16 *)draw->to - (u16 *)draw->from, vc->state.y,
-+			draw->x);
-+	draw->x = -1;
- }
- 
- static inline int vc_translate_ascii(const struct vc_data *vc, int c)
-@@ -2689,9 +2694,11 @@ static inline unsigned char vc_invert_attr(const struct vc_data *vc)
++	if (vc->vc_state != ESnormal)
++		return true;
++
++	if (!tc)
++		return true;
++
++	/*
++	 * If the original code was a control character we only allow a glyph
++	 * to be displayed if the code is not normally used (such as for cursor
++	 * movement) or if the disp_ctrl mode has been explicitly enabled.
++	 * Certain characters (as given by the CTRL_ALWAYS bitmap) are always
++	 * displayed as control characters, as the console would be pretty
++	 * useless without them; to display an arbitrary font position use the
++	 * direct-to-font zone in UTF-8 mode.
++	 */
++	if (c < 32) {
++		if (vc->vc_disp_ctrl)
++			return CTRL_ALWAYS & BIT(c);
++		else
++			return vc->vc_utf || (CTRL_ACTION & BIT(c));
++	}
++
++	if (c == 127 && !vc->vc_disp_ctrl)
++		return true;
++
++	if (c == 128 + 27)
++		return true;
++
++	return false;
++}
++
  /* acquires console_lock */
  static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int count)
  {
--	int c, next_c, tc, ok, n = 0, draw_x = -1;
-+	struct vc_draw_region draw = {
-+		.x = -1,
-+	};
-+	int c, next_c, tc, ok, n = 0;
+ 	struct vc_draw_region draw = {
+ 		.x = -1,
+ 	};
+-	int c, next_c, tc, ok, n = 0;
++	int c, next_c, tc, n = 0;
  	unsigned int currcons;
--	unsigned long draw_from = 0, draw_to = 0;
  	struct vc_data *vc;
  	unsigned char vc_attr;
- 	struct vt_notifier_param param;
-@@ -2798,14 +2805,13 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
- 				vc_attr = vc->vc_attr;
- 			} else {
- 				vc_attr = vc_invert_attr(vc);
--				con_flush(vc, draw_from, draw_to, &draw_x);
-+				con_flush(vc, &draw);
- 			}
- 
- 			next_c = c;
- 			while (1) {
- 				if (vc->vc_need_wrap || vc->vc_decim)
--					con_flush(vc, draw_from, draw_to,
--							&draw_x);
-+					con_flush(vc, &draw);
- 				if (vc->vc_need_wrap) {
- 					cr(vc);
- 					lf(vc);
-@@ -2817,16 +2823,16 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
- 					     ((vc_attr << 8) & ~himask) + ((tc & 0x100) ? himask : 0) + (tc & 0xff) :
- 					     (vc_attr << 8) + tc,
- 					   (u16 *) vc->vc_pos);
--				if (con_should_update(vc) && draw_x < 0) {
--					draw_x = vc->state.x;
--					draw_from = vc->vc_pos;
-+				if (con_should_update(vc) && draw.x < 0) {
-+					draw.x = vc->state.x;
-+					draw.from = vc->vc_pos;
- 				}
- 				if (vc->state.x == vc->vc_cols - 1) {
- 					vc->vc_need_wrap = vc->vc_decawm;
--					draw_to = vc->vc_pos + 2;
-+					draw.to = vc->vc_pos + 2;
- 				} else {
- 					vc->state.x++;
--					draw_to = (vc->vc_pos += 2);
-+					draw.to = (vc->vc_pos += 2);
- 				}
- 
- 				if (!--width) break;
-@@ -2838,17 +2844,17 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
- 			notify_write(vc, c);
- 
- 			if (inverse)
--				con_flush(vc, draw_from, draw_to, &draw_x);
-+				con_flush(vc, &draw);
- 
- 			if (rescan)
- 				goto rescan_last_byte;
- 
+@@ -2755,23 +2790,7 @@ static int do_con_write(struct tty_struct *tty, const unsigned char *buf, int co
+ 					&param) == NOTIFY_STOP)
  			continue;
- 		}
--		con_flush(vc, draw_from, draw_to, &draw_x);
-+		con_flush(vc, &draw);
- 		do_con_trol(tty, vc, orig);
- 	}
--	con_flush(vc, draw_from, draw_to, &draw_x);
-+	con_flush(vc, &draw);
- 	vc_uniscr_debug_check(vc);
- 	console_conditional_schedule();
- 	notify_update(vc);
+ 
+-                /* If the original code was a control character we
+-                 * only allow a glyph to be displayed if the code is
+-                 * not normally used (such as for cursor movement) or
+-                 * if the disp_ctrl mode has been explicitly enabled.
+-                 * Certain characters (as given by the CTRL_ALWAYS
+-                 * bitmap) are always displayed as control characters,
+-                 * as the console would be pretty useless without
+-                 * them; to display an arbitrary font position use the
+-                 * direct-to-font zone in UTF-8 mode.
+-                 */
+-                ok = tc && (c >= 32 ||
+-			    !(vc->vc_disp_ctrl ? (CTRL_ALWAYS >> c) & 1 :
+-				  vc->vc_utf || ((CTRL_ACTION >> c) & 1)))
+-			&& (c != 127 || vc->vc_disp_ctrl)
+-			&& (c != 128+27);
+-
+-		if (vc->vc_state == ESnormal && ok) {
++		if (!vc_is_control(vc, tc, c)) {
+ 			if (vc->vc_utf && !vc->vc_disp_ctrl) {
+ 				if (is_double_width(c))
+ 					width = 2;
 -- 
 2.27.0
 
