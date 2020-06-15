@@ -6,30 +6,30 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6DD6C433E2
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:49:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28698C433E3
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:49:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 901022068E
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:49:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07D512068E
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 07:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728260AbgFOHtf (ORCPT
+        id S1728878AbgFOHtf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 15 Jun 2020 03:49:35 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40068 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:40060 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728903AbgFOHtX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1728904AbgFOHtX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Mon, 15 Jun 2020 03:49:23 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 03BEEB0EA;
+        by mx2.suse.de (Postfix) with ESMTP id D057EB0E6;
         Mon, 15 Jun 2020 07:49:22 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 38/38] vt_ioctl: move perm checks level up
-Date:   Mon, 15 Jun 2020 09:49:10 +0200
-Message-Id: <20200615074910.19267-38-jslaby@suse.cz>
+Subject: [PATCH 37/38] vt_ioctl: move vt_kdsetmode out of vt_k_ioctl
+Date:   Mon, 15 Jun 2020 09:49:09 +0200
+Message-Id: <20200615074910.19267-37-jslaby@suse.cz>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200615074910.19267-1-jslaby@suse.cz>
 References: <20200615074910.19267-1-jslaby@suse.cz>
@@ -40,84 +40,111 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Synchronize with others and check perm directly in vt_k_ioctl.
-We do not need to pass perm to do_fontx_ioctl and do_unimap_ioctl then.
+It's too long to be inlined.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/vt_ioctl.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/tty/vt/vt_ioctl.c | 78 +++++++++++++++++++++------------------
+ 1 file changed, 43 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
-index 224f2a564e13..91c301775047 100644
+index ecf96f5e616d..224f2a564e13 100644
 --- a/drivers/tty/vt/vt_ioctl.c
 +++ b/drivers/tty/vt/vt_ioctl.c
-@@ -486,7 +486,7 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
- }
+@@ -241,6 +241,47 @@ int vt_waitactive(int n)
+ #define GPLAST 0x3df
+ #define GPNUM (GPLAST - GPFIRST + 1)
  
- static inline int do_fontx_ioctl(int cmd,
--		struct consolefontdesc __user *user_cfd, int perm,
-+		struct consolefontdesc __user *user_cfd,
- 		struct console_font_op *op)
- {
- 	struct consolefontdesc cfdarg;
-@@ -497,8 +497,6 @@ static inline int do_fontx_ioctl(int cmd,
- 
- 	switch (cmd) {
- 	case PIO_FONTX:
--		if (!perm)
--			return -EPERM;
- 		op->op = KD_FONT_OP_SET;
- 		op->flags = KD_FONT_FLAG_OLD;
- 		op->width = 8;
-@@ -552,7 +550,7 @@ static int vt_io_fontreset(struct console_font_op *op)
- }
- 
- static inline int do_unimap_ioctl(int cmd, struct unimapdesc __user *user_ud,
--		int perm, struct vc_data *vc)
-+		struct vc_data *vc)
- {
- 	struct unimapdesc tmp;
- 
-@@ -560,11 +558,9 @@ static inline int do_unimap_ioctl(int cmd, struct unimapdesc __user *user_ud,
- 		return -EFAULT;
- 	switch (cmd) {
- 	case PIO_UNIMAP:
--		if (!perm)
--			return -EPERM;
- 		return con_set_unimap(vc, tmp.entry_ct, tmp.entries);
- 	case GIO_UNIMAP:
--		if (!perm && fg_console != vc->vc_num)
-+		if (fg_console != vc->vc_num)
- 			return -EPERM;
- 		return con_get_unimap(vc, tmp.entry_ct, &(user_ud->entry_ct),
- 				tmp.entries);
-@@ -607,8 +603,12 @@ static int vt_io_ioctl(struct vc_data *vc, unsigned int cmd, void __user *up,
-                 return con_get_cmap(up);
- 
- 	case PIO_FONTX:
-+		if (!perm)
-+			return -EPERM;
-+
++/*
++ * currently, setting the mode from KD_TEXT to KD_GRAPHICS doesn't do a whole
++ * lot. i'm not sure if it should do any restoration of modes or what...
++ *
++ * XXX It should at least call into the driver, fbdev's definitely need to
++ * restore their engine state. --BenH
++ */
++static int vt_kdsetmode(struct vc_data *vc, unsigned long mode)
++{
++	switch (mode) {
++	case KD_GRAPHICS:
++		break;
++	case KD_TEXT0:
++	case KD_TEXT1:
++		mode = KD_TEXT;
 +		fallthrough;
- 	case GIO_FONTX:
--		return do_fontx_ioctl(cmd, up, perm, &op);
-+		return do_fontx_ioctl(cmd, up, &op);
- 
- 	case PIO_FONTRESET:
- 		if (!perm)
-@@ -640,7 +640,10 @@ static int vt_io_ioctl(struct vc_data *vc, unsigned int cmd, void __user *up,
- 
- 	case PIO_UNIMAP:
- 	case GIO_UNIMAP:
--		return do_unimap_ioctl(cmd, up, perm, vc);
-+		if (!perm)
-+			return -EPERM;
++	case KD_TEXT:
++		break;
++	default:
++		return -EINVAL;
++	}
 +
-+		return do_unimap_ioctl(cmd, up, vc);
++	/* FIXME: this needs the console lock extending */
++	if (vc->vc_mode == mode)
++		return 0;
++
++	vc->vc_mode = mode;
++	if (vc->vc_num != fg_console)
++		return 0;
++
++	/* explicitly blank/unblank the screen if switching modes */
++	console_lock();
++	if (mode == KD_TEXT)
++		do_unblank_screen(1);
++	else
++		do_blank_screen(1);
++	console_unlock();
++
++	return 0;
++}
++
+ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 		unsigned long arg, bool perm)
+ {
+@@ -335,43 +376,10 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 	}
  
- 	default:
- 		return -ENOIOCTLCMD;
+ 	case KDSETMODE:
+-		/*
+-		 * currently, setting the mode from KD_TEXT to KD_GRAPHICS
+-		 * doesn't do a whole lot. i'm not sure if it should do any
+-		 * restoration of modes or what...
+-		 *
+-		 * XXX It should at least call into the driver, fbdev's definitely
+-		 * need to restore their engine state. --BenH
+-		 */
+ 		if (!perm)
+ 			return -EPERM;
+-		switch (arg) {
+-		case KD_GRAPHICS:
+-			break;
+-		case KD_TEXT0:
+-		case KD_TEXT1:
+-			arg = KD_TEXT;
+-		case KD_TEXT:
+-			break;
+-		default:
+-			return -EINVAL;
+-		}
+-		/* FIXME: this needs the console lock extending */
+-		if (vc->vc_mode == (unsigned char) arg)
+-			break;
+-		vc->vc_mode = (unsigned char) arg;
+-		if (console != fg_console)
+-			break;
+-		/*
+-		 * explicitly blank/unblank the screen if switching modes
+-		 */
+-		console_lock();
+-		if (arg == KD_TEXT)
+-			do_unblank_screen(1);
+-		else
+-			do_blank_screen(1);
+-		console_unlock();
+-		break;
++
++		return vt_kdsetmode(vc, arg);
+ 
+ 	case KDGETMODE:
+ 		return put_user(vc->vc_mode, (int __user *)arg);
 -- 
 2.27.0
 
