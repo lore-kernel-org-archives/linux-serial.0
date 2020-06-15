@@ -2,212 +2,212 @@ Return-Path: <SRS0=TTKI=74=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07105C433E3
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 12:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9663C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 12:44:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DCEE220707
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 12:03:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B3670206D7
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Jun 2020 12:44:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="X1DFqw9K"
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="t4MVnbvl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729886AbgFOMD5 (ORCPT
+        id S1729845AbgFOMoD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Jun 2020 08:03:57 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:41357 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729866AbgFOMD4 (ORCPT
+        Mon, 15 Jun 2020 08:44:03 -0400
+Received: from mailout1.samsung.com ([203.254.224.24]:42978 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729884AbgFOMoA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Jun 2020 08:03:56 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1592222635; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=jDSYALCe32NZH7mnDeCdHDGteHNaCe3q46F/aTTcLQ8=; b=X1DFqw9Kism+7u+bcOOEx9uYlSYPENlSDfs7SclRtUzrZXstDtPt9K8OnuVdJ0zjbImM2ajZ
- FhfIIczR9T4xX+/C2Nw9VZlBUYfxwMv2YHvhiCeJXUzkzAMNXXqrsRdwVeaBLnXMuNeXJ/hO
- ep/0i0aZFm+ox394p4ApXxhmxX4=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 5ee76381356bcc26aba9bc8e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 15 Jun 2020 12:03:13
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id A3EA7C43395; Mon, 15 Jun 2020 12:03:12 +0000 (UTC)
-Received: from blr-ubuntu-173.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: rnayak)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id CF538C43387;
-        Mon, 15 Jun 2020 12:03:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CF538C43387
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=rnayak@codeaurora.org
-From:   Rajendra Nayak <rnayak@codeaurora.org>
-To:     bjorn.andersson@linaro.org, agross@kernel.org, robdclark@gmail.com,
-        robdclark@chromium.org, stanimir.varbanov@linaro.org
-Cc:     viresh.kumar@linaro.org, sboyd@kernel.org, mka@chromium.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v6 1/6] tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
-Date:   Mon, 15 Jun 2020 17:32:39 +0530
-Message-Id: <1592222564-13556-2-git-send-email-rnayak@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1592222564-13556-1-git-send-email-rnayak@codeaurora.org>
-References: <1592222564-13556-1-git-send-email-rnayak@codeaurora.org>
+        Mon, 15 Jun 2020 08:44:00 -0400
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20200615124356epoutp01e5c8be27cd9fdc01383fb0db313509c6~YuDwODLsI2685126851epoutp01H
+        for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2020 12:43:56 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20200615124356epoutp01e5c8be27cd9fdc01383fb0db313509c6~YuDwODLsI2685126851epoutp01H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1592225036;
+        bh=X+mJpzMlxdE7ZBj3ejmV7W+NEmHNprZxCkt0S5Vmxm4=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=t4MVnbvl0ow71SUaTHnp4AbZlx0dLBzEibvL7N3VX+Un3bFHh7azkS6s6kYwUlzrF
+         guy0cMl2BIs7Qjg8wtsoNPt9eAshMJfHITcYcFXHmxxsWqaycFnG6pYsfGo2M6LQRt
+         Hx43bzCDZoJfp13wRsF8M97jpFcXzwEY5rEM61CI=
+Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+        20200615124355epcas5p31d26dc0e2a9bd211112387a5cd43a232~YuDvwjbtA1927719277epcas5p3_;
+        Mon, 15 Jun 2020 12:43:55 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2A.0F.09703.B0D67EE5; Mon, 15 Jun 2020 21:43:55 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20200615124355epcas5p446ae2f1b63331ef87334cd7d696c3c43~YuDvVndXZ1389313893epcas5p4X;
+        Mon, 15 Jun 2020 12:43:55 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20200615124355epsmtrp1e4ac9ac3fc838b011890444db6bfbbd1~YuDvU5Poq0526805268epsmtrp1O;
+        Mon, 15 Jun 2020 12:43:55 +0000 (GMT)
+X-AuditID: b6c32a4a-4cbff700000025e7-9b-5ee76d0b40bd
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2D.3A.08303.B0D67EE5; Mon, 15 Jun 2020 21:43:55 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20200615124353epsmtip1ca0f8bf414b0ce435983625f89302b92~YuDt2V8kg0491304913epsmtip1d;
+        Mon, 15 Jun 2020 12:43:53 +0000 (GMT)
+From:   Tamseel Shams <m.shams@samsung.com>
+To:     kgene@kernel.org, krzk@kernel.org, gregkh@linuxfoundation.org,
+        jslaby@suse.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
+        Tamseel Shams <m.shams@samsung.com>
+Subject: [RFC PATCH] serial: samsung: Re-factors UART IRQ resource for
+ various Samsung SoC
+Date:   Mon, 15 Jun 2020 17:56:09 +0530
+Message-Id: <20200615122609.71884-1-m.shams@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrHIsWRmVeSWpSXmKPExsWy7bCmhi537vM4gy2vtS0ezNvGZtG8eD2b
+        xZQNH5gs+h+/ZrY4f34Du8Wmx9dYLS7vmsNmMeP8PiaLM4t72S3uti5md+Dy2LSqk81j/9w1
+        7B6bl9R79G1ZxeixfstVFo/Pm+QC2KK4bFJSczLLUov07RK4Mt6v2MdW0CtTsfjubJYGxnVi
+        XYycHBICJhLb58xj6WLk4hAS2M0osff6FkYI5xOjxOR/Z9lAqoQEPjNKtE+uh+mYcP4GO0TR
+        LkaJ6z9esEE4LUwSV0+1MHcxcnCwCWhKHD/PDdIgIhAi8e4sxFRmgZNAKzY3sIAkhAViJKac
+        OcwIYrMIqEo82jcdbBuvgIXExCVnWCC2yUus3nCAGaRZQuAcu8TrS8/YIBIuEq8b2lghbGGJ
+        V8e3sEPYUhIv+9ug7HyJ+fNWMUPYFRIrL7yBsu0lDlyZwwJyKDPQoet36YOEmQX4JHp/P2EC
+        CUsI8Ep0tAlBVCtK/N/dDzVRXOLdiilQWz0k2i9NZYUEUKzEsgWXmSYwysxCGLqAkXEVo2Rq
+        QXFuemqxaYFRXmq5XnFibnFpXrpecn7uJkZwEtDy2sH48MEHvUOMTByMhxglOJiVRHgPyT+P
+        E+JNSaysSi3Kjy8qzUktPsQozcGiJM6r9ONMnJBAemJJanZqakFqEUyWiYNTqoHJZNtV5i8t
+        UiuKAt9H/5p4pWH1s435Z9ZWMEbm3t+2IUDuqstK1pVL39l6TF2jOtGj7ANLpMyXP1fSgq8x
+        PDl8znXTRuM61UPtIsU9kss2Pf3Tzv/r31l7Dqn3vhem2ixdv22JiP7VWpfNiYtV913dvczy
+        fWtzel2eTHeXphPvGymlzSxfucLYkrLmvL57KVajbJ/RbLergimyeXz7jKJ5NjSuqH4kzBW9
+        JzFltaDK55CEwjM9m+79sFRLlvI1rpjDun3eTF3ROd6xjovYjMNFcj0Wbo7l2CRfof3yq3ao
+        9XkXLtl8M6/LzRNq5FQL6nTs3s5lc9mUoyOe+blme5TPrCdez/SLbrULOU47M02JpTgj0VCL
+        uag4EQDKgmYtcQMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprILMWRmVeSWpSXmKPExsWy7bCSnC537vM4g+5eEYsH87axWTQvXs9m
+        MWXDByaL/sevmS3On9/AbrHp8TVWi8u75rBZzDi/j8nizOJedou7rYvZHbg8Nq3qZPPYP3cN
+        u8fmJfUefVtWMXqs33KVxePzJrkAtigum5TUnMyy1CJ9uwSujPcr9rEV9MpULL47m6WBcZ1Y
+        FyMnh4SAicSE8zfYuxi5OIQEdjBKnNu0kRkiIS4x7dd+RghbWGLlv+dQRU1MEm9/nGDpYuTg
+        YBPQlDh+nhvEFBGIkJj5sQakhFngPKPEzuOrmUB6hQWiJGbOmccKYrMIqEo82jedDcTmFbCQ
+        mLjkDAvEfHmJ1RsOME9g5FnAyLCKUTK1oDg3PbfYsMAoL7Vcrzgxt7g0L10vOT93EyM41LS0
+        djDuWfVB7xAjEwfjIUYJDmYlEd5D8s/jhHhTEiurUovy44tKc1KLDzFKc7AoifN+nbUwTkgg
+        PbEkNTs1tSC1CCbLxMEp1cDkoqihsEEiKGJBkvPD76tuiyY1HLfU8+2556CaXf5TJ/ra7Z1y
+        M74yT2KSZbqts+UZq7lXe+6zWJm9jasvl7xvcDE28N81a1e59jwVW+cNXK+MKpk8HSynb1WM
+        Njn78MG0lLZrfszP7C9POjT10NMH+uf4V6tn7nLsq8tI5+DLeaWfMIln+cGDFo+VeT202lpe
+        OalFJ9cpswdYn3KI/ch95H0MI8N6J92WSd9+my/1z20S2Hp2mgDD9XxWdbFyod2pJ56+vVy0
+        yevHicMdn8yX8hdaRXyeE3xya9LuJRkXv8zm2/vx2fluldB/x3lfP52pfHnfjPkWWVMlC9Sc
+        nsUkyX4rEyrX4I4IVKmd7qfEUpyRaKjFXFScCACHjvcVpAIAAA==
+X-CMS-MailID: 20200615124355epcas5p446ae2f1b63331ef87334cd7d696c3c43
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20200615124355epcas5p446ae2f1b63331ef87334cd7d696c3c43
+References: <CGME20200615124355epcas5p446ae2f1b63331ef87334cd7d696c3c43@epcas5p4.samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-geni serial needs to express a perforamnce state requirement on CX
-powerdomain depending on the frequency of the clock rates.
-Use OPP table from DT to register with OPP framework and use
-dev_pm_opp_set_rate() to set the clk/perf state.
+In few older Samsung SoCs like s3c2410, s3c2412
+and s3c2440, UART IP is having 2 interrupt lines.
+However, in other SoCs like s3c6400, s5pv210,
+exynos5433, and exynos4210 UART is having only 1
+interrupt line. Due to this, "platform_get_irq(platdev, 1)"
+call in the driver gives the following warning:
+"IRQ index 1 not found" on recent platforms.
 
-Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Akash Asthana <akashast@codeaurora.org>
-Cc: linux-serial@vger.kernel.org
+This patch re-factors the IRQ resources handling for
+each platform and hence fixing the above warnings seen
+on some platforms.
+
+Signed-off-by: Tamseel Shams <m.shams@samsung.com>
 ---
-This patch needs to land via the msm tree. Greg had this already pulled in,
-but later dropped it on my request.
-No change in v6, just resposting it here so Bjorn/Andy can pull it in.
+ drivers/tty/serial/samsung_tty.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
- drivers/tty/serial/qcom_geni_serial.c | 34 +++++++++++++++++++++++++++++-----
- include/linux/qcom-geni-se.h          |  4 ++++
- 2 files changed, 33 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 457c0bf..a90f8ec 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -9,6 +9,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/pm_opp.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/pm_wakeirq.h>
-@@ -962,7 +963,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 		goto out_restart_rx;
- 
- 	uport->uartclk = clk_rate;
--	clk_set_rate(port->se.clk, clk_rate);
-+	dev_pm_opp_set_rate(uport->dev, clk_rate);
- 	ser_clk_cfg = SER_CLK_EN;
- 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
- 
-@@ -1231,8 +1232,11 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
- 		geni_se_resources_on(&port->se);
- 	else if (new_state == UART_PM_STATE_OFF &&
--			old_state == UART_PM_STATE_ON)
-+			old_state == UART_PM_STATE_ON) {
-+		/* Drop the performance state vote */
-+		dev_pm_opp_set_rate(uport->dev, 0);
- 		geni_se_resources_off(&port->se);
-+	}
- }
- 
- static const struct uart_ops qcom_geni_console_pops = {
-@@ -1351,13 +1355,25 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
- 		port->cts_rts_swap = true;
- 
-+	port->se.opp_table = dev_pm_opp_set_clkname(&pdev->dev, "se");
-+	if (IS_ERR(port->se.opp_table))
-+		return PTR_ERR(port->se.opp_table);
-+	/* OPP table is optional */
-+	ret = dev_pm_opp_of_add_table(&pdev->dev);
-+	if (!ret) {
-+		port->se.has_opp_table = true;
-+	} else if (ret != -ENODEV) {
-+		dev_err(&pdev->dev, "invalid OPP table in device tree\n");
-+		return ret;
-+	}
-+
- 	uport->private_data = drv;
- 	platform_set_drvdata(pdev, port);
- 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
- 
- 	ret = uart_add_one_port(drv, uport);
- 	if (ret)
--		return ret;
-+		goto err;
- 
- 	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
- 	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
-@@ -1365,7 +1381,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
- 		uart_remove_one_port(drv, uport);
--		return ret;
-+		goto err;
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 6ef614d8648c..078dcb3e316f 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -60,6 +60,7 @@ struct s3c24xx_uart_info {
+ 	char			*name;
+ 	unsigned int		type;
+ 	unsigned int		fifosize;
++	unsigned int		irq_cnt;
+ 	unsigned long		rx_fifomask;
+ 	unsigned long		rx_fifoshift;
+ 	unsigned long		rx_fifofull;
+@@ -1908,12 +1909,17 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 	else {
+ 		port->irq = ret;
+ 		ourport->rx_irq = ret;
+-		ourport->tx_irq = ret + 1;
++		if (ourport->info->irq_cnt == 1)
++			ourport->tx_irq = ret;
++		else
++			ourport->tx_irq = ret + 1;
  	}
  
+-	ret = platform_get_irq(platdev, 1);
+-	if (ret > 0)
+-		ourport->tx_irq = ret;
++	if (ourport->info->irq_cnt != 1) {
++		ret = platform_get_irq(platdev, 1);
++		if (ret > 0)
++			ourport->tx_irq = ret;
++	}
  	/*
-@@ -1382,11 +1398,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 		if (ret) {
- 			device_init_wakeup(&pdev->dev, false);
- 			uart_remove_one_port(drv, uport);
--			return ret;
-+			goto err;
- 		}
- 	}
- 
- 	return 0;
-+err:
-+	if (port->se.has_opp_table)
-+		dev_pm_opp_of_remove_table(&pdev->dev);
-+	dev_pm_opp_put_clkname(port->se.opp_table);
-+	return ret;
- }
- 
- static int qcom_geni_serial_remove(struct platform_device *pdev)
-@@ -1394,6 +1415,9 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
- 	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
- 	struct uart_driver *drv = port->uport.private_data;
- 
-+	if (port->se.has_opp_table)
-+		dev_pm_opp_of_remove_table(&pdev->dev);
-+	dev_pm_opp_put_clkname(port->se.opp_table);
- 	dev_pm_clear_wake_irq(&pdev->dev);
- 	device_init_wakeup(&pdev->dev, false);
- 	uart_remove_one_port(drv, &port->uport);
-diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
-index dd46494..6b78094 100644
---- a/include/linux/qcom-geni-se.h
-+++ b/include/linux/qcom-geni-se.h
-@@ -33,6 +33,8 @@ struct clk;
-  * @clk:		Handle to the core serial engine clock
-  * @num_clk_levels:	Number of valid clock levels in clk_perf_tbl
-  * @clk_perf_tbl:	Table of clock frequency input to serial engine clock
-+ * @opp_table:		Pointer to the OPP table
-+ * @has_opp_table:	Specifies if the SE has an OPP table
-  */
- struct geni_se {
- 	void __iomem *base;
-@@ -41,6 +43,8 @@ struct geni_se {
- 	struct clk *clk;
- 	unsigned int num_clk_levels;
- 	unsigned long *clk_perf_tbl;
-+	struct opp_table *opp_table;
-+	bool has_opp_table;
- };
- 
- /* Common SE registers */
+ 	 * DMA is currently supported only on DT platforms, if DMA properties
+ 	 * are specified.
+@@ -2387,6 +2393,7 @@ static struct s3c24xx_serial_drv_data s3c2410_serial_drv_data = {
+ 		.name		= "Samsung S3C2410 UART",
+ 		.type		= PORT_S3C2410,
+ 		.fifosize	= 16,
++		.irq_cnt	= 2,
+ 		.rx_fifomask	= S3C2410_UFSTAT_RXMASK,
+ 		.rx_fifoshift	= S3C2410_UFSTAT_RXSHIFT,
+ 		.rx_fifofull	= S3C2410_UFSTAT_RXFULL,
+@@ -2414,6 +2421,7 @@ static struct s3c24xx_serial_drv_data s3c2412_serial_drv_data = {
+ 		.name		= "Samsung S3C2412 UART",
+ 		.type		= PORT_S3C2412,
+ 		.fifosize	= 64,
++		.irq_cnt	= 2,
+ 		.has_divslot	= 1,
+ 		.rx_fifomask	= S3C2440_UFSTAT_RXMASK,
+ 		.rx_fifoshift	= S3C2440_UFSTAT_RXSHIFT,
+@@ -2443,6 +2451,7 @@ static struct s3c24xx_serial_drv_data s3c2440_serial_drv_data = {
+ 		.name		= "Samsung S3C2440 UART",
+ 		.type		= PORT_S3C2440,
+ 		.fifosize	= 64,
++		.irq_cnt	= 2,
+ 		.has_divslot	= 1,
+ 		.rx_fifomask	= S3C2440_UFSTAT_RXMASK,
+ 		.rx_fifoshift	= S3C2440_UFSTAT_RXSHIFT,
+@@ -2471,6 +2480,7 @@ static struct s3c24xx_serial_drv_data s3c6400_serial_drv_data = {
+ 		.name		= "Samsung S3C6400 UART",
+ 		.type		= PORT_S3C6400,
+ 		.fifosize	= 64,
++		.irq_cnt	= 1,
+ 		.has_divslot	= 1,
+ 		.rx_fifomask	= S3C2440_UFSTAT_RXMASK,
+ 		.rx_fifoshift	= S3C2440_UFSTAT_RXSHIFT,
+@@ -2498,6 +2508,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ 	.info = &(struct s3c24xx_uart_info) {
+ 		.name		= "Samsung S5PV210 UART",
+ 		.type		= PORT_S3C6400,
++		.irq_cnt	= 1,
+ 		.has_divslot	= 1,
+ 		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,
+ 		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,
+@@ -2526,6 +2537,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ 	.info = &(struct s3c24xx_uart_info) {			\
+ 		.name		= "Samsung Exynos UART",	\
+ 		.type		= PORT_S3C6400,			\
++		.irq_cnt	= 1,				\
+ 		.has_divslot	= 1,				\
+ 		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
+ 		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,	\
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+2.17.1
 
