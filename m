@@ -2,132 +2,191 @@ Return-Path: <SRS0=S7Zs=76=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9EEC433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 11:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC2CC433E2
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 15:29:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 863C320734
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 11:17:15 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="MIEmoOwM"
+	by mail.kernel.org (Postfix) with ESMTP id 8B56520CC7
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 15:29:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1592407749;
+	bh=SD+fejC18TjS7/DoA5KE5YrnoAqS1yLaxfx11ISwTbM=;
+	h=From:To:Subject:Date:List-ID:From;
+	b=I6rSE/rlTGFQ1vcVqvnYLgCGG0vVYkN1DoSkCQvH1/f1warxHI1Yju3EXWDKScTP3
+	 nSlEw4FgJl9oDGQjdK80hxoICQmAnPTH40ZHipoMndLvM0Wvi0NBDxvisUvNVzfTuD
+	 YovAsw16GY51oT+Qo6e8wfuhpE7CE1tc8yzjmWXo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbgFQLRM (ORCPT
+        id S1726558AbgFQP3F (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 Jun 2020 07:17:12 -0400
-Received: from mailout2.samsung.com ([203.254.224.25]:30295 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgFQLRM (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 Jun 2020 07:17:12 -0400
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20200617111708epoutp02ac365cd60ff84b1937f787ebb0ce7f68~ZUKi9Yplw2092320923epoutp02n
-        for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2020 11:17:08 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20200617111708epoutp02ac365cd60ff84b1937f787ebb0ce7f68~ZUKi9Yplw2092320923epoutp02n
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1592392628;
-        bh=De11PZoZWlcQRwwo0Y8/mr/Pxhnq+Txfs9hPs4x5UzQ=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=MIEmoOwMZwBbGlks8DVr4ZZ0gmwE19zwK6jWDXf8QbmZA2jxeJ48oPRPOEVKlIxYL
-         qruR5Ef8YTcNrq1kmbGvVum3ME5mVxxXE4gdNFLEqMnNddTSsL7/Hyqp7um7ojJt/C
-         ewYmDNfTiF1caAmFXhGyJPcWa2QIYyBfIgwVjNCk=
-Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20200617111708epcas5p1c4e0e139b4bc55695b8bd93eea5fc4e9~ZUKiJfXDm1538915389epcas5p1N;
-        Wed, 17 Jun 2020 11:17:08 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        DF.BD.09703.3BBF9EE5; Wed, 17 Jun 2020 20:17:07 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
-        20200617111707epcas5p3fcb86caeac4a852d44f37ae40759c8a1~ZUKhd7jLw3226032260epcas5p3F;
-        Wed, 17 Jun 2020 11:17:07 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200617111707epsmtrp2629be9449835228b4369f02e6d3e5021~ZUKhdPlaY3247232472epsmtrp2B;
-        Wed, 17 Jun 2020 11:17:07 +0000 (GMT)
-X-AuditID: b6c32a4a-4cbff700000025e7-45-5ee9fbb3f906
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        28.4E.08382.3BBF9EE5; Wed, 17 Jun 2020 20:17:07 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200617111705epsmtip28dc31d81babdd092756d80f3eeda4d79~ZUKf9xn730587705877epsmtip2h;
-        Wed, 17 Jun 2020 11:17:05 +0000 (GMT)
-From:   Tamseel Shams <m.shams@samsung.com>
-To:     kgene@kernel.org, krzk@kernel.org, gregkh@linuxfoundation.org,
-        jslaby@suse.com
-Cc:     linux-arm-kernel@lists.infradead.org,
+        Wed, 17 Jun 2020 11:29:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60330 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726848AbgFQP3D (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 17 Jun 2020 11:29:03 -0400
+Received: from kozik-lap.mshome.net (unknown [194.230.155.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7E7AE20897;
+        Wed, 17 Jun 2020 15:29:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592407742;
+        bh=SD+fejC18TjS7/DoA5KE5YrnoAqS1yLaxfx11ISwTbM=;
+        h=From:To:Subject:Date:From;
+        b=nF/JSFGNj+SedrGskz4bgXFzZUfgizp2OmgNo4HUP37JHEcCY9Ov9Wqps/KNaLklv
+         KfoizibFHs7fTzlwFxrmfoL6igIyNTVeH5qaWhJCnQ6UcGaSLcnGGzEkrCkEOZukVy
+         nSHRUgttSJF7pXr7+g8rKFIDbICS7nwgJ0RvAuFA=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
-        Tamseel Shams <m.shams@samsung.com>
-Subject: [PATCH] serial: samsung: fix spelling mistake
-Date:   Wed, 17 Jun 2020 16:29:07 +0530
-Message-Id: <20200617105907.7143-1-m.shams@samsung.com>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: samsung: Minor whitespace cleanups
+Date:   Wed, 17 Jun 2020 17:28:56 +0200
+Message-Id: <20200617152856.18086-1-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNIsWRmVeSWpSXmKPExsWy7bCmhu7m3y/jDM4/sbF4MG8bm0Xz4vVs
-        FlM2fGCy6H/8mtni/PkN7BabHl9jtbi8aw6bxYzz+5gszizuZbe427qY3YHLY9OqTjaP/XPX
-        sHtsXlLv0bdlFaPH+i1XWTw+b5ILYIvisklJzcksSy3St0vgyuh69YO1YAdrxfSTy1gbGHex
-        dDFyckgImEhMvHyMuYuRi0NIYDejxPm/P9ggnE+MEqe7ZrFDON8YJZo2bgHKcIC1LL0YDhHf
-        yygx4+06RginhUni3/MdjCBFbAKaEsfPc4OsEBEIkXh3dgtYDbPASUaJvZsbwHYLC5hJrD3Q
-        wA5SzyKgKjFtqixImFfAXOLWqrnsEOfJS6zecIAZwj7HLtH3IQPiBheJi5fLIcLCEq+Ob4Eq
-        l5L4/G4vG4SdLzF/3iqo1gqJlRfeQNn2EgeuzGEBGcMMdOX6XfogYWYBPone30+YIKbzSnS0
-        CUFUK0r8390PNV1c4t2KKawQtofEv9vLwCYKCcRKvHx0n3kCo8wshKELGBlXMUqmFhTnpqcW
-        mxYY5aWW6xUn5haX5qXrJefnbmIEx7+W1w7Ghw8+6B1iZOJgPMQowcGsJMLr/PtFnBBvSmJl
-        VWpRfnxRaU5q8SFGaQ4WJXFepR9n4oQE0hNLUrNTUwtSi2CyTBycUg1MUx1U9k79cXn3jDiZ
-        v/NevD748dqKgAK1jdw8rafsG959vH173jN7Ru3l25LevjVi0iz46nrZylFlU9TvSS4Pjxbm
-        T9nBeT4/4Y7l/29er7fNsLxYv3bGdqaXNw0k6rx2KR39/3qG6MbcbaHbF/yIfdLhdGVxJI93
-        q77iUz6LHZ9zXHZuOq3wjT3U2jx9m9ULr2vvz+y6eiYwaumLa6f0UifceTKL5b/fFMZLj+aY
-        /FvU1yJ+8n7ue+mviyMrZV1O1CxblvmbT8pxssuK6W99Jj04ePjqPrad/+15971Z4vfzRHrO
-        zufi97TLdgger+juE7wxY7a7sd6slRahAn7/vti9Lnhpk5jQ66G5V6GPafMmJZbijERDLeai
-        4kQAIHwlMm4DAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnluLIzCtJLcpLzFFi42LZdlhJXnfz75dxBgu3c1k8mLeNzaJ58Xo2
-        iykbPjBZ9D9+zWxx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3slvcbV3M7sDlsWlVJ5vH/rlr
-        2D02L6n36NuyitFj/ZarLB6fN8kFsEVx2aSk5mSWpRbp2yVwZXS9+sFasIO1YvrJZawNjLtY
-        uhg5OCQETCSWXgzvYuTiEBLYzSgxc8khxi5GTqC4uMS0X/uhbGGJlf+es0MUNTFJfLt/nBGk
-        mU1AU+L4eW4QU0QgQmLmxxqQEmaB84wSO4+vZgLpFRYwk1h7oIEdpIZFQFVi2lRZkDCvgLnE
-        rVVz2SHGy0us3nCAeQIjzwJGhlWMkqkFxbnpucWGBYZ5qeV6xYm5xaV56XrJ+bmbGMFhpqW5
-        g3H7qg96hxiZOBgPMUpwMCuJ8Dr/fhEnxJuSWFmVWpQfX1Sak1p8iFGag0VJnPdG4cI4IYH0
-        xJLU7NTUgtQimCwTB6dUA1OV3YnmfHbj1AV/b/De4vZeOJe9ie2xZ0hZYd7Dja+Uetjv79KV
-        k5m3sMs/6tGNvaG9J00FfnaFzJ/0P3lB6Q2tiKmTauLeBNkIn/Nclsq35kB38Jc7d93vnd/z
-        XuRs2o3uvPxN247uaTFp135z2fnH9qk30tgVHBtNnpfdPR986pvtE91pGc2HVGR3X+EVtLuv
-        aOT7cvOj6P3bpEyOXPbKK9z2UGHOpRlr7z9od5nd+HGpzMOArUeWvWHzmqr5b9L+/SrMj7bK
-        SbCefvC868/TTzfSszm95TS7fKqCuXr9gralvzo7gUPwyJvKure5KxbLul/LsL4mYr7MSEtv
-        p/v/Oxxzrs7ivHjad+ZZax0WJZbijERDLeai4kQAXXhHFaICAAA=
-X-CMS-MailID: 20200617111707epcas5p3fcb86caeac4a852d44f37ae40759c8a1
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-X-CMS-RootMailID: 20200617111707epcas5p3fcb86caeac4a852d44f37ae40759c8a1
-References: <CGME20200617111707epcas5p3fcb86caeac4a852d44f37ae40759c8a1@epcas5p3.samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There is a spelling mistake in a comment. Fix it.
+Make the code slightly more readable by removing unneeded line breaks,
+adding missing line breaks and white spaces.  This also fixes few strict
+checkpatch suggestions:
 
-Signed-off-by: Tamseel Shams <m.shams@samsung.com>
+	CHECK: spaces preferred around that '-' (ctx:VxV)
+	CHECK: Unbalanced braces around else statement
+	CHECK: Lines should not end with a '('
+
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/tty/serial/samsung_tty.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/samsung_tty.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 6ef614d8648c..050a47fecdef 100644
+index d913d9b2762a..7be9579216b8 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -6,7 +6,7 @@
-  *	http://armlinux.simtec.co.uk/
-  */
+@@ -327,7 +327,6 @@ static void s3c24xx_serial_tx_dma_complete(void *args)
+ 	unsigned long flags;
+ 	int count;
  
--/* Hote on 2410 error handling
-+/* Note on 2410 error handling
-  *
-  * The s3c2410 manual has a love/hate affair with the contents of the
-  * UERSTAT register in the UART blocks, and keeps marking some of the
+-
+ 	dmaengine_tx_status(dma->tx_chan, dma->tx_cookie, &state);
+ 	count = dma->tx_bytes_requested - state.residue;
+ 	async_tx_ack(dma->tx_desc);
+@@ -409,7 +408,6 @@ static int s3c24xx_serial_start_tx_dma(struct s3c24xx_uart_port *ourport,
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	struct s3c24xx_uart_dma *dma = ourport->dma;
+ 
+-
+ 	if (ourport->tx_mode != S3C24XX_TX_DMA)
+ 		enable_tx_dma(ourport);
+ 
+@@ -816,7 +814,6 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-
+ static irqreturn_t s3c24xx_serial_rx_chars(int irq, void *dev_id)
+ {
+ 	struct s3c24xx_uart_port *ourport = dev_id;
+@@ -842,8 +839,8 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 	    count >= ourport->min_dma_size) {
+ 		int align = dma_get_cache_alignment() -
+ 			(xmit->tail & (dma_get_cache_alignment() - 1));
+-		if (count-align >= ourport->min_dma_size) {
+-			dma_count = count-align;
++		if (count - align >= ourport->min_dma_size) {
++			dma_count = count - align;
+ 			count = align;
+ 		}
+ 	}
+@@ -1589,7 +1586,6 @@ s3c24xx_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 	return 0;
+ }
+ 
+-
+ #ifdef CONFIG_SERIAL_SAMSUNG_CONSOLE
+ 
+ static struct console s3c24xx_serial_console;
+@@ -1672,7 +1668,6 @@ s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS] = {
+ 		}
+ 	},
+ #if CONFIG_SERIAL_SAMSUNG_UARTS > 2
+-
+ 	[2] = {
+ 		.port = {
+ 			.lock		= __PORT_LOCK_UNLOCKED(2),
+@@ -1728,7 +1723,6 @@ static void s3c24xx_serial_resetport(struct uart_port *port,
+ 	udelay(1);
+ }
+ 
+-
+ #ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+ 
+ static int s3c24xx_serial_cpufreq_transition(struct notifier_block *nb,
+@@ -1903,9 +1897,9 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 
+ 	port->mapbase = res->start;
+ 	ret = platform_get_irq(platdev, 0);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		port->irq = 0;
+-	else {
++	} else {
+ 		port->irq = ret;
+ 		ourport->rx_irq = ret;
+ 		ourport->tx_irq = ret + 1;
+@@ -1977,8 +1971,8 @@ static const struct of_device_id s3c24xx_uart_dt_match[];
+ 
+ static int probe_index;
+ 
+-static inline struct s3c24xx_serial_drv_data *s3c24xx_get_driver_data(
+-			struct platform_device *pdev)
++static inline struct s3c24xx_serial_drv_data *
++s3c24xx_get_driver_data(struct platform_device *pdev)
+ {
+ #ifdef CONFIG_OF
+ 	if (pdev->dev.of_node) {
+@@ -2329,7 +2323,6 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
+ 		*baud = rate / (16 * (ubrdiv + 1));
+ 		dev_dbg(port->dev, "calculated baud %d\n", *baud);
+ 	}
+-
+ }
+ 
+ static int __init
+@@ -2696,6 +2689,7 @@ static int __init s3c2410_early_console_setup(struct earlycon_device *device,
+ 	device->port.private_data = &s3c2410_early_console_data;
+ 	return samsung_early_console_setup(device, opt);
+ }
++
+ OF_EARLYCON_DECLARE(s3c2410, "samsung,s3c2410-uart",
+ 			s3c2410_early_console_setup);
+ 
+@@ -2710,6 +2704,7 @@ static int __init s3c2440_early_console_setup(struct earlycon_device *device,
+ 	device->port.private_data = &s3c2440_early_console_data;
+ 	return samsung_early_console_setup(device, opt);
+ }
++
+ OF_EARLYCON_DECLARE(s3c2412, "samsung,s3c2412-uart",
+ 			s3c2440_early_console_setup);
+ OF_EARLYCON_DECLARE(s3c2440, "samsung,s3c2440-uart",
+@@ -2728,6 +2723,7 @@ static int __init s5pv210_early_console_setup(struct earlycon_device *device,
+ 	device->port.private_data = &s5pv210_early_console_data;
+ 	return samsung_early_console_setup(device, opt);
+ }
++
+ OF_EARLYCON_DECLARE(s5pv210, "samsung,s5pv210-uart",
+ 			s5pv210_early_console_setup);
+ OF_EARLYCON_DECLARE(exynos4210, "samsung,exynos4210-uart",
 -- 
 2.17.1
 
