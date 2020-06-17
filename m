@@ -2,91 +2,132 @@ Return-Path: <SRS0=S7Zs=76=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MIME_BASE64_TEXT,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C56C433DF
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 03:58:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9EEC433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 11:17:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ED3992080D
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 03:58:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 863C320734
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 11:17:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="pABTy1T7"
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="MIEmoOwM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726568AbgFQD6a (ORCPT
+        id S1726883AbgFQLRM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Jun 2020 23:58:30 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:15607 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726321AbgFQD6a (ORCPT
+        Wed, 17 Jun 2020 07:17:12 -0400
+Received: from mailout2.samsung.com ([203.254.224.25]:30295 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725536AbgFQLRM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Jun 2020 23:58:30 -0400
-X-UUID: 9563a1485b674d7a911fd7c9099772aa-20200617
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=J8u4UWY2G4d5/E7DWKw+p+qbm1PghnIow5Vag4ifkTE=;
-        b=pABTy1T7Xcoou7TOVVET4AwChQc0Yj+mqREDzs2EHOoR3jYdXvGFPNkAs9XeFyHBfo68UXTN2OVL6eBoSeu7NFN7aK4/lU/HPHKwH4XIMWlTentiBsnj/VedVQHPjpeIGV5skLauQ7tHn/pHmnE8BRAzs77W84oZf9o7E9lrSx8=;
-X-UUID: 9563a1485b674d7a911fd7c9099772aa-20200617
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <sean.wang@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 960733527; Wed, 17 Jun 2020 11:58:23 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs02n1.mediatek.inc (172.21.101.77) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 17 Jun 2020 11:58:21 +0800
-Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 17 Jun 2020 11:58:21 +0800
-From:   <sean.wang@mediatek.com>
-To:     <andy.shevchenko@gmail.com>
-CC:     <andriy.shevchenko@linux.intel.com>, <gregkh@linuxfoundation.org>,
-        <steven.liu@mediatek.com>, <arnd@arndb.de>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <Ryder.Lee@mediatek.com>,
-        <sean.wang@mediatek.com>, <tthayer@opensource.altera.com>,
-        <linux-serial@vger.kernel.org>, <jslaby@suse.com>,
-        <matthias.bgg@gmail.com>, <sr@denx.de>,
-        <mika.westerberg@linux.intel.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v3] tty: serial: don't do termios for BTIF
-Date:   Wed, 17 Jun 2020 11:58:20 +0800
-Message-ID: <1592366300-29503-1-git-send-email-sean.wang@mediatek.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <CAHp75VdSvE9RPq3V8LTVX7OjaYs1PThVi2f1roh3p5EY_k0ANA@mail.gmail.com>
-References: <CAHp75VdSvE9RPq3V8LTVX7OjaYs1PThVi2f1roh3p5EY_k0ANA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-Content-Transfer-Encoding: base64
+        Wed, 17 Jun 2020 07:17:12 -0400
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20200617111708epoutp02ac365cd60ff84b1937f787ebb0ce7f68~ZUKi9Yplw2092320923epoutp02n
+        for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2020 11:17:08 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20200617111708epoutp02ac365cd60ff84b1937f787ebb0ce7f68~ZUKi9Yplw2092320923epoutp02n
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1592392628;
+        bh=De11PZoZWlcQRwwo0Y8/mr/Pxhnq+Txfs9hPs4x5UzQ=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=MIEmoOwMZwBbGlks8DVr4ZZ0gmwE19zwK6jWDXf8QbmZA2jxeJ48oPRPOEVKlIxYL
+         qruR5Ef8YTcNrq1kmbGvVum3ME5mVxxXE4gdNFLEqMnNddTSsL7/Hyqp7um7ojJt/C
+         ewYmDNfTiF1caAmFXhGyJPcWa2QIYyBfIgwVjNCk=
+Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20200617111708epcas5p1c4e0e139b4bc55695b8bd93eea5fc4e9~ZUKiJfXDm1538915389epcas5p1N;
+        Wed, 17 Jun 2020 11:17:08 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        DF.BD.09703.3BBF9EE5; Wed, 17 Jun 2020 20:17:07 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20200617111707epcas5p3fcb86caeac4a852d44f37ae40759c8a1~ZUKhd7jLw3226032260epcas5p3F;
+        Wed, 17 Jun 2020 11:17:07 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20200617111707epsmtrp2629be9449835228b4369f02e6d3e5021~ZUKhdPlaY3247232472epsmtrp2B;
+        Wed, 17 Jun 2020 11:17:07 +0000 (GMT)
+X-AuditID: b6c32a4a-4cbff700000025e7-45-5ee9fbb3f906
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        28.4E.08382.3BBF9EE5; Wed, 17 Jun 2020 20:17:07 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20200617111705epsmtip28dc31d81babdd092756d80f3eeda4d79~ZUKf9xn730587705877epsmtip2h;
+        Wed, 17 Jun 2020 11:17:05 +0000 (GMT)
+From:   Tamseel Shams <m.shams@samsung.com>
+To:     kgene@kernel.org, krzk@kernel.org, gregkh@linuxfoundation.org,
+        jslaby@suse.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
+        Tamseel Shams <m.shams@samsung.com>
+Subject: [PATCH] serial: samsung: fix spelling mistake
+Date:   Wed, 17 Jun 2020 16:29:07 +0530
+Message-Id: <20200617105907.7143-1-m.shams@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNIsWRmVeSWpSXmKPExsWy7bCmhu7m3y/jDM4/sbF4MG8bm0Xz4vVs
+        FlM2fGCy6H/8mtni/PkN7BabHl9jtbi8aw6bxYzz+5gszizuZbe427qY3YHLY9OqTjaP/XPX
+        sHtsXlLv0bdlFaPH+i1XWTw+b5ILYIvisklJzcksSy3St0vgyuh69YO1YAdrxfSTy1gbGHex
+        dDFyckgImEhMvHyMuYuRi0NIYDejxPm/P9ggnE+MEqe7ZrFDON8YJZo2bgHKcIC1LL0YDhHf
+        yygx4+06RginhUni3/MdjCBFbAKaEsfPc4OsEBEIkXh3dgtYDbPASUaJvZsbwHYLC5hJrD3Q
+        wA5SzyKgKjFtqixImFfAXOLWqrnsEOfJS6zecIAZwj7HLtH3IQPiBheJi5fLIcLCEq+Ob4Eq
+        l5L4/G4vG4SdLzF/3iqo1gqJlRfeQNn2EgeuzGEBGcMMdOX6XfogYWYBPone30+YIKbzSnS0
+        CUFUK0r8390PNV1c4t2KKawQtofEv9vLwCYKCcRKvHx0n3kCo8wshKELGBlXMUqmFhTnpqcW
+        mxYY5aWW6xUn5haX5qXrJefnbmIEx7+W1w7Ghw8+6B1iZOJgPMQowcGsJMLr/PtFnBBvSmJl
+        VWpRfnxRaU5q8SFGaQ4WJXFepR9n4oQE0hNLUrNTUwtSi2CyTBycUg1MUx1U9k79cXn3jDiZ
+        v/NevD748dqKgAK1jdw8rafsG959vH173jN7Ru3l25LevjVi0iz46nrZylFlU9TvSS4Pjxbm
+        T9nBeT4/4Y7l/29er7fNsLxYv3bGdqaXNw0k6rx2KR39/3qG6MbcbaHbF/yIfdLhdGVxJI93
+        q77iUz6LHZ9zXHZuOq3wjT3U2jx9m9ULr2vvz+y6eiYwaumLa6f0UifceTKL5b/fFMZLj+aY
+        /FvU1yJ+8n7ue+mviyMrZV1O1CxblvmbT8pxssuK6W99Jj04ePjqPrad/+15971Z4vfzRHrO
+        zufi97TLdgger+juE7wxY7a7sd6slRahAn7/vti9Lnhpk5jQ66G5V6GPafMmJZbijERDLeai
+        4kQAIHwlMm4DAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnluLIzCtJLcpLzFFi42LZdlhJXnfz75dxBgu3c1k8mLeNzaJ58Xo2
+        iykbPjBZ9D9+zWxx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3slvcbV3M7sDlsWlVJ5vH/rlr
+        2D02L6n36NuyitFj/ZarLB6fN8kFsEVx2aSk5mSWpRbp2yVwZXS9+sFasIO1YvrJZawNjLtY
+        uhg5OCQETCSWXgzvYuTiEBLYzSgxc8khxi5GTqC4uMS0X/uhbGGJlf+es0MUNTFJfLt/nBGk
+        mU1AU+L4eW4QU0QgQmLmxxqQEmaB84wSO4+vZgLpFRYwk1h7oIEdpIZFQFVi2lRZkDCvgLnE
+        rVVz2SHGy0us3nCAeQIjzwJGhlWMkqkFxbnpucWGBYZ5qeV6xYm5xaV56XrJ+bmbGMFhpqW5
+        g3H7qg96hxiZOBgPMUpwMCuJ8Dr/fhEnxJuSWFmVWpQfX1Sak1p8iFGag0VJnPdG4cI4IYH0
+        xJLU7NTUgtQimCwTB6dUA1OV3YnmfHbj1AV/b/De4vZeOJe9ie2xZ0hZYd7Dja+Uetjv79KV
+        k5m3sMs/6tGNvaG9J00FfnaFzJ/0P3lB6Q2tiKmTauLeBNkIn/Nclsq35kB38Jc7d93vnd/z
+        XuRs2o3uvPxN247uaTFp135z2fnH9qk30tgVHBtNnpfdPR986pvtE91pGc2HVGR3X+EVtLuv
+        aOT7cvOj6P3bpEyOXPbKK9z2UGHOpRlr7z9od5nd+HGpzMOArUeWvWHzmqr5b9L+/SrMj7bK
+        SbCefvC868/TTzfSszm95TS7fKqCuXr9gralvzo7gUPwyJvKure5KxbLul/LsL4mYr7MSEtv
+        p/v/Oxxzrs7ivHjad+ZZax0WJZbijERDLeai4kQAXXhHFaICAAA=
+X-CMS-MailID: 20200617111707epcas5p3fcb86caeac4a852d44f37ae40759c8a1
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20200617111707epcas5p3fcb86caeac4a852d44f37ae40759c8a1
+References: <CGME20200617111707epcas5p3fcb86caeac4a852d44f37ae40759c8a1@epcas5p3.samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-RnJvbTogU2VhbiBXYW5nIDxzZWFuLndhbmdAbWVkaWF0ZWsuY29tPg0KDQo+Pg0KPj4gRnJvbTog
-U2VhbiBXYW5nIDxzZWFuLndhbmdAbWVkaWF0ZWsuY29tPg0KPj4NCj4+IEJsdWV0b290aCBJbnRl
-cmZhY2UgKEJUSUYpIGlzIGRlc2lnbmVkIGRlZGljYXRlZGx5IGZvciBNZWRpYVRlayBTT0MNCj4+
-IHdpdGggQlQgaW4gb3JkZXIgdG8gYmUgaW5zdGVhZCBvZiB0aGUgVUFSVCBpbnRlcmZhY2UgYmV0
-d2VlbiBCVCBtb2R1bGUNCj4+IGFuZCBIb3N0IENQVSwgYW5kIG5vdCBleHBvcnRlZCB0byB1c2Vy
-IHNwYWNlIHRvIGFjY2Vzcy4NCj4+DQo+PiBBcyB0aGUgVUFSVCBkZXNpZ24sIEJUSUYgd2lsbCBi
-ZSBhbiBBUEIgc2xhdmUgYW5kIGNhbiB0cmFuc21pdCBvcg0KPj4gcmVjZWl2ZSBkYXRhIGJ5IE1D
-VSBhY2Nlc3MsIGJ1dCBkb2Vzbid0IHByb3ZpZGUgdGVybWlvcyBmdW5jdGlvbiBsaWtlDQo+PiBi
-YXVkcmF0ZSBhbmQgZmxvdyBjb250cm9sIHNldHVwLg0KPj4NCj4+IEV2ZW4gTENSIG9uIG9mZnNl
-dCAweEMgdGhhdCBpcyBqdXN0IGEgRkFLRUxDUiBhLiBJZiBGQUtFTENSWzddIGlzDQo+PiBlcXVh
-bGVkIHRvIDEsIFJCUigweDAwKSwgVEhSKDB4MDApLCBJRVIoMHgwNCkNCj4+ICAgIHdpbGwgbm90
-IGJlIHJlYWRhYmxlL3dyaXRhYmxlLg0KPj4NCj4+IGIuIElmIEZBS0VMQ1IgaXMgZXF1YWxlZCB0
-byAweEJGLCBSQlIoMHgwMCksIFRIUigweDAwKSwgSUVSKDB4MDQpLA0KPj4gICAgSUlSKDB4MDgp
-LCBhbmQgTFNSKDB4MTQpIHdpbGwgbm90IGJlIHJlYWRhYmxlL3dyaXRhYmxlLg0KPj4NCj4+IFNv
-IGFkZGluZyBhIG5ldyBjYXBhYmlsaXR5ICdVQVJUX0NBUF9OVElPJyBmb3IgdGhlIHVudXN1YWwg
-dW5zdXBwb3J0ZWQNCj4+IGNhc2UuDQo+Pg0KPj4gRml4ZXM6IDFjMTZhZTY1ZTI1MCAoInNlcmlh
-bDogODI1MDogb2Y6IEFkZCBuZXcgcG9ydCB0eXBlIGZvciBNZWRpYVRlaw0KPj4gQlRJRiBjb250
-cm9sbGVyIG9uIE1UNzYyMi8yMyBTb0MiKQ0KPj4gQ2M6IFN0ZXZlbiBMaXUgPHN0ZXZlbi5saXVA
-bWVkaWF0ZWsuY29tPg0KPg0KPj4gU3VnZ2VzdGVkLWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJp
-eS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4NCj4NCj5JIGRpZG4ndCBzdWdnZXN0IHRoaXMg
-Y2hhbmdlLiBJIG9ubHkgY29tbWVudGVkIG9uIHRoZSBuYW1lIG9mIHRoZSBtYWNyby4NCg0KbXkg
-ZmF1bHQuIGkgd2lsbCByZW1vdmUgdGhlIHRhZyBmcm9tIG5leHQgdmVyc2lvbi4NCg0KPg0KPj4g
-U2lnbmVkLW9mZi1ieTogU2VhbiBXYW5nIDxzZWFuLndhbmdAbWVkaWF0ZWsuY29tPg0KPj4gU2ln
-bmVkLW9mZi1ieTogUnlkZXIgTGVlIDxyeWRlci5sZWVAbWVkaWF0ZWsuY29tPg0KPj4NCj4+IC0t
-DQo=
+There is a spelling mistake in a comment. Fix it.
+
+Signed-off-by: Tamseel Shams <m.shams@samsung.com>
+---
+ drivers/tty/serial/samsung_tty.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 6ef614d8648c..050a47fecdef 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -6,7 +6,7 @@
+  *	http://armlinux.simtec.co.uk/
+  */
+ 
+-/* Hote on 2410 error handling
++/* Note on 2410 error handling
+  *
+  * The s3c2410 manual has a love/hate affair with the contents of the
+  * UERSTAT register in the UART blocks, and keeps marking some of the
+-- 
+2.17.1
 
