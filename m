@@ -6,44 +6,45 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E533C433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 12:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2CEC433DF
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 12:22:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 26EA2206D7
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 12:20:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7606C207E8
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 12:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728045AbgFRMU2 (ORCPT
+        id S1728215AbgFRMWq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Jun 2020 08:20:28 -0400
-Received: from mga07.intel.com ([134.134.136.100]:58076 "EHLO mga07.intel.com"
+        Thu, 18 Jun 2020 08:22:46 -0400
+Received: from mga14.intel.com ([192.55.52.115]:35590 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727949AbgFRMU2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Jun 2020 08:20:28 -0400
-IronPort-SDR: EFJlQN16TydEtNuZSlXZU41sIVafqDdeiuqXlSTcNzb5ElDcMzAWPDA3rnaf1vFyyn9yafaBDt
- mXozJCCYAXow==
-X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="207790111"
+        id S1728196AbgFRMWp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 18 Jun 2020 08:22:45 -0400
+IronPort-SDR: iRGGLystx/IR3BeTDbdrfjo2uQHEu9ySPqWeD1c1OEPbZQ/BM9/b1rjmmh1GWUe6GJW/WCfZgS
+ axQ4sZIAAVQg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="141624946"
 X-IronPort-AV: E=Sophos;i="5.73,526,1583222400"; 
-   d="scan'208";a="207790111"
+   d="scan'208";a="141624946"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 05:20:27 -0700
-IronPort-SDR: 9Hj4QFTpkdOnxX15meW8hHBVTsdAxPn3Y4ti3xAG90KVSYVzYpY8+0UPdntSKcwsLxosFcMoP2
- p0bRGFlIzg7Q==
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 05:22:44 -0700
+IronPort-SDR: Q/DP0y+xr6dBptWw2S7lfwhyHJGST3gVBCUJSgplzSiRJNXp8HtTA4/h7HaV9AUmoTjeBBlm9/
+ pFWptRZiRLAw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,526,1583222400"; 
-   d="scan'208";a="309094678"
+   d="scan'208";a="299674549"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 18 Jun 2020 05:20:25 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 18 Jun 2020 05:22:43 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 21CCD217; Thu, 18 Jun 2020 15:20:24 +0300 (EEST)
+        id E9650217; Thu, 18 Jun 2020 15:22:42 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+        linux-serial@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] serial: 8250_omap: Switch to use platform_get_irq()
-Date:   Thu, 18 Jun 2020 15:20:24 +0300
-Message-Id: <20200618122024.87170-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1] serial: 8250_mtk: Switch to use platform_get_irq()
+Date:   Thu, 18 Jun 2020 15:22:42 +0300
+Message-Id: <20200618122242.87346-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.27.0.rc2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -57,49 +58,45 @@ Also, it's better to use dedicated API to retrieve Linux IRQ resource.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_omap.c | 16 ++++++++++------
+ drivers/tty/serial/8250/8250_mtk.c | 16 ++++++++++------
  1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 144066355af4..b4cd5f1001f8 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1195,17 +1195,21 @@ MODULE_DEVICE_TABLE(of, omap8250_dt_ids);
- 
- static int omap8250_probe(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index 22591c025fd0..7c920b089f0f 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -480,13 +480,17 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
+ static int mtk8250_probe(struct platform_device *pdev)
  {
+ 	struct uart_8250_port uart = {};
 -	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	struct device_node *np = pdev->dev.of_node;
- 	struct omap8250_priv *priv;
- 	const struct omap8250_platdata *pdata;
- 	struct uart_8250_port up;
--	int ret;
+ 	struct mtk8250_data *data;
+-	int err;
 +	struct resource *regs;
- 	void __iomem *membase;
-+	int irq, ret;
++	int irq, err;
 +
 +	irq = platform_get_irq(pdev, 0);
 +	if (irq < 0)
 +		return irq;
  
 -	if (!regs || !irq) {
--		dev_err(&pdev->dev, "missing registers or irq\n");
+-		dev_err(&pdev->dev, "no registers/irq defined\n");
 +	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 +	if (!regs) {
-+		dev_err(&pdev->dev, "missing registers\n");
++		dev_err(&pdev->dev, "no registers defined\n");
  		return -EINVAL;
  	}
  
-@@ -1222,7 +1226,7 @@ static int omap8250_probe(struct platform_device *pdev)
- 	up.port.dev = &pdev->dev;
- 	up.port.mapbase = regs->start;
- 	up.port.membase = membase;
--	up.port.irq = irq->start;
-+	up.port.irq = irq;
- 	/*
- 	 * It claims to be 16C750 compatible however it is a little different.
- 	 * It has EFR and has no FCR7_64byte bit. The AFE (which it claims to
+@@ -510,7 +514,7 @@ static int mtk8250_probe(struct platform_device *pdev)
+ 
+ 	spin_lock_init(&uart.port.lock);
+ 	uart.port.mapbase = regs->start;
+-	uart.port.irq = irq->start;
++	uart.port.irq = irq;
+ 	uart.port.type = PORT_16550;
+ 	uart.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
+ 	uart.port.dev = &pdev->dev;
 -- 
 2.27.0.rc2
 
