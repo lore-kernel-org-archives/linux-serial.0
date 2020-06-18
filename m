@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A23FC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 01:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF45C433E1
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 01:43:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 00368221E6
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 01:37:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7F34C22201
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 01:43:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1592444265;
-	bh=E5EFm55ZnNsfeIRxr5naeScJyOcG1xSOr9Zt7HyEghY=;
+	s=default; t=1592444607;
+	bh=8Bias0CCFPKmvPcirwo29mQ+cpxRi5gBvBq4ZzupnLg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=uP3yDv6hLAt8MiNyi0df7sZeJJ4fxcqGSO6/gioVTPvunyyYAOrdWUwXn6q4E2Azn
-	 A+AL+unPGSolknwzlcKv1tiTBD8QwTOf6d0n31N7OE6L1oJeIFk12r13I4gFSCRct4
-	 6SotoS7Bg/ZYNJ9+sUM5pqxne9kEtmBfdjPm+RAs=
+	b=OrFVBtd5FgBF72WU+XaFUJc1fUoKKl4L0aUhqDkK6pkRcc/X/deggncSdwoPevodx
+	 1chzgJL7TXsonj27ZREJnBxwz0oKvmez+G6jjWxtP0ilp+M1WYGLQ1BFLRDvvON1Dv
+	 KUn3D0HUN4ZeI48VTGXDXuVWfcB7gb3Na4M6RSzo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732610AbgFRBap (ORCPT
+        id S1731556AbgFRBnP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 Jun 2020 21:30:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40972 "EHLO mail.kernel.org"
+        Wed, 17 Jun 2020 21:43:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731836AbgFRBao (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:30:44 -0400
+        id S1731616AbgFRB3I (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:29:08 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0C34122242;
-        Thu, 18 Jun 2020 01:30:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AEF832220B;
+        Thu, 18 Jun 2020 01:29:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443844;
-        bh=E5EFm55ZnNsfeIRxr5naeScJyOcG1xSOr9Zt7HyEghY=;
+        s=default; t=1592443747;
+        bh=8Bias0CCFPKmvPcirwo29mQ+cpxRi5gBvBq4ZzupnLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JJbYYkWVP8ifh4pxfQ12wpfRtt1bP9bNp0BNz4VuDVpA2tkZXkPZq6Iu6yXV+9vlu
-         kAsjEOhmKGUxMEcZQM/De453yBnJE/yRQOzuxQA7jhIyqqNBTCC+VkfvaCJWPzkKVb
-         Nqg8xHlfYd/CgXetdouNqIx9rvNnwWzb0QBmDkuw=
+        b=lGrVprbBjzn3foUNiupDs6iRLRcwAblqLmTXaGgp466Uy+0pZWIFDdQXpdQEH0NVt
+         uUB11O5OSFHEKhdztcsBoZyZW7SjzVFf9yLK74PaZbFi6I4hINNyUim5+E++490V+1
+         4lJnn7mZXn5nHUBc2tQJ32XnnF9SFkgp58YPD67k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     John Stultz <john.stultz@linaro.org>,
@@ -48,12 +48,12 @@ Cc:     John Stultz <john.stultz@linaro.org>,
         Valentin Schneider <valentin.schneider@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 29/60] serial: amba-pl011: Make sure we initialize the port.lock spinlock
-Date:   Wed, 17 Jun 2020 21:29:33 -0400
-Message-Id: <20200618013004.610532-29-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 36/80] serial: amba-pl011: Make sure we initialize the port.lock spinlock
+Date:   Wed, 17 Jun 2020 21:27:35 -0400
+Message-Id: <20200618012819.609778-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618013004.610532-1-sashal@kernel.org>
-References: <20200618013004.610532-1-sashal@kernel.org>
+In-Reply-To: <20200618012819.609778-1-sashal@kernel.org>
+References: <20200618012819.609778-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -131,10 +131,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 899a77187bde..c5da46f7b909 100644
+index f6586a8681b9..b3b9b3d2cddf 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -2323,6 +2323,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+@@ -2524,6 +2524,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
  	uap->port.fifosize = uap->fifosize;
  	uap->port.flags = UPF_BOOT_AUTOCONF;
  	uap->port.line = index;
