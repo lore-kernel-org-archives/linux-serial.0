@@ -1,157 +1,147 @@
-Return-Path: <SRS0=S7Zs=76=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=rTT/=77=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C8DC433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 22:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A23FC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 01:37:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CF0872080D
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Jun 2020 22:48:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00368221E6
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 01:37:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1592444265;
+	bh=E5EFm55ZnNsfeIRxr5naeScJyOcG1xSOr9Zt7HyEghY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=uP3yDv6hLAt8MiNyi0df7sZeJJ4fxcqGSO6/gioVTPvunyyYAOrdWUwXn6q4E2Azn
+	 A+AL+unPGSolknwzlcKv1tiTBD8QwTOf6d0n31N7OE6L1oJeIFk12r13I4gFSCRct4
+	 6SotoS7Bg/ZYNJ9+sUM5pqxne9kEtmBfdjPm+RAs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726955AbgFQWsl (ORCPT
+        id S1732610AbgFRBap (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 Jun 2020 18:48:41 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:57472 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726835AbgFQWsk (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 Jun 2020 18:48:40 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 834DA80045E4;
-        Wed, 17 Jun 2020 22:48:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at baikalelectronics.ru
-Received: from mail.baikalelectronics.ru ([127.0.0.1])
-        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 9FpGH8Tr9p4p; Thu, 18 Jun 2020 01:48:35 +0300 (MSK)
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Will Deacon <will@kernel.org>,
+        Wed, 17 Jun 2020 21:30:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40972 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731836AbgFRBao (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:30:44 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0C34122242;
+        Thu, 18 Jun 2020 01:30:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592443844;
+        bh=E5EFm55ZnNsfeIRxr5naeScJyOcG1xSOr9Zt7HyEghY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JJbYYkWVP8ifh4pxfQ12wpfRtt1bP9bNp0BNz4VuDVpA2tkZXkPZq6Iu6yXV+9vlu
+         kAsjEOhmKGUxMEcZQM/De453yBnJE/yRQOzuxQA7jhIyqqNBTCC+VkfvaCJWPzkKVb
+         Nqg8xHlfYd/CgXetdouNqIx9rvNnwWzb0QBmDkuw=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     John Stultz <john.stultz@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        <linux-mips@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 1/3] serial: 8250: Add 8250 port clock update method
-Date:   Thu, 18 Jun 2020 01:48:11 +0300
-Message-ID: <20200617224813.23853-2-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20200617224813.23853-1-Sergey.Semin@baikalelectronics.ru>
-References: <20200617224813.23853-1-Sergey.Semin@baikalelectronics.ru>
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 29/60] serial: amba-pl011: Make sure we initialize the port.lock spinlock
+Date:   Wed, 17 Jun 2020 21:29:33 -0400
+Message-Id: <20200618013004.610532-29-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200618013004.610532-1-sashal@kernel.org>
+References: <20200618013004.610532-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some platforms can be designed in a way so the UART port reference clock
-might be asynchronously changed at some point. In Baikal-T1 SoC this may
-happen due to the reference clock being shared between two UART ports, on
-the Allwinner SoC the reference clock is derived from the CPU clock, so
-any CPU frequency change should get to be known/reflected by/in the UART
-controller as well. But it's not enough to just update the
-uart_port->uartclk field of the corresponding UART port, the 8250
-controller reference clock divisor should be altered so to preserve
-current baud rate setting. All of these things is done in a coherent
-way by calling the serial8250_update_uartclk() method provided in this
-patch. Though note that it isn't supposed to be called from within the
-UART port callbacks because the locks using to the protect the UART port
-data are already taken in there.
+From: John Stultz <john.stultz@linaro.org>
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Will Deacon <will@kernel.org>
+[ Upstream commit 8508f4cba308f785b2fd4b8c38849c117b407297 ]
+
+Valentine reported seeing:
+
+[    3.626638] INFO: trying to register non-static key.
+[    3.626639] the code is fine but needs lockdep annotation.
+[    3.626640] turning off the locking correctness validator.
+[    3.626644] CPU: 7 PID: 51 Comm: kworker/7:1 Not tainted 5.7.0-rc2-00115-g8c2e9790f196 #116
+[    3.626646] Hardware name: HiKey960 (DT)
+[    3.626656] Workqueue: events deferred_probe_work_func
+[    3.632476] sd 0:0:0:0: [sda] Optimal transfer size 8192 bytes not a multiple of physical block size (16384 bytes)
+[    3.640220] Call trace:
+[    3.640225]  dump_backtrace+0x0/0x1b8
+[    3.640227]  show_stack+0x20/0x30
+[    3.640230]  dump_stack+0xec/0x158
+[    3.640234]  register_lock_class+0x598/0x5c0
+[    3.640235]  __lock_acquire+0x80/0x16c0
+[    3.640236]  lock_acquire+0xf4/0x4a0
+[    3.640241]  _raw_spin_lock_irqsave+0x70/0xa8
+[    3.640245]  uart_add_one_port+0x388/0x4b8
+[    3.640248]  pl011_register_port+0x70/0xf0
+[    3.640250]  pl011_probe+0x184/0x1b8
+[    3.640254]  amba_probe+0xdc/0x180
+[    3.640256]  really_probe+0xe0/0x338
+[    3.640257]  driver_probe_device+0x60/0xf8
+[    3.640259]  __device_attach_driver+0x8c/0xd0
+[    3.640260]  bus_for_each_drv+0x84/0xd8
+[    3.640261]  __device_attach+0xe4/0x140
+[    3.640263]  device_initial_probe+0x1c/0x28
+[    3.640265]  bus_probe_device+0xa4/0xb0
+[    3.640266]  deferred_probe_work_func+0x7c/0xb8
+[    3.640269]  process_one_work+0x2c0/0x768
+[    3.640271]  worker_thread+0x4c/0x498
+[    3.640272]  kthread+0x14c/0x158
+[    3.640275]  ret_from_fork+0x10/0x1c
+
+Which seems to be due to the fact that after allocating the uap
+structure, nothing initializes the spinlock.
+
+Its a little confusing, as uart_port_spin_lock_init() is one
+place where the lock is supposed to be initialized, but it has
+an exception for the case where the port is a console.
+
+This makes it seem like a deeper fix is needed to properly
+register the console, but I'm not sure what that entails, and
+Andy suggested that this approach is less invasive.
+
+Thus, this patch resolves the issue by initializing the spinlock
+in the driver, and resolves the resulting warning.
+
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Russell King <linux@armlinux.org.uk>
-Cc: linux-mips@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Reported-by: Valentin Schneider <valentin.schneider@arm.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: John Stultz <john.stultz@linaro.org>
+Reviewed-and-tested-by: Valentin Schneider <valentin.schneider@arm.com>
+Link: https://lore.kernel.org/r/20200428184050.6501-1-john.stultz@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/tty/serial/amba-pl011.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changelog v4:
-- Export serial8250_update_uartclk() symbol for GPL modules only.
----
- drivers/tty/serial/8250/8250_port.c | 38 +++++++++++++++++++++++++++++
- include/linux/serial_8250.h         |  2 ++
- 2 files changed, 40 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 4d83c85a7389..5596868c8832 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2628,6 +2628,44 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 				  (port->uartclk + tolerance) / 16);
- }
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 899a77187bde..c5da46f7b909 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2323,6 +2323,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+ 	uap->port.fifosize = uap->fifosize;
+ 	uap->port.flags = UPF_BOOT_AUTOCONF;
+ 	uap->port.line = index;
++	spin_lock_init(&uap->port.lock);
  
-+/*
-+ * Note in order to avoid the tty port mutex deadlock don't use the next method
-+ * within the uart port callbacks. Primarily it's supposed to be utilized to
-+ * handle a sudden reference clock rate change.
-+ */
-+void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+	unsigned int baud, quot, frac = 0;
-+	struct ktermios *termios;
-+	unsigned long flags;
-+
-+	mutex_lock(&port->state->port.mutex);
-+
-+	if (port->uartclk == uartclk)
-+		goto out_lock;
-+
-+	port->uartclk = uartclk;
-+	termios = &port->state->port.tty->termios;
-+
-+	baud = serial8250_get_baud_rate(port, termios, NULL);
-+	quot = serial8250_get_divisor(port, baud, &frac);
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	uart_update_timeout(port, termios->c_cflag, baud);
-+
-+	serial8250_set_divisor(port, baud, quot, frac);
-+	serial_port_out(port, UART_LCR, up->lcr);
-+	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+out_lock:
-+	mutex_unlock(&port->state->port.mutex);
-+}
-+EXPORT_SYMBOL_GPL(serial8250_update_uartclk);
-+
- void
- serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 			  struct ktermios *old)
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 6545f8cfc8fa..2b70f736b091 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -155,6 +155,8 @@ extern int early_serial_setup(struct uart_port *port);
+ 	amba_ports[index] = uap;
  
- extern int early_serial8250_setup(struct earlycon_device *device,
- 					 const char *options);
-+extern void serial8250_update_uartclk(struct uart_port *port,
-+				      unsigned int uartclk);
- extern void serial8250_do_set_termios(struct uart_port *port,
- 		struct ktermios *termios, struct ktermios *old);
- extern void serial8250_do_set_ldisc(struct uart_port *port,
 -- 
-2.26.2
+2.25.1
 
