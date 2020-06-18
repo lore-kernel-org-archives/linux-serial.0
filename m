@@ -6,45 +6,44 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 250B7C433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 12:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBDFC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 12:33:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0C4692075E
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 12:30:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 89A6020707
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 12:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727829AbgFRM37 (ORCPT
+        id S1727793AbgFRMdZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Jun 2020 08:29:59 -0400
-Received: from mga14.intel.com ([192.55.52.115]:36206 "EHLO mga14.intel.com"
+        Thu, 18 Jun 2020 08:33:25 -0400
+Received: from mga03.intel.com ([134.134.136.65]:58489 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727793AbgFRM3z (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Jun 2020 08:29:55 -0400
-IronPort-SDR: M87bFHhF92pUl3AjlZo1QQHfvSlmbmKldymw3cpJ8nRl4YlZLtyqH94JaibCH9j3JRJAzmQ3zy
- /JWzk5bB9IhQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="141625756"
+        id S1727091AbgFRMdY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 18 Jun 2020 08:33:24 -0400
+IronPort-SDR: 0EQtmHjChDwQ5EjnDBJ/q/kzVTmIejLF86KK6FHD40hAdeMetWaZczFcP/A43Edf48djf7PLkT
+ wK+hjfRwL3dw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="142499406"
 X-IronPort-AV: E=Sophos;i="5.73,526,1583222400"; 
-   d="scan'208";a="141625756"
+   d="scan'208";a="142499406"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 05:29:55 -0700
-IronPort-SDR: 5V44KlbycgVIk1TomV7i2GaDJESCzMaGhxzUnfaM6imS980InIOyVjElM7xoeEf+sohDYyOFCV
- LDWRuoEPwbqQ==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 05:33:23 -0700
+IronPort-SDR: m9/0Z/o5OVW7ZdET7pVm7OmrH13w2RyBG8lr86SfM/sqpvLPp/bEii4OSB2ju8YmZYsMPSU6cy
+ /DYbtgI0MTEA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,526,1583222400"; 
-   d="scan'208";a="477221285"
+   d="scan'208";a="477222681"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 18 Jun 2020 05:29:54 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 18 Jun 2020 05:33:22 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 49F94217; Thu, 18 Jun 2020 15:29:53 +0300 (EEST)
+        id AE76D217; Thu, 18 Jun 2020 15:33:21 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>
+        linux-serial@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2] serial: 8250_mtk: Switch to use platform_get_irq()
-Date:   Thu, 18 Jun 2020 15:29:52 +0300
-Message-Id: <20200618122952.88265-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1] serial: 8250_ingenic: Switch to use platform_get_irq()
+Date:   Thu, 18 Jun 2020 15:33:20 +0300
+Message-Id: <20200618123320.88612-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.27.0.rc2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -58,46 +57,53 @@ Also, it's better to use dedicated API to retrieve Linux IRQ resource.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v2: rebase on clean tree
- drivers/tty/serial/8250/8250_mtk.c | 16 ++++++++++------
+ drivers/tty/serial/8250/8250_ingenic.c | 16 ++++++++++------
  1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index f839380c2f4c..685ded99fa6d 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -494,13 +494,17 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
- static int mtk8250_probe(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index 424c07c5f629..dde766fa465f 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -207,12 +207,11 @@ static unsigned int ingenic_uart_serial_in(struct uart_port *p, int offset)
+ static int ingenic_uart_probe(struct platform_device *pdev)
  {
  	struct uart_8250_port uart = {};
 -	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	struct mtk8250_data *data;
--	int err;
+ 	struct ingenic_uart_data *data;
+ 	const struct ingenic_uart_config *cdata;
+ 	const struct of_device_id *match;
+-	int err, line;
 +	struct resource *regs;
-+	int irq, err;
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
++	int irq, err, line;
+ 
+ 	match = of_match_device(of_match, &pdev->dev);
+ 	if (!match) {
+@@ -221,8 +220,13 @@ static int ingenic_uart_probe(struct platform_device *pdev)
+ 	}
+ 	cdata = match->data;
  
 -	if (!regs || !irq) {
 -		dev_err(&pdev->dev, "no registers/irq defined\n");
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++
 +	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 +	if (!regs) {
 +		dev_err(&pdev->dev, "no registers defined\n");
  		return -EINVAL;
  	}
  
-@@ -524,7 +528,7 @@ static int mtk8250_probe(struct platform_device *pdev)
- 
- 	spin_lock_init(&uart.port.lock);
- 	uart.port.mapbase = regs->start;
+@@ -238,7 +242,7 @@ static int ingenic_uart_probe(struct platform_device *pdev)
+ 	uart.port.regshift = 2;
+ 	uart.port.serial_out = ingenic_uart_serial_out;
+ 	uart.port.serial_in = ingenic_uart_serial_in;
 -	uart.port.irq = irq->start;
 +	uart.port.irq = irq;
- 	uart.port.pm = mtk8250_do_pm;
- 	uart.port.type = PORT_16550;
- 	uart.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
+ 	uart.port.dev = &pdev->dev;
+ 	uart.port.fifosize = cdata->fifosize;
+ 	uart.tx_loadsz = cdata->tx_loadsz;
 -- 
 2.27.0.rc2
 
