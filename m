@@ -2,108 +2,101 @@ Return-Path: <SRS0=rTT/=77=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F92EC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 08:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB30CC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 09:51:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 159F2204EA
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 08:31:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dd6GBRSK"
+	by mail.kernel.org (Postfix) with ESMTP id B8225217A0
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 09:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727839AbgFRIb6 (ORCPT
+        id S1729060AbgFRJvt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Jun 2020 04:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728406AbgFRIb6 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Jun 2020 04:31:58 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB147C06174E;
-        Thu, 18 Jun 2020 01:31:56 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 64so2444950pfv.11;
-        Thu, 18 Jun 2020 01:31:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TpvBCNreMFHRCyXrfUPmBsfCUSsV/gLfu8O/s2ZlKTU=;
-        b=Dd6GBRSKoTGsMfDWEuAIZly6qDPrieU28huK4UIoNXSzpKVB+tCm9k3ysgnloilyBO
-         8rbDDlSjrhiGXCTO6k/GIGAzQ2dLAiygTxBIwyyTgeUOZb4L3wao7e4pOA+zCXPk04ig
-         jnQSYj00CCJyBDF/OURcKq99tCPNdSjjgHaUAGfutbM8rv3H7aR5289SSZHxZukipygE
-         uPashPZUcMYLiEirvirhWvRdF8wY17Q7pM/UcT7g8IBxNCSe5S+iWp4y0U6reRFcSEiI
-         8p5OCJjFDyaS03+aUqkczrKDutKxPnLuRwGh0LO+h8pGu0nnvtVxBTQ1WW7PEkYwLawu
-         MqmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TpvBCNreMFHRCyXrfUPmBsfCUSsV/gLfu8O/s2ZlKTU=;
-        b=Z/R/a3iu35AzsTGq31XUViKsZVqWlVKLzxT8Q2KOqzUDsukmKvG4gwMH0NfsZj+9/7
-         VhG4Wuk1e2LZmtU4o5szI28mDGLHyRMrS/5TcdZjk5iKWJOVsc2TncMuQaJpRwXtN0Xi
-         qLC2U/C4lTATk8L/gmrnGddzicmqShSlWq+d+5TbgGHLsarhTYIyJ3O529rPFH0VQBgq
-         JGkBy/7Qlfpgg0mOVE9y6C9fPrD2fyFOO7BHM9yUnWEV6GgrD6RYKsewwGBpFecSMbub
-         C7LnAJeqNFbWaJLPCxgHHFd/bpi6YVeqoWluZICcL+VlYsPa0ZNzE51Wi04kxuLNm1Si
-         l5/A==
-X-Gm-Message-State: AOAM533x9gMB5F3zdtM0xJQKYzNd9RKz/6hCIWS0fYH9z9vonsVqVJmf
-        ZTpMF0KYyWZsGCx25Cok2LhlefVSmvv966AWBMU=
-X-Google-Smtp-Source: ABdhPJzIogL9zJwyMTDVa9GrEwtZfyEuOcY8rzHq2ppylVuZVw695VzA+I2FTmRHzOjsQTa8VeIuXwTbhhu2Was/fgw=
-X-Received: by 2002:a63:f042:: with SMTP id s2mr2425063pgj.4.1592469116343;
- Thu, 18 Jun 2020 01:31:56 -0700 (PDT)
+        Thu, 18 Jun 2020 05:51:49 -0400
+Received: from mga11.intel.com ([192.55.52.93]:27678 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729320AbgFRJvs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 18 Jun 2020 05:51:48 -0400
+IronPort-SDR: 6EagYkaK6Q77GnxwAj5Bd3qkzMHttABy20JjYUgmsZs5dsX0lcmgRAz5mrau+wloa/BHuRGorz
+ OEnuiI/lNHrA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="140862124"
+X-IronPort-AV: E=Sophos;i="5.73,526,1583222400"; 
+   d="scan'208";a="140862124"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 02:51:47 -0700
+IronPort-SDR: LQsq9bkbEavIpDi4nPfUv/WJOYaroATLrYdAQ1peYLmBzDneYtVUGl5BSn5ILbup1USgOL0c75
+ LLrdSOZGzflA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,526,1583222400"; 
+   d="scan'208";a="450582962"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 18 Jun 2020 02:51:46 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 3EFD3217; Thu, 18 Jun 2020 12:51:44 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1] serial: 8250_em: Switch to use platform_get_irq()
+Date:   Thu, 18 Jun 2020 12:51:44 +0300
+Message-Id: <20200618095144.73852-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.27.0.rc2
 MIME-Version: 1.0
-References: <20200617224813.23853-1-Sergey.Semin@baikalelectronics.ru> <CAHp75VfPEdxN1UeKJ+gCWpgJymK7YzQs1Lznq1aBfoRNBiMHbQ@mail.gmail.com>
-In-Reply-To: <CAHp75VfPEdxN1UeKJ+gCWpgJymK7YzQs1Lznq1aBfoRNBiMHbQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 18 Jun 2020 11:31:44 +0300
-Message-ID: <CAHp75VdD+=L4OQkwVDx2aLKRssW-qBQL2nsF48J=dCntU8N7Ng@mail.gmail.com>
-Subject: Re: [PATCH RESEND v6 0/3] serial: 8250_dw: Fix ref clock usage
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Tony Lindgren <tony@atomide.com>
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>,
-        Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>,
-        Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>,
-        Vadim Vlasov <V.Vlasov@baikalelectronics.ru>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-mips@vger.kernel.org,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 11:17 AM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Thu, Jun 18, 2020 at 1:52 AM Serge Semin
-> <Sergey.Semin@baikalelectronics.ru> wrote:
+platform_get_irq() provides an established error code and error message.
+Also, it's better to use dedicated API to retrieve Linux IRQ resource.
 
-> I'm wondering how this will collaborate with runtime PM.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_em.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-Forgot to mention the WIP repository [1] for runtime PM rework  (it
-doesn't mean my comment against patch 3 is not valid). Tony and I are
-working on it, you actually may be interested as well.
-
-[1]: https://gitlab.com/andy-shev/next
-
+diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
+index 2a76e22d2ec0..db88dee3a399 100644
+--- a/drivers/tty/serial/8250/8250_em.c
++++ b/drivers/tty/serial/8250/8250_em.c
+@@ -78,14 +78,18 @@ static void serial8250_em_serial_dl_write(struct uart_8250_port *up, int value)
+ 
+ static int serial8250_em_probe(struct platform_device *pdev)
+ {
+-	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	struct serial8250_em_priv *priv;
+ 	struct uart_8250_port up;
+-	int ret;
++	struct resource *regs;
++	int irq, ret;
+ 
+-	if (!regs || !irq) {
+-		dev_err(&pdev->dev, "missing registers or irq\n");
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++
++	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!regs) {
++		dev_err(&pdev->dev, "missing registers\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -101,7 +105,7 @@ static int serial8250_em_probe(struct platform_device *pdev)
+ 
+ 	memset(&up, 0, sizeof(up));
+ 	up.port.mapbase = regs->start;
+-	up.port.irq = irq->start;
++	up.port.irq = irq;
+ 	up.port.type = PORT_UNKNOWN;
+ 	up.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP;
+ 	up.port.dev = &pdev->dev;
 -- 
-With Best Regards,
-Andy Shevchenko
+2.27.0.rc2
+
