@@ -4,65 +4,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,TVD_PH_BODY_ACCOUNTS_PRE,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC6EC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 02:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4233C433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 02:19:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7B78522211
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 02:04:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BC7ED20885
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 02:19:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1592445898;
-	bh=Eq1DcpXNBEZu/BqwZzcK+uB2YIFarNYs5ivrXYLr4uU=;
+	s=default; t=1592446771;
+	bh=wvoafCprIO9G7pLNShNIbRPwF/oFJzwaPAUQRYsVaSY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=CdYEERqSzqKZuLXhNQ6ELlrN66nHe/74agBIsSiK9FXLQp0LALVWb/vSYz3P5jhYy
-	 qH5tb2PA3DXLk3g/o/V/5yMvyTsoBYvT+Ie6iLrkXMEcGj3+Hnuc1sK0SssGGRnXWy
-	 GJlieQzTpgay1yRBjaJ81TvTAXahw92W11EK+ubk=
+	b=1kX407DzouoFSJQ13vZ7u3sxCEVpGPfTdo3RZJUP1m6REj0QoeZu9pXNlNei+dr4I
+	 qF9l4qEk2f1+y7r7sRcwBHgrvNOi1gbndKCa2Cs47PAIt2VvhXGI7kXCtyLubSqqbn
+	 uKoNwMjJ604ZN2lTwepryIokw/6W4MMl1tPl5lLs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730858AbgFRBWx (ORCPT
+        id S1730108AbgFRBTT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 Jun 2020 21:22:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56042 "EHLO mail.kernel.org"
+        Wed, 17 Jun 2020 21:19:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50982 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730850AbgFRBWv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:22:51 -0400
+        id S1730087AbgFRBTQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:19:16 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A066020B1F;
-        Thu, 18 Jun 2020 01:22:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2394E221ED;
+        Thu, 18 Jun 2020 01:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443370;
-        bh=Eq1DcpXNBEZu/BqwZzcK+uB2YIFarNYs5ivrXYLr4uU=;
+        s=default; t=1592443155;
+        bh=wvoafCprIO9G7pLNShNIbRPwF/oFJzwaPAUQRYsVaSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ESi6GQCCQBMA/Crc6rCGnoKGZO/PQsOupHh42boP8MfuWeVhEyN0U3awrkRFt6vnZ
-         /fx4NxDfTFg9y5sJqfRIgVKjVgKwz0PFglKmFFAnzMrfqvM2LeLkJPPZsapHA89+Ej
-         uAf45wkj0e16cTKMIw3YKM/vvxyX17Yumu4kq/W4=
+        b=IeoYfPMnelExv+J0r2oyPcnPTSYaS+eWryb2o8rV3cHBqDKrJm4+15EhKannBivX/
+         mspBGbWkSIxf/7HwrZMHojv91N8YGemzF55A1ujdanTu8QLP/Bbjcs8GEMVAHb1MwK
+         4+fLRj6hi5AYFcKP5OhOtnmxGbF1frsXc+YBle3E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Burton <paulburton@kernel.org>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Long Cheng <long.cheng@mediatek.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+Cc:     John Stultz <john.stultz@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Valentin Schneider <valentin.schneider@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 024/172] serial: 8250: Fix max baud limit in generic 8250 port
-Date:   Wed, 17 Jun 2020 21:19:50 -0400
-Message-Id: <20200618012218.607130-24-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 122/266] serial: amba-pl011: Make sure we initialize the port.lock spinlock
+Date:   Wed, 17 Jun 2020 21:14:07 -0400
+Message-Id: <20200618011631.604574-122-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618012218.607130-1-sashal@kernel.org>
-References: <20200618012218.607130-1-sashal@kernel.org>
+In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
+References: <20200618011631.604574-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -72,79 +63,85 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+From: John Stultz <john.stultz@linaro.org>
 
-[ Upstream commit 7b668c064ec33f3d687c3a413d05e355172e6c92 ]
+[ Upstream commit 8508f4cba308f785b2fd4b8c38849c117b407297 ]
 
-Standard 8250 UART ports are designed in a way so they can communicate
-with baud rates up to 1/16 of a reference frequency. It's expected from
-most of the currently supported UART controllers. That's why the former
-version of serial8250_get_baud_rate() method called uart_get_baud_rate()
-with min and max baud rates passed as (port->uartclk / 16 / UART_DIV_MAX)
-and ((port->uartclk + tolerance) / 16) respectively. Doing otherwise, like
-it was suggested in commit ("serial: 8250_mtk: support big baud rate."),
-caused acceptance of bauds, which was higher than the normal UART
-controllers actually supported. As a result if some user-space program
-requested to set a baud greater than (uartclk / 16) it would have been
-permitted without truncation, but then serial8250_get_divisor(baud)
-(which calls uart_get_divisor() to get the reference clock divisor) would
-have returned a zero divisor. Setting zero divisor will cause an
-unpredictable effect varying from chip to chip. In case of DW APB UART the
-communications just stop.
+Valentine reported seeing:
 
-Lets fix this problem by getting back the limitation of (uartclk +
-tolerance) / 16 maximum baud supported by the generic 8250 port. Mediatek
-8250 UART ports driver developer shouldn't have touched it in the first
-place  notably seeing he already provided a custom version of set_termios()
-callback in that glue-driver which took into account the extended baud
-rate values and accordingly updated the standard and vendor-specific
-divisor latch registers anyway.
+[    3.626638] INFO: trying to register non-static key.
+[    3.626639] the code is fine but needs lockdep annotation.
+[    3.626640] turning off the locking correctness validator.
+[    3.626644] CPU: 7 PID: 51 Comm: kworker/7:1 Not tainted 5.7.0-rc2-00115-g8c2e9790f196 #116
+[    3.626646] Hardware name: HiKey960 (DT)
+[    3.626656] Workqueue: events deferred_probe_work_func
+[    3.632476] sd 0:0:0:0: [sda] Optimal transfer size 8192 bytes not a multiple of physical block size (16384 bytes)
+[    3.640220] Call trace:
+[    3.640225]  dump_backtrace+0x0/0x1b8
+[    3.640227]  show_stack+0x20/0x30
+[    3.640230]  dump_stack+0xec/0x158
+[    3.640234]  register_lock_class+0x598/0x5c0
+[    3.640235]  __lock_acquire+0x80/0x16c0
+[    3.640236]  lock_acquire+0xf4/0x4a0
+[    3.640241]  _raw_spin_lock_irqsave+0x70/0xa8
+[    3.640245]  uart_add_one_port+0x388/0x4b8
+[    3.640248]  pl011_register_port+0x70/0xf0
+[    3.640250]  pl011_probe+0x184/0x1b8
+[    3.640254]  amba_probe+0xdc/0x180
+[    3.640256]  really_probe+0xe0/0x338
+[    3.640257]  driver_probe_device+0x60/0xf8
+[    3.640259]  __device_attach_driver+0x8c/0xd0
+[    3.640260]  bus_for_each_drv+0x84/0xd8
+[    3.640261]  __device_attach+0xe4/0x140
+[    3.640263]  device_initial_probe+0x1c/0x28
+[    3.640265]  bus_probe_device+0xa4/0xb0
+[    3.640266]  deferred_probe_work_func+0x7c/0xb8
+[    3.640269]  process_one_work+0x2c0/0x768
+[    3.640271]  worker_thread+0x4c/0x498
+[    3.640272]  kthread+0x14c/0x158
+[    3.640275]  ret_from_fork+0x10/0x1c
 
-Fixes: 81bb549fdf14 ("serial: 8250_mtk: support big baud rate.")
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Paul Burton <paulburton@kernel.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Long Cheng <long.cheng@mediatek.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
+Which seems to be due to the fact that after allocating the uap
+structure, nothing initializes the spinlock.
+
+Its a little confusing, as uart_port_spin_lock_init() is one
+place where the lock is supposed to be initialized, but it has
+an exception for the case where the port is a console.
+
+This makes it seem like a deeper fix is needed to properly
+register the console, but I'm not sure what that entails, and
+Andy suggested that this approach is less invasive.
+
+Thus, this patch resolves the issue by initializing the spinlock
+in the driver, and resolves the resulting warning.
+
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Russell King <linux@armlinux.org.uk>
-Cc: linux-mips@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
-Link: https://lore.kernel.org/r/20200506233136.11842-2-Sergey.Semin@baikalelectronics.ru
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Reported-by: Valentin Schneider <valentin.schneider@arm.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: John Stultz <john.stultz@linaro.org>
+Reviewed-and-tested-by: Valentin Schneider <valentin.schneider@arm.com>
+Link: https://lore.kernel.org/r/20200428184050.6501-1-john.stultz@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/amba-pl011.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 5a04d4ddca73..20b799219826 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2628,6 +2628,8 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 					     struct ktermios *termios,
- 					     struct ktermios *old)
- {
-+	unsigned int tolerance = port->uartclk / 100;
-+
- 	/*
- 	 * Ask the core to calculate the divisor for us.
- 	 * Allow 1% tolerance at the upper limit so uart clks marginally
-@@ -2636,7 +2638,7 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 	 */
- 	return uart_get_baud_rate(port, termios, old,
- 				  port->uartclk / 16 / UART_DIV_MAX,
--				  port->uartclk);
-+				  (port->uartclk + tolerance) / 16);
- }
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index b0b689546395..de3e8c24c03e 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2585,6 +2585,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+ 	uap->port.fifosize = uap->fifosize;
+ 	uap->port.flags = UPF_BOOT_AUTOCONF;
+ 	uap->port.line = index;
++	spin_lock_init(&uap->port.lock);
  
- void
+ 	amba_ports[index] = uap;
+ 
 -- 
 2.25.1
 
