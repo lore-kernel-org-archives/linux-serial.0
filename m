@@ -2,101 +2,72 @@ Return-Path: <SRS0=rTT/=77=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB30CC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 09:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9685DC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 10:10:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B8225217A0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 09:51:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7588B21924
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Jun 2020 10:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729060AbgFRJvt (ORCPT
+        id S1728331AbgFRKKU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Jun 2020 05:51:49 -0400
-Received: from mga11.intel.com ([192.55.52.93]:27678 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729320AbgFRJvs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Jun 2020 05:51:48 -0400
-IronPort-SDR: 6EagYkaK6Q77GnxwAj5Bd3qkzMHttABy20JjYUgmsZs5dsX0lcmgRAz5mrau+wloa/BHuRGorz
- OEnuiI/lNHrA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="140862124"
-X-IronPort-AV: E=Sophos;i="5.73,526,1583222400"; 
-   d="scan'208";a="140862124"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 02:51:47 -0700
-IronPort-SDR: LQsq9bkbEavIpDi4nPfUv/WJOYaroATLrYdAQ1peYLmBzDneYtVUGl5BSn5ILbup1USgOL0c75
- LLrdSOZGzflA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,526,1583222400"; 
-   d="scan'208";a="450582962"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 18 Jun 2020 02:51:46 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3EFD3217; Thu, 18 Jun 2020 12:51:44 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] serial: 8250_em: Switch to use platform_get_irq()
-Date:   Thu, 18 Jun 2020 12:51:44 +0300
-Message-Id: <20200618095144.73852-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.27.0.rc2
+        Thu, 18 Jun 2020 06:10:20 -0400
+Received: from server-x.ipv4.hkg02.ds.network ([27.111.83.178]:46410 "EHLO
+        mail.gtsys.com.hk" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S1728746AbgFRKKH (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 18 Jun 2020 06:10:07 -0400
+X-Greylist: delayed 422 seconds by postgrey-1.27 at vger.kernel.org; Thu, 18 Jun 2020 06:10:06 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.gtsys.com.hk (Postfix) with ESMTP id 0A597200C125;
+        Thu, 18 Jun 2020 18:10:05 +0800 (HKT)
+X-Virus-Scanned: Debian amavisd-new at gtsys.com.hk
+Received: from mail.gtsys.com.hk ([127.0.0.1])
+        by localhost (mail.gtsys.com.hk [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id qGvK_SY5v7eO; Thu, 18 Jun 2020 18:10:04 +0800 (HKT)
+Received: from s01.gtsys.com.hk (unknown [10.128.4.2])
+        by mail.gtsys.com.hk (Postfix) with ESMTP id E737A200C104;
+        Thu, 18 Jun 2020 18:10:04 +0800 (HKT)
+Received: from [10.128.3.2] (061244237146.static.ctinets.com [61.244.237.146])
+        by s01.gtsys.com.hk (Postfix) with ESMTPSA id DC415C013A5;
+        Thu, 18 Jun 2020 18:10:04 +0800 (HKT)
+To:     linux-arm@lists.infradead.org, linux-serial@vger.kernel.org
+Cc:     Jack Lo <jack.lo@gtsys.com.hk>
+From:   Chris Ruehl <chris.ruehl@gtsys.com.hk>
+Subject: rk3399: uart2 crippled signal on tx @115200
+Message-ID: <4d7fde0a-58f0-485f-41e6-2cb0b36decbc@gtsys.com.hk>
+Date:   Thu, 18 Jun 2020 18:10:04 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-platform_get_irq() provides an established error code and error message.
-Also, it's better to use dedicated API to retrieve Linux IRQ resource.
+Hi,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_em.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+I run into a strange thing on our customized RK3399-LPDDR4 using the 
+UART2 @115200 the
+console spits bad charters. Checking the signal at the TX explains the 
+reason, the rising edge
+is very slow, (we checked with the scope).
+Set the GPIO4_C4 to pcfg_pull_up_20am not working.
 
-diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-index 2a76e22d2ec0..db88dee3a399 100644
---- a/drivers/tty/serial/8250/8250_em.c
-+++ b/drivers/tty/serial/8250/8250_em.c
-@@ -78,14 +78,18 @@ static void serial8250_em_serial_dl_write(struct uart_8250_port *up, int value)
- 
- static int serial8250_em_probe(struct platform_device *pdev)
- {
--	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	struct serial8250_em_priv *priv;
- 	struct uart_8250_port up;
--	int ret;
-+	struct resource *regs;
-+	int irq, ret;
- 
--	if (!regs || !irq) {
--		dev_err(&pdev->dev, "missing registers or irq\n");
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
-+
-+	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!regs) {
-+		dev_err(&pdev->dev, "missing registers\n");
- 		return -EINVAL;
- 	}
- 
-@@ -101,7 +105,7 @@ static int serial8250_em_probe(struct platform_device *pdev)
- 
- 	memset(&up, 0, sizeof(up));
- 	up.port.mapbase = regs->start;
--	up.port.irq = irq->start;
-+	up.port.irq = irq;
- 	up.port.type = PORT_UNKNOWN;
- 	up.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP;
- 	up.port.dev = &pdev->dev;
--- 
-2.27.0.rc2
+Kernel: 5.4.40-rt
+Uboot: 2020-4
 
+The strange observation:
+U-boot TPL boot , return to Boot-rom and the 1st
+lines from SPL (show uboot version) have a sharp rising edge as expected.
+
+Anyone?  I don't know anymore.
+
+Regards
+Chris
