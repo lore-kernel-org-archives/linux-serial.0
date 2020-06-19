@@ -2,91 +2,105 @@ Return-Path: <SRS0=VMdU=AA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86540C433E1
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 17:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BA7C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 17:25:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6B0BE208D5
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 17:21:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 600DD208D5
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 17:25:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="APfopFZR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732626AbgFSRVg (ORCPT
+        id S1731286AbgFSRZY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 Jun 2020 13:21:36 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:37534 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbgFSRVg (ORCPT
+        Fri, 19 Jun 2020 13:25:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731175AbgFSRZX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 Jun 2020 13:21:36 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 0C2A68030866;
-        Fri, 19 Jun 2020 17:21:34 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at baikalelectronics.ru
-Received: from mail.baikalelectronics.ru ([127.0.0.1])
-        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id OQ1qZv5ucs0O; Fri, 19 Jun 2020 20:21:32 +0300 (MSK)
-Date:   Fri, 19 Jun 2020 20:21:31 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>,
-        Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>,
-        Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>,
-        Vadim Vlasov <V.Vlasov@baikalelectronics.ru>,
-        Arnd Bergmann <arnd@arndb.de>,
+        Fri, 19 Jun 2020 13:25:23 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D3AC06174E;
+        Fri, 19 Jun 2020 10:25:22 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id u8so4323723pje.4;
+        Fri, 19 Jun 2020 10:25:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OIGAZSabrhFgy3X+4oVeL5X78+6UeCl/BmE8pXuAxYE=;
+        b=APfopFZRKxDNenAFDX8N8y2gNRPGw63S9Fo/wxCush+BUzDCx1IsYOrIsmlnqJWvJf
+         6PffcoyW55FLPoI1OHOTtVUBhFyOM1a1W560fFXsqOBMKt6tw7TNy4p/icfX3+N0AUcX
+         7r7VMuiH274BHevz78l03bSfVMo+1EboLjY/ijqHAWgoQqF8mjvVgmjDugT9aURnz0A5
+         WD0NvDsoiuhN9U6jK6xcmhRiVwlAvurpkxUADyLJrHaY/IolKPkjVBgmYICQqqHG6Udq
+         Gso4xXl+fyOm7goGcaLhQSXw1NVVbAsOuw+FaL5jc+ABVZ1A18xMC8vJ5u8E/3g/Mj7Q
+         0pBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OIGAZSabrhFgy3X+4oVeL5X78+6UeCl/BmE8pXuAxYE=;
+        b=SKBO9uMifl55JJ9SWconDXRP6A95Voh/D7x3a3Nsj8YN/BEDr5yQ16VyNjYtdomQv+
+         vCU+2fRqDzs3X7FXKojxYZQpC3JCwnYhdQbm/igIBlWzFngWCTpDRoy57WtXs9DKk9NM
+         fyvcZJMMZgqQnBqKXFxTPUP9ReV8kBJRlVSC7TBuZ7Ic2h7lLDniHpMuoOGGZfnzE49h
+         1sAWL37xoHy8k6LyFNZKB6qzxwcJsRyhitzXBTWOx+1oVm28Zu0gsVOhL47eCKb2wQGI
+         DZb9zpDQeqkPZ8nop3U0ELO4JCIlnL2MwJoxHPAQQ+wza/XFVNbVx3sLg8t+EVH3Ib1g
+         cGbA==
+X-Gm-Message-State: AOAM532b7klLByyaqkD3irSVHIHpbUtgPIMFAv6Og5mt+9B1NWZU/L7F
+        RxPljbRBAieoruexbqZDHz8=
+X-Google-Smtp-Source: ABdhPJxM2HsJThgQl1f7W+yXmwyvSlEtgzAVT2RQk+OmiyMzQieee/yq9elAEyvDireL8vfQwQ77uw==
+X-Received: by 2002:a17:902:7288:: with SMTP id d8mr9332975pll.18.1592587522468;
+        Fri, 19 Jun 2020 10:25:22 -0700 (PDT)
+Received: from localhost ([2409:10:2e40:5100:6e29:95ff:fe2d:8f34])
+        by smtp.gmail.com with ESMTPSA id m16sm6319376pfh.187.2020.06.19.10.25.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Jun 2020 10:25:21 -0700 (PDT)
+From:   Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+X-Google-Original-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Date:   Sat, 20 Jun 2020 02:25:19 +0900
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        <linux-mips@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RESEND v6 0/3] serial: 8250_dw: Fix ref clock usage
-Message-ID: <20200619172131.64qnaghsojgxetgf@mobilestation>
-References: <20200617224813.23853-1-Sergey.Semin@baikalelectronics.ru>
- <CAHp75VfPEdxN1UeKJ+gCWpgJymK7YzQs1Lznq1aBfoRNBiMHbQ@mail.gmail.com>
- <CAHp75VdD+=L4OQkwVDx2aLKRssW-qBQL2nsF48J=dCntU8N7Ng@mail.gmail.com>
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v1 0/6] console: unify return codes from ->setup() hook
+Message-ID: <20200619172519.GC310968@jagdpanzerIV.localdomain>
+References: <20200618164751.56828-1-andriy.shevchenko@linux.intel.com>
+ <20200619093917.GK3617@alley>
+ <20200619094726.GD2428291@smile.fi.intel.com>
+ <20200619102132.GB310968@jagdpanzerIV.localdomain>
+ <20200619112638.GL3617@alley>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdD+=L4OQkwVDx2aLKRssW-qBQL2nsF48J=dCntU8N7Ng@mail.gmail.com>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+In-Reply-To: <20200619112638.GL3617@alley>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 11:31:44AM +0300, Andy Shevchenko wrote:
-> On Thu, Jun 18, 2020 at 11:17 AM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Thu, Jun 18, 2020 at 1:52 AM Serge Semin
-> > <Sergey.Semin@baikalelectronics.ru> wrote:
+On (20/06/19 13:26), Petr Mladek wrote:
+> On Fri 2020-06-19 19:21:32, Sergey Senozhatsky wrote:
+> > On (20/06/19 12:47), Andy Shevchenko wrote:
+> > > On Fri, Jun 19, 2020 at 11:39:18AM +0200, Petr Mladek wrote:
+> > > > On Thu 2020-06-18 19:47:45, Andy Shevchenko wrote:
+> > [..]
+> > > > I am going to push it the following week via printk tree unless
+> > > > anybody complains.
+> > > 
+> > > Thanks, Petr, I guess you may also incorporate Sergey's patch
+> > > he proposed. Sergey, are you going to submit it officially?
+> > 
+> > I can send a patch, unless Petr has objections.
 > 
-> > I'm wondering how this will collaborate with runtime PM.
-> 
+> Go ahead :-)
 
-> Forgot to mention the WIP repository [1] for runtime PM rework  (it
-> doesn't mean my comment against patch 3 is not valid). Tony and I are
-> working on it, you actually may be interested as well.
-> 
-> [1]: https://gitlab.com/andy-shev/next
+Oops, I just sent it, but I forgot to specify in-reply-to message-id :(
 
-Thanks for the link. I'll take a look at the repo. Though our SoC doesn't
-require the RPM moderation that critically.
-
--Sergey
-
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+	-ss
