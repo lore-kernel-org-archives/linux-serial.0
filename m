@@ -2,95 +2,97 @@ Return-Path: <SRS0=VMdU=AA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B5CCC433DF
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 09:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F72C433DF
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 10:21:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 21F2F2080C
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 09:47:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E74C32080C
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 10:21:39 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gxw0YkMG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731048AbgFSJr1 (ORCPT
+        id S1731804AbgFSKVj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 Jun 2020 05:47:27 -0400
-Received: from mga05.intel.com ([192.55.52.43]:17096 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729195AbgFSJr1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 Jun 2020 05:47:27 -0400
-IronPort-SDR: cgRpmXvdMW8UGbiPp3oL8e9Q2yp/PcqV6W/XX6gfD+kf0Imnof3ijzu9g5BkDKQwNce8IZZiJD
- eswpKQTonOTw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9656"; a="227591803"
-X-IronPort-AV: E=Sophos;i="5.75,254,1589266800"; 
-   d="scan'208";a="227591803"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2020 02:47:26 -0700
-IronPort-SDR: E5YIUSutHfRfHqgpuop/R4ZPq4wQO+Qt/jK4cjePgZJLJgGSIdiomGH/aJ3aOAfXaxgUsGd5LN
- 7NsNUQxm5z0Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,254,1589266800"; 
-   d="scan'208";a="277950284"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga006.jf.intel.com with ESMTP; 19 Jun 2020 02:47:24 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jmDcM-00ES0f-RQ; Fri, 19 Jun 2020 12:47:26 +0300
-Date:   Fri, 19 Jun 2020 12:47:26 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Petr Mladek <pmladek@suse.com>
+        Fri, 19 Jun 2020 06:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729195AbgFSKVg (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 19 Jun 2020 06:21:36 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88D1C06174E;
+        Fri, 19 Jun 2020 03:21:36 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id k1so3770285pls.2;
+        Fri, 19 Jun 2020 03:21:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VDgnugb2CfGt3bUYZDqOMdc5K2WdlITSMtpr2WMgIQk=;
+        b=Gxw0YkMGFFlUAfxi+H2GeiY0SMotDXQV2unlQJpfrz+VAWp6WXBfkS0QWXz+OpUN57
+         5whyNR2mhL8N4hQsSJc8CPNzASO7USsO827S4pidIlN4RtRTvORKCkyUA7KK4jpte0ir
+         FlszD9T+l9oECvPSzc8muP1YbPkipToRR25IDZxFIT6ufbNmzuBTvZjHUfTxKUOGQEb0
+         mbkLbzmE5wQEjLphu9VrI/5whdR8zO85m9eRiH7azOyNjl1/hiIqOBDUe8/NJ4NjrJhy
+         gLHXp4j7jHxJlGZgad4+hUiTutvkHkjpIxPAG5aVd+j5VRVMT7lLgQJT3DueJR47HG3c
+         uW0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VDgnugb2CfGt3bUYZDqOMdc5K2WdlITSMtpr2WMgIQk=;
+        b=sA40/ExyX5IQ8LuphmO/OBDi9ICoxp8avF4h1ReDO4BhrGql5A0dv50AMS0XOd7MPU
+         RXQirAHwPy61flCe7GCotu9G5y7i/dtatNsD2RLi/brVVEl0VdhYetkooPbvqutIrgM7
+         K8tBXFYt1LJ1z+815yv3TEp4ZRqPQDz++f7W/4CwCFdDvuIY/ZD1Yxezwg35qP50zBlq
+         Q/ty5CMdAIKoZtDyRAF2bOOb8EjUsvz1zRGOU1XFBjtALqtbz6bBHgSgYlw73JGyiPyi
+         oj+7AbBSWQZn2FQXCUs95AUVXg1JfE5ZOgOGCLijduHD/0/d2Af+wJmXNAHogCwvnHD2
+         VgcA==
+X-Gm-Message-State: AOAM5301WBRHG/BwS9SIgBJk9e/3wOOaiJ6I5lhzpK0MM6sJE4/yovzN
+        Ov9X/w8FRCzY0RNHWsa7qCQ=
+X-Google-Smtp-Source: ABdhPJySZmZUheczzUUdNhskXaNolTLzBWtGhah6JUkwzXvdPP05AlmWVmDWTfjEWIkEeMcyZmXgUw==
+X-Received: by 2002:a17:902:fe01:: with SMTP id g1mr7714083plj.254.1592562095934;
+        Fri, 19 Jun 2020 03:21:35 -0700 (PDT)
+Received: from localhost ([2409:10:2e40:5100:6e29:95ff:fe2d:8f34])
+        by smtp.gmail.com with ESMTPSA id o207sm5609202pfd.56.2020.06.19.03.21.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Jun 2020 03:21:35 -0700 (PDT)
+From:   Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+X-Google-Original-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Date:   Fri, 19 Jun 2020 19:21:32 +0900
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 Subject: Re: [PATCH v1 0/6] console: unify return codes from ->setup() hook
-Message-ID: <20200619094726.GD2428291@smile.fi.intel.com>
+Message-ID: <20200619102132.GB310968@jagdpanzerIV.localdomain>
 References: <20200618164751.56828-1-andriy.shevchenko@linux.intel.com>
  <20200619093917.GK3617@alley>
+ <20200619094726.GD2428291@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200619093917.GK3617@alley>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200619094726.GD2428291@smile.fi.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jun 19, 2020 at 11:39:18AM +0200, Petr Mladek wrote:
-> On Thu 2020-06-18 19:47:45, Andy Shevchenko wrote:
-> > Some of the console providers treat error code, returned by ->setup() hook,
-> > differently. Here is the unification of the behaviour.
-> > 
-> > The drivers checked by one of the below criteria:
-> > 1/ the driver has explicit struct console .setup assignment
-> > 2/ the driver has assigned callback to the setup member
-> > 
-> > All such drivers were read in order to see if there is any problematic return
-> > codes, and fixed accordingly which is this series in the result.
-> > 
-> > Andy Shevchenko (6):
-> >   mips: Return proper error code from console ->setup() hook
-> >   serial: sunsab: Return proper error code from console ->setup() hook
-> >   serial: sunzilog: Return proper error code from console ->setup() hook
-> >   tty: hvc: Return proper error code from console ->setup() hook
-> >   console: Propagate error code from console ->setup()
-> >   console: Fix trivia typo 'change' -> 'chance'
+On (20/06/19 12:47), Andy Shevchenko wrote:
+> On Fri, Jun 19, 2020 at 11:39:18AM +0200, Petr Mladek wrote:
+> > On Thu 2020-06-18 19:47:45, Andy Shevchenko wrote:
+[..]
+> > I am going to push it the following week via printk tree unless
+> > anybody complains.
 > 
-> For the entire patchset:
-> 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> 
-> I am going to push it the following week via printk tree unless
-> anybody complains.
+> Thanks, Petr, I guess you may also incorporate Sergey's patch
+> he proposed. Sergey, are you going to submit it officially?
 
-Thanks, Petr, I guess you may also incorporate Sergey's patch he proposed. Sergey, are you going to submit it officially?
+I can send a patch, unless Petr has objections.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+	-ss
