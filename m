@@ -2,63 +2,88 @@ Return-Path: <SRS0=VMdU=AA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C118BC433DF
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 02:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFFDC433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 03:17:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A3731206E2
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 02:50:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 19C572070A
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Jun 2020 03:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729742AbgFSCuv (ORCPT
+        id S1727869AbgFSDRy (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Jun 2020 22:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727773AbgFSCuv (ORCPT
+        Thu, 18 Jun 2020 23:17:54 -0400
+Received: from kernel.crashing.org ([76.164.61.194]:50180 "EHLO
+        kernel.crashing.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726878AbgFSDRy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Jun 2020 22:50:51 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B22C06174E;
-        Thu, 18 Jun 2020 19:50:51 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7EEF1120ED49C;
-        Thu, 18 Jun 2020 19:50:50 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 19:50:49 -0700 (PDT)
-Message-Id: <20200618.195049.463745788487710498.davem@davemloft.net>
-To:     andriy.shevchenko@linux.intel.com
-Cc:     pmladek@suse.com, sergey.senozhatsky@gmail.com,
-        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, jslaby@suse.com,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 2/6] serial: sunsab: Return proper error code from
- console ->setup() hook
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200618164751.56828-3-andriy.shevchenko@linux.intel.com>
+        Thu, 18 Jun 2020 23:17:54 -0400
+Received: from localhost (gate.crashing.org [63.228.1.57])
+        (authenticated bits=0)
+        by kernel.crashing.org (8.14.7/8.14.7) with ESMTP id 05J3H8O5032301
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 18 Jun 2020 22:17:12 -0500
+Message-ID: <412032fa04259cbb7f4d286b8346c551e370214a.camel@kernel.crashing.org>
+Subject: Re: [PATCH v1 5/6] console: Propagate error code from console
+ ->setup()
+From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Date:   Fri, 19 Jun 2020 13:17:07 +1000
+In-Reply-To: <20200618164751.56828-6-andriy.shevchenko@linux.intel.com>
 References: <20200618164751.56828-1-andriy.shevchenko@linux.intel.com>
-        <20200618164751.56828-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
+         <20200618164751.56828-6-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 18 Jun 2020 19:50:50 -0700 (PDT)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date: Thu, 18 Jun 2020 19:47:47 +0300
-
-> For unifying console ->setup() handling, which is pure documented,
-> return error code, rather than non-zero arbitrary number.
+On Thu, 2020-06-18 at 19:47 +0300, Andy Shevchenko wrote:
+> Since console ->setup() hook returns meaningful error codes,
+> propagate it to the caller of try_enable_new_console().
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
+> 
 
-Acked-by: David S. Miller <davem@davemloft.net>
+Acked-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+
+> ---A
+>  kernel/printk/printk.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index 8c14835be46c..aaea3ad182e1 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -2668,7 +2668,7 @@ early_param("keep_bootcon", keep_bootcon_setup);
+>  static int try_enable_new_console(struct console *newcon, bool user_specified)
+>  {
+>  	struct console_cmdline *c;
+> -	int i;
+> +	int i, err;
+>  
+>  	for (i = 0, c = console_cmdline;
+>  	     i < MAX_CMDLINECONSOLES && c->name[0];
+> @@ -2691,8 +2691,8 @@ static int try_enable_new_console(struct console *newcon, bool user_specified)
+>  				return 0;
+>  
+>  			if (newcon->setup &&
+> -			    newcon->setup(newcon, c->options) != 0)
+> -				return -EIO;
+> +			    (err = newcon->setup(newcon, c->options)) != 0)
+> +				return err;
+>  		}
+>  		newcon->flags |= CON_ENABLED;
+>  		if (i == preferred_console) {
+
