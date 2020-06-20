@@ -2,127 +2,131 @@ Return-Path: <SRS0=ODRR=AB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31011C433E0
-	for <linux-serial@archiver.kernel.org>; Sat, 20 Jun 2020 03:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29399C433E0
+	for <linux-serial@archiver.kernel.org>; Sat, 20 Jun 2020 09:08:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EFD9623122
-	for <linux-serial@archiver.kernel.org>; Sat, 20 Jun 2020 03:38:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0A92C23A76
+	for <linux-serial@archiver.kernel.org>; Sat, 20 Jun 2020 09:08:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="lhgV1qId"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="c0RvMXGf"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387587AbgFTDiX (ORCPT
+        id S1727805AbgFTJIm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 Jun 2020 23:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
+        Sat, 20 Jun 2020 05:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387555AbgFTDiV (ORCPT
+        with ESMTP id S1727771AbgFTJIm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 Jun 2020 23:38:21 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B6DC0613EE
-        for <linux-serial@vger.kernel.org>; Fri, 19 Jun 2020 20:38:20 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id 35so4833261ple.0
-        for <linux-serial@vger.kernel.org>; Fri, 19 Jun 2020 20:38:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=HcObWc1pAc0CzEIfy/Ab93l3HI5nWLBSYzw/kBHBfwY=;
-        b=lhgV1qIdumIkMjp9zAF4dHdPgrXIFVHFt+Cc38pwGU4wKuxuWy7t3Nre+sHpGriVla
-         ia0lFohFVhdGIpkN3vOb4zlR5TDKv+GgLGNyWVIraSzsTiVYCrf+I1Xp4tWF1zgw8Lkz
-         RTFP0UGHV9zsWoyNkG8p1MZaPmeCP93Lm3IC4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=HcObWc1pAc0CzEIfy/Ab93l3HI5nWLBSYzw/kBHBfwY=;
-        b=gxKVqMtqBVDu2UoaST/jUIqNXuLOo1dxDcoZ4h34i2AVaZ8glOYxyjnbBcOASDEK5U
-         dmrLDTFn0sqKOqyQpGEzm7dQgYTc67tOFXEg6hOXzGkOEA3B8bp8KkpqQ8k7fqzo4N37
-         uVEiUlvJMxRHnkK3p5PiKbJVk3d2cY4VVeNpKU8cB0M0ZK0WIW3y/ge/NoLUO9cfOjqE
-         6KLFxEQQSOVrzBu6hfwjYCteknexzKrPaCopMT48Y5j/FKn21vrFXbooLnjMmzAwu+He
-         EuaImBD2Hem74YPD4cCWezBsUO3y+ukF4lbPyZykIpM+SpRNqHIVXR9v1IFRGqutSICV
-         o/9g==
-X-Gm-Message-State: AOAM5329wozsqw0lQ7GF9x0s59albogEz7pQet15iotCTrONYHwC1iFS
-        b2lQNHuV92XtmJyrlJgSOd+oXw==
-X-Google-Smtp-Source: ABdhPJy6m7gEuO0EEGifM2oVB4op2VgxIdj0c/pwvE0F4pJDMkyR74gSJh0ct/N06naCetuf7Ub2Eg==
-X-Received: by 2002:a17:902:a587:: with SMTP id az7mr11015643plb.278.1592624300090;
-        Fri, 19 Jun 2020 20:38:20 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id z8sm6323027pjr.41.2020.06.19.20.38.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2020 20:38:19 -0700 (PDT)
-Date:   Fri, 19 Jun 2020 20:38:18 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Charles <18oliveira.charles@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rodrigosiqueiramelo@gmail.com
-Subject: Re: [PATCH] serial: sh-sci: fix uninitialized variable warning
-Message-ID: <202006192035.81C1F7E2C4@keescook>
-References: <20190613180824.6ajwjelzr5fmjnie@debie>
+        Sat, 20 Jun 2020 05:08:42 -0400
+X-Greylist: delayed 735 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 20 Jun 2020 02:08:41 PDT
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B697C06174E;
+        Sat, 20 Jun 2020 02:08:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=HkINJawlRBHwc9VNfEcMZvgjcar16lovqjBKst1T/h8=; b=c0RvMXGf8LMYYodMuFBnlGPA5
+        h3JK1D0vAcXa0tRBv93Q3jOqdlWFQcW1Y2zFSv9zuMaFffJHzW8y0a04xN1b5rtlaz2oBMbGC4ZIX
+        uRoG02au1wR0yha0mGobF+Uhyj4gj/O6v6gihU6qJj9mnC+LDmvkJWZC2U83PkpFYyBRv1PCrTrLf
+        SmrIxhXVJNpfqwG6smZdrlXW83kMBWT6Azs8qTaHYQ/BDAVm0tuWINrSRxGwlPdUxkN7Do1/pi0D5
+        WYLG50K8mu8WOowJ0Bev9At1TL/gy/77i5bRvhvW7GvcB0hD0aUcPCprpHBkRzK2gup6oC/BrgGYe
+        oX9vd11Jg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58864)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jmZII-0007Mf-B7; Sat, 20 Jun 2020 09:56:10 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jmYbZ-0006Th-Ck; Sat, 20 Jun 2020 09:12:01 +0100
+Date:   Sat, 20 Jun 2020 09:12:01 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Will Deacon <will@kernel.org>, linux-mips@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/3] serial: 8250_dw: Simplify the ref clock rate
+ setting procedure
+Message-ID: <20200620081201.GQ1551@shell.armlinux.org.uk>
+References: <20200619200251.9066-1-Sergey.Semin@baikalelectronics.ru>
+ <20200619200251.9066-3-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190613180824.6ajwjelzr5fmjnie@debie>
+In-Reply-To: <20200619200251.9066-3-Sergey.Semin@baikalelectronics.ru>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 03:08:24PM -0300, Charles wrote:
-> Avoid following compiler warning on uninitialized variable
-> 
-> In file included from ./include/linux/rwsem.h:16:0,
->                  from ./include/linux/notifier.h:15,
->                  from ./include/linux/clk.h:17,
->                  from drivers/tty/serial/sh-sci.c:24:
-> drivers/tty/serial/sh-sci.c: In function ‘sci_dma_rx_submit’:
-> ./include/linux/spinlock.h:288:3: warning: ‘flags’ may be used
-> uninitialized in this function [-Wmaybe-uninitialized]
->    _raw_spin_unlock_irqrestore(lock, flags); \
->    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/tty/serial/sh-sci.c:1353:16: note: ‘flags’ was declared here
->   unsigned long flags;
->                 ^~~~~
-> 
-> Signed-off-by: Charles Oliveira <18oliveira.charles@gmail.com>
-> ---
->  drivers/tty/serial/sh-sci.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index abc705716aa0..a6af73eaec11 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1350,7 +1350,7 @@ static int sci_dma_rx_submit(struct sci_port *s, bool port_lock_held)
->  {
->  	struct dma_chan *chan = s->chan_rx;
->  	struct uart_port *port = &s->port;
-> -	unsigned long flags;
-> +	unsigned long uninitialized_var(flags);
+On Fri, Jun 19, 2020 at 11:02:50PM +0300, Serge Semin wrote:
+> Really instead of twice checking the clk_round_rate() return value
+> we could do it once, and if it isn't error the clock rate can be changed.
+> By doing so we decrease a number of ret-value tests and remove a weird
+> goto-based construction implemented in the dw8250_set_termios() method.
 
-akpm made this same change in -mm, and it's not the right
-solution[1]. Please just initialize it to 0 if the compiler can't figure
-it out. :)
+This doesn't look right to me - neither the before code nor the after
+code.
 
--Kees
-
-[1] https://lore.kernel.org/lkml/20200620033007.1444705-2-keescook@chromium.org/
-
->  	int i;
+>  	clk_disable_unprepare(d->clk);
+>  	rate = clk_round_rate(d->clk, baud * 16);
+> -	if (rate < 0)
+> -		ret = rate;
+> -	else if (rate == 0)
+> -		ret = -ENOENT;
+> -	else
+> +	if (rate > 0) {
+>  		ret = clk_set_rate(d->clk, rate);
+> +		if (!ret)
+> +			p->uartclk = rate;
+> +	}
+>  	clk_prepare_enable(d->clk);
 >  
->  	for (i = 0; i < 2; i++) {
-> -- 
-> 2.11.0
-> 
+> -	if (ret)
+> -		goto out;
+> -
+> -	p->uartclk = rate;
+
+	newrate = baud * 16;
+
+	clk_disable_unprepare(d->clk);
+	rate = clk_round_rate(newrate);
+	ret = clk_set_rate(d->clk, newrate);
+	if (!ret)
+		p->uartclk = rate;
+
+	ret = elk_prepare_enable(d->clk);
+	/* check ret for failure, means the clock is no longer running */
+
+is all that should be necessary: note that clk_round_rate() is required
+to return the rate that a successful call to clk_set_rate() would result
+in for that clock.  It is equivalent to:
+
+	ret = clk_set_rate(d->clk, newrate);
+	if (ret == 0)
+		p->uartclk = clk_get_rate(d->clk);
+
+The other commonly misunderstood thing about the clk API is that the
+rate you pass in to clk_round_rate() to discover the actual clock rate
+and the value passed in to clk_set_rate() _should_ be the same value.
+You should _not_ do clk_set_rate(clk, clk_round_rate(clk, newrate));
 
 -- 
-Kees Cook
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
