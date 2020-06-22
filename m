@@ -2,108 +2,117 @@ Return-Path: <SRS0=XDGD=AD=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.4 required=3.0 tests=DATE_IN_PAST_06_12,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AFF3C433E2
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 14:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE36BC433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 14:27:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 41BB020738
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 14:27:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8808C20760
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 14:27:28 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CcQ+0S6+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729484AbgFVO0s (ORCPT
+        id S1729719AbgFVO1X (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Jun 2020 10:26:48 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48254 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729485AbgFVO0r (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Jun 2020 10:26:47 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 85C2CC1A9;
-        Mon, 22 Jun 2020 14:26:43 +0000 (UTC)
-Subject: Re: [PATCH v1 1/6] mips: Return proper error code from console
- ->setup() hook
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-References: <20200618164751.56828-1-andriy.shevchenko@linux.intel.com>
- <20200618164751.56828-2-andriy.shevchenko@linux.intel.com>
-From:   Jiri Slaby <jslaby@suse.com>
-Autocrypt: addr=jslaby@suse.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <15960896-3874-599c-6304-18b01ffd5c94@suse.com>
-Date:   Mon, 22 Jun 2020 06:50:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200618164751.56828-2-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=iso-8859-2
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Mon, 22 Jun 2020 10:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729155AbgFVO1U (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 22 Jun 2020 10:27:20 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A936C061573
+        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 07:27:20 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id i12so8239617pju.3
+        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 07:27:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=3GI1uGL8qRj0UWsRg1f35/N6knURd5cco/VjWV8guxI=;
+        b=CcQ+0S6+v97SJO9VqZ1l3zquEMKhBkbcW/mJDEWfKfhOwMPLFJd8tfH+lqmbqz5SEH
+         wJe2AxmAsInK6RWKkFdunWoh0OZpYUei2rkv+4VsjH18jzdmSoWWbzfI+3TeuZ2ZcTZc
+         DyDiyAcuwI0MJxW/DCAxav6ctw9GQsLe3aQLlmFsco10yy1oVcIx4uoPm4LQBQR08cYt
+         jSe7oExrAEuFqb52wL+qT6kK4ZPX7LVJXEgB3s+gcBG7h5j7YuCyw5Fg5/chnvLQfeXB
+         4tYZ8jGawHQD9UufmWlaYnikek7LGVN/3/uxEjH+L1Pl74VKof4oz54ibaDXG0nahoMO
+         nwoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3GI1uGL8qRj0UWsRg1f35/N6knURd5cco/VjWV8guxI=;
+        b=HNJVadRQMEuoUYcrLNtYgIEcXWngwhPvjiIQhChfsVvdykgT9qMPyrjBzLZ+HxRGQR
+         PmR777J1qfwe3R8ZPWmhBrD1FxwG8yF00yyEUJywNcztz4f1P9IkosHDAAJI/P7C6/kx
+         eTMLRGDuHQjrS7WLD0MtmvmefilMFy/wwgAc7Bp/aEbUh2RJ5Ckb/+9WO4OeWMtFZI4b
+         5Ifd8uPk8rY1JjScrMG/CsWVt/kDqytEk0c7nOaOXQKgOBeb+pqraF1QZL4mwVm4E1Bk
+         y7QX9eBkvLDio/qDdqcgF4zLybdyZMNerlK43SJ691OZev433ZJDudm4XplmYzEIdxGz
+         qx0Q==
+X-Gm-Message-State: AOAM530XGDMNKk8L7+JUCeyvzzPCYoHb2C+Gf09VAPosW1d8Kse563kX
+        pGuUnmQMqZ6ewIMgiVR2GvWsOA==
+X-Google-Smtp-Source: ABdhPJwIWQswOm3gAoyhRJ8B6sV7a9AiL57ArtJyCd3xKaqvSlNveqUuHLc4rb86sbspHNrCNoA0tw==
+X-Received: by 2002:a17:90a:acf:: with SMTP id r15mr19289807pje.171.1592836039745;
+        Mon, 22 Jun 2020 07:27:19 -0700 (PDT)
+Received: from localhost.localdomain ([117.252.67.186])
+        by smtp.gmail.com with ESMTPSA id d6sm14547939pjh.5.2020.06.22.07.27.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Jun 2020 07:27:18 -0700 (PDT)
+From:   Sumit Garg <sumit.garg@linaro.org>
+To:     kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, daniel.thompson@linaro.org,
+        jason.wessel@windriver.com, dianders@chromium.org, jslaby@suse.com,
+        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
+        Sumit Garg <sumit.garg@linaro.org>
+Subject: [PATCH 0/7] Enable support for kgdb NMI console feature
+Date:   Mon, 22 Jun 2020 19:56:17 +0530
+Message-Id: <1592835984-28613-1-git-send-email-sumit.garg@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18. 06. 20, 18:47, Andy Shevchenko wrote:
-> For unifying console ->setup() handling, which is pure documented,
+This work is derived from Daniel's prior work here [1]. It has been
+rebased (tag: kgdb-5.8-rc1 + console hardening patch-set[2]), reworked
+to use serial RX interrupt as NMI (pseudo NMI on aarch64) in order to
+drop into debugger and tested on Developerbox (using amba-pl011).
 
-Did you mean s/pure/poorly/ in all the patches? Or purely? But then where?
+- Patch #1 is more of a fix required for NMI console to replace kgdb IO
+  console.
+- Patches #2 to #6 adds an architecture agnostic fallback mechanism to
+  enable kgdb NMI console using serial RX interrupt as NMI.
+- Patch #7 is an optimization patch that gets rid of inefficient timer
+  based tasklet and rather uses irq_work.
 
-> return error code, rather than non-zero arbitrary number.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Usage of kgdb NMI console:
+- Enable "CONFIG_SERIAL_KGDB_NMI".
+- Kernel cmdline modification for Developerbox:
+   console=ttyNMI0 kgdboc=ttyAMA0
 
-thanks,
+[1] https://git.linaro.org/people/daniel.thompson/linux.git/log/?h=kgdb/polled_request_irq
+[2] https://lkml.org/lkml/2020/6/4/294
+
+Daniel Thompson (5):
+  tty: serial: Add poll_get_irq() to the polling interface
+  kgdb: Add request_nmi() to the io ops table for kgdboc
+  serial: kgdb_nmi: Add support for interrupt based fallback
+  serial: 8250: Implement poll_get_irq() interface
+  serial: kgdb_nmi: Replace hrtimer with irq_work ping
+
+Sumit Garg (2):
+  serial: kgdb_nmi: Allow NMI console to replace kgdb IO console
+  serial: amba-pl011: Implement poll_get_irq() interface
+
+ drivers/tty/serial/8250/8250_port.c |  16 ++++++
+ drivers/tty/serial/amba-pl011.c     |  12 +++++
+ drivers/tty/serial/kgdb_nmi.c       | 100 ++++++++++++++++++++++++------------
+ drivers/tty/serial/kgdboc.c         |  35 +++++++++++++
+ drivers/tty/serial/serial_core.c    |  18 +++++++
+ include/linux/kgdb.h                |   7 +++
+ include/linux/serial_core.h         |   1 +
+ include/linux/tty_driver.h          |   1 +
+ 8 files changed, 158 insertions(+), 32 deletions(-)
+
 -- 
-js
-suse labs
+2.7.4
+
