@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20241C433DF
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 14:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE34C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 14:27:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EE0E42074D
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 14:27:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DE49520767
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 14:27:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QOeLXcXX"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="iES2Z3LS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729160AbgFVO1n (ORCPT
+        id S1729783AbgFVO1q (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Jun 2020 10:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
+        Mon, 22 Jun 2020 10:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729485AbgFVO1k (ORCPT
+        with ESMTP id S1729799AbgFVO1p (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Jun 2020 10:27:40 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6FFC061573
-        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 07:27:40 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id u14so2935097pjj.2
-        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 07:27:40 -0700 (PDT)
+        Mon, 22 Jun 2020 10:27:45 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB73C061573
+        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 07:27:45 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id d10so5753809pls.5
+        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 07:27:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sjUQXgLs8QLSZt9fRiSIf9rP+l/zfeDDFs4yVtYk7Z0=;
-        b=QOeLXcXXYJY7Mbx/0GKxWfojZNvqp1+/iUKrhHvJJPT9TVW7hdHXE2t9l97MfMSFpN
-         a08ODnr/u8hVAu7RVgm3nwaohgTk6yIAfdCRoM5WfyRsqxQHCEGEzi9wTA/yKOQSDDTn
-         EspPlVmFhi6LGov/zu0zVQxHn0TORwdNIp4Tz25YBXpANqqkhTFuF4GxAxBipD+4hDqG
-         jmvq8KHWY56pQ4Uhc3UmRVKr91Ozy+VR2DUlvgYbGewgO3jRkY/Dp81cKfOw8z4F75Dm
-         Z8nwP0kHFAnNAqtxxXXSBop65W6O3MFJ//0g5Mpc6ZSBKBujqa7snPffto/Uxw5BV9qX
-         S9qA==
+        bh=Q8XZGlRV/H7ipjUMwZ0R6upcC6zi/GhiQnizl6ayNWQ=;
+        b=iES2Z3LS/+1ufp5YulU7Lewvw1bchggk2aWycD2ouwUfDqw/J2BDmhkYLoA5Q8Xi1/
+         czE87Id/eTsr/WIJUHU8BJT+s05ule9+LYv0Ido5T4GknU8qZXkBGUNrJUw9Yoc9s4/b
+         GbKx6DlF9lfyzRTu+u41x/JFhfpsQDL13xVlQtBdo9b5QcM3gFxunzDEApVgBt2ZCiMC
+         fe4kGGgabD666+6T0pGDqHa2rTr0hbLHGBP9dQ91Z9MHTbd+skiPXa44ljD14bUyQwDe
+         IqyvhXNM6ncGGDSSPex+2Zmrr3VIqDY+mSqst1UwK3XIJ5tQNVugk+49gE/f2ylISQlv
+         Zfzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=sjUQXgLs8QLSZt9fRiSIf9rP+l/zfeDDFs4yVtYk7Z0=;
-        b=QTmxIjEjqvvuCoQ0FZST/EAfc5XfdufzwuMMPIdTOu4t9vhoFClodMDYu2EPc5q9Ti
-         b/+l0hTuFYXjFWdRcnAu143H0mBOefefx+/Fy3yBslvMGhRoc4u3fkjW2C5CQ+ZmS0/4
-         aqAX05Xb9rmhs73U/SSRv0xwDzgFRCvL3fkYtP6xwcpK/OupkMnhcP5XXFAqYFcKxsix
-         Gl/q9jK2O953Kge/ylNJTToI9dXqCswvaX5J5CuhkYv523wx901RJEmYIt6l42i/Pcnz
-         qE8a0ktwmYbk2UhZzTjA4iLFPZnN4munYdNPFxX3E8rtHaD3jEHSvvwnANNvy4zseYbD
-         NpLg==
-X-Gm-Message-State: AOAM53194KlOUwCOdn1jEHNeqdBGsad0wfBWaiOmuHYkGfu7oBPh9z+8
-        Rv4cnoff/HIPXm4tJs7oQfVCoQmxli4=
-X-Google-Smtp-Source: ABdhPJzpaCxkbO/21akB31Cg1TWuLDrphNwsB5izjnAOPjR2mgcdxwifka4NWh+oyQbNDK0xDtgcng==
-X-Received: by 2002:a17:90a:d485:: with SMTP id s5mr17596432pju.61.1592836060022;
-        Mon, 22 Jun 2020 07:27:40 -0700 (PDT)
+        bh=Q8XZGlRV/H7ipjUMwZ0R6upcC6zi/GhiQnizl6ayNWQ=;
+        b=lDJZHEskMkBUqgfWceurRmu1ibsgU9o/05KGpl1QAdiTW+O54PNHUSqj5Of7H9xHIi
+         Bl3q2z2jRxHrHcdIqP2V5NjYLFh4VTgNZ3IQ+iPJgmfFZrcp4YuSIBpAHmxzqvtAWwLk
+         1JJUP0pW5QJ7f0n0Q9QlQOpnBzhOzU9p8Xn6tHoDlK1q1Rrs2c3DYVBY4e/vGl/MQBR5
+         VbRQ582Zw0oy2f1JSwqpGGSyoz8ZTo6GgDcBIWytCHSrHoEOwpmkkT1ei92OfHeUCBaw
+         gcNlrseB8uh7Ll57A9MmaKWqIPxh0bhES4uinGFDcvG4SUJBvmy9ZR0P+Qtu5mpOmhGB
+         ux4A==
+X-Gm-Message-State: AOAM5310oUXXob+x/L4SXLSjfwLfP18RdUadX4kuKdB82ithcJqn4Mca
+        2exD/J0aQQsVooBNS21phGsA0g==
+X-Google-Smtp-Source: ABdhPJwTKZ4S3rwJvAgQzJ9r2GZApOT49IPaauL4XH7I7OZbzqclPlcDPAUZnlz4ECuEmfHBSCn8JQ==
+X-Received: by 2002:a17:90a:36cf:: with SMTP id t73mr19089365pjb.100.1592836065367;
+        Mon, 22 Jun 2020 07:27:45 -0700 (PDT)
 Received: from localhost.localdomain ([117.252.67.186])
-        by smtp.gmail.com with ESMTPSA id d6sm14547939pjh.5.2020.06.22.07.27.35
+        by smtp.gmail.com with ESMTPSA id d6sm14547939pjh.5.2020.06.22.07.27.40
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 Jun 2020 07:27:39 -0700 (PDT)
+        Mon, 22 Jun 2020 07:27:44 -0700 (PDT)
 From:   Sumit Garg <sumit.garg@linaro.org>
 To:     kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
 Cc:     gregkh@linuxfoundation.org, daniel.thompson@linaro.org,
         jason.wessel@windriver.com, dianders@chromium.org, jslaby@suse.com,
         linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
         Sumit Garg <sumit.garg@linaro.org>
-Subject: [PATCH 4/7] serial: kgdb_nmi: Add support for interrupt based fallback
-Date:   Mon, 22 Jun 2020 19:56:21 +0530
-Message-Id: <1592835984-28613-5-git-send-email-sumit.garg@linaro.org>
+Subject: [PATCH 5/7] serial: 8250: Implement poll_get_irq() interface
+Date:   Mon, 22 Jun 2020 19:56:22 +0530
+Message-Id: <1592835984-28613-6-git-send-email-sumit.garg@linaro.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1592835984-28613-1-git-send-email-sumit.garg@linaro.org>
 References: <1592835984-28613-1-git-send-email-sumit.garg@linaro.org>
@@ -77,96 +77,50 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Thompson <daniel.thompson@linaro.org>
 
-Add a generic NMI fallback to support kgdb NMI console feature which can
-be overridden by arch specific implementation.
-
-This common fallback mechanism utilizes kgdb IO based interrupt in order
-to support entry into kgdb if a user types in kgdb_nmi_magic sequence. So
-during NMI console init, NMI handler is installed corresponding to kgdb
-IO based NMI which is invoked when a character is pending and that can be
-cleared by calling @read_char until it returns NO_POLL_CHAR.
+Support kgdb NMI console feature via implementing poll_get_irq()
+interface. This will allow usage of RX interrupts to support kgdb entry
+while serial device is operating in polling mode.
 
 Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Co-developed-by: Sumit Garg <sumit.garg@linaro.org>
 Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
 ---
- drivers/tty/serial/kgdb_nmi.c | 47 ++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 40 insertions(+), 7 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index b32c6b1..2580f39 100644
---- a/drivers/tty/serial/kgdb_nmi.c
-+++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -42,9 +42,46 @@ MODULE_PARM_DESC(magic, "magic sequence to enter NMI debugger (default $3#33)");
- static atomic_t kgdb_nmi_num_readers = ATOMIC_INIT(0);
- static struct console *orig_dbg_cons;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index f77bf82..1473b1a 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2138,6 +2138,21 @@ static void serial8250_put_poll_char(struct uart_port *port,
+ 	serial8250_rpm_put(up);
+ }
  
-+static int kgdb_nmi_poll_one_knock(void);
-+
-+static irqreturn_t kgdb_handle_nmi(int irq, void *dev_id)
++static int serial8250_get_poll_irq(struct uart_port *port)
 +{
-+	int ret;
++	unsigned int ier;
++	struct uart_8250_port *up = up_to_u8250p(port);
 +
-+	if (kgdb_nmi_knock < 0) {
-+		kgdb_breakpoint();
-+		return IRQ_HANDLED;
-+	}
++	serial8250_rpm_get(up);
 +
-+	ret = kgdb_nmi_poll_one_knock();
-+	if (ret == NO_POLL_CHAR)
-+		return IRQ_NONE;
++	ier = serial_port_in(port, UART_IER);
++	ier |= UART_IER_RLSI | UART_IER_RDI;
++	serial_port_out(port, UART_IER, ier);
 +
-+	while (ret != 1) {
-+		ret = kgdb_nmi_poll_one_knock();
-+		if (ret == NO_POLL_CHAR)
-+			return IRQ_HANDLED;
-+	}
-+
-+	kgdb_breakpoint();
-+	return IRQ_HANDLED;
++	serial8250_rpm_put(up);
++	return port->irq;
 +}
 +
- static int kgdb_nmi_console_setup(struct console *co, char *options)
- {
--	arch_kgdb_ops.enable_nmi(1);
-+	int res;
-+
-+	if (arch_kgdb_ops.enable_nmi) {
-+		arch_kgdb_ops.enable_nmi(1);
-+	} else if (dbg_io_ops->request_nmi) {
-+		res = dbg_io_ops->request_nmi(kgdb_handle_nmi, co);
-+		if (res) {
-+			pr_err("ttyNMI0: Cannot request nmi/irq\n");
-+			return res;
-+		}
-+	} else {
-+		return -ENODEV;
-+	}
+ #endif /* CONFIG_CONSOLE_POLL */
  
- 	/* The NMI console uses the dbg_io_ops to issue console messages. To
- 	 * avoid duplicate messages during kdb sessions we must inform kdb's
-@@ -328,9 +365,6 @@ int kgdb_register_nmi_console(void)
- {
- 	int ret;
+ int serial8250_do_startup(struct uart_port *port)
+@@ -3141,6 +3156,7 @@ static const struct uart_ops serial8250_pops = {
+ #ifdef CONFIG_CONSOLE_POLL
+ 	.poll_get_char = serial8250_get_poll_char,
+ 	.poll_put_char = serial8250_put_poll_char,
++	.poll_get_irq  = serial8250_get_poll_irq,
+ #endif
+ };
  
--	if (!arch_kgdb_ops.enable_nmi)
--		return 0;
--
- 	kgdb_nmi_tty_driver = alloc_tty_driver(1);
- 	if (!kgdb_nmi_tty_driver) {
- 		pr_err("%s: cannot allocate tty\n", __func__);
-@@ -380,9 +414,8 @@ int kgdb_unregister_nmi_console(void)
- {
- 	int ret;
- 
--	if (!arch_kgdb_ops.enable_nmi)
--		return 0;
--	arch_kgdb_ops.enable_nmi(0);
-+	if (arch_kgdb_ops.enable_nmi)
-+		arch_kgdb_ops.enable_nmi(0);
- 
- 	ret = unregister_console(&kgdb_nmi_console);
- 	if (ret)
 -- 
 2.7.4
 
