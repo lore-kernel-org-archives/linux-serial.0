@@ -2,208 +2,231 @@ Return-Path: <SRS0=Q4yL=AE=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D741C433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Jun 2020 10:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D81BC433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Jun 2020 10:52:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E70AD20724
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Jun 2020 10:40:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 54FBF20771
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Jun 2020 10:52:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="wh8nC+GT"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hVTKgZRY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732409AbgFWKkP (ORCPT
+        id S1732392AbgFWKwJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Jun 2020 06:40:15 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:22075 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732339AbgFWKkA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Jun 2020 06:40:00 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1592908799; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=5WFzB6GD/oML5LfTkg7aBaRO3tq1egTpCbAmeSuTlJ4=; b=wh8nC+GTp/Vl+E3oiZlNeIQklp9+050owat8MDIgcwGLPve7iS0kLTdnki/6+6kPDBODS/1S
- cxLle2gBKVaNgtdOlD+kEv5NKrAwLM6m/1T7huqMxhlukZNJke8NrauEVhBtnRcDTa1KfiyL
- P1DEwKWkgzwromRVwN0lrWz7wTk=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n14.prod.us-east-1.postgun.com with SMTP id
- 5ef1dbee567385e8e70bb8b8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 23 Jun 2020 10:39:42
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id A39FBC433B2; Tue, 23 Jun 2020 10:39:41 +0000 (UTC)
-Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 738FCC433A0;
-        Tue, 23 Jun 2020 10:39:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 738FCC433A0
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-From:   Akash Asthana <akashast@codeaurora.org>
-To:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org
-Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@codeaurora.org,
-        linux-kernel@vger.kernel.org,
-        Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V8 5/8] spi: spi-geni-qcom: Combine the clock setting code
-Date:   Tue, 23 Jun 2020 16:08:54 +0530
-Message-Id: <1592908737-7068-6-git-send-email-akashast@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1592908737-7068-1-git-send-email-akashast@codeaurora.org>
-References: <1592908737-7068-1-git-send-email-akashast@codeaurora.org>
+        Tue, 23 Jun 2020 06:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732383AbgFWKwJ (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Jun 2020 06:52:09 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D16C061573
+        for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2020 03:52:08 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id b6so20006997wrs.11
+        for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2020 03:52:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dBzPbPycPoCqD0jxPC/ZRazkaIKgNXR6qz1TtThkFUU=;
+        b=hVTKgZRYdrZf8D1hqAyqe0LNbpXqLr2qkyQuORdV5ZQF1n8hpcd2PdufDsxy2KZshW
+         f3xFNx1WZb2U5LWD+NgGoZ7RarxK1BfT88GLA/1YuWUZ3l3UTlZO4jGaPBsRqOjOc9R4
+         Gz86QuEbWGVO12QL7IcTOXHrAyOjMblCv6w1ADGv4nXP3YZwJVoeFu+dLUbQWZF5KzWn
+         e8ajLS9iSB76QXQOfuZlpGZROIkNwTDFhhRsOc/OKvkydOic3Oo/md3dFvCPS5eX6T7Z
+         4XuA5j6ku24jRQSOB5wf2TI8xKo1W911B7qq2Y4IPNu7Br70etSZO121Jms9Lll2HL0K
+         srEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dBzPbPycPoCqD0jxPC/ZRazkaIKgNXR6qz1TtThkFUU=;
+        b=Egncd3m+nzDrUtv4wCPernub3YnprPquYaUwU126gYMc8McFgDsl88vRzr+BjsS7yL
+         5xkto4XOtJoHYeNosTmn5V+nvEZlJp0UWJddNEmNUnAf7zeFK91jPJovbs8t+/9mrfZm
+         du9br/y7BvC0FQBBKx84/kyDGfebH9XBEXnEnv5Isni8co9Dspl0rYrR3GLHPfno67tf
+         k20RITCrYQd/Vn0PPGKGHH4affyTTHCvIWftE25osV/sQ9+p7I9mICP/134xEI6vvVjy
+         xTkML//ZXgkHuJL3hCG5uppVuLOKeTcchwYEEchcMimYBAQ57ib5q799iFYEsZxSDmao
+         j5hg==
+X-Gm-Message-State: AOAM531MJnWJZK4Cu85JsIs80iiY9wbnF2YZN39+LrXygh63kyhqd5SY
+        3i8KFKneFVwlNJbEq1Z8szy3eQ==
+X-Google-Smtp-Source: ABdhPJxLAPHsxecFBVI1/3n+UdvZKrmvDn4Mcf8d7zg0Xtlmk9Z6ZJ4YUJm4LoASAqM0Kz5pD+MAXA==
+X-Received: by 2002:adf:dc42:: with SMTP id m2mr26010430wrj.342.1592909527428;
+        Tue, 23 Jun 2020 03:52:07 -0700 (PDT)
+Received: from holly.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
+        by smtp.gmail.com with ESMTPSA id c66sm3471923wma.20.2020.06.23.03.52.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2020 03:52:06 -0700 (PDT)
+Date:   Tue, 23 Jun 2020 11:52:04 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/7] tty: serial: Add poll_get_irq() to the polling
+ interface
+Message-ID: <20200623105204.mj4eax7wq7om4jka@holly.lan>
+References: <1592835984-28613-1-git-send-email-sumit.garg@linaro.org>
+ <1592835984-28613-3-git-send-email-sumit.garg@linaro.org>
+ <20200622155624.he2vs2r3e5yzf3sl@holly.lan>
+ <CAFA6WYPEbLVRSHC0QFcWusUrakmxuEjBMYJQb41htbALeTQRPg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFA6WYPEbLVRSHC0QFcWusUrakmxuEjBMYJQb41htbALeTQRPg@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Douglas Anderson <dianders@chromium.org>
+On Tue, Jun 23, 2020 at 01:18:25PM +0530, Sumit Garg wrote:
+> On Mon, 22 Jun 2020 at 21:26, Daniel Thompson
+> <daniel.thompson@linaro.org> wrote:
+> >
+> > On Mon, Jun 22, 2020 at 07:56:19PM +0530, Sumit Garg wrote:
+> > > From: Daniel Thompson <daniel.thompson@linaro.org>
+> >
+> > Sumit, to some extent this mail is me yelling at myself two years ago
+> > although, in my defence, at the time I choose not to post it because I
+> > knew it wasn't right.
+> >
+> > I'm a bit concerned to see the TODO: comment critiquing this interface
+> > being removed (from patch 3) without this patch being changed to
+> > address that comment.
+> >
+> 
+> I did consider that comment but I couldn't think of a normal scenario
+> where request_irq() should fail. And in case it fails as well, I did
+> put in "WARN_ON(res);" so that the user is notified of that particular
+> error scenario.
+> 
+> >
+> > > Add new API: poll_get_irq() to the polling interface in order for user
+> > > of polling interface to retrieve allocated IRQ corresponding to
+> > > underlying serial device.
+> > >
+> > > Although, serial interface still works in polling mode but interrupt
+> > > associated with serial device can be leveraged for special purposes like
+> > > debugger(kgdb) entry.
+> > >
+> > > Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> > > Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+> > > ---
+> > >  drivers/tty/serial/serial_core.c | 18 ++++++++++++++++++
+> > >  include/linux/serial_core.h      |  1 +
+> > >  include/linux/tty_driver.h       |  1 +
+> > >  3 files changed, 20 insertions(+)
+> > >
+> > > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> > > index 66a5e2f..1bb033c 100644
+> > > --- a/drivers/tty/serial/serial_core.c
+> > > +++ b/drivers/tty/serial/serial_core.c
+> > > @@ -2470,6 +2470,23 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
+> > >       port->ops->poll_put_char(port, ch);
+> > >       uart_port_deref(port);
+> > >  }
+> > > +
+> > > +static int uart_poll_get_irq(struct tty_driver *driver, int line)
+> > > +{
+> > > +     struct uart_driver *drv = driver->driver_state;
+> > > +     struct uart_state *state = drv->state + line;
+> > > +     struct uart_port *port;
+> > > +     int ret = -ENODEV;
+> > > +
+> > > +     port = uart_port_ref(state);
+> > > +     if (port && port->ops->poll_get_irq) {
+> > > +             ret = port->ops->poll_get_irq(port);
+> > > +             uart_port_deref(port);
+> > > +     }
+> > > +
+> > > +     return ret;
+> > > +}
+> > > +
+> > >  #endif
+> > >
+> > >  static const struct tty_operations uart_ops = {
+> > > @@ -2505,6 +2522,7 @@ static const struct tty_operations uart_ops = {
+> > >       .poll_init      = uart_poll_init,
+> > >       .poll_get_char  = uart_poll_get_char,
+> > >       .poll_put_char  = uart_poll_put_char,
+> > > +     .poll_get_irq   = uart_poll_get_irq,
+> >
+> > The TODO comments claimed this API was bogus because it doesn't permit
+> > a free and that can cause interoperation problems with the real serial
+> > driver. I'll cover some of that in a reply to patch 3 but for now.
+> >
+> > Anyhow, for this patch, what are the expected semantics for
+> > uart_poll_get_irq().
+> 
+> Currently, the expected use for this API is to enable uart RX
+> interrupts and return corresponding IRQ id.
+> 
+> Although, we can make this interface modular as follows:
+> 
+> .poll_get_irq
+> .poll_enable_rx_int
+> .poll_disable_rx_int
+> 
+> Your views?
 
-There is code for adjusting the clock both in setup_fifo_params()
-(called from prepare_message()) and in setup_fifo_xfer() (called from
-transfer_one()).  The code is the same.  Abstract it out to a shared
-function.
+A direct reply is to ask what the purpose of poll_enable_rx_int()
+is? It appears to be making something modular without any reason to do
+so.
 
-This is a no-op cleanup patch.  The only change is to the error string
-if we fail to set the clock.  Since the two paths has marginally
-different error messages I picked the clean one.
+More generally lets ask some more questions:
 
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Akash Asthana <akashast@codeaurora.org>
----
-This patch is introduced in V8 of the series.
+1. What serial hardware and/or driver state change happens when we call
+   poll_get_irq()
 
- drivers/spi/spi-geni-qcom.c | 70 ++++++++++++++++++++++-----------------------
- 1 file changed, 35 insertions(+), 35 deletions(-)
+2. After a call to poll_get_irq() are there any new restrictions on
+   the underlying serial driver?
 
-diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
-index 0c534d1..f186906 100644
---- a/drivers/spi/spi-geni-qcom.c
-+++ b/drivers/spi/spi-geni-qcom.c
-@@ -192,14 +192,42 @@ static void spi_setup_word_len(struct spi_geni_master *mas, u16 mode,
- 	writel(word_len, se->base + SE_SPI_WORD_LEN);
- }
- 
-+static int geni_spi_set_clock(struct spi_geni_master *mas, unsigned long clk_hz)
-+{
-+	u32 clk_sel, m_clk_cfg, idx, div;
-+	struct geni_se *se = &mas->se;
-+	int ret;
-+
-+	ret = get_spi_clk_cfg(clk_hz, mas, &idx, &div);
-+	if (ret) {
-+		dev_err(mas->dev, "Err setting clk to %lu: %d\n", clk_hz, ret);
-+		return ret;
-+	}
-+
-+	/*
-+	 * SPI core clock gets configured with the requested frequency
-+	 * or the frequency closer to the requested frequency.
-+	 * For that reason requested frequency is stored in the
-+	 * cur_speed_hz and referred in the consecutive transfer instead
-+	 * of calling clk_get_rate() API.
-+	 */
-+	mas->cur_speed_hz = clk_hz;
-+
-+	clk_sel = idx & CLK_SEL_MSK;
-+	m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
-+	writel(clk_sel, se->base + SE_GENI_CLK_SEL);
-+	writel(m_clk_cfg, se->base + GENI_SER_M_CLK_CFG);
-+
-+	return 0;
-+}
-+
- static int setup_fifo_params(struct spi_device *spi_slv,
- 					struct spi_master *spi)
- {
- 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
- 	struct geni_se *se = &mas->se;
- 	u32 loopback_cfg, cpol, cpha, demux_output_inv;
--	u32 demux_sel, clk_sel, m_clk_cfg, idx, div;
--	int ret;
-+	u32 demux_sel;
- 
- 	loopback_cfg = readl(se->base + SE_SPI_LOOPBACK);
- 	cpol = readl(se->base + SE_SPI_CPOL);
-@@ -222,27 +250,16 @@ static int setup_fifo_params(struct spi_device *spi_slv,
- 		demux_output_inv = BIT(spi_slv->chip_select);
- 
- 	demux_sel = spi_slv->chip_select;
--	mas->cur_speed_hz = spi_slv->max_speed_hz;
- 	mas->cur_bits_per_word = spi_slv->bits_per_word;
- 
--	ret = get_spi_clk_cfg(mas->cur_speed_hz, mas, &idx, &div);
--	if (ret) {
--		dev_err(mas->dev, "Err setting clks ret(%d) for %ld\n",
--							ret, mas->cur_speed_hz);
--		return ret;
--	}
--
--	clk_sel = idx & CLK_SEL_MSK;
--	m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
- 	spi_setup_word_len(mas, spi_slv->mode, spi_slv->bits_per_word);
- 	writel(loopback_cfg, se->base + SE_SPI_LOOPBACK);
- 	writel(demux_sel, se->base + SE_SPI_DEMUX_SEL);
- 	writel(cpha, se->base + SE_SPI_CPHA);
- 	writel(cpol, se->base + SE_SPI_CPOL);
- 	writel(demux_output_inv, se->base + SE_SPI_DEMUX_OUTPUT_INV);
--	writel(clk_sel, se->base + SE_GENI_CLK_SEL);
--	writel(m_clk_cfg, se->base + GENI_SER_M_CLK_CFG);
--	return 0;
-+
-+	return geni_spi_set_clock(mas, spi_slv->max_speed_hz);
- }
- 
- static int spi_geni_prepare_message(struct spi_master *spi,
-@@ -304,6 +321,7 @@ static void setup_fifo_xfer(struct spi_transfer *xfer,
- 	u32 m_cmd = 0;
- 	u32 spi_tx_cfg, len;
- 	struct geni_se *se = &mas->se;
-+	int ret;
- 
- 	/*
- 	 * Ensure that our interrupt handler isn't still running from some
-@@ -328,27 +346,9 @@ static void setup_fifo_xfer(struct spi_transfer *xfer,
- 
- 	/* Speed and bits per word can be overridden per transfer */
- 	if (xfer->speed_hz != mas->cur_speed_hz) {
--		int ret;
--		u32 clk_sel, m_clk_cfg;
--		unsigned int idx, div;
--
--		ret = get_spi_clk_cfg(xfer->speed_hz, mas, &idx, &div);
--		if (ret) {
--			dev_err(mas->dev, "Err setting clks:%d\n", ret);
-+		ret = geni_spi_set_clock(mas, xfer->speed_hz);
-+		if (ret)
- 			return;
--		}
--		/*
--		 * SPI core clock gets configured with the requested frequency
--		 * or the frequency closer to the requested frequency.
--		 * For that reason requested frequency is stored in the
--		 * cur_speed_hz and referred in the consecutive transfer instead
--		 * of calling clk_get_rate() API.
--		 */
--		mas->cur_speed_hz = xfer->speed_hz;
--		clk_sel = idx & CLK_SEL_MSK;
--		m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
--		writel(clk_sel, se->base + SE_GENI_CLK_SEL);
--		writel(m_clk_cfg, se->base + GENI_SER_M_CLK_CFG);
- 	}
- 
- 	mas->tx_rem_bytes = 0;
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+3. Does implementing poll_get_irq() create an implied change of
+   contract to any other polling function (I think yes, because
+   poll_read_char() will now have to acknowledge an interrupt if
+   the interrupt flags are edge triggered)?
 
+4. To what extent, if any, do we have to support disconnection of
+   kgdb_nmi?
+
+5. Is the API matched with how it will be used by the layers above?
+   (top level uses a request_irq approach, low level is using a
+   let me have the irq number approach)
+
+An interesting idea to explore is using a different verb for
+poll_get_irq(). Perhaps poll_borrow_irq()? It is now much clearer that
+we are stealing the IRQ and making it unusable by the underlying serial
+driver.
+
+
+> > In particular how do they ensure correct interlocking with the real
+> > serial driver underlying it (if kgdb_nmi is active on a serial port
+> > then the underlying driver better not be active at the same time).
+> >
+> 
+> AFAIU kgdb_nmi feature, it registers a new tty driver (ttyNMI0) which
+> is expected to work alongside underlying tty driver (eg. ttyAMA0 with
+> amba-pl011). So ttyAMA0 will only become active if user-space tries to
+> interact with /dev/ttyAMA0 like:
+> 
+> # echo "Hello World!" > /dev/ttyAMA0
+> 
+> So I would like to understand the downsides of having both of them
+> active at the same time using shared IRQ (although that won't be
+> possible with NMI as that doesn't support shared mode)?
+
+It is likely that one of the interrupt handlers will become unreachable
+since the first handler to execute will clear the interrupt flags. This
+will result in anything waiting for the broken driver getting stuck and
+not reporting an error code.
+
+That isn't acceptable.
+
+
+Daniel.
