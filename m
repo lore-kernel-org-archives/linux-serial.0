@@ -1,155 +1,162 @@
-Return-Path: <SRS0=XDGD=AD=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=Q4yL=AE=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D24AFC433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 22:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A350C433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Jun 2020 05:07:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B974920786
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Jun 2020 22:24:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3A09020771
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Jun 2020 05:07:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="GyM4fscQ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730785AbgFVWY4 (ORCPT
+        id S1728275AbgFWFHD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Jun 2020 18:24:56 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:45742 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730756AbgFVWY4 (ORCPT
+        Tue, 23 Jun 2020 01:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52064 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728390AbgFWFHD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Jun 2020 18:24:56 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 401AB8030833;
-        Mon, 22 Jun 2020 22:24:53 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at baikalelectronics.ru
-Received: from mail.baikalelectronics.ru ([127.0.0.1])
-        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ruqNffr3OvTc; Tue, 23 Jun 2020 01:24:52 +0300 (MSK)
-Date:   Tue, 23 Jun 2020 01:24:50 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Will Deacon <will@kernel.org>, <linux-mips@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 2/3] serial: 8250_dw: Simplify the ref clock rate
- setting procedure
-Message-ID: <20200622222450.3sijzrmfxc4ivl6s@mobilestation>
-References: <20200619200251.9066-1-Sergey.Semin@baikalelectronics.ru>
- <20200619200251.9066-3-Sergey.Semin@baikalelectronics.ru>
- <20200620081201.GQ1551@shell.armlinux.org.uk>
+        Tue, 23 Jun 2020 01:07:03 -0400
+Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA672C061573
+        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 22:07:01 -0700 (PDT)
+Received: by mail-ua1-x944.google.com with SMTP id l24so649981uar.10
+        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 22:07:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7oiDqnOGO+TssYLUtaiAkGZqbTLTe8VBFV4/hAXcsaU=;
+        b=GyM4fscQ4q5oq3dAVNcL2LKqjcJve7N0SZ8ZZHhGKk95SJESE5mehZloXDB+bNh5tp
+         eD5Q2sXcgazzYyaHEaIXxhs4bl/B9ZozpMBCMbM9FGCgjMOGrLh5IWUNBHtQBXkGEfTQ
+         01Z4/4we8JqKj06ttdbLoGxTzqNX9heQz4EGo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7oiDqnOGO+TssYLUtaiAkGZqbTLTe8VBFV4/hAXcsaU=;
+        b=ZnpwX79D6ayRgrYZCbHKzMzUmXRjc2swZl9nbIrY+j/BN5ME1sb8lrs9lRTDsmzgrX
+         qzu330RhjhXfy9D02cVuM+MF6TtwYt/4M5lh2HXtEEBzSZaluCoZK0gv1UOTwSGfQKo4
+         g1QR7vJaxxrifCglgNwyqUIJG/UPDF4tOImv+aLlZpCkcaliZMPVI3ElR4zcSw+vuOED
+         KfTvIedfnzZ/iRtryjex1a/E2Ri1vXpPWdgLLhANxrYv3XYkfnuPeZrWkaRoNd8GUmCX
+         uegbmw4HpOlJBdRNrjMC+w7d/NUUyDbFts3oCsgXPo+oDFhLaaQ+r7ZVmMb1bSqYa4Aj
+         +Ebw==
+X-Gm-Message-State: AOAM530OAmTUJcpU67d/aqGX19/HIppiuIvLO8KNtzRuzg6SOl+Qwlfv
+        8z4BEHNzEbwNJhu3WPhEKzCGg1TRRGI=
+X-Google-Smtp-Source: ABdhPJzoqcSA1DT98vx26JP+j5nZiIOL8ZIaFHxMfRjaix12RrEcvVippitAzwbrbsG/vLWdSjP+kw==
+X-Received: by 2002:ab0:991:: with SMTP id x17mr11763500uag.90.1592888820489;
+        Mon, 22 Jun 2020 22:07:00 -0700 (PDT)
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com. [209.85.217.50])
+        by smtp.gmail.com with ESMTPSA id j197sm2531342vkc.19.2020.06.22.22.07.00
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Jun 2020 22:07:00 -0700 (PDT)
+Received: by mail-vs1-f50.google.com with SMTP id m25so10986576vsp.8
+        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2020 22:07:00 -0700 (PDT)
+X-Received: by 2002:a67:e445:: with SMTP id n5mr18647007vsm.73.1592888819511;
+ Mon, 22 Jun 2020 22:06:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200620081201.GQ1551@shell.armlinux.org.uk>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+References: <1591682194-32388-1-git-send-email-akashast@codeaurora.org> <1591682194-32388-5-git-send-email-akashast@codeaurora.org>
+In-Reply-To: <1591682194-32388-5-git-send-email-akashast@codeaurora.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 22 Jun 2020 22:06:48 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XwV-8J9-j1j2gwQ08oF8izDv=hB9vj_SogbagOBQfN6Q@mail.gmail.com>
+Message-ID: <CAD=FV=XwV-8J9-j1j2gwQ08oF8izDv=hB9vj_SogbagOBQfN6Q@mail.gmail.com>
+Subject: Re: [PATCH V7 RESEND 4/7] spi: spi-geni-qcom: Add interconnect support
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Mark Brown <broonie@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
+        linux-spi <linux-spi@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
+        Manu Gautam <mgautam@codeaurora.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-serial@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
+        Evan Green <evgreen@chromium.org>, msavaliy@codeaurora.org,
+        Rajendra Nayak <rnayak@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Russell,
+Hi,
 
-Thanks for your comments. My response is below.
+On Mon, Jun 8, 2020 at 10:57 PM Akash Asthana <akashast@codeaurora.org> wrote:
+>
+> Get the interconnect paths for SPI based Serial Engine device
+> and vote according to the current bus speed of the driver.
+>
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
+> Changes in V2:
+>  - As per Bjorn's comment, removed se == NULL check from geni_spi_icc_get
+>  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
+>  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
+>    path handle
+>  - As per Matthias comment, added error handling for icc_set_bw call
+>
+> Changes in V3:
+>  - As per Matthias's comment, use helper ICC function from geni-se driver.
+>
+> Changes in V4:
+>  - Move peak_bw guess as twice of avg_bw if nothing mentioned explicitly
+>    to ICC core.
+>
+> Changes in V5:
+>  - Use icc_enable/disable in power on/off call.
+>  - Save some non-zero avg/peak value to ICC core by calling geni_icc_set_bw
+>    from probe so that when resume/icc_enable is called NOC are running at
+>    some non-zero value. No need to call icc_disable after BW vote because
+>    device will resume and suspend before probe return and will leave ICC in
+>    disabled state.
+>
+> Changes in V6:
+>  - No change
+>
+> Changes in V7:
+>  - As per Matthias's comment removed usage of peak_bw variable because we don't
+>    have explicit peak requirement, we were voting peak = avg and this can be
+>    tracked using single variable for avg bw.
+>
+>  drivers/spi/spi-geni-qcom.c | 29 ++++++++++++++++++++++++++++-
+>  1 file changed, 28 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+> index c397242..2ace5c5 100644
+> --- a/drivers/spi/spi-geni-qcom.c
+> +++ b/drivers/spi/spi-geni-qcom.c
+> @@ -234,6 +234,12 @@ static int setup_fifo_params(struct spi_device *spi_slv,
+>                 return ret;
+>         }
+>
+> +       /* Set BW quota for CPU as driver supports FIFO mode only. */
+> +       se->icc_paths[CPU_TO_GENI].avg_bw = Bps_to_icc(mas->cur_speed_hz);
+> +       ret = geni_icc_set_bw(se);
+> +       if (ret)
+> +               return ret;
+> +
 
-On Sat, Jun 20, 2020 at 09:12:01AM +0100, Russell King - ARM Linux admin wrote:
-> On Fri, Jun 19, 2020 at 11:02:50PM +0300, Serge Semin wrote:
-> > Really instead of twice checking the clk_round_rate() return value
-> > we could do it once, and if it isn't error the clock rate can be changed.
-> > By doing so we decrease a number of ret-value tests and remove a weird
-> > goto-based construction implemented in the dw8250_set_termios() method.
-> 
-> This doesn't look right to me - neither the before code nor the after
-> code.
-> 
-> >  	clk_disable_unprepare(d->clk);
-> >  	rate = clk_round_rate(d->clk, baud * 16);
-> > -	if (rate < 0)
-> > -		ret = rate;
-> > -	else if (rate == 0)
-> > -		ret = -ENOENT;
-> > -	else
-> > +	if (rate > 0) {
-> >  		ret = clk_set_rate(d->clk, rate);
-> > +		if (!ret)
-> > +			p->uartclk = rate;
-> > +	}
-> >  	clk_prepare_enable(d->clk);
-> >  
-> > -	if (ret)
-> > -		goto out;
-> > -
-> > -	p->uartclk = rate;
-> 
-> 	newrate = baud * 16;
-> 
-> 	clk_disable_unprepare(d->clk);
+I haven't done a deep review of your patch, but a quick drive-by
+review since I happened to notice it while looking at this driver.
+You should probably also update the other path that's adjusting the
+"mas->cur_speed_hz" variable.  Specifically see setup_fifo_xfer().
 
-> 	rate = clk_round_rate(newrate);
-> 	ret = clk_set_rate(d->clk, newrate);
-> 	if (!ret)
-> 		p->uartclk = rate;
-> 
-> 	ret = elk_prepare_enable(d->clk);
-> 	/* check ret for failure, means the clock is no longer running */
-> 
-> is all that should be necessary: note that clk_round_rate() is required
-> to return the rate that a successful call to clk_set_rate() would result
-> in for that clock.
+For bonus points, you could even unify the two paths.  Perhaps you
+could pick <https://crrev.com/c/2259624> and include it in your series
+(remove the WIP if you do).
 
-While I do understand your note regarding the newrate passing to both methods, I
-don't fully get it why is it ok to skip checking the clk_round_rate() return
-value? As I see it there is no point in calling clk_set_rate() if
-clk_round_rate() has returned an error. From that perspective this patch
-is full acceptable, right?
 
-In addition to that in order to provide an optimization I'll have to check the
-return value of the clk_round_rate() anyway in the next patch of this series
-("serial: 8250_dw: Fix common clocks usage race condition") since I'll need to
-set uartclk with that value before calling clk_set_rate() (see the patch and
-notes there for details). So there is no point in removing the check here since
-it will be got back in the next patch anyway.
-
-One more note in favor of checking the clk_round_rate() return value is below.
-
-> It is equivalent to:
-> 
-
-> 	ret = clk_set_rate(d->clk, newrate);
-> 	if (ret == 0)
-> 		p->uartclk = clk_get_rate(d->clk);
-
-Alas neither this nor the suggested code above will work if the clock is
-optional. If it is, then d->clk will be NULL and clk_round_rate(),
-clk_set_rate() and clk_get_rate() will return zero. Thus in accordance with the
-fixes suggested by you we'll rewrite a fixed uartclk value supplied by a
-firmware.
-
-To sum it up getting a positive value returned from clk_round_rate() will
-mean not only an actual clock frequency, but also having a real reference clock
-installed. So we can use that value to update the uartclk field of the UART port
-descriptor.
-
-> 
-> The other commonly misunderstood thing about the clk API is that the
-> rate you pass in to clk_round_rate() to discover the actual clock rate
-> and the value passed in to clk_set_rate() _should_ be the same value.
-> You should _not_ do clk_set_rate(clk, clk_round_rate(clk, newrate));
-
-Agreed. Thanks for the comment. I'll fix it in the next version of the series.
-
--Sergey
-
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+-Doug
