@@ -1,67 +1,86 @@
-Return-Path: <SRS0=BL42=AG=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=sLvH=AH=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEDFAC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Jun 2020 14:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5D0C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Jun 2020 00:01:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8961D20768
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Jun 2020 14:59:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593097183;
-	bh=wG8QHDQ5wXxLIg0GUFph/M3AwAogggkkTP3PGvLuWWM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ALryiJDZoApTooCLeMqnBPFIlDTlBf3B5g7ilHiBZgffZG7UGmSqb1HrvbISk7Bq+
-	 SsRz3lZISfHNc6jVcbWX4D+6/+dgY/S2cmk/Ak/J+ZPfQBVk/m6F7JXMKhR9dq+EAz
-	 4iK+tcrQ+N41VUmcgo6jzOx9iC2THSQ21oc6FtmA=
+	by mail.kernel.org (Postfix) with ESMTP id AA8A62075D
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Jun 2020 00:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405462AbgFYO7n (ORCPT
+        id S1726695AbgFZABv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Jun 2020 10:59:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55996 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405378AbgFYO7n (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Jun 2020 10:59:43 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 204FD20768;
-        Thu, 25 Jun 2020 14:59:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593097182;
-        bh=wG8QHDQ5wXxLIg0GUFph/M3AwAogggkkTP3PGvLuWWM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rt4s9M9jQBkOdd4x60qO/LNCVmqgI/NtvPm+2djnyhy3lLTkLsnb7MgSknxYD3eBU
-         3MV/4VC3BODTEHadjgYx/IIfHA8epLbtYO4R33Q3wqIuVWAB8SpvMxLNKeGmNi8AFM
-         6ZLTzIxhBJX8DG7+XDKyN5SmoRPHK/mcQwDGddIo=
-Date:   Thu, 25 Jun 2020 16:59:38 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Anthony Canino <anthony.canino1@gmail.com>
-Cc:     linux-serial@vger.kernel.org
-Subject: Re: Possible bug in drivers/tty/vt/vt.c
-Message-ID: <20200625145938.GA3911993@kroah.com>
-References: <CA+dbEpsJs8AgcpjU_-Vwh60BRL4Eq21L1=3sDNJRGHr2acLWLg@mail.gmail.com>
- <CA+dbEpt3YmDE7Q_BBhZZw9CfrUJfrhfR16XVoevXSqi=kOQjJg@mail.gmail.com>
- <20200623115148.GC1963415@kroah.com>
- <CA+dbEpv3kBjEBAV+8d0ea7pFjw6qE7nYW1wC5_NADUNvC5=O4g@mail.gmail.com>
+        Thu, 25 Jun 2020 20:01:51 -0400
+Received: from server-x.ipv4.hkg02.ds.network ([27.111.83.178]:37904 "EHLO
+        mail.gtsys.com.hk" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S1726061AbgFZABu (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 25 Jun 2020 20:01:50 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.gtsys.com.hk (Postfix) with ESMTP id 844572059C8E;
+        Fri, 26 Jun 2020 08:01:48 +0800 (HKT)
+X-Virus-Scanned: Debian amavisd-new at gtsys.com.hk
+Received: from mail.gtsys.com.hk ([127.0.0.1])
+        by localhost (mail.gtsys.com.hk [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id bAkzo2msYY5V; Fri, 26 Jun 2020 08:01:48 +0800 (HKT)
+Received: from s01.gtsys.com.hk (unknown [10.128.4.2])
+        by mail.gtsys.com.hk (Postfix) with ESMTP id 649EA20020FC;
+        Fri, 26 Jun 2020 08:01:48 +0800 (HKT)
+Received: from [10.128.2.32] (unknown [124.217.188.20])
+        by s01.gtsys.com.hk (Postfix) with ESMTPSA id 31F4CC01B7A;
+        Fri, 26 Jun 2020 08:01:48 +0800 (HKT)
+Subject: Re: rk3399: uart2 crippled signal on tx @115200
+From:   Chris Ruehl <chris.ruehl@gtsys.com.hk>
+To:     linux-arm@lists.infradead.org, linux-serial@vger.kernel.org
+Cc:     Jack Lo <jack.lo@gtsys.com.hk>
+References: <4d7fde0a-58f0-485f-41e6-2cb0b36decbc@gtsys.com.hk>
+Message-ID: <d5a0c84f-aa87-459b-fc48-4d635ef17318@gtsys.com.hk>
+Date:   Fri, 26 Jun 2020 08:01:47 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+dbEpv3kBjEBAV+8d0ea7pFjw6qE7nYW1wC5_NADUNvC5=O4g@mail.gmail.com>
+In-Reply-To: <4d7fde0a-58f0-485f-41e6-2cb0b36decbc@gtsys.com.hk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 10:44:27AM -0400, Anthony Canino wrote:
-> Hi Greg,
-> 
-> Thanks for the reply--what you said makes sense. If we find a case
-> where this happens in a normal execution, we will file another bug.
 
-Just email please, that's the best way to work on things, bugzilla is a
-black hole...
+
+On 18/6/2020 6:10 pm, Chris Ruehl wrote:
+> Hi,
+> 
+> I run into a strange thing on our customized RK3399-LPDDR4 using the UART2 
+> @115200 the
+> console spits bad charters. Checking the signal at the TX explains the reason, 
+> the rising edge
+> is very slow, (we checked with the scope).
+> Set the GPIO4_C4 to pcfg_pull_up_20am not working.
+> 
+> Kernel: 5.4.40-rt
+> Uboot: 2020-4
+> 
+> The strange observation:
+> U-boot TPL boot , return to Boot-rom and the 1st
+> lines from SPL (show uboot version) have a sharp rising edge as expected.
+> 
+> Anyone?  I don't know anymore.
+> 
+> Regards
+> Chris
+
+
+Solved. rk3399 io_domain problem supply 3.3v for all rails.
+one was configured for 1.8v and that confused the rk808 had
+reverence voltage on the uart block 2.5v not 1.5v.
+
+all good now.
+
+Chris
