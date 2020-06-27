@@ -2,90 +2,132 @@ Return-Path: <SRS0=J/Eu=AI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D23C433DF
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EE3C433E1
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:12:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A8A642186A
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:00:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EE5821883
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:12:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593266403;
-	bh=8p6ith1ME+sCnv+twqE6KzbdUe2pNu4IyonGeBoDCKY=;
+	s=default; t=1593267154;
+	bh=Mm9Jr0Y6Toy3xKZiWCZpBQOjWvs88DP6/BkXW7NSloI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=osZ9E8cX2RSbS9JmnRX0eXB0gILQ2MbHgZdsZs4mCCRwTAJeJ+qrsOzVIwcnIwNSy
-	 y9oE0zEdCdS5jvgivfkjCmoS6VINpCIBCvjpM3YTGCpDtxB/VTgK3bKv4eaA418pi5
-	 O11apF05QNBR/Hh75z+znOKOMc+9oYZL6pXnu3dg=
+	b=gb9rGItaYMNoXxyRi5AHJqbb+FpA+ReFbBuxn2UCav/B4VMAa/Y6MF3tcZOH44t4m
+	 GdBv+SVYwVTZOIOaWXylaf1dypv9IHxDlLk4io3pmL7CT+O8WYg7LGSYopyP1BZWgN
+	 eJx0AeuUmDWkmDpIA/OIOnoQjXcnKad3Cj6BPNzs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726394AbgF0N77 (ORCPT
+        id S1725922AbgF0OMa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 27 Jun 2020 09:59:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58774 "EHLO mail.kernel.org"
+        Sat, 27 Jun 2020 10:12:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35932 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725850AbgF0N77 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 27 Jun 2020 09:59:59 -0400
+        id S1725798AbgF0OMa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 27 Jun 2020 10:12:30 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3AB0E21852;
-        Sat, 27 Jun 2020 13:59:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AFB4C2184D;
+        Sat, 27 Jun 2020 14:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593266398;
-        bh=8p6ith1ME+sCnv+twqE6KzbdUe2pNu4IyonGeBoDCKY=;
+        s=default; t=1593267149;
+        bh=Mm9Jr0Y6Toy3xKZiWCZpBQOjWvs88DP6/BkXW7NSloI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W2q0O0MhOlak7stnGPXyc73KOyI3qFPvhTbZSJplNQ90P5hUwIPNVLCfVESAPOuJ6
-         4/6bRKvEWijMkPkYikI7Wr5DB7D3Jul0kCcvBU4Sl0+A7jYslXkibZYrAtVjpd9O5g
-         tkuz6kNxCTlxHH7ze9xVZ7nQkm6Q3YiEuTsmwKso=
-Date:   Sat, 27 Jun 2020 15:59:51 +0200
+        b=TfrrfsmELqDgVdyohdtQg5RGnq/X72CkFtYXD+vVAHqE8bU22zy+qL2STz3ewIsSp
+         a82+ne6RpaLkVeJ5rbGMc/Yhr/6tyXaN6oAKecHhJLWOK+X4sw/UL9jgy/NSwDNSEn
+         EEzmq/TNa+IF7b03gev789SKgOHxnvk12u9q00r8=
+Date:   Sat, 27 Jun 2020 16:12:22 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     evgreen@chromium.org, daniel.thompson@linaro.org,
-        akashast@codeaurora.org, swboyd@chromium.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        linux-arm-msm@vger.kernel.org, sumit.garg@linaro.org,
-        vivek.gautam@codeaurora.org, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 0/2] serial: qcom_geni_serial: Use the FIFOs properly for
- console
-Message-ID: <20200627135951.GA1901451@kroah.com>
-References: <20200626200033.1528052-1-dianders@chromium.org>
+To:     sean.wang@mediatek.com
+Cc:     robh+dt@kernel.org, jslaby@suse.com,
+        andriy.shevchenko@linux.intel.com, robert.jarzmik@free.fr,
+        arnd@arndb.de, p.zabel@pengutronix.de, joel@jms.id.au,
+        david@lechnology.com, jan.kiszka@siemens.com,
+        heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com,
+        matthias.bgg@gmail.com, tthayer@opensource.altera.com,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Steven Liu <steven.liu@mediatek.com>,
+        Ryder Lee <ryder.lee@mediatek.com>
+Subject: Re: [PATCH v4] tty: serial: don't do termios for BTIF
+Message-ID: <20200627141222.GC1901451@kroah.com>
+References: <78efa2b1e2599deff4d838b05b4054ec5ac2976a.1592595601.git.sean.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200626200033.1528052-1-dianders@chromium.org>
+In-Reply-To: <78efa2b1e2599deff4d838b05b4054ec5ac2976a.1592595601.git.sean.wang@mediatek.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 01:00:31PM -0700, Douglas Anderson wrote:
-> This series of two patches gets rid of some ugly hacks that were in
-> the qcom_geni_serial driver around dealing with a port that was used
-> for console output and dealing with a port that was being used for
-> kgdb.
+On Sat, Jun 20, 2020 at 03:59:14AM +0800, sean.wang@mediatek.com wrote:
+> From: Sean Wang <sean.wang@mediatek.com>
 > 
-> While the character reading/writing code is now slightly more complex,
-> it's better to be consistently configuring the serial port the same
-> way and doing so avoids some corner cases where the old hacks weren't
-> always catching properly.
+> Bluetooth Interface (BTIF) is designed dedicatedly for MediaTek SOC with
+> BT in order to be instead of the UART interface between BT module and Host
+> CPU, and not exported to user space to access.
 > 
-> This change is slightly larger than it needs to be because I was
-> trying not to use global variables in the read/write functions.
-> Unfortunately the functions were sometimes called earlycon which
-> didn't have any "private_data" pointer set.  I've tried to do the
-> minimal change here to have some shared "private_data" that's always
-> present, but longer term it wouldn't hurt to see if we could unify
-> more.
+> As the UART design, BTIF will be an APB slave and can transmit or receive
+> data by MCU access, but doesn't provide termios function like baudrate and
+> flow control setup.
 > 
-> Greg / Andy / Bjorn:
+> Even LCR on offset 0xC that is just a FAKELCR
+> a. If FAKELCR[7] is equaled to 1, RBR(0x00), THR(0x00), IER(0x04)
+>    will not be readable/writable.
 > 
-> This series of patches is atop the current Qualcomm tree to avoid
-> conflicts.  Assuming it looks OK, presumably the best way for it to
-> land would be to get an Ack from Greg and then Bjorn or Andy could
-> land it.
+> b. If FAKELCR is equaled to 0xBF, RBR(0x00), THR(0x00), IER(0x04),
+>    IIR(0x08), and LSR(0x14) will not be readable/writable.
+> 
+> So adding a new capability 'UART_CAP_NTIO' for the unusual unsupported
+> case.
+> 
+> The bluetooth driver would use BTIF device as a serdev. So the termios
+> still function would be called in kernelspace from ttyport_open in
+> drivers/tty/serdev/serdev-ttyprt.c.
+> 
+> Fixes: 1c16ae65e250 ("serial: 8250: of: Add new port type for MediaTek BTIF controller on MT7622/23 SoC")
+> Cc: Steven Liu <steven.liu@mediatek.com>
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+> 
+> --
+> v1->v2:
+> no change on termios->c_cflag and refine commit message
+> 
+> v2->v3:
+> change the naming from NMOD to NTIO as TIO is a well established prefix
+> for termios IOCTLs.
+> 
+> v3->v4:
+> 1. remove appropriate tag
+> 2. add the explanation why the termios is required even when the connection
+>    isn't exported to userspace.
+> ---
+>  drivers/tty/serial/8250/8250.h      | 1 +
+>  drivers/tty/serial/8250/8250_port.c | 5 ++++-
+>  2 files changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+> index 52bb21205bb6..0d9d3bfe48af 100644
+> --- a/drivers/tty/serial/8250/8250.h
+> +++ b/drivers/tty/serial/8250/8250.h
+> @@ -82,6 +82,7 @@ struct serial8250_config {
+>  #define UART_CAP_MINI	(1 << 17)	/* Mini UART on BCM283X family lacks:
+>  					 * STOP PARITY EPAR SPAR WLEN5 WLEN6
+>  					 */
+> +#define UART_CAP_NTIO	(1 << 18)	/* UART doesn't do termios */
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Naming is hard.  I will never remember what "NTIO" is, how about we make
+it explicit:
+	define UART_CAP_IGNORE_TERMIOS
+
+And the _CAP_ name is getting out of hand, this isn't a "capability",
+it's a "quirk for this port" but that's a battle to worry about later...
+
+thanks,
+
+greg k-h
