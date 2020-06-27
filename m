@@ -1,250 +1,121 @@
-Return-Path: <SRS0=sLvH=AH=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=J/Eu=AI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3349C433E0
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Jun 2020 20:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB1BC433E0
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 08:34:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CDF5E206DD
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Jun 2020 20:01:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 315BA20656
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 08:34:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="kw5llNn/"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UP6TgETl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725957AbgFZUBF (ORCPT
+        id S1726086AbgF0IeP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Jun 2020 16:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
+        Sat, 27 Jun 2020 04:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725928AbgFZUA7 (ORCPT
+        with ESMTP id S1725991AbgF0IeP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Jun 2020 16:00:59 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABB5C03E97B
-        for <linux-serial@vger.kernel.org>; Fri, 26 Jun 2020 13:00:59 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id g17so4628756plq.12
-        for <linux-serial@vger.kernel.org>; Fri, 26 Jun 2020 13:00:59 -0700 (PDT)
+        Sat, 27 Jun 2020 04:34:15 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1DFC03E979
+        for <linux-serial@vger.kernel.org>; Sat, 27 Jun 2020 01:34:15 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id o38so9292731qtf.6
+        for <linux-serial@vger.kernel.org>; Sat, 27 Jun 2020 01:34:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qkv/VxHWefC5lUyKA8n1Hz1OCbBvMseIHHitJ71savo=;
-        b=kw5llNn/AfTSTCkoBZbQldAVoB9RomIr31RSMH32YULEsUd/dNEtUnbSFK+nyM1761
-         BEV9eQxusgef5wIJOXwbx+sxLRWVII1VKSaPsKAIJF9ASgE4Ih4oh0BNdZQXvXehiMXV
-         3T+C6f2jWfspnhrfPQDbS0hzt5xWsuBwGlahQ=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=N49Tf7zlXb0OcGaRN3R9cUXlNR/7bneITQyS0XCftTY=;
+        b=UP6TgETliZgbkxT9VT3opBcjTM1Ggbxv37PrkAxevpGjEsdwz3Zibb7NRq3+bO/D56
+         El2zbuQfrJ8ITbJEeD2L6bjjrU6gpEgPX7PymxbID/oshLrewirJM7iJY0uEYfYYvMbk
+         8K6X2NXlLiXmziCIp8zNLju1QjiVGU9ib9riJeRjspu9LqcMeYCq0DSeR54rrfjq3AaV
+         gH8BSm6qhG1jIeGSQYgA73lnL5Pn1ApEpi9DSv0LpIAf45TbHv8E5qYLaf6HB9iwpsd+
+         usOFBmZFkTjGZ4+8Yo+HuJ+VUci72k8lfcZOS5ryBMxlgJKrBHVCmRkabbtOJrkFuTJM
+         4VWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qkv/VxHWefC5lUyKA8n1Hz1OCbBvMseIHHitJ71savo=;
-        b=dCtAmphsGXdtTQ9JQ/P2UPPVUd8BSUUpfyYSEr8zTQJUqVIhhPcb1iVhE18nuM3+SW
-         7A3oWbHLpq6VJ+Ir8hqCEn9LWssjUTx1cm0zQw4FoSLoY3wPwGH3bHv26TDgPuRoDckW
-         zd7UPlveuSFhzbxPZexRDbQUgcH+u5smZSa4H9EJAvSog2xKdxAu7rjqtHb6UUIFnnWs
-         tAKBI5+2owsGlg7+sbIicr/Xgs2hTfxi2xsGJzyR92lJEVQqfLpGQ7WlHvTFFVhNszwe
-         MI2+Ep5Vz0iQK1XM8qGlmD3hySxdonlbDxjVR9Uqg6D7M6OBMDTMd6wPDP903AstCcVp
-         8dUw==
-X-Gm-Message-State: AOAM533gRVb69TXUt7B4PpWF2KXY59YAmJ5A80JOus8dY/vDB3KMK3AB
-        SSo9gzDwdBNcLWpJ9OYI8KlYvA==
-X-Google-Smtp-Source: ABdhPJzuo5CGUj0KWrNvbLBx8x80yd0S+PRmolL/V/IiPvTaFV87C8WlpLw6Fq1U4qD3FnOzB8470A==
-X-Received: by 2002:a17:902:7109:: with SMTP id a9mr4105159pll.58.1593201659045;
-        Fri, 26 Jun 2020 13:00:59 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
-        by smtp.gmail.com with ESMTPSA id p8sm23461610pgs.29.2020.06.26.13.00.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jun 2020 13:00:58 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     gregkh@linuxfoundation.org
-Cc:     evgreen@chromium.org, daniel.thompson@linaro.org,
-        akashast@codeaurora.org, swboyd@chromium.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        linux-arm-msm@vger.kernel.org, sumit.garg@linaro.org,
-        vivek.gautam@codeaurora.org,
-        Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH 2/2] serial: qcom_geni_serial: Always use 4 bytes per TX FIFO word
-Date:   Fri, 26 Jun 2020 13:00:33 -0700
-Message-Id: <20200626125844.2.Iabd56347670b9e4e916422773aba5b27943d19ee@changeid>
-X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
-In-Reply-To: <20200626200033.1528052-1-dianders@chromium.org>
-References: <20200626200033.1528052-1-dianders@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=N49Tf7zlXb0OcGaRN3R9cUXlNR/7bneITQyS0XCftTY=;
+        b=E0S6pTPU7BbncDnQ9j1PlJGPyCR+H/Rbs+AxcZgtmprf0S2U+FhWDYPQPG+YnWSpdq
+         MZK8b3s6froJxfG2pQHy+d3SxNBJPPRY+CY32GQz/jC+rOav4ND67++HR2YAT7JsEH2O
+         HzyklbExGs3md+u/nWqibTiu3+lK78LyFrUkOdSzmo5pOPa2agH7sT54fIZzTZmpZpht
+         woJBp5ITBoh4ysFiYGr+LLQ4SjaXRS8/nn3bIO9Wp0XrG7KBh1sgM9TLjIOKQAbx0FP/
+         rsllpNJCb/PnkepbR/bzQq7p/8c7z3S2XmpWlTaQ9G8HqJmuV12uRUt9nZGdPhEwJiyW
+         1T9g==
+X-Gm-Message-State: AOAM531XtsqZe29mFMKA8ijMUyDNDWLAnb06e4VuCZ3kjRwolblnqBpD
+        V18Ry6gdJXcUeINyaI0WH8b08s7wuaxa6BHuEmrbSpjE
+X-Google-Smtp-Source: ABdhPJygPMly68YVOIHVzXbOqxUxSwXc26wLkilJVED8WLT5nEiWfjFU2ivec5avXXtEeKIN0sbAZpsbxsTJAIrwIYA=
+X-Received: by 2002:ac8:60c8:: with SMTP id i8mr6749348qtm.271.1593246854050;
+ Sat, 27 Jun 2020 01:34:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAGWcZkJ5LMK59UWPP6zsV3ipgVNbk+mH7tVcmRGsp1PJzxBdTA@mail.gmail.com>
+In-Reply-To: <CAGWcZkJ5LMK59UWPP6zsV3ipgVNbk+mH7tVcmRGsp1PJzxBdTA@mail.gmail.com>
+From:   Egmont Koblinger <egmont@gmail.com>
+Date:   Sat, 27 Jun 2020 10:33:38 +0200
+Message-ID: <CAGWcZk+qZaNN1LOWxWjsBiP+JfSKDvD5+atNHe3LeWgWQhC=gw@mail.gmail.com>
+Subject: PROBLEM: tty devices with future timestamps
+To:     linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The geni serial driver had a rule that we'd only use 1 byte per FIFO
-word for the TX FIFO if we were being used for the serial console.
-This is ugly and a bit of a pain.  It's not too hard to fix, so fix
-it.
+Hi,
 
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+An active terminal line (/dev/pts/N), in about 6% of the cases, has a
+future timestamp.
 
- drivers/tty/serial/qcom_geni_serial.c | 57 +++++++++++++++++----------
- 1 file changed, 37 insertions(+), 20 deletions(-)
+I noticed that the command
+  ls -l $(tty)
+occasionally prints the timestamp in "month day year" format, rather
+than "month day hour:minute". This is what coreutils's "ls" does when
+the timestamp is either 6+ months back in the past, or is in the
+future. Let's test the "in the future" hypothesis:
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 4610e391e886..583d903321b5 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -103,12 +103,18 @@
- #define DEFAULT_IO_MACRO_IO2_IO3_MASK		GENMASK(15, 4)
- #define IO_MACRO_IO2_IO3_SWAP		0x4640
- 
-+/* We always configure 4 bytes per FIFO word */
-+#define BYTES_PER_FIFO_WORD		4
-+
- struct qcom_geni_private_data {
- 	/* NOTE: earlycon port will have NULL here */
- 	struct uart_driver *drv;
- 
- 	u32 poll_cached_bytes;
- 	unsigned int poll_cached_bytes_cnt;
-+
-+	u32 write_cached_bytes;
-+	unsigned int write_cached_bytes_cnt;
- };
- 
- struct qcom_geni_serial_port {
-@@ -121,8 +127,6 @@ struct qcom_geni_serial_port {
- 	bool setup;
- 	int (*handle_rx)(struct uart_port *uport, u32 bytes, bool drop);
- 	unsigned int baud;
--	unsigned int tx_bytes_pw;
--	unsigned int rx_bytes_pw;
- 	void *rx_fifo;
- 	u32 loopback;
- 	bool brk;
-@@ -390,13 +394,25 @@ static void qcom_geni_serial_poll_put_char(struct uart_port *uport,
- #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
- static void qcom_geni_serial_wr_char(struct uart_port *uport, int ch)
- {
--	writel(ch, uport->membase + SE_GENI_TX_FIFOn);
-+	struct qcom_geni_private_data *private_data = uport->private_data;
-+
-+	private_data->write_cached_bytes =
-+		(private_data->write_cached_bytes >> 8) | (ch << 24);
-+	private_data->write_cached_bytes_cnt++;
-+
-+	if (private_data->write_cached_bytes_cnt == BYTES_PER_FIFO_WORD) {
-+		writel(private_data->write_cached_bytes,
-+		       uport->membase + SE_GENI_TX_FIFOn);
-+		private_data->write_cached_bytes_cnt = 0;
-+	}
- }
- 
- static void
- __qcom_geni_serial_console_write(struct uart_port *uport, const char *s,
- 				 unsigned int count)
- {
-+	struct qcom_geni_private_data *private_data = uport->private_data;
-+
- 	int i;
- 	u32 bytes_to_send = count;
- 
-@@ -431,6 +447,15 @@ __qcom_geni_serial_console_write(struct uart_port *uport, const char *s,
- 							SE_GENI_M_IRQ_CLEAR);
- 		i += chars_to_write;
- 	}
-+
-+	if (private_data->write_cached_bytes_cnt) {
-+		private_data->write_cached_bytes >>= BITS_PER_BYTE *
-+			(BYTES_PER_FIFO_WORD - private_data->write_cached_bytes_cnt);
-+		writel(private_data->write_cached_bytes,
-+		       uport->membase + SE_GENI_TX_FIFOn);
-+		private_data->write_cached_bytes_cnt = 0;
-+	}
-+
- 	qcom_geni_serial_poll_tx_done(uport);
- }
- 
-@@ -503,7 +528,7 @@ static int handle_rx_console(struct uart_port *uport, u32 bytes, bool drop)
- 	tport = &uport->state->port;
- 	for (i = 0; i < bytes; ) {
- 		int c;
--		int chunk = min_t(int, bytes - i, port->rx_bytes_pw);
-+		int chunk = min_t(int, bytes - i, BYTES_PER_FIFO_WORD);
- 
- 		ioread32_rep(uport->membase + SE_GENI_RX_FIFOn, buf, 1);
- 		i += chunk;
-@@ -683,11 +708,11 @@ static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop)
- 
- 	if (!word_cnt)
- 		return;
--	total_bytes = port->rx_bytes_pw * (word_cnt - 1);
-+	total_bytes = BYTES_PER_FIFO_WORD * (word_cnt - 1);
- 	if (last_word_partial && last_word_byte_cnt)
- 		total_bytes += last_word_byte_cnt;
- 	else
--		total_bytes += port->rx_bytes_pw;
-+		total_bytes += BYTES_PER_FIFO_WORD;
- 	port->handle_rx(uport, total_bytes, drop);
- }
- 
-@@ -720,7 +745,7 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
- 	}
- 
- 	avail = port->tx_fifo_depth - (status & TX_FIFO_WC);
--	avail *= port->tx_bytes_pw;
-+	avail *= BYTES_PER_FIFO_WORD;
- 
- 	tail = xmit->tail;
- 	chunk = min(avail, pending);
-@@ -744,7 +769,7 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
- 		int c;
- 
- 		memset(buf, 0, ARRAY_SIZE(buf));
--		tx_bytes = min_t(size_t, remaining, port->tx_bytes_pw);
-+		tx_bytes = min_t(size_t, remaining, BYTES_PER_FIFO_WORD);
- 
- 		for (c = 0; c < tx_bytes ; c++) {
- 			buf[c] = xmit->buf[tail++];
-@@ -861,12 +886,6 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
- 	u32 proto;
- 	u32 pin_swap;
- 
--	if (uart_console(uport))
--		port->tx_bytes_pw = 1;
--	else
--		port->tx_bytes_pw = 4;
--	port->rx_bytes_pw = 4;
--
- 	proto = geni_se_read_proto(&port->se);
- 	if (proto != GENI_SE_UART) {
- 		dev_err(uport->dev, "Invalid FW loaded, proto: %d\n", proto);
-@@ -898,10 +917,8 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
- 	 */
- 	if (uart_console(uport))
- 		qcom_geni_serial_poll_tx_done(uport);
--	geni_se_config_packing(&port->se, BITS_PER_BYTE, port->tx_bytes_pw,
--						false, true, false);
--	geni_se_config_packing(&port->se, BITS_PER_BYTE, port->rx_bytes_pw,
--						false, false, true);
-+	geni_se_config_packing(&port->se, BITS_PER_BYTE, BYTES_PER_FIFO_WORD,
-+			       false, true, true);
- 	geni_se_init(&port->se, UART_RX_WM, port->rx_fifo_depth - 2);
- 	geni_se_select_mode(&port->se, GENI_SE_FIFO);
- 	port->setup = true;
-@@ -1197,8 +1214,8 @@ static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
- 	 */
- 	qcom_geni_serial_poll_tx_done(uport);
- 	qcom_geni_serial_abort_rx(uport);
--	geni_se_config_packing(&se, BITS_PER_BYTE, 1, false, true, false);
--	geni_se_config_packing(&se, BITS_PER_BYTE, 4, false, false, true);
-+	geni_se_config_packing(&se, BITS_PER_BYTE, BYTES_PER_FIFO_WORD,
-+			       false, true, true);
- 	geni_se_init(&se, DEF_FIFO_DEPTH_WORDS / 2, DEF_FIFO_DEPTH_WORDS - 2);
- 	geni_se_select_mode(&se, GENI_SE_FIFO);
- 
--- 
-2.27.0.212.ge8ba1cc988-goog
+  ls -l --full-time $(tty); date +%H:%M:%S.%N
+occasionally produces something like
+  crw--w---- 1 egmont tty 136, 8 2020-06-27 09:57:28.686473296 +0200 /dev/p=
+ts/8
+  09:57:28.170717548
+Yep, the timestamp of the tty line is a slightly higher value than the
+system date at a later point.
 
+Running
+  ls -l --full-time $(tty)
+in an endless loop causes the seconds to increment in steps of 8, but
+the subseconds part remains unchanged, like:
+crw--w---- 1 egmont tty 136, 8 2020-06-27 10:07:12.686473296 +0200 /dev/pts=
+/8
+crw--w---- 1 egmont tty 136, 8 2020-06-27 10:07:12.686473296 +0200 /dev/pts=
+/8
+crw--w---- 1 egmont tty 136, 8 2020-06-27 10:07:20.686473296 +0200 /dev/pts=
+/8
+crw--w---- 1 egmont tty 136, 8 2020-06-27 10:07:20.686473296 +0200 /dev/pts=
+/8
+
+drivers/tty/tty_io.c : tty_update_time() seems to be responsible for
+this jump in 8 seconds, leaving the milliseconds intact.
+
+I think zeroing out the milliseconds in this method would solve the
+problem =E2=80=93 although then it's maybe inconsistent that at creation ti=
+me
+the device would have subsecond precision which would be gone soon
+afterwards. Maybe it's better to create the device with no subseconds
+right away? I'll leave it to you guys to decide.
+
+I'm experiencing this on two different machines with Ubuntu 20.04,
+using their 5.4.0 kernel. The method setting the seconds but not the
+nanoseconds is still present in latest kernel git.
+
+Thanks a lot,
+egmont
