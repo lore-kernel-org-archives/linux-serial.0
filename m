@@ -2,69 +2,97 @@ Return-Path: <SRS0=J/Eu=AI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF92C433DF
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC06C433E1
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:18:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8B5192184D
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:16:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 21EA621655
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:18:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593267374;
-	bh=itT5if3N84nfVPow/9kdBCYR0Rh7EMAOUqN8xHYSKug=;
+	s=default; t=1593267492;
+	bh=cIt6opZa+yAA6PsRPnToKEVJTOvIWVfLvMCDwYPe3Xk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=0wagO2UsFpOJ6uTbhqgtVRbiXrVeKFv0hnMsr+V0hSug/LVXIZvZJjrhWDnNfXq78
-	 kjUoE+JgIUTzEphQlJUHk9hQibL9MkNXF+XEvzs96xUfqk6QBpamfsuGgYzjNmRiit
-	 38PNbkanwyJEHfjrydBjQkLJYJtSPeCPCy1tubEw=
+	b=yWeFZbqOGwRk/BWJR0wboCx1M0w6XGmAUM45k78cPHWekBxm100xf+0T4Wa/TqE/A
+	 QU0mjrov8F/0F5diG06XDsZPORgRHvq92aqRmnOtfFhtMo5CSEPcbTW0/ZGc4WUj23
+	 ZK0rdtKvtToRfggX4cfiYmETR/4qHBjDgRY/JpV0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725850AbgF0OQO (ORCPT
+        id S1725854AbgF0OSI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 27 Jun 2020 10:16:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36596 "EHLO mail.kernel.org"
+        Sat, 27 Jun 2020 10:18:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36926 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725798AbgF0OQO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 27 Jun 2020 10:16:14 -0400
+        id S1725798AbgF0OSI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 27 Jun 2020 10:18:08 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 19AC621655;
-        Sat, 27 Jun 2020 14:16:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DC7DF21655;
+        Sat, 27 Jun 2020 14:18:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593267373;
-        bh=itT5if3N84nfVPow/9kdBCYR0Rh7EMAOUqN8xHYSKug=;
+        s=default; t=1593267487;
+        bh=cIt6opZa+yAA6PsRPnToKEVJTOvIWVfLvMCDwYPe3Xk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=v8caGgvguck+JKuFnoTdAvQHyPhjvsMNNzQ0Bm/uxlzL1ASM6Kofiv5YOB+LJBa/3
-         dBcovb9HGZ0lwnoj4/sXMueUhdnEbBOLhyCAbdFvNVZS04hvjxItLnUGKoH5jPbbHE
-         ZcqUHZvAI5l6cqz69pzRT8bDT6fIMhF+ASYAO7bQ=
-Date:   Sat, 27 Jun 2020 16:16:07 +0200
+        b=dTMsD6U1Gd9Qs59wnuvSXVIWP5yBbcKqUWOEqIRqRg003TxHdGjemMqUAOW021M3y
+         LDlPtAuI31mU3xn8qrXtq2QDqTSP5QolxLsRAKvrYHTzpwdnUsjZGyjJuFuLOycqOU
+         AnY4+beRGssrk+yVQP7fbEVlO0Tvb6GdFd3ZedEA=
+Date:   Sat, 27 Jun 2020 16:18:01 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Jiri Slaby <jslaby@suse.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] serial: core: fix up sysrq regressions
-Message-ID: <20200627141607.GA1927422@kroah.com>
-References: <20200610152232.16925-1-johan@kernel.org>
+To:     Erwan Le Ray <erwan.leray@st.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org,
+        Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: add generic DT binding for
+ announcing RTS/CTS lines
+Message-ID: <20200627141801.GA1945477@kroah.com>
+References: <20200520133932.30441-1-erwan.leray@st.com>
+ <20200520133932.30441-2-erwan.leray@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200610152232.16925-1-johan@kernel.org>
+In-Reply-To: <20200520133932.30441-2-erwan.leray@st.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 05:22:29PM +0200, Johan Hovold wrote:
-> This series fixes a few regressions introduced by the recent sysrq
-> rework that went into 5.6.
+On Wed, May 20, 2020 at 03:39:31PM +0200, Erwan Le Ray wrote:
+> Add support of generic DT binding for annoucing RTS/CTS lines. The initial
+> binding 'st,hw-flow-control' is not needed anymore since generic binding
+> is available, but is kept for backward compatibility.
 > 
-> The fix for the unnecessary per-character overhead probably could have
-> been marked for stable but I left that decision to the maintainers as it
-> is a bit intrusive (although mostly shuffling code around).
+> Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+> index 75b8521eb7cb..06d5f251ec88 100644
+> --- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+> @@ -35,9 +35,11 @@ properties:
+>      description: label associated with this uart
+>  
+>    st,hw-flow-ctrl:
+> -    description: enable hardware flow control
+> +    description: enable hardware flow control (deprecated)
+>      $ref: /schemas/types.yaml#/definitions/flag
+>  
+> +  uart-has-rtscts: true
+> +
+>    dmas:
+>      minItems: 1
+>      maxItems: 2
+> -- 
+> 2.17.1
+> 
 
-It makes sense to backport this, I'll mark it as such, thanks!
-
-greg k-h
+Did this get ignored by the DT maintainers?  :(
