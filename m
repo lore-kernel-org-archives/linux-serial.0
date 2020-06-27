@@ -4,95 +4,130 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC06C433E1
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA74C433DF
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:23:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 21EA621655
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:18:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3C5EF21883
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Jun 2020 14:23:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593267492;
-	bh=cIt6opZa+yAA6PsRPnToKEVJTOvIWVfLvMCDwYPe3Xk=;
+	s=default; t=1593267803;
+	bh=z+LI4rDwcqdPllTBWP3ve1Yz1MaJfOlnanpyQgYW/k4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=yWeFZbqOGwRk/BWJR0wboCx1M0w6XGmAUM45k78cPHWekBxm100xf+0T4Wa/TqE/A
-	 QU0mjrov8F/0F5diG06XDsZPORgRHvq92aqRmnOtfFhtMo5CSEPcbTW0/ZGc4WUj23
-	 ZK0rdtKvtToRfggX4cfiYmETR/4qHBjDgRY/JpV0=
+	b=KWzJJJjXoq2v+zD66COIA1haegT0NPt2URlghLPTStubdjTw9eGQzS2M/h+wnpF4E
+	 LK4vwAEOyiqexjDNAhQdWF9N140o2dRtk/+kGo0X5yWqD1DE5lTVDVgRlHXOLnqRDa
+	 QGE0TyIbISqOIUKfOHdindHptIJSyoDRTNlSpcRo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725854AbgF0OSI (ORCPT
+        id S1725854AbgF0OXX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 27 Jun 2020 10:18:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36926 "EHLO mail.kernel.org"
+        Sat, 27 Jun 2020 10:23:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725798AbgF0OSI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 27 Jun 2020 10:18:08 -0400
+        id S1725850AbgF0OXW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 27 Jun 2020 10:23:22 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC7DF21655;
-        Sat, 27 Jun 2020 14:18:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4F38320672;
+        Sat, 27 Jun 2020 14:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593267487;
-        bh=cIt6opZa+yAA6PsRPnToKEVJTOvIWVfLvMCDwYPe3Xk=;
+        s=default; t=1593267801;
+        bh=z+LI4rDwcqdPllTBWP3ve1Yz1MaJfOlnanpyQgYW/k4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dTMsD6U1Gd9Qs59wnuvSXVIWP5yBbcKqUWOEqIRqRg003TxHdGjemMqUAOW021M3y
-         LDlPtAuI31mU3xn8qrXtq2QDqTSP5QolxLsRAKvrYHTzpwdnUsjZGyjJuFuLOycqOU
-         AnY4+beRGssrk+yVQP7fbEVlO0Tvb6GdFd3ZedEA=
-Date:   Sat, 27 Jun 2020 16:18:01 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Erwan Le Ray <erwan.leray@st.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        linux-serial@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org,
-        Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: add generic DT binding for
- announcing RTS/CTS lines
-Message-ID: <20200627141801.GA1945477@kroah.com>
-References: <20200520133932.30441-1-erwan.leray@st.com>
- <20200520133932.30441-2-erwan.leray@st.com>
+        b=cFVJfwSjRJyhEigz/7AFA+Ob7mOkqMvCoTPKZrOJ7UsG+Dy2kZqHjsqylmNuTOor8
+         X7+7bmps7/9K6vRNJik2XzGaqiBfUb7c5cSh2tfuJtC7RBUffBozSV5ckCqLl4UXNa
+         L3dUIBhpviOzJwbGDQuW6pQ+0flXGXeoHJe+bwWo=
+Date:   Sat, 27 Jun 2020 16:23:15 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Fugang Duan <fugang.duan@nxp.com>
+Cc:     u.kleine-koenig@pengutronix.de, linux-serial@vger.kernel.org,
+        lukas@wunner.de, jslaby@suse.com, s.hauer@pengutronix.de,
+        kernel@pengutronix.de
+Subject: Re: [PATCH tty/serial 1/1] tty: serial: imx: enable imx serial
+ console port as module
+Message-ID: <20200627142315.GA1959761@kroah.com>
+References: <20200605084321.26255-1-fugang.duan@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200520133932.30441-2-erwan.leray@st.com>
+In-Reply-To: <20200605084321.26255-1-fugang.duan@nxp.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 20, 2020 at 03:39:31PM +0200, Erwan Le Ray wrote:
-> Add support of generic DT binding for annoucing RTS/CTS lines. The initial
-> binding 'st,hw-flow-control' is not needed anymore since generic binding
-> is available, but is kept for backward compatibility.
+On Fri, Jun 05, 2020 at 04:43:21PM +0800, Fugang Duan wrote:
+> GKI kernel requires drivers built as modules including
+> console driver, so add the support that imx serial console
+> driver can be built as module.
 > 
-> Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+> The changes of the patch:
+> - imx console driver can be built as module.
+> - move out earlycon code to separated driver like imx_earlycon.c,
+>   and imx earlycon driver only support build-in.
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> index 75b8521eb7cb..06d5f251ec88 100644
-> --- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> @@ -35,9 +35,11 @@ properties:
->      description: label associated with this uart
+> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+> ---
+>  drivers/tty/serial/Kconfig        | 17 +++++++----
+>  drivers/tty/serial/Makefile       |  1 +
+>  drivers/tty/serial/imx.c          | 37 ++---------------------
+>  drivers/tty/serial/imx_earlycon.c | 50 +++++++++++++++++++++++++++++++
+>  4 files changed, 65 insertions(+), 40 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index adf9e80e7dc9..890cbf214561 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -502,20 +502,27 @@ config SERIAL_IMX
+>  	  can enable its onboard serial port by enabling this option.
 >  
->    st,hw-flow-ctrl:
-> -    description: enable hardware flow control
-> +    description: enable hardware flow control (deprecated)
->      $ref: /schemas/types.yaml#/definitions/flag
+>  config SERIAL_IMX_CONSOLE
+> -	bool "Console on IMX serial port"
+> -	depends on SERIAL_IMX=y
+> +	tristate "Console on IMX serial port"
+> +	depends on SERIAL_IMX
+>  	select SERIAL_CORE_CONSOLE
+> -	select SERIAL_EARLYCON if OF
+>  	help
+>  	  If you have enabled the serial port on the Freescale IMX
+> -	  CPU you can make it the console by answering Y to this option.
+> +	  CPU you can make it the console by answering Y/M to this option.
 >  
-> +  uart-has-rtscts: true
+> -	  Even if you say Y here, the currently visible virtual console
+> +	  Even if you say Y/M here, the currently visible virtual console
+>  	  (/dev/tty0) will still be used as the system console by default, but
+>  	  you can alter that using a kernel command line option such as
+>  	  "console=ttymxc0". (Try "man bootparam" or see the documentation of
+>  	  your bootloader about how to pass options to the kernel at boot time.)
+>  
+> +config SERIAL_IMX_EARLYCON
+> +	bool "Earlycon on IMX serial port"
+> +	depends OF
+> +	select SERIAL_EARLYCON if OF
+> +	help
+> +	  If you have enabled the earlycon on the Freescale IMX
+> +	  CPU you can make it the earlycon by answering Y to this option.
 > +
->    dmas:
->      minItems: 1
->      maxItems: 2
-> -- 
-> 2.17.1
-> 
 
-Did this get ignored by the DT maintainers?  :(
+Did you test this?
+
+I get the folllowing errors with this patch:
+	scripts/kconfig/conf  --oldconfig Kconfig
+	drivers/tty/serial/Kconfig:521: syntax error
+	drivers/tty/serial/Kconfig:520: invalid statement
+	drivers/tty/serial/Kconfig:521: invalid statement
+	drivers/tty/serial/Kconfig:522: invalid statement
+	drivers/tty/serial/Kconfig:523: unknown statement "If"
+	drivers/tty/serial/Kconfig:524:warning: ignoring unsupported character '.'
+	drivers/tty/serial/Kconfig:524: unknown statement "CPU"
+	make[1]: *** [scripts/kconfig/Makefile:71: oldconfig] Error 1
+	make: *** [Makefile:606: oldconfig] Error 2
+
+I'll let you make the obvious fix and actually test it this time before
+resending :)
+
+thanks,
+
+greg k-h
