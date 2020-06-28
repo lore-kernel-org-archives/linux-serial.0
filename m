@@ -6,45 +6,45 @@ X-Spam-Status: No, score=-4.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	LONGWORDS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC9AC433E0
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Jun 2020 07:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A04C433DF
+	for <linux-serial@archiver.kernel.org>; Sun, 28 Jun 2020 07:10:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 70CCB20775
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Jun 2020 07:10:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A8AD620775
+	for <linux-serial@archiver.kernel.org>; Sun, 28 Jun 2020 07:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726122AbgF1HKW (ORCPT
+        id S1726125AbgF1HKb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 28 Jun 2020 03:10:22 -0400
-Received: from mga03.intel.com ([134.134.136.65]:57027 "EHLO mga03.intel.com"
+        Sun, 28 Jun 2020 03:10:31 -0400
+Received: from mga14.intel.com ([192.55.52.115]:20229 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725958AbgF1HKW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 28 Jun 2020 03:10:22 -0400
-IronPort-SDR: jWlM3cco5DHIX4uaizpC27dI9SGpb8YIqy4OfOFLi/2c/wfzUPnc4XVIdRFW/B5h5bNftIb9RG
- jxczdpRxih8Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9665"; a="145800256"
+        id S1725958AbgF1HKb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 28 Jun 2020 03:10:31 -0400
+IronPort-SDR: XInaIaAxUDcpr18R/l+mwrYuNhxK/gnhb44nuisnUilnr22xXDnDS6uaEBWBCGWVOr78Lv7X9h
+ hmvKSuWYyfEg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9665"; a="144849058"
 X-IronPort-AV: E=Sophos;i="5.75,290,1589266800"; 
-   d="scan'208";a="145800256"
+   d="scan'208";a="144849058"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2020 00:10:21 -0700
-IronPort-SDR: z7bwRP+lwvD+hL0/T3tGvEx4YkN/9ZOfx5+y0GigRzLvyoQlv2B+Jyz4x5ABNwAKbnAtp1TiZq
- pgzrAKJSUsUg==
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2020 00:10:25 -0700
+IronPort-SDR: QexDFDFkTFxmH3Wo99hX2lTF/XV+cL4RdqmZEeov70/vJHG+uh8NZR7yPkQYKWnnXom33HFzOs
+ pO27ltdweybQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,290,1589266800"; 
-   d="scan'208";a="312735393"
+   d="scan'208";a="355166143"
 Received: from lkp-server02.sh.intel.com (HELO 1f25e51baad6) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 28 Jun 2020 00:10:20 -0700
+  by orsmga001.jf.intel.com with ESMTP; 28 Jun 2020 00:10:20 -0700
 Received: from kbuild by 1f25e51baad6 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1jpRSF-00003b-2y; Sun, 28 Jun 2020 07:10:19 +0000
-Date:   Sun, 28 Jun 2020 15:09:29 +0800
+        id 1jpRSF-00003k-7k; Sun, 28 Jun 2020 07:10:19 +0000
+Date:   Sun, 28 Jun 2020 15:09:31 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 890814504eeb930c15a1e238c3fff7dfc238b8c9
-Message-ID: <5ef84229.g6abpcxLsOQzo2er%lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 76ed2e105796710cf5b8a4ba43c81eceed948b70
+Message-ID: <5ef8422b.AJS0+ejghzHl9Mli%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -54,12 +54,12 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 890814504eeb930c15a1e238c3fff7dfc238b8c9  tty: fix spelling mistake
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-linus
+branch HEAD: 76ed2e105796710cf5b8a4ba43c81eceed948b70  Revert "tty: xilinx_uartps: Fix missing id assignment to the console"
 
 elapsed time: 725m
 
-configs tested: 111
+configs tested: 122
 configs skipped: 1
 
 The following configs have been built successfully.
@@ -73,11 +73,6 @@ arm64                            allyesconfig
 arm64                               defconfig
 arm64                            allmodconfig
 arm64                             allnoconfig
-powerpc                     mpc5200_defconfig
-m68k                            q40_defconfig
-arm                           tegra_defconfig
-mips                        vocore2_defconfig
-arm                          simpad_defconfig
 arm                         cm_x300_defconfig
 sh                         microdev_defconfig
 m68k                             allmodconfig
@@ -93,11 +88,6 @@ arm                       netwinder_defconfig
 mips                    maltaup_xpa_defconfig
 powerpc                    gamecube_defconfig
 ia64                                defconfig
-powerpc                      pasemi_defconfig
-riscv                             allnoconfig
-h8300                    h8300h-sim_defconfig
-nds32                             allnoconfig
-sparc64                          allmodconfig
 h8300                       h8s-sim_defconfig
 sh                          landisk_defconfig
 sh                          kfr2r09_defconfig
@@ -110,10 +100,10 @@ arm                         s3c2410_defconfig
 powerpc                     mpc512x_defconfig
 openrisc                 simple_smp_defconfig
 sh                           cayman_defconfig
+i386                              allnoconfig
 i386                             allyesconfig
 i386                                defconfig
 i386                              debian-10.3
-i386                              allnoconfig
 ia64                             allmodconfig
 ia64                              allnoconfig
 ia64                             allyesconfig
@@ -128,6 +118,7 @@ c6x                              allyesconfig
 c6x                               allnoconfig
 openrisc                         allyesconfig
 nds32                               defconfig
+nds32                             allnoconfig
 csky                             allyesconfig
 csky                                defconfig
 alpha                               defconfig
@@ -153,7 +144,26 @@ powerpc                          allyesconfig
 powerpc                          rhel-kconfig
 powerpc                          allmodconfig
 powerpc                           allnoconfig
+i386                 randconfig-a006-20200628
+i386                 randconfig-a002-20200628
+i386                 randconfig-a003-20200628
+i386                 randconfig-a001-20200628
+i386                 randconfig-a005-20200628
+i386                 randconfig-a004-20200628
+i386                 randconfig-a013-20200628
+i386                 randconfig-a016-20200628
+i386                 randconfig-a014-20200628
+i386                 randconfig-a012-20200628
+i386                 randconfig-a015-20200628
+i386                 randconfig-a011-20200628
+x86_64               randconfig-a002-20200628
+x86_64               randconfig-a004-20200628
+x86_64               randconfig-a003-20200628
+x86_64               randconfig-a005-20200628
+x86_64               randconfig-a001-20200628
+x86_64               randconfig-a006-20200628
 riscv                            allyesconfig
+riscv                             allnoconfig
 riscv                               defconfig
 riscv                            allmodconfig
 s390                             allyesconfig
@@ -164,6 +174,7 @@ sparc                               defconfig
 sparc64                             defconfig
 sparc64                           allnoconfig
 sparc64                          allyesconfig
+sparc64                          allmodconfig
 um                                allnoconfig
 um                                  defconfig
 um                               allmodconfig
