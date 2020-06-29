@@ -2,123 +2,120 @@ Return-Path: <SRS0=FCDA=AK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38638C433DF
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Jun 2020 18:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B63AC433E1
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Jun 2020 19:13:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 07C9D204EC
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Jun 2020 18:49:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="egF/bFkm"
+	by mail.kernel.org (Postfix) with ESMTP id 52D9C206F1
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Jun 2020 19:13:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1593458006;
+	bh=i9ZfBpzxB3oPpousxT2bRt0NotTChvxCXKkleB811bU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=cFkB8PM1BXnPQd74Kd8RX6gWCZ3W+wDH20pYnDXcxz8DSY7Zt33Dp9ONa7QnC31M8
+	 cMmexc3Nqi5m31NY/2vCscNEMQuqwMoFbT8yfV/3LZQtBprUKSrTuzrTLiWil2y8QW
+	 EyAkR1+InjfqxjeX5rL2/P1TOWYzki53BmaQUt+U=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727836AbgF2Stz (ORCPT
+        id S1731351AbgF2TNZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Jun 2020 14:49:55 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:57816 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729000AbgF2Stx (ORCPT
+        Mon, 29 Jun 2020 15:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731325AbgF2TNU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Jun 2020 14:49:53 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05T8ASlU008548;
-        Mon, 29 Jun 2020 10:13:29 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=STMicroelectronics;
- bh=w3dIE67dE3KoXbBoLblS3zP9klm4N4Ihl8g7RfI8wH4=;
- b=egF/bFkmDFi7YrM+IdLAZv0HQBZnKlfV+ZcniDcXQgm0yYyQudJlHBmPZOj+bvarfTpC
- N2vq7bC3bsrcygWGevkP28ipsoYRjbYzU/ukbSDNeWdIFxPpQgFeUFfWo0HImZzP96r6
- NO4om23b3JpL5HGFBOlb90MZs2YD59p8FBst0j1X10V6NFOGGR0HbkYH/PzXDIV5Vo4t
- BYzVz379+39a+OCZmA/jRfUyFQTVEOgQVO3QZNFcCX5rJRG2Q5MX7P5q4wGRnjxbVd+B
- OSS/qYn0R40K+763Eag4amcidi0CidlPYJjlQQnskRL6qCLn37ZAmuEGeJdhQSGA4O/t mQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 31ww0ftpxb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Jun 2020 10:13:29 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 510A010002A;
-        Mon, 29 Jun 2020 10:13:28 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag5node1.st.com [10.75.127.13])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 136A82ADA04;
-        Mon, 29 Jun 2020 10:13:28 +0200 (CEST)
-Received: from SFHDAG3NODE1.st.com (10.75.127.7) by SFHDAG5NODE1.st.com
- (10.75.127.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 29 Jun
- 2020 10:13:27 +0200
-Received: from SFHDAG3NODE1.st.com ([fe80::1166:1abb:aad4:5f86]) by
- SFHDAG3NODE1.st.com ([fe80::1166:1abb:aad4:5f86%20]) with mapi id
- 15.00.1473.003; Mon, 29 Jun 2020 10:13:27 +0200
-From:   Erwan LE RAY <erwan.leray@st.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Mark Rutland <mark.rutland@arm.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
-        Fabrice GASNIER <fabrice.gasnier@st.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: add generic DT binding for
- announcing RTS/CTS lines
-Thread-Topic: [PATCH 1/2] dt-bindings: serial: add generic DT binding for
- announcing RTS/CTS lines
-Thread-Index: AQHWLqwdvriVa1dO+kuLItas4TvOb6jsnKeAgAK+zQA=
-Date:   Mon, 29 Jun 2020 08:13:27 +0000
-Message-ID: <b282002b-bca6-96a0-98f8-b4dd5f813296@st.com>
-References: <20200520133932.30441-1-erwan.leray@st.com>
- <20200520133932.30441-2-erwan.leray@st.com>
- <20200627141801.GA1945477@kroah.com>
-In-Reply-To: <20200627141801.GA1945477@kroah.com>
-Accept-Language: en-US, fr-FR
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.75.127.46]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <85399D0122B0FC468E36B331A46F0E31@st.com>
-Content-Transfer-Encoding: base64
+        Mon, 29 Jun 2020 15:13:20 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B91C008751;
+        Mon, 29 Jun 2020 01:35:57 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id i14so15694087ejr.9;
+        Mon, 29 Jun 2020 01:35:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=P/lWBTxJeT64MmPuE+Y53vSa9wNIb6a3JKrDaGJpzms=;
+        b=tCNf8B6YWMeZ7MhUEoFAMQQAPNwFYbsz8eq/qIeXIgJQ6vdkn0041EqqTNOsLS+Ait
+         7avI8YxjJj1tMA/EiLLMs3kgCxbshsE+tLXz1Zkr/SQZY78jFK2GDRipp7jWGmZScS1m
+         x0YWXskl11/zTACK5IRnOR5tCmC5WpBc1ZRDVWTcj5RK5B2ZK2TB6YSmWsVCouXkc9fH
+         m3LrT8ZGR4If4XF5Ru3zfQMz5xoTV5WWhsbTlYl9M7mxn+MGHY4/MM234iegMFhaWdsp
+         uhOC0QCCdFbme+VmxGNE4aqPWc/SeAOABmuCY5wbNX3szwexaajOfxaWr/jw8Q8AH78H
+         wrqg==
+X-Gm-Message-State: AOAM533VCO9psoKWQ3lh3cxY3vt8aw0C/h3kyeoM21T5JpLGZtQXoefc
+        /JH67q0msfWvT/9U+Fkm30zhyXT3
+X-Google-Smtp-Source: ABdhPJwSpDThVjcEd0PgJHWyDlPf/nuRiq+gnvJcGaWZixD0/guW/6gO2OZBM23kPBf0l0OLqzgoxQ==
+X-Received: by 2002:a17:906:a1cc:: with SMTP id bx12mr12520655ejb.461.1593419756288;
+        Mon, 29 Jun 2020 01:35:56 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.195])
+        by smtp.googlemail.com with ESMTPSA id c4sm24101091ejb.17.2020.06.29.01.35.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 29 Jun 2020 01:35:55 -0700 (PDT)
+Date:   Mon, 29 Jun 2020 10:35:53 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Tamseel Shams <m.shams@samsung.com>
+Cc:     kgene@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com
+Subject: Re: [PATCH v2] serial: samsung: Re-factors UART IRQ resource for
+ various Samsung SoC
+Message-ID: <20200629083553.GA14028@kozik-lap>
+References: <CGME20200628071932epcas5p175059c085421a95de76202767bd132cf@epcas5p1.samsung.com>
+ <20200628070007.36222-1-m.shams@samsung.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-29_07:2020-06-26,2020-06-29 signatures=0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200628070007.36222-1-m.shams@samsung.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-DQpPbiA2LzI3LzIwIDQ6MTggUE0sIEdyZWcgS3JvYWgtSGFydG1hbiB3cm90ZToNCj4gT24gV2Vk
-LCBNYXkgMjAsIDIwMjAgYXQgMDM6Mzk6MzFQTSArMDIwMCwgRXJ3YW4gTGUgUmF5IHdyb3RlOg0K
-Pj4gQWRkIHN1cHBvcnQgb2YgZ2VuZXJpYyBEVCBiaW5kaW5nIGZvciBhbm5vdWNpbmcgUlRTL0NU
-UyBsaW5lcy4gVGhlIGluaXRpYWwNCj4+IGJpbmRpbmcgJ3N0LGh3LWZsb3ctY29udHJvbCcgaXMg
-bm90IG5lZWRlZCBhbnltb3JlIHNpbmNlIGdlbmVyaWMgYmluZGluZw0KPj4gaXMgYXZhaWxhYmxl
-LCBidXQgaXMga2VwdCBmb3IgYmFja3dhcmQgY29tcGF0aWJpbGl0eS4NCj4+DQo+PiBTaWduZWQt
-b2ZmLWJ5OiBFcndhbiBMZSBSYXkgPGVyd2FuLmxlcmF5QHN0LmNvbT4NCj4+DQo+PiBkaWZmIC0t
-Z2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9zdCxzdG0zMi11
-YXJ0LnlhbWwgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL3N0LHN0
-bTMyLXVhcnQueWFtbA0KPj4gaW5kZXggNzViODUyMWViN2NiLi4wNmQ1ZjI1MWVjODggMTAwNjQ0
-DQo+PiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL3N0LHN0
-bTMyLXVhcnQueWFtbA0KPj4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
-L3NlcmlhbC9zdCxzdG0zMi11YXJ0LnlhbWwNCj4+IEBAIC0zNSw5ICszNSwxMSBAQCBwcm9wZXJ0
-aWVzOg0KPj4gICAgICAgZGVzY3JpcHRpb246IGxhYmVsIGFzc29jaWF0ZWQgd2l0aCB0aGlzIHVh
-cnQNCj4+ICAgDQo+PiAgICAgc3QsaHctZmxvdy1jdHJsOg0KPj4gLSAgICBkZXNjcmlwdGlvbjog
-ZW5hYmxlIGhhcmR3YXJlIGZsb3cgY29udHJvbA0KPj4gKyAgICBkZXNjcmlwdGlvbjogZW5hYmxl
-IGhhcmR3YXJlIGZsb3cgY29udHJvbCAoZGVwcmVjYXRlZCkNCj4+ICAgICAgICRyZWY6IC9zY2hl
-bWFzL3R5cGVzLnlhbWwjL2RlZmluaXRpb25zL2ZsYWcNCj4+ICAgDQo+PiArICB1YXJ0LWhhcy1y
-dHNjdHM6IHRydWUNCj4+ICsNCj4+ICAgICBkbWFzOg0KPj4gICAgICAgbWluSXRlbXM6IDENCj4+
-ICAgICAgIG1heEl0ZW1zOiAyDQo+PiAtLSANCj4+IDIuMTcuMQ0KPj4NCj4gRGlkIHRoaXMgZ2V0
-IGlnbm9yZWQgYnkgdGhlIERUIG1haW50YWluZXJzPyAgOigNCg0KSGkgUm9iLA0KDQpHZW50bGUg
-cmVtaW5kZXIuIENvdWxkIHlvdSBwbGVhc2UgcHJvdmlkZSB5b3VyIGZlZWRiYWNrIG9uIHRoaXMg
-cGF0Y2ggPw0KDQpCZXN0IFJlZ2FyZHMsIEVyd2FuLg0K
+On Sun, Jun 28, 2020 at 12:30:07PM +0530, Tamseel Shams wrote:
+> In few older Samsung SoCs like s3c2410, s3c2412
+> and s3c2440, UART IP is having 2 interrupt lines.
+> However, in other SoCs like s3c6400, s5pv210,
+> exynos5433, and exynos4210 UART is having only 1
+> interrupt line. Due to this, "platform_get_irq(platdev, 1)"
+> call in the driver gives the following warning:
+> "IRQ index 1 not found" on recent platforms.
+> 
+> This patch re-factors the IRQ resources handling for
+> each platform and hence fixing the above warnings seen
+> on some platforms.
+> 
+> Signed-off-by: Tamseel Shams <m.shams@samsung.com>
+> ---
+> Removed the RFC tag and using 'platform_get_irq_optional'
+> instead of 'platform_get_irq' as per comment received from
+> Robin Murphy.
+> 
+>  drivers/tty/serial/samsung_tty.c | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 6ef614d8648c..60554f42e208 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -60,6 +60,7 @@ struct s3c24xx_uart_info {
+>  	char			*name;
+>  	unsigned int		type;
+>  	unsigned int		fifosize;
+> +	unsigned int		irq_cnt;
+
+No, it's duplicating the logic.
+
+The driver already checks whether SoC has two or one interrupt line with
+s3c24xx_serial_has_interrupt_mask() so there is no point to have two of
+such methods.
+
+Instead unify it please. Probably entire
+s3c24xx_serial_has_interrupt_mask() and s3c24xx_serial_type() should be
+removed and switched into *serial_drv_data.
+
+Best regards,
+Krzysztof
