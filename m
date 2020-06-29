@@ -2,120 +2,152 @@ Return-Path: <SRS0=FCDA=AK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B63AC433E1
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Jun 2020 19:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E38C433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Jun 2020 20:24:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 52D9C206F1
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Jun 2020 19:13:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2DAC5206A5
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Jun 2020 20:24:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593458006;
-	bh=i9ZfBpzxB3oPpousxT2bRt0NotTChvxCXKkleB811bU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=cFkB8PM1BXnPQd74Kd8RX6gWCZ3W+wDH20pYnDXcxz8DSY7Zt33Dp9ONa7QnC31M8
-	 cMmexc3Nqi5m31NY/2vCscNEMQuqwMoFbT8yfV/3LZQtBprUKSrTuzrTLiWil2y8QW
-	 EyAkR1+InjfqxjeX5rL2/P1TOWYzki53BmaQUt+U=
+	s=default; t=1593462283;
+	bh=PGOWm28fuz6FO8l/TArIiE7rQptK2L48gxEGamnWAAc=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=bp52bAec9NLluHoklouGiXCc+oGpqx3nCyYokFPrq/xfKLKT1cn3R3iTOZpqzyIR2
+	 Y+GP/PioSMhgCufpDeOreCZBdmfC3E97Cp5RGD04ni5q1v+l57LlioNRB9tcvSK19P
+	 cStFx/9jVMB7hKfCvvztRBS6ZsLxPMWQ1dHqrpc0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731351AbgF2TNZ (ORCPT
+        id S1731834AbgF2UYm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Jun 2020 15:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731325AbgF2TNU (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Jun 2020 15:13:20 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B91C008751;
-        Mon, 29 Jun 2020 01:35:57 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id i14so15694087ejr.9;
-        Mon, 29 Jun 2020 01:35:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=P/lWBTxJeT64MmPuE+Y53vSa9wNIb6a3JKrDaGJpzms=;
-        b=tCNf8B6YWMeZ7MhUEoFAMQQAPNwFYbsz8eq/qIeXIgJQ6vdkn0041EqqTNOsLS+Ait
-         7avI8YxjJj1tMA/EiLLMs3kgCxbshsE+tLXz1Zkr/SQZY78jFK2GDRipp7jWGmZScS1m
-         x0YWXskl11/zTACK5IRnOR5tCmC5WpBc1ZRDVWTcj5RK5B2ZK2TB6YSmWsVCouXkc9fH
-         m3LrT8ZGR4If4XF5Ru3zfQMz5xoTV5WWhsbTlYl9M7mxn+MGHY4/MM234iegMFhaWdsp
-         uhOC0QCCdFbme+VmxGNE4aqPWc/SeAOABmuCY5wbNX3szwexaajOfxaWr/jw8Q8AH78H
-         wrqg==
-X-Gm-Message-State: AOAM533VCO9psoKWQ3lh3cxY3vt8aw0C/h3kyeoM21T5JpLGZtQXoefc
-        /JH67q0msfWvT/9U+Fkm30zhyXT3
-X-Google-Smtp-Source: ABdhPJwSpDThVjcEd0PgJHWyDlPf/nuRiq+gnvJcGaWZixD0/guW/6gO2OZBM23kPBf0l0OLqzgoxQ==
-X-Received: by 2002:a17:906:a1cc:: with SMTP id bx12mr12520655ejb.461.1593419756288;
-        Mon, 29 Jun 2020 01:35:56 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.195])
-        by smtp.googlemail.com with ESMTPSA id c4sm24101091ejb.17.2020.06.29.01.35.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 29 Jun 2020 01:35:55 -0700 (PDT)
-Date:   Mon, 29 Jun 2020 10:35:53 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Tamseel Shams <m.shams@samsung.com>
-Cc:     kgene@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com
-Subject: Re: [PATCH v2] serial: samsung: Re-factors UART IRQ resource for
- various Samsung SoC
-Message-ID: <20200629083553.GA14028@kozik-lap>
-References: <CGME20200628071932epcas5p175059c085421a95de76202767bd132cf@epcas5p1.samsung.com>
- <20200628070007.36222-1-m.shams@samsung.com>
+        Mon, 29 Jun 2020 16:24:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37056 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729388AbgF2TZ2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 29 Jun 2020 15:25:28 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F024F25384;
+        Mon, 29 Jun 2020 15:40:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593445248;
+        bh=PGOWm28fuz6FO8l/TArIiE7rQptK2L48gxEGamnWAAc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1xDutN+F1USTARgrmyfzgdb80UzuLlSmFQFehROKTHgDiV/1JoEGLefOmKcerMaY0
+         WNbna1qBLRKPnvwF0YOpVomraaUPuKDYlzbOkUWWwb6iqE2/TEKuV0y/zM1LVhG+++
+         YrPoly6CXI/0LU0ji6dRekQJXRSbyMyKlyY880P8=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     John Stultz <john.stultz@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 031/191] serial: amba-pl011: Make sure we initialize the port.lock spinlock
+Date:   Mon, 29 Jun 2020 11:37:27 -0400
+Message-Id: <20200629154007.2495120-32-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200629154007.2495120-1-sashal@kernel.org>
+References: <20200629154007.2495120-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200628070007.36222-1-m.shams@samsung.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.229-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.229-rc1
+X-KernelTest-Deadline: 2020-07-01T15:39+00:00
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Jun 28, 2020 at 12:30:07PM +0530, Tamseel Shams wrote:
-> In few older Samsung SoCs like s3c2410, s3c2412
-> and s3c2440, UART IP is having 2 interrupt lines.
-> However, in other SoCs like s3c6400, s5pv210,
-> exynos5433, and exynos4210 UART is having only 1
-> interrupt line. Due to this, "platform_get_irq(platdev, 1)"
-> call in the driver gives the following warning:
-> "IRQ index 1 not found" on recent platforms.
-> 
-> This patch re-factors the IRQ resources handling for
-> each platform and hence fixing the above warnings seen
-> on some platforms.
-> 
-> Signed-off-by: Tamseel Shams <m.shams@samsung.com>
-> ---
-> Removed the RFC tag and using 'platform_get_irq_optional'
-> instead of 'platform_get_irq' as per comment received from
-> Robin Murphy.
-> 
->  drivers/tty/serial/samsung_tty.c | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 6ef614d8648c..60554f42e208 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -60,6 +60,7 @@ struct s3c24xx_uart_info {
->  	char			*name;
->  	unsigned int		type;
->  	unsigned int		fifosize;
-> +	unsigned int		irq_cnt;
+From: John Stultz <john.stultz@linaro.org>
 
-No, it's duplicating the logic.
+[ Upstream commit 8508f4cba308f785b2fd4b8c38849c117b407297 ]
 
-The driver already checks whether SoC has two or one interrupt line with
-s3c24xx_serial_has_interrupt_mask() so there is no point to have two of
-such methods.
+Valentine reported seeing:
 
-Instead unify it please. Probably entire
-s3c24xx_serial_has_interrupt_mask() and s3c24xx_serial_type() should be
-removed and switched into *serial_drv_data.
+[    3.626638] INFO: trying to register non-static key.
+[    3.626639] the code is fine but needs lockdep annotation.
+[    3.626640] turning off the locking correctness validator.
+[    3.626644] CPU: 7 PID: 51 Comm: kworker/7:1 Not tainted 5.7.0-rc2-00115-g8c2e9790f196 #116
+[    3.626646] Hardware name: HiKey960 (DT)
+[    3.626656] Workqueue: events deferred_probe_work_func
+[    3.632476] sd 0:0:0:0: [sda] Optimal transfer size 8192 bytes not a multiple of physical block size (16384 bytes)
+[    3.640220] Call trace:
+[    3.640225]  dump_backtrace+0x0/0x1b8
+[    3.640227]  show_stack+0x20/0x30
+[    3.640230]  dump_stack+0xec/0x158
+[    3.640234]  register_lock_class+0x598/0x5c0
+[    3.640235]  __lock_acquire+0x80/0x16c0
+[    3.640236]  lock_acquire+0xf4/0x4a0
+[    3.640241]  _raw_spin_lock_irqsave+0x70/0xa8
+[    3.640245]  uart_add_one_port+0x388/0x4b8
+[    3.640248]  pl011_register_port+0x70/0xf0
+[    3.640250]  pl011_probe+0x184/0x1b8
+[    3.640254]  amba_probe+0xdc/0x180
+[    3.640256]  really_probe+0xe0/0x338
+[    3.640257]  driver_probe_device+0x60/0xf8
+[    3.640259]  __device_attach_driver+0x8c/0xd0
+[    3.640260]  bus_for_each_drv+0x84/0xd8
+[    3.640261]  __device_attach+0xe4/0x140
+[    3.640263]  device_initial_probe+0x1c/0x28
+[    3.640265]  bus_probe_device+0xa4/0xb0
+[    3.640266]  deferred_probe_work_func+0x7c/0xb8
+[    3.640269]  process_one_work+0x2c0/0x768
+[    3.640271]  worker_thread+0x4c/0x498
+[    3.640272]  kthread+0x14c/0x158
+[    3.640275]  ret_from_fork+0x10/0x1c
 
-Best regards,
-Krzysztof
+Which seems to be due to the fact that after allocating the uap
+structure, nothing initializes the spinlock.
+
+Its a little confusing, as uart_port_spin_lock_init() is one
+place where the lock is supposed to be initialized, but it has
+an exception for the case where the port is a console.
+
+This makes it seem like a deeper fix is needed to properly
+register the console, but I'm not sure what that entails, and
+Andy suggested that this approach is less invasive.
+
+Thus, this patch resolves the issue by initializing the spinlock
+in the driver, and resolves the resulting warning.
+
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Reported-by: Valentin Schneider <valentin.schneider@arm.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: John Stultz <john.stultz@linaro.org>
+Reviewed-and-tested-by: Valentin Schneider <valentin.schneider@arm.com>
+Link: https://lore.kernel.org/r/20200428184050.6501-1-john.stultz@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/amba-pl011.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index f6586a8681b9b..b3b9b3d2cddf9 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2524,6 +2524,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+ 	uap->port.fifosize = uap->fifosize;
+ 	uap->port.flags = UPF_BOOT_AUTOCONF;
+ 	uap->port.line = index;
++	spin_lock_init(&uap->port.lock);
+ 
+ 	amba_ports[index] = uap;
+ 
+-- 
+2.25.1
+
