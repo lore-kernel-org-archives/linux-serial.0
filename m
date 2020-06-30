@@ -2,113 +2,117 @@ Return-Path: <SRS0=da9C=AL=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B53C433E1
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Jun 2020 12:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67070C433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Jun 2020 18:35:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C2BAA2078B
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Jun 2020 12:17:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="UbMGzN6+"
+	by mail.kernel.org (Postfix) with ESMTP id 4A331206CB
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Jun 2020 18:35:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1593542125;
+	bh=gyfWpjnOJwwzGi1tgl/VLHZLp+8PSWYx42nMxv5kKvo=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=yTvShfYPgyJVGkoo5UvUWMIE/CMKjEE3ihs55I1eLIehNhDnnsLeh7Ktf9/sHRMno
+	 ppGNR93iz3vzFmZVX7ASIua8sIhPLR/ta9muibPymzB2dkgD3PQ+/2fh3qHaucUf8n
+	 ZyjlTkBhETZgOKX0DPBF55k5HbSiA08Y7wfMXokM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387609AbgF3MRW (ORCPT
+        id S1732771AbgF3SfV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Jun 2020 08:17:22 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:34631 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733193AbgF3MRU (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Jun 2020 08:17:20 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1593519439; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=kGYY4QcFYgkLdyV7Im78BrVJWki2PPpmLykzIJ/ZNLs=; b=UbMGzN6+PqBf5Wxi6jkFvCk6hTIix60BW+wf/irfCgYVtp+dKUnqfb3mCnDJU1jICJgHgr7r
- PvLxmY2GS0Ce0+uqtgs2OWVtYlTaiRAV8GqnOdmuDld7PgiMXcCKa+lVUBAn7r86OoHhiVz9
- T53LhOcHYT+i12GAtZggMliVzlM=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n10.prod.us-west-2.postgun.com with SMTP id
- 5efb2d3c3a8a8b20b84098db (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 30 Jun 2020 12:17:00
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9855FC433A0; Tue, 30 Jun 2020 12:17:00 +0000 (UTC)
-Received: from [10.50.61.98] (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+        Tue, 30 Jun 2020 14:35:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43916 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731452AbgF3SfU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 30 Jun 2020 14:35:20 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: rnayak)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A62D8C433C8;
-        Tue, 30 Jun 2020 12:16:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A62D8C433C8
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=rnayak@codeaurora.org
-Subject: Re: [PATCH v6 1/6] tty: serial: qcom_geni_serial: Use OPP API to set
- clk/perf state
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     agross@kernel.org, robdclark@gmail.com, robdclark@chromium.org,
-        stanimir.varbanov@linaro.org, viresh.kumar@linaro.org,
-        sboyd@kernel.org, mka@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        linux-serial@vger.kernel.org
-References: <1592222564-13556-1-git-send-email-rnayak@codeaurora.org>
- <1592222564-13556-2-git-send-email-rnayak@codeaurora.org>
- <20200625050808.GW128451@builder.lan>
-From:   Rajendra Nayak <rnayak@codeaurora.org>
-Message-ID: <a7f5978b-6858-c99f-77e3-16e333b93e43@codeaurora.org>
-Date:   Tue, 30 Jun 2020 17:46:52 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F91C206CB;
+        Tue, 30 Jun 2020 18:35:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593542119;
+        bh=gyfWpjnOJwwzGi1tgl/VLHZLp+8PSWYx42nMxv5kKvo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=VreS75mCNztVC55O5WYtKQ3ty6sypfwjFtEvCpKGJF/P6+aSEBXzu2b1RZvZfzGpB
+         fU3Crxvs7MtpRNg03J0qHtUpL7695T+IUbeYINW2k2LPMvnhMrjK404HPe1gY8RZrK
+         tm1PctHJAhBK3iKVLx00O8lxXyMtdbS71s+sKX4c=
+Received: by mail-ot1-f48.google.com with SMTP id c25so1622230otf.7;
+        Tue, 30 Jun 2020 11:35:19 -0700 (PDT)
+X-Gm-Message-State: AOAM532IMyqxNf0bTcKWksra+d6le2VoHnmV/JK7CkBuWDk8jVKT+CnD
+        8aoK56lNRYZ2JCso6aURqnwvImcCjPbE7V8M1Q==
+X-Google-Smtp-Source: ABdhPJyxGkRB5nAl2gD00aoXYNA+A7QZAkg3P0qe89BJ5GCB6sKgUEuOFJbEZFHSpYjGUE+sPWFRo4oj5kH9Y3fJIos=
+X-Received: by 2002:a9d:3a36:: with SMTP id j51mr19503925otc.129.1593542118992;
+ Tue, 30 Jun 2020 11:35:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200625050808.GW128451@builder.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200520133932.30441-1-erwan.leray@st.com> <20200520133932.30441-2-erwan.leray@st.com>
+ <20200627141801.GA1945477@kroah.com>
+In-Reply-To: <20200627141801.GA1945477@kroah.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 30 Jun 2020 12:35:08 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+PFmeN_bFRD1M_E+1NOTsMowViG3CUWDWgy5=3kpC=xw@mail.gmail.com>
+Message-ID: <CAL_Jsq+PFmeN_bFRD1M_E+1NOTsMowViG3CUWDWgy5=3kpC=xw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: add generic DT binding for
+ announcing RTS/CTS lines
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Erwan Le Ray <erwan.leray@st.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linaro-mm-sig@lists.linaro.org,
+        Fabrice Gasnier <fabrice.gasnier@st.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Sat, Jun 27, 2020 at 8:18 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, May 20, 2020 at 03:39:31PM +0200, Erwan Le Ray wrote:
+> > Add support of generic DT binding for annoucing RTS/CTS lines. The initial
+> > binding 'st,hw-flow-control' is not needed anymore since generic binding
+> > is available, but is kept for backward compatibility.
+> >
+> > Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+> > index 75b8521eb7cb..06d5f251ec88 100644
+> > --- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+> > @@ -35,9 +35,11 @@ properties:
+> >      description: label associated with this uart
+> >
+> >    st,hw-flow-ctrl:
+> > -    description: enable hardware flow control
+> > +    description: enable hardware flow control (deprecated)
+> >      $ref: /schemas/types.yaml#/definitions/flag
+> >
+> > +  uart-has-rtscts: true
+> > +
+> >    dmas:
+> >      minItems: 1
+> >      maxItems: 2
+> > --
+> > 2.17.1
+> >
+>
+> Did this get ignored by the DT maintainers?  :(
 
-On 6/25/2020 10:38 AM, Bjorn Andersson wrote:
-> On Mon 15 Jun 05:02 PDT 2020, Rajendra Nayak wrote:
-> 
->> geni serial needs to express a perforamnce state requirement on CX
->> powerdomain depending on the frequency of the clock rates.
->> Use OPP table from DT to register with OPP framework and use
->> dev_pm_opp_set_rate() to set the clk/perf state.
->>
->> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
->> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Cc: Akash Asthana <akashast@codeaurora.org>
->> Cc: linux-serial@vger.kernel.org
-> 
-> Picked up patch 1 and 2 through the qcom tree.
+When it doesn't go to the DT list, you are playing roulette whether I
+happen to see it. :(
 
-thanks Bjorn
+Anyways,
 
-> As Mark requested, please don't lump together patches that doesn't
-> actually depend on each other in the same series - it's quite confusing
-> to know what to pick and not.
-
-Sorry for the confusion, I will try and split them into driver specific patches henceforth.
-For this series though, I see that you have merged the entire ICC series for
-QUP and QSPI into for-next of the qcom tree.
-In which case it perhaps makes sense for you to pull in the QSPI change from this series
-as well? i.e PATCH 6/6.
-If so, I will rebase the patch on your for-next and resend (Its already Ack'ed by Mark)
-
-thanks,
-Rajendra
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Reviewed-by: Rob Herring <robh@kernel.org>
