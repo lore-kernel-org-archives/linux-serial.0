@@ -2,76 +2,103 @@ Return-Path: <SRS0=INAG=AM=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B3F5C433E0
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 13:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D3FC433DF
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 15:42:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 17332207F5
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 13:26:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593609986;
-	bh=+PuAt1GcsWcVCIdMAT4isueNwyuOKhwz5N/3g/TfwlQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=aOeY5kRnm2rOktbVVr0JoWIz6Y4akweQrdTw4Cgj3EyECUNXPCEhQcYgv721ajywX
-	 kAixsk1G+gvUilMQh9E5rgjRqGN79nhfY+BcSGYqadCZEE1Vuc6vMRfJKY2aD9Adhs
-	 72GkXB6cUUugBDBxhwYcJ+fhqewQ/+h5Mvg71eMg=
+	by mail.kernel.org (Postfix) with ESMTP id 8BA952071A
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 15:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731077AbgGAN0V (ORCPT
+        id S1731640AbgGAPmH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Jul 2020 09:26:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46150 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729429AbgGAN0U (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Jul 2020 09:26:20 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AF20D206BE;
-        Wed,  1 Jul 2020 13:26:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593609980;
-        bh=+PuAt1GcsWcVCIdMAT4isueNwyuOKhwz5N/3g/TfwlQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uLYN4dQVt/Vf2Ju08hqrAZSstU94sGlP+YeVgHDJVsEAapNbPEIhiORBA1axBTBbJ
-         sBYnQPztCertMJJxQQEsyKf5JxbmnTv6RhDra/C9xROCHD5zWzwNkVE+/LV7tE2b2X
-         r1V+jnl9LEQIAyBOQ838GzFOd+1q2+HnqWxFr8+Y=
-Date:   Wed, 1 Jul 2020 15:26:06 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Daniel Winkler <danielwinkler@google.com>
-Cc:     linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        chromeos-bluetooth-upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        Aaron Sierra <asierra@xes-inc.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jslaby@suse.com>, Lukas Wunner <lukas@wunner.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Revert "serial: 8250: Fix max baud limit in generic 8250
- port"
-Message-ID: <20200701132606.GA2363542@kroah.com>
-References: <20200630164204.1.I2cc415fa5793b3e55acfd521ba8f0a71e79aa5f1@changeid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200630164204.1.I2cc415fa5793b3e55acfd521ba8f0a71e79aa5f1@changeid>
+        Wed, 1 Jul 2020 11:42:07 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:34032 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731441AbgGAPmG (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 1 Jul 2020 11:42:06 -0400
+X-IronPort-AV: E=Sophos;i="5.75,300,1589209200"; 
+   d="scan'208";a="50853456"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 02 Jul 2020 00:42:04 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 2F082400CE8B;
+        Thu,  2 Jul 2020 00:42:01 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH] serial: sh-sci: Initialize spinlock for uart console
+Date:   Wed,  1 Jul 2020 16:41:40 +0100
+Message-Id: <1593618100-2151-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 04:42:11PM -0700, Daniel Winkler wrote:
-> This reverts commit 0eeaf62981ecc79e8395ca8caa1570eaf3a12257.
-> 
-> The change regresses the QCA6174A-3 bluetooth chip, preventing
-> firmware from being properly loaded. We have verified that without
-> this patch, the chip works as intended.
-> 
-> Signed-off-by: Daniel Winkler <danielwinkler@google.com>
+serial core expects the spinlock to be initialized by the controller
+driver for serial console, this patch makes sure the spinlock is
+initialized, fixing the below issue:
 
-No cc: stable?  No Fixes: tag?
+[    0.865928] BUG: spinlock bad magic on CPU#0, swapper/0/1
+[    0.865945]  lock: sci_ports+0x0/0x4c80, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+[    0.865955] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.8.0-rc1+ #112
+[    0.865961] Hardware name: HopeRun HiHope RZ/G2H with sub board (DT)
+[    0.865968] Call trace:
+[    0.865979]  dump_backtrace+0x0/0x1d8
+[    0.865985]  show_stack+0x14/0x20
+[    0.865996]  dump_stack+0xe8/0x130
+[    0.866006]  spin_dump+0x6c/0x88
+[    0.866012]  do_raw_spin_lock+0xb0/0xf8
+[    0.866023]  _raw_spin_lock_irqsave+0x80/0xa0
+[    0.866032]  uart_add_one_port+0x3a4/0x4e0
+[    0.866039]  sci_probe+0x504/0x7c8
+[    0.866048]  platform_drv_probe+0x50/0xa0
+[    0.866059]  really_probe+0xdc/0x330
+[    0.866066]  driver_probe_device+0x58/0xb8
+[    0.866072]  device_driver_attach+0x6c/0x90
+[    0.866078]  __driver_attach+0x88/0xd0
+[    0.866085]  bus_for_each_dev+0x74/0xc8
+[    0.866091]  driver_attach+0x20/0x28
+[    0.866098]  bus_add_driver+0x14c/0x1f8
+[    0.866104]  driver_register+0x60/0x110
+[    0.866109]  __platform_driver_register+0x40/0x48
+[    0.866119]  sci_init+0x2c/0x34
+[    0.866127]  do_one_initcall+0x88/0x428
+[    0.866137]  kernel_init_freeable+0x2c0/0x328
+[    0.866143]  kernel_init+0x10/0x108
+[    0.866150]  ret_from_fork+0x10/0x18
 
-{sigh}
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+ drivers/tty/serial/sh-sci.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index ae8463a..2d3169f 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3298,6 +3298,9 @@ static int sci_probe_single(struct platform_device *dev,
+ 		sciport->port.flags |= UPF_HARD_FLOW;
+ 	}
+ 
++	if (sci_uart_driver.cons->index == sciport->port.line)
++		spin_lock_init(&sciport->port.lock);
++
+ 	ret = uart_add_one_port(&sci_uart_driver, &sciport->port);
+ 	if (ret) {
+ 		sci_cleanup_single(sciport);
+-- 
+2.7.4
 
