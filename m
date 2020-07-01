@@ -2,114 +2,105 @@ Return-Path: <SRS0=INAG=AM=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-11.6 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91D3C433DF
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 17:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F24C433E0
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 18:27:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8FB572078D
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 17:17:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6506F2082F
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 18:27:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kueMV6F7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726675AbgGARRt (ORCPT
+        id S1732895AbgGAS1L (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Jul 2020 13:17:49 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:41009 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726432AbgGARRs (ORCPT
+        Wed, 1 Jul 2020 14:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732893AbgGAS1L (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Jul 2020 13:17:48 -0400
-Received: by mail-ot1-f66.google.com with SMTP id k15so21958879otp.8;
-        Wed, 01 Jul 2020 10:17:47 -0700 (PDT)
+        Wed, 1 Jul 2020 14:27:11 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5189C08C5C1
+        for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2020 11:27:10 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id z17so20966112edr.9
+        for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2020 11:27:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OG4wPTT0MmrDulPUOcAMjDpTxFn9+Ne6TG3MoSiqdqI=;
+        b=kueMV6F7kixPK1r1LUmhosoUHdVoF26Nf7ilD50zWA0NpUVw2p9yB0VvFIkRe/MTtc
+         91Xu9beFY4EHpT+wkm6Rf3FairVR3Ax2kAQon0LmoIDmczNj+HbtS5eTEZStT4jqB2js
+         dQm6UUhYMhcNm6YfeIiWbP+SaALeAFyOb+DA7qWn0AR5SyN+87ut7KhZNq3KKd3y14f/
+         CIPP7EhHSkxDxlRJHp4CIIeUz+56LGpAb9VTAJ0e2pFw0Pmx7tunsWd1JBt1SBdWRb9n
+         cdxMSH7jDl+9lEbGa6XGaGGZUCnNedzKRgVZcs55lerfHPgFGrZMC2WFPInkX4+Nb7Iu
+         zq6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4DeJKT3rF87H8O2OZ1E1YXv2QMAJ3DSeaSi7+IyNvX0=;
-        b=OkLCFK/7dazsHs3C/Lif6TQIX9HAbvJEOC/R7WYIkbiQDycXW2jgHVt1JIJubuxWFH
-         qjlKe0HpENn0H5QkVMw5my6ObH1vAZGwkVlpajsq+0QAW0G0/OzZxVPVXGvxHvr1uaEN
-         bwCG+d3EuDWvG3TAifX93jupQBW3vUg88heLLqBr6uVydM6hnqLoqs/aKN5+n5wzQQMC
-         gN2bDV2cx3SrnuvyCKfxdPLlmQQu7YaEnhY8NjjAa7BWVPkRze2zy5fLc8cOHKGpczFv
-         eGIO82YsC2WMLsrxR2ZuXnYiU//tpUAkWiXTC3Sm4nIYk/hqATiBobDNj49LJ8IJPftV
-         fA9w==
-X-Gm-Message-State: AOAM533RaLAxAfW5BLoR5iloaHaofUn1D/E+E+nnthoYX0UxV7kWqQZl
-        8zQ599wt8yEJW0pBAV3RhY9K6OUGFunYka7g9x0=
-X-Google-Smtp-Source: ABdhPJwI1jpyvfp6Syqw8VPHxjayT22lizXhfFASeRsifC+fTjXmjqOeKnVBTI4zyPXPDV+t6Og7OsZoD6/VwVAjvLA=
-X-Received: by 2002:a9d:6254:: with SMTP id i20mr23441092otk.145.1593623867483;
- Wed, 01 Jul 2020 10:17:47 -0700 (PDT)
+        bh=OG4wPTT0MmrDulPUOcAMjDpTxFn9+Ne6TG3MoSiqdqI=;
+        b=WE9ItpSW5mLeYf91eIKKT1SrV7KqWcB2bAweORkzN7HfVEayUxAsYh6WYopFNKSxIG
+         aFtM1cOoGrcOCkIBNEPv03zFvQn1+m3BVTEbNUnNq4I5xhtgIa/n0G8RMfaKQH9UzllY
+         RNtcDzZuJCAuI5co4b7QFyli10a5LAvgNGSON7QG6Z3unNUZXKLPwOX5RvkDzTc1sWN9
+         IEO8d0uUlcmc1CMnyoMWebxn7dqUBnp+G7yIPOxOwXQKUPCqvqEFHjkMpfhBpeSIx1dE
+         S97QhlxSYvv5ABuWCQRJ5m3aDUggC9EyKoqAADUkAqb8jhWo4VvLkxeQS6v7y6UVrFTq
+         3CJg==
+X-Gm-Message-State: AOAM5311v+RVWh1LwuEoPbIAVbcM+G93muPaD41F1o+Y9qFnYRbCdKM6
+        rjONmWVzQlPC5zl/0XctQXPVQ0BeKmIqJpvDGtKcmw==
+X-Google-Smtp-Source: ABdhPJwhuYNT92qHEkOHTddUFOs9/EMZDO1PWPD6MclccZefmL+2QM2Zb42zJC3klECb9ZpeCORMlH1ZSHciYjL+BvU=
+X-Received: by 2002:a50:c219:: with SMTP id n25mr30985162edf.306.1593628029348;
+ Wed, 01 Jul 2020 11:27:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <1593618100-2151-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1593618100-2151-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 1 Jul 2020 19:17:36 +0200
-Message-ID: <CAMuHMdWU7kVJMuNMSGxZSjErmj7rB=tvXH3GANmPRjYz+=JP1g@mail.gmail.com>
-Subject: Re: [PATCH] serial: sh-sci: Initialize spinlock for uart console
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20200630164204.1.I2cc415fa5793b3e55acfd521ba8f0a71e79aa5f1@changeid>
+ <20200701132606.GA2363542@kroah.com>
+In-Reply-To: <20200701132606.GA2363542@kroah.com>
+From:   Daniel Winkler <danielwinkler@google.com>
+Date:   Wed, 1 Jul 2020 11:26:58 -0700
+Message-ID: <CAP2xMbtvf1BcRLJqrdMwEtrxt-EeDvPtUSontfsRZT+FvNvJbQ@mail.gmail.com>
+Subject: Re: [PATCH] Revert "serial: 8250: Fix max baud limit in generic 8250 port"
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        chromeos-bluetooth-upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        Aaron Sierra <asierra@xes-inc.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jslaby@suse.com>, Lukas Wunner <lukas@wunner.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Prabhakar,
+Hello all,
 
-On Wed, Jul 1, 2020 at 5:42 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> serial core expects the spinlock to be initialized by the controller
-> driver for serial console, this patch makes sure the spinlock is
-> initialized, fixing the below issue:
+Please forgive any omitted information, as this is my first
+upstreaming experience. I am preparing a second patch that will
+clarify the requested points. Thanks in advance!
+
+Best regards,
+Daniel Winkler
+
+
+On Wed, Jul 1, 2020 at 6:26 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> [    0.865928] BUG: spinlock bad magic on CPU#0, swapper/0/1
-> [    0.865945]  lock: sci_ports+0x0/0x4c80, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
-> [    0.865955] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.8.0-rc1+ #112
-> [    0.865961] Hardware name: HopeRun HiHope RZ/G2H with sub board (DT)
-> [    0.865968] Call trace:
-> [    0.865979]  dump_backtrace+0x0/0x1d8
-> [    0.865985]  show_stack+0x14/0x20
-> [    0.865996]  dump_stack+0xe8/0x130
-> [    0.866006]  spin_dump+0x6c/0x88
-> [    0.866012]  do_raw_spin_lock+0xb0/0xf8
-> [    0.866023]  _raw_spin_lock_irqsave+0x80/0xa0
-> [    0.866032]  uart_add_one_port+0x3a4/0x4e0
-> [    0.866039]  sci_probe+0x504/0x7c8
-> [    0.866048]  platform_drv_probe+0x50/0xa0
-> [    0.866059]  really_probe+0xdc/0x330
-> [    0.866066]  driver_probe_device+0x58/0xb8
-> [    0.866072]  device_driver_attach+0x6c/0x90
-> [    0.866078]  __driver_attach+0x88/0xd0
-> [    0.866085]  bus_for_each_dev+0x74/0xc8
-> [    0.866091]  driver_attach+0x20/0x28
-> [    0.866098]  bus_add_driver+0x14c/0x1f8
-> [    0.866104]  driver_register+0x60/0x110
-> [    0.866109]  __platform_driver_register+0x40/0x48
-> [    0.866119]  sci_init+0x2c/0x34
-> [    0.866127]  do_one_initcall+0x88/0x428
-> [    0.866137]  kernel_init_freeable+0x2c0/0x328
-> [    0.866143]  kernel_init+0x10/0x108
-> [    0.866150]  ret_from_fork+0x10/0x18
-
-Interesting...
-
-How can I reproduce that? I do have CONFIG_DEBUG_SPINLOCK=y.
-I'm wondering why haven't we seen this before...
-
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> On Tue, Jun 30, 2020 at 04:42:11PM -0700, Daniel Winkler wrote:
+> > This reverts commit 0eeaf62981ecc79e8395ca8caa1570eaf3a12257.
+> >
+> > The change regresses the QCA6174A-3 bluetooth chip, preventing
+> > firmware from being properly loaded. We have verified that without
+> > this patch, the chip works as intended.
+> >
+> > Signed-off-by: Daniel Winkler <danielwinkler@google.com>
+>
+> No cc: stable?  No Fixes: tag?
+>
+> {sigh}
+>
