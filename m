@@ -2,69 +2,71 @@ Return-Path: <SRS0=INAG=AM=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3113BC433E0
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 16:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91D3C433DF
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 17:17:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 06ED620885
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 16:41:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593621661;
-	bh=1oDKRRJecAucuPGAsybdvcvitslL98sAMdG8RwbytZQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=J/PsipHiHuZXkA27Cj3bJlxzSb6xxGLIQfWmn1DuPcnzQJxmUj3E0s65+cAZTinAI
-	 N0iwd+UyJGJQ2TRNulDXzEFDx0hQiyqwtgLsI7DWfwOCDzcVSheu/IvRwNPyJaTRiq
-	 uceSenoHO2YxNUd7okCGicCa3cArLq5dhDHELnHc=
+	by mail.kernel.org (Postfix) with ESMTP id 8FB572078D
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jul 2020 17:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732366AbgGAQlA (ORCPT
+        id S1726675AbgGARRt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Jul 2020 12:41:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53356 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732255AbgGAQlA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Jul 2020 12:41:00 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 225442085B;
-        Wed,  1 Jul 2020 16:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593621659;
-        bh=1oDKRRJecAucuPGAsybdvcvitslL98sAMdG8RwbytZQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FZRIXIggyKlaPBi3DZsdRlQHQ+jSKGJZolbyP4A8nXWVYzoJxDiSPros5zqrqYn8c
-         ypVL9DZXRgd1XsGEktx5iQ9M7RMbJ3nlbPvSITYgGL90snNQGvqWCYZttA7igsS4Y3
-         jtjx3bvtE4i9K5f1Y4v+3ewY3pl0hzqzvJ8d+TZs=
-Date:   Wed, 1 Jul 2020 18:40:45 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Wed, 1 Jul 2020 13:17:49 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:41009 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726432AbgGARRs (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 1 Jul 2020 13:17:48 -0400
+Received: by mail-ot1-f66.google.com with SMTP id k15so21958879otp.8;
+        Wed, 01 Jul 2020 10:17:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4DeJKT3rF87H8O2OZ1E1YXv2QMAJ3DSeaSi7+IyNvX0=;
+        b=OkLCFK/7dazsHs3C/Lif6TQIX9HAbvJEOC/R7WYIkbiQDycXW2jgHVt1JIJubuxWFH
+         qjlKe0HpENn0H5QkVMw5my6ObH1vAZGwkVlpajsq+0QAW0G0/OzZxVPVXGvxHvr1uaEN
+         bwCG+d3EuDWvG3TAifX93jupQBW3vUg88heLLqBr6uVydM6hnqLoqs/aKN5+n5wzQQMC
+         gN2bDV2cx3SrnuvyCKfxdPLlmQQu7YaEnhY8NjjAa7BWVPkRze2zy5fLc8cOHKGpczFv
+         eGIO82YsC2WMLsrxR2ZuXnYiU//tpUAkWiXTC3Sm4nIYk/hqATiBobDNj49LJ8IJPftV
+         fA9w==
+X-Gm-Message-State: AOAM533RaLAxAfW5BLoR5iloaHaofUn1D/E+E+nnthoYX0UxV7kWqQZl
+        8zQ599wt8yEJW0pBAV3RhY9K6OUGFunYka7g9x0=
+X-Google-Smtp-Source: ABdhPJwI1jpyvfp6Syqw8VPHxjayT22lizXhfFASeRsifC+fTjXmjqOeKnVBTI4zyPXPDV+t6Og7OsZoD6/VwVAjvLA=
+X-Received: by 2002:a9d:6254:: with SMTP id i20mr23441092otk.145.1593623867483;
+ Wed, 01 Jul 2020 10:17:47 -0700 (PDT)
+MIME-Version: 1.0
+References: <1593618100-2151-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1593618100-2151-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 1 Jul 2020 19:17:36 +0200
+Message-ID: <CAMuHMdWU7kVJMuNMSGxZSjErmj7rB=tvXH3GANmPRjYz+=JP1g@mail.gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Initialize spinlock for uart console
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [PATCH] serial: sh-sci: Initialize spinlock for uart console
-Message-ID: <20200701164045.GA3163341@kroah.com>
-References: <1593618100-2151-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1593618100-2151-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 01, 2020 at 04:41:40PM +0100, Lad Prabhakar wrote:
+Hi Prabhakar,
+
+On Wed, Jul 1, 2020 at 5:42 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
 > serial core expects the spinlock to be initialized by the controller
 > driver for serial console, this patch makes sure the spinlock is
 > initialized, fixing the below issue:
-> 
+>
 > [    0.865928] BUG: spinlock bad magic on CPU#0, swapper/0/1
 > [    0.865945]  lock: sci_ports+0x0/0x4c80, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
 > [    0.865955] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.8.0-rc1+ #112
@@ -93,12 +95,21 @@ On Wed, Jul 01, 2020 at 04:41:40PM +0100, Lad Prabhakar wrote:
 > [    0.866137]  kernel_init_freeable+0x2c0/0x328
 > [    0.866143]  kernel_init+0x10/0x108
 > [    0.866150]  ret_from_fork+0x10/0x18
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-This should be backported to older kernels too, right?  How far back?
+Interesting...
 
-thanks,
+How can I reproduce that? I do have CONFIG_DEBUG_SPINLOCK=y.
+I'm wondering why haven't we seen this before...
 
-greg k-h
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
