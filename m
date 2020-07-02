@@ -3,104 +3,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B973C433E1
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Jul 2020 08:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CFBC433DF
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Jul 2020 09:23:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 199C720884
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Jul 2020 08:47:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4B12920702
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Jul 2020 09:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726555AbgGBIq6 (ORCPT
+        id S1726734AbgGBJX4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Jul 2020 04:46:58 -0400
-Received: from mga07.intel.com ([134.134.136.100]:46981 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726445AbgGBIq5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Jul 2020 04:46:57 -0400
-IronPort-SDR: SMm7EsYoyGOCw1VH5AY5MYxjoaW32H29P1oECYocvko45IY5F5b95UUmHgEiCVDdbXD7I/6b+L
- oqc/XQVNs4sQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9669"; a="211871600"
-X-IronPort-AV: E=Sophos;i="5.75,303,1589266800"; 
-   d="scan'208";a="211871600"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2020 01:46:57 -0700
-IronPort-SDR: 8v773znlm029UZL/qcOa676PS5qX3eVR1JOuEsIfC/o5+P9qUYXJro3MDuwBkXM9lWFBy+Zfy4
- emMN3tj3kZLQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,303,1589266800"; 
-   d="scan'208";a="455443914"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga005.jf.intel.com with ESMTP; 02 Jul 2020 01:46:53 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jqurt-00HAon-VD; Thu, 02 Jul 2020 11:46:53 +0300
-Date:   Thu, 2 Jul 2020 11:46:53 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Daniel Winkler <danielwinkler@google.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        BlueZ <linux-bluetooth@vger.kernel.org>,
-        chromeos-bluetooth-upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        stable@vger.kernel.org, abhishekpandit@chromium.org,
-        Aaron Sierra <asierra@xes-inc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/1] Revert "serial: 8250: Fix max baud limit in
- generic 8250 port"
-Message-ID: <20200702084653.GG3703480@smile.fi.intel.com>
-References: <20200701211337.3027448-1-danielwinkler@google.com>
- <20200701223713.gavale4aramu3xnb@mobilestation>
- <20200702041152.e5csvbodojzwnagx@wunner.de>
+        Thu, 2 Jul 2020 05:23:56 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:35220 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726183AbgGBJXz (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 2 Jul 2020 05:23:55 -0400
+Received: by mail-oi1-f193.google.com with SMTP id k4so23132504oik.2;
+        Thu, 02 Jul 2020 02:23:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wCkBw3oirGVCWmjI/nTGUzVc7Xs3iHGv9e1O9Q6s09o=;
+        b=MP7oqvcD8TQKBP99o4o1QkIoLNPrN49j441P1gCP1a+YnoSaIzlYruP2movZULeGWr
+         3ogHW4Ra0SeG1gO0t4dZyw4joj5QcHpraNrq+fKX7mABOanN7L2h9Ydfu1x27U54QDvz
+         ZUlWDMZCH+K6rshgO85WhBpvINF1baojpWctqQ3gGAeOeHJ9EQB8HVanFtSTa5qt1DL1
+         y6Qfl1/Ka3Gm4RSSLFAkpQwuX1D+7vpySQsJi2E5VqcOI/a1ns6Cy4WWhArpGluoHpUh
+         fUqYEdY/klyqnCjovYUUuZutSGRVb7cX2CoG9UZ79TBL8KpZl/gmFRfw5PvT5VeSF2ur
+         Kmqg==
+X-Gm-Message-State: AOAM533ozLJ6g2euFbMUVvjIdUalmrF8XREbjZfFk0MH/RNIk8sNBkLE
+        OCn4ZD9qs2xQxpzMTrJ4UospF7l88d2jWdAbIoE=
+X-Google-Smtp-Source: ABdhPJw7jZ2OCXYtQuwzO2vBYZO9WzxgfjqQAWCOrpQ0MQBQ23VXQWCzTcLKpgk/3C8CRK2ZBGKgvLN1JG/aS54Niis=
+X-Received: by 2002:aca:1801:: with SMTP id h1mr18281530oih.148.1593681834441;
+ Thu, 02 Jul 2020 02:23:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200702041152.e5csvbodojzwnagx@wunner.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <1593618100-2151-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdWU7kVJMuNMSGxZSjErmj7rB=tvXH3GANmPRjYz+=JP1g@mail.gmail.com> <CA+V-a8v+2fhqwRNCaGYbmh8E1FDyc2Xss3PHk12dpTt_pgmCFg@mail.gmail.com>
+In-Reply-To: <CA+V-a8v+2fhqwRNCaGYbmh8E1FDyc2Xss3PHk12dpTt_pgmCFg@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 2 Jul 2020 11:23:42 +0200
+Message-ID: <CAMuHMdVdCH-r-xMnDgUYzJfDCzUJCYt8CkSDp9E=tgfP01FrKw@mail.gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Initialize spinlock for uart console
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 06:11:52AM +0200, Lukas Wunner wrote:
-> On Thu, Jul 02, 2020 at 01:37:13AM +0300, Serge Semin wrote:
-> > 1) Add a new capability like UART_CAP_NO16DIV and take it into account
-> >    in the serial8250_get_baud_rate() method.
-> >  
-> > I don't have a documentation for the Mediatek UART port, but it seems to me
-> > that that controller calculates the baud rate differently from the standard
-> > 8250 port. A standard 8250 port does that by the next formulae:
-> >   baud = uartclk / (16 * divisor).
-> > While it seems to me that the Mediatek port uses the formulae like:
-> >   baud = uartclk / divisor. (Please, correct me if I'm wrong)
-> 
-> 8250_bcm2835aux.c seems to suffer from a similar issue and
-> solves it like this in the ->probe hook:
-> 
-> 	/* the HW-clock divider for bcm2835aux is 8,
-> 	 * but 8250 expects a divider of 16,
-> 	 * so we have to multiply the actual clock by 2
-> 	 * to get identical baudrates.
-> 	 */
-> 	up.port.uartclk = clk_get_rate(data->clk) * 2;
+Hi Prabhakar,
 
-8250_mid for example lies about UART clock due to this. It has a comment in the
-code in its ->set_termios().
+On Wed, Jul 1, 2020 at 7:28 PM Lad, Prabhakar
+<prabhakar.csengg@gmail.com> wrote:
+> On Wed, Jul 1, 2020 at 6:17 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Wed, Jul 1, 2020 at 5:42 PM Lad Prabhakar
+> > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > > serial core expects the spinlock to be initialized by the controller
+> > > driver for serial console, this patch makes sure the spinlock is
+> > > initialized, fixing the below issue:
+> > >
+> > > [    0.865928] BUG: spinlock bad magic on CPU#0, swapper/0/1
+> > > [    0.865945]  lock: sci_ports+0x0/0x4c80, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+> > > [    0.865955] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.8.0-rc1+ #112
+> > > [    0.865961] Hardware name: HopeRun HiHope RZ/G2H with sub board (DT)
+> > > [    0.865968] Call trace:
+> > > [    0.865979]  dump_backtrace+0x0/0x1d8
+> > > [    0.865985]  show_stack+0x14/0x20
+> > > [    0.865996]  dump_stack+0xe8/0x130
+> > > [    0.866006]  spin_dump+0x6c/0x88
+> > > [    0.866012]  do_raw_spin_lock+0xb0/0xf8
+> > > [    0.866023]  _raw_spin_lock_irqsave+0x80/0xa0
+> > > [    0.866032]  uart_add_one_port+0x3a4/0x4e0
+> > > [    0.866039]  sci_probe+0x504/0x7c8
+> > > [    0.866048]  platform_drv_probe+0x50/0xa0
+> > > [    0.866059]  really_probe+0xdc/0x330
+> > > [    0.866066]  driver_probe_device+0x58/0xb8
+> > > [    0.866072]  device_driver_attach+0x6c/0x90
+> > > [    0.866078]  __driver_attach+0x88/0xd0
+> > > [    0.866085]  bus_for_each_dev+0x74/0xc8
+> > > [    0.866091]  driver_attach+0x20/0x28
+> > > [    0.866098]  bus_add_driver+0x14c/0x1f8
+> > > [    0.866104]  driver_register+0x60/0x110
+> > > [    0.866109]  __platform_driver_register+0x40/0x48
+> > > [    0.866119]  sci_init+0x2c/0x34
+> > > [    0.866127]  do_one_initcall+0x88/0x428
+> > > [    0.866137]  kernel_init_freeable+0x2c0/0x328
+> > > [    0.866143]  kernel_init+0x10/0x108
+> > > [    0.866150]  ret_from_fork+0x10/0x18
+> >
+> > Interesting...
+> >
+> > How can I reproduce that? I do have CONFIG_DEBUG_SPINLOCK=y.
+> > I'm wondering why haven't we seen this before...
+> >
+> I have attached .config for your reference.
 
-Yes, we have a lot of possibilities here to fix, I guess. We have custom
-termios callback, also get and set divisor and so on.
+Thank you!
+
+I gave it a try with v5.8-rc1 on Salvator-XS with R-Car H3 ES2.0.
+However, I couldn't reproduce the issue.
+Does it happen on that specific board only? Is this serdev-related?
+Note that I had to disable CONFIG_EXTRA_FIRMWARE, as I don't have the
+firmware blobs it referenced.  Do I need them to trigger the issue?
+As the .config has a few non-upstream options, do you have any patches
+applied that might impact the issue?
+
+Thanks again!
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
