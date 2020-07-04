@@ -2,154 +2,188 @@ Return-Path: <SRS0=vj7b=AP=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9094BC433DF
-	for <linux-serial@archiver.kernel.org>; Sat,  4 Jul 2020 14:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A54C433E1
+	for <linux-serial@archiver.kernel.org>; Sat,  4 Jul 2020 15:43:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6AE5D207CD
-	for <linux-serial@archiver.kernel.org>; Sat,  4 Jul 2020 14:27:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="lAPFUGo1"
+	by mail.kernel.org (Postfix) with ESMTP id 0B18D208D5
+	for <linux-serial@archiver.kernel.org>; Sat,  4 Jul 2020 15:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbgGDO1C (ORCPT
+        id S1727050AbgGDPnb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 4 Jul 2020 10:27:02 -0400
-Received: from mailout1.samsung.com ([203.254.224.24]:18068 "EHLO
-        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726669AbgGDO1B (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 4 Jul 2020 10:27:01 -0400
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20200704142659epoutp0145cd0978845b75fdb1b888f0567c28fc~ekuJ1toKN2484824848epoutp01J
-        for <linux-serial@vger.kernel.org>; Sat,  4 Jul 2020 14:26:59 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20200704142659epoutp0145cd0978845b75fdb1b888f0567c28fc~ekuJ1toKN2484824848epoutp01J
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1593872819;
-        bh=bo3BR9KaIVU8rO1xsrNx2+sOCrK1lLR9D1y1xtgsDvg=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=lAPFUGo1LivKMQE0G54L72wbBJGjEDVCuaoDsILRQ9wekcAapfaya94VwNrCO0RxB
-         TsJBQ2twin0BKDq0qe2Aqv5wzVFU8XJgAJREFFdGbZsZjfmSL1VPGV7QmoCoVLHTY4
-         lEEmMWSiN/yy8je09Ag7Pb8+JtpHH+xxLivVh4qY=
-Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20200704142658epcas5p3b0bfcb0c53feb47775864122a626dca9~ekuJFeJIL1569915699epcas5p3R;
-        Sat,  4 Jul 2020 14:26:58 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        02.0F.09475.2B1900F5; Sat,  4 Jul 2020 23:26:58 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20200704142658epcas5p254ae909fedb07dda58cece5d6d5252b4~ekuIk9OPS1952219522epcas5p21;
-        Sat,  4 Jul 2020 14:26:58 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20200704142658epsmtrp1256cc5e5c9e3212ea45bd4d747d1f6f3~ekuIjZhbG2608426084epsmtrp1c;
-        Sat,  4 Jul 2020 14:26:58 +0000 (GMT)
-X-AuditID: b6c32a4b-39fff70000002503-c3-5f0091b26061
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        CD.9C.08382.1B1900F5; Sat,  4 Jul 2020 23:26:57 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20200704142656epsmtip1fba91bc0b977589a15ca47d9b2e9569b~ekuHGO34Y1778117781epsmtip1W;
-        Sat,  4 Jul 2020 14:26:56 +0000 (GMT)
-From:   Tamseel Shams <m.shams@samsung.com>
-To:     kgene@kernel.org, krzk@kernel.org, gregkh@linuxfoundation.org,
-        jslaby@suse.com
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
-        Tamseel Shams <m.shams@samsung.com>
-Subject: [PATCH v3] serial: samsung: Re-factors UART IRQ resource for
- various Samsung SoC
-Date:   Sat,  4 Jul 2020 19:36:46 +0530
-Message-Id: <20200704140646.66528-1-m.shams@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrDIsWRmVeSWpSXmKPExsWy7bCmlu6miQzxBgfXqlo8mLeNzaJ58Xo2
-        iykbPjBZ9D9+zWxx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3slvcbV3M7sDlsWlVJ5vH/rlr
-        2D02L6n36NuyitFj/ZarLB6fN8kFsEVx2aSk5mSWpRbp2yVwZdy80cBcMJe7YtGktSwNjPM4
-        uxg5OCQETCSW3QzsYuTkEBLYzShx+GBGFyMXkP2JUaLpzTpmCOcbo8Tfne/YQapAGua+mgeV
-        2Mso8eviU3YIp4VJ4t6dpSwgY9kENCWOn+cGaRARCJF4d3YLI0gNs8BJRom9mxtYQBLCAtES
-        rV3HWEHqWQRUJa5PSQMJ8wpYSNw+8oUZYpm8xOoNB8CWSQicY5eYvbyXDSLhIvH802OoImGJ
-        V8e3QF0nJfGyvw3KzpeYP28VVE2FxMoLb6Bse4kDV+aA3ckMdOf6XfogYWYBPone30+YIKHC
-        K9HRJgRRrSjxf3c/1ERxiXcrprBC2B4S/1vWs0JCLlai6/wupgmMMrMQhi5gZFzFKJlaUJyb
-        nlpsWmCcl1quV5yYW1yal66XnJ+7iRGcALS8dzA+evBB7xAjEwfjIUYJDmYlEd4E1X9xQrwp
-        iZVVqUX58UWlOanFhxilOViUxHmVfpyJExJITyxJzU5NLUgtgskycXBKNTBl+hTGyMt93c3k
-        /nKHTRNb6talolsjOXfM+hp64kziw76NTexFdSsePaq/vzU2005ENFCw5eDGmuPrvZ3U/xdf
-        sLDjk/Q/uiTgjlXV5PpzL2tqi+88SjlV8nDVD0m7yc2cpUlPDsY/fqJ1xLvOenKUi5Ov1KO3
-        jrZTf+f4BaZJTHUuWcbMXbTGJSKjKy3a+olhQ1+4/bl/FYsU7Xyzu/08+7VcK/j0+k8scPtS
-        Ja50qLHd7aV/YrjOw+rJOi8V/h60EM/vOVrgdqt3+6T87iyPO8fUZ+4/oLzpRKfe4YjWZeoB
-        DO+2iJz6snoXa4iLiNAjlyjzSw+3VBbzB4U6PHRtuiYmsGqX/o3l8ya+V2Ipzkg01GIuKk4E
-        AEVvJK5vAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprALMWRmVeSWpSXmKPExsWy7bCSnO7GiQzxBmc22lg8mLeNzaJ58Xo2
-        iykbPjBZ9D9+zWxx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3slvcbV3M7sDlsWlVJ5vH/rlr
-        2D02L6n36NuyitFj/ZarLB6fN8kFsEVx2aSk5mSWpRbp2yVwZdy80cBcMJe7YtGktSwNjPM4
-        uxg5OSQETCTmvprH3MXIxSEksJtR4u/9a2wQCXGJab/2M0LYwhIr/z1nhyhqYpI4N+8NUIKD
-        g01AU+L4eW4QU0QgQmLmxxqQEmaB84wSO4+vZgLpFRaIlDg/r5ENpIZFQFXi+pQ0kDCvgIXE
-        7SNfmCHGy0us3nCAeQIjzwJGhlWMkqkFxbnpucWGBYZ5qeV6xYm5xaV56XrJ+bmbGMGBpqW5
-        g3H7qg96hxiZOBgPMUpwMCuJ8Cao/osT4k1JrKxKLcqPLyrNSS0+xCjNwaIkznujcGGckEB6
-        YklqdmpqQWoRTJaJg1Oqgemqjs/7Y+FuXaEfGtMWTtotXlwwk9N4/b2rv+YVP7uzJn9CeNm5
-        9MUxigJqBe/FpnGqOf1JfqgVu6PIbOXhc7k7Xs/p4qw5z7QsRupXL3OVA1fPRHXZKfUpp2ay
-        n52wd9Ff/doGllsiGnPeif2NqNpTfkWi4volncLLZQ+8bf2ibsdt+dR68+yKpxc6fgQ6bRSf
-        /2HH+qxDXxI3ZDxifVrVcvznc6t95UEi9x+svpHyYaHF+0Mp5z7dqryyUOf44TIt15tCv+oc
-        j+6Zd6GHoePRP42Lrye/ZUk6X/pdsVmKS40zQ9MweubaKLGiln1/ZQMcLT3FFWOZSposr3Hz
-        KHxW1tv1TW7X/9fKwh9azrUpsRRnJBpqMRcVJwIAq2UZGqMCAAA=
-X-CMS-MailID: 20200704142658epcas5p254ae909fedb07dda58cece5d6d5252b4
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-X-CMS-RootMailID: 20200704142658epcas5p254ae909fedb07dda58cece5d6d5252b4
-References: <CGME20200704142658epcas5p254ae909fedb07dda58cece5d6d5252b4@epcas5p2.samsung.com>
+        Sat, 4 Jul 2020 11:43:31 -0400
+Received: from mga17.intel.com ([192.55.52.151]:1800 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726405AbgGDPn3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 4 Jul 2020 11:43:29 -0400
+IronPort-SDR: oi6M9obSKre6GvD4EF6pCjSli8NOnK0/6NzDniUwh0EF4vI/1bSt7xogd2KKRAjJ2uzfEUZqp6
+ VDTBdoTAUSIg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9672"; a="127342672"
+X-IronPort-AV: E=Sophos;i="5.75,312,1589266800"; 
+   d="scan'208";a="127342672"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2020 08:43:28 -0700
+IronPort-SDR: MAZ0xP3vUfi9MZMMEjm5bfDIET10U//0KH2tb7+fL+c3zgf2Oe+622pksYJN3BZSYEc3veQ6l8
+ qeXG4hoQfI3A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,312,1589266800"; 
+   d="scan'208";a="426624084"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga004.jf.intel.com with ESMTP; 04 Jul 2020 08:43:26 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jrkK6-00HZtZ-Ok; Sat, 04 Jul 2020 18:43:26 +0300
+Date:   Sat, 4 Jul 2020 18:43:26 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Tony Lindgren <tony@atomide.com>,
+        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH v3 2/6] serial: core: Allow detach and attach serial
+ device for console
+Message-ID: <20200704154326.GG3703480@smile.fi.intel.com>
+References: <20200217114016.49856-1-andriy.shevchenko@linux.intel.com>
+ <20200217114016.49856-3-andriy.shevchenko@linux.intel.com>
+ <20200524171032.GA218301@roeck-us.net>
+ <CAMuHMdXvummZiDBu72WJmdanyP2r4dab8SbVLZaTRNrBfnRmTw@mail.gmail.com>
+ <CAMuHMdUSG4UZ_Dj8Jqof8vaPrLabqZws8RpwZCzcLRLkFCVWmA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUSG4UZ_Dj8Jqof8vaPrLabqZws8RpwZCzcLRLkFCVWmA@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In few older Samsung SoCs like s3c2410, s3c2412
-and s3c2440, UART IP is having 2 interrupt lines.
-However, in other SoCs like s3c6400, s5pv210,
-exynos5433, and exynos4210 UART is having only 1
-interrupt line. Due to this, "platform_get_irq(platdev, 1)"
-call in the driver gives the following warning:
-"IRQ index 1 not found" on recent platforms.
+On Fri, Jul 03, 2020 at 01:31:24PM +0200, Geert Uytterhoeven wrote:
+> On Thu, Jul 2, 2020 at 4:48 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Sun, May 24, 2020 at 7:11 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> > > On Mon, Feb 17, 2020 at 01:40:12PM +0200, Andy Shevchenko wrote:
+> > > > In the future we would like to disable power management on the serial devices
+> > > > used as kernel consoles to avoid weird behaviour in some cases. However,
+> > > > disabling PM may prevent system to go to deep sleep states, which in its turn
+> > > > leads to the higher power consumption.
+> > > >
+> > > > Tony Lindgren proposed a work around, i.e. allow user to detach such consoles
+> > > > to make PM working again. In case user wants to see what's going on, it also
+> > > > provides a mechanism to attach console back.
+> > > >
+> > > > Link: https://lists.openwall.net/linux-kernel/2018/09/29/65
+> > > > Suggested-by: Tony Lindgren <tony@atomide.com>
+> > > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> >
+> > > > --- a/drivers/tty/serial/serial_core.c
+> > > > +++ b/drivers/tty/serial/serial_core.c
+> > > > @@ -1919,7 +1919,7 @@ static inline bool uart_console_enabled(struct uart_port *port)
+> > > >   */
+> > > >  static inline void uart_port_spin_lock_init(struct uart_port *port)
+> > > >  {
+> > > > -     if (uart_console_enabled(port))
+> > > > +     if (uart_console(port))
+> > >
+> > > This results in lockdep splashes such as the one attached below. Is there
+> >
+> > Or "BUG: spinlock bad magic on CPU#3, swapper/0/1", cfr. [1].
+> > So far I hadn't noticed that, as the issue only shows up when using the
+> > legacy way of passing a "console=ttyS*" kernel command line parameter,
+> > and not when relying on the modern "chosen/stdout-path" DT property.
+> >
+> > > any special reason for this change ? It is not really explained in the
+> > > commit description.
+> >
+> > Indeed. Why this change?
+> >
+> > I also don't agree with your typical fix for drivers, which is like:
+> >
+> >     @@ -567,6 +567,9 @@ static int hv_probe(struct platform_device *op)
+> >             sunserial_console_match(&sunhv_console, op->dev.of_node,
+> >                                     &sunhv_reg, port->line, false);
+> >
+> >     +       /* We need to initialize lock even for non-registered console */
+> >     +       spin_lock_init(&port->lock);
+> >     +
+> >             err = uart_add_one_port(&sunhv_reg, port);
+> >                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> >                   calls uart_port_spin_lock_init()
+> >
+> >             if (err)
+> >                     goto out_unregister_driver;
+> >
+> > as this initializes the spinlock twice for non-console= ports.
+> 
+> I had a deeper look...
+> 
+>     /*
+>      * Ensure that the serial console lock is initialised early.
+>      * If this port is a console, then the spinlock is already initialised.
+>      */
+>     static inline void uart_port_spin_lock_init(struct uart_port *port)
+>     {
+>             if (uart_console(port))
+>                     return;
+> 
+>             spin_lock_init(&port->lock);
+>             lockdep_set_class(&port->lock, &port_lock_key);
+>     }
+> 
+> So according to the comment, the spinlock is assumed to be already
+> initialized, as the port is already in use as a console.  Makes sense.
 
-This patch re-factors the IRQ resources handling for
-each platform and hence fixing the above warnings seen
-on some platforms.
+Thanks, Geert! Yes, the change makes code aligned with a comment. I did it due
+to some issues with attaching / detaching consoles (I can try to reproduce
+later, perhaps next week, I'm a bit limited now to fulfil kernel work /
+testing).
 
-Signed-off-by: Tamseel Shams <m.shams@samsung.com>
----
-Removed the logic of irq_cnt and directly using
-s3c24xx_serial_has_interrupt_mask() to check for
-number of interrupt lines.
+> Now, where should it be initialized?
+>   1. For modern DT systems, chosen/stdout-path is used, and the spinlock
+>      is initialized in register_earlycon(), just before calling
+>      register_console(). And everything's fine.
+> 
+>   2. With "console=" (even on DT systems with chosen/stdout-path),
+>      the serial console must gets registered differently.
+>      Naively, I assumed that's done in the serial driver, but apparently
+>      that is no longer the case: the single register_console() call in
+>      drivers/tty/serial/sh-sci.c is used on legacy SuperH only.
+>      So we're back to drivers/tty/serial/serial_core.c, which calls
+>      register_console(), but does so _after_ taking the spinlock:
+> 
+>          uart_add_one_port()
+>              uart_port_spin_lock_init() /* skips spin_lock_init()! */
+>              uart_configure_port()
+>                  spin_lock_irqsave(&port->lock, flags); /* BUG! */
+>                  register_console())
+> 
+> So who's to blame for _not_ initializing the spinlock?
 
- drivers/tty/serial/samsung_tty.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+This is a very good question. Code is so old and I don't know why we have such
+interesting implementation among serial drivers. The 8250 does this
+initialisation at console_initcall() when it *properly* calls
+register_console() before adding port (yet).
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 6ef614d8648c..8a955f3d8975 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -1908,10 +1908,13 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 	else {
- 		port->irq = ret;
- 		ourport->rx_irq = ret;
--		ourport->tx_irq = ret + 1;
-+		if (s3c24xx_serial_has_interrupt_mask(port))
-+			ourport->tx_irq = ret;
-+		else
-+			ourport->tx_irq = ret + 1;
- 	}
- 
--	ret = platform_get_irq(platdev, 1);
-+	ret = platform_get_irq_optional(platdev, 1);
- 	if (ret > 0)
- 		ourport->tx_irq = ret;
- 	/*
+    /*
+     * If this driver supports console, and it hasn't been
+     * successfully registered yet, try to re-register it.
+     * It may be that the port was not available.
+     */
+    if (port->cons && !(port->cons->flags & CON_ENABLED))
+            register_console(port->cons);
+
+Seems like a chicken-egg problem. Any advice?
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
