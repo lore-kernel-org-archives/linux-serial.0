@@ -1,170 +1,194 @@
-Return-Path: <SRS0=ZPaU=AO=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=vj7b=AP=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-4.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	LONGWORDS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EA0C433E0
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Jul 2020 11:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A82C433E0
+	for <linux-serial@archiver.kernel.org>; Sat,  4 Jul 2020 01:29:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 62CEA20870
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Jul 2020 11:31:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CD56E20747
+	for <linux-serial@archiver.kernel.org>; Sat,  4 Jul 2020 01:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgGCLbi (ORCPT
+        id S1726469AbgGDB3c (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Jul 2020 07:31:38 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:39028 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726022AbgGCLbh (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Jul 2020 07:31:37 -0400
-Received: by mail-qk1-f195.google.com with SMTP id l6so28457153qkc.6;
-        Fri, 03 Jul 2020 04:31:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TL6dVQUtU8/3vH+JvDwwJWgtzGDLgHPNaLQXhZw2R5M=;
-        b=cGw3n4qE6hhPSuFoSBMpaI9dPqeTrLT6HMGvvUvEG/SWsldHB0WO7llxgfHs4CJh8p
-         +HDleyne46F46FQCw9u3yvIyTB6QeL7efrQhb9Rto7ZCQjwUSxuc9lgSksVvUL8v7Z58
-         7iRxklArB8Gy8yk5dI+trXukOa8YHxpNwDnTmvQuEAkE0lZamdmFQaZtmU+GVJ87On5+
-         ltvYJly5x3VtYxsub9rFYTBsH5hxVwX6LzbNzoj/8BwCYDTyIEuJDV1T4Rsqi/ge0RLm
-         UV7UasonxhLZCZgpzsGwpWA2I1aa363CzTERAeUuAxJkrBDrf98pkkTBz006rxwpgeN9
-         7WGQ==
-X-Gm-Message-State: AOAM5309toTbsm62vAGL6JQ15i/zLfPv1oAtIRVqa7dJW/yU3nJ0Ip4p
-        jNk9eKnO5FOeVAGHAQ8F12wsGpxkqOMvPBEKpcc8FDtXV9s=
-X-Google-Smtp-Source: ABdhPJxKbd3vT3N0Z5oGMhZ/eQuEhGDBe8dHubXS1ddYmf1Rm94FViRORM1rx5oP5lWJ3s7qgGnhj2/EIzHkQwGdNGk=
-X-Received: by 2002:a37:6343:: with SMTP id x64mr34366378qkb.114.1593775896336;
- Fri, 03 Jul 2020 04:31:36 -0700 (PDT)
+        Fri, 3 Jul 2020 21:29:32 -0400
+Received: from mga01.intel.com ([192.55.52.88]:33309 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726726AbgGDB3b (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 3 Jul 2020 21:29:31 -0400
+IronPort-SDR: Hx6kBP/5hHpYkAOg+JCq/qVPW/nYvzyqD3KSE1CBMD8zlyXA4tKfEIT7Jfdl0zMKP9MhXXjMhR
+ 1i/3bEeRgjEg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9671"; a="165280230"
+X-IronPort-AV: E=Sophos;i="5.75,309,1589266800"; 
+   d="scan'208";a="165280230"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2020 18:29:31 -0700
+IronPort-SDR: F84wCQ9x7iER+Bu1I1GC6eoWg0Jmi4x206ORIWUbZUMT1t2jh9PIvl9/vcqz7XyHjiOgA3omSk
+ DtPVcR9ORwLA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,309,1589266800"; 
+   d="scan'208";a="296324479"
+Received: from lkp-server01.sh.intel.com (HELO 6dc8ab148a5d) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 03 Jul 2020 18:29:30 -0700
+Received: from kbuild by 6dc8ab148a5d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1jrWzh-0000Uk-BC; Sat, 04 Jul 2020 01:29:29 +0000
+Date:   Sat, 04 Jul 2020 09:28:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 44c413d9a51752056d606bf6f312003ac1740fab
+Message-ID: <5effdb54.j1mVEX+X8+pFT1p+%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20200217114016.49856-1-andriy.shevchenko@linux.intel.com>
- <20200217114016.49856-3-andriy.shevchenko@linux.intel.com>
- <20200524171032.GA218301@roeck-us.net> <CAMuHMdXvummZiDBu72WJmdanyP2r4dab8SbVLZaTRNrBfnRmTw@mail.gmail.com>
-In-Reply-To: <CAMuHMdXvummZiDBu72WJmdanyP2r4dab8SbVLZaTRNrBfnRmTw@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 3 Jul 2020 13:31:24 +0200
-Message-ID: <CAMuHMdUSG4UZ_Dj8Jqof8vaPrLabqZws8RpwZCzcLRLkFCVWmA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/6] serial: core: Allow detach and attach serial
- device for console
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Tony Lindgren <tony@atomide.com>,
-        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
+branch HEAD: 44c413d9a51752056d606bf6f312003ac1740fab  tty/vt: Do not warn when huge selection requested
 
-On Thu, Jul 2, 2020 at 4:48 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Sun, May 24, 2020 at 7:11 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> > On Mon, Feb 17, 2020 at 01:40:12PM +0200, Andy Shevchenko wrote:
-> > > In the future we would like to disable power management on the serial devices
-> > > used as kernel consoles to avoid weird behaviour in some cases. However,
-> > > disabling PM may prevent system to go to deep sleep states, which in its turn
-> > > leads to the higher power consumption.
-> > >
-> > > Tony Lindgren proposed a work around, i.e. allow user to detach such consoles
-> > > to make PM working again. In case user wants to see what's going on, it also
-> > > provides a mechanism to attach console back.
-> > >
-> > > Link: https://lists.openwall.net/linux-kernel/2018/09/29/65
-> > > Suggested-by: Tony Lindgren <tony@atomide.com>
-> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->
-> > > --- a/drivers/tty/serial/serial_core.c
-> > > +++ b/drivers/tty/serial/serial_core.c
-> > > @@ -1919,7 +1919,7 @@ static inline bool uart_console_enabled(struct uart_port *port)
-> > >   */
-> > >  static inline void uart_port_spin_lock_init(struct uart_port *port)
-> > >  {
-> > > -     if (uart_console_enabled(port))
-> > > +     if (uart_console(port))
-> >
-> > This results in lockdep splashes such as the one attached below. Is there
->
-> Or "BUG: spinlock bad magic on CPU#3, swapper/0/1", cfr. [1].
-> So far I hadn't noticed that, as the issue only shows up when using the
-> legacy way of passing a "console=ttyS*" kernel command line parameter,
-> and not when relying on the modern "chosen/stdout-path" DT property.
->
-> > any special reason for this change ? It is not really explained in the
-> > commit description.
->
-> Indeed. Why this change?
->
-> I also don't agree with your typical fix for drivers, which is like:
->
->     @@ -567,6 +567,9 @@ static int hv_probe(struct platform_device *op)
->             sunserial_console_match(&sunhv_console, op->dev.of_node,
->                                     &sunhv_reg, port->line, false);
->
->     +       /* We need to initialize lock even for non-registered console */
->     +       spin_lock_init(&port->lock);
->     +
->             err = uart_add_one_port(&sunhv_reg, port);
->                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->                   calls uart_port_spin_lock_init()
->
->             if (err)
->                     goto out_unregister_driver;
->
-> as this initializes the spinlock twice for non-console= ports.
+elapsed time: 3533m
 
-I had a deeper look...
+configs tested: 123
+configs skipped: 12
 
-    /*
-     * Ensure that the serial console lock is initialised early.
-     * If this port is a console, then the spinlock is already initialised.
-     */
-    static inline void uart_port_spin_lock_init(struct uart_port *port)
-    {
-            if (uart_console(port))
-                    return;
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-            spin_lock_init(&port->lock);
-            lockdep_set_class(&port->lock, &port_lock_key);
-    }
+arm                                 defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+arm                               allnoconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm64                            allmodconfig
+arm64                             allnoconfig
+arm                       aspeed_g4_defconfig
+m68k                       m5249evb_defconfig
+arm                            mmp2_defconfig
+sh                            shmin_defconfig
+powerpc                      pmac32_defconfig
+arm                          pxa3xx_defconfig
+arm                       imx_v6_v7_defconfig
+powerpc                      ppc6xx_defconfig
+mips                          ath25_defconfig
+ia64                             allyesconfig
+arm                           efm32_defconfig
+sh                               alldefconfig
+powerpc                    mvme5100_defconfig
+mips                          rb532_defconfig
+xtensa                          iss_defconfig
+h8300                               defconfig
+powerpc                  mpc885_ads_defconfig
+arm                   milbeaut_m10v_defconfig
+sh                        dreamcast_defconfig
+openrisc                    or1ksim_defconfig
+powerpc                     mpc5200_defconfig
+s390                          debug_defconfig
+ia64                                defconfig
+s390                             alldefconfig
+powerpc                      tqm8xx_defconfig
+mips                     loongson1b_defconfig
+powerpc                    gamecube_defconfig
+arm                        trizeps4_defconfig
+nios2                         10m50_defconfig
+powerpc                          alldefconfig
+arm                           stm32_defconfig
+arc                            hsdk_defconfig
+mips                        jmr3927_defconfig
+mips                  maltasmvp_eva_defconfig
+ia64                        generic_defconfig
+s390                              allnoconfig
+microblaze                    nommu_defconfig
+mips                        vocore2_defconfig
+parisc                generic-64bit_defconfig
+mips                 decstation_r4k_defconfig
+i386                              allnoconfig
+i386                             allyesconfig
+i386                                defconfig
+i386                              debian-10.3
+ia64                              allnoconfig
+ia64                             allmodconfig
+m68k                              allnoconfig
+m68k                           sun3_defconfig
+m68k                                defconfig
+m68k                             allmodconfig
+m68k                             allyesconfig
+nios2                               defconfig
+openrisc                            defconfig
+c6x                              allyesconfig
+c6x                               allnoconfig
+nios2                            allyesconfig
+openrisc                         allyesconfig
+nds32                               defconfig
+nds32                             allnoconfig
+csky                             allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+h8300                            allmodconfig
+xtensa                              defconfig
+arc                                 defconfig
+sh                                allnoconfig
+microblaze                        allnoconfig
+arc                              allyesconfig
+sh                               allmodconfig
+mips                             allyesconfig
+mips                              allnoconfig
+mips                             allmodconfig
+parisc                            allnoconfig
+parisc                              defconfig
+parisc                           allyesconfig
+parisc                           allmodconfig
+powerpc                          allyesconfig
+powerpc                          rhel-kconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+powerpc                             defconfig
+i386                 randconfig-a002-20200701
+i386                 randconfig-a001-20200701
+i386                 randconfig-a006-20200701
+i386                 randconfig-a005-20200701
+i386                 randconfig-a004-20200701
+i386                 randconfig-a003-20200701
+riscv                            allyesconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                            allmodconfig
+s390                             allyesconfig
+s390                             allmodconfig
+s390                                defconfig
+sparc                            allyesconfig
+sparc                               defconfig
+sparc64                             defconfig
+sparc64                           allnoconfig
+sparc64                          allyesconfig
+sparc64                          allmodconfig
+um                                allnoconfig
+um                                  defconfig
+um                               allmodconfig
+um                               allyesconfig
+x86_64                               rhel-7.6
+x86_64                    rhel-7.6-kselftests
+x86_64                               rhel-8.3
+x86_64                                  kexec
+x86_64                                   rhel
+x86_64                         rhel-7.2-clear
+x86_64                                    lkp
+x86_64                              fedora-25
 
-So according to the comment, the spinlock is assumed to be already
-initialized, as the port is already in use as a console.  Makes sense.
-Now, where should it be initialized?
-  1. For modern DT systems, chosen/stdout-path is used, and the spinlock
-     is initialized in register_earlycon(), just before calling
-     register_console(). And everything's fine.
-
-  2. With "console=" (even on DT systems with chosen/stdout-path),
-     the serial console must gets registered differently.
-     Naively, I assumed that's done in the serial driver, but apparently
-     that is no longer the case: the single register_console() call in
-     drivers/tty/serial/sh-sci.c is used on legacy SuperH only.
-     So we're back to drivers/tty/serial/serial_core.c, which calls
-     register_console(), but does so _after_ taking the spinlock:
-
-         uart_add_one_port()
-             uart_port_spin_lock_init() /* skips spin_lock_init()! */
-             uart_configure_port()
-                 spin_lock_irqsave(&port->lock, flags); /* BUG! */
-                 register_console())
-
-So who's to blame for _not_ initializing the spinlock?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
