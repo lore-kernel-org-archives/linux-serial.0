@@ -2,181 +2,126 @@ Return-Path: <SRS0=r/Py=AR=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B41C433DF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jul 2020 16:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 432E8C433E0
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jul 2020 17:37:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D4D72206DF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jul 2020 16:36:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1594053419;
-	bh=k2QTWzbMB6APqphVWK4zFEzNUlT95fuHmff9QWbaTSU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=gmdKx+oIzXGDIAmSwA29oy+4id5LATE93idT2A8pbbaRwBzzDeyOlHi8bmbr9rkN9
-	 n3CRXxUTEJOx62/QMCGJXWFZZ/Aaio4SHUEn8UGl8kcUnz56pnJMNDBnMwBW8shD/0
-	 5/WPKZTnUjqbonY4PdZBZRO0gQCzsbOeyZ7eWdqQ=
+	by mail.kernel.org (Postfix) with ESMTP id 25FB8206B6
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jul 2020 17:37:17 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tLMYUVfH"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729553AbgGFQg7 (ORCPT
+        id S1729713AbgGFRhM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jul 2020 12:36:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34594 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729551AbgGFQg7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jul 2020 12:36:59 -0400
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 570D1206CD;
-        Mon,  6 Jul 2020 16:36:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594053418;
-        bh=k2QTWzbMB6APqphVWK4zFEzNUlT95fuHmff9QWbaTSU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=R2r5StX+V3B+npBW3ROfxhQf8cLMzKyuo5om8oJiNKRPOA0FbpxvxW+THocSo7qe5
-         t4BT1piRU2BWG0nouW4WEab2fHL0eKSauKuxQL2V5At3SmPCYYHwaKWvy9kw2qOra3
-         BoqDQKgsnI27uZYM1DEcyZvTUqLA8FNv9RuFCJZs=
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <maz@kernel.org>)
-        id 1jsU6y-009Vjc-Sl; Mon, 06 Jul 2020 17:36:56 +0100
+        Mon, 6 Jul 2020 13:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729648AbgGFRhL (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Jul 2020 13:37:11 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EACDC061794
+        for <linux-serial@vger.kernel.org>; Mon,  6 Jul 2020 10:37:11 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id f5so30581148ljj.10
+        for <linux-serial@vger.kernel.org>; Mon, 06 Jul 2020 10:37:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Sz11DYsL5zwVjqYhEKLPrxOF4tzgDMf1vz98/XjZCxY=;
+        b=tLMYUVfHZtxO9KgWzxxOdD9mlQ3dFXlKr7srKRmLWLyKcglJiohqNiQztHYlHwWNUo
+         iP0ZMLRORAtfja/bxFn0wg13a/z0XXiAoY7sxH9g5CvV5ifmaV+6HUOxwMqyNNBa7OXd
+         Pk33QdLTy8IiiwRldr6OC7wSgyp7WcbNDd5KR/Do8+xNqy7KOuO660gFYGVH1OA3SxJL
+         oqVXNWDxaJEO55b67x+Q5VVrZm/aaObRxxyZ6nahPibVE/3egwpX0Puzu7/MWuFuWzgr
+         XtoIxoCAaZ1i2RBQeSzE6JIqCvmWPnrlM3qNEX5tILBOkQd00yt52r8ovQGzGTUUPPbi
+         nqMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sz11DYsL5zwVjqYhEKLPrxOF4tzgDMf1vz98/XjZCxY=;
+        b=USVPfakXEN3g21DVK6CDQKqJkUGEo1QqsvotX9qOPIQ9ocWMg+GOUJJAdEl41q4ngV
+         oIDBIwxeYGe89C75DGvmfapczc1SaQywl1+Av+bZSm/R/Ixf2uUBlA97y9lSXv137qi6
+         U9XIQM/JCzz33Vh3xwHr0FptuhcM21Hvp/s49vHHjkOhqfXyTTdzvCFyz2sNsuvgOTNh
+         0MoYA/EoyEthidORDqkicdoLLsQGQkqHkiKaLkJ2/gF1xK88KbpB57w/SeH8VsP82Hlg
+         dsZ/niTJjSgeNgJbtKgnSblxGnIBhrNc+wZ07jESOX2PU2/LfWnEyfeH3LN7CJWm//Lo
+         66Cw==
+X-Gm-Message-State: AOAM5309nBTbDv9nvLyTYIP3ejfUY+/99kFKQVHJSK1OKAcNZo3/3s8T
+        +NPMG+INXzY1Nw8xKQXjjkkvjxcIatO7JFZaMt2o7w==
+X-Google-Smtp-Source: ABdhPJzFmLIfcVR5FzO4+AEovpNtwMZuiGYvPgfuVk+fhy5MWgeKKsdNiLip/9aWdgIrjSmnfdgotnU2gIr3mk7bFbw=
+X-Received: by 2002:a2e:7401:: with SMTP id p1mr4753087ljc.366.1594057029609;
+ Mon, 06 Jul 2020 10:37:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 06 Jul 2020 17:36:56 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Anatoly Pugachev <matorola@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2] serial: core: Initialise spin lock before use in
- uart_configure_port()
-In-Reply-To: <20200706143548.63985-1-andriy.shevchenko@linux.intel.com>
-References: <20200706143548.63985-1-andriy.shevchenko@linux.intel.com>
-User-Agent: Roundcube Webmail/1.4.5
-Message-ID: <bfa0f8b35fe5b1864338376fa34b0db1@kernel.org>
-X-Sender: maz@kernel.org
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: andriy.shevchenko@linux.intel.com, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, prabhakar.mahadev-lad.rj@bp.renesas.com, linux@roeck-us.net, matorola@gmail.com, tony@atomide.com, geert@linux-m68k.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+References: <CA+G9fYvqW-RQxt3kSoNkh5Y2REoe0QQB_dTz_KPzhJzcwiM5OA@mail.gmail.com>
+ <CAK8P3a1Lda8HhsDvDREf-cOgb4RkCgEKK5Q-Zj+UhK8tsAaBLw@mail.gmail.com> <51d6e5bb-3de1-36dc-15a4-c341b23ca8cd@intel.com>
+In-Reply-To: <51d6e5bb-3de1-36dc-15a4-c341b23ca8cd@intel.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 6 Jul 2020 23:06:58 +0530
+Message-ID: <CA+G9fYvEqr8Wdi6vCTyAFT8eq3yL53E+WW4_Tzeea_HMKSOjQA@mail.gmail.com>
+Subject: Re: [qemu] boot failed: Unable to handle kernel NULL pointer
+ dereference at virtual address 0000000000000000
+To:     Dave Jiang <dave.jiang@intel.com>, Arnd Bergmann <arnd@arndb.de>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     linux-serial@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>, jirislaby@kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        ldewangan@nvidia.com, Thierry Reding <thierry.reding@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>, Qian Cai <cai@lca.pw>,
+        lkft-triage@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2020-07-06 15:35, Andy Shevchenko wrote:
-> The comment near to uart_port_spin_lock_init() says:
-> 
->   Ensure that the serial console lock is initialised early.
->   If this port is a console, then the spinlock is already initialised.
-> 
-> and there is nothing about enabled or disabled consoles. The commit
-> a3cb39d258ef ("serial: core: Allow detach and attach serial device
-> for console") made a change, which follows the comment, and also to
-> prevent reinitialisation of the lock in use, when user detaches and
-> attaches back the same console device. But this change discovers
-> another issue, that uart_add_one_port() tries to access a spin lock
-> that now may be uninitialised. This happens when a driver expects
-> the serial core to register a console on its behalf. In this case
-> we must initialise a spin lock before use.
-> 
-> Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial
-> device for console")
-> Reported-by: Marc Zyngier <maz@kernel.org>
-> Reported-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Reported-by: Anatoly Pugachev <matorola@gmail.com>
-> Cc: Tony Lindgren <tony@atomide.com>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
-> v2: my bad to send the version with one typo, now squashed and resent
-> 
-> I hope this is now properly root caused. To the people in Reported-by 
-> list, can
-> you revert the corresponding change you either reported or submitted to 
-> the
-> certain serial driver and apply this patch and retest?
-> 
-> Tony, can you also test that this doesn't change anything for the PM 
-> case for
-> OMAP?
-> 
-> Geert, I tried to explain above why the change had been made in the 
-> first place.
-> 
->  drivers/tty/serial/serial_core.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c 
-> b/drivers/tty/serial/serial_core.c
-> index 3cc183acf7ba..55f9615f0b50 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1915,6 +1915,12 @@ static inline bool uart_console_enabled(struct
-> uart_port *port)
->  	return uart_console(port) && (port->cons->flags & CON_ENABLED);
->  }
-> 
-> +static inline void uart_any_port_spin_lock_init(struct uart_port 
-> *port)
+> Arnd,
+> I'm looking at the pl001_dma_probe(), I think we could make it more robust if it
+> uses IS_ERR_OR_NULL(chan) instead of IS_ERR(). Should I send a patch for it? I
+> suppose looking at the comment header for dma_request_chan() it does say return
+> chan ptr or error ptr. Sorry I missed that.
+>
+>
+> Vinod,
+> It looks like the only fix for dmaengine for the patch is where Arnd pointed out
+> as far as I can tell after auditing it. Let me know how you want to handle this.
+> Thanks!
 
-nit: __uart_port_spin_lock_init() looks like a better name to me
-(as a primitive of uart_port_spin_lock_init). You can also drop
-the inline which doesn't mean much these days (and this isn't
-a hot path).
+This proposed fix patch applied on top of linux next ( 20200706 tag )
+and boot test PASS.
 
-> +{
-> +	spin_lock_init(&port->lock);
-> +	lockdep_set_class(&port->lock, &port_lock_key);
-> +}
-> +
->  /*
->   * Ensure that the serial console lock is initialised early.
->   * If this port is a console, then the spinlock is already 
-> initialised.
-> @@ -1924,8 +1930,7 @@ static inline void
-> uart_port_spin_lock_init(struct uart_port *port)
->  	if (uart_console(port))
->  		return;
-> 
-> -	spin_lock_init(&port->lock);
-> -	lockdep_set_class(&port->lock, &port_lock_key);
-> +	uart_any_port_spin_lock_init(port);
->  }
-> 
->  #if defined(CONFIG_SERIAL_CORE_CONSOLE) || 
-> defined(CONFIG_CONSOLE_POLL)
-> @@ -2371,6 +2376,13 @@ uart_configure_port(struct uart_driver *drv,
-> struct uart_state *state,
->  		/* Power up port for set_mctrl() */
->  		uart_change_pm(state, UART_PM_STATE_ON);
-> 
-> +		/*
-> +		 * If this driver supports console, and it hasn't been
-> +		 * successfully registered yet, initialise spin lock for it.
-> +		 */
-> +		if (port->cons && !(port->cons->flags & CON_ENABLED))
-> +			uart_any_port_spin_lock_init(port);
-> +
->  		/*
->  		 * Ensure that the modem control lines are de-activated.
->  		 * keep the DTR setting that is set in uart_set_options()
+The reported problem got fixed.
 
-Otherwise looks OK to me (having tested an earlier version).
-With the above addressed:
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Tested-by: Naresh Kamboju <naresh.kamboju@linaro.org>
 
-Acked-by: Marc Zyngier <maz@kernel.org>
+>
+> diff --git a/drivers/dma/dmaengine.c b/drivers/dma/dmaengine.c
+> index 0d6529eff66f..48e159e83cf5 100644
+> --- a/drivers/dma/dmaengine.c
+> +++ b/drivers/dma/dmaengine.c
+> @@ -852,7 +852,7 @@ struct dma_chan *dma_request_chan(struct device *dev, const
+> char *name)
+>          mutex_lock(&dma_list_mutex);
+>          if (list_empty(&dma_device_list)) {
+>                  mutex_unlock(&dma_list_mutex);
+> -               return NULL;
+> +               return ERR_PTR(-ENODEV);
+>          }
+>
+>          list_for_each_entry_safe(d, _d, &dma_device_list, global_node) {
 
-         M.
+ref:
+https://lkft.validation.linaro.org/scheduler/job/1542630#L510
+
 -- 
-Jazz is not dead. It just smells funny...
+Linaro LKFT
+https://lkft.linaro.org
