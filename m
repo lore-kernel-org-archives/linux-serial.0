@@ -2,156 +2,140 @@ Return-Path: <SRS0=r/Py=AR=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD24C433DF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jul 2020 12:53:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA1CC433E0
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jul 2020 14:00:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8627920722
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jul 2020 12:53:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 33349206CD
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jul 2020 14:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbgGFMxf (ORCPT
+        id S1728961AbgGFOAm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jul 2020 08:53:35 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:55735 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728967AbgGFMxf (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jul 2020 08:53:35 -0400
-Received: from mail-qk1-f173.google.com ([209.85.222.173]) by
- mrelayeu.kundenserver.de (mreue012 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1MIbzB-1k6Szp411J-00EeSP; Mon, 06 Jul 2020 14:53:33 +0200
-Received: by mail-qk1-f173.google.com with SMTP id r22so34530382qke.13;
-        Mon, 06 Jul 2020 05:53:32 -0700 (PDT)
-X-Gm-Message-State: AOAM533C4qiqSnhL+DaWcXtlmE9qzODh0CXgeCswjA4hZDegvpwEZ20g
-        iwEHFv9CYvYO2nZS0+UGqsULH/Igtcf+/hHlXd0=
-X-Google-Smtp-Source: ABdhPJzLxzzD0oWLR8gLB+UZOumRyReNJRxw2eFk+0tK/K4zKW/yb78heESjoajcTacz1okTabKhg+kBVFSTBDtiDao=
-X-Received: by 2002:a05:620a:1654:: with SMTP id c20mr39946815qko.138.1594040011521;
- Mon, 06 Jul 2020 05:53:31 -0700 (PDT)
+        Mon, 6 Jul 2020 10:00:42 -0400
+Received: from mga01.intel.com ([192.55.52.88]:20782 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728940AbgGFOAl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Jul 2020 10:00:41 -0400
+IronPort-SDR: FI9e3VnYzb5lIeMZslwU0KEktX7LroVSBWNavv86NdZ04sy5zEIiVCjzyYiWxpnhyA7Va+N+O8
+ fvBg3xaj4whw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9673"; a="165481972"
+X-IronPort-AV: E=Sophos;i="5.75,320,1589266800"; 
+   d="scan'208";a="165481972"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2020 07:00:41 -0700
+IronPort-SDR: W2/OiAruJ2U4sr2mRkO6dXegEVoZUWzbBPxvDPy+FQCclW4j4YYssQy4kTGqrAwMOkXTagEzTB
+ iNnnBSeZApHQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,320,1589266800"; 
+   d="scan'208";a="357456002"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 06 Jul 2020 07:00:38 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id C5B59FA; Mon,  6 Jul 2020 17:00:37 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Anatoly Pugachev <matorola@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v1] serial: core: Initialise spin lock before use in uart_configure_port()
+Date:   Mon,  6 Jul 2020 17:00:36 +0300
+Message-Id: <20200706140036.75524-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <CA+G9fYvqW-RQxt3kSoNkh5Y2REoe0QQB_dTz_KPzhJzcwiM5OA@mail.gmail.com>
-In-Reply-To: <CA+G9fYvqW-RQxt3kSoNkh5Y2REoe0QQB_dTz_KPzhJzcwiM5OA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 6 Jul 2020 14:53:15 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1Lda8HhsDvDREf-cOgb4RkCgEKK5Q-Zj+UhK8tsAaBLw@mail.gmail.com>
-Message-ID: <CAK8P3a1Lda8HhsDvDREf-cOgb4RkCgEKK5Q-Zj+UhK8tsAaBLw@mail.gmail.com>
-Subject: Re: [qemu] boot failed: Unable to handle kernel NULL pointer
- dereference at virtual address 0000000000000000
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     linux-serial@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>, jirislaby@kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        ldewangan@nvidia.com, Thierry Reding <thierry.reding@gmail.com>,
-        Jon Hunter <jonathanh@nvidia.com>, Qian Cai <cai@lca.pw>,
-        lkft-triage@lists.linaro.org, Dave Jiang <dave.jiang@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:7h2WIgJfUR8umEdQGzTQUYjL3+PVFsfHCxAO7m96RjRNmNGPw9N
- sHuWludrvhH8Rnl+cxeVAHKtw8Mww8bjjpS4LhYBlM+RdWcgUfVQT9YyUTm/iTF8lDS61Lj
- krhupWRzRsZhQ7u5PH5zmLIx+MmhwwxSckm7TgxDFTGte3rMYKWdPIKDiTjobw2zcQJ0Hhj
- xBc9GNT7CuiTl1d1brLNQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:05WRbZZwKYE=:1ZH7KIls0ynpOir4F2/d62
- j9meVUQU3kApE1/XOTpf3LT7oTPEqy09bFOmfv2/10XjbgPo7FLCwlv7n+bJ3BZzHOT939QrS
- 0nnDepXpChMAgH6z3stpbszXbXJMWNI/3RqzzuAd11r02D6aVfCbogmad/bE2ewyNAs63DVr7
- F2jjH21Qipjl9NEvf6YYpFTHnK6hz70tgnyUhiL8Aw+HYSBlSUcXQK9Tu5OFrdJDBdtLERi83
- wAjHzX5aSE66qtz4HzyYwMpyt6o6ezkdnlE7CmDs02pbWr/cohE14c+Xi5ENgRGtFvakZR1NT
- qAUrpcZXAm65mV1VEWuPJLtgmOsU2aIUjdizcKQx5fBxZbvGcPC9ks6lhsgMReOreKvECfYY9
- PGMjdIoxkeXxB9PPcZMPbC18Joyb7j8YO4HNZq/1OCQjac+XgDmN+5A4PgmbYhyD0j9v00dKR
- kviv8CHn5gY04gqr0BAFOJTkjURWfG1mLRvkG9Yn/Mu8I9iN07qJUYGxYnU3wxDA+oCI0tHPF
- amwe41B/B9cZG6zdqDQvDUcqe5rDddTxFwIlMsJTYJgoixAx6GtHed529R3jmx02arSMtuP1p
- sl7h5jKHFp+/aDE8i/5apxYaLfVpaql3d4zlIviFf7IFElXn2IKxu237u/JTnvGlo/7VC+Wie
- ocpBS7Ia3HN8j4Ms0o+XGyeApsBlfJx0ehCsHk38Rgm2aFQ9tV6xgLKpjJ5uXevNaC7ZTFdIx
- y8kDxuL8eKn6tzjxJoTMZ6GnBwbNUHFnm5Kuhl4EazvFSS8yBldbFAUirGpzrmT3Iji9fILCw
- sZOn512pmpqNKNZBcYPUToOJ8sKnPuT+A1GErANP/bKZ4RJXzg=
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 6, 2020 at 1:03 PM Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
->
-> While booting qemu_arm64 and qemu_arm with Linux version 5.8.0-rc3-next-20200706
-> the kernel panic noticed due to kernel NULL pointer dereference.
->
-> metadata:
->   git branch: master
->   git repo: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
->   git commit: 5680d14d59bddc8bcbc5badf00dbbd4374858497
->   git describe: next-20200706
->   make_kernelversion: 5.8.0-rc3
->   kernel-config:
-> https://builds.tuxbuild.com/Glr-Ql1wbp3qN3cnHogyNA/kernel.config
->
-> qemu arm64 boot crash log,
->
-> [    0.972053] Unable to handle kernel NULL pointer dereference at
-> virtual address 0000000000000000
-> [    0.975301] Mem abort info:
-> [    0.976316]   ESR = 0x96000004
-> [    0.977378]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [    0.979363]   SET = 0, FnV = 0
-> [    0.980458]   EA = 0, S1PTW = 0
-> [    0.981583] Data abort info:
-> [    0.982634]   ISV = 0, ISS = 0x00000004
-> [    0.984213]   CM = 0, WnR = 0
-> [    0.985260] [0000000000000000] user address but active_mm is swapper
-> [    0.987600] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> [    0.989557] Modules linked in:
-> [    0.990671] CPU: 2 PID: 1 Comm: swapper/0 Not tainted
-> 5.8.0-rc3-next-20200706 #1
-> [    0.993711] Hardware name: linux,dummy-virt (DT)
-> [    0.995708] pstate: 00000005 (nzcv daif -PAN -UAO BTYPE=--)
-> [    0.998168] pc : pl011_dma_probe+0x90/0x360
+The comment near to uart_port_spin_lock_init() says:
 
-This is the code from you vmlinux file:
+  Ensure that the serial console lock is initialised early.
+  If this port is a console, then the spinlock is already initialised.
 
-ffff8000107233e4:       b90087e2        str     w2, [sp, #132]
-ffff8000107233e8:       97fcf14c        bl      ffff80001065f918
-<dma_request_chan>
-ffff8000107233ec:       aa0003f4        mov     x20, x0
-ffff8000107233f0:       b140041f        cmn     x0, #0x1, lsl #12
-ffff8000107233f4:       54000488        b.hi    ffff800010723484
-<pl011_dma_probe+0x11c>  // b.pmore
-ffff8000107233f8:       f9400280        ldr     x0, [x20]
-ffff8000107233fc:       f9409c02        ldr     x2, [x0, #312]
-ffff800010723400:       b4000082        cbz     x2, ffff800010723410
-<pl011_dma_probe+0xa8>
+and there is nothing about enabled or disabled consoles. The commit
+a3cb39d258ef ("serial: core: Allow detach and attach serial device
+for console") made a change, which follows the comment, and also to
+prevent reinitialisation of the lock in use, when user detaches and
+attaches back the same console device. But this change discovers
+another issue, that uart_add_one_port() tries to access a spin lock
+that now may be uninitialised. This happens when a driver expects
+the serial core to register a console on its behalf. In this case
+we must initialise a spin lock before use.
 
-It's the "ldr     x0, [x20]" dereferencing 'chan' in pl011_dma_probe() after
-checking it for an error value. However it's a NULL pointer, not an
-error pointer, indicating that there is a bug in the dmaengine driver
-that you use here, or in the dmaengine core code.
+Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Reported-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Reported-by: Anatoly Pugachev <matorola@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
 
-I don't see anything suspicious in dmaengine drivers, but there is a
-recent series
-from Dave Jiang that might explain it. Could you try reverting  commit
-deb9541f5052 ("dmaengine: check device and channel list for empty")?
+I hope this is now properly root caused. To the people in Reported-by list, can
+you revert the corresponding change you either reported or submitted to the
+certain serial driver and apply this patch and retest?
 
-I think the broken change is this one:
+Tony, can you also test that this doesn't change anything for the PM case for
+OMAP?
 
-@@ -819,6 +850,11 @@ struct dma_chan *dma_request_chan(struct device
-*dev, const char *name)
+Geert, I tried to explain above why the change had been made in the first place.
 
-        /* Try to find the channel via the DMA filter map(s) */
-        mutex_lock(&dma_list_mutex);
-+       if (list_empty(&dma_device_list)) {
-+               mutex_unlock(&dma_list_mutex);
-+               return NULL;
-+       }
+ drivers/tty/serial/serial_core.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 3cc183acf7ba..96d93601bfaa 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1915,6 +1915,12 @@ static inline bool uart_console_enabled(struct uart_port *port)
+ 	return uart_console(port) && (port->cons->flags & CON_ENABLED);
+ }
+ 
++static inline void uart_any_port_spin_lock_init(struct uart_port *port)
++{
++	spin_lock_init(&port->lock);
++	lockdep_set_class(&port->lock, &port_lock_key);
++}
 +
-        list_for_each_entry_safe(d, _d, &dma_device_list, global_node) {
-                dma_cap_mask_t mask;
-                const struct dma_slave_map *map = dma_filter_match(d,
-name, dev);
+ /*
+  * Ensure that the serial console lock is initialised early.
+  * If this port is a console, then the spinlock is already initialised.
+@@ -1924,8 +1930,7 @@ static inline void uart_port_spin_lock_init(struct uart_port *port)
+ 	if (uart_console(port))
+ 		return;
+ 
+-	spin_lock_init(&port->lock);
+-	lockdep_set_class(&port->lock, &port_lock_key);
++	uart_any_port_spin_lock_init(port);
+ }
+ 
+ #if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
+@@ -2371,6 +2376,13 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		/* Power up port for set_mctrl() */
+ 		uart_change_pm(state, UART_PM_STATE_ON);
+ 
++		/*
++		 * If this driver supports console, and it hasn't been
++		 * successfully registered yet, initialise spin lock for it.
++		 */
++		if (port->cons && !(port->cons->flags & CON_ENABLED))
++			uart_any_port_spin_lock_init(uport);
++
+ 		/*
+ 		 * Ensure that the modem control lines are de-activated.
+ 		 * keep the DTR setting that is set in uart_set_options()
+-- 
+2.27.0
 
-which needs to return an error code like -ENODEV instead of NULL. There
-may be other changes in the same patch that introduce the same bug
-elsewhere.
-
-     Arnd
