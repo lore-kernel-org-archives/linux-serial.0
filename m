@@ -2,198 +2,125 @@ Return-Path: <SRS0=ofBx=AS=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MIME_BASE64_TEXT,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD9EC433E1
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jul 2020 17:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CF7C433DF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jul 2020 23:11:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C67DC2065F
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jul 2020 17:00:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7DE01206BE
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jul 2020 23:11:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="o3NV80BN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728214AbgGGRAJ (ORCPT
+        id S1728400AbgGGXLz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jul 2020 13:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728164AbgGGRAJ (ORCPT
+        Tue, 7 Jul 2020 19:11:55 -0400
+Received: from mailgw01.mediatek.com ([210.61.82.183]:32565 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727777AbgGGXLy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jul 2020 13:00:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22672C08C5E1
-        for <linux-serial@vger.kernel.org>; Tue,  7 Jul 2020 10:00:09 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1jsqwt-0004FP-U5; Tue, 07 Jul 2020 19:00:03 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1jsqws-00038n-M4; Tue, 07 Jul 2020 19:00:02 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     kernel@pengutronix.de, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH v7 1/3] tty: rename tty_kopen() and add new function tty_kopen_shared()
-Date:   Tue,  7 Jul 2020 18:59:56 +0200
-Message-Id: <20200707165958.16522-2-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200707165958.16522-1-u.kleine-koenig@pengutronix.de>
-References: <20200707165958.16522-1-u.kleine-koenig@pengutronix.de>
+        Tue, 7 Jul 2020 19:11:54 -0400
+X-UUID: 6363544267ef4f80b9d9ec5b870c4a26-20200708
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=ACgdKKQvvl0IN9nE7D17jMhl6fwZEjwiF6CEjA4GWAU=;
+        b=o3NV80BNsX4PmP6KgyiMYWE09jSPqxpKHDYAiV42GAs1eUcfH/QuMlmSdcI58gY/3bjvPeQpd3o+HsoQRCzQ50Laqf9jZxjpLnX/H11qW7ZUBw/QQ4Swx4RvRFG33XnQWG6w06AONjqYK87jvQRxqvE0aXQyBhU0di4beslthvg=;
+X-UUID: 6363544267ef4f80b9d9ec5b870c4a26-20200708
+Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by mailgw01.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+        with ESMTP id 729408332; Wed, 08 Jul 2020 07:11:49 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs02n2.mediatek.inc (172.21.101.101) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 8 Jul 2020 07:11:29 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 8 Jul 2020 07:11:19 +0800
+From:   <sean.wang@mediatek.com>
+To:     <gregkh@linuxfoundation.org>, <jslaby@suse.com>,
+        <andriy.shevchenko@linux.intel.com>,
+        <mika.westerberg@linux.intel.com>, <sr@denx.de>, <arnd@arndb.de>,
+        <matthias.bgg@gmail.com>, <tthayer@opensource.altera.com>
+CC:     <linux-mediatek@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Sean Wang <sean.wang@mediatek.com>,
+        Steven Liu <steven.liu@mediatek.com>,
+        Ryder Lee <ryder.lee@mediatek.com>
+Subject: [PATCH v5] tty: serial: don't do termios for BTIF
+Date:   Wed, 8 Jul 2020 07:11:22 +0800
+Message-ID: <7c67171728cdcc4ccc10adfaea1a14bfbcf8375a.1594163304.git.sean.wang@mediatek.com>
+X-Mailer: git-send-email 1.7.9.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain
+X-TM-SNTS-SMTP: 4F28F1CAC5E7592B35293C87473BAF934B244B4F5546B2CBC7BAF98B527E8F2A2000:8
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Introduce a new function tty_kopen_shared() that yields a struct
-tty_struct. The semantic difference to tty_kopen() is that the tty is
-expected to be used already. So rename tty_kopen() to
-tty_kopen_exclusive() for clearness, adapt the single user and put the
-common code in a new static helper function.
-
-tty_kopen_shared is to be used to implement an LED trigger for tty
-devices in one of the next patches.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/staging/speakup/spk_ttyio.c |  2 +-
- drivers/tty/tty_io.c                | 58 ++++++++++++++++++++---------
- include/linux/tty.h                 |  5 ++-
- 3 files changed, 44 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/staging/speakup/spk_ttyio.c b/drivers/staging/speakup/spk_ttyio.c
-index 9b95f77f9265..5a134718dac8 100644
---- a/drivers/staging/speakup/spk_ttyio.c
-+++ b/drivers/staging/speakup/spk_ttyio.c
-@@ -147,7 +147,7 @@ static int spk_ttyio_initialise_ldisc(struct spk_synth *synth)
- 	if (ret)
- 		return ret;
- 
--	tty = tty_kopen(dev);
-+	tty = tty_kopen_exclusive(dev);
- 	if (IS_ERR(tty))
- 		return PTR_ERR(tty);
- 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 5a6f36b391d9..05d42f226304 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1871,22 +1871,7 @@ static struct tty_driver *tty_lookup_driver(dev_t device, struct file *filp,
- 	return driver;
- }
- 
--/**
-- *	tty_kopen	-	open a tty device for kernel
-- *	@device: dev_t of device to open
-- *
-- *	Opens tty exclusively for kernel. Performs the driver lookup,
-- *	makes sure it's not already opened and performs the first-time
-- *	tty initialization.
-- *
-- *	Returns the locked initialized &tty_struct
-- *
-- *	Claims the global tty_mutex to serialize:
-- *	  - concurrent first-time tty initialization
-- *	  - concurrent tty driver removal w/ lookup
-- *	  - concurrent tty removal from driver table
-- */
--struct tty_struct *tty_kopen(dev_t device)
-+static struct tty_struct *tty_kopen(dev_t device, int shared)
- {
- 	struct tty_struct *tty;
- 	struct tty_driver *driver;
-@@ -1901,7 +1886,7 @@ struct tty_struct *tty_kopen(dev_t device)
- 
- 	/* check whether we're reopening an existing tty */
- 	tty = tty_driver_lookup_tty(driver, NULL, index);
--	if (IS_ERR(tty))
-+	if (IS_ERR(tty) || shared)
- 		goto out;
- 
- 	if (tty) {
-@@ -1919,7 +1904,44 @@ struct tty_struct *tty_kopen(dev_t device)
- 	tty_driver_kref_put(driver);
- 	return tty;
- }
--EXPORT_SYMBOL_GPL(tty_kopen);
-+
-+/**
-+ *	tty_kopen_exclusive	-	open a tty device for kernel
-+ *	@device: dev_t of device to open
-+ *
-+ *	Opens tty exclusively for kernel. Performs the driver lookup,
-+ *	makes sure it's not already opened and performs the first-time
-+ *	tty initialization.
-+ *
-+ *	Returns the locked initialized &tty_struct
-+ *
-+ *	Claims the global tty_mutex to serialize:
-+ *	  - concurrent first-time tty initialization
-+ *	  - concurrent tty driver removal w/ lookup
-+ *	  - concurrent tty removal from driver table
-+ */
-+struct tty_struct *tty_kopen_exclusive(dev_t device)
-+{
-+	return tty_kopen(device, 0);
-+}
-+EXPORT_SYMBOL_GPL(tty_kopen_exclusive);
-+
-+/**
-+ *	tty_kopen_shared	-	open a tty device for shared in-kernel use
-+ *	@device: dev_t of device to open
-+ *
-+ *	Opens an already existing tty
-+ *	rnel. Performs the driver lookup,
-+ *	makes sure it's not already opened and performs the first-time
-+ *	tty initialization.
-+ *
-+ *	Locking is identical to tty_kopen() above.
-+ */
-+struct tty_struct *tty_kopen_shared(dev_t device)
-+{
-+	return tty_kopen(device, 1);
-+}
-+EXPORT_SYMBOL_GPL(tty_kopen_shared);
- 
- /**
-  *	tty_open_by_driver	-	open a tty device
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index a99e9b8e4e31..c867d6fe67c4 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -413,7 +413,8 @@ extern struct tty_struct *get_current_tty(void);
- /* tty_io.c */
- extern int __init tty_init(void);
- extern const char *tty_name(const struct tty_struct *tty);
--extern struct tty_struct *tty_kopen(dev_t device);
-+extern struct tty_struct *tty_kopen_exclusive(dev_t device);
-+extern struct tty_struct *tty_kopen_shared(dev_t device);
- extern void tty_kclose(struct tty_struct *tty);
- extern int tty_dev_name_to_number(const char *name, dev_t *number);
- extern int tty_ldisc_lock(struct tty_struct *tty, unsigned long timeout);
-@@ -438,7 +439,7 @@ static inline int __init tty_init(void)
- { return 0; }
- static inline const char *tty_name(const struct tty_struct *tty)
- { return "(none)"; }
--static inline struct tty_struct *tty_kopen(dev_t device)
-+static inline struct tty_struct *tty_kopen_exclusive(dev_t device)
- { return ERR_PTR(-ENODEV); }
- static inline void tty_kclose(struct tty_struct *tty)
- { }
--- 
-2.27.0
+RnJvbTogU2VhbiBXYW5nIDxzZWFuLndhbmdAbWVkaWF0ZWsuY29tPg0KDQpCbHVldG9vdGggSW50
+ZXJmYWNlIChCVElGKSBpcyBkZXNpZ25lZCBkZWRpY2F0ZWRseSBmb3IgTWVkaWFUZWsgU09DIHdp
+dGgNCkJUIGluIG9yZGVyIHRvIGJlIGluc3RlYWQgb2YgdGhlIFVBUlQgaW50ZXJmYWNlIGJldHdl
+ZW4gQlQgbW9kdWxlIGFuZCBIb3N0DQpDUFUsIGFuZCBub3QgZXhwb3J0ZWQgdG8gdXNlciBzcGFj
+ZSB0byBhY2Nlc3MuDQoNCkFzIHRoZSBVQVJUIGRlc2lnbiwgQlRJRiB3aWxsIGJlIGFuIEFQQiBz
+bGF2ZSBhbmQgY2FuIHRyYW5zbWl0IG9yIHJlY2VpdmUNCmRhdGEgYnkgTUNVIGFjY2VzcywgYnV0
+IGRvZXNuJ3QgcHJvdmlkZSB0ZXJtaW9zIGZ1bmN0aW9uIGxpa2UgYmF1ZHJhdGUgYW5kDQpmbG93
+IGNvbnRyb2wgc2V0dXAuDQoNCkV2ZW4gTENSIG9uIG9mZnNldCAweEMgdGhhdCBpcyBqdXN0IGEg
+RkFLRUxDUg0KYS4gSWYgRkFLRUxDUls3XSBpcyBlcXVhbGVkIHRvIDEsIFJCUigweDAwKSwgVEhS
+KDB4MDApLCBJRVIoMHgwNCkNCiAgIHdpbGwgbm90IGJlIHJlYWRhYmxlL3dyaXRhYmxlLg0KDQpi
+LiBJZiBGQUtFTENSIGlzIGVxdWFsZWQgdG8gMHhCRiwgUkJSKDB4MDApLCBUSFIoMHgwMCksIElF
+UigweDA0KSwNCiAgIElJUigweDA4KSwgYW5kIExTUigweDE0KSB3aWxsIG5vdCBiZSByZWFkYWJs
+ZS93cml0YWJsZS4NCg0KU28gYWRkaW5nIGEgbmV3IGNhcGFiaWxpdHkgJ1VBUlRfQ0FQX05USU8n
+IGZvciB0aGUgdW51c3VhbCB1bnN1cHBvcnRlZA0KY2FzZS4NCg0KVGhlIGJsdWV0b290aCBkcml2
+ZXIgd291bGQgdXNlIEJUSUYgZGV2aWNlIGFzIGEgc2VyZGV2LiBTbyB0aGUgdGVybWlvcw0Kc3Rp
+bGwgZnVuY3Rpb24gd291bGQgYmUgY2FsbGVkIGluIGtlcm5lbHNwYWNlIGZyb20gdHR5cG9ydF9v
+cGVuIGluDQpkcml2ZXJzL3R0eS9zZXJkZXYvc2VyZGV2LXR0eXBydC5jLg0KDQpGaXhlczogMWMx
+NmFlNjVlMjUwICgic2VyaWFsOiA4MjUwOiBvZjogQWRkIG5ldyBwb3J0IHR5cGUgZm9yIE1lZGlh
+VGVrIEJUSUYgY29udHJvbGxlciBvbiBNVDc2MjIvMjMgU29DIikNCkNjOiBTdGV2ZW4gTGl1IDxz
+dGV2ZW4ubGl1QG1lZGlhdGVrLmNvbT4NClNpZ25lZC1vZmYtYnk6IFNlYW4gV2FuZyA8c2Vhbi53
+YW5nQG1lZGlhdGVrLmNvbT4NClNpZ25lZC1vZmYtYnk6IFJ5ZGVyIExlZSA8cnlkZXIubGVlQG1l
+ZGlhdGVrLmNvbT4NCg0KLS0NCnYxLT52MjoNCm5vIGNoYW5nZSBvbiB0ZXJtaW9zLT5jX2NmbGFn
+IGFuZCByZWZpbmUgY29tbWl0IG1lc3NhZ2UNCg0KdjItPnYzOg0KY2hhbmdlIHRoZSBuYW1pbmcg
+ZnJvbSBOTU9EIHRvIE5USU8gYXMgVElPIGlzIGEgd2VsbCBlc3RhYmxpc2hlZCBwcmVmaXgNCmZv
+ciB0ZXJtaW9zIElPQ1RMcy4NCg0KdjMtPnY0Og0KMS4gcmVtb3ZlIGFwcHJvcHJpYXRlIHRhZw0K
+Mi4gYWRkIHRoZSBleHBsYW5hdGlvbiB3aHkgdGhlIHRlcm1pb3MgaXMgcmVxdWlyZWQgZXZlbiB3
+aGVuIHRoZSBjb25uZWN0aW9uDQogICBpc24ndCBleHBvcnRlZCB0byB1c2Vyc3BhY2UuDQoNCnY0
+LT52NToNClVzZSB1cC0+cG9ydC5xdWlya3MgVVBRX0lHTk9SRV9URVJNSU9TIGluc3RlYWQuDQot
+LS0NCiBkcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2NvcmUuYyB8IDMgKysrDQogZHJpdmVy
+cy90dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMgfCAzICsrKw0KIGluY2x1ZGUvbGludXgvc2Vy
+aWFsX2NvcmUuaCAgICAgICAgIHwgMSArDQogMyBmaWxlcyBjaGFuZ2VkLCA3IGluc2VydGlvbnMo
+KykNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfY29yZS5jIGIv
+ZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9jb3JlLmMNCmluZGV4IGZjMTE4ZjY0OTg4Ny4u
+YjAwMDYwYzYxNWMyIDEwMDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9j
+b3JlLmMNCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfY29yZS5jDQpAQCAtNDkw
+LDYgKzQ5MCw5IEBAIHN0YXRpYyB2b2lkIHVuaXY4MjUwX3JzYV9zdXBwb3J0KHN0cnVjdCB1YXJ0
+X29wcyAqb3BzKQ0KIHN0YXRpYyBpbmxpbmUgdm9pZCBzZXJpYWw4MjUwX2FwcGx5X3F1aXJrcyhz
+dHJ1Y3QgdWFydF84MjUwX3BvcnQgKnVwKQ0KIHsNCiAJdXAtPnBvcnQucXVpcmtzIHw9IHNraXBf
+dHhlbl90ZXN0ID8gVVBRX05PX1RYRU5fVEVTVCA6IDA7DQorDQorCWlmICh1cC0+cG9ydC50eXBl
+ID09IFBPUlRfTVRLX0JUSUYpDQorCQl1cC0+cG9ydC5xdWlya3MgfD0gVVBRX0lHTk9SRV9URVJN
+SU9TOw0KIH0NCiANCiBzdGF0aWMgdm9pZCBfX2luaXQgc2VyaWFsODI1MF9pc2FfaW5pdF9wb3J0
+cyh2b2lkKQ0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5j
+IGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMNCmluZGV4IDE2MzJmN2QyNWFj
+Yy4uYmUzODA2NDlmZWZiIDEwMDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1
+MF9wb3J0LmMNCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jDQpAQCAt
+MjY0MCw2ICsyNjQwLDkgQEAgc2VyaWFsODI1MF9kb19zZXRfdGVybWlvcyhzdHJ1Y3QgdWFydF9w
+b3J0ICpwb3J0LCBzdHJ1Y3Qga3Rlcm1pb3MgKnRlcm1pb3MsDQogCXVuc2lnbmVkIGxvbmcgZmxh
+Z3M7DQogCXVuc2lnbmVkIGludCBiYXVkLCBxdW90LCBmcmFjID0gMDsNCiANCisJaWYgKHBvcnQt
+PnF1aXJrcyAmIFVQUV9JR05PUkVfVEVSTUlPUykNCisJCXJldHVybjsNCisNCiAJaWYgKHVwLT5j
+YXBhYmlsaXRpZXMgJiBVQVJUX0NBUF9NSU5JKSB7DQogCQl0ZXJtaW9zLT5jX2NmbGFnICY9IH4o
+Q1NUT1BCIHwgUEFSRU5CIHwgUEFST0REIHwgQ01TUEFSKTsNCiAJCWlmICgodGVybWlvcy0+Y19j
+ZmxhZyAmIENTSVpFKSA9PSBDUzUgfHwNCmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3Nlcmlh
+bF9jb3JlLmggYi9pbmNsdWRlL2xpbnV4L3NlcmlhbF9jb3JlLmgNCmluZGV4IDlmZDU1MGU3OTQ2
+YS4uYzQ2YWFlMzc0ZTBlIDEwMDY0NA0KLS0tIGEvaW5jbHVkZS9saW51eC9zZXJpYWxfY29yZS5o
+DQorKysgYi9pbmNsdWRlL2xpbnV4L3NlcmlhbF9jb3JlLmgNCkBAIC0xNTUsNiArMTU1LDcgQEAg
+c3RydWN0IHVhcnRfcG9ydCB7DQogDQogCS8qIHF1aXJrcyBtdXN0IGJlIHVwZGF0ZWQgd2hpbGUg
+aG9sZGluZyBwb3J0IG11dGV4ICovDQogI2RlZmluZSBVUFFfTk9fVFhFTl9URVNUCUJJVCgwKQ0K
+KyNkZWZpbmUgVVBRX0lHTk9SRV9URVJNSU9TCUJJVCgxKQ0KIA0KIAl1bnNpZ25lZCBpbnQJCXJl
+YWRfc3RhdHVzX21hc2s7CS8qIGRyaXZlciBzcGVjaWZpYyAqLw0KIAl1bnNpZ25lZCBpbnQJCWln
+bm9yZV9zdGF0dXNfbWFzazsJLyogZHJpdmVyIHNwZWNpZmljICovDQotLSANCjIuMjUuMQ0K
 
