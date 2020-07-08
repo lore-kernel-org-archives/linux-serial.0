@@ -2,99 +2,78 @@ Return-Path: <SRS0=q01k=AT=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C06C433DF
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jul 2020 15:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BCDC433E1
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jul 2020 17:48:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E89CC2063A
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jul 2020 15:40:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1594222839;
-	bh=f9OKByRreJnmzYiKqsCux5rcWp4GaOz8dutrQOUlyIc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=BHyasMWD9wp5Ce3jyV2pEf22RBq7kzad3hjror2iH2WYEkGxy+Yi55gZSfJdYTij8
-	 f7TqUtBrKUHUK3nVRyAIS1B7+hcNQ+jtMi/Nb1NtiZ9t/70FY6Tsdebr7fT0zu9vO0
-	 +4F9Wth2wIby2okLpKKvD9wmQSDELX5DZzCBWghs=
+	by mail.kernel.org (Postfix) with ESMTP id 5C57A206E2
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jul 2020 17:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729915AbgGHPkd (ORCPT
+        id S1728257AbgGHRsq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jul 2020 11:40:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47324 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729022AbgGHPkd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jul 2020 11:40:33 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5C2392063A;
-        Wed,  8 Jul 2020 15:40:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594222832;
-        bh=f9OKByRreJnmzYiKqsCux5rcWp4GaOz8dutrQOUlyIc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SWOLpOll+7GeFajDdGkhB89ANQgz/DpR82Trf7v+WRGsdd6bSA+b++wqiRWoPKjv+
-         GpK+QyNPriDDBYbfb4T6TvqT4DPq40vdmFa+sQo3voNCP1zXxrOqnBst/N8bRBPzu7
-         do4KgnUhKI9QMKTNXTeHdcyDIQj2IxwR8tFiq/Jg=
-Date:   Wed, 8 Jul 2020 17:40:28 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Mukesh, Savaliya" <msavaliy@codeaurora.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Akash Asthana <akashast@codeaurora.org>, saravanak@google.com,
-        sspatil@google.com, tkjos@google.com,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V6] serial: msm_geni_serial_console : Add Earlycon support
-Message-ID: <20200708154028.GC715257@kroah.com>
-References: <1592820512-1225-1-git-send-email-akashast@codeaurora.org>
- <20200623194936.GE128451@builder.lan>
- <c2752c91-b203-4224-9ddf-1e5a03b6488b@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c2752c91-b203-4224-9ddf-1e5a03b6488b@codeaurora.org>
+        Wed, 8 Jul 2020 13:48:46 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:48841 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725953AbgGHRsp (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 8 Jul 2020 13:48:45 -0400
+X-IronPort-AV: E=Sophos;i="5.75,328,1589209200"; 
+   d="scan'208";a="51641770"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 09 Jul 2020 02:48:44 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id DDF294005E3D;
+        Thu,  9 Jul 2020 02:48:40 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 2/8] dt-bindings: serial: renesas,hscif: Document r8a774e1 bindings
+Date:   Wed,  8 Jul 2020 18:48:25 +0100
+Message-Id: <1594230511-24790-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 08, 2020 at 08:06:52PM +0530, Mukesh, Savaliya wrote:
-> 
-> On 6/24/2020 1:19 AM, Bjorn Andersson wrote:
-> > On Mon 22 Jun 03:08 PDT 2020, Akash Asthana wrote:
-> > 
-> > > From: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
-> > > 
-> > > This change enables earlyconsole support as static driver for geni
-> > > based UART. Kernel space UART console driver will be generic for
-> > > console and other usecases of UART.
-> > > 
-> > Is this hardware different from the qcom,geni-debug-uart which we
-> > already have EARLYCON support for?
-> > 
-> > Why is this a separate driver?
-> 
-> The Hardware is same, but for the Generic kernel image we are using
-> downstream driver which can't be a static compiled driver.
+RZ/G2H (R8A774E1) SoC also has the R-Car gen3 compatible HSCIF ports,
+so document the SoC specific bindings.
 
-Why not?  Why not fix that?
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ Documentation/devicetree/bindings/serial/renesas,hscif.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-> The same driver file has  1.earlyconsole, 2.kernel console and 3.HSUART
-> driver parts.
-> 
-> To make Generic image, 2 and 3 are internal downstream driver and 1st one i
-> am trying to get upstreamed, so that can be pulled into the ACK.
+diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+index 6b04c0451d41..9fb87a648c1b 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+@@ -42,6 +42,7 @@ properties:
+               - renesas,hscif-r8a774a1     # RZ/G2M
+               - renesas,hscif-r8a774b1     # RZ/G2N
+               - renesas,hscif-r8a774c0     # RZ/G2E
++              - renesas,hscif-r8a774e1     # RZ/G2H
+               - renesas,hscif-r8a7795      # R-Car H3
+               - renesas,hscif-r8a7796      # R-Car M3-W
+               - renesas,hscif-r8a77961     # R-Car M3-W+
+-- 
+2.17.1
 
-That has nothing to do with us, please do it correctly so that everyone
-benifits.
-
-> The one with the qcom,genu-debug-uart is not being used for our products.
-
-So we can just delete it from the tree?
-
-thanks,
-
-greg k-h
