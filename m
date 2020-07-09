@@ -1,145 +1,137 @@
-Return-Path: <SRS0=q01k=AT=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=9J3d=AU=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7B4C433E1
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jul 2020 18:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE84C433DF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jul 2020 07:49:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 03AEE20760
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jul 2020 18:07:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 42A882070E
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jul 2020 07:49:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BABD/YKf"
+	dkim=pass (2048-bit key) header.d=intenta.de header.i=@intenta.de header.b="DYCJ88jv"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726107AbgGHSHw (ORCPT
+        id S1726215AbgGIHtA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jul 2020 14:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725982AbgGHSHv (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jul 2020 14:07:51 -0400
-Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6063C061A0B;
-        Wed,  8 Jul 2020 11:07:51 -0700 (PDT)
-Received: by mail-oo1-xc43.google.com with SMTP id z127so5473943ooa.3;
-        Wed, 08 Jul 2020 11:07:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Dbjixg8wVW4KiLQ8LuqGqeXCZzaz3G8pYbAoEYagxd0=;
-        b=BABD/YKfjW0mIwaMVs9UjiC2SUdi92avYxvpf42B+KfGltlqykB0xdn9ahRcCoDXf9
-         VDwpfwIa8lnzywTuzP5hvE4cn4MZaOsYvdudnIYShpnTDW+c8zD5JAlHfcot5j0hG8/Y
-         qm+BPNC2/sG851JPTGW5K2zYzv7u6IjnglXPDa+eOnEF87XbVfC09Arsnjt/LVIhDCCb
-         +kOqH+/i5gS6XP3RhRbPocFWjx9j4DTaUavwr5ac83F/0rCjD+Pzv2vmWO2/9vQlg2Wp
-         Pi4Hmx3zG2osbVkPMHKxpFzD9wcywUoZ661yzSVfKFjGzyeE97YhzRPhEfEbl/H08Pkl
-         dMOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Dbjixg8wVW4KiLQ8LuqGqeXCZzaz3G8pYbAoEYagxd0=;
-        b=oNubtPZ+elVs5kJIhqt1ifUgcDFHGuqfNyvL9dBzCuhMKZy9rdX+hBlTfGT8I63pHq
-         uR8VzemgZ1uvYyhknbMlqkCXfEChNwmaLSBhB4Kd8TmWyee3YnCLXC2Dd7iVBWUXvon0
-         BHdohsEO6CMK747WmplIgc7IP+T8u23mAOeJfCAi5l53SBouFO8mR32eYnwzHTTXE+Wt
-         HkMI2bTmE+3ixy7qO9P146PBE2MpZ5ywxRhAfkL6TFFt5k07SJsJn4WY+4PTpT4EIo/d
-         PMNjgFdJTyV0W2Ru6iJX/pXNcowHtUEZ8fSLb1a1H1id8vOzvk4WIj8+9213VwBKPjdj
-         XkfA==
-X-Gm-Message-State: AOAM532q61bDawfZTCL6wQfHk44CPZp0pm/6Fj6McD+s0BTfNEImuK/8
-        bfRr+2TGWyN8h9tKLspIayVgmEboNZ06wndDFDw=
-X-Google-Smtp-Source: ABdhPJzenbWqkONtEFKX26/+MA9S+zxLqr587WnjZXCwNPfEZvFWBPd1l8xRZA3n7OVhkM9hmpM8NBOg4iaSo38XfX4=
-X-Received: by 2002:a4a:98c8:: with SMTP id b8mr29294676ooj.42.1594231671210;
- Wed, 08 Jul 2020 11:07:51 -0700 (PDT)
+        Thu, 9 Jul 2020 03:49:00 -0400
+Received: from mail.intenta.de ([178.249.25.132]:26497 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726187AbgGIHtA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Jul 2020 03:49:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=TC3CKUv3GI3V1R9v1YaBRJSpUEXcqzJmrUEkquDu7SA=;
+        b=DYCJ88jvCeXue0j0te2eOpKBXIFjC1hm1wunE3nX3uE/xSszxZ66JfUCa1j+U6dS0O65evYHpG/Xlp5dqvXgUvz802FkjC6GvDNVuukClHkwsLMBDr37pVYFTU0G4fUtWRyqgzt11Fb6jhygCn8+lOtbHHe5BpqXTi5oQ8ChONqGUXOArObEPOukSjzeqsIRvhgQGR+OnJsbPwFti7oY0JW4ihRnJ/SK0/m0MHLftG7izW42FEVmSOwkbbYdiU3r45Eltq6xaD+d33BxCY4sikVrhp66k99G0lDBytOSWrJcDT2kKXiLRHmgkYXPVDao12vHV+7oDGCVvvWsM9OXaA==;
+Date:   Thu, 9 Jul 2020 09:48:53 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        Jan Kiszka <jan.kiszka@web.de>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH] tty: xilinx_uartps: Really fix id assignment
+Message-ID: <20200709074849.GA28968@laureti-dev>
+References: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
 MIME-Version: 1.0
-References: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594230511-24790-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com> <daf83dafc069b12b6a10205e5f93793a@kernel.org>
-In-Reply-To: <daf83dafc069b12b6a10205e5f93793a@kernel.org>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 8 Jul 2020 19:07:24 +0100
-Message-ID: <CA+V-a8ssT==SsVRgbM1kwP4U3-f6=1h4es547isTvANpydwi4g@mail.gmail.com>
-Subject: Re: [PATCH 6/8] arm64: dts: renesas: Initial r8a774e1 SoC device tree
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Marc,
+The problems started with the revert (18cc7ac8a28e28). The
+cdns_uart_console.index is statically assigned -1. When the port is
+registered, Linux assigns consecutive numbers to it. It turned out that
+when using ttyPS1 as console, the index is not updated as we are reusing
+the same cdns_uart_console instance for multiple ports. When registering
+ttyPS0, it gets updated from -1 to 0, but when registering ttyPS1, it
+already is 0 and not updated.
 
-Thank you for the review.
+That led to 2ae11c46d5fdc4. It assigns the index prior to registering
+the uart_driver once. Unfortunately, that ended up breaking the
+situation where the probe order does not match the id order. When using
+the same device tree for both uboot and linux, it is important that the
+serial0 alias points to the console. So some boards reverse those
+aliases. This was reported by Jan Kiszka. The proposed fix was reverting
+the index assignment and going back to the previous iteration.
 
-On Wed, Jul 8, 2020 at 6:53 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On 2020-07-08 18:48, Lad Prabhakar wrote:
-> > From: Marian-Cristian Rotariu
-> > <marian-cristian.rotariu.rb@bp.renesas.com>
-> >
-> > Basic support for the RZ/G2H SoC.
-> >
-> > Signed-off-by: Marian-Cristian Rotariu
-> > <marian-cristian.rotariu.rb@bp.renesas.com>
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >  arch/arm64/boot/dts/renesas/r8a774e1.dtsi | 652 ++++++++++++++++++++++
-> >  1 file changed, 652 insertions(+)
-> >  create mode 100644 arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-> >
-> > diff --git a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-> > b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-> > new file mode 100644
-> > index 000000000000..6637e157ffcd
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
->
-> [...]
-> > +             gic: interrupt-controller@f1010000 {
-> > +                     compatible = "arm,gic-400";
-> > +                     #interrupt-cells = <3>;
-> > +                     #address-cells = <0>;
-> > +                     interrupt-controller;
-> > +                     reg = <0x0 0xf1010000 0 0x1000>,
-> > +                           <0x0 0xf1020000 0 0x20000>,
-> > +                           <0x0 0xf1040000 0 0x20000>,
-> > +                           <0x0 0xf1060000 0 0x20000>;
-> > +                     interrupts = <GIC_PPI 9
-> > +                                     (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
->
-> You seem to have a bit more than only 2 CPUs in this system.
->
-Argh should be 8.
+However such a reversed assignement (serial0 -> uart1, serial1 -> uart0)
+was already partially broken by the revert (18cc7ac8a28e28). While the
+ttyPS device works, the kmsg connection is already broken and kernel
+messages go missing. Reverting the id assignment does not fix this.
 
-Cheers,
---Prabhakar
+From the xilinx_uartps driver pov (after reverting the refactoring
+commits), there can be only one console. This manifests in static
+variables console_pprt and cdns_uart_console. These variables are not
+properly linked and can go out of sync. The cdns_uart_console.index is
+important for uart_add_one_port. We call that function for each port -
+one of which hopefully is the console. If it isn't, the CON_ENABLED flag
+is not set and console_port is cleared. The next cdns_uart_probe call
+then tries to register the next port using that same cdns_uart_console.
 
-> > +                     clocks = <&cpg CPG_MOD 408>;
-> > +                     clock-names = "clk";
-> > +                     power-domains = <&sysc R8A774E1_PD_ALWAYS_ON>;
-> > +                     resets = <&cpg 408>;
-> > +             };
->
->          M.
-> --
-> Jazz is not dead. It just smells funny...
+It is important that console_port and cdns_uart_console (and its index
+in particular) stay in sync. The index assignment implemented by
+Shubhrajyoti Datta is correct in principle. It just may have to happen a
+second time if the first cdns_uart_probe call didn't encounter the
+console device. And we shouldn't change the index once the console uart
+is registered.
+
+Reported-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Reported-by: Jan Kiszka <jan.kiszka@web.de>
+Link: https://lore.kernel.org/linux-serial/f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com/
+Fixes: 18cc7ac8a28e28 ("Revert "serial: uartps: Register own uart console and driver structures"")
+Fixes: 2ae11c46d5fdc4 ("tty: xilinx_uartps: Fix missing id assignment to the console")
+Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
+---
+ drivers/tty/serial/xilinx_uartps.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index b9d672af8b65..2833f1418d6d 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1465,7 +1465,6 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		cdns_uart_uart_driver.nr = CDNS_UART_NR_PORTS;
+ #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+ 		cdns_uart_uart_driver.cons = &cdns_uart_console;
+-		cdns_uart_console.index = id;
+ #endif
+ 
+ 		rc = uart_register_driver(&cdns_uart_uart_driver);
+@@ -1581,8 +1580,10 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	 * If register_console() don't assign value, then console_port pointer
+ 	 * is cleanup.
+ 	 */
+-	if (!console_port)
++	if (!console_port) {
++		cdns_uart_console.index = id;
+ 		console_port = port;
++	}
+ #endif
+ 
+ 	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
+@@ -1595,8 +1596,10 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+ 	/* This is not port which is used for console that's why clean it up */
+ 	if (console_port == port &&
+-	    !(cdns_uart_uart_driver.cons->flags & CON_ENABLED))
++	    !(cdns_uart_uart_driver.cons->flags & CON_ENABLED)) {
+ 		console_port = NULL;
++		cdns_uart_console.index = -1;
++	}
+ #endif
+ 
+ 	cdns_uart_data->cts_override = of_property_read_bool(pdev->dev.of_node,
+-- 
+2.20.1
+
