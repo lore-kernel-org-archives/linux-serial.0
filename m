@@ -2,155 +2,86 @@ Return-Path: <SRS0=9J3d=AU=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FD5C433DF
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jul 2020 13:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB154C433DF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jul 2020 14:21:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 82D8120708
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jul 2020 13:56:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 96D53206A5
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jul 2020 14:21:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gfE8rgv9"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="pHICmP0n"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbgGIN4T (ORCPT
+        id S1726615AbgGIOVk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jul 2020 09:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726729AbgGIN4S (ORCPT
+        Thu, 9 Jul 2020 10:21:40 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:23766 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726662AbgGIOVj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jul 2020 09:56:18 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53CFC08C5CE;
-        Thu,  9 Jul 2020 06:56:18 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id d4so1018552pgk.4;
-        Thu, 09 Jul 2020 06:56:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=h558bNdz+ALdoIojIxtZwctE+fRhBkDe5PAZGaAvP6U=;
-        b=gfE8rgv9qIBnyKW/75JmtNyFErM6yZ/5v1BNZp17ZRVhmLS6VD6T/MsryG9qTXczSg
-         LyphMEP2M7vaMSN6luQGosY5Y6sXO3rhFBUK9iJZKMygJafb8Ob+qKyTOmiW9CQgGhIx
-         cKizsEU/JGEFzrxuZ2Zsg8FTM2r3O1Arhx7EwyPNQSsXeYr7c8+wzYKlV6i61VOgv7n9
-         A4O2EdKUzmOtRTxMCEa6l7Bz9UWSPEPS1TShhwyr0e++5w3WK4697xaqh2Q4ae7du9Rz
-         18mRIuv/+m/kwjDSupZ5ykxqyU+y5C/f3QaxcsOknGEnZ6iiTeWa7vLNFKAP7XkvU50B
-         cPxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=h558bNdz+ALdoIojIxtZwctE+fRhBkDe5PAZGaAvP6U=;
-        b=QSH3DTVqq6RuwMsHwC8mEn6Xu5uomKXtlSlIN1sxA9htjaQrta7F8WslWsSy/XqjFN
-         TELAbT7AS6WTUT4gnjhh6612s66aRYUbf5YUbb6LSeUPbQteFcxc7+mEsA6jv1Co8yiz
-         VFFm//RAnB7SG4aAm+eRCdvmjWxqR4uYC2Hya9n0ivQrKrx/ogy99KgKBChSOhYWHHwe
-         qL6Uk/bWl5GNck3l/WH5N8KR0ltuRk/m6WZk+xbmQ7r6klNgf0B2QjNwf7cT5sVJ8Bjo
-         NaxBrR2RH9AHjg8m8Qsu69/13geK7WmSIbltsYuClbQ/wkxyyziKrbGSUCGhS5gRqPHI
-         kKAQ==
-X-Gm-Message-State: AOAM5321ANN7feVKdeqtigkEgoSjC45OPZo2aZylvXaHZq0KuZmV6xp/
-        L3GSGG78f08RwmSG0+UwJv8=
-X-Google-Smtp-Source: ABdhPJx9jxxv75YnWC6v4T0SESzp6aFF4h7ok+oXm33OzoALrK0dC2u3FzFw0Oi6J/lLKcld3amVmg==
-X-Received: by 2002:a62:84d5:: with SMTP id k204mr54550112pfd.66.1594302978512;
-        Thu, 09 Jul 2020 06:56:18 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.gmail.com with ESMTPSA id o129sm2474929pfg.14.2020.07.09.06.56.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 06:56:17 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH v2] serial: mxs-auart: add missed iounmap() in probe failure and remove
-Date:   Thu,  9 Jul 2020 21:56:08 +0800
-Message-Id: <20200709135608.68290-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        Thu, 9 Jul 2020 10:21:39 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1594304499; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=mef3WUw0Xoz9/rvpec4bfeBVTOIL1IZyFuhez1uFRbg=; b=pHICmP0ngokhdZ0AB0gSEBMhYwkw0djYSSwdby7juS0XW73JgawWqenGiQ5OAlHJpZmo+trb
+ Xt+0R+spVuw1ZHYB7ChqycQmH97jSqmQN1pRriS31lod77PE/X81odGq4EWoK9wXC86x/9s9
+ /TAMOqB+xNkjvaRQiIq28O91qnE=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 5f0727d89b7f1f3df7503eb1 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 09 Jul 2020 14:21:12
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 96B5DC433CA; Thu,  9 Jul 2020 14:21:12 +0000 (UTC)
+Received: from [192.168.0.4] (unknown [183.83.138.47])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EDB79C433C8;
+        Thu,  9 Jul 2020 14:21:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EDB79C433C8
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH] tty: serial: qcom-geni-serial: Drop the icc bw votes in
+ suspend for console
+To:     Rajendra Nayak <rnayak@codeaurora.org>, bjorn.andersson@linaro.org,
+        agross@kernel.org, gregkh@linuxfoundation.org,
+        georgi.djakov@linaro.org
+Cc:     mka@chromium.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        dianders@chromium.org, swboyd@chromium.org
+References: <1594287420-24141-1-git-send-email-rnayak@codeaurora.org>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <77c0899c-ab9a-e195-cc53-5f9bf340ab0e@codeaurora.org>
+Date:   Thu, 9 Jul 2020 19:51:06 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <1594287420-24141-1-git-send-email-rnayak@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This driver calls ioremap() in probe, but it misses calling iounmap() in 
-probe's error handler and remove.
-Add the missed calls to fix it.
 
-Fixes: 47d37d6f94cc ("serial: Add auart driver for i.MX23/28")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
-Changes in v2:
-  - Use iounmap() instead of devm_ioremap() to fix the bugs.
-  - Modify the subject and the description.
+On 7/9/2020 3:07 PM, Rajendra Nayak wrote:
+> When using the geni-serial as console, its important to be
+> able to hit the lowest possible power state in suspend,
+> even with no_console_suspend.
+> The only thing that prevents it today on platforms like the sc7180
+> is the interconnect BW votes, which we certainly don't need when
+> the system is in suspend. So in the suspend handler mark them as
+> ACTIVE_ONLY (0x3) and on resume switch them back to the ALWAYS tag (0x7)
+Reviewed-by: Akash Asthana <akashast@codeaurora.org>
 
- drivers/tty/serial/mxs-auart.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index b4f835e7de23..b784323a6a7b 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1698,21 +1698,21 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0) {
- 		ret = irq;
--		goto out_disable_clks;
-+		goto out_iounmap;
- 	}
- 
- 	s->port.irq = irq;
- 	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
- 			       dev_name(&pdev->dev), s);
- 	if (ret)
--		goto out_disable_clks;
-+		goto out_iounmap;
- 
- 	platform_set_drvdata(pdev, s);
- 
- 	ret = mxs_auart_init_gpios(s, &pdev->dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to initialize GPIOs.\n");
--		goto out_disable_clks;
-+		goto out_iounmap;
- 	}
- 
- 	/*
-@@ -1720,7 +1720,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	 */
- 	ret = mxs_auart_request_gpio_irq(s);
- 	if (ret)
--		goto out_disable_clks;
-+		goto out_iounmap;
- 
- 	auart_port[s->port.line] = s;
- 
-@@ -1746,6 +1746,9 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	mxs_auart_free_gpio_irq(s);
- 	auart_port[pdev->id] = NULL;
- 
-+out_iounmap:
-+	iounmap(s->port.membase);
-+
- out_disable_clks:
- 	if (is_asm9260_auart(s)) {
- 		clk_disable_unprepare(s->clk);
-@@ -1761,6 +1764,7 @@ static int mxs_auart_remove(struct platform_device *pdev)
- 	uart_remove_one_port(&auart_driver, &s->port);
- 	auart_port[pdev->id] = NULL;
- 	mxs_auart_free_gpio_irq(s);
-+	iounmap(s->port.membase);
- 	if (is_asm9260_auart(s)) {
- 		clk_disable_unprepare(s->clk);
- 		clk_disable_unprepare(s->clk_ahb);
 -- 
-2.26.2
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
 
