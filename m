@@ -2,74 +2,74 @@ Return-Path: <SRS0=t8aj=AV=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-9.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F45C433E2
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jul 2020 17:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C67C433E8
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jul 2020 17:44:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6DFAB2076A
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jul 2020 17:39:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 38EC82076A
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jul 2020 17:44:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="H+fQVcht"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ILDYVm0L"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbgGJRjd (ORCPT
+        id S1728140AbgGJRoq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Jul 2020 13:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45116 "EHLO
+        Fri, 10 Jul 2020 13:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726872AbgGJRjb (ORCPT
+        with ESMTP id S1726977AbgGJRoq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Jul 2020 13:39:31 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1322AC08C5DC
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jul 2020 10:39:31 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id e4so7387249ljn.4
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jul 2020 10:39:30 -0700 (PDT)
+        Fri, 10 Jul 2020 13:44:46 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22AE2C08C5DC
+        for <linux-serial@vger.kernel.org>; Fri, 10 Jul 2020 10:44:46 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id dp18so6971787ejc.8
+        for <linux-serial@vger.kernel.org>; Fri, 10 Jul 2020 10:44:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lXuUczWFNlwPKehZIWXn30gRWiLBJgbemeVZ6SnUAcc=;
-        b=H+fQVchtOQTAtj7qP/IRP93a2MdhdzCX+kqk9bAncYdhLuiymqoDTbVFJDni8bdQpW
-         bnkmCwDyWeEU0Op/y1KIcZ2rsMu0mVcT3G48Ow4qQw8E9PMNaJYfexIG1RlD8Tpvf9VU
-         MfU7LXYx4m5hygDtLlzwEm+bMw8uFlgaP7fOQ=
+        bh=m/CMHk4w6+cNFzgYJXIzp3UU76Y8y9UeHEGOkUVbXTU=;
+        b=ILDYVm0LcXLZZrfmAxtURkQprTX9skjAShvhFipQKJAKbFGyoFEeZfJniL4uh1sJtQ
+         6GQsddyIJ/M36EE7v0/XiEEynwtBixNj1dz7zWXkp46lP3Sbmpdp/lJneh5gVSnuRIoP
+         uDZ95SWe4tPPb6v31ajhDIGF2FUlWNiVlWd+8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lXuUczWFNlwPKehZIWXn30gRWiLBJgbemeVZ6SnUAcc=;
-        b=U5GZmNFsCuiDyypfORJWjwfBJ/26b1FnysTpAtHw2Bi3uyxPHwS1zrJpad7gqJMr1G
-         6j/U8V4dCLTFLSm/KL+4J7TQtcuLR3GesWKxo4lLDcj3Yj4SAeTmKJ8qrw0M8a8YU+8w
-         OorSt/eYjiXibm2tU8ilJIwDYbJzPqgKjVXP6dOQDPFjXo0ySeLNjL0XwiEjGl/8WmZN
-         T/SYzswIyoYHQ+WhX421uvTpD4Y3QCalxlBBbAbg+ZINxZ7ckhSaRX2o8QfTYpD/LlZ8
-         iYuE7i6XPJJ0GGOImM8kjs6rG57z0aR1Akve+3DjGLv0CGDtQSBh5Y+JwQGCL8f7FGOG
-         fL2g==
-X-Gm-Message-State: AOAM533awSUwzySd8TVxCX6CMYRKAq5d9oMIt/pY/yPCJvWKDEPCk0dp
-        MvS4PopyTRAJwhzlL/qOYYj+WjYKxtw=
-X-Google-Smtp-Source: ABdhPJyfI26WMO44gBZ/0ohQGI4uV+OeabuhPv/2R2D3/CDb0FeBQ5smj1Rl4w/j/S6DxzPuK5yOBA==
-X-Received: by 2002:a05:651c:3d1:: with SMTP id f17mr13051731ljp.203.1594402769013;
-        Fri, 10 Jul 2020 10:39:29 -0700 (PDT)
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
-        by smtp.gmail.com with ESMTPSA id 83sm2113199ljj.51.2020.07.10.10.39.26
+        bh=m/CMHk4w6+cNFzgYJXIzp3UU76Y8y9UeHEGOkUVbXTU=;
+        b=rWT501k+C1kBxp1O3vu9z3wmJD5jO31Uo9+apfAxGtGeQlxEWe/3e0A7pLl/TdCq8o
+         S0aeXICAWt8SwhBrU7uFXHnTA3K72vvyo34Ut5eiKkWsQRPmYH/fd6f1fUgsa1X92+Ri
+         bB8inmYrIuQf7IKxbVRladiklJFyT29Km0pKuNJuiOKz0lOT9WnxaRjsMfK6aIpzhUBe
+         EIj8q+YPnC1disw7qIIzKGBmi9w+e/lVujNn0mAh5rsxs05BKCL6XENYyglxoAbl4jHA
+         MYJkmQGSrqhqzbmO7qMTLzG4m4n0jXSahVbp4oSbfAL3z18hYbR4Jowg9ftnDLaXftvg
+         mF1Q==
+X-Gm-Message-State: AOAM533LQLseKvPh/YnKE2E+qnWUmWSUoseK3xGEaPAiEl+JFMXxybsl
+        uan3axFWwLAQgfof8cPoCYPthgK2VUw=
+X-Google-Smtp-Source: ABdhPJxNTxtLIGEY0VgYVUiaMSTPzcBPhVW5tHxZ4a6Jg9r8XdKio65pntlheqejU9KieWjDtdiFbg==
+X-Received: by 2002:a17:906:915:: with SMTP id i21mr64354889ejd.313.1594403084539;
+        Fri, 10 Jul 2020 10:44:44 -0700 (PDT)
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com. [209.85.218.45])
+        by smtp.gmail.com with ESMTPSA id ce15sm4054447ejc.86.2020.07.10.10.44.44
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jul 2020 10:39:27 -0700 (PDT)
-Received: by mail-lj1-f176.google.com with SMTP id d17so7391812ljl.3
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jul 2020 10:39:26 -0700 (PDT)
-X-Received: by 2002:a2e:b0ed:: with SMTP id h13mr30489580ljl.250.1594402765997;
- Fri, 10 Jul 2020 10:39:25 -0700 (PDT)
+        Fri, 10 Jul 2020 10:44:44 -0700 (PDT)
+Received: by mail-ej1-f45.google.com with SMTP id a1so6957915ejg.12
+        for <linux-serial@vger.kernel.org>; Fri, 10 Jul 2020 10:44:44 -0700 (PDT)
+X-Received: by 2002:ac2:44b2:: with SMTP id c18mr42517426lfm.99.1594402767378;
+ Fri, 10 Jul 2020 10:39:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200626200033.1528052-1-dianders@chromium.org> <20200626125844.1.I8546ecb6c5beb054f70c5302d1a7293484212cd1@changeid>
-In-Reply-To: <20200626125844.1.I8546ecb6c5beb054f70c5302d1a7293484212cd1@changeid>
+References: <20200626200033.1528052-1-dianders@chromium.org> <20200626125844.2.Iabd56347670b9e4e916422773aba5b27943d19ee@changeid>
+In-Reply-To: <20200626125844.2.Iabd56347670b9e4e916422773aba5b27943d19ee@changeid>
 From:   Evan Green <evgreen@chromium.org>
-Date:   Fri, 10 Jul 2020 10:38:44 -0700
-X-Gmail-Original-Message-ID: <CAE=gft7Q-KC2+9kGVT1k3BaAHZv61iWaeEODZEf7FnXX6i=1LA@mail.gmail.com>
-Message-ID: <CAE=gft7Q-KC2+9kGVT1k3BaAHZv61iWaeEODZEf7FnXX6i=1LA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] serial: qcom_geni_serial: Make kgdb work even if UART
- isn't console
+Date:   Fri, 10 Jul 2020 10:38:50 -0700
+X-Gmail-Original-Message-ID: <CAE=gft504BAm2sr0S32kSO2xoQWhjrXLXa9+uqgkcPO6wjNhrg@mail.gmail.com>
+Message-ID: <CAE=gft504BAm2sr0S32kSO2xoQWhjrXLXa9+uqgkcPO6wjNhrg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] serial: qcom_geni_serial: Always use 4 bytes per TX
+ FIFO word
 To:     Douglas Anderson <dianders@chromium.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         daniel.thompson@linaro.org,
@@ -90,130 +90,88 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Fri, Jun 26, 2020 at 1:01 PM Douglas Anderson <dianders@chromium.org> wrote:
 >
-> The geni serial driver had the rather sketchy hack in it where it
-> would adjust the number of bytes per RX FIFO word from 4 down to 1 if
-> it detected that CONFIG_CONSOLE_POLL was enabled (for kgdb) and this
-> was a console port (defined by the kernel directing output to this
-> port via the "console=" command line argument).
->
-> The problem with that sketchy hack is that it's possible to run kgdb
-> over a serial port even if it isn't used for console.
->
-> Let's avoid the hack by simply handling the 4-bytes-per-FIFO word case
-> for kdb.  We'll have to have a (very small) cache but that should be
-> fine.
->
-> A nice side effect of this patch is that an agetty (or similar)
-> running on this port is less likely to drop characters.  We'll
-> have roughly 4 times the RX FIFO depth than we used to now.
->
-> NOTE: the character cache here isn't shared between the polling API
-> and the non-polling API.  That means that, technically, the polling
-> API could eat a few extra bytes.  This doesn't seem to pose a huge
-> problem in reality because we'll only get several characters per FIFO
-> word if those characters are all received at nearly the same time and
-> we don't really expect non-kgdb characters to be sent to the same port
-> as kgdb at the exact same time we're exiting kgdb.
->
-> ALSO NOTE: we still have the sketchy hack for setting the number of
-> bytes per TX FIFO word in place, but that one is less bad.  kgdb
-> doesn't have any problem with this because it always just sends 1 byte
-> at a time and waits for it to finish.  The TX FIFO hack is only really
-> needed for console output.  In any case, a future patch will remove
-> that hack, too.
+> The geni serial driver had a rule that we'd only use 1 byte per FIFO
+> word for the TX FIFO if we were being used for the serial console.
+> This is ugly and a bit of a pain.  It's not too hard to fix, so fix
+> it.
 >
 > Signed-off-by: Douglas Anderson <dianders@chromium.org>
 > ---
 >
->  drivers/tty/serial/qcom_geni_serial.c | 80 ++++++++++++++++++---------
->  1 file changed, 55 insertions(+), 25 deletions(-)
+>  drivers/tty/serial/qcom_geni_serial.c | 57 +++++++++++++++++----------
+>  1 file changed, 37 insertions(+), 20 deletions(-)
 >
 > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 0300867eab7a..4610e391e886 100644
+> index 4610e391e886..583d903321b5 100644
 > --- a/drivers/tty/serial/qcom_geni_serial.c
 > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -103,11 +103,13 @@
+> @@ -103,12 +103,18 @@
 >  #define DEFAULT_IO_MACRO_IO2_IO3_MASK          GENMASK(15, 4)
 >  #define IO_MACRO_IO2_IO3_SWAP          0x4640
 >
-> -#ifdef CONFIG_CONSOLE_POLL
-> -#define CONSOLE_RX_BYTES_PW 1
-> -#else
-> -#define CONSOLE_RX_BYTES_PW 4
-> -#endif
-> +struct qcom_geni_private_data {
-> +       /* NOTE: earlycon port will have NULL here */
-> +       struct uart_driver *drv;
+> +/* We always configure 4 bytes per FIFO word */
+> +#define BYTES_PER_FIFO_WORD            4
 > +
-> +       u32 poll_cached_bytes;
-> +       unsigned int poll_cached_bytes_cnt;
-> +};
+>  struct qcom_geni_private_data {
+>         /* NOTE: earlycon port will have NULL here */
+>         struct uart_driver *drv;
 >
->  struct qcom_geni_serial_port {
->         struct uart_port uport;
-> @@ -129,6 +131,8 @@ struct qcom_geni_serial_port {
->         int wakeup_irq;
->         bool rx_tx_swap;
->         bool cts_rts_swap;
+>         u32 poll_cached_bytes;
+>         unsigned int poll_cached_bytes_cnt;
 > +
-> +       struct qcom_geni_private_data private_data;
+> +       u32 write_cached_bytes;
+> +       unsigned int write_cached_bytes_cnt;
 >  };
 >
->  static const struct uart_ops qcom_geni_console_pops;
-> @@ -264,8 +268,9 @@ static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+>  struct qcom_geni_serial_port {
+> @@ -121,8 +127,6 @@ struct qcom_geni_serial_port {
+>         bool setup;
+>         int (*handle_rx)(struct uart_port *uport, u32 bytes, bool drop);
 >         unsigned int baud;
->         unsigned int fifo_bits;
->         unsigned long timeout_us = 20000;
+> -       unsigned int tx_bytes_pw;
+> -       unsigned int rx_bytes_pw;
+>         void *rx_fifo;
+>         u32 loopback;
+>         bool brk;
+> @@ -390,13 +394,25 @@ static void qcom_geni_serial_poll_put_char(struct uart_port *uport,
+>  #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
+>  static void qcom_geni_serial_wr_char(struct uart_port *uport, int ch)
+>  {
+> -       writel(ch, uport->membase + SE_GENI_TX_FIFOn);
 > +       struct qcom_geni_private_data *private_data = uport->private_data;
->
-> -       if (uport->private_data) {
-> +       if (private_data->drv) {
->                 port = to_dev_port(uport, uport);
->                 baud = port->baud;
->                 if (!baud)
-> @@ -331,23 +336,42 @@ static void qcom_geni_serial_abort_rx(struct uart_port *uport)
+> +
+> +       private_data->write_cached_bytes =
+> +               (private_data->write_cached_bytes >> 8) | (ch << 24);
+> +       private_data->write_cached_bytes_cnt++;
+> +
+> +       if (private_data->write_cached_bytes_cnt == BYTES_PER_FIFO_WORD) {
+> +               writel(private_data->write_cached_bytes,
+> +                      uport->membase + SE_GENI_TX_FIFOn);
+> +               private_data->write_cached_bytes_cnt = 0;
+> +       }
 >  }
 >
->  #ifdef CONFIG_CONSOLE_POLL
-> +
->  static int qcom_geni_serial_get_char(struct uart_port *uport)
+>  static void
+>  __qcom_geni_serial_console_write(struct uart_port *uport, const char *s,
+>                                  unsigned int count)
 >  {
-> -       u32 rx_fifo;
 > +       struct qcom_geni_private_data *private_data = uport->private_data;
->         u32 status;
-> +       u32 word_cnt;
-> +       int ret;
 > +
-> +       if (!private_data->poll_cached_bytes_cnt) {
-> +               status = readl(uport->membase + SE_GENI_M_IRQ_STATUS);
-> +               writel(status, uport->membase + SE_GENI_M_IRQ_CLEAR);
+>         int i;
+>         u32 bytes_to_send = count;
 >
-> -       status = readl(uport->membase + SE_GENI_M_IRQ_STATUS);
-> -       writel(status, uport->membase + SE_GENI_M_IRQ_CLEAR);
-> +               status = readl(uport->membase + SE_GENI_S_IRQ_STATUS);
-> +               writel(status, uport->membase + SE_GENI_S_IRQ_CLEAR);
->
-> -       status = readl(uport->membase + SE_GENI_S_IRQ_STATUS);
-> -       writel(status, uport->membase + SE_GENI_S_IRQ_CLEAR);
-> +               status = readl(uport->membase + SE_GENI_RX_FIFO_STATUS);
-> +               word_cnt = status & RX_FIFO_WC_MSK;
-> +               if (!word_cnt)
-> +                       return NO_POLL_CHAR;
->
-> -       status = readl(uport->membase + SE_GENI_RX_FIFO_STATUS);
-> -       if (!(status & RX_FIFO_WC_MSK))
-> -               return NO_POLL_CHAR;
-> +               if (word_cnt == 1 && (status & RX_LAST))
+> @@ -431,6 +447,15 @@ __qcom_geni_serial_console_write(struct uart_port *uport, const char *s,
+>                                                         SE_GENI_M_IRQ_CLEAR);
+>                 i += chars_to_write;
+>         }
+> +
+> +       if (private_data->write_cached_bytes_cnt) {
+> +               private_data->write_cached_bytes >>= BITS_PER_BYTE *
+> +                       (BYTES_PER_FIFO_WORD - private_data->write_cached_bytes_cnt);
+> +               writel(private_data->write_cached_bytes,
+> +                      uport->membase + SE_GENI_TX_FIFOn);
+> +               private_data->write_cached_bytes_cnt = 0;
+> +       }
 
-I forget how the partial word snapping works. Are you sure you want
-word_cnt == 1? I see qcom_geni_serial_handle_rx() looks at RX_LAST
-independently as long as word_cnt != 0. I'm worried the hardware
-allows one FIFO entry with say 2 bytes in it and RX_LAST set, but then
-also piles new stuff in the FIFO behind it, so that word_cnt can be
->1.
-
-Also I mostly reviewed the change on Gerrit, they seemed to be the
-same. In this case it was easier to understand the indentation
-changes. If there were gotchas between the Gerrit version and this
-patch, let me know.
--Evan
+How does this not end up sending stray zeros? In other words, how does
+the hardware know which bytes of this word are valid?
