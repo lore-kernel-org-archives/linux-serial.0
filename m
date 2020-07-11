@@ -2,102 +2,120 @@ Return-Path: <SRS0=puAX=AW=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E52C433DF
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Jul 2020 06:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72982C433DF
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Jul 2020 06:40:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0E7D520725
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Jul 2020 06:30:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 42989207BC
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Jul 2020 06:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1594449040;
-	bh=acSdpfnvbGb2jx7WzFGXvtApWSJ1zwvQTWvxV4ZbgjA=;
+	s=default; t=1594449611;
+	bh=gI75qSUt5Lfb8eztx2LA6onxkmBfiF0BaPrJgvW2TTw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=xvpLkHZw83EuQcwZsQRdoUWt8kTRV0uxlePcIkNPkNeWVglcNVQn9uOcFVP7YMxL8
-	 6DZesyf3axE7CjMuTI+As7iIwNMu9bZWxv/vuOAPL0ujfxkyVQl8sA96TAef5A28Mg
-	 +veHzmk+NgRt4WN1tVLcyHX0q/dCA/bTONu7wPxE=
+	b=BhHI0QSuWopDg2bZKKwtQMtZVz2w8BdfhtXfpYfde3WcRTCkiZ6peVoVWnvMcvYsG
+	 Fl24G4KUSpp0A4IpjbdPMDeqPp1Lh30hTmW6OgO8LliC8GajQi04nmxtvf9hvlykqz
+	 hmHQWoA/vM6B1J9g9Zb7MhsmtVYgmUiV63FEXXrM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbgGKGaj (ORCPT
+        id S1727888AbgGKGkK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 11 Jul 2020 02:30:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33598 "EHLO mail.kernel.org"
+        Sat, 11 Jul 2020 02:40:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34604 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726963AbgGKGaj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 11 Jul 2020 02:30:39 -0400
+        id S1726963AbgGKGkK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 11 Jul 2020 02:40:10 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 47393206F4;
-        Sat, 11 Jul 2020 06:30:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 70297206E2;
+        Sat, 11 Jul 2020 06:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594449038;
-        bh=acSdpfnvbGb2jx7WzFGXvtApWSJ1zwvQTWvxV4ZbgjA=;
+        s=default; t=1594449610;
+        bh=gI75qSUt5Lfb8eztx2LA6onxkmBfiF0BaPrJgvW2TTw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=glLyWxGbTSKecu6XfJKxx2aYmv+Wd9NhB+w34QIKn2RDUm3GV2wOzMmAZWWDheO+6
-         F2dHJyKL97QejJB6zx6p6asf4EPtQ5JHIi2vkDYXwVfg51R2zuC1PInJsAN4KwfKN9
-         yyr3UG0dI3UG0C2wLVmYSGWdTbmTnGxjPiUbcMc8=
-Date:   Sat, 11 Jul 2020 08:30:41 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Cristian Ciocaltea <cristian.ciocaltea@gmail.com>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-actions@lists.infradead.org
-Subject: Re: [PATCH 1/1] tty: serial: owl: Initialize lock before registering
- port
-Message-ID: <20200711063041.GC2784728@kroah.com>
-References: <89f6393934fc6d493f8b9e87c1a6e916642b6a18.1590749143.git.cristian.ciocaltea@gmail.com>
- <20200529113419.GA1631227@kroah.com>
- <20200710120549.GA11293@BV030612LT>
- <20200710133542.GA2172832@kroah.com>
- <20200710155806.GA10457@BV030612LT>
- <20200710163022.GT3703480@smile.fi.intel.com>
+        b=ZXAMB3JknGYYZFR3gXxFNnboZs3zv/7h+EWcJJtHBPXGac+bwsM3jyC4Apl3r+k8u
+         r3iRIEgJ41LOv5l/rdk9iAtcF2Pb1d5HEcgwz7G3M31GjVLL9MX3Gl8TQQZcFSf1hv
+         8LN5JzhnWcDW9NoEXC07rBRRIPvlarY17qbcxL34=
+Date:   Sat, 11 Jul 2020 08:40:14 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Matthew Howell <mrhowel@g.clemson.edu>
+Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
+        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com
+Subject: Re: [PATCH v2] serial: exar: Fix GPIO configuration for Sealevel
+ cards based on XR17V35X
+Message-ID: <20200711064014.GA2786431@kroah.com>
+References: <156b27a1-82c5-090e-0ae8-86944b849d6d@g.clemson.edu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200710163022.GT3703480@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <156b27a1-82c5-090e-0ae8-86944b849d6d@g.clemson.edu>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 07:30:22PM +0300, Andy Shevchenko wrote:
-> On Fri, Jul 10, 2020 at 06:58:06PM +0300, Cristian Ciocaltea wrote:
-> > On Fri, Jul 10, 2020 at 03:35:42PM +0200, Greg Kroah-Hartman wrote:
-> > > On Fri, Jul 10, 2020 at 03:05:49PM +0300, Cristian Ciocaltea wrote:
+On Fri, Jul 10, 2020 at 04:33:00PM -0400, Matthew Howell wrote:
 > 
-> ...
+> From: Matthew Howell <mrhowel@g.clemson.edu>
 > 
-> > > But I think we now have a core fix for this, no need to do this in any
-> > > individual driver, right?  Can you test my tty-linus branch to see if
-> > > your change is still needed or not?
-> > 
-> > I was not aware of the alternative approach, at that time Andy
-> > confirmed the expected behaviour is to have a proper initialization
-> > of the spinlock in the driver:
-> > https://lore.kernel.org/lkml/CAHp75Vcz0a87LSnb6Ubt5_bSF3wUcs21GbP119trXER5KBDxbQ@mail.gmail.com/
-> > https://lore.kernel.org/lkml/CAHp75Vf8xJ2yX-11JsTDnRvZQOK+16aePcB1AUzq=5oO-mFCGQ@mail.gmail.com/
-> > 
-> > I have just checked the tty-linus tree and the only related change
-> > seems to be f743061a85f5
-> > ("serial: core: Initialise spin lock before use in uart_configure_port()")
-> > 
-> > I tested it on top of 5.8.0-rc4 and I confirm it fixes the splat,
+> Sealevel XR17V35X based devices are inoperable on kernel versions
+> 4.11 and above due to a change in the GPIO preconfiguration introduced in commit
+> 7dea8165f1d. This patch fixes this by preconfiguring the GPIO on Sealevel
+> cards to the value (0x00) used prior to commit 7dea8165f1d
 > 
-> Thank you for the testing!
+> Fixes: 7dea8165f1d ("serial: exar: Preconfigure xr17v35x MPIOs as output")
+> Signed-off-by: Matthew Howell <mrhowel@g.clemson.edu>
+> ---
 > 
-> > however I'm a bit confused now regarding the recommended approach since
-> > there is at least one more commit in the tty-linux tree that still 
-> > handles a similar issue in the driver specific code:
-> > f38278e9b810 ("serial: sh-sci: Initialize spinlock for uart console")
+> This is a revised patch submission based on comments received on
+> the previous submission.
+> See https://www.spinics.net/lists/linux-serial/msg39348.html
 > 
-> They now should be reverted.
+> I am using a different email address to address the email footer issue,
+> and I have attempted to fix the formatting issues.
 
-Please send patches for that :)
+The footer issues are fixed, but you should probably change the from:
+and signed-off-by to your company address, right?
+
+> 
+> Summary/justification of the patch is below.
+> 
+> With GPIOs preconfigured as per commit 7dea8165f1d all ports on Sealevel
+> XR17V35X based devices become stuck in high impedance mode, regardless of
+> dip-switch or software configuration. This causes the device to become
+> effectively unusable. This patch (in various forms) has been distributed
+> to our customers and no issues related to it have been reported.
+
+Why not put that paragraph in the changelog as well?
+
+> 
+> Let me know if any changes need to be made.
+> 
+> --- linux/drivers/tty/serial/8250/8250_exar.c.orig    2020-07-09 11:05:03.920060577 -0400
+> +++ linux/drivers/tty/serial/8250/8250_exar.c    2020-07-09 11:05:25.275891627 -0400
+> @@ -326,7 +326,7 @@ static void setup_gpio(struct pci_dev *p
+>       * devices will export them as GPIOs, so we pre-configure them safely
+>       * as inputs.
+>       */
+> -    u8 dir = pcidev->vendor == PCI_VENDOR_ID_EXAR ? 0xff : 0x00;
+> +    u8 dir = (pcidev->vendor == PCI_VENDOR_ID_EXAR && pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL) ? 0xff : 0x00;
+
+That's a horrible line to try to read now, right?
+
+Why not turn it into a real if statement so we can make more sense of it
+over time:
+
+	u8 dir = 0x00;
+
+	if ((pcidev->vendor == PCI_VENDOR_ID_EXAR) &&
+	    (pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL))
+		dir = 0xff;
+
+Looks better, right?
 
 thanks,
 
