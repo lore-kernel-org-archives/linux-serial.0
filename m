@@ -1,92 +1,138 @@
-Return-Path: <SRS0=puAX=AW=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=GjS6=AX=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A022BC433E1
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Jul 2020 13:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE1A3C433DF
+	for <linux-serial@archiver.kernel.org>; Sun, 12 Jul 2020 08:25:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 78AAB2075F
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Jul 2020 13:55:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D7AD820722
+	for <linux-serial@archiver.kernel.org>; Sun, 12 Jul 2020 08:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbgGKNzh (ORCPT
+        id S1728302AbgGLIY6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 11 Jul 2020 09:55:37 -0400
-Received: from mga11.intel.com ([192.55.52.93]:37296 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726630AbgGKNzg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 11 Jul 2020 09:55:36 -0400
-IronPort-SDR: RxlwBMj8Ml3xVBojiloCN/klavHr/xv5vmt8hi4R872E4uu8TvL1w7+N+YoqA/dgdhCHlYzT9j
- G6VtWo/o+qkg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9679"; a="146439062"
-X-IronPort-AV: E=Sophos;i="5.75,339,1589266800"; 
-   d="scan'208";a="146439062"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2020 06:55:36 -0700
-IronPort-SDR: uC8ttAo1xEOsPMPi0O6p3/g5T2S3Ysi1cMb5cqvlzSfLMy7Bp0S/x3mjIcEsMMiwP3VGaFP7go
- 3KKnY36TvX9g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,339,1589266800"; 
-   d="scan'208";a="306870014"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga004.fm.intel.com with ESMTP; 11 Jul 2020 06:55:34 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1juFyZ-001FLr-80; Sat, 11 Jul 2020 16:55:35 +0300
-Date:   Sat, 11 Jul 2020 16:55:35 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Cristian Ciocaltea <cristian.ciocaltea@gmail.com>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-actions@lists.infradead.org
-Subject: Re: [PATCH 1/1] tty: serial: owl: Initialize lock before registering
- port
-Message-ID: <20200711135535.GW3703480@smile.fi.intel.com>
-References: <89f6393934fc6d493f8b9e87c1a6e916642b6a18.1590749143.git.cristian.ciocaltea@gmail.com>
- <20200529113419.GA1631227@kroah.com>
- <20200710120549.GA11293@BV030612LT>
- <20200710133542.GA2172832@kroah.com>
- <20200710155806.GA10457@BV030612LT>
- <20200710163022.GT3703480@smile.fi.intel.com>
- <20200711063041.GC2784728@kroah.com>
+        Sun, 12 Jul 2020 04:24:58 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:50330 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725974AbgGLIY6 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 12 Jul 2020 04:24:58 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 50FAD1C0BD2; Sun, 12 Jul 2020 10:24:54 +0200 (CEST)
+Date:   Sun, 12 Jul 2020 10:24:53 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v7 3/3] leds: trigger: implement a tty trigger
+Message-ID: <20200712082453.GI8295@amd>
+References: <20200707165958.16522-1-u.kleine-koenig@pengutronix.de>
+ <20200707165958.16522-4-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="HkMjoL2LAeBLhbFV"
 Content-Disposition: inline
-In-Reply-To: <20200711063041.GC2784728@kroah.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200707165958.16522-4-u.kleine-koenig@pengutronix.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Jul 11, 2020 at 08:30:41AM +0200, Greg Kroah-Hartman wrote:
-> On Fri, Jul 10, 2020 at 07:30:22PM +0300, Andy Shevchenko wrote:
-> > On Fri, Jul 10, 2020 at 06:58:06PM +0300, Cristian Ciocaltea wrote:
-> > > On Fri, Jul 10, 2020 at 03:35:42PM +0200, Greg Kroah-Hartman wrote:
 
-...
+--HkMjoL2LAeBLhbFV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > > however I'm a bit confused now regarding the recommended approach since
-> > > there is at least one more commit in the tty-linux tree that still 
-> > > handles a similar issue in the driver specific code:
-> > > f38278e9b810 ("serial: sh-sci: Initialize spinlock for uart console")
-> > 
-> > They now should be reverted.
-> 
-> Please send patches for that :)
+Hi!
 
-Just sent.
+> +++ b/Documentation/ABI/testing/sysfs-class-led-trigger-tty
+> @@ -0,0 +1,6 @@
+> +What:		/sys/class/leds/<led>/ttyname
+> +Date:		Jul 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-leds@vger.kernel.org
+> +Description:
+> +		Specifies the tty device name of the triggering tty
+> diff --git a/drivers/leds/trigger/Kconfig b/drivers/leds/trigger/Kconfig
+> index ce9429ca6dde..40ff08c93f56 100644
+> --- a/drivers/leds/trigger/Kconfig
+> +++ b/drivers/leds/trigger/Kconfig
+> @@ -144,4 +144,11 @@ config LEDS_TRIGGER_AUDIO
+>  	  the audio mute and mic-mute changes.
+>  	  If unsure, say N
+> =20
+> +config LEDS_TRIGGER_TTY
+> +	tristate "LED Trigger for TTY devices"
+> +	depends on TTY
+> +	help
+> +	  This allows LEDs to be controlled by activity on ttys which includes
+> +	  serial devices like /dev/ttyS0.
 
--- 
-With Best Regards,
-Andy Shevchenko
+"This driver can be built as a module, resulting module will be
+named.. If unsure, say N."
 
+> +++ b/drivers/leds/trigger/ledtrig-tty.c
+> @@ -0,0 +1,192 @@
+> +// SPDX-License-Identifier: GPL-2.0
 
+2.0+ is preffered.
+
+> +
+> +	while (firstrun ||
+> +	       icount.rx !=3D trigger_data->rx ||
+> +	       icount.tx !=3D trigger_data->tx) {
+> +
+> +		led_set_brightness(trigger_data->led_cdev, LED_ON);
+> +
+> +		msleep(100);
+> +
+> +		led_set_brightness(trigger_data->led_cdev, LED_OFF);
+
+Is this good idea inside workqueue?
+
+> +		trigger_data->rx =3D icount.rx;
+> +		trigger_data->tx =3D icount.tx;
+> +		firstrun =3D false;
+> +
+> +		ret =3D tty_get_icount(trigger_data->tty, &icount);
+> +		if (ret)
+> +			return;
+
+Unbalanced locking.
+
+> +	}
+> +
+> +out:
+> +	mutex_unlock(&trigger_data->mutex);
+> +	schedule_delayed_work(&trigger_data->dwork, msecs_to_jiffies(100));
+> +}
+
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--HkMjoL2LAeBLhbFV
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAl8KyNUACgkQMOfwapXb+vIRGQCfcetd56bS9agQaVauYv2lHkvb
+1s8An3uDX2YeCo929pVDkPHeyNch219x
+=NlJV
+-----END PGP SIGNATURE-----
+
+--HkMjoL2LAeBLhbFV--
