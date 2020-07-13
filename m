@@ -1,105 +1,76 @@
-Return-Path: <SRS0=GjS6=AX=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=GPH0=AY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F3AC433E0
-	for <linux-serial@archiver.kernel.org>; Sun, 12 Jul 2020 09:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D56C433E2
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 07:11:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6FD4020791
-	for <linux-serial@archiver.kernel.org>; Sun, 12 Jul 2020 09:32:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1594546321;
-	bh=QbBUjOO2ONnvgGnMB4P8D8RHlpRM3HwBtK8P2s+FuHo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Lct0cAQL8VBQXzXcL7Y2svI1Qppz2REPkgzl0mRX8HhSDKffTOVOyHOn0ak4kDc/o
-	 3ACdVxCteY4tjUy+j3Zcn063jqMHGHOAbQ7RBsoJs2RrPGyIjUVkwPXPEzEiIp1tpx
-	 qsPgw+UuHLmwbUFYUb990W36XpblSs9squiT8QTs=
+	by mail.kernel.org (Postfix) with ESMTP id 375392073A
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 07:11:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=intenta.de header.i=@intenta.de header.b="pHAb52yN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728408AbgGLJcB (ORCPT
+        id S1726725AbgGMHLd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 12 Jul 2020 05:32:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44566 "EHLO mail.kernel.org"
+        Mon, 13 Jul 2020 03:11:33 -0400
+Received: from mail.intenta.de ([178.249.25.132]:33348 "EHLO mail.intenta.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728341AbgGLJcA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 12 Jul 2020 05:32:00 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 72F7720720;
-        Sun, 12 Jul 2020 09:31:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594546320;
-        bh=QbBUjOO2ONnvgGnMB4P8D8RHlpRM3HwBtK8P2s+FuHo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DIOaCGD1+bjKJDJVKTV/O8HAFx/9ay39kyDx/3wyN+HoGE6tTP/yDj48Mz9D1nOrY
-         NcF/EMHdvhav34JEa8FoC9yPWjPHQsDxtCoSjNQlNiqv7SRq9ZqLOhXXE9qhdYIrbY
-         PvQ8mAXR4UcmxQWkXeaZKzzcDZQuy0ybtVVu0ClU=
-Date:   Sun, 12 Jul 2020 11:31:55 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>, Jiri Slaby <jslaby@suse.com>,
-        kernel@pengutronix.de, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v7 3/3] leds: trigger: implement a tty trigger
-Message-ID: <20200712093155.GA179963@kroah.com>
-References: <20200707165958.16522-1-u.kleine-koenig@pengutronix.de>
- <20200707165958.16522-4-u.kleine-koenig@pengutronix.de>
- <20200712082453.GI8295@amd>
- <20200712084352.GA175558@kroah.com>
- <20200712085059.GA13495@amd>
- <20200712090217.GA177304@kroah.com>
- <20200712090731.GB13495@amd>
+        id S1725818AbgGMHLd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 13 Jul 2020 03:11:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=kRgItzgVjopJ0+BF6ESNn5SkXGN3c3eqdjKHFyqO2Nc=;
+        b=pHAb52yNpOpnCnq7Ls3ghIwI7CDn5XmxT0/QTkc9d+70x1kgat8w8DgFds5OmdW1EAQH5as+tpkBq0qm/KF5EtybJhAk28kvKfC4BfoGt5ZylHv2o3XvlGNH+ZXYiSNsn4Y456ZchObvyjcQLUnIZP8OsY0gVzYHnFGuhLmBEWYLjpPQUfonnef+TtRIIoqOmQPsB4pZMx96v7Zmlxp1efAFIzA48OlL+90FgdLBiVwvW3keQFwJPa6Yjo3Ajv5bbTxmyg6XNilyUASGu0dU8es6CCYT1rwbbkyb59tR0A4w92sJu2XH1sa+fwEMeUubyJ3VPyVeprtS3H1N/XaNdg==;
+Date:   Mon, 13 Jul 2020 09:11:25 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Michal Simek <michal.simek@xilinx.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        "Jan Kiszka" <jan.kiszka@web.de>, <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] tty: xilinx_uartps: Really fix id assignment
+Message-ID: <20200713071123.GA1994@laureti-dev>
+References: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
+ <20200709074849.GA28968@laureti-dev>
+ <a3b9df28-8142-fc04-317f-44d65a24f38e@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200712090731.GB13495@amd>
+In-Reply-To: <a3b9df28-8142-fc04-317f-44d65a24f38e@xilinx.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Jul 12, 2020 at 11:07:31AM +0200, Pavel Machek wrote:
-> On Sun 2020-07-12 11:02:17, Greg Kroah-Hartman wrote:
-> > On Sun, Jul 12, 2020 at 10:50:59AM +0200, Pavel Machek wrote:
-> > > On Sun 2020-07-12 10:43:52, Greg Kroah-Hartman wrote:
-> > > > On Sun, Jul 12, 2020 at 10:24:53AM +0200, Pavel Machek wrote:
-> > > > > > +++ b/drivers/leds/trigger/ledtrig-tty.c
-> > > > > > @@ -0,0 +1,192 @@
-> > > > > > +// SPDX-License-Identifier: GPL-2.0
-> > > > > 
-> > > > > 2.0+ is preffered.
-> > > > 
-> > > > No it is not, that's up to the developer.
-> > > 
-> > > For code I maintain, yes it is.
-> > 
-> > That's up to the developer of the code, not the maintainer, as the
-> > maintainer is not the copyright holder of it.  For new files, it is up
-> > to the author of that code.  No maintainer should impose a license rule
-> > like this on their subsystem, that's just not ok at all.  The only
-> > "rule" is that it is compatible with GPLv2, nothing else.
-> 
-> No, see for example device tree rules.
+Hi Michal,
 
-Note, I don't agree with that rule, and if you have noticed, it's not
-really enforced.
+On Fri, Jul 10, 2020 at 01:45:21PM +0200, Michal Simek wrote:
+> Thanks for the patch. I think that it will be very useful to list out
+> all testcases to make sure that we test all that scenarios and finally
+> get over it.
+> We are testing scenarios and likely we are missing some that we are not
+> able catch all issues before we submit a patch.
 
-> Plus, IIRC it was you who asked the developer to "doublecheck with
-> their legal" when you seen GPL-2.0+.  You can't really prevent me from
-> doing the same.
+Let me try to enumerate those I know:
 
-Asking to verify that a specific license is what they really want it to
-be and they know the ramifications of it is NOT the same as saying "For
-code in the subsystem I maintain it has to be GPLv2+".
+uart0    | uart1    | console | remark
+---------+----------+---------+----------
+serial0  | serial1  | ttyPS0  | regular case
+serial0  | serial1  | ttyPS1  | normal assignment, second console
+serial1  | serial0  | ttyPS0  | -> Jan Kiszka, broken since revert
+disabled | serial0  | ttyPS0  | use only uart1 as serial0
+serial0  | disabled | ttyPS0  | regular case with uart1 disabled
 
-thanks,
+Out of these, I'm actively using configurations 3 and 4.
 
-greg k-h
+Which of these scenarios do you test already?
+
+Helmut
