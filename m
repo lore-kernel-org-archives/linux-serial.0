@@ -2,101 +2,129 @@ Return-Path: <SRS0=GPH0=AY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AA2C433E1
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 12:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FD0C433EA
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 12:24:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1DBA520773
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 12:10:26 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=intenta.de header.i=@intenta.de header.b="inf5MulV"
+	by mail.kernel.org (Postfix) with ESMTP id E324720738
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 12:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729027AbgGMMKZ (ORCPT
+        id S1729715AbgGMMY5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jul 2020 08:10:25 -0400
-Received: from mail.intenta.de ([178.249.25.132]:34971 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728714AbgGMMKZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jul 2020 08:10:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=1FfHxGk9Fkq4rbXPd8sX91QgCFVfWDb1d+CXYS3YaHM=;
-        b=inf5MulVjWhipWbArKPDwNh25OqJ9z+5Ul/bTDyK+Zj8W8PmEQKjGrpTZaCEDkCzN+V45PZAlKC+6drpa+4ZKb0OI5DBKL2PfPHnXZDM5Zwy6cAD05+T7ad50dK/eHK0hdixmZq2FUWm8b/ZehcKYf/+1buSle6Frv8AIpFxX6GKkVSMbDasPvDaRi1CMDhjHfCS6+5PkWbKkzK8DIF6Y5WtH4NASeDXgwJXDsQQiEyVLBMEQM5nBfMm9z3zLMwfk3W/90Co7WIGCet6WvIgZ8XPvtIummjHEU+QRr3QWTUwMR9BVYrGXLG9kkrb0SVQoTOFAGZ4+n3qS0XcNmY14g==;
-Date:   Mon, 13 Jul 2020 14:10:19 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Michal Simek <michal.simek@xilinx.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        "Jan Kiszka" <jan.kiszka@web.de>, <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH] tty: xilinx_uartps: Really fix id assignment
-Message-ID: <20200713121019.GA6920@laureti-dev>
-References: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
- <20200709074849.GA28968@laureti-dev>
- <a3b9df28-8142-fc04-317f-44d65a24f38e@xilinx.com>
- <20200713071123.GA1994@laureti-dev>
- <e7b766ab-8c99-d30c-2352-6d7b09033537@xilinx.com>
+        Mon, 13 Jul 2020 08:24:57 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:40792 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728714AbgGMMY4 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 13 Jul 2020 08:24:56 -0400
+Received: by mail-ot1-f66.google.com with SMTP id c25so9343712otf.7;
+        Mon, 13 Jul 2020 05:24:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NKzDJKlpDpfQR0XqsgcICeQR3a964ULdFkGju83hPh4=;
+        b=PZ8YhE6GE31idexlhmfb3Jirg1fmIzWelFz3bJoSnqo+EVZ4vFFRokFm0JrlHU+Wjt
+         8qYOpYcBQUmBcVX0OUjBRQkoBWsjFeCRcJbcXh8eDr7pEzceDVZB5EIZvviFDvUnaZ8x
+         uljKNjdd66Zog078sR8ZVwZsMp9ZKUAApgab5j0b11Zc2PNDmQStQJzTp3cxWTcd/e9O
+         Lbm/sK+7BLfprg7I1F6n1rLcPnhCqP7HeRblQ4MNtq9JdVXNSQZD/RWpRa9BvsTHvFGv
+         D5v7NmezD//lb4mE/NwB/84RY9jCWGE0vK7uOYm9nLO/N5m6KKkON4NwebacF8WQ8ozX
+         Qtog==
+X-Gm-Message-State: AOAM530+jeSYYKO7B1XtwgyItnWIIqrhIk0rckd9yaUI4yVg/Hu/M8ka
+        dH4zr6CDpZg/PtRo7TCQyrFQXkQoI+Qjn3B3lIw=
+X-Google-Smtp-Source: ABdhPJxFpWOlCjGDSPwtxen5jRbE20ZbTRROeQPrTNlSL/t1mKoQeo8W3SZGj1ef99nPDdRUJYfaYSbuaSZRFBz1XuE=
+X-Received: by 2002:a05:6830:1451:: with SMTP id w17mr57240483otp.250.1594643094760;
+ Mon, 13 Jul 2020 05:24:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <e7b766ab-8c99-d30c-2352-6d7b09033537@xilinx.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
+References: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594230511-24790-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594230511-24790-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 13 Jul 2020 14:24:43 +0200
+Message-ID: <CAMuHMdWBLrPQJJzs=K7fHzu4UJsKyj29Yu9KZK4vf9QQNLQF+Q@mail.gmail.com>
+Subject: Re: [PATCH 6/8] arm64: dts: renesas: Initial r8a774e1 SoC device tree
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Michal,
+Hi Prabhakar,
 
-On Mon, Jul 13, 2020 at 01:49:38PM +0200, Michal Simek wrote:
-> On 13. 07. 20 9:11, Helmut Grohne wrote:
-> > Let me try to enumerate those I know:
-> > 
-> > uart0    | uart1    | console | remark
-> > ---------+----------+---------+----------
-> > serial0  | serial1  | ttyPS0  | regular case
-> > serial0  | serial1  | ttyPS1  | normal assignment, second console
-> > serial1  | serial0  | ttyPS0  | -> Jan Kiszka, broken since revert
-> > disabled | serial0  | ttyPS0  | use only uart1 as serial0
-> > serial0  | disabled | ttyPS0  | regular case with uart1 disabled
-> > 
-> > Out of these, I'm actively using configurations 3 and 4.
-> > 
-> > Which of these scenarios do you test already?
-> 
-> For above we are missing also others
-> serial1 | serial0 | ttyPS1
-> disabled| serial1 | ttyPS1
+On Wed, Jul 8, 2020 at 7:49 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+>
+> Basic support for the RZ/G2H SoC.
+>
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Is it actually possible to have ttyPS1, but no ttyPS0? I think I tried
-doing that earlier and it resulted in there being ttyPS0, but no ttyPS1.
+Thanks for your patch!
 
-> serial1 | disables | ttyPS0
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
 
-I'm not sure what this is supposed to mean. When there is no serial0
-alias, I'd expect ttyPS0 to be missing. However as indicated above that
-is not what happens in practice. So either of these two configurations
-seems invalid to me.
+> +               avb: ethernet@e6800000 {
+> +                       reg = <0 0xe6800000 0 0x800>, <0 0xe6a00000 0 0x10000>;
 
-> All of these above are just not setting any console= on bootargs.
+According to Rev. 1.00 of the Hardware User's Manual, RZ/G2H does not
+have the Stream Buffer for EtherAVB-IF, so the second register block
+should be dropped.
 
-We usually set the console= assignment on bootargs.
+> +                       #address-cells = <1>;
+> +                       #size-cells = <0>;
+> +                       status = "disabled";
+> +
+> +                       /* placeholder */
+> +               };
 
-> It means mix of these combinations is tested regularly but not all of
-> them. Do you see any other combination which is not supported?
+> +               gic: interrupt-controller@f1010000 {
+> +                       compatible = "arm,gic-400";
+> +                       #interrupt-cells = <3>;
+> +                       #address-cells = <0>;
+> +                       interrupt-controller;
+> +                       reg = <0x0 0xf1010000 0 0x1000>,
+> +                             <0x0 0xf1020000 0 0x20000>,
+> +                             <0x0 0xf1040000 0 0x20000>,
+> +                             <0x0 0xf1060000 0 0x20000>;
+> +                       interrupts = <GIC_PPI 9
+> +                                       (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
 
-I'm not aware of further relevant combinations.
+Like Marc already pointed out, GIC_CPU_MASK_SIMPLE(8).
 
-Can we maybe trim down the matrix somehow? In my context, the need for
-swapping the serial aliases arises from a limitation in u-boot-xlnx and
-the desire to use one dtb for both linux and u-boot. It requires that
-the serial0 alias is the console. Are there other reasons to swap them?
-If not, maybe fixing u-boot would be an option?
+With the above fixed:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Will queue in renesas-devel for v5.9, after fixing the above.
 
-Helmut
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
