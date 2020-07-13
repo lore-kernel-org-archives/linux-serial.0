@@ -2,95 +2,116 @@ Return-Path: <SRS0=GPH0=AY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D1CC433E3
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 12:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC398C433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 16:08:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B32B120738
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 12:25:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D2C00206F0
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 16:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729808AbgGMMZo (ORCPT
+        id S1729644AbgGMQId (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jul 2020 08:25:44 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:37296 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729646AbgGMMZo (ORCPT
+        Mon, 13 Jul 2020 12:08:33 -0400
+Received: from fieber.vanmierlo.com ([84.243.197.177]:40987 "EHLO
+        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729027AbgGMQId (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jul 2020 08:25:44 -0400
-Received: by mail-ot1-f65.google.com with SMTP id w17so9374478otl.4;
-        Mon, 13 Jul 2020 05:25:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ngQqrXWqBxko6JtBE6sOb/BLJIUDqiUQnKCnbuzn+TQ=;
-        b=JmrdkBN7R6wb69xG9d7LwiOaJldc+6ACCT8EkQtjuInnYkV5+2na2UrUSZ70Njjhid
-         SZ5UBT/ApOus7mObz07QpwGXokQDr/FUSNf9Djp0I2yDAW9y96R7AlvSrQE1SjudnYxk
-         VsAckqUC4FQGZPadVaFYVECV2BQFUXFlJV1ZSVm4BlF+cfFSFunGxsy26SSe9zmGT7E7
-         5ia1pxqjYzhgsFtDuebzikCD83RSKwpbpyH7q4CVUkGQ+8Yo5oOW1qopUo3uBz/zH2Ii
-         ejQ1UA6LAcXhvdxv6OGjfyRCCTv0m6kYgwT3RenN9/l7roNdtEqi9zd4Olu4UuHC7rVW
-         c0DA==
-X-Gm-Message-State: AOAM5303Q8xJnky7cHB6QF56aA5aJbRG3qwdLoLFKZ5cmL1Fi5Zpfl0Z
-        AmKpKdOv+dekfrRS/UKKa0xMQxmjIRveNmKO8MM=
-X-Google-Smtp-Source: ABdhPJzZ7jGk83XfCIDNOcc26Jsxe8/Z0kqkWINTZY1+NJCMaRBt957GP2gBQfs3bj7Fb0KscTISiJUWI7W1/V3CD8k=
-X-Received: by 2002:a9d:2646:: with SMTP id a64mr65288809otb.107.1594643142951;
- Mon, 13 Jul 2020 05:25:42 -0700 (PDT)
+        Mon, 13 Jul 2020 12:08:33 -0400
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by kerio9.vanmierlo.com (Kerio Connect 9.2.12 patch 1) with ESMTPA;
+        Mon, 13 Jul 2020 18:08:08 +0200
 MIME-Version: 1.0
-References: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594230511-24790-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594230511-24790-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 13 Jul 2020 14:25:32 +0200
-Message-ID: <CAMuHMdXw-rgKJUCz-eoqEQJbRuwdRfyrZj+Ot=Zrg6e4_9cWLg@mail.gmail.com>
-Subject: Re: [PATCH 8/8] arm64: dts: renesas: Add HiHope RZ/G2H sub board support
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Marc Zyngier <maz@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 13 Jul 2020 18:08:08 +0200
+From:   Maarten Brock <m.brock@vanmierlo.com>
+To:     Helmut Grohne <helmut.grohne@intenta.de>
+Cc:     Michal Simek <michal.simek@xilinx.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jslaby@suse.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        Jan Kiszka <jan.kiszka@web.de>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-serial-owner@vger.kernel.org
+Subject: Re: [PATCH] tty: xilinx_uartps: Really fix id assignment
+In-Reply-To: <20200713121019.GA6920@laureti-dev>
+References: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
+ <20200709074849.GA28968@laureti-dev>
+ <a3b9df28-8142-fc04-317f-44d65a24f38e@xilinx.com>
+ <20200713071123.GA1994@laureti-dev>
+ <e7b766ab-8c99-d30c-2352-6d7b09033537@xilinx.com>
+ <20200713121019.GA6920@laureti-dev>
+Message-ID: <2db78149ae9ffb205f02ca4919b50d88@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+User-Agent: Roundcube Webmail/1.3.3
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 8, 2020 at 7:49 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
->
-> The HiHope RZ/G2H sub board sits below the HiHope RZ/G2H main board.
-> These boards are identical with the ones for RZ/G2M[N].
->
-> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On 2020-07-13 14:10, Helmut Grohne wrote:
+> Hi Michal,
+> 
+> On Mon, Jul 13, 2020 at 01:49:38PM +0200, Michal Simek wrote:
+>> On 13. 07. 20 9:11, Helmut Grohne wrote:
+>> > Let me try to enumerate those I know:
+>> >
+>> > uart0    | uart1    | console | remark
+>> > ---------+----------+---------+----------
+>> > serial0  | serial1  | ttyPS0  | regular case
+>> > serial0  | serial1  | ttyPS1  | normal assignment, second console
+>> > serial1  | serial0  | ttyPS0  | -> Jan Kiszka, broken since revert
+>> > disabled | serial0  | ttyPS0  | use only uart1 as serial0
+>> > serial0  | disabled | ttyPS0  | regular case with uart1 disabled
+>> >
+>> > Out of these, I'm actively using configurations 3 and 4.
+>> >
+>> > Which of these scenarios do you test already?
+>> 
+>> For above we are missing also others
+>> serial1 | serial0 | ttyPS1
+>> disabled| serial1 | ttyPS1
+> 
+> Is it actually possible to have ttyPS1, but no ttyPS0? I think I tried
+> doing that earlier and it resulted in there being ttyPS0, but no 
+> ttyPS1.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.9.
+What if you also have a 16550 (in the PL) and give it the serial0 alias?
+Or a UARTlite? The serialN alias is inappropriate to set the number for
+ttyPSn. How are you supposed to create all of ttyPS0, ttyS0 and ttyUL0
+using a single serial0 alias?
 
-Gr{oetje,eeting}s,
+>> serial1 | disables | ttyPS0
+> 
+> I'm not sure what this is supposed to mean. When there is no serial0
+> alias, I'd expect ttyPS0 to be missing. However as indicated above that
+> is not what happens in practice. So either of these two configurations
+> seems invalid to me.
+> 
+>> All of these above are just not setting any console= on bootargs.
+> 
+> We usually set the console= assignment on bootargs.
+> 
+>> It means mix of these combinations is tested regularly but not all of
+>> them. Do you see any other combination which is not supported?
+> 
+> I'm not aware of further relevant combinations.
+> 
+> Can we maybe trim down the matrix somehow? In my context, the need for
+> swapping the serial aliases arises from a limitation in u-boot-xlnx and
+> the desire to use one dtb for both linux and u-boot. It requires that
+> the serial0 alias is the console. Are there other reasons to swap them?
+> If not, maybe fixing u-boot would be an option?
+> 
+> Helmut
 
-                        Geert
+I think that it would be better if u-boot used a "console" alias.
 
+Maarten
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
