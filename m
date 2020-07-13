@@ -2,133 +2,127 @@ Return-Path: <SRS0=GPH0=AY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F47CC433E1
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 07:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 964EAC433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 10:26:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4B857206F0
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 07:32:34 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=intenta.de header.i=@intenta.de header.b="O2mUO1JG"
+	by mail.kernel.org (Postfix) with ESMTP id 7B9E220758
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 10:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729037AbgGMHcd (ORCPT
+        id S1729166AbgGMK0K (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jul 2020 03:32:33 -0400
-Received: from mail.intenta.de ([178.249.25.132]:33487 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725830AbgGMHcd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jul 2020 03:32:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=FSVKKh1K3meJ2NLE68XU6nTptr/hNpfqhkvhx31taXA=;
-        b=O2mUO1JGdL4/AbtHEfauBDNtzEgysjWjoTAEjYR9au4rNCkW7R8lB9Q/eObE95p1qFy4Nvlt11xS//A49bE25U9v84DKexywB7ZALe8rW42MRY12IDYLSEtw2vN7OS+r5aJ41Rqo71NGjJCSd0R7XZo1mFAHRhi8ELY94jbhH6Dsyn9YFruncKOs1dKOqr33BCNQSCPNfJkM79OcUyQrpJe+KVmQIpokuYL5LbEOTIialSpFkjoJUA/tZotFzzeMIOo0Nn2c/oMM+41E7Kbe28JguRa41a56o0R9jm9ErYslM66EpjkJTAXfDJHr0XKryqZvQpYDt0LOdPo5CImSUg==;
-Date:   Mon, 13 Jul 2020 09:32:28 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        Jan Kiszka <jan.kiszka@web.de>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v2] tty: xilinx_uartps: Really fix id assignment
-Message-ID: <20200713073227.GA3805@laureti-dev>
-References: <20200710124535.GA1584780@kroah.com>
+        Mon, 13 Jul 2020 06:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727890AbgGMK0J (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 13 Jul 2020 06:26:09 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B26AC061755
+        for <linux-serial@vger.kernel.org>; Mon, 13 Jul 2020 03:26:09 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1juves-0006lX-6S; Mon, 13 Jul 2020 12:26:02 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1juver-0008D8-6D; Mon, 13 Jul 2020 12:26:01 +0200
+Date:   Mon, 13 Jul 2020 12:26:00 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Pavel Machek <pavel@denx.de>
+Cc:     kernel@pengutronix.de,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>,
+        linux-leds@vger.kernel.org, Dan Murphy <dmurphy@ti.com>
+Subject: Re: [PATCH v7 3/3] leds: trigger: implement a tty trigger
+Message-ID: <20200713102600.ts672o72krjky5gi@pengutronix.de>
+References: <20200707165958.16522-1-u.kleine-koenig@pengutronix.de>
+ <20200707165958.16522-4-u.kleine-koenig@pengutronix.de>
+ <20200712082453.GI8295@amd>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="p7sgu6f4s3srokfq"
 Content-Disposition: inline
-In-Reply-To: <20200710124535.GA1584780@kroah.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
+In-Reply-To: <20200712082453.GI8295@amd>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The problems started with the revert (18cc7ac8a28e28). The
-cdns_uart_console.index is statically assigned -1. When the port is
-registered, Linux assigns consecutive numbers to it. It turned out that
-when using ttyPS1 as console, the index is not updated as we are reusing
-the same cdns_uart_console instance for multiple ports. When registering
-ttyPS0, it gets updated from -1 to 0, but when registering ttyPS1, it
-already is 0 and not updated.
 
-That led to 2ae11c46d5fdc4. It assigns the index prior to registering
-the uart_driver once. Unfortunately, that ended up breaking the
-situation where the probe order does not match the id order. When using
-the same device tree for both uboot and linux, it is important that the
-serial0 alias points to the console. So some boards reverse those
-aliases. This was reported by Jan Kiszka. The proposed fix was reverting
-the index assignment and going back to the previous iteration.
+--p7sgu6f4s3srokfq
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-However such a reversed assignement (serial0 -> uart1, serial1 -> uart0)
-was already partially broken by the revert (18cc7ac8a28e28). While the
-ttyPS device works, the kmsg connection is already broken and kernel
-messages go missing. Reverting the id assignment does not fix this.
+Hello Pavel,
 
-From the xilinx_uartps driver pov (after reverting the refactoring
-commits), there can be only one console. This manifests in static
-variables console_pprt and cdns_uart_console. These variables are not
-properly linked and can go out of sync. The cdns_uart_console.index is
-important for uart_add_one_port. We call that function for each port -
-one of which hopefully is the console. If it isn't, the CON_ENABLED flag
-is not set and console_port is cleared. The next cdns_uart_probe call
-then tries to register the next port using that same cdns_uart_console.
+On Sun, Jul 12, 2020 at 10:24:53AM +0200, Pavel Machek wrote:
+> > +++ b/drivers/leds/trigger/ledtrig-tty.c
+> > @@ -0,0 +1,192 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+>=20
+> 2.0+ is preffered.
 
-It is important that console_port and cdns_uart_console (and its index
-in particular) stay in sync. The index assignment implemented by
-Shubhrajyoti Datta is correct in principle. It just may have to happen a
-second time if the first cdns_uart_probe call didn't encounter the
-console device. And we shouldn't change the index once the console uart
-is registered.
+My employer requests GPL-2.0-only for kernel code.
 
-Reported-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Reported-by: Jan Kiszka <jan.kiszka@web.de>
-Link: https://lore.kernel.org/linux-serial/f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com/
-Fixes: 18cc7ac8a28e28 ("Revert "serial: uartps: Register own uart console and driver structures"")
-Fixes: 2ae11c46d5fdc4 ("tty: xilinx_uartps: Fix missing id assignment to the console")
-Fixes: 76ed2e10579671 ("Revert "tty: xilinx_uartps: Fix missing id assignment to the console"")
-Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
----
- drivers/tty/serial/xilinx_uartps.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+> > +	while (firstrun ||
+> > +	       icount.rx !=3D trigger_data->rx ||
+> > +	       icount.tx !=3D trigger_data->tx) {
+> > +
+> > +		led_set_brightness(trigger_data->led_cdev, LED_ON);
+> > +
+> > +		msleep(100);
+> > +
+> > +		led_set_brightness(trigger_data->led_cdev, LED_OFF);
+>=20
+> Is this good idea inside workqueue?
 
-Changes since v1:
- * This patch was meant to replace 76ed2e10579671. Since it is part of
-   gregkh/tty-linus already, rebase this patch onto it.
+What is "this"? The msleep? Calling led_set_brightness? What would you
+recommend instead? Maybe led_set_brightness_nosleep()?
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 672cfa075e28..2833f1418d6d 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1580,8 +1580,10 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	 * If register_console() don't assign value, then console_port pointer
- 	 * is cleanup.
- 	 */
--	if (!console_port)
-+	if (!console_port) {
-+		cdns_uart_console.index = id;
- 		console_port = port;
-+	}
- #endif
- 
- 	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
-@@ -1594,8 +1596,10 @@ static int cdns_uart_probe(struct platform_device *pdev)
- #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
- 	/* This is not port which is used for console that's why clean it up */
- 	if (console_port == port &&
--	    !(cdns_uart_uart_driver.cons->flags & CON_ENABLED))
-+	    !(cdns_uart_uart_driver.cons->flags & CON_ENABLED)) {
- 		console_port = NULL;
-+		cdns_uart_console.index = -1;
-+	}
- #endif
- 
- 	cdns_uart_data->cts_override = of_property_read_bool(pdev->dev.of_node,
--- 
-2.20.1
+> > +		trigger_data->rx =3D icount.rx;
+> > +		trigger_data->tx =3D icount.tx;
+> > +		firstrun =3D false;
+> > +
+> > +		ret =3D tty_get_icount(trigger_data->tty, &icount);
+> > +		if (ret)
+> > +			return;
+>=20
+> Unbalanced locking.
 
+indeed, will fix and resend after the above issues are resolved.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--p7sgu6f4s3srokfq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8MNrYACgkQwfwUeK3K
+7AmjaAgAhJ4ZfU4c7r1CzUjNGOMKD/u6/lkeH+6PbKNRLQA7PLSdkfAvfUitzLVH
+p7CsYj4YavhWXRO9i3p7PDgMUUPeUWdpMq1pYBPOKspahP5hSDjI7ncvgOwhI4Ot
+ANXhLG4jvYlMXa5054nHcPzSkPi5d30If4bg9et+F0+2dTRuVgiIibc5SDXHeOpJ
+a0XKR6gLIog9F4ufu8H71Rz+eA/qK26xbvksv8OWpupLmi+EIg4ijsXiA1Iqgc4R
+gnHYG7cu2oeyXJSXrHitK0415ZT0S//vMZrMPRQvWHiiLhjpYqJTHHpiP3oFTTyu
+REWG/lIOh2q0yDn7dE7+yFG4oQt8sg==
+=lxZ0
+-----END PGP SIGNATURE-----
+
+--p7sgu6f4s3srokfq--
