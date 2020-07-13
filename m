@@ -2,116 +2,196 @@ Return-Path: <SRS0=GPH0=AY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC398C433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 16:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2605C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 16:26:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D2C00206F0
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 16:08:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C6D792065E
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 16:26:57 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=g-clemson-edu.20150623.gappssmtp.com header.i=@g-clemson-edu.20150623.gappssmtp.com header.b="RCE1Tdvi"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729644AbgGMQId (ORCPT
+        id S1729835AbgGMQ05 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jul 2020 12:08:33 -0400
-Received: from fieber.vanmierlo.com ([84.243.197.177]:40987 "EHLO
-        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729027AbgGMQId (ORCPT
+        Mon, 13 Jul 2020 12:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729593AbgGMQ05 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jul 2020 12:08:33 -0400
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by kerio9.vanmierlo.com (Kerio Connect 9.2.12 patch 1) with ESMTPA;
-        Mon, 13 Jul 2020 18:08:08 +0200
+        Mon, 13 Jul 2020 12:26:57 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B3FAC061755
+        for <linux-serial@vger.kernel.org>; Mon, 13 Jul 2020 09:26:57 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id h17so6058402qvr.0
+        for <linux-serial@vger.kernel.org>; Mon, 13 Jul 2020 09:26:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=g-clemson-edu.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=5IwiE3MW39I8Vdq2ru7qR/S54NS/AS9DRHW+hinUxDk=;
+        b=RCE1Tdvi4WMnVU+9MCaZDDeE0L22wxMglilTrCx7jC8fWbykrwgtPMonAII+n4awOx
+         Z6qBwfwnOKeAiB2kx4ihuffQfImUkhmB1dD+gY3CGnMTDDyikRzRdJhYvDjgPmeraszY
+         2EQAc+HEdTImPbhqFbiKFgXYLKbckAbz3X+pSDU7LYYLAIaaAbSPWzsvA7oob1Jtz5T4
+         MZmNlb9R23ZGhCNNL6bG2v9Brajmi6+oLQE/hSAp7Dsi3tE2CTRZ/F5T9ni4egumDDQB
+         v5Xkru1ohzX39Bq58IQT+Nxc+uLrdHFbXralEMZWcIf1PcRw+OpJcLPczTeQBEP2Z8BX
+         IOBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=5IwiE3MW39I8Vdq2ru7qR/S54NS/AS9DRHW+hinUxDk=;
+        b=oWfNiOnD31fuOGr81d8uROUYot0IiLBOdZ9tHfoycGUifxfqodhZ3FiRaTqTu8XTtz
+         WAw9ycnTjkHuHPBBP7jqAKCVXX869FFn6HsdeAH3Rg/2BNVCYSuOHspDLE6jRxB+fEFI
+         dFKs+ZWBotIPVp0nZAzGT99bwPEmY2G5DoSW/USoLpKVFdehukbTyqVuSVcDHfXRhxnZ
+         KzpoJs89wnhg2LpSmJm+3f7THgWKn/EAPKnK7aXv34gWYeLWCshH1Ox+WXcreAm9Xkm+
+         nFR+eL9dx7Vp0uT5omBt0aHmSiSNUpnoG61xC8p/vPOzxJP+vvNSFN54ED/kBnlI0A8q
+         v/8Q==
+X-Gm-Message-State: AOAM530jwLNOYwPhKuu/KwD9A+PZRB6vlwD8O1mvJ9HPWY0aS58Hv1DV
+        BxPjvPxu+QgM9j+Rjr7MBmdVUPJgVOmJDw==
+X-Google-Smtp-Source: ABdhPJwuTTeJD2w46fewFhNtOplui/KVkMBmi87Wfh/O8pFauQZlYYtVDry1LeCEWG80bvqMs0b1CQ==
+X-Received: by 2002:a0c:f214:: with SMTP id h20mr223019qvk.131.1594657616250;
+        Mon, 13 Jul 2020 09:26:56 -0700 (PDT)
+Received: from [10.0.2.15] ([12.18.222.50])
+        by smtp.gmail.com with ESMTPSA id t138sm18563012qka.15.2020.07.13.09.26.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jul 2020 09:26:55 -0700 (PDT)
+Subject: Re: [PATCH v2] serial: exar: Fix GPIO configuration for Sealevel
+ cards based on XR17V35X
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
+        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com
+References: <156b27a1-82c5-090e-0ae8-86944b849d6d@g.clemson.edu>
+ <20200711064014.GA2786431@kroah.com>
+From:   Matthew Howell <mrhowel@g.clemson.edu>
+Message-ID: <c2c183d1-4a90-199a-23ad-2a736e431b27@g.clemson.edu>
+Date:   Mon, 13 Jul 2020 12:26:54 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 13 Jul 2020 18:08:08 +0200
-From:   Maarten Brock <m.brock@vanmierlo.com>
-To:     Helmut Grohne <helmut.grohne@intenta.de>
-Cc:     Michal Simek <michal.simek@xilinx.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        Jan Kiszka <jan.kiszka@web.de>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-serial-owner@vger.kernel.org
-Subject: Re: [PATCH] tty: xilinx_uartps: Really fix id assignment
-In-Reply-To: <20200713121019.GA6920@laureti-dev>
-References: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
- <20200709074849.GA28968@laureti-dev>
- <a3b9df28-8142-fc04-317f-44d65a24f38e@xilinx.com>
- <20200713071123.GA1994@laureti-dev>
- <e7b766ab-8c99-d30c-2352-6d7b09033537@xilinx.com>
- <20200713121019.GA6920@laureti-dev>
-Message-ID: <2db78149ae9ffb205f02ca4919b50d88@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-User-Agent: Roundcube Webmail/1.3.3
+In-Reply-To: <20200711064014.GA2786431@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2020-07-13 14:10, Helmut Grohne wrote:
-> Hi Michal,
-> 
-> On Mon, Jul 13, 2020 at 01:49:38PM +0200, Michal Simek wrote:
->> On 13. 07. 20 9:11, Helmut Grohne wrote:
->> > Let me try to enumerate those I know:
->> >
->> > uart0    | uart1    | console | remark
->> > ---------+----------+---------+----------
->> > serial0  | serial1  | ttyPS0  | regular case
->> > serial0  | serial1  | ttyPS1  | normal assignment, second console
->> > serial1  | serial0  | ttyPS0  | -> Jan Kiszka, broken since revert
->> > disabled | serial0  | ttyPS0  | use only uart1 as serial0
->> > serial0  | disabled | ttyPS0  | regular case with uart1 disabled
->> >
->> > Out of these, I'm actively using configurations 3 and 4.
->> >
->> > Which of these scenarios do you test already?
->> 
->> For above we are missing also others
->> serial1 | serial0 | ttyPS1
->> disabled| serial1 | ttyPS1
-> 
-> Is it actually possible to have ttyPS1, but no ttyPS0? I think I tried
-> doing that earlier and it resulted in there being ttyPS0, but no 
-> ttyPS1.
 
-What if you also have a 16550 (in the PL) and give it the serial0 alias?
-Or a UARTlite? The serialN alias is inappropriate to set the number for
-ttyPSn. How are you supposed to create all of ttyPS0, ttyS0 and ttyUL0
-using a single serial0 alias?
+On 7/11/20 2:40 AM, Greg KH wrote:
+> On Fri, Jul 10, 2020 at 04:33:00PM -0400, Matthew Howell wrote:
+>>
+>> From: Matthew Howell <mrhowel@g.clemson.edu>
+>>
+>> Sealevel XR17V35X based devices are inoperable on kernel versions
+>> 4.11 and above due to a change in the GPIO preconfiguration introduced in commit
+>> 7dea8165f1d. This patch fixes this by preconfiguring the GPIO on Sealevel
+>> cards to the value (0x00) used prior to commit 7dea8165f1d
+>>
+>> Fixes: 7dea8165f1d ("serial: exar: Preconfigure xr17v35x MPIOs as output")
+>> Signed-off-by: Matthew Howell <mrhowel@g.clemson.edu>
+>> ---
+>>
+>> This is a revised patch submission based on comments received on
+>> the previous submission.
+>> See https://www.spinics.net/lists/linux-serial/msg39348.html
+>>
+>> I am using a different email address to address the email footer issue,
+>> and I have attempted to fix the formatting issues.
+>
+> The footer issues are fixed, but you should probably change the from:
+> and signed-off-by to your company address, right?
+>
 
->> serial1 | disables | ttyPS0
-> 
-> I'm not sure what this is supposed to mean. When there is no serial0
-> alias, I'd expect ttyPS0 to be missing. However as indicated above that
-> is not what happens in practice. So either of these two configurations
-> seems invalid to me.
-> 
->> All of these above are just not setting any console= on bootargs.
-> 
-> We usually set the console= assignment on bootargs.
-> 
->> It means mix of these combinations is tested regularly but not all of
->> them. Do you see any other combination which is not supported?
-> 
-> I'm not aware of further relevant combinations.
-> 
-> Can we maybe trim down the matrix somehow? In my context, the need for
-> swapping the serial aliases arises from a limitation in u-boot-xlnx and
-> the desire to use one dtb for both linux and u-boot. It requires that
-> the serial0 alias is the console. Are there other reasons to swap them?
-> If not, maybe fixing u-boot would be an option?
-> 
-> Helmut
+That would be optimal, yes. However, I don't have direct control over
+the footer as it is enforced by our email server / group policy. Let
+me know if the company email is *required* to be in the from: field
+for this patch to be accepted though I will see if there is any way I
+can get an exemption in this case.
 
-I think that it would be better if u-boot used a "console" alias.
+>>
+>> Summary/justification of the patch is below.
+>>
+>> With GPIOs preconfigured as per commit 7dea8165f1d all ports on Sealevel
+>> XR17V35X based devices become stuck in high impedance mode, regardless of
+>> dip-switch or software configuration. This causes the device to become
+>> effectively unusable. This patch (in various forms) has been distributed
+>> to our customers and no issues related to it have been reported.
+>
+> Why not put that paragraph in the changelog as well?
 
-Maarten
+It is my understanding that the message above signed-off-by is
+included as the commit message and should be as short as possible,
+while additional information and justification is provided below the
+sign-off-by line. Is that not the case? If it is preferable to be
+above signed-off-by line I can move it to there.
+
+>
+>>
+>> Let me know if any changes need to be made.
+>>
+>> --- linux/drivers/tty/serial/8250/8250_exar.c.orig    2020-07-09 11:05:03.920060577 -0400
+>> +++ linux/drivers/tty/serial/8250/8250_exar.c    2020-07-09 11:05:25.275891627 -0400
+>> @@ -326,7 +326,7 @@ static void setup_gpio(struct pci_dev *p
+>>       * devices will export them as GPIOs, so we pre-configure them safely
+>>       * as inputs.
+>>       */
+>> -    u8 dir = pcidev->vendor == PCI_VENDOR_ID_EXAR ? 0xff : 0x00;
+>> +    u8 dir = (pcidev->vendor == PCI_VENDOR_ID_EXAR && pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL) ? 0xff : 0x00;
+>
+> That's a horrible line to try to read now, right?
+>
+> Why not turn it into a real if statement so we can make more sense of it
+> over time:
+>
+>     u8 dir = 0x00;
+>
+>     if ((pcidev->vendor == PCI_VENDOR_ID_EXAR) &&
+>         (pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL))
+>         dir = 0xff;
+>
+> Looks better, right?
+>
+> thanks,
+>
+> greg k-h
+
+Thanks for that feedback. It must have been unclear since the value of
+dir in your if statement has the wrong value. Revised patch diff with
+added comments is below.
+
+--- linux/drivers/tty/serial/8250/8250_exar.c.orig    2020-07-09 11:05:03.920060577 -0400
++++ linux/drivers/tty/serial/8250/8250_exar.c    2020-07-13 11:54:44.386718167 -0400
+@@ -326,7 +326,20 @@ static void setup_gpio(struct pci_dev *p
+      * devices will export them as GPIOs, so we pre-configure them safely
+      * as inputs.
+      */
+-    u8 dir = pcidev->vendor == PCI_VENDOR_ID_EXAR ? 0xff : 0x00;
++
++    u8 dir = 0x00;
++
++    if  ((pcidev->vendor == PCI_VENDOR_ID_EXAR) &&
++        (pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL))
++    {
++       // Configure GPIO as inputs for Commtech adapters
++       dir = 0xff;
++    }
++    else
++    {
++       // Configure GPIO as outputs for SeaLevel adapters
++       dir = 0x00;
++    }
+ 
+     writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
+     writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+
+--
+
+Thanks,
+Matthew Howell
 
