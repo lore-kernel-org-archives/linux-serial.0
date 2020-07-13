@@ -2,127 +2,90 @@ Return-Path: <SRS0=GPH0=AY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 964EAC433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 10:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 059A4C433E4
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 11:23:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7B9E220758
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 10:26:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CFE34206F0
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jul 2020 11:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729166AbgGMK0K (ORCPT
+        id S1729510AbgGMLXx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jul 2020 06:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727890AbgGMK0J (ORCPT
+        Mon, 13 Jul 2020 07:23:53 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:33613 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728714AbgGMLXx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jul 2020 06:26:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B26AC061755
-        for <linux-serial@vger.kernel.org>; Mon, 13 Jul 2020 03:26:09 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1juves-0006lX-6S; Mon, 13 Jul 2020 12:26:02 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1juver-0008D8-6D; Mon, 13 Jul 2020 12:26:01 +0200
-Date:   Mon, 13 Jul 2020 12:26:00 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     kernel@pengutronix.de,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>,
-        linux-leds@vger.kernel.org, Dan Murphy <dmurphy@ti.com>
-Subject: Re: [PATCH v7 3/3] leds: trigger: implement a tty trigger
-Message-ID: <20200713102600.ts672o72krjky5gi@pengutronix.de>
-References: <20200707165958.16522-1-u.kleine-koenig@pengutronix.de>
- <20200707165958.16522-4-u.kleine-koenig@pengutronix.de>
- <20200712082453.GI8295@amd>
+        Mon, 13 Jul 2020 07:23:53 -0400
+Received: by mail-oi1-f196.google.com with SMTP id k22so10702430oib.0;
+        Mon, 13 Jul 2020 04:23:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t0c5/AlvHBtEdtRei7U/gPNfoy0qpSsHEDnU5efW7LQ=;
+        b=QAX++xtorYkssSzDni1/eDKuz98dXoz6jbPhLTY/ck/D97Qlg0Xo9aFrgL/ftHyBYO
+         5oP3EmvfJBEooI+8rM4ca6xmSNR9Ml7TlswbUQuDTAoCqsGyiVLFgwyhoIz3zkQBUOaf
+         QxAe8NQTL76DYvrYXv40LZXoPzn5IlTSedRrUr4F107hlGOuahX5SA8B5jw1YKeiTm4+
+         ytnYHbHFDqnd188BaEH2tUDj7Rc+7yGE4vvJ6TVKxA1+4UTmWQwMNw/+qHCN9q02puMe
+         OaE3h7SIGo5zYQOsVfvOFaglzEoNsk6HlAqyujjDf8N4akpvgfw1DoGKKhnr7tdqbEQT
+         3VwQ==
+X-Gm-Message-State: AOAM530by5+4NxKZcXt1jyzNyFqlXJ4u6PLREKJUsMiri7sR2wI1z/Uz
+        eqagbcU4Gv3/ICI+hDHrDxz3HtrJPvGibrnKw3Q=
+X-Google-Smtp-Source: ABdhPJxpNlgDeDuBZWvoF2yBqvFfeg9xo/UBJLiMa1zcD4QIP4g207kFYL2Jsaai2+C1jcjtJtL3Ks7vlyCzIuxIFdo=
+X-Received: by 2002:aca:5c41:: with SMTP id q62mr13054270oib.148.1594639432252;
+ Mon, 13 Jul 2020 04:23:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="p7sgu6f4s3srokfq"
-Content-Disposition: inline
-In-Reply-To: <20200712082453.GI8295@amd>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+References: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594230511-24790-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594230511-24790-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 13 Jul 2020 13:23:41 +0200
+Message-ID: <CAMuHMdUoQxQ90uD0D4jV695S7weN5whZV=ypq7pUOW+q3DHW_g@mail.gmail.com>
+Subject: Re: [PATCH 1/8] dt-bindings: serial: renesas,scif: Document r8a774e1 bindings
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Wed, Jul 8, 2020 at 7:48 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> RZ/G2H (R8A774E1) SoC also has the R-Car gen3 compatible SCIF ports,
+> so document the SoC specific bindings.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
---p7sgu6f4s3srokfq
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Hello Pavel,
+Gr{oetje,eeting}s,
 
-On Sun, Jul 12, 2020 at 10:24:53AM +0200, Pavel Machek wrote:
-> > +++ b/drivers/leds/trigger/ledtrig-tty.c
-> > @@ -0,0 +1,192 @@
-> > +// SPDX-License-Identifier: GPL-2.0
->=20
-> 2.0+ is preffered.
+                        Geert
 
-My employer requests GPL-2.0-only for kernel code.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-> > +	while (firstrun ||
-> > +	       icount.rx !=3D trigger_data->rx ||
-> > +	       icount.tx !=3D trigger_data->tx) {
-> > +
-> > +		led_set_brightness(trigger_data->led_cdev, LED_ON);
-> > +
-> > +		msleep(100);
-> > +
-> > +		led_set_brightness(trigger_data->led_cdev, LED_OFF);
->=20
-> Is this good idea inside workqueue?
-
-What is "this"? The msleep? Calling led_set_brightness? What would you
-recommend instead? Maybe led_set_brightness_nosleep()?
-
-> > +		trigger_data->rx =3D icount.rx;
-> > +		trigger_data->tx =3D icount.tx;
-> > +		firstrun =3D false;
-> > +
-> > +		ret =3D tty_get_icount(trigger_data->tty, &icount);
-> > +		if (ret)
-> > +			return;
->=20
-> Unbalanced locking.
-
-indeed, will fix and resend after the above issues are resolved.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---p7sgu6f4s3srokfq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8MNrYACgkQwfwUeK3K
-7AmjaAgAhJ4ZfU4c7r1CzUjNGOMKD/u6/lkeH+6PbKNRLQA7PLSdkfAvfUitzLVH
-p7CsYj4YavhWXRO9i3p7PDgMUUPeUWdpMq1pYBPOKspahP5hSDjI7ncvgOwhI4Ot
-ANXhLG4jvYlMXa5054nHcPzSkPi5d30If4bg9et+F0+2dTRuVgiIibc5SDXHeOpJ
-a0XKR6gLIog9F4ufu8H71Rz+eA/qK26xbvksv8OWpupLmi+EIg4ijsXiA1Iqgc4R
-gnHYG7cu2oeyXJSXrHitK0415ZT0S//vMZrMPRQvWHiiLhjpYqJTHHpiP3oFTTyu
-REWG/lIOh2q0yDn7dE7+yFG4oQt8sg==
-=lxZ0
------END PGP SIGNATURE-----
-
---p7sgu6f4s3srokfq--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
