@@ -2,49 +2,52 @@ Return-Path: <SRS0=SZDA=AZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD22C433F4
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 12:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99170C433E3
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 12:48:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B4A1E22453
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 12:48:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 73D052242C
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 12:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728274AbgGNMsR (ORCPT
+        id S1728248AbgGNMsR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 14 Jul 2020 08:48:17 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:33050 "EHLO
+Received: from mail.baikalelectronics.com ([87.245.175.226]:33070 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726889AbgGNMsQ (ORCPT
+        with ESMTP id S1727858AbgGNMsQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 14 Jul 2020 08:48:16 -0400
 Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 75C9480045E5;
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 894A3803202D;
         Tue, 14 Jul 2020 12:48:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at baikalelectronics.ru
 Received: from mail.baikalelectronics.ru ([127.0.0.1])
         by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id YWtsWr-lMKj8; Tue, 14 Jul 2020 15:48:11 +0300 (MSK)
+        with ESMTP id QahHFbfq1Bc7; Tue, 14 Jul 2020 15:48:12 +0300 (MSK)
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
+        Jiri Slaby <jslaby@suse.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
         Will Deacon <will@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         <linux-mips@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v8 0/4] serial: 8250_dw: Fix ref clock usage
-Date:   Tue, 14 Jul 2020 15:48:03 +0300
-Message-ID: <20200714124808.21493-1-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v8 3/4] serial: 8250_dw: Pass the same rate to the clk round and set rate methods
+Date:   Tue, 14 Jul 2020 15:48:06 +0300
+Message-ID: <20200714124808.21493-4-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20200714124808.21493-1-Sergey.Semin@baikalelectronics.ru>
+References: <20200714124808.21493-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -54,89 +57,45 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Greg, Jiri. We've missed the last merge window. It would be pity to miss
-the next one. Please review/merge in the series.
+Indeed according to the clk API if clk_round_rate() has successfully
+accepted a rate, then in order setup the clock with value returned by the
+clk_round_rate() the clk_set_rate() method must be called with the
+original rate value.
 
-Regarding the patchset. It might be dangerous if an UART port reference
-clock rate is suddenly changed. In particular the 8250 port drivers
-(and AFAICS most of the tty drivers using common clock framework clocks)
-rely either on the exclusive reference clock utilization or on the ref
-clock rate being always constant. Needless to say that it turns out not
-true and if some other service suddenly changes the clock rate behind an
-UART port driver back no good can happen. So the port might not only end
-up with an invalid uartclk value saved, but may also experience a
-distorted output/input data since such action will effectively update the
-programmed baud-clock. We discovered such problem on Baikal-T1 SoC where
-two DW 8250 ports have got a shared reference clock. Allwinner SoC is
-equipped with an UART, which clock is derived from the CPU PLL clock
-source, so the CPU frequency change might be propagated down up to the
-serial port reference clock. This patchset provides a way to fix the
-problem to the 8250 serial port controllers and mostly fixes it for the
-DW 8250-compatible UART. I say mostly because due to not having a facility
-to pause/stop and resume/restart on-going transfers we implemented the
-UART clock rate update procedure executed post factum of the actual
-reference clock rate change.
-
-In addition the patchset includes a small optimization patch. It
-simplifies the DW APB UART ref clock rate setting procedure a bit.
-
-This patchset is rebased and tested on the mainline Linux kernel 5.7-rc4:
-base-commit: 0e698dfa2822 ("Linux 5.7-rc4")
-tag: v5.7-rc4
-
-Changelog v3:
-- Refactor the original patch to adjust the UART port divisor instead of
-  requesting an exclusive ref clock utilization.
-
-Changelog v4:
-- Discard commit b426bf0fb085 ("serial: 8250: Fix max baud limit in generic
-  8250 port") since Greg has already merged it into the tty-next branch.
-- Use EXPORT_SYMBOL_GPL() for the serial8250_update_uartclk() method.
-
-Changelog v5:
-- Refactor dw8250_clk_work_cb() function cheking the clk_get_rate()
-  return value for being erroneous and exit if it is.
-- Don't update p->uartclk in the port startup. It will be updated later in
-  the same procedure at the set_termios() function being invoked by the
-  serial_core anyway.
-
-Changelog v6:
-- Resend
-
-Link: https://lore.kernel.org/linux-serial/20200617224813.23853-1-Sergey.Semin@baikalelectronics.ru
-Changelog v7:
-- Wake the device up on the serial port divider update.
-
-Link: https://lore.kernel.org/linux-serial/20200619200251.9066-1-Sergey.Semin@baikalelectronics.ru
-Changelog v8:
-- Add a new patch:
-  "serial: 8250_dw: Pass the same rate to the clk round and set rate methods"
-
+Suggested-by: Russell King <linux@armlinux.org.uk>
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: linux-mips@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
 
-Serge Semin (4):
-  serial: 8250: Add 8250 port clock update method
-  serial: 8250_dw: Simplify the ref clock rate setting procedure
-  serial: 8250_dw: Pass the same rate to the clk round and set rate
-    methods
-  serial: 8250_dw: Fix common clocks usage race condition
+---
 
- drivers/tty/serial/8250/8250_dw.c   | 120 ++++++++++++++++++++++++----
- drivers/tty/serial/8250/8250_port.c |  40 ++++++++++
- include/linux/serial_8250.h         |   2 +
- 3 files changed, 148 insertions(+), 14 deletions(-)
+Changelog v8:
+- This is a new patch created by the Russell King suggestion.
+---
+ drivers/tty/serial/8250/8250_dw.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 12866083731d..c1511f9244bb 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -275,15 +275,15 @@ dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
+ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
+ 			       struct ktermios *old)
+ {
+-	unsigned int baud = tty_termios_baud_rate(termios);
++	unsigned long newrate = tty_termios_baud_rate(termios) * 16;
+ 	struct dw8250_data *d = to_dw8250_data(p->private_data);
+ 	long rate;
+ 	int ret;
+ 
+ 	clk_disable_unprepare(d->clk);
+-	rate = clk_round_rate(d->clk, baud * 16);
++	rate = clk_round_rate(d->clk, newrate);
+ 	if (rate > 0) {
+-		ret = clk_set_rate(d->clk, rate);
++		ret = clk_set_rate(d->clk, newrate);
+ 		if (!ret)
+ 			p->uartclk = rate;
+ 	}
 -- 
 2.26.2
 
