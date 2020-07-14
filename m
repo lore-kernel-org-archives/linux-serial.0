@@ -2,153 +2,136 @@ Return-Path: <SRS0=SZDA=AZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAB5C43446
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 12:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7396AC433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 15:52:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C77522453
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 12:48:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 521C622509
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 15:52:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pSDC/jbE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728085AbgGNMsQ (ORCPT
+        id S1726602AbgGNPwF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jul 2020 08:48:16 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:32992 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726823AbgGNMsP (ORCPT
+        Tue, 14 Jul 2020 11:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726062AbgGNPwE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jul 2020 08:48:15 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 4D24F8030809;
-        Tue, 14 Jul 2020 12:48:12 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at baikalelectronics.ru
-Received: from mail.baikalelectronics.ru ([127.0.0.1])
-        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id qVqk18cJToeC; Tue, 14 Jul 2020 15:48:11 +0300 (MSK)
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        <linux-mips@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v8 1/4] serial: 8250: Add 8250 port clock update method
-Date:   Tue, 14 Jul 2020 15:48:04 +0300
-Message-ID: <20200714124808.21493-2-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20200714124808.21493-1-Sergey.Semin@baikalelectronics.ru>
-References: <20200714124808.21493-1-Sergey.Semin@baikalelectronics.ru>
+        Tue, 14 Jul 2020 11:52:04 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F8BC061755;
+        Tue, 14 Jul 2020 08:52:04 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id dp18so22539046ejc.8;
+        Tue, 14 Jul 2020 08:52:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8ma385S9XtvllyPFqZZyWkLBqNuOCBNLKQ/FFZ13ZKw=;
+        b=pSDC/jbE+Qa0bij2n1SZrZmVpg9S6LwvxnLh8cKVELNbEfqqnBg1g0sb7cWiw45Ili
+         9NfqiIVYzTQxp4PwLkPetUL7ssZxBPXftfuwMu3nCJ3pQ+Sc3tbiJ+RFBuW8+D99ApOb
+         9qlBKMj1iDEagnxzceho9tnGWc4p/h5HhcHnP9sZqt4/f8zFsNEMCow/vTNuGw39GLoC
+         zmPo4f7R8/MdI2StVEceJ9S/oWm6fR4wGdPOmS57gcDkZ3iTNMpN2l5Pns34KMkmflW2
+         fkRTZiGPvJ0gYbF75MCd8CH2ZrSGAWZYmSzYFVrV9EgqHw3dW+62+eFVJ7GgN4025KxT
+         zTZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8ma385S9XtvllyPFqZZyWkLBqNuOCBNLKQ/FFZ13ZKw=;
+        b=iygjFQRx7H8khHHHsMWFlffoqa6YIc0sCA7Y3pMOn+9J4xRtCnynPEP6i+hdbmx+V4
+         9+xCexrRp2dORRQ3wAPMozwKM/QNUZ6YkPb0lgXW0D/PqDkijJ2CKaYYiFERt+joIykk
+         CVE82P7qXWsTq4NUKG+Xdsj1E+Nll52yPoNUOiDwGOAzley2bGFa0aLHqmYdvUU9APSK
+         wuJ4AoXVveqGPfN5YLXiw6F0FdSxXGqip8Jor7KPGa7Cwl2/By4xUe3eEPdIi/ZlW3dD
+         VtX6kFInFN17Si8E+0pxU1PsVq00H2Xg+q/XttA4kHQpnWn+8rW3G1LzjTPJ0ATp2RDH
+         asDQ==
+X-Gm-Message-State: AOAM532Yz9J4SRGZ13yVlSX8ofcIPttLp4AJJ9sMYchcYgJXoXMyty+7
+        DXKdBFEE2gwH8ItyiR+SW30=
+X-Google-Smtp-Source: ABdhPJwVwWy+mYhcQbMzIwAsrvhXC5qyNxh45YEnq3DASdGc4ydc2Fij/VqDYPXLeulhFsshSe1GpQ==
+X-Received: by 2002:a17:906:26c7:: with SMTP id u7mr4988154ejc.13.1594741923259;
+        Tue, 14 Jul 2020 08:52:03 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id cq7sm14958442edb.66.2020.07.14.08.52.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2020 08:52:01 -0700 (PDT)
+Date:   Tue, 14 Jul 2020 17:52:00 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Laxman Dewangan <ldewangan@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable <stable@vger.kernel.org>,
+        Shardar Shariff Md <smohammed@nvidia.com>,
+        Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Subject: Re: [PATCH 1/2] serial: tegra: fix CREAD handling for PIO
+Message-ID: <20200714155200.GB251696@ulmo>
+References: <20200710135947.2737-1-johan@kernel.org>
+ <20200710135947.2737-2-johan@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="8GpibOaaTibBMecb"
+Content-Disposition: inline
+In-Reply-To: <20200710135947.2737-2-johan@kernel.org>
+User-Agent: Mutt/1.14.4 (2020-06-18)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some platforms can be designed in a way so the UART port reference clock
-might be asynchronously changed at some point. In Baikal-T1 SoC this may
-happen due to the reference clock being shared between two UART ports, on
-the Allwinner SoC the reference clock is derived from the CPU clock, so
-any CPU frequency change should get to be known/reflected by/in the UART
-controller as well. But it's not enough to just update the
-uart_port->uartclk field of the corresponding UART port, the 8250
-controller reference clock divisor should be altered so to preserve
-current baud rate setting. All of these things is done in a coherent
-way by calling the serial8250_update_uartclk() method provided in this
-patch. Though note that it isn't supposed to be called from within the
-UART port callbacks because the locks using to the protect the UART port
-data are already taken in there.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+--8GpibOaaTibBMecb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
----
+On Fri, Jul 10, 2020 at 03:59:46PM +0200, Johan Hovold wrote:
+> Commit 33ae787b74fc ("serial: tegra: add support to ignore read") added
+> support for dropping input in case CREAD isn't set, but for PIO the
+> ignore_status_mask wasn't checked until after the character had been
+> put in the receive buffer.
+>=20
+> Note that the NULL tty-port test is bogus and will be removed by a
+> follow-on patch.
+>=20
+> Fixes: 33ae787b74fc ("serial: tegra: add support to ignore read")
+> Cc: stable <stable@vger.kernel.org>     # 5.4
+> Cc: Shardar Shariff Md <smohammed@nvidia.com>
+> Cc: Krishna Yarlagadda <kyarlagadda@nvidia.com>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
+> ---
+>  drivers/tty/serial/serial-tegra.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
 
-Changelog v4:
-- Export serial8250_update_uartclk() symbol for GPL modules only.
+Looks good to me:
 
-Changelog v7:
-- Wake the device up on the serial port divider update.
----
- drivers/tty/serial/8250/8250_port.c | 40 +++++++++++++++++++++++++++++
- include/linux/serial_8250.h         |  2 ++
- 2 files changed, 42 insertions(+)
+Acked-by: Thierry Reding <treding@nvidia.com>
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 4d83c85a7389..7bfa0f7d9d60 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2628,6 +2628,46 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 				  (port->uartclk + tolerance) / 16);
- }
- 
-+/*
-+ * Note in order to avoid the tty port mutex deadlock don't use the next method
-+ * within the uart port callbacks. Primarily it's supposed to be utilized to
-+ * handle a sudden reference clock rate change.
-+ */
-+void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+	unsigned int baud, quot, frac = 0;
-+	struct ktermios *termios;
-+	unsigned long flags;
-+
-+	mutex_lock(&port->state->port.mutex);
-+
-+	if (port->uartclk == uartclk)
-+		goto out_lock;
-+
-+	port->uartclk = uartclk;
-+	termios = &port->state->port.tty->termios;
-+
-+	baud = serial8250_get_baud_rate(port, termios, NULL);
-+	quot = serial8250_get_divisor(port, baud, &frac);
-+
-+	serial8250_rpm_get(up);
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	uart_update_timeout(port, termios->c_cflag, baud);
-+
-+	serial8250_set_divisor(port, baud, quot, frac);
-+	serial_port_out(port, UART_LCR, up->lcr);
-+	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	serial8250_rpm_put(up);
-+
-+out_lock:
-+	mutex_unlock(&port->state->port.mutex);
-+}
-+EXPORT_SYMBOL_GPL(serial8250_update_uartclk);
-+
- void
- serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 			  struct ktermios *old)
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 6545f8cfc8fa..2b70f736b091 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -155,6 +155,8 @@ extern int early_serial_setup(struct uart_port *port);
- 
- extern int early_serial8250_setup(struct earlycon_device *device,
- 					 const char *options);
-+extern void serial8250_update_uartclk(struct uart_port *port,
-+				      unsigned int uartclk);
- extern void serial8250_do_set_termios(struct uart_port *port,
- 		struct ktermios *termios, struct ktermios *old);
- extern void serial8250_do_set_ldisc(struct uart_port *port,
--- 
-2.26.2
+--8GpibOaaTibBMecb
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl8N1KAACgkQ3SOs138+
+s6E5wxAAh7iJ8sJY9GOfgRgH+TfVpaOx9vthw1a+YaDJkl8WT7Y7pz9YaEru4OIJ
+eBLvyt+pMPkx7Tl495j7EbFwUmZGy7F+4pse9vx686+bAwsc9+SgYRgnQzMvwsY1
+UX6Kfaj+pfWcGvYz/Gq5zQEi23ZH6QrIkEZGWm408gXMz+NzRKxABTDJx5+FRdtu
+uB2b6BNnrQ/em1dY2NTtFoNbKZpoHRm5aDXiAb/9NO4sgmJHaKB4UpNdtMBe2mHA
+uCkPzhytPCl6gzyl+EMLsrkPZQpPRDEcCoeHj/Gv01F5FRXILUUb8dhCIvhQpXZ/
+vKiHVCN7o7IfMp+CVRDSwRrcLZ4D1hQl/wDw+k4ZSAhE5InotN6nDrpJIR4kDxII
+KWEkyWkrf8buSpdCFCY6XBPtC7FAHn/W28RaD4LDE9fpXFJWawxe0ebtH+M/bRxk
+CVbjYU6NxjpdbK0YCKNUzPNQJwBU1HWErGkMU7cnPdc+04t/jVx7023JrYaRzYak
+6+2O96GdpQEa97PthXw6xVamIwWjA3383/+inuztYSXduWajpx3A1RA38ihcU04I
+stG3Ft3FHvDjEu/iE8i/8k5nvs0S/s+lJYKkdyVaJcvUAwQt2kO24x8WPkV4tdvz
+w1AIMxx54zoT9n4CHdVhc3EINKoWirt8QgAfw37VSSa2vboL4yg=
+=0eYi
+-----END PGP SIGNATURE-----
+
+--8GpibOaaTibBMecb--
