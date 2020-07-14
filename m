@@ -2,126 +2,210 @@ Return-Path: <SRS0=SZDA=AZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.6 required=3.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_IN_DEF_DKIM_WL autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F58C433E4
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 15:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0E1C433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 20:45:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A47C72222E
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 15:52:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A735B2064B
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 20:45:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jwl7xjaj"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dsDrvsXK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726062AbgGNPws (ORCPT
+        id S1726848AbgGNUpP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jul 2020 11:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
+        Tue, 14 Jul 2020 16:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgGNPwr (ORCPT
+        with ESMTP id S1725981AbgGNUpO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jul 2020 11:52:47 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDCAC061755;
-        Tue, 14 Jul 2020 08:52:47 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id d18so17729002edv.6;
-        Tue, 14 Jul 2020 08:52:47 -0700 (PDT)
+        Tue, 14 Jul 2020 16:45:14 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FADC061794
+        for <linux-serial@vger.kernel.org>; Tue, 14 Jul 2020 13:45:14 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id ga4so24372256ejb.11
+        for <linux-serial@vger.kernel.org>; Tue, 14 Jul 2020 13:45:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=HC01Z6OLDElwaYfUqlXgjB5pKfu/tIF7xhD0stkkoE4=;
-        b=Jwl7xjajpAamyRBfornhb/ooABbGMtjk3/sQx5mWMrJMj2Awgv+gDjRmAjSHkQ0Gv7
-         nlliQDgxqH4s7/dXsCh7i6CfYdJ3yAvUiXFVAFemTZ3LwvTfbvLTMjFnm6JSo0y45vCC
-         NKlz1D1AGvcc0NwxUSL4SXdyesqyufey3rJnG8PXlqgH2xFRTcL3hL0O+NPOzUTBreO0
-         ydjdztT3GK9UszUKAKMk2hP3Vx6rSvxs4vc7Z+6MLZh/MvTd7XDTyTBBdapBDC+2V0WM
-         3yWwcb2R0/egYXg3aqzRnLahJd2ZyGW+2Uf/fVZRJ47iJ/DGM7p7TU8ICfTz3IZOLgLZ
-         fKig==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kqh1NBVBlHrZFE286BUwAHdoh8ntAaaIXSLlXQ7Bm6s=;
+        b=dsDrvsXKwnz4Ec5AoGC7UzNnGr6HGFuQx0fMIrzZdpvzT8V+sMBjSseqibtKkUleNp
+         YAQBi76uicXluskJd+hTeTsyWAg05jNYM0frcHY4PBAtEKlADxwqvaJdPcxxHuR6fSg4
+         Z8Av9Xw3kWBU7AcvAiZLJvP0ANAQYQY/1HRVk5m0U6KRDc+OtwfbXN0N1c0AAmeVdh96
+         7p0jLgi5ACnL+H0e8teJtGjWlj+U1ay7gVzmHsVYk1zN8dRbuaztcrZ66pzJ2Ok7zto2
+         EGMDow93S9QTHHgzoSZB16/uOQk9fIg12WPTEmg38d7cg2Gx2p4CpzISSSFIUXkbDAsr
+         HC/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=HC01Z6OLDElwaYfUqlXgjB5pKfu/tIF7xhD0stkkoE4=;
-        b=hnnNxSNxP8jS0zf+cr+Osm2zU7ENoKcmMZfH9h5gXQau5xGM/lHmg2nAToeqV0AEVo
-         iz8552SuRwiXrEW5Zu9gn4uK518ZNWNSVqELRPgCl9X2U+lRj+M2yJHqyH3ReO48hGpP
-         8wjwSHNLF7dNsDCAO5A4SFwXqBlCYZhMn4LanaaMqyH3gymgwQ6UWMfgjm8d5qz4ZWXV
-         tPIGNdZ0fw3Buhqd5+dhEIRUTaaGipI+1zMpbYyZObyaUcPKmhjBSUHG6JX/koSnqgug
-         pwqJGZn4prpWaf0MR+eWxtsdIL3peutbjrMRpcRB2PgoHT/YI9CbAbgRYQ4PAI3j85M8
-         WyYQ==
-X-Gm-Message-State: AOAM530rG31DP6NeCByLmAT5RJ237zi4Ncgurre2nJMI0cSxzVJxqQcz
-        EcUogcBvEk5qRud9Ea1Um3w=
-X-Google-Smtp-Source: ABdhPJwM+0LjznQqykK788nYYpN22ezdQK2v668RvcWSXO5fMQpdt3NfrSE/i4oQAr0H+Naf8jTS9w==
-X-Received: by 2002:a05:6402:2cb:: with SMTP id b11mr5506993edx.66.1594741966218;
-        Tue, 14 Jul 2020 08:52:46 -0700 (PDT)
-Received: from localhost ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id h10sm14583606edz.31.2020.07.14.08.52.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2020 08:52:45 -0700 (PDT)
-Date:   Tue, 14 Jul 2020 17:52:44 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Laxman Dewangan <ldewangan@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: tegra: drop bogus NULL tty-port checks
-Message-ID: <20200714155244.GC251696@ulmo>
-References: <20200710135947.2737-1-johan@kernel.org>
- <20200710135947.2737-3-johan@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kqh1NBVBlHrZFE286BUwAHdoh8ntAaaIXSLlXQ7Bm6s=;
+        b=Nc2SPZtCNkJ0v2TDVPk93V+UnSL5v7nhQYTHtqGShqv+WWEIFbUe/ge7syi4gmGu30
+         RCP8MmU/CtjCkpirGo07y76PRO9rZHJlQoBljRUy/wzQcsIjYl1A8DxfY4GaqXFIiCzS
+         bXPeRBgtuQ1muDyTABtOtkEl6YGfrtbJu3PVXgLb0gylnM5Az0osrlqI2VyxbnzTSjb5
+         8qTbDOSj7xFbp4B+3mnvUGxGo6MuGhZEO2V/wecbHfD7xAjQte9+jqUZ1r687fuVtmlc
+         ukjyX9o/a0IdQjMKHuTNVmLMt8VasDVJ7XJC4s3UepmVt2RMSpGI+OJ/V2DkS4I7t7jD
+         3xdA==
+X-Gm-Message-State: AOAM5322wH3PZ4/KveFZKCyLJYOocpbbq/ITS3t7/qrm3u7fN/+P+Qju
+        0BJblqfVmMAK9r2lonvlFlSHi3hXvuCg5pHblzd71A==
+X-Google-Smtp-Source: ABdhPJysUSBHVOa53sWJQjIcFkn4l3OgSNQEcR9y15L+mAV25fgE46PISgPYdobloPCBMeTthBtC00kZdSRclXpMQu0=
+X-Received: by 2002:a17:906:fa9b:: with SMTP id lt27mr6000034ejb.513.1594759512692;
+ Tue, 14 Jul 2020 13:45:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="0lnxQi9hkpPO77W3"
-Content-Disposition: inline
-In-Reply-To: <20200710135947.2737-3-johan@kernel.org>
-User-Agent: Mutt/1.14.4 (2020-06-18)
+References: <20200714124113.20918-1-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20200714124113.20918-1-Sergey.Semin@baikalelectronics.ru>
+From:   Daniel Winkler <danielwinkler@google.com>
+Date:   Tue, 14 Jul 2020 13:45:01 -0700
+Message-ID: <CAP2xMbvwxYaGPPCDWY2LWUc2te8kS9t-+A0zieYp3RiGMJR6ng@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_mtk: Fix high-speed baud rates clamping
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Claire Chang <tientzu@google.com>,
+        Nicolas Boichat <drinkcat@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Aaron Sierra <asierra@xes-inc.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        chromeos-bluetooth-upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        abhishekpandit@chromium.org, stable@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Thank you Sergey for looking into this. Adding folks working on this
+platform to perform validation of the proposed patch.
 
---0lnxQi9hkpPO77W3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Best,
+Daniel
 
-On Fri, Jul 10, 2020 at 03:59:47PM +0200, Johan Hovold wrote:
-> The struct tty_port is part of the uart state and will never be NULL in
-> the receive helpers. Drop the bogus NULL checks and rename the
-> pointer-variables "port" to differentiate them from struct tty_struct
-> pointers (which can be NULL).
->=20
-> Fixes: 962963e4ee23 ("serial: tegra: Switch to using struct tty_port")
-> Signed-off-by: Johan Hovold <johan@kernel.org>
+On Tue, Jul 14, 2020 at 5:41 AM Serge Semin
+<Sergey.Semin@baikalelectronics.ru> wrote:
+>
+> Commit 7b668c064ec3 ("serial: 8250: Fix max baud limit in generic 8250
+> port") fixed limits of a baud rate setting for a generic 8250 port.
+> In other words since that commit the baud rate has been permitted to be
+> within [uartclk / 16 / UART_DIV_MAX; uartclk / 16], which is absolutely
+> normal for a standard 8250 UART port. But there are custom 8250 ports,
+> which provide extended baud rate limits. In particular the Mediatek 8250
+> port can work with baud rates up to "uartclk" speed.
+>
+> Normally that and any other peculiarity is supposed to be handled in a
+> custom set_termios() callback implemented in the vendor-specific
+> 8250-port glue-driver. Currently that is how it's done for the most of
+> the vendor-specific 8250 ports, but for some reason for Mediatek a
+> solution has been spread out to both the glue-driver and to the generic
+> 8250-port code. Due to that a bug has been introduced, which permitted the
+> extended baud rate limit for all even for standard 8250-ports. The bug
+> has been fixed by the commit 7b668c064ec3 ("serial: 8250: Fix max baud
+> limit in generic 8250 port") by narrowing the baud rates limit back down to
+> the normal bounds. Unfortunately by doing so we also broke the
+> Mediatek-specific extended bauds feature.
+>
+> A fix of the problem described above is twofold. First since we can't get
+> back the extended baud rate limits feature to the generic set_termios()
+> function and that method supports only a standard baud rates range, the
+> requested baud rate must be locally stored before calling it and then
+> restored back to the new termios structure after the generic set_termios()
+> finished its magic business. By doing so we still use the
+> serial8250_do_set_termios() method to set the LCR/MCR/FCR/etc. registers,
+> while the extended baud rate setting procedure will be performed later in
+> the custom Mediatek-specific set_termios() callback. Second since a true
+> baud rate is now fully calculated in the custom set_termios() method we
+> need to locally update the port timeout by calling the
+> uart_update_timeout() function. After the fixes described above are
+> implemented in the 8250_mtk.c driver, the Mediatek 8250-port should
+> get back to normally working with extended baud rates.
+>
+> Link: https://lore.kernel.org/linux-serial/20200701211337.3027448-1-danielwinkler@google.com
+>
+> Fixes: 7b668c064ec3 ("serial: 8250: Fix max baud limit in generic 8250 port")
+> Reported-by: Daniel Winkler <danielwinkler@google.com>
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+>
 > ---
->  drivers/tty/serial/serial-tegra.c | 13 ++++---------
->  1 file changed, 4 insertions(+), 9 deletions(-)
-
-Acked-by: Thierry Reding <treding@nvidia.com>
-
---0lnxQi9hkpPO77W3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl8N1MwACgkQ3SOs138+
-s6HN4Q/9GbF9ywuYWv23IziNN5Nomf0Lg5LzLc4u2KZiDaVFS94F7kqYc2ZVI189
-xKiFdeXeWfKadEcU3b9v8aSZeG+jQyjRq8SjlVa0jwN3pI1MQPEGUHeIKS53rWuy
-nmm3csdutYZEP9N4I7WPpgUJkhL8ReY5ycJmgAQT8Pw6lc/ikgg2RqZo8GK/L4vF
-DfcXXOGWf0C9rM8FS0Gsm3j0ZEiMNpo2mWqIb58nBZIW0DrYfg+E5CNB3KeVc6ry
-BXANwBwth2Np20gcTu29RYClJ+jPIaHLIyoyu/z1JFu4fKuQ8fE+5srm0UqrvKnB
-XXsr7Uck2Pp+cIICAwURnkeAdP/81ak27BvPJe+0039CRs0HxrQ8aLbEgfMU+0i+
-MoGuqpjYC+HmMEoMDUICoB0WHtHAoaeocUxN7wO45HMei4Vme4yDHrpsVQMeZ3Iw
-3SPuGaSPcjRqYnxvkDcMwLpbdj6llcpPO3vf5FGHD8LdgxGTcugz2/n43By1rDLS
-+1QitK/7JPf4hvaoBeYvd59GqRSc+oO0chrnHoWODjhC3kqS+VAjdU8bhcJLDEet
-GiWN2CqDsKujxrLj8gRqg72YE5CVXriVCiQdkULQz6g4qI9XA1/hP+wWKcJybB6l
-FQylj2A4/s1ZU5+APCsrmUlAOWkVYKradW0d0iG8Pozn120jpik=
-=O4HE
------END PGP SIGNATURE-----
-
---0lnxQi9hkpPO77W3--
+>
+> Folks, sorry for a delay with the problem fix. A solution is turned out to
+> be a bit more complicated than I originally thought in my comment to the
+> Daniel revert-patch.
+>
+> Please also note, that I don't have a Mediatek hardware to test the
+> solution suggested in the patch. The code is written as on so called
+> the tip of the pen after digging into the 8250_mtk.c and 8250_port.c
+> drivers code. So please Daniel or someone with Mediatek 8250-port
+> available on a board test this patch first and report about the results in
+> reply to this emailing thread. After that, if your conclusion is positive
+> and there is no objection against the solution design the patch can be
+> merged in.
+>
+> Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+> Cc: Daniel Winkler <danielwinkler@google.com>
+> Cc: Aaron Sierra <asierra@xes-inc.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Cc: Vignesh Raghavendra <vigneshr@ti.com>
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-mediatek@lists.infradead.org
+> Cc: BlueZ <linux-bluetooth@vger.kernel.org>
+> Cc: chromeos-bluetooth-upstreaming <chromeos-bluetooth-upstreaming@chromium.org>
+> Cc: abhishekpandit@chromium.org
+> Cc: stable@vger.kernel.org
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+>
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index f839380c2f4c..98b8a3e30733 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -306,8 +306,21 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
+>         }
+>  #endif
+>
+> +       /*
+> +        * Store the requested baud rate before calling the generic 8250
+> +        * set_termios method. Standard 8250 port expects bauds to be
+> +        * no higher than (uartclk / 16) so the baud will be clamped if it
+> +        * gets out of that bound. Mediatek 8250 port supports speed
+> +        * higher than that, therefore we'll get original baud rate back
+> +        * after calling the generic set_termios method and recalculate
+> +        * the speed later in this method.
+> +        */
+> +       baud = tty_termios_baud_rate(termios);
+> +
+>         serial8250_do_set_termios(port, termios, old);
+>
+> +       tty_termios_encode_baud_rate(termios, baud, baud);
+> +
+>         /*
+>          * Mediatek UARTs use an extra highspeed register (MTK_UART_HIGHS)
+>          *
+> @@ -339,6 +352,11 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
+>          */
+>         spin_lock_irqsave(&port->lock, flags);
+>
+> +       /*
+> +        * Update the per-port timeout.
+> +        */
+> +       uart_update_timeout(port, termios->c_cflag, baud);
+> +
+>         /* set DLAB we have cval saved in up->lcr from the call to the core */
+>         serial_port_out(port, UART_LCR, up->lcr | UART_LCR_DLAB);
+>         serial_dl_write(up, quot);
+> --
+> 2.26.2
+>
