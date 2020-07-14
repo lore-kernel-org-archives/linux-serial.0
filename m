@@ -2,160 +2,174 @@ Return-Path: <SRS0=SZDA=AZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC10EC433E3
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 11:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE17DC433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 12:41:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C651021897
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 11:29:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1594726156;
-	bh=I6pDkwSKrWWZUDebWwls+2rzc5Lnk/KZPJHHytzxk68=;
-	h=Subject:To:Cc:References:From:Date:In-Reply-To:List-ID:From;
-	b=Xfsk0vUJcr/EDxpGicIoHoHNPYdtuLE8JbKrfnI1VfEtrinJw8Y3do3oOP58dVi5q
-	 O/7/i2dc4g051LSiRyjVGStaiz71ErxhqyviBSfyAv2Bm0j3uykPBBC+6GG9SxWve4
-	 cypP3kAsWWCgQ/KnHxSAkMb5vofjw9tFn142pXSo=
+	by mail.kernel.org (Postfix) with ESMTP id D052E208FE
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jul 2020 12:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbgGNL3Q (ORCPT
+        id S1726914AbgGNMlX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jul 2020 07:29:16 -0400
-Received: from mail-ej1-f65.google.com ([209.85.218.65]:39646 "EHLO
-        mail-ej1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726252AbgGNL3Q (ORCPT
+        Tue, 14 Jul 2020 08:41:23 -0400
+Received: from mail.baikalelectronics.com ([87.245.175.226]:32916 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726354AbgGNMlX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jul 2020 07:29:16 -0400
-Received: by mail-ej1-f65.google.com with SMTP id w6so21197230ejq.6;
-        Tue, 14 Jul 2020 04:29:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xph+e5Wgs29Mq4JQTkkGF6Lc0G5UFxbS0Ft+cUAArB8=;
-        b=KW41Zn1LLDT/ZWUkqopfJs5YDzrW29uA6olpaRxRvvqk2gjNUK/pwXOG/heOFygG9l
-         mjPFyU10V2dcWuK2kKnsUFohaaVo9Hv76zQUe3GdJA1XuX/B6W9B3gx/TTlsuN6wBC4T
-         aJT3i0/ZYgsbUjCeZjGCQBPRxJ/hp0WJe/PdtaWspFdAUpHThW1IJpju+4IexIlqCzwX
-         3aS7PP8QGnYd5N99ksyu9Uu+RVu7sBcqP7Lzrg8axam/i6VA9/6exEuz9hLbw457wNwv
-         e+LjuObJ/5nKZZq/tLBN2jgprJvhp4zVf1bYfz9PQXjGvMBMojONhBoCwejcqaYLOHpE
-         xIyQ==
-X-Gm-Message-State: AOAM5333qQCGvItrC9o2szYbNwTg/S/Guyw8WSqC+upnM2+kJT/1rryS
-        m2ycw70PkdLSSJUs3/fhJ98/N6rW
-X-Google-Smtp-Source: ABdhPJzQnz4VFBFVzpyWoYnkX1YyFcr0HPY6Qzm+Ck/nD6Lb32DImL6L+o1XRZd+9eAAshqPmCMrMw==
-X-Received: by 2002:a17:906:375a:: with SMTP id e26mr4208219ejc.324.1594726153373;
-        Tue, 14 Jul 2020 04:29:13 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id cq7sm14345902edb.66.2020.07.14.04.29.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jul 2020 04:29:12 -0700 (PDT)
-Subject: Re: [PATCH v2] serial: mxs-auart: add missed iounmap() in probe
- failure and remove
-To:     Chuhong Yuan <hslester96@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20200709135608.68290-1-hslester96@gmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <8fcb4cd4-3a3a-5240-bce4-ef740a243856@kernel.org>
-Date:   Tue, 14 Jul 2020 13:29:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 14 Jul 2020 08:41:23 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id F1F208030809;
+        Tue, 14 Jul 2020 12:41:19 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at baikalelectronics.ru
+Received: from mail.baikalelectronics.ru ([127.0.0.1])
+        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id wvIaP-V6CogS; Tue, 14 Jul 2020 15:41:18 +0300 (MSK)
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Daniel Winkler <danielwinkler@google.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Aaron Sierra <asierra@xes-inc.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        chromeos-bluetooth-upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        <abhishekpandit@chromium.org>, <stable@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] serial: 8250_mtk: Fix high-speed baud rates clamping
+Date:   Tue, 14 Jul 2020 15:41:12 +0300
+Message-ID: <20200714124113.20918-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-In-Reply-To: <20200709135608.68290-1-hslester96@gmail.com>
-Content-Type: text/plain; charset=iso-8859-2
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 09. 07. 20, 15:56, Chuhong Yuan wrote:
-> This driver calls ioremap() in probe, but it misses calling iounmap() in 
-> probe's error handler and remove.
-> Add the missed calls to fix it.
-> 
-> Fixes: 47d37d6f94cc ("serial: Add auart driver for i.MX23/28")
-> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> ---
-> Changes in v2:
->   - Use iounmap() instead of devm_ioremap() to fix the bugs.
+Commit 7b668c064ec3 ("serial: 8250: Fix max baud limit in generic 8250
+port") fixed limits of a baud rate setting for a generic 8250 port.
+In other words since that commit the baud rate has been permitted to be
+within [uartclk / 16 / UART_DIV_MAX; uartclk / 16], which is absolutely
+normal for a standard 8250 UART port. But there are custom 8250 ports,
+which provide extended baud rate limits. In particular the Mediatek 8250
+port can work with baud rates up to "uartclk" speed.
 
-Out of curiosity, what was wrong with devm_ioremap? I seem I cannot find
-the reason...
+Normally that and any other peculiarity is supposed to be handled in a
+custom set_termios() callback implemented in the vendor-specific
+8250-port glue-driver. Currently that is how it's done for the most of
+the vendor-specific 8250 ports, but for some reason for Mediatek a
+solution has been spread out to both the glue-driver and to the generic
+8250-port code. Due to that a bug has been introduced, which permitted the
+extended baud rate limit for all even for standard 8250-ports. The bug
+has been fixed by the commit 7b668c064ec3 ("serial: 8250: Fix max baud
+limit in generic 8250 port") by narrowing the baud rates limit back down to
+the normal bounds. Unfortunately by doing so we also broke the
+Mediatek-specific extended bauds feature.
 
->   - Modify the subject and the description.
-> 
->  drivers/tty/serial/mxs-auart.c | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> index b4f835e7de23..b784323a6a7b 100644
-> --- a/drivers/tty/serial/mxs-auart.c
-> +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -1698,21 +1698,21 @@ static int mxs_auart_probe(struct platform_device *pdev)
->  	irq = platform_get_irq(pdev, 0);
->  	if (irq < 0) {
->  		ret = irq;
-> -		goto out_disable_clks;
-> +		goto out_iounmap;
->  	}
->  
->  	s->port.irq = irq;
->  	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
->  			       dev_name(&pdev->dev), s);
->  	if (ret)
-> -		goto out_disable_clks;
-> +		goto out_iounmap;
->  
->  	platform_set_drvdata(pdev, s);
->  
->  	ret = mxs_auart_init_gpios(s, &pdev->dev);
->  	if (ret) {
->  		dev_err(&pdev->dev, "Failed to initialize GPIOs.\n");
-> -		goto out_disable_clks;
-> +		goto out_iounmap;
->  	}
->  
->  	/*
-> @@ -1720,7 +1720,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
->  	 */
->  	ret = mxs_auart_request_gpio_irq(s);
->  	if (ret)
-> -		goto out_disable_clks;
-> +		goto out_iounmap;
->  
->  	auart_port[s->port.line] = s;
->  
-> @@ -1746,6 +1746,9 @@ static int mxs_auart_probe(struct platform_device *pdev)
->  	mxs_auart_free_gpio_irq(s);
->  	auart_port[pdev->id] = NULL;
->  
-> +out_iounmap:
-> +	iounmap(s->port.membase);
-> +
->  out_disable_clks:
->  	if (is_asm9260_auart(s)) {
->  		clk_disable_unprepare(s->clk);
-> @@ -1761,6 +1764,7 @@ static int mxs_auart_remove(struct platform_device *pdev)
->  	uart_remove_one_port(&auart_driver, &s->port);
->  	auart_port[pdev->id] = NULL;
->  	mxs_auart_free_gpio_irq(s);
-> +	iounmap(s->port.membase);
->  	if (is_asm9260_auart(s)) {
->  		clk_disable_unprepare(s->clk);
->  		clk_disable_unprepare(s->clk_ahb);
-> 
+A fix of the problem described above is twofold. First since we can't get
+back the extended baud rate limits feature to the generic set_termios()
+function and that method supports only a standard baud rates range, the
+requested baud rate must be locally stored before calling it and then
+restored back to the new termios structure after the generic set_termios()
+finished its magic business. By doing so we still use the
+serial8250_do_set_termios() method to set the LCR/MCR/FCR/etc. registers,
+while the extended baud rate setting procedure will be performed later in
+the custom Mediatek-specific set_termios() callback. Second since a true
+baud rate is now fully calculated in the custom set_termios() method we
+need to locally update the port timeout by calling the
+uart_update_timeout() function. After the fixes described above are
+implemented in the 8250_mtk.c driver, the Mediatek 8250-port should
+get back to normally working with extended baud rates.
 
+Link: https://lore.kernel.org/linux-serial/20200701211337.3027448-1-danielwinkler@google.com
 
+Fixes: 7b668c064ec3 ("serial: 8250: Fix max baud limit in generic 8250 port")
+Reported-by: Daniel Winkler <danielwinkler@google.com>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+
+---
+
+Folks, sorry for a delay with the problem fix. A solution is turned out to
+be a bit more complicated than I originally thought in my comment to the
+Daniel revert-patch.
+
+Please also note, that I don't have a Mediatek hardware to test the
+solution suggested in the patch. The code is written as on so called
+the tip of the pen after digging into the 8250_mtk.c and 8250_port.c
+drivers code. So please Daniel or someone with Mediatek 8250-port
+available on a board test this patch first and report about the results in
+reply to this emailing thread. After that, if your conclusion is positive
+and there is no objection against the solution design the patch can be
+merged in.
+
+Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+Cc: Daniel Winkler <danielwinkler@google.com>
+Cc: Aaron Sierra <asierra@xes-inc.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Vignesh Raghavendra <vigneshr@ti.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-mediatek@lists.infradead.org
+Cc: BlueZ <linux-bluetooth@vger.kernel.org>
+Cc: chromeos-bluetooth-upstreaming <chromeos-bluetooth-upstreaming@chromium.org>
+Cc: abhishekpandit@chromium.org
+Cc: stable@vger.kernel.org
+---
+ drivers/tty/serial/8250/8250_mtk.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index f839380c2f4c..98b8a3e30733 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -306,8 +306,21 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	}
+ #endif
+ 
++	/*
++	 * Store the requested baud rate before calling the generic 8250
++	 * set_termios method. Standard 8250 port expects bauds to be
++	 * no higher than (uartclk / 16) so the baud will be clamped if it
++	 * gets out of that bound. Mediatek 8250 port supports speed
++	 * higher than that, therefore we'll get original baud rate back
++	 * after calling the generic set_termios method and recalculate
++	 * the speed later in this method.
++	 */
++	baud = tty_termios_baud_rate(termios);
++
+ 	serial8250_do_set_termios(port, termios, old);
+ 
++	tty_termios_encode_baud_rate(termios, baud, baud);
++
+ 	/*
+ 	 * Mediatek UARTs use an extra highspeed register (MTK_UART_HIGHS)
+ 	 *
+@@ -339,6 +352,11 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 */
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
++	/*
++	 * Update the per-port timeout.
++	 */
++	uart_update_timeout(port, termios->c_cflag, baud);
++
+ 	/* set DLAB we have cval saved in up->lcr from the call to the core */
+ 	serial_port_out(port, UART_LCR, up->lcr | UART_LCR_DLAB);
+ 	serial_dl_write(up, quot);
 -- 
-js
-suse labs
+2.26.2
+
