@@ -2,61 +2,61 @@ Return-Path: <SRS0=G31y=A2=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC0CC433DF
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jul 2020 11:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 710EEC433E2
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jul 2020 11:08:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 83E5B2072E
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jul 2020 11:07:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4FE882072E
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jul 2020 11:08:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="lqrkG9U7"
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="gJLhhB65"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731393AbgGOLHs (ORCPT
+        id S1731404AbgGOLIB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Jul 2020 07:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48520 "EHLO
+        Wed, 15 Jul 2020 07:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729557AbgGOLHr (ORCPT
+        with ESMTP id S1731402AbgGOLIB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Jul 2020 07:07:47 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4333EC061755
-        for <linux-serial@vger.kernel.org>; Wed, 15 Jul 2020 04:07:47 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id h19so2034517ljg.13
-        for <linux-serial@vger.kernel.org>; Wed, 15 Jul 2020 04:07:47 -0700 (PDT)
+        Wed, 15 Jul 2020 07:08:01 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B393CC061755
+        for <linux-serial@vger.kernel.org>; Wed, 15 Jul 2020 04:08:00 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id b25so2100298ljp.6
+        for <linux-serial@vger.kernel.org>; Wed, 15 Jul 2020 04:08:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=antmicro.com; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=muwTuXzB4pduFj+DdPoctnqj23punB7VX+M8kMsnQIM=;
-        b=lqrkG9U7lhRpbZIKBVjQPP2A4bCq7uYOqE3qpc1lpJXFHea0xNsJThKRaXvue8X1/+
-         b8bbqSEXUbtNE5uoDE3sMcjcGaBvD/GeOu0CKZ/ua/pmC73d0gaWOoF/enaeyZtU+3fz
-         NZl3cTtRlz786CmTWlFScF6pBl67qSf0pp+F0=
+        bh=cPKWFtolDPofy4S426BSH99RJKD82yAKEvmC7z8YXk4=;
+        b=gJLhhB65O3AFnwx10zb1P6z5SfxXuuLNR9U+5CJSFJhuENqj1tK0n3ikqXMHVImE33
+         d845rP+ei5QVptZXFt4hsbIFG49n7LDABVG9YBqIuWNTgSCQcyHoopDFvDQFXtQqD+t+
+         he2yuQeQ4DOVtNmDcf1243W34i49Qnu8fohRY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=muwTuXzB4pduFj+DdPoctnqj23punB7VX+M8kMsnQIM=;
-        b=C9nCurPGH8c4sRimpaIgUBRgerLCPVm9sRnrOCoE/ZL5gKIq7xbOa/J5DwhrXjDZ5u
-         yR2ndLDRHKRm1UI0zueGVn8yS/ggffpczEzJAcgPEcSbBFC6Dh6HfawgMZVX2w0XY+aX
-         l+rPmdNVlwQXfOP6RaorAALOmf4c50KJcIh92H2bT6npdOU3RoHxqhZyJulO1vlPNqJd
-         WT9Iehyuuww39qMy4dOW4+b4eWtoVmwqw5JVkDT9W7lRZ3a1mai0LKypKt1nLNSmjlM4
-         0ljPMUD6AsZdPH++FQogNjwVmjy6nQI0iVI/OHf0Ldv/CrfflLJJZyAm3wWulYn5HUuS
-         Oqgw==
-X-Gm-Message-State: AOAM5313OsSCslyw9GxcQG9MXbO6QsfJx0s485vH4lukcsq8riclH9Os
-        v3YIQhRxdPbb92lwe0HRlLfOGQ==
-X-Google-Smtp-Source: ABdhPJxI6sRzsPUQXXX+XakE5EK352uo2tLqlQoLfcaCFozkHsVWK7FoRvZ7fWtyOq+crAM+I3olLw==
-X-Received: by 2002:a2e:9792:: with SMTP id y18mr4898856lji.172.1594811265404;
-        Wed, 15 Jul 2020 04:07:45 -0700 (PDT)
+        bh=cPKWFtolDPofy4S426BSH99RJKD82yAKEvmC7z8YXk4=;
+        b=Czqf0EuUesAKITT8Jc7v9sSt2TTtkH9Bs+TIezc/peYyo50A8MrGfbDiWnyayamWsw
+         lYkX2rrLYppxVVkc04yRQ+W35yNcqYZHfIqAebxn8LXF49JdbmMk6qWu9GYpx2K3JcF7
+         I3B4mBHmoLUjnCkxwYZzf4wfkS7zLGBiTkycddnrv/VzwAbVjjHn/pjrlgwXBcMdVtqs
+         3F+/F+VjZRuojjMk324BE8UU1cSfz+jQef9Ef10P4gLMqFAFqpDu5Q7nVSFmR1IKK4Zb
+         It29+D9r3pN2gpEeT4C2IC8V9R8pPPj6R7cIPpfep/AOd2f54vnbJTwbA/ePu/k/ZRVJ
+         RlBw==
+X-Gm-Message-State: AOAM532lCa2uYsUT1Uy81c37deMjuk5dM1IC9rPMsZL8PIvdAq8tHfp5
+        QqWJ7+9sioqf5wWY8X3r0aWbQg==
+X-Google-Smtp-Source: ABdhPJwz2pDMsmhLzTvonSaPlbSoC+7cyhrmGqj375t8b2+Q2kDlgQr0hqRzHNs0xpVduo+n1Xjyqw==
+X-Received: by 2002:a2e:b4ed:: with SMTP id s13mr4626150ljm.296.1594811279253;
+        Wed, 15 Jul 2020 04:07:59 -0700 (PDT)
 Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
-        by smtp.gmail.com with ESMTPSA id o4sm426080lfb.52.2020.07.15.04.07.43
+        by smtp.gmail.com with ESMTPSA id m9sm430669lfb.5.2020.07.15.04.07.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2020 04:07:44 -0700 (PDT)
-Date:   Wed, 15 Jul 2020 13:07:39 +0200
+        Wed, 15 Jul 2020 04:07:58 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 13:07:53 +0200
 From:   Mateusz Holenko <mholenko@antmicro.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -80,8 +80,8 @@ Cc:     Stafford Horne <shorne@gmail.com>,
         Icenowy Zheng <icenowy@aosc.io>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-kernel@vger.kernel.org, "Gabriel L. Somlo" <gsomlo@gmail.com>
-Subject: [PATCH v8 3/5] drivers/soc/litex: add LiteX SoC Controller driver
-Message-ID: <20200715130641.1953227-3-mholenko@antmicro.com>
+Subject: [PATCH v8 4/5] dt-bindings: serial: document LiteUART bindings
+Message-ID: <20200715130641.1953227-4-mholenko@antmicro.com>
 References: <20200715130641.1953227-0-mholenko@antmicro.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -92,353 +92,86 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
+From: Filip Kokosinski <fkokosinski@antmicro.com>
 
-This commit adds driver for the FPGA-based LiteX SoC
-Controller from LiteX SoC builder.
+Add documentation for LiteUART devicetree bindings.
 
-Co-developed-by: Mateusz Holenko <mholenko@antmicro.com>
+Signed-off-by: Filip Kokosinski <fkokosinski@antmicro.com>
 Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
-Signed-off-by: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
 
 Notes:
-    Changes in v8:
-    - removed `litex_check_accessors()` helper function
-    - added crashing (BUG) on the failed LiteX CSR access test
+    No changes in v8.
 
     No changes in v7.
 
     Changes in v6:
-    - added dependency on OF || COMPILE_TEST
-    - used le32_to_cpu(readl(addr)) instead of __raw_readl
-      and writel(cpu_to_le32(value), addr) instead of __raw_writel
-      to take advantage of memory barriers provided by readl/writel
+    - fixed license header
 
-    Changes in v5:
-    - removed helper accessors and used __raw_readl/__raw_writel instead
-    - fixed checking for errors in litex_soc_ctrl_probe
+    No changes in v5.
 
-    Changes in v4:
-    - fixed indent in Kconfig's help section
-    - fixed copyright header
-    - changed compatible to "litex,soc-controller"
-    - simplified litex_soc_ctrl_probe
-    - removed unnecessary litex_soc_ctrl_remove
-   
-    This commit has been introduced in v3 of the patchset.
+    No changes in v4.
+
+    Changes in v3:
+    - added Reviewed-by tag
+    - patch number changed from 3 to 4
+    - removed changes in MAINTAINERS file (moved to patch #2)
     
-    It includes a simplified version of common 'litex.h'
-    header introduced in v2 of the patchset.
+    Changes in v2:
+    - binding description rewritten to a yaml schema file
+    - added interrupt line
+    - fixed unit address
+    - patch number changed from 2 to 3
 
- MAINTAINERS                        |   2 +
- drivers/soc/Kconfig                |   1 +
- drivers/soc/Makefile               |   1 +
- drivers/soc/litex/Kconfig          |  15 +++
- drivers/soc/litex/Makefile         |   3 +
- drivers/soc/litex/litex_soc_ctrl.c | 192 +++++++++++++++++++++++++++++
- include/linux/litex.h              |  24 ++++
- 7 files changed, 238 insertions(+)
- create mode 100644 drivers/soc/litex/Kconfig
- create mode 100644 drivers/soc/litex/Makefile
- create mode 100644 drivers/soc/litex/litex_soc_ctrl.c
- create mode 100644 include/linux/litex.h
+ .../bindings/serial/litex,liteuart.yaml       | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.yaml
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 39be98db7418..4d70a1b22a87 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9840,6 +9840,8 @@ M:	Karol Gugala <kgugala@antmicro.com>
- M:	Mateusz Holenko <mholenko@antmicro.com>
- S:	Maintained
- F:	Documentation/devicetree/bindings/*/litex,*.yaml
-+F:	drivers/soc/litex/litex_soc_ctrl.c
-+F:	include/linux/litex.h
- 
- LIVE PATCHING
- M:	Josh Poimboeuf <jpoimboe@redhat.com>
-diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
-index 425ab6f7e375..d097d070f579 100644
---- a/drivers/soc/Kconfig
-+++ b/drivers/soc/Kconfig
-@@ -9,6 +9,7 @@ source "drivers/soc/bcm/Kconfig"
- source "drivers/soc/fsl/Kconfig"
- source "drivers/soc/imx/Kconfig"
- source "drivers/soc/ixp4xx/Kconfig"
-+source "drivers/soc/litex/Kconfig"
- source "drivers/soc/mediatek/Kconfig"
- source "drivers/soc/qcom/Kconfig"
- source "drivers/soc/renesas/Kconfig"
-diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
-index 36452bed86ef..0b16108823ef 100644
---- a/drivers/soc/Makefile
-+++ b/drivers/soc/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_ARCH_GEMINI)	+= gemini/
- obj-y				+= imx/
- obj-$(CONFIG_ARCH_IXP4XX)	+= ixp4xx/
- obj-$(CONFIG_SOC_XWAY)		+= lantiq/
-+obj-$(CONFIG_LITEX_SOC_CONTROLLER) += litex/
- obj-y				+= mediatek/
- obj-y				+= amlogic/
- obj-y				+= qcom/
-diff --git a/drivers/soc/litex/Kconfig b/drivers/soc/litex/Kconfig
+diff --git a/Documentation/devicetree/bindings/serial/litex,liteuart.yaml b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
 new file mode 100644
-index 000000000000..c974ec3846bc
+index 000000000000..69acb222bb57
 --- /dev/null
-+++ b/drivers/soc/litex/Kconfig
-@@ -0,0 +1,15 @@
-+# SPDX-License_Identifier: GPL-2.0
++++ b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+@@ -0,0 +1,38 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 +
-+menu "Enable LiteX SoC Builder specific drivers"
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/litex,liteuart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+config LITEX_SOC_CONTROLLER
-+	tristate "Enable LiteX SoC Controller driver"
-+	depends on OF || COMPILE_TEST
-+	help
-+	  This option enables the SoC Controller Driver which verifies
-+	  LiteX CSR access and provides common litex_get_reg/litex_set_reg
-+	  accessors.
-+	  All drivers that use functions from litex.h must depend on
-+	  LITEX_SOC_CONTROLLER.
++title: LiteUART serial controller
 +
-+endmenu
-diff --git a/drivers/soc/litex/Makefile b/drivers/soc/litex/Makefile
-new file mode 100644
-index 000000000000..98ff7325b1c0
---- /dev/null
-+++ b/drivers/soc/litex/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License_Identifier: GPL-2.0
++maintainers:
++  - Karol Gugala <kgugala@antmicro.com>
++  - Mateusz Holenko <mholenko@antmicro.com>
 +
-+obj-$(CONFIG_LITEX_SOC_CONTROLLER)	+= litex_soc_ctrl.o
-diff --git a/drivers/soc/litex/litex_soc_ctrl.c b/drivers/soc/litex/litex_soc_ctrl.c
-new file mode 100644
-index 000000000000..08330c9872b0
---- /dev/null
-+++ b/drivers/soc/litex/litex_soc_ctrl.c
-@@ -0,0 +1,192 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * LiteX SoC Controller Driver
-+ *
-+ * Copyright (C) 2020 Antmicro <www.antmicro.com>
-+ *
-+ */
++description: |
++  LiteUART serial controller is a part of LiteX FPGA SoC builder. It supports
++  multiple CPU architectures, currently including e.g. OpenRISC and RISC-V.
 +
-+#include <linux/litex.h>
-+#include <linux/device.h>
-+#include <linux/errno.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+#include <linux/printk.h>
-+#include <linux/module.h>
-+#include <linux/errno.h>
-+#include <linux/io.h>
++properties:
++  compatible:
++    const: litex,liteuart
 +
-+/*
-+ * The parameters below are true for LiteX SoC
-+ * configured for 8-bit CSR Bus, 32-bit aligned.
-+ *
-+ * Supporting other configurations will require
-+ * extending the logic in this header.
-+ */
-+#define LITEX_REG_SIZE             0x4
-+#define LITEX_SUBREG_SIZE          0x1
-+#define LITEX_SUBREG_SIZE_BIT      (LITEX_SUBREG_SIZE * 8)
++  reg:
++    maxItems: 1
 +
-+static DEFINE_SPINLOCK(csr_lock);
++  interrupts:
++    maxItems: 1
 +
-+/*
-+ * LiteX SoC Generator, depending on the configuration,
-+ * can split a single logical CSR (Control & Status Register)
-+ * into a series of consecutive physical registers.
-+ *
-+ * For example, in the configuration with 8-bit CSR Bus,
-+ * 32-bit aligned (the default one for 32-bit CPUs) a 32-bit
-+ * logical CSR will be generated as four 32-bit physical registers,
-+ * each one containing one byte of meaningful data.
-+ *
-+ * For details see: https://github.com/enjoy-digital/litex/wiki/CSR-Bus
-+ *
-+ * The purpose of `litex_set_reg`/`litex_get_reg` is to implement
-+ * the logic of writing to/reading from the LiteX CSR in a single
-+ * place that can be then reused by all LiteX drivers.
-+ */
-+void litex_set_reg(void __iomem *reg, unsigned long reg_size,
-+		    unsigned long val)
-+{
-+	unsigned long shifted_data, shift, i;
-+	unsigned long flags;
++required:
++  - compatible
++  - reg
 +
-+	spin_lock_irqsave(&csr_lock, flags);
-+
-+	for (i = 0; i < reg_size; ++i) {
-+		shift = ((reg_size - i - 1) * LITEX_SUBREG_SIZE_BIT);
-+		shifted_data = val >> shift;
-+
-+		writel(cpu_to_le32(shifted_data), reg + (LITEX_REG_SIZE * i));
-+	}
-+
-+	spin_unlock_irqrestore(&csr_lock, flags);
-+}
-+
-+unsigned long litex_get_reg(void __iomem *reg, unsigned long reg_size)
-+{
-+	unsigned long shifted_data, shift, i;
-+	unsigned long result = 0;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&csr_lock, flags);
-+
-+	for (i = 0; i < reg_size; ++i) {
-+		shifted_data = le32_to_cpu(readl(reg + (LITEX_REG_SIZE * i)));
-+
-+		shift = ((reg_size - i - 1) * LITEX_SUBREG_SIZE_BIT);
-+		result |= (shifted_data << shift);
-+	}
-+
-+	spin_unlock_irqrestore(&csr_lock, flags);
-+
-+	return result;
-+}
-+
-+#define SCRATCH_REG_OFF         0x04
-+#define SCRATCH_REG_SIZE        4
-+#define SCRATCH_REG_VALUE       0x12345678
-+#define SCRATCH_TEST_VALUE      0xdeadbeef
-+
-+/*
-+ * Check LiteX CSR read/write access
-+ *
-+ * This function reads and writes a scratch register in order
-+ * to verify if CSR access works.
-+ *
-+ * In case any problems are detected, the driver should panic.
-+ *
-+ * Access to the LiteX CSR is, by design, done in CPU native
-+ * endianness. The driver should not dynamically configure
-+ * access functions when the endianness mismatch is detected.
-+ * Such situation indicates problems in the soft SoC design
-+ * and should be solved at the LiteX generator level,
-+ * not in the software.
-+ */
-+static int litex_check_csr_access(void __iomem *reg_addr)
-+{
-+	unsigned long reg;
-+
-+	reg = litex_get_reg(reg_addr + SCRATCH_REG_OFF, SCRATCH_REG_SIZE);
-+
-+	if (reg != SCRATCH_REG_VALUE) {
-+		panic("Scratch register read error! Expected: 0x%x but got: 0x%lx",
-+			SCRATCH_REG_VALUE, reg);
-+		return -EINVAL;
-+	}
-+
-+	litex_set_reg(reg_addr + SCRATCH_REG_OFF,
-+		SCRATCH_REG_SIZE, SCRATCH_TEST_VALUE);
-+	reg = litex_get_reg(reg_addr + SCRATCH_REG_OFF, SCRATCH_REG_SIZE);
-+
-+	if (reg != SCRATCH_TEST_VALUE) {
-+		panic("Scratch register write error! Expected: 0x%x but got: 0x%lx",
-+			SCRATCH_TEST_VALUE, reg);
-+		return -EINVAL;
-+	}
-+
-+	/* restore original value of the SCRATCH register */
-+	litex_set_reg(reg_addr + SCRATCH_REG_OFF,
-+		SCRATCH_REG_SIZE, SCRATCH_REG_VALUE);
-+
-+	/* Set flag for other drivers */
-+	pr_info("LiteX SoC Controller driver initialized");
-+
-+	return 0;
-+}
-+
-+struct litex_soc_ctrl_device {
-+	void __iomem *base;
-+};
-+
-+static const struct of_device_id litex_soc_ctrl_of_match[] = {
-+	{.compatible = "litex,soc-controller"},
-+	{},
-+};
-+
-+MODULE_DEVICE_TABLE(of, litex_soc_ctrl_of_match);
-+
-+static int litex_soc_ctrl_probe(struct platform_device *pdev)
-+{
-+	int result;
-+	struct device *dev;
-+	struct device_node *node;
-+	struct litex_soc_ctrl_device *soc_ctrl_dev;
-+
-+	dev = &pdev->dev;
-+	node = dev->of_node;
-+	if (!node)
-+		return -ENODEV;
-+
-+	soc_ctrl_dev = devm_kzalloc(dev, sizeof(*soc_ctrl_dev), GFP_KERNEL);
-+	if (!soc_ctrl_dev)
-+		return -ENOMEM;
-+
-+	soc_ctrl_dev->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(soc_ctrl_dev->base))
-+		return PTR_ERR(soc_ctrl_dev->base);
-+
-+	result = litex_check_csr_access(soc_ctrl_dev->base);
-+	if (result) {
-+		// LiteX CSRs access is broken which means that
-+		// none of LiteX drivers will most probably
-+		// operate correctly
-+		BUG();
-+	}
-+
-+	return 0;
-+}
-+
-+static struct platform_driver litex_soc_ctrl_driver = {
-+	.driver = {
-+		.name = "litex-soc-controller",
-+		.of_match_table = of_match_ptr(litex_soc_ctrl_of_match)
-+	},
-+	.probe = litex_soc_ctrl_probe,
-+};
-+
-+module_platform_driver(litex_soc_ctrl_driver);
-+MODULE_DESCRIPTION("LiteX SoC Controller driver");
-+MODULE_AUTHOR("Antmicro <www.antmicro.com>");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/litex.h b/include/linux/litex.h
-new file mode 100644
-index 000000000000..72061018c172
---- /dev/null
-+++ b/include/linux/litex.h
-@@ -0,0 +1,24 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Common LiteX header providing
-+ * helper functions for accessing CSRs.
-+ *
-+ * Implementation of the functions is provided by
-+ * the LiteX SoC Controller driver.
-+ *
-+ * Copyright (C) 2019-2020 Antmicro <www.antmicro.com>
-+ */
-+
-+#ifndef _LINUX_LITEX_H
-+#define _LINUX_LITEX_H
-+
-+#include <linux/io.h>
-+#include <linux/types.h>
-+#include <linux/compiler_types.h>
-+
-+void litex_set_reg(void __iomem *reg, unsigned long reg_sz, unsigned long val);
-+
-+unsigned long litex_get_reg(void __iomem *reg, unsigned long reg_sz);
-+
-+
-+#endif /* _LINUX_LITEX_H */
++examples:
++  - |
++    uart0: serial@e0001800 {
++      compatible = "litex,liteuart";
++      reg = <0xe0001800 0x100>;
++      interrupts = <2>;
++    };
 -- 
 2.25.1
 
