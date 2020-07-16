@@ -2,322 +2,150 @@ Return-Path: <SRS0=PhEQ=A3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3138BC433E2
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 07:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A710C433DF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 12:20:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 053EA206F5
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 07:23:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1594884195;
-	bh=+0N0OTs7zVfZ35MGgY+T+NR3IzrxTZFXr2prbhBHbzg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=D1TDZSG7tkxBk6maIIZI8t/oAqXI8VNVIYrjeNM8sQbGCj3YKEtcromhRRI1En472
-	 qIVz0fqB2l332Ib8SibnpcyRhgEJw/rG/oGwwOmdfRDW7GL5kKI2+J4j8Bx31hWJGa
-	 ry0HBPzPQn1imS2njmVxgRA3KLkaA1eyBts3ul+0=
+	by mail.kernel.org (Postfix) with ESMTP id 784442065F
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 12:20:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="soTF6V0N"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726141AbgGPHXO (ORCPT
+        id S1728571AbgGPMUk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jul 2020 03:23:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51906 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726069AbgGPHXO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jul 2020 03:23:14 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 690442067D;
-        Thu, 16 Jul 2020 07:23:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594884193;
-        bh=+0N0OTs7zVfZ35MGgY+T+NR3IzrxTZFXr2prbhBHbzg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=l4nKUl/5lJae9QZbcA0D4/XE27GXf0WG1HaZCm5ajWMBl4nbwGmhZu67x8iDDdq45
-         xxzocNrMcz+l+W+7PTZyNteJ0beDLQ/1TtCZMfELhkYmjqjRMiYi6gM2Ak7fWm6Von
-         mSXZAubEq31mXtObwrkl7LTbUFNd2QnYDcdx4+Dk=
-Date:   Thu, 16 Jul 2020 09:23:05 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Johnson CH Chen =?utf-8?B?KOmZs+aYreWLsyk=?= 
-        <JohnsonCH.Chen@moxa.com>
-Cc:     Jiri Slaby <jirislaby@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] tty: Add MOXA NPort Real TTY Driver
-Message-ID: <20200716072305.GA970724@kroah.com>
-References: <HK2PR01MB328134FB2EF5F9D1E381BDA3FA610@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
- <20200714073609.GA688099@kroah.com>
- <HK2PR01MB32815CE2F455B909EA32F406FA7F0@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <HK2PR01MB32815CE2F455B909EA32F406FA7F0@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
+        Thu, 16 Jul 2020 08:20:40 -0400
+Received: from mailout4.samsung.com ([203.254.224.34]:57984 "EHLO
+        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728477AbgGPMUi (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Jul 2020 08:20:38 -0400
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20200716122035epoutp0445ef5c147bcbfb637d5287f7d439c0c3~iOvOSr8GK0453004530epoutp04K
+        for <linux-serial@vger.kernel.org>; Thu, 16 Jul 2020 12:20:35 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20200716122035epoutp0445ef5c147bcbfb637d5287f7d439c0c3~iOvOSr8GK0453004530epoutp04K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1594902035;
+        bh=mYyGwdaGLsmdtAnpge0iP3YLiOv1LCA0Vl9pK3Po7a4=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=soTF6V0NMRUkwsl0TPXGPewGx4bmbqpAFyXj4YRH5DMyjYIjaiDJs6c/y1+KhUKnV
+         1zlgfThqlrFmuiAkTZLEJQh5f8NAmQRsSjMfLhL++5QkcOrmVOR0DztDpASjrBzeh2
+         PCMdagaVzghIxtN+bvvL5DHgVNRMHo/8Odz35f0Q=
+Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20200716122035epcas5p14e6b0541c6899cca10ba2613c2c05c4c~iOvNpA3J-0450304503epcas5p15;
+        Thu, 16 Jul 2020 12:20:35 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        73.B3.09475.316401F5; Thu, 16 Jul 2020 21:20:35 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20200716121621epcas5p376ac02b9774d95451d56b888babfc3f8~iOrh3mmSd3060430604epcas5p3o;
+        Thu, 16 Jul 2020 12:16:21 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20200716121621epsmtrp2efc5b0ac875237d9833ab0af08e9dae8~iOrh2_XPI0694906949epsmtrp2A;
+        Thu, 16 Jul 2020 12:16:21 +0000 (GMT)
+X-AuditID: b6c32a4b-389ff70000002503-dc-5f10461330d1
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        80.7A.08303.515401F5; Thu, 16 Jul 2020 21:16:21 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20200716121620epsmtip1d5ea675329ad0e84bb768e4dfaf56876~iOrgpTDh01388213882epsmtip1C;
+        Thu, 16 Jul 2020 12:16:20 +0000 (GMT)
+From:   Tamseel Shams <m.shams@samsung.com>
+To:     gregkh@linuxfoundation.org, jslaby@suse.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        krzk@kernel.org, linux-samsung-soc@vger.kernel.org,
+        alim.akhtar@samsung.com, Tamseel Shams <m.shams@samsung.com>
+Subject: [PATCH] serial: core: Fix Coding Style
+Date:   Thu, 16 Jul 2020 17:24:38 +0530
+Message-Id: <20200716115438.9967-1-m.shams@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrHIsWRmVeSWpSXmKPExsWy7bCmlq6wm0C8QVM7u8WDedvYLJoXr2ez
+        mLLhA5PF+fMb2C0u75rDZjHj/D4mizOLe9kt7rYuZnfg8Ni0qpPNY//cNewefVtWMXqs33KV
+        xePzJrkA1igum5TUnMyy1CJ9uwSujFn7mpkL7nFXnPj5jamB8QxnFyMnh4SAicSrO+fYuxi5
+        OIQEdjNKzP66hRXC+cQosXvjMjYI5zOjxN5tC1hhWj59eMwIkdjFKHF+80Wo/hYmieaLl4Cq
+        ODjYBDQljp/nBmkQEdCXWNd4jwWkhllgC6PEknObmUESwkCJb1ues4DYLAKqErdbdoPZvALm
+        Erd/z2SC2CYvsXrDAWaQZgmBfewSp589Z4NIuEjcetXHCGELS7w6voUdwpaS+PxuL1RNvsT8
+        eauYIewKiZUX3kDZ9hIHrsxhATmUGejQ9bv0IcKyElNPrQPbyyzAJ9H7+wnUDbwSO+bB2IoS
+        /3f3Q60Sl3i3Ygo0VDwkGrZvA1srJBAr8fbxRrYJjLKzEDYsYGRcxSiZWlCcm55abFpgnJda
+        rlecmFtcmpeul5yfu4kRnAS0vHcwPnrwQe8QIxMH4yFGCQ5mJRFeHi7eeCHelMTKqtSi/Pii
+        0pzU4kOM0hwsSuK8Sj/OxAkJpCeWpGanphakFsFkmTg4pRqYXrbcaj3RZ7BgTrxqb9q0Ywce
+        hajXsRqe376ySsOKU9hIdKvIfO70R7FSX/afZ7imzfqZ//GN5b8fiQWyS3yNc3sXpxSf+PHp
+        mbsKYm91FyYKX5TO4Ahemdf16VTvxLRf9Y3Cdt19Cy6ckfl8SuHkv0vP76+97/iprfCO2Dnm
+        SynttStF7fWLCpoyIys4C7d+3HLaMG1S91rFhycUVi4IvJnOtrxCx2eRZLb4lRn9z6zann/U
+        mJMqwnRpl/Pc3b8Tr8/zCetK+F3yzMFHtvt4oXLXg6jDi+2vF3ibvHZcUHyoIH9Z81d7wWsl
+        v5inT1nw+9/ribrTjG7+blfi4P9dv9Dg8mOerqVFF8XuXLqxV4mlOCPRUIu5qDgRAGbueM5x
+        AwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmphluLIzCtJLcpLzFFi42LZdlhJTlfUVSDe4NQ6S4sH87axWTQvXs9m
+        MWXDByaL8+c3sFtc3jWHzWLG+X1MFmcW97Jb3G1dzO7A4bFpVSebx/65a9g9+rasYvRYv+Uq
+        i8fnTXIBrFFcNimpOZllqUX6dglcGbP2NTMX3OOuOPHzG1MD4xnOLkZODgkBE4lPHx4zdjFy
+        cQgJ7GCUeHlsATtEQlxi2q/9jBC2sMTKf8/ZIYqamCQe7V3O1MXIwcEmoClx/Dw3SI2IgKHE
+        0dWfmUBqmAV2MUos7l3DBpIQFtCX+LblOQuIzSKgKnG7ZTeYzStgLnH790wmiAXyEqs3HGCe
+        wMizgJFhFaNkakFxbnpusWGBUV5quV5xYm5xaV66XnJ+7iZGcEBpae1g3LPqg94hRiYOxkOM
+        EhzMSiK8PFy88UK8KYmVValF+fFFpTmpxYcYpTlYlMR5v85aGCckkJ5YkpqdmlqQWgSTZeLg
+        lGpguuC++3yPsfjlGRyPe2/f8fSPM17JELPwVuJK156POcveR9T/ZNp+/a1Jotn0F4z9Z1Yl
+        7vm1IHe54ZvFZ0yCjlrOOBDcsn2BumKAZNAB5TLpxy63zETr5tb9v8Z9bMaW89dN14e2mb6o
+        y98YNKd+6R+NxX+/8szy6tq36veeA7vP5X9xT/v+y2Yt8+GSmRdvyL2752m1oLKsZvvd7ZVN
+        ahkHZnZJ72S+Z/1sXeqnteujLZyehZZwpK74+HNCU/htUZdajVN1hfcYBWU23F5x1v/Xebc3
+        /jPNZ7nbntY8M9HYP0GR9coe7XdZqd852BbMnvSNz/JVzu28zsovbmJtznHFr8va3Qw2cqRM
+        PjmjslGJpTgj0VCLuag4EQA04xailwIAAA==
+X-CMS-MailID: 20200716121621epcas5p376ac02b9774d95451d56b888babfc3f8
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20200716121621epcas5p376ac02b9774d95451d56b888babfc3f8
+References: <CGME20200716121621epcas5p376ac02b9774d95451d56b888babfc3f8@epcas5p3.samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 16, 2020 at 07:19:02AM +0000, Johnson CH Chen (陳昭勳) wrote:
-> Hi Greg,
-> 
-> Thanks for detailed and good suggestions!
-> 
-> > From: linux-serial-owner@vger.kernel.org
-> > <linux-serial-owner@vger.kernel.org> On Behalf Of Greg Kroah-Hartman
-> > Sent: Tuesday, July 14, 2020 3:36 PM
-> > To: Johnson CH Chen (陳昭勳) <JohnsonCH.Chen@moxa.com>
-> > Cc: Jiri Slaby <jirislaby@gmail.com>; linux-kernel@vger.kernel.org;
-> > linux-serial@vger.kernel.org
-> > Subject: Re: [PATCH] tty: Add MOXA NPort Real TTY Driver
-> > 
-> > On Tue, Jul 14, 2020 at 06:24:42AM +0000, Johnson CH Chen (陳昭勳) wrote:
-> > > This driver supports tty functions for all of MOXA's NPort series with
-> > > v5.0. Using this driver, host part can use tty to connect NPort device
-> > > server by ethernet.
-> > >
-> > > The following Moxa products are supported:
-> > > * CN2600 Series
-> > > * CN2500 Series
-> > > * NPort DE Series
-> > > * NPort 5000A-M12 Series
-> > > * NPort 5100 Series
-> > > * NPort 5200 Series
-> > > * NPort 5400 Series
-> > > * NPort 5600 Desktop Series
-> > > * NPort 5600 Rackmount Series
-> > > * NPort Wireless Series
-> > > * NPort IA5000 Series
-> > > * NPort 6000 Series
-> > > * NPort S8000 Series
-> > > * NPort S8455I Series
-> > > * NPort S9000 Series
-> > > * NE-4100 Series
-> > > * MiiNePort Series
-> > >
-> > > Signed-off-by: Johnson Chen <johnsonch.chen@moxa.com>
-> > > Signed-off-by: Jason Chen <jason.chen@moxa.com>
-> > > Signed-off-by: Danny Lin <danny.lin@moxa.com>
-> > > Signed-off-by: Victor Yu <victor.yu@moxa.com>
-> > > ---
-> > >  drivers/tty/Kconfig   |   11 +
-> > >  drivers/tty/Makefile  |    1 +
-> > >  drivers/tty/npreal2.c | 3042
-> > > +++++++++++++++++++++++++++++++++++++++++
-> > >  drivers/tty/npreal2.h |  140 ++
-> > >  4 files changed, 3194 insertions(+)
-> > >  create mode 100644 drivers/tty/npreal2.c  create mode 100644
-> > > drivers/tty/npreal2.h
-> > >
-> > > diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig index
-> > > 93fd984eb2f5..79b545269b71 100644
-> > > --- a/drivers/tty/Kconfig
-> > > +++ b/drivers/tty/Kconfig
-> > > @@ -259,6 +259,17 @@ config MOXA_SMARTIO
-> > >  	  This driver can also be built as a module. The module will be called
-> > >  	  mxser. If you want to do that, say M here.
-> > >
-> > > +config MOXA_NPORT_REAL_TTY
-> > > +	tristate "Moxa NPort Real TTY support v5.0"
-> > > +	help
-> > > +	  Say Y here if you have a Moxa NPort serial device server.
-> > > +
-> > > +	  The purpose of this driver is to map NPort serial port to host tty
-> > > +	  port. Using this driver, you can use NPort serial port as local tty port.
-> > > +
-> > > +	  This driver can also be built as a module. The module will be called
-> > > +	  npreal2 by setting M.
-> > > +
-> > >  config SYNCLINK
-> > >  	tristate "Microgate SyncLink card support"
-> > >  	depends on SERIAL_NONSTANDARD && PCI && ISA_DMA_API diff --git
-> > > a/drivers/tty/Makefile b/drivers/tty/Makefile index
-> > > 020b1cd9294f..6d07985d6962 100644
-> > > --- a/drivers/tty/Makefile
-> > > +++ b/drivers/tty/Makefile
-> > > @@ -24,6 +24,7 @@ obj-$(CONFIG_CYCLADES)		+= cyclades.o
-> > >  obj-$(CONFIG_ISI)		+= isicom.o
-> > >  obj-$(CONFIG_MOXA_INTELLIO)	+= moxa.o
-> > >  obj-$(CONFIG_MOXA_SMARTIO)	+= mxser.o
-> > > +obj-$(CONFIG_MOXA_NPORT_REAL_TTY) += npreal2.o
-> > >  obj-$(CONFIG_NOZOMI)		+= nozomi.o
-> > >  obj-$(CONFIG_NULL_TTY)	        += ttynull.o
-> > >  obj-$(CONFIG_ROCKETPORT)	+= rocket.o
-> > > diff --git a/drivers/tty/npreal2.c b/drivers/tty/npreal2.c new file
-> > > mode 100644 index 000000000000..65c773420755
-> > > --- /dev/null
-> > > +++ b/drivers/tty/npreal2.c
-> > > @@ -0,0 +1,3042 @@
-> > > +// SPDX-License-Identifier: GPL-2.0+
-> > > +/*
-> > > + * npreal2.c  -- MOXA NPort Server family Real TTY driver.
-> > > + *
-> > > + * Copyright (c) 1999-2020  Moxa Technologies (support@moxa.com)
-> > > + *
-> > > + * Supports the following Moxa Product:
-> > > + * CN2600 Series
-> > > + * CN2500 Series
-> > > + * NPort DE Series
-> > > + * NPort 5000A-M12 Series
-> > > + * NPort 5100 Series
-> > > + * NPort 5200 Series
-> > > + * NPort 5400 Series
-> > > + * NPort 5600 Desktop Series
-> > > + * NPort 5600 Rackmount Series
-> > > + * NPort Wireless Series
-> > > + * NPort IA5000 Series
-> > > + * NPort 6000 Series
-> > > + * NPort S8000 Series
-> > > + * NPort S8455I Series
-> > > + * NPort S9000 Series
-> > > + * NE-4100 Series
-> > > + * MiiNePort Series
-> > > + */
-> > > +
-> > > +#include <linux/delay.h>
-> > > +#include <linux/errno.h>
-> > > +#include <linux/fcntl.h>
-> > > +#include <linux/version.h>
-> > > +#include <linux/init.h>
-> > > +#include <linux/ioport.h>
-> > > +#include <linux/interrupt.h>
-> > > +#include <linux/major.h>
-> > > +#include <linux/mm.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/ptrace.h>
-> > > +#include <linux/poll.h>
-> > > +#include <linux/proc_fs.h>
-> > > +#include <linux/uaccess.h>
-> > > +#include <linux/serial.h>
-> > > +#include <linux/serial_reg.h>
-> > > +#include <linux/slab.h>
-> > > +#include <linux/string.h>
-> > > +#include <linux/signal.h>
-> > > +#include <linux/sched.h>
-> > > +#include <linux/tty.h>
-> > > +#include <linux/tty_flip.h>
-> > > +#include <linux/timer.h>
-> > > +#include "npreal2.h"
-> > > +
-> > > +static int ttymajor = NPREALMAJOR;
-> > > +static int verbose = 1;
-> > > +
-> > > +MODULE_AUTHOR("<support@moxa.com>");
-> > > +MODULE_DESCRIPTION("MOXA Async/NPort Server Family Real TTY
-> > Driver");
-> > > +module_param(ttymajor, int, 0); module_param(verbose, int, 0644);
-> > > +MODULE_VERSION(NPREAL_VERSION); MODULE_LICENSE("GPL");
-> > > +
-> > > +struct server_setting_struct {
-> > > +	int32_t server_type;
-> > > +	int32_t disable_fifo;
-> > > +};
-> > > +
-> > > +struct npreal_struct {
-> > > +	struct tty_port ttyPort;
-> > > +	struct work_struct tqueue;
-> > > +	struct work_struct process_flip_tqueue;
-> > > +	struct ktermios normal_termios;
-> > > +	struct ktermios callout_termios;
-> > > +	/* kernel counters for the 4 input interrupts */
-> > > +	struct async_icount icount;
-> > > +	struct semaphore rx_semaphore;
-> > > +	struct nd_struct *net_node;
-> > > +	struct tty_struct *tty;
-> > > +	struct pid *session;
-> > > +	struct pid *pgrp;
-> > > +	wait_queue_head_t open_wait;
-> > > +	wait_queue_head_t close_wait;
-> > > +	wait_queue_head_t delta_msr_wait;
-> > > +	unsigned long baud_base;
-> > > +	unsigned long event;
-> > > +	unsigned short closing_wait;
-> > > +	int port;
-> > > +	int flags;
-> > > +	int type;  /* UART type */
-> > > +	int xmit_fifo_size;
-> > > +	int custom_divisor;
-> > > +	int x_char; /* xon/xoff character */
-> > > +	int close_delay;
-> > > +	int modem_control; /* Modem control register */
-> > > +	int modem_status;  /* Line status */
-> > > +	int count; /* # of fd on device */
-> > > +	int xmit_head;
-> > > +	int xmit_tail;
-> > > +	int xmit_cnt;
-> > > +	unsigned char *xmit_buf;
-> > > +
-> > > +	/*
-> > > +	 * We use spin_lock_irqsave instead of semaphonre here.
-> > > +	 * Reason: When we use pppd to dialout via Real TTY driver,
-> > > +	 * some driver functions, such as npreal_write(), would be
-> > > +	 * invoked under interrpute mode which causes warning in
-> > > +	 * down/up tx_semaphore.
-> > > +	 */
-> > > +	spinlock_t tx_lock;
-> > > +};
-> > > +
-> > > +struct nd_struct {
-> > > +	struct semaphore cmd_semaphore;
-> > > +	struct proc_dir_entry *node_entry;
-> > > +	struct npreal_struct *tty_node;
-> > > +	struct semaphore semaphore;
-> > > +	wait_queue_head_t initialize_wait;
-> > > +	wait_queue_head_t select_in_wait;
-> > > +	wait_queue_head_t select_out_wait;
-> > > +	wait_queue_head_t select_ex_wait;
-> > > +	wait_queue_head_t cmd_rsp_wait;
-> > > +	int32_t server_type;
-> > > +	int do_session_recovery_len;
-> > > +	int cmd_rsp_flag;
-> > > +	int tx_ready;
-> > > +	int rx_ready;
-> > > +	int cmd_ready;
-> > > +	int wait_oqueue_responsed;
-> > > +	int oqueue;
-> > > +	int rsp_length;
-> > > +	unsigned long flag;
-> > > +	unsigned char cmd_buffer[84];
-> > > +	unsigned char rsp_buffer[84];
-> > 
-> > You seem to have two "static" buffers here, for your device, that you
-> > semi-randomly write to all over the place, but I can't find any locking or
-> > coordination between things that prevents multiple commands from not just
-> > overwritting each other.
-> > 
-> For cmd_buffer[], we use npreal_wait_and_set_command() to make sure
-> cmd_buffer[] is safe to be written by checking "cmd_buffer[0] == 0".
+This patch fixes the following checkpatch error and warning:
+  1. space required after ','
+  2. Missing a blank line after declarations
 
-And what locks are protecting you there?
+Signed-off-by: Tamseel Shams <m.shams@samsung.com>
+---
+ drivers/tty/serial/serial_core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> For rsp_buffer[], we use npreal_wait_command_completed() to make sure
-> rsp_buffer[] is desired by checking rsp_buffer[0] and rsp_buffer[1].
-> Command_set and command should be checked. Besides, rsp_buffer[] is
-> got from user space by "NPREAL_NET_CMD_RESPONSE" in
-> npreal_net_ioctl().
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 66a5e2faf57e..9334e8d238b1 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1122,7 +1122,7 @@ static int uart_break_ctl(struct tty_struct *tty, int break_state)
+ 	return ret;
+ }
+ 
+-static int uart_do_autoconfig(struct tty_struct *tty,struct uart_state *state)
++static int uart_do_autoconfig(struct tty_struct *tty, struct uart_state *state)
+ {
+ 	struct tty_port *port = &state->port;
+ 	struct uart_port *uport;
+@@ -1525,6 +1525,7 @@ static void uart_set_termios(struct tty_struct *tty,
+ 	/* Handle transition away from B0 status */
+ 	else if (!(old_termios->c_cflag & CBAUD) && (cflag & CBAUD)) {
+ 		unsigned int mask = TIOCM_DTR;
++
+ 		if (!(cflag & CRTSCTS) || !tty_throttled(tty))
+ 			mask |= TIOCM_RTS;
+ 		uart_set_mctrl(uport, mask);
+@@ -2276,6 +2277,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 		if (console_suspend_enabled || !uart_console(uport)) {
+ 			/* Protected by port mutex for now */
+ 			struct tty_struct *tty = port->tty;
++
+ 			ret = ops->startup(uport);
+ 			if (ret == 0) {
+ 				if (tty)
+-- 
+2.17.1
 
-Again, what locking is really handling this?
-
-> > Also, how does the data get sent to the hardware at all?  I see cmd_buffer[]
-> > being written to, but what reads from it and how does the hardware get the
-> > data?
-> 
-> Actually we need to both NPort driver (this driver) and Npreal daemon
-> (userspace) to let HW work. Npreal daemon can communicate with HW by
-> socket, and Npreal deamon communicates with Nport driver by
-> "npreal_net_fops". When commands are ready for driver part, it will
-> wake up poll event to let Nport daemon know.
-
-That is not obvious at all, and needs to be really really really
-documented here.  Why not put the userspace chunk in the tree too?  At
-the least, you need to point at it.
-
-And why is a userspace part needed?  We have tty-over-ethernet drivers
-that do not require such a thing in the tree somewhere...
-
-thanks,
-
-greg k-h
