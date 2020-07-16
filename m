@@ -2,254 +2,322 @@ Return-Path: <SRS0=PhEQ=A3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D852C433E1
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 07:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3138BC433E2
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 07:23:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ED1D02067D
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 07:19:10 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="JcBtGdqx"
+	by mail.kernel.org (Postfix) with ESMTP id 053EA206F5
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 07:23:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1594884195;
+	bh=+0N0OTs7zVfZ35MGgY+T+NR3IzrxTZFXr2prbhBHbzg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=D1TDZSG7tkxBk6maIIZI8t/oAqXI8VNVIYrjeNM8sQbGCj3YKEtcromhRRI1En472
+	 qIVz0fqB2l332Ib8SibnpcyRhgEJw/rG/oGwwOmdfRDW7GL5kKI2+J4j8Bx31hWJGa
+	 ry0HBPzPQn1imS2njmVxgRA3KLkaA1eyBts3ul+0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727833AbgGPHTK (ORCPT
+        id S1726141AbgGPHXO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jul 2020 03:19:10 -0400
-Received: from mail-eopbgr1320057.outbound.protection.outlook.com ([40.107.132.57]:9824
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726069AbgGPHTK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jul 2020 03:19:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bnZXHeJavY/X604+sVm1u/3Had2ieNRSiTBSAEGe/LI9J5XRrEabk4YBNXMPVXXgvMSftIf3nKoy3dba3cF/ADvrVb+jQlKH78eOg3atP9bg8RYJDT4xuDWrMf47/4tjG/Sm6+6vkXEhtfTmtO617rXJzER5NpooAqRPicjE9SgUBuH+uzaqtRUQE8QPFBqLnolIulqrC0BLlvFaDBBUdbZ2/y8sCmEOVvwygiXrrwKZ3YZcp/Fr1CLQHtHWmLbJk7k7VlNatX5GRXynRUwnGKsT1Grn+RzkRQM1+EZU0WVWAF4pJFOkg9kLEG8s3cMbg0NmtmVCUVpt5og3KQo0Zg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EWPGObP8gmlkL0yXV1oCIK7GSZlyfiyWIOW6BqFUNfQ=;
- b=j6C78J9euTnuvG0dvDzpyjvep93lzZl0TVDHj5g7SDx0JO6iCMeHbw/leq/y2qceuxH0/LipNTqZMV7xqk73cSt83pjuJ+eR3QbXj9TXcG70ha/s+krMLWVQYVWqFp0R8OPcXfrc/x6i3dlC0dYFYVxWlprBoAL4kNI+ONGRFzr9qPdLs6hDUU6jmVvcMQcXwkTEm/DUduf23m7xr79mCOoSdnubBsKdYcKI6ao+ksy/oav+2bznMwO8ue4Etme8DS0VhqGkYuyU72It8xQ1LdnzTSi6aMUjT4HGw8YbwUFv4gq/5GOnPL67W488rc79v6an2bV9982vPhQR4qzh2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
- dkim=pass header.d=moxa.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EWPGObP8gmlkL0yXV1oCIK7GSZlyfiyWIOW6BqFUNfQ=;
- b=JcBtGdqxcHE6gtApXmYuCNpzwxWW6iuhcCaCmh+vrBcap1xlAsMDz7lsxX6YmRrqjvl8Elwga59X3KEu+wfYfFc2grk+YxoIfpOM2Qv5MmnaI816Z+RwD5K/13lWLcmKZHfl0NqkMn4LAo1eiVL0rE5EdMYoCUva/W7DJZ5bo8o=
-Received: from HK2PR01MB3281.apcprd01.prod.exchangelabs.com
- (2603:1096:202:22::12) by HK0PR01MB2244.apcprd01.prod.exchangelabs.com
- (2603:1096:203:7f::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.18; Thu, 16 Jul
- 2020 07:19:03 +0000
-Received: from HK2PR01MB3281.apcprd01.prod.exchangelabs.com
- ([fe80::dce:9650:6c58:8b77]) by HK2PR01MB3281.apcprd01.prod.exchangelabs.com
- ([fe80::dce:9650:6c58:8b77%4]) with mapi id 15.20.3174.027; Thu, 16 Jul 2020
- 07:19:03 +0000
-From:   =?utf-8?B?Sm9obnNvbiBDSCBDaGVuICjpmbPmmK3li7Mp?= 
+        Thu, 16 Jul 2020 03:23:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51906 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726069AbgGPHXO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Jul 2020 03:23:14 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 690442067D;
+        Thu, 16 Jul 2020 07:23:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594884193;
+        bh=+0N0OTs7zVfZ35MGgY+T+NR3IzrxTZFXr2prbhBHbzg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=l4nKUl/5lJae9QZbcA0D4/XE27GXf0WG1HaZCm5ajWMBl4nbwGmhZu67x8iDDdq45
+         xxzocNrMcz+l+W+7PTZyNteJ0beDLQ/1TtCZMfELhkYmjqjRMiYi6gM2Ak7fWm6Von
+         mSXZAubEq31mXtObwrkl7LTbUFNd2QnYDcdx4+Dk=
+Date:   Thu, 16 Jul 2020 09:23:05 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Johnson CH Chen =?utf-8?B?KOmZs+aYreWLsyk=?= 
         <JohnsonCH.Chen@moxa.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Jiri Slaby <jirislaby@gmail.com>,
+Cc:     Jiri Slaby <jirislaby@gmail.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: RE: [PATCH] tty: Add MOXA NPort Real TTY Driver
-Thread-Topic: [PATCH] tty: Add MOXA NPort Real TTY Driver
-Thread-Index: AQHWWaW+EbrUHbhx60a/vOExcWbf46kGr5aAgAMXG4A=
-Date:   Thu, 16 Jul 2020 07:19:02 +0000
-Message-ID: <HK2PR01MB32815CE2F455B909EA32F406FA7F0@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
+Subject: Re: [PATCH] tty: Add MOXA NPort Real TTY Driver
+Message-ID: <20200716072305.GA970724@kroah.com>
 References: <HK2PR01MB328134FB2EF5F9D1E381BDA3FA610@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
  <20200714073609.GA688099@kroah.com>
-In-Reply-To: <20200714073609.GA688099@kroah.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linuxfoundation.org; dkim=none (message not signed)
- header.d=none;linuxfoundation.org; dmarc=none action=none
- header.from=moxa.com;
-x-originating-ip: [123.51.145.16]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4f5f1144-cf20-4c18-65da-08d82958849d
-x-ms-traffictypediagnostic: HK0PR01MB2244:
-x-microsoft-antispam-prvs: <HK0PR01MB224403AF91BBBEBD18CB3DBFFA7F0@HK0PR01MB2244.apcprd01.prod.exchangelabs.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mnkum6qA48gnV6bxCWKXRfGziYhHfbxcT3+ayKvXnmwtj8jsPWH0H7NkdLJWvckbUFr7UjI7kr5RMi7mDDJdssoRdwg/a7zkb0wKR49qsFVx6qJ70FtR8U847mHTTNeE4dG4k7OWBhd1UyiVXl/CmUpDPJilHgu42WFCx6F+2S76fQzLXEvTyiRJ9wwY0YZfSWxeq9wsfm25/FNhKIf1rODvxEvnfze4jaDu8uqOZ17EXaFoJ+z/jzC1E3fuonxxrsr/gVoSfJSGbc/NV935yMOix98jjG3i3P2CCMjsKY8o62fifS5TdJZoiPqjHh16GZupptnSuVPSn2Q8O96iRg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR01MB3281.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39850400004)(136003)(376002)(346002)(366004)(2906002)(54906003)(4326008)(66556008)(66946007)(66446008)(64756008)(76116006)(7696005)(66476007)(33656002)(53546011)(6506007)(86362001)(26005)(8936002)(478600001)(85182001)(55016002)(186003)(9686003)(6916009)(8676002)(316002)(5660300002)(52536014)(71200400001)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: JaU+Q3uubYPOpnJBQkt7Ny6Lv+rHzBVXC/+K9CN1zNdMx4ZlunHFoU0cvMrC6VAfY1euxpacN9QxUgEFQdR9TEor61Do5RofLuocSzn/FB4mF1YB6EiluplRvanGVIMLS7Yt7Q+8jeWR3EkU0zt+y209J1r/fiT33j0V03FPtlFIl0pd+T+U0RI0kJgmbcj1BjKTSTSs9dxzaig9iMiimonaiwSzYnHEwpu4ukvP4/NuNVTwgCRmCJgaddtUIdKgioxBs5dvQngfkIId1nNjLScNaYi+Oem5vNjbv5gtS/uCesizzRT7pE9P0SNxQFWTejYxh0TaosjYQWcmbDV+awiS/eocXRfTAEyXzo3sp33co8FJvUDBuxLnWouvq1ZvERemNQ8cvQssXSITRy0NVos8ElUHai3LTfbjEFtMspE8U3lsmJv8cxzQBGJeKfE0+DVVRZEvEpJ6kIvs9hpOg2AgkndkfzbxUsbZrF7zex4=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <HK2PR01MB32815CE2F455B909EA32F406FA7F0@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
 MIME-Version: 1.0
-X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: HK2PR01MB3281.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f5f1144-cf20-4c18-65da-08d82958849d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2020 07:19:02.9674
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wc98KsE1l6G+y5kyVLvj2bIjuhyr+ptrKTsWx9tqnnUXibQS50bXVBJVxhhD9ev1pmlgxcfmrlVEevQuNsYOQQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR01MB2244
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <HK2PR01MB32815CE2F455B909EA32F406FA7F0@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGkgR3JlZywNCg0KVGhhbmtzIGZvciBkZXRhaWxlZCBhbmQgZ29vZCBzdWdnZXN0aW9ucyENCg0K
-PiBGcm9tOiBsaW51eC1zZXJpYWwtb3duZXJAdmdlci5rZXJuZWwub3JnDQo+IDxsaW51eC1zZXJp
-YWwtb3duZXJAdmdlci5rZXJuZWwub3JnPiBPbiBCZWhhbGYgT2YgR3JlZyBLcm9haC1IYXJ0bWFu
-DQo+IFNlbnQ6IFR1ZXNkYXksIEp1bHkgMTQsIDIwMjAgMzozNiBQTQ0KPiBUbzogSm9obnNvbiBD
-SCBDaGVuICjpmbPmmK3li7MpIDxKb2huc29uQ0guQ2hlbkBtb3hhLmNvbT4NCj4gQ2M6IEppcmkg
-U2xhYnkgPGppcmlzbGFieUBnbWFpbC5jb20+OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3Jn
-Ow0KPiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hd
-IHR0eTogQWRkIE1PWEEgTlBvcnQgUmVhbCBUVFkgRHJpdmVyDQo+IA0KPiBPbiBUdWUsIEp1bCAx
-NCwgMjAyMCBhdCAwNjoyNDo0MkFNICswMDAwLCBKb2huc29uIENIIENoZW4gKOmZs+aYreWLsykg
-d3JvdGU6DQo+ID4gVGhpcyBkcml2ZXIgc3VwcG9ydHMgdHR5IGZ1bmN0aW9ucyBmb3IgYWxsIG9m
-IE1PWEEncyBOUG9ydCBzZXJpZXMgd2l0aA0KPiA+IHY1LjAuIFVzaW5nIHRoaXMgZHJpdmVyLCBo
-b3N0IHBhcnQgY2FuIHVzZSB0dHkgdG8gY29ubmVjdCBOUG9ydCBkZXZpY2UNCj4gPiBzZXJ2ZXIg
-YnkgZXRoZXJuZXQuDQo+ID4NCj4gPiBUaGUgZm9sbG93aW5nIE1veGEgcHJvZHVjdHMgYXJlIHN1
-cHBvcnRlZDoNCj4gPiAqIENOMjYwMCBTZXJpZXMNCj4gPiAqIENOMjUwMCBTZXJpZXMNCj4gPiAq
-IE5Qb3J0IERFIFNlcmllcw0KPiA+ICogTlBvcnQgNTAwMEEtTTEyIFNlcmllcw0KPiA+ICogTlBv
-cnQgNTEwMCBTZXJpZXMNCj4gPiAqIE5Qb3J0IDUyMDAgU2VyaWVzDQo+ID4gKiBOUG9ydCA1NDAw
-IFNlcmllcw0KPiA+ICogTlBvcnQgNTYwMCBEZXNrdG9wIFNlcmllcw0KPiA+ICogTlBvcnQgNTYw
-MCBSYWNrbW91bnQgU2VyaWVzDQo+ID4gKiBOUG9ydCBXaXJlbGVzcyBTZXJpZXMNCj4gPiAqIE5Q
-b3J0IElBNTAwMCBTZXJpZXMNCj4gPiAqIE5Qb3J0IDYwMDAgU2VyaWVzDQo+ID4gKiBOUG9ydCBT
-ODAwMCBTZXJpZXMNCj4gPiAqIE5Qb3J0IFM4NDU1SSBTZXJpZXMNCj4gPiAqIE5Qb3J0IFM5MDAw
-IFNlcmllcw0KPiA+ICogTkUtNDEwMCBTZXJpZXMNCj4gPiAqIE1paU5lUG9ydCBTZXJpZXMNCj4g
-Pg0KPiA+IFNpZ25lZC1vZmYtYnk6IEpvaG5zb24gQ2hlbiA8am9obnNvbmNoLmNoZW5AbW94YS5j
-b20+DQo+ID4gU2lnbmVkLW9mZi1ieTogSmFzb24gQ2hlbiA8amFzb24uY2hlbkBtb3hhLmNvbT4N
-Cj4gPiBTaWduZWQtb2ZmLWJ5OiBEYW5ueSBMaW4gPGRhbm55LmxpbkBtb3hhLmNvbT4NCj4gPiBT
-aWduZWQtb2ZmLWJ5OiBWaWN0b3IgWXUgPHZpY3Rvci55dUBtb3hhLmNvbT4NCj4gPiAtLS0NCj4g
-PiAgZHJpdmVycy90dHkvS2NvbmZpZyAgIHwgICAxMSArDQo+ID4gIGRyaXZlcnMvdHR5L01ha2Vm
-aWxlICB8ICAgIDEgKw0KPiA+ICBkcml2ZXJzL3R0eS9ucHJlYWwyLmMgfCAzMDQyDQo+ID4gKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gPiAgZHJpdmVycy90dHkv
-bnByZWFsMi5oIHwgIDE0MCArKw0KPiA+ICA0IGZpbGVzIGNoYW5nZWQsIDMxOTQgaW5zZXJ0aW9u
-cygrKQ0KPiA+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy90dHkvbnByZWFsMi5jICBjcmVh
-dGUgbW9kZSAxMDA2NDQNCj4gPiBkcml2ZXJzL3R0eS9ucHJlYWwyLmgNCj4gPg0KPiA+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL3R0eS9LY29uZmlnIGIvZHJpdmVycy90dHkvS2NvbmZpZyBpbmRleA0K
-PiA+IDkzZmQ5ODRlYjJmNS4uNzliNTQ1MjY5YjcxIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMv
-dHR5L0tjb25maWcNCj4gPiArKysgYi9kcml2ZXJzL3R0eS9LY29uZmlnDQo+ID4gQEAgLTI1OSw2
-ICsyNTksMTcgQEAgY29uZmlnIE1PWEFfU01BUlRJTw0KPiA+ICAJICBUaGlzIGRyaXZlciBjYW4g
-YWxzbyBiZSBidWlsdCBhcyBhIG1vZHVsZS4gVGhlIG1vZHVsZSB3aWxsIGJlIGNhbGxlZA0KPiA+
-ICAJICBteHNlci4gSWYgeW91IHdhbnQgdG8gZG8gdGhhdCwgc2F5IE0gaGVyZS4NCj4gPg0KPiA+
-ICtjb25maWcgTU9YQV9OUE9SVF9SRUFMX1RUWQ0KPiA+ICsJdHJpc3RhdGUgIk1veGEgTlBvcnQg
-UmVhbCBUVFkgc3VwcG9ydCB2NS4wIg0KPiA+ICsJaGVscA0KPiA+ICsJICBTYXkgWSBoZXJlIGlm
-IHlvdSBoYXZlIGEgTW94YSBOUG9ydCBzZXJpYWwgZGV2aWNlIHNlcnZlci4NCj4gPiArDQo+ID4g
-KwkgIFRoZSBwdXJwb3NlIG9mIHRoaXMgZHJpdmVyIGlzIHRvIG1hcCBOUG9ydCBzZXJpYWwgcG9y
-dCB0byBob3N0IHR0eQ0KPiA+ICsJICBwb3J0LiBVc2luZyB0aGlzIGRyaXZlciwgeW91IGNhbiB1
-c2UgTlBvcnQgc2VyaWFsIHBvcnQgYXMgbG9jYWwgdHR5IHBvcnQuDQo+ID4gKw0KPiA+ICsJICBU
-aGlzIGRyaXZlciBjYW4gYWxzbyBiZSBidWlsdCBhcyBhIG1vZHVsZS4gVGhlIG1vZHVsZSB3aWxs
-IGJlIGNhbGxlZA0KPiA+ICsJICBucHJlYWwyIGJ5IHNldHRpbmcgTS4NCj4gPiArDQo+ID4gIGNv
-bmZpZyBTWU5DTElOSw0KPiA+ICAJdHJpc3RhdGUgIk1pY3JvZ2F0ZSBTeW5jTGluayBjYXJkIHN1
-cHBvcnQiDQo+ID4gIAlkZXBlbmRzIG9uIFNFUklBTF9OT05TVEFOREFSRCAmJiBQQ0kgJiYgSVNB
-X0RNQV9BUEkgZGlmZiAtLWdpdA0KPiA+IGEvZHJpdmVycy90dHkvTWFrZWZpbGUgYi9kcml2ZXJz
-L3R0eS9NYWtlZmlsZSBpbmRleA0KPiA+IDAyMGIxY2Q5Mjk0Zi4uNmQwNzk4NWQ2OTYyIDEwMDY0
-NA0KPiA+IC0tLSBhL2RyaXZlcnMvdHR5L01ha2VmaWxlDQo+ID4gKysrIGIvZHJpdmVycy90dHkv
-TWFrZWZpbGUNCj4gPiBAQCAtMjQsNiArMjQsNyBAQCBvYmotJChDT05GSUdfQ1lDTEFERVMpCQkr
-PSBjeWNsYWRlcy5vDQo+ID4gIG9iai0kKENPTkZJR19JU0kpCQkrPSBpc2ljb20ubw0KPiA+ICBv
-YmotJChDT05GSUdfTU9YQV9JTlRFTExJTykJKz0gbW94YS5vDQo+ID4gIG9iai0kKENPTkZJR19N
-T1hBX1NNQVJUSU8pCSs9IG14c2VyLm8NCj4gPiArb2JqLSQoQ09ORklHX01PWEFfTlBPUlRfUkVB
-TF9UVFkpICs9IG5wcmVhbDIubw0KPiA+ICBvYmotJChDT05GSUdfTk9aT01JKQkJKz0gbm96b21p
-Lm8NCj4gPiAgb2JqLSQoQ09ORklHX05VTExfVFRZKQkgICAgICAgICs9IHR0eW51bGwubw0KPiA+
-ICBvYmotJChDT05GSUdfUk9DS0VUUE9SVCkJKz0gcm9ja2V0Lm8NCj4gPiBkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy90dHkvbnByZWFsMi5jIGIvZHJpdmVycy90dHkvbnByZWFsMi5jIG5ldyBmaWxlDQo+
-ID4gbW9kZSAxMDA2NDQgaW5kZXggMDAwMDAwMDAwMDAwLi42NWM3NzM0MjA3NTUNCj4gPiAtLS0g
-L2Rldi9udWxsDQo+ID4gKysrIGIvZHJpdmVycy90dHkvbnByZWFsMi5jDQo+ID4gQEAgLTAsMCAr
-MSwzMDQyIEBADQo+ID4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wKw0KPiA+
-ICsvKg0KPiA+ICsgKiBucHJlYWwyLmMgIC0tIE1PWEEgTlBvcnQgU2VydmVyIGZhbWlseSBSZWFs
-IFRUWSBkcml2ZXIuDQo+ID4gKyAqDQo+ID4gKyAqIENvcHlyaWdodCAoYykgMTk5OS0yMDIwICBN
-b3hhIFRlY2hub2xvZ2llcyAoc3VwcG9ydEBtb3hhLmNvbSkNCj4gPiArICoNCj4gPiArICogU3Vw
-cG9ydHMgdGhlIGZvbGxvd2luZyBNb3hhIFByb2R1Y3Q6DQo+ID4gKyAqIENOMjYwMCBTZXJpZXMN
-Cj4gPiArICogQ04yNTAwIFNlcmllcw0KPiA+ICsgKiBOUG9ydCBERSBTZXJpZXMNCj4gPiArICog
-TlBvcnQgNTAwMEEtTTEyIFNlcmllcw0KPiA+ICsgKiBOUG9ydCA1MTAwIFNlcmllcw0KPiA+ICsg
-KiBOUG9ydCA1MjAwIFNlcmllcw0KPiA+ICsgKiBOUG9ydCA1NDAwIFNlcmllcw0KPiA+ICsgKiBO
-UG9ydCA1NjAwIERlc2t0b3AgU2VyaWVzDQo+ID4gKyAqIE5Qb3J0IDU2MDAgUmFja21vdW50IFNl
-cmllcw0KPiA+ICsgKiBOUG9ydCBXaXJlbGVzcyBTZXJpZXMNCj4gPiArICogTlBvcnQgSUE1MDAw
-IFNlcmllcw0KPiA+ICsgKiBOUG9ydCA2MDAwIFNlcmllcw0KPiA+ICsgKiBOUG9ydCBTODAwMCBT
-ZXJpZXMNCj4gPiArICogTlBvcnQgUzg0NTVJIFNlcmllcw0KPiA+ICsgKiBOUG9ydCBTOTAwMCBT
-ZXJpZXMNCj4gPiArICogTkUtNDEwMCBTZXJpZXMNCj4gPiArICogTWlpTmVQb3J0IFNlcmllcw0K
-PiA+ICsgKi8NCj4gPiArDQo+ID4gKyNpbmNsdWRlIDxsaW51eC9kZWxheS5oPg0KPiA+ICsjaW5j
-bHVkZSA8bGludXgvZXJybm8uaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L2ZjbnRsLmg+DQo+ID4g
-KyNpbmNsdWRlIDxsaW51eC92ZXJzaW9uLmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9pbml0Lmg+
-DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9pb3BvcnQuaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L2lu
-dGVycnVwdC5oPg0KPiA+ICsjaW5jbHVkZSA8bGludXgvbWFqb3IuaD4NCj4gPiArI2luY2x1ZGUg
-PGxpbnV4L21tLmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4NCj4gPiArI2luY2x1
-ZGUgPGxpbnV4L3B0cmFjZS5oPg0KPiA+ICsjaW5jbHVkZSA8bGludXgvcG9sbC5oPg0KPiA+ICsj
-aW5jbHVkZSA8bGludXgvcHJvY19mcy5oPg0KPiA+ICsjaW5jbHVkZSA8bGludXgvdWFjY2Vzcy5o
-Pg0KPiA+ICsjaW5jbHVkZSA8bGludXgvc2VyaWFsLmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9z
-ZXJpYWxfcmVnLmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9zbGFiLmg+DQo+ID4gKyNpbmNsdWRl
-IDxsaW51eC9zdHJpbmcuaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L3NpZ25hbC5oPg0KPiA+ICsj
-aW5jbHVkZSA8bGludXgvc2NoZWQuaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L3R0eS5oPg0KPiA+
-ICsjaW5jbHVkZSA8bGludXgvdHR5X2ZsaXAuaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L3RpbWVy
-Lmg+DQo+ID4gKyNpbmNsdWRlICJucHJlYWwyLmgiDQo+ID4gKw0KPiA+ICtzdGF0aWMgaW50IHR0
-eW1ham9yID0gTlBSRUFMTUFKT1I7DQo+ID4gK3N0YXRpYyBpbnQgdmVyYm9zZSA9IDE7DQo+ID4g
-Kw0KPiA+ICtNT0RVTEVfQVVUSE9SKCI8c3VwcG9ydEBtb3hhLmNvbT4iKTsNCj4gPiArTU9EVUxF
-X0RFU0NSSVBUSU9OKCJNT1hBIEFzeW5jL05Qb3J0IFNlcnZlciBGYW1pbHkgUmVhbCBUVFkNCj4g
-RHJpdmVyIik7DQo+ID4gK21vZHVsZV9wYXJhbSh0dHltYWpvciwgaW50LCAwKTsgbW9kdWxlX3Bh
-cmFtKHZlcmJvc2UsIGludCwgMDY0NCk7DQo+ID4gK01PRFVMRV9WRVJTSU9OKE5QUkVBTF9WRVJT
-SU9OKTsgTU9EVUxFX0xJQ0VOU0UoIkdQTCIpOw0KPiA+ICsNCj4gPiArc3RydWN0IHNlcnZlcl9z
-ZXR0aW5nX3N0cnVjdCB7DQo+ID4gKwlpbnQzMl90IHNlcnZlcl90eXBlOw0KPiA+ICsJaW50MzJf
-dCBkaXNhYmxlX2ZpZm87DQo+ID4gK307DQo+ID4gKw0KPiA+ICtzdHJ1Y3QgbnByZWFsX3N0cnVj
-dCB7DQo+ID4gKwlzdHJ1Y3QgdHR5X3BvcnQgdHR5UG9ydDsNCj4gPiArCXN0cnVjdCB3b3JrX3N0
-cnVjdCB0cXVldWU7DQo+ID4gKwlzdHJ1Y3Qgd29ya19zdHJ1Y3QgcHJvY2Vzc19mbGlwX3RxdWV1
-ZTsNCj4gPiArCXN0cnVjdCBrdGVybWlvcyBub3JtYWxfdGVybWlvczsNCj4gPiArCXN0cnVjdCBr
-dGVybWlvcyBjYWxsb3V0X3Rlcm1pb3M7DQo+ID4gKwkvKiBrZXJuZWwgY291bnRlcnMgZm9yIHRo
-ZSA0IGlucHV0IGludGVycnVwdHMgKi8NCj4gPiArCXN0cnVjdCBhc3luY19pY291bnQgaWNvdW50
-Ow0KPiA+ICsJc3RydWN0IHNlbWFwaG9yZSByeF9zZW1hcGhvcmU7DQo+ID4gKwlzdHJ1Y3QgbmRf
-c3RydWN0ICpuZXRfbm9kZTsNCj4gPiArCXN0cnVjdCB0dHlfc3RydWN0ICp0dHk7DQo+ID4gKwlz
-dHJ1Y3QgcGlkICpzZXNzaW9uOw0KPiA+ICsJc3RydWN0IHBpZCAqcGdycDsNCj4gPiArCXdhaXRf
-cXVldWVfaGVhZF90IG9wZW5fd2FpdDsNCj4gPiArCXdhaXRfcXVldWVfaGVhZF90IGNsb3NlX3dh
-aXQ7DQo+ID4gKwl3YWl0X3F1ZXVlX2hlYWRfdCBkZWx0YV9tc3Jfd2FpdDsNCj4gPiArCXVuc2ln
-bmVkIGxvbmcgYmF1ZF9iYXNlOw0KPiA+ICsJdW5zaWduZWQgbG9uZyBldmVudDsNCj4gPiArCXVu
-c2lnbmVkIHNob3J0IGNsb3Npbmdfd2FpdDsNCj4gPiArCWludCBwb3J0Ow0KPiA+ICsJaW50IGZs
-YWdzOw0KPiA+ICsJaW50IHR5cGU7ICAvKiBVQVJUIHR5cGUgKi8NCj4gPiArCWludCB4bWl0X2Zp
-Zm9fc2l6ZTsNCj4gPiArCWludCBjdXN0b21fZGl2aXNvcjsNCj4gPiArCWludCB4X2NoYXI7IC8q
-IHhvbi94b2ZmIGNoYXJhY3RlciAqLw0KPiA+ICsJaW50IGNsb3NlX2RlbGF5Ow0KPiA+ICsJaW50
-IG1vZGVtX2NvbnRyb2w7IC8qIE1vZGVtIGNvbnRyb2wgcmVnaXN0ZXIgKi8NCj4gPiArCWludCBt
-b2RlbV9zdGF0dXM7ICAvKiBMaW5lIHN0YXR1cyAqLw0KPiA+ICsJaW50IGNvdW50OyAvKiAjIG9m
-IGZkIG9uIGRldmljZSAqLw0KPiA+ICsJaW50IHhtaXRfaGVhZDsNCj4gPiArCWludCB4bWl0X3Rh
-aWw7DQo+ID4gKwlpbnQgeG1pdF9jbnQ7DQo+ID4gKwl1bnNpZ25lZCBjaGFyICp4bWl0X2J1ZjsN
-Cj4gPiArDQo+ID4gKwkvKg0KPiA+ICsJICogV2UgdXNlIHNwaW5fbG9ja19pcnFzYXZlIGluc3Rl
-YWQgb2Ygc2VtYXBob25yZSBoZXJlLg0KPiA+ICsJICogUmVhc29uOiBXaGVuIHdlIHVzZSBwcHBk
-IHRvIGRpYWxvdXQgdmlhIFJlYWwgVFRZIGRyaXZlciwNCj4gPiArCSAqIHNvbWUgZHJpdmVyIGZ1
-bmN0aW9ucywgc3VjaCBhcyBucHJlYWxfd3JpdGUoKSwgd291bGQgYmUNCj4gPiArCSAqIGludm9r
-ZWQgdW5kZXIgaW50ZXJycHV0ZSBtb2RlIHdoaWNoIGNhdXNlcyB3YXJuaW5nIGluDQo+ID4gKwkg
-KiBkb3duL3VwIHR4X3NlbWFwaG9yZS4NCj4gPiArCSAqLw0KPiA+ICsJc3BpbmxvY2tfdCB0eF9s
-b2NrOw0KPiA+ICt9Ow0KPiA+ICsNCj4gPiArc3RydWN0IG5kX3N0cnVjdCB7DQo+ID4gKwlzdHJ1
-Y3Qgc2VtYXBob3JlIGNtZF9zZW1hcGhvcmU7DQo+ID4gKwlzdHJ1Y3QgcHJvY19kaXJfZW50cnkg
-Km5vZGVfZW50cnk7DQo+ID4gKwlzdHJ1Y3QgbnByZWFsX3N0cnVjdCAqdHR5X25vZGU7DQo+ID4g
-KwlzdHJ1Y3Qgc2VtYXBob3JlIHNlbWFwaG9yZTsNCj4gPiArCXdhaXRfcXVldWVfaGVhZF90IGlu
-aXRpYWxpemVfd2FpdDsNCj4gPiArCXdhaXRfcXVldWVfaGVhZF90IHNlbGVjdF9pbl93YWl0Ow0K
-PiA+ICsJd2FpdF9xdWV1ZV9oZWFkX3Qgc2VsZWN0X291dF93YWl0Ow0KPiA+ICsJd2FpdF9xdWV1
-ZV9oZWFkX3Qgc2VsZWN0X2V4X3dhaXQ7DQo+ID4gKwl3YWl0X3F1ZXVlX2hlYWRfdCBjbWRfcnNw
-X3dhaXQ7DQo+ID4gKwlpbnQzMl90IHNlcnZlcl90eXBlOw0KPiA+ICsJaW50IGRvX3Nlc3Npb25f
-cmVjb3ZlcnlfbGVuOw0KPiA+ICsJaW50IGNtZF9yc3BfZmxhZzsNCj4gPiArCWludCB0eF9yZWFk
-eTsNCj4gPiArCWludCByeF9yZWFkeTsNCj4gPiArCWludCBjbWRfcmVhZHk7DQo+ID4gKwlpbnQg
-d2FpdF9vcXVldWVfcmVzcG9uc2VkOw0KPiA+ICsJaW50IG9xdWV1ZTsNCj4gPiArCWludCByc3Bf
-bGVuZ3RoOw0KPiA+ICsJdW5zaWduZWQgbG9uZyBmbGFnOw0KPiA+ICsJdW5zaWduZWQgY2hhciBj
-bWRfYnVmZmVyWzg0XTsNCj4gPiArCXVuc2lnbmVkIGNoYXIgcnNwX2J1ZmZlcls4NF07DQo+IA0K
-PiBZb3Ugc2VlbSB0byBoYXZlIHR3byAic3RhdGljIiBidWZmZXJzIGhlcmUsIGZvciB5b3VyIGRl
-dmljZSwgdGhhdCB5b3UNCj4gc2VtaS1yYW5kb21seSB3cml0ZSB0byBhbGwgb3ZlciB0aGUgcGxh
-Y2UsIGJ1dCBJIGNhbid0IGZpbmQgYW55IGxvY2tpbmcgb3INCj4gY29vcmRpbmF0aW9uIGJldHdl
-ZW4gdGhpbmdzIHRoYXQgcHJldmVudHMgbXVsdGlwbGUgY29tbWFuZHMgZnJvbSBub3QganVzdA0K
-PiBvdmVyd3JpdHRpbmcgZWFjaCBvdGhlci4NCj4gDQpGb3IgY21kX2J1ZmZlcltdLCB3ZSB1c2Ug
-bnByZWFsX3dhaXRfYW5kX3NldF9jb21tYW5kKCkgdG8gbWFrZSBzdXJlIGNtZF9idWZmZXJbXSBp
-cyBzYWZlIHRvIGJlIHdyaXR0ZW4gYnkgY2hlY2tpbmcgImNtZF9idWZmZXJbMF0gPT0gMCIuDQoN
-CkZvciByc3BfYnVmZmVyW10sIHdlIHVzZSBucHJlYWxfd2FpdF9jb21tYW5kX2NvbXBsZXRlZCgp
-IHRvIG1ha2Ugc3VyZSByc3BfYnVmZmVyW10gaXMgZGVzaXJlZCBieSBjaGVja2luZyByc3BfYnVm
-ZmVyWzBdIGFuZCByc3BfYnVmZmVyWzFdLiBDb21tYW5kX3NldCBhbmQgY29tbWFuZCBzaG91bGQg
-YmUgY2hlY2tlZC4gQmVzaWRlcywgcnNwX2J1ZmZlcltdIGlzIGdvdCBmcm9tIHVzZXIgc3BhY2Ug
-YnkgIk5QUkVBTF9ORVRfQ01EX1JFU1BPTlNFIiBpbiBucHJlYWxfbmV0X2lvY3RsKCkuDQoNCj4g
-QWxzbywgaG93IGRvZXMgdGhlIGRhdGEgZ2V0IHNlbnQgdG8gdGhlIGhhcmR3YXJlIGF0IGFsbD8g
-IEkgc2VlIGNtZF9idWZmZXJbXQ0KPiBiZWluZyB3cml0dGVuIHRvLCBidXQgd2hhdCByZWFkcyBm
-cm9tIGl0IGFuZCBob3cgZG9lcyB0aGUgaGFyZHdhcmUgZ2V0IHRoZQ0KPiBkYXRhPw0KDQpBY3R1
-YWxseSB3ZSBuZWVkIHRvIGJvdGggTlBvcnQgZHJpdmVyICh0aGlzIGRyaXZlcikgYW5kIE5wcmVh
-bCBkYWVtb24gKHVzZXJzcGFjZSkgdG8gbGV0IEhXIHdvcmsuIE5wcmVhbCBkYWVtb24gY2FuIGNv
-bW11bmljYXRlIHdpdGggSFcgYnkgc29ja2V0LCBhbmQgTnByZWFsIGRlYW1vbiBjb21tdW5pY2F0
-ZXMgd2l0aCBOcG9ydCBkcml2ZXIgYnkgIm5wcmVhbF9uZXRfZm9wcyIuIFdoZW4gY29tbWFuZHMg
-YXJlIHJlYWR5IGZvciBkcml2ZXIgcGFydCwgaXQgd2lsbCB3YWtlIHVwIHBvbGwgZXZlbnQgdG8g
-bGV0IE5wb3J0IGRhZW1vbiBrbm93Lg0KDQpCZXN0IHJlZ2FyZHMsDQpKb2huc29uDQo+IA0KPiBX
-aGF0IGFtIEkgbWlzc2luZyBoZXJlPw0KPiANCj4gdGhhbmtzLA0KPiANCj4gZ3JlZyBrLWgNCg0K
+On Thu, Jul 16, 2020 at 07:19:02AM +0000, Johnson CH Chen (陳昭勳) wrote:
+> Hi Greg,
+> 
+> Thanks for detailed and good suggestions!
+> 
+> > From: linux-serial-owner@vger.kernel.org
+> > <linux-serial-owner@vger.kernel.org> On Behalf Of Greg Kroah-Hartman
+> > Sent: Tuesday, July 14, 2020 3:36 PM
+> > To: Johnson CH Chen (陳昭勳) <JohnsonCH.Chen@moxa.com>
+> > Cc: Jiri Slaby <jirislaby@gmail.com>; linux-kernel@vger.kernel.org;
+> > linux-serial@vger.kernel.org
+> > Subject: Re: [PATCH] tty: Add MOXA NPort Real TTY Driver
+> > 
+> > On Tue, Jul 14, 2020 at 06:24:42AM +0000, Johnson CH Chen (陳昭勳) wrote:
+> > > This driver supports tty functions for all of MOXA's NPort series with
+> > > v5.0. Using this driver, host part can use tty to connect NPort device
+> > > server by ethernet.
+> > >
+> > > The following Moxa products are supported:
+> > > * CN2600 Series
+> > > * CN2500 Series
+> > > * NPort DE Series
+> > > * NPort 5000A-M12 Series
+> > > * NPort 5100 Series
+> > > * NPort 5200 Series
+> > > * NPort 5400 Series
+> > > * NPort 5600 Desktop Series
+> > > * NPort 5600 Rackmount Series
+> > > * NPort Wireless Series
+> > > * NPort IA5000 Series
+> > > * NPort 6000 Series
+> > > * NPort S8000 Series
+> > > * NPort S8455I Series
+> > > * NPort S9000 Series
+> > > * NE-4100 Series
+> > > * MiiNePort Series
+> > >
+> > > Signed-off-by: Johnson Chen <johnsonch.chen@moxa.com>
+> > > Signed-off-by: Jason Chen <jason.chen@moxa.com>
+> > > Signed-off-by: Danny Lin <danny.lin@moxa.com>
+> > > Signed-off-by: Victor Yu <victor.yu@moxa.com>
+> > > ---
+> > >  drivers/tty/Kconfig   |   11 +
+> > >  drivers/tty/Makefile  |    1 +
+> > >  drivers/tty/npreal2.c | 3042
+> > > +++++++++++++++++++++++++++++++++++++++++
+> > >  drivers/tty/npreal2.h |  140 ++
+> > >  4 files changed, 3194 insertions(+)
+> > >  create mode 100644 drivers/tty/npreal2.c  create mode 100644
+> > > drivers/tty/npreal2.h
+> > >
+> > > diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig index
+> > > 93fd984eb2f5..79b545269b71 100644
+> > > --- a/drivers/tty/Kconfig
+> > > +++ b/drivers/tty/Kconfig
+> > > @@ -259,6 +259,17 @@ config MOXA_SMARTIO
+> > >  	  This driver can also be built as a module. The module will be called
+> > >  	  mxser. If you want to do that, say M here.
+> > >
+> > > +config MOXA_NPORT_REAL_TTY
+> > > +	tristate "Moxa NPort Real TTY support v5.0"
+> > > +	help
+> > > +	  Say Y here if you have a Moxa NPort serial device server.
+> > > +
+> > > +	  The purpose of this driver is to map NPort serial port to host tty
+> > > +	  port. Using this driver, you can use NPort serial port as local tty port.
+> > > +
+> > > +	  This driver can also be built as a module. The module will be called
+> > > +	  npreal2 by setting M.
+> > > +
+> > >  config SYNCLINK
+> > >  	tristate "Microgate SyncLink card support"
+> > >  	depends on SERIAL_NONSTANDARD && PCI && ISA_DMA_API diff --git
+> > > a/drivers/tty/Makefile b/drivers/tty/Makefile index
+> > > 020b1cd9294f..6d07985d6962 100644
+> > > --- a/drivers/tty/Makefile
+> > > +++ b/drivers/tty/Makefile
+> > > @@ -24,6 +24,7 @@ obj-$(CONFIG_CYCLADES)		+= cyclades.o
+> > >  obj-$(CONFIG_ISI)		+= isicom.o
+> > >  obj-$(CONFIG_MOXA_INTELLIO)	+= moxa.o
+> > >  obj-$(CONFIG_MOXA_SMARTIO)	+= mxser.o
+> > > +obj-$(CONFIG_MOXA_NPORT_REAL_TTY) += npreal2.o
+> > >  obj-$(CONFIG_NOZOMI)		+= nozomi.o
+> > >  obj-$(CONFIG_NULL_TTY)	        += ttynull.o
+> > >  obj-$(CONFIG_ROCKETPORT)	+= rocket.o
+> > > diff --git a/drivers/tty/npreal2.c b/drivers/tty/npreal2.c new file
+> > > mode 100644 index 000000000000..65c773420755
+> > > --- /dev/null
+> > > +++ b/drivers/tty/npreal2.c
+> > > @@ -0,0 +1,3042 @@
+> > > +// SPDX-License-Identifier: GPL-2.0+
+> > > +/*
+> > > + * npreal2.c  -- MOXA NPort Server family Real TTY driver.
+> > > + *
+> > > + * Copyright (c) 1999-2020  Moxa Technologies (support@moxa.com)
+> > > + *
+> > > + * Supports the following Moxa Product:
+> > > + * CN2600 Series
+> > > + * CN2500 Series
+> > > + * NPort DE Series
+> > > + * NPort 5000A-M12 Series
+> > > + * NPort 5100 Series
+> > > + * NPort 5200 Series
+> > > + * NPort 5400 Series
+> > > + * NPort 5600 Desktop Series
+> > > + * NPort 5600 Rackmount Series
+> > > + * NPort Wireless Series
+> > > + * NPort IA5000 Series
+> > > + * NPort 6000 Series
+> > > + * NPort S8000 Series
+> > > + * NPort S8455I Series
+> > > + * NPort S9000 Series
+> > > + * NE-4100 Series
+> > > + * MiiNePort Series
+> > > + */
+> > > +
+> > > +#include <linux/delay.h>
+> > > +#include <linux/errno.h>
+> > > +#include <linux/fcntl.h>
+> > > +#include <linux/version.h>
+> > > +#include <linux/init.h>
+> > > +#include <linux/ioport.h>
+> > > +#include <linux/interrupt.h>
+> > > +#include <linux/major.h>
+> > > +#include <linux/mm.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/ptrace.h>
+> > > +#include <linux/poll.h>
+> > > +#include <linux/proc_fs.h>
+> > > +#include <linux/uaccess.h>
+> > > +#include <linux/serial.h>
+> > > +#include <linux/serial_reg.h>
+> > > +#include <linux/slab.h>
+> > > +#include <linux/string.h>
+> > > +#include <linux/signal.h>
+> > > +#include <linux/sched.h>
+> > > +#include <linux/tty.h>
+> > > +#include <linux/tty_flip.h>
+> > > +#include <linux/timer.h>
+> > > +#include "npreal2.h"
+> > > +
+> > > +static int ttymajor = NPREALMAJOR;
+> > > +static int verbose = 1;
+> > > +
+> > > +MODULE_AUTHOR("<support@moxa.com>");
+> > > +MODULE_DESCRIPTION("MOXA Async/NPort Server Family Real TTY
+> > Driver");
+> > > +module_param(ttymajor, int, 0); module_param(verbose, int, 0644);
+> > > +MODULE_VERSION(NPREAL_VERSION); MODULE_LICENSE("GPL");
+> > > +
+> > > +struct server_setting_struct {
+> > > +	int32_t server_type;
+> > > +	int32_t disable_fifo;
+> > > +};
+> > > +
+> > > +struct npreal_struct {
+> > > +	struct tty_port ttyPort;
+> > > +	struct work_struct tqueue;
+> > > +	struct work_struct process_flip_tqueue;
+> > > +	struct ktermios normal_termios;
+> > > +	struct ktermios callout_termios;
+> > > +	/* kernel counters for the 4 input interrupts */
+> > > +	struct async_icount icount;
+> > > +	struct semaphore rx_semaphore;
+> > > +	struct nd_struct *net_node;
+> > > +	struct tty_struct *tty;
+> > > +	struct pid *session;
+> > > +	struct pid *pgrp;
+> > > +	wait_queue_head_t open_wait;
+> > > +	wait_queue_head_t close_wait;
+> > > +	wait_queue_head_t delta_msr_wait;
+> > > +	unsigned long baud_base;
+> > > +	unsigned long event;
+> > > +	unsigned short closing_wait;
+> > > +	int port;
+> > > +	int flags;
+> > > +	int type;  /* UART type */
+> > > +	int xmit_fifo_size;
+> > > +	int custom_divisor;
+> > > +	int x_char; /* xon/xoff character */
+> > > +	int close_delay;
+> > > +	int modem_control; /* Modem control register */
+> > > +	int modem_status;  /* Line status */
+> > > +	int count; /* # of fd on device */
+> > > +	int xmit_head;
+> > > +	int xmit_tail;
+> > > +	int xmit_cnt;
+> > > +	unsigned char *xmit_buf;
+> > > +
+> > > +	/*
+> > > +	 * We use spin_lock_irqsave instead of semaphonre here.
+> > > +	 * Reason: When we use pppd to dialout via Real TTY driver,
+> > > +	 * some driver functions, such as npreal_write(), would be
+> > > +	 * invoked under interrpute mode which causes warning in
+> > > +	 * down/up tx_semaphore.
+> > > +	 */
+> > > +	spinlock_t tx_lock;
+> > > +};
+> > > +
+> > > +struct nd_struct {
+> > > +	struct semaphore cmd_semaphore;
+> > > +	struct proc_dir_entry *node_entry;
+> > > +	struct npreal_struct *tty_node;
+> > > +	struct semaphore semaphore;
+> > > +	wait_queue_head_t initialize_wait;
+> > > +	wait_queue_head_t select_in_wait;
+> > > +	wait_queue_head_t select_out_wait;
+> > > +	wait_queue_head_t select_ex_wait;
+> > > +	wait_queue_head_t cmd_rsp_wait;
+> > > +	int32_t server_type;
+> > > +	int do_session_recovery_len;
+> > > +	int cmd_rsp_flag;
+> > > +	int tx_ready;
+> > > +	int rx_ready;
+> > > +	int cmd_ready;
+> > > +	int wait_oqueue_responsed;
+> > > +	int oqueue;
+> > > +	int rsp_length;
+> > > +	unsigned long flag;
+> > > +	unsigned char cmd_buffer[84];
+> > > +	unsigned char rsp_buffer[84];
+> > 
+> > You seem to have two "static" buffers here, for your device, that you
+> > semi-randomly write to all over the place, but I can't find any locking or
+> > coordination between things that prevents multiple commands from not just
+> > overwritting each other.
+> > 
+> For cmd_buffer[], we use npreal_wait_and_set_command() to make sure
+> cmd_buffer[] is safe to be written by checking "cmd_buffer[0] == 0".
+
+And what locks are protecting you there?
+
+> For rsp_buffer[], we use npreal_wait_command_completed() to make sure
+> rsp_buffer[] is desired by checking rsp_buffer[0] and rsp_buffer[1].
+> Command_set and command should be checked. Besides, rsp_buffer[] is
+> got from user space by "NPREAL_NET_CMD_RESPONSE" in
+> npreal_net_ioctl().
+
+Again, what locking is really handling this?
+
+> > Also, how does the data get sent to the hardware at all?  I see cmd_buffer[]
+> > being written to, but what reads from it and how does the hardware get the
+> > data?
+> 
+> Actually we need to both NPort driver (this driver) and Npreal daemon
+> (userspace) to let HW work. Npreal daemon can communicate with HW by
+> socket, and Npreal deamon communicates with Nport driver by
+> "npreal_net_fops". When commands are ready for driver part, it will
+> wake up poll event to let Nport daemon know.
+
+That is not obvious at all, and needs to be really really really
+documented here.  Why not put the userspace chunk in the tree too?  At
+the least, you need to point at it.
+
+And why is a userspace part needed?  We have tty-over-ethernet drivers
+that do not require such a thing in the tree somewhere...
+
+thanks,
+
+greg k-h
