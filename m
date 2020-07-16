@@ -2,166 +2,110 @@ Return-Path: <SRS0=PhEQ=A3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAC8C433E2
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 12:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE61C433E7
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 14:51:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3BBF3207CD
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 12:39:13 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hM8MArVc"
+	by mail.kernel.org (Postfix) with ESMTP id A05E7207BC
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jul 2020 14:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728054AbgGPMjC (ORCPT
+        id S1728402AbgGPOu6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jul 2020 08:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728087AbgGPMjB (ORCPT
+        Thu, 16 Jul 2020 10:50:58 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:43758 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbgGPOu5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jul 2020 08:39:01 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905AAC061755;
-        Thu, 16 Jul 2020 05:39:01 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id t15so4607616pjq.5;
-        Thu, 16 Jul 2020 05:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=K1HWiQZgE61cy/vLmXw2XWqZLzJFdYeUlZUgURRvU5U=;
-        b=hM8MArVcutmn6qHTeKVWDy7oE71DfDVoTU4O5q7N0THKl52g271rQZviqdZ3BmfX2H
-         wBqoYDoDmNn324vso1g5wApALL7Jldq7EGkn5+NuVzUSPd68+gg9wJDZHRjN1owC2enb
-         +zVvWZviVR2Mz9xJ/N2ZvDihSuoB5y8+If5VF7W+koKd3C0G3mMDbFYvOQuagCm4/Ppp
-         wTGtApYTOmZ4bsrZZcXyL59EAtHZ+rM5s/aRpM9/cUJ2NaGLoo/siDBxW0K/fJrGmjuf
-         CsF/y6XLeLoJW4I1RdWc99f3nheSOJKwdlk4AEm28L7a532FtDq6lsmzLhmFDIeYYkvd
-         aMCQ==
+        Thu, 16 Jul 2020 10:50:57 -0400
+Received: by mail-ot1-f68.google.com with SMTP id 95so4391533otw.10;
+        Thu, 16 Jul 2020 07:50:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=K1HWiQZgE61cy/vLmXw2XWqZLzJFdYeUlZUgURRvU5U=;
-        b=MjmYiXPn78saZh9fduGkVNauZVVdyFmhP2/OTLtFrEbZSbxcxve8j9huGCqMWQ2YsW
-         1J3k8pm7xuTmc4HEEuh+WsO+POf7Aea19XInNmRGQdCm/AARNlJSm/hmUQZLnYnpFD58
-         5YRIU2LfGJxiQVGDeZsLmWz7AzWdRrt/6q5Dj3v5Kg0EO2WgTR/8rygAIK5TCU0xg9TX
-         mtOEYpHeYs12+iIYA+ofsiRHto4fQqUJwgm9uTuvCC6Lr9lFetJmEvhfGXfLWUyIFLMs
-         sF9Us467YVU0fQMj+6A+EqCPwf7fvp+xz2/a0P0GIL9Rdh7mVGbFPqxG7ApXPKke5QIR
-         JkWw==
-X-Gm-Message-State: AOAM5310dpboEZuGeV+HGLC6mqFJjD0RcgG3I0UKkq/AWpzvHkcjWEN2
-        BiFWxQByrq+Cz2SwDFlTJ++EMEgFA6YLkFEl1OQ=
-X-Google-Smtp-Source: ABdhPJym4fUkA7PWQNVi5tG8ifNxe+uZqYMEc9TePz2JLjfYzUvpwTwBo1WSpcBLmCkunTVTGzgqldVCTP55rLJLojE=
-X-Received: by 2002:a17:90a:ef17:: with SMTP id k23mr4253147pjz.45.1594903141101;
- Thu, 16 Jul 2020 05:39:01 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=DRJaFCSXRYkutxNn91NF44g9U1kYxsQDLLWfAu1WbbQ=;
+        b=uRGg/mLe7ma/iNNFdbPtorWOp6YZ3KHKPWUUPtCKpFx8t9cyC9TStlP3AZifa8QXLV
+         pku+gO7QQJ4upgFPyenmR/m0dy2nhiChUMtJPwf9Tsk0SGhlXN2KnCdJOaOuIHDAPI5m
+         XOhZbOGvPXE6a+ZEbiNK9/oADi9FmlE6+Spt6+uctZ3iZ9lo21t90Y5snaVt5GU2z5Ki
+         5BgqSVJFCSNs791SArowXAVXw2Dqq1fkRoi1a7MumjDOUVY4lfzsQLaDBxs4J2Lu83wS
+         d1flftQf5/XnaNlrrI9mnc0kPIAwJY/ERXgf7u3fA4PNhAY8tbqTWkVxnHNQh3rbknUZ
+         yh2Q==
+X-Gm-Message-State: AOAM531pAqhmqz/IY9N3my4iJO0CdWvi7iVjp59RSeDFMt8BYHaWSFf8
+        vXB1I4BhWkJIseW9rDKW099UYz4ACrleZn12d7c=
+X-Google-Smtp-Source: ABdhPJxyxYPYlnu26Hv5+mDli+MtJUrQt5wGWDh7lDg99HePscNEbHIbPNRFs3d2epSAxS9HsVjtad/k5x67y/U4vnc=
+X-Received: by 2002:a9d:2646:: with SMTP id a64mr4514600otb.107.1594911057188;
+ Thu, 16 Jul 2020 07:50:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200618100852.13715-1-gengcixi@gmail.com> <2fae67c7637f4e978cb54c3b96090788@BJMBX01.spreadtrum.com>
-In-Reply-To: <2fae67c7637f4e978cb54c3b96090788@BJMBX01.spreadtrum.com>
-From:   Cixi Geng <gengcixi@gmail.com>
-Date:   Thu, 16 Jul 2020 20:38:25 +0800
-Message-ID: <CAF12kFseC4MMbEUk6CgW=Hpz_Hg-+fjwbLZKFdPu0K_EGtcPDw@mail.gmail.com>
-Subject: Re: [PATCH V6] GCOV: Add config to check the preqequisites situation
-To:     Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-serial@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     Cixi Geng1 <cixi.geng1@unisoc.com>,
-        Orson Zhai <orsonzhai@gmail.com>, zhang.lyra@gmail.com
+References: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594230511-24790-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594230511-24790-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 16 Jul 2020 16:50:46 +0200
+Message-ID: <CAMuHMdVy4O9vbyO-j1eJbjQGon-3MEng42EOYJ2PoRmRY5ttKQ@mail.gmail.com>
+Subject: Re: [PATCH 6/8] arm64: dts: renesas: Initial r8a774e1 SoC device tree
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi All:
-Does this patch need more modification?
+Hi Prabhakar,
 
-
-
-> =E5=8F=91=E4=BB=B6=E4=BA=BA: gengcixi@gmail.com <gengcixi@gmail.com>
-> =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B46=E6=9C=8818=E6=97=A5 =
-18:08
-> =E6=94=B6=E4=BB=B6=E4=BA=BA: gregkh@linuxfoundation.org; jslaby@suse.com;=
- oberpar@linux.ibm.com; linux-serial@vger.kernel.org; linux-kernel@vger.ker=
-nel.org
-> =E6=8A=84=E9=80=81: orsonzhai@gmail.com; zhang.lyra@gmail.com; =E8=80=BF=
-=E6=85=88=E7=86=99 (Cixi Geng/10039)
-> =E4=B8=BB=E9=A2=98: [PATCH V6] GCOV: Add config to check the preqequisite=
-s situation
+On Wed, Jul 8, 2020 at 7:49 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 >
-> From: Cixi Geng <cixi.geng1@unisoc.com>
+> Basic support for the RZ/G2H SoC.
 >
-> Introduce new configuration option GCOV_PROFILE_PREREQS that can be
-> used to check whether the prerequisites for enabling gcov profiling
-> for specific files and directories are met.
->
-> Only add SERIAL_GCOV for an example.
->
-> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > ---
->  drivers/tty/serial/Kconfig  |  7 +++++++
->  drivers/tty/serial/Makefile |  1 +
->  kernel/gcov/Kconfig         | 10 ++++++++++
->  3 files changed, 18 insertions(+)
+>  arch/arm64/boot/dts/renesas/r8a774e1.dtsi | 652 ++++++++++++++++++++++
+>  1 file changed, 652 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/renesas/r8a774e1.dtsi
 >
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index adf9e80e7dc9..6df002370f18 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1566,3 +1566,10 @@ endmenu
->
->  config SERIAL_MCTRL_GPIO
->         tristate
-> +
-> +config SERIAL_GCOV
-> +       bool "Enable profile gcov for serial directory"
-> +       depends on GCOV_PROFILE_PREREQS
-> +       help
-> +         The SERIAL_GCOV will add Gcov profiling flags when kernel compi=
-les.
-> +         Say 'Y' here if you want the gcov data for the serial directory=
-,
-> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-> index d056ee6cca33..17272733db95 100644
-> --- a/drivers/tty/serial/Makefile
-> +++ b/drivers/tty/serial/Makefile
-> @@ -3,6 +3,7 @@
->  # Makefile for the kernel serial device drivers.
->  #
->
-> +GCOV_PROFILE :=3D $(CONFIG_SERIAL_GCOV)
->  obj-$(CONFIG_SERIAL_CORE) +=3D serial_core.o
->
->  obj-$(CONFIG_SERIAL_EARLYCON) +=3D earlycon.o
-> diff --git a/kernel/gcov/Kconfig b/kernel/gcov/Kconfig
-> index 3941a9c48f83..f415c4aaf0ab 100644
-> --- a/kernel/gcov/Kconfig
-> +++ b/kernel/gcov/Kconfig
-> @@ -51,6 +51,16 @@ config GCOV_PROFILE_ALL
->         larger and run slower. Also be sure to exclude files from profili=
-ng
->         which are not linked to the kernel image to prevent linker errors=
-.
->
-> +config GCOV_PROFILE_PREREQS
-> +       bool "Profile Kernel for prereqs"
-> +       default y if GCOV_KERNEL && !COMPILE_TEST
-> +       help
-> +         This options activates profiling for the specified kernel modul=
-es.
-> +
-> +         When some modules need Gcov data, enable this config, then conf=
-igure
-> +         with gcov on the corresponding modules,The directories or files=
- of
-> +         these modules will be added profiling flags after kernel compil=
-e.
-> +
->  choice
->         prompt "Specify GCOV format"
->         depends on GCOV_KERNEL
-> --
-> 2.17.1
+> diff --git a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
+> new file mode 100644
+> index 000000000000..6637e157ffcd
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
+
+> +               intc_ex: interrupt-controller@e61c0000 {
+> +                       compatible = "renesas,intc-ex-r8a774b1", "renesas,irqc";
+
+Woops, '4e1, of course.
+
+As I haven't sent a PR for arm-soc yet, I'll fix it up in renesas-devel.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
