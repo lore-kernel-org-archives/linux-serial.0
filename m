@@ -2,149 +2,123 @@ Return-Path: <SRS0=EuFA=BA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 469C4C433E6
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 08:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5016C433EC
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 10:48:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 244652080D
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 08:43:40 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="X9SVl1no"
+	by mail.kernel.org (Postfix) with ESMTP id A4D172077D
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 10:48:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1595328496;
+	bh=mCVOD2/3rIZ2K7CMs4hFee4ep9/OgYgQYJgBZXG9RJc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=DUlP6W7oGDXls7uN+3h5u38PFJcj7fBYhUlVBCoOY90ANZ+Dfj80Stt9Zg1nIKNbZ
+	 qae8U2tp+tuukwdpHbzMwWR0+Bk15QsTTI4y0jzx0gceLE3hekJYxx9eP4VwWFmFgy
+	 mtbT2xStJFfzNPhnEDcZec9kwTk/tSgUpn4qUuNg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725984AbgGUInh (ORCPT
+        id S1729207AbgGUKsM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jul 2020 04:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728577AbgGUIng (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jul 2020 04:43:36 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215F8C0619D8
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 01:43:36 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id l6so9950116plt.7
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 01:43:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:content-transfer-encoding:in-reply-to:references
-         :subject:from:cc:to:date:message-id:user-agent;
-        bh=LDyYq7mGwU/io/5kwm3whsJhqDFrwNw4M+0gHu2yWNM=;
-        b=X9SVl1noxhxAJSxVLxnUk8o/KVL6aNK/lBRqGdm26YT8FAGcP40UJUB4BB2eG9FC9R
-         7cY73a/L9bOTX3FMGx+9yNjqfED2E3hwadYVHTGyX9aEqhrcpcKsT8Q7Gykux3FwOouw
-         2QGN+kC97nd84cz5yCXtzKOKY+5Dy6TvR83fk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:content-transfer-encoding
-         :in-reply-to:references:subject:from:cc:to:date:message-id
-         :user-agent;
-        bh=LDyYq7mGwU/io/5kwm3whsJhqDFrwNw4M+0gHu2yWNM=;
-        b=ndnsgGhTA1piF23qJCFHHFtlHX8Hi9DEOmg+9DGCRabihrzNPzN40TF0HP5GYvwcK7
-         744VY/Ct5HVFb3W7XPofR4LzLOcCuBXDkguS0AIoFUJ6A5UfU8HTzOXrn14QX0uf+WXw
-         YiGFeMb+1rMOEt6nr4FIRXX16NdSPK4rWG4GgcVJT1cBuRMrDk55jB3jCbuFwwOvslC0
-         B2khxFioCkbiGLW+B4q+2PWSyLB05CrD4S5ze9vDmLJYGUyhRfaxgoohZS0oKJy/SdcC
-         hwf7qKhfBxfLt4rNvWjeJoQF3MI0akJ9aA6MXUidXfY2u1nmR2EAFZaF+S1VViE1Jq91
-         vI6g==
-X-Gm-Message-State: AOAM533Lx4QgB1zrzClQ9LxsscEtzUSV2YbgMhYOnE+4jDPiqcSvuIGP
-        QRZZx+cLdOnwpaGZxyns7pCg1g==
-X-Google-Smtp-Source: ABdhPJy4aKFmpB5Dgc+0DC8B10/KpMNM/Ag1dR6K/OxvywuhrosN4V4qOP35QJiccdOAUxzwf8dn0g==
-X-Received: by 2002:a17:90a:6888:: with SMTP id a8mr3579090pjd.59.1595321015512;
-        Tue, 21 Jul 2020 01:43:35 -0700 (PDT)
-Received: from chromium.org ([2620:15c:202:1:3e52:82ff:fe6c:83ab])
-        by smtp.gmail.com with ESMTPSA id r191sm19920333pfr.181.2020.07.21.01.43.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 01:43:34 -0700 (PDT)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 21 Jul 2020 06:48:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35190 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726089AbgGUKsM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Jul 2020 06:48:12 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C87AA20674;
+        Tue, 21 Jul 2020 10:48:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595328491;
+        bh=mCVOD2/3rIZ2K7CMs4hFee4ep9/OgYgQYJgBZXG9RJc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mW8j8WIQbBScJfrAarqnLyQlPtHFHdBRC0whN3aOU5rZVBRrHa5J6hxstqFFa5sFJ
+         IUMzqgZ4LNvqcCyCQWgzosUiR9OrhGqczGLXzQxvT2Jz6RNhWeJ6IwyFsLEmpyQ4Eh
+         LC++w/roMQVmC2ODhp4GomhzPJMIuDM6yArByN+c=
+Date:   Tue, 21 Jul 2020 12:48:19 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jslaby@suse.com
+Subject: Re: [PATCH] serial: 8250: fix null-ptr-deref in serial8250_start_tx()
+Message-ID: <20200721104819.GA1678476@kroah.com>
+References: <20200721143852.4058352-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20200630030552.cfp5oh33qde6nlnf@vireshk-i7>
-References: <1592222564-13556-1-git-send-email-rnayak@codeaurora.org> <1592222564-13556-2-git-send-email-rnayak@codeaurora.org> <159347264530.1987609.11350620235820019545@swboyd.mtv.corp.google.com> <a3d53f82-b29d-97ef-3ba1-ca9bd650d354@codeaurora.org> <20200630030552.cfp5oh33qde6nlnf@vireshk-i7>
-Subject: Re: [PATCH v6 1/6] tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
-From:   Stephen Boyd <swboyd@chromium.org>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        robdclark@chromium.org, robdclark@gmail.com,
-        stanimir.varbanov@linaro.org, mka@chromium.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        linux-serial@vger.kernel.org
-To:     Rajendra Nayak <rnayak@codeaurora.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Date:   Tue, 21 Jul 2020 01:43:33 -0700
-Message-ID: <159532101373.3847286.9695594340556014384@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9.1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200721143852.4058352-1-yangyingliang@huawei.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Viresh Kumar (2020-06-29 20:05:52)
-> On 30-06-20, 08:31, Rajendra Nayak wrote:
-> >=20
-> >=20
-> > On 6/30/2020 4:47 AM, Stephen Boyd wrote:
-> > > Quoting Rajendra Nayak (2020-06-15 05:02:39)
-> > > > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/se=
-rial/qcom_geni_serial.c
-> > > > index 457c0bf..a90f8ec 100644
-> > > > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > > > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > > > @@ -9,6 +9,7 @@
-> > > >   #include <linux/module.h>
-> > > >   #include <linux/of.h>
-> > > >   #include <linux/of_device.h>
-> > > > +#include <linux/pm_opp.h>
-> > > >   #include <linux/platform_device.h>
-> > > >   #include <linux/pm_runtime.h>
-> > > >   #include <linux/pm_wakeirq.h>
-> > > > @@ -962,7 +963,7 @@ static void qcom_geni_serial_set_termios(struct=
- uart_port *uport,
-> > > >                  goto out_restart_rx;
-> > > >          uport->uartclk =3D clk_rate;
-> > > > -       clk_set_rate(port->se.clk, clk_rate);
-> > > > +       dev_pm_opp_set_rate(uport->dev, clk_rate);
-> > >=20
-> > > If there isn't an OPP table for the device because it is optional then
-> > > how can we unconditionally call dev_pm_opp_set_rate()?
->=20
-> Looks like some *Maintainers* aren't paying enough attention lately ;)
->=20
-> Just kidding.
->=20
+On Tue, Jul 21, 2020 at 02:38:52PM +0000, Yang Yingliang wrote:
+> I got null-ptr-deref in serial8250_start_tx():
+> 
+> [   78.114630] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+> [   78.123778] Mem abort info:
+> [   78.126560]   ESR = 0x86000007
+> [   78.129603]   EC = 0x21: IABT (current EL), IL = 32 bits
+> [   78.134891]   SET = 0, FnV = 0
+> [   78.137933]   EA = 0, S1PTW = 0
+> [   78.141064] user pgtable: 64k pages, 48-bit VAs, pgdp=00000027d41a8600
+> [   78.147562] [0000000000000000] pgd=00000027893f0003, p4d=00000027893f0003, pud=00000027893f0003, pmd=00000027c9a20003, pte=0000000000000000
+> [   78.160029] Internal error: Oops: 86000007 [#1] SMP
+> [   78.164886] Modules linked in: sunrpc vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher crct10dif_ce ghash_ce sha2_ce sha256_arm64 sha1_ce ses enclosure sg sbsa_gwdt ipmi_ssif spi_dw_mmio sch_fq_codel vhost_net tun vhost vhost_iotlb tap ip_tables ext4 mbcache jbd2 ahci hisi_sas_v3_hw libahci hisi_sas_main libsas hns3 scsi_transport_sas hclge libata megaraid_sas ipmi_si hnae3 ipmi_devintf ipmi_msghandler br_netfilter bridge stp llc nvme nvme_core xt_sctp sctp libcrc32c dm_mod nbd
+> [   78.207383] CPU: 11 PID: 23258 Comm: null-ptr Not tainted 5.8.0-rc6+ #48
+> [   78.214056] Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 2280-V2 CS V3.B210.01 03/12/2020
+> [   78.222888] pstate: 80400089 (Nzcv daIf +PAN -UAO BTYPE=--)
+> [   78.228435] pc : 0x0
+> [   78.230618] lr : serial8250_start_tx+0x160/0x260
+> [   78.235215] sp : ffff800062eefb80
+> [   78.238517] x29: ffff800062eefb80 x28: 0000000000000fff
+> [   78.243807] x27: ffff800062eefd80 x26: ffff202fd83b3000
+> [   78.249098] x25: ffff800062eefd80 x24: ffff202fd83b3000
+> [   78.254388] x23: ffff002fc5e50be8 x22: 0000000000000002
+> [   78.259679] x21: 0000000000000001 x20: 0000000000000000
+> [   78.264969] x19: ffffa688827eecc8 x18: 0000000000000000
+> [   78.270259] x17: 0000000000000000 x16: 0000000000000000
+> [   78.275550] x15: ffffa68881bc67a8 x14: 00000000000002e6
+> [   78.280841] x13: ffffa68881bc67a8 x12: 000000000000c539
+> [   78.286131] x11: d37a6f4de9bd37a7 x10: ffffa68881cccff0
+> [   78.291421] x9 : ffffa68881bc6000 x8 : ffffa688819daa88
+> [   78.296711] x7 : ffffa688822a0f20 x6 : ffffa688819e0000
+> [   78.302002] x5 : ffff800062eef9d0 x4 : ffffa68881e707a8
+> [   78.307292] x3 : 0000000000000000 x2 : 0000000000000002
+> [   78.312582] x1 : 0000000000000001 x0 : ffffa688827eecc8
+> [   78.317873] Call trace:
+> [   78.320312]  0x0
+> [   78.322147]  __uart_start.isra.9+0x64/0x78
+> [   78.326229]  uart_start+0xb8/0x1c8
+> [   78.329620]  uart_flush_chars+0x24/0x30
+> [   78.333442]  n_tty_receive_buf_common+0x7b0/0xc30
+> [   78.338128]  n_tty_receive_buf+0x44/0x2c8
+> [   78.342122]  tty_ioctl+0x348/0x11f8
+> [   78.345599]  ksys_ioctl+0xd8/0xf8
+> [   78.348903]  __arm64_sys_ioctl+0x2c/0xc8
+> [   78.352812]  el0_svc_common.constprop.2+0x88/0x1b0
+> [   78.357583]  do_el0_svc+0x44/0xd0
+> [   78.360887]  el0_sync_handler+0x14c/0x1d0
+> [   78.364880]  el0_sync+0x140/0x180
+> [   78.368185] Code: bad PC value
+> 
+> SERIAL_PORT_DFNS is not defined on each arch, if it's not defined,
+> serial8250_set_defaults() won't be called in serial8250_isa_init_ports(),
+> so the p->serial_in pointer won't be initialized, and it leads a null-ptr-deref.
+> Fix this problem by calling serial8250_set_defaults() after init uart port.
+> 
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-It seems that dev_pm_opp_set_rate() calls _find_opp_table() and finds
-something that isn't an error pointer but then dev_pm_opp_of_add_table()
-returns an error value because there isn't an operating-points property
-in DT. We're getting saved because this driver also happens to call
-dev_pm_opp_set_clkname() which allocates the OPP table a second time
-(because the first time it got freed when dev_pm_opp_of_add_table()
-return -ENODEV because the property was missing).
+Does this fix a specific commit, or has this issue always been present?
+What has caused it to happen now that no one else has seen this?
 
-Why do we need 'has_opp_table' logic? It seems that we have to keep
-track of the fact that dev_pm_opp_of_add_table() failed so that we don't
-put the table again, but then dev_pm_opp_set_clkname() can be called
-to allocate the table regardless.
+thanks,
 
-This maintainer is paying very close attention to super confusing code like
-this:
-
-	if (drv->has_opp_table)
-		dev_pm_opp_of_remove_table(dev);
-	dev_pm_opp_put_clkname(drv->opp_table);
-
-which reads as "if I have an opp table remove it and oh by the way
-remove the clk name for this opp table pointer I also happen to always
-have".
-
-Maybe I would be happier if dev_pm_opp_of_table() went away and we just
-had dev_pm_opp_add_table(const struct opp_config *config) that did all
-the things for us like set a clk name, set the supported hw, set the
-prop name, etc. based on the single config struct pointer and also
-parsed out the OPP table from DT or just ignored that if there isn't any
-operating-points property. Then the caller wouldn't need to keep track
-of 'if has_opp_table' because it doesn't seem to actually care and the
-core is happy to allocate a table for the device anyway so long as it
-sets a clk name.
+greg k-h
