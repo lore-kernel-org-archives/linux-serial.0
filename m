@@ -2,95 +2,149 @@ Return-Path: <SRS0=EuFA=BA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9960C433E0
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 08:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 469C4C433E6
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 08:43:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AD51D2080D
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 08:04:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595318687;
-	bh=DfcAnOdK3BxY6jqQpzn4sc8Wri40qkfysNtuloW83bs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=fyhTFLDWEceAFJckNtfObV+tcDpl8LgvD/pJ1BYH9kUvlb5ZY+zH4jfaWbp5pOqnq
-	 kvTlbjpQ/Dy6OjXOI6mAVKEnq2sxV/BOdY9NEIwRMCDQNsqNN9qpCJk0RYU1WTocal
-	 rHBst1WLQCEznoY96SYY+TDUTDV/MnEB9ZFRaaC8=
+	by mail.kernel.org (Postfix) with ESMTP id 244652080D
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 08:43:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="X9SVl1no"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728259AbgGUIEr (ORCPT
+        id S1725984AbgGUInh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jul 2020 04:04:47 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53719 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726614AbgGUIEr (ORCPT
+        Tue, 21 Jul 2020 04:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728577AbgGUIng (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jul 2020 04:04:47 -0400
-Received: by mail-wm1-f67.google.com with SMTP id j18so1857174wmi.3;
-        Tue, 21 Jul 2020 01:04:45 -0700 (PDT)
+        Tue, 21 Jul 2020 04:43:36 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215F8C0619D8
+        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 01:43:36 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id l6so9950116plt.7
+        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 01:43:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:content-transfer-encoding:in-reply-to:references
+         :subject:from:cc:to:date:message-id:user-agent;
+        bh=LDyYq7mGwU/io/5kwm3whsJhqDFrwNw4M+0gHu2yWNM=;
+        b=X9SVl1noxhxAJSxVLxnUk8o/KVL6aNK/lBRqGdm26YT8FAGcP40UJUB4BB2eG9FC9R
+         7cY73a/L9bOTX3FMGx+9yNjqfED2E3hwadYVHTGyX9aEqhrcpcKsT8Q7Gykux3FwOouw
+         2QGN+kC97nd84cz5yCXtzKOKY+5Dy6TvR83fk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=syvFVe39WCS6I7HZqBbb+16Wl3B+m141J405QHoInHE=;
-        b=WOzBDXudrswjLpFnCUlRp0S6MWhUH84fHHDeADyLAeXTDcg8axRSMifiRuaFsqaYQ6
-         amedgHwmpkqPRvxZg6ajVG3j18aImUnefB9npjZGSK/N33foieFdG94k8gdCXkS+hvuS
-         M7j0P6rGsgLJu8k+eqgHqXJQkFr3RTJLteR7oAXt77PguOYofV0Uu/7ds3GI74NLuaOa
-         jRkfbK0UIzNqTHvv7IMByIOgHvzaRMMJMK16pcy6bzam/MOI8fCWKaojUeorobdwghBb
-         yXhJPWCeQavFIDcaQMiIYV4OqGVDcaM0wD8Dcy/i+5uG7JUHpqwmCpS6kDqReFjQy7mr
-         wRrw==
-X-Gm-Message-State: AOAM53254MBRn8uINdEiBVFY8xGjlc/vDpkEPYoKAiXK0AXZpXzQycs3
-        mAzE19EOY0d72jFg7Nzq7hRKxqftEhM=
-X-Google-Smtp-Source: ABdhPJxda9SdlT7pF9+Os3z3GaDcUTXtBao7aheqKIsfkWKfKAqh6bpMotyBzTDIkJgsfF7Wf+I2vw==
-X-Received: by 2002:a7b:cb92:: with SMTP id m18mr2786559wmi.94.1595318684880;
-        Tue, 21 Jul 2020 01:04:44 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.200])
-        by smtp.googlemail.com with ESMTPSA id u65sm2545294wmg.5.2020.07.21.01.04.43
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 21 Jul 2020 01:04:44 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 10:04:42 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Tamseel Shams <m.shams@samsung.com>
-Cc:     kgene@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com
-Subject: Re: [PATCH v4] serial: samsung: change to platform_get_irq_optional
-Message-ID: <20200721080442.GA6580@kozik-lap>
-References: <CGME20200713141655epcas5p2cdd83477e4fc024457a2b08d8ebfbad0@epcas5p2.samsung.com>
- <20200713135531.68583-1-m.shams@samsung.com>
+        h=x-gm-message-state:mime-version:content-transfer-encoding
+         :in-reply-to:references:subject:from:cc:to:date:message-id
+         :user-agent;
+        bh=LDyYq7mGwU/io/5kwm3whsJhqDFrwNw4M+0gHu2yWNM=;
+        b=ndnsgGhTA1piF23qJCFHHFtlHX8Hi9DEOmg+9DGCRabihrzNPzN40TF0HP5GYvwcK7
+         744VY/Ct5HVFb3W7XPofR4LzLOcCuBXDkguS0AIoFUJ6A5UfU8HTzOXrn14QX0uf+WXw
+         YiGFeMb+1rMOEt6nr4FIRXX16NdSPK4rWG4GgcVJT1cBuRMrDk55jB3jCbuFwwOvslC0
+         B2khxFioCkbiGLW+B4q+2PWSyLB05CrD4S5ze9vDmLJYGUyhRfaxgoohZS0oKJy/SdcC
+         hwf7qKhfBxfLt4rNvWjeJoQF3MI0akJ9aA6MXUidXfY2u1nmR2EAFZaF+S1VViE1Jq91
+         vI6g==
+X-Gm-Message-State: AOAM533Lx4QgB1zrzClQ9LxsscEtzUSV2YbgMhYOnE+4jDPiqcSvuIGP
+        QRZZx+cLdOnwpaGZxyns7pCg1g==
+X-Google-Smtp-Source: ABdhPJy4aKFmpB5Dgc+0DC8B10/KpMNM/Ag1dR6K/OxvywuhrosN4V4qOP35QJiccdOAUxzwf8dn0g==
+X-Received: by 2002:a17:90a:6888:: with SMTP id a8mr3579090pjd.59.1595321015512;
+        Tue, 21 Jul 2020 01:43:35 -0700 (PDT)
+Received: from chromium.org ([2620:15c:202:1:3e52:82ff:fe6c:83ab])
+        by smtp.gmail.com with ESMTPSA id r191sm19920333pfr.181.2020.07.21.01.43.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jul 2020 01:43:34 -0700 (PDT)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200713135531.68583-1-m.shams@samsung.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200630030552.cfp5oh33qde6nlnf@vireshk-i7>
+References: <1592222564-13556-1-git-send-email-rnayak@codeaurora.org> <1592222564-13556-2-git-send-email-rnayak@codeaurora.org> <159347264530.1987609.11350620235820019545@swboyd.mtv.corp.google.com> <a3d53f82-b29d-97ef-3ba1-ca9bd650d354@codeaurora.org> <20200630030552.cfp5oh33qde6nlnf@vireshk-i7>
+Subject: Re: [PATCH v6 1/6] tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
+From:   Stephen Boyd <swboyd@chromium.org>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        robdclark@chromium.org, robdclark@gmail.com,
+        stanimir.varbanov@linaro.org, mka@chromium.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Akash Asthana <akashast@codeaurora.org>,
+        linux-serial@vger.kernel.org
+To:     Rajendra Nayak <rnayak@codeaurora.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Date:   Tue, 21 Jul 2020 01:43:33 -0700
+Message-ID: <159532101373.3847286.9695594340556014384@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 07:25:31PM +0530, Tamseel Shams wrote:
-> In few older Samsung SoCs like s3c2410, s3c2412
-> and s3c2440, UART IP is having 2 interrupt lines.
-> However, in other SoCs like s3c6400, s5pv210,
-> exynos5433, and exynos4210 UART is having only 1
-> interrupt line. Due to this, "platform_get_irq(platdev, 1)"
-> call in the driver gives the following false-positive error:
-> "IRQ index 1 not found" on recent platforms.
-> 
-> This patch replaces the platform_get_irq() call with
-> platform_get_irq_optional() and hence avoiding the
-> false-positive error.
+Quoting Viresh Kumar (2020-06-29 20:05:52)
+> On 30-06-20, 08:31, Rajendra Nayak wrote:
+> >=20
+> >=20
+> > On 6/30/2020 4:47 AM, Stephen Boyd wrote:
+> > > Quoting Rajendra Nayak (2020-06-15 05:02:39)
+> > > > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/se=
+rial/qcom_geni_serial.c
+> > > > index 457c0bf..a90f8ec 100644
+> > > > --- a/drivers/tty/serial/qcom_geni_serial.c
+> > > > +++ b/drivers/tty/serial/qcom_geni_serial.c
+> > > > @@ -9,6 +9,7 @@
+> > > >   #include <linux/module.h>
+> > > >   #include <linux/of.h>
+> > > >   #include <linux/of_device.h>
+> > > > +#include <linux/pm_opp.h>
+> > > >   #include <linux/platform_device.h>
+> > > >   #include <linux/pm_runtime.h>
+> > > >   #include <linux/pm_wakeirq.h>
+> > > > @@ -962,7 +963,7 @@ static void qcom_geni_serial_set_termios(struct=
+ uart_port *uport,
+> > > >                  goto out_restart_rx;
+> > > >          uport->uartclk =3D clk_rate;
+> > > > -       clk_set_rate(port->se.clk, clk_rate);
+> > > > +       dev_pm_opp_set_rate(uport->dev, clk_rate);
+> > >=20
+> > > If there isn't an OPP table for the device because it is optional then
+> > > how can we unconditionally call dev_pm_opp_set_rate()?
+>=20
+> Looks like some *Maintainers* aren't paying enough attention lately ;)
+>=20
+> Just kidding.
+>=20
 
-The error is not a false positive on S3C platforms, but a real error.
-The existing code did not handle missing TX IRQ but at least printed a
-message.  Your change hides the message.
+It seems that dev_pm_opp_set_rate() calls _find_opp_table() and finds
+something that isn't an error pointer but then dev_pm_opp_of_add_table()
+returns an error value because there isn't an operating-points property
+in DT. We're getting saved because this driver also happens to call
+dev_pm_opp_set_clkname() which allocates the OPP table a second time
+(because the first time it got freed when dev_pm_opp_of_add_table()
+return -ENODEV because the property was missing).
 
-The real problem here is a missing error handling for TX interrupt.
-Solving this one, would solve also false-positive error message on newer
-SoCs.
+Why do we need 'has_opp_table' logic? It seems that we have to keep
+track of the fact that dev_pm_opp_of_add_table() failed so that we don't
+put the table again, but then dev_pm_opp_set_clkname() can be called
+to allocate the table regardless.
 
-Best regards,
-Krzysztof
+This maintainer is paying very close attention to super confusing code like
+this:
 
+	if (drv->has_opp_table)
+		dev_pm_opp_of_remove_table(dev);
+	dev_pm_opp_put_clkname(drv->opp_table);
+
+which reads as "if I have an opp table remove it and oh by the way
+remove the clk name for this opp table pointer I also happen to always
+have".
+
+Maybe I would be happier if dev_pm_opp_of_table() went away and we just
+had dev_pm_opp_add_table(const struct opp_config *config) that did all
+the things for us like set a clk name, set the supported hw, set the
+prop name, etc. based on the single config struct pointer and also
+parsed out the OPP table from DT or just ignored that if there isn't any
+operating-points property. Then the caller wouldn't need to keep track
+of 'if has_opp_table' because it doesn't seem to actually care and the
+core is happy to allocate a table for the device anyway so long as it
+sets a clk name.
