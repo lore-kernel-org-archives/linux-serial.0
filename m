@@ -7,57 +7,58 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 748C6C433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 12:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB28C433EA
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 12:11:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 482612080D
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 12:11:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AAC53206E9
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 12:11:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="BuARnLyS"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uf70pNth"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729009AbgGUMLB (ORCPT
+        id S1729913AbgGUMLS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jul 2020 08:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
+        Tue, 21 Jul 2020 08:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728714AbgGUMLA (ORCPT
+        with ESMTP id S1728692AbgGUMLR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jul 2020 08:11:00 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC8EC0619D9
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 05:11:00 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id b9so10182707plx.6
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 05:11:00 -0700 (PDT)
+        Tue, 21 Jul 2020 08:11:17 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16FFC061794
+        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 05:11:17 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id 207so10643808pfu.3
+        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 05:11:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jQ4rDDgYanuVEiD5VSyVtoHbMEWpqen32aI8GMWnA+0=;
-        b=BuARnLySFYXHobk+DJzYYbZapFac75rnp2cAzZUyk+Gi1xEuU1EKVS1Y1ft+eSIwcL
-         vUQ65Nj4hj0gbP6KuHvpVQ1/mKEqee4c+RYlKvvGEkqecq5lPOYvBC/pKxqWrs/xvNuX
-         ConaNJol+yJAMDTJi84K9crZw28bIZdQhev3sLhB3gqdVEqEs55lxbxIv8OArsnDnGfV
-         CCpC7mpvvk9RD+YSf+d/FvJn9J02mMZZ+jD96+Ckm7JLj1B7A4Q+80Q9XsJ0Ztb2vljT
-         r9PD1tKl8MrmBZAm8XG6xSQLyTNYFft4pqHRY1+16emo3h9Q8zs9U0cfGItOz/xXjY0v
-         cfHA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=N4Vrr3RPHrWaZucTwZmFhL/vg7dtTdfGT3O+wG1Ixzw=;
+        b=uf70pNthNkaG3TDajmNXQMzUZC357fX+gxRyGvjVoSt7QCQD+VlLfXEpUgB7chSAz6
+         FuBv3g5/v5cCY5sSHmWYxMWVGAcX/6yDmSmrb+oKCinGzeScKnAwpUZ1P+tEKAnRYfs7
+         Ja0AJZGiOm2s51IyFYTYMx8IDbE4GLdwb3civ6b5D0rKMcUzzulkbxVSEtYE6V95wGUm
+         7ha67V/Mww5u18Pk2tOxvaKnnyy6RxjLgpmbLlXCXHSMQpfu7ZV1qj97i1Nw1Xg1LfkO
+         aay91kXJy6qnhoNRyr53om2Qs7jjUp+jzFAonpY8FVRxVINqOMymAN9HH4l0ENsgeQf6
+         mQbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=jQ4rDDgYanuVEiD5VSyVtoHbMEWpqen32aI8GMWnA+0=;
-        b=mitnixc+mUfp7el/nXU6y0LqrboIdrBVnBDURW5lNJssGxCcuZcdzZJPXxoyAxe3Wm
-         5g0SCAK3/LUjnqEnpNVNUFVVQRIKVAPJ6JCPSdZ+SxU+xWzkx9W1Dsq6/9/30F5eZEGD
-         cmz9TVbAob4QtBRT/W98H2Usnb4t2ZEY1oQQiPO1O6XxW9YTh27bsz02GyEop/8SF+7O
-         WM6nxWuqnyaEUW9XR6AHzS2omIGMvi1chrQxCEAONsKkIHxdivRzhtnjh9QiWRZBjkCr
-         hN3RLQ1gkiEr0rgdkZAFu8HsxIF8pJ14EDuNAOsrftOOa0ZCadYtIrlc9zAwEl97pUX8
-         osow==
-X-Gm-Message-State: AOAM532IGrxYb3JmLO7PTSGPtEFlb0vs/j2wuTVDDi14VYlRwXdoA1tV
-        Z0CMMbhWk+/2rH0kHqCZn5Wqdg==
-X-Google-Smtp-Source: ABdhPJwuz8QK1fPNOpZalpAeTbf4LEUS9VjUfrRfr1RCUAvdtOBgLm3oRTOaw/15VbGU7Sm1GM7DZg==
-X-Received: by 2002:a17:902:a9c8:: with SMTP id b8mr22299780plr.2.1595333459711;
-        Tue, 21 Jul 2020 05:10:59 -0700 (PDT)
+         :references:mime-version:content-transfer-encoding;
+        bh=N4Vrr3RPHrWaZucTwZmFhL/vg7dtTdfGT3O+wG1Ixzw=;
+        b=MOtfAVgb6+d2ttj+snybhpi9zQkLef5/coZiLnciuWMQRljN87knFpUSPWt3/QhxHL
+         aQMHICbNCOAOTNQp98zsOi208TssCJO7pSWvXPVPyS8jCsVNviq1wNcxc3GtOm6d0Dm+
+         rriRxPhF6JIVOgooKLSsDIy1fYo4CVN52OkfJbduNZ/kWnEXMutL1cejptWymxF5RyoT
+         c+LTJBdXmAG3bZAK8Ih0i45sHWS/HEdp3Vtly12t000bmPRiyiBrLabqRJu8yxDpbsCY
+         F9ItWD7FWfgh1wTt688DdA53ySVZOi8AtuIam1qD+HktmEdgnE968Z77NPVZj6ZxHCzR
+         uE+A==
+X-Gm-Message-State: AOAM532F/ybcRo79NaXfrbb96hvNCc1nR9rnFUnFfTjVXbjrQIPcxTIP
+        qiVGCfahkg5SP3zkQcUtEz+zsw==
+X-Google-Smtp-Source: ABdhPJzUr3AOufOgS8kYacmYw2lEJYaoNCrAwivO0iMkoijWQgmxOSdj3Ydl+zm0ckA2gH2pdb+CWA==
+X-Received: by 2002:a65:63c8:: with SMTP id n8mr22380565pgv.232.1595333477168;
+        Tue, 21 Jul 2020 05:11:17 -0700 (PDT)
 Received: from localhost.localdomain ([117.210.211.74])
-        by smtp.gmail.com with ESMTPSA id w9sm20601992pfq.178.2020.07.21.05.10.54
+        by smtp.gmail.com with ESMTPSA id w9sm20601992pfq.178.2020.07.21.05.11.11
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 Jul 2020 05:10:58 -0700 (PDT)
+        Tue, 21 Jul 2020 05:11:16 -0700 (PDT)
 From:   Sumit Garg <sumit.garg@linaro.org>
 To:     gregkh@linuxfoundation.org, daniel.thompson@linaro.org,
         dianders@chromium.org, linux-serial@vger.kernel.org,
@@ -65,278 +66,519 @@ To:     gregkh@linuxfoundation.org, daniel.thompson@linaro.org,
 Cc:     jslaby@suse.com, linux@armlinux.org.uk, jason.wessel@windriver.com,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Sumit Garg <sumit.garg@linaro.org>
-Subject: [RFC 2/5] serial: core: Add framework to allow NMI aware serial drivers
-Date:   Tue, 21 Jul 2020 17:40:10 +0530
-Message-Id: <1595333413-30052-3-git-send-email-sumit.garg@linaro.org>
+Subject: [RFC 5/5] serial: Remove KGDB NMI serial driver
+Date:   Tue, 21 Jul 2020 17:40:13 +0530
+Message-Id: <1595333413-30052-6-git-send-email-sumit.garg@linaro.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
 References: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add NMI framework APIs in serial core which can be leveraged by serial
-drivers to have NMI driven serial transfers. These APIs are kept under
-CONFIG_CONSOLE_POLL as currently kgdb initializing uart in polling mode
-is the only known user to enable NMI driven serial port.
+This driver provided a special ttyNMI0 port to enable NMI debugging
+capabilities for kgdb but it remained in silos with the serial
+core/drivers which made it a bit odd to enable using serial device
+interrupt and hence remained unused.
 
-The general idea is to intercept RX characters in NMI context, if those
-are specific to magic sysrq then allow corresponding handler to run in
-NMI context. Otherwise defer all other RX and TX operations to IRQ work
-queue in order to run those in normal interrupt context.
-
-Also, since magic sysrq entry APIs will need to be invoked from NMI
-context, so make those APIs NMI safe via deferring NMI unsafe work to
-IRQ work queue.
+But now with the serial core/drivers becoming NMI aware which in turn
+provides NMI debugging capabilities via magic sysrq, there is no specific
+reason to keep this special driver. So remove it instead.
 
 Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
 ---
- drivers/tty/serial/serial_core.c | 120 ++++++++++++++++++++++++++++++++++++++-
- include/linux/serial_core.h      |  67 ++++++++++++++++++++++
- 2 files changed, 185 insertions(+), 2 deletions(-)
+ drivers/tty/serial/Kconfig    |  19 ---
+ drivers/tty/serial/Makefile   |   1 -
+ drivers/tty/serial/kgdb_nmi.c | 383 ------------------------------------------
+ drivers/tty/serial/kgdboc.c   |   8 -
+ include/linux/kgdb.h          |  10 --
+ 5 files changed, 421 deletions(-)
+ delete mode 100644 drivers/tty/serial/kgdb_nmi.c
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 57840cf..6342e90 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3181,8 +3181,14 @@ static bool uart_try_toggle_sysrq(struct uart_port *port, unsigned int ch)
- 		return true;
- 	}
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 780908d..625d283 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -176,25 +176,6 @@ config SERIAL_ATMEL_TTYAT
  
-+#ifdef CONFIG_CONSOLE_POLL
-+	if (in_nmi())
-+		irq_work_queue(&port->nmi_state.sysrq_toggle_work);
-+	else
-+		schedule_work(&sysrq_enable_work);
-+#else
- 	schedule_work(&sysrq_enable_work);
+ 	  Say Y if you have an external 8250/16C550 UART.  If unsure, say N.
+ 
+-config SERIAL_KGDB_NMI
+-	bool "Serial console over KGDB NMI debugger port"
+-	depends on KGDB_SERIAL_CONSOLE
+-	help
+-	  This special driver allows you to temporary use NMI debugger port
+-	  as a normal console (assuming that the port is attached to KGDB).
 -
-+#endif
- 	port->sysrq = 0;
- 	return true;
- }
-@@ -3273,12 +3279,122 @@ int uart_handle_break(struct uart_port *port)
- 		port->sysrq = 0;
- 	}
+-	  Unlike KDB's disable_nmi command, with this driver you are always
+-	  able to go back to the debugger using KGDB escape sequence ($3#33).
+-	  This is because this console driver processes the input in NMI
+-	  context, and thus is able to intercept the magic sequence.
+-
+-	  Note that since the console interprets input and uses polling
+-	  communication methods, for things like PPP you still must fully
+-	  detach debugger port from the KGDB NMI (i.e. disable_nmi), and
+-	  use raw console.
+-
+-	  If unsure, say N.
+-
+ config SERIAL_MESON
+ 	tristate "Meson serial port support"
+ 	depends on ARCH_MESON
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index d056ee6..9ea6263 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -93,5 +93,4 @@ obj-$(CONFIG_SERIAL_SIFIVE)	+= sifive.o
+ # GPIOLIB helpers for modem control lines
+ obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
  
--	if (port->flags & UPF_SAK)
-+	if (port->flags & UPF_SAK) {
-+#ifdef CONFIG_CONSOLE_POLL
-+		if (in_nmi())
-+			irq_work_queue(&port->nmi_state.sysrq_sak_work);
-+		else
-+			do_SAK(state->port.tty);
-+#else
- 		do_SAK(state->port.tty);
-+#endif
-+	}
+-obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
+ obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
+diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
+deleted file mode 100644
+index 6004c0c..0000000
+--- a/drivers/tty/serial/kgdb_nmi.c
++++ /dev/null
+@@ -1,383 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * KGDB NMI serial console
+- *
+- * Copyright 2010 Google, Inc.
+- *		  Arve Hjønnevåg <arve@android.com>
+- *		  Colin Cross <ccross@android.com>
+- * Copyright 2012 Linaro Ltd.
+- *		  Anton Vorontsov <anton.vorontsov@linaro.org>
+- */
+-
+-#include <linux/kernel.h>
+-#include <linux/module.h>
+-#include <linux/compiler.h>
+-#include <linux/slab.h>
+-#include <linux/errno.h>
+-#include <linux/atomic.h>
+-#include <linux/console.h>
+-#include <linux/tty.h>
+-#include <linux/tty_driver.h>
+-#include <linux/tty_flip.h>
+-#include <linux/serial_core.h>
+-#include <linux/interrupt.h>
+-#include <linux/hrtimer.h>
+-#include <linux/tick.h>
+-#include <linux/kfifo.h>
+-#include <linux/kgdb.h>
+-#include <linux/kdb.h>
+-
+-static int kgdb_nmi_knock = 1;
+-module_param_named(knock, kgdb_nmi_knock, int, 0600);
+-MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command " \
+-			"must be used to enter the debugger; when set to 0, " \
+-			"hitting return key is enough to enter the debugger; " \
+-			"when set to -1, the debugger is entered immediately " \
+-			"upon NMI");
+-
+-static char *kgdb_nmi_magic = "$3#33";
+-module_param_named(magic, kgdb_nmi_magic, charp, 0600);
+-MODULE_PARM_DESC(magic, "magic sequence to enter NMI debugger (default $3#33)");
+-
+-static atomic_t kgdb_nmi_num_readers = ATOMIC_INIT(0);
+-
+-static int kgdb_nmi_console_setup(struct console *co, char *options)
+-{
+-	arch_kgdb_ops.enable_nmi(1);
+-
+-	/* The NMI console uses the dbg_io_ops to issue console messages. To
+-	 * avoid duplicate messages during kdb sessions we must inform kdb's
+-	 * I/O utilities that messages sent to the console will automatically
+-	 * be displayed on the dbg_io.
+-	 */
+-	dbg_io_ops->cons = co;
+-
+-	return 0;
+-}
+-
+-static void kgdb_nmi_console_write(struct console *co, const char *s, uint c)
+-{
+-	int i;
+-
+-	for (i = 0; i < c; i++)
+-		dbg_io_ops->write_char(s[i]);
+-}
+-
+-static struct tty_driver *kgdb_nmi_tty_driver;
+-
+-static struct tty_driver *kgdb_nmi_console_device(struct console *co, int *idx)
+-{
+-	*idx = co->index;
+-	return kgdb_nmi_tty_driver;
+-}
+-
+-static struct console kgdb_nmi_console = {
+-	.name	= "ttyNMI",
+-	.setup  = kgdb_nmi_console_setup,
+-	.write	= kgdb_nmi_console_write,
+-	.device	= kgdb_nmi_console_device,
+-	.flags	= CON_PRINTBUFFER | CON_ANYTIME,
+-	.index	= -1,
+-};
+-
+-/*
+- * This is usually the maximum rate on debug ports. We make fifo large enough
+- * to make copy-pasting to the terminal usable.
+- */
+-#define KGDB_NMI_BAUD		115200
+-#define KGDB_NMI_FIFO_SIZE	roundup_pow_of_two(KGDB_NMI_BAUD / 8 / HZ)
+-
+-struct kgdb_nmi_tty_priv {
+-	struct tty_port port;
+-	struct timer_list timer;
+-	STRUCT_KFIFO(char, KGDB_NMI_FIFO_SIZE) fifo;
+-};
+-
+-static struct tty_port *kgdb_nmi_port;
+-
+-static void kgdb_tty_recv(int ch)
+-{
+-	struct kgdb_nmi_tty_priv *priv;
+-	char c = ch;
+-
+-	if (!kgdb_nmi_port || ch < 0)
+-		return;
+-	/*
+-	 * Can't use port->tty->driver_data as tty might be not there. Timer
+-	 * will check for tty and will get the ref, but here we don't have to
+-	 * do that, and actually, we can't: we're in NMI context, no locks are
+-	 * possible.
+-	 */
+-	priv = container_of(kgdb_nmi_port, struct kgdb_nmi_tty_priv, port);
+-	kfifo_in(&priv->fifo, &c, 1);
+-}
+-
+-static int kgdb_nmi_poll_one_knock(void)
+-{
+-	static int n;
+-	int c = -1;
+-	const char *magic = kgdb_nmi_magic;
+-	size_t m = strlen(magic);
+-	bool printch = false;
+-
+-	c = dbg_io_ops->read_char();
+-	if (c == NO_POLL_CHAR)
+-		return c;
+-
+-	if (!kgdb_nmi_knock && (c == '\r' || c == '\n')) {
+-		return 1;
+-	} else if (c == magic[n]) {
+-		n = (n + 1) % m;
+-		if (!n)
+-			return 1;
+-		printch = true;
+-	} else {
+-		n = 0;
+-	}
+-
+-	if (atomic_read(&kgdb_nmi_num_readers)) {
+-		kgdb_tty_recv(c);
+-		return 0;
+-	}
+-
+-	if (printch) {
+-		kdb_printf("%c", c);
+-		return 0;
+-	}
+-
+-	kdb_printf("\r%s %s to enter the debugger> %*s",
+-		   kgdb_nmi_knock ? "Type" : "Hit",
+-		   kgdb_nmi_knock ? magic  : "<return>", (int)m, "");
+-	while (m--)
+-		kdb_printf("\b");
+-	return 0;
+-}
+-
+-/**
+- * kgdb_nmi_poll_knock - Check if it is time to enter the debugger
+- *
+- * "Serial ports are often noisy, especially when muxed over another port (we
+- * often use serial over the headset connector). Noise on the async command
+- * line just causes characters that are ignored, on a command line that blocked
+- * execution noise would be catastrophic." -- Colin Cross
+- *
+- * So, this function implements KGDB/KDB knocking on the serial line: we won't
+- * enter the debugger until we receive a known magic phrase (which is actually
+- * "$3#33", known as "escape to KDB" command. There is also a relaxed variant
+- * of knocking, i.e. just pressing the return key is enough to enter the
+- * debugger. And if knocking is disabled, the function always returns 1.
+- */
+-bool kgdb_nmi_poll_knock(void)
+-{
+-	if (kgdb_nmi_knock < 0)
+-		return true;
+-
+-	while (1) {
+-		int ret;
+-
+-		ret = kgdb_nmi_poll_one_knock();
+-		if (ret == NO_POLL_CHAR)
+-			return false;
+-		else if (ret == 1)
+-			break;
+-	}
+-	return true;
+-}
+-
+-/*
+- * The tasklet is cheap, it does not cause wakeups when reschedules itself,
+- * instead it waits for the next tick.
+- */
+-static void kgdb_nmi_tty_receiver(struct timer_list *t)
+-{
+-	struct kgdb_nmi_tty_priv *priv = from_timer(priv, t, timer);
+-	char ch;
+-
+-	priv->timer.expires = jiffies + (HZ/100);
+-	add_timer(&priv->timer);
+-
+-	if (likely(!atomic_read(&kgdb_nmi_num_readers) ||
+-		   !kfifo_len(&priv->fifo)))
+-		return;
+-
+-	while (kfifo_out(&priv->fifo, &ch, 1))
+-		tty_insert_flip_char(&priv->port, ch, TTY_NORMAL);
+-	tty_flip_buffer_push(&priv->port);
+-}
+-
+-static int kgdb_nmi_tty_activate(struct tty_port *port, struct tty_struct *tty)
+-{
+-	struct kgdb_nmi_tty_priv *priv =
+-	    container_of(port, struct kgdb_nmi_tty_priv, port);
+-
+-	kgdb_nmi_port = port;
+-	priv->timer.expires = jiffies + (HZ/100);
+-	add_timer(&priv->timer);
+-
+-	return 0;
+-}
+-
+-static void kgdb_nmi_tty_shutdown(struct tty_port *port)
+-{
+-	struct kgdb_nmi_tty_priv *priv =
+-	    container_of(port, struct kgdb_nmi_tty_priv, port);
+-
+-	del_timer(&priv->timer);
+-	kgdb_nmi_port = NULL;
+-}
+-
+-static const struct tty_port_operations kgdb_nmi_tty_port_ops = {
+-	.activate	= kgdb_nmi_tty_activate,
+-	.shutdown	= kgdb_nmi_tty_shutdown,
+-};
+-
+-static int kgdb_nmi_tty_install(struct tty_driver *drv, struct tty_struct *tty)
+-{
+-	struct kgdb_nmi_tty_priv *priv;
+-	int ret;
+-
+-	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
+-
+-	INIT_KFIFO(priv->fifo);
+-	timer_setup(&priv->timer, kgdb_nmi_tty_receiver, 0);
+-	tty_port_init(&priv->port);
+-	priv->port.ops = &kgdb_nmi_tty_port_ops;
+-	tty->driver_data = priv;
+-
+-	ret = tty_port_install(&priv->port, drv, tty);
+-	if (ret) {
+-		pr_err("%s: can't install tty port: %d\n", __func__, ret);
+-		goto err;
+-	}
+-	return 0;
+-err:
+-	tty_port_destroy(&priv->port);
+-	kfree(priv);
+-	return ret;
+-}
+-
+-static void kgdb_nmi_tty_cleanup(struct tty_struct *tty)
+-{
+-	struct kgdb_nmi_tty_priv *priv = tty->driver_data;
+-
+-	tty->driver_data = NULL;
+-	tty_port_destroy(&priv->port);
+-	kfree(priv);
+-}
+-
+-static int kgdb_nmi_tty_open(struct tty_struct *tty, struct file *file)
+-{
+-	struct kgdb_nmi_tty_priv *priv = tty->driver_data;
+-	unsigned int mode = file->f_flags & O_ACCMODE;
+-	int ret;
+-
+-	ret = tty_port_open(&priv->port, tty, file);
+-	if (!ret && (mode == O_RDONLY || mode == O_RDWR))
+-		atomic_inc(&kgdb_nmi_num_readers);
+-
+-	return ret;
+-}
+-
+-static void kgdb_nmi_tty_close(struct tty_struct *tty, struct file *file)
+-{
+-	struct kgdb_nmi_tty_priv *priv = tty->driver_data;
+-	unsigned int mode = file->f_flags & O_ACCMODE;
+-
+-	if (mode == O_RDONLY || mode == O_RDWR)
+-		atomic_dec(&kgdb_nmi_num_readers);
+-
+-	tty_port_close(&priv->port, tty, file);
+-}
+-
+-static void kgdb_nmi_tty_hangup(struct tty_struct *tty)
+-{
+-	struct kgdb_nmi_tty_priv *priv = tty->driver_data;
+-
+-	tty_port_hangup(&priv->port);
+-}
+-
+-static int kgdb_nmi_tty_write_room(struct tty_struct *tty)
+-{
+-	/* Actually, we can handle any amount as we use polled writes. */
+-	return 2048;
+-}
+-
+-static int kgdb_nmi_tty_write(struct tty_struct *tty, const unchar *buf, int c)
+-{
+-	int i;
+-
+-	for (i = 0; i < c; i++)
+-		dbg_io_ops->write_char(buf[i]);
+-	return c;
+-}
+-
+-static const struct tty_operations kgdb_nmi_tty_ops = {
+-	.open		= kgdb_nmi_tty_open,
+-	.close		= kgdb_nmi_tty_close,
+-	.install	= kgdb_nmi_tty_install,
+-	.cleanup	= kgdb_nmi_tty_cleanup,
+-	.hangup		= kgdb_nmi_tty_hangup,
+-	.write_room	= kgdb_nmi_tty_write_room,
+-	.write		= kgdb_nmi_tty_write,
+-};
+-
+-int kgdb_register_nmi_console(void)
+-{
+-	int ret;
+-
+-	if (!arch_kgdb_ops.enable_nmi)
+-		return 0;
+-
+-	kgdb_nmi_tty_driver = alloc_tty_driver(1);
+-	if (!kgdb_nmi_tty_driver) {
+-		pr_err("%s: cannot allocate tty\n", __func__);
+-		return -ENOMEM;
+-	}
+-	kgdb_nmi_tty_driver->driver_name	= "ttyNMI";
+-	kgdb_nmi_tty_driver->name		= "ttyNMI";
+-	kgdb_nmi_tty_driver->num		= 1;
+-	kgdb_nmi_tty_driver->type		= TTY_DRIVER_TYPE_SERIAL;
+-	kgdb_nmi_tty_driver->subtype		= SERIAL_TYPE_NORMAL;
+-	kgdb_nmi_tty_driver->flags		= TTY_DRIVER_REAL_RAW;
+-	kgdb_nmi_tty_driver->init_termios	= tty_std_termios;
+-	tty_termios_encode_baud_rate(&kgdb_nmi_tty_driver->init_termios,
+-				     KGDB_NMI_BAUD, KGDB_NMI_BAUD);
+-	tty_set_operations(kgdb_nmi_tty_driver, &kgdb_nmi_tty_ops);
+-
+-	ret = tty_register_driver(kgdb_nmi_tty_driver);
+-	if (ret) {
+-		pr_err("%s: can't register tty driver: %d\n", __func__, ret);
+-		goto err_drv_reg;
+-	}
+-
+-	register_console(&kgdb_nmi_console);
+-
+-	return 0;
+-err_drv_reg:
+-	put_tty_driver(kgdb_nmi_tty_driver);
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(kgdb_register_nmi_console);
+-
+-int kgdb_unregister_nmi_console(void)
+-{
+-	int ret;
+-
+-	if (!arch_kgdb_ops.enable_nmi)
+-		return 0;
+-	arch_kgdb_ops.enable_nmi(0);
+-
+-	ret = unregister_console(&kgdb_nmi_console);
+-	if (ret)
+-		return ret;
+-
+-	ret = tty_unregister_driver(kgdb_nmi_tty_driver);
+-	if (ret)
+-		return ret;
+-	put_tty_driver(kgdb_nmi_tty_driver);
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(kgdb_unregister_nmi_console);
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 84ffede..e959e72 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -158,8 +158,6 @@ static void cleanup_kgdboc(void)
+ 	if (configured != 1)
+ 		return;
+ 
+-	if (kgdb_unregister_nmi_console())
+-		return;
+ 	kgdboc_unregister_kbd();
+ 	kgdb_unregister_io_module(&kgdboc_io_ops);
+ }
+@@ -210,16 +208,10 @@ static int configure_kgdboc(void)
+ 	if (err)
+ 		goto noconfig;
+ 
+-	err = kgdb_register_nmi_console();
+-	if (err)
+-		goto nmi_con_failed;
+-
+ 	configured = 1;
+ 
  	return 0;
- }
- EXPORT_SYMBOL_GPL(uart_handle_break);
  
-+#ifdef CONFIG_CONSOLE_POLL
-+int uart_nmi_handle_char(struct uart_port *port, unsigned int status,
-+			 unsigned int overrun, unsigned int ch,
-+			 unsigned int flag)
-+{
-+	struct uart_nmi_rx_data rx_data;
-+
-+	if (!in_nmi())
-+		return 0;
-+
-+	rx_data.status = status;
-+	rx_data.overrun = overrun;
-+	rx_data.ch = ch;
-+	rx_data.flag = flag;
-+
-+	if (!kfifo_in(&port->nmi_state.rx_fifo, &rx_data, 1))
-+		++port->icount.buf_overrun;
-+
-+	return 1;
-+}
-+EXPORT_SYMBOL_GPL(uart_nmi_handle_char);
-+
-+static void uart_nmi_rx_work(struct irq_work *rx_work)
-+{
-+	struct uart_nmi_state *nmi_state =
-+	    container_of(rx_work, struct uart_nmi_state, rx_work);
-+	struct uart_port *port =
-+	    container_of(nmi_state, struct uart_port, nmi_state);
-+	struct uart_nmi_rx_data rx_data;
-+
-+	/*
-+	 * In polling mode, serial device is initialized much prior to
-+	 * TTY port becoming active. This scenario is especially useful
-+	 * from debugging perspective such that magic sysrq or debugger
-+	 * entry would still be possible even when TTY port isn't
-+	 * active (consider a boot hang case or if a user hasn't opened
-+	 * the serial port). So we discard any other RX data apart from
-+	 * magic sysrq commands in case TTY port isn't active.
-+	 */
-+	if (!port->state || !tty_port_active(&port->state->port)) {
-+		kfifo_reset(&nmi_state->rx_fifo);
-+		return;
-+	}
-+
-+	spin_lock(&port->lock);
-+	while (kfifo_out(&nmi_state->rx_fifo, &rx_data, 1))
-+		uart_insert_char(port, rx_data.status, rx_data.overrun,
-+				 rx_data.ch, rx_data.flag);
-+	spin_unlock(&port->lock);
-+
-+	tty_flip_buffer_push(&port->state->port);
-+}
-+
-+static void uart_nmi_tx_work(struct irq_work *tx_work)
-+{
-+	struct uart_nmi_state *nmi_state =
-+	    container_of(tx_work, struct uart_nmi_state, tx_work);
-+	struct uart_port *port =
-+	    container_of(nmi_state, struct uart_port, nmi_state);
-+
-+	spin_lock(&port->lock);
-+	if (nmi_state->tx_irq_callback)
-+		nmi_state->tx_irq_callback(port);
-+	spin_unlock(&port->lock);
-+}
-+
-+static void uart_nmi_sak_work(struct irq_work *work)
-+{
-+	struct uart_nmi_state *nmi_state =
-+	    container_of(work, struct uart_nmi_state, sysrq_sak_work);
-+	struct uart_port *port =
-+	    container_of(nmi_state, struct uart_port, nmi_state);
-+
-+	do_SAK(port->state->port.tty);
-+}
-+
-+#ifdef CONFIG_MAGIC_SYSRQ_SERIAL
-+static void uart_nmi_toggle_work(struct irq_work *work)
-+{
-+	schedule_work(&sysrq_enable_work);
-+}
-+#endif
-+
-+int uart_nmi_state_init(struct uart_port *port)
-+{
-+	int ret;
-+
-+	ret = kfifo_alloc(&port->nmi_state.rx_fifo, 256, GFP_KERNEL);
-+	if (ret)
-+		return ret;
-+
-+	init_irq_work(&port->nmi_state.rx_work, uart_nmi_rx_work);
-+	init_irq_work(&port->nmi_state.tx_work, uart_nmi_tx_work);
-+	init_irq_work(&port->nmi_state.sysrq_sak_work, uart_nmi_sak_work);
-+#ifdef CONFIG_MAGIC_SYSRQ_SERIAL
-+	init_irq_work(&port->nmi_state.sysrq_toggle_work, uart_nmi_toggle_work);
-+#endif
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(uart_nmi_state_init);
-+#endif
-+
- EXPORT_SYMBOL(uart_write_wakeup);
- EXPORT_SYMBOL(uart_register_driver);
- EXPORT_SYMBOL(uart_unregister_driver);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 9fd550e..84487a9 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -18,6 +18,8 @@
- #include <linux/tty.h>
- #include <linux/mutex.h>
- #include <linux/sysrq.h>
-+#include <linux/irq_work.h>
-+#include <linux/kfifo.h>
- #include <uapi/linux/serial_core.h>
+-nmi_con_failed:
+-	kgdb_unregister_io_module(&kgdboc_io_ops);
+ noconfig:
+ 	kgdboc_unregister_kbd();
+ 	configured = 0;
+diff --git a/include/linux/kgdb.h b/include/linux/kgdb.h
+index 529116b..2e8c5de 100644
+--- a/include/linux/kgdb.h
++++ b/include/linux/kgdb.h
+@@ -294,16 +294,6 @@ extern const struct kgdb_arch		arch_kgdb_ops;
  
- #ifdef CONFIG_SERIAL_CORE_CONSOLE
-@@ -103,6 +105,28 @@ struct uart_icount {
- typedef unsigned int __bitwise upf_t;
- typedef unsigned int __bitwise upstat_t;
+ extern unsigned long kgdb_arch_pc(int exception, struct pt_regs *regs);
  
-+#ifdef CONFIG_CONSOLE_POLL
-+struct uart_nmi_rx_data {
-+	unsigned int		status;
-+	unsigned int		overrun;
-+	unsigned int		ch;
-+	unsigned int		flag;
-+};
-+
-+struct uart_nmi_state {
-+	bool			active;
-+
-+	struct irq_work		tx_work;
-+	void			(*tx_irq_callback)(struct uart_port *port);
-+
-+	struct irq_work		rx_work;
-+	DECLARE_KFIFO_PTR(rx_fifo, struct uart_nmi_rx_data);
-+
-+	struct irq_work		sysrq_sak_work;
-+	struct irq_work		sysrq_toggle_work;
-+};
-+#endif
-+
- struct uart_port {
- 	spinlock_t		lock;			/* port lock */
- 	unsigned long		iobase;			/* in/out[bwl] */
-@@ -255,6 +279,9 @@ struct uart_port {
- 	struct gpio_desc	*rs485_term_gpio;	/* enable RS485 bus termination */
- 	struct serial_iso7816   iso7816;
- 	void			*private_data;		/* generic platform data pointer */
-+#ifdef CONFIG_CONSOLE_POLL
-+	struct uart_nmi_state	nmi_state;
-+#endif
- };
- 
- static inline int serial_port_in(struct uart_port *up, int offset)
-@@ -475,4 +502,44 @@ extern int uart_handle_break(struct uart_port *port);
- 					 !((cflag) & CLOCAL))
- 
- int uart_get_rs485_mode(struct uart_port *port);
-+
-+/*
-+ * The following are helper functions for the NMI aware serial drivers.
-+ * Currently NMI support is only enabled under polling mode.
-+ */
-+
-+#ifdef CONFIG_CONSOLE_POLL
-+int uart_nmi_state_init(struct uart_port *port);
-+int uart_nmi_handle_char(struct uart_port *port, unsigned int status,
-+			 unsigned int overrun, unsigned int ch,
-+			 unsigned int flag);
-+
-+static inline bool uart_nmi_active(struct uart_port *port)
-+{
-+	return port->nmi_state.active;
-+}
-+
-+static inline void uart_set_nmi_active(struct uart_port *port, bool val)
-+{
-+	port->nmi_state.active = val;
-+}
-+#else
-+static inline int uart_nmi_handle_char(struct uart_port *port,
-+				       unsigned int status,
-+				       unsigned int overrun,
-+				       unsigned int ch, unsigned int flag)
-+{
-+	return 0;
-+}
-+
-+static inline bool uart_nmi_active(struct uart_port *port)
-+{
-+	return false;
-+}
-+
-+static inline void uart_set_nmi_active(struct uart_port *port, bool val)
-+{
-+}
-+#endif
-+
- #endif /* LINUX_SERIAL_CORE_H */
+-#ifdef CONFIG_SERIAL_KGDB_NMI
+-extern int kgdb_register_nmi_console(void);
+-extern int kgdb_unregister_nmi_console(void);
+-extern bool kgdb_nmi_poll_knock(void);
+-#else
+-static inline int kgdb_register_nmi_console(void) { return 0; }
+-static inline int kgdb_unregister_nmi_console(void) { return 0; }
+-static inline bool kgdb_nmi_poll_knock(void) { return true; }
+-#endif
+-
+ extern int kgdb_register_io_module(struct kgdb_io *local_kgdb_io_ops);
+ extern void kgdb_unregister_io_module(struct kgdb_io *local_kgdb_io_ops);
+ extern struct kgdb_io *dbg_io_ops;
 -- 
 2.7.4
 
