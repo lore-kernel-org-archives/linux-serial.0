@@ -2,127 +2,95 @@ Return-Path: <SRS0=EuFA=BA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,
-	DATE_IN_FUTURE_06_12,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45509C433E2
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 06:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9960C433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 08:04:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 283292080D
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 06:40:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AD51D2080D
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 08:04:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1595318687;
+	bh=DfcAnOdK3BxY6jqQpzn4sc8Wri40qkfysNtuloW83bs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=fyhTFLDWEceAFJckNtfObV+tcDpl8LgvD/pJ1BYH9kUvlb5ZY+zH4jfaWbp5pOqnq
+	 kvTlbjpQ/Dy6OjXOI6mAVKEnq2sxV/BOdY9NEIwRMCDQNsqNN9qpCJk0RYU1WTocal
+	 rHBst1WLQCEznoY96SYY+TDUTDV/MnEB9ZFRaaC8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726127AbgGUGkV (ORCPT
+        id S1728259AbgGUIEr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jul 2020 02:40:21 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8339 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726053AbgGUGkV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jul 2020 02:40:21 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 0EEF65FA3585A5ACFB01;
-        Tue, 21 Jul 2020 14:40:19 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Tue, 21 Jul 2020
- 14:40:09 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <gregkh@linuxfoundation.org>, <jslaby@suse.com>,
-        <yangyingliang@huawei.com>
-Subject: [PATCH] serial: 8250: fix null-ptr-deref in serial8250_start_tx()
-Date:   Tue, 21 Jul 2020 14:38:52 +0000
-Message-ID: <20200721143852.4058352-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 21 Jul 2020 04:04:47 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:53719 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726614AbgGUIEr (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Jul 2020 04:04:47 -0400
+Received: by mail-wm1-f67.google.com with SMTP id j18so1857174wmi.3;
+        Tue, 21 Jul 2020 01:04:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=syvFVe39WCS6I7HZqBbb+16Wl3B+m141J405QHoInHE=;
+        b=WOzBDXudrswjLpFnCUlRp0S6MWhUH84fHHDeADyLAeXTDcg8axRSMifiRuaFsqaYQ6
+         amedgHwmpkqPRvxZg6ajVG3j18aImUnefB9npjZGSK/N33foieFdG94k8gdCXkS+hvuS
+         M7j0P6rGsgLJu8k+eqgHqXJQkFr3RTJLteR7oAXt77PguOYofV0Uu/7ds3GI74NLuaOa
+         jRkfbK0UIzNqTHvv7IMByIOgHvzaRMMJMK16pcy6bzam/MOI8fCWKaojUeorobdwghBb
+         yXhJPWCeQavFIDcaQMiIYV4OqGVDcaM0wD8Dcy/i+5uG7JUHpqwmCpS6kDqReFjQy7mr
+         wRrw==
+X-Gm-Message-State: AOAM53254MBRn8uINdEiBVFY8xGjlc/vDpkEPYoKAiXK0AXZpXzQycs3
+        mAzE19EOY0d72jFg7Nzq7hRKxqftEhM=
+X-Google-Smtp-Source: ABdhPJxda9SdlT7pF9+Os3z3GaDcUTXtBao7aheqKIsfkWKfKAqh6bpMotyBzTDIkJgsfF7Wf+I2vw==
+X-Received: by 2002:a7b:cb92:: with SMTP id m18mr2786559wmi.94.1595318684880;
+        Tue, 21 Jul 2020 01:04:44 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.200])
+        by smtp.googlemail.com with ESMTPSA id u65sm2545294wmg.5.2020.07.21.01.04.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 21 Jul 2020 01:04:44 -0700 (PDT)
+Date:   Tue, 21 Jul 2020 10:04:42 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Tamseel Shams <m.shams@samsung.com>
+Cc:     kgene@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com
+Subject: Re: [PATCH v4] serial: samsung: change to platform_get_irq_optional
+Message-ID: <20200721080442.GA6580@kozik-lap>
+References: <CGME20200713141655epcas5p2cdd83477e4fc024457a2b08d8ebfbad0@epcas5p2.samsung.com>
+ <20200713135531.68583-1-m.shams@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200713135531.68583-1-m.shams@samsung.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-I got null-ptr-deref in serial8250_start_tx():
+On Mon, Jul 13, 2020 at 07:25:31PM +0530, Tamseel Shams wrote:
+> In few older Samsung SoCs like s3c2410, s3c2412
+> and s3c2440, UART IP is having 2 interrupt lines.
+> However, in other SoCs like s3c6400, s5pv210,
+> exynos5433, and exynos4210 UART is having only 1
+> interrupt line. Due to this, "platform_get_irq(platdev, 1)"
+> call in the driver gives the following false-positive error:
+> "IRQ index 1 not found" on recent platforms.
+> 
+> This patch replaces the platform_get_irq() call with
+> platform_get_irq_optional() and hence avoiding the
+> false-positive error.
 
-[   78.114630] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-[   78.123778] Mem abort info:
-[   78.126560]   ESR = 0x86000007
-[   78.129603]   EC = 0x21: IABT (current EL), IL = 32 bits
-[   78.134891]   SET = 0, FnV = 0
-[   78.137933]   EA = 0, S1PTW = 0
-[   78.141064] user pgtable: 64k pages, 48-bit VAs, pgdp=00000027d41a8600
-[   78.147562] [0000000000000000] pgd=00000027893f0003, p4d=00000027893f0003, pud=00000027893f0003, pmd=00000027c9a20003, pte=0000000000000000
-[   78.160029] Internal error: Oops: 86000007 [#1] SMP
-[   78.164886] Modules linked in: sunrpc vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher crct10dif_ce ghash_ce sha2_ce sha256_arm64 sha1_ce ses enclosure sg sbsa_gwdt ipmi_ssif spi_dw_mmio sch_fq_codel vhost_net tun vhost vhost_iotlb tap ip_tables ext4 mbcache jbd2 ahci hisi_sas_v3_hw libahci hisi_sas_main libsas hns3 scsi_transport_sas hclge libata megaraid_sas ipmi_si hnae3 ipmi_devintf ipmi_msghandler br_netfilter bridge stp llc nvme nvme_core xt_sctp sctp libcrc32c dm_mod nbd
-[   78.207383] CPU: 11 PID: 23258 Comm: null-ptr Not tainted 5.8.0-rc6+ #48
-[   78.214056] Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 2280-V2 CS V3.B210.01 03/12/2020
-[   78.222888] pstate: 80400089 (Nzcv daIf +PAN -UAO BTYPE=--)
-[   78.228435] pc : 0x0
-[   78.230618] lr : serial8250_start_tx+0x160/0x260
-[   78.235215] sp : ffff800062eefb80
-[   78.238517] x29: ffff800062eefb80 x28: 0000000000000fff
-[   78.243807] x27: ffff800062eefd80 x26: ffff202fd83b3000
-[   78.249098] x25: ffff800062eefd80 x24: ffff202fd83b3000
-[   78.254388] x23: ffff002fc5e50be8 x22: 0000000000000002
-[   78.259679] x21: 0000000000000001 x20: 0000000000000000
-[   78.264969] x19: ffffa688827eecc8 x18: 0000000000000000
-[   78.270259] x17: 0000000000000000 x16: 0000000000000000
-[   78.275550] x15: ffffa68881bc67a8 x14: 00000000000002e6
-[   78.280841] x13: ffffa68881bc67a8 x12: 000000000000c539
-[   78.286131] x11: d37a6f4de9bd37a7 x10: ffffa68881cccff0
-[   78.291421] x9 : ffffa68881bc6000 x8 : ffffa688819daa88
-[   78.296711] x7 : ffffa688822a0f20 x6 : ffffa688819e0000
-[   78.302002] x5 : ffff800062eef9d0 x4 : ffffa68881e707a8
-[   78.307292] x3 : 0000000000000000 x2 : 0000000000000002
-[   78.312582] x1 : 0000000000000001 x0 : ffffa688827eecc8
-[   78.317873] Call trace:
-[   78.320312]  0x0
-[   78.322147]  __uart_start.isra.9+0x64/0x78
-[   78.326229]  uart_start+0xb8/0x1c8
-[   78.329620]  uart_flush_chars+0x24/0x30
-[   78.333442]  n_tty_receive_buf_common+0x7b0/0xc30
-[   78.338128]  n_tty_receive_buf+0x44/0x2c8
-[   78.342122]  tty_ioctl+0x348/0x11f8
-[   78.345599]  ksys_ioctl+0xd8/0xf8
-[   78.348903]  __arm64_sys_ioctl+0x2c/0xc8
-[   78.352812]  el0_svc_common.constprop.2+0x88/0x1b0
-[   78.357583]  do_el0_svc+0x44/0xd0
-[   78.360887]  el0_sync_handler+0x14c/0x1d0
-[   78.364880]  el0_sync+0x140/0x180
-[   78.368185] Code: bad PC value
+The error is not a false positive on S3C platforms, but a real error.
+The existing code did not handle missing TX IRQ but at least printed a
+message.  Your change hides the message.
 
-SERIAL_PORT_DFNS is not defined on each arch, if it's not defined,
-serial8250_set_defaults() won't be called in serial8250_isa_init_ports(),
-so the p->serial_in pointer won't be initialized, and it leads a null-ptr-deref.
-Fix this problem by calling serial8250_set_defaults() after init uart port.
+The real problem here is a missing error handling for TX interrupt.
+Solving this one, would solve also false-positive error message on newer
+SoCs.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/tty/serial/8250/8250_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index fc118f649887..cae61d1ebec5 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -524,6 +524,7 @@ static void __init serial8250_isa_init_ports(void)
- 		 */
- 		up->mcr_mask = ~ALPHA_KLUDGE_MCR;
- 		up->mcr_force = ALPHA_KLUDGE_MCR;
-+		serial8250_set_defaults(up);
- 	}
- 
- 	/* chain base port ops to support Remote Supervisor Adapter */
-@@ -547,7 +548,6 @@ static void __init serial8250_isa_init_ports(void)
- 		port->membase  = old_serial_port[i].iomem_base;
- 		port->iotype   = old_serial_port[i].io_type;
- 		port->regshift = old_serial_port[i].iomem_reg_shift;
--		serial8250_set_defaults(up);
- 
- 		port->irqflags |= irqflag;
- 		if (serial8250_isa_config != NULL)
--- 
-2.25.1
+Best regards,
+Krzysztof
 
