@@ -2,169 +2,179 @@ Return-Path: <SRS0=EuFA=BA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB1FC433E3
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 11:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A6DC433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 12:10:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 825FC20792
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 11:55:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3E4C7206E9
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 12:10:49 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jcbCCb7h"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726919AbgGULzF (ORCPT
+        id S1728196AbgGUMKt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jul 2020 07:55:05 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7810 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726266AbgGULzE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jul 2020 07:55:04 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id DE71D5C1C5211E8B8AC4;
-        Tue, 21 Jul 2020 19:55:01 +0800 (CST)
-Received: from [127.0.0.1] (10.174.176.211) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Tue, 21 Jul 2020
- 19:54:52 +0800
-Subject: Re: [PATCH] serial: 8250: fix null-ptr-deref in serial8250_start_tx()
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jslaby@suse.com>, Hanjun Guo <guohanjun@huawei.com>,
-        "Libin (Huawei)" <huawei.libin@huawei.com>
-References: <20200721143852.4058352-1-yangyingliang@huawei.com>
- <20200721104819.GA1678476@kroah.com>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <b0cbee3f-05cd-b15c-06db-68c223c9944c@huawei.com>
-Date:   Tue, 21 Jul 2020 19:54:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20200721104819.GA1678476@kroah.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.176.211]
-X-CFilter-Loop: Reflected
+        Tue, 21 Jul 2020 08:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726715AbgGUMKs (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Jul 2020 08:10:48 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E6AC061794
+        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 05:10:48 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id gc15so1347186pjb.0
+        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 05:10:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=DUhxoUHdk/G5hcIoHHmedsybYx4YWFvLP5ZmToBFcQA=;
+        b=jcbCCb7hQJlHIsdcZ51dQFHY/9ZAio9o8npqoAFikBjrRS5rSX8azSndpIfoxx4pB+
+         36zJ9XHfNsZaRy7DSN1DP/aiQPS1wdywIz2HH7ZUeQPS9pMnDDMBFScXUX8tkATs9D3Q
+         AgbIybVi4CKkW8frVqni9KeOc3TfJHu2wgPhSRbqmU1CzyLw2BnPvo3mq5J7vWHydhVG
+         ykZd7ucwFth+Pedeigm9B3p8zNkoO+gfshaZ2vqKoy3ykznGytstafoT6n4A86ml+rYT
+         oMyEtsd0jdPbtn+jYCfaazIcKecvvJ9MCT/0T4bbqk2TDYe3Ou5Vdbc5vVEP2p1XGntN
+         aHHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DUhxoUHdk/G5hcIoHHmedsybYx4YWFvLP5ZmToBFcQA=;
+        b=TO534wPAc//wilw3xzNRo1NOBtf7KjZe3thy7UHtAUGNslQsN+EaVqFhZ4Lz+v3EEz
+         fI624/Qavq3iDk8xj7P6SOY/Z7c+tKNcM/YHP0uimTtshtb9HnClrsfncx1pFwfPRi6q
+         ferRng64tYpXe5y2p8tw8NooxIAaPbxa2z8NQV0MQVoPluXgjiR3ogDsU0ng8wkI6TYL
+         WRvTJKg2KzrviyH5V92k+52ggdm9vIQZ01wsK8mLKMzogGw6wYK0NSyquoQj5yvUyhcQ
+         /ZJeMO59cH6oWeIZVwPTxBlH7EpKjdk7Tz44sb7u6aSWGTzuOHxRL66D1CmyK84hp6jS
+         rwMQ==
+X-Gm-Message-State: AOAM531ysksFHLUNo6uCHgy2sgojXb6uVeJAf+S6z7Mf7LbYhd2ELgVR
+        dvoyE7mcvJUNCz5YlfMpnnEWuQ==
+X-Google-Smtp-Source: ABdhPJyRExe3Qfy877FM+lq0KPlLWXAqsMqBIE5QqFOrqY5bkLpSCnvsNe2TWxlOTPk4HSLRIyix+g==
+X-Received: by 2002:a17:902:d698:: with SMTP id v24mr21585075ply.163.1595333447996;
+        Tue, 21 Jul 2020 05:10:47 -0700 (PDT)
+Received: from localhost.localdomain ([117.210.211.74])
+        by smtp.gmail.com with ESMTPSA id w9sm20601992pfq.178.2020.07.21.05.10.42
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 Jul 2020 05:10:47 -0700 (PDT)
+From:   Sumit Garg <sumit.garg@linaro.org>
+To:     gregkh@linuxfoundation.org, daniel.thompson@linaro.org,
+        dianders@chromium.org, linux-serial@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net
+Cc:     jslaby@suse.com, linux@armlinux.org.uk, jason.wessel@windriver.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Sumit Garg <sumit.garg@linaro.org>
+Subject: [RFC 0/5] Introduce NMI aware serial drivers
+Date:   Tue, 21 Jul 2020 17:40:08 +0530
+Message-Id: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Make it possible for UARTs to trigger magic sysrq from an NMI. With the
+advent of pseudo NMIs on arm64 it became quite generic to request serial
+device interrupt as an NMI rather than IRQ. And having NMI driven serial
+RX will allow us to trigger magic sysrq as an NMI and hence drop into
+kernel debugger in NMI context.
 
-On 2020/7/21 18:48, Greg KH wrote:
-> On Tue, Jul 21, 2020 at 02:38:52PM +0000, Yang Yingliang wrote:
->> I got null-ptr-deref in serial8250_start_tx():
->>
->> [   78.114630] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
->> [   78.123778] Mem abort info:
->> [   78.126560]   ESR = 0x86000007
->> [   78.129603]   EC = 0x21: IABT (current EL), IL = 32 bits
->> [   78.134891]   SET = 0, FnV = 0
->> [   78.137933]   EA = 0, S1PTW = 0
->> [   78.141064] user pgtable: 64k pages, 48-bit VAs, pgdp=00000027d41a8600
->> [   78.147562] [0000000000000000] pgd=00000027893f0003, p4d=00000027893f0003, pud=00000027893f0003, pmd=00000027c9a20003, pte=0000000000000000
->> [   78.160029] Internal error: Oops: 86000007 [#1] SMP
->> [   78.164886] Modules linked in: sunrpc vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher crct10dif_ce ghash_ce sha2_ce sha256_arm64 sha1_ce ses enclosure sg sbsa_gwdt ipmi_ssif spi_dw_mmio sch_fq_codel vhost_net tun vhost vhost_iotlb tap ip_tables ext4 mbcache jbd2 ahci hisi_sas_v3_hw libahci hisi_sas_main libsas hns3 scsi_transport_sas hclge libata megaraid_sas ipmi_si hnae3 ipmi_devintf ipmi_msghandler br_netfilter bridge stp llc nvme nvme_core xt_sctp sctp libcrc32c dm_mod nbd
->> [   78.207383] CPU: 11 PID: 23258 Comm: null-ptr Not tainted 5.8.0-rc6+ #48
->> [   78.214056] Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 2280-V2 CS V3.B210.01 03/12/2020
->> [   78.222888] pstate: 80400089 (Nzcv daIf +PAN -UAO BTYPE=--)
->> [   78.228435] pc : 0x0
->> [   78.230618] lr : serial8250_start_tx+0x160/0x260
->> [   78.235215] sp : ffff800062eefb80
->> [   78.238517] x29: ffff800062eefb80 x28: 0000000000000fff
->> [   78.243807] x27: ffff800062eefd80 x26: ffff202fd83b3000
->> [   78.249098] x25: ffff800062eefd80 x24: ffff202fd83b3000
->> [   78.254388] x23: ffff002fc5e50be8 x22: 0000000000000002
->> [   78.259679] x21: 0000000000000001 x20: 0000000000000000
->> [   78.264969] x19: ffffa688827eecc8 x18: 0000000000000000
->> [   78.270259] x17: 0000000000000000 x16: 0000000000000000
->> [   78.275550] x15: ffffa68881bc67a8 x14: 00000000000002e6
->> [   78.280841] x13: ffffa68881bc67a8 x12: 000000000000c539
->> [   78.286131] x11: d37a6f4de9bd37a7 x10: ffffa68881cccff0
->> [   78.291421] x9 : ffffa68881bc6000 x8 : ffffa688819daa88
->> [   78.296711] x7 : ffffa688822a0f20 x6 : ffffa688819e0000
->> [   78.302002] x5 : ffff800062eef9d0 x4 : ffffa68881e707a8
->> [   78.307292] x3 : 0000000000000000 x2 : 0000000000000002
->> [   78.312582] x1 : 0000000000000001 x0 : ffffa688827eecc8
->> [   78.317873] Call trace:
->> [   78.320312]  0x0
->> [   78.322147]  __uart_start.isra.9+0x64/0x78
->> [   78.326229]  uart_start+0xb8/0x1c8
->> [   78.329620]  uart_flush_chars+0x24/0x30
->> [   78.333442]  n_tty_receive_buf_common+0x7b0/0xc30
->> [   78.338128]  n_tty_receive_buf+0x44/0x2c8
->> [   78.342122]  tty_ioctl+0x348/0x11f8
->> [   78.345599]  ksys_ioctl+0xd8/0xf8
->> [   78.348903]  __arm64_sys_ioctl+0x2c/0xc8
->> [   78.352812]  el0_svc_common.constprop.2+0x88/0x1b0
->> [   78.357583]  do_el0_svc+0x44/0xd0
->> [   78.360887]  el0_sync_handler+0x14c/0x1d0
->> [   78.364880]  el0_sync+0x140/0x180
->> [   78.368185] Code: bad PC value
->>
->> SERIAL_PORT_DFNS is not defined on each arch, if it's not defined,
->> serial8250_set_defaults() won't be called in serial8250_isa_init_ports(),
->> so the p->serial_in pointer won't be initialized, and it leads a null-ptr-deref.
->> Fix this problem by calling serial8250_set_defaults() after init uart port.
->>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   drivers/tty/serial/8250/8250_core.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
-> Does this fix a specific commit, or has this issue always been present?
-> What has caused it to happen now that no one else has seen this?
+The major use-case is to add NMI debugging capabilities to the kernel
+in order to debug scenarios such as:
+- Primary CPU is stuck in deadlock with interrupts disabled and hence
+  doesn't honor serial device interrupt. So having magic sysrq triggered
+  as an NMI is helpful for debugging.
+- Always enabled NMI based magic sysrq irrespective of whether the serial
+  TTY port is active or not.
 
-I think it's always been present on the arch that not defined 
-SERIAL_PORT_DFNS.
+Currently there is an existing kgdb NMI serial driver which provides
+partial implementation in upstream to have a separate ttyNMI0 port but
+that remained in silos with the serial core/drivers which made it a bit
+odd to enable using serial device interrupt and hence remained unused. It
+seems to be clearly intended to avoid almost all custom NMI changes to
+the UART driver.
 
-I got this on arm64 and here is the C reproducer:
+But this patch-set allows the serial core/drivers to be NMI aware which
+in turn provides NMI debugging capabilities via magic sysrq and hence
+there is no specific reason to keep this special driver. So remove it
+instead.
 
-// autogenerated by syzkaller (https://github.com/google/syzkaller)
+Approach:
+---------
 
-#define _GNU_SOURCE
+The overall idea is to intercept serial RX characters in NMI context, if
+those are specific to magic sysrq then allow corresponding handler to run
+in NMI context. Otherwise, defer all other RX and TX operations onto IRQ
+work queue in order to run those in normal interrupt context.
 
-#include <endian.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
+This approach is demonstrated using amba-pl011 driver.
 
-#ifndef __NR_ioctl
-#define __NR_ioctl 29
-#endif
-#ifndef __NR_mmap
-#define __NR_mmap 222
-#endif
-#ifndef __NR_openat
-#define __NR_openat 56
-#endif
+Patch-wise description:
+-----------------------
 
-uint64_t r[1] = {0xffffffffffffffff};
+Patch #1 prepares magic sysrq handler to be NMI aware.
+Patch #2 adds NMI framework to serial core.
+Patch #3 and #4 demonstrates NMI aware uart port using amba-pl011 driver.
+Patch #5 removes kgdb NMI serial driver.
 
-int main(void)
-{
-     syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 3ul, 0x32ul, -1, 0);
-     intptr_t res = 0;
-     memcpy((void*)0x20000040, "/dev/ttyS3\000", 11);
-     res = syscall(__NR_openat, 0xffffffffffffff9cul, 0x20000040ul, 
-0x401ul, 0ul);
-     if (res != -1)
-         r[0] = res;
-     syscall(__NR_ioctl, r[0], 0x5412ul, 0x20000080ul);
-     return 0;
-}
+Goal of this RFC:
+-----------------
 
+My main reason for sharing this as an RFC is to help decide whether or
+not to continue with this approach. The next step for me would to port
+the work to a system with an 8250 UART.
 
-Thanks,
+Usage:
+------
 
-Yang
+This RFC has been developed on top of 5.8-rc3 and if anyone is interested
+to give this a try on QEMU, just enable following config options
+additional to arm64 defconfig:
 
->
-> thanks,
->
-> greg k-h
-> .
+CONFIG_KGDB=y
+CONFIG_KGDB_KDB=y
+CONFIG_ARM64_PSEUDO_NMI=y
+
+Qemu command line to test:
+
+$ qemu-system-aarch64 -nographic -machine virt,gic-version=3 -cpu cortex-a57 \
+  -smp 2 -kernel arch/arm64/boot/Image -append 'console=ttyAMA0,38400 \
+  keep_bootcon root=/dev/vda2 irqchip.gicv3_pseudo_nmi=1 kgdboc=ttyAMA0' \
+  -initrd rootfs-arm64.cpio.gz
+
+NMI entry into kgdb via sysrq:
+- Ctrl a + b + g
+
+Reference:
+----------
+
+For more details about NMI/FIQ debugger, refer to this blog post [1].
+
+[1] https://www.linaro.org/blog/debugging-arm-kernels-using-nmifiq/
+
+I do look forward to your comments and feedback.
+
+Sumit Garg (5):
+  tty/sysrq: Make sysrq handler NMI aware
+  serial: core: Add framework to allow NMI aware serial drivers
+  serial: amba-pl011: Re-order APIs definition
+  serial: amba-pl011: Enable NMI aware uart port
+  serial: Remove KGDB NMI serial driver
+
+ drivers/tty/serial/Kconfig       |  19 --
+ drivers/tty/serial/Makefile      |   1 -
+ drivers/tty/serial/amba-pl011.c  | 232 +++++++++++++++++-------
+ drivers/tty/serial/kgdb_nmi.c    | 383 ---------------------------------------
+ drivers/tty/serial/kgdboc.c      |   8 -
+ drivers/tty/serial/serial_core.c | 120 +++++++++++-
+ drivers/tty/sysrq.c              |  33 +++-
+ include/linux/kgdb.h             |  10 -
+ include/linux/serial_core.h      |  67 +++++++
+ include/linux/sysrq.h            |   1 +
+ kernel/debug/debug_core.c        |   1 +
+ 11 files changed, 386 insertions(+), 489 deletions(-)
+ delete mode 100644 drivers/tty/serial/kgdb_nmi.c
+
+-- 
+2.7.4
 
