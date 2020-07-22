@@ -2,151 +2,147 @@ Return-Path: <SRS0=VfF8=BB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA37C433DF
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 05:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C661C433E1
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 07:04:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1E67920792
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 05:24:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1EC6B2080D
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 07:04:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tPcUArAX"
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="fdX4oR9I"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgGVFYt (ORCPT
+        id S1728063AbgGVHEF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jul 2020 01:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726253AbgGVFYt (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jul 2020 01:24:49 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF823C0619DB
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 22:24:48 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id d7so370605plq.13
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 22:24:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sKsu2k4zgHSwkJM1tGdl1w2cpO2vsxMcLmVlUEcUe4I=;
-        b=tPcUArAXeKgDPP+5uhYAO+IddNgf5clIh1GvfT9og2rVyw/GDB3vMFPJLJT5Q80lK7
-         M16unqNehP0zaoRQWzToJQd6ZSZQT4ojfUQxhSXRUsHWWJUGDOammwIs9huiuZxi+QgC
-         RqbR3edVqGyYFjt1qRUk5KOLP6oCzp4Hg9lm4vF9vhk5WhCCbX34GM0kiucsa6RaR1sB
-         LqHKrmbTDBkhjC+Gt+dyJz7+C0BOn/9dkl3zIibme2ggwqFSRCU1KmiqY7jjlN+vJG+v
-         0OQjg/2MN/F+H6TCzgo18p4/0jV0EXYV2IeDm0dhOKhbJzsZQk58g5Av6pakErnj5qfg
-         nI1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sKsu2k4zgHSwkJM1tGdl1w2cpO2vsxMcLmVlUEcUe4I=;
-        b=kmF+rDqTHXCdWF4ogPUfKastsdyDHebo8IUEWw/X3kgY5lucwLvTXjKZqz/lnzg28h
-         c4NR938gw8sbSlenSlJsiaZbah453e/oS9eeiqDTnBgBmp9sn4bpNF38H51TRRy7QaIe
-         AGW8hZAXpqp8OfOHDKD8Y2gPIwO1sR4GXu3ObPhYnME/1vMr7WD8jnVvdELZFed6nY5u
-         jdQHJ/tL+ydak1L4cQ+EHR6fO/tLiS3/M1ZNj1yZY6kHlTL3+vftJiq9upoAFrlcmXAO
-         oQP6vTiNdQ/FAfW84pYamzhMmykFpomjK8t2bF0DquK4LA7Z2Ejx87EkY2jOZdx3uD6a
-         gqbw==
-X-Gm-Message-State: AOAM530squPO8sThjtP6sKBBljBlCR5bSBkgjHcHBjz2l3mV+TooO1Hz
-        5DKgd9yIFnDTvOEgP+eAQDal/A==
-X-Google-Smtp-Source: ABdhPJy4KtwrRmb0WHGLTdusgx9+v5/UvU1PCVaIysq25oC726zsaTjQhBx2RAqTt8iVfLZkBgfnIg==
-X-Received: by 2002:a17:90a:f68c:: with SMTP id cl12mr7306414pjb.116.1595395488285;
-        Tue, 21 Jul 2020 22:24:48 -0700 (PDT)
-Received: from localhost ([182.77.116.224])
-        by smtp.gmail.com with ESMTPSA id 21sm22102854pfu.124.2020.07.21.22.24.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 21 Jul 2020 22:24:46 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 10:54:44 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Rajendra Nayak <rnayak@codeaurora.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, robdclark@chromium.org,
-        robdclark@gmail.com, stanimir.varbanov@linaro.org,
-        mka@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 1/6] tty: serial: qcom_geni_serial: Use OPP API to set
- clk/perf state
-Message-ID: <20200722052444.updchi2yfjgbf3hb@vireshk-mac-ubuntu>
-References: <1592222564-13556-1-git-send-email-rnayak@codeaurora.org>
- <1592222564-13556-2-git-send-email-rnayak@codeaurora.org>
- <159347264530.1987609.11350620235820019545@swboyd.mtv.corp.google.com>
- <a3d53f82-b29d-97ef-3ba1-ca9bd650d354@codeaurora.org>
- <20200630030552.cfp5oh33qde6nlnf@vireshk-i7>
- <159532101373.3847286.9695594340556014384@swboyd.mtv.corp.google.com>
+        Wed, 22 Jul 2020 03:04:05 -0400
+Received: from mail-eopbgr1300084.outbound.protection.outlook.com ([40.107.130.84]:51936
+        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727096AbgGVHEF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 22 Jul 2020 03:04:05 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c/LLSNoKAL1IjHYVpk+O/IxvJgghNLL5BKLHtcru6K+BG4+KAaEj7Q9NfxFXhq+Y7YJ/2x3EechMXA7rQyqMtO0HPOtvWPN74JhzrpjEQgJ1mh4fS35KrZv5RKwm87hv3p9Mlju+lBUtQkJwTAuD8emcVV7HC3t6NTipvQ4S3StRlUL4OGYnFe86xeeZTS8hddKfRmGgbFOxvJS/CM5TSgHihb+eOb6HEv/x986UR3+Tt4mLVukZHHQWfgf9QKwhFwnt/qgwENL9FYY8vgawMF2lGpdGE6xQMyVYWkrcl1mbiUD7V82lITt+nCxenCMe2KsPaBWqjrHRLqGkhWbH/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DylMaV/q1A8fkNR1+R85fNsA3X8O33djb2Qo8EmkvWw=;
+ b=J8hRwfRYjxVFYPkmvzEfRecHYYmP4EEIUryAorvV6JT+k00bj2R1IsOjdG9iwRx+dtMqxbB3qJj2h9iNo5feTkkg+cXB6TOzWRT9hsc7IY0UpF79b8rD+3VrAuaG9fz2x11JPDoQbNPA7lbE29B8rWZZz82P5hCYt5ERtBG7ZGkEUwjrAX59/RLYVBIGowXoXiYSB2DoIYO2ZvACHiVzzKTNNW0UHA0LhmekWr6JmGW604AVq5K83ZQIYTW8tX7rHmi/sqp8a9TtGkVMSCDtSdQs33umL55L8nmtJp3MG6NDJNqH+/LX70UTAcAOHIbntOdjzV3w5/zf/PlaYXYQ5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DylMaV/q1A8fkNR1+R85fNsA3X8O33djb2Qo8EmkvWw=;
+ b=fdX4oR9IdYH6JYg4uiZqPjiTHXhT5Q5rlcjIauHtjel7voJIs8ymlpDuc1+q8pe7X6kjqCXSn2xoQBLFgpSxr77+srft5lLdFQDVsvNKFSd0GDtHzfPcno94q/lIo8F30jtEHbRvchAp1w3lKRLemsOTH5Q0mEpu65IPs1tXpcI=
+Received: from HK2PR01MB3281.apcprd01.prod.exchangelabs.com
+ (2603:1096:202:22::12) by HK0PR01MB2289.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:75::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.23; Wed, 22 Jul
+ 2020 07:04:00 +0000
+Received: from HK2PR01MB3281.apcprd01.prod.exchangelabs.com
+ ([fe80::dce:9650:6c58:8b77]) by HK2PR01MB3281.apcprd01.prod.exchangelabs.com
+ ([fe80::dce:9650:6c58:8b77%4]) with mapi id 15.20.3195.026; Wed, 22 Jul 2020
+ 07:04:00 +0000
+From:   =?utf-8?B?Sm9obnNvbiBDSCBDaGVuICjpmbPmmK3li7Mp?= 
+        <JohnsonCH.Chen@moxa.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        =?utf-8?B?VmljdG9yIFl1ICjmuLjli53nvqkp?= <victor.yu@moxa.com>,
+        =?utf-8?B?RGFubnkgTGluICjmnpfmlL/mmJMp?= <danny.lin@moxa.com>
+Subject: RE: [PATCH] tty: Add MOXA NPort Real TTY Driver
+Thread-Topic: [PATCH] tty: Add MOXA NPort Real TTY Driver
+Thread-Index: AQHWWaW+EbrUHbhx60a/vOExcWbf46kGr5aAgAMXG4CAAAnogIAJZUiA
+Date:   Wed, 22 Jul 2020 07:04:00 +0000
+Message-ID: <HK2PR01MB32817A21FEDDC410F2822640FA790@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
+References: <HK2PR01MB328134FB2EF5F9D1E381BDA3FA610@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
+ <20200714073609.GA688099@kroah.com>
+ <HK2PR01MB32815CE2F455B909EA32F406FA7F0@HK2PR01MB3281.apcprd01.prod.exchangelabs.com>
+ <20200716072305.GA970724@kroah.com>
+In-Reply-To: <20200716072305.GA970724@kroah.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linuxfoundation.org; dkim=none (message not signed)
+ header.d=none;linuxfoundation.org; dmarc=none action=none
+ header.from=moxa.com;
+x-originating-ip: [123.51.145.16]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5775fa33-eb98-4a5a-7a85-08d82e0d6915
+x-ms-traffictypediagnostic: HK0PR01MB2289:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <HK0PR01MB2289C6A9C47516DE3C4FBA1FFA790@HK0PR01MB2289.apcprd01.prod.exchangelabs.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: A57pM3mJWSTbuxjRYhMEqSNH9zXKVv02i59sr9VTYt7M19r9h9VEqankHcDQ+K7mM7CglStYv25v+AHiun6KukXKwLgsKVGomVw2GBDHAzgKk56lVrEEK3eYM6JZGy/AsT0nGv1NV8s+3KhQr20E0w7liqw6j6W9x9sBZadxDpkQR6bUPvZDLgCKa1aMEz++UGfX6D5WCZP+3xh8feHQt19na40H/1umfMIeagR5Pkoq7dbKJDVZtdtqgPFz7ryp29xrtHISk+0UozwWfhHOhaltcpVMt+Shr0ThNwRW21aqb/sNIcHUm41GIhxDFjKXHSjZhvNNOmkzqV5uKvZKbw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR01MB3281.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39850400004)(136003)(346002)(376002)(396003)(83380400001)(6506007)(478600001)(71200400001)(107886003)(9686003)(7696005)(54906003)(86362001)(6916009)(26005)(85182001)(8676002)(55016002)(316002)(4326008)(186003)(52536014)(64756008)(33656002)(66446008)(66556008)(66946007)(8936002)(66476007)(76116006)(2906002)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: SUX5PDHnc55mCUX4gMn3dRkj0g2jYh1+BoUKCvfJ2EVYAtwCrn6T9D0uE7Vd6hvs8ls//zGrwEnphBYklODKMnIxZl+dzXlOA0/rWoGOpspW1QQqWodJHO/e76R1n1XY89Vq0ZVkEpUv3qn4nAbmJKBrPDhuuQvABG7kPSea2fI6EOtTICE7CtNb75r3i7gbLVy97h05wM7mZ0QH3I1K6caPcwkjqDjhmoW6tTabLEhLSEPZIJDkdVNhDphZDxvctSu5EcSB0Jg3j8kq3xQYo1CaaicDIhSTcsesZCiDgR3Mtf7/6KCFRRal2yrbL3J+FXPfPY58Jaatv1jfMG+jEUMPowXrThsbRpY1Dl90GtphNhIAwhKjjzch3vZ7FZyCdWytAYGOtRODy34YMOqgf2DppYhyUslp5O+rhxJOb88E4Yj3Qi51IJwcgbYgYcJ50YCUoxUEHFVOB5fcJvF6dDidhux47VRMUiXHzD80YgE=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <159532101373.3847286.9695594340556014384@swboyd.mtv.corp.google.com>
-User-Agent: NeoMutt/20170609 (1.8.3)
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR01MB3281.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5775fa33-eb98-4a5a-7a85-08d82e0d6915
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jul 2020 07:04:00.3714
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: S8pQrvJU3+aoUzE6akMBYHeeyMBZBNg+snnQAMQXcAWEfYWTTKkRDjduoAa8zMsP6Ed2mlkvwfHVBF6tnyrLFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR01MB2289
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21-07-20, 01:43, Stephen Boyd wrote:
-> It seems that dev_pm_opp_set_rate() calls _find_opp_table() and finds
-> something that isn't an error pointer but then dev_pm_opp_of_add_table()
-> returns an error value because there isn't an operating-points property
-> in DT. We're getting saved because this driver also happens to call
-> dev_pm_opp_set_clkname() which allocates the OPP table a second time
-> (because the first time it got freed when dev_pm_opp_of_add_table()
-> return -ENODEV because the property was missing).
-> 
-> Why do we need 'has_opp_table' logic? It seems that we have to keep
-> track of the fact that dev_pm_opp_of_add_table() failed so that we don't
-> put the table again, but then dev_pm_opp_set_clkname() can be called
-> to allocate the table regardless.
-> 
-> This maintainer is paying very close attention
-
-:)
-
-> to super confusing code like
-> this:
-> 
-> 	if (drv->has_opp_table)
-> 		dev_pm_opp_of_remove_table(dev);
-> 	dev_pm_opp_put_clkname(drv->opp_table);
-> 
-> which reads as "if I have an opp table remove it and oh by the way
-> remove the clk name for this opp table pointer I also happen to always
-> have".
-> 
-> Maybe I would be happier if dev_pm_opp_of_table() went away and we just
-> had dev_pm_opp_add_table(const struct opp_config *config) that did all
-> the things for us like set a clk name, set the supported hw, set the
-> prop name, etc. based on the single config struct pointer and also
-> parsed out the OPP table from DT or just ignored that if there isn't any
-> operating-points property. Then the caller wouldn't need to keep track
-> of 'if has_opp_table' because it doesn't seem to actually care and the
-> core is happy to allocate a table for the device anyway so long as it
-> sets a clk name.
-
-The config style wouldn't work as well as we don't really want to
-allocate an OPP table if the property isn't found in DT.
-
-All the mess is coming from the fact that I wanted to make it easy for
-the generic drivers to have code which can do opp-set-rate or
-clk-set-rate depending on how the platform is configured. While the
-intention was fine, the end result is still not great as you figured
-out.
-
-Because we need to keep a flag to make the right decision anyway, I
-wonder if doing this is the best solution we have at hand.
-
-if (opp-table-present)
-        opp_set_rate();
-else
-        clk_set_rate();
-
-Or maybe stop printing errors from dev_pm_opp_of_remove_table() if the
-OPP table isn't found. And so we can get rid of the flag.
-
--- 
-viresh
+SGkgR3JlZywNCg0KVGhhbmtzIGZvciB5b3VyIHJlc3BvbnNlIQ0KDQo+ID4gPiA+ICsJdW5zaWdu
+ZWQgbG9uZyBmbGFnOw0KPiA+ID4gPiArCXVuc2lnbmVkIGNoYXIgY21kX2J1ZmZlcls4NF07DQo+
+ID4gPiA+ICsJdW5zaWduZWQgY2hhciByc3BfYnVmZmVyWzg0XTsNCj4gPiA+DQo+ID4gPiBZb3Ug
+c2VlbSB0byBoYXZlIHR3byAic3RhdGljIiBidWZmZXJzIGhlcmUsIGZvciB5b3VyIGRldmljZSwg
+dGhhdCANCj4gPiA+IHlvdSBzZW1pLXJhbmRvbWx5IHdyaXRlIHRvIGFsbCBvdmVyIHRoZSBwbGFj
+ZSwgYnV0IEkgY2FuJ3QgZmluZCANCj4gPiA+IGFueSBsb2NraW5nIG9yIGNvb3JkaW5hdGlvbiBi
+ZXR3ZWVuIHRoaW5ncyB0aGF0IHByZXZlbnRzIG11bHRpcGxlIA0KPiA+ID4gY29tbWFuZHMgZnJv
+bSBub3QganVzdCBvdmVyd3JpdHRpbmcgZWFjaCBvdGhlci4NCj4gPiA+DQo+ID4gRm9yIGNtZF9i
+dWZmZXJbXSwgd2UgdXNlIG5wcmVhbF93YWl0X2FuZF9zZXRfY29tbWFuZCgpIHRvIG1ha2Ugc3Vy
+ZSANCj4gPiBjbWRfYnVmZmVyW10gaXMgc2FmZSB0byBiZSB3cml0dGVuIGJ5IGNoZWNraW5nICJj
+bWRfYnVmZmVyWzBdID09IDAiLg0KPiANCj4gQW5kIHdoYXQgbG9ja3MgYXJlIHByb3RlY3Rpbmcg
+eW91IHRoZXJlPw0KPiANCj4gPiBGb3IgcnNwX2J1ZmZlcltdLCB3ZSB1c2UgbnByZWFsX3dhaXRf
+Y29tbWFuZF9jb21wbGV0ZWQoKSB0byBtYWtlIA0KPiA+IHN1cmUgcnNwX2J1ZmZlcltdIGlzIGRl
+c2lyZWQgYnkgY2hlY2tpbmcgcnNwX2J1ZmZlclswXSBhbmQgcnNwX2J1ZmZlclsxXS4NCj4gPiBD
+b21tYW5kX3NldCBhbmQgY29tbWFuZCBzaG91bGQgYmUgY2hlY2tlZC4gQmVzaWRlcywgcnNwX2J1
+ZmZlcltdIGlzIA0KPiA+IGdvdCBmcm9tIHVzZXIgc3BhY2UgYnkgIk5QUkVBTF9ORVRfQ01EX1JF
+U1BPTlNFIiBpbiANCj4gPiBucHJlYWxfbmV0X2lvY3RsKCkuDQo+IA0KPiBBZ2Fpbiwgd2hhdCBs
+b2NraW5nIGlzIHJlYWxseSBoYW5kbGluZyB0aGlzPw0KPiANCg0KSXQncyBiZXR0ZXIgdG8gcHJv
+dGVjdCBjbWRfYnVmZmVyWzg0XSBhbmQgcnNwX2J1ZmZlcls4NF0gYnkgbG9ja2luZyBjb21wbGV0
+ZWx5LiBUaGV5IGFyZSBzYWZlIGJlY2F1c2UgTlBvcnQgZHJpdmVyIHNob3VsZCBiZSB3b3JrZWQg
+d2l0aCBOUG9ydCBkYWVtb24gYmVmb3JlLCBhbmQgTlBvcnQgZGFlbW9uIGlzIGRlc2lnbmVkIHRv
+IGJlIHNpbXBsZS4NCg0KPiA+ID4gQWxzbywgaG93IGRvZXMgdGhlIGRhdGEgZ2V0IHNlbnQgdG8g
+dGhlIGhhcmR3YXJlIGF0IGFsbD8gIEkgc2VlIA0KPiA+ID4gY21kX2J1ZmZlcltdIGJlaW5nIHdy
+aXR0ZW4gdG8sIGJ1dCB3aGF0IHJlYWRzIGZyb20gaXQgYW5kIGhvdyBkb2VzIA0KPiA+ID4gdGhl
+IGhhcmR3YXJlIGdldCB0aGUgZGF0YT8NCj4gPg0KPiA+IEFjdHVhbGx5IHdlIG5lZWQgdG8gYm90
+aCBOUG9ydCBkcml2ZXIgKHRoaXMgZHJpdmVyKSBhbmQgTnByZWFsIA0KPiA+IGRhZW1vbg0KPiA+
+ICh1c2Vyc3BhY2UpIHRvIGxldCBIVyB3b3JrLiBOcHJlYWwgZGFlbW9uIGNhbiBjb21tdW5pY2F0
+ZSB3aXRoIEhXIGJ5IA0KPiA+IHNvY2tldCwgYW5kIE5wcmVhbCBkZWFtb24gY29tbXVuaWNhdGVz
+IHdpdGggTnBvcnQgZHJpdmVyIGJ5IA0KPiA+ICJucHJlYWxfbmV0X2ZvcHMiLiBXaGVuIGNvbW1h
+bmRzIGFyZSByZWFkeSBmb3IgZHJpdmVyIHBhcnQsIGl0IHdpbGwgDQo+ID4gd2FrZSB1cCBwb2xs
+IGV2ZW50IHRvIGxldCBOcG9ydCBkYWVtb24ga25vdy4NCj4gDQo+IFRoYXQgaXMgbm90IG9idmlv
+dXMgYXQgYWxsLCBhbmQgbmVlZHMgdG8gYmUgcmVhbGx5IHJlYWxseSByZWFsbHkgZG9jdW1lbnRl
+ZCBoZXJlLg0KPiBXaHkgbm90IHB1dCB0aGUgdXNlcnNwYWNlIGNodW5rIGluIHRoZSB0cmVlIHRv
+bz8gIEF0IHRoZSBsZWFzdCwgeW91IA0KPiBuZWVkIHRvIHBvaW50IGF0IGl0Lg0KPiANCj4gQW5k
+IHdoeSBpcyBhIHVzZXJzcGFjZSBwYXJ0IG5lZWRlZD8gIFdlIGhhdmUgdHR5LW92ZXItZXRoZXJu
+ZXQgZHJpdmVycyANCj4gdGhhdCBkbyBub3QgcmVxdWlyZSBzdWNoIGEgdGhpbmcgaW4gdGhlIHRy
+ZWUgc29tZXdoZXJlLi4uDQo+DQoNCkJlY2F1c2Ugd2UgbmVlZCBoYXJkd2FyZSBzZXJpYWwgdG8g
+RXRoZXJuZXQgY29udmVydGVyIChOUG9ydCBkZXZpY2Ugc2VydmVyKSB0byBtYW5hZ2Ugc29tZSBz
+ZXJpYWwgZGV2aWNlcywgc28gd2Ugc3RpbGwgbmVlZCB0byB1c2UgTU9YQSBOcG9ydCdzIGNvbW1h
+bmRzIGFuZCByZXNwb25zZXMgYmV0d2VlbiBob3N0IGNvbXB1dGVyIGFuZCBjb252ZXJ0ZXIuIFdl
+IHdpbGwgaGF2ZSBhbiBpbnRlcm5hbCBkaXNjdXNzaW9uIGFib3V0IHJlbGVhc2Ugb2YgTnBvcnQg
+ZGFlbW9uIGFuZCByZWxhdGVkIGRvY3VtZW50LCBvciB1c2luZyBmcmVlIHR0eSB0byBFdGhlcm5l
+dCBkYWVtb24gc3VjaCBhcyAoc2VyMm5ldC8gc29jYXQvIHJlbXR0eSkgYW5kIGltcHJvdmVkIG5w
+b3J0IGRyaXZlciBsYXRlci4gVGhhbmtzIGEgbG90IQ0KDQpCZXN0IHJlZ2FyZHMsDQpKb2huc29u
+DQo=
