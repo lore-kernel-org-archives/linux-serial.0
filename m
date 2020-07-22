@@ -2,129 +2,142 @@ Return-Path: <SRS0=VfF8=BB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBBCC433E2
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 07:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A1A2C433E2
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 08:34:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 334A420717
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 07:37:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 14516207DD
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 08:34:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595403444;
-	bh=E3BDv9EXS45tdmSzR1XilX0feunp4kFN3hS+6Te80cs=;
+	s=default; t=1595406875;
+	bh=bBhVauzcDv+gdi7HS/M9GiiTKSQl50htelXyJHZUl4E=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=XY2zWGNAURS396oH4PcQBhpTFZ+cxWsNuFATlPgkuwdcq1e2CdIKyjO1dQB+Q628x
-	 9s5Cp9HnUp5m/y+ogsYSV9XGlrMI/XEsbKVRnQVJIr2H2UDQ8QKE4VMRdOeJMbFh0O
-	 1gWxnIBVQ279O6RmasiKkwkM67E+pDBpeidzGLJQ=
+	b=BZqGpulK2/ccLTvV1WHwzDpj5cCsev77iSgEkog+w3wBZ5yWBPjE8wGWrmUs9oS5b
+	 dcdg9Ea+VIu6cJbkGnq22hPnxOECzu8p/Gcj+sRxgP4kifUE5wgAI2HQYJRVx94J89
+	 eNfb/5obyf7fHsiuc9pBpu8KVgF9mS93+fwtYbRk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728289AbgGVHhX (ORCPT
+        id S1726632AbgGVIed (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jul 2020 03:37:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40706 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727096AbgGVHhX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jul 2020 03:37:23 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7876920709;
-        Wed, 22 Jul 2020 07:37:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595403443;
-        bh=E3BDv9EXS45tdmSzR1XilX0feunp4kFN3hS+6Te80cs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UKqtWxxZD6V3t+pJD+W8pZDMv82yCXhKT56RUuw2sM06eBvTlEuZTBaVky8JpzSh1
-         ptRplOIIyJT6PM4cfwVCHd+LbuQFzXpJauihc4issXW4XrfIewEclW2BO+VFjYX4Lw
-         h8T80T5lyXS6Wgg+ccCWAVbtwidrETJTOQ2xEHL0=
-Date:   Wed, 22 Jul 2020 09:37:29 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Matthew Howell <mrhowel@g.clemson.edu>
-Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
-        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com
-Subject: Re: [PATCH v3] serial: exar: Fix GPIO configuration for Sealevel
- cards based on XR17V35X
-Message-ID: <20200722073729.GA2787816@kroah.com>
-References: <9318fef6-f2d4-dc77-2a25-6033d63aab9b@g.clemson.edu>
+        Wed, 22 Jul 2020 04:34:33 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46944 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726573AbgGVIed (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 22 Jul 2020 04:34:33 -0400
+Received: by mail-lj1-f194.google.com with SMTP id h19so1543930ljg.13;
+        Wed, 22 Jul 2020 01:34:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a320Kl5LlLOAYjeoIoCSr52bpOgO1xg6oWW0y+XyzMw=;
+        b=RW1QO2AgljyDHzHWSrSy+PzOsrEwS//NpMR/UWp20giKm3iN/75GmdEpAtwGJg0GV2
+         uHoabgJtLA9ajOttFxUoPv9BtSAoHDJE/RdjEPvT29Qj23c1/9Q63cbSMabCg620zvM6
+         rOtq+mp7+o5pqVX9AehRGhxtuF8cEVZp5qSLy/yWilBTLxrhDQe9W8Xi6ACUOx2olD5k
+         kVicebcX1KEuXl9uWsjHSq7PWOReXlbfmgufXQk4C6c8PZtGFq0zVlUH6xgWajZLrjyZ
+         5pOoUV6UDPTzXUqvoxoBuynPaZv57p6CdxNqiwEeCSI9fHLax87pL1vlLWjcsUaKSgLp
+         v8zw==
+X-Gm-Message-State: AOAM531BK8oQ2k7QGi8tzYUK3w2O88X+Lz7tJMBc5BDlwE1jGnGYf4rw
+        TV8iYuV3hunhpqzh01hcRbRSBwZY
+X-Google-Smtp-Source: ABdhPJyZVBEFI0bvjliXucRioA69zALGxm9a2TuCL16DZpKu64loQwYwFw8ndfYgVc8LlaM47TwOeA==
+X-Received: by 2002:a2e:9d86:: with SMTP id c6mr14184500ljj.418.1595406870872;
+        Wed, 22 Jul 2020 01:34:30 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id c27sm7530646lfm.56.2020.07.22.01.34.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 01:34:29 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1jyACn-0005S2-4r; Wed, 22 Jul 2020 10:34:25 +0200
+Date:   Wed, 22 Jul 2020 10:34:25 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Johan Hovold <johan@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        kernel@pengutronix.de, Jiri Slaby <jslaby@suse.com>,
+        linux-leds@vger.kernel.org, Dan Murphy <dmurphy@ti.com>
+Subject: Re: [PATCH v7 3/3] leds: trigger: implement a tty trigger
+Message-ID: <20200722083425.GF3634@localhost>
+References: <20200707165958.16522-1-u.kleine-koenig@pengutronix.de>
+ <20200707165958.16522-4-u.kleine-koenig@pengutronix.de>
+ <20200714071355.GY3453@localhost>
+ <20200721194815.mmkqccrkbgrly4xz@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="CblX+4bnyfN0pR09"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9318fef6-f2d4-dc77-2a25-6033d63aab9b@g.clemson.edu>
+In-Reply-To: <20200721194815.mmkqccrkbgrly4xz@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 04:08:17PM -0400, Matthew Howell wrote:
-> 
-> From: Matthew Howell <matthew.howell@sealevel.com>
-> 
-> Sealevel XR17V35X based devices are inoperable on kernel versions
-> 4.11 and above due to a change in the GPIO preconfiguration introduced in commit
-> 7dea8165f1d. This patch fixes this by preconfiguring the GPIO on Sealevel
-> cards to the value (0x00) used prior to commit 7dea8165f1d
-> 
-> With GPIOs preconfigured as per commit 7dea8165f1d all ports on
-> Sealevel XR17V35X based devices become stuck in high impedance
-> mode, regardless of dip-switch or software configuration. This
-> causes the device to become effectively unusable. This patch (in
-> various forms) has been distributed to our customers and no issues
-> related to it have been reported.
-> 
-> Fixes: 7dea8165f1d ("serial: exar: Preconfigure xr17v35x MPIOs as output")
-> Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
-> 
-> Patch resubmitted as per comments received on
-> https://www.spinics.net/lists/linux-serial/msg39371.html
-> 
-> Moved problem description and justification above the signed-off-by
-> line.
-> 
-> checkpatch.pl reports no styling issues with the diff below.
-> 
-> Let me know if I need to make any other changes.
 
-You should put a --- line after the signed-off-by line, so these
-comments do not show up in the changelog.
+--CblX+4bnyfN0pR09
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> --- linux/drivers/tty/serial/8250/8250_exar.c.orig    2020-07-09 11:05:03.920060577 -0400
-> +++ linux/drivers/tty/serial/8250/8250_exar.c    2020-07-13 11:54:44.386718167 -0400
-> @@ -326,7 +326,20 @@ static void setup_gpio(struct pci_dev *p
->       * devices will export them as GPIOs, so we pre-configure them safely
->       * as inputs.
->       */
-> -    u8 dir = pcidev->vendor == PCI_VENDOR_ID_EXAR ? 0xff : 0x00;
-> +
-> +    u8 dir = 0x00;
-> +
-> +    if  ((pcidev->vendor == PCI_VENDOR_ID_EXAR) &&
-> +        (pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL))
-> +    {
-> +       // Configure GPIO as inputs for Commtech adapters
-> +       dir = 0xff;
-> +    }
-> +    else
-> +    {
-> +       // Configure GPIO as outputs for SeaLevel adapters
-> +       dir = 0x00;
-> +    }
-> 
->      writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
->      writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
-> 
+On Tue, Jul 21, 2020 at 09:48:15PM +0200, Uwe Kleine-K=F6nig wrote:
+> Hello Johan,
+>=20
+> On Tue, Jul 14, 2020 at 09:13:55AM +0200, Johan Hovold wrote:
+> > On Tue, Jul 07, 2020 at 06:59:58PM +0200, Uwe Kleine-K=F6nig wrote:
+> > > +	while (firstrun ||
+> > > +	       icount.rx !=3D trigger_data->rx ||
+> > > +	       icount.tx !=3D trigger_data->tx) {
+> > > +
+> > > +		led_set_brightness(trigger_data->led_cdev, LED_ON);
+> > > +
+> > > +		msleep(100);
+> > > +
+> > > +		led_set_brightness(trigger_data->led_cdev, LED_OFF);
+> > > +
+> > > +		trigger_data->rx =3D icount.rx;
+> > > +		trigger_data->tx =3D icount.tx;
+> > > +		firstrun =3D false;
+> > > +
+> > > +		ret =3D tty_get_icount(trigger_data->tty, &icount);
+> > > +		if (ret)
+> > > +			return;
+> > > +	}
+> >=20
+> > Haven't looked at the latest proposal in detail, but this looks broken
+> > as you can potentially loop indefinitely in a worker thread, and with no
+> > way to stop the trigger (delayed work).
+>=20
+> I don't think that potentially looping indefinitely is a problem, but
+> indeed it should drop the lock during each iteration. Will think about
+> how to adapt.
 
-Your patch has all tabs turned to spaces, making this impossible to
-apply.
+You musn't queue work that can run for long on the global shared
+workqueue as it affects flushing:
 
-Also, always run your patch through scripts/checkpatch.pl to fix the
-obvious coding style issues in it before sending it out.
+	* system_wq is the one used by schedule[_delayed]_work[_on]().
+	* Multi-CPU multi-threaded.  There are users which expect relatively
+	* short queue flush time.  Don't queue works which can run for too
+	* long.
 
-v4?  :)
+Work that potentially run indefinitely is an absolute no-no. :)
 
-thanks,
+Johan
 
-greg k-h
+--CblX+4bnyfN0pR09
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQQHbPq+cpGvN/peuzMLxc3C7H1lCAUCXxf6DgAKCRALxc3C7H1l
+CAKdAPwMLuzL36R91UerEvnH4zUtKfNS5jRfm18tpgXYHJMHygEArxfQACvPs6nx
+njUDzVBzoW1/YxY47dCsqRZ4zne/JAQ=
+=E/KR
+-----END PGP SIGNATURE-----
+
+--CblX+4bnyfN0pR09--
