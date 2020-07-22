@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A3CC433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 10:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 608EFC433F1
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 10:28:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2F37E20729
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 10:27:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 384C920792
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 10:28:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="V0XYt9PE"
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="nt6DlWw6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732089AbgGVK1p (ORCPT
+        id S1732031AbgGVK2A (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jul 2020 06:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42426 "EHLO
+        Wed, 22 Jul 2020 06:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732082AbgGVK1o (ORCPT
+        with ESMTP id S1731610AbgGVK2A (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jul 2020 06:27:44 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C59DC0619DF
-        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2020 03:27:44 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id b30so998107lfj.12
-        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2020 03:27:44 -0700 (PDT)
+        Wed, 22 Jul 2020 06:28:00 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289F6C0619DC
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2020 03:28:00 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id h19so1878159ljg.13
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2020 03:28:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=antmicro.com; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=RUcc5eU7gKD/3gCaEHln3Fn1jI+Zlv9W+faFtSeViaM=;
-        b=V0XYt9PEAiL5V6MknhkVVbfYEBJLpTxY0F8yKjKk/BX6aXOf5L5nCS9kZtYqJgEE82
-         Lg7XO9b1Asbp9KMTwRHanI/UUzohla0LmBrEQfogzzQZAZKgG+XUXj1pyc08KSkPKz6i
-         sW64L3kmTxqCyyfE5826+7ewwuze/H0GgbGyc=
+        bh=F4m6AAmhYPUTGyWxMwC/LLFRqPzSDwHMxBDJbGrxjBU=;
+        b=nt6DlWw6ttotvaxYhXRP3pwG0ze7Ntiov/qqbHTaqC7OO3iTsTWH6D3tRTQTgNfWu3
+         7rA9VnhPJhaf0wuaefOpbKcIkgCbqU4l46akWAMKGkCAirDVmcsYup+Oj7Db3XXiEI1M
+         7/4rzCjfuDVlGhWsYBhWNEG99kmsR5W6O9Hio=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=RUcc5eU7gKD/3gCaEHln3Fn1jI+Zlv9W+faFtSeViaM=;
-        b=DITklwWFz/2pd8nTIW7AQoS0B+fLPC+ucbjBulLy/2SOCxqR1o2TfBJH//EnHncEwr
-         pw8JdEmO3syAdEqmwQxkIBvSgDoKHT+RDIWzecFvxNf1ZXVv4ugb6yVvAzgqvCYYIdjD
-         TH5mzqY3luTZgQvOO8nAZ6URA9C5g581xl1yMcWWcXc3SPCLp0dJrUkGZAvD6hnEllvS
-         0N0Jcoflbj73JJ0XORKvw6L2vIjM1todq8LZZlY6/SP/7d9e83DGKjZ0Qo2Iv9M5aHKD
-         7GnTjfLki1G5sDUdQ7vNQe1u3R1+/D4RDTE4Y/H9NxYS7vNaGYXeqwPX3hxhHnec8+JM
-         YjtA==
-X-Gm-Message-State: AOAM532u+uiYtIzQMfUQvvbnRm9/pO3lBM0vGoIkIToZt0IrwzdWJxiv
-        Dksh94BsEaKCUcmz7ozQG+JYFg==
-X-Google-Smtp-Source: ABdhPJwnBmYCqGUPkan/pK36A1to8WFJ0mcCznoFBDC9TJY6fzfk+CFGYo8VTrVqkDRlXgK3ynUNfQ==
-X-Received: by 2002:a05:6512:3249:: with SMTP id c9mr15859074lfr.216.1595413662784;
-        Wed, 22 Jul 2020 03:27:42 -0700 (PDT)
+        bh=F4m6AAmhYPUTGyWxMwC/LLFRqPzSDwHMxBDJbGrxjBU=;
+        b=RGMrF6FL7JuekHUvFZ03/7c+j66qt7/VwCnZ4cPA4tvE79Oyv/vYWJxfRStjogeVYE
+         PrtXkJvopwtrbC3zMbGJkBQV2i+nk1RB/ojnpa7pKxW7yH/O1Uef55v47AtJuEedohYp
+         5M17VdUCZn5qa4OqjRH8PlZZ1lWfemsLmCRmttFApYPW4AuFI/9EbiDu2lIR4gcULfTn
+         UPyuzj47Bq2AdzmEgWG4mND5MUKUZmXmIvlUIJ1oe6DcdCYbDsEhhdpyCkqQUByd/+pC
+         uC4pBmrP+oLoT638suEd3QvK9j7aRCUoiTvsE4msxQAUnHerfcom91M8qGgxqPfYu+EH
+         5PaA==
+X-Gm-Message-State: AOAM531RWBZLOxscx1cK594xAOsSqEeEvk62QnSYcgyUm8lLBfBtrdQY
+        ec2e//+V06SnpRvq9oqGByCMiw==
+X-Google-Smtp-Source: ABdhPJyjQNcmWselZyGmlLJBanO1riPk4KR0mlv5XUzOMkryG7t9h3qL8X75+cQOB+d6whJS2/NeSA==
+X-Received: by 2002:a2e:8882:: with SMTP id k2mr13710749lji.352.1595413678589;
+        Wed, 22 Jul 2020 03:27:58 -0700 (PDT)
 Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
-        by smtp.gmail.com with ESMTPSA id b25sm3726534lff.75.2020.07.22.03.27.41
+        by smtp.gmail.com with ESMTPSA id w2sm6464969lji.41.2020.07.22.03.27.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 03:27:42 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 12:27:35 +0200
+        Wed, 22 Jul 2020 03:27:57 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 12:27:52 +0200
 From:   Mateusz Holenko <mholenko@antmicro.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -80,8 +80,9 @@ Cc:     Stafford Horne <shorne@gmail.com>,
         Icenowy Zheng <icenowy@aosc.io>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-kernel@vger.kernel.org, "Gabriel L. Somlo" <gsomlo@gmail.com>
-Subject: [PATCH v9 1/5] dt-bindings: vendor: add vendor prefix for LiteX
-Message-ID: <20200722122704.1153221-1-mholenko@antmicro.com>
+Subject: [PATCH v9 2/5] dt-bindings: soc: document LiteX SoC Controller
+ bindings
+Message-ID: <20200722122704.1153221-2-mholenko@antmicro.com>
 References: <20200722122704.1153221-0-mholenko@antmicro.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -92,49 +93,104 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Filip Kokosinski <fkokosinski@antmicro.com>
+From: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
 
-Add vendor prefix for LiteX SoC builder.
+Add documentation for LiteX SoC Controller bindings.
 
-Signed-off-by: Filip Kokosinski <fkokosinski@antmicro.com>
+Signed-off-by: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
 Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
 
 Notes:
-    No changes in v9.
+    Changes in v9:
+        - fixed the `reg` node notation in the DT example
 
     No changes in v8.
 
     No changes in v7.
 
-    No changes in v6.
+    Changes in v6:
+        - fixed license header
 
-    No changes in v5.
-
-    No changes in v4.
-
-    Changes in v3:
-    - added Acked-by tag
+    Changes in v5:
+        - added reviewed-by tag
     
-    No changes in v2.
+    Changes in v4:
+        - changes compatible to "litex,soc-controller"
+        - fixed yaml's header
+        - removed unnecessary sections from yaml
+        - fixed indentation in yaml
+    
+    This commit has been introduced in v3 of the patchset.
 
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ .../soc/litex/litex,soc-controller.yaml       | 39 +++++++++++++++++++
+ MAINTAINERS                                   |  6 +++
+ 2 files changed, 45 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index d3891386d671..9aae6c56d7a3 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -571,6 +571,8 @@ patternProperties:
-     description: Linux-specific binding
-   "^linx,.*":
-     description: Linx Technologies
-+  "^litex,.*":
-+    description: LiteX SoC builder
-   "^lltc,.*":
-     description: Linear Technology Corporation
-   "^logicpd,.*":
+diff --git a/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml b/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+new file mode 100644
+index 000000000000..53121c1fbe4d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+@@ -0,0 +1,39 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++# Copyright 2020 Antmicro <www.antmicro.com>
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/soc/litex/litex,soc-controller.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: LiteX SoC Controller driver
++
++description: |
++  This is the SoC Controller driver for the LiteX SoC Builder.
++  It's purpose is to verify LiteX CSR (Control&Status Register) access
++  operations and provide function for other drivers to read/write CSRs
++  and to check if those accessors are ready to use.
++
++maintainers:
++  - Karol Gugala <kgugala@antmicro.com>
++  - Mateusz Holenko <mholenko@antmicro.com>
++
++properties:
++  compatible:
++    const: litex,soc-controller
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++examples:
++  - |
++    soc_ctrl0: soc-controller@f0000000 {
++        compatible = "litex,soc-controller";
++        reg = <0xf0000000 0xC>;
++        status = "okay";
++    };
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7b58ca29cc80..39be98db7418 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9835,6 +9835,12 @@ L:	kunit-dev@googlegroups.com
+ S:	Maintained
+ F:	lib/list-test.c
+ 
++LITEX PLATFORM
++M:	Karol Gugala <kgugala@antmicro.com>
++M:	Mateusz Holenko <mholenko@antmicro.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/*/litex,*.yaml
++
+ LIVE PATCHING
+ M:	Josh Poimboeuf <jpoimboe@redhat.com>
+ M:	Jiri Kosina <jikos@kernel.org>
 -- 
 2.25.1
 
