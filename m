@@ -2,176 +2,130 @@ Return-Path: <SRS0=VfF8=BB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED11C433E5
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 16:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6946C433FB
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 20:11:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 40501206F5
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 16:51:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8090020771
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 20:11:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=g-clemson-edu.20150623.gappssmtp.com header.i=@g-clemson-edu.20150623.gappssmtp.com header.b="vTFVxANE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726649AbgGVQvX (ORCPT
+        id S1732877AbgGVUL1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jul 2020 12:51:23 -0400
-Received: from fieber.vanmierlo.com ([84.243.197.177]:51583 "EHLO
-        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726642AbgGVQvX (ORCPT
+        Wed, 22 Jul 2020 16:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732791AbgGVUL0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jul 2020 12:51:23 -0400
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by kerio9.vanmierlo.com (Kerio Connect 9.2.12 patch 1) with ESMTPA;
-        Wed, 22 Jul 2020 18:50:58 +0200
+        Wed, 22 Jul 2020 16:11:26 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6645BC0619DC
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2020 13:11:26 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id k18so2785368qtm.10
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2020 13:11:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=g-clemson-edu.20150623.gappssmtp.com; s=20150623;
+        h=from:date:to:cc:subject:message-id:user-agent:mime-version;
+        bh=L7bhn4spU+NBDgg5EABDORW/iXaxYAZneHN6frZeQko=;
+        b=vTFVxANEURxYQXJF8ny/wZ4WBfwoke/2SvN7SikLudohjHKX1vebgrsoYlsUE2lub2
+         b+IZdWW1D3w4Xg8z1NruJan1fnT5FOT6qDbcAvK8QXJ46XdBOdYNg4cihBuysOU5ZIs/
+         E4Tk186dDekJhM4xQ3F5wrMt2kvKU8JCZDXZEfxjXH7JxUznFuysOJIbxoazyzEmSW0e
+         MB2/idSv1adD9ihh/hrUvbpJGgzutcOc8tUpuJbTIeryFYj4ai2e7LgTiOOrAwpPUx33
+         eHsEkLICN13p7M6vylBmM/jPfRhwPaLScn/A/J9p1yeQRZnOe2HEcSZNjK7bycCZ7Akm
+         vprA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:user-agent
+         :mime-version;
+        bh=L7bhn4spU+NBDgg5EABDORW/iXaxYAZneHN6frZeQko=;
+        b=LTT635p5j+yeCotEISIVIk/9LeOPeFLv9diE6hTtaFgKulzVW3AZCn9Le55hWZwjmY
+         g2RvA+uiP87mpcr+RYOVCEE+EPYO5ufUk4JL+jgc2Xi1gUvAjHiCHcLQHVenXptO2rmk
+         qUem9puTpHz0aqAoXtoGsl77zuykj2jE+EBBpwMQpx0cj1V9RqJV08Xb32pN915AJbXn
+         37c54UrytrOab0Cmsz1pAvhkvpRApSMErOIepQepDSj5zbtdWew0YBfpEk1BWLrBkbgw
+         KEVRWnc5JOsHawIwxFUn3NMrDr8L8eQQyICcQK1q8KUQWnifmEsIgFZZmUVEg8PkhGPS
+         VJfg==
+X-Gm-Message-State: AOAM532digAaUehl9TpcZRddhl5ZFUVhhQCY+LhkVcCk3Spg+/0PjdeC
+        +OejKrQCyTxAsTJ8g/sxcc3HFDDYs/jv8Orv
+X-Google-Smtp-Source: ABdhPJyMOFiN34ZZcC+UFmsDEJwVjd7/FgSpZoUrV3DfhrPc/vTwM75wFzdvDkj9MGSlfFhbiC2leg==
+X-Received: by 2002:aed:3f2c:: with SMTP id p41mr1126250qtf.12.1595448685615;
+        Wed, 22 Jul 2020 13:11:25 -0700 (PDT)
+Received: from tstest-VirtualBox ([12.18.222.50])
+        by smtp.gmail.com with ESMTPSA id r185sm790487qkb.39.2020.07.22.13.11.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 13:11:24 -0700 (PDT)
+From:   Matthew Howell <mrhowel@g.clemson.edu>
+X-Google-Original-From: Matthew Howell <ts-test@tstest-VirtualBox>
+Date:   Wed, 22 Jul 2020 16:11:24 -0400 (EDT)
+To:     gregkh@linuxfoundation.org
+cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
+        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com
+Subject: [PATCH v4] serial: exar: Fix GPIO configuration for Sealevel cards
+ based on XR17V35X
+Message-ID: <alpine.DEB.2.21.2007221605270.13247@tstest-VirtualBox>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Wed, 22 Jul 2020 18:50:58 +0200
-From:   Maarten Brock <m.brock@vanmierlo.com>
-To:     Michal Simek <michal.simek@xilinx.com>
-Cc:     Helmut Grohne <helmut.grohne@intenta.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        Jan Kiszka <jan.kiszka@web.de>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-serial-owner@vger.kernel.org
-Subject: Re: [PATCH] tty: xilinx_uartps: Really fix id assignment
-In-Reply-To: <c652674b-97c1-c333-0d75-ae40c3c7de49@xilinx.com>
-References: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
- <20200709074849.GA28968@laureti-dev>
- <a3b9df28-8142-fc04-317f-44d65a24f38e@xilinx.com>
- <20200713071123.GA1994@laureti-dev>
- <e7b766ab-8c99-d30c-2352-6d7b09033537@xilinx.com>
- <20200713121019.GA6920@laureti-dev>
- <2db78149ae9ffb205f02ca4919b50d88@vanmierlo.com>
- <c652674b-97c1-c333-0d75-ae40c3c7de49@xilinx.com>
-Message-ID: <775b7fc75f27513f70df63854ddccf58@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-User-Agent: Roundcube Webmail/1.3.3
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2020-07-22 09:18, Michal Simek wrote:
-> On 13. 07. 20 18:08, Maarten Brock wrote:
->> On 2020-07-13 14:10, Helmut Grohne wrote:
->>> Hi Michal,
->>> 
->>> On Mon, Jul 13, 2020 at 01:49:38PM +0200, Michal Simek wrote:
->>>> On 13. 07. 20 9:11, Helmut Grohne wrote:
->>>> > Let me try to enumerate those I know:
->>>> >
->>>> > uart0    | uart1    | console | remark
->>>> > ---------+----------+---------+----------
->>>> > serial0  | serial1  | ttyPS0  | regular case
->>>> > serial0  | serial1  | ttyPS1  | normal assignment, second console
->>>> > serial1  | serial0  | ttyPS0  | -> Jan Kiszka, broken since revert
->>>> > disabled | serial0  | ttyPS0  | use only uart1 as serial0
->>>> > serial0  | disabled | ttyPS0  | regular case with uart1 disabled
->>>> >
->>>> > Out of these, I'm actively using configurations 3 and 4.
->>>> >
->>>> > Which of these scenarios do you test already?
->>>> 
->>>> For above we are missing also others
->>>> serial1 | serial0 | ttyPS1
->>>> disabled| serial1 | ttyPS1
->>> 
->>> Is it actually possible to have ttyPS1, but no ttyPS0? I think I 
->>> tried
->>> doing that earlier and it resulted in there being ttyPS0, but no 
->>> ttyPS1.
->> 
->> What if you also have a 16550 (in the PL) and give it the serial0 
->> alias?
->> Or a UARTlite? The serialN alias is inappropriate to set the number 
->> for
->> ttyPSn. How are you supposed to create all of ttyPS0, ttyS0 and ttyUL0
->> using a single serial0 alias?
-> 
-> yes this combination is not possible and I don't think this is xilinx
-> specific issue.
-> I expect the same problem you have with ttyAMA, ttyS and others.
 
-Well, it is very easy to add a 16550 in the programmable logic of a 
-Zynq.
-Worse, it's impossible to only add uartps devices as the IP for it is
-not available to the public.
-It is less easy to add a 16550 to a CPU with ttyAMA but no external bus.
-But if you add e.g. an I2C/SPI based SC16IS7xx which generates ttySCx 
-you
-might have the same problems.
+From: Matthew Howell <matthew.howell@sealevel.com>
 
-But the problem is worse. What happens if you give the serial0 alias to
-a xilinx_uartps and the 16550 driver has already taken ttyS0? (Or vice
-versa?) Will the uartps still use ttyPS0 or will it ignore the serial0
-alias? I predict the latter.
+Sealevel XR17V35X based devices are inoperable on kernel versions
+4.11 and above due to a change in the GPIO preconfiguration introduced in
+commit
+7dea8165f1d. This patch fixes this by preconfiguring the GPIO on Sealevel
+cards to the value (0x00) used prior to commit 7dea8165f1d
 
-I see only two ways out.
-* Let uartps generate ttySx device names, or
-* Do not use serialN alias to set the number.
+With GPIOs preconfigured as per commit 7dea8165f1d all ports on
+Sealevel XR17V35X based devices become stuck in high impedance
+mode, regardless of dip-switch or software configuration. This
+causes the device to become effectively unusable. This patch (in
+various forms) has been distributed to our customers and no issues
+related to it have been reported.
 
-It was already stated that it is impossible to have ttyPS1 and no 
-ttyPS0.
-That would mean we cannot give serial0 to ttyS0 and serial1 to ttyPS1.
-This makes me wonder if the opposite is valid: to give serial0 to ttyPS0
-and serial1 to ttyS1. Probably not either.
+Fixes: 7dea8165f1d ("serial: exar: Preconfigure xr17v35x MPIOs as output")
+Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
+---
 
-There really needs to be a way to create deterministic names for the
-devices!
+Revised based on comments received on previous submission
+https://www.spinics.net/lists/linux-serial/msg39482.html
 
->>>> serial1 | disables | ttyPS0
->>> 
->>> I'm not sure what this is supposed to mean. When there is no serial0
->>> alias, I'd expect ttyPS0 to be missing. However as indicated above 
->>> that
->>> is not what happens in practice. So either of these two 
->>> configurations
->>> seems invalid to me.
->>> 
->>>> All of these above are just not setting any console= on bootargs.
->>> 
->>> We usually set the console= assignment on bootargs.
->>> 
->>>> It means mix of these combinations is tested regularly but not all 
->>>> of
->>>> them. Do you see any other combination which is not supported?
->>> 
->>> I'm not aware of further relevant combinations.
->>> 
->>> Can we maybe trim down the matrix somehow? In my context, the need 
->>> for
->>> swapping the serial aliases arises from a limitation in u-boot-xlnx 
->>> and
->>> the desire to use one dtb for both linux and u-boot. It requires that
->>> the serial0 alias is the console. Are there other reasons to swap 
->>> them?
->>> If not, maybe fixing u-boot would be an option?
->>> 
->>> Helmut
->> 
->> I think that it would be better if u-boot used a "console" alias.
-> 
-> console is defined in bootargs which is OS specific feature. U-Boot has
-> no idea what ttyPS, ttyS, etc means. That's why I don't think there is
-> something wrong in this in u-boot. But please elaborate more on this
-> because I am not aware about any issue on u-boot configuration.
-> 
-> Thanks,
-> Michal
+It had previously passed checkpatch.pl in "patch" mode (--patch)
+without errors. However, when running it in "file" mode (-f) it finds
+stling issues that did not show up in "patch" mode. These styling
+issues are now resolved according to checkpatch.pl. It appears my
+editor (and email client) were automatically converting tabs
+to spaces.
 
-What I meant to say is that apparently U-boot requires serial0 to point 
-to
-the user-interface. This limits your options when assigning aliases. If
-U-boot would use a different entry (e.g. "console" or better yet
-"earlycon") things might be easier. serial0 should not be special IMHO.
+Let me know if the tabs are still being converted to spaces somehow
+or if anything else looks wrong.
 
-But let's not diverge too much here.
+--- linux/drivers/tty/serial/8250/8250_exar.c.orig	2020-07-09 11:05:03.920060577 -0400
++++ linux/drivers/tty/serial/8250/8250_exar.c	2020-07-22 14:08:27.494512202 -0400
+@@ -326,7 +326,17 @@ static void setup_gpio(struct pci_dev *p
+ 	 * devices will export them as GPIOs, so we pre-configure them safely
+ 	 * as inputs.
+ 	 */
+-	u8 dir = pcidev->vendor == PCI_VENDOR_ID_EXAR ? 0xff : 0x00;
++
++	u8 dir = 0x00;
++
++	if  ((pcidev->vendor == PCI_VENDOR_ID_EXAR) &&
++		(pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL)) {
++		// Configure GPIO as inputs for Commtech adapters
++		dir = 0xff;
++	} else {
++		// Configure GPIO as outputs for SeaLevel adapters
++		dir = 0x00;
++	}
 
-Maarten
-
+ 	writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
+ 	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
