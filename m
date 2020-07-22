@@ -1,133 +1,100 @@
-Return-Path: <SRS0=EuFA=BA=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=VfF8=BB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A051C433E0
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 20:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E15C433E1
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 02:03:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1FA3120717
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jul 2020 20:08:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=g-clemson-edu.20150623.gappssmtp.com header.i=@g-clemson-edu.20150623.gappssmtp.com header.b="F76bKfIZ"
+	by mail.kernel.org (Postfix) with ESMTP id F12AB20792
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 02:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgGUUIW (ORCPT
+        id S1731621AbgGVCD1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jul 2020 16:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbgGUUIW (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jul 2020 16:08:22 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4567FC061794
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 13:08:22 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id di5so3299qvb.11
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2020 13:08:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=g-clemson-edu.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding:content-language;
-        bh=bE+aHMPt+2ywutqsSxCUEv0VI08jDvw1IRwhdxbiXGU=;
-        b=F76bKfIZPGroMbEJQvLudH3bxeu3JW7J559unLYyvbPhuqIwOqg/Uhy/nvNsIZf+XS
-         40KwZRqDAWa1tLm3AztUZHPjrut7yjT0DCd9pebLQF72lwrcnLsB3vOo14N4mfptosQs
-         6IgJhNWP36hQMUzWX5LgZsANxJnPEEoxePT8r9UhwdhbRDsQqsFEbmN/mAndOEvOUF9y
-         rhvFqOaUCrapSCuU3UQxSwBu5PHi3sB6lozeACBSq3yJ4x82TeymxFk4cFCvKawfIZ2D
-         bop569NeNf8DGnx5UZfKOE3yFoeb+/jhk8+qVa5wFjzNpvT9sexGpTaLnmb6uNIG/N+2
-         0ARg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding:content-language;
-        bh=bE+aHMPt+2ywutqsSxCUEv0VI08jDvw1IRwhdxbiXGU=;
-        b=Oih7PVSbHumDYHFXwFaTef8nk0f19bkI7z9wrblqatgJXOcWRyC6CNvAilbE3kMvT9
-         LAA284KJoT6DP+Iqkj6XSFa1KFFymHIAz+bZ9uefAcG23RcMT+wKdj4xWFXXrhmNuMiG
-         jEZiGdV+jr83xevWb9JnWnl+s4jhq2AW340pazVSFZLYDRcduJ/HtizJT1/C5e0dz8+K
-         If1RIobVpUb/cHbkGxmrIo3fN+tor96+x2FYuszMd1APRhrmRlTnhux3wxBWJs/vROm7
-         xE648aJzgNKRgnxZ5Gw9dGgRwRMVpROIkmY9wkhNBTxOGa8fILxgtXH7BWhde+jIr9RB
-         vtDA==
-X-Gm-Message-State: AOAM531aY/ltv6twNQecL9wmqdbyS+G4weGUfVA97YhIMiLryfFCvU9u
-        BNGy0RQe3Zk9Ieyio/8m/WBGeQ==
-X-Google-Smtp-Source: ABdhPJw1HHaL3xSwkR9E7dSFg1CO/v8KQ/fZ68jRE0II5IqqDNX2U4CXZ0grnEftsRTTCkvc7Muwag==
-X-Received: by 2002:ad4:5912:: with SMTP id ez18mr26850042qvb.24.1595362101408;
-        Tue, 21 Jul 2020 13:08:21 -0700 (PDT)
-Received: from [10.0.2.15] ([12.18.222.50])
-        by smtp.gmail.com with ESMTPSA id s128sm3210106qkd.108.2020.07.21.13.08.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jul 2020 13:08:20 -0700 (PDT)
-From:   Matthew Howell <mrhowel@g.clemson.edu>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
-        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com
-Subject: [PATCH v3] serial: exar: Fix GPIO configuration for Sealevel cards
- based on XR17V35X
-Message-ID: <9318fef6-f2d4-dc77-2a25-6033d63aab9b@g.clemson.edu>
-Date:   Tue, 21 Jul 2020 16:08:17 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        Tue, 21 Jul 2020 22:03:27 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:38092 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731614AbgGVCD1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Jul 2020 22:03:27 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 9E13415924246FF15238;
+        Wed, 22 Jul 2020 09:56:45 +0800 (CST)
+Received: from [10.174.178.63] (10.174.178.63) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 22 Jul 2020 09:56:39 +0800
+Subject: Re: [PATCH] serial: 8250: fix null-ptr-deref in serial8250_start_tx()
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        <gregkh@linuxfoundation.org>
+CC:     <jslaby@suse.com>, LKML <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>
+References: <20200721143852.4058352-1-yangyingliang@huawei.com>
+From:   "liwei (GF)" <liwei391@huawei.com>
+Message-ID: <c56e0ecc-275c-2cd6-4f9b-8ae37656ab5b@huawei.com>
+Date:   Wed, 22 Jul 2020 09:56:38 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+In-Reply-To: <20200721143852.4058352-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.63]
+X-CFilter-Loop: Reflected
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Yingliang,
 
-From: Matthew Howell <matthew.howell@sealevel.com>
+On 2020/7/21 22:38, Yang Yingliang wrote:
+(SNIP)
+> 
+> SERIAL_PORT_DFNS is not defined on each arch, if it's not defined,
+> serial8250_set_defaults() won't be called in serial8250_isa_init_ports(),
+> so the p->serial_in pointer won't be initialized, and it leads a null-ptr-deref.
+> Fix this problem by calling serial8250_set_defaults() after init uart port.
+> 
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index fc118f649887..cae61d1ebec5 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -524,6 +524,7 @@ static void __init serial8250_isa_init_ports(void)
+>  		 */
+>  		up->mcr_mask = ~ALPHA_KLUDGE_MCR;
+>  		up->mcr_force = ALPHA_KLUDGE_MCR;
+> +		serial8250_set_defaults(up);
 
-Sealevel XR17V35X based devices are inoperable on kernel versions
-4.11 and above due to a change in the GPIO preconfiguration introduced in commit
-7dea8165f1d. This patch fixes this by preconfiguring the GPIO on Sealevel
-cards to the value (0x00) used prior to commit 7dea8165f1d
+That is really a good catch, but this modification looks not good to me.
 
-With GPIOs preconfigured as per commit 7dea8165f1d all ports on
-Sealevel XR17V35X based devices become stuck in high impedance
-mode, regardless of dip-switch or software configuration. This
-causes the device to become effectively unusable. This patch (in
-various forms) has been distributed to our customers and no issues
-related to it have been reported.
+First, serial8250_set_defaults()'s parameter 'up' updated in the loop below is used to
+lead to different branch in this function. So that the logic is broken.
 
-Fixes: 7dea8165f1d ("serial: exar: Preconfigure xr17v35x MPIOs as output")
-Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
+Second, up->port.iobase and up->port.iotype are both initialized to 0, so the 'serial_in'
+and 'serial_out' will be assigned to the ops for IO space with port 0 here, i don't think
+that is correct.
 
-Patch resubmitted as per comments received on
-https://www.spinics.net/lists/linux-serial/msg39371.html
+>  	}
+>  
+>  	/* chain base port ops to support Remote Supervisor Adapter */
+> @@ -547,7 +548,6 @@ static void __init serial8250_isa_init_ports(void)
+>  		port->membase  = old_serial_port[i].iomem_base;
+>  		port->iotype   = old_serial_port[i].io_type;
+>  		port->regshift = old_serial_port[i].iomem_reg_shift;
+> -		serial8250_set_defaults(up);
+>  
+>  		port->irqflags |= irqflag;
+>  		if (serial8250_isa_config != NULL)
+> 
 
-Moved problem description and justification above the signed-off-by
-line.
 
-checkpatch.pl reports no styling issues with the diff below.
-
-Let me know if I need to make any other changes.
-
---- linux/drivers/tty/serial/8250/8250_exar.c.orig    2020-07-09 11:05:03.920060577 -0400
-+++ linux/drivers/tty/serial/8250/8250_exar.c    2020-07-13 11:54:44.386718167 -0400
-@@ -326,7 +326,20 @@ static void setup_gpio(struct pci_dev *p
-      * devices will export them as GPIOs, so we pre-configure them safely
-      * as inputs.
-      */
--    u8 dir = pcidev->vendor == PCI_VENDOR_ID_EXAR ? 0xff : 0x00;
-+
-+    u8 dir = 0x00;
-+
-+    if  ((pcidev->vendor == PCI_VENDOR_ID_EXAR) &&
-+        (pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL))
-+    {
-+       // Configure GPIO as inputs for Commtech adapters
-+       dir = 0xff;
-+    }
-+    else
-+    {
-+       // Configure GPIO as outputs for SeaLevel adapters
-+       dir = 0x00;
-+    }
-
-     writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
-     writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
-
+Thanks,
+Wei
