@@ -2,142 +2,175 @@ Return-Path: <SRS0=VfF8=BB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A1A2C433E2
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 08:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEB4C433EA
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 10:27:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 14516207DD
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 08:34:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595406875;
-	bh=bBhVauzcDv+gdi7HS/M9GiiTKSQl50htelXyJHZUl4E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=BZqGpulK2/ccLTvV1WHwzDpj5cCsev77iSgEkog+w3wBZ5yWBPjE8wGWrmUs9oS5b
-	 dcdg9Ea+VIu6cJbkGnq22hPnxOECzu8p/Gcj+sRxgP4kifUE5wgAI2HQYJRVx94J89
-	 eNfb/5obyf7fHsiuc9pBpu8KVgF9mS93+fwtYbRk=
+	by mail.kernel.org (Postfix) with ESMTP id C1DB820729
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 10:27:31 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="ogUc7Sea"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726632AbgGVIed (ORCPT
+        id S1731898AbgGVK1b (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jul 2020 04:34:33 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:46944 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726573AbgGVIed (ORCPT
+        Wed, 22 Jul 2020 06:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730296AbgGVK1a (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jul 2020 04:34:33 -0400
-Received: by mail-lj1-f194.google.com with SMTP id h19so1543930ljg.13;
-        Wed, 22 Jul 2020 01:34:31 -0700 (PDT)
+        Wed, 22 Jul 2020 06:27:30 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BA8C0619DC
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2020 03:27:30 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id h19so1876650ljg.13
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2020 03:27:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=antmicro.com; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=VPm22LOYeZ54yE0JFsNtMPSHO2Ay7Su9W8bmkwt26Hs=;
+        b=ogUc7SeaE1rAZkufGirXFyyBtKme0j9yLEpwlBGAchRT1H/Y21p0SuaaFUFFdQLSzU
+         dY3GtumCHpZi0bombwJiAXtR7gEgE7EjEnqUm6YuYz5qME9Cqrn+2jpF4pUeO5LveylR
+         Ax0X8Crr2SUgogVopy4PBMHci69Ot7JQhUTFU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=a320Kl5LlLOAYjeoIoCSr52bpOgO1xg6oWW0y+XyzMw=;
-        b=RW1QO2AgljyDHzHWSrSy+PzOsrEwS//NpMR/UWp20giKm3iN/75GmdEpAtwGJg0GV2
-         uHoabgJtLA9ajOttFxUoPv9BtSAoHDJE/RdjEPvT29Qj23c1/9Q63cbSMabCg620zvM6
-         rOtq+mp7+o5pqVX9AehRGhxtuF8cEVZp5qSLy/yWilBTLxrhDQe9W8Xi6ACUOx2olD5k
-         kVicebcX1KEuXl9uWsjHSq7PWOReXlbfmgufXQk4C6c8PZtGFq0zVlUH6xgWajZLrjyZ
-         5pOoUV6UDPTzXUqvoxoBuynPaZv57p6CdxNqiwEeCSI9fHLax87pL1vlLWjcsUaKSgLp
-         v8zw==
-X-Gm-Message-State: AOAM531BK8oQ2k7QGi8tzYUK3w2O88X+Lz7tJMBc5BDlwE1jGnGYf4rw
-        TV8iYuV3hunhpqzh01hcRbRSBwZY
-X-Google-Smtp-Source: ABdhPJyZVBEFI0bvjliXucRioA69zALGxm9a2TuCL16DZpKu64loQwYwFw8ndfYgVc8LlaM47TwOeA==
-X-Received: by 2002:a2e:9d86:: with SMTP id c6mr14184500ljj.418.1595406870872;
-        Wed, 22 Jul 2020 01:34:30 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id c27sm7530646lfm.56.2020.07.22.01.34.29
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=VPm22LOYeZ54yE0JFsNtMPSHO2Ay7Su9W8bmkwt26Hs=;
+        b=ew9QfCdSnbpCY5TvcNsuh7Ta7XLxN1h+SeVqHrSNTSfSYz495BoADFjBHjrBSmfBAf
+         5f6S901srfB4lTo+leGIgEyUX1joIlA4i3s5NQmgBhUsZJDpmuWcpv87mdl089+PFvzB
+         fqRKWteIuoayo+SdhfMOOZVe/XwqGkhna21LDO0+mBWS9/LDorpteg7bZXVKdiai0bSx
+         yhvDh/j4tOM8WOuF3SNkU39LtlZpIAVDf4/nG1Py1d5+fEUVBxiUc8aNTtGrPAuju6++
+         WYg02YW7q9juDKsKCbjhCGFUruhCgjRv8sneJ0neQ0O+Pkn9NsL16Q4nNya/Hjz16O4B
+         MiHg==
+X-Gm-Message-State: AOAM532DzMoTXtH9qXDYcleQ9e+imsAnS3qiMUbx7y1svI9hBgQoUsBi
+        3eF/HpmkiTg4uZgHQT7Ol12UfA==
+X-Google-Smtp-Source: ABdhPJztz3YC0z08uqZCfX8O3PtxgNuSMnR2KAngE5gKIgL0V4oOMc1BqEep74wkuMP7v5jQiyifFg==
+X-Received: by 2002:a2e:7a07:: with SMTP id v7mr15018202ljc.159.1595413648841;
+        Wed, 22 Jul 2020 03:27:28 -0700 (PDT)
+Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
+        by smtp.gmail.com with ESMTPSA id f26sm6400345ljj.4.2020.07.22.03.27.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 01:34:29 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1jyACn-0005S2-4r; Wed, 22 Jul 2020 10:34:25 +0200
-Date:   Wed, 22 Jul 2020 10:34:25 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Johan Hovold <johan@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        linux-serial@vger.kernel.org,
+        Wed, 22 Jul 2020 03:27:28 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 12:27:21 +0200
+From:   Mateusz Holenko <mholenko@antmicro.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        kernel@pengutronix.de, Jiri Slaby <jslaby@suse.com>,
-        linux-leds@vger.kernel.org, Dan Murphy <dmurphy@ti.com>
-Subject: Re: [PATCH v7 3/3] leds: trigger: implement a tty trigger
-Message-ID: <20200722083425.GF3634@localhost>
-References: <20200707165958.16522-1-u.kleine-koenig@pengutronix.de>
- <20200707165958.16522-4-u.kleine-koenig@pengutronix.de>
- <20200714071355.GY3453@localhost>
- <20200721194815.mmkqccrkbgrly4xz@pengutronix.de>
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org, "Gabriel L. Somlo" <gsomlo@gmail.com>
+Subject: [PATCH v9 0/5] LiteX SoC controller and LiteUART serial driver
+Message-ID: <20200722122704.1153221-0-mholenko@antmicro.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="CblX+4bnyfN0pR09"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200721194815.mmkqccrkbgrly4xz@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This patchset introduces support for LiteX SoC Controller
+and LiteUART - serial device from LiteX SoC builder
+(https://github.com/enjoy-digital/litex).
 
---CblX+4bnyfN0pR09
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In the following patchset I will add
+a new mor1kx-based (OpenRISC) platform that
+uses this device.
 
-On Tue, Jul 21, 2020 at 09:48:15PM +0200, Uwe Kleine-K=F6nig wrote:
-> Hello Johan,
->=20
-> On Tue, Jul 14, 2020 at 09:13:55AM +0200, Johan Hovold wrote:
-> > On Tue, Jul 07, 2020 at 06:59:58PM +0200, Uwe Kleine-K=F6nig wrote:
-> > > +	while (firstrun ||
-> > > +	       icount.rx !=3D trigger_data->rx ||
-> > > +	       icount.tx !=3D trigger_data->tx) {
-> > > +
-> > > +		led_set_brightness(trigger_data->led_cdev, LED_ON);
-> > > +
-> > > +		msleep(100);
-> > > +
-> > > +		led_set_brightness(trigger_data->led_cdev, LED_OFF);
-> > > +
-> > > +		trigger_data->rx =3D icount.rx;
-> > > +		trigger_data->tx =3D icount.tx;
-> > > +		firstrun =3D false;
-> > > +
-> > > +		ret =3D tty_get_icount(trigger_data->tty, &icount);
-> > > +		if (ret)
-> > > +			return;
-> > > +	}
-> >=20
-> > Haven't looked at the latest proposal in detail, but this looks broken
-> > as you can potentially loop indefinitely in a worker thread, and with no
-> > way to stop the trigger (delayed work).
->=20
-> I don't think that potentially looping indefinitely is a problem, but
-> indeed it should drop the lock during each iteration. Will think about
-> how to adapt.
+Later I plan to extend this platform by
+adding support for more devices from LiteX suite.
 
-You musn't queue work that can run for long on the global shared
-workqueue as it affects flushing:
+Changes in v9:
+    - fixed the `reg` node notation in the DT example
+    - added exporting of the `litex_set_reg`/`litex_get_reg` symbols
 
-	* system_wq is the one used by schedule[_delayed]_work[_on]().
-	* Multi-CPU multi-threaded.  There are users which expect relatively
-	* short queue flush time.  Don't queue works which can run for too
-	* long.
+Changes in v8:
+    - fixed help messages in LiteUART's KConfig
+    - removed dependency between LiteUART and LiteX SoC drivers
+    - removed `litex_check_accessors()` helper function
+    - added crashing (BUG) on the failed LiteX CSR access test
 
-Work that potentially run indefinitely is an absolute no-no. :)
+Changes in v7:
+    - added missing include directive in UART's driver
 
-Johan
+Changes in v6:
+    - changed accessors in SoC Controller's driver
+    - reworked UART driver
 
---CblX+4bnyfN0pR09
-Content-Type: application/pgp-signature; name="signature.asc"
+Changes in v5:
+    - added Reviewed-by tag
+    - removed custom accessors from SoC Controller's driver
+    - fixed error checking in SoC Controller's driver
 
------BEGIN PGP SIGNATURE-----
+Changes in v4:
+    - fixed copyright headers
+    - fixed SoC Controller's yaml 
+    - simplified SoC Controller's driver
 
-iHUEABYIAB0WIQQHbPq+cpGvN/peuzMLxc3C7H1lCAUCXxf6DgAKCRALxc3C7H1l
-CAKdAPwMLuzL36R91UerEvnH4zUtKfNS5jRfm18tpgXYHJMHygEArxfQACvPs6nx
-njUDzVBzoW1/YxY47dCsqRZ4zne/JAQ=
-=E/KR
------END PGP SIGNATURE-----
+Changes in v3:
+    - added Acked-by and Reviewed-by tags
+    - introduced LiteX SoC Controller driver
+    - removed endianness detection (handled now by LiteX SoC Controller driver)
+    - modified litex.h header
+    - DTS aliases for LiteUART made optional
+    - renamed SERIAL_LITEUART_NR_PORTS to SERIAL_LITEUART_MAX_PORTS
+    - changed PORT_LITEUART from 122 to 123
 
---CblX+4bnyfN0pR09--
+Changes in v2:
+    - binding description rewritten to a yaml schema file
+    - added litex.h header with common register access functions
+
+Filip Kokosinski (3):
+  dt-bindings: vendor: add vendor prefix for LiteX
+  dt-bindings: serial: document LiteUART bindings
+  drivers/tty/serial: add LiteUART driver
+
+Pawel Czarnecki (2):
+  dt-bindings: soc: document LiteX SoC Controller bindings
+  drivers/soc/litex: add LiteX SoC Controller driver
+
+ .../bindings/serial/litex,liteuart.yaml       |  38 ++
+ .../soc/litex/litex,soc-controller.yaml       |  39 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   9 +
+ drivers/soc/Kconfig                           |   1 +
+ drivers/soc/Makefile                          |   1 +
+ drivers/soc/litex/Kconfig                     |  15 +
+ drivers/soc/litex/Makefile                    |   3 +
+ drivers/soc/litex/litex_soc_ctrl.c            | 194 +++++++++
+ drivers/tty/serial/Kconfig                    |  32 ++
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/liteuart.c                 | 402 ++++++++++++++++++
+ include/linux/litex.h                         |  24 ++
+ 13 files changed, 761 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+ create mode 100644 drivers/soc/litex/Kconfig
+ create mode 100644 drivers/soc/litex/Makefile
+ create mode 100644 drivers/soc/litex/litex_soc_ctrl.c
+ create mode 100644 drivers/tty/serial/liteuart.c
+ create mode 100644 include/linux/litex.h
+
+-- 
+2.25.1
+
