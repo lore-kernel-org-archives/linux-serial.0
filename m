@@ -7,88 +7,91 @@ X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2015C433E1
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 07:14:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EBBC433E8
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 07:18:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 66261206F5
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 07:14:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 167A0207BB
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Jul 2020 07:18:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="B/3CtdwL"
+	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="Ym+5dVn9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727882AbgGVHOy (ORCPT
+        id S1728734AbgGVHSm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jul 2020 03:14:54 -0400
-Received: from mail-dm6nam12on2048.outbound.protection.outlook.com ([40.107.243.48]:60384
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        Wed, 22 Jul 2020 03:18:42 -0400
+Received: from mail-bn8nam11on2060.outbound.protection.outlook.com ([40.107.236.60]:43713
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727096AbgGVHOx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jul 2020 03:14:53 -0400
+        id S1728338AbgGVHSm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 22 Jul 2020 03:18:42 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kw8MoTpkuVmfvPfYyLSHcVvm4qcwtz7sfWzQB+x0yW0cBt79oHuW0sDpfVCFRw40YLU8r3I3NlXZGY9yZKc9SN8TFpTvUYym/M7dd4e3kEjfiWZmvMuGMARXMM9Pokxl/Q6MdXQkSQmUsm0cvdlTgaAu3pkTHOnLKuc8USNL1Yj/BDAYEg0QHFlivjAJjn7lM+f3yQJG4GSveNw5M7RAT0jdEPbLoa3NtKi2R1AaVXgWPsvzxoqyTl81otTbe/D8hqTC/82pWw5ha7gilmizS5UmqlYpv5URcPcTzy7iCrKFgRjqo57xg03CSh4GME5EcuNJRqiyGEtjJZNi0WS6Vg==
+ b=B2Jup5SeEUjflR5/yFvlKfHziEPvj68SBrgCOwZItZGv9cDmeM+1whd+YVFEU0UE5H5Q4OdZ5FGSTrUWbEKj5gMiRDV8XZxWWPbi2eubcfQ7glunEzhGPKs/zyzTrNDTofWTp2QtJPLgYB7acoGCyGTgwx9MYTKz2fLvYMn+yeMPQ4EChB8T6zVbDo8KZXCskR9M4a6uJA0qEYl6tr9/13eJvy8mLqTc1QX6zyfER2tHPkdIsmrHbEvaI6hQ3IMNLj8jBCcrjyLO08TTeS6qHFkGutP/vDAWHMvTGreRX967TxZuqHNUyo1d4JKf+HQCmTgmJARLyn/pfHycn8RRog==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j3ASc5cMCxio41ABcHJVFJN0RscV/oFZc/sUQzoGW8Q=;
- b=LdW8AdiAsOdx+484mN7yBMlXUNKpgOzj222mk3an4ZABkqvIrNzJiGhd1eF9YWD3ImAXZQN2IZ0yg80207h65X4wc2jsh4GHXp+RxWAOYByaf2mPqJuC/hKVzs7znKrIyr5Q9A8hX2iMcExFwo4J3TV1E7PVbuCeW2caMCSxEoRA0IzFFY5ONAGgJoC25bogq2+wMgZJdDIrMeZ5IMey10k8QnFkWc8v2ZYpfCpUQh1Tx19Aa2eWQ+/1MkXs+CBpuAi6Z6DnARRra+HMnt2m0xurV2RutAR2D5KZMXjktWGeNGUzrKp//F+Lj9YdqCFOtdYSvzrHjPqIaOpCITG64w==
+ bh=m9ib/z0N6Z3PIK6fsHGLX+OcD5O/e1gONd3C+xn3i34=;
+ b=QA/GZW3+s7la/YgfFSxOEIXopbZxE9Bh/sIJN2mnvDGQBCHm5vL8R7Y57rWQ+gZ1vi9AE8DyTEtipqRdZDQLUvltV9YP9gD7AssYoOIlZAGdYy8/QLnQR9DN5MebvC7kvFiych126/SwMMvPSnaaieUUhFlMNHgDLzYM60DyFkAgfKtLyy2v2m3CHfA/doaE20jc/xGahaTb1NuLcNZpCFDZOZu0yVOlrnZlzCG1HVzrxAO1PeMoJdziZIRKQtpI9QDab44z+YR8D+VxalfYu5f+V7NP6BlvU1lNjxJ9N38mmSi0j0wnlDZYS1S30K+9isi7Of7jTklHJVY/PuJaoA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.60.83) smtp.rcpttodomain=intenta.de smtp.mailfrom=xilinx.com;
+ 149.199.60.83) smtp.rcpttodomain=vanmierlo.com smtp.mailfrom=xilinx.com;
  dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
  not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j3ASc5cMCxio41ABcHJVFJN0RscV/oFZc/sUQzoGW8Q=;
- b=B/3CtdwLy3CAsEXah4KbZiVCIR/F79tcM5/s3ls1V4e3WahCaYcagIQQWktBHfF7/fKF+JHug+t8xOXPwTRoHAsvoKOLuiYWLCOPHSB6/dSoV60EwjAnAKwN8QCP2Ox4Y3Sf5P6cSLx8Z6tiX+I31Iup6NtqZCnMyiHmH5tgSak=
-Received: from MN2PR11CA0026.namprd11.prod.outlook.com (2603:10b6:208:23b::31)
- by BY5PR02MB6036.namprd02.prod.outlook.com (2603:10b6:a03:1b6::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20; Wed, 22 Jul
- 2020 07:14:48 +0000
-Received: from BL2NAM02FT054.eop-nam02.prod.protection.outlook.com
- (2603:10b6:208:23b:cafe::f7) by MN2PR11CA0026.outlook.office365.com
- (2603:10b6:208:23b::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.19 via Frontend
- Transport; Wed, 22 Jul 2020 07:14:47 +0000
+ bh=m9ib/z0N6Z3PIK6fsHGLX+OcD5O/e1gONd3C+xn3i34=;
+ b=Ym+5dVn9uFdpRWJbxe+HZ75L0aCDCYP3a/X8x3yNqZfn2qBAsErrKd52XBWIKvjrSOqa8Pl+zq1MhMEdq1l7ATkVb8pLuK2ctXa6fryaLm933IpI4EmsmdLYNW8r1GcPzwZ2/IiyyZIdxSjbRP+BRcq9/P3JUWNrODBrFddGT1s=
+Received: from SN4PR0801CA0024.namprd08.prod.outlook.com
+ (2603:10b6:803:29::34) by BN7PR02MB5284.namprd02.prod.outlook.com
+ (2603:10b6:408:32::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.25; Wed, 22 Jul
+ 2020 07:18:38 +0000
+Received: from SN1NAM02FT047.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:29:cafe::5a) by SN4PR0801CA0024.outlook.office365.com
+ (2603:10b6:803:29::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20 via Frontend
+ Transport; Wed, 22 Jul 2020 07:18:38 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
- smtp.mailfrom=xilinx.com; intenta.de; dkim=none (message not signed)
- header.d=none;intenta.de; dmarc=bestguesspass action=none
+ smtp.mailfrom=xilinx.com; vanmierlo.com; dkim=none (message not signed)
+ header.d=none;vanmierlo.com; dmarc=bestguesspass action=none
  header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.60.83 as permitted sender) receiver=protection.outlook.com;
  client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
 Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
- BL2NAM02FT054.mail.protection.outlook.com (10.152.77.107) with Microsoft SMTP
- Server id 15.20.3216.10 via Frontend Transport; Wed, 22 Jul 2020 07:14:46
+ SN1NAM02FT047.mail.protection.outlook.com (10.152.72.201) with Microsoft SMTP
+ Server id 15.20.3216.10 via Frontend Transport; Wed, 22 Jul 2020 07:18:37
  +0000
-Received: from [149.199.38.66] (port=41797 helo=smtp.xilinx.com)
+Received: from [149.199.38.66] (port=47579 helo=smtp.xilinx.com)
         by xsj-pvapsmtpgw01 with esmtp (Exim 4.90)
         (envelope-from <michal.simek@xilinx.com>)
-        id 1jy8vu-0002Oc-40; Wed, 22 Jul 2020 00:12:54 -0700
+        id 1jy8zd-0002SX-5Y; Wed, 22 Jul 2020 00:16:45 -0700
 Received: from [127.0.0.1] (helo=localhost)
         by xsj-pvapsmtp01 with smtp (Exim 4.63)
         (envelope-from <michal.simek@xilinx.com>)
-        id 1jy8xi-0003Cq-8x; Wed, 22 Jul 2020 00:14:46 -0700
-Received: from xsj-pvapsmtp01 (smtp-fallback.xilinx.com [149.199.38.66] (may be forged))
-        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 06M7EhZ4019969;
-        Wed, 22 Jul 2020 00:14:44 -0700
+        id 1jy91R-0004V2-Ax; Wed, 22 Jul 2020 00:18:37 -0700
+Received: from xsj-pvapsmtp01 (mailman.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 06M7IY11017762;
+        Wed, 22 Jul 2020 00:18:34 -0700
 Received: from [172.30.17.109]
         by xsj-pvapsmtp01 with esmtp (Exim 4.63)
         (envelope-from <michals@xilinx.com>)
-        id 1jy8xf-0003C9-Cj; Wed, 22 Jul 2020 00:14:43 -0700
+        id 1jy91N-0004Tc-RZ; Wed, 22 Jul 2020 00:18:34 -0700
 Subject: Re: [PATCH] tty: xilinx_uartps: Really fix id assignment
-To:     Helmut Grohne <helmut.grohne@intenta.de>,
-        Michal Simek <michal.simek@xilinx.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Maarten Brock <m.brock@vanmierlo.com>,
+        Helmut Grohne <helmut.grohne@intenta.de>
+Cc:     Michal Simek <michal.simek@xilinx.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
         Jan Kiszka <jan.kiszka@web.de>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
+        linux-arm-kernel@lists.infradead.org,
+        linux-serial-owner@vger.kernel.org
 References: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
  <20200709074849.GA28968@laureti-dev>
  <a3b9df28-8142-fc04-317f-44d65a24f38e@xilinx.com>
  <20200713071123.GA1994@laureti-dev>
  <e7b766ab-8c99-d30c-2352-6d7b09033537@xilinx.com>
  <20200713121019.GA6920@laureti-dev>
+ <2db78149ae9ffb205f02ca4919b50d88@vanmierlo.com>
 From:   Michal Simek <michal.simek@xilinx.com>
 Autocrypt: addr=michals@xilinx.com; keydata=
  xsFNBFFuvDEBEAC9Amu3nk79+J+4xBOuM5XmDmljuukOc6mKB5bBYOa4SrWJZTjeGRf52VMc
@@ -152,40 +155,40 @@ Autocrypt: addr=michals@xilinx.com; keydata=
  oa0OZXydlVP7wrnJdi3m8DnljxyInPxbxdKGN5XnMq/r9Y70uRVyeqwp97sKLXd9GsxuaSg7
  QJKUaltvN/i7ng1UOT/xsKeVdfXuqDIIElZ+dyEVTweDM011Zv0NN3OWFz6oD+GzyBetuBwD
  0Z1MQlmNcq2bhOMzTxuXX2NDzUZs4aqEyZQ=
-Message-ID: <7fea9efe-f439-33a3-966f-4215681ec4c8@xilinx.com>
-Date:   Wed, 22 Jul 2020 09:14:40 +0200
+Message-ID: <c652674b-97c1-c333-0d75-ae40c3c7de49@xilinx.com>
+Date:   Wed, 22 Jul 2020 09:18:31 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200713121019.GA6920@laureti-dev>
+In-Reply-To: <2db78149ae9ffb205f02ca4919b50d88@vanmierlo.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-RCIS-Action: ALLOW
 X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
 X-TM-AS-User-Approved-Sender: Yes;Yes
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapsmtpgw01;PTR:unknown-60-83.xilinx.com;CAT:NONE;SFTY:;SFS:(136003)(396003)(39860400002)(376002)(346002)(46966005)(5660300002)(316002)(54906003)(82310400002)(110136005)(36756003)(426003)(336012)(82740400003)(4326008)(47076004)(2616005)(31696002)(356005)(478600001)(186003)(81166007)(26005)(9786002)(70586007)(8936002)(31686004)(2906002)(44832011)(83380400001)(8676002)(70206006)(42866002)(43740500002);DIR:OUT;SFP:1101;
+X-Forefront-Antispam-Report: CIP:149.199.60.83;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapsmtpgw01;PTR:unknown-60-83.xilinx.com;CAT:NONE;SFTY:;SFS:(346002)(39860400002)(376002)(396003)(136003)(46966005)(316002)(31686004)(53546011)(54906003)(26005)(81166007)(47076004)(8676002)(8936002)(82740400003)(4326008)(9786002)(356005)(110136005)(36756003)(2906002)(336012)(5660300002)(478600001)(6666004)(70206006)(31696002)(44832011)(426003)(2616005)(186003)(70586007)(82310400002)(83380400001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 87be65f5-66d8-4d86-cfb9-08d82e0eea32
-X-MS-TrafficTypeDiagnostic: BY5PR02MB6036:
-X-Microsoft-Antispam-PRVS: <BY5PR02MB6036DC3E7EA52992FD13C965C6790@BY5PR02MB6036.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: bfc2c0bb-1fe5-4381-828d-08d82e0f73dd
+X-MS-TrafficTypeDiagnostic: BN7PR02MB5284:
+X-Microsoft-Antispam-PRVS: <BN7PR02MB52841654701CF244221A4C2BC6790@BN7PR02MB5284.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Htvs68xiLYW1fV8AKbKXJ6HkL5oQembupNznLAP9emUKvRxHgX77MO0pw+3yah4Ebp9ylMmg7mp6EA6Lv6lbzqWlLdIS84Y509reTYxTI3K/16NGE2uMR+oetUJWpvJJg2R7kfODSDos90N6iCidyEZUbt4Pu+dznQb5sGUf/6G4dgYmCx96zTKtEKKZETeUfZRNeAhjHHBlNWTN+yWjs5uhz2Jt4XDdtOqZxNMMjl+12DnotodmeSdY6VgFvzVeg9FNGHBmrsL0lWy3JH3YG+hkHE4MgFDL9TcsoMhjsM5x1zWKm9F8bYug1kVGan/Q5kJ7uxhbSWRp8r0KMOAX7kmaoajVXtjZMt6jCWqjIPXWzUvg6xhgupSYKIgs8UedgIuLA3NT/a2t3xH5mSW+wE4vL5IjZLZdo90ss+/S/yABGJV+aWP1Z/JHypsL2x/n+duHnTaBY28uKZaXY4k8og==
+X-Microsoft-Antispam-Message-Info: b/nxSxsuAPJEtzh3rMiaF61fCetZ3exDHI3wDpNZET9tbW3V6UikyufqMWNCJgLT3TbikQW6vJTi0JyGP21ee81vzaM/LsAokpw+G09K4H1TGhjw+6iwOcNfa8bk138igqBb/J3VXoRnZbiOvPezKU+Lj0i9ecofd68x7b8zB5ZskLDqzSzR5UJc4EilyTlwmFj5tgPKiFjWbHO8phU0mC1rWXaTDbEFq9qBmSPQc1CsrpgNWb6HbV/OCR6Q/SnH22ajrPh7SRKy6/UXPFPBMBpP20pGmwBPr1zRipZwM2LC9nhFzJ1BPsKBwHAH7mZoFcwJu/ttiYCJc0+Tk+9U9zxwD/w/N6K4yfP4lcqGbgwrGOr+0CSQRRRI7nms/JFI8Hqn8uvCua7cYwvCNSUUklH8qMOZzaDbvPiP3VE+N9eE36KpKM4w+hsLRT3f1Gpb
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2020 07:14:46.6443
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2020 07:18:37.6079
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87be65f5-66d8-4d86-cfb9-08d82e0eea32
+X-MS-Exchange-CrossTenant-Network-Message-Id: bfc2c0bb-1fe5-4381-828d-08d82e0f73dd
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
-X-MS-Exchange-CrossTenant-AuthSource: BL2NAM02FT054.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT047.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR02MB6036
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR02MB5284
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -193,70 +196,74 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 
-On 13. 07. 20 14:10, Helmut Grohne wrote:
-> Hi Michal,
-> 
-> On Mon, Jul 13, 2020 at 01:49:38PM +0200, Michal Simek wrote:
->> On 13. 07. 20 9:11, Helmut Grohne wrote:
->>> Let me try to enumerate those I know:
->>>
->>> uart0    | uart1    | console | remark
->>> ---------+----------+---------+----------
->>> serial0  | serial1  | ttyPS0  | regular case
->>> serial0  | serial1  | ttyPS1  | normal assignment, second console
->>> serial1  | serial0  | ttyPS0  | -> Jan Kiszka, broken since revert
->>> disabled | serial0  | ttyPS0  | use only uart1 as serial0
->>> serial0  | disabled | ttyPS0  | regular case with uart1 disabled
->>>
->>> Out of these, I'm actively using configurations 3 and 4.
->>>
->>> Which of these scenarios do you test already?
+On 13. 07. 20 18:08, Maarten Brock wrote:
+> On 2020-07-13 14:10, Helmut Grohne wrote:
+>> Hi Michal,
 >>
->> For above we are missing also others
->> serial1 | serial0 | ttyPS1
->> disabled| serial1 | ttyPS1
+>> On Mon, Jul 13, 2020 at 01:49:38PM +0200, Michal Simek wrote:
+>>> On 13. 07. 20 9:11, Helmut Grohne wrote:
+>>> > Let me try to enumerate those I know:
+>>> >
+>>> > uart0    | uart1    | console | remark
+>>> > ---------+----------+---------+----------
+>>> > serial0  | serial1  | ttyPS0  | regular case
+>>> > serial0  | serial1  | ttyPS1  | normal assignment, second console
+>>> > serial1  | serial0  | ttyPS0  | -> Jan Kiszka, broken since revert
+>>> > disabled | serial0  | ttyPS0  | use only uart1 as serial0
+>>> > serial0  | disabled | ttyPS0  | regular case with uart1 disabled
+>>> >
+>>> > Out of these, I'm actively using configurations 3 and 4.
+>>> >
+>>> > Which of these scenarios do you test already?
+>>>
+>>> For above we are missing also others
+>>> serial1 | serial0 | ttyPS1
+>>> disabled| serial1 | ttyPS1
+>>
+>> Is it actually possible to have ttyPS1, but no ttyPS0? I think I tried
+>> doing that earlier and it resulted in there being ttyPS0, but no ttyPS1.
 > 
-> Is it actually possible to have ttyPS1, but no ttyPS0? I think I tried
-> doing that earlier and it resulted in there being ttyPS0, but no ttyPS1.
+> What if you also have a 16550 (in the PL) and give it the serial0 alias?
+> Or a UARTlite? The serialN alias is inappropriate to set the number for
+> ttyPSn. How are you supposed to create all of ttyPS0, ttyS0 and ttyUL0
+> using a single serial0 alias?
 
-serial1 alias should all the time create ttyPS1 device.
-serial0 ttyPS0.
+yes this combination is not possible and I don't think this is xilinx
+specific issue.
+I expect the same problem you have with ttyAMA, ttyS and others.
 
-If there are no serial aliases driver should started numbering them from 0.
 
-
->> serial1 | disables | ttyPS0
+>>> serial1 | disables | ttyPS0
+>>
+>> I'm not sure what this is supposed to mean. When there is no serial0
+>> alias, I'd expect ttyPS0 to be missing. However as indicated above that
+>> is not what happens in practice. So either of these two configurations
+>> seems invalid to me.
+>>
+>>> All of these above are just not setting any console= on bootargs.
+>>
+>> We usually set the console= assignment on bootargs.
+>>
+>>> It means mix of these combinations is tested regularly but not all of
+>>> them. Do you see any other combination which is not supported?
+>>
+>> I'm not aware of further relevant combinations.
+>>
+>> Can we maybe trim down the matrix somehow? In my context, the need for
+>> swapping the serial aliases arises from a limitation in u-boot-xlnx and
+>> the desire to use one dtb for both linux and u-boot. It requires that
+>> the serial0 alias is the console. Are there other reasons to swap them?
+>> If not, maybe fixing u-boot would be an option?
+>>
+>> Helmut
 > 
-> I'm not sure what this is supposed to mean. When there is no serial0
-> alias, I'd expect ttyPS0 to be missing. However as indicated above that
-> is not what happens in practice. So either of these two configurations
-> seems invalid to me.
+> I think that it would be better if u-boot used a "console" alias.
 
-You are right on this one - this is not possible. It should be ttyPS1.
-
-> 
->> All of these above are just not setting any console= on bootargs.
-> 
-> We usually set the console= assignment on bootargs.
-
-I found some time ago that setting up console in bootargs was covering
-issue reported by Jan but didn't have time to look at it in more details.
-
-> 
->> It means mix of these combinations is tested regularly but not all of
->> them. Do you see any other combination which is not supported?
-> 
-> I'm not aware of further relevant combinations.
-> 
-> Can we maybe trim down the matrix somehow? In my context, the need for
-> swapping the serial aliases arises from a limitation in u-boot-xlnx and
-> the desire to use one dtb for both linux and u-boot. It requires that
-> the serial0 alias is the console. Are there other reasons to swap them?
-> If not, maybe fixing u-boot would be an option?
-
-I am not aware about any limitation in u-boot in this space. U-Boot is
-working with aliases and also with stdout-patch selection.
-Can you please elaborate more on this?
+console is defined in bootargs which is OS specific feature. U-Boot has
+no idea what ttyPS, ttyS, etc means. That's why I don't think there is
+something wrong in this in u-boot. But please elaborate more on this
+because I am not aware about any issue on u-boot configuration.
 
 Thanks,
 Michal
+
