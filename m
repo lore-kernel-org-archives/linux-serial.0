@@ -2,91 +2,91 @@ Return-Path: <SRS0=2ftc=BC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B336C433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 13:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE350C433EA
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 21:28:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E5BE92086A
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 13:22:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A0631207C4
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 21:28:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1595539689;
+	bh=pk+rm6RtFtDuDJYX5QlmBpWj1i6nuD3M8mLx0YOEiqU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=zBMX1bEK9AoSiBWLy97ZaPyntRg3sS8ZfnjcmncVM7SZF08K/6a3sYmFVcmeouWk5
+	 HMsMkUWabZHd+2NTv+VuBD7Tm1gxjSkylGmCSFkP+x8uqVz5W6NMuHiQRbj9x77z6K
+	 0mrho/sIgNdZue3c+z68+YQ1b3Q6XEozY4TkFX+Q=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728709AbgGWNW6 (ORCPT
+        id S1726838AbgGWV2F (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jul 2020 09:22:58 -0400
-Received: from mga06.intel.com ([134.134.136.31]:29787 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728265AbgGWNW5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jul 2020 09:22:57 -0400
-IronPort-SDR: J30BYzvvgLMENviJEZRXkbsq12x4R6rWRdVbvdXfVRHv1/lmyRKY3krnsXZT3QhY8unrd1TspF
- EvoyBgyoSZJQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9690"; a="212059114"
-X-IronPort-AV: E=Sophos;i="5.75,386,1589266800"; 
-   d="scan'208";a="212059114"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2020 06:22:56 -0700
-IronPort-SDR: 4GO0K6O/fAszS773o7NEpcOAj7DizHFTQKjcLN5fA0k2A2aTmjSdUbwuYtzJneptBZbbkmgh9t
- iHd3vWCNkkMQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,386,1589266800"; 
-   d="scan'208";a="272294139"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Jul 2020 06:22:55 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jybBX-003e7x-Kb; Thu, 23 Jul 2020 16:22:55 +0300
-Date:   Thu, 23 Jul 2020 16:22:55 +0300
-From:   andriy.shevchenko@linux.intel.com
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] serial: add sparse context annotation
-Message-ID: <20200723132255.GA869178@smile.fi.intel.com>
-References: <20200723123327.5843-1-johan@kernel.org>
+        Thu, 23 Jul 2020 17:28:05 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:36546 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbgGWV2F (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 23 Jul 2020 17:28:05 -0400
+Received: by mail-il1-f195.google.com with SMTP id x9so5601096ila.3;
+        Thu, 23 Jul 2020 14:28:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SGrdVeSEpiWCWaFeRxn1THIMaeD/i6V3qXeYtCopQ5M=;
+        b=cj1xRVdGqSA8pMYHHNLZp18j2ZVe6BRkkzoUZdOnmbdYTm6gls5SoAEWjm0VVLzN9U
+         FwOVQsEFM8DIfvkuQLFyMKuV7/iJRvX/xW4FRNRL5/cCaZcHNlBj3Ycqba9nZLwaHRij
+         pQrknlUiI5wJemxvfLaL2ANO3iudAWHtk9Y2Bn05xbu7Ys1KHRnpp2b6lFiJcmnm0QSD
+         4bqQSg7OGVuIFQjqD376Tz6TRZ037maBKQx/0NpUSVoof+QgELMfgTH5Xr65j12Lodto
+         rQulRlX1DaatI0iMeIJVXIfdAVyLi3FKYXtep3ZNLiryIdz49cxh48c0hbVVwR16DWj5
+         Awbw==
+X-Gm-Message-State: AOAM533X62y3CZYWolfv7NESZ0sNt/huTeQVGlYXvuZ1SBe0EvMMV7eQ
+        jz4siNZI8Lfk0DB1GHGYWQ==
+X-Google-Smtp-Source: ABdhPJz7NZ07oV2YI6+xdgYtE3bNTA7ewz+4xk+gmQaRX1u2WcAI2yQMS726ZBZHBEXxDhgzeLJPAA==
+X-Received: by 2002:a92:9e5c:: with SMTP id q89mr317408ili.265.1595539684704;
+        Thu, 23 Jul 2020 14:28:04 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id t21sm2086484ioc.0.2020.07.23.14.28.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jul 2020 14:28:04 -0700 (PDT)
+Received: (nullmailer pid 889370 invoked by uid 1000);
+        Thu, 23 Jul 2020 21:28:03 -0000
+Date:   Thu, 23 Jul 2020 15:28:03 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Seiya Wang <seiya.wang@mediatek.com>
+Cc:     linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com,
+        linux-kernel@vger.kernel.org,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-watchdog@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 2/4] dt-bindings: serial: Add compatible for Mediatek
+ MT8192
+Message-ID: <20200723212803.GA889323@bogus>
+References: <20200723090731.4482-1-seiya.wang@mediatek.com>
+ <20200723090731.4482-3-seiya.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200723123327.5843-1-johan@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200723090731.4482-3-seiya.wang@mediatek.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 23, 2020 at 02:33:25PM +0200, Johan Hovold wrote:
-> The Intel test robot reported a new sparse warning in pmac_zilog, which
-> wasn't actually new.
+On Thu, 23 Jul 2020 17:07:29 +0800, Seiya Wang wrote:
+> This commit adds dt-binding documentation of uart for Mediatek MT8192 SoC
+> Platform.
 > 
-> Add sparse annotation to the two drivers that release and reacquire the
-> port lock in their receive handlers to suppress these warnings.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-> Johan
-> 
-> Changes in v2:
->  - let's use the right context expression even if sparse doesn't seem to
->    care (add the missing ampersand)
-> 
-> 
-> Johan Hovold (2):
->   serial: pmac_zilog: add sparse context annotation
->   serial: msm_serial: add sparse context annotation
-> 
->  drivers/tty/serial/msm_serial.c | 2 ++
->  drivers/tty/serial/pmac_zilog.c | 1 +
->  2 files changed, 3 insertions(+)
-> 
-> -- 
-> 2.26.2
+> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/serial/mtk-uart.txt | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Acked-by: Rob Herring <robh@kernel.org>
