@@ -2,122 +2,85 @@ Return-Path: <SRS0=2ftc=BC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6437DC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 09:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DDEC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 09:50:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 478D420825
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 09:48:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 33A9D20709
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 09:50:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=intenta.de header.i=@intenta.de header.b="wyRq9SX7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbgGWJsL (ORCPT
+        id S1726330AbgGWJug (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jul 2020 05:48:11 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:11995 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726127AbgGWJsL (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jul 2020 05:48:11 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06N9XWE8045943;
-        Thu, 23 Jul 2020 05:47:55 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32e1yc0v15-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 23 Jul 2020 05:47:55 -0400
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 06N9XwQK047495;
-        Thu, 23 Jul 2020 05:47:55 -0400
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32e1yc0v0c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 23 Jul 2020 05:47:55 -0400
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06N9fL8G013581;
-        Thu, 23 Jul 2020 09:47:52 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06fra.de.ibm.com with ESMTP id 32brbgu5q0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 23 Jul 2020 09:47:52 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06N9loTk29360560
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 23 Jul 2020 09:47:50 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0E8FF52052;
-        Thu, 23 Jul 2020 09:47:50 +0000 (GMT)
-Received: from [9.145.184.33] (unknown [9.145.184.33])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id A543052057;
-        Thu, 23 Jul 2020 09:47:49 +0000 (GMT)
-Subject: Re: [PATCH V6] GCOV: Add config to check the preqequisites situation
-To:     Cixi Geng <gengcixi@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com,
-        linux-serial@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     Cixi Geng1 <cixi.geng1@unisoc.com>,
-        Orson Zhai <orsonzhai@gmail.com>, zhang.lyra@gmail.com
-References: <20200618100852.13715-1-gengcixi@gmail.com>
- <2fae67c7637f4e978cb54c3b96090788@BJMBX01.spreadtrum.com>
- <CAF12kFseC4MMbEUk6CgW=Hpz_Hg-+fjwbLZKFdPu0K_EGtcPDw@mail.gmail.com>
-From:   Peter Oberparleiter <oberpar@linux.ibm.com>
-Message-ID: <a5c4018c-a0fd-7855-1ee9-dc0c4e7251e7@linux.ibm.com>
-Date:   Thu, 23 Jul 2020 11:47:51 +0200
+        Thu, 23 Jul 2020 05:50:36 -0400
+Received: from mail.intenta.de ([178.249.25.132]:43888 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726127AbgGWJug (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 23 Jul 2020 05:50:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=DTpO2wSxcH/F8/ps/tsSTU3i0/beUuu607Y/JU3khSg=;
+        b=wyRq9SX7gnl/eqjBXhZz2MngmWJAo+/KjR8zanUzaR1R/TJDRlKTQU7oZhuyMroTZ9mXXruxM57gRVv35xmpUbJMgH/8i80Zrzg4J19bsufIyGYOhngrcdoSUenJFENPgskQmikSqfXkiEccug9/L188X2v1NJ9R+hJoG8E0l4w2ypFx96oZvrVDjnSaYWtDB9/FlUvzNpPE869qLK/sslHdzMv3oFRnOj1crmw8TBlkh9KyWckYvy6DlAplPjAK0uqcvTtcSmStPt2nzCUMN6PCcZadexY1AvQrTZwoB7y/jPPP+Zp8GCZcEqyBb+ixqD91LGtWaKGmvqeyEfcf+w==;
+Date:   Thu, 23 Jul 2020 11:50:30 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Michal Simek <michal.simek@xilinx.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        "Jan Kiszka" <jan.kiszka@web.de>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] tty: xilinx_uartps: Really fix id assignment
+Message-ID: <20200723095030.GA23929@laureti-dev>
+References: <f4092727-d8f5-5f91-2c9f-76643aace993@siemens.com>
+ <20200709074849.GA28968@laureti-dev>
+ <a3b9df28-8142-fc04-317f-44d65a24f38e@xilinx.com>
+ <20200713071123.GA1994@laureti-dev>
+ <e7b766ab-8c99-d30c-2352-6d7b09033537@xilinx.com>
+ <20200713121019.GA6920@laureti-dev>
+ <7fea9efe-f439-33a3-966f-4215681ec4c8@xilinx.com>
 MIME-Version: 1.0
-In-Reply-To: <CAF12kFseC4MMbEUk6CgW=Hpz_Hg-+fjwbLZKFdPu0K_EGtcPDw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-23_03:2020-07-22,2020-07-23 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 suspectscore=1 bulkscore=0 adultscore=0 clxscore=1011
- priorityscore=1501 mlxscore=0 mlxlogscore=999 phishscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007230072
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <7fea9efe-f439-33a3-966f-4215681ec4c8@xilinx.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16.07.2020 14:38, Cixi Geng wrote:
-> Hi All:
-> Does this patch need more modification?
+Hi Michal,
 
-Yes. As it is now there's still a prompt for the prereq symbol. There
-should be no prompt for this symbol in the config dialog.
+On Wed, Jul 22, 2020 at 09:14:40AM +0200, Michal Simek wrote:
+> On 13. 07. 20 14:10, Helmut Grohne wrote:
+> > Can we maybe trim down the matrix somehow? In my context, the need for
+> > swapping the serial aliases arises from a limitation in u-boot-xlnx and
+> > the desire to use one dtb for both linux and u-boot. It requires that
+> > the serial0 alias is the console. Are there other reasons to swap them?
+> > If not, maybe fixing u-boot would be an option?
+> 
+> I am not aware about any limitation in u-boot in this space. U-Boot is
+> working with aliases and also with stdout-patch selection.
+> Can you please elaborate more on this?
 
-[...]
+I have retested this (with more recent versions than earlier).
 
+I confirm that u-boot correctly deals with aliases and
+chosen/stdout-path. Using linear aliases and assigning stdout to serial1
+works.
 
->> diff --git a/kernel/gcov/Kconfig b/kernel/gcov/Kconfig
->> index 3941a9c48f83..f415c4aaf0ab 100644
->> --- a/kernel/gcov/Kconfig
->> +++ b/kernel/gcov/Kconfig
->> @@ -51,6 +51,16 @@ config GCOV_PROFILE_ALL
->>         larger and run slower. Also be sure to exclude files from profiling
->>         which are not linked to the kernel image to prevent linker errors.
->>
->> +config GCOV_PROFILE_PREREQS
->> +       bool "Profile Kernel for prereqs"
->> +       default y if GCOV_KERNEL && !COMPILE_TEST
->> +       help
->> +         This options activates profiling for the specified kernel modules.
->> +
->> +         When some modules need Gcov data, enable this config, then configure
->> +         with gcov on the corresponding modules,The directories or files of
->> +         these modules will be added profiling flags after kernel compile.
->> +
+I also confirm that having ttyPS1 without having ttyPS0 works (only
+tested with this patch applied). I questioned this earlier.
 
-Replace the portion above with these lines:
+So it seems that the need for reversing these aliases is less strong
+now. If I remember correctly, Jan Kiszka was also using reversed
+aliases, but I don't know why.
 
-config GCOV_PROFILE_PREREQS
-        def_bool y if GCOV_KERNEL && !COMPILE_TEST
-
-
-
--- 
-Peter Oberparleiter
-Linux on Z Development - IBM Germany
+Helmut
