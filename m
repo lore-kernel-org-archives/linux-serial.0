@@ -2,274 +2,101 @@ Return-Path: <SRS0=2ftc=BC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00862C433E8
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 00:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32D1C433DF
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 09:08:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D95AB2071A
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 00:34:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CECFC20656
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jul 2020 09:08:00 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Lk9rxwTo"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729423AbgGWAeS (ORCPT
+        id S1725911AbgGWJIA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jul 2020 20:34:18 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:60780 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729198AbgGWAeJ (ORCPT
+        Thu, 23 Jul 2020 05:08:00 -0400
+Received: from mailgw01.mediatek.com ([210.61.82.183]:62859 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725846AbgGWJIA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jul 2020 20:34:09 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 7A7F6803202F;
-        Thu, 23 Jul 2020 00:34:03 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at baikalelectronics.ru
-Received: from mail.baikalelectronics.ru ([127.0.0.1])
-        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3BovykwKELW8; Thu, 23 Jul 2020 03:34:01 +0300 (MSK)
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+        Thu, 23 Jul 2020 05:08:00 -0400
+X-UUID: 609ee1b2215c485ab6481c4575604080-20200723
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=fQAlYTu7jimnOiNSbIQbC1bv/gLKYWyftON61ys5CAk=;
+        b=Lk9rxwToEFLLsTkehhDeBHCo0H0jZUGXf0jbhFpJldHRQI8qrBLvNBH0Xy5rpLVyACJxlHz+XahoaimFd//B/8+W42p7chWSbgoOf1nFlwtTNl6bujE1p4QVn5xxqNXMUXvKvLjqpsJL9E5WClRSquxSQKdCn3fHPI+gKjGhwVM=;
+X-UUID: 609ee1b2215c485ab6481c4575604080-20200723
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+        (envelope-from <seiya.wang@mediatek.com>)
+        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+        with ESMTP id 1782811880; Thu, 23 Jul 2020 17:07:54 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 23 Jul 2020 17:07:51 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 23 Jul 2020 17:07:46 +0800
+From:   Seiya Wang <seiya.wang@mediatek.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+CC:     <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v9 4/4] serial: 8250_dw: Fix common clocks usage race condition
-Date:   Thu, 23 Jul 2020 03:33:57 +0300
-Message-ID: <20200723003357.26897-5-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20200723003357.26897-1-Sergey.Semin@baikalelectronics.ru>
-References: <20200723003357.26897-1-Sergey.Semin@baikalelectronics.ru>
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
+        <srv_heupstream@mediatek.com>
+Subject: [PATCH 0/4] Add basic node support for Mediatek MT8192 SoC 
+Date:   Thu, 23 Jul 2020 17:07:27 +0800
+Message-ID: <20200723090731.4482-1-seiya.wang@mediatek.com>
+X-Mailer: git-send-email 2.14.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The race condition may happen if the UART reference clock is shared with
-some other device (on Baikal-T1 SoC it's another DW UART port). In this
-case if that device changes the clock rate while serial console is using
-it the DW 8250 UART port might not only end up with an invalid uartclk
-value saved, but may also experience a distorted output data since
-baud-clock could have been changed. In order to fix this lets at least
-try to adjust the 8250 port setting like UART clock rate in case if the
-reference clock rate change is discovered. The driver will call the new
-method to update 8250 UART port clock rate settings. It's done by means of
-the clock event notifier registered at the port startup and unregistered
-in the shutdown callback method.
-
-Note 1. In order to avoid deadlocks we had to execute the UART port update
-method in a dedicated deferred work. This is due to (in my opinion
-redundant) the clock update implemented in the dw8250_set_termios()
-method.
-Note 2. Before the ref clock is manually changed by the custom
-set_termios() function we swap the port uartclk value with new rate
-adjusted to be suitable for the requested baud. It is necessary in
-order to effectively disable a functionality of the ref clock events
-handler for the current UART port, since uartclk update will be done
-a bit further in the generic serial8250_do_set_termios() function.
-
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-
----
-
-Changelog v2:
-- Move exclusive ref clock lock/unlock precudures to the 8250 port
-  startup/shutdown methods.
-- The changelog message has also been slightly modified due to the
-  alteration.
-- Remove Alexey' SoB tag.
-- Cc someone from ARM who might be concerned regarding this change.
-- Cc someone from Clocks Framework to get their comments on this patch.
-
-Changelog v3:
-- Refactor the original patch to adjust the UART port divisor instead of
-  requesting an exclusive ref clock utilization.
-
-Changelog v5:
-- Refactor dw8250_clk_work_cb() function cheking the clk_get_rate()
-  return value for being erroneous and exit if it is.
-- Don't update p->uartclk on the port startup. It will be updated later in
-  the same procedure at the set_termios() function being invoked by the
-  serial_core anyway.
----
- drivers/tty/serial/8250/8250_dw.c | 103 +++++++++++++++++++++++++++++-
- 1 file changed, 101 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index c1511f9244bb..87f450b7c177 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -19,6 +19,8 @@
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-+#include <linux/workqueue.h>
-+#include <linux/notifier.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
- #include <linux/clk.h>
-@@ -43,6 +45,8 @@ struct dw8250_data {
- 	int			msr_mask_off;
- 	struct clk		*clk;
- 	struct clk		*pclk;
-+	struct notifier_block	clk_notifier;
-+	struct work_struct	clk_work;
- 	struct reset_control	*rst;
- 
- 	unsigned int		skip_autocfg:1;
-@@ -54,6 +58,16 @@ static inline struct dw8250_data *to_dw8250_data(struct dw8250_port_data *data)
- 	return container_of(data, struct dw8250_data, data);
- }
- 
-+static inline struct dw8250_data *clk_to_dw8250_data(struct notifier_block *nb)
-+{
-+	return container_of(nb, struct dw8250_data, clk_notifier);
-+}
-+
-+static inline struct dw8250_data *work_to_dw8250_data(struct work_struct *work)
-+{
-+	return container_of(work, struct dw8250_data, clk_work);
-+}
-+
- static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
- {
- 	struct dw8250_data *d = to_dw8250_data(p->private_data);
-@@ -260,6 +274,46 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	return 0;
- }
- 
-+static void dw8250_clk_work_cb(struct work_struct *work)
-+{
-+	struct dw8250_data *d = work_to_dw8250_data(work);
-+	struct uart_8250_port *up;
-+	unsigned long rate;
-+
-+	rate = clk_get_rate(d->clk);
-+	if (rate <= 0)
-+		return;
-+
-+	up = serial8250_get_port(d->data.line);
-+
-+	serial8250_update_uartclk(&up->port, rate);
-+}
-+
-+static int dw8250_clk_notifier_cb(struct notifier_block *nb,
-+				  unsigned long event, void *data)
-+{
-+	struct dw8250_data *d = clk_to_dw8250_data(nb);
-+
-+	/*
-+	 * We have no choice but to defer the uartclk update due to two
-+	 * deadlocks. First one is caused by a recursive mutex lock which
-+	 * happens when clk_set_rate() is called from dw8250_set_termios().
-+	 * Second deadlock is more tricky and is caused by an inverted order of
-+	 * the clk and tty-port mutexes lock. It happens if clock rate change
-+	 * is requested asynchronously while set_termios() is executed between
-+	 * tty-port mutex lock and clk_set_rate() function invocation and
-+	 * vise-versa. Anyway if we didn't have the reference clock alteration
-+	 * in the dw8250_set_termios() method we wouldn't have needed this
-+	 * deferred event handling complication.
-+	 */
-+	if (event == POST_RATE_CHANGE) {
-+		queue_work(system_unbound_wq, &d->clk_work);
-+		return NOTIFY_OK;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
- static void
- dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
- {
-@@ -283,9 +337,16 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
- 	clk_disable_unprepare(d->clk);
- 	rate = clk_round_rate(d->clk, newrate);
- 	if (rate > 0) {
-+		/*
-+		 * Premilinary set the uartclk to the new clock rate so the
-+		 * clock update event handler caused by the clk_set_rate()
-+		 * calling wouldn't actually update the UART divisor since
-+		 * we about to do this anyway.
-+		 */
-+		swap(p->uartclk, rate);
- 		ret = clk_set_rate(d->clk, newrate);
--		if (!ret)
--			p->uartclk = rate;
-+		if (ret)
-+			swap(p->uartclk, rate);
- 	}
- 	clk_prepare_enable(d->clk);
- 
-@@ -312,6 +373,39 @@ static void dw8250_set_ldisc(struct uart_port *p, struct ktermios *termios)
- 	serial8250_do_set_ldisc(p, termios);
- }
- 
-+static int dw8250_startup(struct uart_port *p)
-+{
-+	struct dw8250_data *d = to_dw8250_data(p->private_data);
-+	int ret;
-+
-+	/*
-+	 * Some platforms may provide a reference clock shared between several
-+	 * devices. In this case before using the serial port first we have to
-+	 * make sure that any clock state change is known to the UART port at
-+	 * least post factum.
-+	 */
-+	if (d->clk) {
-+		ret = clk_notifier_register(d->clk, &d->clk_notifier);
-+		if (ret)
-+			dev_warn(p->dev, "Failed to set the clock notifier\n");
-+	}
-+
-+	return serial8250_do_startup(p);
-+}
-+
-+static void dw8250_shutdown(struct uart_port *p)
-+{
-+	struct dw8250_data *d = to_dw8250_data(p->private_data);
-+
-+	serial8250_do_shutdown(p);
-+
-+	if (d->clk) {
-+		clk_notifier_unregister(d->clk, &d->clk_notifier);
-+
-+		flush_work(&d->clk_work);
-+	}
-+}
-+
- /*
-  * dw8250_fallback_dma_filter will prevent the UART from getting just any free
-  * channel on platforms that have DMA engines, but don't have any channels
-@@ -407,6 +501,8 @@ static int dw8250_probe(struct platform_device *pdev)
- 	p->serial_out	= dw8250_serial_out;
- 	p->set_ldisc	= dw8250_set_ldisc;
- 	p->set_termios	= dw8250_set_termios;
-+	p->startup	= dw8250_startup;
-+	p->shutdown	= dw8250_shutdown;
- 
- 	p->membase = devm_ioremap(dev, regs->start, resource_size(regs));
- 	if (!p->membase)
-@@ -468,6 +564,9 @@ static int dw8250_probe(struct platform_device *pdev)
- 	if (IS_ERR(data->clk))
- 		return PTR_ERR(data->clk);
- 
-+	INIT_WORK(&data->clk_work, dw8250_clk_work_cb);
-+	data->clk_notifier.notifier_call = dw8250_clk_notifier_cb;
-+
- 	err = clk_prepare_enable(data->clk);
- 	if (err)
- 		dev_warn(dev, "could not enable optional baudclk: %d\n", err);
--- 
-2.26.2
+DQpNVDgxOTIgaXMgYSBTb0MgYmFzZWQgb24gNjRiaXQgQVJNdjggYXJjaGl0ZWN0dXJlLg0KSXQg
+Y29udGFpbnMgNCBDQTU1IGFuZCA0IENBNzYgY29yZXMuDQpNVDgxOTIgc2hhcmUgbWFueSBIVyBJ
+UCB3aXRoIE1UNjV4eCBzZXJpZXMuDQpUaGlzIHBhdGNoc2V0IHdhcyB0ZXN0ZWQgb24gTVQ4MTky
+IGV2YWx1YXRpb24gYm9hcmQgYW5kIHVzZSBjb3JyZWN0IGNsb2NrIHRvIHNoZQ0KbGwuDQoNCkJh
+c2VkIG9uIHY1LjgtcmMxDQoNCkNyeXN0YWwgR3VvICgyKToNCiAgd2F0Y2hkb2c6IG10ODE5Mjog
+YWRkIHdkdCBzdXBwb3J0DQogIGR0LWJpbmRpbmc6IG1lZGlhdGVrOiBtdDgxOTI6IHVwZGF0ZSBt
+dGstd2R0IGRvY3VtZW50DQoNClNlaXlhIFdhbmcgKDIpOg0KICBhcm02NDogZHRzOiBBZGQgTWVk
+aWF0ZWsgU29DIE1UODE5MiBhbmQgZXZhbHVhdGlvbiBib2FyZCBkdHMgYW5kDQogICAgTWFrZWZp
+bGUNCiAgZHQtYmluZGluZ3M6IHNlcmlhbDogQWRkIGNvbXBhdGlibGUgZm9yIE1lZGlhdGVrIE1U
+ODE5Mg0KLS0tDQpUaGlzIHBhdGNoIGRlcGVuZHMgb24NCltQQVRDSCAxLzNdIGR0LWJpbmRpbmdz
+OiBwaW5jdHJsOiBtdDgxOTI6IGFkZCBwaW5jdHJsIGZpbGUNCltQQVRDSCAyLzNdIGR0LWJpbmRp
+bmdzOiBwaW5jdHJsOiBtdDgxOTI6IGFkZCBiaW5kaW5nIGRvY3VtZW50DQpbUEFUQ0ggdjIgMy80
+XSBkdC1iaW5kaW5nczogbWVkaWF0ZWs6IGFkZCBjb21wYXRpYmxlIGZvciBNVDY4NzMvODE5MiBw
+d3JhcA0KW1BBVENIIHYyIDEvMl0gZHQtYmluZGluZ3M6IHNwaTogdXBkYXRlIGJpbmRpbmdzIGZv
+ciBNVDgxOTIgU29DDQpbUEFUQ0ggMi80XSBjbGs6IG1lZGlhdGVrOiBBZGQgZHQtYmluZGluZ3Mg
+Zm9yIE1UODE5MiBjbG9ja3MNCltQQVRDSCAxLzRdIGR0LWJpbmRpbmdzOiBBUk06IE1lZGlhdGVr
+OiBEb2N1bWVudCBiaW5kaW5ncyBmb3IgTVQ4MTkyDQoNClBsZWFzZSBhbHNvIGFjY2VwdCB0aGlz
+IHBhdGNoIHRvZ2V0aGVyIHdpdGggWzFdWzJdWzNdWzRdWzVdWzZdDQp0byBhdm9pZCBidWlsZCBh
+bmQgZHQgYmluZGluZyBjaGVjayBlcnJvci4NCg0KWzFdIGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQu
+b3JnL3BpcGVybWFpbC9saW51eC1tZWRpYXRlay8yMDIwLUp1bHkvMDE0MDQyLmh0bWwNClsyXSBo
+dHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9waXBlcm1haWwvbGludXgtbWVkaWF0ZWsvMjAyMC1K
+dWx5LzAxNDA0My5odG1sDQpbM10gaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvcGlwZXJtYWls
+L2xpbnV4LW1lZGlhdGVrLzIwMjAtSnVseS8wMTQ1NDYuaHRtbA0KWzRdIGh0dHA6Ly9saXN0cy5p
+bmZyYWRlYWQub3JnL3BpcGVybWFpbC9saW51eC1tZWRpYXRlay8yMDIwLUp1bHkvMDE0NDA2Lmh0
+bWwNCls1XSBodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9waXBlcm1haWwvbGludXgtbWVkaWF0
+ZWsvMjAyMC1KdWx5LzAxNDQ1MC5odG1sDQpbNl0gaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcv
+cGlwZXJtYWlsL2xpbnV4LW1lZGlhdGVrLzIwMjAtSnVseS8wMTQ0NTEuaHRtbA0KLS0tDQogLi4u
+L2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL210ay11YXJ0LnR4dCAgICAgICAgfCAgIDEgKw0K
+IC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL3dhdGNoZG9nL210ay13ZHQudHh0ICAgICAgIHwgICAy
+ICsNCiBhcmNoL2FybTY0L2Jvb3QvZHRzL21lZGlhdGVrL01ha2VmaWxlICAgICAgICAgICAgICB8
+ICAgMSArDQogYXJjaC9hcm02NC9ib290L2R0cy9tZWRpYXRlay9tdDgxOTItZXZiLmR0cyAgICAg
+ICAgfCAgMjkgKw0KIGFyY2gvYXJtNjQvYm9vdC9kdHMvbWVkaWF0ZWsvbXQ4MTkyLmR0c2kgICAg
+ICAgICAgIHwgNjYzICsrKysrKysrKysrKysrKysrKysrKw0KIGRyaXZlcnMvd2F0Y2hkb2cvbXRr
+X3dkdC5jICAgICAgICAgICAgICAgICAgICAgICAgIHwgICA1ICsNCiA2IGZpbGVzIGNoYW5nZWQs
+IDcwMSBpbnNlcnRpb25zKCspDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGFyY2gvYXJtNjQvYm9vdC9k
+dHMvbWVkaWF0ZWsvbXQ4MTkyLWV2Yi5kdHMNCiBjcmVhdGUgbW9kZSAxMDA2NDQgYXJjaC9hcm02
+NC9ib290L2R0cy9tZWRpYXRlay9tdDgxOTIuZHRzaQ0KDQotLQ0KMi4xNC4xDQo=
 
