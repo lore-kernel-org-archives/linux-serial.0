@@ -7,65 +7,92 @@ X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7061C433E1
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jul 2020 06:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D74BDC433E5
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Jul 2020 06:27:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BC1A720714
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jul 2020 06:14:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B2FB22074A
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Jul 2020 06:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726554AbgGXGOV (ORCPT
+        id S1726567AbgGXG1h (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Jul 2020 02:14:21 -0400
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:21431 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726539AbgGXGOV (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Jul 2020 02:14:21 -0400
-Received: from ironmsg07-lv.qualcomm.com (HELO ironmsg07-lv.qulacomm.com) ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 23 Jul 2020 23:14:21 -0700
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg07-lv.qulacomm.com with ESMTP/TLS/AES256-SHA; 23 Jul 2020 23:14:19 -0700
-Received: from parashar-linux.qualcomm.com ([10.206.13.63])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 24 Jul 2020 11:44:07 +0530
-Received: by parashar-linux.qualcomm.com (Postfix, from userid 2363307)
-        id A04AE21443; Fri, 24 Jul 2020 11:44:06 +0530 (IST)
-From:   Paras Sharma <parashar@codeaurora.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        akashast@codeaurora.org, Paras Sharma <parashar@codeaurora.org>
-Subject: [PATCH] tty: serial: qcom_geni_serial: To correct logic for QUP HW version
-Date:   Fri, 24 Jul 2020 11:44:02 +0530
-Message-Id: <1595571242-9967-1-git-send-email-parashar@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
+        Fri, 24 Jul 2020 02:27:37 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41474 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726178AbgGXG1h (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 24 Jul 2020 02:27:37 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 54606AC20;
+        Fri, 24 Jul 2020 06:27:44 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: [PATCH] newport_con: vc_color is now in state
+Date:   Fri, 24 Jul 2020 08:27:35 +0200
+Message-Id: <20200724062735.18229-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <202007241318.wXYkumEO%lkp@intel.com>
+References: <202007241318.wXYkumEO%lkp@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-To correct the logic to detect whether the QUP HW version is greater
- than 2.5.
+Since commit 28bc24fc46f9 (vc: separate state), vc->vc_color is known as
+vc->state.color. Somehow both me and 0-day bot missed this driver during
+the conversion.
 
-Signed-off-by: Paras Sharma <parashar@codeaurora.org>
+So fix the driver now.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-fbdev@vger.kernel.org
+Cc: linux-mips@vger.kernel.org
 ---
- drivers/tty/serial/qcom_geni_serial.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/video/console/newport_con.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 1ed3d35..5b0efb49 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -954,7 +954,8 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	sampling_rate = UART_OVERSAMPLING;
- 	/* Sampling rate is halved for IP versions >= 2.5 */
- 	ver = geni_se_get_qup_hw_version(&port->se);
--	if (GENI_SE_VERSION_MAJOR(ver) >= 2 && GENI_SE_VERSION_MINOR(ver) >= 5)
-+	if ((GENI_SE_VERSION_MAJOR(ver) >= 2 && GENI_SE_VERSION_MINOR(ver) >= 5)
-+		|| GENI_SE_VERSION_MAJOR(ver) >= 3)
- 		sampling_rate /= 2;
+diff --git a/drivers/video/console/newport_con.c b/drivers/video/console/newport_con.c
+index df3c52d72159..72f146d047d9 100644
+--- a/drivers/video/console/newport_con.c
++++ b/drivers/video/console/newport_con.c
+@@ -362,12 +362,12 @@ static void newport_clear(struct vc_data *vc, int sy, int sx, int height,
  
- 	clk_rate = get_clk_div_rate(baud, sampling_rate, &clk_div);
+ 	if (ystart < yend) {
+ 		newport_clear_screen(sx << 3, ystart, xend, yend,
+-				     (vc->vc_color & 0xf0) >> 4);
++				     (vc->state.color & 0xf0) >> 4);
+ 	} else {
+ 		newport_clear_screen(sx << 3, ystart, xend, 1023,
+-				     (vc->vc_color & 0xf0) >> 4);
++				     (vc->state.color & 0xf0) >> 4);
+ 		newport_clear_screen(sx << 3, 0, xend, yend,
+-				     (vc->vc_color & 0xf0) >> 4);
++				     (vc->state.color & 0xf0) >> 4);
+ 	}
+ }
+ 
+@@ -591,11 +591,11 @@ static bool newport_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
+ 			topscan = (topscan + (lines << 4)) & 0x3ff;
+ 			newport_clear_lines(vc->vc_rows - lines,
+ 					    vc->vc_rows - 1,
+-					    (vc->vc_color & 0xf0) >> 4);
++					    (vc->state.color & 0xf0) >> 4);
+ 		} else {
+ 			topscan = (topscan + (-lines << 4)) & 0x3ff;
+ 			newport_clear_lines(0, lines - 1,
+-					    (vc->vc_color & 0xf0) >> 4);
++					    (vc->state.color & 0xf0) >> 4);
+ 		}
+ 		npregs->cset.topscan = (topscan - 1) & 0x3ff;
+ 		return false;
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+2.27.0
 
