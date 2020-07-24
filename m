@@ -2,106 +2,91 @@ Return-Path: <SRS0=jxo+=BD=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42005C433EB
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jul 2020 07:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC36C433E1
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Jul 2020 07:13:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 205DF2073E
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jul 2020 07:03:37 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="X5PD51Uu"
+	by mail.kernel.org (Postfix) with ESMTP id CD6D42074F
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Jul 2020 07:13:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1595574814;
+	bh=fUeIibLbxVfYamditippdQ64erDPYhNSY56DGcKqco8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=Zp8UIcC5OHw1Mu6VQWxHAUVy3QtenGmm9HEypoPGcQVX96oQjo69VmSkxzEijAraO
+	 PwEwLM+9BmYkVHUeZF+eQgDsB47cUxH3I793tSj+wmgVl8+8E3mZAgM6vI6Dw14ZUB
+	 6JcdKbW0JhTeeokDm5/tzjVMabh1eRKsn8Ksgjd0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbgGXHDg (ORCPT
+        id S1726742AbgGXHNe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Jul 2020 03:03:36 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:5243 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725942AbgGXHDg (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Jul 2020 03:03:36 -0400
-X-UUID: 40d85fcacdc84a78b366d4c8c9a9741e-20200724
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=pQEzRPBBsfVAYpz/jWwz9ulLUcB7f5ZARXi1n6E4uJE=;
-        b=X5PD51UuZTUw9T9biWy2CeEPUtz6YAwpyRH2/VSsrukFa4TQ8pfTM+32aBQgtZFO2lqlO0ayl//FOUUWyCC9se6M+aRq/1L+ms/zv7iFcukwb5a3+EwLbvPGGc99BjT1zr9133HlrcymoHHS7qIPlC/r5F8etwrsiYdB/znPgIg=;
-X-UUID: 40d85fcacdc84a78b366d4c8c9a9741e-20200724
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <crystal.guo@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 2057504373; Fri, 24 Jul 2020 15:03:32 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by mtkmbs06n2.mediatek.inc
- (172.21.101.130) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jul
- 2020 15:03:30 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 24 Jul 2020 15:03:27 +0800
-Message-ID: <1595574138.15289.16.camel@mhfsdcap03>
-Subject: Re: [PATCH 3/4] watchdog: mt8192: add wdt support
-From:   Crystal Guo <crystal.guo@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Seiya Wang =?UTF-8?Q?=28=E7=8E=8B=E8=BF=BA=E5=90=9B=29?= 
-        <seiya.wang@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
-        srv_heupstream <srv_heupstream@mediatek.com>
-Date:   Fri, 24 Jul 2020 15:02:18 +0800
-In-Reply-To: <bdd9f543-0fe0-af25-1843-aae95fcd4230@gmail.com>
-References: <20200723090731.4482-1-seiya.wang@mediatek.com>
-         <20200723090731.4482-4-seiya.wang@mediatek.com>
-         <bdd9f543-0fe0-af25-1843-aae95fcd4230@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+        Fri, 24 Jul 2020 03:13:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50776 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726543AbgGXHNe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 24 Jul 2020 03:13:34 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1543720748;
+        Fri, 24 Jul 2020 07:13:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595574813;
+        bh=fUeIibLbxVfYamditippdQ64erDPYhNSY56DGcKqco8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UJdUpdVHMv4UuMUJUwPQnL5XE/7udNcWNkHE2t4+1hgtIAZR2f9l0p3uu/5az95dw
+         XUkqJM5+fB8xx72eO+o8wVGKEn/oF68u4JgDpiAHIdY0+naVBAiEIjjXdgIYDgDFIz
+         Spo29x7iM0brgeiBL8tjVfD9rNrCrzVXcOG7P8sk=
+Date:   Fri, 24 Jul 2020 09:13:35 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Paras Sharma <parashar@codeaurora.org>
+Cc:     Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        akashast@codeaurora.org
+Subject: Re: [PATCH] tty: serial: qcom_geni_serial: To correct logic for QUP
+ HW version
+Message-ID: <20200724071335.GA3948185@kroah.com>
+References: <1595571242-9967-1-git-send-email-parashar@codeaurora.org>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 13D0D2DA84AEC947E1C8752AB204567EA3348C69F831154A8F05B16077032F5D2000:8
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1595571242-9967-1-git-send-email-parashar@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-T24gRnJpLCAyMDIwLTA3LTI0IGF0IDA2OjAwICswODAwLCBNYXR0aGlhcyBCcnVnZ2VyIHdyb3Rl
-Og0KPiANCj4gT24gMjMvMDcvMjAyMCAxMTowNywgU2VpeWEgV2FuZyB3cm90ZToNCj4gPiBGcm9t
-OiBDcnlzdGFsIEd1byA8Y3J5c3RhbC5ndW9AbWVkaWF0ZWsuY29tPg0KPiA+IA0KPiA+IGFkZCBk
-cml2ZXIgc2V0dGluZyB0byBzdXBwb3J0IG10ODE5MiB3ZHQNCj4gPiANCj4gPiBTaWduZWQtb2Zm
-LWJ5OiBDcnlzdGFsIEd1byA8Y3J5c3RhbC5ndW9AbWVkaWF0ZWsuY29tPg0KPiA+IC0tLQ0KPiA+
-ICAgZHJpdmVycy93YXRjaGRvZy9tdGtfd2R0LmMgfCA1ICsrKysrDQo+ID4gICAxIGZpbGUgY2hh
-bmdlZCwgNSBpbnNlcnRpb25zKCspDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvd2F0
-Y2hkb2cvbXRrX3dkdC5jIGIvZHJpdmVycy93YXRjaGRvZy9tdGtfd2R0LmMNCj4gPiBpbmRleCBk
-NmE2MzkzZjYwOWQuLmFkMjM1OTYxNzBhZiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3dhdGNo
-ZG9nL210a193ZHQuYw0KPiA+ICsrKyBiL2RyaXZlcnMvd2F0Y2hkb2cvbXRrX3dkdC5jDQo+ID4g
-QEAgLTc2LDYgKzc2LDEwIEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgbXRrX3dkdF9kYXRhIG10ODE4
-M19kYXRhID0gew0KPiA+ICAgCS50b3ByZ3Vfc3dfcnN0X251bSA9IE1UODE4M19UT1BSR1VfU1df
-UlNUX05VTSwNCj4gPiAgIH07DQo+ID4gICANCj4gPiArc3RhdGljIGNvbnN0IHN0cnVjdCBtdGtf
-d2R0X2RhdGEgbXQ4MTkyX2RhdGEgPSB7DQo+ID4gKwkudG9wcmd1X3N3X3JzdF9udW0gPSAyMywN
-Cj4gDQo+IFNob3VsZCBiZSBkZWZpbmVkIGluIGluY2x1ZGUvZHQtYmluZGluZ3MvcmVzZXQtY29u
-dHJvbGxlci9tdDgxOTItcmVzZXRzLmgNCg0KbXQ4eHh4LXJlc2V0cy5oIGFjdHVhbGx5IGp1c3Qg
-dXNlZCB0byBkZWZpbmUgVE9QUkdVX1NXX1JTVF9OVU0sIG1heSBiZQ0KaXQncyBtb3JlIGVhc2ll
-ciB0byBtYWludGFpbiBieSBkZWZpbmUgaXQgYXQgT0YgZGF0YSBkaXJlY3RseSwgaW5zdGVhZA0K
-b2YgcmVzdWJtaXQgdGhlIG10OHh4eC1yZXNldC5oIGFuZCBhZGQNCiJpbmNsdWRlL2R0LWJpbmRp
-bmdzL3Jlc2V0LWNvbnRyb2xsZXIvbXQ4eHh4LXJlc2V0cy5oIiBhdCBtdGtfd2R0LmMuDQoNClJl
-Z2FyZHMNCkNyeXN0YWwgR3VvDQoNCj4gDQo+ID4gK307DQo+ID4gKw0KPiA+ICAgc3RhdGljIGlu
-dCB0b3ByZ3VfcmVzZXRfdXBkYXRlKHN0cnVjdCByZXNldF9jb250cm9sbGVyX2RldiAqcmNkZXYs
-DQo+ID4gICAJCQkgICAgICAgdW5zaWduZWQgbG9uZyBpZCwgYm9vbCBhc3NlcnQpDQo+ID4gICB7
-DQo+ID4gQEAgLTMyMiw2ICszMjYsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9p
-ZCBtdGtfd2R0X2R0X2lkc1tdID0gew0KPiA+ICAgCXsgLmNvbXBhdGlibGUgPSAibWVkaWF0ZWss
-bXQyNzEyLXdkdCIsIC5kYXRhID0gJm10MjcxMl9kYXRhIH0sDQo+ID4gICAJeyAuY29tcGF0aWJs
-ZSA9ICJtZWRpYXRlayxtdDY1ODktd2R0IiB9LA0KPiA+ICAgCXsgLmNvbXBhdGlibGUgPSAibWVk
-aWF0ZWssbXQ4MTgzLXdkdCIsIC5kYXRhID0gJm10ODE4M19kYXRhIH0sDQo+ID4gKwl7IC5jb21w
-YXRpYmxlID0gIm1lZGlhdGVrLG10ODE5Mi13ZHQiLCAuZGF0YSA9ICZtdDgxOTJfZGF0YSB9LA0K
-PiA+ICAgCXsgLyogc2VudGluZWwgKi8gfQ0KPiA+ICAgfTsNCj4gPiAgIE1PRFVMRV9ERVZJQ0Vf
-VEFCTEUob2YsIG10a193ZHRfZHRfaWRzKTsNCj4gPiANCg0K
+On Fri, Jul 24, 2020 at 11:44:02AM +0530, Paras Sharma wrote:
+> To correct the logic to detect whether the QUP HW version is greater
+>  than 2.5.
 
+The subject line and here does not make any sense.  Can you reword this
+as what the problem is and why you need to change this?
+
+> 
+> Signed-off-by: Paras Sharma <parashar@codeaurora.org>
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 1ed3d35..5b0efb49 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -954,7 +954,8 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>  	sampling_rate = UART_OVERSAMPLING;
+>  	/* Sampling rate is halved for IP versions >= 2.5 */
+>  	ver = geni_se_get_qup_hw_version(&port->se);
+> -	if (GENI_SE_VERSION_MAJOR(ver) >= 2 && GENI_SE_VERSION_MINOR(ver) >= 5)
+> +	if ((GENI_SE_VERSION_MAJOR(ver) >= 2 && GENI_SE_VERSION_MINOR(ver) >= 5)
+> +		|| GENI_SE_VERSION_MAJOR(ver) >= 3)
+
+Odd coding style :(
+
+Please fix all of the above up and resubmit a v2.
+
+thanks,
+
+greg k-h
