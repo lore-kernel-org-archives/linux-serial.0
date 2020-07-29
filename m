@@ -2,100 +2,89 @@ Return-Path: <SRS0=y+wj=BI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5D7C433DF
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jul 2020 08:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C82C433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jul 2020 16:03:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A9FD72070B
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jul 2020 08:10:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="loBW/c/M"
+	by mail.kernel.org (Postfix) with ESMTP id 9111D2173E
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jul 2020 16:03:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1596038623;
+	bh=VZUYphEQUTYK+8UogBIYPgtkqViD/D0Xw8dBmHZUB3g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=ijv+kKqy1xEWPsT2DCdxRgCyTPezHbR6B+gCm+9HwXTnZwT3f2wA0M5HSzQwCFeV9
+	 XpI6p+AQh6+uPgWQ3Ra2MHMbe3CEuddGDAcvqXuEM5E6gBMWKDGhpzbYyK2Jui9moo
+	 7pBh4lnnmyo0kx94EDgDRiWT7Dy380Po7TqrfSpk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbgG2IK2 (ORCPT
+        id S1726365AbgG2QDn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jul 2020 04:10:28 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:39155 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726476AbgG2IK1 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jul 2020 04:10:27 -0400
-X-UUID: 80cd8d0062d14291b6ab20d84c6dcfff-20200729
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=bR10KbXtzajag+49gYfd5nFZ5Eo9nw+6eYZQAA/1I/c=;
-        b=loBW/c/M6WOL8dxdgrA+B6w/h6kUziukhtD7os2FiGPEF1Q8jDK8lCQJ/osHxilBSnBrD7Fv79D2v7i5OBT196lRTBlyL/tQwKC1FQzcfgURyuaCM5GqFOBYbowixpNySzFmqkPMXRqAOCRQvC35mlA5NykEpLF+YCaFPuoUVBo=;
-X-UUID: 80cd8d0062d14291b6ab20d84c6dcfff-20200729
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 1580035275; Wed, 29 Jul 2020 16:10:22 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 29 Jul 2020 16:10:20 +0800
-Received: from [172.21.77.4] (172.21.77.4) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 29 Jul 2020 16:10:20 +0800
-Message-ID: <1596010221.23124.2.camel@mtksdaap41>
-Subject: Re: [PATCH v3 1/3] arm64: dts: Add Mediatek SoC MT8192 and
- evaluation board dts and Makefile
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Seiya Wang <seiya.wang@mediatek.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Daniel Lezcano" <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Wed, 29 Jul 2020 16:10:21 +0800
-In-Reply-To: <1596009775.12468.6.camel@mtksdaap41>
-References: <20200729013100.19539-1-seiya.wang@mediatek.com>
-         <20200729013100.19539-2-seiya.wang@mediatek.com>
-         <1596009775.12468.6.camel@mtksdaap41>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+        Wed, 29 Jul 2020 12:03:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45854 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726341AbgG2QDn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 29 Jul 2020 12:03:43 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 215F8206D8;
+        Wed, 29 Jul 2020 16:03:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596038622;
+        bh=VZUYphEQUTYK+8UogBIYPgtkqViD/D0Xw8dBmHZUB3g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H63B0KKsLXRaZEMqJMzY3dz4ZH/fCmTxVfzOf5H0WnP/kkqDO8WFZEFch22BlY253
+         2JOo6UlC6YiU79+fj9gs1z0cW6CBjRc1SEipPmRMbC8QyCPeglNLdm2HJ9urPQG1ZI
+         4cLj/0a3oNrIMMFnesuG4XvoT7r/466u4S2AnmOI=
+Date:   Wed, 29 Jul 2020 18:03:33 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     B K Karthik <bkkarthik@pesu.pes.edu>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Vabhav Sharma (OSS)" <vabhav.sharma@oss.nxp.com>,
+        "bhuvanchandra.dv@toradex.com" <bhuvanchandra.dv@toradex.com>
+Subject: Re: [PATCH v2] tty: serial: fsl_lpuart.c: prevent a bad shift
+ operation
+Message-ID: <20200729160333.GA3652767@kroah.com>
+References: <20200721174228.misj2mgqzcfz2lsj@pesu.pes.edu>
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200721174228.misj2mgqzcfz2lsj@pesu.pes.edu>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGksIFNlaXlhOg0KDQpPbiBXZWQsIDIwMjAtMDctMjkgYXQgMTY6MDIgKzA4MDAsIENLIEh1IHdy
-b3RlOg0KPiBIaSwgU2VpeWE6DQo+IA0KPiBPbiBXZWQsIDIwMjAtMDctMjkgYXQgMDk6MzAgKzA4
-MDAsIFNlaXlhIFdhbmcgd3JvdGU6DQo+ID4gQWRkIGJhc2ljIGNoaXAgc3VwcG9ydCBmb3IgTWVk
-aWF0ZWsgTVQ4MTkyDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogU2VpeWEgV2FuZyA8c2VpeWEu
-d2FuZ0BtZWRpYXRlay5jb20+DQo+ID4gLS0tDQo+ID4gIGFyY2gvYXJtNjQvYm9vdC9kdHMvbWVk
-aWF0ZWsvTWFrZWZpbGUgICAgICAgfCAgIDEgKw0KPiA+ICBhcmNoL2FybTY0L2Jvb3QvZHRzL21l
-ZGlhdGVrL210ODE5Mi1ldmIuZHRzIHwgIDI5ICsrDQo+ID4gIGFyY2gvYXJtNjQvYm9vdC9kdHMv
-bWVkaWF0ZWsvbXQ4MTkyLmR0c2kgICAgfCA2NzEgKysrKysrKysrKysrKysrKysrKysrKysrKysr
-Kw0KPiA+ICAzIGZpbGVzIGNoYW5nZWQsIDcwMSBpbnNlcnRpb25zKCspDQo+ID4gIGNyZWF0ZSBt
-b2RlIDEwMDY0NCBhcmNoL2FybTY0L2Jvb3QvZHRzL21lZGlhdGVrL210ODE5Mi1ldmIuZHRzDQo+
-ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL2FybTY0L2Jvb3QvZHRzL21lZGlhdGVrL210ODE5
-Mi5kdHNpDQo+ID4gDQo+IA0KPiBbc25pcF0NCj4gDQo+ID4gKw0KPiA+ICsJCXdhdGNoZG9nOiB3
-YXRjaGRvZ0AxMDAwNzAwMCB7DQo+ID4gKwkJCWNvbXBhdGlibGUgPSAibWVkaWF0ZWssbXQ2NTg5
-LXdkdCI7DQo+IA0KPiBBY2NvcmRpbmcgdG8gWzFdIGFuZCBbMl0sIGNvbXBhdGlibGUgc3RyaW5n
-IGZvciBtdDgxOTIgd2F0Y2ggZG9nIHNob3VsZA0KPiBiZSAibWVkaWF0ZWssbXQ2ODczLXdkdCIs
-Im1lZGlhdGVrLG10ODE5Mi13ZHQiLg0KPiANCj4gDQo+IFsxXQ0KPiBodHRwczovL2Nocm9taXVt
-LXJldmlldy5nb29nbGVzb3VyY2UuY29tL2MvY2hyb21pdW1vcy90aGlyZF9wYXJ0eS9rZXJuZWwv
-Ky8yMjg3MDkwLzEyDQo+IFsyXQ0KPiBodHRwczovL2Nocm9taXVtLXJldmlldy5nb29nbGVzb3Vy
-Y2UuY29tL2MvY2hyb21pdW1vcy90aGlyZF9wYXJ0eS9rZXJuZWwvKy8yMTMxNTk4LzE4DQo+IA0K
-PiA+ICsJCQlyZWcgPSA8MCAweDEwMDA3MDAwIDAgMHgxMDA+Ow0KPiA+ICsJCQkjcmVzZXQtY2Vs
-bHMgPSA8MT47DQo+ID4gKwkJfTsNCj4gPiArDQo+IA0KPiBbc25pcF0NCj4gDQo+ID4gKw0KPiA+
-ICsJCW1tc3lzOiBtbXN5c0AxNDAwMDAwMCB7DQo+ID4gKwkJCWNvbXBhdGlibGUgPSAibWVkaWF0
-ZWssbXQ4MTkyLW1tc3lzIiwgInN5c2NvbiI7DQo+IA0KPiBZb3Ugc2hvdWxkIGRlZmluZSAibWVk
-aWF0ZWssbXQ4MTkyLW1tc3lzIiBmaXJzdCwgdGhlbiB5b3UgY291bGQgdXNlIGl0DQo+IGluIHRo
-aXMgcGF0Y2gNCg0KU29ycnksIHRoaXMgc2VyaWVzIGRlcGVuZCBvbiBbMV0sIGJ1dCBtbXN5cyBp
-cyBhIHN5c2Nvbiwgc28gdGhpcyBzaG91bGQNCmJlDQoNCm1tc3lzOiBzeXNjb25AMTQwMDAwMDAg
-ew0KDQpbMV0NCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL3BpcGVybWFpbC9saW51eC1tZWRp
-YXRlay8yMDIwLUp1bHkvMDE0NDUxLmh0bWwNCg0KUmVnYXJkcywNCkNLDQo+IC4NCj4gDQo+IFJl
-Z2FyZHMsDQo+IENLDQo+IA0KPiA+ICsJCQlyZWcgPSA8MCAweDE0MDAwMDAwIDAgMHgxMDAwPjsN
-Cj4gPiArCQkJI2Nsb2NrLWNlbGxzID0gPDE+Ow0KPiA+ICsJCX07DQo+ID4gKw0KPiANCg0K
+On Tue, Jul 21, 2020 at 11:12:29PM +0530, B K Karthik wrote:
+> prevent a bad shift operation by verifying that
+> the argument to fls is non zero.
+> 
+> Reported-by: "Vabhav Sharma (OSS)" <vabhav.sharma@oss.nxp.com>
+> Signed-off-by: B K Karthik <bkkarthik@pesu.pes.edu>
+> ---
+> v1 -> v2:
+> 	added Reported-by tag
+> 
+>  drivers/tty/serial/fsl_lpuart.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index 7ca642249224..0cc64279cd2d 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1168,7 +1168,8 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
+>  	 * 10ms at any baud rate.
+>  	 */
+>  	sport->rx_dma_rng_buf_len = (DMA_RX_TIMEOUT * baud /  bits / 1000) * 2;
+> -	sport->rx_dma_rng_buf_len = (1 << (fls(sport->rx_dma_rng_buf_len) - 1));
+> +	if (sport->rx_dma_rng_buf_len != 0)
 
+How can this variable become 0?
+
+thanks,
+
+greg k-h
