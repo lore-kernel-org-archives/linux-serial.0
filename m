@@ -1,88 +1,144 @@
-Return-Path: <SRS0=+g8y=BK=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=pctG=BL=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A426C433DF
-	for <linux-serial@archiver.kernel.org>; Fri, 31 Jul 2020 21:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFC5C433DF
+	for <linux-serial@archiver.kernel.org>; Sat,  1 Aug 2020 04:09:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DF79622BF5
-	for <linux-serial@archiver.kernel.org>; Fri, 31 Jul 2020 21:13:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596230032;
-	bh=hMIRdwmttvYnG6R2d8TU5SjlTpwQmxcQIYzbWnRPxws=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=jnWQBmfYEvZpthFLu9P4NiOoDQDnH5RfZcT+jQGS2Ub89pRLZjjVot65iyjjHjRU4
-	 kCdvkMdzJ0uik1XW1f02UEH4pWkj5rOba26QQaYErgnt1qoIlYDXHz0A3Hl8WHbdFY
-	 cdgKneyQLQWS5k1GFKg8cFtnAuL26nNXpc7DFSfM=
+	by mail.kernel.org (Postfix) with ESMTP id 6684C2076A
+	for <linux-serial@archiver.kernel.org>; Sat,  1 Aug 2020 04:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727975AbgGaVNw (ORCPT
+        id S1725280AbgHAEJA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 31 Jul 2020 17:13:52 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:46638 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727053AbgGaVNw (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 31 Jul 2020 17:13:52 -0400
-Received: by mail-io1-f67.google.com with SMTP id a5so17762287ioa.13;
-        Fri, 31 Jul 2020 14:13:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0kUiZodQVGoScmGeQBAxfGuNNmJgniCksGkhC2caiFo=;
-        b=iTNNulpZ0ubAvngsZf4lqCo7QjBOD8lJt6fkQqRf1qgoYiU0KerajYMIZqGEDesI44
-         z4grd22LUCOEObrBWVLErSu0XeA5UFTRHYGdYlCrZUneZB7+Cia9P5KWEyxcaEV977Z5
-         I8340FHuodMyHkoSksQ8HtyyC7e5kR3LbK5OIeLtmo4Bd8hMjKP/UAG/LVzH3gLszOCO
-         RRaba8/qpy2mBgEdp17Z/eBxWqxsij8GrIFnoDGX7rKrAjlXBrKXW/f1+za7hut7k2Iu
-         VYWdv1PFd+u+tFxBoViMM6cquPwq5WDFK7MDm4vz8HT8MQTsY4VqijhGbPGee+x+/Wmf
-         Czzg==
-X-Gm-Message-State: AOAM5337vY+/L9qttv9eHLP2uX4YoDi84VYgo6068+IIYw2IVMMdjwPM
-        a4d2UN2PR2zXNMe+GlVM84ujnzr+JA==
-X-Google-Smtp-Source: ABdhPJxkduuS7JPJS9dhqjYDKOUcWmOcyCaz1IWXXBMarQCX27BuT7ZuW1Xheh1N6rFpWa7XPS02Qw==
-X-Received: by 2002:a05:6638:2653:: with SMTP id n19mr7238909jat.34.1596230031583;
-        Fri, 31 Jul 2020 14:13:51 -0700 (PDT)
-Received: from xps15 ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id s10sm5360289ilh.4.2020.07.31.14.13.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2020 14:13:51 -0700 (PDT)
-Received: (nullmailer pid 800839 invoked by uid 1000);
-        Fri, 31 Jul 2020 21:13:49 -0000
-Date:   Fri, 31 Jul 2020 15:13:49 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Seiya Wang <seiya.wang@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        srv_heupstream@mediatek.com, Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v3 3/3] dt-bindings: timer: Add compatible for Mediatek
- MT8192
-Message-ID: <20200731211349.GA800755@bogus>
-References: <20200729013100.19539-1-seiya.wang@mediatek.com>
- <20200729013100.19539-4-seiya.wang@mediatek.com>
+        Sat, 1 Aug 2020 00:09:00 -0400
+Received: from mga07.intel.com ([134.134.136.100]:64417 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725275AbgHAEJA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 1 Aug 2020 00:09:00 -0400
+IronPort-SDR: zdA6oUkoC8B1pWHzr0cwm/bY6yUGSB0VdjG8/I+UHQ/uEH4CMUKxuCUt21PgWSYmIAw20/OBBG
+ ORA6ziNRAFVw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9699"; a="216342189"
+X-IronPort-AV: E=Sophos;i="5.75,420,1589266800"; 
+   d="scan'208";a="216342189"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2020 21:09:00 -0700
+IronPort-SDR: 88WoaQFBAafYzIL1GA2rB79/B/2XmfwAwX2WDX6K/UV8nGF/QnM9wDEd/vi8bq+LYDhM9LkbKa
+ HSAhYyVHFVLg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,420,1589266800"; 
+   d="scan'208";a="305248226"
+Received: from lkp-server01.sh.intel.com (HELO e21119890065) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 31 Jul 2020 21:08:58 -0700
+Received: from kbuild by e21119890065 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1k1ipN-0000IF-VE; Sat, 01 Aug 2020 04:08:57 +0000
+Date:   Sat, 01 Aug 2020 12:08:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-next] BUILD SUCCESS
+ cc816969d7b5973d2720d9afd381f06f0eac6885
+Message-ID: <5f24eacc.Lftj4sv+qXlZ64Kt%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200729013100.19539-4-seiya.wang@mediatek.com>
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 29 Jul 2020 09:31:00 +0800, Seiya Wang wrote:
-> This commit adds dt-binding documentation of timer for Mediatek MT8192 SoC
-> Platform.
-> 
-> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
-> ---
->  Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-next
+branch HEAD: cc816969d7b5973d2720d9afd381f06f0eac6885  serial: 8250_dw: Fix common clocks usage race condition
 
-Acked-by: Rob Herring <robh@kernel.org>
+elapsed time: 3490m
+
+configs tested: 72
+configs skipped: 1
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+c6x                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+powerpc                             defconfig
+i386                 randconfig-a005-20200731
+i386                 randconfig-a004-20200731
+i386                 randconfig-a006-20200731
+i386                 randconfig-a002-20200731
+i386                 randconfig-a001-20200731
+i386                 randconfig-a003-20200731
+x86_64               randconfig-a015-20200731
+x86_64               randconfig-a014-20200731
+x86_64               randconfig-a016-20200731
+x86_64               randconfig-a012-20200731
+x86_64               randconfig-a013-20200731
+x86_64               randconfig-a011-20200731
+i386                 randconfig-a016-20200730
+i386                 randconfig-a012-20200730
+i386                 randconfig-a014-20200730
+i386                 randconfig-a015-20200730
+i386                 randconfig-a011-20200730
+i386                 randconfig-a013-20200730
+i386                 randconfig-a016-20200731
+i386                 randconfig-a012-20200731
+i386                 randconfig-a014-20200731
+i386                 randconfig-a015-20200731
+i386                 randconfig-a011-20200731
+i386                 randconfig-a013-20200731
+riscv                            allyesconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                            allmodconfig
+x86_64                                   rhel
+x86_64                           allyesconfig
+x86_64                    rhel-7.6-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
