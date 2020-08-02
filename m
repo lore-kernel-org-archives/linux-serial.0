@@ -2,101 +2,82 @@ Return-Path: <SRS0=oHof=BM=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 227ABC433E0
-	for <linux-serial@archiver.kernel.org>; Sun,  2 Aug 2020 10:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51505C433E0
+	for <linux-serial@archiver.kernel.org>; Sun,  2 Aug 2020 11:16:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EB31D2076B
-	for <linux-serial@archiver.kernel.org>; Sun,  2 Aug 2020 10:58:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596365907;
-	bh=MOrzMj2W55UJKJyvuXI+G/4EBNaq8w1o1Kkvy6T/r2k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=saHItqmYh+x17ECuTRQckwJpewvzgkBoBzOPl3vrxRuqjT6MCT8OZdu/ECLqdyviI
-	 6GdRKeESIwYnQl8vJ4a/Xm+7XdLRCst4hFLuJ0b6INjJ2Z16UGgx+gWk5JllzuKEPu
-	 mGljoif41b3OyoGNKmV7049WEZV3VfhnloINC5vE=
+	by mail.kernel.org (Postfix) with ESMTP id 3B1C5207DF
+	for <linux-serial@archiver.kernel.org>; Sun,  2 Aug 2020 11:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726827AbgHBK60 (ORCPT
+        id S1728423AbgHBLQQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 2 Aug 2020 06:58:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36828 "EHLO mail.kernel.org"
+        Sun, 2 Aug 2020 07:16:16 -0400
+Received: from mga02.intel.com ([134.134.136.20]:12504 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726765AbgHBK60 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 2 Aug 2020 06:58:26 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 136C020738;
-        Sun,  2 Aug 2020 10:58:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596365905;
-        bh=MOrzMj2W55UJKJyvuXI+G/4EBNaq8w1o1Kkvy6T/r2k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JzBSDUgWdyzOLKpSKMOlE16XUzUVspN0ZmE9otAJGyosykI2/eLOjQSykhqPY0vgw
-         f7D7uP/xQ2VXsJlsivi6B+zgfOaGvVrLO3hV2OAn19dIKlYHM4l0Ndl4ft2padKoKZ
-         s2cUzeqK0bwnClj3LrW9rKKsJwYIONXivcrj+rlQ=
-Date:   Sun, 2 Aug 2020 12:58:08 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        lkp@lists.01.org
-Subject: Re: [serial] 679193b7ba: BUG:spinlock_bad_magic_on_CPU
-Message-ID: <20200802105808.GA164531@kroah.com>
-References: <20200802054852.GR23458@shao2-debian>
- <CAHp75Vcdwz2RynZ0KVCDMFyO_GPREgGdCNVNGqosjf6iV0_uog@mail.gmail.com>
+        id S1728270AbgHBLQP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 2 Aug 2020 07:16:15 -0400
+IronPort-SDR: beACZg5nxfeeWe/VVPqYq+OykIu8tHieJFdrlYRJ+tHHDqCPwdqHH5Arg9ctJ6ePqrfyaaLcPT
+ vAGxaL7Fhmbw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9700"; a="139947866"
+X-IronPort-AV: E=Sophos;i="5.75,426,1589266800"; 
+   d="scan'208";a="139947866"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2020 04:16:15 -0700
+IronPort-SDR: MfwIlbRFlUXFxZhRFDziFgPRIdyfLTz7haxslzJnGUrAuMDyW0+VMyW2KMc/DSWY1eWeKYzK8X
+ OFnp6viokavw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,426,1589266800"; 
+   d="scan'208";a="466156955"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 02 Aug 2020 04:16:14 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 40CDA130; Sun,  2 Aug 2020 14:16:13 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v1] Revert "serial: 8250: Let serial core initialise spin lock"
+Date:   Sun,  2 Aug 2020 14:16:12 +0300
+Message-Id: <20200802111612.36189-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vcdwz2RynZ0KVCDMFyO_GPREgGdCNVNGqosjf6iV0_uog@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Aug 02, 2020 at 01:50:29PM +0300, Andy Shevchenko wrote:
-> On Sun, Aug 2, 2020 at 8:54 AM kernel test robot <lkp@intel.com> wrote:
-> >
-> > Greeting,
-> >
-> > FYI, we noticed the following commit (built with gcc-9):
-> >
-> > commit: 679193b7baf8d88e41cbeb397ca17f797654947d ("serial: 8250: Let serial core initialise spin lock")
-> > https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git tty-next
-> >
-> >
-> > in testcase: boot
-> >
-> > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> >
-> > caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
-> >
-> >
-> > +-------------------------------+------------+------------+
-> > |                               | f3af1b68fc | 679193b7ba |
-> > +-------------------------------+------------+------------+
-> > | boot_successes                | 4          | 0          |
-> > | boot_failures                 | 0          | 4          |
-> > | BUG:spinlock_bad_magic_on_CPU | 0          | 4          |
-> > +-------------------------------+------------+------------+
-> >
-> >
-> > If you fix the issue, kindly add following tag
-> > Reported-by: kernel test robot <lkp@intel.com>
-> 
-> Thanks for the report. I didn't see it on real hardware though. Maybe
-> because of timing (race?) differences.
-> 
-> Greg, I think the best is to revert the change until I will have better one.
+This reverts commit 679193b7baf8d88e41cbeb397ca17f797654947d.
 
-Can you send me a revert patch with the reported-by: set up?
+It appears that in QEmu the lock has been initialised differently
+(it wasn't obvious on real hardware during testing). Let's
+revert the change until the better approach will be developed.
 
-thanks,
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index b2d18189d3d9..09475695effd 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3194,6 +3194,7 @@ void serial8250_init_port(struct uart_8250_port *up)
+ {
+ 	struct uart_port *port = &up->port;
+ 
++	spin_lock_init(&port->lock);
+ 	port->ops = &serial8250_pops;
+ 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
+ 
+-- 
+2.27.0
+
