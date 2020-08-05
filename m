@@ -7,28 +7,28 @@ X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7249C433E0
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 04:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AACD0C433E0
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 04:59:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A3804207FC
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 04:59:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 98B4722CB3
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 04:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725887AbgHEE7C (ORCPT
+        id S1726128AbgHEE7F (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Aug 2020 00:59:02 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:36098 "EHLO inva020.nxp.com"
+        Wed, 5 Aug 2020 00:59:05 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:60772 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725372AbgHEE7B (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Aug 2020 00:59:01 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 3221F1A0403;
-        Wed,  5 Aug 2020 06:58:59 +0200 (CEST)
+        id S1725868AbgHEE7D (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 5 Aug 2020 00:59:03 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6865F2013D5;
+        Wed,  5 Aug 2020 06:59:00 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 14BB01A04E8;
-        Wed,  5 Aug 2020 06:58:54 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3C7072013E5;
+        Wed,  5 Aug 2020 06:58:55 +0200 (CEST)
 Received: from 10.192.242.69 (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 1835A40319;
-        Wed,  5 Aug 2020 06:58:48 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 3E5A9402E5;
+        Wed,  5 Aug 2020 06:58:49 +0200 (CEST)
 From:   Anson Huang <Anson.Huang@nxp.com>
 To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
@@ -36,117 +36,113 @@ To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Linux-imx@nxp.com
-Subject: [PATCH 1/3] dt-bindings: serial: Convert i.MX uart to json-schema
-Date:   Wed,  5 Aug 2020 12:54:17 +0800
-Message-Id: <1596603259-5367-1-git-send-email-Anson.Huang@nxp.com>
+Subject: [PATCH 2/3] dt-bindings: serial: Convert MXS auart to json-schema
+Date:   Wed,  5 Aug 2020 12:54:18 +0800
+Message-Id: <1596603259-5367-2-git-send-email-Anson.Huang@nxp.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1596603259-5367-1-git-send-email-Anson.Huang@nxp.com>
+References: <1596603259-5367-1-git-send-email-Anson.Huang@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the i.MX uart binding to DT schema format using json-schema.
+Convert the MXS auart binding to DT schema format using json-schema.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
- .../devicetree/bindings/serial/fsl-imx-uart.txt    | 40 ----------
- .../devicetree/bindings/serial/fsl-imx-uart.yaml   | 92 ++++++++++++++++++++++
- 2 files changed, 92 insertions(+), 40 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+ .../devicetree/bindings/serial/fsl-mxs-auart.txt   | 53 ------------
+ .../devicetree/bindings/serial/fsl-mxs-auart.yaml  | 93 ++++++++++++++++++++++
+ 2 files changed, 93 insertions(+), 53 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/fsl-mxs-auart.yaml
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+diff --git a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
 deleted file mode 100644
-index 9582fc2..0000000
---- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+index 5c96d41..0000000
+--- a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.txt
 +++ /dev/null
-@@ -1,40 +0,0 @@
--* Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
+@@ -1,53 +0,0 @@
+-* Freescale MXS Application UART (AUART)
 -
--Required properties:
--- compatible : Should be "fsl,<soc>-uart"
+-Required properties for all SoCs:
+-- compatible : Should be one of fallowing variants:
+-	"fsl,imx23-auart" - Freescale i.MX23
+-	"fsl,imx28-auart" - Freescale i.MX28
+-	"alphascale,asm9260-auart" - Alphascale ASM9260
 -- reg : Address and length of the register set for the device
--- interrupts : Should contain uart interrupt
+-- interrupts : Should contain the auart interrupt numbers
+-- dmas: DMA specifier, consisting of a phandle to DMA controller node
+-  and AUART DMA channel ID.
+-  Refer to dma.txt and fsl-mxs-dma.txt for details.
+-- dma-names: "rx" for RX channel, "tx" for TX channel.
+-
+-Required properties for "alphascale,asm9260-auart":
+-- clocks : the clocks feeding the watchdog timer. See clock-bindings.txt
+-- clock-names : should be set to
+-	"mod" - source for tick counter.
+-	"ahb" - ahb gate.
 -
 -Optional properties:
--- fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
--                  in DCE mode by default.
--- fsl,inverted-tx , fsl,inverted-rx : Indicate that the hardware attached
--  to the peripheral inverts the signal transmitted or received,
--  respectively, and that the peripheral should invert its output/input
--  using the INVT/INVR registers.
--- rs485-rts-delay, rs485-rts-active-low, rs485-rx-during-tx,
--  linux,rs485-enabled-at-boot-time: see rs485.txt. Note that for RS485
--  you must enable either the "uart-has-rtscts" or the "rts-gpios"
--  properties. In case you use "uart-has-rtscts" the signal that controls
--  the transceiver is actually CTS_B, not RTS_B. CTS_B is always output,
--  and RTS_B is input, regardless of dte-mode.
+-- uart-has-rtscts : Indicate the UART has RTS and CTS lines
+-  for hardware flow control,
+-	it also means you enable the DMA support for this UART.
+-- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
+-  line respectively. It will use specified PIO instead of the peripheral
+-  function pin for the USART feature.
+-  If unsure, don't specify this property.
 -
--Please check Documentation/devicetree/bindings/serial/serial.yaml
--for the complete list of generic properties.
+-Example:
+-auart0: serial@8006a000 {
+-	compatible = "fsl,imx28-auart", "fsl,imx23-auart";
+-	reg = <0x8006a000 0x2000>;
+-	interrupts = <112>;
+-	dmas = <&dma_apbx 8>, <&dma_apbx 9>;
+-	dma-names = "rx", "tx";
+-	cts-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
+-	dsr-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
+-	dcd-gpios = <&gpio1 17 GPIO_ACTIVE_LOW>;
+-};
 -
--Note: Each uart controller should have an alias correctly numbered
--in "aliases" node.
+-Note: Each auart port should have an alias correctly numbered in "aliases"
+-node.
 -
 -Example:
 -
 -aliases {
--	serial0 = &uart1;
+-	serial0 = &auart0;
+-	serial1 = &auart1;
+-	serial2 = &auart2;
+-	serial3 = &auart3;
+-	serial4 = &auart4;
 -};
--
--uart1: serial@73fbc000 {
--	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
--	reg = <0x73fbc000 0x4000>;
--	interrupts = <31>;
--	uart-has-rtscts;
--	fsl,dte-mode;
--};
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+diff --git a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.yaml b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.yaml
 new file mode 100644
-index 0000000..cba3f83
+index 0000000..096ef05
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-@@ -0,0 +1,92 @@
++++ b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.yaml
+@@ -0,0 +1,93 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/serial/fsl-imx-uart.yaml#
++$id: http://devicetree.org/schemas/serial/fsl-mxs-auart.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
++title: Freescale MXS Application UART (AUART)
 +
 +maintainers:
-+  - Fabio Estevam <fabio.estevam@nxp.com>
++  - Kumar Gala <galak@codeaurora.org>
 +
 +allOf:
 +  - $ref: "serial.yaml"
-+  - $ref: "rs485.yaml"
 +
 +properties:
 +  compatible:
-+    oneOf:
-+      - const: fsl,imx1-uart
-+      - const: fsl,imx21-uart
-+      - const: fsl,imx53-uart
-+      - const: fsl,imx6q-uart
-+      - items:
-+          - enum:
-+            - fsl,imx25-uart
-+            - fsl,imx27-uart
-+            - fsl,imx31-uart
-+            - fsl,imx35-uart
-+            - fsl,imx50-uart
-+            - fsl,imx51-uart
-+          - const: fsl,imx21-uart
-+      - items:
-+          - enum:
-+            - fsl,imx6sl-uart
-+            - fsl,imx6sll-uart
-+            - fsl,imx6sx-uart
-+            - fsl,imx6ul-uart
-+            - fsl,imx7d-uart
-+          - const: fsl,imx6q-uart
++    enum:
++      - fsl,imx23-auart
++      - fsl,imx28-auart
++      - alphascale,asm9260-auart
 +
 +  reg:
 +    maxItems: 1
@@ -154,51 +150,71 @@ index 0000000..cba3f83
 +  interrupts:
 +    maxItems: 1
 +
-+  fsl,dte-mode:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Indicate the uart works in DTE mode. The uart works in DCE mode by default.
++  dmas:
++    items:
++      - description: DMA controller phandle and request line for RX
++      - description: DMA controller phandle and request line for TX
 +
-+  fsl,inverted-tx:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Indicate that the hardware attached to the peripheral inverts the signal
-+      transmitted, and that the peripheral should invert its output using the
-+      INVT registers.
++  dma-names:
++    items:
++      - const: rx
++      - const: tx
 +
-+  fsl,inverted-rx:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Indicate that the hardware attached to the peripheral inverts the signal
-+      received, and that the peripheral should invert its input using the
-+      INVR registers.
++  clocks:
++    items:
++      - description: mod clock
++      - description: ahb clock
++
++  clock-names:
++    items:
++      - const: mod
++      - const: ahb
 +
 +  uart-has-rtscts: true
++  rts-gpios: true
++  cts-gpios: true
++  dtr-gpios: true
++  dsr-gpios: true
++  rng-gpios: true
++  dcd-gpios: true
 +
-+  rs485-rts-delay: true
-+  rs485-rts-active-low: true
-+  rs485-rx-during-tx: true
-+  linux,rs485-enabled-at-boot-time: true
++if:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - alphascale,asm9260-auart
++then:
++  required:
++    - clocks
++    - clock-names
 +
 +required:
 +  - compatible
 +  - reg
 +  - interrupts
++  - dmas
++  - dma-names
 +
 +unevaluatedProperties: false
 +
 +examples:
 +  - |
++    #include <dt-bindings/gpio/gpio.h>
++
 +    aliases {
-+        serial0 = &uart1;
++        serial0 = &auart0;
 +    };
 +
-+    uart1: serial@73fbc000 {
-+        compatible = "fsl,imx51-uart", "fsl,imx21-uart";
-+        reg = <0x73fbc000 0x4000>;
-+        interrupts = <31>;
-+        uart-has-rtscts;
-+        fsl,dte-mode;
++    auart0: serial@8006a000 {
++        compatible = "fsl,imx28-auart";
++        reg = <0x8006a000 0x2000>;
++        interrupts = <112>;
++        dmas = <&dma_apbx 8>, <&dma_apbx 9>;
++        dma-names = "rx", "tx";
++        cts-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
++        dsr-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
++        dcd-gpios = <&gpio1 17 GPIO_ACTIVE_LOW>;
 +    };
 -- 
 2.7.4
