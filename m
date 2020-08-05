@@ -2,140 +2,204 @@ Return-Path: <SRS0=nzNS=BP=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A99C433DF
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 03:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7249C433E0
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 04:59:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 550CB22B40
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 03:52:21 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="g3ycNW8+"
+	by mail.kernel.org (Postfix) with ESMTP id A3804207FC
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 04:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726027AbgHEDwV (ORCPT
+        id S1725887AbgHEE7C (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Aug 2020 23:52:21 -0400
-Received: from mail-am6eur05on2078.outbound.protection.outlook.com ([40.107.22.78]:63616
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725904AbgHEDwT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Aug 2020 23:52:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VbC/wp+yQnk3yDUy/CR+4WMu8NAkfsXgyh9m4pmZUlfLde3IIA+tGHcs/NFQ1MANEd8cq4M6TbsCaSv6fGW3leIZZWKdfpLT/1PSstE5uef1hbV5TI2V7Nr++LZTuQsGGKCXknk+VtI20Sqgh+k1pDHaDWVU7FuwwSHQeylFr+NeR0m/s5GsBQtrx4TmcHTF5pKEnnB9mMTphZY4wEXL7u8ZMN85Z3e+WydeugbyqcOAHW9zP1ccjeACOJg8ns/JrxZXZbteO9FBz9YDf/0HItbWiNo/e4iDZ+0leDMWVy96wkX1JQs1+u82++ODQKjtq8UDhPUSM6Q/qkP6i8hPRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qR2SIJW/0ejMmyMoVERcDQ+8/sNa8UnFnUtJJ1Xp0ls=;
- b=g1SfelTOJfOSR+K1d6FnVQRwzO7f3k9ub0ukcP+hRqVD5BKTeN0rNBhb+tqljf+htZT/iJlTqw62ms4csQIMHsfS30Q0AoCIV0iIxuVB1eGD9Hik9KS0Rk9+pwuoZqbn/7x2ws4JbF5dfeZ10AEIitSuxXd63sk5TnrkLW3n6Mz3/XLXRshuRHkkKuPc1CfsmF1pAuD3qk5lOVHTvAkjUjuBppKEfqFna1LBgq4nDo05UzK/ZiXypENIpnagpTS2dPd34yUQBUeHYTsG7J1aTNKZlctYOce1AsbJAAtgX7edskgiwIKVPKgVCzTHyJpsVF9neH6ihCE90sps4ElPBg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qR2SIJW/0ejMmyMoVERcDQ+8/sNa8UnFnUtJJ1Xp0ls=;
- b=g3ycNW8+Swr4JMCaGMCFaRhkR3PyjXz4hrgJME3HxH3ij49rfUEDRADTY8KH337QrS4sq7hsYhMsvxrLyNAgqcjepdG9rJXzqxMRufErIXSrTd67JXvbt8SkHyFf/j4jf+DQTmSURNLQYAWTOZXLPOQDeaJv2t1/KTixPyRqmPY=
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM7PR04MB6968.eurprd04.prod.outlook.com
- (2603:10a6:20b:dc::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.20; Wed, 5 Aug
- 2020 03:52:15 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::75d9:c8cb:c564:d17f]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::75d9:c8cb:c564:d17f%5]) with mapi id 15.20.3261.016; Wed, 5 Aug 2020
- 03:52:15 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Greg KH <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Jiri Slaby <jslaby@suse.com>
-Subject: RE: [EXT] Re: [PATCH tty/serial v3 2/2] tty: serial: imx: add imx
- earlycon driver
-Thread-Topic: [EXT] Re: [PATCH tty/serial v3 2/2] tty: serial: imx: add imx
- earlycon driver
-Thread-Index: AQHWYYpUoNUEN1E9XUm5EHAJWMHWnKkn9SYAgAD/PmA=
-Date:   Wed, 5 Aug 2020 03:52:15 +0000
-Message-ID: <AM6PR0402MB36079D1B1A77678BF3BD4367FF4B0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-References: <20200724070815.11445-1-fugang.duan@nxp.com>
- <20200724070815.11445-3-fugang.duan@nxp.com>
- <CAMuHMdUJw1rqzNMUduE0qVO=f1dBuXGMf+vcgkhRkc-x-4TAvg@mail.gmail.com>
-In-Reply-To: <CAMuHMdUJw1rqzNMUduE0qVO=f1dBuXGMf+vcgkhRkc-x-4TAvg@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linux-m68k.org; dkim=none (message not signed)
- header.d=none;linux-m68k.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.67]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b3b4cca4-c011-4a66-b2cb-08d838f2f140
-x-ms-traffictypediagnostic: AM7PR04MB6968:
-x-microsoft-antispam-prvs: <AM7PR04MB69688EF7C5CCFF3AE4F0892AFF4B0@AM7PR04MB6968.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: P48Wbt+9Xmjo/P2TxHiliZWVJQwuDfOQxCTCyxwIqgO3Tk0UHWyqyrBEy2SAGg3l4dqHm5IK3GqSxX80+Gllg+GZQKoZUhA58xNTAC2ab7viipOh9ibob5KJxAdwrdMvKKGSnOT54UC2mtIt7vjnD1v4WM0NDvihLxj1sva9ZspATsS+Mgep5qR4bwFJR93BRYL2aEkZFuHbiNcDJmsw0xL5z6PS7oZg5oc3vfr7yuFgdT8ojsIsv6PIiz9l9tpImalrHeXKJzyZxv+UwuUMTtpRYDzFYf55E/cnYWXyxWlx7OUeoy+Sp8uvg+FDiJuvLhhYO8v4aRNe/iYXUT2zlQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(39860400002)(346002)(376002)(366004)(9686003)(6506007)(7696005)(316002)(83380400001)(5660300002)(8676002)(76116006)(6916009)(66946007)(478600001)(71200400001)(55016002)(26005)(66446008)(4326008)(66556008)(8936002)(66476007)(53546011)(86362001)(33656002)(2906002)(186003)(64756008)(54906003)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 8SiCUvOA0ovOGO+b1k6AGykSW8SWXGu6hqgRchxS+PpPMKimjZ2pYy4KrPGUjGb4rAK33f+mjip87PIfE24L6DDL7D/s5ai9hNA/KxZw164jwSTDfXjpq2Hjv7sg9VxGviF5kjMQhX9gwbbdik6mLx/qSDRxEu2LNfVVOgvgHDFHbahU8F2gVXs/yup/vXlZfNdMYIu8SpCUmvrjAa0sNx5ul0lKWyElfY0kAYmPbtccKQERT1reCRVZXee//lHlQsbgwJqP6awKZ+ff7gX/KwlsXjbKNpPIuS66z/0BZBGWF2vbfITdKokfrAEbmZVlTZdyfAS//SpEfi3mGJ+UX7/xOd3fOGsMxRYSfUltCd8D0X7N/jp+G42lZU4GT45WXgZp3OglJQF5ZZzFcq5rOv0JwK8zxixSFUtUum0K6SoICymmfEmMxN9pmCHgrqFKMqD4DU7/5AnDrf7XDCuzmZfUUQjM/qu3ZC76lTLoFXvnKlKZ3eMbfVUijs+mzsYl/bj2IvNAV4XPsR9dD+F/H3gYv5wlLlFUILROGH4GXNF3aZRpidMMTUR+bHsu/2BK4WlhkhNNjuxkoK4nHKr0cJsHstswhub2CdLFXuZ+TOfKs/P9Ai7Xnyt1NXXINn4GasSBdhmajuqUsieYzJzWhg==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3b4cca4-c011-4a66-b2cb-08d838f2f140
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Aug 2020 03:52:15.3105
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5QmLJLfjNKXwSxuURhu/ksrVav0GC2CFik5c3dNa8Xsy254ibcFVGqwo4eriHhElDWO6HN8ahfdosl2bZxzP0A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6968
+        Wed, 5 Aug 2020 00:59:02 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:36098 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725372AbgHEE7B (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 5 Aug 2020 00:59:01 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 3221F1A0403;
+        Wed,  5 Aug 2020 06:58:59 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 14BB01A04E8;
+        Wed,  5 Aug 2020 06:58:54 +0200 (CEST)
+Received: from 10.192.242.69 (shlinux2.ap.freescale.net [10.192.224.44])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 1835A40319;
+        Wed,  5 Aug 2020 06:58:48 +0200 (CEST)
+From:   Anson Huang <Anson.Huang@nxp.com>
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, galak@codeaurora.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Linux-imx@nxp.com
+Subject: [PATCH 1/3] dt-bindings: serial: Convert i.MX uart to json-schema
+Date:   Wed,  5 Aug 2020 12:54:17 +0800
+Message-Id: <1596603259-5367-1-git-send-email-Anson.Huang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-RnJvbTogR2VlcnQgVXl0dGVyaG9ldmVuIDxnZWVydEBsaW51eC1tNjhrLm9yZz4NCj4gSGkgRnVn
-YW4sDQo+IA0KPiBPbiBGcmksIEp1bCAyNCwgMjAyMCBhdCA5OjE3IEFNIEZ1Z2FuZyBEdWFuIDxm
-dWdhbmcuZHVhbkBueHAuY29tPiB3cm90ZToNCj4gPiBTcGxpdCBpbXggZWFybHljb24gZHJpdmVy
-IGZyb20gaW14IHNlcmlhbCBkcml2ZXIgImlteC5jIiBhcyBzZXBhcmF0ZWQNCj4gPiBkcml2ZXIu
-IGlteCBzZXJpYWwgZHJpdmVyIGNhbiBiZSBidWlsdCBhcyBtb2R1bGUsIGJ1dCBlYXJseWNvbiBk
-cml2ZXINCj4gPiBvbmx5IHN1cHBvcnQgYnVpbGQgaW4uDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5
-OiBGdWdhbmcgRHVhbiA8ZnVnYW5nLmR1YW5AbnhwLmNvbT4NCj4gDQo+IFRoYW5rcyBmb3IgeW91
-ciBwYXRjaCwgd2hpY2ggaXMgbm93IGNvbW1pdCA2OTljYzRkZmQxNDA3MWU0ICgidHR5OiBzZXJp
-YWw6DQo+IGlteDogYWRkIGlteCBlYXJseWNvbiBkcml2ZXIiKSBpbiB0dHktbmV4dC4NCj4gDQo+
-ID4gIGRyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnICAgICAgICB8ICA4ICsrKysrDQo+ID4gIGRy
-aXZlcnMvdHR5L3NlcmlhbC9pbXhfZWFybHljb24uYyB8IDUwDQo+ID4gKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKw0KPiANCj4gU2VlbXMgbGlrZSBpbXhfZWFybHljb24uYyBpcyBuZXZl
-ciBidWlsdCwgYXMgbm8gTWFrZWZpbGUgdXBkYXRlIGlzIGluY2x1ZGVkPw0KPiBFbHNlIHRoaXMg
-cGF0Y2ggaXMganVzdCBhbiBvYmZ1c2NhdGVkIHdheSB0byBlbmFibGUgU0VSSUFMX0VBUkxZQ09O
-IGZvciBhbGwgT0YNCj4gcGxhdGZvcm1zPyA7LSkNCj4gDQo+ID4gLS0tIGEvZHJpdmVycy90dHkv
-c2VyaWFsL0tjb25maWcNCj4gPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZw0KPiA+
-IEBAIC01MTUsNiArNTE1LDE0IEBAIGNvbmZpZyBTRVJJQUxfSU1YX0NPTlNPTEUNCj4gPiAgICAg
-ICAgICAgImNvbnNvbGU9dHR5bXhjMCIuIChUcnkgIm1hbiBib290cGFyYW0iIG9yIHNlZSB0aGUN
-Cj4gZG9jdW1lbnRhdGlvbiBvZg0KPiA+ICAgICAgICAgICB5b3VyIGJvb3Rsb2FkZXIgYWJvdXQg
-aG93IHRvIHBhc3Mgb3B0aW9ucyB0byB0aGUga2VybmVsIGF0DQo+ID4gYm9vdCB0aW1lLikNCj4g
-Pg0KPiA+ICtjb25maWcgU0VSSUFMX0lNWF9FQVJMWUNPTg0KPiA+ICsgICAgICAgYm9vbCAiRWFy
-bHljb24gb24gSU1YIHNlcmlhbCBwb3J0Ig0KPiA+ICsgICAgICAgZGVwZW5kcyBvbiBPRg0KPiAN
-Cj4gT2J2aW91c2x5IHRoaXMgc2hvdWxkIGRlcGVuZCBvbiAiQVJDSF9NWEMgfHwgQ09NUElMRV9U
-RVNUIi4NCg0KSSB3aWxsIHN1Ym1pdCBhbm90aGVyIHBhdGNoIGZvciBpdC4NClRoYW5rcyENCj4g
-DQo+ID4gKyAgICAgICBzZWxlY3QgU0VSSUFMX0VBUkxZQ09ODQo+ID4gKyAgICAgICBoZWxwDQo+
-ID4gKyAgICAgICAgIElmIHlvdSBoYXZlIGVuYWJsZWQgdGhlIGVhcmx5Y29uIG9uIHRoZSBGcmVl
-c2NhbGUgSU1YDQo+ID4gKyAgICAgICAgIENQVSB5b3UgY2FuIG1ha2UgaXQgdGhlIGVhcmx5Y29u
-IGJ5IGFuc3dlcmluZyBZIHRvIHRoaXMgb3B0aW9uLg0KPiA+ICsNCj4gPiAgY29uZmlnIFNFUklB
-TF9VQVJUTElURQ0KPiA+ICAgICAgICAgdHJpc3RhdGUgIlhpbGlueCB1YXJ0bGl0ZSBzZXJpYWwg
-cG9ydCBzdXBwb3J0Ig0KPiA+ICAgICAgICAgZGVwZW5kcyBvbiBIQVNfSU9NRU0NCj4gDQo+IEdy
-e29ldGplLGVldGluZ31zLA0KPiANCj4gICAgICAgICAgICAgICAgICAgICAgICAgR2VlcnQNCj4g
-DQo+IC0tDQo+IEdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5
-b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5vcmcNCj4gDQo+IEluIHBlcnNvbmFsIGNvbnZl
-cnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2VyLiBC
-dXQgd2hlbg0KPiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFt
-bWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0Lg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIC0tIExpbnVzIFRvcnZhbGRzDQo=
+Convert the i.MX uart binding to DT schema format using json-schema.
+
+Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+---
+ .../devicetree/bindings/serial/fsl-imx-uart.txt    | 40 ----------
+ .../devicetree/bindings/serial/fsl-imx-uart.yaml   | 92 ++++++++++++++++++++++
+ 2 files changed, 92 insertions(+), 40 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+deleted file mode 100644
+index 9582fc2..0000000
+--- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
++++ /dev/null
+@@ -1,40 +0,0 @@
+-* Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
+-
+-Required properties:
+-- compatible : Should be "fsl,<soc>-uart"
+-- reg : Address and length of the register set for the device
+-- interrupts : Should contain uart interrupt
+-
+-Optional properties:
+-- fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
+-                  in DCE mode by default.
+-- fsl,inverted-tx , fsl,inverted-rx : Indicate that the hardware attached
+-  to the peripheral inverts the signal transmitted or received,
+-  respectively, and that the peripheral should invert its output/input
+-  using the INVT/INVR registers.
+-- rs485-rts-delay, rs485-rts-active-low, rs485-rx-during-tx,
+-  linux,rs485-enabled-at-boot-time: see rs485.txt. Note that for RS485
+-  you must enable either the "uart-has-rtscts" or the "rts-gpios"
+-  properties. In case you use "uart-has-rtscts" the signal that controls
+-  the transceiver is actually CTS_B, not RTS_B. CTS_B is always output,
+-  and RTS_B is input, regardless of dte-mode.
+-
+-Please check Documentation/devicetree/bindings/serial/serial.yaml
+-for the complete list of generic properties.
+-
+-Note: Each uart controller should have an alias correctly numbered
+-in "aliases" node.
+-
+-Example:
+-
+-aliases {
+-	serial0 = &uart1;
+-};
+-
+-uart1: serial@73fbc000 {
+-	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
+-	reg = <0x73fbc000 0x4000>;
+-	interrupts = <31>;
+-	uart-has-rtscts;
+-	fsl,dte-mode;
+-};
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+new file mode 100644
+index 0000000..cba3f83
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+@@ -0,0 +1,92 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/fsl-imx-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
++
++maintainers:
++  - Fabio Estevam <fabio.estevam@nxp.com>
++
++allOf:
++  - $ref: "serial.yaml"
++  - $ref: "rs485.yaml"
++
++properties:
++  compatible:
++    oneOf:
++      - const: fsl,imx1-uart
++      - const: fsl,imx21-uart
++      - const: fsl,imx53-uart
++      - const: fsl,imx6q-uart
++      - items:
++          - enum:
++            - fsl,imx25-uart
++            - fsl,imx27-uart
++            - fsl,imx31-uart
++            - fsl,imx35-uart
++            - fsl,imx50-uart
++            - fsl,imx51-uart
++          - const: fsl,imx21-uart
++      - items:
++          - enum:
++            - fsl,imx6sl-uart
++            - fsl,imx6sll-uart
++            - fsl,imx6sx-uart
++            - fsl,imx6ul-uart
++            - fsl,imx7d-uart
++          - const: fsl,imx6q-uart
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  fsl,dte-mode:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      Indicate the uart works in DTE mode. The uart works in DCE mode by default.
++
++  fsl,inverted-tx:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      Indicate that the hardware attached to the peripheral inverts the signal
++      transmitted, and that the peripheral should invert its output using the
++      INVT registers.
++
++  fsl,inverted-rx:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      Indicate that the hardware attached to the peripheral inverts the signal
++      received, and that the peripheral should invert its input using the
++      INVR registers.
++
++  uart-has-rtscts: true
++
++  rs485-rts-delay: true
++  rs485-rts-active-low: true
++  rs485-rx-during-tx: true
++  linux,rs485-enabled-at-boot-time: true
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    aliases {
++        serial0 = &uart1;
++    };
++
++    uart1: serial@73fbc000 {
++        compatible = "fsl,imx51-uart", "fsl,imx21-uart";
++        reg = <0x73fbc000 0x4000>;
++        interrupts = <31>;
++        uart-has-rtscts;
++        fsl,dte-mode;
++    };
+-- 
+2.7.4
+
