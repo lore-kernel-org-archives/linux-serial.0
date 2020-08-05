@@ -2,133 +2,142 @@ Return-Path: <SRS0=nzNS=BP=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C86FC433E0
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 08:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45860C433E0
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 19:56:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 057D920678
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 08:05:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2081920842
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 19:56:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fMTw7nHA"
+	dkim=pass (2048-bit key) header.d=pesu-pes-edu.20150623.gappssmtp.com header.i=@pesu-pes-edu.20150623.gappssmtp.com header.b="15Gzl4QZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728142AbgHEIFi (ORCPT
+        id S1727932AbgHETzo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Aug 2020 04:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50208 "EHLO
+        Wed, 5 Aug 2020 15:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728109AbgHEIE4 (ORCPT
+        with ESMTP id S1727893AbgHEQqQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Aug 2020 04:04:56 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049F5C061757;
-        Wed,  5 Aug 2020 01:04:32 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id e14so9497608ybf.4;
-        Wed, 05 Aug 2020 01:04:31 -0700 (PDT)
+        Wed, 5 Aug 2020 12:46:16 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C00C08EA0C
+        for <linux-serial@vger.kernel.org>; Wed,  5 Aug 2020 06:16:31 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id v4so37947616ljd.0
+        for <linux-serial@vger.kernel.org>; Wed, 05 Aug 2020 06:16:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=pesu-pes-edu.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BiuuPtVTD0TIdLTlFbDmr4GJPdBHQfsmJUkSiUv0PmQ=;
-        b=fMTw7nHAmyojNDsyhXH2aNqC8O1PkqTHzVO/PnUwikGnJZK2hKak0OUyUzjx7VlP+S
-         HiiabgNJLGQ7dHfvKgHWb+ICEXl2kfFYqGoVM6u+FGD2Gl05sugti/x6k1XH19zn+hjr
-         /ZR5xkO31XqfJ++52Hx3pLgJpJhFnl1sW2hbqPIhUCO6edCHWPQiKzXwHWTGqwCiIQ4X
-         g0BV886F3c1y3po2yVxQSrcrv9WEGa9m5RpQvv/e6IAuZ9g1LJ6UIftUWBJeonEeAX/D
-         WYby2otwKWiWhW7mxVYcScSZ86lDJXcNCI4HMmSAHrERp2yv0aNNWBuuU3spM2EhBbRf
-         C9TA==
+        bh=a94+vY6/4IIigbXjg7NoT3QyS3gyeM3tRGM7IVe4C4A=;
+        b=15Gzl4QZddTS7bZppiLCks8TnKdGjjThf1+1n2PB6hvFFKm0anFwj1mRbuIopHjtjZ
+         PmhBrjQq9P0jGAtfWE0WpRv0NUlg+TC0xFMMPI0UdQ5zswvcPJgKz7zuojmmHBPoo+fM
+         Nk0mZHL66mV47gSHqMPCmZEUVeTWLmSsOnPbETHn7F1sflFlCeHJG6lZ2ugkPeICATot
+         05QaAVOAxe1WcFLQn+qCP6t5k76N4waNiQE70DxT7FRmkjn2xfCFlv5kCxbeR48a6fqW
+         uAr7zHqPvdbgmz0OpHYND8tA6Zag4e4lDHNcV8RPJwuOPO8wmk2LM8lc02XvlEKJ7Fnh
+         gSew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BiuuPtVTD0TIdLTlFbDmr4GJPdBHQfsmJUkSiUv0PmQ=;
-        b=TlqptdNgGfFcz+BXueeZPtumVYmXZxuqaYZbixGfIKfHbm+Z4g0Irgi0o9/8EKgkjY
-         9IaiCQTge5lMRJkAnF44Hemu4bGTI1fgw+sn75D6A2PBQ7OiV6CJM3f//jU1x3i9WZih
-         zo7QauLyKvBqKcmiDUKSGK4HT4ipNJ335X4y950MXMrwy6C3MzN655hxH+Db/uMXPgXJ
-         eKHZj8OznKxGapdqcnQInujJmxP+9t7n0YbW+wgITs7Uun7cFM8GFtADCQqkAsV+jQhO
-         oRCPv0mXm/DOc7/oyxKh8/SYGlI6lY6dBl9y+xZukNesIq0CzkihdxIphR3At/hly0KK
-         H1yQ==
-X-Gm-Message-State: AOAM533eL0qZvISCKDGz4PPamOGMf9zQeoLC/cxIJEsMSqilf8yhzZu1
-        Mbv244efvC1bmaqIawIoVXaMRw07Cep9Ese0fpU=
-X-Google-Smtp-Source: ABdhPJysh3lsTewqog7MiMBZa3uhA597rnIHVhPuIrHcPba7M8AIp8ClLZSH9skBUgGReuophzgnmo6NBEDS8+kuO3s=
-X-Received: by 2002:a25:4b01:: with SMTP id y1mr2768364yba.395.1596614671325;
- Wed, 05 Aug 2020 01:04:31 -0700 (PDT)
+        bh=a94+vY6/4IIigbXjg7NoT3QyS3gyeM3tRGM7IVe4C4A=;
+        b=LwmhIu0ps2UhYf91qoaOgH9wATYYA9s6nLScIuA1ca88v8jUebSd6Zo/a9kESV/FMx
+         9btv3XY0blsddCzt3rNg3Y/0tciKKEpP0GQXB2IScOXpV+Tm6zd0SZT2JwoOKG0b49O7
+         qOPs2VGug4koEgRMRkqfCR+xj6/1Ys7jTtcpyUTR/j+6Hd2hJh2XeurHKYrFOSjrn8GK
+         AehUMboyZygWsKJLPczLYWuwCUCcIp2w5lb+s90pTsAy+fDN5D5wAOFR1T+mBEG1bWOD
+         Kl4xnl301LEZk5tKxd7EGwd9pFE61I5wawqJWN5ytQ86tg2UN1Oimeqj9gbFYKWbo3M8
+         UPmw==
+X-Gm-Message-State: AOAM533Ol8FWxos6uFhX5utyWajhJHKle7RfHpgaIrGCRx7vsaukHigh
+        e5+vmVP5URPwuNQTcaYos86V/rnqZZ1LBGLysmGXJKCR
+X-Google-Smtp-Source: ABdhPJwjg5Ra/z1LK5PGj9yIvEUV894D92SaQPSdTYQ19poiZFDx8xCMEmv974RmQSyC4iXeKoYKya43bsM13OJHPJc=
+X-Received: by 2002:a2e:9c59:: with SMTP id t25mr1397247ljj.402.1596633386436;
+ Wed, 05 Aug 2020 06:16:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594230511-24790-5-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAPDyKFqeiEUeajprG=Bx3Nion8bGpVrDOuM7q6-kLDpOMY-QbQ@mail.gmail.com>
-In-Reply-To: <CAPDyKFqeiEUeajprG=Bx3Nion8bGpVrDOuM7q6-kLDpOMY-QbQ@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 5 Aug 2020 09:04:05 +0100
-Message-ID: <CA+V-a8txuETixBOg7iLRN_uYmSDpwpQJq=o83ewYAs6w9uHC0Q@mail.gmail.com>
-Subject: Re: [PATCH 4/8] dt-bindings: mmc: renesas,sdhi: Add r8a774e1 support
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Marc Zyngier <maz@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20200721174228.misj2mgqzcfz2lsj@pesu.pes.edu> <20200729160333.GA3652767@kroah.com>
+ <VI1PR04MB480018F32A080BC5CC76E3C7F34B0@VI1PR04MB4800.eurprd04.prod.outlook.com>
+ <20200805125627.GA1822283@kroah.com>
+In-Reply-To: <20200805125627.GA1822283@kroah.com>
+From:   B K Karthik <bkkarthik@pesu.pes.edu>
+Date:   Wed, 5 Aug 2020 18:46:15 +0530
+Message-ID: <CAAhDqq3iZXdtxC6kaRZg7520gzBORmP75uWDf+fNBtwr_Zpi9A@mail.gmail.com>
+Subject: Re: [PATCH v2] tty: serial: fsl_lpuart.c: prevent a bad shift operation
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "Vabhav Sharma (OSS)" <vabhav.sharma@oss.nxp.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bhuvanchandra.dv@toradex.com" <bhuvanchandra.dv@toradex.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Ulf,
+On Wed, Aug 5, 2020 at 6:26 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Aug 05, 2020 at 12:09:34PM +0000, Vabhav Sharma (OSS) wrote:
+> >
+> >
+> > > -----Original Message-----
+> > > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Sent: Wednesday, July 29, 2020 9:34 PM
+> > > To: B K Karthik <bkkarthik@pesu.pes.edu>
+> > > Cc: Jiri Slaby <jirislaby@kernel.org>; linux-serial@vger.kernel.org; linux-
+> > > kernel@vger.kernel.org; Vabhav Sharma (OSS)
+> > > <vabhav.sharma@oss.nxp.com>; bhuvanchandra.dv@toradex.com
+> > > Subject: Re: [PATCH v2] tty: serial: fsl_lpuart.c: prevent a bad shift operation
+> > >
+> > > On Tue, Jul 21, 2020 at 11:12:29PM +0530, B K Karthik wrote:
+> > > > prevent a bad shift operation by verifying that the argument to fls is
+> > > > non zero.
+> > > >
+> > > > Reported-by: "Vabhav Sharma (OSS)" <vabhav.sharma@oss.nxp.com>
+> > > > Signed-off-by: B K Karthik <bkkarthik@pesu.pes.edu>
+> > > > ---
+> > > > v1 -> v2:
+> > > >   added Reported-by tag
+> > > >
+> > > >  drivers/tty/serial/fsl_lpuart.c | 3 ++-
+> > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/tty/serial/fsl_lpuart.c
+> > > > b/drivers/tty/serial/fsl_lpuart.c index 7ca642249224..0cc64279cd2d
+> > > > 100644
+> > > > --- a/drivers/tty/serial/fsl_lpuart.c
+> > > > +++ b/drivers/tty/serial/fsl_lpuart.c
+> > > > @@ -1168,7 +1168,8 @@ static inline int lpuart_start_rx_dma(struct
+> > > lpuart_port *sport)
+> > > >    * 10ms at any baud rate.
+> > > >    */
+> > > >   sport->rx_dma_rng_buf_len = (DMA_RX_TIMEOUT * baud /  bits /
+> > > 1000) * 2;
+> > > > - sport->rx_dma_rng_buf_len = (1 << (fls(sport->rx_dma_rng_buf_len)
+> > > - 1));
+> > > > + if (sport->rx_dma_rng_buf_len != 0)
+> > >
+> > > How can this variable become 0?
+> > Condition x, taking false branch
+> > Explicitly returning zero
+> >
+> > static __always_inline int fls(unsigned int x)
+> > {
+> >       return x ? sizeof(x) * 8 - __builtin_clz(x) : 0;
+> > }
+>
+> What false branch?
 
-On Wed, Aug 5, 2020 at 7:32 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> On Wed, 8 Jul 2020 at 19:48, Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> >
-> > Document SDHI controller for RZ/G2H (R8A774E1) SoC, which is compatible
-> > with R-Car Gen3 SoC family.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
->
-> Sorry, but this doesn't apply as the DT doc has been converted to
-> YAML. Can you please rebase and respin.
->
-Sure will respin it.
+I'm assuming he's talking about the value after : in the ? operator.
 
-Cheers,
-Prabhakar
+I am checking for the wrong thing in the if statement. We will have to
+check for the return value of fls() before performing the shift.
+I can change it and send a v3 if you agree.
 
-> Kind regards
-> Uffe
->
->
->
-> > ---
-> >  Documentation/devicetree/bindings/mmc/renesas,sdhi.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt b/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
-> > index 0ca9a622cce0..779e484fa3ef 100644
-> > --- a/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
-> > +++ b/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
-> > @@ -14,6 +14,7 @@ Required properties:
-> >                 "renesas,sdhi-r8a774a1" - SDHI IP on R8A774A1 SoC
-> >                 "renesas,sdhi-r8a774b1" - SDHI IP on R8A774B1 SoC
-> >                 "renesas,sdhi-r8a774c0" - SDHI IP on R8A774C0 SoC
-> > +               "renesas,sdhi-r8a774e1" - SDHI IP on R8A774E1 SoC
-> >                 "renesas,sdhi-r8a77470" - SDHI IP on R8A77470 SoC
-> >                 "renesas,sdhi-mmc-r8a77470" - SDHI/MMC IP on R8A77470 SoC
-> >                 "renesas,sdhi-r8a7778" - SDHI IP on R8A7778 SoC
-> > --
-> > 2.17.1
-> >
+Please let me know.
+
+thanks,
+
+karthik
