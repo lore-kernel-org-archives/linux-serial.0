@@ -2,196 +2,123 @@ Return-Path: <SRS0=nzNS=BP=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AA2C433DF
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 04:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BCE2C433DF
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 06:33:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 74ED5207FC
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 04:59:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 63E992245C
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Aug 2020 06:33:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="u+hjsVhI"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725868AbgHEE7N (ORCPT
+        id S1728076AbgHEGdA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Aug 2020 00:59:13 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:36182 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725372AbgHEE7E (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Aug 2020 00:59:04 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0EFD51A037B;
-        Wed,  5 Aug 2020 06:59:02 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E77C61A0448;
-        Wed,  5 Aug 2020 06:58:56 +0200 (CEST)
-Received: from 10.192.242.69 (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 6512C4032B;
-        Wed,  5 Aug 2020 06:58:50 +0200 (CEST)
-From:   Anson Huang <Anson.Huang@nxp.com>
-To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, galak@codeaurora.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Linux-imx@nxp.com
-Subject: [PATCH 3/3] dt-bindings: serial: Convert NXP lpuart to json-schema
-Date:   Wed,  5 Aug 2020 12:54:19 +0800
-Message-Id: <1596603259-5367-3-git-send-email-Anson.Huang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1596603259-5367-1-git-send-email-Anson.Huang@nxp.com>
-References: <1596603259-5367-1-git-send-email-Anson.Huang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 5 Aug 2020 02:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728118AbgHEGc5 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 5 Aug 2020 02:32:57 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0E3C061756
+        for <linux-serial@vger.kernel.org>; Tue,  4 Aug 2020 23:32:56 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id i129so4749064vsi.3
+        for <linux-serial@vger.kernel.org>; Tue, 04 Aug 2020 23:32:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3i8XFESZihDO6mc3/4tfcR56mY/Nrg7Lzf+GDZhYM0g=;
+        b=u+hjsVhIDKbvRcozTis1DkPn0ESZP+Sd8wJOYW7WIDQKDcD7a4CcJkAWutLduFx1Ac
+         2jOZERHr/wrMd0HMCF3FNsxtJxv3fiLLKPX4kzcT9AOdYmXNV68G2Qzcjxj1YffFf50R
+         2xg3/w5dyp8w+Dbj3V1/VawrbYwILC569f3qDEjI0SFAak1NcLF9cMesEXGrZ+XP3Xry
+         WBn4lK7J2UIPYRV2SZtBvzCcdSQlRsWQo2/DuhaLoKYe/JQ7SM30i00eYs12UP0YBniE
+         yl0hpANKnYMyu9U8yCOpAbgs+p5G3lAxsa2PEMhfyT2+RVpnQL4tDH5uxTswkKlYq0ky
+         IcNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3i8XFESZihDO6mc3/4tfcR56mY/Nrg7Lzf+GDZhYM0g=;
+        b=PaY8QCFmrZnl8ouq3B12pGscBFB4NtNGty34jQ6xrlUOat/RqyuCHBRWpEGf7/CkFb
+         HRdh8U42+9KuPt5CUbVDBvSmXETdAMuLbK4f24x8Bvs+rv0/4nGUlAFMaX2vOF0AdW3c
+         fbkltL3/yNxinK1o5cSdZb2WEAtEWv57r4XvlbkhNjGeLcX7Bndrx2priEmnnRlSizdq
+         MFa9Oyofc+x23s9FHG44vin+Y2px70ving0VDTBVXIzEgkxd6+qlT852ELtaVnbm3UDV
+         xSovDekLSesN4e54nGr5WJdCohkeFqgtBGx+3I+D0SCtVSElf6wQERTHE/wPTiFB4Bqw
+         cDpg==
+X-Gm-Message-State: AOAM530mdNB8vlOmhsV3fyymn43V5WDf4jRIWrGr+lUN17CPICVRMyqJ
+        ESqdmuAeP/OfY0AvC6Hy38DJer6+FXXcIxI7mryc1w==
+X-Google-Smtp-Source: ABdhPJwRtcGnWnSrfLNC1GRoMPhliXQgGipO4zbcYB0cTmrrdPOh4Q7PwFb5o1O0BAF8kY6G3DlVTaO3sR41MJVFDyg=
+X-Received: by 2002:a05:6102:382:: with SMTP id m2mr883411vsq.34.1596609175004;
+ Tue, 04 Aug 2020 23:32:55 -0700 (PDT)
+MIME-Version: 1.0
+References: <1594230511-24790-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594230511-24790-5-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594230511-24790-5-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 5 Aug 2020 08:32:18 +0200
+Message-ID: <CAPDyKFqeiEUeajprG=Bx3Nion8bGpVrDOuM7q6-kLDpOMY-QbQ@mail.gmail.com>
+Subject: Re: [PATCH 4/8] dt-bindings: mmc: renesas,sdhi: Add r8a774e1 support
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        linux-serial@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the NXP lpuart binding to DT schema format using json-schema.
+On Wed, 8 Jul 2020 at 19:48, Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>
+> Document SDHI controller for RZ/G2H (R8A774E1) SoC, which is compatible
+> with R-Car Gen3 SoC family.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
- .../devicetree/bindings/serial/fsl-lpuart.txt      | 43 ------------
- .../devicetree/bindings/serial/fsl-lpuart.yaml     | 79 ++++++++++++++++++++++
- 2 files changed, 79 insertions(+), 43 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/fsl-lpuart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+Sorry, but this doesn't apply as the DT doc has been converted to
+YAML. Can you please rebase and respin.
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-deleted file mode 100644
-index e7448b9..0000000
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-+++ /dev/null
-@@ -1,43 +0,0 @@
--* Freescale low power universal asynchronous receiver/transmitter (lpuart)
--
--Required properties:
--- compatible :
--  - "fsl,vf610-lpuart" for lpuart compatible with the one integrated
--    on Vybrid vf610 SoC with 8-bit register organization
--  - "fsl,ls1021a-lpuart" for lpuart compatible with the one integrated
--    on LS1021A SoC with 32-bit big-endian register organization
--  - "fsl,ls1028a-lpuart" for lpuart compatible with the one integrated
--    on LS1028A SoC with 32-bit little-endian register organization
--  - "fsl,imx7ulp-lpuart" for lpuart compatible with the one integrated
--    on i.MX7ULP SoC with 32-bit little-endian register organization
--  - "fsl,imx8qxp-lpuart" for lpuart compatible with the one integrated
--    on i.MX8QXP SoC with 32-bit little-endian register organization
--  - "fsl,imx8qm-lpuart" for lpuart compatible with the one integrated
--    on i.MX8QM SoC with 32-bit little-endian register organization
--- reg : Address and length of the register set for the device
--- interrupts : Should contain uart interrupt
--- clocks : phandle + clock specifier pairs, one for each entry in clock-names
--- clock-names : For vf610/ls1021a/ls1028a/imx7ulp, "ipg" clock is for uart
--  bus/baud clock. For imx8qxp lpuart, "ipg" clock is bus clock that is used
--  to access lpuart controller registers, it also requires "baud" clock for
--  module to receive/transmit data.
--
--Optional properties:
--- dmas: A list of two dma specifiers, one for each entry in dma-names.
--- dma-names: should contain "tx" and "rx".
--- rs485-rts-active-low, linux,rs485-enabled-at-boot-time: see rs485.txt
--
--Note: Optional properties for DMA support. Write them both or both not.
--
--Example:
--
--uart0: serial@40027000 {
--		compatible = "fsl,vf610-lpuart";
--		reg = <0x40027000 0x1000>;
--		interrupts = <0 61 0x00>;
--		clocks = <&clks VF610_CLK_UART0>;
--		clock-names = "ipg";
--		dmas = <&edma0 0 2>,
--			<&edma0 0 3>;
--		dma-names = "rx","tx";
--	};
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-new file mode 100644
-index 0000000..1b955f3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/fsl-lpuart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Freescale low power universal asynchronous receiver/transmitter (lpuart)
-+
-+maintainers:
-+  - Kumar Gala <galak@codeaurora.org>
-+
-+allOf:
-+  - $ref: "rs485.yaml"
-+
-+properties:
-+  compatible:
-+    enum:
-+      - fsl,vf610-lpuart
-+      - fsl,ls1021a-lpuart
-+      - fsl,ls1028a-lpuart
-+      - fsl,imx7ulp-lpuart
-+      - fsl,imx8qxp-lpuart
-+      - fsl,imx8qm-lpuart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: ipg clock
-+      - description: baud clock
-+    minItems: 1
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: ipg
-+      - const: baud
-+    minItems: 1
-+    maxItems: 2
-+
-+  dmas:
-+    items:
-+      - description: DMA controller phandle and request line for RX
-+      - description: DMA controller phandle and request line for TX
-+
-+  dma-names:
-+    items:
-+      - const: rx
-+      - const: tx
-+
-+  rs485-rts-active-low: true
-+  linux,rs485-enabled-at-boot-time: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/vf610-clock.h>
-+
-+    serial@40027000 {
-+        compatible = "fsl,vf610-lpuart";
-+        reg = <0x40027000 0x1000>;
-+        interrupts = <0 61 0x00>;
-+        clocks = <&clks VF610_CLK_UART0>;
-+        clock-names = "ipg";
-+        dmas = <&edma0 0 2>, <&edma0 0 3>;
-+        dma-names = "rx","tx";
-+    };
--- 
-2.7.4
+Kind regards
+Uffe
 
+
+
+> ---
+>  Documentation/devicetree/bindings/mmc/renesas,sdhi.txt | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt b/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
+> index 0ca9a622cce0..779e484fa3ef 100644
+> --- a/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
+> +++ b/Documentation/devicetree/bindings/mmc/renesas,sdhi.txt
+> @@ -14,6 +14,7 @@ Required properties:
+>                 "renesas,sdhi-r8a774a1" - SDHI IP on R8A774A1 SoC
+>                 "renesas,sdhi-r8a774b1" - SDHI IP on R8A774B1 SoC
+>                 "renesas,sdhi-r8a774c0" - SDHI IP on R8A774C0 SoC
+> +               "renesas,sdhi-r8a774e1" - SDHI IP on R8A774E1 SoC
+>                 "renesas,sdhi-r8a77470" - SDHI IP on R8A77470 SoC
+>                 "renesas,sdhi-mmc-r8a77470" - SDHI/MMC IP on R8A77470 SoC
+>                 "renesas,sdhi-r8a7778" - SDHI IP on R8A7778 SoC
+> --
+> 2.17.1
+>
