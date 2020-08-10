@@ -2,174 +2,100 @@ Return-Path: <SRS0=IIB/=BU=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFF6C433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Aug 2020 12:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C39ACC433E1
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Aug 2020 14:15:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 997C4206C3
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Aug 2020 12:32:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="h3TScBre"
+	by mail.kernel.org (Postfix) with ESMTP id 9211B2070B
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Aug 2020 14:15:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1597068936;
+	bh=vy8eBB2//IvDtBt60/3I4yq6JaPvKDrnYi5TwhfDlK4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=EDyzAz6eAsbbi5sKYuteCkgwFPN3SA5m8EcCSy4FajYpen+vZhAACXgi2CaNB0okG
+	 aX+6Vs2nbb3rwUuvG8ZvGQiUB4pv0WioW9XhGfiN7mSL0rmKRXevZ64dzZNkGvFenE
+	 6wEV+bYtOU4voFb7SaHIHTEz3zfgPLJo22A2eFcI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726644AbgHJMc1 (ORCPT
+        id S1726948AbgHJOPb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Aug 2020 08:32:27 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:13907 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726614AbgHJMc0 (ORCPT
+        Mon, 10 Aug 2020 10:15:31 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:45980 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726900AbgHJOPb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Aug 2020 08:32:26 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1597062745; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=YATn2IQenXC1AZhlnO1R/hOYwlccU9AexyRTM+qvl5Y=; b=h3TScBrewZ0psJ2ZTdiLpFKY9iEOhXr4O+WGo4pKmNMxO53G425dlJmFtVjEJWmUf7wpcNzy
- UJgAIWJmo/2NzPuboubCAB0kkw/Y2WCId6WOJm7Ire+4j4j+7571rx8yVaaoTGLg8UEDe/B3
- U4V6FPOx0LmdZF6U4P4TrU/7XPA=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
- 5f313e49d96d28d61e297def (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 10 Aug 2020 12:32:09
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EEE58C4339C; Mon, 10 Aug 2020 12:32:08 +0000 (UTC)
-Received: from [192.168.1.100] (unknown [47.8.236.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 04822C433C6;
-        Mon, 10 Aug 2020 12:32:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 04822C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH] serial: qcom_geni_serial: Fix recent kdb hang
-To:     Douglas Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kgdb-bugreport@lists.sourceforge.net,
-        Mukesh Savaliya <msavaliy@codeaurora.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Evan Green <evgreen@chromium.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20200806221904.1.I4455ff86f0ef5281c2a0cd0a4712db614548a5ca@changeid>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <adaef6bf-7887-feea-fedf-d3bc5566bb9d@codeaurora.org>
-Date:   Mon, 10 Aug 2020 18:01:54 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        Mon, 10 Aug 2020 10:15:31 -0400
+Received: by mail-ed1-f67.google.com with SMTP id di22so6484044edb.12;
+        Mon, 10 Aug 2020 07:15:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/9w3jeHQu0tGGSbBjCL27CGFJj/E1cqCv8uax1z96uE=;
+        b=sCwCZoU5iE+LkzhKQKQVtAzw0dpsVHJyBgau7259ONYpybq/COBujwDPfLpFp8VzzZ
+         2CwapVL1bPGvqNplTpFTx5Bt5RZgj5l0lIr8CiEiJZDFXv+wi1bMYqIszCUd1ya93wRt
+         3Vloy5aP8SW5L1q16yzlypAUEM8l4vnMucM2wzsGPi3SduIMMyiBU9QDIEHMJJv9Wv8k
+         1O6dRYg4llCWv2GqzyNWqYD2AI/SwPUH0XC0NgJ3QTsSumeeFgRRKMwUXgx+zJjBT2tf
+         6wPIvSLKOYAgKq4ToQY/QsOYllhxnuChYBEA2ShV7qfv4quCDoCZKSGDBFsOlI1oSeTT
+         wSlA==
+X-Gm-Message-State: AOAM530V2yZT8A1rIUrvwdom7E0FcjNOaMLipeu02mD3/7WS2kwzB1Ax
+        bMReJFEPtB8vdtWRWnkQbZc=
+X-Google-Smtp-Source: ABdhPJwln4xOfhbOSKOZ+8uP/TEgLEw/XTopL0JiulzbP60CYhCX+ZiXbmfrXBY/H9XrTHJk0GskSg==
+X-Received: by 2002:a05:6402:1504:: with SMTP id f4mr21756997edw.163.1597068929268;
+        Mon, 10 Aug 2020 07:15:29 -0700 (PDT)
+Received: from pi3 ([194.230.155.117])
+        by smtp.googlemail.com with ESMTPSA id t18sm13397113ejf.38.2020.08.10.07.15.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Aug 2020 07:15:28 -0700 (PDT)
+Date:   Mon, 10 Aug 2020 16:15:26 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Tamseel Shams <m.shams@samsung.com>
+Cc:     kgene@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com
+Subject: Re: [RFT PATCH v5] serial: samsung: Removes the IRQ not found warning
+Message-ID: <20200810141526.GA12448@pi3>
+References: <CGME20200810032514epcas5p1140fe0e44f3727953480ff0531c76b0c@epcas5p1.samsung.com>
+ <20200810030021.45348-1-m.shams@samsung.com>
 MIME-Version: 1.0
-In-Reply-To: <20200806221904.1.I4455ff86f0ef5281c2a0cd0a4712db614548a5ca@changeid>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200810030021.45348-1-m.shams@samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Doug,
-
-On 8/7/2020 10:49 AM, Douglas Anderson wrote:
-> The commit e42d6c3ec0c7 ("serial: qcom_geni_serial: Make kgdb work
-> even if UART isn't console") worked pretty well and I've been doing a
-> lot of debugging with it.  However, recently I typed "dmesg" in kdb
-> and then held the space key down to scroll through the pagination.  My
-> device hung.  This was repeatable and I found that it was introduced
-> with the aforementioned commit.
->
-> It turns out that there are some strange boundary cases in geni where
-> in some weird situations it will signal RX_LAST but then will put 0 in
-> RX_LAST_BYTE.  This means that the entire last FIFO entry is valid.
-
-IMO that means we received a word in RX_FIFO and it is the last word 
-hence RX_LAST bit is set.
-
-RX_LAST_BYTE is 0 means none of the bytes are valid in the last word.
-
-In such scenario we should just read RX_FIFO buffer (to empty it), 
-discard the word and return NO_POLL_CHAR. Something like below.
-
----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-                 else
-                         private_data->poll_cached_bytes_cnt = 4;
-
-                 private_data->poll_cached_bytes =
-                         readl(uport->membase + SE_GENI_RX_FIFOn);
-         }
-
-+        if (!private_data->poll_cached_bytes_cnt)
-+              return NO_POLL_CHAR;
-         private_data->poll_cached_bytes_cnt--;
-         ret = private_data->poll_cached_bytes & 0xff;
--------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Please let me know whether above code helps.
-
-I am not sure about what all scenario can leads to this behavior from 
-hardware, I will try to get an answer from hardware team.
-
-Any error bit was set for SE_GENI_S_IRQ_STATUS & SE_GENI_M_IRQ_STATUS 
-registers?
-
-
-I guess the hang was seen because *poll_cached_bytes_cnt* is unsigned 
-int and it's value was 0, when it's decremented by 1 it's value become 
-'4294967295' (very large) and dummy RX (0x00) would happen that
-
-many times before reading any actual RX transfers/bytes.
-
-Regards,
-
-Akash
-
-
-> This weird corner case is handled in qcom_geni_serial_handle_rx()
-> where you can see that we only honor RX_LAST_BYTE if RX_LAST is set
-> _and_ RX_LAST_BYTE is non-zero.  If either of these is not true we use
-> BYTES_PER_FIFO_WORD (4) for the size of the last FIFO word.
->
-> Let's fix kgdb.  While at it, also use the proper #define for 4.
->
-> Fixes: e42d6c3ec0c7 ("serial: qcom_geni_serial: Make kgdb work even if UART isn't console")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+On Mon, Aug 10, 2020 at 08:30:21AM +0530, Tamseel Shams wrote:
+> In few older Samsung SoCs like s3c2410, s3c2412
+> and s3c2440, UART IP is having 2 interrupt lines.
+> However, in other SoCs like s3c6400, s5pv210,
+> exynos5433, and exynos4210 UART is having only 1
+> interrupt line. Due to this, "platform_get_irq(platdev, 1)"
+> call in the driver gives the following false-positive error:
+> "IRQ index 1 not found" on newer SoC's.
+> 
+> This patch adds the condition to check for Tx interrupt
+> only for the those SoC's which have 2 interrupt lines.
+> 
+> Signed-off-by: Tamseel Shams <m.shams@samsung.com>
 > ---
->
->   drivers/tty/serial/qcom_geni_serial.c | 9 +++++++--
->   1 file changed, 7 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 07b7b6b05b8b..e27077656939 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -361,11 +361,16 @@ static int qcom_geni_serial_get_char(struct uart_port *uport)
->   			return NO_POLL_CHAR;
->   
->   		if (word_cnt == 1 && (status & RX_LAST))
-> +			/*
-> +			 * NOTE: If RX_LAST_BYTE_VALID is 0 it needs to be
-> +			 * treated as if it was BYTES_PER_FIFO_WORD.
-> +			 */
->   			private_data->poll_cached_bytes_cnt =
->   				(status & RX_LAST_BYTE_VALID_MSK) >>
->   				RX_LAST_BYTE_VALID_SHFT;
-> -		else
-> -			private_data->poll_cached_bytes_cnt = 4;
-> +
-> +		if (private_data->poll_cached_bytes_cnt == 0)
-> +			private_data->poll_cached_bytes_cnt = BYTES_PER_FIFO_WORD;
->   
->   		private_data->poll_cached_bytes =
->   			readl(uport->membase + SE_GENI_RX_FIFOn);
+> Commit message is changed.
+> 
+> Added RFT, for older platform.
+>  
+> Addressed Krzysztof's review comments [1]
+> [1] -> https://lkml.org/lkml/2020/7/21/150
+> 
+>  drivers/tty/serial/samsung_tty.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
+Best regards,
+Krzysztof
