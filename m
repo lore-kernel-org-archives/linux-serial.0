@@ -2,191 +2,231 @@ Return-Path: <SRS0=7S4r=BV=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.6 required=3.0 tests=BAYES_00,DKIMWL_WL_MED,
+X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_IN_DEF_DKIM_WL autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5781C433E1
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 17:00:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CFFC433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 17:16:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7E280204FD
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 17:00:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 184A9206DC
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 17:16:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="gfocM8GF"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="klLz6wKU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729090AbgHKRAY (ORCPT
+        id S1729096AbgHKRQE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Aug 2020 13:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
+        Tue, 11 Aug 2020 13:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729004AbgHKRAH (ORCPT
+        with ESMTP id S1729092AbgHKRQD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Aug 2020 13:00:07 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903B5C061787
-        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 10:00:07 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id 17so7931336pfw.9
-        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 10:00:07 -0700 (PDT)
+        Tue, 11 Aug 2020 13:16:03 -0400
+Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C65C06174A
+        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 10:16:01 -0700 (PDT)
+Received: by mail-ua1-x944.google.com with SMTP id g11so3724879ual.2
+        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 10:16:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=cdCN+EFlBoYxXAxI6GQmydGxHxnnk0sb8TB0qb8FPBM=;
-        b=gfocM8GFiLlhQY5QDxnSWQvvsMemkNQMNTijiRI++hlF04JK+lq/WJkDQBSJKriHz1
-         Pn8pX84/Wg3yE94kWAE0MBj1kjrF8d8t35Rb/23nnMsqN3Ev/8bR3BUN8WqLzRkRMIWc
-         2W3gcQopnYr/DZkNqnvyAL48CLciKBgVyftCQqOka3P1X3JlpAjhb/w3V6JvLDuTCPtV
-         +GszNsAkg0Fu/pTMH0ug2kdxooiK2M8Rs7d3NsavW3WgOYHpmkwwHvZjZ0okbosMFd0n
-         QhY5/ek6TQ+1enoMbDkQRxRtb+/9EKpXsP3Bv01xh+EbnJA7uy+/cgtuIwvgfYpYKO8p
-         l5Lg==
+        bh=GcOJfgPH+kookjeNTFA/a55bCUyOIBtLpH9z1xzQ2Dk=;
+        b=klLz6wKUUtyx3zTEv9yLDqYfCzgIBog5o60iZxU1w4FeSRHRE0b71zp3P+GhyIdo5T
+         rChF30fNgQprCmJxLbQr1YPJFiBv6guVBUBCqfTSS5M8aXfntO6UJTZ/p6Op2XHdn7TR
+         o2TnLXcqhz88ByC7UnvSIlo/qFjwfFZF2Gawg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=cdCN+EFlBoYxXAxI6GQmydGxHxnnk0sb8TB0qb8FPBM=;
-        b=VYCqM4Rb++IC+cPtlMoviYAE8RZT+MWoj8u0q4RLjdcwFGHk+qotmhaVYnTBitfnZ8
-         0Ux6x72FJTYLGOjnfF7IAaYqMl9QRu1rtL3ocdpZcjnnWzrPLo6sdda5foOTBOrYDmj8
-         anaZiEMFaN5pE4Sh6qp1dHn1yyWIDiIvEmeefFTKV2fW+4DmMYCbtBK1H54xeHmHyF5j
-         vRfvNgNeBNODMo1aIq/Od69UcR3zNFY86+8YI2292dd8J/9TJJXkqluWzvd9HJX+/fkl
-         8JefYF9uDsk3n62JRoC2Y1JQleG6BA6w+1Tp3HIIsx9hnRBfE5BRCrp5V4m9BtYi34Rh
-         Wh8g==
-X-Gm-Message-State: AOAM532DNEu3YTixXiqpG8LCibKhITP8qG8jWOWE0Qhby5YZXoE4QgMD
-        TXh00tzoyRgLWIXAmNo8qmIv4/1cEFQcMDEYpnXLwA==
-X-Google-Smtp-Source: ABdhPJwlflsnhvVydVvQnH8y4HXhtOWtkwKRg+wFTfdywoYortT+tTcwiOHiCdYjh5A2VH7q9yaxD/7l6ETd7xvlbgg=
-X-Received: by 2002:a63:fa09:: with SMTP id y9mr1581444pgh.0.1597165206144;
- Tue, 11 Aug 2020 10:00:06 -0700 (PDT)
+        bh=GcOJfgPH+kookjeNTFA/a55bCUyOIBtLpH9z1xzQ2Dk=;
+        b=Z7XDhTm2rWtidHtFKq4OW8DOtp7kkA/F0A6Aj09zj18+auEKLi0hVsC405ViZ/h9dG
+         qfZiGcOhindobN1gRApA1mKBKafiBmvU6GyIYdzGGJ3QDGdTsHU4jDsnKnnyD2oup5Nz
+         vPVJ9bpe6i4bb3vhvbiV7AwVSQiC0GnQRoeoefQWI0ljw+C9bvHMijTv6vCKCRExNNY9
+         EhuSAwgTgm32ZT8qLx07BLNYXYz3R61tGHSfV95A56CoSMR1UMEPMeBfqVieLA7imlrV
+         o0d4sL08ORW/OB6ZRblzGdXI3MchSH/Islf8qZP83IPswKodWfRbbOJYXjx+rj6tKc7r
+         N+cg==
+X-Gm-Message-State: AOAM533K2Gw/uD+kFQ4wyORscWlfnK2WCr2/s1DvZFB+2NRmb6BjfkAC
+        zW/L4dEheKnzT8gYM5zWbnAWIJnicXg=
+X-Google-Smtp-Source: ABdhPJzlhyAvVjPkOMVeTcSlBmdCauWlxH+bFO2F3BBFZUBdSuMALXHUvgMXaKzZzZBC0KgDXig+9w==
+X-Received: by 2002:ab0:c3:: with SMTP id 61mr4027266uaj.106.1597166160656;
+        Tue, 11 Aug 2020 10:16:00 -0700 (PDT)
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
+        by smtp.gmail.com with ESMTPSA id x25sm3963629ual.2.2020.08.11.10.15.59
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Aug 2020 10:15:59 -0700 (PDT)
+Received: by mail-ua1-f41.google.com with SMTP id g20so2786050uap.8
+        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 10:15:59 -0700 (PDT)
+X-Received: by 2002:ab0:37d3:: with SMTP id e19mr24271569uav.64.1597166159205;
+ Tue, 11 Aug 2020 10:15:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200811025044.70626-1-john.stultz@linaro.org>
-In-Reply-To: <20200811025044.70626-1-john.stultz@linaro.org>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 11 Aug 2020 09:59:30 -0700
-Message-ID: <CAGETcx8qjnVNNB_z-Ar8gxKAy7Sc8kcj8oAWQ76mXcBpaqnagg@mail.gmail.com>
-Subject: Re: [RFC][PATCH] tty: serial: qcom_geni_serial: Drop __init from qcom_geni_console_setup
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Todd Kjos <tkjos@google.com>,
-        Amit Pundir <amit.pundir@linaro.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org
+References: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
+ <CAFA6WYMN=na4Pxnu1LYRVAAZRdV==5EwU-Vcq-QkRb_jaLiPmw@mail.gmail.com>
+ <20200811135801.GA416071@kroah.com> <CAFA6WYMN8i96rEZuHLnskB+4k0o=K9vF1_we83P04h2BSoGjmQ@mail.gmail.com>
+ <20200811145816.GA424033@kroah.com>
+In-Reply-To: <20200811145816.GA424033@kroah.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 11 Aug 2020 10:15:47 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UD=cTn6jwpYS-C-=1ORd-4azZ8ZiBR6om++2sMS1nmMg@mail.gmail.com>
+Message-ID: <CAD=FV=UD=cTn6jwpYS-C-=1ORd-4azZ8ZiBR6om++2sMS1nmMg@mail.gmail.com>
+Subject: Re: [RFC 0/5] Introduce NMI aware serial drivers
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Sumit Garg <sumit.garg@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        Jiri Slaby <jslaby@suse.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 7:50 PM John Stultz <john.stultz@linaro.org> wrote:
->
-> When booting with heavily modularized config, the serial console
-> may not be able to load until after init when modules that
-> satisfy needed dependencies have time to load.
->
-> Unfortunately, as qcom_geni_console_setup is marked as __init,
-> the function may have been freed before we get to run it,
-> causing boot time crashes such as:
+Hi,
 
-Btw, I thought non-__init functions calling __init functions would be
-caught by the build system. Is that not correct? If it's correct, do
-we know how this gets past that check?
+On Tue, Aug 11, 2020 at 7:58 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Aug 11, 2020 at 07:59:24PM +0530, Sumit Garg wrote:
+> > Hi Greg,
+> >
+> > Thanks for your comments.
+> >
+> > On Tue, 11 Aug 2020 at 19:27, Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Tue, Aug 11, 2020 at 07:20:26PM +0530, Sumit Garg wrote:
+> > > > On Tue, 21 Jul 2020 at 17:40, Sumit Garg <sumit.garg@linaro.org> wrote:
+> > > > >
+> > > > > Make it possible for UARTs to trigger magic sysrq from an NMI. With the
+> > > > > advent of pseudo NMIs on arm64 it became quite generic to request serial
+> > > > > device interrupt as an NMI rather than IRQ. And having NMI driven serial
+> > > > > RX will allow us to trigger magic sysrq as an NMI and hence drop into
+> > > > > kernel debugger in NMI context.
+> > > > >
+> > > > > The major use-case is to add NMI debugging capabilities to the kernel
+> > > > > in order to debug scenarios such as:
+> > > > > - Primary CPU is stuck in deadlock with interrupts disabled and hence
+> > > > >   doesn't honor serial device interrupt. So having magic sysrq triggered
+> > > > >   as an NMI is helpful for debugging.
+> > > > > - Always enabled NMI based magic sysrq irrespective of whether the serial
+> > > > >   TTY port is active or not.
+> > > > >
+> > > > > Currently there is an existing kgdb NMI serial driver which provides
+> > > > > partial implementation in upstream to have a separate ttyNMI0 port but
+> > > > > that remained in silos with the serial core/drivers which made it a bit
+> > > > > odd to enable using serial device interrupt and hence remained unused. It
+> > > > > seems to be clearly intended to avoid almost all custom NMI changes to
+> > > > > the UART driver.
+> > > > >
+> > > > > But this patch-set allows the serial core/drivers to be NMI aware which
+> > > > > in turn provides NMI debugging capabilities via magic sysrq and hence
+> > > > > there is no specific reason to keep this special driver. So remove it
+> > > > > instead.
+> > > > >
+> > > > > Approach:
+> > > > > ---------
+> > > > >
+> > > > > The overall idea is to intercept serial RX characters in NMI context, if
+> > > > > those are specific to magic sysrq then allow corresponding handler to run
+> > > > > in NMI context. Otherwise, defer all other RX and TX operations onto IRQ
+> > > > > work queue in order to run those in normal interrupt context.
+> > > > >
+> > > > > This approach is demonstrated using amba-pl011 driver.
+> > > > >
+> > > > > Patch-wise description:
+> > > > > -----------------------
+> > > > >
+> > > > > Patch #1 prepares magic sysrq handler to be NMI aware.
+> > > > > Patch #2 adds NMI framework to serial core.
+> > > > > Patch #3 and #4 demonstrates NMI aware uart port using amba-pl011 driver.
+> > > > > Patch #5 removes kgdb NMI serial driver.
+> > > > >
+> > > > > Goal of this RFC:
+> > > > > -----------------
+> > > > >
+> > > > > My main reason for sharing this as an RFC is to help decide whether or
+> > > > > not to continue with this approach. The next step for me would to port
+> > > > > the work to a system with an 8250 UART.
+> > > > >
+> > > >
+> > > > A gentle reminder to seek feedback on this series.
 
--Saravana
+It's been on my list for a while.  I started it Friday but ran out of
+time.  This week hasn't been going as smoothly as I hoped but I'll
+prioritize this since it's been too long.
 
+
+> > > It's the middle of the merge window, and I can't do anything.
+> > >
+> > > Also, I almost never review RFC patches as I have have way too many
+> > > patches that people think are "right" to review first...
+> > >
+> >
+> > Okay, I understand and I can definitely wait for your feedback.
 >
-> [    6.469057] Unable to handle kernel paging request at virtual address ffffffe645d4e6cc
-> [    6.481623] Mem abort info:
-> [    6.484466]   ESR = 0x86000007
-> [    6.487557]   EC = 0x21: IABT (current EL), IL = 32 bits
-> [    6.492929]   SET = 0, FnV = 0g
-> [    6.496016]   EA = 0, S1PTW = 0
-> [    6.499202] swapper pgtable: 4k pages, 39-bit VAs, pgdp=000000008151e000
-> [    6.501286] ufshcd-qcom 1d84000.ufshc: ufshcd_print_pwr_info:[RX, TX]: gear=[3, 3], lane[2, 2], pwr[FAST MODE, FAST MODE], rate = 2
-> [    6.505977] [ffffffe645d4e6cc] pgd=000000017df9f003, p4d=000000017df9f003, pud=000000017df9f003, pmd=000000017df9c003, pte=0000000000000000
-> [    6.505990] Internal error: Oops: 86000007 [#1] PREEMPT SMP
-> [    6.505995] Modules linked in: zl10353 zl10039 zl10036 zd1301_demod xc5000 xc4000 ves1x93 ves1820 tuner_xc2028 tuner_simple tuner_types tua9001 tua6100 1
-> [    6.506152]  isl6405
-> [    6.518104] ufshcd-qcom 1d84000.ufshc: ufshcd_find_max_sup_active_icc_level: Regulator capability was not set, actvIccLevel=0
-> [    6.530549]  horus3a helene fc2580 fc0013 fc0012 fc0011 ec100 e4000 dvb_pll ds3000 drxk drxd drx39xyj dib9000 dib8000 dib7000p dib7000m dib3000mc dibx003
-> [    6.624271] CPU: 7 PID: 148 Comm: kworker/7:2 Tainted: G        W       5.8.0-mainline-12021-g6defd37ba1cd #3455
-> [    6.624273] Hardware name: Thundercomm Dragonboard 845c (DT)
-> [    6.624290] Workqueue: events deferred_probe_work_func
-> [    6.624296] pstate: 40c00005 (nZcv daif +PAN +UAO BTYPE=--)
-> [    6.624307] pc : qcom_geni_console_setup+0x0/0x110
-> [    6.624316] lr : try_enable_new_console+0xa0/0x140
-> [    6.624318] sp : ffffffc010843a30
-> [    6.624320] x29: ffffffc010843a30 x28: ffffffe645c3e7d0
-> [    6.624325] x27: ffffff80f8022180 x26: ffffffc010843b28
-> [    6.637937] x25: 0000000000000000 x24: ffffffe6462a2000
-> [    6.637941] x23: ffffffe646398000 x22: 0000000000000000
-> [    6.637945] x21: 0000000000000000 x20: ffffffe6462a5ce8
-> [    6.637952] x19: ffffffe646398e38 x18: ffffffffffffffff
-> [    6.680296] x17: 0000000000000000 x16: ffffffe64492b900
-> [    6.680300] x15: ffffffe6461e9d08 x14: 69202930203d2064
-> [    6.680305] x13: 7561625f65736162 x12: 202c363331203d20
-> [    6.696434] x11: 0000000000000030 x10: 0101010101010101
-> [    6.696438] x9 : 4d4d20746120304d x8 : 7f7f7f7f7f7f7f7f
-> [    6.707249] x7 : feff4c524c787373 x6 : 0000000000008080
-> [    6.707253] x5 : 0000000000000000 x4 : 8080000000000000
-> [    6.707257] x3 : 0000000000000000 x2 : ffffffe645d4e6cc
-> [    6.744223] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate: failed to find OPP for freq 102400000 (-34)
-> [    6.744966] x1 : fffffffefe74e174 x0 : ffffffe6462a5ce8
-> [    6.753580] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate: failed to find OPP for freq 102400000 (-34)
-> [    6.761634] Call trace:
-> [    6.761639]  qcom_geni_console_setup+0x0/0x110
-> [    6.761645]  register_console+0x29c/0x2f8
-> [    6.767981] Bluetooth: hci0: Frame reassembly failed (-84)
-> [    6.775252]  uart_add_one_port+0x438/0x500
-> [    6.775258]  qcom_geni_serial_probe+0x2c4/0x4a8
-> [    6.775266]  platform_drv_probe+0x58/0xa8
-> [    6.855359]  really_probe+0xec/0x398
-> [    6.855362]  driver_probe_device+0x5c/0xb8
-> [    6.855367]  __device_attach_driver+0x98/0xb8
-> [    7.184945]  bus_for_each_drv+0x74/0xd8
-> [    7.188825]  __device_attach+0xec/0x148
-> [    7.192705]  device_initial_probe+0x24/0x30
-> [    7.196937]  bus_probe_device+0x9c/0xa8
-> [    7.200816]  deferred_probe_work_func+0x7c/0xb8
-> [    7.205398]  process_one_work+0x20c/0x4b0
-> [    7.209456]  worker_thread+0x48/0x460
-> [    7.213157]  kthread+0x14c/0x158
-> [    7.216432]  ret_from_fork+0x10/0x18
-> [    7.220049] Code: bad PC value
-> [    7.223139] ---[ end trace 73f3b21e251d5a70 ]---
+> My feedback here is this:
 >
-> Thus this patch removes the __init avoiding crash in such
-> configs.
+> > > I suggest you work to flesh this out first and submit something that you
+> > > feels works properly.
 >
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Saravana Kannan <saravanak@google.com>
-> Cc: Todd Kjos <tkjos@google.com>
-> Cc: Amit Pundir <amit.pundir@linaro.org>
-> Cc: linux-arm-msm@vger.kernel.org
-> Cc: linux-serial@vger.kernel.org
-> Suggested-by: Saravana Kannan <saravanak@google.com>
-> Signed-off-by: John Stultz <john.stultz@linaro.org>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> :)
 >
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 3aa29d201f54..f7c6c7466520 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1098,7 +1098,7 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
->  }
+> > IIUC, in order to make this approach substantial I need to make it
+> > work with 8250 UART (major serial driver), correct? As currently it
+> > works properly for amba-pl011 driver.
 >
->  #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
-> -static int __init qcom_geni_console_setup(struct console *co, char *options)
-> +static int qcom_geni_console_setup(struct console *co, char *options)
->  {
->         struct uart_port *uport;
->         struct qcom_geni_serial_port *port;
-> --
-> 2.17.1
->
+> Yes, try to do that, or better yet, make it work with all serial drivers
+> automatically.
+
+A bit of early feedback...
+
+Although I'm not sure we can do Greg's "make it work everywhere
+automatically", it's possible you could get half of your patch done
+automatically.  Specifically, your patch really does two things:
+
+a) It leaves the serial port "active" all the time to look for sysrq.
+In other words even if there is no serial client it's always reading
+the port looking for characters.  IMO this concept should be separated
+out from the NMI concept and _could_ automatically work for all serial
+drivers.  You'd just need something in the serial core that acted like
+a default client if nobody else opened the serial port.  The nice
+thing here is that we go through all the normal code paths and don't
+need special cases in the driver.
+
+b) It enables NMI for your particular serial driver.  This seems like
+it'd be hard to do automatically because you can't do the same things
+at NMI that you could do in a normal interrupt handler.
+
+NOTE: to me, a) is more important than b) (though it'd be nice to have
+both).  This would be especially true the earlier you could make a)
+work since the main time when an "agetty" isn't running on my serial
+port to read characters is during bootup.
+
+Why is b) less important to me? Sure, it would let you drop into the
+debugger in the case where the CPU handling serial port interrupts is
+hung with IRQs disabled, but it _woudln't_ let you drop into the
+debugger in the case where a different CPU is hung with IRQs disabled.
+To get that we need NMI roundup (which, I know, you are also working
+on for arm64).  ...and, if we've got NMI roundup, presumably we can
+find our way into the debugger by either moving the serial interrupt
+to a different CPU ahead of time or using some type of lockup detector
+(which I know you are also working on for arm64).
+
+
+One last bit of feedback is that I noticed that you didn't try to
+implement the old "knock" functionality of the old NMI driver that's
+being deleted.  That is: your new patches don't provide an alternate
+way to drop into the debugger for systems where BREAK isn't hooked up.
+That's not a hard requirement, but I was kinda hoping for it since I
+have some systems that haven't routed BREAK properly.  ;-)
+
+
+I'll try to get some more detailed feedback in the next few days.
+
+-Doug
