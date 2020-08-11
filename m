@@ -2,158 +2,239 @@ Return-Path: <SRS0=7S4r=BV=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11583C433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 10:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7BCC433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 11:54:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DEF6520768
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 10:50:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1597143030;
-	bh=3whMPcZEMBwo/8MBw6WpLUIM5Bv+7gtc1CnOTQoiTqk=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:List-ID:From;
-	b=2pLP/0WMVfOZ/lUr0rJxX50ZWf4ZDOUBN0mOR7eQ24WJrFPTa29ylK4iDGO851+jz
-	 xBpPdPivAt9vtNPGFnEw855VJpjiGtUWb835CLf2rk6vtUnxs2zFnakBM1XFSawHk8
-	 t2tdCHtAfQZ3mNrTWcobUqGa0bljyx1pMbLVxASk=
+	by mail.kernel.org (Postfix) with ESMTP id C5F112076B
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 11:54:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="KxGDYqh+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728500AbgHKKu1 (ORCPT
+        id S1728454AbgHKLyZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Aug 2020 06:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728464AbgHKKu1 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Aug 2020 06:50:27 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DEB0C06174A;
-        Tue, 11 Aug 2020 03:50:26 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id b11so6395363lfe.10;
-        Tue, 11 Aug 2020 03:50:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=itXXXyW5i1H7kJa+q7FRrhS32KPXcWAeeqv3XPQhNJo=;
-        b=It7IO5oPi05wwwGQhoKst5i0BiFfurtyCO+dkAQ7DZaG2EZuQLZjEvLD+NwLvyyv4i
-         wISREV9XWj5I0XEa3TNPTLwpwScKy0cTveIaRzGFOqxKf6YsUM2DNjyqZbTBHzCkrD0L
-         ONzGb/lus8eMLtKDc8yWbNJhxjd7vBmvdxFooycc7wlLgqaU2p6tKhv15lRRNM/LCpMR
-         /0d9k+WAK0hbOT7RAM8P9+fSkL6uJ6LdlH8OLNe3/ia0T7R7ZuzNkmvpPTHm22gai47j
-         CEGeJUW1Pd21quHX9wmbVP9g4L2NaX7nxfN/9mwtACqmHuGTsBszoGtfqW75p7NhZ3t3
-         8DvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:in-reply-to:references
-         :date:message-id:mime-version;
-        bh=itXXXyW5i1H7kJa+q7FRrhS32KPXcWAeeqv3XPQhNJo=;
-        b=cIIicv6S8JSHss0aRYlRgL4iJ0a/uEQ/vh23I3v5bSvizrtcTzhOd1oelnux9n2SWr
-         sFwQFcpyEQyl08dVzwexT9/40A801CHXewJ3ao9izIWoaHDQ16XMirApmEYr8zVkz2jT
-         sdfS7ZfP7q2cUzU9C7081OK0ctB9SREJATKji3Gn3pPld+eTok4L+wc70EzhJLOiodvB
-         ZM74PldUEcJ3G5v7AT7GH9tomRLjvQz6iavxhkE1WTqdo+O2G7sHg8ggeBIs3BwwVjIM
-         z6ZOOUfs/SNJzt29i7CEIoVVu5jigyVtH1z0gxH3XkKEn87MIgY13pdC/fCF9ojzBLeO
-         lz9w==
-X-Gm-Message-State: AOAM531KnTQK1w3P77TmeAkyUZJOJj2FSIU1B0PeBgkvOP0zeJW5UHo/
-        wjR0dTWTf1ki7WQp+FeGcNg=
-X-Google-Smtp-Source: ABdhPJzBQkgcMck8wo0i1wUSYyiTkVCmJeEjNsemCRe808B9HyYMG2Phjl8ePTDM2XdHogFpyzVI1w==
-X-Received: by 2002:a19:102:: with SMTP id 2mr2940050lfb.54.1597143025007;
-        Tue, 11 Aug 2020 03:50:25 -0700 (PDT)
-Received: from saruman ([194.34.132.58])
-        by smtp.gmail.com with ESMTPSA id u6sm10006959ljg.105.2020.08.11.03.50.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 11 Aug 2020 03:50:23 -0700 (PDT)
-From:   Felipe Balbi <balbi@kernel.org>
-To:     Paras Sharma <parashar@codeaurora.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paras Sharma <parashar@codeaurora.org>
-Subject: Re: [PATCH V2] serial: qcom_geni_serial: To correct QUP Version detection logic
-In-Reply-To: <1597131794-1076-1-git-send-email-parashar@codeaurora.org>
-References: <1597131794-1076-1-git-send-email-parashar@codeaurora.org>
-Date:   Tue, 11 Aug 2020 13:50:19 +0300
-Message-ID: <871rkdpic4.fsf@kernel.org>
+        Tue, 11 Aug 2020 07:54:25 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:26671 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728663AbgHKLyX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 11 Aug 2020 07:54:23 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1597146862; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=BbgBllrGixV1VF5JA2+YDRoW43ZC6IFJKZUmb8h6+nw=; b=KxGDYqh+D6RnwGbi90TfXDzTXE3pLC7tPkg/M+6qDN45nHPjU88EXVAUaPAXvrOWUuU8h3rH
+ W/4ga52gnx8UNZhAoJJ3s5e9fYff3s+w6tp6+goFv+pVi2BHK8mPjZpqyi0DlRW4BT1yis3i
+ BDQbwNV75eoo+8VIpI5O3OFA/9U=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 5f3286eb4c787f237b268b1c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 11 Aug 2020 11:54:19
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id BF4FCC433CA; Tue, 11 Aug 2020 11:54:18 +0000 (UTC)
+Received: from [192.168.1.100] (unknown [157.43.31.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9B877C433C6;
+        Tue, 11 Aug 2020 11:54:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9B877C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH] serial: qcom_geni_serial: Fix recent kdb hang
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Mukesh Savaliya <msavaliy@codeaurora.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Evan Green <evgreen@chromium.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+References: <20200806221904.1.I4455ff86f0ef5281c2a0cd0a4712db614548a5ca@changeid>
+ <adaef6bf-7887-feea-fedf-d3bc5566bb9d@codeaurora.org>
+ <CAD=FV=X8tNpmkSrEjXgKPKsBOZfjt8aVQe47gzi5FvPqdOQN+A@mail.gmail.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <b4cd8daf-ef37-4cc1-546e-ba46cb19392a@codeaurora.org>
+Date:   Tue, 11 Aug 2020 17:24:08 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
+In-Reply-To: <CAD=FV=X8tNpmkSrEjXgKPKsBOZfjt8aVQe47gzi5FvPqdOQN+A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
 
-
-Hi,
-
-Paras Sharma <parashar@codeaurora.org> writes:
-> The current implementation reduces the sampling rate by half
-> if qup HW version greater is than 2.5 by checking if the geni
-                    ^^^^^^^^^^^^^^^
-                    is greater than
-
-could, possibly, be fixed while applying.
-
-> SE major version is greater than 2 and geni SE minor version
-> is greater than 5.
+On 8/11/2020 2:56 AM, Doug Anderson wrote:
+> Hi,
 >
-> This implementation fails when the version is 3 or greater.
+> On Mon, Aug 10, 2020 at 5:32 AM Akash Asthana <akashast@codeaurora.org> wrote:
+>> Hi Doug,
+>>
+>> On 8/7/2020 10:49 AM, Douglas Anderson wrote:
+>>> The commit e42d6c3ec0c7 ("serial: qcom_geni_serial: Make kgdb work
+>>> even if UART isn't console") worked pretty well and I've been doing a
+>>> lot of debugging with it.  However, recently I typed "dmesg" in kdb
+>>> and then held the space key down to scroll through the pagination.  My
+>>> device hung.  This was repeatable and I found that it was introduced
+>>> with the aforementioned commit.
+>>>
+>>> It turns out that there are some strange boundary cases in geni where
+>>> in some weird situations it will signal RX_LAST but then will put 0 in
+>>> RX_LAST_BYTE.  This means that the entire last FIFO entry is valid.
+>> IMO that means we received a word in RX_FIFO and it is the last word
+>> hence RX_LAST bit is set.
+> What you say would make logical sense, but it's not how I have
+> observed geni to work.  See below.
 >
-> Hence by adding the another check for geni SE major version,
-> this problem can be solved.
 >
-> Signed-off-by: Paras Sharma <parashar@codeaurora.org>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>> RX_LAST_BYTE is 0 means none of the bytes are valid in the last word.
+> This would imply that qcom_geni_serial_handle_rx() is also broken
+> though, wouldn't it?  Specifically imagine that WORD_CNT is 1 and
+> RX_LAST is set and RX_LAST_BYTE_VALID is true.  Here's the logic from
+> that function:
 >
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
-com_geni_serial.c
-> index 3aa29d2..a9f92d8 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -995,7 +995,8 @@ static void qcom_geni_serial_set_termios(struct uart_=
-port *uport,
->  	sampling_rate =3D UART_OVERSAMPLING;
->  	/* Sampling rate is halved for IP versions >=3D 2.5 */
->  	ver =3D geni_se_get_qup_hw_version(&port->se);
-> -	if (GENI_SE_VERSION_MAJOR(ver) >=3D 2 && GENI_SE_VERSION_MINOR(ver) >=
-=3D 5)
-> +	if ((GENI_SE_VERSION_MAJOR(ver) >=3D 2 && GENI_SE_VERSION_MINOR(ver) >=
-=3D 5)
-> +		|| GENI_SE_VERSION_MAJOR(ver) >=3D 3)
+>    total_bytes = BYTES_PER_FIFO_WORD * (word_cnt - 1);
+>    if (last_word_partial && last_word_byte_cnt)
+>      total_bytes += last_word_byte_cnt;
+>    else
+>      total_bytes += BYTES_PER_FIFO_WORD;
+>    port->handle_rx(uport, total_bytes, drop);
+>
+> As you can see that logic will set "total_bytes" to 4 in the case I'm
+> talking about.
 
-it looks like having a single GENI_SE_VERSION() that returns MAJOR and
-MINOR without STEP would look better here. Then you could use:
+Yeah IMO as per theory this should also be corrected but since you have 
+already pulled out few experiment to prove garbage data issue(which I  
+was suspecting) is not seen.
 
-	if (GENI_SE_VERSION(ver) >=3D 0x20050000)
+It's already consistent with existing logic and it behaves well 
+practically . So the changes could be merge. Meanwhile I am checking 
+with HW team to get clarity.
 
-and it would work for any future version. Not a strong opinion, though
+>
+>
+>> In such scenario we should just read RX_FIFO buffer (to empty it),
+>> discard the word and return NO_POLL_CHAR. Something like below.
+>>
+>> ---------------------------------------------------------------------------------------------------------------------------------------------------------
+>>
+>>                   else
+>>                           private_data->poll_cached_bytes_cnt = 4;
+>>
+>>                   private_data->poll_cached_bytes =
+>>                           readl(uport->membase + SE_GENI_RX_FIFOn);
+>>           }
+>>
+>> +        if (!private_data->poll_cached_bytes_cnt)
+>> +              return NO_POLL_CHAR;
+>>           private_data->poll_cached_bytes_cnt--;
+>>           ret = private_data->poll_cached_bytes & 0xff;
+>> -------------------------------------------------------------------------------------------------------------------------------------------------------------
+>>
+>> Please let me know whether above code helps.
+> Your code will avoid the hang.  Yes.  ...but it will drop bytes.  I
+> devised a quick-n-dirty test.  Here's a test of your code:
+I assumed those as invalid bytes and don't wanted to read them so yeah 
+dropping of bytes was expected.
+>
+> https://crrev.com/c/2346886
+>
+> ...and here's a test of my code:
+>
+> https://crrev.com/c/2346884
+>
+> I had to keep a buffer around since it's hard to debug the serial
+> driver.  In both cases I put "DOUG" into the buffer when I detect this
+> case.  If my theory about how geni worked was wrong then we should
+> expect to see some garbage in the buffer right after the DOUG, right?
+> ...but my code gets the alphabet in nice sequence.  Your code drops 4
+> bytes.
+Yeah I was expecting garbage data.
+>
+>
+> NOTE: while poking around with the above two test patches I found it
+> was pretty easy to get geni to drop bytes / hit overflow cases and
+> also to insert bogus 0 bytes in the stream (I believe these are
+> related).  I was able to reproduce this:
+> * With ${SUBJECT} patch in place.
+> * With your proposed patch.
+> * With the recent "geni" patches reverted (in other words back to 1
+> byte per FIFO entry).
+>
+> It's not terribly surprising that we're overflowing since I believe
+> kgdb isn't too keen to read characters at the same time it's writing.
+> That doesn't explain the weird 0-bytes that geni seemed to be
+> inserting, but at least it would explain the overflows.  However, even
+> after I fixed this I _still_ was getting problems.  Specifically geni
+> seemed to be hiding bytes from me until it was too late.  I put
+> logging in and would see this:
+>
+> 1 word in FIFO - wxyz
+> 1 word in FIFO (last set, last FIFO has 1 byte) - \n
+> Check again, still 0 bytes in FIFO
+> Suddenly 16 bytes are in FIFO and S_RX_FIFO_WR_ERR_EN is set.
 
-=2D-=20
-balbi
+RX data first stored in RX_ASYNC_FIFO then it's transfered to RX_FIFO
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+When get_char is called and we observe 0 bytes in RX_FIFO, most probably 
+data is not transfered from RX_ASYNC_FIFO to RX_FIFO.
 
------BEGIN PGP SIGNATURE-----
+BITS 27:25 of SE_GENI_RX_FIFO_STATUS register shows RX_ASYNC_FIFO word 
+count.
 
-iQIzBAEBCAAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAl8yd+sACgkQzL64meEa
-mQZtng/+ME8/MzGicCyBG2nyh/gkrqd24TNxjGISKjkK1uQsWLFOC6SnVdop1Dk9
-o20Wyp1hqcLebKQ5QKXagqYc7Wc8w9NxyeWeaqiJ+QX23NEFyQ+EKrgG+KzcyhuF
-90UNVhDlimcHlpUzNJESKgh4bHljYEJIrz0nODIUA5ipuvCfHL1SSEoZrFOBiKu6
-WJSAsELXv3DcKICvND3JqW8kNXkX/eAbwmfEoWuytdd8KnNmSv0tCvFGN2GNXpI4
-mrFrbtWBfBR3DYsP38dVT9VFMEhvUadj1bBaIoUW+wLR3Vmqc+tsq/Kg/C+vKrkN
-6ynWj6cvkmZANY3x9i4tTLc3eZN+I7ic5BQFR2ecMP9B9jVdiS+Y2sMgnoIGPpKN
-EAJtOZXAdmc8eLMYKPabvQTcdlLZ0d3I1/SCI7vLbmnOW0Mlq4KPfQPwjAPjZ89C
-CeeCDQvTHqc4kB3um9216CGT2gXEgZ7VpRQ96FI37o/uqSnw3HGc1fND3XmAwKeQ
-U8cfrdozff1KXLZTHQN3Oei7N/dNURMBbqwwSdpz9j6ryI0ONDeBmAesx/waOjhK
-UpCk9OgJZ5QwmAN/ycA4F+3703rWZw8rawFNrfBNAFZ3U1wS4QY52lSfr2M5TF/0
-bjhkNxaxkLW+l+WMNzC+dTqNLlmfmFDQ+NaRyp/wUWuUP5VDseA=
-=wvqF
------END PGP SIGNATURE-----
---=-=-=--
+
+>
+> I spent a whole bunch of time poking at this and couldn't find any
+> sort of workaround.  Presumably geni is taking some time between me
+> reading the last word out of the FIFO from the "previous" packet and
+> then transitioning to the new packet.  I found a lot of references to
+> this process in the hardware register description (see GENI_CFG_REG69,
+> for instance), but I couldn't manage to make the kick to happen any
+> faster.  Presumably this isn't a problem for things like Bluetooth
+> since flow control saves them.  ...and I guess this isn't a problem in
+> practice because we usually _send_ a lot of data to the host for
+> console/kgdb and it's only the host => DUT path that has problems.
+>
+>
+>> I am not sure about what all scenario can leads to this behavior from
+>> hardware, I will try to get an answer from hardware team.
+>>
+>> Any error bit was set for SE_GENI_S_IRQ_STATUS & SE_GENI_M_IRQ_STATUS
+>> registers?
+> As per above I can see overflows in my test case and geni seems to be
+> behaving pretty badly.  If you have ideas on how to fix this I'd love
+> it.  However, it still seems like my patch is right because (at least
+> in the cases I tested) it avoids dropping bytes in some cases.  It
+> also matches how qcom_geni_serial_handle_rx() works and if that was
+> broken we'd have noticed by now.
+
+Reviewed-by: Akash Asthana <akashast@codeaurora.org>
+
+
+>
+>> I guess the hang was seen because *poll_cached_bytes_cnt* is unsigned
+>> int and it's value was 0, when it's decremented by 1 it's value become
+>> '4294967295' (very large) and dummy RX (0x00) would happen that
+>>
+>> many times before reading any actual RX transfers/bytes.
+> Right.  That would be why it was hanging.
+>
+>
+> -Doug
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+
