@@ -2,267 +2,191 @@ Return-Path: <SRS0=7S4r=BV=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-17.6 required=3.0 tests=BAYES_00,DKIMWL_WL_MED,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_IN_DEF_DKIM_WL autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB70C433E3
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 16:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5781C433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 17:00:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4FC1B207DA
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 16:21:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7E280204FD
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Aug 2020 17:00:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="GvKwKq8K"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="gfocM8GF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729163AbgHKQVu (ORCPT
+        id S1729090AbgHKRAY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Aug 2020 12:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
+        Tue, 11 Aug 2020 13:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729082AbgHKQVj (ORCPT
+        with ESMTP id S1729004AbgHKRAH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Aug 2020 12:21:39 -0400
-Received: from mail-vk1-xa41.google.com (mail-vk1-xa41.google.com [IPv6:2607:f8b0:4864:20::a41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268CAC06174A
-        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 09:21:39 -0700 (PDT)
-Received: by mail-vk1-xa41.google.com with SMTP id s81so2758628vkb.3
-        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 09:21:39 -0700 (PDT)
+        Tue, 11 Aug 2020 13:00:07 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903B5C061787
+        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 10:00:07 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id 17so7931336pfw.9
+        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 10:00:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=X9jWu21QNef/y5RNTkP3JQSFDtJBKoAf39qs8UQj2Es=;
-        b=GvKwKq8KzBW7bvzT/gMFdhvrNCMi36fLi5QJh0aPqDeIix2UD0f6x75Zx8Rs/obKIg
-         XgoPnYeyDRybszElAKPaek1CeqfPDBP0/gcJwQH7r/KChcEdrmFy9xMu2/1/o+gODLjB
-         DOI+rUbSa67JUJHKCfGyUGS7xwnA/xjEEI080=
+        bh=cdCN+EFlBoYxXAxI6GQmydGxHxnnk0sb8TB0qb8FPBM=;
+        b=gfocM8GFiLlhQY5QDxnSWQvvsMemkNQMNTijiRI++hlF04JK+lq/WJkDQBSJKriHz1
+         Pn8pX84/Wg3yE94kWAE0MBj1kjrF8d8t35Rb/23nnMsqN3Ev/8bR3BUN8WqLzRkRMIWc
+         2W3gcQopnYr/DZkNqnvyAL48CLciKBgVyftCQqOka3P1X3JlpAjhb/w3V6JvLDuTCPtV
+         +GszNsAkg0Fu/pTMH0ug2kdxooiK2M8Rs7d3NsavW3WgOYHpmkwwHvZjZ0okbosMFd0n
+         QhY5/ek6TQ+1enoMbDkQRxRtb+/9EKpXsP3Bv01xh+EbnJA7uy+/cgtuIwvgfYpYKO8p
+         l5Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=X9jWu21QNef/y5RNTkP3JQSFDtJBKoAf39qs8UQj2Es=;
-        b=mgdmmV38Le/hSEox6jaNzmoYxT6wxnayJTB0o6O+cB0UafYxREY3b3vd0lktKKrNXy
-         yc/jRcNdxCskM5xVCzOO1MtmPNZ/ZaA/l5Bl9aScwm01jcKurLuo1CL42xaqNBTpPKR8
-         KDPsMdkSagitmWvwanzb2kcagtaxRPNdQaioCz12bdn43uq3tF9+ob82CPtMBSdaiXo3
-         iG11m47a53MY//aVuScA1R0A0XSE+ss2nYh2d47uQATXJYEppKarjLxYvIQNV8VnZVTf
-         pX/0hqVzGgGnbCEn3Oz1wolnZdohR7FF2u4GM9mVpeW9yjjf8tiDW2CI/SsNvbDnyRQk
-         3iMw==
-X-Gm-Message-State: AOAM531D9BlsTnRv5RUtYklNyzM5nwdZNItwCLrr1RI3Ocx9TT0tKKNN
-        aPr+sj03sJQTrFMj7rr65zizyJgkRdI=
-X-Google-Smtp-Source: ABdhPJxKZltEWnMH5NJ+YWsNVg83qCdBiygFD3Hl02Z3mVaawpS5g9I5YAL8kUcOi5yGdefOkzOfHg==
-X-Received: by 2002:ac5:c8a7:: with SMTP id o7mr25784974vkl.29.1597162896554;
-        Tue, 11 Aug 2020 09:21:36 -0700 (PDT)
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com. [209.85.217.52])
-        by smtp.gmail.com with ESMTPSA id q69sm6834271vkb.47.2020.08.11.09.21.34
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Aug 2020 09:21:35 -0700 (PDT)
-Received: by mail-vs1-f52.google.com with SMTP id k25so888913vsm.11
-        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 09:21:34 -0700 (PDT)
-X-Received: by 2002:a67:fd67:: with SMTP id h7mr22597678vsa.121.1597162894299;
- Tue, 11 Aug 2020 09:21:34 -0700 (PDT)
+        bh=cdCN+EFlBoYxXAxI6GQmydGxHxnnk0sb8TB0qb8FPBM=;
+        b=VYCqM4Rb++IC+cPtlMoviYAE8RZT+MWoj8u0q4RLjdcwFGHk+qotmhaVYnTBitfnZ8
+         0Ux6x72FJTYLGOjnfF7IAaYqMl9QRu1rtL3ocdpZcjnnWzrPLo6sdda5foOTBOrYDmj8
+         anaZiEMFaN5pE4Sh6qp1dHn1yyWIDiIvEmeefFTKV2fW+4DmMYCbtBK1H54xeHmHyF5j
+         vRfvNgNeBNODMo1aIq/Od69UcR3zNFY86+8YI2292dd8J/9TJJXkqluWzvd9HJX+/fkl
+         8JefYF9uDsk3n62JRoC2Y1JQleG6BA6w+1Tp3HIIsx9hnRBfE5BRCrp5V4m9BtYi34Rh
+         Wh8g==
+X-Gm-Message-State: AOAM532DNEu3YTixXiqpG8LCibKhITP8qG8jWOWE0Qhby5YZXoE4QgMD
+        TXh00tzoyRgLWIXAmNo8qmIv4/1cEFQcMDEYpnXLwA==
+X-Google-Smtp-Source: ABdhPJwlflsnhvVydVvQnH8y4HXhtOWtkwKRg+wFTfdywoYortT+tTcwiOHiCdYjh5A2VH7q9yaxD/7l6ETd7xvlbgg=
+X-Received: by 2002:a63:fa09:: with SMTP id y9mr1581444pgh.0.1597165206144;
+ Tue, 11 Aug 2020 10:00:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200806221904.1.I4455ff86f0ef5281c2a0cd0a4712db614548a5ca@changeid>
- <adaef6bf-7887-feea-fedf-d3bc5566bb9d@codeaurora.org> <CAD=FV=X8tNpmkSrEjXgKPKsBOZfjt8aVQe47gzi5FvPqdOQN+A@mail.gmail.com>
- <b4cd8daf-ef37-4cc1-546e-ba46cb19392a@codeaurora.org>
-In-Reply-To: <b4cd8daf-ef37-4cc1-546e-ba46cb19392a@codeaurora.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 11 Aug 2020 09:21:22 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=W=C111X2VzZaAKo8JhRGexG=crK+YJbr9FWcAzATggAQ@mail.gmail.com>
-Message-ID: <CAD=FV=W=C111X2VzZaAKo8JhRGexG=crK+YJbr9FWcAzATggAQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: qcom_geni_serial: Fix recent kdb hang
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Mukesh Savaliya <msavaliy@codeaurora.org>,
+References: <20200811025044.70626-1-john.stultz@linaro.org>
+In-Reply-To: <20200811025044.70626-1-john.stultz@linaro.org>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 11 Aug 2020 09:59:30 -0700
+Message-ID: <CAGETcx8qjnVNNB_z-Ar8gxKAy7Sc8kcj8oAWQ76mXcBpaqnagg@mail.gmail.com>
+Subject: Re: [RFC][PATCH] tty: serial: qcom_geni_serial: Drop __init from qcom_geni_console_setup
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
         Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Evan Green <evgreen@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
+        Todd Kjos <tkjos@google.com>,
+        Amit Pundir <amit.pundir@linaro.org>,
         linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+        linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On Tue, Aug 11, 2020 at 4:54 AM Akash Asthana <akashast@codeaurora.org> wrote:
+On Mon, Aug 10, 2020 at 7:50 PM John Stultz <john.stultz@linaro.org> wrote:
 >
+> When booting with heavily modularized config, the serial console
+> may not be able to load until after init when modules that
+> satisfy needed dependencies have time to load.
 >
-> On 8/11/2020 2:56 AM, Doug Anderson wrote:
-> > Hi,
-> >
-> > On Mon, Aug 10, 2020 at 5:32 AM Akash Asthana <akashast@codeaurora.org> wrote:
-> >> Hi Doug,
-> >>
-> >> On 8/7/2020 10:49 AM, Douglas Anderson wrote:
-> >>> The commit e42d6c3ec0c7 ("serial: qcom_geni_serial: Make kgdb work
-> >>> even if UART isn't console") worked pretty well and I've been doing a
-> >>> lot of debugging with it.  However, recently I typed "dmesg" in kdb
-> >>> and then held the space key down to scroll through the pagination.  My
-> >>> device hung.  This was repeatable and I found that it was introduced
-> >>> with the aforementioned commit.
-> >>>
-> >>> It turns out that there are some strange boundary cases in geni where
-> >>> in some weird situations it will signal RX_LAST but then will put 0 in
-> >>> RX_LAST_BYTE.  This means that the entire last FIFO entry is valid.
-> >> IMO that means we received a word in RX_FIFO and it is the last word
-> >> hence RX_LAST bit is set.
-> > What you say would make logical sense, but it's not how I have
-> > observed geni to work.  See below.
-> >
-> >
-> >> RX_LAST_BYTE is 0 means none of the bytes are valid in the last word.
-> > This would imply that qcom_geni_serial_handle_rx() is also broken
-> > though, wouldn't it?  Specifically imagine that WORD_CNT is 1 and
-> > RX_LAST is set and RX_LAST_BYTE_VALID is true.  Here's the logic from
-> > that function:
-> >
-> >    total_bytes = BYTES_PER_FIFO_WORD * (word_cnt - 1);
-> >    if (last_word_partial && last_word_byte_cnt)
-> >      total_bytes += last_word_byte_cnt;
-> >    else
-> >      total_bytes += BYTES_PER_FIFO_WORD;
-> >    port->handle_rx(uport, total_bytes, drop);
-> >
-> > As you can see that logic will set "total_bytes" to 4 in the case I'm
-> > talking about.
+> Unfortunately, as qcom_geni_console_setup is marked as __init,
+> the function may have been freed before we get to run it,
+> causing boot time crashes such as:
+
+Btw, I thought non-__init functions calling __init functions would be
+caught by the build system. Is that not correct? If it's correct, do
+we know how this gets past that check?
+
+-Saravana
+
 >
-> Yeah IMO as per theory this should also be corrected but since you have
-> already pulled out few experiment to prove garbage data issue(which I
-> was suspecting) is not seen.
+> [    6.469057] Unable to handle kernel paging request at virtual address ffffffe645d4e6cc
+> [    6.481623] Mem abort info:
+> [    6.484466]   ESR = 0x86000007
+> [    6.487557]   EC = 0x21: IABT (current EL), IL = 32 bits
+> [    6.492929]   SET = 0, FnV = 0g
+> [    6.496016]   EA = 0, S1PTW = 0
+> [    6.499202] swapper pgtable: 4k pages, 39-bit VAs, pgdp=000000008151e000
+> [    6.501286] ufshcd-qcom 1d84000.ufshc: ufshcd_print_pwr_info:[RX, TX]: gear=[3, 3], lane[2, 2], pwr[FAST MODE, FAST MODE], rate = 2
+> [    6.505977] [ffffffe645d4e6cc] pgd=000000017df9f003, p4d=000000017df9f003, pud=000000017df9f003, pmd=000000017df9c003, pte=0000000000000000
+> [    6.505990] Internal error: Oops: 86000007 [#1] PREEMPT SMP
+> [    6.505995] Modules linked in: zl10353 zl10039 zl10036 zd1301_demod xc5000 xc4000 ves1x93 ves1820 tuner_xc2028 tuner_simple tuner_types tua9001 tua6100 1
+> [    6.506152]  isl6405
+> [    6.518104] ufshcd-qcom 1d84000.ufshc: ufshcd_find_max_sup_active_icc_level: Regulator capability was not set, actvIccLevel=0
+> [    6.530549]  horus3a helene fc2580 fc0013 fc0012 fc0011 ec100 e4000 dvb_pll ds3000 drxk drxd drx39xyj dib9000 dib8000 dib7000p dib7000m dib3000mc dibx003
+> [    6.624271] CPU: 7 PID: 148 Comm: kworker/7:2 Tainted: G        W       5.8.0-mainline-12021-g6defd37ba1cd #3455
+> [    6.624273] Hardware name: Thundercomm Dragonboard 845c (DT)
+> [    6.624290] Workqueue: events deferred_probe_work_func
+> [    6.624296] pstate: 40c00005 (nZcv daif +PAN +UAO BTYPE=--)
+> [    6.624307] pc : qcom_geni_console_setup+0x0/0x110
+> [    6.624316] lr : try_enable_new_console+0xa0/0x140
+> [    6.624318] sp : ffffffc010843a30
+> [    6.624320] x29: ffffffc010843a30 x28: ffffffe645c3e7d0
+> [    6.624325] x27: ffffff80f8022180 x26: ffffffc010843b28
+> [    6.637937] x25: 0000000000000000 x24: ffffffe6462a2000
+> [    6.637941] x23: ffffffe646398000 x22: 0000000000000000
+> [    6.637945] x21: 0000000000000000 x20: ffffffe6462a5ce8
+> [    6.637952] x19: ffffffe646398e38 x18: ffffffffffffffff
+> [    6.680296] x17: 0000000000000000 x16: ffffffe64492b900
+> [    6.680300] x15: ffffffe6461e9d08 x14: 69202930203d2064
+> [    6.680305] x13: 7561625f65736162 x12: 202c363331203d20
+> [    6.696434] x11: 0000000000000030 x10: 0101010101010101
+> [    6.696438] x9 : 4d4d20746120304d x8 : 7f7f7f7f7f7f7f7f
+> [    6.707249] x7 : feff4c524c787373 x6 : 0000000000008080
+> [    6.707253] x5 : 0000000000000000 x4 : 8080000000000000
+> [    6.707257] x3 : 0000000000000000 x2 : ffffffe645d4e6cc
+> [    6.744223] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate: failed to find OPP for freq 102400000 (-34)
+> [    6.744966] x1 : fffffffefe74e174 x0 : ffffffe6462a5ce8
+> [    6.753580] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate: failed to find OPP for freq 102400000 (-34)
+> [    6.761634] Call trace:
+> [    6.761639]  qcom_geni_console_setup+0x0/0x110
+> [    6.761645]  register_console+0x29c/0x2f8
+> [    6.767981] Bluetooth: hci0: Frame reassembly failed (-84)
+> [    6.775252]  uart_add_one_port+0x438/0x500
+> [    6.775258]  qcom_geni_serial_probe+0x2c4/0x4a8
+> [    6.775266]  platform_drv_probe+0x58/0xa8
+> [    6.855359]  really_probe+0xec/0x398
+> [    6.855362]  driver_probe_device+0x5c/0xb8
+> [    6.855367]  __device_attach_driver+0x98/0xb8
+> [    7.184945]  bus_for_each_drv+0x74/0xd8
+> [    7.188825]  __device_attach+0xec/0x148
+> [    7.192705]  device_initial_probe+0x24/0x30
+> [    7.196937]  bus_probe_device+0x9c/0xa8
+> [    7.200816]  deferred_probe_work_func+0x7c/0xb8
+> [    7.205398]  process_one_work+0x20c/0x4b0
+> [    7.209456]  worker_thread+0x48/0x460
+> [    7.213157]  kthread+0x14c/0x158
+> [    7.216432]  ret_from_fork+0x10/0x18
+> [    7.220049] Code: bad PC value
+> [    7.223139] ---[ end trace 73f3b21e251d5a70 ]---
 >
-> It's already consistent with existing logic and it behaves well
-> practically . So the changes could be merge. Meanwhile I am checking
-> with HW team to get clarity.
+> Thus this patch removes the __init avoiding crash in such
+> configs.
 >
-> >
-> >
-> >> In such scenario we should just read RX_FIFO buffer (to empty it),
-> >> discard the word and return NO_POLL_CHAR. Something like below.
-> >>
-> >> ---------------------------------------------------------------------------------------------------------------------------------------------------------
-> >>
-> >>                   else
-> >>                           private_data->poll_cached_bytes_cnt = 4;
-> >>
-> >>                   private_data->poll_cached_bytes =
-> >>                           readl(uport->membase + SE_GENI_RX_FIFOn);
-> >>           }
-> >>
-> >> +        if (!private_data->poll_cached_bytes_cnt)
-> >> +              return NO_POLL_CHAR;
-> >>           private_data->poll_cached_bytes_cnt--;
-> >>           ret = private_data->poll_cached_bytes & 0xff;
-> >> -------------------------------------------------------------------------------------------------------------------------------------------------------------
-> >>
-> >> Please let me know whether above code helps.
-> > Your code will avoid the hang.  Yes.  ...but it will drop bytes.  I
-> > devised a quick-n-dirty test.  Here's a test of your code:
-> I assumed those as invalid bytes and don't wanted to read them so yeah
-> dropping of bytes was expected.
-> >
-> > https://crrev.com/c/2346886
-> >
-> > ...and here's a test of my code:
-> >
-> > https://crrev.com/c/2346884
-> >
-> > I had to keep a buffer around since it's hard to debug the serial
-> > driver.  In both cases I put "DOUG" into the buffer when I detect this
-> > case.  If my theory about how geni worked was wrong then we should
-> > expect to see some garbage in the buffer right after the DOUG, right?
-> > ...but my code gets the alphabet in nice sequence.  Your code drops 4
-> > bytes.
-> Yeah I was expecting garbage data.
-> >
-> >
-> > NOTE: while poking around with the above two test patches I found it
-> > was pretty easy to get geni to drop bytes / hit overflow cases and
-> > also to insert bogus 0 bytes in the stream (I believe these are
-> > related).  I was able to reproduce this:
-> > * With ${SUBJECT} patch in place.
-> > * With your proposed patch.
-> > * With the recent "geni" patches reverted (in other words back to 1
-> > byte per FIFO entry).
-> >
-> > It's not terribly surprising that we're overflowing since I believe
-> > kgdb isn't too keen to read characters at the same time it's writing.
-> > That doesn't explain the weird 0-bytes that geni seemed to be
-> > inserting, but at least it would explain the overflows.  However, even
-> > after I fixed this I _still_ was getting problems.  Specifically geni
-> > seemed to be hiding bytes from me until it was too late.  I put
-> > logging in and would see this:
-> >
-> > 1 word in FIFO - wxyz
-> > 1 word in FIFO (last set, last FIFO has 1 byte) - \n
-> > Check again, still 0 bytes in FIFO
-> > Suddenly 16 bytes are in FIFO and S_RX_FIFO_WR_ERR_EN is set.
+> Cc: Andy Gross <agross@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: Saravana Kannan <saravanak@google.com>
+> Cc: Todd Kjos <tkjos@google.com>
+> Cc: Amit Pundir <amit.pundir@linaro.org>
+> Cc: linux-arm-msm@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Suggested-by: Saravana Kannan <saravanak@google.com>
+> Signed-off-by: John Stultz <john.stultz@linaro.org>
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> RX data first stored in RX_ASYNC_FIFO then it's transfered to RX_FIFO
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 3aa29d201f54..f7c6c7466520 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -1098,7 +1098,7 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
+>  }
 >
-> When get_char is called and we observe 0 bytes in RX_FIFO, most probably
-> data is not transfered from RX_ASYNC_FIFO to RX_FIFO.
+>  #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
+> -static int __init qcom_geni_console_setup(struct console *co, char *options)
+> +static int qcom_geni_console_setup(struct console *co, char *options)
+>  {
+>         struct uart_port *uport;
+>         struct qcom_geni_serial_port *port;
+> --
+> 2.17.1
 >
-> BITS 27:25 of SE_GENI_RX_FIFO_STATUS register shows RX_ASYNC_FIFO word
-> count.
-
-OK, I did a tad bit more debugging and I think any problems left after
-my patch are actually kdb's fault, though geni doesn't behave terribly
-well with overflows (it would be better if it just dropped characters
-rather than enqueuing garbage).  Specifically in the tests I was
-running recently kdb would sometimes still take over 30 ms between
-polls so it's not surprising that we'd get overflows if we're
-spamming.  All my test code and results are at:
-
-https://crrev.com/c/2348284
-
-Earlier when I claimed that bytes were showing up in geni too quickly
-I was wrong.  My timing code was broken at the time.
-
-
-> > I spent a whole bunch of time poking at this and couldn't find any
-> > sort of workaround.  Presumably geni is taking some time between me
-> > reading the last word out of the FIFO from the "previous" packet and
-> > then transitioning to the new packet.  I found a lot of references to
-> > this process in the hardware register description (see GENI_CFG_REG69,
-> > for instance), but I couldn't manage to make the kick to happen any
-> > faster.  Presumably this isn't a problem for things like Bluetooth
-> > since flow control saves them.  ...and I guess this isn't a problem in
-> > practice because we usually _send_ a lot of data to the host for
-> > console/kgdb and it's only the host => DUT path that has problems.
-> >
-> >
-> >> I am not sure about what all scenario can leads to this behavior from
-> >> hardware, I will try to get an answer from hardware team.
-> >>
-> >> Any error bit was set for SE_GENI_S_IRQ_STATUS & SE_GENI_M_IRQ_STATUS
-> >> registers?
-> > As per above I can see overflows in my test case and geni seems to be
-> > behaving pretty badly.  If you have ideas on how to fix this I'd love
-> > it.  However, it still seems like my patch is right because (at least
-> > in the cases I tested) it avoids dropping bytes in some cases.  It
-> > also matches how qcom_geni_serial_handle_rx() works and if that was
-> > broken we'd have noticed by now.
->
-> Reviewed-by: Akash Asthana <akashast@codeaurora.org>
-
-Thanks!  After my extra digging I now think that the weird case is
-triggered by the overflows and the FIFO certainly does get garbage in
-it when there are overflows, but I think my patch is still correct and
-gets correct bytes.  The garbage that is queued up is queued up later
-and looks like normal transfers.  ...so I think we're good to go with
-it.
-
-So summary:
-1. We should land my patch.
-2. I filed <https://crbug.com/1115125> to track trying to make kdb's
-polling nicer.
-3. I also filed an internal bug to track seeing if we could make geni
-not queue up garbage in this case.
-
-
--Doug
