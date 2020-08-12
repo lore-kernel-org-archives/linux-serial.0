@@ -2,84 +2,113 @@ Return-Path: <SRS0=P72y=BW=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A94A1C433EA
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 08:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F237C433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 09:12:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A0AE20781
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 08:56:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4AFD92078B
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 09:12:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1597223524;
+	bh=jR293OCHa+yBeBKsUsbQnoAZJNYh3ggd8EfI0YOsRA8=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:List-ID:From;
+	b=PmUEgFjxLGUxY4eeytSQUNRBpPLextR9GMYC7GCnCEknsnmgr1Jj5V4IPpSF2dE9Q
+	 fpxaPom0p/nBa5UwinE0vFYrcH5D/Qki/08NXjLiea5EfYFFwckj/D4hI5Ab23Y0wF
+	 lz/JHGJ9kC/PQUrDVi9NVnOARX9Ec42iPes+OhuM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727055AbgHLI4c (ORCPT
+        id S1727021AbgHLJMD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Aug 2020 04:56:32 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:49094 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726965AbgHLI4b (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Aug 2020 04:56:31 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 158921A17FA;
-        Wed, 12 Aug 2020 10:56:30 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 399061A006C;
-        Wed, 12 Aug 2020 10:56:24 +0200 (CEST)
-Received: from 10.192.242.69 (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id B3C9C402BF;
-        Wed, 12 Aug 2020 10:56:16 +0200 (CEST)
-From:   Anson Huang <Anson.Huang@nxp.com>
-To:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, gregkh@linuxfoundation.org,
-        galak@codeaurora.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     Linux-imx@nxp.com
-Subject: [PATCH V2 2/5] dt-bindings: clock: Update i.MX23 example
-Date:   Wed, 12 Aug 2020 16:51:21 +0800
-Message-Id: <1597222284-32609-2-git-send-email-Anson.Huang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1597222284-32609-1-git-send-email-Anson.Huang@nxp.com>
-References: <1597222284-32609-1-git-send-email-Anson.Huang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 12 Aug 2020 05:12:03 -0400
+Received: from mail-ej1-f65.google.com ([209.85.218.65]:43573 "EHLO
+        mail-ej1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726409AbgHLJMD (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 12 Aug 2020 05:12:03 -0400
+Received: by mail-ej1-f65.google.com with SMTP id m22so1416760eje.10;
+        Wed, 12 Aug 2020 02:12:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OTisqPWsNaLTBYitGN0ANbWIWidBebEjPE1GGi+XHPo=;
+        b=WCUHjJcRRwnGAq9VOuOmTvmvip3lFPELMqiMREB4HgYk75LxdFGk5cszIv0f2c6crd
+         cJj0Dxgj82uhRS+RUN4CnouF7qJayJMvZ9h8odbQOWue6jIdkuC3k/W+Q+UK2NdajNCx
+         4LsVQXPmzTNKGpK9NkZxk/7U6SjCHHysjrn4rh4ow008TZscUgfmUiNWvO9LG3fsoF2U
+         f2RJLIwNp30CUtsJJEbpOzP7Ynh6M0EB6grrJaHOru2o/ADy4ubrCNrVaG1vAfzaNac0
+         PcdP9L5RokNlHBPtq8m5EWFtrFzRIK22tQ3H3L3IARhpsQsvj57oYaAEtn9up9rbONdT
+         Pjgw==
+X-Gm-Message-State: AOAM530972VnIAy31LcF0NTiWq/0i8RMAGLGcGzwcV4CBg5hwcFKvIX6
+        8lHepuQNNyTT/m2TXk1g/gjevcMH
+X-Google-Smtp-Source: ABdhPJx4Ji37nXDxN20tn3PvjQIZPTdXvsFQViO+KYO2t3kFaOFPoZTfU7qrcm4UESPYpxrGCY3/WA==
+X-Received: by 2002:a17:906:e0e:: with SMTP id l14mr28652549eji.398.1597223521309;
+        Wed, 12 Aug 2020 02:12:01 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::ee2? ([2a0b:e7c0:0:107::ee2])
+        by smtp.gmail.com with ESMTPSA id p3sm1053769edx.75.2020.08.12.02.11.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Aug 2020 02:12:00 -0700 (PDT)
+Subject: Re: [RFC][PATCH] tty: serial: qcom_geni_serial: Drop __init from
+ qcom_geni_console_setup
+To:     John Stultz <john.stultz@linaro.org>,
+        Saravana Kannan <saravanak@google.com>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Todd Kjos <tkjos@google.com>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+References: <20200811025044.70626-1-john.stultz@linaro.org>
+ <CAGETcx8qjnVNNB_z-Ar8gxKAy7Sc8kcj8oAWQ76mXcBpaqnagg@mail.gmail.com>
+ <CALAqxLUhX0JLLvn=4fNXk0z6dm=teqCaBmz2VDPEKGfZ+EDFZw@mail.gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <74bc87df-db5a-4388-9b8d-4eed78196685@kernel.org>
+Date:   Wed, 12 Aug 2020 11:11:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <CALAqxLUhX0JLLvn=4fNXk0z6dm=teqCaBmz2VDPEKGfZ+EDFZw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Update the i.MX23 clock example to align with MXS AUART binding doc to
-avoid below build error:
+On 11. 08. 20, 22:02, John Stultz wrote:
+> On Tue, Aug 11, 2020 at 10:00 AM Saravana Kannan <saravanak@google.com> wrote:
+>>
+>> On Mon, Aug 10, 2020 at 7:50 PM John Stultz <john.stultz@linaro.org> wrote:
+>>>
+>>> When booting with heavily modularized config, the serial console
+>>> may not be able to load until after init when modules that
+>>> satisfy needed dependencies have time to load.
+>>>
+>>> Unfortunately, as qcom_geni_console_setup is marked as __init,
+>>> the function may have been freed before we get to run it,
+>>> causing boot time crashes such as:
+>>
+>> Btw, I thought non-__init functions calling __init functions would be
+>> caught by the build system. Is that not correct? If it's correct, do
+>> we know how this gets past that check?
+> 
+> I think it's because it's indirectly called through a function pointer.
 
-Documentation/devicetree/bindings/clock/imx23-clock.example.dt.yaml:
-   serial@8006c000: clocks: [[4294967295, 32]] is too short
-Documentation/devicetree/bindings/clock/imx23-clock.example.dt.yaml:
-   serial@8006c000: 'dmas' is a required property
-Documentation/devicetree/bindings/clock/imx23-clock.example.dt.yaml:
-    serial@8006c000: 'dma-names' is a required property
+Definitely.
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
-new patch.
----
- Documentation/devicetree/bindings/clock/imx23-clock.yaml | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Given there are lots of __init by *_console_setup, I wonder how many
+console drivers return EPROBE_DEFER from probe and then register the
+console from the same (but deferred) probe like this driver does...
 
-diff --git a/Documentation/devicetree/bindings/clock/imx23-clock.yaml b/Documentation/devicetree/bindings/clock/imx23-clock.yaml
-index 66cb238..4028c1f 100644
---- a/Documentation/devicetree/bindings/clock/imx23-clock.yaml
-+++ b/Documentation/devicetree/bindings/clock/imx23-clock.yaml
-@@ -87,6 +87,8 @@ examples:
-     serial@8006c000 {
-         compatible = "fsl,imx23-auart";
-         reg = <0x8006c000 0x2000>;
--        interrupts = <24 25 23>;
-+        interrupts = <24>;
-         clocks = <&clks 32>;
-+        dmas = <&dma_apbx 6>, <&dma_apbx 7>;
-+        dma-names = "rx", "tx";
-     };
+In fact, it doesn't even matter if the probe returns EPROBE_DEFER. The
+probe is not marked __init, so the setup shouldn't be either.
+
+thanks,
 -- 
-2.7.4
-
+js
