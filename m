@@ -7,28 +7,28 @@ X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBEAC433E1
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 08:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5A8C433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 08:56:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 56FF820786
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 08:56:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4551E20786
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 08:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgHLI4h (ORCPT
+        id S1727078AbgHLI4e (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Aug 2020 04:56:37 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:53434 "EHLO inva021.nxp.com"
+        Wed, 12 Aug 2020 04:56:34 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:49122 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727098AbgHLI4h (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Aug 2020 04:56:37 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6EF5D200040;
-        Wed, 12 Aug 2020 10:56:34 +0200 (CEST)
+        id S1726572AbgHLI4d (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 12 Aug 2020 04:56:33 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 9EA781A0CAE;
+        Wed, 12 Aug 2020 10:56:31 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4E534200027;
-        Wed, 12 Aug 2020 10:56:28 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 936B71A0088;
+        Wed, 12 Aug 2020 10:56:25 +0200 (CEST)
 Received: from 10.192.242.69 (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id D3AE1402EB;
-        Wed, 12 Aug 2020 10:56:20 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 21E83402D2;
+        Wed, 12 Aug 2020 10:56:18 +0200 (CEST)
 From:   Anson Huang <Anson.Huang@nxp.com>
 To:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
         shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
@@ -37,9 +37,9 @@ To:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc:     Linux-imx@nxp.com
-Subject: [PATCH V2 5/5] dt-bindings: serial: Convert NXP lpuart to json-schema
-Date:   Wed, 12 Aug 2020 16:51:24 +0800
-Message-Id: <1597222284-32609-5-git-send-email-Anson.Huang@nxp.com>
+Subject: [PATCH V2 3/5] dt-bindings: serial: Convert i.MX uart to json-schema
+Date:   Wed, 12 Aug 2020 16:51:22 +0800
+Message-Id: <1597222284-32609-3-git-send-email-Anson.Huang@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1597222284-32609-1-git-send-email-Anson.Huang@nxp.com>
 References: <1597222284-32609-1-git-send-email-Anson.Huang@nxp.com>
@@ -49,96 +49,109 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the NXP lpuart binding to DT schema format using json-schema.
+Convert the i.MX uart binding to DT schema format using json-schema.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
 no change.
 ---
- .../devicetree/bindings/serial/fsl-lpuart.txt      | 43 ------------
- .../devicetree/bindings/serial/fsl-lpuart.yaml     | 79 ++++++++++++++++++++++
- 2 files changed, 79 insertions(+), 43 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/fsl-lpuart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+ .../devicetree/bindings/serial/fsl-imx-uart.txt    | 40 ----------
+ .../devicetree/bindings/serial/fsl-imx-uart.yaml   | 92 ++++++++++++++++++++++
+ 2 files changed, 92 insertions(+), 40 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
 deleted file mode 100644
-index e7448b9..0000000
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+index 9582fc2..0000000
+--- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
 +++ /dev/null
-@@ -1,43 +0,0 @@
--* Freescale low power universal asynchronous receiver/transmitter (lpuart)
+@@ -1,40 +0,0 @@
+-* Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
 -
 -Required properties:
--- compatible :
--  - "fsl,vf610-lpuart" for lpuart compatible with the one integrated
--    on Vybrid vf610 SoC with 8-bit register organization
--  - "fsl,ls1021a-lpuart" for lpuart compatible with the one integrated
--    on LS1021A SoC with 32-bit big-endian register organization
--  - "fsl,ls1028a-lpuart" for lpuart compatible with the one integrated
--    on LS1028A SoC with 32-bit little-endian register organization
--  - "fsl,imx7ulp-lpuart" for lpuart compatible with the one integrated
--    on i.MX7ULP SoC with 32-bit little-endian register organization
--  - "fsl,imx8qxp-lpuart" for lpuart compatible with the one integrated
--    on i.MX8QXP SoC with 32-bit little-endian register organization
--  - "fsl,imx8qm-lpuart" for lpuart compatible with the one integrated
--    on i.MX8QM SoC with 32-bit little-endian register organization
+-- compatible : Should be "fsl,<soc>-uart"
 -- reg : Address and length of the register set for the device
 -- interrupts : Should contain uart interrupt
--- clocks : phandle + clock specifier pairs, one for each entry in clock-names
--- clock-names : For vf610/ls1021a/ls1028a/imx7ulp, "ipg" clock is for uart
--  bus/baud clock. For imx8qxp lpuart, "ipg" clock is bus clock that is used
--  to access lpuart controller registers, it also requires "baud" clock for
--  module to receive/transmit data.
 -
 -Optional properties:
--- dmas: A list of two dma specifiers, one for each entry in dma-names.
--- dma-names: should contain "tx" and "rx".
--- rs485-rts-active-low, linux,rs485-enabled-at-boot-time: see rs485.txt
+-- fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
+-                  in DCE mode by default.
+-- fsl,inverted-tx , fsl,inverted-rx : Indicate that the hardware attached
+-  to the peripheral inverts the signal transmitted or received,
+-  respectively, and that the peripheral should invert its output/input
+-  using the INVT/INVR registers.
+-- rs485-rts-delay, rs485-rts-active-low, rs485-rx-during-tx,
+-  linux,rs485-enabled-at-boot-time: see rs485.txt. Note that for RS485
+-  you must enable either the "uart-has-rtscts" or the "rts-gpios"
+-  properties. In case you use "uart-has-rtscts" the signal that controls
+-  the transceiver is actually CTS_B, not RTS_B. CTS_B is always output,
+-  and RTS_B is input, regardless of dte-mode.
 -
--Note: Optional properties for DMA support. Write them both or both not.
+-Please check Documentation/devicetree/bindings/serial/serial.yaml
+-for the complete list of generic properties.
+-
+-Note: Each uart controller should have an alias correctly numbered
+-in "aliases" node.
 -
 -Example:
 -
--uart0: serial@40027000 {
--		compatible = "fsl,vf610-lpuart";
--		reg = <0x40027000 0x1000>;
--		interrupts = <0 61 0x00>;
--		clocks = <&clks VF610_CLK_UART0>;
--		clock-names = "ipg";
--		dmas = <&edma0 0 2>,
--			<&edma0 0 3>;
--		dma-names = "rx","tx";
--	};
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+-aliases {
+-	serial0 = &uart1;
+-};
+-
+-uart1: serial@73fbc000 {
+-	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
+-	reg = <0x73fbc000 0x4000>;
+-	interrupts = <31>;
+-	uart-has-rtscts;
+-	fsl,dte-mode;
+-};
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
 new file mode 100644
-index 0000000..1b955f3
+index 0000000..cba3f83
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-@@ -0,0 +1,79 @@
++++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+@@ -0,0 +1,92 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/serial/fsl-lpuart.yaml#
++$id: http://devicetree.org/schemas/serial/fsl-imx-uart.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Freescale low power universal asynchronous receiver/transmitter (lpuart)
++title: Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
 +
 +maintainers:
-+  - Kumar Gala <galak@codeaurora.org>
++  - Fabio Estevam <fabio.estevam@nxp.com>
 +
 +allOf:
++  - $ref: "serial.yaml"
 +  - $ref: "rs485.yaml"
 +
 +properties:
 +  compatible:
-+    enum:
-+      - fsl,vf610-lpuart
-+      - fsl,ls1021a-lpuart
-+      - fsl,ls1028a-lpuart
-+      - fsl,imx7ulp-lpuart
-+      - fsl,imx8qxp-lpuart
-+      - fsl,imx8qm-lpuart
++    oneOf:
++      - const: fsl,imx1-uart
++      - const: fsl,imx21-uart
++      - const: fsl,imx53-uart
++      - const: fsl,imx6q-uart
++      - items:
++          - enum:
++            - fsl,imx25-uart
++            - fsl,imx27-uart
++            - fsl,imx31-uart
++            - fsl,imx35-uart
++            - fsl,imx50-uart
++            - fsl,imx51-uart
++          - const: fsl,imx21-uart
++      - items:
++          - enum:
++            - fsl,imx6sl-uart
++            - fsl,imx6sll-uart
++            - fsl,imx6sx-uart
++            - fsl,imx6ul-uart
++            - fsl,imx7d-uart
++          - const: fsl,imx6q-uart
 +
 +  reg:
 +    maxItems: 1
@@ -146,54 +159,51 @@ index 0000000..1b955f3
 +  interrupts:
 +    maxItems: 1
 +
-+  clocks:
-+    items:
-+      - description: ipg clock
-+      - description: baud clock
-+    minItems: 1
-+    maxItems: 2
++  fsl,dte-mode:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      Indicate the uart works in DTE mode. The uart works in DCE mode by default.
 +
-+  clock-names:
-+    items:
-+      - const: ipg
-+      - const: baud
-+    minItems: 1
-+    maxItems: 2
++  fsl,inverted-tx:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      Indicate that the hardware attached to the peripheral inverts the signal
++      transmitted, and that the peripheral should invert its output using the
++      INVT registers.
 +
-+  dmas:
-+    items:
-+      - description: DMA controller phandle and request line for RX
-+      - description: DMA controller phandle and request line for TX
++  fsl,inverted-rx:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      Indicate that the hardware attached to the peripheral inverts the signal
++      received, and that the peripheral should invert its input using the
++      INVR registers.
 +
-+  dma-names:
-+    items:
-+      - const: rx
-+      - const: tx
++  uart-has-rtscts: true
 +
++  rs485-rts-delay: true
 +  rs485-rts-active-low: true
++  rs485-rx-during-tx: true
 +  linux,rs485-enabled-at-boot-time: true
 +
 +required:
 +  - compatible
 +  - reg
 +  - interrupts
-+  - clocks
-+  - clock-names
 +
 +unevaluatedProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/vf610-clock.h>
++    aliases {
++        serial0 = &uart1;
++    };
 +
-+    serial@40027000 {
-+        compatible = "fsl,vf610-lpuart";
-+        reg = <0x40027000 0x1000>;
-+        interrupts = <0 61 0x00>;
-+        clocks = <&clks VF610_CLK_UART0>;
-+        clock-names = "ipg";
-+        dmas = <&edma0 0 2>, <&edma0 0 3>;
-+        dma-names = "rx","tx";
++    uart1: serial@73fbc000 {
++        compatible = "fsl,imx51-uart", "fsl,imx21-uart";
++        reg = <0x73fbc000 0x4000>;
++        interrupts = <31>;
++        uart-has-rtscts;
++        fsl,dte-mode;
 +    };
 -- 
 2.7.4
