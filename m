@@ -2,147 +2,183 @@ Return-Path: <SRS0=P72y=BW=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1262FC433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 05:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E83C433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 05:48:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E177920781
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 05:48:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9380820781
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 05:48:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="r9endyL4"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="t3V+ZjoH"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726430AbgHLFsh (ORCPT
+        id S1726685AbgHLFsj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Aug 2020 01:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726567AbgHLFsh (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
         Wed, 12 Aug 2020 01:48:37 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:14316 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726567AbgHLFsg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Aug 2020 01:48:36 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1597211315; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=pcchFqlGO204owbj4tYlSsiQCb+7lLvPn9Lhykdi2Js=; b=r9endyL46qeUm9rha6L2oLkLUituluSVEv0XeFSp3x4KHpa1jGDNqqVhxIytf8QtCReBlZed
- ky3LvmJQsE0n0ohRVW5bzzHnFIzE4KoF16U+y08/YwUfoSOBw719Nn5s/1Pt3IT5e1ZnXoU0
- YJg+kaofJRZP3JK6vMco+zZUYMw=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
- 5f33829a668ab3fef6fec7d2 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 12 Aug 2020 05:48:10
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6AEF3C43391; Wed, 12 Aug 2020 05:48:10 +0000 (UTC)
-Received: from [192.168.1.15] (unknown [61.1.229.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: rnayak)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 339F8C433C6;
-        Wed, 12 Aug 2020 05:48:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 339F8C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=rnayak@codeaurora.org
-Subject: Re: [RFC v2 03/11] tty: serial: qcom_geni_serial: Use OPP API to set
- clk/perf state
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-scsi@vger.kernel.org,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Doug Anderson <dianders@chromium.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20190320094918.20234-1-rnayak@codeaurora.org>
- <20190320094918.20234-4-rnayak@codeaurora.org>
- <CALAqxLV2TBk9ScUM6MeJMCkL8kJnCihjQ7ac5fLzcqOg1rREVQ@mail.gmail.com>
- <CALAqxLWg3jJKJFLnnne-mrQEnH=m7R_9azCGaGnEmFYR4EMh=A@mail.gmail.com>
-From:   Rajendra Nayak <rnayak@codeaurora.org>
-Message-ID: <ec5eeb21-48e4-5dcc-583a-ac9419659e44@codeaurora.org>
-Date:   Wed, 12 Aug 2020 11:18:01 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253A6C061787
+        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 22:48:37 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id h19so844385ljg.13
+        for <linux-serial@vger.kernel.org>; Tue, 11 Aug 2020 22:48:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0zEyjemzrW6tuSgaZxYukJPqD4TDeOcf1QxIdZ2ERWE=;
+        b=t3V+ZjoHihxGen/+fgcb+Sl03t+g32bqWe2dXV0gZ0ay5zDsCBaKQXzaAsXiaWlX4M
+         bWnc6EU04acKEt4FPPmZIbGLNgPs5+7PI/M1HLrVIKJCwsyAKf+T8wh9dUqU4Pm5eEev
+         QUX8yIytpIJ9M++9s670b38UU7MBDjMJ4ZRy9uV2/p5zLmLTIsvfYdAMe2lx0r/pv2tr
+         WvI8EyZ0wO9Zz4TYPOT1Ghp3FeHCTh2o4yCQqqN9NuHTgSKAPHEKK4Bi2Dmh9Jk+L/hi
+         mvKVcbex+IDJGph6gi02H2S+N8Qrj6V6jMbx+9fo9F3b6pUnSyZXdf2kOTqQmoqT1mt/
+         xBKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0zEyjemzrW6tuSgaZxYukJPqD4TDeOcf1QxIdZ2ERWE=;
+        b=U1q4myx0lYVEJvG+fKvHJjmfz2UTpdAXXjQaRljiYiWf/dqlrgLRRsKdTLcZIahghN
+         yivF2PWJtzzJRNLpIC8UaFf6UEnT+kFgB2WyiIw5rAAFqpcNYQ9rprATxeaB1Pgf561O
+         VnJaMKiIIzPptYZY8HAZbd7SGe8VY7UMFal6dKVWY97UlL8B6GBHkk5bW5dLoRHWvxQh
+         vkOtmdILyGULEY0rySxE6DazvoI9V4yC9ip1tZiSbQX1iUPw4O5R82DE0BY6Gc+hn9KI
+         IjMmL2WqyOLd4KtdSaEkK8trDkKB8Qaja6nBBLVMvQZ/bmCUAA2ZfUyPRqFMYrOXRfkb
+         mCwQ==
+X-Gm-Message-State: AOAM533fL9vXnGEdtRgDBsLhx7HVFrtfNImvvLfEj3xyEJ+D5vzZmQWv
+        qb+97HSk4yW4dtyi0aGUarMG81JhoptJ9Z72tGweyg==
+X-Google-Smtp-Source: ABdhPJwHYv2n245El0sBHY3SXi/OZuUM7Hs+PCZPO5C3+U+GeaumrLCmLEKIDi60P/Ex2ud9bVj2jZmm4c++3mhnB+c=
+X-Received: by 2002:a05:651c:1293:: with SMTP id 19mr4299748ljc.427.1597211315219;
+ Tue, 11 Aug 2020 22:48:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CALAqxLWg3jJKJFLnnne-mrQEnH=m7R_9azCGaGnEmFYR4EMh=A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
+ <CAFA6WYMN=na4Pxnu1LYRVAAZRdV==5EwU-Vcq-QkRb_jaLiPmw@mail.gmail.com>
+ <20200811135801.GA416071@kroah.com> <CAFA6WYMN8i96rEZuHLnskB+4k0o=K9vF1_we83P04h2BSoGjmQ@mail.gmail.com>
+ <20200811145816.GA424033@kroah.com>
+In-Reply-To: <20200811145816.GA424033@kroah.com>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Wed, 12 Aug 2020 11:18:23 +0530
+Message-ID: <CAFA6WYNzP5kUtcUrrUthxUGh7T+S+V1bqsRD6i=HfhBcncQqPg@mail.gmail.com>
+Subject: Re: [RFC 0/5] Introduce NMI aware serial drivers
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        Jiri Slaby <jslaby@suse.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, 11 Aug 2020 at 20:28, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Aug 11, 2020 at 07:59:24PM +0530, Sumit Garg wrote:
+> > Hi Greg,
+> >
+> > Thanks for your comments.
+> >
+> > On Tue, 11 Aug 2020 at 19:27, Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Tue, Aug 11, 2020 at 07:20:26PM +0530, Sumit Garg wrote:
+> > > > On Tue, 21 Jul 2020 at 17:40, Sumit Garg <sumit.garg@linaro.org> wrote:
+> > > > >
+> > > > > Make it possible for UARTs to trigger magic sysrq from an NMI. With the
+> > > > > advent of pseudo NMIs on arm64 it became quite generic to request serial
+> > > > > device interrupt as an NMI rather than IRQ. And having NMI driven serial
+> > > > > RX will allow us to trigger magic sysrq as an NMI and hence drop into
+> > > > > kernel debugger in NMI context.
+> > > > >
+> > > > > The major use-case is to add NMI debugging capabilities to the kernel
+> > > > > in order to debug scenarios such as:
+> > > > > - Primary CPU is stuck in deadlock with interrupts disabled and hence
+> > > > >   doesn't honor serial device interrupt. So having magic sysrq triggered
+> > > > >   as an NMI is helpful for debugging.
+> > > > > - Always enabled NMI based magic sysrq irrespective of whether the serial
+> > > > >   TTY port is active or not.
+> > > > >
+> > > > > Currently there is an existing kgdb NMI serial driver which provides
+> > > > > partial implementation in upstream to have a separate ttyNMI0 port but
+> > > > > that remained in silos with the serial core/drivers which made it a bit
+> > > > > odd to enable using serial device interrupt and hence remained unused. It
+> > > > > seems to be clearly intended to avoid almost all custom NMI changes to
+> > > > > the UART driver.
+> > > > >
+> > > > > But this patch-set allows the serial core/drivers to be NMI aware which
+> > > > > in turn provides NMI debugging capabilities via magic sysrq and hence
+> > > > > there is no specific reason to keep this special driver. So remove it
+> > > > > instead.
+> > > > >
+> > > > > Approach:
+> > > > > ---------
+> > > > >
+> > > > > The overall idea is to intercept serial RX characters in NMI context, if
+> > > > > those are specific to magic sysrq then allow corresponding handler to run
+> > > > > in NMI context. Otherwise, defer all other RX and TX operations onto IRQ
+> > > > > work queue in order to run those in normal interrupt context.
+> > > > >
+> > > > > This approach is demonstrated using amba-pl011 driver.
+> > > > >
+> > > > > Patch-wise description:
+> > > > > -----------------------
+> > > > >
+> > > > > Patch #1 prepares magic sysrq handler to be NMI aware.
+> > > > > Patch #2 adds NMI framework to serial core.
+> > > > > Patch #3 and #4 demonstrates NMI aware uart port using amba-pl011 driver.
+> > > > > Patch #5 removes kgdb NMI serial driver.
+> > > > >
+> > > > > Goal of this RFC:
+> > > > > -----------------
+> > > > >
+> > > > > My main reason for sharing this as an RFC is to help decide whether or
+> > > > > not to continue with this approach. The next step for me would to port
+> > > > > the work to a system with an 8250 UART.
+> > > > >
+> > > >
+> > > > A gentle reminder to seek feedback on this series.
+> > >
+> > > It's the middle of the merge window, and I can't do anything.
+> > >
+> > > Also, I almost never review RFC patches as I have have way too many
+> > > patches that people think are "right" to review first...
+> > >
+> >
+> > Okay, I understand and I can definitely wait for your feedback.
+>
+> My feedback here is this:
+>
+> > > I suggest you work to flesh this out first and submit something that you
+> > > feels works properly.
+>
+> :)
+>
+> > IIUC, in order to make this approach substantial I need to make it
+> > work with 8250 UART (major serial driver), correct? As currently it
+> > works properly for amba-pl011 driver.
+>
+> Yes, try to do that, or better yet, make it work with all serial drivers
+> automatically.
 
-On 8/12/2020 7:03 AM, John Stultz wrote:
-> On Tue, Aug 11, 2020 at 4:11 PM John Stultz <john.stultz@linaro.org> wrote:
->>
->> On Wed, Mar 20, 2019 at 2:49 AM Rajendra Nayak <rnayak@codeaurora.org> wrote:
->>>
->>> geni serial needs to express a perforamnce state requirement on CX
->>> depending on the frequency of the clock rates. Use OPP table from
->>> DT to register with OPP framework and use dev_pm_opp_set_rate() to
->>> set the clk/perf state.
->>>
->>> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
->>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
->>> ---
->>>   drivers/tty/serial/qcom_geni_serial.c | 15 +++++++++++++--
->>>   1 file changed, 13 insertions(+), 2 deletions(-)
->>>
->>
->> Hey,
->>    I just wanted to follow up on this patch, as I've bisected it
->> (a5819b548af0) down as having broken qca bluetooth on the Dragonboard
->> 845c.
->>
->> I haven't yet had time to debug it yet, but wanted to raise the issue
->> in case anyone else has seen similar trouble.
-> 
-> So I dug in a bit further, and this chunk seems to be causing the issue:
->> @@ -961,7 +963,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>                  goto out_restart_rx;
->>
->>          uport->uartclk = clk_rate;
->> -       clk_set_rate(port->se.clk, clk_rate);
->> +       dev_pm_opp_set_rate(port->dev, clk_rate);
->>          ser_clk_cfg = SER_CLK_EN;
->>          ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
->>
-> 
-> 
-> With that applied, I see the following errors in dmesg and bluetooth
-> fails to function:
-> [    4.763467] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate:
-> failed to find OPP for freq 102400000 (-34)
-> [    4.773493] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate:
-> failed to find OPP for freq 102400000 (-34)
-> 
-> With just that chunk reverted on linus/HEAD, bluetooth seems to work ok.
+I would like to make serial drivers work automatically but
+unfortunately the interrupt request/ handling code is pretty specific
+to the corresponding serial driver.
 
-This seems like the same issue that was also reported on venus [1] because the
-clock frequency tables apparently don;t exactly match the achievable clock
-frequencies (which we also used to construct the OPP tables)
+BTW, I will look for ways how we can make it much easier for serial
+drivers to adapt.
 
-Can you try updating the OPP table for QUP to have 102400000 instead of the
-current 100000000 and see if that fixes it?
+-Sumit
 
-[1] https://lkml.org/lkml/2020/7/27/507
-
-> 
-> thanks
-> -john
-> 
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+>
+> thanks,
+>
+> greg k-h
