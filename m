@@ -2,186 +2,178 @@ Return-Path: <SRS0=P72y=BW=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C254C433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 09:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C03C433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 12:33:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5CED7206C3
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 09:26:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E154E2080C
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Aug 2020 12:33:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="d20ue8ZG"
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="E1Oyp1cD"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727822AbgHLJ01 (ORCPT
+        id S1727992AbgHLMd5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Aug 2020 05:26:27 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:24191 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727816AbgHLJ00 (ORCPT
+        Wed, 12 Aug 2020 08:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726722AbgHLMd4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Aug 2020 05:26:26 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1597224385; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: References: Cc: To: From:
- Subject: Sender; bh=Ut7UsXyyt3w1ZkSYeaLSTk9Ej6vXqnbWm3dpszGQbYk=; b=d20ue8ZG+WnVsgznsTyLSMkrNVmrN1V0RWSyg4BGAZaSVelC/JqE1l1oPQYl4fMcP7yaXcpG
- O1yzklwDHur+sJf1WOxIsi8m2epuw1YGbv8FyM6oWE95msaN3oC3jINQlupT6V7MEda3679e
- AKYhoWosGDgy3YYA5TAXPSQ0k9g=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n13.prod.us-east-1.postgun.com with SMTP id
- 5f33b5c1247ccc308cb56001 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 12 Aug 2020 09:26:25
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9D184C433A0; Wed, 12 Aug 2020 09:26:24 +0000 (UTC)
-Received: from [192.168.1.16] (unknown [61.1.229.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: rnayak)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B0A60C433CA;
-        Wed, 12 Aug 2020 09:26:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B0A60C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=rnayak@codeaurora.org
-Subject: Re: [RFC v2 03/11] tty: serial: qcom_geni_serial: Use OPP API to set
- clk/perf state
-From:   Rajendra Nayak <rnayak@codeaurora.org>
-To:     Amit Pundir <amit.pundir@linaro.org>
-Cc:     John Stultz <john.stultz@linaro.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-scsi@vger.kernel.org,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Doug Anderson <dianders@chromium.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20190320094918.20234-1-rnayak@codeaurora.org>
- <20190320094918.20234-4-rnayak@codeaurora.org>
- <CALAqxLV2TBk9ScUM6MeJMCkL8kJnCihjQ7ac5fLzcqOg1rREVQ@mail.gmail.com>
- <CALAqxLWg3jJKJFLnnne-mrQEnH=m7R_9azCGaGnEmFYR4EMh=A@mail.gmail.com>
- <ec5eeb21-48e4-5dcc-583a-ac9419659e44@codeaurora.org>
- <CAMi1Hd1O+3bjQN6c9WQr+t0YXGBAukfFzJWtkgXDp1Zcir-0-w@mail.gmail.com>
- <aab760b8-2a06-ae96-584a-301d5326fc0d@codeaurora.org>
-Message-ID: <fb5b6abf-b26a-5db2-1f8f-23d457c7235e@codeaurora.org>
-Date:   Wed, 12 Aug 2020 14:56:17 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        Wed, 12 Aug 2020 08:33:56 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824DCC06174A
+        for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2020 05:33:56 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id w25so1996481ljo.12
+        for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2020 05:33:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=antmicro.com; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=aQwP/0l0m5s+Hp6E9P2OaxabPF+ONqwtg5F3idJNxeo=;
+        b=E1Oyp1cDKNXa/qL202tPvk+586jn7dzdRSDowWFBi3ibjreBcyongiJbYLzZBNs6Hb
+         SFS3+XBKWcjS61acKhdJbl8jzFYrrFWYhFIraeQqVwPb8oUHSuh95BulF1qr12dxVbzt
+         T9g/bX5P68NjhX8eRtvn2abSXpl3pyPCHNZrQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=aQwP/0l0m5s+Hp6E9P2OaxabPF+ONqwtg5F3idJNxeo=;
+        b=B+k/afnkrB+QfVerwhwgYTgZ6FEDQmDKzKgUreUTdEhE9jgbcWHxKIHOZVN3M61JkJ
+         4eiW4pnNsZaR2BSPhSJbHjgeNb9XbMqmI/tcDCDhgK811NhocLMcNJ8iajBQUMSLgZg/
+         qy4hdEfbwzWFZG4Mc95zVkMkR1NyfoIuxp9XeIFAiLOrayvvyUq7LoejtYKdWmSbZ/32
+         YaQ4ONlJLmwt3uFS/ixQL/1ndiQw1XBwx9NqTX4vMZCu22ohbUuD6MPTOzzatV5EqK01
+         KevAArA7BjVc1o60/3INLCn1CcUYNew6adZ5g6zpZyL3u4ah2R55nE3F0G1g2p5dHCWA
+         Kecw==
+X-Gm-Message-State: AOAM530D+L0PXnZyAPw4Rj6gBHapMfqnpJzx0M5HP//gUiF9ZpmHb9GM
+        MnME/O9xtQebmMK52ss8wMQEvA==
+X-Google-Smtp-Source: ABdhPJzDLRNV6Ipk/5lW5Sc5MeOljidE0sbnR7D6ZFavmHh+RRkNYPs6cq5l1Du/GfScLPHm/VvzXQ==
+X-Received: by 2002:a2e:302:: with SMTP id 2mr4821823ljd.156.1597235635003;
+        Wed, 12 Aug 2020 05:33:55 -0700 (PDT)
+Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
+        by smtp.gmail.com with ESMTPSA id r19sm414364ljc.59.2020.08.12.05.33.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Aug 2020 05:33:54 -0700 (PDT)
+Date:   Wed, 12 Aug 2020 14:33:46 +0200
+From:   Mateusz Holenko <mholenko@antmicro.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org, "Gabriel L. Somlo" <gsomlo@gmail.com>
+Subject: [PATCH v10 0/5] LiteX SoC controller and LiteUART serial driver
+Message-ID: <20200812143324.2394375-0-mholenko@antmicro.com>
 MIME-Version: 1.0
-In-Reply-To: <aab760b8-2a06-ae96-584a-301d5326fc0d@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This patchset introduces support for LiteX SoC Controller
+and LiteUART - serial device from LiteX SoC builder
+(https://github.com/enjoy-digital/litex).
 
-On 8/12/2020 1:09 PM, Rajendra Nayak wrote:
-> 
-> On 8/12/2020 1:05 PM, Amit Pundir wrote:
->> Hi Rajendra,
->>
->> On Wed, 12 Aug 2020 at 11:18, Rajendra Nayak <rnayak@codeaurora.org> wrote:
->>>
->>>
->>> On 8/12/2020 7:03 AM, John Stultz wrote:
->>>> On Tue, Aug 11, 2020 at 4:11 PM John Stultz <john.stultz@linaro.org> wrote:
->>>>>
->>>>> On Wed, Mar 20, 2019 at 2:49 AM Rajendra Nayak <rnayak@codeaurora.org> wrote:
->>>>>>
->>>>>> geni serial needs to express a perforamnce state requirement on CX
->>>>>> depending on the frequency of the clock rates. Use OPP table from
->>>>>> DT to register with OPP framework and use dev_pm_opp_set_rate() to
->>>>>> set the clk/perf state.
->>>>>>
->>>>>> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
->>>>>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
->>>>>> ---
->>>>>>    drivers/tty/serial/qcom_geni_serial.c | 15 +++++++++++++--
->>>>>>    1 file changed, 13 insertions(+), 2 deletions(-)
->>>>>>
->>>>>
->>>>> Hey,
->>>>>     I just wanted to follow up on this patch, as I've bisected it
->>>>> (a5819b548af0) down as having broken qca bluetooth on the Dragonboard
->>>>> 845c.
->>>>>
->>>>> I haven't yet had time to debug it yet, but wanted to raise the issue
->>>>> in case anyone else has seen similar trouble.
->>>>
->>>> So I dug in a bit further, and this chunk seems to be causing the issue:
->>>>> @@ -961,7 +963,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>>>>                   goto out_restart_rx;
->>>>>
->>>>>           uport->uartclk = clk_rate;
->>>>> -       clk_set_rate(port->se.clk, clk_rate);
->>>>> +       dev_pm_opp_set_rate(port->dev, clk_rate);
->>>>>           ser_clk_cfg = SER_CLK_EN;
->>>>>           ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
->>>>>
->>>>
->>>>
->>>> With that applied, I see the following errors in dmesg and bluetooth
->>>> fails to function:
->>>> [    4.763467] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate:
->>>> failed to find OPP for freq 102400000 (-34)
->>>> [    4.773493] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate:
->>>> failed to find OPP for freq 102400000 (-34)
->>>>
->>>> With just that chunk reverted on linus/HEAD, bluetooth seems to work ok.
->>>
->>> This seems like the same issue that was also reported on venus [1] because the
->>> clock frequency tables apparently don;t exactly match the achievable clock
->>> frequencies (which we also used to construct the OPP tables)
->>>
->>> Can you try updating the OPP table for QUP to have 102400000 instead of the
->>> current 100000000 and see if that fixes it?
->>
->> That worked. Thanks.
->>
->> Should this change be common to base sdm845.dtsi or platform specific dts?
->> For what it's worth, we see this BT breakage on PocoF1 phone too.
-> 
-> Thanks for confirming, it will have to be part of the SoC dtsi, and I am
-> guessing a similar change is perhaps also needed on sc7180.
-> I will send a patch out to fix the OPP tables for both.
+In the following patchset I will add
+a new mor1kx-based (OpenRISC) platform that
+uses this device.
 
-I spent some more time looking at this and it does not look like this is the
-rounding issues with clock FMAX tables. I had these tables picked from downstream
-clock code and it turns out these tables were reworked at clock init based on
-the silicon rev, so I need to fix up the OPP tables accordingly which will add
-a new OPP entry for 102.4Mhz. I'll post a patch shortly.
+Later I plan to extend this platform by
+adding support for more devices from LiteX suite.
 
-> 
->>
->> Regards,
->> Amit Pundir
->>
->>
->>>
->>> [1] https://lkml.org/lkml/2020/7/27/507
->>>
->>>>
->>>> thanks
->>>> -john
->>>>
->>>
->>> -- 
->>> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
->>> of Code Aurora Forum, hosted by The Linux Foundation
-> 
+Changes in v10:
+    - added casting to avoid sparse warnings in the SoC Controller's driver
+
+Changes in v9:
+    - fixed the `reg` node notation in the DT example
+    - added exporting of the `litex_set_reg`/`litex_get_reg` symbols
+
+Changes in v8:
+    - fixed help messages in LiteUART's KConfig
+    - removed dependency between LiteUART and LiteX SoC drivers
+    - removed `litex_check_accessors()` helper function
+    - added crashing (BUG) on the failed LiteX CSR access test
+
+Changes in v7:
+    - added missing include directive in UART's driver
+
+Changes in v6:
+    - changed accessors in SoC Controller's driver
+    - reworked UART driver
+
+Changes in v5:
+    - added Reviewed-by tag
+    - removed custom accessors from SoC Controller's driver
+    - fixed error checking in SoC Controller's driver
+
+Changes in v4:
+    - fixed copyright headers
+    - fixed SoC Controller's yaml 
+    - simplified SoC Controller's driver
+
+Changes in v3:
+    - added Acked-by and Reviewed-by tags
+    - introduced LiteX SoC Controller driver
+    - removed endianness detection (handled now by LiteX SoC Controller driver)
+    - modified litex.h header
+    - DTS aliases for LiteUART made optional
+    - renamed SERIAL_LITEUART_NR_PORTS to SERIAL_LITEUART_MAX_PORTS
+    - changed PORT_LITEUART from 122 to 123
+
+Changes in v2:
+    - binding description rewritten to a yaml schema file
+    - added litex.h header with common register access functions
+
+Filip Kokosinski (3):
+  dt-bindings: vendor: add vendor prefix for LiteX
+  dt-bindings: serial: document LiteUART bindings
+  drivers/tty/serial: add LiteUART driver
+
+Pawel Czarnecki (2):
+  dt-bindings: soc: document LiteX SoC Controller bindings
+  drivers/soc/litex: add LiteX SoC Controller driver
+
+ .../bindings/serial/litex,liteuart.yaml       |  38 ++
+ .../soc/litex/litex,soc-controller.yaml       |  39 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   9 +
+ drivers/soc/Kconfig                           |   1 +
+ drivers/soc/Makefile                          |   1 +
+ drivers/soc/litex/Kconfig                     |  15 +
+ drivers/soc/litex/Makefile                    |   3 +
+ drivers/soc/litex/litex_soc_ctrl.c            | 194 +++++++++
+ drivers/tty/serial/Kconfig                    |  32 ++
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/liteuart.c                 | 402 ++++++++++++++++++
+ include/linux/litex.h                         |  24 ++
+ 13 files changed, 761 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+ create mode 100644 drivers/soc/litex/Kconfig
+ create mode 100644 drivers/soc/litex/Makefile
+ create mode 100644 drivers/soc/litex/litex_soc_ctrl.c
+ create mode 100644 drivers/tty/serial/liteuart.c
+ create mode 100644 include/linux/litex.h
 
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+2.25.1
+
