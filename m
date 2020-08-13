@@ -2,152 +2,88 @@ Return-Path: <SRS0=hLv5=BX=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C71C433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Aug 2020 15:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 006A1C433DF
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Aug 2020 15:29:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EE7692078D
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Aug 2020 15:26:53 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="WHqM+7gQ"
+	by mail.kernel.org (Postfix) with ESMTP id CD4F52078D
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Aug 2020 15:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726334AbgHMP0x (ORCPT
+        id S1726292AbgHMP3Q (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Aug 2020 11:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51292 "EHLO
+        Thu, 13 Aug 2020 11:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726249AbgHMP0x (ORCPT
+        with ESMTP id S1726249AbgHMP3Q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Aug 2020 11:26:53 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF65C061757
-        for <linux-serial@vger.kernel.org>; Thu, 13 Aug 2020 08:26:52 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id n4so3090919vsl.10
-        for <linux-serial@vger.kernel.org>; Thu, 13 Aug 2020 08:26:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1s5slD5xTRFFbW+h5M8Mtfy1B797ut+y2+cHY1OmjLY=;
-        b=WHqM+7gQMzNV59fPJeZs3rGKhbE9qM3WyS4WwK4osQC4YO4qDuGUt6LJ9FM8egQwUC
-         VytnE4Zh2KYSkKeCXP4g/2ZrFQ0UTbqr49Ky7xXOH0E+VX1VQ7SHKP5HibHklBsLX0Lb
-         zD8EqdHy3tjHuz3ZMqgWbofxY0x5cqC77Plqs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1s5slD5xTRFFbW+h5M8Mtfy1B797ut+y2+cHY1OmjLY=;
-        b=h/YMJCzVu9ZvOy2O1+dWeI3fu4jQs9N3n8DBLk+72eoWlzQRhk9q6SQCN/BcDYuPFl
-         sgXS8d6fiMp9hpM4BkKWfFrKFZ3xV9vQE5cjWUzvt5pl2+jTxxAGnTu34x4e6xxwRIsA
-         1Yw/Y5Nee0BM/v3NHYr9C32ogSOXj9uTLOiBxjb6+HjO+RkK/dZaxTJt7wyph26+cYOj
-         9IGWpLx7nJu89+7gdSCmVTNVZoZ8bSd8epkZLcDpW7K4wq/4goqxf/Hft3J5cxgwn6sM
-         OLR16ghQ7QiXWBZ2ByJ3sitRvJk0CTbv5mejmkUED+MkNMd6DVhq+o9n7UG++BI3QiWb
-         FUXA==
-X-Gm-Message-State: AOAM533Af8RP3KxwpBB/cb138qtEA3kWNc9rSeZSpC+oqY2cET7O00mh
-        2Lb/GrsBB5raF2oCMlo9i+afxcdZ4aI=
-X-Google-Smtp-Source: ABdhPJwJT5dpQcOUA+14pvY7DKVHAZehpVIoIezXnC2pNEzvSzzymndd+GQhC07HuFscY7Yje+g/Uw==
-X-Received: by 2002:a05:6102:2012:: with SMTP id p18mr3960282vsr.62.1597332410050;
-        Thu, 13 Aug 2020 08:26:50 -0700 (PDT)
-Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
-        by smtp.gmail.com with ESMTPSA id h139sm843941vke.2.2020.08.13.08.26.49
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Aug 2020 08:26:49 -0700 (PDT)
-Received: by mail-ua1-f53.google.com with SMTP id g20so1747929uap.8
-        for <linux-serial@vger.kernel.org>; Thu, 13 Aug 2020 08:26:49 -0700 (PDT)
-X-Received: by 2002:ab0:37d3:: with SMTP id e19mr3760000uav.64.1597332408240;
- Thu, 13 Aug 2020 08:26:48 -0700 (PDT)
+        Thu, 13 Aug 2020 11:29:16 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A382C061757
+        for <linux-serial@vger.kernel.org>; Thu, 13 Aug 2020 08:29:16 -0700 (PDT)
+Received: from dude02.hi.pengutronix.de ([2001:67c:670:100:1d::28])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <has@pengutronix.de>)
+        id 1k6FAC-0002UR-VH; Thu, 13 Aug 2020 17:29:08 +0200
+Received: from has by dude02.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <has@pengutronix.de>)
+        id 1k6FA9-0000Hq-U4; Thu, 13 Aug 2020 17:29:05 +0200
+From:   Holger Assmann <h.assmann@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Fabien Dessenne <fabien.dessenne@st.com>,
+        Erwan Le Ray <erwan.leray@st.com>
+Cc:     kernel@pengutronix.de, Holger Assmann <h.assmann@pengutronix.de>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: stm32: avoid kernel warning on absence of optional IRQ
+Date:   Thu, 13 Aug 2020 17:27:57 +0200
+Message-Id: <20200813152757.32751-1-h.assmann@pengutronix.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
- <CAFA6WYMN=na4Pxnu1LYRVAAZRdV==5EwU-Vcq-QkRb_jaLiPmw@mail.gmail.com>
- <20200811135801.GA416071@kroah.com> <CAFA6WYMN8i96rEZuHLnskB+4k0o=K9vF1_we83P04h2BSoGjmQ@mail.gmail.com>
- <20200811145816.GA424033@kroah.com> <CAD=FV=UD=cTn6jwpYS-C-=1ORd-4azZ8ZiBR6om++2sMS1nmMg@mail.gmail.com>
- <CAFA6WYPBdOiVsKR_hSLpigN_1b9jimXKaqyRZjvKSx3xpAmLjA@mail.gmail.com>
- <CAD=FV=WccmFRkV4UUTLSYR9+7210h00Si=nG4tRs3BBuweA6ng@mail.gmail.com>
- <CAD=FV=V8UhQVQvcAp6XCmT3=6FYM=_zPELy4FTj4kMKUswaR8Q@mail.gmail.com> <CAFA6WYPxieH6ZTa_BFdaLuiwbqAs6r7eKmxG7ci4XtyRONGN7g@mail.gmail.com>
-In-Reply-To: <CAFA6WYPxieH6ZTa_BFdaLuiwbqAs6r7eKmxG7ci4XtyRONGN7g@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 13 Aug 2020 08:26:36 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WGh-+GTsg3-UDr-Ht48n3sRqAJ76PJVFcFuJ1ruFEqOw@mail.gmail.com>
-Message-ID: <CAD=FV=WGh-+GTsg3-UDr-Ht48n3sRqAJ76PJVFcFuJ1ruFEqOw@mail.gmail.com>
-Subject: Re: [RFC 0/5] Introduce NMI aware serial drivers
-To:     Sumit Garg <sumit.garg@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
-        Jiri Slaby <jslaby@suse.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::28
+X-SA-Exim-Mail-From: has@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+stm32_init_port() of the stm32-usart may trigger a warning in
+platform_get_irq() when the device tree specifies no wakeup interrupt.
 
-On Thu, Aug 13, 2020 at 2:25 AM Sumit Garg <sumit.garg@linaro.org> wrote:
->
-> > One other idea occurred to me that's maybe simpler.  You could in
-> > theory just poll the serial port periodically to accomplish.  It would
-> > actually probably even work to call the normal serial port interrupt
-> > routine from any random CPU.  On many serial drivers the entire
-> > interrupt handler is wrapped with:
-> >
-> > spin_lock_irqsave(&uap->port.lock, flags);
-> > ...
-> > spin_unlock_irqrestore(&uap->port.lock, flags);
-> >
-> > And a few (the ones I was involved in fixing) have the similar pattern
-> > of using uart_unlock_and_check_sysrq().
-> >
-> > Any serial drivers following this pattern could have their interrupt
-> > routine called periodically just to poll for characters and it'd be
-> > fine, right?  ...and having it take a second before a sysrq comes in
-> > this case is probably not the end of the world?
-> >
->
-> Are you proposing to have complete RX operation in polling mode with
-> RX interrupt disabled (eg. using a kernel thread)?
+The wakeup interrupt is usually a board-specific GPIO and the driver
+functions correctly in its absence. The mainline stm32mp151.dtsi does
+not specify it, so all mainline device trees trigger an unnecessary
+kernel warning. Use of platform_get_irq_optional() avoids this.
 
-No, I'm suggesting a hybrid approach.  Leave the interrupts enabled as
-usual, but _also_ poll every 500 ms or 1 second (maybe make it
-configurable?).  In some serial drivers (ones that hold the lock for
-the whole interrupt routine) this polling function could actually be
-the same as the normal interrupt handler so it'd be trivially easy to
-implement and maintain.
+Fixes: 2c58e56096dd ("serial: stm32: fix the get_irq error case")
+Signed-off-by: Holger Assmann <h.assmann@pengutronix.de>
+---
+ drivers/tty/serial/stm32-usart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-NOTE: This is not the same type of polling that kgdb does today.  The
-existing polling is really only intended to work when we're dropped
-into the debugger.  This would be more like a "poll_irq" type function
-that would do all the normal work the interrupt did and is really just
-there in the case that the CPU that the interrupt is routed to is
-locked up.
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 8602ff357321..b77b41c768fb 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -962,7 +962,7 @@ static int stm32_init_port(struct stm32_port *stm32port,
+ 		return ret;
+ 
+ 	if (stm32port->info->cfg.has_wakeup) {
+-		stm32port->wakeirq = platform_get_irq(pdev, 1);
++		stm32port->wakeirq = platform_get_irq_optional(pdev, 1);
+ 		if (stm32port->wakeirq <= 0 && stm32port->wakeirq != -ENXIO)
+ 			return stm32port->wakeirq ? : -ENODEV;
+ 	}
+-- 
+2.20.1
 
-
-> > One nice benefit of this is that it would actually work _better_ on
-> > SMP systems for any sysrqs that aren't NMI safe.  Specifically with
-> > your patch series those would be queued with irq_work_queue() which
-> > means they'd be blocked if the CPU processing the NMI is stuck with
-> > IRQs disabled.
->
-> Yes, the sysrq handlers which aren't NMI safe will behave similarly to
-> existing IRQ based sysrq handlers.
->
-> > With the polling mechanism they'd nicely just run on a
-> > different CPU.
->
-> It looks like polling would cause much CPU overhead. So I am not sure
-> if that is the preferred approach.
-
-Maybe now it's clearer that there should be almost no overhead.  When
-dealing with a SYSRQ it's fine if there's a bit of a delay before it's
-processed, so polling every 1 second is probably fine.
-
--Doug
