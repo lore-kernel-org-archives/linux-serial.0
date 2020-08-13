@@ -2,131 +2,121 @@ Return-Path: <SRS0=hLv5=BX=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFBCCC433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Aug 2020 05:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BF0C433DF
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Aug 2020 07:51:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 89E3B20768
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Aug 2020 05:06:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jvW+5p9x"
+	by mail.kernel.org (Postfix) with ESMTP id F3D7E20716
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Aug 2020 07:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbgHMFGd (ORCPT
+        id S1726807AbgHMHvK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Aug 2020 01:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725949AbgHMFGc (ORCPT
+        Thu, 13 Aug 2020 03:51:10 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:38760 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbgHMHvJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Aug 2020 01:06:32 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB03C061757;
-        Wed, 12 Aug 2020 22:06:32 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id d22so2204614pfn.5;
-        Wed, 12 Aug 2020 22:06:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=l7Gd3m+l+WQZG6hx+TJ+/PJV8/ZKvFTo9d5/gMASdug=;
-        b=jvW+5p9xSWMOLmI2q5K1VeRNAcla5WpZdkSsOySFkmZkwU4xtNGjiFsfDxryGSDiFz
-         /bkUHqrBsr7/+cJiwQmXUv8pg8Ziph77TbwheglQaEgcS4s6tQz0POS0DF6CuAUkTnr1
-         7jeFYdOqq5mHJ2DrhcB6pBthTBPo/j7jBj2cxVn169zEWg/kzzFGh6FRDUW+G0d543Wo
-         6m92oIkIrqt1Klm8Y/s+vA6epCGke1g3FHHkNuAAZ0ab7MsrSG1D0ekCPIydUmP1gsO/
-         z3KvuAIF/h7/+oubCWHixYdk8Z1W/9fFao3/D7RFkzRaBMDeBB6lVN9HZphqanHy8I0C
-         FPXQ==
+        Thu, 13 Aug 2020 03:51:09 -0400
+Received: by mail-ot1-f65.google.com with SMTP id q9so4110499oth.5;
+        Thu, 13 Aug 2020 00:51:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=l7Gd3m+l+WQZG6hx+TJ+/PJV8/ZKvFTo9d5/gMASdug=;
-        b=Ji0HCdxqgImV45wxGwrWXaSMGxP8q16zN5I0fhf6exeJaooot9d5oWG3g2yWPXqqqu
-         AzcX9p4u6g/AyhKhN2Lxqzkj7KqZPGLpu+RoxQ+gT/NDfvJVPj8Yx356rx5IQUVVjuPD
-         fsY24nqKIMKeZf1qbtKx25TFwMPR30EbHsCNwquPaBo4Co5a8g5/rDkJuyubfIqSGmAt
-         sZIsGYqbENKUTJ3xJ9N8RQz3LvzrPFjnbQq+W9OQ5J/s+7wu04/pEFjseUdUVZ48zjg9
-         FJ3r1VyMWkLMWmCPpwBhWa+WTwT+W1WuNaWORzK+Y+dcCdLNmbCtyWSIlICIlUQxUuAZ
-         /NqA==
-X-Gm-Message-State: AOAM531xgUNRy4UpXZnJFwktcFp5/W+4SAKNNPkcTeiGPD1uYDY7gK0o
-        b1ku0iMcaeUDFVpxAyrYpWg=
-X-Google-Smtp-Source: ABdhPJwn8XLNWsyFJJI90LfEQmbYsg1NbcOao3/9lM5cvVg4Lb6UWgILt234JkAwNaKWO+PJUKPPsw==
-X-Received: by 2002:a65:620f:: with SMTP id d15mr2182119pgv.270.1597295191721;
-        Wed, 12 Aug 2020 22:06:31 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j8sm4283364pfh.90.2020.08.12.22.06.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 12 Aug 2020 22:06:30 -0700 (PDT)
-Date:   Wed, 12 Aug 2020 22:06:29 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Recursive/circular locking in
- serial8250_console_write/serial8250_do_startup
-Message-ID: <20200813050629.GA95559@roeck-us.net>
-References: <20200812154813.GA46894@roeck-us.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eU62SrftExeZEPFtSlHLsBRzbUkLx1KNOgZc6VKFeBQ=;
+        b=RKVY0mqqakUrEXk4TORV8A5/ZSMY0dexhKfXyaOKBp8tYT6+lN9tMY1gCu59dMSnI/
+         6Av5sXCLtCtfska6KBUfoUvPLN8QSlHGcwX+BKv8ZNWhNtirhMGElzBnWp56J7vtBCeA
+         RTsTm+tpM0JqO6hs1Zx9oL0KiDPnHu2wr8nXIFBaGz9jqMUEyZCYMyj21d8ckpZmX8IH
+         sIyh51oPoVvqSR3qDoGMDZJhbXuz4s9KHdaT9j4oPeIaqxws0OL9u53GcL8uZhE7hrov
+         ikjJM0LMxR/OG4BC9tZAySXGXWwQpPbcG9j3oyJJCCrBhecUJhWEIB5ZPymwSBlP+imO
+         EXuw==
+X-Gm-Message-State: AOAM531KpbVTNZA6DQGhlLakjE36ZGk11NQSWXrXhgb2m/BrbDAUDZAN
+        GTNNlK5/qceLxjH+paJhJQLuqYhFPre+GsLWPoc=
+X-Google-Smtp-Source: ABdhPJzAAKS8g3t/W5mSJd2Vboc2FEvoNvVXoru7u4kNP7jabPCwVCki2JjTk/fEfMzVv8QAFC24k07bLAU2LYhSK+k=
+X-Received: by 2002:a05:6830:1b79:: with SMTP id d25mr2990956ote.107.1597305067462;
+ Thu, 13 Aug 2020 00:51:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200812154813.GA46894@roeck-us.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200812203618.2656699-1-robh@kernel.org>
+In-Reply-To: <20200812203618.2656699-1-robh@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 13 Aug 2020 09:50:55 +0200
+Message-ID: <CAMuHMdVXvSRF-G_TYu4P+Bqa2FZJWsUCyzqFur3Rb-tBExfbsw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Whitespace clean-ups in schema files
+To:     Rob Herring <robh@kernel.org>
+Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, linux-hwmon@vger.kernel.org,
+        linux-rtc@vger.kernel.org,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
+        <linux-remoteproc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-input@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 12, 2020 at 08:48:13AM -0700, Guenter Roeck wrote:
-> Hi,
-> 
-> crbug.com/1114800 reports a hard lockup due to circular locking in the
-> 8250 console driver. This is seen if CONFIG_PROVE_LOCKING is enabled.
-> 
-> Problem is as follows:
-> - serial8250_do_startup() locks the serial (console) port.
-> - serial8250_do_startup() then disables interrupts if interrupts are
->   shared, by calling disable_irq_nosync().
-> - disable_irq_nosync() calls __irq_get_desc_lock() to lock the interrupt
->   descriptor.
-> - __irq_get_desc_lock() calls lock_acquire()
-> - If CONFIG_PROVE_LOCKING is enabled, validate_chain() and check_noncircular()
->   are called and identify a potential locking error.
-> - This locking error is reported via printk, which ultimately calls
->   serial8250_console_write().
-> - serial8250_console_write() tries to lock the serial console port.
->   Since it is already locked, the system hangs and ultimately reports
->   a hard lockup.
-> 
-> I understand we'll need to figure out and fix what lockdep complains about,
-> and I am working on that. However, even if that is fixed, we'll need a
-> solution for the recursive lock: Fixing the lockdep problem doesn't
-> guarantee that a similar problem (or some other log message) won't be
-> detected and reported sometime in the future while serial8250_do_startup()
-> holds the console port lock.
-> 
-> Ideas, anyone ? Everything I came up with so far seems clumsy and hackish.
-> 
+Hi Rob,
 
-Turns out the situation is a bit worse than I thought. disable_irq_nosync(),
-when called from serial8250_do_startup(), locks the interrupt descriptor.
-The order of locking is
-	serial port lock
-	  interrupt descriptor lock
+On Wed, Aug 12, 2020 at 10:36 PM Rob Herring <robh@kernel.org> wrote:
+> Clean-up incorrect indentation, extra spaces, long lines, and missing
+> EOF newline in schema files. Most of the clean-ups are for list
+> indentation which should always be 2 spaces more than the preceding
+> keyword.
+>
+> Found with yamllint (which I plan to integrate into the checks).
 
-At the same time, __setup_irq() locks the interrupt descriptor as well.
-With the descriptor locked, it may report an error message using pr_err().
-This in turn may call serial8250_console_write(), which will try to lock
-the console serial port. The lock sequence is
-	interrupt descriptor lock
-	  serial port lock
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
-I added the lockdep splat to the bug log at crbug.com/1114800.
+Thanks for your patch!
 
-Effectively, I think, this means we can't call disable_irq_nosync()
-while holding a serial port lock, or at least not while holding a
-serial port lock that is associated with a console.
+> --- a/Documentation/devicetree/bindings/clock/renesas,cpg-clocks.yaml
+> +++ b/Documentation/devicetree/bindings/clock/renesas,cpg-clocks.yaml
+> @@ -24,9 +24,9 @@ properties:
+>        - const: renesas,r8a7778-cpg-clocks # R-Car M1
+>        - const: renesas,r8a7779-cpg-clocks # R-Car H1
+>        - items:
+> -        - enum:
+> -            - renesas,r7s72100-cpg-clocks # RZ/A1H
+> -        - const: renesas,rz-cpg-clocks    # RZ/A1
+> +          - enum:
+> +              - renesas,r7s72100-cpg-clocks # RZ/A1H
+> +          - const: renesas,rz-cpg-clocks    # RZ/A1
 
-The problem was introduced (or, rather, exposed) with upstream commit
-7febbcbc48fc ("serial: 8250: Check UPF_IRQ_SHARED in advance").
+This change breaks alignment of the comments at the end of each line.
 
-Guenter
+>        - const: renesas,sh73a0-cpg-clocks  # SH-Mobile AG5
+
+(I only checked the files I care about)
+
+If you don't update commit  e0fe7fc6f2ca0781 ("dt-bindings: Whitespace
+clean-ups in schema files"), I can send a patch after v5.9-rc1.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
