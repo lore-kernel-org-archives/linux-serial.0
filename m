@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A454C433E1
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Aug 2020 12:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3DD1C433E1
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Aug 2020 12:50:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 10E2F2054F
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Aug 2020 12:06:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ABFF72087D
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Aug 2020 12:50:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rCN61g45"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dRkTj42r"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728015AbgHNMGv (ORCPT
+        id S1727857AbgHNMuU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Aug 2020 08:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43920 "EHLO
+        Fri, 14 Aug 2020 08:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727987AbgHNMGu (ORCPT
+        with ESMTP id S1726209AbgHNMuS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Aug 2020 08:06:50 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F64C061385
-        for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2020 05:06:50 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id y2so649967ljc.1
-        for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2020 05:06:49 -0700 (PDT)
+        Fri, 14 Aug 2020 08:50:18 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7545AC061384
+        for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2020 05:50:18 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id y2so781077ljc.1
+        for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2020 05:50:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xTYBrkMPYKHND6Y0Pf59epaQl0DOsspR8aK4JTKm68k=;
-        b=rCN61g45Uj5RAeXU3ZrO9R56Wpm3Zvr8GekOvDvvz4aIZohZJYliwqW0KKfipQpjm3
-         dfRAg7XvqBHvcBi737ixXx66TqbFyytmlFrdedZGT5Qv1vO81xuIqjq1ioezmWC/I+Xr
-         GM/P4FLNaWnPV4nY8mmekeRA4CDISmoug8hYnFLSrH+ol+7od7RmQMNLXzGYH3ODgCFE
-         tqR0bEdTscFbskdo6XQxyrUOwv4glcS592tDiVgA/y8iQ+vS875dbPGxMPpoZjFi7oh1
-         A112kq6ZPpG25ilSPSbHbbb2o8QnxfLsFyohMMGo3mwJmvn71xxuVV8GdGECB7M6GsxN
-         qsgQ==
+        bh=oNrJofI4VSIM1YMzNApXQ6u0hlAa3YOeI7FwPv0W0xo=;
+        b=dRkTj42r1ORWNCi0KwgABypOpxNH2YfxXSplKDrbKISe72oY7nKYANmkrXI7TtKY3n
+         FWkBYRoaG+R3/7Eh6gST6LtxiWqxoQ1nnN/qdQ9Knst1jUzHDduf2/YG0bhDHTtvLjkS
+         DBtUfpz7eYBCI85lLB3Rw7TkYRda85x+si9K8QaSMd4wEoLUDF/zI32+bvFkkArZLn2b
+         lZ0LOGC3YD0UVakzKaVLrc7hDjHoQc8aEgGCpfrRHGeL+cc/bztqeYVArmzbPYRg/pBR
+         wmtPaXdqENs54CoXQf69SlfWc9fyGj+wCEIJ0Ft9yWLyfQq98qCaRGUS6iUCHvOBLvZY
+         YI2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xTYBrkMPYKHND6Y0Pf59epaQl0DOsspR8aK4JTKm68k=;
-        b=m1tprs1PFTfNtWtRtQrN7ei1JfzJJTeqvL7HwIT6D8OLhvEfEzSPkzmGjIxg6XFKgO
-         ZXc8+8BawjFoHwv0YcBHt/SUGpZapLsSsPlhLfemwI0HClsW1y5RWbImQkzoGTNE44vP
-         NwGB1JtwQqYRkc+cA5WHbJ9aFNir54bjqZ8tQl956bQYDfSXK7VN/6k94FI34wm/RJWk
-         Wsxw1NFMKzlYav3JvIiSZLhLugFmjm8331k303BhC+DGyM4Ttirfrfs0vGpQQp6f1+k9
-         ymlL+PKshZ13jYo80rH3n22Uy5XSaW7GLCmTKMLitq5g55E8BI7zAadLuqIpzpr/5cK7
-         axkQ==
-X-Gm-Message-State: AOAM531OnIhT0fJ8lNYz3d6uua8FhqGi6W+Xus9HuwfWwVsPjHudmelE
-        Zgfk+lkGjQKI3rQai6e6le1odqlUfE/O3mfF25f0TA==
-X-Google-Smtp-Source: ABdhPJywj23a4nvERV3TKhIYGPaMXV4zmy4h23AHgBTAYyeNijyM6bL8LmRUqDcquSKjRsPVWJJY9vAMmjV8KCcU/+Y=
-X-Received: by 2002:a2e:3202:: with SMTP id y2mr1253902ljy.30.1597406808381;
- Fri, 14 Aug 2020 05:06:48 -0700 (PDT)
+        bh=oNrJofI4VSIM1YMzNApXQ6u0hlAa3YOeI7FwPv0W0xo=;
+        b=Ki4eSozzjYn3HHfsxy8mg9ioipdAUh1KhSU8eilNEFpb/Bz3XpMHtuT3LV0p7kvGnp
+         fJqr0neH5uoiu1LGqaxvOuoXZsS1Z3Z0sYBLNRMZtDCTEDD5ud3ymLvzBd+LbOjYJivq
+         7C1uuN+KRTIfXyKzvlM/kF9dAm8QGG1eAuY2FUqzrSnoVov1CfTP6AlAQNjkdLNpmJVd
+         S+4fCxDjwapaTg0d1PMfwYl14P8QXCy1wD3zuV8UkZHMcdyO3uVV+RZa0UxsYo/Hepas
+         twx2hRfcwrrkVqYU4Kh+siCamq8Qr9Vbqzpb1FBdBvSxkVjmuBjs/f4GptRWV65e11Lr
+         niQQ==
+X-Gm-Message-State: AOAM5329qJ6l5jNh6aUtWhEC50GQLLRyhClkkoYjWs14/1yUcetHKLZ9
+        Xjz67GT4C++C2dEfRk7aYqSG4JFKkUW/Extcl8vmKQ==
+X-Google-Smtp-Source: ABdhPJx+l2dECJh1QpeXm78A5+o8DyQZpif8ELQbqtHLPbnrx54NFZfHtESmhBFMjh1+R+HViwIbf0fFv25NmToqJpU=
+X-Received: by 2002:a2e:b8cb:: with SMTP id s11mr1353447ljp.110.1597409416937;
+ Fri, 14 Aug 2020 05:50:16 -0700 (PDT)
 MIME-Version: 1.0
 References: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
  <CAFA6WYMN=na4Pxnu1LYRVAAZRdV==5EwU-Vcq-QkRb_jaLiPmw@mail.gmail.com>
@@ -63,15 +63,15 @@ References: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
  <CAFA6WYPBdOiVsKR_hSLpigN_1b9jimXKaqyRZjvKSx3xpAmLjA@mail.gmail.com>
  <CAD=FV=WccmFRkV4UUTLSYR9+7210h00Si=nG4tRs3BBuweA6ng@mail.gmail.com>
  <CAD=FV=V8UhQVQvcAp6XCmT3=6FYM=_zPELy4FTj4kMKUswaR8Q@mail.gmail.com>
- <CAFA6WYPxieH6ZTa_BFdaLuiwbqAs6r7eKmxG7ci4XtyRONGN7g@mail.gmail.com> <20200813101703.566thqmnc2d7cb3n@holly.lan>
-In-Reply-To: <20200813101703.566thqmnc2d7cb3n@holly.lan>
+ <CAFA6WYPxieH6ZTa_BFdaLuiwbqAs6r7eKmxG7ci4XtyRONGN7g@mail.gmail.com> <CAD=FV=WGh-+GTsg3-UDr-Ht48n3sRqAJ76PJVFcFuJ1ruFEqOw@mail.gmail.com>
+In-Reply-To: <CAD=FV=WGh-+GTsg3-UDr-Ht48n3sRqAJ76PJVFcFuJ1ruFEqOw@mail.gmail.com>
 From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Fri, 14 Aug 2020 17:36:36 +0530
-Message-ID: <CAFA6WYPd-fcDkYNk1KrjYwD=FH3FBvjDGEoxCBBN9CRidoVXbw@mail.gmail.com>
+Date:   Fri, 14 Aug 2020 18:20:05 +0530
+Message-ID: <CAFA6WYPOF6_+jxG+PCtUS1BHPsnzYtAHmcWRMpMnvorQQ+M3wg@mail.gmail.com>
 Subject: Re: [RFC 0/5] Introduce NMI aware serial drivers
-To:     Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
         linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
         Jiri Slaby <jslaby@suse.com>,
         Russell King - ARM Linux admin <linux@armlinux.org.uk>,
@@ -84,46 +84,77 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 13 Aug 2020 at 15:47, Daniel Thompson
-<daniel.thompson@linaro.org> wrote:
+On Thu, 13 Aug 2020 at 20:56, Doug Anderson <dianders@chromium.org> wrote:
 >
-> On Thu, Aug 13, 2020 at 02:55:12PM +0530, Sumit Garg wrote:
-> > On Thu, 13 Aug 2020 at 05:38, Doug Anderson <dianders@chromium.org> wrote:
-> > > On Wed, Aug 12, 2020 at 8:27 AM Doug Anderson <dianders@chromium.org> wrote:
-> > > > One
-> > > > last worry is that I assume that most people testing (and even
-> > > > automated testing labs) will either always enable NMI or won't enable
-> > > > NMI.  That means that everyone will be only testing one codepath or
-> > > > the other and (given the complexity) the non-tested codepath will
-> > > > break.
-> > > >
+> Hi,
+>
+> On Thu, Aug 13, 2020 at 2:25 AM Sumit Garg <sumit.garg@linaro.org> wrote:
 > >
-> > The current patch-set only makes this NMI to work when debugger (kgdb)
-> > is enabled which I think is mostly suitable for development
-> > environments. So most people testing will involve existing IRQ mode
-> > only.
+> > > One other idea occurred to me that's maybe simpler.  You could in
+> > > theory just poll the serial port periodically to accomplish.  It would
+> > > actually probably even work to call the normal serial port interrupt
+> > > routine from any random CPU.  On many serial drivers the entire
+> > > interrupt handler is wrapped with:
+> > >
+> > > spin_lock_irqsave(&uap->port.lock, flags);
+> > > ...
+> > > spin_unlock_irqrestore(&uap->port.lock, flags);
+> > >
+> > > And a few (the ones I was involved in fixing) have the similar pattern
+> > > of using uart_unlock_and_check_sysrq().
+> > >
+> > > Any serial drivers following this pattern could have their interrupt
+> > > routine called periodically just to poll for characters and it'd be
+> > > fine, right?  ...and having it take a second before a sysrq comes in
+> > > this case is probably not the end of the world?
+> > >
 > >
-> > However, it's very much possible to make NMI mode as default for a
-> > particular serial driver if the underlying irqchip supports it but it
-> > depends if we really see any production level usage of NMI debug
-> > feature.
+> > Are you proposing to have complete RX operation in polling mode with
+> > RX interrupt disabled (eg. using a kernel thread)?
 >
-> The effect of this patch is not to make kgdb work from NMI it is to make
-> (some) SysRqs work from NMI. I think that only allowing it to deploy for
-> kgdb users is a mistake.
+> No, I'm suggesting a hybrid approach.  Leave the interrupts enabled as
+> usual, but _also_ poll every 500 ms or 1 second (maybe make it
+> configurable?).  In some serial drivers (ones that hold the lock for
+> the whole interrupt routine) this polling function could actually be
+> the same as the normal interrupt handler so it'd be trivially easy to
+> implement and maintain.
 >
-> Having it deploy automatically for kgdb users might be OK but it seems
-> sensible to make this feature available for other users too.
+> NOTE: This is not the same type of polling that kgdb does today.  The
+> existing polling is really only intended to work when we're dropped
+> into the debugger.  This would be more like a "poll_irq" type function
+> that would do all the normal work the interrupt did and is really just
+> there in the case that the CPU that the interrupt is routed to is
+> locked up.
+>
 
-I think I wasn't clear enough in my prior reply. Actually I meant to
-say that this patch-set enables NMI support for a particular serial
-driver via ".poll_init()" interface and the only current user of that
-interface is kgdb.
+Your idea sounds interesting. I think where we are reaching is to have
+an ever active listener to serial port that can be scheduled to any
+random active CPU. And to keep its CPU overhead negligible, it can
+sleep and only wake-up and listen once every 500 ms or 1 second
+(configurable).
 
-So if there are other users interested in this feature, they can use
-".poll_init()" interface as well to enable it.
+I will try to think more about it and probably give it a try with a PoC.
 
 -Sumit
 
 >
-> Daniel.
+> > > One nice benefit of this is that it would actually work _better_ on
+> > > SMP systems for any sysrqs that aren't NMI safe.  Specifically with
+> > > your patch series those would be queued with irq_work_queue() which
+> > > means they'd be blocked if the CPU processing the NMI is stuck with
+> > > IRQs disabled.
+> >
+> > Yes, the sysrq handlers which aren't NMI safe will behave similarly to
+> > existing IRQ based sysrq handlers.
+> >
+> > > With the polling mechanism they'd nicely just run on a
+> > > different CPU.
+> >
+> > It looks like polling would cause much CPU overhead. So I am not sure
+> > if that is the preferred approach.
+>
+> Maybe now it's clearer that there should be almost no overhead.  When
+> dealing with a SYSRQ it's fine if there's a bit of a delay before it's
+> processed, so polling every 1 second is probably fine.
+>
+> -Doug
