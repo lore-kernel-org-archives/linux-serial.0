@@ -2,298 +2,298 @@ Return-Path: <SRS0=xWBg=BY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F04DC433DF
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Aug 2020 07:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B98D4C433E1
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Aug 2020 10:03:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1227F20639
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Aug 2020 07:24:52 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NgjWmY2F"
+	by mail.kernel.org (Postfix) with ESMTP id 999762074D
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Aug 2020 10:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726272AbgHNHYv (ORCPT
+        id S1726285AbgHNKDz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Aug 2020 03:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726263AbgHNHYv (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Aug 2020 03:24:51 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0535C061383
-        for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2020 00:24:49 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id 185so8898187ljj.7
-        for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2020 00:24:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4fPs0JDtfGboYKwrCWztqbdTj5WJ03dHcVbV7Wd/c5s=;
-        b=NgjWmY2FdzolwiHelbqczqVP1Dzk6b2a8gAHTL9y7oqv3vU1781Zy84P473xdCsaKD
-         l8whA5FioTs41uuk/TgAImUqOVUnTVJtYNxF19dRT5rALy3lY+fv0gg8raUnbwXb42Or
-         omtHOg+lbiujjdW5BmRdVE4N7H0NfAdJsrPDGDyCY4Le8CYTe2hauCtOlnvpEF8s6ege
-         VqzDkllVROgr5o574nGBLTmExHXkXybOgEYXlp4Su6S15GCuYZoGXIVTO0K5hRXHppb2
-         7J0uSad3EZPbkkguB+6Xc7W7KQ5qot7VK53RB9+TD1UloCZOKezI2UpAb90W5y/D8JFT
-         qM1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4fPs0JDtfGboYKwrCWztqbdTj5WJ03dHcVbV7Wd/c5s=;
-        b=mT88gtza8AW4e7yw833Jx+4klzFDD5nADpe6w1b5oARRVEILQBzS78ymmmAJX7MR41
-         MpNZGfQp9FgSRPhbtCK2E0savB8IKN9lMTT4bSb7KOEDb+YqcejQnNCSEYJXV37CeeYC
-         Ej54BsfmQ9L0d66kflrLWc/GcHIQCa2h61QiJXG2aRIqjD1z9sUsFAyqGM1xcdX6gyRe
-         dM0dintqspRgLzWaES8OsClj0UCVdlfYVMW5IaeOmkCaQwJCe4+DwPXPkG7kVzPerK87
-         aZlLND0hOpuFpnV12DaoSav8YhZzia10qCYtYJaJ8rNDGVviQ/eWaQksIboPnawSuSV6
-         1vAw==
-X-Gm-Message-State: AOAM532z9R967lgyZMtiHofvRZCd5mEEnPUaMbIlSFgLL1NcoogklUJX
-        Ugzs1fmtB9StD6+1MsCR82YYi/RoFMQfcm7y2lNRrQ==
-X-Google-Smtp-Source: ABdhPJzElsv/zvY8T4wAXIBLHFjWpscPRVO7i4tqAWxJX5DyzNokuOSsE5BVD6hzq7tqVzBx/7IBLxIqXf2M2wsBKKw=
-X-Received: by 2002:a2e:b4f4:: with SMTP id s20mr651759ljm.339.1597389886799;
- Fri, 14 Aug 2020 00:24:46 -0700 (PDT)
+        Fri, 14 Aug 2020 06:03:55 -0400
+Received: from mga18.intel.com ([134.134.136.126]:61105 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726012AbgHNKDz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 14 Aug 2020 06:03:55 -0400
+IronPort-SDR: D+DrS/+Q3A1GuC68RpLvTN4h7LcqU/UrDV3paufmzMoKT55WduWv0Sh7sQqudW/d6BIkIY87b1
+ jj0kggth9tGQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9712"; a="142007196"
+X-IronPort-AV: E=Sophos;i="5.76,311,1592895600"; 
+   d="scan'208";a="142007196"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2020 03:03:53 -0700
+IronPort-SDR: bQocZAeykEUzScGIOud3UzAhCJsAwIkZKhtpP/nPUEf5Zv15xX7Rkh2EPfTXWizdsvwCKMkzoE
+ ECklPdKFdNHw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,311,1592895600"; 
+   d="scan'208";a="325686581"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga008.jf.intel.com with ESMTP; 14 Aug 2020 03:03:50 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1k6WUi-008cyr-FQ; Fri, 14 Aug 2020 12:59:28 +0300
+Date:   Fri, 14 Aug 2020 12:59:28 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Tony Lindgren <tony@atomide.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Raul Rangel <rrangel@google.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH] uart:8250: change lock order in serial8250_do_startup()
+Message-ID: <20200814095928.GK1891694@smile.fi.intel.com>
+References: <20200814013802.357412-1-sergey.senozhatsky@gmail.com>
 MIME-Version: 1.0
-References: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
- <1595333413-30052-2-git-send-email-sumit.garg@linaro.org> <CAD=FV=Uqi28A=sm5+JhAqBM2OtBM3_XwvvkaKyEDVL9uVEioog@mail.gmail.com>
-In-Reply-To: <CAD=FV=Uqi28A=sm5+JhAqBM2OtBM3_XwvvkaKyEDVL9uVEioog@mail.gmail.com>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Fri, 14 Aug 2020 12:54:35 +0530
-Message-ID: <CAFA6WYMy_+RdsPJekm7zmCrFUXHqjsfr3JvyD7L8A2X8+jB8Qw@mail.gmail.com>
-Subject: Re: [RFC 1/5] tty/sysrq: Make sysrq handler NMI aware
-To:     Doug Anderson <dianders@chromium.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
-        Jiri Slaby <jslaby@suse.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200814013802.357412-1-sergey.senozhatsky@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-+ Peter (author of irq_work.c)
+On Fri, Aug 14, 2020 at 10:38:02AM +0900, Sergey Senozhatsky wrote:
+> We have a number of "uart.port->desc.lock vs desc.lock->uart.port"
+> lockdep reports coming from 8250 driver; this causes a bit of trouble
+> to people, so let's fix it.
+> 
+> The problem is reverse lock order in two different call paths:
+> 
+> chain #1:
+> 
+>  serial8250_do_startup()
+>   spin_lock_irqsave(&port->lock);
+>    disable_irq_nosync(port->irq);
+>     raw_spin_lock_irqsave(&desc->lock)
+> 
+> chain #2:
+> 
+>   __report_bad_irq()
+>    raw_spin_lock_irqsave(&desc->lock)
+>     for_each_action_of_desc()
+>      printk()
+>       spin_lock_irqsave(&port->lock);
+> 
+> Fix this by changing the order of locks in serial8250_do_startup():
+>  do disable_irq_nosync() first, which grabs desc->lock, and grab
+>  uart->port after that, so that chain #1 and chain #2 have same lock
+>  order.
+> 
+> Full lockdep splat:
+> 
+>  ======================================================
+>  WARNING: possible circular locking dependency detected
+>  5.4.39 #55 Not tainted
+>  ------------------------------------------------------
+>  swapper/0/0 is trying to acquire lock:
+>  ffffffffab65b6c0 (console_owner){-...}, at: console_lock_spinning_enable+0x31/0x57
+> 
+>  but task is already holding lock:
+>  ffff88810a8e34c0 (&irq_desc_lock_class){-.-.}, at: __report_bad_irq+0x5b/0xba
+> 
+>  which lock already depends on the new lock.
+> 
+>  the existing dependency chain (in reverse order) is:
+> 
+>  -> #2 (&irq_desc_lock_class){-.-.}:
+>         _raw_spin_lock_irqsave+0x61/0x8d
+>         __irq_get_desc_lock+0x65/0x89
+>         __disable_irq_nosync+0x3b/0x93
+>         serial8250_do_startup+0x451/0x75c
+>         uart_startup+0x1b4/0x2ff
+>         uart_port_activate+0x73/0xa0
+>         tty_port_open+0xae/0x10a
+>         uart_open+0x1b/0x26
+>         tty_open+0x24d/0x3a0
+>         chrdev_open+0xd5/0x1cc
+>         do_dentry_open+0x299/0x3c8
+>         path_openat+0x434/0x1100
+>         do_filp_open+0x9b/0x10a
+>         do_sys_open+0x15f/0x3d7
+>         kernel_init_freeable+0x157/0x1dd
+>         kernel_init+0xe/0x105
+>         ret_from_fork+0x27/0x50
+> 
+>  -> #1 (&port_lock_key){-.-.}:
+>         _raw_spin_lock_irqsave+0x61/0x8d
+>         serial8250_console_write+0xa7/0x2a0
+>         console_unlock+0x3b7/0x528
+>         vprintk_emit+0x111/0x17f
+>         printk+0x59/0x73
+>         register_console+0x336/0x3a4
+>         uart_add_one_port+0x51b/0x5be
+>         serial8250_register_8250_port+0x454/0x55e
+>         dw8250_probe+0x4dc/0x5b9
+>         platform_drv_probe+0x67/0x8b
+>         really_probe+0x14a/0x422
+>         driver_probe_device+0x66/0x130
+>         device_driver_attach+0x42/0x5b
+>         __driver_attach+0xca/0x139
+>         bus_for_each_dev+0x97/0xc9
+>         bus_add_driver+0x12b/0x228
+>         driver_register+0x64/0xed
+>         do_one_initcall+0x20c/0x4a6
+>         do_initcall_level+0xb5/0xc5
+>         do_basic_setup+0x4c/0x58
+>         kernel_init_freeable+0x13f/0x1dd
+>         kernel_init+0xe/0x105
+>         ret_from_fork+0x27/0x50
+> 
+>  -> #0 (console_owner){-...}:
+>         __lock_acquire+0x118d/0x2714
+>         lock_acquire+0x203/0x258
+>         console_lock_spinning_enable+0x51/0x57
+>         console_unlock+0x25d/0x528
+>         vprintk_emit+0x111/0x17f
+>         printk+0x59/0x73
+>         __report_bad_irq+0xa3/0xba
+>         note_interrupt+0x19a/0x1d6
+>         handle_irq_event_percpu+0x57/0x79
+>         handle_irq_event+0x36/0x55
+>         handle_fasteoi_irq+0xc2/0x18a
+>         do_IRQ+0xb3/0x157
+>         ret_from_intr+0x0/0x1d
+>         cpuidle_enter_state+0x12f/0x1fd
+>         cpuidle_enter+0x2e/0x3d
+>         do_idle+0x1ce/0x2ce
+>         cpu_startup_entry+0x1d/0x1f
+>         start_kernel+0x406/0x46a
+>         secondary_startup_64+0xa4/0xb0
+> 
+>  other info that might help us debug this:
+> 
+>  Chain exists of:
+>    console_owner --> &port_lock_key --> &irq_desc_lock_class
+> 
+>   Possible unsafe locking scenario:
+> 
+>         CPU0                    CPU1
+>         ----                    ----
+>    lock(&irq_desc_lock_class);
+>                                 lock(&port_lock_key);
+>                                 lock(&irq_desc_lock_class);
+>    lock(console_owner);
+> 
+>   *** DEADLOCK ***
+> 
+>  2 locks held by swapper/0/0:
+>   #0: ffff88810a8e34c0 (&irq_desc_lock_class){-.-.}, at: __report_bad_irq+0x5b/0xba
+>   #1: ffffffffab65b5c0 (console_lock){+.+.}, at: console_trylock_spinning+0x20/0x181
+> 
+>  stack backtrace:
+>  CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.39 #55
+>  Hardware name: XXXXXX
+>  Call Trace:
+>   <IRQ>
+>   dump_stack+0xbf/0x133
+>   ? print_circular_bug+0xd6/0xe9
+>   check_noncircular+0x1b9/0x1c3
+>   __lock_acquire+0x118d/0x2714
+>   lock_acquire+0x203/0x258
+>   ? console_lock_spinning_enable+0x31/0x57
+>   console_lock_spinning_enable+0x51/0x57
+>   ? console_lock_spinning_enable+0x31/0x57
+>   console_unlock+0x25d/0x528
+>   ? console_trylock+0x18/0x4e
+>   vprintk_emit+0x111/0x17f
+>   ? lock_acquire+0x203/0x258
+>   printk+0x59/0x73
+>   __report_bad_irq+0xa3/0xba
+>   note_interrupt+0x19a/0x1d6
+>   handle_irq_event_percpu+0x57/0x79
+>   handle_irq_event+0x36/0x55
+>   handle_fasteoi_irq+0xc2/0x18a
+>   do_IRQ+0xb3/0x157
+>   common_interrupt+0xf/0xf
+>   </IRQ>
 
-On Thu, 13 Aug 2020 at 05:30, Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Tue, Jul 21, 2020 at 5:10 AM Sumit Garg <sumit.garg@linaro.org> wrote:
-> >
-> > In a future patch we will add support to the serial core to make it
-> > possible to trigger a magic sysrq from an NMI context. Prepare for this
-> > by marking some sysrq actions as NMI safe. Safe actions will be allowed
-> > to run from NMI context whilst that cannot run from an NMI will be queued
-> > as irq_work for later processing.
-> >
-> > A particular sysrq handler is only marked as NMI safe in case the handler
-> > isn't contending for any synchronization primitives as in NMI context
-> > they are expected to cause deadlocks. Note that the debug sysrq do not
-> > contend for any synchronization primitives. It does call kgdb_breakpoint()
-> > to provoke a trap but that trap handler should be NMI safe on
-> > architectures that implement an NMI.
-> >
-> > Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
-> > ---
-> >  drivers/tty/sysrq.c       | 33 ++++++++++++++++++++++++++++++++-
-> >  include/linux/sysrq.h     |  1 +
-> >  kernel/debug/debug_core.c |  1 +
-> >  3 files changed, 34 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> > index 7c95afa9..8017e33 100644
-> > --- a/drivers/tty/sysrq.c
-> > +++ b/drivers/tty/sysrq.c
-> > @@ -50,6 +50,8 @@
-> >  #include <linux/syscalls.h>
-> >  #include <linux/of.h>
-> >  #include <linux/rcupdate.h>
-> > +#include <linux/irq_work.h>
-> > +#include <linux/kfifo.h>
-> >
-> >  #include <asm/ptrace.h>
-> >  #include <asm/irq_regs.h>
-> > @@ -111,6 +113,7 @@ static const struct sysrq_key_op sysrq_loglevel_op = {
-> >         .help_msg       = "loglevel(0-9)",
-> >         .action_msg     = "Changing Loglevel",
-> >         .enable_mask    = SYSRQ_ENABLE_LOG,
-> > +       .nmi_safe       = true,
-> >  };
-> >
-> >  #ifdef CONFIG_VT
-> > @@ -157,6 +160,7 @@ static const struct sysrq_key_op sysrq_crash_op = {
-> >         .help_msg       = "crash(c)",
-> >         .action_msg     = "Trigger a crash",
-> >         .enable_mask    = SYSRQ_ENABLE_DUMP,
-> > +       .nmi_safe       = true,
-> >  };
-> >
-> >  static void sysrq_handle_reboot(int key)
-> > @@ -170,6 +174,7 @@ static const struct sysrq_key_op sysrq_reboot_op = {
-> >         .help_msg       = "reboot(b)",
-> >         .action_msg     = "Resetting",
-> >         .enable_mask    = SYSRQ_ENABLE_BOOT,
-> > +       .nmi_safe       = true,
-> >  };
-> >
-> >  const struct sysrq_key_op *__sysrq_reboot_op = &sysrq_reboot_op;
-> > @@ -217,6 +222,7 @@ static const struct sysrq_key_op sysrq_showlocks_op = {
-> >         .handler        = sysrq_handle_showlocks,
-> >         .help_msg       = "show-all-locks(d)",
-> >         .action_msg     = "Show Locks Held",
-> > +       .nmi_safe       = true,
-> >  };
-> >  #else
-> >  #define sysrq_showlocks_op (*(const struct sysrq_key_op *)NULL)
-> > @@ -289,6 +295,7 @@ static const struct sysrq_key_op sysrq_showregs_op = {
-> >         .help_msg       = "show-registers(p)",
-> >         .action_msg     = "Show Regs",
-> >         .enable_mask    = SYSRQ_ENABLE_DUMP,
-> > +       .nmi_safe       = true,
-> >  };
-> >
-> >  static void sysrq_handle_showstate(int key)
-> > @@ -326,6 +333,7 @@ static const struct sysrq_key_op sysrq_ftrace_dump_op = {
-> >         .help_msg       = "dump-ftrace-buffer(z)",
-> >         .action_msg     = "Dump ftrace buffer",
-> >         .enable_mask    = SYSRQ_ENABLE_DUMP,
-> > +       .nmi_safe       = true,
-> >  };
-> >  #else
-> >  #define sysrq_ftrace_dump_op (*(const struct sysrq_key_op *)NULL)
-> > @@ -538,6 +546,23 @@ static void __sysrq_put_key_op(int key, const struct sysrq_key_op *op_p)
-> >                  sysrq_key_table[i] = op_p;
-> >  }
-> >
-> > +#define SYSRQ_NMI_FIFO_SIZE    64
-> > +static DEFINE_KFIFO(sysrq_nmi_fifo, int, SYSRQ_NMI_FIFO_SIZE);
->
-> A 64-entry FIFO seems excessive. Quite honestly even a FIFO seems a
-> bit excessive and it feels like if two sysrqs were received in super
-> quick succession that it would be OK to just process the first one.  I
-> guess if it simplifies the processing to have a FIFO then it shouldn't
-> hurt, but no need for 64 entries.
->
+I guess we may add some tags here
 
-Okay, would a 2-entry FIFO work here? As here we need a FIFO to pass
-on the key parameter.
+Fixes: 768aec0b5bcc ("serial: 8250: fix shared interrupts issues with SMP and RT kernels")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Reported-by: Raul Rangel <rrangel@google.com>
+BugLink: https://bugs.chromium.org/p/chromium/issues/detail?id=1114800
+Link: https://lore.kernel.org/lkml/CAHQZ30BnfX+gxjPm1DUd5psOTqbyDh4EJE=2=VAMW_VDafctkA@mail.gmail.com/T/#u
 
->
-> > +static void sysrq_do_nmi_work(struct irq_work *work)
-> > +{
-> > +       const struct sysrq_key_op *op_p;
-> > +       int key;
-> > +
-> > +       while (kfifo_out(&sysrq_nmi_fifo, &key, 1)) {
-> > +               op_p = __sysrq_get_key_op(key);
-> > +               if (op_p)
-> > +                       op_p->handler(key);
-> > +       }
->
-> Do you need to manage "suppress_printk" in this function?  Do you need
-> to call rcu_sysrq_start() and rcu_read_lock()?
+Since above below a nit-pick after addressing these,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Ah I missed those. Will add them here instead.
+Thanks!
 
->
-> If so, how do you prevent racing between the mucking we're doing with
-> these things and the mucking that the NMI does with them?
+> Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 09475695effd..67f1a4f31093 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2275,6 +2275,11 @@ int serial8250_do_startup(struct uart_port *port)
+>  
+>  	if (port->irq && !(up->port.flags & UPF_NO_THRE_TEST)) {
+>  		unsigned char iir1;
 
-IIUC, here you meant to highlight the race while scheduled sysrq is
-executing in IRQ context and we receive a new sysrq in NMI context,
-correct? If yes, this seems to be a trickier situation. I think the
-appropriate way to handle it would be to deny any further sysrq
-handling until the prior sysrq handling is complete, your views?
+> +		bool irq_shared = up->port.irqflags & IRQF_SHARED;
 
->
->
-> > +}
-> > +
-> > +static DEFINE_IRQ_WORK(sysrq_nmi_work, sysrq_do_nmi_work);
-> > +
-> >  void __handle_sysrq(int key, bool check_mask)
-> >  {
-> >         const struct sysrq_key_op *op_p;
-> > @@ -568,7 +593,13 @@ void __handle_sysrq(int key, bool check_mask)
-> >                 if (!check_mask || sysrq_on_mask(op_p->enable_mask)) {
-> >                         pr_info("%s\n", op_p->action_msg);
-> >                         console_loglevel = orig_log_level;
-> > -                       op_p->handler(key);
-> > +
-> > +                       if (in_nmi() && !op_p->nmi_safe) {
-> > +                               kfifo_in(&sysrq_nmi_fifo, &key, 1);
->
-> Rather than kfifo_in() and kfifo_out(), I think you can use
-> kfifo_put() and kfifo_get().  As I understand it those just get/put
-> one element which is what you want.
+I'm wondering why we need a temporary variable? This flag is not supposed to be
+changed in between, can we leave original conditionals?
 
-Okay, will use kfifo_put() and kfifo_get() here instead.
+Nevertheless I noticed an inconsistency of the dereference of the flags which
+seems to be brough by dfe42443ea1d ("serial: reduce number of indirections in
+8250 code").
 
->
->
-> > +                               irq_work_queue(&sysrq_nmi_work);
->
-> Wishful thinking, but (as far as I can tell) irq_work_queue() only
-> queues work on the CPU running the NMI.  I don't have lots of NMI
-> experience, but any chance there is a variant that will queue work on
-> any CPU?  Then sysrq handlers that aren't NMI aware will be more
-> likely to work.
->
+I think we can stick with newer:
 
-Unfortunately, queuing work on other CPUs isn't safe in NMI context,
-see this warning [1]. The comment mentions:
+		if (port->irqflags & IRQF_SHARED)
 
-/* Arch remote IPI send/receive backend aren't NMI safe */
+> +
+> +		if (irq_shared)
+> +			disable_irq_nosync(port->irq);
+> +
+>  		/*
+>  		 * Test for UARTs that do not reassert THRE when the
+>  		 * transmitter is idle and the interrupt has already
+> @@ -2284,8 +2289,6 @@ int serial8250_do_startup(struct uart_port *port)
+>  		 * allow register changes to become visible.
+>  		 */
+>  		spin_lock_irqsave(&port->lock, flags);
+> -		if (up->port.irqflags & IRQF_SHARED)
+> -			disable_irq_nosync(port->irq);
+>  
+>  		wait_for_xmitr(up, UART_LSR_THRE);
+>  		serial_port_out_sync(port, UART_IER, UART_IER_THRI);
+> @@ -2297,9 +2300,9 @@ int serial8250_do_startup(struct uart_port *port)
+>  		iir = serial_port_in(port, UART_IIR);
+>  		serial_port_out(port, UART_IER, 0);
+>  
+> -		if (port->irqflags & IRQF_SHARED)
+> -			enable_irq(port->irq);
+>  		spin_unlock_irqrestore(&port->lock, flags);
+> +		if (irq_shared)
+> +			enable_irq(port->irq);
+>  
+>  		/*
+>  		 * If the interrupt is not reasserted, or we otherwise
+> -- 
+> 2.28.0
+> 
 
-Peter,
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Can you throw some light here as to why it isn't considered NMI-safe
-to send remote IPI in NMI context? Is it an arch specific limitation?
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/irq_work.c#n103
-
--Sumit
-
->
->
->
-> > +                       } else {
-> > +                               op_p->handler(key);
-> > +                       }
-> >                 } else {
-> >                         pr_info("This sysrq operation is disabled.\n");
-> >                         console_loglevel = orig_log_level;
-> > diff --git a/include/linux/sysrq.h b/include/linux/sysrq.h
-> > index 3a582ec..630b5b9 100644
-> > --- a/include/linux/sysrq.h
-> > +++ b/include/linux/sysrq.h
-> > @@ -34,6 +34,7 @@ struct sysrq_key_op {
-> >         const char * const help_msg;
-> >         const char * const action_msg;
-> >         const int enable_mask;
-> > +       const bool nmi_safe;
-> >  };
-> >
-> >  #ifdef CONFIG_MAGIC_SYSRQ
-> > diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
-> > index 9e59347..2b51173 100644
-> > --- a/kernel/debug/debug_core.c
-> > +++ b/kernel/debug/debug_core.c
-> > @@ -943,6 +943,7 @@ static const struct sysrq_key_op sysrq_dbg_op = {
-> >         .handler        = sysrq_handle_dbg,
-> >         .help_msg       = "debug(g)",
-> >         .action_msg     = "DEBUG",
-> > +       .nmi_safe       = true,
-> >  };
-> >  #endif
-> >
-> > --
-> > 2.7.4
-> >
