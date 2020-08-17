@@ -4,71 +4,71 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABD9C433E1
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 12:27:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D149EC433E3
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 12:29:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1022C20658
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 12:27:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 90DE82075B
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 12:29:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="l+JYLWC1"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JrkF1v5G"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbgHQM1V (ORCPT
+        id S1728293AbgHQM3X (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Aug 2020 08:27:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
+        Mon, 17 Aug 2020 08:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728000AbgHQM1U (ORCPT
+        with ESMTP id S1728038AbgHQM3R (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Aug 2020 08:27:20 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690E9C061389
-        for <linux-serial@vger.kernel.org>; Mon, 17 Aug 2020 05:27:19 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id v12so17237341ljc.10
-        for <linux-serial@vger.kernel.org>; Mon, 17 Aug 2020 05:27:19 -0700 (PDT)
+        Mon, 17 Aug 2020 08:29:17 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17EAC061342
+        for <linux-serial@vger.kernel.org>; Mon, 17 Aug 2020 05:29:16 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id y2so8238915ljc.1
+        for <linux-serial@vger.kernel.org>; Mon, 17 Aug 2020 05:29:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kGNaJzjvB0G23O3m+g09oc7AaMHJR8rzuI+FZ8OzZho=;
-        b=l+JYLWC1gaw8VNDmrmNAAtddkNB7uKAOuuqUIP0VLJ05s36eKqagQn7Fscj3rj8eql
-         +GgvKhWtOnQzFAN/tyy9MZeq5+57ylMcQMJOM755Z6g6UTNgJcaYZhzl6PcXxMxW23Ie
-         79NEVuCWKe9aFMiqR4xIvB+mRAAfs6bedEz1gyCzd7OAm/acEuOHVM8jlgvbNufTaXV9
-         ukQhxX95BDRbcuM5dei10NSg0xwcEwNxX3qTBK/0Y1yM+ZJlPSeg4dPii3nyGcVSSwYV
-         uvLkp+wsYTJ2T9O0RPhrUOeJB6sKfYTjHSlwo9s+QrAtpptsZELrAXdvDEPjSVJSsqIT
-         1rmQ==
+        bh=kaS9QGr/CoVL2sSV275Tul/9GvZ4IxXLL+meMexP+eg=;
+        b=JrkF1v5GRUEC2PkvtUTHwlReaCu7YQgc+YTXcxfj7rn/lcJVaYSnogIyX9TJnW3uwo
+         88NNquO2upSOLuEi0fFBrL97SBHRI1GrNf9LEl0wUBsdO8Odnx5RmSKFb4nWHwCcjCTA
+         kUpfEMpcTJj2GmlgUkuf/ExfqiL6+S6xWQXYwdO3X91RDW5IXmH6I5UBZ8HlYrMstETJ
+         4Agk10IcnHSys3q2qkNUGniPWa9wK+/FcvK/SlhSrXuoL3136FFoZ4fAnRzdzCo7X9B9
+         lbkFh4kCkKgk0RHiKm5wSkcnmNcXQp9t9oaSKpTWpO5x5jk+dFTI2B4hRRHF6uTA2E1j
+         HKUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kGNaJzjvB0G23O3m+g09oc7AaMHJR8rzuI+FZ8OzZho=;
-        b=WeJLLVQtuFI0nQFQAjFdk7bw4sJgLP8Mo379TrCIqD5XqUbDTNrWEv9bl/IWLA2qyT
-         avS4NE+mXv/sLuDs3zvHYEWhykUvgbbGCCNeuuE+dg1iXY3bxZcEvtkVm354pfyaBIOp
-         5Ob7uC9eRiilD07Lbe2eBQpm+ze7eZ4Pmc9xxg5hcpEzjihFj0ra5GnOsre3hBfWcgIC
-         C4EMIP/pNYNWVPP3kpoi7GL/QJ2fulmanaN4KqFq8O1wAxezhGUAlgU45ktljUBtt0ai
-         NC4SvkBBBpXPAW1dGtcnFBNQ5Fvcg4h55cCiQ8AAPpwNH+RQLmDKeUisCcv4NQU+G8bW
-         g54w==
-X-Gm-Message-State: AOAM5319nRlnuMo8liKEcWg2x5nxWgChRMZOpGfNmhZiy6MlQQDElkSM
-        OZR+9sy0PmtOikRPq/jDttSClZgItf0+leYXgQp6wA==
-X-Google-Smtp-Source: ABdhPJxtJZS0JEiUqGDZr1SMgDDrLZBXKwTHfXS4aFhVrETusCociczvaeOKEW94hSszS0YwalvA8+zCH7r3ToYthfk=
-X-Received: by 2002:a2e:9550:: with SMTP id t16mr6823311ljh.372.1597667234699;
- Mon, 17 Aug 2020 05:27:14 -0700 (PDT)
+        bh=kaS9QGr/CoVL2sSV275Tul/9GvZ4IxXLL+meMexP+eg=;
+        b=IjKN+UDDOo3X+NVEeW49QZSNCMWtsJp1FopE72l0fiKWFHbsRacarZmAaXg5kCKArn
+         cfHnHcJ2brVVB1icKtTzLM42iG5hOERoaMZsIIPvbQqbKga5TPsjKvnZ9TaxTSMdQjLP
+         lLrOUSnqWJAC+K+99TVYJnqWtZ88F/61K822dGcuwo4sy1tHVaQ7h0ktFwAFNY10vPVw
+         rtIGUc17rtPBFbH6z06wGmwxMsvO02oBp/r9fPXpVwhOipru+j816Gw3ngjEuvdoSGvv
+         RF9tLV7jUSN7pe5NQRrEYB5nPdOzbrMQSYwkFhb0jo7BFbBobItSFoHZNVMbd+H0o/6U
+         ayxA==
+X-Gm-Message-State: AOAM533d1p+PIxUQTMuLASyxjynVXq4eKrUcAep6uNGajBV3OqlhQXnW
+        wTIXkRsMe5cJ1z5mvqwIFPlJ/IONLlV5VjY0GMqhxQ==
+X-Google-Smtp-Source: ABdhPJxycajF68k7LfbWmGKMEmchQ5vYrDZoKIW7NZDRjvDhKjzMA+vUCrbjICqJuG9WgO/B1/FzG0EDVSoe2KCqce8=
+X-Received: by 2002:a2e:b6cc:: with SMTP id m12mr6559788ljo.256.1597667354932;
+ Mon, 17 Aug 2020 05:29:14 -0700 (PDT)
 MIME-Version: 1.0
 References: <1595333413-30052-1-git-send-email-sumit.garg@linaro.org>
  <1595333413-30052-3-git-send-email-sumit.garg@linaro.org> <CAD=FV=XUNqun3d+C_7GpgntGWRXwLSLnXKStLUz8iqZoGKu8zg@mail.gmail.com>
  <CAFA6WYNq-Z5WD=AqJn2_DEg0F6G1CYte2y5Snc964vsgCnr0Bw@mail.gmail.com>
  <CAD=FV=Vu3PGSUzargD-6e2XOw=Eh7CZaQ_+a09dr8SR1T8eE2g@mail.gmail.com>
- <CAFA6WYPJ_w+R15NRKK5BzZtTxKq8Gh_mGswuYbW0cYZoBYLhxw@mail.gmail.com> <20200814141322.lffebtamfjt2qrym@holly.lan>
-In-Reply-To: <20200814141322.lffebtamfjt2qrym@holly.lan>
+ <CAFA6WYPJ_w+R15NRKK5BzZtTxKq8Gh_mGswuYbW0cYZoBYLhxw@mail.gmail.com> <CAD=FV=XA91CcyGMHKmnMG4LD7HO1d65Fuq3nDWDH_NKPOh+n3Q@mail.gmail.com>
+In-Reply-To: <CAD=FV=XA91CcyGMHKmnMG4LD7HO1d65Fuq3nDWDH_NKPOh+n3Q@mail.gmail.com>
 From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Mon, 17 Aug 2020 17:57:03 +0530
-Message-ID: <CAFA6WYNAdELYCoOVQokgLNKhOYF9QK85UidgvyFfo4wsSNwKXw@mail.gmail.com>
+Date:   Mon, 17 Aug 2020 17:59:03 +0530
+Message-ID: <CAFA6WYMAza8bJtow3_+8PEeXgHFym-6CHt73ePi5tMnW-jr26g@mail.gmail.com>
 Subject: Re: [RFC 2/5] serial: core: Add framework to allow NMI aware serial drivers
-To:     Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
         linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
         Jiri Slaby <jslaby@suse.com>,
         Russell King - ARM Linux <linux@armlinux.org.uk>,
@@ -81,10 +81,12 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 14 Aug 2020 at 19:43, Daniel Thompson
-<daniel.thompson@linaro.org> wrote:
+On Fri, 14 Aug 2020 at 20:14, Doug Anderson <dianders@chromium.org> wrote:
 >
-> On Fri, Aug 14, 2020 at 04:47:11PM +0530, Sumit Garg wrote:
+> Hi,
+>
+> On Fri, Aug 14, 2020 at 4:17 AM Sumit Garg <sumit.garg@linaro.org> wrote:
+> >
 > > On Thu, 13 Aug 2020 at 20:08, Doug Anderson <dianders@chromium.org> wrote:
 > > >
 > > > Hi,
@@ -231,95 +233,36 @@ On Fri, 14 Aug 2020 at 19:43, Daniel Thompson
 > > tries to achieve that. If you have any better way to achieve this, I
 > > can use that instead.
 >
-> Perhaps don't consider this to be "fixing schedule_work()" but providing
-> an NMI-safe alternative to schedule_work().
-
-Okay.
-
+> So I guess the two options to avoid the overhead are:
 >
-> Does it look better if you create a new type to map the two structures
-> together. Alternatively are there enough existing use-cases to want to
-> extend irq_work_queue() with irq_work_schedule() or something similar?
+> 1. Create a new struct:
+>
+> struct nmi_queuable_work_struct {
+>   struct work_struct work;
+>   struct irq_work iw;
+> };
+>
+> Then the overhead is only needed for those that want this
+> functionality.  Those people would need to use a variant
+> nmi_schedule_work() which, depending on in_nmi(), would either
+> schedule it directly or use the extra work.
+>
+> Looks like Daniel already responded and suggested this.
+>
+>
+> 2. Something that duplicates the code of at least part of irq_work and
+> therefore saves the need to store the function pointer.  Think of it
+> this way: if you made a whole copy of irq_work that was hardcoded to
+> just call the function you wanted then you wouldn't need to store a
+> function pointer.  This is, of course, excessive.  I was trying to
+> figure out if you could do less by only copying the NMI-safe
+> linked-list manipulation, but this is probably impossible and not
+> worth it anyway.
 >
 
-Thanks for your suggestion, irq_work_schedule() looked even better
-without any overhead, see below:
-
-diff --git a/include/linux/irq_work.h b/include/linux/irq_work.h
-index 3082378..1eade89 100644
---- a/include/linux/irq_work.h
-+++ b/include/linux/irq_work.h
-@@ -3,6 +3,7 @@
- #define _LINUX_IRQ_WORK_H
-
- #include <linux/smp_types.h>
-+#include <linux/workqueue.h>
-
- /*
-  * An entry can be in one of four states:
-@@ -24,6 +25,11 @@ struct irq_work {
-        void (*func)(struct irq_work *);
- };
-
-+struct irq_work_schedule {
-+       struct irq_work work;
-+       struct work_struct *sched_work;
-+};
-+
- static inline
- void init_irq_work(struct irq_work *work, void (*func)(struct irq_work *))
- {
- {
-@@ -39,6 +45,7 @@ void init_irq_work(struct irq_work *work, void
-(*func)(struct irq_work *))
-
- bool irq_work_queue(struct irq_work *work);
- bool irq_work_queue_on(struct irq_work *work, int cpu);
-+bool irq_work_schedule(struct work_struct *sched_work);
-
- void irq_work_tick(void);
- void irq_work_sync(struct irq_work *work);
-diff --git a/kernel/irq_work.c b/kernel/irq_work.c
-index eca8396..3880316 100644
---- a/kernel/irq_work.c
-+++ b/kernel/irq_work.c
-@@ -24,6 +24,8 @@
- static DEFINE_PER_CPU(struct llist_head, raised_list);
- static DEFINE_PER_CPU(struct llist_head, lazy_list);
-
-+static struct irq_work_schedule irq_work_sched;
-+
- /*
-  * Claim the entry so that no one else will poke at it.
-  */
-@@ -79,6 +81,25 @@ bool irq_work_queue(struct irq_work *work)
- }
- EXPORT_SYMBOL_GPL(irq_work_queue);
-
-+static void irq_work_schedule_fn(struct irq_work *work)
-+{
-+       struct irq_work_schedule *irq_work_sched =
-+               container_of(work, struct irq_work_schedule, work);
-+
-+       if (irq_work_sched->sched_work)
-+               schedule_work(irq_work_sched->sched_work);
-+}
-+
-+/* Schedule work via irq work queue */
-+bool irq_work_schedule(struct work_struct *sched_work)
-+{
-+       init_irq_work(&irq_work_sched.work, irq_work_schedule_fn);
-+       irq_work_sched.sched_work = sched_work;
-+
-+       return irq_work_queue(&irq_work_sched.work);
-+}
-+EXPORT_SYMBOL_GPL(irq_work_schedule);
-+
- /*
-  * Enqueue the irq_work @work on @cpu unless it's already pending
-  * somewhere.
+Thanks for your suggestions. I came up with an approach without any
+overhead (see my reply to Daniel).
 
 -Sumit
 
->
-> Daniel.
+> -Doug
