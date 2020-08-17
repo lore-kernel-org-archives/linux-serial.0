@@ -5,69 +5,69 @@ X-Spam-Level:
 X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C167C433E1
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 08:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97463C433E3
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 08:59:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5468420758
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 08:59:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6D48020758
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 08:59:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PiVBIWKY"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="auEcpVle"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728718AbgHQI7k (ORCPT
+        id S1728730AbgHQI7o (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Aug 2020 04:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
+        Mon, 17 Aug 2020 04:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728307AbgHQI7j (ORCPT
+        with ESMTP id S1728307AbgHQI7m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Aug 2020 04:59:39 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26E7C061388;
-        Mon, 17 Aug 2020 01:59:38 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id l60so7491463pjb.3;
-        Mon, 17 Aug 2020 01:59:38 -0700 (PDT)
+        Mon, 17 Aug 2020 04:59:42 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE52C061389;
+        Mon, 17 Aug 2020 01:59:42 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id y6so7183893plt.3;
+        Mon, 17 Aug 2020 01:59:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dprMDdtzRUqVhrLyliJzSuOBrFlLqstZsl9JNe0NSK4=;
-        b=PiVBIWKYpZOwpl3l30M6Fo3rPU5nW0nfTubZQV7JUc+vV0A64yGrNLFdEjouXpaa5k
-         Z5MoM3QXi9zN03azfYuFoEgScl5BTcR6CYvCRXQ0yUUkhjRyt2gbWOpjMrL8eEKGIAH/
-         t5PN9g3nz5jnInLj5+xhlgTaoAPzC1QEmRa/NN3HL8FR4C0cKFBl2OyupfYgLxWhk4qZ
-         y6oV4Jn7ofsbDRM2qFptLzVp5oA/WPWcct7BDmWBh2FIlElullflHeaz9Rjp6X4myAn5
-         MJD3otw4Ijv/FhpK+p9x8q2mI9Vd1VRlhBf7SnAUps5VsK+hCda8WhTlrQ/B6j9SiBas
-         2ZAg==
+        bh=4/hpWacXzg752w756gSyrpUVLzy+WB4RJa2GSP/+9j0=;
+        b=auEcpVlecmTzXj7OggiVoMdBj0jRijTiGrF/U2SMXHJLXUFPcimRoSxlPOhWzjsymv
+         tbWzYiD145VNZe3FvkJxHFPyYQcpNLRit1aXK0I/hcXMmuzYug1MHfKDMD8/Z/SJ6L1J
+         9x/ozt05NLarjVrhKMgfOz0S9OWUcwIlA5NwOnjK45IZmBNrbnz43YWeX6N1wJfXhJGx
+         dwdhiAbZxecKnD/JloZSzlYXHuowiUEz7xbkkVQI4vGDjwQVEVc7tLuRLEoAgqMtMmx+
+         +zaImGLg1Y741z2rLE5Mr1axt9xfLGvNIaj4AWRCNrv6VRzkztOAAQx5y4ze8/Mxr8vH
+         Nu5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=dprMDdtzRUqVhrLyliJzSuOBrFlLqstZsl9JNe0NSK4=;
-        b=HHpWEkVN7NBP/RiyeNvU+R5//i8XBHa4iXd8T/d6fZtucwhmwHK67YcTBAWl1pSfrt
-         93yDMSOasSuXmH3l7wKDr2VS4mON0yQJXcwyH2tXuHx/2tAU317lWWJhy18MIZ6nqAhD
-         zELc/gLiWCzJ6HJ5KCEs0ants3pH9ZR4MqZgYpN1cdd3Rh/tmy1+ArAWTHD7hBYyrz/z
-         O1INngrRRxqbYri5y9tnrLWojpyxvbt/8lI+emUHp8ouMuCF7TUR5ZlcqOqoMJidosVL
-         FlWlc8pjCVkYEzTaOsly7va3p7Y9YHtrBTZcZxOWRwWtdqrnIUPWPBfgpL/IzAz36sUy
-         PG3g==
-X-Gm-Message-State: AOAM532lnc/e0OsLB0VXdep8vRhA7KkFCE688oCSYsE/d3+XyqHaXrd2
-        J8KkBV3eYwDZx54qPy+NzJbdHtuGc6/jmA==
-X-Google-Smtp-Source: ABdhPJyhdp9fjnJK79p+NpoPwon5bOwfZA4oyGKma49ni2x2sF9tVyQew0t66rGvuOPdfS5alrGOlg==
-X-Received: by 2002:a17:902:c154:: with SMTP id 20mr10665077plj.64.1597654778442;
-        Mon, 17 Aug 2020 01:59:38 -0700 (PDT)
+        bh=4/hpWacXzg752w756gSyrpUVLzy+WB4RJa2GSP/+9j0=;
+        b=C2dlpTvTvo/Nv4NviSZsqEM0y0D4FtCyxwrP+KM78K1p1XbIdyZBbviFf687qn82Gj
+         Y1wrrumt1yjLKEBouvIXws8AQUElGUZk8m/66jIwO4vMOvRlYHy+uJ7EhClgG5jzYK0C
+         1RLMOtSpzKqdNTuLbvUbX5nbrxSYAgIkqZ0eZ3W2h+AFqT2GIO5AkHAAQiWgzZEG4rig
+         trp15w8CEIPQvqIXFFLL/gPDmxRf3AB7IeTArmGeyAePY++qCckAWC39XwVFrBhiMSiO
+         eKMCXs6PnrUjYmgskRtrkaRFUEDBk5lN44l161WLvRYJC0UBP0GhcJcJJxHr3w1hYnix
+         HzqA==
+X-Gm-Message-State: AOAM531rpmJSgt3e41SxKC9GC0+BVltfq5mzLxI6wPywxh1xvsXWPjAI
+        HRNDvrj8U9z9H2XpJTeujIQ=
+X-Google-Smtp-Source: ABdhPJy7SzASHehEpfjff0m7qfksRabhhEePmE484gqg2MRXGyG6iKLa92zNti7GDJ3fI+sV2JpQtA==
+X-Received: by 2002:a17:90a:2a84:: with SMTP id j4mr11844533pjd.135.1597654781701;
+        Mon, 17 Aug 2020 01:59:41 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id j13sm18508547pfn.166.2020.08.17.01.59.35
+        by smtp.gmail.com with ESMTPSA id j13sm18508547pfn.166.2020.08.17.01.59.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:59:37 -0700 (PDT)
+        Mon, 17 Aug 2020 01:59:41 -0700 (PDT)
 From:   Allen Pais <allen.cryptic@gmail.com>
 To:     richard.genoud@gmail.com, gregkh@linuxfoundation.org
 Cc:     keescook@chromium.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 2/4] tty: atmel_serial: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 14:29:19 +0530
-Message-Id: <20200817085921.26033-3-allen.cryptic@gmail.com>
+Subject: [PATCH 3/4] tty: ifx6x60: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 14:29:20 +0530
+Message-Id: <20200817085921.26033-4-allen.cryptic@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817085921.26033-1-allen.cryptic@gmail.com>
 References: <20200817085921.26033-1-allen.cryptic@gmail.com>
@@ -86,56 +86,37 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/tty/serial/atmel_serial.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/tty/serial/ifx6x60.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index e43471b33710..a9c47f56e994 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1722,10 +1722,11 @@ static int atmel_prepare_rx_pdc(struct uart_port *port)
- /*
-  * tasklet handling tty stuff outside the interrupt handler.
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 7d16fe41932f..37d5b8516880 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -725,10 +725,11 @@ static void ifx_spi_complete(void *ctx)
+  *	Queue data for transmission if possible and then kick off the
+  *	transfer.
   */
--static void atmel_tasklet_rx_func(unsigned long data)
-+static void atmel_tasklet_rx_func(struct tasklet_struct *t)
+-static void ifx_spi_io(unsigned long data)
++static void ifx_spi_io(struct tasklet_struct *t)
  {
--	struct uart_port *port = (struct uart_port *)data;
--	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	struct atmel_uart_port *atmel_port = from_tasklet(atmel_port, t,
-+							  tasklet_rx);
-+	struct uart_port *port = &atmel_port->uart;
+ 	int retval;
+-	struct ifx_spi_device *ifx_dev = (struct ifx_spi_device *) data;
++	struct ifx_spi_device *ifx_dev = from_tasklet(ifx_dev, t,
++						      io_work_tasklet);
  
- 	/* The interrupt handler does not take the lock */
- 	spin_lock(&port->lock);
-@@ -1733,10 +1734,11 @@ static void atmel_tasklet_rx_func(unsigned long data)
- 	spin_unlock(&port->lock);
- }
+ 	if (!test_and_set_bit(IFX_SPI_STATE_IO_IN_PROGRESS, &ifx_dev->flags) &&
+ 		test_bit(IFX_SPI_STATE_IO_AVAILABLE, &ifx_dev->flags)) {
+@@ -1067,8 +1068,7 @@ static int ifx_spi_spi_probe(struct spi_device *spi)
+ 	init_waitqueue_head(&ifx_dev->mdm_reset_wait);
  
--static void atmel_tasklet_tx_func(unsigned long data)
-+static void atmel_tasklet_tx_func(struct tasklet_struct *t)
- {
--	struct uart_port *port = (struct uart_port *)data;
--	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	struct atmel_uart_port *atmel_port = from_tasklet(atmel_port, t,
-+							  tasklet_tx);
-+	struct uart_port *port = &atmel_port->uart;
+ 	spi_set_drvdata(spi, ifx_dev);
+-	tasklet_init(&ifx_dev->io_work_tasklet, ifx_spi_io,
+-						(unsigned long)ifx_dev);
++	tasklet_setup(&ifx_dev->io_work_tasklet, ifx_spi_io);
  
- 	/* The interrupt handler does not take the lock */
- 	spin_lock(&port->lock);
-@@ -1911,10 +1913,8 @@ static int atmel_startup(struct uart_port *port)
- 	}
+ 	set_bit(IFX_SPI_STATE_PRESENT, &ifx_dev->flags);
  
- 	atomic_set(&atmel_port->tasklet_shutdown, 0);
--	tasklet_init(&atmel_port->tasklet_rx, atmel_tasklet_rx_func,
--			(unsigned long)port);
--	tasklet_init(&atmel_port->tasklet_tx, atmel_tasklet_tx_func,
--			(unsigned long)port);
-+	tasklet_setup(&atmel_port->tasklet_rx, atmel_tasklet_rx_func);
-+	tasklet_setup(&atmel_port->tasklet_tx, atmel_tasklet_tx_func);
- 
- 	/*
- 	 * Initialize DMA (if necessary)
 -- 
 2.17.1
 
