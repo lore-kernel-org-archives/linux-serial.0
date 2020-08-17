@@ -8,67 +8,68 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D82EC433DF
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 18:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F74EC433E3
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 18:54:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4D6CF204EC
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 18:52:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA669204EC
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Aug 2020 18:54:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pe9fLNDE"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WA+o569b"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387913AbgHQSwu (ORCPT
+        id S1730918AbgHQSy6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Aug 2020 14:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37362 "EHLO
+        Mon, 17 Aug 2020 14:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391641AbgHQSwq (ORCPT
+        with ESMTP id S1730917AbgHQSy4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Aug 2020 14:52:46 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EA5C061344;
-        Mon, 17 Aug 2020 11:52:45 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id e5so13232606qth.5;
-        Mon, 17 Aug 2020 11:52:45 -0700 (PDT)
+        Mon, 17 Aug 2020 14:54:56 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED041C061389;
+        Mon, 17 Aug 2020 11:54:55 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id 6so13276296qtt.0;
+        Mon, 17 Aug 2020 11:54:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
         bh=EyInuEBx4tu8/dpK6QVmoYclYZh/Tpg6DL8iKkTJkGU=;
-        b=Pe9fLNDEEnHmY37636XimvnOUgmaRGT+7ZjrZXOCOn5ANBcz/YnSzYtj1opCJoE4XN
-         m+0gf0HV0Z7EzBplf8sVlk6FH0vTjVtbelDqTqzTkyfd2ULr4QPGVwYN1dK4DyKiqJMs
-         80qrV3w1Icy5C7jFtQ5q4JERbSW62pKtVkH9qWljKgo0RISyJCyUXrlqTkudkBg+AQZY
-         hQyFwQsPpIHnc5RxawZHiHucwiB1s/C24VskGr9EOfwPIlkvXP2YrLNLrnKQb0LUjvzC
-         eqH/U0VQW/9Wn57DRZ1ioqovhxxUDeEovsdl4BsCRNOcMGQ6ZH1FLr00+A3kDvDp7PWa
-         QiDQ==
+        b=WA+o569b6qU9RIK8BsU79Xhczucyqu1v2kaoVouU7fMrqwOUY2OyVs9O7aiNYPuzfl
+         avdb3ooAA8YBV5u5nvog6hB9QI+4Zu3Hcywk15YkFXfgkTKZpvbXvyJxFm8PNit0vxWb
+         MCL6CkZwvbKmggNumNDl30FJvQfjWmAlFGqpQfbbhX2RbABWBKLeAUJHT6dl5EVWzyt3
+         PRbcXED8PgwrPH3jLFqA2lmIcSNXW8uL2ngTMKUIrcY06yjln5EPuX7OSmr5AqYkzCvw
+         BRPWf/YRFhdul+WTxFcaiqgDtgjuLswXlYksDLI0omlITnTOz+vWaQxrYds/lfvGIPxq
+         GfEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
         bh=EyInuEBx4tu8/dpK6QVmoYclYZh/Tpg6DL8iKkTJkGU=;
-        b=h2VvqgHLFBx+dj/BF/6xCC02RWvw6uMaEs3/T1NtHO5Q8QA1gq0InB96gnCTnjiZ1e
-         O4JrnOKigZWJxEF6ZmD9lWdFdRyfk6MR705CbKZfcqjdBjP96N0dn5zpaNgcfKbwX514
-         zkExsJa5YpyH2NZO/BxN/6qRZ9KO5+fBTIZO5MyWkbfeDe0TNgKYeY7ZckgOEigxDkK8
-         +1BfDmGgGlCx+oJMKEjFKQ5FBtrUknbw4hCOIylLPIBWXLe1xD55pqgHq1tc9QQhcBoy
-         uWWAYaicTk6OHaTr2rDnZXM7bMh8ZhYux2nOgA3ZrXGp+BK+QxWnqqBlhVrhcOvYa/rP
-         j0iw==
-X-Gm-Message-State: AOAM530/4oyOoAK6of76nAPXo8ODwiAumeTiDkJeetgW08w5IskmRyQ+
-        wKPwy0kIZRvzE3WFAkYZuRrbTcaq3uUqNg==
-X-Google-Smtp-Source: ABdhPJzqT11r5CkeXxxzIyr9TKN47NMEwxu3N2u39F6z7Hn7QAfDIhWSgHUxGQ+wjGPXz88CIW93kw==
-X-Received: by 2002:ac8:7606:: with SMTP id t6mr15003326qtq.348.1597690364557;
-        Mon, 17 Aug 2020 11:52:44 -0700 (PDT)
+        b=j74txvyTsmf1BePC0+JhhhO+oeXByoXiAosVJU05Lnjdq2fRmeN98dSHGrqAHQDMIg
+         Z5mB65ov0XmbXJIV7Z7luwlBRLmUNbQjqUmpkIe+Uu9hEp7tBXG+RMCGmyTgRJhxVVfV
+         UrVQCCXHXiD0UXixHOSMcgn7tuQyJWpQmr9qV6Lc1jHuk/pPUpszJXD3eSokvyOK+Y7b
+         QieihtBv1nEB05BCxb3Ur+Y7+3svteCe5r8B/ChPlEp6qQyGVJkyoCmIJhK+su/0MKN3
+         kCt/G0aDAqU2TBgEWoajXKJGykSWSc4eKbbmE2RPArfpU66872HaxqHLogyo01fQxU7Z
+         Sp5Q==
+X-Gm-Message-State: AOAM532oRaWOYplV+iFyWgvMP7kyXwfZOJqdNPVwReSBkcs0zQ2kS+vl
+        xifTywEeF2IzcwJuhYRusMY=
+X-Google-Smtp-Source: ABdhPJyOu0pQY8yotrl8IF2bpoy442cARcsPMMim1bBFdx5ZWmsjekNfmiZ04J3F1AzoSCTJFVk3sQ==
+X-Received: by 2002:ac8:4c86:: with SMTP id j6mr14725822qtv.65.1597690495228;
+        Mon, 17 Aug 2020 11:54:55 -0700 (PDT)
 Received: from tong-desktop.local ([2601:5c0:c100:b9d:c66:53f8:5dc7:25fa])
-        by smtp.googlemail.com with ESMTPSA id m30sm21903159qtm.46.2020.08.17.11.52.43
+        by smtp.googlemail.com with ESMTPSA id w12sm17318534qkj.116.2020.08.17.11.54.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 11:52:43 -0700 (PDT)
+        Mon, 17 Aug 2020 11:54:54 -0700 (PDT)
 From:   Tong Zhang <ztong0001@gmail.com>
-To:     ztong0001@gmail.com
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     ztong0001@gmail.com, linux-kernel@vger.kernel.org
 Subject: [PATCH v2] Fixes: tty: serial: earlycon dependency
-Date:   Mon, 17 Aug 2020 14:52:38 -0400
-Message-Id: <20200817185238.1133509-1-ztong0001@gmail.com>
+Date:   Mon, 17 Aug 2020 14:54:19 -0400
+Message-Id: <20200817185419.1133596-1-ztong0001@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200817170038.GA725471@kroah.com>
+References: <20200817170038.GA725471@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
