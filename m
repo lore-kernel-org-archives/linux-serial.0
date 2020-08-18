@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F72C433E1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA4AC433DF
 	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7E0062075E
+	by mail.kernel.org (Postfix) with ESMTP id CA3992075E
 	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbgHRI5K (ORCPT
+        id S1726706AbgHRI5K (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 18 Aug 2020 04:57:10 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37886 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:37876 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726699AbgHRI5J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1726698AbgHRI5J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Tue, 18 Aug 2020 04:57:09 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 39376B02B;
+        by mx2.suse.de (Postfix) with ESMTP id 16796B02D;
         Tue, 18 Aug 2020 08:57:33 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 05/16] vc_screen: rewrite vcs_size to accept vc, not inode
-Date:   Tue, 18 Aug 2020 10:56:55 +0200
-Message-Id: <20200818085706.12163-5-jslaby@suse.cz>
+Subject: [PATCH 04/16] vc_screen: document and cleanup vcs_vc
+Date:   Tue, 18 Aug 2020 10:56:54 +0200
+Message-Id: <20200818085706.12163-4-jslaby@suse.cz>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200818085706.12163-1-jslaby@suse.cz>
 References: <20200818085706.12163-1-jslaby@suse.cz>
@@ -41,116 +41,76 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It is weird to fetch the information from the inode over and over. Read
-and write already have the needed information, so rewrite vcs_size to
-accept a vc, attr and unicode and adapt vcs_lseek to that.
-
-Also make sure all sites check the return value of vcs_size for errors.
-
-And document it using kernel-doc.
+Document parameters of vcs_vc and make viewed a bool.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/vc_screen.c | 46 ++++++++++++++++++++++++--------------
- 1 file changed, 29 insertions(+), 17 deletions(-)
+ drivers/tty/vt/vc_screen.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index adc3c786b621..8aa0d50bcac7 100644
+index 778f83ea2249..adc3c786b621 100644
 --- a/drivers/tty/vt/vc_screen.c
 +++ b/drivers/tty/vt/vc_screen.c
-@@ -202,39 +202,47 @@ static struct vc_data *vcs_vc(struct inode *inode, bool *viewed)
- 	return vc_cons[currcons].d;
+@@ -177,12 +177,14 @@ vcs_poll_data_get(struct file *file)
+ 	return poll;
  }
  
 -/*
-- * Returns size for VC carried by inode.
+- * Returns VC for inode.
 +/**
-+ * vcs_size -- return size for a VC in @vc
-+ * @vc: which VC
-+ * @attr: does it use attributes?
-+ * @unicode: is it unicode?
++ * vcs_vc -- return VC for @inode
++ * @inode: inode for which to return a VC
++ * @viewed: returns whether this console is currently foreground (viewed)
 + *
   * Must be called with console_lock.
   */
--static int
--vcs_size(struct inode *inode)
-+static int vcs_size(const struct vc_data *vc, bool attr, bool unicode)
+-static struct vc_data*
+-vcs_vc(struct inode *inode, int *viewed)
++static struct vc_data *vcs_vc(struct inode *inode, bool *viewed)
  {
- 	int size;
--	struct vc_data *vc;
+ 	unsigned int currcons = console(inode);
  
- 	WARN_CONSOLE_UNLOCKED();
- 
--	vc = vcs_vc(inode, NULL);
--	if (!vc)
--		return -ENXIO;
--
- 	size = vc->vc_rows * vc->vc_cols;
- 
--	if (use_attributes(inode)) {
--		if (use_unicode(inode))
-+	if (attr) {
-+		if (unicode)
- 			return -EOPNOTSUPP;
--		size = 2*size + HEADER_SIZE;
--	} else if (use_unicode(inode))
-+
-+		size = 2 * size + HEADER_SIZE;
-+	} else if (unicode)
- 		size *= 4;
-+
- 	return size;
+@@ -191,11 +193,11 @@ vcs_vc(struct inode *inode, int *viewed)
+ 	if (currcons == 0) {
+ 		currcons = fg_console;
+ 		if (viewed)
+-			*viewed = 1;
++			*viewed = true;
+ 	} else {
+ 		currcons--;
+ 		if (viewed)
+-			*viewed = 0;
++			*viewed = false;
+ 	}
+ 	return vc_cons[currcons].d;
  }
+@@ -247,10 +249,11 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	struct vc_data *vc;
+ 	struct vcs_poll_data *poll;
+ 	long pos, read;
+-	int attr, uni_mode, row, col, maxcol, viewed;
++	int attr, uni_mode, row, col, maxcol;
+ 	unsigned short *org = NULL;
+ 	ssize_t ret;
+ 	char *con_buf;
++	bool viewed;
  
- static loff_t vcs_lseek(struct file *file, loff_t offset, int orig)
- {
-+	struct inode *inode = file_inode(file);
-+	struct vc_data *vc;
- 	int size;
+ 	con_buf = (char *) __get_free_page(GFP_KERNEL);
+ 	if (!con_buf)
+@@ -451,10 +454,11 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ 	long pos;
+ 	long attr, size, written;
+ 	char *con_buf0;
+-	int col, maxcol, viewed;
++	int col, maxcol;
+ 	u16 *org0 = NULL, *org = NULL;
+ 	size_t ret;
+ 	char *con_buf;
++	bool viewed;
  
- 	console_lock();
--	size = vcs_size(file_inode(file));
-+	vc = vcs_vc(inode, NULL);
-+	if (!vc) {
-+		console_unlock();
-+		return -ENXIO;
-+	}
-+
-+	size = vcs_size(vc, use_attributes(inode), use_unicode(inode));
- 	console_unlock();
- 	if (size < 0)
- 		return size;
-@@ -295,7 +303,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 		 * as copy_to_user at the end of this loop
- 		 * could sleep.
- 		 */
--		size = vcs_size(inode);
-+		size = vcs_size(vc, attr, uni_mode);
- 		if (size < 0) {
- 			if (read)
- 				break;
-@@ -480,7 +488,11 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
- 	if (!vc)
- 		goto unlock_out;
- 
--	size = vcs_size(inode);
-+	size = vcs_size(vc, attr, false);
-+	if (size < 0) {
-+		ret = size;
-+		goto unlock_out;
-+	}
- 	ret = -EINVAL;
- 	if (pos < 0 || pos > size)
- 		goto unlock_out;
-@@ -519,7 +531,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
- 		 * the user buffer, so recheck.
- 		 * Return data written up to now on failure.
- 		 */
--		size = vcs_size(inode);
-+		size = vcs_size(vc, attr, false);
- 		if (size < 0) {
- 			if (written)
- 				break;
+ 	if (use_unicode(inode))
+ 		return -EOPNOTSUPP;
 -- 
 2.28.0
 
