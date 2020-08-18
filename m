@@ -7,96 +7,91 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 393BBC433E1
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 15:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81CD2C433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 15:52:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 180E42080C
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 15:52:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 55EF520897
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 15:52:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1597765942;
-	bh=/bDijrbe0Io59V0lahxfMAjJqZmvoTOk4XcBOedRV+M=;
+	s=default; t=1597765970;
+	bh=Xdv0xCjVGcZyLhsifvuY5MUma95gMDQkWtsc9KTt/IE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=I/V2CE4wA9J+FwIXmkJlprXvXW0XNO9K4atP1mRd5IX8XqMjKt3Hehyl8VMZ3xHuY
-	 42W8X6A1pB/wbmApRw9/2iA3IvZP6oEAeWiClYRSZ+T2BVyn8csyGjJ/r9vniXwpfa
-	 YNPg5bLNC+0ln0oewcvwfPPsyAMUFwzaeP+bBw0o=
+	b=E7NJNQUL17MheL4xbbDoEkA0gLdcbma94cerl3MSRE7jtMoTvILNxnF9OwGPmTUSs
+	 2+Of0YPzA12n5He84iufBGV0DgrjrqwgadqGgNz1T5jXn3d8nTZItzDhfUs0i9j2ms
+	 om8imac4n1WIQGSuoRKc34MAeykvbtmHXF1YeYVM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728245AbgHRPwR (ORCPT
+        id S1727826AbgHRPwd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Aug 2020 11:52:17 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:34943 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727831AbgHRPvy (ORCPT
+        Tue, 18 Aug 2020 11:52:33 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:38626 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728344AbgHRPwG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Aug 2020 11:51:54 -0400
-Received: by mail-io1-f68.google.com with SMTP id s189so21679557iod.2;
-        Tue, 18 Aug 2020 08:51:53 -0700 (PDT)
+        Tue, 18 Aug 2020 11:52:06 -0400
+Received: by mail-il1-f195.google.com with SMTP id 77so18006567ilc.5;
+        Tue, 18 Aug 2020 08:52:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Mf422wvmtHGB+fLAHqkYV5iliyU3plq01dFBfESJYS0=;
-        b=fQ033Hg+n30+M9X4XPrqW9mpP2fnBgDl2jbVloW3idniQlMSvwb/B8rkOb56NghyMH
-         RsfWG0S4TH1deKefT4lQgqAA3vY09GBUmTG2s412e95C/tDjg3g5Uo1ydUYZM6ActtYy
-         BKKIz9SdkbCBgfXtSMdna+5a1ZfVgcJtF8n1gtiVoKPKW8usoRRrIZKeewdU9c0SeQRh
-         L6KpLCRNDu48EovocK+ecjSN/Q4urIp1n0yropFRDjrC7WzHbmCvycPCTw13yqlmFmrH
-         vn4rccUxOk/8BDeNz1RocdZg7WCiPqH+XT6q30ds7a6TNRaQe3tkGo7WKOkgkLTWwxr8
-         Ba+Q==
-X-Gm-Message-State: AOAM531JqTfp99peAUucdQdI6JZ3lgcsg+/LkiVl1cCF1ruN5VK9y/BI
-        X740ZWDwU63NJ7ctAnfIDGNjMZRY5Q==
-X-Google-Smtp-Source: ABdhPJxucHnQnFfDvMaxcgX49sVszAnJBk6CGxr0tcEZLJF8jUkmB4GUT5sDMmAuZn81f35K4UToiQ==
-X-Received: by 2002:a02:cf26:: with SMTP id s6mr19858789jar.44.1597765912536;
-        Tue, 18 Aug 2020 08:51:52 -0700 (PDT)
+        bh=RWrMVtISM3XsfgJH5aOXfatld7zUPSy+cKjr1bTQ/Nc=;
+        b=HbBc/MhQWCL1oUeQZmsUgQB/u1HXGNp29zvS/fggLrOuCLxtCsG7rSmjegmsiqDHFe
+         2YIK4TA6aZiI3pxtRJ6FdYu0YvD0s4lwSW10ARojuCJj1MfsaftvIMUqVY501xTFpYG6
+         VoSfV/037AeVgMad5qoIFUKbqxhASuG3VrOrfV4topv8QJieI7jOeSXq0ytScM+9zVc2
+         JDhKhjdCgnp1RveOghK41l+OUPM/e8h2PS7+aSTiESXKus+syfAlOl3xEkfIo908ahWr
+         jFV+0Zc51QUY99fmDlpMXwGwXmcq0n+1dFoD4fQnlS43XlMUqFwKC8lyaGBLLoHD8oo3
+         mEaQ==
+X-Gm-Message-State: AOAM531OQuWXCUKl8U+PTor7QyvDVFws5eYtiDwxLUWyBnf5+SnsPUFK
+        /bx0hNaSRhNrZ4mpsWvizMoyTQABeg==
+X-Google-Smtp-Source: ABdhPJyryqwKNqf3hcMBEuVLUQwnAaNHFmTH44QlioCKElBC48gLiTKFfOT+6vf3WkwFfIh+EGOyyA==
+X-Received: by 2002:a05:6e02:147:: with SMTP id j7mr968720ilr.109.1597765921964;
+        Tue, 18 Aug 2020 08:52:01 -0700 (PDT)
 Received: from xps15 ([64.188.179.249])
-        by smtp.gmail.com with ESMTPSA id v14sm11524845iln.76.2020.08.18.08.51.50
+        by smtp.gmail.com with ESMTPSA id w9sm11056305iop.2.2020.08.18.08.52.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 08:51:51 -0700 (PDT)
-Received: (nullmailer pid 3526978 invoked by uid 1000);
-        Tue, 18 Aug 2020 15:51:49 -0000
-Date:   Tue, 18 Aug 2020 09:51:49 -0600
+        Tue, 18 Aug 2020 08:52:01 -0700 (PDT)
+Received: (nullmailer pid 3527382 invoked by uid 1000);
+        Tue, 18 Aug 2020 15:52:00 -0000
+Date:   Tue, 18 Aug 2020 09:52:00 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Anson Huang <Anson.Huang@nxp.com>
-Cc:     linux-serial@vger.kernel.org, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, sboyd@kernel.org,
-        linux-clk@vger.kernel.org, fugang.duan@nxp.com, Linux-imx@nxp.com,
-        s.hauer@pengutronix.de, gregkh@linuxfoundation.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, mturquette@baylibre.com,
-        shawnguo@kernel.org, festevam@gmail.com
-Subject: Re: [PATCH V3 1/5] dt-bindings: clock: Update i.MX28 example
-Message-ID: <20200818155149.GA3526911@bogus>
+Cc:     mturquette@baylibre.com, shawnguo@kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org,
+        kernel@pengutronix.de, sboyd@kernel.org, fugang.duan@nxp.com,
+        s.hauer@pengutronix.de, festevam@gmail.com,
+        linux-kernel@vger.kernel.org, Linux-imx@nxp.com,
+        linux-serial@vger.kernel.org, robh+dt@kernel.org
+Subject: Re: [PATCH V3 2/5] dt-bindings: clock: Update i.MX23 example
+Message-ID: <20200818155200.GA3527350@bogus>
 References: <1597721685-9280-1-git-send-email-Anson.Huang@nxp.com>
+ <1597721685-9280-2-git-send-email-Anson.Huang@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1597721685-9280-1-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <1597721685-9280-2-git-send-email-Anson.Huang@nxp.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 18 Aug 2020 11:34:41 +0800, Anson Huang wrote:
-> Update the i.MX28 clock example to align with MXS AUART binding doc to
+On Tue, 18 Aug 2020 11:34:42 +0800, Anson Huang wrote:
+> Update the i.MX23 clock example to align with MXS AUART binding doc to
 > avoid below build error:
 > 
-> Documentation/devicetree/bindings/clock/imx28-clock.example.dt.yaml:
->   serial@8006a000: clocks: [[4294967295, 45]] is too short
-> Documentation/devicetree/bindings/clock/imx28-clock.example.dt.yaml:
->   serial@8006a000: compatible: Additional items are not allowed
->   ('fsl,imx23-auart' was unexpected)
-> Documentation/devicetree/bindings/clock/imx28-clock.example.dt.yaml:
->   serial@8006a000: compatible: ['fsl,imx28-auart', 'fsl,imx23-auart']
->   is too long
-> Documentation/devicetree/bindings/clock/imx28-clock.example.dt.yaml:
->   serial@8006a000: 'dmas' is a required property
-> Documentation/devicetree/bindings/clock/imx28-clock.example.dt.yaml:
->   serial@8006a000: 'dma-names' is a required property
+> Documentation/devicetree/bindings/clock/imx23-clock.example.dt.yaml:
+>    serial@8006c000: clocks: [[4294967295, 32]] is too short
+> Documentation/devicetree/bindings/clock/imx23-clock.example.dt.yaml:
+>    serial@8006c000: 'dmas' is a required property
+> Documentation/devicetree/bindings/clock/imx23-clock.example.dt.yaml:
+>     serial@8006c000: 'dma-names' is a required property
 > 
 > Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 > ---
 > no change.
 > ---
->  Documentation/devicetree/bindings/clock/imx28-clock.yaml | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>  Documentation/devicetree/bindings/clock/imx23-clock.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
 
 Applied, thanks!
