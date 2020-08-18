@@ -4,33 +4,33 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 428DBC433E3
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB691C433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:57:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2CBFA2067C
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:57:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8A2C52067C
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbgHRI5o (ORCPT
+        id S1726820AbgHRI54 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Aug 2020 04:57:44 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37998 "EHLO mx2.suse.de"
+        Tue, 18 Aug 2020 04:57:56 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37996 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726736AbgHRI5M (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1726718AbgHRI5M (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Tue, 18 Aug 2020 04:57:12 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 9C8FDB048;
+        by mx2.suse.de (Postfix) with ESMTP id 36F1BB03D;
         Tue, 18 Aug 2020 08:57:34 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 15/16] vc_screen: extract vcs_read_buf_header
-Date:   Tue, 18 Aug 2020 10:57:05 +0200
-Message-Id: <20200818085706.12163-15-jslaby@suse.cz>
+Subject: [PATCH 12/16] vc_screen: extract vcs_read_buf_uni
+Date:   Tue, 18 Aug 2020 10:57:02 +0200
+Message-Id: <20200818085706.12163-12-jslaby@suse.cz>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200818085706.12163-1-jslaby@suse.cz>
 References: <20200818085706.12163-1-jslaby@suse.cz>
@@ -41,67 +41,90 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The attribute header handling is terrible in vcs_read_buf. Separate it
-to a new function and simply do memmove (of up to 4 bytes) to the start
-of the con_buf -- if user seeked.
+The same as making write more readable, extract unicode handling from
+vcs_read. The other two cases (w/ and w/o attributes) will follow.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/vc_screen.c | 31 ++++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
+ drivers/tty/vt/vc_screen.c | 49 +++++++++++++++++++++++---------------
+ 1 file changed, 30 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index c178a1611223..9d68c6b36ddf 100644
+index 8ebb6724a804..91d2e0148a67 100644
 --- a/drivers/tty/vt/vc_screen.c
 +++ b/drivers/tty/vt/vc_screen.c
-@@ -297,6 +297,22 @@ static void vcs_read_buf_noattr(const struct vc_data *vc, char *con_buf,
- 	}
+@@ -249,6 +249,33 @@ static loff_t vcs_lseek(struct file *file, loff_t offset, int orig)
+ 	return fixed_size_llseek(file, offset, orig, size);
  }
  
-+static unsigned int vcs_read_buf_header(const struct vc_data *vc, char *con_buf,
-+		unsigned int pos, unsigned int count)
++static int vcs_read_buf_uni(struct vc_data *vc, char *con_buf,
++		unsigned int pos, unsigned int count, bool viewed)
 +{
-+	count = min(HEADER_SIZE - pos, count);
++	unsigned int nr, row, col, maxcol = vc->vc_cols;
++	int ret;
 +
-+	/* clamp header values if they don't fit */
-+	con_buf[0] = min(vc->vc_rows, 0xFFu);
-+	con_buf[1] = min(vc->vc_cols, 0xFFu);
-+	getconsxy(vc, con_buf + 2);
++	ret = vc_uniscr_check(vc);
++	if (ret)
++		return ret;
 +
-+	if (pos)
-+		memmove(con_buf, con_buf + pos, count);
++	pos /= 4;
++	row = pos / maxcol;
++	col = pos % maxcol;
++	nr = maxcol - col;
++	do {
++		if (nr > count / 4)
++			nr = count / 4;
++		vc_uniscr_copy_line(vc, con_buf, viewed, row, col, nr);
++		con_buf += nr * 4;
++		count -= nr * 4;
++		row++;
++		col = 0;
++		nr = maxcol;
++	} while (count);
 +
-+	return count;
++	return 0;
 +}
-+
- static unsigned int vcs_read_buf(const struct vc_data *vc, char *con_buf,
- 		unsigned int pos, unsigned int count, bool viewed,
- 		unsigned int *skip)
-@@ -306,22 +322,11 @@ static unsigned int vcs_read_buf(const struct vc_data *vc, char *con_buf,
- 	unsigned int filled = count;
  
- 	if (pos < HEADER_SIZE) {
--		/* clamp header values if they don't fit */
--		con_buf[0] = min(vc->vc_rows, 0xFFu);
--		con_buf[1] = min(vc->vc_cols, 0xFFu);
--		getconsxy(vc, con_buf + 2);
+ static ssize_t
+ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+@@ -257,7 +284,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	struct vc_data *vc;
+ 	struct vcs_poll_data *poll;
+ 	u16 *org;
+-	unsigned int read, row, col, maxcol;
++	unsigned int read, col, maxcol;
+ 	ssize_t ret;
+ 	char *con_buf;
+ 	loff_t pos;
+@@ -327,26 +354,10 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 		orig_count = this_round;
+ 		maxcol = vc->vc_cols;
+ 		if (uni_mode) {
+-			unsigned int nr;
 -
--		*skip += pos;
--		count += pos;
--		if (count > CON_BUF_SIZE) {
--			count = CON_BUF_SIZE;
--			filled = count - pos;
--		}
-+		count -= vcs_read_buf_header(vc, con_buf, pos, count);
- 
--		/* Advance state pointers and move on. */
--		count -= min(HEADER_SIZE, count);
- 		pos = HEADER_SIZE;
- 		con_buf += HEADER_SIZE;
-+
- 		/* If count >= 0, then pos is even... */
- 	} else if (pos & 1) {
- 		/*
+-			ret = vc_uniscr_check(vc);
++			ret = vcs_read_buf_uni(vc, con_buf, pos, this_round,
++					viewed);
+ 			if (ret)
+ 				break;
+-			p /= 4;
+-			row = p / vc->vc_cols;
+-			col = p % maxcol;
+-			nr = maxcol - col;
+-			do {
+-				if (nr > this_round/4)
+-					nr = this_round/4;
+-				vc_uniscr_copy_line(vc, con_buf0, viewed,
+-						    row, col, nr);
+-				con_buf0 += nr * 4;
+-				this_round -= nr * 4;
+-				row++;
+-				col = 0;
+-				nr = maxcol;
+-			} while (this_round);
+ 		} else if (!attr) {
+ 			org = screen_pos(vc, p, viewed);
+ 			col = p % maxcol;
 -- 
 2.28.0
 
