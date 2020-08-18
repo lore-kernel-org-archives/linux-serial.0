@@ -2,81 +2,81 @@ Return-Path: <SRS0=mq3J=B4=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3FFC433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 10:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F2A6C433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:19:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7EA9B20789
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 10:46:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2F5B020706
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:19:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1597749574;
+	bh=/erd3TMa+88zcgkkl/pnfVVP6m25RnHWrfKehr1Rf7U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=V7A4r5fc8Z2zRLutze7yfCuvqEyyal+cWpIz7bRBT+lpERRSbf2aAxZASnGCO6moQ
+	 sV8NspPTNUwaTWN8ykvDXtFs++b1Kqvz9Fzj+DSqZIf64XD4Efqr5UTEc6uaD7+bR7
+	 cY7IlTPnqpRyhegwxIgJRYSCu99aFOwib3Wfl3sY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbgHRKqs (ORCPT
+        id S1726273AbgHRLTb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Aug 2020 06:46:48 -0400
-Received: from muru.com ([72.249.23.125]:40772 "EHLO muru.com"
+        Tue, 18 Aug 2020 07:19:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726203AbgHRKqs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Aug 2020 06:46:48 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 4FAF9810D;
-        Tue, 18 Aug 2020 10:46:47 +0000 (UTC)
-Date:   Tue, 18 Aug 2020 13:47:14 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] n_gsm: Fix write handling for zero bytes written
-Message-ID: <20200818104714.GR2994@atomide.com>
-References: <20200817135454.28505-1-tony@atomide.com>
- <1b8538a8-d8b6-4287-36e1-aa1e0863ff2d@kernel.org>
- <20200818095609.GQ2994@atomide.com>
- <ea5e0639-4419-c60b-059a-8fbd057fc6e3@kernel.org>
+        id S1726145AbgHRLTa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 18 Aug 2020 07:19:30 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DFD0520706;
+        Tue, 18 Aug 2020 11:19:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597749570;
+        bh=/erd3TMa+88zcgkkl/pnfVVP6m25RnHWrfKehr1Rf7U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xFrMEsAaQ4e2eIQP6w2vhxLzUTsVbBEGumqrH4ZLIl+tVLkEQBwu9elFSX+T8ST+2
+         FsZDu0b1aVJFczOkZKq9S25Gny35wVj0N2LyLbpir2J2BMlnhflUy0lALeKDYZZ9yr
+         hVh5HRbpmxuHfHXwbCqZknzkUu0NPVCgo19oUU5k=
+Date:   Tue, 18 Aug 2020 13:19:54 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tong Zhang <ztong0001@gmail.com>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] Fixes: tty: serial: earlycon dependency
+Message-ID: <20200818111954.GA283417@kroah.com>
+References: <20200817170038.GA725471@kroah.com>
+ <20200817185419.1133596-1-ztong0001@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ea5e0639-4419-c60b-059a-8fbd057fc6e3@kernel.org>
+In-Reply-To: <20200817185419.1133596-1-ztong0001@gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Jiri Slaby <jirislaby@kernel.org> [200818 10:14]:
-> On 18. 08. 20, 11:56, Tony Lindgren wrote:
-> > Hi,
-> > 
-> > * Jiri Slaby <jirislaby@kernel.org> [200818 08:24]:
-> >> On 17. 08. 20, 15:54, Tony Lindgren wrote:
-> >>> If write returns zero we currently end up removing the message
-> >>> from the queue. Instead of removing the message, we want to just
-> >>> break out of the loop just like we already do for error codes.
-> >>
-> >> When exactly does the only writer (gsmld_output) return zero for
-> >> non-zero len parameter?
-> > 
-> > I ran into this when testing with the WIP serial core PM runtime
-> > changes from Andy Shevchenko earlier. If there are also other
-> > cases where we have serial drivers return 0, I don't know about
-> > them.
+On Mon, Aug 17, 2020 at 02:54:19PM -0400, Tong Zhang wrote:
+> parse_options() in drivers/tty/serial/earlycon.c calls uart_parse_earlycon
+> in drivers/tty/serial/serial_core.c therefore selecting SERIAL_EARLYCON
+> should automatically select SERIAL_CORE, otherwise will result in symbol
+> not found error during linking if SERIAL_CORE is not configured as builtin
 > 
-> Sorry, I don't understand: my gsmld_output() ignores the return value
-> from drivers' write and returns something greater than zero or a
-> negative error. What tree/SHA do you run?
+> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
 
-Oh right, good catch. I also had my WIP serdev-ngsm patches applied
-that uses gsm_serdev_output() and returns the bytes written. Andy's
-patches do not touch n_gsm.c.
+As Jiri pointed out, the Fixes: line goes down here, not in your subject
+line :)
 
-Hmm sounds like we should also start returning value also from
-gsmld_output()? Any objections to making that change?
+Please fix up, thanks.
 
-For reference, Andy's WIP serial cor PM runtime changes are at:
+> ---
+>  drivers/tty/serial/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 
-https://gitlab.com/andy-shev/next.git/ topic/uart/rpm-plus
+What changed from v1?  Also always list that below the --- line so we
+know.
 
-Regards,
+thanks,
 
-Tony
+greg k-h
