@@ -7,31 +7,36 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9B8C433E1
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D94C433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 923492075E
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 04B8E2075E
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbgHRI6R (ORCPT
+        id S1726640AbgHRI5A (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Aug 2020 04:58:17 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37846 "EHLO mx2.suse.de"
+        Tue, 18 Aug 2020 04:57:00 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37694 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726694AbgHRI5K (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Aug 2020 04:57:10 -0400
+        id S1726370AbgHRI46 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 18 Aug 2020 04:56:58 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id A169EABF4;
-        Tue, 18 Aug 2020 08:57:32 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 5A7DEB02B;
+        Tue, 18 Aug 2020 08:57:22 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 01/16] vt: make vc_data pointers const in selection.h
-Date:   Tue, 18 Aug 2020 10:56:51 +0200
-Message-Id: <20200818085706.12163-1-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: [PATCH 3/8] newport_con: make module's init & exit static using module_driver
+Date:   Tue, 18 Aug 2020 10:56:50 +0200
+Message-Id: <20200818085655.12071-3-jslaby@suse.cz>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200818085655.12071-1-jslaby@suse.cz>
+References: <20200818085655.12071-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -39,187 +44,47 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There are many functions declared in selection.h which only read from
-struct vc_data passed as a parameter. Make all those uses const to hint
-the compiler a bit.
+The compiler complains that newport_console_init and
+newport_console_exit are not declared:
+   drivers/video/console/newport_con.c:745:12: warning: no previous prototype for 'newport_console_init'
+   drivers/video/console/newport_con.c:750:13: warning: no previous prototype for 'newport_console_exit'
+
+Here, it translates into: they should be marked static. Do so by
+converting the simple un/registration to module_driver().
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-fbdev@vger.kernel.org
+Cc: linux-mips@vger.kernel.org
 ---
- drivers/tty/vt/consolemap.c      |  2 +-
- drivers/tty/vt/vt.c              | 15 ++++++++-------
- drivers/video/console/sticon.c   |  2 +-
- drivers/video/fbdev/core/fbcon.c |  2 +-
- include/linux/console.h          |  2 +-
- include/linux/consolemap.h       |  3 ++-
- include/linux/selection.h        | 14 ++++++++------
- 7 files changed, 22 insertions(+), 18 deletions(-)
+ drivers/video/console/newport_con.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 5947b54d92be..5d5a5fd2dce7 100644
---- a/drivers/tty/vt/consolemap.c
-+++ b/drivers/tty/vt/consolemap.c
-@@ -268,7 +268,7 @@ unsigned short *set_translate(int m, struct vc_data *vc)
-  *    was active.
-  * Still, it is now possible to a certain extent to cut and paste non-ASCII.
-  */
--u16 inverse_translate(struct vc_data *conp, int glyph, int use_unicode)
-+u16 inverse_translate(const struct vc_data *conp, int glyph, int use_unicode)
- {
- 	struct uni_pagedir *p;
- 	int m;
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index ccb533fd00a2..8f283221330e 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -283,7 +283,8 @@ static inline bool con_should_update(const struct vc_data *vc)
- 	return con_is_visible(vc) && !console_blanked;
- }
+diff --git a/drivers/video/console/newport_con.c b/drivers/video/console/newport_con.c
+index 4d9110393479..0d0989040c58 100644
+--- a/drivers/video/console/newport_con.c
++++ b/drivers/video/console/newport_con.c
+@@ -751,18 +751,6 @@ static struct gio_driver newport_driver = {
+ 	.probe = newport_probe,
+ 	.remove = newport_remove,
+ };
+-
+-int __init newport_console_init(void)
+-{
+-	return gio_register_driver(&newport_driver);
+-}
+-
+-void __exit newport_console_exit(void)
+-{
+-	gio_unregister_driver(&newport_driver);
+-}
+-
+-module_init(newport_console_init);
+-module_exit(newport_console_exit);
++module_driver(newport_driver, gio_register_driver, gio_unregister_driver);
  
--static inline unsigned short *screenpos(struct vc_data *vc, int offset, int viewed)
-+static inline unsigned short *screenpos(const struct vc_data *vc, int offset,
-+		int viewed)
- {
- 	unsigned short *p;
- 	
-@@ -543,7 +544,7 @@ int vc_uniscr_check(struct vc_data *vc)
-  * This must be preceded by a successful call to vc_uniscr_check() once
-  * the console lock has been taken.
-  */
--void vc_uniscr_copy_line(struct vc_data *vc, void *dest, int viewed,
-+void vc_uniscr_copy_line(const struct vc_data *vc, void *dest, int viewed,
- 			 unsigned int row, unsigned int col, unsigned int nr)
- {
- 	struct uni_screen *uniscr = get_vc_uniscr(vc);
-@@ -4740,7 +4741,7 @@ int con_font_op(struct vc_data *vc, struct console_font_op *op)
-  */
- 
- /* used by selection */
--u16 screen_glyph(struct vc_data *vc, int offset)
-+u16 screen_glyph(const struct vc_data *vc, int offset)
- {
- 	u16 w = scr_readw(screenpos(vc, offset, 1));
- 	u16 c = w & 0xff;
-@@ -4751,7 +4752,7 @@ u16 screen_glyph(struct vc_data *vc, int offset)
- }
- EXPORT_SYMBOL_GPL(screen_glyph);
- 
--u32 screen_glyph_unicode(struct vc_data *vc, int n)
-+u32 screen_glyph_unicode(const struct vc_data *vc, int n)
- {
- 	struct uni_screen *uniscr = get_vc_uniscr(vc);
- 
-@@ -4762,13 +4763,13 @@ u32 screen_glyph_unicode(struct vc_data *vc, int n)
- EXPORT_SYMBOL_GPL(screen_glyph_unicode);
- 
- /* used by vcs - note the word offset */
--unsigned short *screen_pos(struct vc_data *vc, int w_offset, int viewed)
-+unsigned short *screen_pos(const struct vc_data *vc, int w_offset, int viewed)
- {
- 	return screenpos(vc, 2 * w_offset, viewed);
- }
- EXPORT_SYMBOL_GPL(screen_pos);
- 
--void getconsxy(struct vc_data *vc, unsigned char *p)
-+void getconsxy(const struct vc_data *vc, unsigned char *p)
- {
- 	/* clamp values if they don't fit */
- 	p[0] = min(vc->state.x, 0xFFu);
-@@ -4782,7 +4783,7 @@ void putconsxy(struct vc_data *vc, unsigned char *p)
- 	set_cursor(vc);
- }
- 
--u16 vcs_scr_readw(struct vc_data *vc, const u16 *org)
-+u16 vcs_scr_readw(const struct vc_data *vc, const u16 *org)
- {
- 	if ((unsigned long)org == vc->vc_pos && softcursor_original != -1)
- 		return softcursor_original;
-diff --git a/drivers/video/console/sticon.c b/drivers/video/console/sticon.c
-index 21a5c280c8c9..e21147e8a14e 100644
---- a/drivers/video/console/sticon.c
-+++ b/drivers/video/console/sticon.c
-@@ -236,7 +236,7 @@ static int sticon_blank(struct vc_data *c, int blank, int mode_switch)
-     return 1;
- }
- 
--static u16 *sticon_screen_pos(struct vc_data *conp, int offset)
-+static u16 *sticon_screen_pos(const struct vc_data *conp, int offset)
- {
-     int line;
-     unsigned long p;
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 8a31fc2b2258..6068845d98f2 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2765,7 +2765,7 @@ static void fbcon_set_palette(struct vc_data *vc, const unsigned char *table)
- 	fb_set_cmap(&palette_cmap, info);
- }
- 
--static u16 *fbcon_screen_pos(struct vc_data *vc, int offset)
-+static u16 *fbcon_screen_pos(const struct vc_data *vc, int offset)
- {
- 	unsigned long p;
- 	int line;
-diff --git a/include/linux/console.h b/include/linux/console.h
-index 0670d3491e0e..4b1e26c4cb42 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -74,7 +74,7 @@ struct consw {
- 			enum vc_intensity intensity,
- 			bool blink, bool underline, bool reverse, bool italic);
- 	void	(*con_invert_region)(struct vc_data *vc, u16 *p, int count);
--	u16    *(*con_screen_pos)(struct vc_data *vc, int offset);
-+	u16    *(*con_screen_pos)(const struct vc_data *vc, int offset);
- 	unsigned long (*con_getxy)(struct vc_data *vc, unsigned long position,
- 			int *px, int *py);
- 	/*
-diff --git a/include/linux/consolemap.h b/include/linux/consolemap.h
-index 254246673390..bcfce748c9d8 100644
---- a/include/linux/consolemap.h
-+++ b/include/linux/consolemap.h
-@@ -17,7 +17,8 @@
- #ifdef CONFIG_CONSOLE_TRANSLATIONS
- struct vc_data;
- 
--extern u16 inverse_translate(struct vc_data *conp, int glyph, int use_unicode);
-+extern u16 inverse_translate(const struct vc_data *conp, int glyph,
-+		int use_unicode);
- extern unsigned short *set_translate(int m, struct vc_data *vc);
- extern int conv_uni_to_pc(struct vc_data *conp, long ucs);
- extern u32 conv_8bit_to_uni(unsigned char c);
-diff --git a/include/linux/selection.h b/include/linux/selection.h
-index 5b890ef5b59f..34404a019ebf 100644
---- a/include/linux/selection.h
-+++ b/include/linux/selection.h
-@@ -33,21 +33,23 @@ extern unsigned char default_red[];
- extern unsigned char default_grn[];
- extern unsigned char default_blu[];
- 
--extern unsigned short *screen_pos(struct vc_data *vc, int w_offset, int viewed);
--extern u16 screen_glyph(struct vc_data *vc, int offset);
--extern u32 screen_glyph_unicode(struct vc_data *vc, int offset);
-+extern unsigned short *screen_pos(const struct vc_data *vc, int w_offset,
-+		int viewed);
-+extern u16 screen_glyph(const struct vc_data *vc, int offset);
-+extern u32 screen_glyph_unicode(const struct vc_data *vc, int offset);
- extern void complement_pos(struct vc_data *vc, int offset);
- extern void invert_screen(struct vc_data *vc, int offset, int count, int shift);
- 
--extern void getconsxy(struct vc_data *vc, unsigned char *p);
-+extern void getconsxy(const struct vc_data *vc, unsigned char *p);
- extern void putconsxy(struct vc_data *vc, unsigned char *p);
- 
--extern u16 vcs_scr_readw(struct vc_data *vc, const u16 *org);
-+extern u16 vcs_scr_readw(const struct vc_data *vc, const u16 *org);
- extern void vcs_scr_writew(struct vc_data *vc, u16 val, u16 *org);
- extern void vcs_scr_updated(struct vc_data *vc);
- 
- extern int vc_uniscr_check(struct vc_data *vc);
--extern void vc_uniscr_copy_line(struct vc_data *vc, void *dest, int viewed,
-+extern void vc_uniscr_copy_line(const struct vc_data *vc, void *dest,
-+				int viewed,
- 				unsigned int row, unsigned int col,
- 				unsigned int nr);
- 
+ MODULE_LICENSE("GPL");
 -- 
 2.28.0
 
