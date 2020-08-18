@@ -5,108 +5,100 @@ X-Spam-Level:
 X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB61BC433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 18:55:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC80C433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 22:45:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 985762067C
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 18:55:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1C15F2065D
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 22:45:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dWNgsnEi"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JbHOoutm"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726630AbgHRSz1 (ORCPT
+        id S1727000AbgHRWp2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Aug 2020 14:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        Tue, 18 Aug 2020 18:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726705AbgHRSzZ (ORCPT
+        with ESMTP id S1726995AbgHRWp2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Aug 2020 14:55:25 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3904C061389;
-        Tue, 18 Aug 2020 11:55:23 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id f19so11455571qtp.2;
-        Tue, 18 Aug 2020 11:55:23 -0700 (PDT)
+        Tue, 18 Aug 2020 18:45:28 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91A7C061389
+        for <linux-serial@vger.kernel.org>; Tue, 18 Aug 2020 15:45:24 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id n129so19925979qkd.6
+        for <linux-serial@vger.kernel.org>; Tue, 18 Aug 2020 15:45:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=b3jNsyj/qiBAuy4YJCoytwqosstgAXD/++wTpyEbakU=;
-        b=dWNgsnEipriITe0mjwq95y0gULU3kOwQLSobXeWaYDw0Cbjwwf4MCX3g8yrdz3GKWV
-         d/XtOuS4ZxHZwU3PqZ3kgWFv7DQ/E2i1BGrS5Kuvso24spEjd9bgIpn6L/QCloULM0SN
-         PiY2NGbhJmkkgs1101USl1jvVUD43zUSzXwOAcPxq16oXrCwkv1ZvgFSdlPs1QqpsxHu
-         fnaErg4JTIWYY69JmDoaLxn4JDA5wmAAxy7PMiZUv8HyZDxSwiNGVERnMSKclXioPkaJ
-         FXblSXCadnQ+AkVJ0lBRVxHS8tZ6tRshG3hNCbHXiSh5rNUb+EXRF44BTSxUYmW5+OhC
-         iJIw==
+        h=from:to:cc:subject:date:message-id;
+        bh=WnWs5M+4neEOa//6tNo473Dr58NPVdqL+IgjOZRAt7Q=;
+        b=JbHOoutmMcyX0HjMwj51UuJNQyCVrkIREDvbVjHcgalWJEc6gVyHjURwJH4jS42DBf
+         LulDyIInSxDFzUfEQ/zFcIkJ7fTwvDxe9CAkSEwG34CdLK/XOVFonLU2aze1SrLOCgx7
+         aw78h2GFArqq1Ft+mbgzxfr5Zn6vBgATq5yY5kijNvHI+CZmozES7Gzr6Wo6Z5w3/t6L
+         LPsandv3GkmtZhCscws3q8/6LdWZ+cdhzidmcVRrbQE3jlY6Kp5iRpQHJ3HPkauenuP0
+         Jt5Imk3GAXoP+OTZtznSSQYgpqqQmkiyIaayRZaStQb6XOBxHwiL29WxDgunq5IGK0Lz
+         U2FQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=b3jNsyj/qiBAuy4YJCoytwqosstgAXD/++wTpyEbakU=;
-        b=QXDlwwRgveAQMqv2UxRrARK2szQUG4ZI4ssqkQGfc/9HZXlzeK5cdZ6p7qSmZ3N8nH
-         uAyb1B1UqEKxJbPdDxOOIiSs9Yyn/jrZ+G7ut1vKvZQ+MQT6svUONcl3RKaiBTKf0Jt2
-         OMJaXrAQJon/STI/axrHDecAOqFog/fptVP8dfnO6in7UJ45X9cDLs0tN0QKKi6UiXpp
-         CZO4qXZIhTUOqQOTJFadY+pztELHhb+zjB9M30127Af+KLyh0ApfB5zX3Lv/M07v6ds9
-         wde1f6OPbBJswaX9XXa+ztbmwLXxf09Kagjq35np3EV0es35dM/nHXMj/ErdLVRCP2g9
-         aWBg==
-X-Gm-Message-State: AOAM532r0ihhvEXZkD4xBQY4iyPcYAn2Oj+/Mey0IXm/asI5ndi223XZ
-        oW7ztSp+1fYUuwrl0kz9K0w=
-X-Google-Smtp-Source: ABdhPJzMq+tTPcrnH3DTevTOuTLR+H4yZD2srB20pl4xe+6ZIBA/sei9Ubuxgt0mzdIYmUmNHemhiA==
-X-Received: by 2002:aed:2199:: with SMTP id l25mr18742965qtc.309.1597776923228;
-        Tue, 18 Aug 2020 11:55:23 -0700 (PDT)
-Received: from tong-desktop.local ([2601:5c0:c100:b9d:f9e2:64b4:fbc4:6485])
-        by smtp.googlemail.com with ESMTPSA id x198sm23498821qka.37.2020.08.18.11.55.22
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WnWs5M+4neEOa//6tNo473Dr58NPVdqL+IgjOZRAt7Q=;
+        b=bgMJXGlwOSAxKjdZeFvk/eDx+pr03EreSh7cWvl1hpbhQ4yzWHGk0PvDaabeD+RhE4
+         OWKlYrKPoxmIpaHYosFoiro3UT6v4wiJJRZM4GMepLOq6MCb/DkR1r9GECnSw1mtTENS
+         hn58qIbfcNeUzrPSsE12JJpS+CrVBGfSUzaaLIJ0tjlOdGP43euXSM+lt2X9oCkcgrmv
+         ZyhOr1TDVcs69+c2hH48/YM+mZb8GE1kOK5DsRPJHTw1O5AECEgmVpErYdVUVqqegHod
+         v3Zlq3lQWNAz6sOdrHSNaeA529CH5ndLzqK2xSzvWASNMlhvd8DwH7AJDfa2q0Xm2svW
+         3/hw==
+X-Gm-Message-State: AOAM5329zSX3wBJhPkzssnNXuXG98UoVckHLF87HS8CNs/GddhRkBlRI
+        K25lEvXK+fCtsIqAyfE0Avw=
+X-Google-Smtp-Source: ABdhPJxa0aMMJ9WjpM6cZsVNuFBSjPPpwwEVM849hHJ4atS/Jfcll8GW/98fCBU93rsW7jBxx1UJDA==
+X-Received: by 2002:a37:5d3:: with SMTP id 202mr19428073qkf.498.1597790722920;
+        Tue, 18 Aug 2020 15:45:22 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14c:482:4fb::1000])
+        by smtp.gmail.com with ESMTPSA id o21sm21791564qkk.94.2020.08.18.15.45.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 11:55:22 -0700 (PDT)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     ztong0001@gmail.com, kernel test robot <lkp@intel.com>
-Subject: [PATCH v4] tty: serial: earlycon dependency
-Date:   Tue, 18 Aug 2020 14:54:59 -0400
-Message-Id: <20200818185458.84418-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200818162556.6621-1-ztong0001@gmail.com>
-References: <20200818162556.6621-1-ztong0001@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 18 Aug 2020 15:45:22 -0700 (PDT)
+From:   Fabio Estevam <festevam@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH] serial: fsl_lpuart: Fix typo in "transfer"
+Date:   Tue, 18 Aug 2020 19:44:57 -0300
+Message-Id: <20200818224457.16507-1-festevam@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-parse_options() in drivers/tty/serial/earlycon.c calls uart_parse_earlycon
-in drivers/tty/serial/serial_core.c therefore selecting SERIAL_EARLYCON
-should automatically select SERIAL_CORE, otherwise will result in symbol
-not found error during linking if SERIAL_CORE is not configured as builtin
+Fix two occurrences where "transfer" is spelled incorrectly.
 
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
 ---
+ drivers/tty/serial/fsl_lpuart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Fixes: 9aac5887595b ("tty/serial: add generic serial earlycon")
-v2: I made an attempt to fix the commit log
-v3: I made another attempt to fix the commit log and I also changed
-select to depends according to Jiri's comment
-v4: fixed another stupid error -- should be "depends on" not "depends"
-Reported-by: kernel test robot <lkp@intel.com>
-
- drivers/tty/serial/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 8a0352eb337c..759ac4a5a5c5 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -8,6 +8,7 @@ menu "Serial drivers"
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 90298c403042..77a1a0b64ddd 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1260,7 +1260,7 @@ static int lpuart_config_rs485(struct uart_port *port,
+ 		modem |= UARTMODEM_TXRTSE;
  
- config SERIAL_EARLYCON
- 	bool
-+	depends on SERIAL_CORE
- 	help
- 	  Support for early consoles with the earlycon parameter. This enables
- 	  the console before standard serial driver is probed. The console is
+ 		/*
+-		 * RTS needs to be logic HIGH either during transer _or_ after
++		 * RTS needs to be logic HIGH either during transfer _or_ after
+ 		 * transfer, other variants are not supported by the hardware.
+ 		 */
+ 
+@@ -1311,7 +1311,7 @@ static int lpuart32_config_rs485(struct uart_port *port,
+ 		modem |= UARTMODEM_TXRTSE;
+ 
+ 		/*
+-		 * RTS needs to be logic HIGH either during transer _or_ after
++		 * RTS needs to be logic HIGH either during transfer _or_ after
+ 		 * transfer, other variants are not supported by the hardware.
+ 		 */
+ 
 -- 
-2.25.1
+2.17.1
 
