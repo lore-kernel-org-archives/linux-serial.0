@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3119C433E3
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 302E2C433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BA7182075E
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 119252075E
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 08:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbgHRI60 (ORCPT
+        id S1726403AbgHRI61 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Aug 2020 04:58:26 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37750 "EHLO mx2.suse.de"
+        Tue, 18 Aug 2020 04:58:27 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37752 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726620AbgHRI5A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1726624AbgHRI5A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Tue, 18 Aug 2020 04:57:00 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 27C55B036;
-        Tue, 18 Aug 2020 08:57:23 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id C0EF5B033;
+        Tue, 18 Aug 2020 08:57:22 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 8/8] tty: serial, fix kernel-doc
-Date:   Tue, 18 Aug 2020 10:56:55 +0200
-Message-Id: <20200818085655.12071-8-jslaby@suse.cz>
+Subject: [PATCH 6/8] tty: vt, fix kernel-doc
+Date:   Tue, 18 Aug 2020 10:56:53 +0200
+Message-Id: <20200818085655.12071-6-jslaby@suse.cz>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200818085655.12071-1-jslaby@suse.cz>
 References: <20200818085655.12071-1-jslaby@suse.cz>
@@ -41,93 +41,88 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As in the previous patches, fix kernel-doc in serial drivers.
+As in the previous patches, fix kernel-doc in vt.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/ifx6x60.c       | 7 +++----
- drivers/tty/serial/men_z135_uart.c | 8 ++++----
- 2 files changed, 7 insertions(+), 8 deletions(-)
+ drivers/tty/vt/consolemap.c | 2 +-
+ drivers/tty/vt/vt.c         | 7 ++++---
+ drivers/tty/vt/vt_ioctl.c   | 3 +--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 7d16fe41932f..095ddd04370f 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -257,7 +257,7 @@ static void mrdy_assert(struct ifx_spi_device *ifx_dev)
- 
+diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+index 5d5a5fd2dce7..5d778c0aa009 100644
+--- a/drivers/tty/vt/consolemap.c
++++ b/drivers/tty/vt/consolemap.c
+@@ -708,7 +708,7 @@ EXPORT_SYMBOL(con_set_default_unimap);
  /**
-  *	ifx_spi_timeout		-	SPI timeout
-- *	@arg: our SPI device
-+ *	@t: timer in our SPI device
+  *	con_copy_unimap		-	copy unimap between two vts
+  *	@dst_vc: target
+- *	@src_vt: source
++ *	@src_vc: source
   *
-  *	The SPI has timed out: hang up the tty. Users will then see a hangup
-  *	and error events.
-@@ -277,7 +277,6 @@ static void ifx_spi_timeout(struct timer_list *t)
- /**
-  *	ifx_spi_tiocmget	-	get modem lines
-  *	@tty: our tty device
-- *	@filp: file handle issuing the request
-  *
-  *	Map the signal state into Linux modem flags and report the value
-  *	in Linux terms
-@@ -531,7 +530,7 @@ static int ifx_spi_chars_in_buffer(struct tty_struct *tty)
- 
- /**
-  *	ifx_port_hangup
-- *	@port: our tty port
-+ *	@tty: our tty
-  *
-  *	tty port hang up. Called when tty_hangup processing is invoked either
-  *	by loss of carrier, or by software (eg vhangup). Serialized against
-@@ -611,7 +610,7 @@ static const struct tty_operations ifx_spi_serial_ops = {
- 
- /**
-  *	ifx_spi_insert_fip_string	-	queue received data
-- *	@ifx_ser: our SPI device
-+ *	@ifx_dev: our SPI device
-  *	@chars: buffer we have received
-  *	@size: number of chars reeived
-  *
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index 4f53a4caabf6..9acae5f8fc32 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -173,7 +173,7 @@ static void men_z135_reg_clr(struct men_z135_port *uart,
- 
- /**
-  * men_z135_handle_modem_status() - Handle change of modem status
-- * @port: The UART port
-+ * @uart: The UART port
-  *
-  * Handle change of modem status register. This is done by reading the "delta"
-  * versions of DCD (Data Carrier Detect) and CTS (Clear To Send).
-@@ -236,7 +236,7 @@ static u16 get_rx_fifo_content(struct men_z135_port *uart)
- 
- /**
-  * men_z135_handle_rx() - RX tasklet routine
-- * @arg: Pointer to struct men_z135_port
-+ * @uart: Pointer to struct men_z135_port
-  *
-  * Copy from RX FIFO and acknowledge number of bytes copied.
+  *	The caller must hold the console lock when invoking this method
   */
-@@ -287,7 +287,7 @@ static void men_z135_handle_rx(struct men_z135_port *uart)
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 0f7064d41e92..71f972675fee 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1181,7 +1181,6 @@ static inline int resize_screen(struct vc_data *vc, int width, int height,
+ /**
+  *	vc_do_resize	-	resizing method for the tty
+  *	@tty: tty being resized
+- *	@real_tty: real tty (different to tty if a pty/tty pair)
+  *	@vc: virtual console private data
+  *	@cols: columns
+  *	@lines: lines
+@@ -2607,6 +2606,9 @@ static inline int vc_sanitize_unicode(const int c)
  
  /**
-  * men_z135_handle_tx() - TX tasklet routine
-- * @arg: Pointer to struct men_z135_port
-+ * @uart: Pointer to struct men_z135_port
+  * vc_translate_unicode -- Combine UTF-8 into Unicode in @vc_utf_char
++ * @vc: virtual console
++ * @c: character to translate
++ * @rescan: we return true if we need more (continuation) data
   *
-  */
- static void men_z135_handle_tx(struct men_z135_port *uart)
-@@ -596,7 +596,7 @@ static void men_z135_stop_rx(struct uart_port *port)
+  * @vc_utf_char is the being-constructed unicode character.
+  * @vc_utf_count is the number of continuation bytes still expected to arrive.
+@@ -3982,7 +3984,7 @@ EXPORT_SYMBOL(con_is_visible);
  
  /**
-  * men_z135_enable_ms() - Enable Modem Status
-- * port:
-+ * @port: the port
+  * con_debug_enter - prepare the console for the kernel debugger
+- * @sw: console driver
++ * @vc: virtual console
   *
-  * Enable Modem Status IRQ.
+  * Called when the console is taken over by the kernel debugger, this
+  * function needs to save the current console state, then put the console
+@@ -4040,7 +4042,6 @@ EXPORT_SYMBOL_GPL(con_debug_enter);
+ 
+ /**
+  * con_debug_leave - restore console state
+- * @sw: console driver
+  *
+  * Restore the console state to what it was before the kernel debugger
+  * was invoked.
+diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+index 91c301775047..7726df6b9b6f 100644
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -181,7 +181,7 @@ static void vt_event_wait(struct vt_event_wait *vw)
+ 
+ /**
+  *	vt_event_wait_ioctl	-	event ioctl handler
+- *	@arg: argument to ioctl
++ *	@event: argument to ioctl (the event)
+  *
+  *	Implement the VT_WAITEVENT ioctl using the VT event interface
   */
+@@ -208,7 +208,6 @@ static int vt_event_wait_ioctl(struct vt_event __user *event)
+ 
+ /**
+  *	vt_waitactive	-	active console wait
+- *	@event: event code
+  *	@n: new console
+  *
+  *	Helper for event waits. Used to implement the legacy
 -- 
 2.28.0
 
