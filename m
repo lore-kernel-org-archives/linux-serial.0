@@ -2,209 +2,113 @@ Return-Path: <SRS0=mq3J=B4=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88286C433EB
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 03:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BF2C433E3
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 05:42:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 71EFC2078D
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 03:40:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B246D20709
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 05:42:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1597729354;
+	bh=nAs17kp1y9OHZ3MsLK2pOcWJA+U0AXsIdOQeLq58/+U=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:List-ID:From;
+	b=avuc7fXiuu6xy3sovCVZYFnTdppLqlYu3ZzLr+zgmykUU57NT8AYgdtb1/KViw+Rq
+	 OuYuWai+4rXBa937kiUGfEoxiTyFZyC4OS7DSo8YLMXuK17bK2Ww/1S3uEA+UMeQME
+	 qqHtuIhm6c0uiKqto97E+Herp57bf7UOrEPw7LvM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726357AbgHRDk2 (ORCPT
+        id S1726381AbgHRFme (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Aug 2020 23:40:28 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:44740 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726302AbgHRDkM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Aug 2020 23:40:12 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3EDC7200DE3;
-        Tue, 18 Aug 2020 05:40:10 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3943C2000ED;
-        Tue, 18 Aug 2020 05:40:04 +0200 (CEST)
-Received: from 10.192.242.69 (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id AF45B402C3;
-        Tue, 18 Aug 2020 05:39:56 +0200 (CEST)
-From:   Anson Huang <Anson.Huang@nxp.com>
-To:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, gregkh@linuxfoundation.org,
-        fugang.duan@nxp.com, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     Linux-imx@nxp.com
-Subject: [PATCH V3 3/5] dt-bindings: serial: Convert i.MX uart to json-schema
-Date:   Tue, 18 Aug 2020 11:34:43 +0800
-Message-Id: <1597721685-9280-3-git-send-email-Anson.Huang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1597721685-9280-1-git-send-email-Anson.Huang@nxp.com>
-References: <1597721685-9280-1-git-send-email-Anson.Huang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 18 Aug 2020 01:42:34 -0400
+Received: from mail-ej1-f67.google.com ([209.85.218.67]:37018 "EHLO
+        mail-ej1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726228AbgHRFmd (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 18 Aug 2020 01:42:33 -0400
+Received: by mail-ej1-f67.google.com with SMTP id qc22so20577054ejb.4;
+        Mon, 17 Aug 2020 22:42:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1tVz7UT+SvsNDotol38wN9NUomwuxLq4eSOdjboG+OY=;
+        b=eII3H7oLNtReXuSTcSLRJbono5IJ5z1Dbt033YzmNIrFhrEOh6DF1keS2mZDP1NrsW
+         UGnW8jVScgSD6wn58LXhRMurD7mgIn46OxEnkNotK5k5zlHgGELmeqIaNu46nT6ORvEF
+         YZalgzTmMctNVuaVx+/bZxitH1nqFWVZw10W/Cderv6mkqed9MHAam2GXJMy1nFsBa9J
+         pitZwTWAQg8ht/RiH7k9UCjUX+EFtG4P5Axmd+/KKAXMACUDo/Z8761M23iE8xAWAnMY
+         +45dXczc4AXuFkWG8GMHrdbx78j3Tz0qchcLcI+W4hX9Kz4c1XmK7P1cH/CzyYhoVYV5
+         sWAA==
+X-Gm-Message-State: AOAM532/DIX+CoblL+1Od8t/BYGsUU6WZ12UpqHIPcwvAeyJP25sTfiF
+        pkLrE/BbR50UvskB4q7Oq9qAF/65OlE=
+X-Google-Smtp-Source: ABdhPJwDhpmTxHUv/rAR858626yDAWiLDUAqQgeA5SJPCXuVD9+jaHiH0SIIZAKI5WxInsWGT+HVjw==
+X-Received: by 2002:a17:906:3cc:: with SMTP id c12mr17804853eja.222.1597729351225;
+        Mon, 17 Aug 2020 22:42:31 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id i9sm15678045ejb.48.2020.08.17.22.42.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Aug 2020 22:42:30 -0700 (PDT)
+Subject: Re: [PATCH v2] Fixes: tty: serial: earlycon dependency
+To:     Tong Zhang <ztong0001@gmail.com>, gregkh@linuxfoundation.org,
+        linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Peter Hurley <peter@hurleysoftware.com>
+References: <20200817170038.GA725471@kroah.com>
+ <20200817185419.1133596-1-ztong0001@gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <603a20ef-fe09-c4ae-11d0-3f1dc7b87580@kernel.org>
+Date:   Tue, 18 Aug 2020 07:42:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
+MIME-Version: 1.0
+In-Reply-To: <20200817185419.1133596-1-ztong0001@gmail.com>
+Content-Type: text/plain; charset=iso-8859-2
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the i.MX uart binding to DT schema format using json-schema.
+On 17. 08. 20, 20:54, Tong Zhang wrote:
+> parse_options() in drivers/tty/serial/earlycon.c calls uart_parse_earlycon
+> in drivers/tty/serial/serial_core.c therefore selecting SERIAL_EARLYCON
+> should automatically select SERIAL_CORE, otherwise will result in symbol
+> not found error during linking if SERIAL_CORE is not configured as builtin
+> 
+> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
-no change.
----
- .../devicetree/bindings/serial/fsl-imx-uart.txt    | 40 ----------
- .../devicetree/bindings/serial/fsl-imx-uart.yaml   | 92 ++++++++++++++++++++++
- 2 files changed, 92 insertions(+), 40 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+The "Fixes:" keyword should not have been in the Subject but here.
+According to your findings something like this:
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-deleted file mode 100644
-index 9582fc2..0000000
---- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-+++ /dev/null
-@@ -1,40 +0,0 @@
--* Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
--
--Required properties:
--- compatible : Should be "fsl,<soc>-uart"
--- reg : Address and length of the register set for the device
--- interrupts : Should contain uart interrupt
--
--Optional properties:
--- fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
--                  in DCE mode by default.
--- fsl,inverted-tx , fsl,inverted-rx : Indicate that the hardware attached
--  to the peripheral inverts the signal transmitted or received,
--  respectively, and that the peripheral should invert its output/input
--  using the INVT/INVR registers.
--- rs485-rts-delay, rs485-rts-active-low, rs485-rx-during-tx,
--  linux,rs485-enabled-at-boot-time: see rs485.txt. Note that for RS485
--  you must enable either the "uart-has-rtscts" or the "rts-gpios"
--  properties. In case you use "uart-has-rtscts" the signal that controls
--  the transceiver is actually CTS_B, not RTS_B. CTS_B is always output,
--  and RTS_B is input, regardless of dte-mode.
--
--Please check Documentation/devicetree/bindings/serial/serial.yaml
--for the complete list of generic properties.
--
--Note: Each uart controller should have an alias correctly numbered
--in "aliases" node.
--
--Example:
--
--aliases {
--	serial0 = &uart1;
--};
--
--uart1: serial@73fbc000 {
--	compatible = "fsl,imx51-uart", "fsl,imx21-uart";
--	reg = <0x73fbc000 0x4000>;
--	interrupts = <31>;
--	uart-has-rtscts;
--	fsl,dte-mode;
--};
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-new file mode 100644
-index 0000000..cba3f83
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-@@ -0,0 +1,92 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/fsl-imx-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Freescale i.MX Universal Asynchronous Receiver/Transmitter (UART)
-+
-+maintainers:
-+  - Fabio Estevam <fabio.estevam@nxp.com>
-+
-+allOf:
-+  - $ref: "serial.yaml"
-+  - $ref: "rs485.yaml"
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: fsl,imx1-uart
-+      - const: fsl,imx21-uart
-+      - const: fsl,imx53-uart
-+      - const: fsl,imx6q-uart
-+      - items:
-+          - enum:
-+            - fsl,imx25-uart
-+            - fsl,imx27-uart
-+            - fsl,imx31-uart
-+            - fsl,imx35-uart
-+            - fsl,imx50-uart
-+            - fsl,imx51-uart
-+          - const: fsl,imx21-uart
-+      - items:
-+          - enum:
-+            - fsl,imx6sl-uart
-+            - fsl,imx6sll-uart
-+            - fsl,imx6sx-uart
-+            - fsl,imx6ul-uart
-+            - fsl,imx7d-uart
-+          - const: fsl,imx6q-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  fsl,dte-mode:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Indicate the uart works in DTE mode. The uart works in DCE mode by default.
-+
-+  fsl,inverted-tx:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Indicate that the hardware attached to the peripheral inverts the signal
-+      transmitted, and that the peripheral should invert its output using the
-+      INVT registers.
-+
-+  fsl,inverted-rx:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Indicate that the hardware attached to the peripheral inverts the signal
-+      received, and that the peripheral should invert its input using the
-+      INVR registers.
-+
-+  uart-has-rtscts: true
-+
-+  rs485-rts-delay: true
-+  rs485-rts-active-low: true
-+  rs485-rx-during-tx: true
-+  linux,rs485-enabled-at-boot-time: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    aliases {
-+        serial0 = &uart1;
-+    };
-+
-+    uart1: serial@73fbc000 {
-+        compatible = "fsl,imx51-uart", "fsl,imx21-uart";
-+        reg = <0x73fbc000 0x4000>;
-+        interrupts = <31>;
-+        uart-has-rtscts;
-+        fsl,dte-mode;
-+    };
+Fixes: 73abaf87f01b (serial: earlycon: Refactor parse_options into
+serial core)
+
+I am not sure:
+1) it should be "select" (and not "depends")
+2) serial earlycon should depend on serial core. But it's likely OK.
+
+>  drivers/tty/serial/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 8a0352eb337c..42e844314cbb 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -8,6 +8,7 @@ menu "Serial drivers"
+>  
+>  config SERIAL_EARLYCON
+>  	bool
+> +	select SERIAL_CORE
+>  	help
+>  	  Support for early consoles with the earlycon parameter. This enables
+>  	  the console before standard serial driver is probed. The console is
+> 
+
+thanks,
 -- 
-2.7.4
-
+js
+suse labs
