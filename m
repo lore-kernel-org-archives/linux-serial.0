@@ -2,87 +2,73 @@ Return-Path: <SRS0=mq3J=B4=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6043C433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2829C433E1
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:51:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9FA3B206DA
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:43:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BB1232075E
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1597750999;
-	bh=usmfjuKyMHfX6KvZ1abtP2KSf349aqo4sVQLXIkJjsU=;
+	s=default; t=1597751509;
+	bh=hhb0IY4cPJ9eA2KCKViAjlMIC4OAAyM8melebR30u8Y=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=vCNjXciqEk06WwMJq/HIh/j3GsGVR8KtiLpq9gE96sH6KFvCXWbflyKHzE3HVqbF0
-	 P9deY9P9R6BKncEzc5uQXyU6RvHoyM+JE8AoY7vEjbacLEKodKzZcigQHYo9MGD0Y4
-	 9d45tFRmY41rlYcWYRcMJFjAp4PnsSOaSAvO4ayI=
+	b=iB6135kp+pH9AewQzhw7K9jXaL1VEnaR0oYH3ErWKnALH0U2xwnFFF1LgDqtY3KXW
+	 H53kOZALahSpp7aaWA14czZUjZea2ebjc6PWvaqhm/8UK4+tF5Wao5eL5hmteoILLV
+	 KVe9x32GFZirhWFVgFRmLEMV9eWwzeO8JsxiC8+I=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726495AbgHRLnS (ORCPT
+        id S1726391AbgHRLvt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Aug 2020 07:43:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47638 "EHLO mail.kernel.org"
+        Tue, 18 Aug 2020 07:51:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54488 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726483AbgHRLnS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Aug 2020 07:43:18 -0400
+        id S1726353AbgHRLvt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 18 Aug 2020 07:51:49 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 10FBF206DA;
-        Tue, 18 Aug 2020 11:43:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4DCEC206B5;
+        Tue, 18 Aug 2020 11:51:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597750997;
-        bh=usmfjuKyMHfX6KvZ1abtP2KSf349aqo4sVQLXIkJjsU=;
+        s=default; t=1597751508;
+        bh=hhb0IY4cPJ9eA2KCKViAjlMIC4OAAyM8melebR30u8Y=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=18g4PfPtxhjt65zoA7BhbuFp/4u5zqTUPkjVygU9s76jFu0lv4ImVNrK2DLHdJ2HW
-         wr6krFvIaYVYsZLwsNbgTrWoPcd9TmHEQFDCiYHs0RGOUC3pjQ6Bct2ttUZtc6C8an
-         aKlSYUa6quZRLATROJcIYgyB0rTUQUBUPzFRkrQ8=
-Date:   Tue, 18 Aug 2020 13:43:41 +0200
+        b=f51mk/XV6ujRPLb3qrLXWcQgwTFWr19kCIkPf5ElInD5Zn80o+RcraSph/e9lj2/r
+         Oz9GwrPASJwRavATyGWcV7qCIQl0uDhgsTIT1Xe2877KSX+QlfZAV4BK8DlGIPLp3V
+         +Ff9bD3PLkQ/Q5mW+bsjuFmFUtCLmgmjYocpV4LE=
+Date:   Tue, 18 Aug 2020 13:52:12 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Jiri Slaby <jslaby@suse.cz>
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/16] vt: declare xy for get/putconsxy properly
-Message-ID: <20200818114341.GA343779@kroah.com>
-References: <20200818085706.12163-1-jslaby@suse.cz>
- <20200818085706.12163-2-jslaby@suse.cz>
+Subject: Re: [PATCH 1/8] tty: n_gsm, eliminate indirection for
+ gsm->{output,error}()
+Message-ID: <20200818115212.GA376000@kroah.com>
+References: <20200818085655.12071-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200818085706.12163-2-jslaby@suse.cz>
+In-Reply-To: <20200818085655.12071-1-jslaby@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 10:56:52AM +0200, Jiri Slaby wrote:
-> That is:
-> 1) call the parameter 'xy' to denote what it really is, not generic 'p'
-> 2) tell the compiler and users that we expect an array:
->    * with at least 2 chars (static 2)
->    * which we don't modify in putconsxy (const)
+On Tue, Aug 18, 2020 at 10:56:48AM +0200, Jiri Slaby wrote:
+> gsm->output and ->error are set only to gsmld_output and gsm_error,
+> respectively. Call these functions directly and remove error and output
+> function pointers from struct gsm_mux completely.
+> 
+> Note: we need a forward declaration of gsmld_output now.
 > 
 > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 > ---
->  drivers/tty/vt/vt.c       | 10 +++++-----
->  include/linux/selection.h |  4 ++--
->  2 files changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index 8f283221330e..a0da7771c327 100644
-> --- a/drivers/tty/vt/vt.c
-> +++ b/drivers/tty/vt/vt.c
-> @@ -4769,17 +4769,17 @@ unsigned short *screen_pos(const struct vc_data *vc, int w_offset, int viewed)
->  }
->  EXPORT_SYMBOL_GPL(screen_pos);
->  
-> -void getconsxy(const struct vc_data *vc, unsigned char *p)
-> +void getconsxy(const struct vc_data *vc, unsigned char xy[static 2])
+>  drivers/tty/n_gsm.c | 15 ++++++---------
+>  1 file changed, 6 insertions(+), 9 deletions(-)
 
-I didn't realize we could do "[static 2]" in the kernel now, is that
-thanks to the bump of the minimum gcc version?  If so, nice!
-
-thanks,
+Thanks for this series, and for the vt cleanup series, all now queued
+up.
 
 greg k-h
