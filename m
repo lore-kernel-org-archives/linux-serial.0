@@ -7,104 +7,81 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F8CC433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6043C433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:43:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 69C4A205CB
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:31:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9FA3B206DA
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Aug 2020 11:43:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1597750274;
-	bh=5TYn0yuZSINSZm4y7PjY+futrVE0KH4lxc5vWIGUn0M=;
+	s=default; t=1597750999;
+	bh=usmfjuKyMHfX6KvZ1abtP2KSf349aqo4sVQLXIkJjsU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=t0QfaEGjyO9DbpP8Ltlqf2SKI2EjbijylYy7krKSkzYggRBwfUsgH7MOJnOHW+loo
-	 A7eVHqd7I/eAoR8JuKn2vVmLXiPQhNzX/Lejo02ndAE+UzsPHAc6LqoCfAqr8MLozL
-	 LF29tcaa7IR5DpKiH15AClrU9ULre7MU/f3aeNzw=
+	b=vCNjXciqEk06WwMJq/HIh/j3GsGVR8KtiLpq9gE96sH6KFvCXWbflyKHzE3HVqbF0
+	 P9deY9P9R6BKncEzc5uQXyU6RvHoyM+JE8AoY7vEjbacLEKodKzZcigQHYo9MGD0Y4
+	 9d45tFRmY41rlYcWYRcMJFjAp4PnsSOaSAvO4ayI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726570AbgHRLbL (ORCPT
+        id S1726495AbgHRLnS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Aug 2020 07:31:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44184 "EHLO mail.kernel.org"
+        Tue, 18 Aug 2020 07:43:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47638 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726684AbgHRLa6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Aug 2020 07:30:58 -0400
+        id S1726483AbgHRLnS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 18 Aug 2020 07:43:18 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 46ABC20706;
-        Tue, 18 Aug 2020 11:30:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 10FBF206DA;
+        Tue, 18 Aug 2020 11:43:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597750257;
-        bh=5TYn0yuZSINSZm4y7PjY+futrVE0KH4lxc5vWIGUn0M=;
+        s=default; t=1597750997;
+        bh=usmfjuKyMHfX6KvZ1abtP2KSf349aqo4sVQLXIkJjsU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AMEOoZ8cL4mfjOgtSaKRT86CC+LYDyr1suXSLuOXJQezm7CRHa2kfEhrrs0CR4iMu
-         QXf291zph2xqyFCiOyI/hscGC8M9Mhmb7MRcrC72GkxE4BP4GZ1y0Dq5gKZ72FMBif
-         0gwsIojSbfIU8KUejzloiR/GYDTJBWoWZLgMEzfw=
-Date:   Tue, 18 Aug 2020 13:31:21 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] serial: 8250: Explicitly show we initialise ISA
- ports only once
-Message-ID: <20200818113121.GA314369@kroah.com>
-References: <20200731123733.22754-1-andriy.shevchenko@linux.intel.com>
- <20200731123733.22754-2-andriy.shevchenko@linux.intel.com>
+        b=18g4PfPtxhjt65zoA7BhbuFp/4u5zqTUPkjVygU9s76jFu0lv4ImVNrK2DLHdJ2HW
+         wr6krFvIaYVYsZLwsNbgTrWoPcd9TmHEQFDCiYHs0RGOUC3pjQ6Bct2ttUZtc6C8an
+         aKlSYUa6quZRLATROJcIYgyB0rTUQUBUPzFRkrQ8=
+Date:   Tue, 18 Aug 2020 13:43:41 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/16] vt: declare xy for get/putconsxy properly
+Message-ID: <20200818114341.GA343779@kroah.com>
+References: <20200818085706.12163-1-jslaby@suse.cz>
+ <20200818085706.12163-2-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200731123733.22754-2-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20200818085706.12163-2-jslaby@suse.cz>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 31, 2020 at 03:37:33PM +0300, Andy Shevchenko wrote:
-> serial8250_isa_init_ports() uses home grown approach to make itself
-> a singleton. Instead, explicitly show that we initialise ISA ports
-> once by providing a helper function which calls the original function
-> via DO_ONCE() macro.
+On Tue, Aug 18, 2020 at 10:56:52AM +0200, Jiri Slaby wrote:
+> That is:
+> 1) call the parameter 'xy' to denote what it really is, not generic 'p'
+> 2) tell the compiler and users that we expect an array:
+>    * with at least 2 chars (static 2)
+>    * which we don't modify in putconsxy (const)
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 > ---
->  drivers/tty/serial/8250/8250_core.c | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
+>  drivers/tty/vt/vt.c       | 10 +++++-----
+>  include/linux/selection.h |  4 ++--
+>  2 files changed, 7 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index cae61d1ebec5..9c0d6693f745 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -22,6 +22,7 @@
->  #include <linux/console.h>
->  #include <linux/sysrq.h>
->  #include <linux/delay.h>
-> +#include <linux/once.h>
->  #include <linux/platform_device.h>
->  #include <linux/tty.h>
->  #include <linux/ratelimit.h>
-> @@ -495,13 +496,8 @@ static inline void serial8250_apply_quirks(struct uart_8250_port *up)
->  static void __init serial8250_isa_init_ports(void)
->  {
->  	struct uart_8250_port *up;
-> -	static int first = 1;
->  	int i, irqflag = 0;
->  
-> -	if (!first)
-> -		return;
-> -	first = 0;
-> -
->  	if (nr_uarts > UART_NR)
->  		nr_uarts = UART_NR;
->  
-> @@ -555,6 +551,11 @@ static void __init serial8250_isa_init_ports(void)
->  	}
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index 8f283221330e..a0da7771c327 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -4769,17 +4769,17 @@ unsigned short *screen_pos(const struct vc_data *vc, int w_offset, int viewed)
 >  }
+>  EXPORT_SYMBOL_GPL(screen_pos);
 >  
-> +static void __init serial8250_isa_init_ports_once(void)
-> +{
-> +	DO_ONCE(serial8250_isa_init_ports);
+> -void getconsxy(const struct vc_data *vc, unsigned char *p)
+> +void getconsxy(const struct vc_data *vc, unsigned char xy[static 2])
 
-DO_ONCE() is there for fast-path code, where the code is then patched
-out of the kernel after it is run.  That's not the case here and is not
-needed, please just do this "normally".
+I didn't realize we could do "[static 2]" in the kernel now, is that
+thanks to the bump of the minimum gcc version?  If so, nice!
 
 thanks,
 
