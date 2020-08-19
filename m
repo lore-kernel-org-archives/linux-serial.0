@@ -2,85 +2,123 @@ Return-Path: <SRS0=XS4C=B5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D656C433DF
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Aug 2020 06:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B7AFC433E1
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Aug 2020 06:51:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6CD52207DA
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Aug 2020 06:40:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7551D2063A
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Aug 2020 06:51:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1597819866;
+	bh=YtGA+bHMnmTYX3eYCFdXF3Fvq1L2BUr3wwmShDyTZVA=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:List-ID:From;
+	b=AAvvuUzrf9uZ4TBNkNUaGyIMu24mq9+K5mgznbEw6fYz8E/DlGuPFWYP6pZRIrytI
+	 qyH1PBt6VxLtu/biCsH0C8BCWNmYU0zbFe4Ih2FPvn1OTKJhJxpmnm7WlG74TR7iUV
+	 QEJyvu+rL/SXhbrUREM1QLB0xjlf7R7fCzZqZwuo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbgHSGk3 (ORCPT
+        id S1726713AbgHSGvG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Aug 2020 02:40:29 -0400
-Received: from muru.com ([72.249.23.125]:40890 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726840AbgHSGk2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Aug 2020 02:40:28 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id C82A6807A;
-        Wed, 19 Aug 2020 06:40:27 +0000 (UTC)
-Date:   Wed, 19 Aug 2020 09:40:55 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] n_gsm: Fix write handling for zero bytes written
-Message-ID: <20200819064055.GV2994@atomide.com>
-References: <20200817135454.28505-1-tony@atomide.com>
- <1b8538a8-d8b6-4287-36e1-aa1e0863ff2d@kernel.org>
- <20200818095609.GQ2994@atomide.com>
- <ea5e0639-4419-c60b-059a-8fbd057fc6e3@kernel.org>
- <20200818104714.GR2994@atomide.com>
- <34dd61d2-01c3-dcc1-21bd-494eb90759ac@kernel.org>
+        Wed, 19 Aug 2020 02:51:06 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:36686 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726701AbgHSGvF (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 Aug 2020 02:51:05 -0400
+Received: by mail-ed1-f67.google.com with SMTP id ba10so17205254edb.3
+        for <linux-serial@vger.kernel.org>; Tue, 18 Aug 2020 23:51:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dQdz0YbzAz7fMBAqd5KnzSATkRPJEnTNl6tRwR/LuY8=;
+        b=LBmz226DrvevzvJZTBoSYr+fdsMb2FG8kaDHGARfpUAQuC84iYcw4Z/PiC6+kDiCkj
+         51sfR4RFYbzDznq0nreQ4zHfpcJSGj/MNqgNH3UkESV2JKHvqg4Ldf4efhdYHh4LDnSq
+         aUK/tlXHH/YWptsfVuiy3y1buUoDAyXyBKyKTwQJBqSUIajQY+P1d7DIiGabXONUQVRc
+         R2ej68atEMNeiI/dKjmglvxzPq4ZWy+KQdEsQYR5HiI4TLAuaTpkxfP7BRKGnUdibrvt
+         2hZ82SWgzwmSltwfn2NBz3BB/Xl2fZVZaoVfcis/Dqj0xU1dCVY72HPvZiuH/J1j9sDH
+         7PFA==
+X-Gm-Message-State: AOAM530ixcFgrM9dnWR/xeYCpqdFTW7xfXX6zQuha3e6bST57tHIBRaT
+        aKq7NSI8e2q26LQaO3fRRKY=
+X-Google-Smtp-Source: ABdhPJyAsg5yKt2JAZ31A/3+Uq3jUS9fCzuhg20FM+Epyq6pRK0a1Zs4f72I6wUIWnOacgsja4cRpg==
+X-Received: by 2002:aa7:d84d:: with SMTP id f13mr22575735eds.155.1597819863072;
+        Tue, 18 Aug 2020 23:51:03 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id p23sm13149278edm.31.2020.08.18.23.51.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Aug 2020 23:51:02 -0700 (PDT)
+Subject: Re: [PATCH] serial: pl011: Don't leak amba_ports entry on driver
+ register error
+To:     Lukas Wunner <lukas@wunner.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org,
+        Tushar Behera <tushar.behera@linaro.org>
+References: <138f8c15afb2f184d8102583f8301575566064a6.1597316167.git.lukas@wunner.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <4830ea38-6947-aa34-d04b-c143d74bb022@kernel.org>
+Date:   Wed, 19 Aug 2020 08:51:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <34dd61d2-01c3-dcc1-21bd-494eb90759ac@kernel.org>
+In-Reply-To: <138f8c15afb2f184d8102583f8301575566064a6.1597316167.git.lukas@wunner.de>
+Content-Type: text/plain; charset=iso-8859-2
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Jiri Slaby <jirislaby@kernel.org> [200819 06:20]:
-> On 18. 08. 20, 12:47, Tony Lindgren wrote:
-> > * Jiri Slaby <jirislaby@kernel.org> [200818 10:14]:
-> >> On 18. 08. 20, 11:56, Tony Lindgren wrote:
-> >>> Hi,
-> >>>
-> >>> * Jiri Slaby <jirislaby@kernel.org> [200818 08:24]:
-> >>>> On 17. 08. 20, 15:54, Tony Lindgren wrote:
-> >>>>> If write returns zero we currently end up removing the message
-> >>>>> from the queue. Instead of removing the message, we want to just
-> >>>>> break out of the loop just like we already do for error codes.
-> >>>>
-> >>>> When exactly does the only writer (gsmld_output) return zero for
-> >>>> non-zero len parameter?
-> >>>
-> >>> I ran into this when testing with the WIP serial core PM runtime
-> >>> changes from Andy Shevchenko earlier. If there are also other
-> >>> cases where we have serial drivers return 0, I don't know about
-> >>> them.
-> >>
-> >> Sorry, I don't understand: my gsmld_output() ignores the return value
-> >> from drivers' write and returns something greater than zero or a
-> >> negative error. What tree/SHA do you run?
-> > 
-> > Oh right, good catch. I also had my WIP serdev-ngsm patches applied
-> > that uses gsm_serdev_output() and returns the bytes written. Andy's
-> > patches do not touch n_gsm.c.
-> > 
-> > Hmm sounds like we should also start returning value also from
-> > gsmld_output()? Any objections to making that change?
+On 13. 08. 20, 12:59, Lukas Wunner wrote:
+> pl011_probe() calls pl011_setup_port() to reserve an amba_ports[] entry,
+> then calls pl011_register_port() to register the uart driver with the
+> tty layer.
 > 
-> No objections here.
+> If registration of the uart driver fails, the amba_ports[] entry is not
+> released.  If this happens 14 times (value of UART_NR macro), then all
+> amba_ports[] entries will have been leaked and driver probing is no
+> longer possible.  (To be fair, that can only happen if the DeviceTree
+> doesn't contain alias IDs since they cause the same entry to be used for
+> a given port.)   Fix it.
+> 
+> Fixes: ef2889f7ffee ("serial: pl011: Move uart_register_driver call to device")
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> Cc: stable@vger.kernel.org # v3.15+
+> Cc: Tushar Behera <tushar.behera@linaro.org>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index cd1ba8d8b0e6..67498594d7d7 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2614,7 +2614,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+>  
+>  static int pl011_register_port(struct uart_amba_port *uap)
+>  {
+> -	int ret;
+> +	int ret, i;
+>  
+>  	/* Ensure interrupts from this UART are masked and cleared */
+>  	pl011_write(0, uap, REG_IMSC);
+> @@ -2625,6 +2625,9 @@ static int pl011_register_port(struct uart_amba_port *uap)
+>  		if (ret < 0) {
+>  			dev_err(uap->port.dev,
+>  				"Failed to register AMBA-PL011 driver\n");
+> +			for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
+> +				if (amba_ports[i] == uap)
+> +					amba_ports[i] = NULL;
 
-OK thanks, I'll post an updated patch.
+This doesn't look like the right place to free it. The callers should do
+it instead. Or if you really want to do it here, just pass the index to
+the function, so that you don't have to find it.
 
-Regards,
-
-Tony
+thanks,
+-- 
+js
+suse labs
