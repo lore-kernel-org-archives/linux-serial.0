@@ -2,258 +2,148 @@ Return-Path: <SRS0=XS4C=B5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A41AC433E1
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Aug 2020 15:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5489C433E1
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Aug 2020 16:42:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 040A220888
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Aug 2020 15:34:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1597851299;
-	bh=Pyt1m/KVEyQ5O3OhE4xvSYZIJxh25I6hcg5HpYHtkg0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ZT4HBcOoHu6E7AlSGCpVk9SMHIHZxV+8DeYlwmBpeQ84YkP0CtmtGXy3OMqUUkxXX
-	 KmzEBimG6gEBSTWyR/RAzIV7/sH/5DFRxyuFh6aDl1XdcM0MhhxfEGb0TKp3UsutKg
-	 m475VWQkoNdHp7QvIObFjqm40w//Yb3O5LZAFNuo=
+	by mail.kernel.org (Postfix) with ESMTP id BAC1B208A9
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Aug 2020 16:42:41 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="PHjNfMR7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgHSPe6 (ORCPT
+        id S1726414AbgHSQml (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Aug 2020 11:34:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45330 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726792AbgHSPe5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Aug 2020 11:34:57 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 13451207FF;
-        Wed, 19 Aug 2020 15:34:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597851296;
-        bh=Pyt1m/KVEyQ5O3OhE4xvSYZIJxh25I6hcg5HpYHtkg0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nYCaGHjqykW3fGHKdRNzTlEYrYQsI0YMLhoexiYJN7B4a3J1VjqdeEhS4vAot62/x
-         mVrpvJ0o//NuyvJQe1LS6OUrPh9SffjV+M5/kwCh/DdTD9xWgEBBS5Jo+cAqzzzC44
-         65wmsk8AP/QPvvU+FaTkwMBVsPvi7zG+vd8VBDIw=
-Date:   Wed, 19 Aug 2020 17:35:18 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     kuldip dwivedi <kuldip.dwivedi@puresoftware.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        linux-serial@vger.kernel.org,
-        Vabhav Sharma <vabhav.sharma@nxp.com>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        Varun Sethi <V.Sethi@nxp.com>
-Subject: Re: [PATCH] serial: 8250_fsl: Add ACPI support
-Message-ID: <20200819153518.GA3684861@kroah.com>
-References: <20200819152935.3182-1-kuldip.dwivedi@puresoftware.com>
+        Wed, 19 Aug 2020 12:42:41 -0400
+Received: from mail-bn8nam12on2062.outbound.protection.outlook.com ([40.107.237.62]:39553
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726211AbgHSQmj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 Aug 2020 12:42:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PpDPMGvlOo410Tj8KtVHniQOM95hOQp9hJCbQTMix5cApUVahJ+ZEJsvlBNweO7qaOGiyJ+TQzLBWYyo5YuC43OsQnE46/gZYzJ55gvXkMKyu+iyVu1oLk2yu7qO9zp6UrXkYv55HS04E0b1GaiB60Rd9Xe+W5/totpNv38/Le0I57XLAgrMHgyxd2h0IsguJwbTbUC7uwKxeTG6J2u98hw3MRFG7/Go9NWJONw29Es+mILf1cQlVHWBsCykpFTxf0LBhKvYVrX7g5+VGsqYZJEFRvLhk8QtK0B/Ohwv5DHz0V4CKlPKhZB3GmygpASfEuQA5HBxJ4eUuFZPpNs62Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nqeJHA/xXfAWAX7KJIjKmv5iOE0qwEbz/F2EVqWPqXY=;
+ b=VkHndEuUmr29KhOcU7umMAgxiu6RWb8yO1otLBlr7G6cGrhwOng9Vw9+dwClGmaNZCpPlei/GCI9AfoemAoF/Nx+vMRKQt2sb1KH1dL/uOHwT+cIp1KLexQNG6+Gr28BcRNxk/suRjOhYj3CPo56hmYAEG1bWgPg3R7OZ2re1KBE2vxJyuYrcYuaccttEH7ijmD0fu950VfHqttlV7vVGXPsO2zMe3cNg2wzCVrR/9rA3v9+o82dmJbOe0MMeh6zNJ9GEhV1Wc7HKxmDjA4DrIGfuQg39LEg/DNReagB2dLUUx3hlpZFxj2EztW0mUBycy0vJx7EOdLbDYKkscNC4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=linuxfoundation.org
+ smtp.mailfrom=xilinx.com; dmarc=bestguesspass action=none
+ header.from=xilinx.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nqeJHA/xXfAWAX7KJIjKmv5iOE0qwEbz/F2EVqWPqXY=;
+ b=PHjNfMR7WAZ9UPZz00vgGbV8vTclH3VB8zB71r/IwFZZkDK26gDMAUImmZZOIkYXV7q7fBcde1GvwHgqb3q10GskViK3nIO+H2MzhTl7dg4kEh7/Hp9ftOO7+l6etfQamFRbPyugzYmScUfSHlWi+mLhTOciQyh9+8PHhH8FyE8=
+Received: from DM5PR10CA0007.namprd10.prod.outlook.com (2603:10b6:4:2::17) by
+ CY4PR02MB2455.namprd02.prod.outlook.com (2603:10b6:903:74::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3283.18; Wed, 19 Aug 2020 16:42:36 +0000
+Received: from DM3NAM02FT016.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:4:2:cafe::8b) by DM5PR10CA0007.outlook.office365.com
+ (2603:10b6:4:2::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.24 via Frontend
+ Transport; Wed, 19 Aug 2020 16:42:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; linuxfoundation.org; dkim=none (message not signed)
+ header.d=none;linuxfoundation.org; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ DM3NAM02FT016.mail.protection.outlook.com (10.13.4.77) with Microsoft SMTP
+ Server id 15.20.3305.24 via Frontend Transport; Wed, 19 Aug 2020 16:42:36
+ +0000
+Received: from [149.199.38.66] (port=60048 helo=smtp.xilinx.com)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.90)
+        (envelope-from <shubhrajyoti.datta@xilinx.com>)
+        id 1k8RAG-0004CV-MT; Wed, 19 Aug 2020 09:42:16 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by smtp.xilinx.com with smtp (Exim 4.63)
+        (envelope-from <shubhrajyoti.datta@xilinx.com>)
+        id 1k8RAa-00023h-Af; Wed, 19 Aug 2020 09:42:36 -0700
+Received: from xsj-pvapsmtp01 (mailhub.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 07JGgZfl024321;
+        Wed, 19 Aug 2020 09:42:35 -0700
+Received: from [10.140.6.59] (helo=xhdshubhraj40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <shubhrajyoti.datta@xilinx.com>)
+        id 1k8RAY-00023U-L0; Wed, 19 Aug 2020 09:42:35 -0700
+From:   Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+To:     linux-serial@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, jslaby@suse.com, robh+dt@kernel.org,
+        gregkh@linuxfoundation.org,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Subject: [PATCH 1/2] bindings: serial: Add xilinx compatible
+Date:   Wed, 19 Aug 2020 22:12:30 +0530
+Message-Id: <1597855351-30817-1-git-send-email-shubhrajyoti.datta@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-PublicTrafficType: Email
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200819152935.3182-1-kuldip.dwivedi@puresoftware.com>
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 88fda95a-5dba-4169-3f09-08d8445ee102
+X-MS-TrafficTypeDiagnostic: CY4PR02MB2455:
+X-Microsoft-Antispam-PRVS: <CY4PR02MB2455D6E3CC19BC9CFD7F7BCEAA5D0@CY4PR02MB2455.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:949;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sg3KvgZQa1XBS/XXWWdHhoLen81ToqdL4tOJ3suoU7IRH6DHERXqTh3EA6oQN+sXgb/uk1UjnIdWKvBQ6ZhkX7rXXncVBP9nxI9DrEgdU/3Ce3oy9y5jt3rBDE5oPWXPJreDDSvf5I4SUBkxaskTl95MuMVXSSXfAmbzgJfAeerRmz8Jo3mjYDAycHeJGewwtdA77C2fe7aryNLu88ngjaUNcFGfpMmtgs18Q1pSw7syvKXqJQdbgNLwoDn9oFEEhCu3Hs54ZdTBJHdTRSoz2qfetr2tbjQrgROXw2wNvlMHBjEFGvTryJU1zgk1MaaCaWt7i8EKiOVvxqG33u5Ljyh0WvuZO5+PZCFpZHOkHkckp2kk0k3mQMAqsO0YHVaTaos06s0IhswnboRtYx7pXA==
+X-Forefront-Antispam-Report: CIP:149.199.60.83;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapsmtpgw01;PTR:unknown-60-83.xilinx.com;CAT:NONE;SFS:(39860400002)(396003)(346002)(136003)(376002)(46966005)(81166007)(426003)(6666004)(478600001)(356005)(2906002)(4326008)(8676002)(47076004)(2616005)(7696005)(5660300002)(8936002)(82310400002)(316002)(70586007)(36756003)(107886003)(70206006)(6916009)(44832011)(82740400003)(186003)(9786002)(336012)(4744005)(26005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2020 16:42:36.5520
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88fda95a-5dba-4169-3f09-08d8445ee102
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT016.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR02MB2455
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 08:59:35PM +0530, kuldip dwivedi wrote:
-> This adds support for ACPI enumerated FSL 16550 UARTs.
+Add the arm,xlnx-sbsa-uart compatible.
+Xilinx versal uart is similar to sbsa-uart except that it has
+termios configurable.
 
-Why?  We need more information here than just this, please.
+Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+---
+ Documentation/devicetree/bindings/serial/pl011.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> 
-> Signed-off-by: kuldip dwivedi <kuldip.dwivedi@puresoftware.com>
-> ---
->  drivers/tty/serial/8250/8250_fsl.c | 147 +++++++++++++++++++++++++----
->  1 file changed, 131 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
-> index 0d0c80905c58..49e5987e538b 100644
-> --- a/drivers/tty/serial/8250/8250_fsl.c
-> +++ b/drivers/tty/serial/8250/8250_fsl.c
-> @@ -1,24 +1,50 @@
-> -// SPDX-License-Identifier: GPL-2.0
-> +// SPDX-License-Identifier: GPL-2.0+
+diff --git a/Documentation/devicetree/bindings/serial/pl011.yaml b/Documentation/devicetree/bindings/serial/pl011.yaml
+index c23c93b..6e123b1 100644
+--- a/Documentation/devicetree/bindings/serial/pl011.yaml
++++ b/Documentation/devicetree/bindings/serial/pl011.yaml
+@@ -20,6 +20,7 @@ select:
+         enum:
+           - arm,pl011
+           - zte,zx296702-uart
++          - arm,xlnx-sbsa-uart
+   required:
+     - compatible
+ 
+@@ -32,6 +33,7 @@ properties:
+       - items:
+           - const: zte,zx296702-uart
+           - const: arm,primecell
++          - const: arm,xlnx-sbsa-uart
+ 
+   reg:
+     maxItems: 1
+-- 
+2.7.4
 
-Why are you changing the license of this file?  Are you _SURE_ you are
-allowed to do that?
-
-> +//
-> +// Freescale 16550 UART "driver"
-> +//
-> +// Copyright (C) 2011 Paul Gortmaker.
-> +// Copyright 2020 NXP
-> +// Copyright 2020 Puresoftware Ltd
-> +//
-> +// This isn't a full driver; it just provides an alternate IRQ
-> +// handler to deal with an errata.  Everything else is just
-> +// using the bog standard 8250 support.
-> +//
-> +// We follow code flow of serial8250_default_handle_irq() but add
-> +// a check for a break and insert a dummy read on the Rx for the
-> +// immediately following IRQ event.
-> +//
-> +// We re-use the already existing "bug handling" lsr_saved_flags
-> +// field to carry the "what we just did" information from the one
-> +// IRQ event to the next one.
-
-/* */ is nicer for file headers, please.
-
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/reset.h>
-> +#include <linux/slab.h>
-> +
->  #include <linux/serial_reg.h>
->  #include <linux/serial_8250.h>
->  
-> +
-> +#include <asm/byteorder.h>
-
-Why the extra blank lines here?  And why asm/ ?  what do you need from
-that?
-
-> +
->  #include "8250.h"
->  
-> -/*
-> - * Freescale 16550 UART "driver", Copyright (C) 2011 Paul Gortmaker.
-> - *
-> - * This isn't a full driver; it just provides an alternate IRQ
-> - * handler to deal with an errata.  Everything else is just
-> - * using the bog standard 8250 support.
-> - *
-> - * We follow code flow of serial8250_default_handle_irq() but add
-> - * a check for a break and insert a dummy read on the Rx for the
-> - * immediately following IRQ event.
-> - *
-> - * We re-use the already existing "bug handling" lsr_saved_flags
-> - * field to carry the "what we just did" information from the one
-> - * IRQ event to the next one.
-> - */
-> +#define DRIVER_NAME "fsl-ns16550-uart"
-> +
-> +struct fsl8250_data {
-> +	int			line;
-> +};
->  
->  int fsl8250_handle_irq(struct uart_port *port)
->  {
-> @@ -79,3 +105,92 @@ int fsl8250_handle_irq(struct uart_port *port)
->  	return 1;
->  }
->  EXPORT_SYMBOL_GPL(fsl8250_handle_irq);
-> +
-> +static int fsl8250_acpi_probe(struct platform_device *pdev)
-> +{
-> +	struct fsl8250_data *data;
-> +	struct uart_8250_port port8250;
-> +	struct device *dev = &pdev->dev;
-> +	struct resource *regs;
-> +
-> +	int ret, irq;
-> +
-> +	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!regs) {
-> +		dev_err(dev, "no registers defined\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	if (irq < 0) {
-> +		if (irq != -EPROBE_DEFER)
-> +			dev_err(dev, "cannot get irq\n");
-> +		return irq;
-> +	}
-> +
-> +	memset(&port8250, 0, sizeof(port8250));
-> +
-> +	ret = device_property_read_u32(dev, "clock-frequency",
-> +					&port8250.port.uartclk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	spin_lock_init(&port8250.port.lock);
-> +
-> +	port8250.port.mapbase		= regs->start;
-> +	port8250.port.irq		= irq;
-> +	port8250.port.handle_irq	= fsl8250_handle_irq;
-> +	port8250.port.type		= PORT_16550A;
-> +	port8250.port.flags		= UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF
-> +						| UPF_FIXED_PORT | UPF_IOREMAP
-> +						| UPF_FIXED_TYPE;
-> +	port8250.port.dev		= dev;
-> +	port8250.port.mapsize		= resource_size(regs);
-> +	port8250.port.iotype		= UPIO_MEM;
-> +	port8250.port.irqflags		= IRQF_SHARED;
-> +
-> +	port8250.port.membase = devm_ioremap(dev,  port8250.port.mapbase,
-> +						port8250.port.mapsize);
-> +	if (!port8250.port.membase)
-> +		return -ENOMEM;
-> +
-> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
-> +
-> +	data->line = serial8250_register_8250_port(&port8250);
-> +	if (data->line < 0)
-> +		ret = data->line;
-> +
-> +	platform_set_drvdata(pdev, data);
-> +	return 0;
-> +}
-> +
-> +static int fsl8250_acpi_remove(struct platform_device *pdev)
-> +{
-> +	struct fsl8250_data *data = platform_get_drvdata(pdev);
-> +
-> +	serial8250_unregister_port(data->line);
-> +	return 0;
-> +}
-> +
-> +static const struct acpi_device_id fsl8250_acpi_match[] = {
-> +	{ "NXP0018", 0 },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, fsl8250_acpi_match);
-> +
-> +static struct platform_driver fsl8250_platform_driver = {
-> +	.driver = {
-> +		.name			= "fsl-16550-uart",
-> +		.acpi_match_table	= ACPI_PTR(fsl8250_acpi_match),
-> +	},
-> +	.probe			= fsl8250_acpi_probe,
-> +	.remove			= fsl8250_acpi_remove,
-> +};
-> +
-> +module_platform_driver(fsl8250_platform_driver);
-> +
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("FSL 8250 serial port driver");
-> +MODULE_ALIAS("platform:" DRIVER_NAME);
-> -- 
-> 2.17.1
-> 
-
-Are you _sure_ this will work properly with the build system?  You are
-turning an individual file into a stand-alone module, but you didn't
-touch any build files.
-
-thanks,
-
-greg k-h
