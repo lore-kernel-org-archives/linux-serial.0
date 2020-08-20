@@ -2,110 +2,139 @@ Return-Path: <SRS0=0389=B6=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0439CC433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Aug 2020 10:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D052C433E1
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Aug 2020 10:46:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D75D520738
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Aug 2020 10:45:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7C70A20724
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Aug 2020 10:46:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ZP0QD+50"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zkaFZto0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731470AbgHTKps (ORCPT
+        id S1731373AbgHTKq4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Aug 2020 06:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40450 "EHLO
+        Thu, 20 Aug 2020 06:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731421AbgHTKpo (ORCPT
+        with ESMTP id S1731876AbgHTKoT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Aug 2020 06:45:44 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BA8C061387
-        for <linux-serial@vger.kernel.org>; Thu, 20 Aug 2020 03:45:43 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 17so820564pfw.9
-        for <linux-serial@vger.kernel.org>; Thu, 20 Aug 2020 03:45:43 -0700 (PDT)
+        Thu, 20 Aug 2020 06:44:19 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33900C061385
+        for <linux-serial@vger.kernel.org>; Thu, 20 Aug 2020 03:44:19 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id o13so951230pgf.0
+        for <linux-serial@vger.kernel.org>; Thu, 20 Aug 2020 03:44:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=e8inUcZeC1EMvDkcDtQU8bF16fiEKmHQKTdE6UvD9Ao=;
-        b=ZP0QD+506tNSnZWgxhklM3ACdIxHLDAKs7Y13NpvZb2lV6r7xBuNUnDBfXq2jvNYt5
-         7/lQtWJa3Cu4CfERXUOwODKWYU+mc5q5qYgKK8atZQD/l3Z7Zcqfa36O+ah8JEkloJ7/
-         4QI/MwpTcOG0VE1ecRxhrUQkH0pIEadmkkaLn0VK5zuxbvSE/NDTjXl7TAQDuoYLIrg7
-         lZTOkJP3RN5mhSYnn8+JpyUvQtmpkgc0Oenv7D/7CoFEV7ycyqokUoEQRnSzpdLZ3gXr
-         77bL4G/C9sDbJETUHN0n73YPe+3B9OdykJGXhLF73vdoXwUpld0sK/DvCVXPwvGnU8BH
-         JPOA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3PXtPhgN15xkqptqDoOT+6OR5bz1DwLunRYJNev9KR4=;
+        b=zkaFZto0eMoTUXrhXnN5c215rPk2SI+mYKS6axiQrRCTTNkAxc+HQ1zvbE+9q8CdK3
+         ejrwiC5XvbU1VEVR0PkGPGG669EkRUf07na+UAjM95hQEAsG4rAcauD7W4QS/mQQK9Ji
+         aHAzBEJD8cb3YAopp2IN0BnKR0TfeOemTuipy2eA7MsVI9rqpSpfngZuJ3YGffGgvoOr
+         2qaNwaJ3BQvjLM/eOrXzy4yluttDslK9WrVaLBIAQGyCyGmcBfTPfVT8FfIY5a1ueI/3
+         qAMmm3cwSJncp0MSZc3c4f5Ucf1L5617fzuL31JE1OimTfSyQCLy69f4jWzzKMfRVtbY
+         sboA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=e8inUcZeC1EMvDkcDtQU8bF16fiEKmHQKTdE6UvD9Ao=;
-        b=mZUGQ/Eju0pQciM3MPkvpTuZBxqSnW1EtDFxsmc3YbpG+YptqRlWVQ26psfpitmsQm
-         vEi/BuzXMlUe50OQ7+P6JmP4I9KvwO83ucNZOBrTFkgIFEYjB5JIZCXV6UEn8pJlbtDD
-         2BRifbLWKUfhgFnwOxgYSGODjM+dd3FYCEBZZF5qVT5/8sTn0QHqGxxxc3vpb/NjZUKX
-         /e3vnvyCmS5sRb5UY+fAq4t0bw60Gb0e4BAuR8+I4yhmktl0VRL9MwJVIkFGYTf8cgDH
-         /oDfuV/SrOhdj0jswScJmmOg3Y0IFD2G9kmDCWEiiGNLoio1KOvnaaIgeEoqJaMKCgub
-         kyjg==
-X-Gm-Message-State: AOAM533jQ8vjtsxhPrtksexjobFZXrnCxJOqXjU+xUKWMM/N1NsFaDpp
-        uDiaczpUXPmd12654vEkO3mkdw==
-X-Google-Smtp-Source: ABdhPJxOJujoHIwJeXRT5jnwcXre+SjocPhd74ZRzEkHGK2rTIfJshGRbE/6smUIR6n+rpoJPe8BDw==
-X-Received: by 2002:aa7:83cf:: with SMTP id j15mr1682989pfn.251.1597920342783;
-        Thu, 20 Aug 2020 03:45:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3PXtPhgN15xkqptqDoOT+6OR5bz1DwLunRYJNev9KR4=;
+        b=GQlM+Psr73+3/2c2yknPLdrK1WsouYrtFwv4oRhYFTxnZ/UVlhMYw4KgfjJKL0WqAt
+         jqZTNjoGEJVcEqgNBqe2ZBILbeRbzUIgCqpzR+ksRj5eJetxVydxx1Cyg9oePwqYkSuV
+         VjVuBmBMXAvmb9Koqd1bAPbmjUgEhvk1yPiISsIfU5pzmDou+EZey+djQMyKS1GfZQFX
+         INsl2woO0jmIlYIwaAxV8Gywqt4ToUAK1IGvPNbfc84s7mnI8X70y/UGfpHK7EYnqdz3
+         rJUrDg5HCSWDtS8jApDNFzjyFNr9CtbSea06dlWRG0ZmBwtdxw7J0eRD1fTwHsuiio5n
+         b2wA==
+X-Gm-Message-State: AOAM5337+znihfmUxrRfp3mQl9sVJ3wqJ+uN1BqyhIylsn1PQ6mMO5Le
+        s2oRugb/HMXNIwZ+6n/F6/9dig==
+X-Google-Smtp-Source: ABdhPJzGI4PMt2rxPglqL7BKdt2SWVVgHiE/GuL96GZfgXci06o5FRoVl3y2qYxeBmL8p5wYvmHOSw==
+X-Received: by 2002:a65:4808:: with SMTP id h8mr2045357pgs.113.1597920255960;
+        Thu, 20 Aug 2020 03:44:15 -0700 (PDT)
 Received: from localhost ([122.172.43.13])
-        by smtp.gmail.com with ESMTPSA id s125sm2589935pfc.63.2020.08.20.03.45.41
+        by smtp.gmail.com with ESMTPSA id e8sm2352323pfd.34.2020.08.20.03.44.14
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Aug 2020 03:45:42 -0700 (PDT)
-Date:   Thu, 20 Aug 2020 16:15:40 +0530
+        Thu, 20 Aug 2020 03:44:15 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Rajendra Nayak <rnayak@codeaurora.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, robdclark@chromium.org,
-        robdclark@gmail.com, stanimir.varbanov@linaro.org,
-        mka@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+To:     rnayak@codeaurora.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Fabio Estevam <festevam@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 1/6] tty: serial: qcom_geni_serial: Use OPP API to set
- clk/perf state
-Message-ID: <20200820104540.4c4cg4rn4oa4rh6t@vireshk-i7>
-References: <1592222564-13556-1-git-send-email-rnayak@codeaurora.org>
- <1592222564-13556-2-git-send-email-rnayak@codeaurora.org>
- <159347264530.1987609.11350620235820019545@swboyd.mtv.corp.google.com>
- <a3d53f82-b29d-97ef-3ba1-ca9bd650d354@codeaurora.org>
- <20200630030552.cfp5oh33qde6nlnf@vireshk-i7>
- <159532101373.3847286.9695594340556014384@swboyd.mtv.corp.google.com>
- <20200722052444.updchi2yfjgbf3hb@vireshk-mac-ubuntu>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Qiang Yu <yuq825@gmail.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rob Clark <robdclark@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sean Paul <sean@poorly.run>, Shawn Guo <shawnguo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        lima@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Subject: [PATCH 0/8] opp: Unconditionally call dev_pm_opp_of_remove_table()
+Date:   Thu, 20 Aug 2020 16:13:49 +0530
+Message-Id: <cover.1597919647.git.viresh.kumar@linaro.org>
+X-Mailer: git-send-email 2.25.0.rc1.19.g042ed3e048af
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200722052444.updchi2yfjgbf3hb@vireshk-mac-ubuntu>
-User-Agent: NeoMutt/20180716-391-311a52
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22-07-20, 10:54, Viresh Kumar wrote:
-> On 21-07-20, 01:43, Stephen Boyd wrote:
-> > It seems that dev_pm_opp_set_rate() calls _find_opp_table() and finds
-> > something that isn't an error pointer but then dev_pm_opp_of_add_table()
-> > returns an error value because there isn't an operating-points property
-> > in DT. We're getting saved because this driver also happens to call
-> > dev_pm_opp_set_clkname() which allocates the OPP table a second time
-> > (because the first time it got freed when dev_pm_opp_of_add_table()
-> > return -ENODEV because the property was missing).
-> > 
-> > Why do we need 'has_opp_table' logic? It seems that we have to keep
-> > track of the fact that dev_pm_opp_of_add_table() failed so that we don't
-> > put the table again, but then dev_pm_opp_set_clkname() can be called
-> > to allocate the table regardless.
+Hello,
 
-I have sent a patchset to clean this stuff up a bit now.
+This cleans up some of the user code around calls to
+dev_pm_opp_of_remove_table().
+
+All the patches can be picked by respective maintainers directly except
+for the last patch, which needs the previous two to get merged first.
+
+These are based for 5.9-rc1.
+
+Rajendra, Since most of these changes are related to qcom stuff, it
+would be great if you can give them a try. I wasn't able to test them
+due to lack of hardware.
+
+Viresh Kumar (8):
+  cpufreq: imx6q: Unconditionally call dev_pm_opp_of_remove_table()
+  drm/lima: Unconditionally call dev_pm_opp_of_remove_table()
+  drm/msm: Unconditionally call dev_pm_opp_of_remove_table()
+  mmc: sdhci-msm: Unconditionally call dev_pm_opp_of_remove_table()
+  spi: spi-geni-qcom: Unconditionally call dev_pm_opp_of_remove_table()
+  spi: spi-qcom-qspi: Unconditionally call dev_pm_opp_of_remove_table()
+  tty: serial: qcom_geni_serial: Unconditionally call
+    dev_pm_opp_of_remove_table()
+  qcom-geni-se: remove has_opp_table
+
+ drivers/cpufreq/imx6q-cpufreq.c         | 10 ++--------
+ drivers/gpu/drm/lima/lima_devfreq.c     |  6 +-----
+ drivers/gpu/drm/lima/lima_devfreq.h     |  1 -
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 10 +++-------
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h |  1 -
+ drivers/gpu/drm/msm/dsi/dsi_host.c      |  8 ++------
+ drivers/mmc/host/sdhci-msm.c            | 11 +++--------
+ drivers/spi/spi-geni-qcom.c             | 10 +++-------
+ drivers/spi/spi-qcom-qspi.c             | 11 +++--------
+ drivers/tty/serial/qcom_geni_serial.c   | 10 +++-------
+ include/linux/qcom-geni-se.h            |  2 --
+ 11 files changed, 20 insertions(+), 60 deletions(-)
 
 -- 
-viresh
+2.25.0.rc1.19.g042ed3e048af
+
