@@ -1,4 +1,4 @@
-Return-Path: <SRS0=3upM=B7=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=gkMA=CA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -8,63 +8,63 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 531AAC433DF
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Aug 2020 11:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A70ECC433E1
+	for <linux-serial@archiver.kernel.org>; Sat, 22 Aug 2020 01:47:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2E8932078D
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Aug 2020 11:03:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8263920735
+	for <linux-serial@archiver.kernel.org>; Sat, 22 Aug 2020 01:47:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GHFImIr3"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="krOLdRR5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbgHULDH (ORCPT
+        id S1725935AbgHVBrn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Aug 2020 07:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
+        Fri, 21 Aug 2020 21:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbgHULDF (ORCPT
+        with ESMTP id S1725883AbgHVBrm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Aug 2020 07:03:05 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E7FC061385
-        for <linux-serial@vger.kernel.org>; Fri, 21 Aug 2020 04:03:04 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id m8so901030pfh.3
-        for <linux-serial@vger.kernel.org>; Fri, 21 Aug 2020 04:03:04 -0700 (PDT)
+        Fri, 21 Aug 2020 21:47:42 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524EBC061573
+        for <linux-serial@vger.kernel.org>; Fri, 21 Aug 2020 18:47:42 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id i10so1831588pgk.1
+        for <linux-serial@vger.kernel.org>; Fri, 21 Aug 2020 18:47:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=DGscCnE9QszAjWEAPcRAu9jEqvaTuqlPRFuqo4CZFwU=;
-        b=GHFImIr3Wc/2d47TCow4n/7zhAD24l8TaJdR4+ikNjgvtlGvddupdqefK7kiewqpWd
-         ntkTw2OvG5Kkk4UZU6C+YqhxqGaS4AtrZp/gpLVcuqTEfMFPiP/UHRP3cdQKN832zsYt
-         h0DoTxkrT5+VrMOA1/R75L0AQx4rQAp3V7J6cOUx1cyoCZ6sbjwaoYOjb++/+N2GR1bd
-         6DtlnVqz0tDuc9p4r4YoPMjsZWsZ43dbFeAGeu28leOwwW0CMtwo1zAqrYbg+h7yVbOu
-         2kKywS4GLekRJ17MT0bRjylfSM7yOcTozgznYHEiAVeI+uCEvKP8eRWcLJN7zGBqRhap
-         suKQ==
+        bh=ecEv7XoXjFc8OQ/d+M11MEy/9WmfPQPLRo0cR2yVQvE=;
+        b=krOLdRR5o1mKoKl6296/4Xj+yNnah8oxr9T6BEw5g5oZTpYWwszPsVa113zJZ2NGpb
+         Fb5nywmE7tsZB5cVC4v9OBaIK0aOY9rqz9WwNHMPWp9cr+tahFTenOYjkCp+hYZLg/M0
+         GAWc/4Grny8XmaIePFV6i3zxNXHFfd8o4dYrWH3oPiCmJJceKpaZXcGXrzqHEuTTh+Yv
+         +f35b6d1CjbZN9m+uIKnQWBklNBFkwx93T5ONFl2L+/wH03u8UNFn/LvceR2zJi+aEP/
+         HmujWaMoOW4iI2rY9m2HiBtpunOphJn/oMJzOW6ChhIGwx5UJ8qq5BUmqrE9x5dYd0Ll
+         BmGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DGscCnE9QszAjWEAPcRAu9jEqvaTuqlPRFuqo4CZFwU=;
-        b=JeGsOaMV5pt+4D44RBlT8aJCpAA5SqPpSdGQs+unqpiLkGXQ4RTMR2dl2w1tnUcHVP
-         pJXEFpyfI+A+poZ8hL6/bYbSHg8VZoRiLg+a/pfjrDAHh/pGBLfEwbP5v5wpIKnjFtyF
-         uVjQ1QQxcAucpn2Ck0CQF79iw0Dy0sbhGgWew1UsuxvWXopwY5cgDXTrTOMWiuyZIEBU
-         hGocso7y4CUw3QwJ+8hcJEReiPxcRZgkG4vlcbJ7DNBwXLGZSPwDlFUZbg9l0Vy2NGc1
-         g6YUceZTtMePit1RzuxW5velPrGRBbS0EyiMnScEnm1m01ZJLrXHLw2Pw/NcyoSGiTLB
-         wluw==
-X-Gm-Message-State: AOAM530duww2G60M3u7aq7NbqLKXFsptE8+s6uoQ97ckp57WGTCHG/ew
-        TDcc8fRCIAgRL/iNj72MSuP6JApDrtOWxw==
-X-Google-Smtp-Source: ABdhPJxEre3GhkRnpSCmzTfLuCm/0dPU5fTLTJWJ0jqH4BmdBbYyWBkcOooW4ulnj41IAYcUcSI+ug==
-X-Received: by 2002:a63:1457:: with SMTP id 23mr1983294pgu.80.1598007781554;
-        Fri, 21 Aug 2020 04:03:01 -0700 (PDT)
-Received: from localhost.localdomain ([207.204.224.6])
-        by smtp.gmail.com with ESMTPSA id 63sm2149721pfu.196.2020.08.21.04.02.59
+        bh=ecEv7XoXjFc8OQ/d+M11MEy/9WmfPQPLRo0cR2yVQvE=;
+        b=rTBeW3NfC26dxNsafo01x2Cvu7+f4itVKQDOaJa+UekalDx+HMIHAbNj1YbGW7ouZE
+         GIss5uJNgffLkhQnkxkvBULNPSZHykEZIjtk0zN2ANi1orDEXX/VqqpZPOV5Ads/jOXh
+         cIlfADbgD56Slr4SpHXOg7l+7t2Iyx5Sqx2MRQiDS9twyLnTmuB1dlRtTOdIcqYPTyli
+         jMXg1p3pYXK6GoUulKafq2lnXoHZ7mgDM2PHpxWrxRCGqc5+NCcR1bu6UkRqTkh3xVAv
+         wqZJZi8V4PPK1Uo/hthSxHUaMob5lGtSlDP6ht+V/9DeCU1HjPbF67bX6YTIqAfFgxXW
+         ag8A==
+X-Gm-Message-State: AOAM533CzK2wgMeVGoiyv9s92gBs1zx/1OhTSazqapPhB5RFA81wHAZ4
+        sUoPH6cc95a8HK/1D1BX2EoFE1KDR98=
+X-Google-Smtp-Source: ABdhPJzGxEHJHawHoWbNuBAuUlFuf3Dow3gycrL3DGpt0hs+MEoqjfD+KDTSZ0iEH5LOKG7dTsDrXg==
+X-Received: by 2002:a65:524b:: with SMTP id q11mr4232802pgp.372.1598060861655;
+        Fri, 21 Aug 2020 18:47:41 -0700 (PDT)
+Received: from localhost.localdomain ([103.209.252.252])
+        by smtp.googlemail.com with ESMTPSA id g15sm3886476pfh.70.2020.08.21.18.47.35
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 21 Aug 2020 04:03:01 -0700 (PDT)
+        Fri, 21 Aug 2020 18:47:41 -0700 (PDT)
 From:   Du Huanpeng <u74147@gmail.com>
-To:     linux-serial@vger.kernel.org
-Cc:     linux@rempel-privat.de, mkl@blackshift.org, zhangj@wch.cn,
-        Du Huanpeng <u74147@gmail.com>
+To:     linux-serial@vger.kernel.org, linux@rempel-privat.de,
+        mkl@blackshift.org, zhangj@wch.cn
+Cc:     Du Huanpeng <u74147@gmail.com>
 Subject: [PATCH] serial: 8250_pci: Add WCH384_8S 8 port serial device
-Date:   Fri, 21 Aug 2020 19:02:35 +0800
-Message-Id: <1598007755-16428-1-git-send-email-u74147@gmail.com>
+Date:   Sat, 22 Aug 2020 09:47:28 +0800
+Message-Id: <1598060848-27807-1-git-send-email-u74147@gmail.com>
 X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
@@ -83,7 +83,7 @@ Signed-off-by: Du Huanpeng <u74147@gmail.com>
  1 file changed, 56 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 0804469..db6dc03 100644
+index 1a74d51..d8f43f2 100644
 --- a/drivers/tty/serial/8250/8250_pci.c
 +++ b/drivers/tty/serial/8250/8250_pci.c
 @@ -1776,6 +1776,39 @@ pci_wch_ch38x_setup(struct serial_private *priv,
@@ -133,8 +133,8 @@ index 0804469..db6dc03 100644
 +#define PCIE_DEVICE_ID_WCH_CH384_8S	0x3853
  #define PCIE_DEVICE_ID_WCH_CH382_2S	0x3253
  
- #define PCI_VENDOR_ID_PERICOM			0x12D8
-@@ -2648,6 +2682,16 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ #define PCI_VENDOR_ID_ACCESIO			0x494f
+@@ -2642,6 +2676,16 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
  		.subdevice      = PCI_ANY_ID,
  		.setup          = pci_wch_ch38x_setup,
  	},
@@ -151,7 +151,7 @@ index 0804469..db6dc03 100644
  	/*
  	 * ASIX devices with FIFO bug
  	 */
-@@ -2919,6 +2963,7 @@ enum pci_board_num_t {
+@@ -2913,6 +2957,7 @@ enum pci_board_num_t {
  	pbn_fintek_F81512A,
  	pbn_wch382_2,
  	pbn_wch384_4,
@@ -159,7 +159,7 @@ index 0804469..db6dc03 100644
  	pbn_pericom_PI7C9X7951,
  	pbn_pericom_PI7C9X7952,
  	pbn_pericom_PI7C9X7954,
-@@ -3656,6 +3701,13 @@ static struct pciserial_board pci_boards[] = {
+@@ -3650,6 +3695,13 @@ static struct pciserial_board pci_boards[] = {
  		.uart_offset    = 8,
  		.first_offset   = 0xC0,
  	},
@@ -173,7 +173,7 @@ index 0804469..db6dc03 100644
  	/*
  	 * Pericom PI7C9X795[1248] Uno/Dual/Quad/Octal UART
  	 */
-@@ -5572,6 +5624,10 @@ static const struct pci_device_id serial_pci_tbl[] = {
+@@ -5566,6 +5618,10 @@ static const struct pci_device_id serial_pci_tbl[] = {
  		PCI_ANY_ID, PCI_ANY_ID,
  		0, 0, pbn_wch384_4 },
  
