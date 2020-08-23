@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-14.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2728C433E3
-	for <linux-serial@archiver.kernel.org>; Sun, 23 Aug 2020 16:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81379C433EA
+	for <linux-serial@archiver.kernel.org>; Sun, 23 Aug 2020 16:19:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C6D502076D
-	for <linux-serial@archiver.kernel.org>; Sun, 23 Aug 2020 16:18:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 629042072D
+	for <linux-serial@archiver.kernel.org>; Sun, 23 Aug 2020 16:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598199537;
-	bh=896l3mHbTpz7Udoblv0WC50trxhLboDp1OOqzgKW9jM=;
+	s=default; t=1598199544;
+	bh=VqDD3KFuiRD86Z7+w0i17rgKkKCPFxI1DEBp8fL8MEs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=hSg3vwLkV/fClivgM5m+kDUt3Nw5ZQ/ECTeJC9itwCXmkhSY//r2V24Khlfck3HaD
-	 yASpEUgQRxLmnCbropzg6jwDa0sLqMYmbKiIFleKPsj2ktMqJ93g0hRWgfNuVmoE+L
-	 l5to6ff36PECMoE5y3oxIyyPgh7TPPbkvXQQJJP8=
+	b=O6FxsExCWVrHDtFD0gpZcDiHmxKkphFnHO7MEQozwgK73cbQFOlWGGPLweXFyxo6K
+	 H97AP0KijaogOhZDORnKhd4RxYC8yeQOVftoZECe1GcdJT6T30rqUzTEZFuy4WgJv4
+	 YoqmQladbFyf8XbvBrF4RAmMor13GWnm6OVDipJc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728141AbgHWQRJ (ORCPT
+        id S1727972AbgHWQTC (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 23 Aug 2020 12:17:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46412 "EHLO mail.kernel.org"
+        Sun, 23 Aug 2020 12:19:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46096 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728121AbgHWQRH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 23 Aug 2020 12:17:07 -0400
+        id S1728105AbgHWQQ5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 23 Aug 2020 12:16:57 -0400
 Received: from kozik-lap.proceq-device.com (unknown [194.230.155.216])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 43E132075B;
-        Sun, 23 Aug 2020 16:17:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 193DD2078A;
+        Sun, 23 Aug 2020 16:16:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598199426;
-        bh=896l3mHbTpz7Udoblv0WC50trxhLboDp1OOqzgKW9jM=;
+        s=default; t=1598199417;
+        bh=VqDD3KFuiRD86Z7+w0i17rgKkKCPFxI1DEBp8fL8MEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HuKsuY+eqO+A5PXgNMu8MX+x2WaM5UnMlzLnxerWZETbbSWDWVXnW1VhGg7pPK+xo
-         105L/fgGz6B9tFDyC3nwOyHLdpuuvHFDQsBhlEQJtIchsXgRZdzFUsCVLY+PJ2qu9v
-         tYHvP3WQX/qrZCrvvo0VDiyx89qasQwsBS/h9YZw=
+        b=MCzDXQVgp12mbtB449hvqtg7DzFdqsO50NCG20CPk1CsZdLEJfHDaLpgv7hQiFozl
+         65k5IkpH4qZJ/JxrPVyr6VCgjsJNsUFOxZFdgzzJK9n3KQX0m6DpPrmDLR7D6+wrHK
+         Z0iUD8IrtKeucGsZayZVT8FCgSjVCTBh+IVhWc6o=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -56,9 +56,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
         Anson Huang <Anson.Huang@nxp.com>,
         Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH 15/22] dt-bindings: arm: fsl: Add ZII Ultra boards binding
-Date:   Sun, 23 Aug 2020 18:15:43 +0200
-Message-Id: <20200823161550.3981-15-krzk@kernel.org>
+Subject: [PATCH 13/22] dt-bindings: nvmem: imx-ocotp: Update i.MX 8M compatibles
+Date:   Sun, 23 Aug 2020 18:15:41 +0200
+Message-Id: <20200823161550.3981-13-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200823161550.3981-1-krzk@kernel.org>
 References: <20200823161550.3981-1-krzk@kernel.org>
@@ -67,32 +67,73 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Document the binding for Zodiac Inflight Innovations Ultra Boards.
+DTSes with new i.MX 8M SoCs use two compatibles so update the binding to
+fix dtbs_check warnings like:
+
+  arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: efuse@30350000: compatible:1: 'syscon' was expected
+    From schema: Documentation/devicetree/bindings/nvmem/imx-ocotp.yaml
+
+  arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: efuse@30350000:
+    compatible: ['fsl,imx8mn-ocotp', 'fsl,imx8mm-ocotp', 'syscon'] is too long
+
+  arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: efuse@30350000:
+    compatible: Additional items are not allowed ('syscon' was unexpected)
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- Documentation/devicetree/bindings/arm/fsl.yaml | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ .../devicetree/bindings/nvmem/imx-ocotp.yaml  | 39 ++++++++++++-------
+ 1 file changed, 24 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 93a21b10d115..f2e670e9ae54 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -379,6 +379,14 @@ properties:
-               - technexion,pico-pi-imx8m  # TechNexion PICO-PI-8M evk
-           - const: fsl,imx8mq
+diff --git a/Documentation/devicetree/bindings/nvmem/imx-ocotp.yaml b/Documentation/devicetree/bindings/nvmem/imx-ocotp.yaml
+index 1c9d7f05f173..b5b250185afd 100644
+--- a/Documentation/devicetree/bindings/nvmem/imx-ocotp.yaml
++++ b/Documentation/devicetree/bindings/nvmem/imx-ocotp.yaml
+@@ -19,21 +19,30 @@ allOf:
  
-+      - description: Zodiac Inflight Innovations Ultra Boards
-+        items:
+ properties:
+   compatible:
+-    items:
+-      - enum:
+-          - fsl,imx6q-ocotp
+-          - fsl,imx6sl-ocotp
+-          - fsl,imx6sx-ocotp
+-          - fsl,imx6ul-ocotp
+-          - fsl,imx6ull-ocotp
+-          - fsl,imx7d-ocotp
+-          - fsl,imx6sll-ocotp
+-          - fsl,imx7ulp-ocotp
+-          - fsl,imx8mq-ocotp
+-          - fsl,imx8mm-ocotp
+-          - fsl,imx8mn-ocotp
+-          - fsl,imx8mp-ocotp
+-      - const: syscon
++    oneOf:
++      - items:
 +          - enum:
-+              - zii,imx8mq-ultra-rmb3
-+              - zii,imx8mq-ultra-zest
-+          - const: zii,imx8mq-ultra
-+          - const: fsl,imx8mq
-+
-       - description: i.MX8QXP based Boards
-         items:
-           - enum:
++              - fsl,imx6q-ocotp
++              - fsl,imx6sl-ocotp
++              - fsl,imx6sx-ocotp
++              - fsl,imx6ul-ocotp
++              - fsl,imx6ull-ocotp
++              - fsl,imx7d-ocotp
++              - fsl,imx6sll-ocotp
++              - fsl,imx7ulp-ocotp
++              - fsl,imx8mq-ocotp
++              - fsl,imx8mm-ocotp
++              - fsl,imx8mn-ocotp
++              - fsl,imx8mp-ocotp
++          - const: syscon
++      - items:
++          # The devices are not really compatible with fsl,imx8mm-ocotp, however
++          # the code for getting SoC revision depends on fsl,imx8mm-ocotp compatible.
++          - enum:
++              - fsl,imx8mn-ocotp
++              - fsl,imx8mp-ocotp
++          - const: fsl,imx8mm-ocotp
++          - const: syscon
+ 
+   reg:
+     maxItems: 1
 -- 
 2.17.1
 
