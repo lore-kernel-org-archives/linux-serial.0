@@ -2,159 +2,156 @@ Return-Path: <SRS0=CzRg=CC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-9.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0257C433E3
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 07:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF0BC433E1
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 09:00:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 885DE206B5
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 07:07:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598252836;
-	bh=L7lFreml+LeSlRAYWIfDf6ivAo/g2mibkewQKdqPv8g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=AgLr8VcYYOG3Kg1BpSaICsKp3sp0c1xkx8gHgzTVPAjSOACRZm7IP2terSuFLgMDI
-	 HpOOSj/26SheX1TxhiNKjjpXQZC7oH3EAGxdQtQdLr8cei6t6e5uTNYk2ykgXR1Dur
-	 1aMrjTSG/9Wwy7EwZT7HfvwWtzIkQWu1ffgi8ksU=
+	by mail.kernel.org (Postfix) with ESMTP id 72C892072D
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 09:00:50 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="fOf2jCyr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726041AbgHXHHL (ORCPT
+        id S1730819AbgHXJAi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Aug 2020 03:07:11 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40907 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgHXHHK (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Aug 2020 03:07:10 -0400
-Received: by mail-wm1-f68.google.com with SMTP id k20so7114138wmi.5;
-        Mon, 24 Aug 2020 00:07:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jMkESQ6/qDeh8yFOp5ut20DDKvKP8Egt8HrPQWgV3hI=;
-        b=qO1tdIinoFPIXWPm5/19KfBpyFAwq8uKSg7EQU1L8V6ovQx9nJWVqyn3VV5ax8kBxQ
-         pbVqTRVoiDADr0KvqztcBve3TkrN3Fl9lFP1UXt+MjKM+BULUR6gOD7v2Zhusjq4JE6W
-         PzNQzwmCMMpsOIyNMIOA0r7/IZ6GjQyzxV8g4uEdQmkom9Zl5Wc4naHb4zWQicafXGE+
-         ZBZfmBbEr3kyOvrivi2+KJJN9VY4xshpgyieT9qL2aC/lW3Zdm8z3E7U62EPJScgJYHS
-         rZDR3h+FNeOgElnSHLwSH/Qkfq6sJmMvHVFSA1T6JeHKf6x2mv2hDTBPb4P6UFBtA1J4
-         dwpg==
-X-Gm-Message-State: AOAM530XgyTPKsoaliYNEw6PrdoDEeX2dCtCpr8HI1/B5ZGAHNi9rttZ
-        zxzwkG2bBffmUngDYt1gm9g=
-X-Google-Smtp-Source: ABdhPJyU61NszbES0k6p1PAHajV48Erw/hGcjANLVNAFBKqGCzpj1Y19Wb9rD9qlokEO4JMhFKYb8w==
-X-Received: by 2002:a7b:c1c1:: with SMTP id a1mr4297940wmj.137.1598252826663;
-        Mon, 24 Aug 2020 00:07:06 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.216])
-        by smtp.googlemail.com with ESMTPSA id m1sm21788437wmc.28.2020.08.24.00.07.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 24 Aug 2020 00:07:06 -0700 (PDT)
-Date:   Mon, 24 Aug 2020 09:07:03 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mon, 24 Aug 2020 05:00:38 -0400
+Received: from mail-eopbgr30073.outbound.protection.outlook.com ([40.107.3.73]:1239
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729064AbgHXJAZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 Aug 2020 05:00:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IGQLYBAOUvkgGSljhGAu5G6xFtKdD+mfC8RBAb3oeTeOIjXC8PHDBAKZ8lbz72Of1bIdXnRtVo3Dcd2xRgHYYb0Um0EH5/vO3VNoD7v4rAH8BOVlm+jjQ56Vd7vgSmXmc0lKuMDqnF4OUnm8gu7RCGZRjrU9FKwK405Yiy/0UdiGN44hK6GLuOZMFr3GLHBs7tBsXGbt4n9p2Wh7qju4gcfZze37DaPHgMs5/neKCZaugdIFJRXCFet/jmFtIDGhoEzhi8nosnrhobu/51PNNpjVPrc+xe0B9B1AyxBu19XsidWI4Us0lR1QP7WIR/KoQGSk8ZG0ub0464IvUfUAdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5Oi07fpJKhwidrgeiwmkna4p8Jzdtdd08CuuGi7iEqQ=;
+ b=fiw407YCAcraZ7XGHx6W3vb8cd/a1AXY9+9W1wC+j0DpeX6WPVR00GWsR94SR1xuGxNL35hllUbFQlbweDPet7IDjrQrRy0mxLtspiRevA8pbvZjhKakRzM8ZLFzts6m0Xbj16diyWdTzCN4WwoTVvylLIHjFhKXmoaVgeuiiyJweOeG+aD7rFeP0uo5fsKTXJ8tryM9Oe720aKw44gTvRFHtpTZ5by2KzsNeQnO02MHIdAC/pENZ5xepOC8t0yiTVa3TXZfA99boY+q43z7jbQu7mGsTG/gkeHyXwf4c7KjYfxLo5U+2tCFEUml/OQiAIpjHmt91PnqLdB9LcgsHA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5Oi07fpJKhwidrgeiwmkna4p8Jzdtdd08CuuGi7iEqQ=;
+ b=fOf2jCyrVMDFH/YYVps6YuPEphvx76u90mJYkfArfa82WG0vWO1SIogABWFktWPBB5p4gDX7HUsaYOJDd6l+EI5kHgXVafsBAKNo3b0QF+PwzNjrSN05U/i7ajjZ2uqWItSb8p942iFaEl0cd8QtbpYsJdtvJZtv22cmI6oVtO8=
+Received: from AM6PR04MB4966.eurprd04.prod.outlook.com (2603:10a6:20b:2::14)
+ by AM6PR0402MB3894.eurprd04.prod.outlook.com (2603:10a6:209:20::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.26; Mon, 24 Aug
+ 2020 09:00:20 +0000
+Received: from AM6PR04MB4966.eurprd04.prod.outlook.com
+ ([fe80::99b5:145d:16cc:78ca]) by AM6PR04MB4966.eurprd04.prod.outlook.com
+ ([fe80::99b5:145d:16cc:78ca%3]) with mapi id 15.20.3305.026; Mon, 24 Aug 2020
+ 09:00:19 +0000
+From:   Aisheng Dong <aisheng.dong@nxp.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Anson Huang <Anson.Huang@nxp.com>
-Subject: Re: [PATCH 02/22] dt-bindings: gpio: fsl-imx-gpio: Add gpio-ranges
- property
-Message-ID: <20200824070703.GA5382@kozik-lap>
+        dl-linux-imx <linux-imx@nxp.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
+CC:     Thierry Reding <thierry.reding@gmail.com>,
+        Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH 21/22] arm64: dts: imx8qxp: Remove i.MX7 compatible from
+ USDHC
+Thread-Topic: [PATCH 21/22] arm64: dts: imx8qxp: Remove i.MX7 compatible from
+ USDHC
+Thread-Index: AQHWeWjs3+F925Bk106zrc9FAFewr6lG9uLw
+Date:   Mon, 24 Aug 2020 09:00:19 +0000
+Message-ID: <AM6PR04MB49668B0F67B02B2A33603B4880560@AM6PR04MB4966.eurprd04.prod.outlook.com>
 References: <20200823161550.3981-1-krzk@kernel.org>
- <20200823161550.3981-2-krzk@kernel.org>
- <20200824052446.GE13023@pengutronix.de>
- <20200824063806.GA2497@kozik-lap>
- <20200824065801.GH13023@pengutronix.de>
+ <20200823161550.3981-21-krzk@kernel.org>
+In-Reply-To: <20200823161550.3981-21-krzk@kernel.org>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.67]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 3f9b0d02-acba-4307-918e-08d8480c20c6
+x-ms-traffictypediagnostic: AM6PR0402MB3894:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR0402MB389430D49307CE2BAA78F7BC80560@AM6PR0402MB3894.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1443;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 67I/EcZQbxLD8cgq45bPaFHWiAgYKRlN6FdV/oA7EsQbON53d7MTJrro7YJ+LXT92IfXAgjDJDviHocnXa1xVQ6KI003EMt7a+M/3Q+O1YO39MiQ8T48jwio62qhcOxJC11ugn45a3cudhkehhdoIQhiMxqWy0AyR6HoM4HEmoQWz0uiicUzGX0gOU0NcECeQl3/lAryj/SHhcBNJV3EPMdODrKx5ubPAU3co7eq8AFbRBybfcRNByfzd4J4/J+HPr9pifpgtHg2UaOiUOd1eIwofpB1D2fPH3opy9mGlEHEcGj8iEpBC80qOHH9Jbf/Ewz/5girr/oLsCXmpP7uD8AlbQx/OtWzcq/wDGoZe+dkdYbwTghS75HLbK/dEUis3s+bpaIZKHzo8XwEDiGjKg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB4966.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(366004)(136003)(376002)(396003)(316002)(110136005)(44832011)(8936002)(7696005)(9686003)(26005)(4326008)(186003)(7416002)(2906002)(478600001)(8676002)(54906003)(6506007)(66946007)(76116006)(5660300002)(83380400001)(66476007)(33656002)(86362001)(66556008)(66446008)(64756008)(52536014)(55016002)(71200400001)(921003)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: RkLyOxMxPiIXid+HwKWJ/5uHIVEUO0bTM+49E57o2YxuyHxmxIDTCZM9HqxdIcxhO3do+NdNJn9+oeQPfkfibdKlIwZD50XB3qvs29Nc6hcTDBSTGcQbrnso1Edpsy75EVL/sv/tfZwxF99WQboSJ7C+FsOIFwKUSHxhGnbUxi7gahLgLK1DcTJi3MSFe8wSTGvtFeu3FuYO+wG0iZV7KDnWAlOzhV36kAXv+skpesA4AuO07q55j8YzXvi1qGqOaubt4lKCRsfujpUjJyBnO6lcCMGm1vt4FA+bb8NTABeppxdgPxz3Bi9tuW7oDAiDXW7I94magYMUK18jLl93q2IrUEmU11K8TLuPbXh79UV5ncUPBN3eu/tKQxGPSYn9DJdPAOjEUz8K5P4XO3W8PAcIYWtXc6Hr4XS9FsI2uxKI994TJYZSRC+tV94+OQ+R4hnqfClFA1uie90Al4IprD9pz5cey2/NDNRlDc/lhymVzr2zj0VmmZuDzAVsxHoNXlCmXwNwWBRIVdYePOxwL229UjoiXmn0gBFUs73cI7H7FKIl+xQbkic1L59HhVBij3kfmaOBb3tWy5IufVKpsdWEeLuZNYP6Wf8a8H0h7PDMWEXYlHV0i88O4tq+jfD5B1vub5G1lX3kZ6mtgOPaKw==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200824065801.GH13023@pengutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB4966.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f9b0d02-acba-4307-918e-08d8480c20c6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2020 09:00:19.7937
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: P2X+PmlpoE6tIjOjAM2mB1F0wDKpA7ypCLWmTpoFTCbMfQwijkKRz6eEFG8L0wjQUMC78JXRWFpB0AC1geZxeA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3894
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 08:58:01AM +0200, Sascha Hauer wrote:
-> On Mon, Aug 24, 2020 at 08:38:06AM +0200, Krzysztof Kozlowski wrote:
-> > On Mon, Aug 24, 2020 at 07:24:46AM +0200, Sascha Hauer wrote:
-> > > On Sun, Aug 23, 2020 at 06:15:30PM +0200, Krzysztof Kozlowski wrote:
-> > > > The GPIO controller node can have gpio-ranges property.  This fixes
-> > > > dtbs_check warnings like:
-> > > > 
-> > > >   arch/arm64/boot/dts/freescale/imx8mm-evk.dt.yaml: gpio@30200000: 'gpio-ranges' does not match any of the regexes: 'pinctrl-[0-9]+'
-> > > >     From schema: Documentation/devicetree/bindings/gpio/fsl-imx-gpio.yaml
-> > > > 
-> > > > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> > > > ---
-> > > >  .../devicetree/bindings/gpio/fsl-imx-gpio.yaml    | 15 +++++++++++++++
-> > > >  1 file changed, 15 insertions(+)
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/gpio/fsl-imx-gpio.yaml b/Documentation/devicetree/bindings/gpio/fsl-imx-gpio.yaml
-> > > > index 454db20c2d1a..1fac69573bb9 100644
-> > > > --- a/Documentation/devicetree/bindings/gpio/fsl-imx-gpio.yaml
-> > > > +++ b/Documentation/devicetree/bindings/gpio/fsl-imx-gpio.yaml
-> > > > @@ -51,6 +51,9 @@ properties:
-> > > >  
-> > > >    gpio-controller: true
-> > > >  
-> > > > +  gpio-ranges:
-> > > > +    maxItems: 1
-> > > > +
-> > > >  required:
-> > > >    - compatible
-> > > >    - reg
-> > > > @@ -62,6 +65,18 @@ required:
-> > > >  
-> > > >  additionalProperties: false
-> > > >  
-> > > > +allOf:
-> > > > +  - if:
-> > > > +      properties:
-> > > > +        compatible:
-> > > > +          contains:
-> > > > +            const: fsl,imx8mp-gpio
-> > > > +    then:
-> > > > +      properties:
-> > > > +        gpio-ranges:
-> > > > +          minItems: 1
-> > > > +          maxItems: 2
-> > > 
-> > > Why do you limit this to fsl,imx8mp-gpio? The i.MX5,6,7 dtsi files use
-> > > gpio-ranges as well and other i.MX dtsi files could also use it.
-> > 
-> > All other cases use maximum one element in gpio-ranges, so they are
-> > covered so I assumed they are continuous. But if it not the case, I can
-> > make all them maximum 2.
-> 
-> I misread this, I thought you allow gpio-ranges only for imx8mp, but
-> it's only the maxItems you set differently for that SoC. Anyway,
-> arch/arm/boot/dts/imx6dl.dtsi has this:
-> 
-> &gpio1 {
->         gpio-ranges = <&iomuxc  0 131 2>, <&iomuxc  2 137 8>, <&iomuxc 10 189 2>,
->                       <&iomuxc 12 194 1>, <&iomuxc 13 193 1>, <&iomuxc 14 192 1>,
->                       <&iomuxc 15 191 1>, <&iomuxc 16 185 2>, <&iomuxc 18 184 1>,
->                       <&iomuxc 19 187 1>, <&iomuxc 20 183 1>, <&iomuxc 21 188 1>,
->                       <&iomuxc 22 123 3>, <&iomuxc 25 121 1>, <&iomuxc 26 127 1>,
->                       <&iomuxc 27 126 1>, <&iomuxc 28 128 1>, <&iomuxc 29 130 1>,
->                       <&iomuxc 30 129 1>, <&iomuxc 31 122 1>;
-> };
-> 
-> I don't think it makes sense to specify maxItems.
-
-Indeed, I will skip the max limit.
-
-Best regards,
-Krzysztof
-
+PiBGcm9tOiBLcnp5c3p0b2YgS296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+DQo+IFNlbnQ6IE1v
+bmRheSwgQXVndXN0IDI0LCAyMDIwIDEyOjE2IEFNDQo+IA0KPiBUaGUgVVNESEMgb24gaS5NWCA4
+UVhQIGhhcyBpdHMgb3duIGNvbXBhdGlibGUgZGVzY3JpYmVkIGluIGJpbmRpbmdzIGFuZA0KPiB1
+c2VkIGluIHRoZSBkcml2ZXIgKHdpdGggaXRzIG93biBxdWlya3MpLiAgUmVtb3ZlIGFkZGl0aW9u
+YWwgZnNsLGlteDdkLXVzZGhjDQo+IGNvbXBhdGlibGUgdG8gZml4IGR0YnNfY2hlY2sgd2Fybmlu
+Z3MgbGlrZToNCj4gDQo+ICAgYXJjaC9hcm02NC9ib290L2R0cy9mcmVlc2NhbGUvaW14OHF4cC1h
+aV9tbC5kdC55YW1sOiBtbWNANWIwMTAwMDA6DQo+ICAgICBjb21wYXRpYmxlOiBbJ2ZzbCxpbXg4
+cXhwLXVzZGhjJywgJ2ZzbCxpbXg3ZC11c2RoYyddIGlzIHRvbyBsb25nDQo+ICAgICBGcm9tIHNj
+aGVtYToNCj4gL29jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21tYy9mc2wtaW14LWVz
+ZGhjLnlhbWwNCj4gDQo+ICAgYXJjaC9hcm02NC9ib290L2R0cy9mcmVlc2NhbGUvaW14OHF4cC1h
+aV9tbC5kdC55YW1sOiBtbWNANWIwMTAwMDA6DQo+ICAgICBjb21wYXRpYmxlOiBBZGRpdGlvbmFs
+IGl0ZW1zIGFyZSBub3QgYWxsb3dlZCAoJ2ZzbCxpbXg3ZC11c2RoYycgd2FzDQo+IHVuZXhwZWN0
+ZWQpDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBLcnp5c3p0b2YgS296bG93c2tpIDxrcnprQGtlcm5l
+bC5vcmc+DQoNCkZvciBQYXRjaCAxOS0yMiwgSSB0aGluayB3ZSBzaG91bGQgZml4IGR0IGJpbmRp
+bmcgZG9jLg0KDQpSZWdhcmRzDQpBaXNoZW5nDQoNCj4gLS0tDQo+ICBhcmNoL2FybTY0L2Jvb3Qv
+ZHRzL2ZyZWVzY2FsZS9pbXg4cXhwLmR0c2kgfCA2ICsrKy0tLQ0KPiAgMSBmaWxlIGNoYW5nZWQs
+IDMgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9hcmNo
+L2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9pbXg4cXhwLmR0c2kNCj4gYi9hcmNoL2FybTY0L2Jv
+b3QvZHRzL2ZyZWVzY2FsZS9pbXg4cXhwLmR0c2kNCj4gaW5kZXggNjFiY2NiNjlmMDllLi4yNmM0
+ZmNkZmUyOTAgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvYXJtNjQvYm9vdC9kdHMvZnJlZXNjYWxlL2lt
+eDhxeHAuZHRzaQ0KPiArKysgYi9hcmNoL2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9pbXg4cXhw
+LmR0c2kNCj4gQEAgLTM2Miw3ICszNjIsNyBAQA0KPiAgCQl9Ow0KPiANCj4gIAkJdXNkaGMxOiBt
+bWNANWIwMTAwMDAgew0KPiAtCQkJY29tcGF0aWJsZSA9ICJmc2wsaW14OHF4cC11c2RoYyIsICJm
+c2wsaW14N2QtdXNkaGMiOw0KPiArCQkJY29tcGF0aWJsZSA9ICJmc2wsaW14OHF4cC11c2RoYyI7
+DQo+ICAJCQlpbnRlcnJ1cHRzID0gPEdJQ19TUEkgMjMyIElSUV9UWVBFX0xFVkVMX0hJR0g+Ow0K
+PiAgCQkJcmVnID0gPDB4NWIwMTAwMDAgMHgxMDAwMD47DQo+ICAJCQljbG9ja3MgPSA8JmNvbm5f
+bHBjZyBJTVhfQ09OTl9MUENHX1NESEMwX0lQR19DTEs+LCBAQA0KPiAtMzc0LDcgKzM3NCw3IEBA
+DQo+ICAJCX07DQo+IA0KPiAgCQl1c2RoYzI6IG1tY0A1YjAyMDAwMCB7DQo+IC0JCQljb21wYXRp
+YmxlID0gImZzbCxpbXg4cXhwLXVzZGhjIiwgImZzbCxpbXg3ZC11c2RoYyI7DQo+ICsJCQljb21w
+YXRpYmxlID0gImZzbCxpbXg4cXhwLXVzZGhjIjsNCj4gIAkJCWludGVycnVwdHMgPSA8R0lDX1NQ
+SSAyMzMgSVJRX1RZUEVfTEVWRUxfSElHSD47DQo+ICAJCQlyZWcgPSA8MHg1YjAyMDAwMCAweDEw
+MDAwPjsNCj4gIAkJCWNsb2NrcyA9IDwmY29ubl9scGNnIElNWF9DT05OX0xQQ0dfU0RIQzFfSVBH
+X0NMSz4sIEBADQo+IC0zODgsNyArMzg4LDcgQEANCj4gIAkJfTsNCj4gDQo+ICAJCXVzZGhjMzog
+bW1jQDViMDMwMDAwIHsNCj4gLQkJCWNvbXBhdGlibGUgPSAiZnNsLGlteDhxeHAtdXNkaGMiLCAi
+ZnNsLGlteDdkLXVzZGhjIjsNCj4gKwkJCWNvbXBhdGlibGUgPSAiZnNsLGlteDhxeHAtdXNkaGMi
+Ow0KPiAgCQkJaW50ZXJydXB0cyA9IDxHSUNfU1BJIDIzNCBJUlFfVFlQRV9MRVZFTF9ISUdIPjsN
+Cj4gIAkJCXJlZyA9IDwweDViMDMwMDAwIDB4MTAwMDA+Ow0KPiAgCQkJY2xvY2tzID0gPCZjb25u
+X2xwY2cgSU1YX0NPTk5fTFBDR19TREhDMl9JUEdfQ0xLPiwNCj4gLS0NCj4gMi4xNy4xDQoNCg==
