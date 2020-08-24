@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-14.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 728D7C433E8
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 16:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3FAC433E1
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 16:29:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4FFA02074D
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 16:28:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C5BD42072D
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 16:29:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598286527;
-	bh=PdacYnFzAXKYzO75jZ6jRptISMDbTeC/IgkjXkml0CM=;
+	s=default; t=1598286587;
+	bh=CnRSnps+AJEG/CNxkZZ3JT+RUcAXLf0eIGA4Cov4d+8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=fF9jX2XQ5xrBisHrvY3jlYyVqW+uZ1IclYLzPJECdDcIQAFCQY7aoZBIVXaoVivdi
-	 yjSN5ToWvvI3MCpNHLbL9Tg1+Sotcw0zU37jw+3DXl9U5ZavE0kmkbAEMy8C2pvUnR
-	 1IRNttOXH2qtnAGs7QgMDvsEb3rDDqPjmzXZ45H8=
+	b=iXMTWvwx64FUxxn/0sZ0duNLoykb6JngeNaUACJvTb0KtdUF9MbwlRhGWSMeDbrC3
+	 RIToeq3bKy/GblGCCpHVfOYWZ/Bmt7lrquFhloce0/wb4EzQLjNAyFBA0C0EzKv+aa
+	 diUc1UHaDVnPp585pKWAlohrOw4t14DlCxS2Gxvw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728070AbgHXQ2q (ORCPT
+        id S1728073AbgHXQ3c (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Aug 2020 12:28:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57802 "EHLO mail.kernel.org"
+        Mon, 24 Aug 2020 12:29:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58906 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728022AbgHXQ2f (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Aug 2020 12:28:35 -0400
+        id S1728077AbgHXQ3X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 Aug 2020 12:29:23 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.216])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 48A24207CD;
-        Mon, 24 Aug 2020 16:28:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 968582072D;
+        Mon, 24 Aug 2020 16:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598286515;
-        bh=PdacYnFzAXKYzO75jZ6jRptISMDbTeC/IgkjXkml0CM=;
+        s=default; t=1598286562;
+        bh=CnRSnps+AJEG/CNxkZZ3JT+RUcAXLf0eIGA4Cov4d+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ym/mKHg/O93t27zPW8xdlsm8lZurF61bz6fwAKw/8jxPmxcGdSWXWq8gNAizCqtJ7
-         hiBF62A+9rlYM4r/FtwJs49Ozpt0uRstEdzlajjZQ9LwUaaztom8lQ/jHUk/b+LSZ6
-         cJUQ5yDqYJ0mL5ZvlxkW4YG0Khiferx573tQ0qQk=
+        b=nh6hgK7lOgmW9izb+LuDJ5SUOJo34fH/EcIpkU/0ZYG4pF1uo1o36J78/CuG+K+t4
+         qgGmOJjzuiea5OHtVIhlowJCGQvlmsszKFpGttk8lcVH3x6B0kuBekleSS7+IS2r1g
+         7LwXM1sLXEhWcF0hUbBodcOCqYk9umOvq2I1qbyQ=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -66,9 +66,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v2 12/19] dt-bindings: mmc: fsl-imx-esdhc: Fix i.MX 8 compatible matching
-Date:   Mon, 24 Aug 2020 18:26:45 +0200
-Message-Id: <20200824162652.21047-12-krzk@kernel.org>
+Subject: [PATCH v2 19/19] arm64: dts: imx8mq-zii-ultra: Add hog suffixes to GPIO hogs
+Date:   Mon, 24 Aug 2020 18:26:52 +0200
+Message-Id: <20200824162652.21047-19-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200824162652.21047-1-krzk@kernel.org>
 References: <20200824162652.21047-1-krzk@kernel.org>
@@ -77,80 +77,52 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The i.MX 8 DTSes use two compatibles so update the binding to fix
-dtbs_check warnings like:
-
-  arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: mmc@30b40000:
-    compatible: ['fsl,imx8mn-usdhc', 'fsl,imx7d-usdhc'] is too long
-    From schema: Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-
-  arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: mmc@30b40000:
-    compatible: Additional items are not allowed ('fsl,imx7d-usdhc' was unexpected)
-
-  arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dt.yaml: mmc@30b40000:
-    compatible: ['fsl,imx8mn-usdhc', 'fsl,imx7d-usdhc'] is too long
+According to device tree specification, device node names should be
+somewhat generic and reflecting the function of the device so add the
+"hog" suffixes to all GPIO hog nodes.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-
 ---
+ arch/arm64/boot/dts/freescale/imx8mq-zii-ultra.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Changes since v1:
-1. Handle also fsl,imx8mm-usdhc and fsl,imx8qxp-usdhc
----
- .../bindings/mmc/fsl-imx-esdhc.yaml           | 40 +++++++++++--------
- 1 file changed, 23 insertions(+), 17 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-index 10b45966f1b8..54f05e2a4246 100644
---- a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-+++ b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-@@ -21,23 +21,29 @@ description: |
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-zii-ultra.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-zii-ultra.dtsi
+index 0d1088dcaa02..fa7a041ffcfd 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-zii-ultra.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mq-zii-ultra.dtsi
+@@ -229,28 +229,28 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_gpio3_hog>;
  
- properties:
-   compatible:
--    enum:
--      - fsl,imx25-esdhc
--      - fsl,imx35-esdhc
--      - fsl,imx51-esdhc
--      - fsl,imx53-esdhc
--      - fsl,imx6q-usdhc
--      - fsl,imx6sl-usdhc
--      - fsl,imx6sx-usdhc
--      - fsl,imx6ull-usdhc
--      - fsl,imx7d-usdhc
--      - fsl,imx7ulp-usdhc
--      - fsl,imx8mq-usdhc
--      - fsl,imx8mm-usdhc
--      - fsl,imx8mn-usdhc
--      - fsl,imx8mp-usdhc
--      - fsl,imx8qm-usdhc
--      - fsl,imx8qxp-usdhc
-+    oneOf:
-+      - enum:
-+          - fsl,imx25-esdhc
-+          - fsl,imx35-esdhc
-+          - fsl,imx51-esdhc
-+          - fsl,imx53-esdhc
-+          - fsl,imx6q-usdhc
-+          - fsl,imx6sl-usdhc
-+          - fsl,imx6sx-usdhc
-+          - fsl,imx6ull-usdhc
-+          - fsl,imx7d-usdhc
-+          - fsl,imx7ulp-usdhc
-+          - fsl,imx8mq-usdhc
-+          - fsl,imx8mm-usdhc
-+          - fsl,imx8qxp-usdhc
-+      - items:
-+          - enum:
-+              - fsl,imx8mm-usdhc
-+              - fsl,imx8mn-usdhc
-+              - fsl,imx8mp-usdhc
-+              - fsl,imx8mq-usdhc
-+              - fsl,imx8qxp-usdhc
-+          - const: fsl,imx7d-usdhc
+-	usb-emulation {
++	usb-emulation-hog {
+ 		gpio-hog;
+ 		gpios = <10 GPIO_ACTIVE_HIGH>;
+ 		output-low;
+ 		line-name = "usb-emulation";
+ 	};
  
-   reg:
-     maxItems: 1
+-	usb-mode1 {
++	usb-mode1-hog {
+ 		gpio-hog;
+ 		gpios = <11 GPIO_ACTIVE_HIGH>;
+ 		output-high;
+ 		line-name = "usb-mode1";
+ 	};
+ 
+-	usb-pwr {
++	usb-pwr-hog {
+ 		gpio-hog;
+ 		gpios = <12 GPIO_ACTIVE_LOW>;
+ 		output-high;
+ 		line-name = "usb-pwr-ctrl-en-n";
+ 	};
+ 
+-	usb-mode2 {
++	usb-mode2-hog {
+ 		gpio-hog;
+ 		gpios = <13 GPIO_ACTIVE_HIGH>;
+ 		output-high;
 -- 
 2.17.1
 
