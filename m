@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-14.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 927B7C433E5
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 16:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09CD4C433E3
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 16:30:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7267420738
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 16:30:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DE8212067C
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Aug 2020 16:30:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598286639;
-	bh=gOESEJc7aA4Bdlbw/0GS4VThO3taNCzjhxOFB6At2XY=;
+	s=default; t=1598286644;
+	bh=zn6SwQvRqTQI9Av55ZFXzkgJGiEIGN9PfDf4Q2x9mwU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Z8VJPaKTQAZD6EPaHJalrxbna14zbfMCfwSVhZ+4dLKX73locEffeLZl87RRGmmno
-	 2m8Ub50qy8Vj03QaL0ousK8ycHZUIksRQuYwZ9BQM54x0v/HAD94ocuag0LnmUUHmw
-	 3nNcEEbt3ogGQtJUS0brwlOIBRoRSVM3wR1h0q50=
+	b=XG1oBFoveKfmG0oO5eoZxTonZEQ/X0mClOResvWTuwbhlx0vd/m4c+6LKFmmkDs/c
+	 boZ8v/B/5e5zl8zFAardHt8R38TolOYqBESaK4f0XUfKnsG+cFooAY3PlQ/NwdrOyk
+	 Y1mzeOVCq7QKe594rdofjkf+1Tr7uXDjlUk6BDZk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728138AbgHXQaf (ORCPT
+        id S1728061AbgHXQ2q (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Aug 2020 12:30:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58318 "EHLO mail.kernel.org"
+        Mon, 24 Aug 2020 12:28:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57698 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728080AbgHXQ2z (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Aug 2020 12:28:55 -0400
+        id S1726952AbgHXQ23 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 Aug 2020 12:28:29 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.216])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 12E472074D;
-        Mon, 24 Aug 2020 16:28:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AB4CF20866;
+        Mon, 24 Aug 2020 16:28:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598286535;
-        bh=gOESEJc7aA4Bdlbw/0GS4VThO3taNCzjhxOFB6At2XY=;
+        s=default; t=1598286508;
+        bh=zn6SwQvRqTQI9Av55ZFXzkgJGiEIGN9PfDf4Q2x9mwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bz8SqDs4rFnLVFy9fjZrXh8NVo9GVwojru9OTglcSdI3wl17KPorg7NtyoHqhV4bN
-         47R46lF9BdF+EUDQpoUn2zWx/P1IYHdJBWFsTPBLXqFCZqBVbG9TORCWgoQeKs/d4J
-         hyGPPb1c/43B98AXJeRQuRd6GeITtXc3WoEyGQ/0=
+        b=Lc5v+i6R4868rSns6Pnlf3sYqSq41pDHXT2qEDxgaiUFWD3d3G1R3SANTYpTyO7vO
+         fHq1kqFHdq/oZDj2voanWVtglRZaByLbvzfMkHB+k26zkka8r+ETpFbq/4doPDP0RW
+         1NbyfLC/2VAAfJwSMAYzmWSCk4XnkNAuljsWtaCM=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -66,9 +66,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v2 15/19] dt-bindings: arm: fsl: Add ZII Ultra boards binding
-Date:   Mon, 24 Aug 2020 18:26:48 +0200
-Message-Id: <20200824162652.21047-15-krzk@kernel.org>
+Subject: [PATCH v2 11/19] dt-bindings: thermal: imx8mm-thermal: Add i.MX 8M Nano compatible
+Date:   Mon, 24 Aug 2020 18:26:44 +0200
+Message-Id: <20200824162652.21047-11-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200824162652.21047-1-krzk@kernel.org>
 References: <20200824162652.21047-1-krzk@kernel.org>
@@ -77,32 +77,45 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Document the binding for Zodiac Inflight Innovations Ultra Boards.
+DTSes with new i.MX 8M SoCs introduce their own compatibles so add them
+to fix dtbs_check warnings like:
+
+  arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
+    compatible:0: 'fsl,imx8mn-tmu' is not one of ['fsl,imx8mm-tmu', 'fsl,imx8mp-tmu']
+    From schema: Documentation/devicetree/bindings/thermal/imx8mm-thermal.yaml
+
+  arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
+    compatible: ['fsl,imx8mn-tmu', 'fsl,imx8mm-tmu'] is too long
+
+  arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
+    compatible: Additional items are not allowed ('fsl,imx8mm-tmu' was unexpected)
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- Documentation/devicetree/bindings/arm/fsl.yaml | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ .../devicetree/bindings/thermal/imx8mm-thermal.yaml    | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 377fc2a4c159..b48dbf924cfe 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -373,6 +373,14 @@ properties:
-               - technexion,pico-pi-imx8m  # TechNexion PICO-PI-8M evk
-           - const: fsl,imx8mq
+diff --git a/Documentation/devicetree/bindings/thermal/imx8mm-thermal.yaml b/Documentation/devicetree/bindings/thermal/imx8mm-thermal.yaml
+index 38852877b8e3..89c54e08ee61 100644
+--- a/Documentation/devicetree/bindings/thermal/imx8mm-thermal.yaml
++++ b/Documentation/devicetree/bindings/thermal/imx8mm-thermal.yaml
+@@ -18,9 +18,13 @@ description: |
  
-+      - description: Zodiac Inflight Innovations Ultra Boards
-+        items:
-+          - enum:
-+              - zii,imx8mq-ultra-rmb3
-+              - zii,imx8mq-ultra-zest
-+          - const: zii,imx8mq-ultra
-+          - const: fsl,imx8mq
-+
-       - description: i.MX8QXP based Boards
-         items:
-           - enum:
+ properties:
+   compatible:
+-    enum:
+-      - fsl,imx8mm-tmu
+-      - fsl,imx8mp-tmu
++    oneOf:
++      - enum:
++          - fsl,imx8mm-tmu
++          - fsl,imx8mp-tmu
++      - items:
++          - const: fsl,imx8mn-tmu
++          - const: fsl,imx8mm-tmu
+ 
+   reg:
+     maxItems: 1
 -- 
 2.17.1
 
