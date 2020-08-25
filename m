@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-14.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD2FC433E1
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 19:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2806C433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 19:38:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B8A9520782
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 19:38:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C914A2075F
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 19:38:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598384294;
-	bh=sGtFPuXEsVbIrliCojcp2Mbe+DlIhAJbh8Iyk2PAwVI=;
+	s=default; t=1598384309;
+	bh=M4HsMpi+RByLc2WfD2hU1auUVsDqshtSVqJUE+BFQVI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=1BEjEkjNTE86e5cnnaRCR+2Wv+B4n+35NNnqgP7Dg7qj2auYP+ZQvVEjWmtotDaL+
-	 UtXL/pfhEb6SdLfPlUBT4NQiQSN/vOpZBQsd80WchIxBwt0hYrcVE/Y0dfXi+tFNb2
-	 6p5DwJ07L37YTE47vxri2WCEkwd1+njjBBs9YOuM=
+	b=vr0Su2UaYejqCbbQq3m0ouMzquEgAKjLAZUp5WmuS5MHZq4rF+rm8NReQvELdZgwm
+	 +B8GvQT4Yt0czhXCzim3CG22kwEAGNGMzYnQgbz3XdIi8rPAeX/GFIPw9NO8U7Fqnm
+	 vEr2h+AQn8U4OHm5Qx6/IiLBW3Ygk6vqWb/p8Hl8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727814AbgHYTiO (ORCPT
+        id S1727823AbgHYTiV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Aug 2020 15:38:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44232 "EHLO mail.kernel.org"
+        Tue, 25 Aug 2020 15:38:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44520 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726149AbgHYTiL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Aug 2020 15:38:11 -0400
+        id S1726149AbgHYTiT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 25 Aug 2020 15:38:19 -0400
 Received: from localhost.localdomain (unknown [194.230.155.216])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 852572076C;
-        Tue, 25 Aug 2020 19:38:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C9A6C2075E;
+        Tue, 25 Aug 2020 19:38:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598384291;
-        bh=sGtFPuXEsVbIrliCojcp2Mbe+DlIhAJbh8Iyk2PAwVI=;
+        s=default; t=1598384298;
+        bh=M4HsMpi+RByLc2WfD2hU1auUVsDqshtSVqJUE+BFQVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R5T+9iBATjKkXGJCeBqNAkAw3SBt/m46XL/ziWg/zYkWvcZDhbpTMqDfrsbhCcbkA
-         e5lvmECPc2cMpr7pnyu7aBccWffRpz2kxB1/7qcAe/gKtkV0LBLCO7wjOlrFaYgdof
-         rDtf6Pk40serFot87UKcrp3zoaEx5TSm/23LJCT4=
+        b=oOkLt8Y8H/gwVZuCXJOtYYkPoy7sPNwaLw4UhvOunN6Z8R3ikXyDrTfJfSLfesO9a
+         gCmGLV4zq8C6d6N8i4Mm+6pe7XdOVDi/AHw28KlDiLU6apTZNIXzh62bbgT+mDV0hv
+         4eC1Vml69ym2WYaSIHI/js2lICJeCRjDeBbYU4m4=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -61,9 +61,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v3 16/19] dt-bindings: interrupt-controller: fsl,irqsteer: Fix compatible matching
-Date:   Tue, 25 Aug 2020 21:35:33 +0200
-Message-Id: <20200825193536.7332-17-krzk@kernel.org>
+Subject: [PATCH v3 17/19] dt-bindings: serial: fsl-lpuart: Fix compatible matching
+Date:   Tue, 25 Aug 2020 21:35:34 +0200
+Message-Id: <20200825193536.7332-18-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200825193536.7332-1-krzk@kernel.org>
 References: <20200825193536.7332-1-krzk@kernel.org>
@@ -72,38 +72,54 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The i.MX 8M DTSes use two compatibles so update the binding to fix
+The i.MX 8QXP DTSes use two compatibles so update the binding to fix
 dtbs_check warnings like:
 
-  arch/arm64/boot/dts/freescale/imx8mq-thor96.dt.yaml: interrupt-controller@32e2d000:
-    compatible: ['fsl,imx8m-irqsteer', 'fsl,imx-irqsteer'] is too long
-    From schema: Domentation/devicetree/bindings/interrupt-controller/fsl,irqsteer.yaml
+  arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml: serial@5a060000:
+    compatible: ['fsl,imx8qxp-lpuart', 'fsl,imx7ulp-lpuart'] is too long
+    From schema: Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
 
-  arch/arm64/boot/dts/freescale/imx8mq-thor96.dt.yaml: interrupt-controller@32e2d000:
-    compatible: Additional items are not allowed ('fsl,imx-irqsteer' was unexpected)
+  arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml: serial@5a060000:
+    compatible: Additional items are not allowed ('fsl,imx7ulp-lpuart' was unexpected)
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../bindings/interrupt-controller/fsl,irqsteer.yaml       | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/fsl,irqsteer.yaml b/Documentation/devicetree/bindings/interrupt-controller/fsl,irqsteer.yaml
-index 360a575ef8b0..3b11a1a15398 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/fsl,irqsteer.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/fsl,irqsteer.yaml
-@@ -11,9 +11,11 @@ maintainers:
+---
+
+Changes since v2:
+1. Remove moved compatibles.
+
+Changes since v1:
+1. New patch.
+---
+ .../devicetree/bindings/serial/fsl-lpuart.yaml  | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+index e82c2cf9fef7..bd21060d26e0 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
++++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+@@ -14,13 +14,16 @@ allOf:
  
  properties:
    compatible:
 -    enum:
--      - fsl,imx8m-irqsteer
--      - fsl,imx-irqsteer
+-      - fsl,vf610-lpuart
+-      - fsl,ls1021a-lpuart
+-      - fsl,ls1028a-lpuart
+-      - fsl,imx7ulp-lpuart
+-      - fsl,imx8qxp-lpuart
+-      - fsl,imx8qm-lpuart
 +    oneOf:
-+      - const: fsl,imx-irqsteer
++      - enum:
++          - fsl,vf610-lpuart
++          - fsl,ls1021a-lpuart
++          - fsl,ls1028a-lpuart
++          - fsl,imx7ulp-lpuart
++          - fsl,imx8qm-lpuart
 +      - items:
-+          - const: fsl,imx8m-irqsteer
-+          - const: fsl,imx-irqsteer
++          - const: fsl,imx8qxp-lpuart
++          - const: fsl,imx7ulp-lpuart
  
    reg:
      maxItems: 1
