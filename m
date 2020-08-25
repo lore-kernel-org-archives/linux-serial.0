@@ -2,116 +2,176 @@ Return-Path: <SRS0=bk4J=CD=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6A6C433E1
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 02:36:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3CD5C433E3
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 02:38:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E25B820866
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 02:36:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B8D82205CB
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 02:38:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598323011;
-	bh=GWg8OOtVj0hi0r/pWD1XXaiT45NXSvN/2yga2fCwrjs=;
+	s=default; t=1598323088;
+	bh=bdUJXjjwNsr5wCzB/3eeAi70YcjODuhNCA5p9byMl6Y=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=E4v8hBPI21coDikGSKjFoQILK9423mUhB9vOJMmXQjRCBbwCCVLHMOpSKi0fgHQYD
-	 qA/7Mc9RG47a28ya5r0f2XiW3RRKLBKthkvEUangIxhimwRtxW+oDvoxdH3BeyKYZ7
-	 f2sJjMpOYCnFAt8lkOby2pLrDy808DOaX6HUWTW8=
+	b=y38tYKbLKjs4KAFo8aEutLhuC4DoK6h+GIw+8WpZgKi2PDzNBFLnxWeOyuE/9mTlO
+	 iuNXU8Lj+a5SrhXv9CvsUAZt+Ncaw+iZrc9ngi3mJbMwxdU7Q851zQ3kQI/C3lHDgA
+	 n+TQYyUHe/URzryDVwNvTheDj0I7k+U5e7z1ZW3o=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728334AbgHYCgs (ORCPT
+        id S1728081AbgHYCiI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Aug 2020 22:36:48 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:43841 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726113AbgHYCgr (ORCPT
+        Mon, 24 Aug 2020 22:38:08 -0400
+Received: from mail-il1-f194.google.com ([209.85.166.194]:39277 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726113AbgHYCiH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Aug 2020 22:36:47 -0400
-Received: by mail-il1-f195.google.com with SMTP id e11so9147903ils.10;
-        Mon, 24 Aug 2020 19:36:46 -0700 (PDT)
+        Mon, 24 Aug 2020 22:38:07 -0400
+Received: by mail-il1-f194.google.com with SMTP id f12so9149554ils.6;
+        Mon, 24 Aug 2020 19:38:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=UlfbS2vnAzZ5sBtAV+WlmNk8b75VkidkfLid2dc/mRw=;
-        b=fUpYdE94ml7S2E7YNYN3RHGJTEhxwKJHypQELx4baY0MwV72t3WrnauYsI2/MV/eKV
-         bx0P8S0hXjL6mRMdVNaoiDSRRQxQ5BLu6heEGpmBqf5sxs1ZSidIdPLMT+eart2b9DgR
-         7FCGqBaCoonEciS9vrwsDBGfQm2KkDG0cPeHX+qfEQJeTuXY91IMZebQpSm6c9lGWoz5
-         CO7LTGYdKkKYfuh9aVgRLbOyBec0lvXF/GlGcnd7TpytYQ1e7ah1zo+HYXWcPTmpJFU2
-         FQ/m99t85dhUkdXK5Kj5IjQ5WX8u+diGz4xu04W2jcO9gmzOUFjIIZHXadl8tzlNs6/x
-         z80g==
-X-Gm-Message-State: AOAM530GycUiaEpy4Z1V8QCTDTLHyfsRQTfnYViKRUKlg8wqmk155WLv
-        70y1thOGKXQavd9InWhDlg==
-X-Google-Smtp-Source: ABdhPJyluUdv6ckXt6NtvqqOIFO4WPBGXDDadSOzeYergi+1EGQ65T2QUKGU26Hbwt7hRt0m7fVACA==
-X-Received: by 2002:a92:505:: with SMTP id q5mr6873789ile.15.1598323006078;
-        Mon, 24 Aug 2020 19:36:46 -0700 (PDT)
+        bh=vHuWCZoFM8KEH9OXdGLnKVh8KdDE2ghgJSP6XVVfi1k=;
+        b=GT7Kh7dmpwbmyxkGNjv+dHJDPuNnQ+NFdrpkD5EvRNRnDJR/qqNQ1H9hwodzN2swXD
+         2Qxjcd9Z++Noc1m4pVmYH4vIMLbskvE5Sr74Gek5NDnyo9NX3OsRYj+2uvGqHqie0JyP
+         8RmF0yxyiU0hzrX3TAQkiUGSSD6upXE3eqw3XgmacQ+no24w18ceLNWlQLrgfzMwostl
+         pmiug5iT57bE3c1uKDaogs5ALFx8UEon4eNk3kromz5DuDI+0auwffu7yFtFFMQAfQuR
+         SwfpbccyWN8/moRy58tj5LgykNaMVZZ+tArSQ9M+pRJoMyZhC1zAneS9n/rOPZPf5cfG
+         nVZQ==
+X-Gm-Message-State: AOAM531Q1XeOK5A4n0D2dv/YlGj6hBAoA4ypHLvc7W20/NxVjhs7rtdn
+        sfHuSP6SOzRPFTwv9Rj3bQ==
+X-Google-Smtp-Source: ABdhPJxyDT616uQdPaHejXQOiu9bcoPn9AkiEkg6Sluynt9CbmKjrnrd75RY7Yu+d7MHI+Z/K1B02Q==
+X-Received: by 2002:a92:5209:: with SMTP id g9mr7627159ilb.72.1598323085959;
+        Mon, 24 Aug 2020 19:38:05 -0700 (PDT)
 Received: from xps15 ([64.188.179.249])
-        by smtp.gmail.com with ESMTPSA id h7sm8337940ilo.51.2020.08.24.19.36.43
+        by smtp.gmail.com with ESMTPSA id c12sm8217104ilq.79.2020.08.24.19.38.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2020 19:36:45 -0700 (PDT)
-Received: (nullmailer pid 3834766 invoked by uid 1000);
-        Tue, 25 Aug 2020 02:36:42 -0000
-Date:   Mon, 24 Aug 2020 20:36:42 -0600
+        Mon, 24 Aug 2020 19:38:05 -0700 (PDT)
+Received: (nullmailer pid 3836883 invoked by uid 1000);
+        Tue, 25 Aug 2020 02:38:01 -0000
+Date:   Mon, 24 Aug 2020 20:38:01 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     linux-watchdog@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        linux-serial@vger.kernel.org,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Li Yang <leoyang.li@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Frank Li <frank.li@nxp.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-mtd@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, Han Xu <han.xu@nxp.com>,
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2 11/19] dt-bindings: thermal: imx8mm-thermal: Add i.MX
- 8M Nano compatible
-Message-ID: <20200825023642.GA3834715@bogus>
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Li Yang <leoyang.li@nxp.com>, Han Xu <han.xu@nxp.com>,
+        Frank Li <frank.li@nxp.com>, Fugang Duan <fugang.duan@nxp.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH v2 12/19] dt-bindings: mmc: fsl-imx-esdhc: Fix i.MX 8
+ compatible matching
+Message-ID: <20200825023801.GA3835035@bogus>
 References: <20200824162652.21047-1-krzk@kernel.org>
- <20200824162652.21047-11-krzk@kernel.org>
+ <20200824162652.21047-12-krzk@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200824162652.21047-11-krzk@kernel.org>
+In-Reply-To: <20200824162652.21047-12-krzk@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 24 Aug 2020 18:26:44 +0200, Krzysztof Kozlowski wrote:
-> DTSes with new i.MX 8M SoCs introduce their own compatibles so add them
-> to fix dtbs_check warnings like:
+On Mon, Aug 24, 2020 at 06:26:45PM +0200, Krzysztof Kozlowski wrote:
+> The i.MX 8 DTSes use two compatibles so update the binding to fix
+> dtbs_check warnings like:
 > 
->   arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
->     compatible:0: 'fsl,imx8mn-tmu' is not one of ['fsl,imx8mm-tmu', 'fsl,imx8mp-tmu']
->     From schema: Documentation/devicetree/bindings/thermal/imx8mm-thermal.yaml
+>   arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: mmc@30b40000:
+>     compatible: ['fsl,imx8mn-usdhc', 'fsl,imx7d-usdhc'] is too long
+>     From schema: Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
 > 
->   arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
->     compatible: ['fsl,imx8mn-tmu', 'fsl,imx8mm-tmu'] is too long
+>   arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: mmc@30b40000:
+>     compatible: Additional items are not allowed ('fsl,imx7d-usdhc' was unexpected)
 > 
->   arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
->     compatible: Additional items are not allowed ('fsl,imx8mm-tmu' was unexpected)
+>   arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dt.yaml: mmc@30b40000:
+>     compatible: ['fsl,imx8mn-usdhc', 'fsl,imx7d-usdhc'] is too long
 > 
 > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  .../devicetree/bindings/thermal/imx8mm-thermal.yaml    | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
 > 
+> ---
+> 
+> Changes since v1:
+> 1. Handle also fsl,imx8mm-usdhc and fsl,imx8qxp-usdhc
+> ---
+>  .../bindings/mmc/fsl-imx-esdhc.yaml           | 40 +++++++++++--------
+>  1 file changed, 23 insertions(+), 17 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> index 10b45966f1b8..54f05e2a4246 100644
+> --- a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> @@ -21,23 +21,29 @@ description: |
+>  
+>  properties:
+>    compatible:
+> -    enum:
+> -      - fsl,imx25-esdhc
+> -      - fsl,imx35-esdhc
+> -      - fsl,imx51-esdhc
+> -      - fsl,imx53-esdhc
+> -      - fsl,imx6q-usdhc
+> -      - fsl,imx6sl-usdhc
+> -      - fsl,imx6sx-usdhc
+> -      - fsl,imx6ull-usdhc
+> -      - fsl,imx7d-usdhc
+> -      - fsl,imx7ulp-usdhc
+> -      - fsl,imx8mq-usdhc
+> -      - fsl,imx8mm-usdhc
+> -      - fsl,imx8mn-usdhc
+> -      - fsl,imx8mp-usdhc
+> -      - fsl,imx8qm-usdhc
+> -      - fsl,imx8qxp-usdhc
+> +    oneOf:
+> +      - enum:
+> +          - fsl,imx25-esdhc
+> +          - fsl,imx35-esdhc
+> +          - fsl,imx51-esdhc
+> +          - fsl,imx53-esdhc
+> +          - fsl,imx6q-usdhc
+> +          - fsl,imx6sl-usdhc
+> +          - fsl,imx6sx-usdhc
+> +          - fsl,imx6ull-usdhc
+> +          - fsl,imx7d-usdhc
+> +          - fsl,imx7ulp-usdhc
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> +          - fsl,imx8mq-usdhc
+> +          - fsl,imx8mm-usdhc
+> +          - fsl,imx8qxp-usdhc
+
+These should be dropped.
+
+> +      - items:
+> +          - enum:
+> +              - fsl,imx8mm-usdhc
+> +              - fsl,imx8mn-usdhc
+> +              - fsl,imx8mp-usdhc
+> +              - fsl,imx8mq-usdhc
+> +              - fsl,imx8qxp-usdhc
+> +          - const: fsl,imx7d-usdhc
+>  
+>    reg:
+>      maxItems: 1
+> -- 
+> 2.17.1
+> 
