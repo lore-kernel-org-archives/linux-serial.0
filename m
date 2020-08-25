@@ -2,108 +2,139 @@ Return-Path: <SRS0=bk4J=CD=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48521C433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 17:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CF4C433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 19:36:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 252322076C
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 17:13:03 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NnZw/EDH"
+	by mail.kernel.org (Postfix) with ESMTP id D3523207FB
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Aug 2020 19:36:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1598384164;
+	bh=M1J8uZpqgbBk0Tp3JOS/OOQb4fA/JLnQDLU2aYyUXZk=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=PSEy5jBEHJh90Q3mbKyaGioGBuX08WAvSFc4rTdVmYjw+GKgmPoYDdE9Mjh1TTLW1
+	 +S7NEg6pM1wCEBQVEIK4L6utPKMTcCIrW5ERJUwRHCiodngE0CLhvzPn7KB0qHC3i7
+	 tsGQnvsB50ghYJcrIwzvU5J7R9kWcpkmgI+grckw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726225AbgHYRNA (ORCPT
+        id S1726716AbgHYTgA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Aug 2020 13:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726119AbgHYRM5 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Aug 2020 13:12:57 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6557C061574;
-        Tue, 25 Aug 2020 10:12:56 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id w186so5164919pgb.8;
-        Tue, 25 Aug 2020 10:12:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CDJUAd9wV5rW2Ler2a2mLyA8fUH115tJlJPmgB4uBuY=;
-        b=NnZw/EDHYt2NwwW6ntYS4NRclJi2nzS0qnpyZ5bOPH+F1THhlFHTusVgt0akMN1gHg
-         cruU8w15DKhorJi2+8a0CgAleQeml1Ibg+Bkkp6iqxrqbpMl5Xy2PRKkHIHnw8DLUxBK
-         kremo6Ji8Ywg1muwwQh1KGSfzGX3Cn36vVUhiAMBgdn80NgNo0UFCQUJjAkWtuczdWew
-         z37hSfISD+N/dTDknT6czKgEsGrvYbecgW2DvnKaaYUSlC0EmAIadOnbHcNmFbCRAhye
-         H6N+m7rbfMudLxWFTXNzTv/jXRx3QHfkqxyMoixpHjorW6O1PD0kKA0NfuVVX+xAIqjw
-         9HwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CDJUAd9wV5rW2Ler2a2mLyA8fUH115tJlJPmgB4uBuY=;
-        b=C3+NLszTegHPGz7CAggisbF+RnDcLyByNNrQTq95zVmkYQsAk1HoLbPWSN7l7FkcgR
-         CpFlbIM9eOzpVUOFYWWsHfHiH0sBnZ/yFYuHM3Lpz11zs3BX79qpIydLAEdHPnLODX5A
-         klGKmmZaS2yCvddL7Jyfg4xt57/8IB3haefx0U5ehbeWlfltZQe6AiMPZ30Ao8AQqBBM
-         qj6MDphFTGK076IizMGtRs2G+CQOlzHvRRHYodNyIQfHTlqKoFVLiO40egp56QYA+aIf
-         tUa9qPPbzN7hkIb6Xm64qxQITAMC9b9+s3xQ3wDLiq0mHs0gxdar69SkHAy0Afc6OlY6
-         KSHg==
-X-Gm-Message-State: AOAM5300C1fGG3HLLzZOS1E0QUKAZnvI9Ud6ZhWKiXSs37NQvqHokPqn
-        ZD5wxyoFxP+AOPdHAeePo59IrL9xBEiv
-X-Google-Smtp-Source: ABdhPJzhfdy/2hH5np/xlhW3evexK/onWwZg2iqcIhwkYrgFP32U51A3Eh68OeZL4e6QQ2I7bKGm9A==
-X-Received: by 2002:a63:f4a:: with SMTP id 10mr7150104pgp.18.1598375576436;
-        Tue, 25 Aug 2020 10:12:56 -0700 (PDT)
-Received: from PWN ([161.117.80.159])
-        by smtp.gmail.com with ESMTPSA id g8sm14481455pfo.132.2020.08.25.10.12.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2020 10:12:55 -0700 (PDT)
-Date:   Tue, 25 Aug 2020 13:12:49 -0400
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     jslaby@suse.cz, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [PATCH 15/16] vc_screen: extract vcs_read_buf_header
-Message-ID: <20200825171249.GA860904@PWN>
-References: <20200818085706.12163-15-jslaby@suse.cz>
- <20200825164804.860743-1-yepeilin.cs@gmail.com>
- <20200825165935.GA1527003@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200825165935.GA1527003@kroah.com>
+        Tue, 25 Aug 2020 15:36:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39366 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726149AbgHYTf7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 25 Aug 2020 15:35:59 -0400
+Received: from localhost.localdomain (unknown [194.230.155.216])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D9EB72075E;
+        Tue, 25 Aug 2020 19:35:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598384158;
+        bh=M1J8uZpqgbBk0Tp3JOS/OOQb4fA/JLnQDLU2aYyUXZk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HIS7rlbZC99+PFJ+c8TL3+mAFsePhLupI704uWAszxjjQtUK0rRn26QHhWk51eWPf
+         osIIVZV6O8lT/j7Ew+BLD285VUcGHCFOkYLMR0yuSzUtYuTjxNzMDHDy+Ab3kRUQYC
+         hmdIrv3bnxN73fG1c+3EPyro5Z47zPoDJd5DzXyQ=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Anson Huang <Anson.Huang@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>, Han Xu <han.xu@nxp.com>,
+        Frank Li <frank.li@nxp.com>, Fugang Duan <fugang.duan@nxp.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH v3 00/19] dt-bindings / arm64: Cleanup of i.MX 8 bindings
+Date:   Tue, 25 Aug 2020 21:35:17 +0200
+Message-Id: <20200825193536.7332-1-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 06:59:35PM +0200, Greg KH wrote:
-> On Tue, Aug 25, 2020 at 12:48:04PM -0400, Peilin Ye wrote:
-> > Hi all,
-> > 
-> > Link: https://syzkaller.appspot.com/bug?id=f332576321998d36cd07d09c9c1268cfed1895c9
-> > 
-> > As reported by syzbot, vcs_read_buf() is overflowing `con_buf16`, since
-> > this patch removed the following check:
-> > 
-> > -		if (count > CON_BUF_SIZE) {
-> > -			count = CON_BUF_SIZE;
-> > -			filled = count - pos;
-> > -		}
-> > 
-> > Decreasing `count` by `min(HEADER_SIZE - pos, count)` bypasses this check.
-> > Additionally, this patch also removed updates to `skip` and `filled`.
-> > 
-> > What should we do in order to fix it?
-> 
-> This patch is already reverted, and it has been discussed a bit as to
-> how to do this properly if you look at the email where this was reported
-> to us.
+Hi,
 
-Ah, syzbot has reported this issue as two different bugs...I started
-looking into it without noticing your discussion under another thread.
+This is a v3 of cleanup of i.XM 8 bindings and DTSes.
 
-Sorry,
-Peilin Ye
+It is separate patchset from i.MX 8 pin configuration cleanup, which
+also touch the bindings [1]. No dependencies (although in my tree this
+comes first).
+
+Merging
+=======
+There are no dependencies, so dt-bindings could go through Rob's tree,
+DTS through SoC. I think there is no point to push dt-bindings changes
+through subsystem maintainers (gpio, pwm, watchdog, mtd etc). Usually
+Rob has been picking them up.
+
+Changes since v2:
+=================
+1. Add Rob's review,
+2. Correct things pointed during review (see individual patches and
+their change logs).
+
+[1] dt-bindings: mtd: gpmi-nand: Fix matching of clocks on different SoC
+
+Best regards,
+Krzysztof
+
+
+Krzysztof Kozlowski (19):
+  dt-bindings: gpio: fsl-imx-gpio: Add i.MX 8 compatibles
+  dt-bindings: gpio: fsl-imx-gpio: Add gpio-ranges property
+  dt-bindings: gpio: fsl-imx-gpio: Add parsing of hogs
+  dt-bindings: gpio: fsl-imx-gpio: Add power-domains
+  dt-bindings: perf: fsl-imx-ddr: Add i.MX 8M compatibles
+  dt-bindings: pwm: imx-pwm: Add i.MX 8M compatibles
+  dt-bindings: serial: fsl-imx-uart: Add i.MX 8M compatibles
+  dt-bindings: watchdog: fsl-imx-wdt: Add i.MX 8M compatibles
+  dt-bindings: mtd: gpmi-nand: Add i.MX 8M compatibles
+  dt-bindings: reset: fsl,imx7-src: Add i.MX 8M compatibles
+  dt-bindings: thermal: imx8mm-thermal: Add i.MX 8M Nano compatible
+  dt-bindings: mmc: fsl-imx-esdhc: Fix i.MX 8 compatible matching
+  dt-bindings: nvmem: imx-ocotp: Update i.MX 8M compatibles
+  dt-bindings: arm: fsl: Fix Toradex Colibri i.MX 8 binding
+  dt-bindings: arm: fsl: Add ZII Ultra boards binding
+  dt-bindings: interrupt-controller: fsl,irqsteer: Fix compatible
+    matching
+  dt-bindings: serial: fsl-lpuart: Fix compatible matching
+  arm64: dts: imx8mq-evk: Add hog suffix to wl-reg-on
+  arm64: dts: imx8mq-zii-ultra: Add hog suffixes to GPIO hogs
+
+ .../devicetree/bindings/arm/fsl.yaml          | 14 ++++++
+ .../bindings/gpio/fsl-imx-gpio.yaml           | 43 ++++++++++++++++---
+ .../interrupt-controller/fsl,irqsteer.yaml    |  8 ++--
+ .../bindings/mmc/fsl-imx-esdhc.yaml           | 37 ++++++++--------
+ .../devicetree/bindings/mtd/gpmi-nand.yaml    | 18 +++++---
+ .../devicetree/bindings/nvmem/imx-ocotp.yaml  | 38 +++++++++-------
+ .../devicetree/bindings/perf/fsl-imx-ddr.yaml | 16 +++++--
+ .../devicetree/bindings/pwm/imx-pwm.yaml      | 14 ++++--
+ .../bindings/reset/fsl,imx7-src.yaml          | 19 +++++---
+ .../bindings/serial/fsl-imx-uart.yaml         |  4 ++
+ .../bindings/serial/fsl-lpuart.yaml           | 17 +++++---
+ .../bindings/thermal/imx8mm-thermal.yaml      | 10 +++--
+ .../bindings/watchdog/fsl-imx-wdt.yaml        | 11 ++++-
+ arch/arm64/boot/dts/freescale/imx8mq-evk.dts  |  2 +-
+ .../boot/dts/freescale/imx8mq-zii-ultra.dtsi  |  8 ++--
+ 15 files changed, 182 insertions(+), 77 deletions(-)
+
+-- 
+2.17.1
+
