@@ -2,152 +2,134 @@ Return-Path: <SRS0=CfSU=CE=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0ACC433E1
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Aug 2020 13:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FEAC433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Aug 2020 13:43:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A6537214F1
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Aug 2020 13:29:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FHhyO1L8"
+	by mail.kernel.org (Postfix) with ESMTP id 39B2121741
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Aug 2020 13:43:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1598449426;
+	bh=bp5RdPShh4m+p+wKH0LbTr4nyPsyLIDHModZ1ACSoEQ=;
+	h=Date:From:To:Cc:Subject:List-ID:From;
+	b=lSHN4VGb4mgkaxC2aD+J07CU97bJ2iqQgxZSYwd4POVSMcl/KMUpf/qNpwlhvxOXV
+	 Xt5SSCVTXdJ4zgzGJ4/8fiEGOENy7SJyWMIChmTV8Y63r1VX+Id5dvMnEKds0oiKjT
+	 okErctEFfyP8Ul4zNXyfMG4nGKm3PXItfxaJwwB4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730243AbgHZN3s (ORCPT
+        id S1730349AbgHZNnk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Aug 2020 09:29:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729646AbgHZN3l (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Aug 2020 09:29:41 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AECC061574;
-        Wed, 26 Aug 2020 06:29:41 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id q14so1798780wrn.9;
-        Wed, 26 Aug 2020 06:29:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=M20VE+d1SyikYkPKQp699LgJh3dwsjKIjrFsf14di5g=;
-        b=FHhyO1L8sY6MS5WHEtlc4/NqyzCjRgvoNYTuHP/1jtgFJVRj4V50vmQTTaPaHz6fJr
-         HFs4AVo9mww7WCtJpbD5pwq8lPYEVdFdGAxBPUo2KoDz9srxOPAiiCRbXlBg6ZePDSVM
-         xjJQR9XSizQnfbxfYmlisuuEVToUXVWPc0JBpErb0RPzCLVu3kXufV0Ix2PpaJ40eN43
-         fKrkwXshFbA7VtqWVZ9q9ZQHCgOBqcPCgYFECsH+vSLNtttBxn5fWZZcWa+4ZLP+uNEU
-         zxYyAtAGzcJp2JR8yrHKNX7/PdXgic78a0DYNbWwv4GeePrZHPU+Tz4hFJkOEyBezK4r
-         ptFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=M20VE+d1SyikYkPKQp699LgJh3dwsjKIjrFsf14di5g=;
-        b=bAhI2rTO1bGIbqKdiSUp75jEDkJkS0zbOnf8YgJaYGfAmTJ+iVZePWpREnf1PqAw2/
-         a7s9CBKOF5dmUUnVhM4nqfCP6PHmpMgFw3si+9UXZkwwcKBFjfoK9q9ZXUH3lO9to5ol
-         78vSRA6TjiFWNHJD9T0GScGhp+LC1ZHZthr3aOIo+W84v9uIkEGa/UrvtOMdJICsWp6f
-         ArG/zQMTO4An5/MhqRWtCLNkWtWyKGEdH/MYvV9exKywu/qVVFIIUPAeHCfTO1Hh2lW+
-         JdeANzDfO9ck/c5B92MHXDHKIGeTq2/AId28WqqAjj+Wk+FE2s/KNPVZCzZ80cApanqc
-         3COw==
-X-Gm-Message-State: AOAM530fpxU46559lUOW7rvQ2DZaWoAEwXwI7g7dFtR7Oh9M1DskUb8h
-        327Iu9lWCe7VMy9tSedtl5pE0YmjhS8=
-X-Google-Smtp-Source: ABdhPJzPk54iIX/ihiy1jYrgubw5zGiw5BO3bEK5G402jVzuUDX27vGZrhSkq1vRpVx7mbIeReCj3Q==
-X-Received: by 2002:adf:fd48:: with SMTP id h8mr4287642wrs.121.1598448579894;
-        Wed, 26 Aug 2020 06:29:39 -0700 (PDT)
-Received: from [192.168.2.41] ([46.227.18.67])
-        by smtp.gmail.com with ESMTPSA id 5sm5874350wmg.32.2020.08.26.06.29.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Aug 2020 06:29:39 -0700 (PDT)
-Subject: Re: [PATCH 2/4] tty: atmel_serial: convert tasklets to use new
- tasklet_setup() API
-To:     Allen Pais <allen.cryptic@gmail.com>, gregkh@linuxfoundation.org
-Cc:     keescook@chromium.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Allen Pais <allen.lkml@gmail.com>,
-        Romain Perier <romain.perier@gmail.com>
-References: <20200817085921.26033-1-allen.cryptic@gmail.com>
- <20200817085921.26033-3-allen.cryptic@gmail.com>
-From:   Richard Genoud <richard.genoud@gmail.com>
-Message-ID: <422885e6-9ffe-e525-1ea1-3cf4e6d3bf7c@gmail.com>
-Date:   Wed, 26 Aug 2020 15:29:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        Wed, 26 Aug 2020 09:43:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52618 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730140AbgHZNnO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 26 Aug 2020 09:43:14 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 062A7208E4;
+        Wed, 26 Aug 2020 13:42:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598449362;
+        bh=bp5RdPShh4m+p+wKH0LbTr4nyPsyLIDHModZ1ACSoEQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=rqjb1gR1SvucF/OIj7B+TfPHgx+kY7CJx7Wyb6vpn5lukSMPhIfy93fYkDEgZHmnq
+         yRm4gmaewM6OrI8ooIG19Rcd9ZDRSE6hH4ZsCIXOJug6aINP/gOQ2dl1BwcAOhtovw
+         BAxKNuMrXL5aZfpUZd8KXA/3A+93XpvCND6K+mlQ=
+Date:   Wed, 26 Aug 2020 15:42:57 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.9-rc3
+Message-ID: <20200826134257.GA3882407@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20200817085921.26033-3-allen.cryptic@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 17/08/2020 à 10:59, Allen Pais a écrit :
-> From: Allen Pais <allen.lkml@gmail.com>
-> 
-> In preparation for unconditionally passing the
-> struct tasklet_struct pointer to all tasklet
-> callbacks, switch to using the new tasklet_setup()
-> and from_tasklet() to pass the tasklet pointer explicitly.
-> 
-> Signed-off-by: Romain Perier <romain.perier@gmail.com>
-> Signed-off-by: Allen Pais <allen.lkml@gmail.com>
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
+The following changes since commit 9123e3a74ec7b934a4a099e98af6a61c2f80bbf5:
 
-> ---
->  drivers/tty/serial/atmel_serial.c | 20 ++++++++++----------
->  1 file changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index e43471b33710..a9c47f56e994 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -1722,10 +1722,11 @@ static int atmel_prepare_rx_pdc(struct uart_port *port)
->  /*
->   * tasklet handling tty stuff outside the interrupt handler.
->   */
-> -static void atmel_tasklet_rx_func(unsigned long data)
-> +static void atmel_tasklet_rx_func(struct tasklet_struct *t)
->  {
-> -	struct uart_port *port = (struct uart_port *)data;
-> -	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	struct atmel_uart_port *atmel_port = from_tasklet(atmel_port, t,
-> +							  tasklet_rx);
-> +	struct uart_port *port = &atmel_port->uart;
->  
->  	/* The interrupt handler does not take the lock */
->  	spin_lock(&port->lock);
-> @@ -1733,10 +1734,11 @@ static void atmel_tasklet_rx_func(unsigned long data)
->  	spin_unlock(&port->lock);
->  }
->  
-> -static void atmel_tasklet_tx_func(unsigned long data)
-> +static void atmel_tasklet_tx_func(struct tasklet_struct *t)
->  {
-> -	struct uart_port *port = (struct uart_port *)data;
-> -	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	struct atmel_uart_port *atmel_port = from_tasklet(atmel_port, t,
-> +							  tasklet_tx);
-> +	struct uart_port *port = &atmel_port->uart;
->  
->  	/* The interrupt handler does not take the lock */
->  	spin_lock(&port->lock);
-> @@ -1911,10 +1913,8 @@ static int atmel_startup(struct uart_port *port)
->  	}
->  
->  	atomic_set(&atmel_port->tasklet_shutdown, 0);
-> -	tasklet_init(&atmel_port->tasklet_rx, atmel_tasklet_rx_func,
-> -			(unsigned long)port);
-> -	tasklet_init(&atmel_port->tasklet_tx, atmel_tasklet_tx_func,
-> -			(unsigned long)port);
-> +	tasklet_setup(&atmel_port->tasklet_rx, atmel_tasklet_rx_func);
-> +	tasklet_setup(&atmel_port->tasklet_tx, atmel_tasklet_tx_func);
->  
->  	/*
->  	 * Initialize DMA (if necessary)
-> 
+  Linux 5.9-rc1 (2020-08-16 13:04:57 -0700)
 
-Thanks !
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.9-rc3
+
+for you to fetch changes up to ea1fc02e12b647d8dd7515d1dba137847d8e951d:
+
+  tty: serial: imx: add dependence and build for earlycon (2020-08-18 13:54:34 +0200)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 5.9-rc3
+
+Here are a few small TTY/Serial/vt fixes for 5.9-rc3
+
+Included in here are:
+	- qcom serial fixes
+	- vt ioctl and core bugfixes
+	- pl011 serial driver fixes
+	- 8250 serial driver fixes
+	- other misc serial driver fixes
+
+and for good measure:
+	- fbcon fix for syzbot found problem.
+
+All of these have been in linux-next for a while with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Douglas Anderson (1):
+      serial: qcom_geni_serial: Fix recent kdb hang
+
+Fugang Duan (1):
+      tty: serial: imx: add dependence and build for earlycon
+
+George Kennedy (2):
+      fbcon: prevent user font height or width change from causing potential out-of-bounds access
+      vt_ioctl: change VT_RESIZEX ioctl to check for error return from vc_resize()
+
+Holger Assmann (1):
+      serial: stm32: avoid kernel warning on absence of optional IRQ
+
+John Stultz (1):
+      tty: serial: qcom_geni_serial: Drop __init from qcom_geni_console_setup
+
+Lukas Wunner (2):
+      serial: pl011: Don't leak amba_ports entry on driver register error
+      serial: pl011: Fix oops on -EPROBE_DEFER
+
+Sergey Senozhatsky (1):
+      serial: 8250: change lock order in serial8250_do_startup()
+
+Tamseel Shams (1):
+      serial: samsung: Removes the IRQ not found warning
+
+Tetsuo Handa (1):
+      vt: defer kfree() of vc_screenbuf in vc_do_resize()
+
+Valmer Huhn (1):
+      serial: 8250_exar: Fix number of ports for Commtech PCIe cards
+
+ drivers/tty/serial/8250/8250_exar.c   | 24 +++++++++++++++++++++---
+ drivers/tty/serial/8250/8250_port.c   |  9 ++++++---
+ drivers/tty/serial/Kconfig            |  1 +
+ drivers/tty/serial/Makefile           |  1 +
+ drivers/tty/serial/amba-pl011.c       | 16 +++++++++-------
+ drivers/tty/serial/qcom_geni_serial.c | 11 ++++++++---
+ drivers/tty/serial/samsung_tty.c      |  8 +++++---
+ drivers/tty/serial/stm32-usart.c      |  2 +-
+ drivers/tty/vt/vt.c                   |  5 +++--
+ drivers/tty/vt/vt_ioctl.c             | 12 +++++++++++-
+ drivers/video/fbdev/core/fbcon.c      | 25 +++++++++++++++++++++++--
+ 11 files changed, 89 insertions(+), 25 deletions(-)
