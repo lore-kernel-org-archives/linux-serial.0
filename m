@@ -1,106 +1,149 @@
-Return-Path: <SRS0=fONL=CF=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=9Cit=CG=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E613C433E1
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Aug 2020 15:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE4BC433E7
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Aug 2020 06:08:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3C1E322B4E
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Aug 2020 15:23:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 87CF820CC7
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Aug 2020 06:08:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T+RtF9Wl"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dQYbjhEl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728625AbgH0Lao (ORCPT
+        id S1728001AbgH1GIV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Aug 2020 07:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        Fri, 28 Aug 2020 02:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728550AbgH0L37 (ORCPT
+        with ESMTP id S1727922AbgH1GIR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Aug 2020 07:29:59 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C332C06123E;
-        Thu, 27 Aug 2020 04:08:34 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id q16so2729576ybk.6;
-        Thu, 27 Aug 2020 04:08:34 -0700 (PDT)
+        Fri, 28 Aug 2020 02:08:17 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CFAC061232
+        for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2020 23:08:15 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id ls14so51433pjb.3
+        for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2020 23:08:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4AC1iNQgWZrkBSCQYpKpySGolDqTh2HDf1hkAeZFNb4=;
-        b=T+RtF9WlK+QYlzaFRforZObowt16Z/icVvaSdm1jjwL0BDGUHQxVhiDeSCIDIn/cF4
-         +Jfk9BSyfhzclpoE+pdql83jioly+c2MdVx6NLOqCLqCWsfKn3Ao1cjYW7XGKcbi7b+U
-         lMPm9mwtitTgaESAs6c79YF6oXOk0GFbAjfy2CbREnXE5LP9HiOSzDqqm6SpSwKIwp78
-         jol6U5yB2v5SJpmbkCRsn9lIz1UpWha3gERsgWwwi0BiYzt2T8ctaMSbXxTOd937vCr6
-         +e/ereWKyJnAtDM99NFXloqA5EQ1i1oc8Q08QBJG2EdSdwUiYA2aTShsnaRZ5mV5pyJT
-         LM7A==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wkk0kqQojZrEOjifkrPuQd7LDxgIRSjnsXOzLYLA0o8=;
+        b=dQYbjhElGdyqNV6ZV4eRZLnjn+zjUbF+jtnas/LabHDnJ+Bjn0HtzNQmB320LDS+96
+         fhlB4zaGpJR3quVew2N2RhJDZht63NvQK61dKvUxIdfZNQr5KwhfqvJE+FSUJjkHylGV
+         PC5K5iEgtt/x33wvKqqocbVo9geCyxNA+eFluF5Sjx/AwofF1lbAbX0nadTZmF1OliRg
+         Z3+2f7jPjXKbtXdaj8DMQOeqbpZsxGr89tRXm8wbD7Z7MCIMpyZv6OdZAIBZulWbkBZa
+         4jvONY/qfEHHjj4vLYdK5/UAxUyH3Wn35F3H3242AshY2o6tOPC7VyXzMc9RqWL3ZJ+4
+         Be1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4AC1iNQgWZrkBSCQYpKpySGolDqTh2HDf1hkAeZFNb4=;
-        b=r04hRvZH6rcwvRX+/cRGvUFv/2GkV3XgabSorz8yILWPdCehOTI2OO+ohm+29kz8H2
-         /IJFFb9afn0OBe4o/xBJnn9EeN012EA2Yb31d5oPwYacFBRxGKfFnwA+COBEFRgZrRON
-         y47z4xOva9+tJNnKIhrxOjlqB4494nnY0iOYi/pIT02T9X+TlLciJlT8YWhyZWoPUL/U
-         1yqG3SPPMWegXE0/M0UKPIepbIQiOK/M3GW1nJKr/6djtdwuB1RHSQEh+CgKl/LfwwZr
-         PztxWNgFgyeQI1EtM2ouNM+X2cIVoahXLkdOtRjRR9K7CqfSsQzx/fNzhyFz8pkYYijW
-         Lbww==
-X-Gm-Message-State: AOAM5307fAgGfz9DoT3BBnMCsuWPXrf4iuHC+A55rVifiBN0DL2MD9q/
-        8ZYokM/uCiAn6XVYB64uIid7qAKWbddK5RCXWaY=
-X-Google-Smtp-Source: ABdhPJxqcVtXp1n3gyHbu5k3vj5n974w3z1wdNTj6pVg7CQ0rfbSLCDrB4IgRwp3FjMCjoGv8C0ToybrrjeIiLUlXDE=
-X-Received: by 2002:a25:8149:: with SMTP id j9mr28989594ybm.214.1598526513604;
- Thu, 27 Aug 2020 04:08:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <1588542414-14826-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1588542414-14826-6-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1588542414-14826-6-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Thu, 27 Aug 2020 12:08:07 +0100
-Message-ID: <CA+V-a8v5CtxJQxjSWcvJrPtf9JyYKZeACdc3as_hjM710pk1AQ@mail.gmail.com>
-Subject: Re: [PATCH v2 05/10] dt-bindings: renesas,rcar-dmac: Document r8a7742 support
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wkk0kqQojZrEOjifkrPuQd7LDxgIRSjnsXOzLYLA0o8=;
+        b=M/twxdncC01GeG1HWbiRddnrswTU/WdtTc88V8JRv/IJXDWDQn/yy70JvhORvfPX+j
+         i4qONK9XGtPoqlsOd+qndre6GJd7q6LTXg6J64F1ksPMpTvHnBsaPx2ZrKcmt3iOGBh7
+         6Hs7A1Ft7hoL6AAdnIQRbqBP9xxwxJTJd833eZidwA4orM86FRlxNI6jkiZcsMWtRWHb
+         CAwEaWj2b2B9/uSfQ7oD5wPs6SoZCLonqMnWpuHBjQDNWHMLWX2G7zXiOtcO7gPFPfAT
+         qMxGpsz/GYB4za0J8xu0sCxOFw+GDRVI4N3DgLvjtEWxt/Lhxw2BrGkIw3QS9uLk2qY2
+         eyGw==
+X-Gm-Message-State: AOAM532evwT5T3uKuGtmnrKNaIqB/JUe+mzMDW394R5BT+8OIJVCkpy2
+        XSw4jFz2xP2s5o5/xNTPK0DpjA==
+X-Google-Smtp-Source: ABdhPJwbf3i6rXPmZ0ExE+Q7jiAQQHIVdD9AnhEKARQdQY7dJTgP0tK4U6F2U2zkZN0+YzfEAQJ7Bw==
+X-Received: by 2002:a17:90a:d3c2:: with SMTP id d2mr303366pjw.112.1598594894529;
+        Thu, 27 Aug 2020 23:08:14 -0700 (PDT)
+Received: from localhost ([122.167.135.199])
+        by smtp.gmail.com with ESMTPSA id n17sm304177pgg.6.2020.08.27.23.08.13
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Aug 2020 23:08:13 -0700 (PDT)
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     rnayak@codeaurora.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Fabio Estevam <festevam@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jirislaby@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Qiang Yu <yuq825@gmail.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rob Clark <robdclark@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sean Paul <sean@poorly.run>, Shawn Guo <shawnguo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        lima@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Subject: [PATCH V2 0/8] opp: Unconditionally call dev_pm_opp_of_remove_table()
+Date:   Fri, 28 Aug 2020 11:37:45 +0530
+Message-Id: <cover.1598594714.git.viresh.kumar@linaro.org>
+X-Mailer: git-send-email 2.25.0.rc1.19.g042ed3e048af
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Vinod,
+Hello,
 
-On Sun, May 3, 2020 at 10:47 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> Renesas RZ/G SoC also have the R-Car gen2/3 compatible DMA controllers.
-> Document RZ/G1H (also known as R8A7742) SoC bindings.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  Documentation/devicetree/bindings/dma/renesas,rcar-dmac.yaml | 1 +
->  1 file changed, 1 insertion(+)
->
-This patch is not present in linux-next yet, could you please take care of it.
+This cleans up some of the user code around calls to
+dev_pm_opp_of_remove_table().
 
-Cheers,
-Prabhakar
+All the patches can be picked by respective maintainers directly except
+for the last patch, which needs the previous two to get merged first.
+
+These are based for 5.9-rc1.
+
+Rajendra, Since most of these changes are related to qcom stuff, it
+would be great if you can give them a try. I wasn't able to test them
+due to lack of hardware.
+
+Ulf, I had to revise the sdhci patch, sorry about that. Please pick this
+one.
+
+Diff between V1 and V2 is mentioned in each of the patches separately.
+
+Viresh Kumar (8):
+  cpufreq: imx6q: Unconditionally call dev_pm_opp_of_remove_table()
+  drm/lima: Unconditionally call dev_pm_opp_of_remove_table()
+  drm/msm: Unconditionally call dev_pm_opp_of_remove_table()
+  mmc: sdhci-msm: Unconditionally call dev_pm_opp_of_remove_table()
+  spi: spi-geni-qcom: Unconditionally call dev_pm_opp_of_remove_table()
+  spi: spi-qcom-qspi: Unconditionally call dev_pm_opp_of_remove_table()
+  tty: serial: qcom_geni_serial: Unconditionally call
+    dev_pm_opp_of_remove_table()
+  qcom-geni-se: remove has_opp_table
+
+ drivers/cpufreq/imx6q-cpufreq.c         | 10 ++--------
+ drivers/gpu/drm/lima/lima_devfreq.c     |  6 +-----
+ drivers/gpu/drm/lima/lima_devfreq.h     |  1 -
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 14 +++++---------
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h |  1 -
+ drivers/gpu/drm/msm/dsi/dsi_host.c      |  8 ++------
+ drivers/mmc/host/sdhci-msm.c            | 14 +++++---------
+ drivers/spi/spi-geni-qcom.c             | 13 +++++--------
+ drivers/spi/spi-qcom-qspi.c             | 15 ++++++---------
+ drivers/tty/serial/qcom_geni_serial.c   | 13 +++++--------
+ include/linux/qcom-geni-se.h            |  2 --
+ 11 files changed, 31 insertions(+), 66 deletions(-)
+
+
+base-commit: 9123e3a74ec7b934a4a099e98af6a61c2f80bbf5
+-- 
+2.25.0.rc1.19.g042ed3e048af
+
