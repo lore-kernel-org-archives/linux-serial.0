@@ -2,85 +2,138 @@ Return-Path: <SRS0=jZzm=CJ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C69C2BB84
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Aug 2020 03:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5B2C433E2
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Aug 2020 11:22:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9D8842100A
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Aug 2020 03:25:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598844311;
-	bh=OTw00Oc3Wju4RQXg/5vC2M1kiJAGqeJnd4hSVyX2Nho=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ODJciLK8n+tWQ/QwMSrnJJbxlj9pxh9rWhW5eY5zevAU4kYIG3VCDL4curd+Jzc/H
-	 mV9E3S4b7dlhaCaqEBZbJ2W1qBhs1QDHHBdCX9vnzHwhsVYwF0fQYerXc23OnKAcUM
-	 +NtqsEqe2D1kejf+zYkJfp71Um5TYNuQwTX2DMFc=
+	by mail.kernel.org (Postfix) with ESMTP id A51A42073A
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Aug 2020 11:22:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FNd/akIM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727929AbgHaDZK (ORCPT
+        id S1726546AbgHaLWO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 30 Aug 2020 23:25:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56762 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727043AbgHaDZK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 30 Aug 2020 23:25:10 -0400
-Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E36D4206A5;
-        Mon, 31 Aug 2020 03:25:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598844309;
-        bh=OTw00Oc3Wju4RQXg/5vC2M1kiJAGqeJnd4hSVyX2Nho=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rVLLTDyxwzW/PJVfK7yIzJrqtfSe/2PHz//izP4j8Y1/zK30FLylp1/r8uA1YD9EQ
-         O/Eo6rpof3wr8IQspo+5OD8HskGGJ+jFmTGDC2D7EL/pU3JUHqIWUqAfFfnhCYU3Y9
-         GIa7il8sA0rs8/VrFkDjwwIbiGp4mlzE94bl2Bvo=
-Date:   Mon, 31 Aug 2020 11:25:01 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Mon, 31 Aug 2020 07:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726515AbgHaLR6 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 31 Aug 2020 07:17:58 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856C4C06123D
+        for <linux-serial@vger.kernel.org>; Mon, 31 Aug 2020 04:09:42 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id k15so381582pfc.12
+        for <linux-serial@vger.kernel.org>; Mon, 31 Aug 2020 04:09:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=E02AUVeFQVT/Yby1TXwpBy6LjVsB+G1ulzMrGLTQLsU=;
+        b=FNd/akIMkL3eaopJcpGVw841qNXHifVpshOPHlo/uuzzMC1uIxR4rpF1cuEx20MJW8
+         zRU3b7IXYtOiWUHE2usegI5lqkz29pQSEe7lc2Zn6kFtFUMZkTsgPTu53uMWFebd0coM
+         iLMT0oFYlNnVymD+VsZPkcbeOQMjtAIsBp7DxOf1eo/wPc9H61/kybyugntRfQEZbv8D
+         gwC6Tj3nw1Cui3GshhMMxUmIqh6mQUDR4d6WK83d4fAnnl0g+V9RF79Hz/YfHby4mlw7
+         mR3PyKcjWV5VnHdjRO8FhwNUz77opdus4HEGeEpTBOw/d8C3bmxPjA6qWJWpAFad6iz7
+         g8gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=E02AUVeFQVT/Yby1TXwpBy6LjVsB+G1ulzMrGLTQLsU=;
+        b=cx3rPTO2bP7h8YrjVWPjDHREghjqHqPi/uvy4E3OkFC9zCxCqHKaNUulBfyiS8vMP7
+         23KGfcFVyGHMzvpX6l1B6RT0qs/wyzHeJgDP+xcsxGqI27ujremCsB37uxyTPQFvK8ul
+         AWSpPxtumz/e9+cWZ2iE11MaSjKuezXE7NqK7PKdb7chYE8eiG9Fa+qkWZFWV7qhcdhy
+         6UUq0EFqcmRtcEfU00sLCy81bCWF63ktzilvOh4oAJATREf519p9KjMJZvvHm1mG1WfC
+         cqn5HTcoSCbyNU6dLFO0RUNPEvXtcwK10W4rQqHYDUMdlJGBQdDBKAi28wxUg7nitg98
+         2cQg==
+X-Gm-Message-State: AOAM533oilYL9vkuhRWI2Nn2x2lH1NG6TWcqr+049om2oXO+5h5DCH1q
+        fQpHwUR4n3XQjG8pib2LpxNvfA==
+X-Google-Smtp-Source: ABdhPJzSBT56cUJvUmQ1jeDl1RjMGJiu46b0HYsbuCGKuS2QrgmD92t81oKVAXJFmHCb4EhXLUuNfg==
+X-Received: by 2002:aa7:9207:: with SMTP id 7mr819876pfo.156.1598872182053;
+        Mon, 31 Aug 2020 04:09:42 -0700 (PDT)
+Received: from localhost ([122.167.135.199])
+        by smtp.gmail.com with ESMTPSA id u16sm7495367pfn.134.2020.08.31.04.09.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 31 Aug 2020 04:09:41 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 16:39:39 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     rnayak@codeaurora.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
         Fabio Estevam <festevam@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Anson Huang <Anson.Huang@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>, Han Xu <han.xu@nxp.com>,
-        Frank Li <frank.li@nxp.com>, Fugang Duan <fugang.duan@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v3 19/19] arm64: dts: imx8mq-zii-ultra: Add hog suffixes
- to GPIO hogs
-Message-ID: <20200831032501.GI4488@dragon>
-References: <20200825193536.7332-1-krzk@kernel.org>
- <20200825193536.7332-20-krzk@kernel.org>
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Qiang Yu <yuq825@gmail.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rob Clark <robdclark@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sean Paul <sean@poorly.run>, Shawn Guo <shawnguo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        lima@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Subject: Re: [PATCH V2 0/8] opp: Unconditionally call
+ dev_pm_opp_of_remove_table()
+Message-ID: <20200831110939.qnyugmhajkg36gzw@vireshk-i7>
+References: <cover.1598594714.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200825193536.7332-20-krzk@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <cover.1598594714.git.viresh.kumar@linaro.org>
+User-Agent: NeoMutt/20180716-391-311a52
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 09:35:36PM +0200, Krzysztof Kozlowski wrote:
-> According to device tree specification, device node names should be
-> somewhat generic and reflecting the function of the device so add the
-> "hog" suffixes to all GPIO hog nodes.
+On 28-08-20, 11:37, Viresh Kumar wrote:
+> Hello,
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> This cleans up some of the user code around calls to
+> dev_pm_opp_of_remove_table().
+> 
+> All the patches can be picked by respective maintainers directly except
+> for the last patch, which needs the previous two to get merged first.
+> 
+> These are based for 5.9-rc1.
+ 
+> Viresh Kumar (8):
+>   cpufreq: imx6q: Unconditionally call dev_pm_opp_of_remove_table()
+>   drm/lima: Unconditionally call dev_pm_opp_of_remove_table()
+>   drm/msm: Unconditionally call dev_pm_opp_of_remove_table()
+>   mmc: sdhci-msm: Unconditionally call dev_pm_opp_of_remove_table()
+>   spi: spi-geni-qcom: Unconditionally call dev_pm_opp_of_remove_table()
+>   spi: spi-qcom-qspi: Unconditionally call dev_pm_opp_of_remove_table()
+>   tty: serial: qcom_geni_serial: Unconditionally call
+>     dev_pm_opp_of_remove_table()
+>   qcom-geni-se: remove has_opp_table
 
-Applied, thanks.
+During testing by some of the Linaro folks on linux-next, we found out
+that there was a bug in the OPP core (which makes the kernel crash in
+some corner cases with these patches) for which I have sent a fix
+today which should be part of 5.9-rc4:
+
+https://lore.kernel.org/lkml/922ff0759a16299e24cacfc981ac07914d8f1826.1598865786.git.viresh.kumar@linaro.org/
+
+Please apply the patches over rc4 only once it comes out (I will
+confirm by that time once the patch gets merged). Else you guys can
+provide your Ack and I can take the patches through OPP tree.
+
+-- 
+viresh
