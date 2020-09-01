@@ -2,68 +2,90 @@ Return-Path: <SRS0=lI39=CK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F29D2C433E7
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Sep 2020 12:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFD1C433E2
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Sep 2020 15:31:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D5D0F206EF
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Sep 2020 12:45:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CED5221548
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Sep 2020 15:31:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1598974277;
+	bh=hRHvPfyODUedIyJaZ2MhAzqCT6E0WyLbz0tk8Et2M10=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=dkxjHP7oZVcGiN9w1pY0JnfUi2ifumgOaGxIWuEPpse/u2ySmGbGU/oWAhqu6nWzg
+	 cLt/hbXaumbk6k7Z9gR/f2bj8/enZwjWJpiTuVzUgpncMLJgAs5Wr+Ept80F5MeJAN
+	 6Kn2UJVIPi7qQqOssPOBIoCGOjy89rjNfILvi/Zs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbgIAMow (ORCPT
+        id S1730685AbgIAPbQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Sep 2020 08:44:52 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:60422 "EHLO mail.bugwerft.de"
+        Tue, 1 Sep 2020 11:31:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34034 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728143AbgIAMND (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Sep 2020 08:13:03 -0400
-X-Greylist: delayed 542 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Sep 2020 08:13:02 EDT
-Received: from zenbar.fritz.box (p57bc9c6c.dip0.t-ipconnect.de [87.188.156.108])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 506C04553E4;
-        Tue,  1 Sep 2020 12:03:36 +0000 (UTC)
-From:   Daniel Mack <daniel@zonque.org>
-To:     linux-serial@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        Daniel Mack <daniel@zonque.org>
-Subject: [PATCH] sc16is7xx: Set iobase to device index
-Date:   Tue,  1 Sep 2020 14:03:29 +0200
-Message-Id: <20200901120329.4176302-1-daniel@zonque.org>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730681AbgIAPbO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 1 Sep 2020 11:31:14 -0400
+Received: from kozik-lap.mshome.net (unknown [194.230.155.106])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E8E20207D3;
+        Tue,  1 Sep 2020 15:31:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598974273;
+        bh=hRHvPfyODUedIyJaZ2MhAzqCT6E0WyLbz0tk8Et2M10=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FgtprEiaMA12V+a4eyAMQvqBuq0zq5O53C9sAgIyGMapnQCQgnol0g7xMHGMnvaY/
+         HisXdopg/V+c4VPOzODcDXCuOYVh1XgZbJXFyUpA8xnOFKD68ZN4Z+4pyWDrzmiESN
+         qZG//G04yUF3xG9pRIjGO0wUSjRW/psTPS5kioy8=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH 2/2] serial: core: Simplify with dev_err_probe()
+Date:   Tue,  1 Sep 2020 17:31:00 +0200
+Message-Id: <20200901153100.18827-2-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200901153100.18827-1-krzk@kernel.org>
+References: <20200901153100.18827-1-krzk@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some derivates of sc16is7xx devices expose more than one tty device to
-userspace. If multiple such devices exist in a system, userspace
-currently has no clean way to infer which tty maps to which physical
-line.
+Common pattern of handling deferred probe can be simplified with
+dev_err_probe().  Less code and the error value gets printed.
 
-Set the .iobase value to the relative index within the device to allow
-infering the order through sysfs.
-
-Signed-off-by: Daniel Mack <daniel@zonque.org>
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/tty/serial/sc16is7xx.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/serial_core.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index d2e5c6c866439..a3085b90e2023 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1272,6 +1272,7 @@ static int sc16is7xx_probe(struct device *dev,
- 		s->p[i].port.type	= PORT_SC16IS7XX;
- 		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
- 		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
-+		s->p[i].port.iobase	= i;
- 		s->p[i].port.iotype	= UPIO_PORT;
- 		s->p[i].port.uartclk	= freq;
- 		s->p[i].port.rs485_config = sc16is7xx_config_rs485;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index f797c971cd82..2c52e0457faf 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3264,9 +3264,7 @@ int uart_get_rs485_mode(struct uart_port *port)
+ 	if (IS_ERR(port->rs485_term_gpio)) {
+ 		ret = PTR_ERR(port->rs485_term_gpio);
+ 		port->rs485_term_gpio = NULL;
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(dev, "Cannot get rs485-term-gpios\n");
+-		return ret;
++		return dev_err_probe(dev, ret, "Cannot get rs485-term-gpios\n");
+ 	}
+ 
+ 	return 0;
 -- 
-2.26.2
+2.17.1
 
