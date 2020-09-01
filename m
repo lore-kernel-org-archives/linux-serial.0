@@ -2,137 +2,65 @@ Return-Path: <SRS0=lI39=CK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=0.1 required=3.0 tests=BAYES_50,
+	FREEMAIL_REPLYTO_END_DIGIT,HEADER_FROM_DIFFERENT_DOMAINS,LOTS_OF_MONEY,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBED4C433E6
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Sep 2020 16:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A037C433E2
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Sep 2020 17:17:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A82B12065F
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Sep 2020 16:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598978073;
-	bh=DcBlB18rbAsmyBD9sb9dDR94iJ5BAmzF5Xo0e4RxksY=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=zd2ycYAFyVXxJ6uWOyWp+wBvsE4twnpRY4FBfJWL6204ETWDPWMZ8C0RIkaFnWHND
-	 nATEzBDrA5NrCkQYfPoT2Fv76/zQYdIVKpw/ILqR4SmeIVH3tLSEvGwAlRKPAzmHO0
-	 W+In1uE2eho+YWui1UDFSC8aS9OSDjEWY+aMo2MM=
+	by mail.kernel.org (Postfix) with ESMTP id 0764220866
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Sep 2020 17:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730804AbgIAQeb (ORCPT
+        id S1728585AbgIARRD convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Sep 2020 12:34:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33878 "EHLO mail.kernel.org"
+        Tue, 1 Sep 2020 13:17:03 -0400
+Received: from mx.metalurgs.lv ([81.198.125.103]:59079 "EHLO mx.metalurgs.lv"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730671AbgIAPbK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Sep 2020 11:31:10 -0400
-Received: from kozik-lap.mshome.net (unknown [194.230.155.106])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8B96C21527;
-        Tue,  1 Sep 2020 15:31:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598974269;
-        bh=DcBlB18rbAsmyBD9sb9dDR94iJ5BAmzF5Xo0e4RxksY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=sBJjxRcFa7GzT6SamUEOBeBB4W2Ofp99PojRb8SLlckVfMyokPt9uatH0MnbBHXpD
-         E8Z30W3gjJKJ6u338nbOuu0x4gUCBRo2RSLnm9eEEDESkEIjVomd8K6GYBjLpdEsuM
-         NxbukGKI9+I10NsKUnvx2pFV+yCHg7r7Zm3Assm8=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH 1/2] serial: 8250: Simplify with dev_err_probe()
-Date:   Tue,  1 Sep 2020 17:30:59 +0200
-Message-Id: <20200901153100.18827-1-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
+        id S1732591AbgIARQ5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 1 Sep 2020 13:16:57 -0400
+Received: from mx.metalurgs.lv (localhost [127.0.0.1])
+        by mx.metalurgs.lv (Postfix) with ESMTP id 1C38062F11
+        for <linux-serial@vger.kernel.org>; Tue,  1 Sep 2020 20:07:47 +0300 (EEST)
+Received: from kas30pipe.localhost (localhost [127.0.0.1])
+        by mx.metalurgs.lv (Postfix) with ESMTP id B0A6A69681
+        for <linux-serial@vger.kernel.org>; Tue,  1 Sep 2020 19:47:54 +0300 (EEST)
+Received: by mx.metalurgs.lv (Postfix, from userid 1005)
+        id AF28966A43; Tue,  1 Sep 2020 18:50:01 +0300 (EEST)
+Received: from [192.168.8.10] (ip168-243-231-195.intercom.com.sv [168.243.231.195])
+        (Authenticated sender: admin)
+        by mx.metalurgs.lv (Postfix) with ESMTPA id 71BA15046
+        for <linux-serial@vger.kernel.org>; Tue,  1 Sep 2020 18:13:18 +0300 (EEST)
+MIME-Version: 1.0
+Content-Description: Mail message body
+To:     linux-serial@vger.kernel.org
+From:   "Angel Investors" <info@unituscapital.com>
+Date:   Tue, 01 Sep 2020 09:13:11 -0600
+Reply-To: andrewmacklin12@gmail.com
+X-SpamTest-Envelope-From: info@unituscapital.com
+X-SpamTest-Group-ID: 00000000
+X-SpamTest-Info: Profiles 71303 [Jan 01 2015]
+X-SpamTest-Info: {RECEIVED: dynamic ip detected}
+X-SpamTest-Info: {DATE: unreal year}
+X-SpamTest-Method: none
+X-SpamTest-Rate: 35
+X-SpamTest-Status: Not detected
+X-SpamTest-Status-Extended: not_detected
+X-SpamTest-Version: SMTP-Filter Version 3.0.0 [0284], KAS30/Release
+Message-ID: <20200901161205.AF28966A43@mx.metalurgs.lv>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Subject: GREETINGS!!!
+X-Anti-Virus: Kaspersky Anti-Virus for Linux Mail Server 5.6.39/RELEASE,
+         bases: 20140401 #7726142, check: 20200901 notchecked
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Common pattern of handling deferred probe can be simplified with
-dev_err_probe().  Less code and the error value gets printed.
-
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- drivers/tty/serial/8250/8250_bcm2835aux.c | 12 +++---------
- drivers/tty/serial/8250/8250_ingenic.c    | 20 ++++++--------------
- 2 files changed, 9 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
-index 12d03e678295..fd95860cd661 100644
---- a/drivers/tty/serial/8250/8250_bcm2835aux.c
-+++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-@@ -110,12 +110,8 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
- 
- 	/* get the clock - this also enables the HW */
- 	data->clk = devm_clk_get(&pdev->dev, NULL);
--	ret = PTR_ERR_OR_ZERO(data->clk);
--	if (ret) {
--		if (ret != -EPROBE_DEFER)
--			dev_err(&pdev->dev, "could not get clk: %d\n", ret);
--		return ret;
--	}
-+	if (IS_ERR(data->clk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
- 
- 	/* get the interrupt */
- 	ret = platform_get_irq(pdev, 0);
-@@ -155,9 +151,7 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
- 	/* register the port */
- 	ret = serial8250_register_8250_port(&up);
- 	if (ret < 0) {
--		if (ret != -EPROBE_DEFER)
--			dev_err(&pdev->dev,
--				"unable to register 8250 port - %d\n", ret);
-+		dev_err_probe(&pdev->dev, ret, "unable to register 8250 port\n");
- 		goto dis_clk;
- 	}
- 	data->line = ret;
-diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-index dde766fa465f..988bf6bcce42 100644
---- a/drivers/tty/serial/8250/8250_ingenic.c
-+++ b/drivers/tty/serial/8250/8250_ingenic.c
-@@ -259,22 +259,14 @@ static int ingenic_uart_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	data->clk_module = devm_clk_get(&pdev->dev, "module");
--	if (IS_ERR(data->clk_module)) {
--		err = PTR_ERR(data->clk_module);
--		if (err != -EPROBE_DEFER)
--			dev_err(&pdev->dev,
--				"unable to get module clock: %d\n", err);
--		return err;
--	}
-+	if (IS_ERR(data->clk_module))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(data->clk_module),
-+				     "unable to get module clock\n");
- 
- 	data->clk_baud = devm_clk_get(&pdev->dev, "baud");
--	if (IS_ERR(data->clk_baud)) {
--		err = PTR_ERR(data->clk_baud);
--		if (err != -EPROBE_DEFER)
--			dev_err(&pdev->dev,
--				"unable to get baud clock: %d\n", err);
--		return err;
--	}
-+	if (IS_ERR(data->clk_baud))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(data->clk_baud),
-+				     "unable to get baud clock\n");
- 
- 	err = clk_prepare_enable(data->clk_module);
- 	if (err) {
--- 
-2.17.1
-
+Attention To Email : linux-serial@vger.kernel.org
+Good Day Sir,
+Our Group have the financial capability to finance any investment portfolio as far as is genuine, all we need is a capable business partner that possesses investment strategies for profitable business information for good turn over within 10-30years. Our Partners are willing to invest 10million — 5billon USD. We can provide proof of funds on demand, after certification of your documents/details. Please write me back if you can work with me on this project. Thank You,
+Best Regards
+Andrew Macklin
