@@ -2,43 +2,43 @@ Return-Path: <SRS0=cUMT=CN=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E04EAC433E2
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D59E6C43461
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:27:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B10C12087E
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:27:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B2E2520797
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:27:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599233222;
-	bh=g3o7tt+MugsYL++tcyWf98GZHjVPsCkdOLiyqZCrTPA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=nLfGUj9fiz9Hc3B0gXsUzOWvfWFKyTuyn4ci9M0bZogn4uHYLAfQ4/KxkWeOHkEQa
-	 avxgURbZjnQUuIHjinFIyJWi2EESRSEKocQ1NK+bYHv358E1E87uBMa1guQsieBIpR
-	 S38I2TNb9g99c1n8wcCdacoOoSlwahKrwtioUuiQ=
+	s=default; t=1599233233;
+	bh=sKvZCsZobU7Bh4Xu+fGf9ZJCYmD7SquliyFmgqG50Oo=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=vDe47csYEnlxj5BXCoBg75HIMC+cGaJpYmujmPYI0zzPbKRGUqScW52ycwSRaX9u4
+	 cWdjmPed/cfDiyTP+lFaT+Dem+PYwn0hqmFG5D84IcZWJEf0MdizeMKhAsHP18Or32
+	 lFXkcxtgfrFUbV34Ukua53RMdqu7Cgcb7yKZPPgY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730876AbgIDP1B (ORCPT
+        id S1730220AbgIDPYW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Sep 2020 11:27:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33180 "EHLO mail.kernel.org"
+        Fri, 4 Sep 2020 11:24:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33060 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730970AbgIDPYd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Sep 2020 11:24:33 -0400
+        id S1730829AbgIDPYU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Sep 2020 11:24:20 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.106])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 144C62074D;
-        Fri,  4 Sep 2020 15:24:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AB3F420770;
+        Fri,  4 Sep 2020 15:24:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599233072;
-        bh=g3o7tt+MugsYL++tcyWf98GZHjVPsCkdOLiyqZCrTPA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tvp3tLsxj+Tz4tpJJg9/Iws16vsVTfn4cqnHRQFd0/97FP/oVJnzW1uiArHnInweg
-         yGz6XtT17i0HHAGBbOOPnRfA+VHYNpfvEfTCJ+zJkorCGwS/UGzGh9ds4TZdcf7kin
-         EmQ/SZY+TweAb5oyuButZC0OsvZ4WUTx/H7H+8X0=
+        s=default; t=1599233059;
+        bh=sKvZCsZobU7Bh4Xu+fGf9ZJCYmD7SquliyFmgqG50Oo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sV58pfGmmWQn8uohb/hknW48UOzALop3pIk3iQCR4uyFQ0gZyZbkeRJ5Qu8MEqccx
+         Mkiwo6Wf3oJFhnVa4ToV7+vibP0Ihhvq3O5bvcBpigvWvC8sLMGLbJFQuBKgZhExcg
+         M/98mPuaOqB0LDnKCPaiqseidOtLyrZLK/gWkZYU=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -54,56 +54,69 @@ Cc:     Michael Turquette <mturquette@baylibre.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v3 03/14] dt-bindings: serial: fsl-imx-uart: Add i.MX 8M compatibles
-Date:   Fri,  4 Sep 2020 17:23:53 +0200
-Message-Id: <20200904152404.20636-4-krzk@kernel.org>
+Subject: [PATCH v3 00/14] dt-bindings: Cleanup of i.MX 8
+Date:   Fri,  4 Sep 2020 17:23:50 +0200
+Message-Id: <20200904152404.20636-1-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200904152404.20636-1-krzk@kernel.org>
-References: <20200904152404.20636-1-krzk@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-DTSes with new i.MX 8M SoCs introduce their own compatibles so add them
-to fix dtbs_check warnings like:
+Hi Rob,
 
-  arch/arm64/boot/dts/freescale/imx8mm-evk.dt.yaml: pwm@30660000:
-    compatible:0: 'fsl,imx8mm-pwm' is not one of ['fsl,imx1-pwm', 'fsl,imx27-pwm']
-    From schema: Documentation/devicetree/bindings/pwm/imx-pwm.yaml
+I am resending the series (v3) without actual changes.  You already
+reviewed many of them.  I think that subsystem maintainers are hesitant
+to pick them up, so maybe this could go via your tree (all of them)?
 
-  arch/arm64/boot/dts/freescale/imx8mm-evk.dt.yaml: pwm@30660000:
-    compatible: ['fsl,imx8mm-pwm', 'fsl,imx27-pwm'] is too long
+Changes against previous revisions are in individual patches.
 
-  arch/arm64/boot/dts/freescale/imx8mm-evk.dt.yaml: pwm@30660000:
-    compatible: Additional items are not allowed ('fsl,imx27-pwm' was unexpected)
+Best regards,
+Krzysztof
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
 
----
+Krzysztof Kozlowski (14):
+  dt-bindings: perf: fsl-imx-ddr: Add i.MX 8M compatibles
+  dt-bindings: pwm: imx-pwm: Add i.MX 8M compatibles
+  dt-bindings: serial: fsl-imx-uart: Add i.MX 8M compatibles
+  dt-bindings: serial: fsl-lpuart: Fix compatible matching
+  dt-bindings: watchdog: fsl-imx-wdt: Add i.MX 8M compatibles
+  dt-bindings: reset: fsl,imx7-src: Add i.MX 8M compatibles
+  dt-bindings: thermal: imx8mm-thermal: Add i.MX 8M Nano compatible
+  dt-bindings: nvmem: imx-ocotp: Update i.MX 8M compatibles
+  dt-bindings: mfd: rohm,bd71847-pmic: Correct clock properties
+    requirements
+  dt-bindings: interrupt-controller: fsl,irqsteer: Fix compatible
+    matching
+  dt-bindings: mtd: gpmi-nand: Add i.MX 8M compatibles
+  dt-bindings: mtd: gpmi-nand: Fix matching of clocks on different SoCs
+  dt-bindings: mtd: nand-controller: Fix matching with size-cells==1
+  dt-bindings: clock: imx8m: Integrate duplicated i.MX 8M schemas
 
-Changes since v1:
-1. Fix subject prefix
----
- Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../bindings/clock/imx8m-clock.yaml           | 125 ++++++++++++++++++
+ .../bindings/clock/imx8mm-clock.yaml          |  68 ----------
+ .../bindings/clock/imx8mn-clock.yaml          |  70 ----------
+ .../bindings/clock/imx8mp-clock.yaml          |  70 ----------
+ .../bindings/clock/imx8mq-clock.yaml          |  72 ----------
+ .../interrupt-controller/fsl,irqsteer.yaml    |   8 +-
+ .../bindings/mfd/rohm,bd71847-pmic.yaml       |   9 +-
+ .../devicetree/bindings/mtd/gpmi-nand.yaml    |  94 ++++++++++---
+ .../bindings/mtd/nand-controller.yaml         |   5 +-
+ .../devicetree/bindings/nvmem/imx-ocotp.yaml  |  38 +++---
+ .../devicetree/bindings/perf/fsl-imx-ddr.yaml |  16 ++-
+ .../devicetree/bindings/pwm/imx-pwm.yaml      |  14 +-
+ .../bindings/reset/fsl,imx7-src.yaml          |  19 ++-
+ .../bindings/serial/fsl-imx-uart.yaml         |   4 +
+ .../bindings/serial/fsl-lpuart.yaml           |  17 ++-
+ .../bindings/thermal/imx8mm-thermal.yaml      |  10 +-
+ .../bindings/watchdog/fsl-imx-wdt.yaml        |  11 +-
+ 17 files changed, 303 insertions(+), 347 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/imx8m-clock.yaml
+ delete mode 100644 Documentation/devicetree/bindings/clock/imx8mm-clock.yaml
+ delete mode 100644 Documentation/devicetree/bindings/clock/imx8mn-clock.yaml
+ delete mode 100644 Documentation/devicetree/bindings/clock/imx8mp-clock.yaml
+ delete mode 100644 Documentation/devicetree/bindings/clock/imx8mq-clock.yaml
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-index cba3f83ccd5f..3d896173b3b0 100644
---- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-@@ -36,6 +36,10 @@ properties:
-             - fsl,imx6sx-uart
-             - fsl,imx6ul-uart
-             - fsl,imx7d-uart
-+            - fsl,imx8mm-uart
-+            - fsl,imx8mn-uart
-+            - fsl,imx8mp-uart
-+            - fsl,imx8mq-uart
-           - const: fsl,imx6q-uart
- 
-   reg:
 -- 
 2.17.1
 
