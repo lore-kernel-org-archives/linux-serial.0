@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08533C2D0A8
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9051C2D0E0
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:26:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C7D392098B
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:25:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 790A920770
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:26:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599233149;
-	bh=98AU22xTYMCZ0QAZTXK9ChSrXEOj0TuIT22qgKEeDKo=;
+	s=default; t=1599233161;
+	bh=Pq6AMCutClAdC1MVlFH4CnQL+gGmRAYhCy6R3i2GV1c=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=KAr6nLuWpOycTZvraZgeqkqkOrxR0hBLJNU7kTEgpdslb680L/RSyp0do/sDDmcnC
-	 XwvegitD9HAKbfDu1SdyUAG8MBfE98U2I1vlq5kKO30o0/hACDqIV61KefmHHc5Ig0
-	 Gv6E8vTb91CIra5kZVyy22Mw5X5MXByapnmy6H38=
+	b=PsLm0zmsGyGLjlUQUtecrF8E6JFWFIjBBjgD0P5furbmGsRHgBTxTtHy/D6ifv5vo
+	 6lXMksDU4w3+Mdx0PKWXIKftuQmxkpuGmoAsL/JgmsfNt5UAg4Yj+F/i/DB/In0H73
+	 VY+jKIl9ru2IVQQR5sNbxbrPD+cF7Ea0sAebZPKg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731067AbgIDPZ2 (ORCPT
+        id S1731097AbgIDPZ7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Sep 2020 11:25:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34050 "EHLO mail.kernel.org"
+        Fri, 4 Sep 2020 11:25:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33728 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731045AbgIDPZP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Sep 2020 11:25:15 -0400
+        id S1730476AbgIDPZB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Sep 2020 11:25:01 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.106])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4DDCF20829;
-        Fri,  4 Sep 2020 15:25:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 942D02074D;
+        Fri,  4 Sep 2020 15:24:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599233114;
-        bh=98AU22xTYMCZ0QAZTXK9ChSrXEOj0TuIT22qgKEeDKo=;
+        s=default; t=1599233100;
+        bh=Pq6AMCutClAdC1MVlFH4CnQL+gGmRAYhCy6R3i2GV1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pjl+iSmQKDcuFKuJWoCO2KfDCopCbpvL/j6GNIQ56/n5nI6trH4Mvd5TovdpW1bVv
-         nH4RMK4IfSteEnnKQ6qlPsMbzkwxl2DIdMLXTOeS/eIHdJvAIfUqERAA8KE3TsJO7i
-         qUuqc3539Tq4VNzRPHXzyvE3JsJTmxuaTymnXfpg=
+        b=pjis33CzlE4L8H5Hnvz2sDPU+++Cix7kCoiPDA0FaQM0iuGrWZ141pW18vBqPfqaT
+         Umi3jXeYOqFfHssMDCjdXC2mY1bme+uWigxNZiQQXnN/iI1NQK5KMKoaigEUqADwJK
+         6PFcpRACCzgdaObvVFzjEiaKq6yu/d9JATDLwVWQ=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -54,9 +54,9 @@ Cc:     Michael Turquette <mturquette@baylibre.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v3 12/14] dt-bindings: mtd: gpmi-nand: Fix matching of clocks on different SoCs
-Date:   Fri,  4 Sep 2020 17:24:02 +0200
-Message-Id: <20200904152404.20636-13-krzk@kernel.org>
+Subject: [PATCH v3 09/14] dt-bindings: mfd: rohm,bd71847-pmic: Correct clock properties requirements
+Date:   Fri,  4 Sep 2020 17:23:59 +0200
+Message-Id: <20200904152404.20636-10-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200904152404.20636-1-krzk@kernel.org>
 References: <20200904152404.20636-1-krzk@kernel.org>
@@ -65,126 +65,54 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Driver requires different amount of clocks for different SoCs.  Describe
-these requirements properly to fix dtbs_check warnings like:
+The input clock and number of clock provider cells are not required for
+the PMIC to operate.  They are needed only for the optional bd718x7
+clock driver.
 
-    arch/arm64/boot/dts/freescale/imx8mm-beacon-kit.dt.yaml: nand-controller@33002000: clock-names:1: 'gpmi_apb' was expected
+Add also clock-output-names as driver takes use of it.
+
+This fixes dtbs_check warnings like:
+
+    arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dt.yaml: pmic@4b: 'clocks' is a required property
+    arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dt.yaml: pmic@4b: '#clock-cells' is a required property
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-
+Acked-by: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
 ---
+ .../devicetree/bindings/mfd/rohm,bd71847-pmic.yaml       | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-Changes since v1:
-1. Do not require order of clocks (use pattern).
----
- .../devicetree/bindings/mtd/gpmi-nand.yaml    | 76 +++++++++++++++----
- 1 file changed, 61 insertions(+), 15 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml b/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
-index 28ff8c581837..e08e0a50929e 100644
---- a/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
-+++ b/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
-@@ -9,9 +9,6 @@ title: Freescale General-Purpose Media Interface (GPMI) binding
- maintainers:
-   - Han Xu <han.xu@nxp.com>
+diff --git a/Documentation/devicetree/bindings/mfd/rohm,bd71847-pmic.yaml b/Documentation/devicetree/bindings/mfd/rohm,bd71847-pmic.yaml
+index 77bcca2d414f..5d531051a153 100644
+--- a/Documentation/devicetree/bindings/mfd/rohm,bd71847-pmic.yaml
++++ b/Documentation/devicetree/bindings/mfd/rohm,bd71847-pmic.yaml
+@@ -38,6 +38,9 @@ properties:
+   "#clock-cells":
+     const: 0
  
--allOf:
--  - $ref: "nand-controller.yaml"
--
- description: |
-   The GPMI nand controller provides an interface to control the NAND
-   flash chips. The device tree may optionally contain sub-nodes
-@@ -58,22 +55,10 @@ properties:
-   clocks:
-     minItems: 1
-     maxItems: 5
--    items:
--      - description: SoC gpmi io clock
--      - description: SoC gpmi apb clock
--      - description: SoC gpmi bch clock
--      - description: SoC gpmi bch apb clock
--      - description: SoC per1 bch clock
- 
-   clock-names:
-     minItems: 1
-     maxItems: 5
--    items:
--      - const: gpmi_io
--      - const: gpmi_apb
--      - const: gpmi_bch
--      - const: gpmi_bch_apb
--      - const: per1_bch
- 
-   fsl,use-minimum-ecc:
-     type: boolean
-@@ -107,6 +92,67 @@ required:
- 
- unevaluatedProperties: false
- 
-+allOf:
-+  - $ref: "nand-controller.yaml"
++  clock-output-names:
++    maxItems: 1
 +
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - fsl,imx23-gpmi-nand
-+              - fsl,imx28-gpmi-nand
-+    then:
-+      properties:
-+        clocks:
-+          items:
-+            - description: SoC gpmi io clock
-+        clock-names:
-+          items:
-+            - const: gpmi_io
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - fsl,imx6q-gpmi-nand
-+              - fsl,imx6sx-gpmi-nand
-+    then:
-+      properties:
-+        clocks:
-+          items:
-+            - description: SoC gpmi io clock
-+            - description: SoC gpmi apb clock
-+            - description: SoC gpmi bch clock
-+            - description: SoC gpmi bch apb clock
-+            - description: SoC per1 bch clock
-+        clock-names:
-+          items:
-+            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
-+            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
-+            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
-+            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
-+            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: fsl,imx7d-gpmi-nand
-+    then:
-+      properties:
-+        clocks:
-+          items:
-+            - description: SoC gpmi io clock
-+            - description: SoC gpmi bch apb clock
-+        clock-names:
-+          minItems: 2
-+          maxItems: 2
-+          items:
-+            - pattern: "^gpmi_(io|bch_apb)$"
-+            - pattern: "^gpmi_(io|bch_apb)$"
+ # The BD71847 abd BD71850 support two different HW states as reset target
+ # states. States are called as SNVS and READY. At READY state all the PMIC
+ # power outputs go down and OTP is reload. At the SNVS state all other logic
+@@ -116,12 +119,14 @@ required:
+   - compatible
+   - reg
+   - interrupts
+-  - clocks
+-  - "#clock-cells"
+   - regulators
+ 
+ additionalProperties: false
+ 
++dependencies:
++  '#clock-cells': [clocks]
++  clocks: ['#clock-cells']
 +
  examples:
    - |
-     nand-controller@8000c000 {
+     #include <dt-bindings/interrupt-controller/irq.h>
 -- 
 2.17.1
 
