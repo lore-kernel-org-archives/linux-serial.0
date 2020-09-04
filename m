@@ -2,78 +2,120 @@ Return-Path: <SRS0=cUMT=CN=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE45C43461
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:11:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 791C9C2BB84
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:24:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0044E2074D
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:11:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3757D207EA
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Sep 2020 15:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599232266;
-	bh=tYJdMqrk0GYWpMweFguKqDno9M3LJpFL3eQwj/m0Txc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=W0Vnh41ZTiuBg4gFbauFcqmwfHCVvNlEIGFBt01jVqs/iGZztRZB9lmqsJWH0Xyb+
-	 F9Nd8HTLHUfzgeO0u/C4X1x/HVOKa+jux+9A98VnQ3M5zI2Tyia6jM3wXYpJ1UN652
-	 Tjo5CkK9B43EHuNI5Z7l1eQLPhJ2kqTAOX3uwiRU=
+	s=default; t=1599233070;
+	bh=6pQee/lEOtd6XVjbMxZhh087Cotb2fe4tMAUouVEZXE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=kMEGRADV3zHnkRd/b/R8rL5bDotHS4VDcs9BYA1fuLSntgIxmCIGPeHP6EhaQPfVs
+	 KXJl+jU2BJEaifncau2W6AReQPYaok8BJ4/9XWGz1qKQxqOqHN8zLBhjjq2biS1omv
+	 b6Ifku+yTfp1xhO5hk+MatDzL+re9rwsIKmh1NGs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730258AbgIDPLF (ORCPT
+        id S1730958AbgIDPY0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Sep 2020 11:11:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56900 "EHLO mail.kernel.org"
+        Fri, 4 Sep 2020 11:24:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33098 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730224AbgIDPLF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Sep 2020 11:11:05 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1730947AbgIDPYY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Sep 2020 11:24:24 -0400
+Received: from kozik-lap.mshome.net (unknown [194.230.155.106])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3EB2C2073B;
-        Fri,  4 Sep 2020 15:11:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 16B7B20772;
+        Fri,  4 Sep 2020 15:24:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599232264;
-        bh=tYJdMqrk0GYWpMweFguKqDno9M3LJpFL3eQwj/m0Txc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MdOMEGmst9Yob16TZ5IpYFaGoXecLUmvIlJ7DKcf7SvgUB8BDD+GNoKGQmCuVBde1
-         yz0urAv/drFzGttsdCy6ySKWqUHvJ7QS79fajCLlWyf7zur+7xwAsXgGwM1zxdAv1P
-         +UhU6RJjrX88wNNbK3GafUXz8uAXxZYkqN8EdWAY=
-Date:   Fri, 4 Sep 2020 17:11:25 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Ye Bin <yebin10@huawei.com>, chris.ruehl@gtsys.com.hk,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] serial: imx: Delete duplicated argument to '|' in
- imx_uart_probe
-Message-ID: <20200904151125.GA3347894@kroah.com>
-References: <20200903062401.692442-1-yebin10@huawei.com>
- <20200903073541.g57uoipyolsixfjn@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200903073541.g57uoipyolsixfjn@pengutronix.de>
+        s=default; t=1599233063;
+        bh=6pQee/lEOtd6XVjbMxZhh087Cotb2fe4tMAUouVEZXE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1fI7OCKRsmVbQYS6N2dVp6SPO5K4qz0jslg76k2kM48ER4goWCfSme/YryOk0UzfS
+         oJfT7Oi4nQDBp2aBJykUg8ECPs0VynIcSDOBWFJpHOZlNcmdXlmr2cwxVLXPvxAJU+
+         D49qN+u9rtCXOjJzO6VCooJVdFYuIOMiTdp8FIHQ=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH v3 01/14] dt-bindings: perf: fsl-imx-ddr: Add i.MX 8M compatibles
+Date:   Fri,  4 Sep 2020 17:23:51 +0200
+Message-Id: <20200904152404.20636-2-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200904152404.20636-1-krzk@kernel.org>
+References: <20200904152404.20636-1-krzk@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 03, 2020 at 09:35:41AM +0200, Uwe Kleine-König wrote:
-> Hello,
-> 
-> On Thu, Sep 03, 2020 at 02:24:01PM +0800, Ye Bin wrote:
-> > When calculate "ucr1" UCR1_TRDYEN is duplicate.
-> > 
-> > Fixes: c514a6f848b5b ("serial: imx: use Tx ready rather than Tx empty irq")
-> > Signed-off-by: Ye Bin <yebin10@huawei.com>
-> 
-> Not sure I'd use Fixes: to reference the commit that introduced this
-> duplication, as this fix is not critical at all.
+DTSes with new i.MX 8M SoCs introduce their own compatibles so add them
+to fix dtbs_check warnings like:
 
-Agreed, I'm dropping that line.
+  arch/arm64/boot/dts/freescale/imx8mm-evk.dt.yaml: ddr-pmu@3d800000:
+    compatible:0: 'fsl,imx8mm-ddr-pmu' is not one of ['fsl,imx8-ddr-pmu', 'fsl,imx8m-ddr-pmu', 'fsl,imx8mp-ddr-pmu']
+    From schema: Documentation/devicetree/bindings/perf/fsl-imx-ddr.yaml
 
-thanks,
+  arch/arm64/boot/dts/freescale/imx8mm-evk.dt.yaml: ddr-pmu@3d800000:
+    compatible: ['fsl,imx8mm-ddr-pmu', 'fsl,imx8m-ddr-pmu'] is too long
 
-greg k-h
+  arch/arm64/boot/dts/freescale/imx8mm-evk.dt.yaml: ddr-pmu@3d800000:
+    compatible: Additional items are not allowed ('fsl,imx8m-ddr-pmu' was unexpected)
+
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+
+---
+
+Changes since v1:
+1. Handle also fsl,imx8mp-ddr-pmu
+---
+ .../devicetree/bindings/perf/fsl-imx-ddr.yaml    | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/perf/fsl-imx-ddr.yaml b/Documentation/devicetree/bindings/perf/fsl-imx-ddr.yaml
+index 9ed8f44adabe..5aad9f4e0b2a 100644
+--- a/Documentation/devicetree/bindings/perf/fsl-imx-ddr.yaml
++++ b/Documentation/devicetree/bindings/perf/fsl-imx-ddr.yaml
+@@ -11,10 +11,18 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    enum:
+-      - fsl,imx8-ddr-pmu
+-      - fsl,imx8m-ddr-pmu
+-      - fsl,imx8mp-ddr-pmu
++    oneOf:
++      - enum:
++          - fsl,imx8-ddr-pmu
++          - fsl,imx8m-ddr-pmu
++          - fsl,imx8mp-ddr-pmu
++      - items:
++          - enum:
++              - fsl,imx8mm-ddr-pmu
++              - fsl,imx8mn-ddr-pmu
++              - fsl,imx8mq-ddr-pmu
++              - fsl,imx8mp-ddr-pmu
++          - const: fsl,imx8m-ddr-pmu
+ 
+   reg:
+     maxItems: 1
+-- 
+2.17.1
+
