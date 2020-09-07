@@ -1,210 +1,244 @@
-Return-Path: <SRS0=qU75=CO=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=+lVX=CQ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21134C43461
-	for <linux-serial@archiver.kernel.org>; Sat,  5 Sep 2020 14:46:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10F15C433E2
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Sep 2020 06:10:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E18AA20760
-	for <linux-serial@archiver.kernel.org>; Sat,  5 Sep 2020 14:46:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D276B215A4
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Sep 2020 06:10:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1599459012;
+	bh=C3vKsiG4vkTwDPVcbZmOIDpiODE/HBPpqmNNHSj1MkU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=e9i0q2xSY9PDaBbJp+gUx3aVRJ3HeWQkgYKXbLC8mz15T/yHPE3rasGT8T7lXw4Hj
+	 t417Cmc2yoS1FP/fI3k0vFE7qRyh2EDC2HrpuHWf58B2eu+sqlpfG91Mm1N85EJ1KJ
+	 qydwKcAzoWvxrrFY5I7G4tgpB/OFcZLqDPAoV5BY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbgIEOqx (ORCPT
+        id S1726511AbgIGGKG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 5 Sep 2020 10:46:53 -0400
-Received: from mga11.intel.com ([192.55.52.93]:6304 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728647AbgIEOqr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 5 Sep 2020 10:46:47 -0400
-IronPort-SDR: ysdQz9TNm/2cJDoDXRto3GtIcW+LwYrbP0ZkmHq36m7qe6dN7DB+iz9o+++XR3YnBvtc0I4Heb
- nvQQRIaCMm8w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9734"; a="155367831"
-X-IronPort-AV: E=Sophos;i="5.76,394,1592895600"; 
-   d="scan'208";a="155367831"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2020 07:46:37 -0700
-IronPort-SDR: d2AyybNdU+ws6RDqs6rGXKy2dai8yWWbdfXGfmUgETGnD4RnFZ1O1GpY8JMydHUvmrHnpF031/
- eH9yBi4K0J2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,394,1592895600"; 
-   d="scan'208";a="335368783"
-Received: from lkp-server02.sh.intel.com (HELO c089623da072) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 05 Sep 2020 07:46:36 -0700
-Received: from kbuild by c089623da072 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1kEZSd-0000Fa-DX; Sat, 05 Sep 2020 14:46:35 +0000
-Date:   Sat, 05 Sep 2020 22:45:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 71a174b39f10b4b93223d374722aa894b5d8a82e
-Message-ID: <5f53a495.I6D5h8VwdbHOFowe%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Mon, 7 Sep 2020 02:10:06 -0400
+Received: from mail-ej1-f67.google.com ([209.85.218.67]:44350 "EHLO
+        mail-ej1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725803AbgIGGKG (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 7 Sep 2020 02:10:06 -0400
+Received: by mail-ej1-f67.google.com with SMTP id r7so3266499ejs.11;
+        Sun, 06 Sep 2020 23:10:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GVokwuwCaSVBc9Gyn7b0LOXpcqkbxNYOMN+1IZzWnZQ=;
+        b=a/E5fKmAyHWIix6L1IW31pNLvcxTdToWINidap+0KcmBjq68Hhx6EC+MLnZ3Iv0nKu
+         LGT8SDT65dzLFvq4lmEcpnivS8uEhkZXehNbUtQiG7j3h3KSNg3ZVxQQiSH/HCaOqkds
+         I9ZE9KoHf2eWgIKSIB7JOtDHXgNK6W7eHiZRwEOWJaV01frOvckMeRnQDEAnWyP9SW+K
+         LxxPcBKdjx30SLeFCTyEigg9UYzHjpep0iKNQU0cqjiXUsEO8xApx73G5BhFZNI61yXm
+         /p6sYNeJcjBWHmrdiM92DID6TLHNTug2TChQadaD5FkhxOEvqwpzJiZW923LRtAA+4ph
+         I4wA==
+X-Gm-Message-State: AOAM531ZCzY/DJ6nK2AKirtVlNY4PbDLfXAq4PnodCCT8SHTY+h20F8w
+        MmbRxd2w5uB1/i0LC/BzvoWX17+N00s=
+X-Google-Smtp-Source: ABdhPJzM/GiqDDPUglZaYg3VUWUe0/dDHCWpXQ1+YwL2JZxA9p9bR+MKuStVCwG/XpSPy00N+WM4qQ==
+X-Received: by 2002:a17:906:a00d:: with SMTP id p13mr20408792ejy.535.1599459001754;
+        Sun, 06 Sep 2020 23:10:01 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.174])
+        by smtp.googlemail.com with ESMTPSA id r16sm14473271ejb.110.2020.09.06.23.09.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 06 Sep 2020 23:10:00 -0700 (PDT)
+Date:   Mon, 7 Sep 2020 08:09:58 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     linux-clk <linux-clk@vger.kernel.org>, devicetree@vger.kernel.org,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v3 12/14] dt-bindings: mtd: gpmi-nand: Fix matching of
+ clocks on different SoCs
+Message-ID: <20200907060958.GA4525@kozik-lap>
+References: <20200904152404.20636-1-krzk@kernel.org>
+ <20200904152404.20636-13-krzk@kernel.org>
+ <CAL_Jsq+tGQhkqtQszOx7nvr1PR=YFz2p1=OnWQ8JxmSg4qNkHA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAL_Jsq+tGQhkqtQszOx7nvr1PR=YFz2p1=OnWQ8JxmSg4qNkHA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 71a174b39f10b4b93223d374722aa894b5d8a82e  pty: do tty_flip_buffer_push without port->lock in pty_write
+On Fri, Sep 04, 2020 at 04:36:39PM -0600, Rob Herring wrote:
+> On Fri, Sep 4, 2020 at 9:25 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> >
+> > Driver requires different amount of clocks for different SoCs.  Describe
+> > these requirements properly to fix dtbs_check warnings like:
+> >
+> >     arch/arm64/boot/dts/freescale/imx8mm-beacon-kit.dt.yaml: nand-controller@33002000: clock-names:1: 'gpmi_apb' was expected
+> >
+> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> >
+> > ---
+> >
+> > Changes since v1:
+> > 1. Do not require order of clocks (use pattern).
+> 
+> To the extent that you can, you should fix the order in dts files
+> first. If we just adjust the schemas to match the dts files, then
+> what's the point?
 
-elapsed time: 1288m
+The DTSes do not have mixed order of clocks between each other, as fair
+as I remember. It was fix after Sasha Hauer comment that order is not
+necessarily good.
 
-configs tested: 135
-configs skipped: 12
+We have the clock-names property, why enforcing the order?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> 
+> > ---
+> >  .../devicetree/bindings/mtd/gpmi-nand.yaml    | 76 +++++++++++++++----
+> >  1 file changed, 61 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml b/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
+> > index 28ff8c581837..e08e0a50929e 100644
+> > --- a/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
+> > +++ b/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
+> > @@ -9,9 +9,6 @@ title: Freescale General-Purpose Media Interface (GPMI) binding
+> >  maintainers:
+> >    - Han Xu <han.xu@nxp.com>
+> >
+> > -allOf:
+> > -  - $ref: "nand-controller.yaml"
+> > -
+> >  description: |
+> >    The GPMI nand controller provides an interface to control the NAND
+> >    flash chips. The device tree may optionally contain sub-nodes
+> > @@ -58,22 +55,10 @@ properties:
+> >    clocks:
+> >      minItems: 1
+> >      maxItems: 5
+> > -    items:
+> > -      - description: SoC gpmi io clock
+> > -      - description: SoC gpmi apb clock
+> > -      - description: SoC gpmi bch clock
+> > -      - description: SoC gpmi bch apb clock
+> > -      - description: SoC per1 bch clock
+> >
+> >    clock-names:
+> >      minItems: 1
+> >      maxItems: 5
+> > -    items:
+> > -      - const: gpmi_io
+> > -      - const: gpmi_apb
+> > -      - const: gpmi_bch
+> > -      - const: gpmi_bch_apb
+> > -      - const: per1_bch
+> >
+> >    fsl,use-minimum-ecc:
+> >      type: boolean
+> > @@ -107,6 +92,67 @@ required:
+> >
+> >  unevaluatedProperties: false
+> >
+> > +allOf:
+> > +  - $ref: "nand-controller.yaml"
+> > +
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            enum:
+> > +              - fsl,imx23-gpmi-nand
+> > +              - fsl,imx28-gpmi-nand
+> > +    then:
+> > +      properties:
+> > +        clocks:
+> > +          items:
+> > +            - description: SoC gpmi io clock
+> > +        clock-names:
+> > +          items:
+> > +            - const: gpmi_io
+> > +
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            enum:
+> > +              - fsl,imx6q-gpmi-nand
+> > +              - fsl,imx6sx-gpmi-nand
+> > +    then:
+> > +      properties:
+> > +        clocks:
+> > +          items:
+> > +            - description: SoC gpmi io clock
+> > +            - description: SoC gpmi apb clock
+> > +            - description: SoC gpmi bch clock
+> > +            - description: SoC gpmi bch apb clock
+> > +            - description: SoC per1 bch clock
+> > +        clock-names:
+> > +          items:
+> > +            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
+> > +            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
+> > +            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
+> > +            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
+> > +            - pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
+> 
+> BTW, you can make 'items' a schema rather than a list to apply a
+> constraint to all entries:
+> 
+> maxItems: 5
+> items:
+>   pattern: "^(gpmi_(io|apb|bch|bch_apb)|per1_bch)$"
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-arc                     haps_hs_smp_defconfig
-m68k                            q40_defconfig
-m68k                       m5208evb_defconfig
-m68k                       m5249evb_defconfig
-arm                         mv78xx0_defconfig
-sh                        edosk7705_defconfig
-arc                 nsimosci_hs_smp_defconfig
-m68k                          atari_defconfig
-mips                     loongson1c_defconfig
-mips                       bmips_be_defconfig
-xtensa                              defconfig
-mips                      maltaaprp_defconfig
-arm                         axm55xx_defconfig
-xtensa                    xip_kc705_defconfig
-m68k                                defconfig
-powerpc                          allmodconfig
-s390                                defconfig
-arc                         haps_hs_defconfig
-arm                              zx_defconfig
-powerpc                      ppc64e_defconfig
-arm                        mvebu_v5_defconfig
-mips                          malta_defconfig
-openrisc                 simple_smp_defconfig
-arm                         nhk8815_defconfig
-sh                          rsk7264_defconfig
-powerpc                          allyesconfig
-sh                           se7751_defconfig
-m68k                          amiga_defconfig
-sh                          r7785rp_defconfig
-arm                      tct_hammer_defconfig
-sh                             sh03_defconfig
-mips                      loongson3_defconfig
-powerpc                           allnoconfig
-alpha                            alldefconfig
-mips                        qi_lb60_defconfig
-arm                     am200epdkit_defconfig
-sh                     sh7710voipgw_defconfig
-arm                        multi_v7_defconfig
-nios2                            alldefconfig
-sh                          landisk_defconfig
-mips                            ar7_defconfig
-sh                           se7619_defconfig
-arc                              allyesconfig
-sh                   sh7724_generic_defconfig
-riscv                             allnoconfig
-ia64                         bigsur_defconfig
-arc                     nsimosci_hs_defconfig
-powerpc                          g5_defconfig
-arm                            hisi_defconfig
-powerpc                     skiroot_defconfig
-sh                         ecovec24_defconfig
-arm                            qcom_defconfig
-powerpc                  storcenter_defconfig
-arm                          iop32x_defconfig
-xtensa                generic_kc705_defconfig
-ia64                          tiger_defconfig
-xtensa                           allyesconfig
-mips                           xway_defconfig
-m68k                       m5275evb_defconfig
-m68k                          sun3x_defconfig
-mips                      pistachio_defconfig
-arm                            mps2_defconfig
-openrisc                    or1ksim_defconfig
-openrisc                         alldefconfig
-m68k                        stmark2_defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-nios2                               defconfig
-nds32                             allnoconfig
-c6x                              allyesconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-parisc                           allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                             defconfig
-x86_64               randconfig-a006-20200905
-x86_64               randconfig-a004-20200905
-x86_64               randconfig-a003-20200905
-x86_64               randconfig-a005-20200905
-x86_64               randconfig-a001-20200905
-x86_64               randconfig-a002-20200905
-i386                 randconfig-a004-20200904
-i386                 randconfig-a005-20200904
-i386                 randconfig-a006-20200904
-i386                 randconfig-a002-20200904
-i386                 randconfig-a003-20200904
-i386                 randconfig-a001-20200904
-x86_64               randconfig-a013-20200904
-x86_64               randconfig-a011-20200904
-x86_64               randconfig-a016-20200904
-x86_64               randconfig-a012-20200904
-x86_64               randconfig-a015-20200904
-x86_64               randconfig-a014-20200904
-i386                 randconfig-a016-20200905
-i386                 randconfig-a015-20200905
-i386                 randconfig-a011-20200905
-i386                 randconfig-a013-20200905
-i386                 randconfig-a014-20200905
-i386                 randconfig-a012-20200905
-riscv                            allyesconfig
-riscv                               defconfig
-riscv                            allmodconfig
-x86_64                                   rhel
-x86_64                           allyesconfig
-x86_64                    rhel-7.6-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                                  kexec
+Right, I forgot about such syntax.
 
-clang tested configs:
-x86_64               randconfig-a006-20200904
-x86_64               randconfig-a004-20200904
-x86_64               randconfig-a003-20200904
-x86_64               randconfig-a005-20200904
-x86_64               randconfig-a001-20200904
-x86_64               randconfig-a002-20200904
+> 
+> > +
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            const: fsl,imx7d-gpmi-nand
+> > +    then:
+> > +      properties:
+> > +        clocks:
+> > +          items:
+> > +            - description: SoC gpmi io clock
+> > +            - description: SoC gpmi bch apb clock
+> > +        clock-names:
+> > +          minItems: 2
+> > +          maxItems: 2
+> 
+> You can drop these. It's the default based on the size of 'items'.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Sure.
+
+> 
+> > +          items:
+> > +            - pattern: "^gpmi_(io|bch_apb)$"
+> > +            - pattern: "^gpmi_(io|bch_apb)$"
+> 
+> Surely here we can define the order.
+
+Yes, but still the same question as before - do we want the order? Why
+enforcing it?
+
+Best regards,
+Krzysztof
