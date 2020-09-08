@@ -5,40 +5,40 @@ X-Spam-Level:
 X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 510F9C433E2
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Sep 2020 19:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B16FC433E2
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Sep 2020 19:56:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 202552177B
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Sep 2020 19:01:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E167F20658
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Sep 2020 19:56:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599591718;
-	bh=oFwQTqkPx4RNpgcIPFeuHBuLYJqGFWWbtO/xBgcKfw8=;
+	s=default; t=1599595002;
+	bh=npfcU0pwyfPfRyU05fDUq1Zm5QXoTD0f+8A/EmwT2RA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=e2PLQEf+e3+/oNhNKu7hUnyzKRXmqfHvlDykazwTBMxMLK20W5+uxExmms9A+TQaI
-	 wIqSsOkSCmETLiCYUvlWTOUDA3u66BId5oKSGKHRIvyxDirqjCcSCY0yqJrxCies1B
-	 93q/6Wh5IjY7ZN2U1TfE9bdgW++rNMMcHcXZhBcw=
+	b=pqM8RU0vAJaramr5n7w3Lp5sf4KhB0PidQXynAd904GSYHAj5e23lJK7Xbwwfe5mx
+	 AD5miWxcxZ+eHgX9+5iLWUEwy4gR9m7OlDJJFgOCXJYK/ThheetvuQE75uL/WbyfdA
+	 27OcsRHRsGn/labZKKGZMeBS/KfnmIOePCuRODeE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731535AbgIHTBb (ORCPT
+        id S1732403AbgIHT4k (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Sep 2020 15:01:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55070 "EHLO mail.kernel.org"
+        Tue, 8 Sep 2020 15:56:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59456 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731292AbgIHQIC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Sep 2020 12:08:02 -0400
+        id S1730523AbgIHPgn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 8 Sep 2020 11:36:43 -0400
 Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5A8D123ED1;
-        Tue,  8 Sep 2020 15:47:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2EE7D22473;
+        Tue,  8 Sep 2020 15:34:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599580059;
-        bh=oFwQTqkPx4RNpgcIPFeuHBuLYJqGFWWbtO/xBgcKfw8=;
+        s=default; t=1599579284;
+        bh=npfcU0pwyfPfRyU05fDUq1Zm5QXoTD0f+8A/EmwT2RA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LdZrqKecb0JqvMMHfOY6y4vAXNyXO/Km6u3LzsVSLeZ7NmEMedKPLrCreP3t9e6Xt
-         92tUR1w826DopOp1o8uOuo2HHEnyeuwFPjADZHQmWHGPVeDo8cJZNV1bEeypqSSDMq
-         PEVXCtZP96vb9TyGbPHrNOsw69HrjU51OkmdSogs=
+        b=j/Cb0j7mwfjlo9yVb4vl8J3B1R8MPSUTloMB+JP8dL1OwR+1emijV3N+vJydC13Dt
+         ism9X5tvRtl0MEZsLIwDmcuxkcGXQAPI8oGTwe1tAsAG2euDvW+t+iCXM5s2JkppZq
+         NPPZ8Q8PRtQkcsdQ5E6wf4L/1ZDNbC6R1mrPJz3E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -51,12 +51,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         John Stultz <john.stultz@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 06/88] tty: serial: qcom_geni_serial: Drop __init from qcom_geni_console_setup
-Date:   Tue,  8 Sep 2020 17:25:07 +0200
-Message-Id: <20200908152221.399617527@linuxfoundation.org>
+Subject: [PATCH 5.8 006/186] tty: serial: qcom_geni_serial: Drop __init from qcom_geni_console_setup
+Date:   Tue,  8 Sep 2020 17:22:28 +0200
+Message-Id: <20200908152241.960585647@linuxfoundation.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200908152221.082184905@linuxfoundation.org>
-References: <20200908152221.082184905@linuxfoundation.org>
+In-Reply-To: <20200908152241.646390211@linuxfoundation.org>
+References: <20200908152241.646390211@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -159,10 +159,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 0d405cc58e722..cd0768c3e773e 100644
+index 457c0bf8cbf83..ffdf6da016c21 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1050,7 +1050,7 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
+@@ -1047,7 +1047,7 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
  }
  
  #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
