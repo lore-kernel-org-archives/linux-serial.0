@@ -2,111 +2,177 @@ Return-Path: <SRS0=MeJI=CR=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2043C2D0A7
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Sep 2020 16:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BEFFC43461
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Sep 2020 18:27:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A2D72075A
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Sep 2020 16:51:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 34A7B2145D
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Sep 2020 18:27:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599583900;
-	bh=pW1S8wYQ7shAS4VTkFPTvct/ClWzUHOw3xWhbsYQUNo=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=HrxNebQiLLR8qeYRH0rrSbsha0+Rq2L6kE6lqw/4UUc0jsMtwoiyK4tMFtattN/TB
-	 GaT9rLCP6+ySjnok2Rn7ySFqYL6sz60HZElPPIXaZ2gVFZ0TOD4e961ISxx9/XiujG
-	 Jf7DZ3Fi0l/LCEq/YqtHQCg3CF3d08Kd5+lh9lMA=
+	s=default; t=1599589656;
+	bh=7kggAtYaeM4k5CsWqpNQSPTgP1ACBAj2QxNoizFutYg=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=GncXZFlXoIpZYQXm8HuzPYj1cHJ6Q4a5ua5QVCREdZow2BkBCgGHauKGZwAsekcyf
+	 nESVdmEh4zUDi7O1hSpIUQdM6b8f6qT/pU7jjPU68cc8jMqtsrTrNDI52t+8fG0q+Q
+	 RCeGOaQXiLrp+Qnc8FkrgP9gGWm3mi69UXHH45M8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731928AbgIHQvj (ORCPT
+        id S1731625AbgIHS1P (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Sep 2020 12:51:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41926 "EHLO mail.kernel.org"
+        Tue, 8 Sep 2020 14:27:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56676 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731909AbgIHQvJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Sep 2020 12:51:09 -0400
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1731415AbgIHQKa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 8 Sep 2020 12:10:30 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B576E2137B;
-        Tue,  8 Sep 2020 16:51:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CFC262478E;
+        Tue,  8 Sep 2020 15:42:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599583868;
-        bh=pW1S8wYQ7shAS4VTkFPTvct/ClWzUHOw3xWhbsYQUNo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=FgS6w9TKkNIumIokoiwznLHegSZ8da9H6/tyCUONyA8D6mS4MC5L9U2z22U5vpbaJ
-         F9LBw9H3U/ZQfNzWt6ceq2QpbMCME12qMJBPAnufXbEXaMdXUN5OQTdjSiBIy0r3bk
-         7U2jnKRg1UiTm9IReOgbeVZRQG6XO2kMrq5x8Ajs=
-Received: by mail-oo1-f51.google.com with SMTP id 4so4091291ooh.11;
-        Tue, 08 Sep 2020 09:51:08 -0700 (PDT)
-X-Gm-Message-State: AOAM5336w4FaUrgkkaZQMHIC9XcoaoO79MmlghHpn2rTwscnyo8U5huj
-        MQjZH4r+nvWe9apsBepBEXfpRVfNTTha4s0nQQ==
-X-Google-Smtp-Source: ABdhPJyVFdSAOgZ7160kEJoAezjYnztio3h9Ino2moi2r5NNuCCiGtHqBpSUtvivi5rsYhCBevOSckk/m/8RpCmF5Go=
-X-Received: by 2002:a4a:d306:: with SMTP id g6mr19090952oos.25.1599583867914;
- Tue, 08 Sep 2020 09:51:07 -0700 (PDT)
+        s=default; t=1599579729;
+        bh=7kggAtYaeM4k5CsWqpNQSPTgP1ACBAj2QxNoizFutYg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yCXA5xAecTmltzyFeiBQObfSW6Mon5FED6mAjAmkgMUME12CAUT+nrNz7olPBGso6
+         CQ0yCtTqExdxcODk1Nuo/742ivXrcSK9BO5Mx9ilIymHp+XPseSSTD7XtFSj2ulJS1
+         eKXYiTBdSElixff+VK0ymcWgQfUFB045cvtQ1cNo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Todd Kjos <tkjos@google.com>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        John Stultz <john.stultz@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 003/129] tty: serial: qcom_geni_serial: Drop __init from qcom_geni_console_setup
+Date:   Tue,  8 Sep 2020 17:24:04 +0200
+Message-Id: <20200908152229.867852865@linuxfoundation.org>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200908152229.689878733@linuxfoundation.org>
+References: <20200908152229.689878733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20200904152404.20636-1-krzk@kernel.org> <20200904152404.20636-13-krzk@kernel.org>
- <CAL_Jsq+tGQhkqtQszOx7nvr1PR=YFz2p1=OnWQ8JxmSg4qNkHA@mail.gmail.com> <20200907060958.GA4525@kozik-lap>
-In-Reply-To: <20200907060958.GA4525@kozik-lap>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 8 Sep 2020 10:50:56 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJZ=PxDxH-=GUUg7WadZrAKjYbtE0sQ8h9YDGOGx6Ykwg@mail.gmail.com>
-Message-ID: <CAL_JsqJZ=PxDxH-=GUUg7WadZrAKjYbtE0sQ8h9YDGOGx6Ykwg@mail.gmail.com>
-Subject: Re: [PATCH v3 12/14] dt-bindings: mtd: gpmi-nand: Fix matching of
- clocks on different SoCs
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     linux-clk <linux-clk@vger.kernel.org>, devicetree@vger.kernel.org,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Sep 7, 2020 at 12:10 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->
-> On Fri, Sep 04, 2020 at 04:36:39PM -0600, Rob Herring wrote:
-> > On Fri, Sep 4, 2020 at 9:25 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> > >
-> > > Driver requires different amount of clocks for different SoCs.  Describe
-> > > these requirements properly to fix dtbs_check warnings like:
-> > >
-> > >     arch/arm64/boot/dts/freescale/imx8mm-beacon-kit.dt.yaml: nand-controller@33002000: clock-names:1: 'gpmi_apb' was expected
-> > >
-> > > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> > >
-> > > ---
-> > >
-> > > Changes since v1:
-> > > 1. Do not require order of clocks (use pattern).
-> >
-> > To the extent that you can, you should fix the order in dts files
-> > first. If we just adjust the schemas to match the dts files, then
-> > what's the point?
->
-> The DTSes do not have mixed order of clocks between each other, as fair
-> as I remember. It was fix after Sasha Hauer comment that order is not
-> necessarily good.
->
-> We have the clock-names property, why enforcing the order?
+From: John Stultz <john.stultz@linaro.org>
 
-Because DT/OpenFirmware has always had a defined order for property
-values. '*-names' is just extra information.
+[ Upstream commit 975efc66d4e654207c17f939eb737ac591ac38fe ]
 
-Rob
+When booting with heavily modularized config, the serial console
+may not be able to load until after init when modules that
+satisfy needed dependencies have time to load.
+
+Unfortunately, as qcom_geni_console_setup is marked as __init,
+the function may have been freed before we get to run it,
+causing boot time crashes such as:
+
+[    6.469057] Unable to handle kernel paging request at virtual address ffffffe645d4e6cc
+[    6.481623] Mem abort info:
+[    6.484466]   ESR = 0x86000007
+[    6.487557]   EC = 0x21: IABT (current EL), IL = 32 bits
+[    6.492929]   SET = 0, FnV = 0g
+[    6.496016]   EA = 0, S1PTW = 0
+[    6.499202] swapper pgtable: 4k pages, 39-bit VAs, pgdp=000000008151e000
+[    6.501286] ufshcd-qcom 1d84000.ufshc: ufshcd_print_pwr_info:[RX, TX]: gear=[3, 3], lane[2, 2], pwr[FAST MODE, FAST MODE], rate = 2
+[    6.505977] [ffffffe645d4e6cc] pgd=000000017df9f003, p4d=000000017df9f003, pud=000000017df9f003, pmd=000000017df9c003, pte=0000000000000000
+[    6.505990] Internal error: Oops: 86000007 [#1] PREEMPT SMP
+[    6.505995] Modules linked in: zl10353 zl10039 zl10036 zd1301_demod xc5000 xc4000 ves1x93 ves1820 tuner_xc2028 tuner_simple tuner_types tua9001 tua6100 1
+[    6.506152]  isl6405
+[    6.518104] ufshcd-qcom 1d84000.ufshc: ufshcd_find_max_sup_active_icc_level: Regulator capability was not set, actvIccLevel=0
+[    6.530549]  horus3a helene fc2580 fc0013 fc0012 fc0011 ec100 e4000 dvb_pll ds3000 drxk drxd drx39xyj dib9000 dib8000 dib7000p dib7000m dib3000mc dibx003
+[    6.624271] CPU: 7 PID: 148 Comm: kworker/7:2 Tainted: G        W       5.8.0-mainline-12021-g6defd37ba1cd #3455
+[    6.624273] Hardware name: Thundercomm Dragonboard 845c (DT)
+[    6.624290] Workqueue: events deferred_probe_work_func
+[    6.624296] pstate: 40c00005 (nZcv daif +PAN +UAO BTYPE=--)
+[    6.624307] pc : qcom_geni_console_setup+0x0/0x110
+[    6.624316] lr : try_enable_new_console+0xa0/0x140
+[    6.624318] sp : ffffffc010843a30
+[    6.624320] x29: ffffffc010843a30 x28: ffffffe645c3e7d0
+[    6.624325] x27: ffffff80f8022180 x26: ffffffc010843b28
+[    6.637937] x25: 0000000000000000 x24: ffffffe6462a2000
+[    6.637941] x23: ffffffe646398000 x22: 0000000000000000
+[    6.637945] x21: 0000000000000000 x20: ffffffe6462a5ce8
+[    6.637952] x19: ffffffe646398e38 x18: ffffffffffffffff
+[    6.680296] x17: 0000000000000000 x16: ffffffe64492b900
+[    6.680300] x15: ffffffe6461e9d08 x14: 69202930203d2064
+[    6.680305] x13: 7561625f65736162 x12: 202c363331203d20
+[    6.696434] x11: 0000000000000030 x10: 0101010101010101
+[    6.696438] x9 : 4d4d20746120304d x8 : 7f7f7f7f7f7f7f7f
+[    6.707249] x7 : feff4c524c787373 x6 : 0000000000008080
+[    6.707253] x5 : 0000000000000000 x4 : 8080000000000000
+[    6.707257] x3 : 0000000000000000 x2 : ffffffe645d4e6cc
+[    6.744223] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate: failed to find OPP for freq 102400000 (-34)
+[    6.744966] x1 : fffffffefe74e174 x0 : ffffffe6462a5ce8
+[    6.753580] qcom_geni_serial 898000.serial: dev_pm_opp_set_rate: failed to find OPP for freq 102400000 (-34)
+[    6.761634] Call trace:
+[    6.761639]  qcom_geni_console_setup+0x0/0x110
+[    6.761645]  register_console+0x29c/0x2f8
+[    6.767981] Bluetooth: hci0: Frame reassembly failed (-84)
+[    6.775252]  uart_add_one_port+0x438/0x500
+[    6.775258]  qcom_geni_serial_probe+0x2c4/0x4a8
+[    6.775266]  platform_drv_probe+0x58/0xa8
+[    6.855359]  really_probe+0xec/0x398
+[    6.855362]  driver_probe_device+0x5c/0xb8
+[    6.855367]  __device_attach_driver+0x98/0xb8
+[    7.184945]  bus_for_each_drv+0x74/0xd8
+[    7.188825]  __device_attach+0xec/0x148
+[    7.192705]  device_initial_probe+0x24/0x30
+[    7.196937]  bus_probe_device+0x9c/0xa8
+[    7.200816]  deferred_probe_work_func+0x7c/0xb8
+[    7.205398]  process_one_work+0x20c/0x4b0
+[    7.209456]  worker_thread+0x48/0x460
+[    7.213157]  kthread+0x14c/0x158
+[    7.216432]  ret_from_fork+0x10/0x18
+[    7.220049] Code: bad PC value
+[    7.223139] ---[ end trace 73f3b21e251d5a70 ]---
+
+Thus this patch removes the __init avoiding crash in such
+configs.
+
+Cc: Andy Gross <agross@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Saravana Kannan <saravanak@google.com>
+Cc: Todd Kjos <tkjos@google.com>
+Cc: Amit Pundir <amit.pundir@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Suggested-by: Saravana Kannan <saravanak@google.com>
+Signed-off-by: John Stultz <john.stultz@linaro.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20200811025044.70626-1-john.stultz@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index f98a79172ad23..0b184256034fb 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1063,7 +1063,7 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
+ }
+ 
+ #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
+-static int __init qcom_geni_console_setup(struct console *co, char *options)
++static int qcom_geni_console_setup(struct console *co, char *options)
+ {
+ 	struct uart_port *uport;
+ 	struct qcom_geni_serial_port *port;
+-- 
+2.25.1
+
+
+
