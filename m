@@ -2,143 +2,108 @@ Return-Path: <SRS0=MLOr=CS=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5E9C433E2
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 11:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A6FC43461
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 14:12:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D87E121D7E
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 11:26:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="m4KHcZLZ"
+	by mail.kernel.org (Postfix) with ESMTP id C5F3B221F0
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 14:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgIIL0Z (ORCPT
+        id S1730383AbgIIOLZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Sep 2020 07:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726293AbgIILIq (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Sep 2020 07:08:46 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36423C061795
-        for <linux-serial@vger.kernel.org>; Wed,  9 Sep 2020 04:08:11 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id j34so1818639pgi.7
-        for <linux-serial@vger.kernel.org>; Wed, 09 Sep 2020 04:08:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=hHbPBPqCAjeHpFptYktHnZF2Ot4j4iCHuxaSsZ+eCnQ=;
-        b=m4KHcZLZ3vphfXLl8Z6uPW+Z5xRc7prauxsfl0JLhrjWsiglWRJP4MpIyU91H/iLho
-         zrypWq/9xIvYPiotVpXou3HNQ/xOAUSdnA0p1Aeb2P6B8wsSa9RZ/k3wQsg8i79uXKFf
-         oqrgkMysLIqLInktyZ0qNeCahTkBgCR1FU+Sdh8z08fzYT7FIdiuUuOj/THP1lBYxblb
-         crk/ICcFVagGGuLu1MtvSBSpBtzUON7VuahiwpKU9qQILtWVvIRGlEVE5GFGdKpbyIDw
-         gFqItvEzQktmZxC+C5bsJupV5InVVkiOeLk+WlFuumCOeBab41igCm17UsYlleFsQ8ke
-         LG/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hHbPBPqCAjeHpFptYktHnZF2Ot4j4iCHuxaSsZ+eCnQ=;
-        b=ccWi7JYRrVCyLmunbQmXkAUtIFw/UxmySkdI6VM57dd5YEX48jMxvU3NYtgltRSLxu
-         Lcf7Loj09Ywc44xDeGfPuw8L8mjhe/olPCsFJ/21Y6xXXkptl2u4OzLGIUmTP0Sag3+S
-         7DIclRQoNtHbxUfBRbgzfaVM4H0YTOIM5W2qiayf+9NpX59PsuNlcbTrRg/zcF5oHslc
-         +dIfVN7cbsjzj41bAzsW4VYhVkZBdGlizzrfG3vGjQOH6cegF9/oeBRLsLncHzrsWFjN
-         3KRRZAC2iy5eMhI5ejj5u9f/uhUZXJWY00C99GbPOOIgK5Yq0GvHmqtyUanIM0t+Q2Ci
-         NjCw==
-X-Gm-Message-State: AOAM531brk5vwlxJ2ev1ZWgKapBr82efVbD4erOrhfQQqFK4gReuth2U
-        ookrs9Eb0ecuR1e93BuDabxDew==
-X-Google-Smtp-Source: ABdhPJy2EZv/VIxB9RnTfqRMANkRu2WWxpNJfCDbS9BRC+1+0r57LjDxgPFYplFTRs+2i65+o+pECA==
-X-Received: by 2002:a65:5849:: with SMTP id s9mr215399pgr.439.1599649690536;
-        Wed, 09 Sep 2020 04:08:10 -0700 (PDT)
-Received: from localhost ([122.181.54.133])
-        by smtp.gmail.com with ESMTPSA id w185sm2619035pfc.36.2020.09.09.04.08.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 09 Sep 2020 04:08:09 -0700 (PDT)
-Date:   Wed, 9 Sep 2020 16:38:07 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     rnayak@codeaurora.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Fabio Estevam <festevam@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Qiang Yu <yuq825@gmail.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Rob Clark <robdclark@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sean Paul <sean@poorly.run>, Shawn Guo <shawnguo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        lima@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Subject: Re: [PATCH V2 0/8] opp: Unconditionally call
- dev_pm_opp_of_remove_table()
-Message-ID: <20200909110807.aw3q4bqxis3ya5ci@vireshk-i7>
-References: <cover.1598594714.git.viresh.kumar@linaro.org>
- <20200831110939.qnyugmhajkg36gzw@vireshk-i7>
+        Wed, 9 Sep 2020 10:11:25 -0400
+Received: from elvis.franken.de ([193.175.24.41]:32954 "EHLO elvis.franken.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730295AbgIINKQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Sep 2020 09:10:16 -0400
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1kFzrd-0001tu-00; Wed, 09 Sep 2020 15:10:17 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 4848CC0F5F; Wed,  9 Sep 2020 14:10:57 +0200 (CEST)
+Date:   Wed, 9 Sep 2020 14:10:57 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 00/12] Convert WAR defines to config options
+Message-ID: <20200909121057.GA2814@alpha.franken.de>
+References: <20200824163257.44533-1-tsbogend@alpha.franken.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200831110939.qnyugmhajkg36gzw@vireshk-i7>
-User-Agent: NeoMutt/20180716-391-311a52
+In-Reply-To: <20200824163257.44533-1-tsbogend@alpha.franken.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 31-08-20, 16:39, Viresh Kumar wrote:
-> On 28-08-20, 11:37, Viresh Kumar wrote:
-> > Hello,
-> > 
-> > This cleans up some of the user code around calls to
-> > dev_pm_opp_of_remove_table().
-> > 
-> > All the patches can be picked by respective maintainers directly except
-> > for the last patch, which needs the previous two to get merged first.
-> > 
-> > These are based for 5.9-rc1.
->  
-> > Viresh Kumar (8):
-> >   cpufreq: imx6q: Unconditionally call dev_pm_opp_of_remove_table()
-> >   drm/lima: Unconditionally call dev_pm_opp_of_remove_table()
-> >   drm/msm: Unconditionally call dev_pm_opp_of_remove_table()
-> >   mmc: sdhci-msm: Unconditionally call dev_pm_opp_of_remove_table()
-> >   spi: spi-geni-qcom: Unconditionally call dev_pm_opp_of_remove_table()
-> >   spi: spi-qcom-qspi: Unconditionally call dev_pm_opp_of_remove_table()
-> >   tty: serial: qcom_geni_serial: Unconditionally call
-> >     dev_pm_opp_of_remove_table()
-> >   qcom-geni-se: remove has_opp_table
+On Mon, Aug 24, 2020 at 06:32:42PM +0200, Thomas Bogendoerfer wrote:
+> This patches convert workaround (WAR) defines into config options and
+> gets rid of mach-*/war.h files.
 > 
-> During testing by some of the Linaro folks on linux-next, we found out
-> that there was a bug in the OPP core (which makes the kernel crash in
-> some corner cases with these patches) for which I have sent a fix
-> today which should be part of 5.9-rc4:
+> Thomas Bogendoerfer (12):
+>   MIPS: Convert R4600_V1_INDEX_ICACHEOP into a config option
+>   MIPS: Convert R4600_V1_HIT_CACHEOP into a config option
+>   MIPS: Convert R4600_V2_HIT_CACHEOP into a config option
+>   MIPS: Remove MIPS4K_ICACHE_REFILL_WAR and MIPS_CACHE_SYNC_WAR
+>   MIPS: Convert TX49XX_ICACHE_INDEX_INV into a config option
+>   MIPS: Convert ICACHE_REFILLS_WORKAROUND_WAR into a config option
+>   MIPS: Convert R10000_LLSC_WAR info a config option
+>   MIPS: Convert MIPS34K_MISSED_ITLB_WAR into a config option
+>   MIPS: Replace SIBYTE_1956_WAR by CONFIG_SB1_PASS_2_WORKAROUNDS
+>   MIPS: Get rid of BCM1250_M3_WAR
+>   MIPS: Get rid of CAVIUM_OCTEON_DCACHE_PREFETCH_WAR
+>   MIPS: Remove mach-*/war.h
 > 
-> https://lore.kernel.org/lkml/922ff0759a16299e24cacfc981ac07914d8f1826.1598865786.git.viresh.kumar@linaro.org/
-> 
-> Please apply the patches over rc4 only once it comes out (I will
-> confirm by that time once the patch gets merged). Else you guys can
-> provide your Ack and I can take the patches through OPP tree.
+>  arch/mips/Kconfig                              |  80 +++++++++++++
+>  arch/mips/cavium-octeon/setup.c                |   2 +-
+>  arch/mips/include/asm/futex.h                  |   4 +-
+>  arch/mips/include/asm/llsc.h                   |   2 +-
+>  arch/mips/include/asm/local.h                  |   4 +-
+>  arch/mips/include/asm/mach-cavium-octeon/war.h |  27 -----
+>  arch/mips/include/asm/mach-generic/war.h       |  23 ----
+>  arch/mips/include/asm/mach-ip22/war.h          |  27 -----
+>  arch/mips/include/asm/mach-ip27/war.h          |  23 ----
+>  arch/mips/include/asm/mach-ip28/war.h          |  23 ----
+>  arch/mips/include/asm/mach-ip30/war.h          |  24 ----
+>  arch/mips/include/asm/mach-ip32/war.h          |  23 ----
+>  arch/mips/include/asm/mach-malta/war.h         |  23 ----
+>  arch/mips/include/asm/mach-rc32434/war.h       |  23 ----
+>  arch/mips/include/asm/mach-rm/war.h            |  27 -----
+>  arch/mips/include/asm/mach-sibyte/war.h        |  38 -------
+>  arch/mips/include/asm/mach-tx49xx/war.h        |  23 ----
+>  arch/mips/include/asm/mipsregs.h               |   4 +-
+>  arch/mips/include/asm/war.h                    | 150 -------------------------
+>  arch/mips/kernel/signal.c                      |   8 +-
+>  arch/mips/kernel/syscall.c                     |   2 +-
+>  arch/mips/mm/c-r4k.c                           |  17 +--
+>  arch/mips/mm/page.c                            |  16 ++-
+>  arch/mips/mm/tlbex.c                           |   8 +-
+>  arch/mips/mm/uasm.c                            |   2 +-
+>  drivers/tty/serial/sb1250-duart.c              |   9 +-
+>  26 files changed, 127 insertions(+), 485 deletions(-)
+>  delete mode 100644 arch/mips/include/asm/mach-cavium-octeon/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-generic/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-ip22/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-ip27/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-ip28/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-ip30/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-ip32/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-malta/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-rc32434/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-rm/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-sibyte/war.h
+>  delete mode 100644 arch/mips/include/asm/mach-tx49xx/war.h
 
-The fix got merged in 5.9-rc4, please apply the patches from this
-series in your trees and base them on rc4. Thanks.
+series applied to mips-next.
+
+Thomas.
 
 -- 
-viresh
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
