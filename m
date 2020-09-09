@@ -2,193 +2,116 @@ Return-Path: <SRS0=MLOr=CS=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0AFC43461
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 17:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 379D5C433E2
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 17:13:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C828E21941
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 17:09:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E2F4A21919
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 17:12:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599671394;
-	bh=owyEgMcfPs68c15/bSVWTgCiIRzr/NN2Ga4Lbh82KXs=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=k3H/yv8NxM9b9TgSHw1x09SXPLbIPzOv/jG5FccVrLEyIpUGzqNiixJzaIF8cekLE
-	 xLF/26CSdmaQME+shzL2jJc0TmwIGPqQD/oq+ilNo+JwOSDOGBAVrCMjeG44ZjBhv0
-	 Vata1pIhzjjQ0c0fQ3y2C33N8ru1KUGjgsu5wqBw=
+	s=default; t=1599671579;
+	bh=TODrVcs9lgVCPiXcAEfLvUZlnsS84ktzJrcnCMX1MKg=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:List-ID:From;
+	b=OPJagf/Via58WPIm+wxT7dDuT7BKdQD14CEr1JVYQSCRXhr63LBTBbrwyYTxcO8ft
+	 fHGx2emu4C7aYXO+RdQoom8SlO3otSEtCWrY9K+MyeEYsRWef3a6oYQnLYBqRV6VEn
+	 xE7xLTMqqki/C/LXNvMZJGuhoSG/ruSInPgr5TN8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730604AbgIIRJv (ORCPT
+        id S1730303AbgIIRMD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Sep 2020 13:09:51 -0400
-Received: from mail-ej1-f66.google.com ([209.85.218.66]:42534 "EHLO
-        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730224AbgIIPgB (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Sep 2020 11:36:01 -0400
-Received: by mail-ej1-f66.google.com with SMTP id q13so4179483ejo.9;
-        Wed, 09 Sep 2020 08:35:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qP6O2ucn5KuDRC7RB2WRLd9myNrDAnc1ixV/2OFvSfA=;
-        b=Cg4PLTB08yBHJQsQW/PfsBFiRrKA45GKvH1wRkcrGVceSxcdFgJBavweZraWzLk/bF
-         3PFxarALEuOZO9itpNOZEKOaK3XpquI4u6IywkKlb4vchMx1KazWyEhs24vyBGKNwHeV
-         Gz5GTzI8N5coJMPg3lJZYPq5pC+a/rp0B0rKUHd4R6O+VviycAHYr6C8zk9VOXJEG8vk
-         /GRaXZ8817J7CqF6LOhipPvSon0aJkdkV+O483k7P8xxk9h2rK3Oso9DykYDOF7PQ8bK
-         3r4ddQP7ji6BbQ+5NA5u9t5a4LAtapmcBiRcfu7h0kxNIL8x9o6n5HbdyVUR5Rlpwk2q
-         w3Sg==
-X-Gm-Message-State: AOAM531Cvey5IbHb30HMnaeR7AuEenfpHRmL17e7s7UKBQL3Qbmred6Q
-        E6I7eYzIzCVzUJx2JCC+2sdJLepcs68=
-X-Google-Smtp-Source: ABdhPJxkx0pKWo4zITjkUOd3XsCXmG/5wXI1KoHYWOKbmq1Yq+MSaAZNQZh7k9wsK9NWreIyeaSFVA==
-X-Received: by 2002:a19:4186:: with SMTP id o128mr1899570lfa.148.1599661891771;
-        Wed, 09 Sep 2020 07:31:31 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id 206sm612714lfd.72.2020.09.09.07.31.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 07:31:29 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@xi.terra>)
-        id 1kG18B-00041D-1O; Wed, 09 Sep 2020 16:31:27 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        stable <stable@vger.kernel.org>
-Subject: [PATCH 2/2] serial: core: fix console port-lock regression
-Date:   Wed,  9 Sep 2020 16:31:01 +0200
-Message-Id: <20200909143101.15389-3-johan@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200909143101.15389-1-johan@kernel.org>
-References: <20200909143101.15389-1-johan@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 9 Sep 2020 13:12:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57484 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728663AbgIIPcj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Sep 2020 11:32:39 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7681822240;
+        Wed,  9 Sep 2020 15:29:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599665377;
+        bh=TODrVcs9lgVCPiXcAEfLvUZlnsS84ktzJrcnCMX1MKg=;
+        h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+        b=FY4sgLDDXx1wg27+Ljvut8xHybpkWQIHYtUAsv96blD6Wh6IeNsMO5lKZ4mATR23F
+         G2JVLlILS5NoIvW+hUvsFBsE0SCBbOD4sJNMPWwIiH4P5TcKH/x0yYb7nfTfqm+lH0
+         ZCd5YGHXme1dc0s7OslYkmkiil92Mu448CHiBotA=
+Date:   Wed, 09 Sep 2020 16:28:51 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Fabio Estevam <festevam@gmail.com>, rnayak@codeaurora.org,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Qiang Yu <yuq825@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Andy Gross <agross@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        freedreno@lists.freedesktop.org,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        lima@lists.freedesktop.org, Nishanth Menon <nm@ti.com>,
+        linux-mmc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <cover.1598594714.git.viresh.kumar@linaro.org>
+References: <cover.1598594714.git.viresh.kumar@linaro.org>
+Subject: Re: [PATCH V2 0/8] opp: Unconditionally call dev_pm_opp_of_remove_table()
+Message-Id: <159966533166.54485.703021491015822828.b4-ty@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fix the port-lock initialisation regression introduced by commit
-a3cb39d258ef ("serial: core: Allow detach and attach serial device for
-console") by making sure that the lock is again initialised during
-console setup.
+On Fri, 28 Aug 2020 11:37:45 +0530, Viresh Kumar wrote:
+> This cleans up some of the user code around calls to
+> dev_pm_opp_of_remove_table().
+> 
+> All the patches can be picked by respective maintainers directly except
+> for the last patch, which needs the previous two to get merged first.
+> 
+> These are based for 5.9-rc1.
+> 
+> [...]
 
-The console may be registered before the serial controller has been
-probed in which case the port lock needs to be initialised during
-console setup by a call to uart_set_options(). The console-detach
-changes introduced a regression in several drivers by effectively
-removing that initialisation by not initialising the lock when the port
-is used as a console (which is always the case during console setup).
+Applied to
 
-Add back the early lock initialisation and instead use a new
-console-reinit flag to handle the case where a console is being
-re-attached through sysfs.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-The question whether the console-detach interface should have been added
-in the first place is left for another discussion.
+Thanks!
 
-Note that the console-enabled check in uart_set_options() is not
-redundant because of kgdboc, which can end up reinitialising an already
-enabled console (see commit 42b6a1baa3ec ("serial_core: Don't
-re-initialize a previously initialized spinlock.")).
+[1/2] spi: spi-geni-qcom: Unconditionally call dev_pm_opp_of_remove_table()
+      commit: 7d568edff5cb7968cc5f29e85da15f941b8070b8
+[2/2] spi: spi-qcom-qspi: Unconditionally call dev_pm_opp_of_remove_table()
+      commit: 062cf7fc927d2546b58ed128383e5c52f26a00a5
 
-Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
-Cc: stable <stable@vger.kernel.org>     # 5.7
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/serial/serial_core.c | 32 +++++++++++++++-----------------
- include/linux/serial_core.h      |  1 +
- 2 files changed, 16 insertions(+), 17 deletions(-)
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 53b79e1fcbc8..124524ecfe26 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1916,24 +1916,12 @@ static inline bool uart_console_enabled(struct uart_port *port)
- 	return uart_console(port) && (port->cons->flags & CON_ENABLED);
- }
- 
--static void __uart_port_spin_lock_init(struct uart_port *port)
-+static void uart_port_spin_lock_init(struct uart_port *port)
- {
- 	spin_lock_init(&port->lock);
- 	lockdep_set_class(&port->lock, &port_lock_key);
- }
- 
--/*
-- * Ensure that the serial console lock is initialised early.
-- * If this port is a console, then the spinlock is already initialised.
-- */
--static inline void uart_port_spin_lock_init(struct uart_port *port)
--{
--	if (uart_console(port))
--		return;
--
--	__uart_port_spin_lock_init(port);
--}
--
- #if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
- /**
-  *	uart_console_write - write a console message to a serial port
-@@ -2086,7 +2074,15 @@ uart_set_options(struct uart_port *port, struct console *co,
- 	struct ktermios termios;
- 	static struct ktermios dummy;
- 
--	uart_port_spin_lock_init(port);
-+	/*
-+	 * Ensure that the serial-console lock is initialised early.
-+	 *
-+	 * Note that the console-enabled check is needed because of kgdboc,
-+	 * which can end up calling uart_set_options() for an already enabled
-+	 * console via tty_find_polling_driver() and uart_poll_init().
-+	 */
-+	if (!uart_console_enabled(port) && !port->console_reinit)
-+		uart_port_spin_lock_init(port);
- 
- 	memset(&termios, 0, sizeof(struct ktermios));
- 
-@@ -2794,10 +2790,12 @@ static ssize_t console_store(struct device *dev,
- 		if (oldconsole && !newconsole) {
- 			ret = unregister_console(uport->cons);
- 		} else if (!oldconsole && newconsole) {
--			if (uart_console(uport))
-+			if (uart_console(uport)) {
-+				uport->console_reinit = 1;
- 				register_console(uport->cons);
--			else
-+			} else {
- 				ret = -ENOENT;
-+			}
- 		}
- 	} else {
- 		ret = -ENXIO;
-@@ -2898,7 +2896,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	 * initialised.
- 	 */
- 	if (!uart_console_enabled(uport))
--		__uart_port_spin_lock_init(uport);
-+		uart_port_spin_lock_init(uport);
- 
- 	if (uport->cons && uport->dev)
- 		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 01fc4d9c9c54..8a99279a579b 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -248,6 +248,7 @@ struct uart_port {
- 
- 	unsigned char		hub6;			/* this should be in the 8250 driver */
- 	unsigned char		suspended;
-+	unsigned char		console_reinit;
- 	const char		*name;			/* port name */
- 	struct attribute_group	*attr_group;		/* port specific attributes */
- 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
--- 
-2.26.2
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
