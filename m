@@ -2,108 +2,76 @@ Return-Path: <SRS0=MLOr=CS=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A6FC43461
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 14:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 458CEC433E2
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 15:55:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C5F3B221F0
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 14:12:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1821A206D4
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Sep 2020 15:55:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730383AbgIIOLZ (ORCPT
+        id S1730702AbgIIPyW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Sep 2020 10:11:25 -0400
-Received: from elvis.franken.de ([193.175.24.41]:32954 "EHLO elvis.franken.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730295AbgIINKQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Sep 2020 09:10:16 -0400
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1kFzrd-0001tu-00; Wed, 09 Sep 2020 15:10:17 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 4848CC0F5F; Wed,  9 Sep 2020 14:10:57 +0200 (CEST)
-Date:   Wed, 9 Sep 2020 14:10:57 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 00/12] Convert WAR defines to config options
-Message-ID: <20200909121057.GA2814@alpha.franken.de>
-References: <20200824163257.44533-1-tsbogend@alpha.franken.de>
+        Wed, 9 Sep 2020 11:54:22 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:11326 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730581AbgIIPyK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Sep 2020 11:54:10 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 31D906DFC959D022662F;
+        Wed,  9 Sep 2020 21:51:15 +0800 (CST)
+Received: from localhost (10.174.179.108) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Wed, 9 Sep 2020
+ 21:51:06 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <u74147@gmail.com>, <je.yen.tam@ni.com>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] serial: 8250_pci: Remove unused function get_pci_irq()
+Date:   Wed, 9 Sep 2020 21:51:03 +0800
+Message-ID: <20200909135103.17768-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200824163257.44533-1-tsbogend@alpha.franken.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.108]
+X-CFilter-Loop: Reflected
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 06:32:42PM +0200, Thomas Bogendoerfer wrote:
-> This patches convert workaround (WAR) defines into config options and
-> gets rid of mach-*/war.h files.
-> 
-> Thomas Bogendoerfer (12):
->   MIPS: Convert R4600_V1_INDEX_ICACHEOP into a config option
->   MIPS: Convert R4600_V1_HIT_CACHEOP into a config option
->   MIPS: Convert R4600_V2_HIT_CACHEOP into a config option
->   MIPS: Remove MIPS4K_ICACHE_REFILL_WAR and MIPS_CACHE_SYNC_WAR
->   MIPS: Convert TX49XX_ICACHE_INDEX_INV into a config option
->   MIPS: Convert ICACHE_REFILLS_WORKAROUND_WAR into a config option
->   MIPS: Convert R10000_LLSC_WAR info a config option
->   MIPS: Convert MIPS34K_MISSED_ITLB_WAR into a config option
->   MIPS: Replace SIBYTE_1956_WAR by CONFIG_SB1_PASS_2_WORKAROUNDS
->   MIPS: Get rid of BCM1250_M3_WAR
->   MIPS: Get rid of CAVIUM_OCTEON_DCACHE_PREFETCH_WAR
->   MIPS: Remove mach-*/war.h
-> 
->  arch/mips/Kconfig                              |  80 +++++++++++++
->  arch/mips/cavium-octeon/setup.c                |   2 +-
->  arch/mips/include/asm/futex.h                  |   4 +-
->  arch/mips/include/asm/llsc.h                   |   2 +-
->  arch/mips/include/asm/local.h                  |   4 +-
->  arch/mips/include/asm/mach-cavium-octeon/war.h |  27 -----
->  arch/mips/include/asm/mach-generic/war.h       |  23 ----
->  arch/mips/include/asm/mach-ip22/war.h          |  27 -----
->  arch/mips/include/asm/mach-ip27/war.h          |  23 ----
->  arch/mips/include/asm/mach-ip28/war.h          |  23 ----
->  arch/mips/include/asm/mach-ip30/war.h          |  24 ----
->  arch/mips/include/asm/mach-ip32/war.h          |  23 ----
->  arch/mips/include/asm/mach-malta/war.h         |  23 ----
->  arch/mips/include/asm/mach-rc32434/war.h       |  23 ----
->  arch/mips/include/asm/mach-rm/war.h            |  27 -----
->  arch/mips/include/asm/mach-sibyte/war.h        |  38 -------
->  arch/mips/include/asm/mach-tx49xx/war.h        |  23 ----
->  arch/mips/include/asm/mipsregs.h               |   4 +-
->  arch/mips/include/asm/war.h                    | 150 -------------------------
->  arch/mips/kernel/signal.c                      |   8 +-
->  arch/mips/kernel/syscall.c                     |   2 +-
->  arch/mips/mm/c-r4k.c                           |  17 +--
->  arch/mips/mm/page.c                            |  16 ++-
->  arch/mips/mm/tlbex.c                           |   8 +-
->  arch/mips/mm/uasm.c                            |   2 +-
->  drivers/tty/serial/sb1250-duart.c              |   9 +-
->  26 files changed, 127 insertions(+), 485 deletions(-)
->  delete mode 100644 arch/mips/include/asm/mach-cavium-octeon/war.h
->  delete mode 100644 arch/mips/include/asm/mach-generic/war.h
->  delete mode 100644 arch/mips/include/asm/mach-ip22/war.h
->  delete mode 100644 arch/mips/include/asm/mach-ip27/war.h
->  delete mode 100644 arch/mips/include/asm/mach-ip28/war.h
->  delete mode 100644 arch/mips/include/asm/mach-ip30/war.h
->  delete mode 100644 arch/mips/include/asm/mach-ip32/war.h
->  delete mode 100644 arch/mips/include/asm/mach-malta/war.h
->  delete mode 100644 arch/mips/include/asm/mach-rc32434/war.h
->  delete mode 100644 arch/mips/include/asm/mach-rm/war.h
->  delete mode 100644 arch/mips/include/asm/mach-sibyte/war.h
->  delete mode 100644 arch/mips/include/asm/mach-tx49xx/war.h
+It is not used since commit 8428413b1d14 ("serial: 8250_pci: Implement MSI(-X) support")
 
-series applied to mips-next.
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-Thomas.
-
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 85810b8b9d20..824c44ec25a8 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2795,15 +2795,6 @@ static struct pci_serial_quirk *find_quirk(struct pci_dev *dev)
+ 	return quirk;
+ }
+ 
+-static inline int get_pci_irq(struct pci_dev *dev,
+-				const struct pciserial_board *board)
+-{
+-	if (board->flags & FL_NOIRQ)
+-		return 0;
+-	else
+-		return dev->irq;
+-}
+-
+ /*
+  * This is the configuration table for all of the PCI serial boards
+  * which we support.  It is directly indexed by the pci_board_num_t enum
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.17.1
+
+
