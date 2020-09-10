@@ -2,133 +2,197 @@ Return-Path: <SRS0=IUNt=CT=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F5FC2BB84
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 09:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A3FC2BB84
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 09:30:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BC56B21582
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 09:28:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B1DDB206A5
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 09:30:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BoSxMilj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730262AbgIJJ2G (ORCPT
+        id S1730596AbgIJJ3q (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Sep 2020 05:28:06 -0400
-Received: from mga11.intel.com ([192.55.52.93]:34053 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730381AbgIJJ1a (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Sep 2020 05:27:30 -0400
-IronPort-SDR: mN4Uow4Byk5k4UvhSnTNlUyibOBSy0oEUcs8w/rWXt4DNVDCNpRY762hQdPvg7KeqM0VjL30rB
- Nlv48Ggz10YA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="155959546"
-X-IronPort-AV: E=Sophos;i="5.76,412,1592895600"; 
-   d="scan'208";a="155959546"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 02:27:19 -0700
-IronPort-SDR: eCrhByWXSSpzQhy0QRwbfDpyXB6D1mCK4pQ0qv49CimrJISk/wYVOIIq6oYwYQwClFtU3ibcSG
- 89+uWbTIVm1Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,412,1592895600"; 
-   d="scan'208";a="334120998"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga008.jf.intel.com with ESMTP; 10 Sep 2020 02:27:17 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1kGIrL-00FeWV-0j; Thu, 10 Sep 2020 12:27:15 +0300
-Date:   Thu, 10 Sep 2020 12:27:15 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Johan Hovold <johan@kernel.org>, Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable <stable@vger.kernel.org>
-Subject: Re: [PATCH 2/2] serial: core: fix console port-lock regression
-Message-ID: <20200910092715.GM1891694@smile.fi.intel.com>
-References: <20200909143101.15389-1-johan@kernel.org>
- <20200909143101.15389-3-johan@kernel.org>
- <20200909154815.GD1891694@smile.fi.intel.com>
- <20200910073527.GC24441@localhost>
+        Thu, 10 Sep 2020 05:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36252 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730358AbgIJJYi (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Sep 2020 05:24:38 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140A9C061573;
+        Thu, 10 Sep 2020 02:24:37 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id z25so6271818iol.10;
+        Thu, 10 Sep 2020 02:24:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UyqGiyvWtrvEPIbfLtgakvWHIPcO7f2wwjJnMPORWG0=;
+        b=BoSxMiljYiAjMP/XBn/hYGNVKL/oHxnqnEUJ7qSdwoJLG0pxR2qK3V4/fkUTSaV51s
+         3pvr292/IyS8ps68VC6dxn72XHdiWpnrMVrw8xogJTOMYamirEZ059PvshX7H4Z5GWuh
+         Vr7j8283bIhfaNsK7sxUGLf6s0Z2Efi6Yl4vefoBSqVlIDK265aYxjjSjS69bDYpqbGV
+         /GSb5UhzJJFq63scKHt5GhqSRkybY6g2zuA571aN2zohyHumpin0aZgpFfaeOPy0WbSg
+         Mpw6iHtgik0cTA/OjEeiGwKuBqjHR2p7i1mxyZ7WrSW4CGvjjQTt8jjc//sWyeGDOFMK
+         9KBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UyqGiyvWtrvEPIbfLtgakvWHIPcO7f2wwjJnMPORWG0=;
+        b=O/2XUnV1EtfgfgEoeb0tWhNcir4xfPnAGynDycHILp/UjjoK+MkhZcdiMLOsBL6sdx
+         ueBZJVL79C2C9MYcsMGOL5bdh4O3PQW2D9Pvgjq4HoEkSZEPII9X+aymHemdtnjE0Alr
+         0WZSMVhmEj8voYJ03ltlEthJhY6lv0tbZJuxabeIV0pa9EMhXA9un7B+DH/ntObBIf+9
+         BmpMd/WrGD0wwAbHbSMBDvQItIHDUC0d9E+sFnVFDAaI8gr/N227J5uMxl5cT6wXoE10
+         IPnjMS2l7nvI//BN//lgm0N0g8L3K4kq5Py7WD00fgh6oDALQkzp7TRutHF6MYjxWahv
+         sM6A==
+X-Gm-Message-State: AOAM532ywlPycKW7BigrvrbeI5fmmYuKtgIlMY+CTkpgz3ykrSwmz6YG
+        yk2jcSj2kjVBOGcpW+CrBpuFuh7r23UhtnrKsec=
+X-Google-Smtp-Source: ABdhPJzJ/LFpexv9kLm1kjwc0/B+7GHCOB8WQagf03Hz+gzhVFwgLWrpkGefOcCCEeSFlcKtCwndocR5oDNlZlvNymM=
+X-Received: by 2002:a5d:8846:: with SMTP id t6mr7056972ios.123.1599729876856;
+ Thu, 10 Sep 2020 02:24:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200910073527.GC24441@localhost>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
+In-Reply-To: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
+From:   Ilya Dryomov <idryomov@gmail.com>
+Date:   Thu, 10 Sep 2020 11:24:26 +0200
+Message-ID: <CAOi1vP-v77pj3G5Ez94CDYVs2jSO828c4uV_wzNi6sRKp=Yvyg@mail.gmail.com>
+Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to break;
+To:     Joe Perches <joe@perches.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Jiri Kosina <trivial@kernel.org>,
+        Kees Cook <kees.cook@canonical.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-mips@vger.kernel.org, linux-s390@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-ide@vger.kernel.org, linux-atm-general@lists.sourceforge.net,
+        netdev <netdev@vger.kernel.org>, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-input@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-rdma@vger.kernel.org, iommu@lists.linux-foundation.org,
+        dm-devel@redhat.com, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        intel-wired-lan@lists.osuosl.org, oss-drivers@netronome.com,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-nvme@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, storagedev@microchip.com,
+        sparclinux@vger.kernel.org, linux-serial@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-afs@lists.infradead.org,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        linux-nfs@vger.kernel.org, bpf@vger.kernel.org,
+        dccp@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-sctp@vger.kernel.org,
+        alsa-devel <alsa-devel@alsa-project.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-+Cc: Tony, let me add Tony to the discussion.
+On Wed, Sep 9, 2020 at 10:10 PM Joe Perches <joe@perches.com> wrote:
+>
+> fallthrough to a separate case/default label break; isn't very readable.
+>
+> Convert pseudo-keyword fallthrough; statements to a simple break; when
+> the next label is case or default and the only statement in the next
+> label block is break;
+>
+> Found using:
+>
+> $ grep-2.5.4 -rP --include=*.[ch] -n "fallthrough;(\s*(case\s+\w+|default)\s*:\s*){1,7}break;" *
+>
+> Miscellanea:
+>
+> o Move or coalesce a couple label blocks above a default: block.
+>
+> Signed-off-by: Joe Perches <joe@perches.com>
+> ---
+>
+> Compiled allyesconfig x86-64 only.
+> A few files for other arches were not compiled.
+>
+>  arch/arm/mach-mmp/pm-pxa910.c                             |  2 +-
+>  arch/arm64/kvm/handle_exit.c                              |  2 +-
+>  arch/mips/kernel/cpu-probe.c                              |  2 +-
+>  arch/mips/math-emu/cp1emu.c                               |  2 +-
+>  arch/s390/pci/pci.c                                       |  2 +-
+>  crypto/tcrypt.c                                           |  4 ++--
+>  drivers/ata/sata_mv.c                                     |  2 +-
+>  drivers/atm/lanai.c                                       |  2 +-
+>  drivers/gpu/drm/i915/display/intel_sprite.c               |  2 +-
+>  drivers/gpu/drm/nouveau/nvkm/engine/disp/hdmi.c           |  2 +-
+>  drivers/hid/wacom_wac.c                                   |  2 +-
+>  drivers/i2c/busses/i2c-i801.c                             |  2 +-
+>  drivers/infiniband/ulp/rtrs/rtrs-clt.c                    | 14 +++++++-------
+>  drivers/infiniband/ulp/rtrs/rtrs-srv.c                    |  6 +++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c               |  2 +-
+>  drivers/irqchip/irq-vic.c                                 |  4 ++--
+>  drivers/md/dm.c                                           |  2 +-
+>  drivers/media/dvb-frontends/drxd_hard.c                   |  2 +-
+>  drivers/media/i2c/ov5640.c                                |  2 +-
+>  drivers/media/i2c/ov6650.c                                |  5 ++---
+>  drivers/media/i2c/smiapp/smiapp-core.c                    |  2 +-
+>  drivers/media/i2c/tvp5150.c                               |  2 +-
+>  drivers/media/pci/ddbridge/ddbridge-core.c                |  2 +-
+>  drivers/media/usb/cpia2/cpia2_core.c                      |  2 +-
+>  drivers/mfd/iqs62x.c                                      |  3 +--
+>  drivers/mmc/host/atmel-mci.c                              |  2 +-
+>  drivers/mtd/nand/raw/nandsim.c                            |  2 +-
+>  drivers/net/ethernet/intel/e1000e/phy.c                   |  2 +-
+>  drivers/net/ethernet/intel/fm10k/fm10k_pf.c               |  2 +-
+>  drivers/net/ethernet/intel/i40e/i40e_adminq.c             |  2 +-
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c               |  2 +-
+>  drivers/net/ethernet/intel/iavf/iavf_txrx.c               |  2 +-
+>  drivers/net/ethernet/intel/igb/e1000_phy.c                |  2 +-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_82599.c            |  2 +-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c             |  2 +-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c            |  2 +-
+>  drivers/net/ethernet/intel/ixgbevf/vf.c                   |  2 +-
+>  drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c |  2 +-
+>  drivers/net/ethernet/qlogic/qed/qed_mcp.c                 |  2 +-
+>  drivers/net/ethernet/sfc/falcon/farch.c                   |  2 +-
+>  drivers/net/ethernet/sfc/farch.c                          |  2 +-
+>  drivers/net/phy/adin.c                                    |  3 +--
+>  drivers/net/usb/pegasus.c                                 |  4 ++--
+>  drivers/net/usb/usbnet.c                                  |  2 +-
+>  drivers/net/wireless/ath/ath5k/eeprom.c                   |  2 +-
+>  drivers/net/wireless/mediatek/mt7601u/dma.c               |  8 ++++----
+>  drivers/nvme/host/core.c                                  | 12 ++++++------
+>  drivers/pcmcia/db1xxx_ss.c                                |  4 ++--
+>  drivers/power/supply/abx500_chargalg.c                    |  2 +-
+>  drivers/power/supply/charger-manager.c                    |  2 +-
+>  drivers/rtc/rtc-pcf85063.c                                |  2 +-
+>  drivers/s390/scsi/zfcp_fsf.c                              |  2 +-
+>  drivers/scsi/aic7xxx/aic79xx_core.c                       |  4 ++--
+>  drivers/scsi/aic94xx/aic94xx_tmf.c                        |  2 +-
+>  drivers/scsi/lpfc/lpfc_sli.c                              |  2 +-
+>  drivers/scsi/smartpqi/smartpqi_init.c                     |  2 +-
+>  drivers/scsi/sr.c                                         |  2 +-
+>  drivers/tty/serial/sunsu.c                                |  2 +-
+>  drivers/tty/serial/sunzilog.c                             |  2 +-
+>  drivers/tty/vt/vt_ioctl.c                                 |  2 +-
+>  drivers/usb/dwc3/core.c                                   |  2 +-
+>  drivers/usb/gadget/legacy/inode.c                         |  2 +-
+>  drivers/usb/gadget/udc/pxa25x_udc.c                       |  4 ++--
+>  drivers/usb/host/ohci-hcd.c                               |  2 +-
+>  drivers/usb/isp1760/isp1760-hcd.c                         |  2 +-
+>  drivers/usb/musb/cppi_dma.c                               |  2 +-
+>  drivers/usb/phy/phy-fsl-usb.c                             |  2 +-
+>  drivers/video/fbdev/stifb.c                               |  2 +-
+>  fs/afs/yfsclient.c                                        |  8 ++++----
+>  fs/ceph/dir.c                                             |  2 +-
 
-On Thu, Sep 10, 2020 at 09:35:27AM +0200, Johan Hovold wrote:
-> On Wed, Sep 09, 2020 at 06:48:15PM +0300, Andy Shevchenko wrote:
-> > On Wed, Sep 09, 2020 at 04:31:01PM +0200, Johan Hovold wrote:
-> > > Fix the port-lock initialisation regression introduced by commit
-> > > a3cb39d258ef ("serial: core: Allow detach and attach serial device for
-> > > console") by making sure that the lock is again initialised during
-> > > console setup.
-> > > 
-> > > The console may be registered before the serial controller has been
-> > > probed in which case the port lock needs to be initialised during
-> > > console setup by a call to uart_set_options(). The console-detach
-> > > changes introduced a regression in several drivers by effectively
-> > > removing that initialisation by not initialising the lock when the port
-> > > is used as a console (which is always the case during console setup).
-> > > 
-> > > Add back the early lock initialisation and instead use a new
-> > > console-reinit flag to handle the case where a console is being
-> > > re-attached through sysfs.
-> > > 
-> > > The question whether the console-detach interface should have been added
-> > > in the first place is left for another discussion.
-> > 
-> > It was discussed in [1]. TL;DR: OMAP would like to keep runtime PM available
-> > for UART while at the same time we disable it for kernel consoles in
-> > bedb404e91bb.
-> > 
-> > [1]: https://lists.openwall.net/linux-kernel/2018/09/29/65
-> 
-> Yeah, I remember that. My fear is just that the new interface opens up a
-> can of worms as it removes the earlier assumption that the console would
-> essentially never be deregistered without really fixing all those
-> drivers, and core functions, written under that assumption. Just to
-> mention a few issues; we have drivers enabling clocks and other
-> resources during console setup which can now be done repeatedly,
+For ceph:
 
-The series introduced the console ->exit() callback, so it should be easy to
-fix.
+Acked-by: Ilya Dryomov <idryomov@gmail.com>
 
->	and
-> several drivers whose setup callbacks are marked __init and will oops
-> the minute you reattach the console.
+Thanks,
 
-I believe this can be fixed relatively easy. As a last resort it can be a quirk
-that disables console detachment for problematic consoles.
-
-> And what about power management
-> which was the reason for wanting this on OMAP in the first place; tty
-> core never calls shutdown() for a console port, not even when it's been
-> detached using the new interface.
-
-That is interesting... Tony, do we have OMAP case working because of luck?
-
-> I know, the console setup is all a mess, but this still seems a little
-> rushed to me. I'm even inclined to suggest a revert until the above and
-> similar issues have been addressed properly rather keeping a known buggy
-> interface.
-
-You know that it will be a dead end. Any solution how to move forward?
-
-> > > Note that the console-enabled check in uart_set_options() is not
-> > > redundant because of kgdboc, which can end up reinitialising an already
-> > > enabled console (see commit 42b6a1baa3ec ("serial_core: Don't
-> > > re-initialize a previously initialized spinlock.")).
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+                Ilya
