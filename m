@@ -2,174 +2,133 @@ Return-Path: <SRS0=IUNt=CT=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82DF2C2D0A7
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 09:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F5FC2BB84
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 09:28:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1905520809
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 09:19:37 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="m+S0uISl"
+	by mail.kernel.org (Postfix) with ESMTP id BC56B21582
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 09:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730373AbgIJJTg (ORCPT
+        id S1730262AbgIJJ2G (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Sep 2020 05:19:36 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:34946 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730093AbgIJJTZ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Sep 2020 05:19:25 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08A92VZj043273;
-        Thu, 10 Sep 2020 05:18:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : subject : to : cc
- : references : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=lbijph5Taiyv+LvsJ/sM7F9hRJYgXJ1/OeIBGv1V4zI=;
- b=m+S0uISl4zEUpQGOdqBmign+zGpGsKWZr0M8gyz4QB85tpAWWy9P9TsdEALPMOQc3bzS
- HTmLUO+a8FzA6nkFFUM33SJxJVALimBUdqlyOa2QZAPtF+c5k3tdLE9Ja5lY/NITAiC6
- 7HCRwKAifhDAW7efbtBkvvOJ9noreWSpBIsRvblR2Hd6QlL3Ql+0LiOJ/5ZV1/0dyGOl
- ERG9aDbHT//+EVNVz7T31D+HrD6qNbB+7sB3Bj+uKnN/s2x03LNnlPZVOOElWWQIxfaC
- VUv4NZ3PEML96IaUY9CGtxDOOL3o1HTtA4I8YY6eO/McXjX1bfFSSUd+pDdF2Re/VmW7 tg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33fh5s0eur-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Sep 2020 05:18:39 -0400
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 08A92b39043665;
-        Thu, 10 Sep 2020 05:18:37 -0400
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33fh5s0etk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Sep 2020 05:18:37 -0400
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08A9DDHx028675;
-        Thu, 10 Sep 2020 09:18:34 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03fra.de.ibm.com with ESMTP id 33c2a8bckn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Sep 2020 09:18:34 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08A9GxlP65470906
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Sep 2020 09:16:59 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6C217AE055;
-        Thu, 10 Sep 2020 09:18:32 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 299C6AE04D;
-        Thu, 10 Sep 2020 09:18:30 +0000 (GMT)
-Received: from oc4120165700.ibm.com (unknown [9.145.14.177])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 10 Sep 2020 09:18:30 +0000 (GMT)
-From:   Steffen Maier <maier@linux.ibm.com>
-Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
- break;
-To:     Joe Perches <joe@perches.com>, LKML <linux-kernel@vger.kernel.org>,
-        Jiri Kosina <trivial@kernel.org>,
-        Benjamin Block <bblock@linux.ibm.com>
-Cc:     Kees Cook <kees.cook@canonical.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-mips@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-input@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-rdma@vger.kernel.org,
-        iommu@lists.linux-foundation.org, dm-devel@redhat.com,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, intel-wired-lan@lists.osuosl.org,
-        oss-drivers@netronome.com, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-nvme@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        storagedev@microchip.com, sparclinux@vger.kernel.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-parisc@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, ceph-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, bpf@vger.kernel.org,
-        dccp@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-sctp@vger.kernel.org,
-        alsa-devel <alsa-devel@alsa-project.org>
-References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-Message-ID: <0c66fbe5-c48b-7dc1-f7fe-1498da9cc1a3@linux.ibm.com>
-Date:   Thu, 10 Sep 2020 11:18:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        Thu, 10 Sep 2020 05:28:06 -0400
+Received: from mga11.intel.com ([192.55.52.93]:34053 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730381AbgIJJ1a (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Sep 2020 05:27:30 -0400
+IronPort-SDR: mN4Uow4Byk5k4UvhSnTNlUyibOBSy0oEUcs8w/rWXt4DNVDCNpRY762hQdPvg7KeqM0VjL30rB
+ Nlv48Ggz10YA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="155959546"
+X-IronPort-AV: E=Sophos;i="5.76,412,1592895600"; 
+   d="scan'208";a="155959546"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 02:27:19 -0700
+IronPort-SDR: eCrhByWXSSpzQhy0QRwbfDpyXB6D1mCK4pQ0qv49CimrJISk/wYVOIIq6oYwYQwClFtU3ibcSG
+ 89+uWbTIVm1Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,412,1592895600"; 
+   d="scan'208";a="334120998"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga008.jf.intel.com with ESMTP; 10 Sep 2020 02:27:17 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1kGIrL-00FeWV-0j; Thu, 10 Sep 2020 12:27:15 +0300
+Date:   Thu, 10 Sep 2020 12:27:15 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Johan Hovold <johan@kernel.org>, Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable <stable@vger.kernel.org>
+Subject: Re: [PATCH 2/2] serial: core: fix console port-lock regression
+Message-ID: <20200910092715.GM1891694@smile.fi.intel.com>
+References: <20200909143101.15389-1-johan@kernel.org>
+ <20200909143101.15389-3-johan@kernel.org>
+ <20200909154815.GD1891694@smile.fi.intel.com>
+ <20200910073527.GC24441@localhost>
 MIME-Version: 1.0
-In-Reply-To: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-10_01:2020-09-10,2020-09-10 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 suspectscore=0 impostorscore=0 priorityscore=1501 spamscore=0
- mlxlogscore=940 adultscore=0 bulkscore=0 clxscore=1011 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009100080
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200910073527.GC24441@localhost>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 9/9/20 10:06 PM, Joe Perches wrote:
-> fallthrough to a separate case/default label break; isn't very readable.
-> 
-> Convert pseudo-keyword fallthrough; statements to a simple break; when
-> the next label is case or default and the only statement in the next
-> label block is break;
-> 
-> Found using:
-> 
-> $ grep-2.5.4 -rP --include=*.[ch] -n "fallthrough;(\s*(case\s+\w+|default)\s*:\s*){1,7}break;" *
-> 
-> Miscellanea:
-> 
-> o Move or coalesce a couple label blocks above a default: block.
-> 
-> Signed-off-by: Joe Perches <joe@perches.com>
-> ---
-> 
-> Compiled allyesconfig x86-64 only.
-> A few files for other arches were not compiled.
++Cc: Tony, let me add Tony to the discussion.
 
->   drivers/s390/scsi/zfcp_fsf.c                              |  2 +-
+On Thu, Sep 10, 2020 at 09:35:27AM +0200, Johan Hovold wrote:
+> On Wed, Sep 09, 2020 at 06:48:15PM +0300, Andy Shevchenko wrote:
+> > On Wed, Sep 09, 2020 at 04:31:01PM +0200, Johan Hovold wrote:
+> > > Fix the port-lock initialisation regression introduced by commit
+> > > a3cb39d258ef ("serial: core: Allow detach and attach serial device for
+> > > console") by making sure that the lock is again initialised during
+> > > console setup.
+> > > 
+> > > The console may be registered before the serial controller has been
+> > > probed in which case the port lock needs to be initialised during
+> > > console setup by a call to uart_set_options(). The console-detach
+> > > changes introduced a regression in several drivers by effectively
+> > > removing that initialisation by not initialising the lock when the port
+> > > is used as a console (which is always the case during console setup).
+> > > 
+> > > Add back the early lock initialisation and instead use a new
+> > > console-reinit flag to handle the case where a console is being
+> > > re-attached through sysfs.
+> > > 
+> > > The question whether the console-detach interface should have been added
+> > > in the first place is left for another discussion.
+> > 
+> > It was discussed in [1]. TL;DR: OMAP would like to keep runtime PM available
+> > for UART while at the same time we disable it for kernel consoles in
+> > bedb404e91bb.
+> > 
+> > [1]: https://lists.openwall.net/linux-kernel/2018/09/29/65
+> 
+> Yeah, I remember that. My fear is just that the new interface opens up a
+> can of worms as it removes the earlier assumption that the console would
+> essentially never be deregistered without really fixing all those
+> drivers, and core functions, written under that assumption. Just to
+> mention a few issues; we have drivers enabling clocks and other
+> resources during console setup which can now be done repeatedly,
 
->   82 files changed, 109 insertions(+), 112 deletions(-)
+The series introduced the console ->exit() callback, so it should be easy to
+fix.
 
-> diff --git a/drivers/s390/scsi/zfcp_fsf.c b/drivers/s390/scsi/zfcp_fsf.c
-> index 140186fe1d1e..2741a07df692 100644
-> --- a/drivers/s390/scsi/zfcp_fsf.c
-> +++ b/drivers/s390/scsi/zfcp_fsf.c
-> @@ -2105,7 +2105,7 @@ static void zfcp_fsf_open_lun_handler(struct zfcp_fsf_req *req)
->   
->   	case FSF_PORT_HANDLE_NOT_VALID:
->   		zfcp_erp_adapter_reopen(adapter, 0, "fsouh_1");
-> -		fallthrough;
-> +		break;
->   	case FSF_LUN_ALREADY_OPEN:
->   		break;
->   	case FSF_PORT_BOXED:
+>	and
+> several drivers whose setup callbacks are marked __init and will oops
+> the minute you reattach the console.
 
-Acked-by: Steffen Maier <maier@linux.ibm.com> # for zfcp
+I believe this can be fixed relatively easy. As a last resort it can be a quirk
+that disables console detachment for problematic consoles.
 
+> And what about power management
+> which was the reason for wanting this on OMAP in the first place; tty
+> core never calls shutdown() for a console port, not even when it's been
+> detached using the new interface.
+
+That is interesting... Tony, do we have OMAP case working because of luck?
+
+> I know, the console setup is all a mess, but this still seems a little
+> rushed to me. I'm even inclined to suggest a revert until the above and
+> similar issues have been addressed properly rather keeping a known buggy
+> interface.
+
+You know that it will be a dead end. Any solution how to move forward?
+
+> > > Note that the console-enabled check in uart_set_options() is not
+> > > redundant because of kgdboc, which can end up reinitialising an already
+> > > enabled console (see commit 42b6a1baa3ec ("serial_core: Don't
+> > > re-initialize a previously initialized spinlock.")).
 
 -- 
-Mit freundlichen Gruessen / Kind regards
-Steffen Maier
+With Best Regards,
+Andy Shevchenko
 
-Linux on IBM Z Development
 
-https://www.ibm.com/privacy/us/en/
-IBM Deutschland Research & Development GmbH
-Vorsitzender des Aufsichtsrats: Matthias Hartmann
-Geschaeftsfuehrung: Dirk Wittkopp
-Sitz der Gesellschaft: Boeblingen
-Registergericht: Amtsgericht Stuttgart, HRB 243294
