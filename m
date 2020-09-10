@@ -2,236 +2,189 @@ Return-Path: <SRS0=IUNt=CT=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7ACC2BB84
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 07:35:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A727C43461
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 08:31:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C7AD72078B
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 07:35:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599723341;
-	bh=aAENchbACXwky89jNsRNg/ClfcJwS6TJ6K4IQrXNUQA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=lLQHx4yYQEA5D/B9wdElKuAIkeoB2w3gQGsgoJNPCx0Ag2zhksAGIt5oSIPU0iDNy
-	 /5ikHiNb/Sk6Pr+4DAICdcZ9lpu2/KHsuEiTq2K3GqlBD+KZJ3+G418YTTncs6iBcG
-	 l6ddd/xauiKa5WhZ6R+cUGtCjXaaOUAa3nuvvp6I=
+	by mail.kernel.org (Postfix) with ESMTP id B5AAE208CA
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 08:31:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="cj/9uAeA";
+	dkim=pass (1024-bit key) header.d=microchiptechnology.onmicrosoft.com header.i=@microchiptechnology.onmicrosoft.com header.b="nHI74pvW"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728463AbgIJHfl (ORCPT
+        id S1730477AbgIJIbF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Sep 2020 03:35:41 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:33216 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729135AbgIJHff (ORCPT
+        Thu, 10 Sep 2020 04:31:05 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:61294 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730356AbgIJIYj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Sep 2020 03:35:35 -0400
-Received: by mail-lf1-f67.google.com with SMTP id x77so3053527lfa.0;
-        Thu, 10 Sep 2020 00:35:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fshanOoZEbXfh2wzkzEbd7aeXs9RjWFS3jNx1xf0WE4=;
-        b=RqTDOp4XG5wM03koJZFVVKn+WvFeYg5N0/Ss0VXAH3zJYHwcPIaoMaBVy8sbZhawqu
-         HL712snAUnx7gZaTFtHmQmUN2gEhy0YPgE/NG8A+V4W704N/WXl/dYq/K05Xz5vciyTy
-         L4JO3yLPRwLreIDiYdV80NUV8MEUIXoUNY7nH5cEM39taM/vLOq6d/DrRzRYhDXYtP0Q
-         itI7YB7Q/b8w6ETGnTxMFSSTadtZ2THtUcmEm0P4dv4/a/UC7X0Pwf1V8YG8sLCIikoQ
-         ztNwFkXdLSoM1Iv+YgDA/xGpPOO1uAZf/Tao/DZCLVVYg8uIYrONBCbClmLiUWnSEfix
-         LiLQ==
-X-Gm-Message-State: AOAM531F/UsqqcXrn74sXWM+oAxikRNdUHtJaQZDNUk0+ZDeLQaNe03P
-        Oit9J0ejiOqbCHCZCp8XCUg=
-X-Google-Smtp-Source: ABdhPJy8m6LygSl7HMxtzakpu88W+WmiS92wExIdiFB7dR3zHltDxVhPBhP4S8n5sk57q1OAjc7E7g==
-X-Received: by 2002:a19:d95:: with SMTP id 143mr3361008lfn.4.1599723332027;
-        Thu, 10 Sep 2020 00:35:32 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id v14sm1140974lfe.79.2020.09.10.00.35.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 00:35:31 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1kGH79-0005dT-10; Thu, 10 Sep 2020 09:35:27 +0200
-Date:   Thu, 10 Sep 2020 09:35:27 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable <stable@vger.kernel.org>
-Subject: Re: [PATCH 2/2] serial: core: fix console port-lock regression
-Message-ID: <20200910073527.GC24441@localhost>
-References: <20200909143101.15389-1-johan@kernel.org>
- <20200909143101.15389-3-johan@kernel.org>
- <20200909154815.GD1891694@smile.fi.intel.com>
+        Thu, 10 Sep 2020 04:24:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1599726278; x=1631262278;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=Yyq2EDCS2vKZmH5eLOYYicNPIXcRgkd+H8Ca+7FcXOc=;
+  b=cj/9uAeAlzEQFS2eT6rVQ1IFXEBDChgI2LEhqtY4jULOSg+toOJ/EPDz
+   fNwmimX5eNLs3iyo+7O2YceRwhb9OjNUoZI8ftb9utA8PClcPnH7MpT1G
+   B6a5d2HZh3q+SGlLj0Pbsqa/hCRIPnuBHpdhudv4uhs69zm1L9c5ktYw1
+   9PTVwt0Cv+rCyC7qXPtBQ2GMQwonSg3jWbTZcRAGCIgPV+Ln+ugGRPtBO
+   k3K/WKJbsdPkSSfjZ503xX9W6ZwYmyBwxYG5DNA1VQCA/kuEe3/x95wD5
+   mOpdLX6I4EyWUalzUhElLrvDCHUugaPehbn8/DGdfAgFUqTYgr108q8ud
+   A==;
+IronPort-SDR: ftLnKVJWWVARs6xE60k80lvcWvEF9LnNReTXi2pIeHcFd1pOvCbq5YtWKyNQKbgntoF3PJrEzZ
+ yGkW+CSPkTanXwFzN+yaXQvli7N+J9TDXD7EYbxy0puKvjPuscpCKfJznonLOJ1RssHzyGXWld
+ FEmXkljrjgcGdATyyJ52ywdn6YOedSeAiw39Unb2/iAlFSlX4xOSaPEQ1oDzJo6jB0orKUYHob
+ 8TPZOmriiXyQ/YsxyXR92KLsMxoOl9I7rBMGKN1j5VU4WXWSblm45hfVc18o3BtgyAUNaPQFAh
+ yGo=
+X-IronPort-AV: E=Sophos;i="5.76,412,1592895600"; 
+   d="scan'208";a="91279822"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Sep 2020 01:24:26 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 10 Sep 2020 01:24:22 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3
+ via Frontend Transport; Thu, 10 Sep 2020 01:24:22 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=itElKv30dbsNhtpfiKLkCOXYopTjtkZ9zEAzRioxDAmgifjIhq6QVV/lc6kfk0TIuSPX1OZAUrSDWVumK4tLXffHjOu4WRZugnRrQRvvAAgpCE7V1+zJn3PyPC0j6/G2aAtgoGzj2pGQVkq35HD5i3ZvkV68QA+ILQVSTYqBA+q+9/IrmOIYHSq5T7WknjE5tqhKpcoEPyxu0LHlp9MR91+nL0ffI8mb6UZ8R19c1Z8LDep20pLw6r6tPamTWrMJ0hAxNX35wsV6GMNcE6JFgdV5g0JfNl3CssuMyPR0eMKE/T9DeShiio5DN/5SR2TytdQ7bAPBSy6lDzF4x9zLmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/BE3UD6DmJgxUoBN4fm1O92DvDQlokRm7L2E5H8tZ/w=;
+ b=aw+E7ncriQCfdGAUGrQZUE/X01NpnQkPaMKg98SJOA6wY+Umt71j+ZM3yJT4X2e4Z3a1Nf1QLyhCWVWM5woSGiSrFRCtJ7Y+axoK5muAMFzy8K/q5zDKA+XhU43kGZTFp6nun78Bc4vdtny2nuHntBDykocQKzISfMU5cKF8KWDvMYiCfneJuxF9RID1NNZC8H0s/Flemt9H/8te0Tc5X4Wgyt0zHH2qftbjcUtGDix9JdV3FbJj+OP489jnkeYYjXBTFPWiX1axHsYPxivLdaeMUWo+d8svoqnPmKjaFYR7H+Czrws9kPnJiEDFXxT1EnrZJjVbs3wTlpHvyWTwVg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/BE3UD6DmJgxUoBN4fm1O92DvDQlokRm7L2E5H8tZ/w=;
+ b=nHI74pvWX9voKu6qjF0Kfqy5Sc0AGs+NSCuuZ7eJDs13Cd2LSPaaZXvb/ZjcOfT09uuWHM6p5pmozbJumZzu3LweHgExn3n4A3SazKZjxpV5HJ3Rfd1IYhfQ1vrLcAgTG/9j9wdLhYAt6RaeZr3RJVUTfyzdVhJVMpRZmeQD3Xk=
+Received: from BYAPR11MB3477.namprd11.prod.outlook.com (2603:10b6:a03:7c::28)
+ by BY5PR11MB4307.namprd11.prod.outlook.com (2603:10b6:a03:1bd::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Thu, 10 Sep
+ 2020 08:24:22 +0000
+Received: from BYAPR11MB3477.namprd11.prod.outlook.com
+ ([fe80::d1dd:de76:4e99:7c85]) by BYAPR11MB3477.namprd11.prod.outlook.com
+ ([fe80::d1dd:de76:4e99:7c85%7]) with mapi id 15.20.3348.019; Thu, 10 Sep 2020
+ 08:24:21 +0000
+From:   <Nicolas.Ferre@microchip.com>
+To:     <joe@perches.com>, <linux-kernel@vger.kernel.org>,
+        <trivial@kernel.org>
+CC:     <kees.cook@canonical.com>, <ndesaulniers@google.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <kvmarm@lists.cs.columbia.edu>, <linux-mips@vger.kernel.org>,
+        <linux-s390@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>,
+        <linux-atm-general@lists.sourceforge.net>,
+        <netdev@vger.kernel.org>, <intel-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <nouveau@lists.freedesktop.org>,
+        <linux-input@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+        <dm-devel@redhat.com>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        <intel-wired-lan@lists.osuosl.org>, <oss-drivers@netronome.com>,
+        <linux-usb@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-nvme@lists.infradead.org>, <linux-pm@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <storagedev@microchip.com>, <sparclinux@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <linux-parisc@vger.kernel.org>, <linux-fbdev@vger.kernel.org>,
+        <linux-afs@lists.infradead.org>, <ceph-devel@vger.kernel.org>,
+        <linux-nfs@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <dccp@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
+        <coreteam@netfilter.org>, <linux-sctp@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <Eugen.Hristev@microchip.com>,
+        <Ludovic.Desroches@microchip.com>
+Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
+ break;
+Thread-Topic: [trivial PATCH] treewide: Convert switch/case fallthrough; to
+ break;
+Thread-Index: AQHWh0vIy44IYF5A+kuaVLhVJ6ZdVw==
+Date:   Thu, 10 Sep 2020 08:24:21 +0000
+Message-ID: <c2929349-ca60-486d-3cad-a83321587c5f@microchip.com>
+References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
+In-Reply-To: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+authentication-results: perches.com; dkim=none (message not signed)
+ header.d=none;perches.com; dmarc=none action=none header.from=microchip.com;
+x-originating-ip: [2a01:cb1c:8c:b200:d11f:426b:f805:cbe2]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e351a690-85b8-47aa-f38f-08d85562eb8c
+x-ms-traffictypediagnostic: BY5PR11MB4307:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR11MB4307E000D4DA0597A74F9A31E0270@BY5PR11MB4307.namprd11.prod.outlook.com>
+x-bypassexternaltag: True
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rwdyTK6oNx+pJXY+VYO8jlUUcB5LsJW3ZQhau0YhpysDI1uZrWJ+5KkXmnJNABVwRpL8mxf24YLlXWyB3yirjaXQ/srQXMAk73DmLRMX7FFSd/uWs59kXpR0gz7YIDZpkdEHXR8Ks47+GSWaldjUxHW1dDgr9Bml1Ile+LfAjDi5j/2WavAN5DcmiJhVV86brSYApECTF1sqFMiIoIfargGWcDiXjLp0xoZy1wTF5cYKXSjd2DGvBQRASj+UAeO1Pg9WFEX+2sgdqqFJ/HgGUzu9uaOU20bpHBTTwQw7yoVGql5DTXE+Xr30INsHw1gSuTyHpcI3KtFhJi6QDKEIl6ZhO0EwhNcia52tqGsvyefiqtKNAZSsmZhN9N/OPaNO
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3477.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(346002)(396003)(366004)(39860400002)(36756003)(6506007)(4744005)(53546011)(31686004)(4326008)(8676002)(31696002)(6512007)(186003)(478600001)(2616005)(107886003)(83380400001)(54906003)(110136005)(5660300002)(316002)(2906002)(6486002)(76116006)(71200400001)(91956017)(66476007)(66556008)(8936002)(66446008)(66946007)(64756008)(7416002)(7406005)(86362001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: CK3jnFjP+DaxTGoKSfijNwQSDSi+zYRAANKGWEe0w6BHoCBr3jeo8QFCPrdi+OpT1qz3lmVs3mCRxOmBtUGK5WN0AxOt0wvA3bBJRUyjBicAE+lDMsP7vy1cft0wcXBrEZgdgqF7VD1sQj+khtUTD5EsNnntahNSIGqwN+VZCKQ1QzjPtAbjR2oPP/LrPDKYk//qfKAomMDI7R2fpR0tTUzDMz48DEh+PQCCmr/krCP8U3KTB6FIGhilgI7TLOfsJcLS9qlGh0PGNeVy7GIerGvFEQfkR4YdlzVLyEKvYmf4EXR5wArGM6eS5MMbLL4vYVjGrhiNaJt+earGuTqyYiFZbc+uujPQG9qCWcGOhC7tSaJvV/BIkb7lV8g/yXvxSbayqkCXQ/s7jX+D9fM+ZWNqgoWbSd/P+uuCP7/8e33PXHOet1lAM1sUIHpLxk8RCyecYucN6ijlgMa8IdFcV7U+ZA3zH97/7OWVEtd6OgF0CR21Hki2raxtlS5sca+cVURYu2gcHFAMLULSgaOruMk5qcKurGsgOTL9NDY1H7Jpn1+7gJ+bMQIt2b5OxDFW2nSizeQSfqlNFoprGc6aS71OSv+MwkoEfhBi640q5sGrdYfhliWNj5HhbdiTLJVy1TBmrhSIzi6KODxmStaMlQzfe8a1Otv3042csYwXaPKEPC9i6WiYuHbWrvEwzSbxIsAABeXwAiTaxYC040N9rw==
+Content-Type: text/plain; charset="Windows-1252"
+Content-ID: <0B2726412C35D14B94E876CA5EB14904@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200909154815.GD1891694@smile.fi.intel.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3477.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e351a690-85b8-47aa-f38f-08d85562eb8c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2020 08:24:21.4887
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JW3oElxXZwEvl6R2z5GFIVkcX/+UpGKsEW8MKFxofB9W1y9KDMUkM69WnQUZrCOB/0mudh2ADBhfj0C34gWZhgepCXhZk3LC9prwi+CGg3E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4307
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 06:48:15PM +0300, Andy Shevchenko wrote:
-> On Wed, Sep 09, 2020 at 04:31:01PM +0200, Johan Hovold wrote:
-> > Fix the port-lock initialisation regression introduced by commit
-> > a3cb39d258ef ("serial: core: Allow detach and attach serial device for
-> > console") by making sure that the lock is again initialised during
-> > console setup.
-> > 
-> > The console may be registered before the serial controller has been
-> > probed in which case the port lock needs to be initialised during
-> > console setup by a call to uart_set_options(). The console-detach
-> > changes introduced a regression in several drivers by effectively
-> > removing that initialisation by not initialising the lock when the port
-> > is used as a console (which is always the case during console setup).
-> > 
-> > Add back the early lock initialisation and instead use a new
-> > console-reinit flag to handle the case where a console is being
-> > re-attached through sysfs.
-> > 
-> > The question whether the console-detach interface should have been added
-> > in the first place is left for another discussion.
-> 
-> It was discussed in [1]. TL;DR: OMAP would like to keep runtime PM available
-> for UART while at the same time we disable it for kernel consoles in
-> bedb404e91bb.
-> 
-> [1]: https://lists.openwall.net/linux-kernel/2018/09/29/65
+Joe,
 
-Yeah, I remember that. My fear is just that the new interface opens up a
-can of worms as it removes the earlier assumption that the console would
-essentially never be deregistered without really fixing all those
-drivers, and core functions, written under that assumption. Just to
-mention a few issues; we have drivers enabling clocks and other
-resources during console setup which can now be done repeatedly, and
-several drivers whose setup callbacks are marked __init and will oops
-the minute you reattach the console. And what about power management
-which was the reason for wanting this on OMAP in the first place; tty
-core never calls shutdown() for a console port, not even when it's been
-detached using the new interface.
+Please drop this chunk: it's a successive controller version number=20
+which are all backward compatible with "fallthrough" on each case so=20
+removing from this last one makes it inconsistent.
 
-I know, the console setup is all a mess, but this still seems a little
-rushed to me. I'm even inclined to suggest a revert until the above and
-similar issues have been addressed properly rather keeping a known buggy
-interface.
+In sort: NACK for atmel-mci.
 
-> > Note that the console-enabled check in uart_set_options() is not
-> > redundant because of kgdboc, which can end up reinitialising an already
-> > enabled console (see commit 42b6a1baa3ec ("serial_core: Don't
-> > re-initialize a previously initialized spinlock.")).
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Thank you!
-> 
-> One question below, though.
-> 
-> > Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
-> > Cc: stable <stable@vger.kernel.org>     # 5.7
-> > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Signed-off-by: Johan Hovold <johan@kernel.org>
-> > ---
-> >  drivers/tty/serial/serial_core.c | 32 +++++++++++++++-----------------
-> >  include/linux/serial_core.h      |  1 +
-> >  2 files changed, 16 insertions(+), 17 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > index 53b79e1fcbc8..124524ecfe26 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -1916,24 +1916,12 @@ static inline bool uart_console_enabled(struct uart_port *port)
-> >  	return uart_console(port) && (port->cons->flags & CON_ENABLED);
-> >  }
-> >  
-> > -static void __uart_port_spin_lock_init(struct uart_port *port)
-> > +static void uart_port_spin_lock_init(struct uart_port *port)
-> >  {
-> >  	spin_lock_init(&port->lock);
-> >  	lockdep_set_class(&port->lock, &port_lock_key);
-> >  }
-> >  
-> > -/*
-> > - * Ensure that the serial console lock is initialised early.
-> > - * If this port is a console, then the spinlock is already initialised.
-> > - */
-> > -static inline void uart_port_spin_lock_init(struct uart_port *port)
-> > -{
-> 
-> > -	if (uart_console(port))
-> 
-> I'm wondering if we may revert this line to be uart_console_enabled() and use a
-> helper below twice.
+Best regards,
+   Nicolas
 
-I didn't do that on purpose as the rationale for why the
-uart_console_enabled() check is there is different in the two paths so
-merging the two comments, and moving it away from the call sites, wasn't
-really a good idea to begin with.
 
-> > -		return;
-> > -
-> > -	__uart_port_spin_lock_init(port);
-> > -}
-> > -
-> >  #if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
-> >  /**
-> >   *	uart_console_write - write a console message to a serial port
-> > @@ -2086,7 +2074,15 @@ uart_set_options(struct uart_port *port, struct console *co,
-> >  	struct ktermios termios;
-> >  	static struct ktermios dummy;
-> >  
-> > -	uart_port_spin_lock_init(port);
-> > +	/*
-> > +	 * Ensure that the serial-console lock is initialised early.
-> > +	 *
-> > +	 * Note that the console-enabled check is needed because of kgdboc,
-> > +	 * which can end up calling uart_set_options() for an already enabled
-> > +	 * console via tty_find_polling_driver() and uart_poll_init().
-> > +	 */
-> > +	if (!uart_console_enabled(port) && !port->console_reinit)
-> > +		uart_port_spin_lock_init(port);
-> >  
-> >  	memset(&termios, 0, sizeof(struct ktermios));
-> >  
-> > @@ -2794,10 +2790,12 @@ static ssize_t console_store(struct device *dev,
-> >  		if (oldconsole && !newconsole) {
-> >  			ret = unregister_console(uport->cons);
-> >  		} else if (!oldconsole && newconsole) {
-> > -			if (uart_console(uport))
-> > +			if (uart_console(uport)) {
-> > +				uport->console_reinit = 1;
-> >  				register_console(uport->cons);
-> > -			else
-> > +			} else {
-> >  				ret = -ENOENT;
-> > +			}
-> >  		}
-> >  	} else {
-> >  		ret = -ENXIO;
-> > @@ -2898,7 +2896,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
-> >  	 * initialised.
-> >  	 */
-> >  	if (!uart_console_enabled(uport))
-> > -		__uart_port_spin_lock_init(uport);
-> > +		uart_port_spin_lock_init(uport);
-> >  
-> >  	if (uport->cons && uport->dev)
-> >  		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
-> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> > index 01fc4d9c9c54..8a99279a579b 100644
-> > --- a/include/linux/serial_core.h
-> > +++ b/include/linux/serial_core.h
-> > @@ -248,6 +248,7 @@ struct uart_port {
-> >  
-> >  	unsigned char		hub6;			/* this should be in the 8250 driver */
-> >  	unsigned char		suspended;
-> > +	unsigned char		console_reinit;
-> >  	const char		*name;			/* port name */
-> >  	struct attribute_group	*attr_group;		/* port specific attributes */
-> >  	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
-> > -- 
-> > 2.26.2
+On 09/09/2020 at 22:06, Joe Perches wrote:
+> diff --git a/drivers/mmc/host/atmel-mci.c b/drivers/mmc/host/atmel-mci.c
+> index 444bd3a0a922..8324312e4f42 100644
+> --- a/drivers/mmc/host/atmel-mci.c
+> +++ b/drivers/mmc/host/atmel-mci.c
+> @@ -2435,7 +2435,7 @@ static void atmci_get_cap(struct atmel_mci *host)
+>          case 0x100:
+>                  host->caps.has_bad_data_ordering =3D 0;
+>                  host->caps.need_reset_after_xfer =3D 0;
+> -               fallthrough;
+> +               break;
+>          case 0x0:
+>                  break;
+>          default:
 
-Johan
+
+--=20
+Nicolas Ferre
