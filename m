@@ -2,131 +2,109 @@ Return-Path: <SRS0=IUNt=CT=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08147C433E2
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 06:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEA8C433E2
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 07:10:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B602220882
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 06:53:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 419BE20708
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Sep 2020 07:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599720813;
-	bh=/LOePKGDUR83plqAhx1ySvpBeTmOBTt4AYD41Ar10p8=;
+	s=default; t=1599721853;
+	bh=ilD/+nP6kSsOUI9r+lncUg9b7MEA/loYwqG2265oiLI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Z0cgjCdYTYd3JrWIvWM5//UnbdrS1syznPWPg1LJ1YEpu0EIstLa1YimuN23pn39O
-	 CEIMVWk425iar8MNNmpHB8LjPkng69oWcoT1Rteen8BHNixOBNSoZTIbjmF1DlqZcb
-	 pAGhIxdS2K+y1eP9MXKKccuuWmHpbhEIa86Z55rY=
+	b=faQpYJPvvfLNiJ/Y0OB7pg68BkJ4xAX6Vi+eyttbGoRBYMjT36eCJ3ASnrdAXPule
+	 /6ciG+WTGJenKFRpjWs+DeZRuky6yfXyZYbO8eKLHN/xQFn7B0mjUFCrSob5KGMZsm
+	 Dr2kYgoyO6vlbh1eX7wMyhRoFrkJl6jMT6o15fJw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730077AbgIJGxW (ORCPT
+        id S1730225AbgIJHKe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Sep 2020 02:53:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33088 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726961AbgIJGxQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Sep 2020 02:53:16 -0400
-Received: from localhost (p5486ceec.dip0.t-ipconnect.de [84.134.206.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 93A222078E;
-        Thu, 10 Sep 2020 06:53:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599720795;
-        bh=/LOePKGDUR83plqAhx1ySvpBeTmOBTt4AYD41Ar10p8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e3Jk9M7ZKtsnsBd892ykDqq6ldjJyX23IqJ7DyDWgKOR2vkDHWpTUx3L4W3ZSGRl8
-         gbJ25CK/q4T0DRgLEQdFDMLfOBf9AoSauHV2UkWklXje0SfXK1Ub2yM0Bl5ncgFE73
-         tRqSbJwVN+gRudxLpTtOTt3VxbQSMkA19oVYS08w=
-Date:   Thu, 10 Sep 2020 08:53:12 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Jiri Kosina <trivial@kernel.org>,
-        Kees Cook <kees.cook@canonical.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-mips@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-input@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-rdma@vger.kernel.org,
-        iommu@lists.linux-foundation.org, dm-devel@redhat.com,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, intel-wired-lan@lists.osuosl.org,
-        oss-drivers@netronome.com, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-nvme@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        storagedev@microchip.com, sparclinux@vger.kernel.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-parisc@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, ceph-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, bpf@vger.kernel.org,
-        dccp@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-sctp@vger.kernel.org,
-        alsa-devel <alsa-devel@alsa-project.org>
-Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
- break;
-Message-ID: <20200910065312.GH1031@ninjato>
-References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
+        Thu, 10 Sep 2020 03:10:34 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:44777 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730408AbgIJHIo (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Sep 2020 03:08:44 -0400
+Received: by mail-lj1-f195.google.com with SMTP id b19so6743653lji.11;
+        Thu, 10 Sep 2020 00:08:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rLyVaAJAglFySSpr2MGhrCSvoIYdsTOte9p/4jLkzmo=;
+        b=ivrn1aIWEFXz+cMgUi7eGCFI6kl+Ow9i96etPX4Q1XzYqtOQ98ky6EyJd9pEX/cCUL
+         4vj0Vw20W1nBBCGrVojg/uVfHTjXFVWDqr/r5rjbn6KEw1DvR6F9wfl1NIPG8stp3+cQ
+         jVhy/b5Jwan+SGnBG9fmyHoGM0AlohDibqxnfHthsu2ZfEU9pdcsRwNHgqwJovIn2Wb8
+         Miyohu57hsdIIpxa7K1XlcdayUNfSDPLh1TpU7B27kop6S813mu/N1/TrS51COHYa7eJ
+         cN4LtsVieqT2SSyqrGWSD96EqN3k9Vwo3NDo8seMsxY4Mq5hQ1y5A2drG0FefXBaI0yR
+         Blnw==
+X-Gm-Message-State: AOAM533FM88CY1FcUR84h+obTP730R95HOmKVzR1anllSXA+kIQICPSL
+        KCPT+21HaCsVQRv7spCFMDU=
+X-Google-Smtp-Source: ABdhPJzcLGO0skLg/9MNKQOq2gGlzisRR/xiOYj/piuMfbP3jScnhymaPvFW15ZJ6AgBtqBeh2jeFA==
+X-Received: by 2002:a2e:b8d1:: with SMTP id s17mr602390ljp.222.1599721721980;
+        Thu, 10 Sep 2020 00:08:41 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id z8sm1349606ljh.19.2020.09.10.00.08.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Sep 2020 00:08:41 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1kGGhA-0005SA-Rw; Thu, 10 Sep 2020 09:08:37 +0200
+Date:   Thu, 10 Sep 2020 09:08:36 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable <stable@vger.kernel.org>
+Subject: Re: [PATCH 1/2] serial: core: fix port-lock initialisation
+Message-ID: <20200910070836.GB24441@localhost>
+References: <20200909143101.15389-1-johan@kernel.org>
+ <20200909143101.15389-2-johan@kernel.org>
+ <20200909152158.GC1891694@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="OpLPJvDmhXTZE4Lg"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200909152158.GC1891694@smile.fi.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Wed, Sep 09, 2020 at 06:21:58PM +0300, Andy Shevchenko wrote:
+> On Wed, Sep 09, 2020 at 04:31:00PM +0200, Johan Hovold wrote:
+> > Commit f743061a85f5 ("serial: core: Initialise spin lock before use in
+> > uart_configure_port()") tried to work around a breakage introduced by
+> > commit a3cb39d258ef ("serial: core: Allow detach and attach serial
+> > device for console") by adding a second initialisation of the port lock
+> > when registering the port.
+> > 
+> > As reported by the build robots [1], this doesn't really solve the
+> > regression introduced by the console-detach changes and also adds a
+> > second redundant initialisation of the lock for normal ports.
+> 
+> I thought, though doubtfully, it was a regression made by
+> 679193b7baf8 ("serial: 8250: Let serial core initialise spin lock")
+> and then I completely forgot about [1].
 
---OpLPJvDmhXTZE4Lg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Yes, that driver has had an explicit early initialisation of the lock
+and it was indeed the removal of that which triggered the robot's
+report. With the initialisation again done during console setup (patch
+2/2), that should no longer be an issue (at least not for the console
+port...).
 
+> > Start cleaning up this mess by removing the redundant initialisation and
+> > making sure that the port lock is again initialised once-only for ports
+> > that aren't already in use as a console.
+> 
+> Thanks for looking into this!
+> 
+> I agree this is better place for lock initialization.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-> diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-> index e32ef3f01fe8..b13b1cbcac29 100644
-> --- a/drivers/i2c/busses/i2c-i801.c
-> +++ b/drivers/i2c/busses/i2c-i801.c
-> @@ -1785,7 +1785,7 @@ static int i801_probe(struct pci_dev *dev, const struct pci_device_id *id)
->  		fallthrough;
->  	case PCI_DEVICE_ID_INTEL_82801CA_3:
->  		priv->features |= FEATURE_HOST_NOTIFY;
-> -		fallthrough;
-> +		break;
->  	case PCI_DEVICE_ID_INTEL_82801BA_2:
->  	case PCI_DEVICE_ID_INTEL_82801AB_3:
->  	case PCI_DEVICE_ID_INTEL_82801AA_3:
+Thanks for reviewing.
 
-I am not the maintainer (Jean is) but I suggest to drop this hunk. The
-code is more complex with multiple 'fallthrough', so this change alone
-actually makes the code inconsistent. A rework would need a seperate
-patch.
-
-
---OpLPJvDmhXTZE4Lg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl9ZzVQACgkQFA3kzBSg
-KbYNuA//cymFe0KsFqywRHv3eBWJhoqwvWN2Xhwrx5/b6N3kkKGTo61aOo1ZI2gU
-55rQoGusy8OzGXaxlyhNS8Ea9ztPZc/tHEohOHKPYr52ErUMXlbMo3I3q7sZAZEI
-O/bRlnPKUCKqKOpZBin0ri6NE3FNYybTW30HgIk/LFUeCuaup10cUcxCmPfXHlNc
-M/2M2tBVyyBOqlVVsPxIfEZ4jGDaikxt7mBZDj4QMJnivnuMFuuz8U7gYzkXIHfO
-4ahGx+dBLCCInwFNFjEIPr+biq6Bgt/Vl9bbgN/BYbzdgbbJcikEhWHd9FxEoxQ5
-Y4M6/HxLDuCwTLIoFHjVifsFHK4Emk5ECc0xBWjHu3CJDunZSmy6yS5gbD1BrstW
-Djf0Ue1kyqnVPBDKE0EwFmwz1z1V14bhhXVC1fkiJjTpYRA6g3zMwH1oan6XIbGj
-v4OuWFDkQLEfzCCBIASGS849HtQ4rNafKxX3KQ3qxngh7XBrK7X92SLf3qRJurdt
-h5Ozd/zYDzyKQ1nOf/XWAOP5SKZH2ANjTrFKgIZE8MRkTmbzrlZkCnDnFD0pKPlB
-Z9h9uPZ7kifAejwaRPfsTu6/B9XJafMKfLa3hKTg2kgO+p67ItBEQ0W8wrXLE1/1
-c5FW5PqdkjKnx/9yUqosjEsHV2goh1guE4cziLkF1pZXcrElbtk=
-=ZP3J
------END PGP SIGNATURE-----
-
---OpLPJvDmhXTZE4Lg--
+Johan
