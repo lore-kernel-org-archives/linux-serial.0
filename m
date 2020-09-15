@@ -1,115 +1,139 @@
-Return-Path: <SRS0=LhIc=CX=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=fl1Y=CY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16215C433E2
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Sep 2020 22:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6213C43461
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Sep 2020 05:48:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C51E920738
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Sep 2020 22:53:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600124024;
-	bh=YcQqu9lU7DJ+bdFOW+zBZzqM4emmXYWT2h9DBDtOd8g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=U2aaVcYapqPAGRctMIkR3xbZlZpSNF7H9vLmUFwKgW2TW4nhJ6t0nLuAHZ8DEUdTj
-	 oJzNV7bJTtaGNH/cnihOMOk6FiThLVnymzbMceHI4mrNbfEWaIA3pBYziqhBiYJVQT
-	 yFSV/khL7PylEmfn1MRuNtL243bYsu7jviWXlY1E=
+	by mail.kernel.org (Postfix) with ESMTP id 7AC9C2080C
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Sep 2020 05:48:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="d5fpZWid"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725999AbgINWxl (ORCPT
+        id S1726094AbgIOFsq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Sep 2020 18:53:41 -0400
-Received: from mail-il1-f193.google.com ([209.85.166.193]:38038 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725926AbgINWxi (ORCPT
+        Tue, 15 Sep 2020 01:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726087AbgIOFso (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Sep 2020 18:53:38 -0400
-Received: by mail-il1-f193.google.com with SMTP id t18so1199112ilp.5;
-        Mon, 14 Sep 2020 15:53:37 -0700 (PDT)
+        Tue, 15 Sep 2020 01:48:44 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B746C061788
+        for <linux-serial@vger.kernel.org>; Mon, 14 Sep 2020 22:48:44 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id o16so1190978pjr.2
+        for <linux-serial@vger.kernel.org>; Mon, 14 Sep 2020 22:48:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i6P44y5mpNfyLXR4RrG6FSEEHMj+iy7zvhbL9GfNdpo=;
+        b=d5fpZWid3HK1S3xeIBo+ue3RwJcRvMaqXA2dL6Lr92GKstsooZcdMke7Fq8vsiRI41
+         Ey17Xc6tNlQNXNx0S2hxaCGnhuY2Y2OnpPjTzRXLub5w0N7X/JxbD8I82KLgzYJxivrl
+         68MOS1P2Q86+kcaiKUH9xAmW8eP9Z7oTe1e0M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qADdGXdYZqT13TlNq77A8iEBF6/xm6VQ88F8vF+6Mt0=;
-        b=ZbwWEunnv1fLjUlZfWALBywgqa/JrdFYFsEZ5uOdqAaVON/iJ2+C7cMU3jLZ+K61xg
-         +urO/m3JnJxAngXvKxmzGwcdooHPiNPi37q1SaOeylT3oHPZMYQQJy4pAUj8L1UrCinA
-         jo1O69pZd8+uC5DhlTP1dGg2/8a5onvHHFUoo96RDnKVmwDwle08G19fAytPtbRDewBn
-         SR9yFVHftFVXNBbSjX6LgxcInc4pUR6rmFSApRBoIrh0G/xzXVZ8Z/mZBVak9f1HTmgH
-         kDDGiylv0aRE0pq4AwgQ+dZKQthaej7c4IOTnLYkvonCdhB7VypvjOOKIVOumX+EYDlA
-         CfrQ==
-X-Gm-Message-State: AOAM532gritv5PYZ6UaVf9rRnMHbKTueSse2Gh4HtgNALnJk3yJAic98
-        tRlz9Ar6FMPYtzI1uhfANZ9RONpe9j8f
-X-Google-Smtp-Source: ABdhPJxQ6XmFgSPgsFsEuxc9KsSWx/uXdnk7BWY/+ZvrQLIouNhajOLGL/a9iRpmAURP/dKuGjOVsg==
-X-Received: by 2002:a92:b109:: with SMTP id t9mr13133758ilh.191.1600124017132;
-        Mon, 14 Sep 2020 15:53:37 -0700 (PDT)
-Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id v20sm7670949ile.42.2020.09.14.15.53.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i6P44y5mpNfyLXR4RrG6FSEEHMj+iy7zvhbL9GfNdpo=;
+        b=phWsMPqya5CEGqiY1DZUgKFjYc5hqd4Hpe05BgQIs2G5ZYiu6BE9HzEg9Xneg+2bYY
+         PYkn6JS4WvthEjDAf1kbb6IN7cvDh3dXscurjyYRgKww5RGJiwWltx0pIo64S6TzX+Pd
+         9xOdAAW1hH6f414/cI9DgM1+grW6OTvZzN2PReTOibYIQBjiTcKFNnOawASLXms1p0C9
+         iB4ttR41FMPgZN36+RCM/UY6rTJPaqkgJA29+ElWdScavAPlm1+VNLlopHpbu1jWDixd
+         TIxNzrrCFHOtcmzzYlscpLioDAfXUsFWLi9lAKEOaSH0uEAztoKQwHAvKk8E6uXR0cwq
+         62Cg==
+X-Gm-Message-State: AOAM532W6LFw+hOQVlrqOKll/ABDbauhel8rXH643GQeAG40n+KHJF8h
+        I2T+5VHSFuXXJRU3BkbN9X6YKMvqY3hltmjr
+X-Google-Smtp-Source: ABdhPJyBoTpUYRjmNE7S4RH/HZ+Wd5QDHCdP+aOrKbrqlSzxhloY/EzG1bmXclaKkAnFOoA370xwVw==
+X-Received: by 2002:a17:902:b186:b029:d1:cc21:9a7d with SMTP id s6-20020a170902b186b02900d1cc219a7dmr6444831plr.8.1600148920854;
+        Mon, 14 Sep 2020 22:48:40 -0700 (PDT)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:1a60:24ff:fe89:3e93])
+        by smtp.gmail.com with ESMTPSA id gn24sm11034935pjb.8.2020.09.14.22.48.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 15:53:36 -0700 (PDT)
-Received: (nullmailer pid 419687 invoked by uid 1000);
-        Mon, 14 Sep 2020 22:53:32 -0000
-Date:   Mon, 14 Sep 2020 16:53:32 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v3 00/14] dt-bindings: Cleanup of i.MX 8
-Message-ID: <20200914225332.GA418101@bogus>
-References: <20200904152404.20636-1-krzk@kernel.org>
+        Mon, 14 Sep 2020 22:48:40 -0700 (PDT)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Changqi Hu <changqi.hu@mediatek.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Eddie Huang <eddie.huang@mediatek.com>
+Subject: [PATCH v2 1/2] tty: serial: print earlycon info after match->setup
+Date:   Tue, 15 Sep 2020 13:48:25 +0800
+Message-Id: <20200915054825.3289105-1-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200904152404.20636-1-krzk@kernel.org>
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 04, 2020 at 05:23:50PM +0200, Krzysztof Kozlowski wrote:
-> Hi Rob,
-> 
-> I am resending the series (v3) without actual changes.  You already
-> reviewed many of them.  I think that subsystem maintainers are hesitant
-> to pick them up, so maybe this could go via your tree (all of them)?
-> 
-> Changes against previous revisions are in individual patches.
-> 
-> Best regards,
-> Krzysztof
-> 
-> 
-> Krzysztof Kozlowski (14):
->   dt-bindings: perf: fsl-imx-ddr: Add i.MX 8M compatibles
->   dt-bindings: pwm: imx-pwm: Add i.MX 8M compatibles
->   dt-bindings: serial: fsl-imx-uart: Add i.MX 8M compatibles
->   dt-bindings: serial: fsl-lpuart: Fix compatible matching
->   dt-bindings: watchdog: fsl-imx-wdt: Add i.MX 8M compatibles
->   dt-bindings: reset: fsl,imx7-src: Add i.MX 8M compatibles
->   dt-bindings: thermal: imx8mm-thermal: Add i.MX 8M Nano compatible
->   dt-bindings: nvmem: imx-ocotp: Update i.MX 8M compatibles
->   dt-bindings: mfd: rohm,bd71847-pmic: Correct clock properties
->     requirements
->   dt-bindings: interrupt-controller: fsl,irqsteer: Fix compatible
->     matching
->   dt-bindings: mtd: gpmi-nand: Add i.MX 8M compatibles
->   dt-bindings: mtd: gpmi-nand: Fix matching of clocks on different SoCs
->   dt-bindings: mtd: nand-controller: Fix matching with size-cells==1
->   dt-bindings: clock: imx8m: Integrate duplicated i.MX 8M schemas
+8250 devices may modify iotype in their own earlycon setup. For example:
+8250_mtk and 8250_uniphier force iotype to be MMIO32. Print earlycon info
+after match->setup to reflect actual earlycon info.
 
-I've applied patches 1-11 and 14.
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+---
+Change:
+v1->v2: rename function
+---
+ drivers/tty/serial/earlycon.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Rob
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 2ae9190b64bb9..b70877932d47d 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -56,7 +56,6 @@ static void __init earlycon_init(struct earlycon_device *device,
+ 				 const char *name)
+ {
+ 	struct console *earlycon = device->con;
+-	struct uart_port *port = &device->port;
+ 	const char *s;
+ 	size_t len;
+ 
+@@ -70,6 +69,12 @@ static void __init earlycon_init(struct earlycon_device *device,
+ 	len = s - name;
+ 	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
+ 	earlycon->data = &early_console_dev;
++}
++
++static void __init earlycon_print_info(struct earlycon_device *device)
++{
++	struct console *earlycon = device->con;
++	struct uart_port *port = &device->port;
+ 
+ 	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
+ 	    port->iotype == UPIO_MEM32 || port->iotype == UPIO_MEM32BE)
+@@ -140,6 +145,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+ 
+ 	earlycon_init(&early_console_dev, match->name);
+ 	err = match->setup(&early_console_dev, buf);
++	earlycon_print_info(&early_console_dev);
+ 	if (err < 0)
+ 		return err;
+ 	if (!early_console_dev.con->write)
+@@ -302,6 +308,7 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 	}
+ 	earlycon_init(&early_console_dev, match->name);
+ 	err = match->setup(&early_console_dev, options);
++	earlycon_print_info(&early_console_dev);
+ 	if (err < 0)
+ 		return err;
+ 	if (!early_console_dev.con->write)
+-- 
+2.28.0.618.gf4bc123cb7-goog
+
