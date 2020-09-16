@@ -2,104 +2,165 @@ Return-Path: <SRS0=QtZL=CZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F934C43461
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Sep 2020 17:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AB7C43461
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Sep 2020 18:36:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F08722067C
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Sep 2020 17:52:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600278748;
-	bh=5Jd9jVHxcOyK7zuQDeG8R+4sy3KRHCao0bv2UcrVMR8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ULFHjG+wWprQZga0GnJOXTGL3d8xOOgj6n9Z1iZbV5XeyUuLejLBEzQSJAepwuCxj
-	 wZrYogpFUQ9vK/tNEiqaP3Ll9IPJWzz0OIp+HO5U7Hyv00A/9S20U8tMesftVsfXT8
-	 bJZBz1CnsuVHC8ACIA0V1JH0QpzI+MYi100OdL6E=
+	by mail.kernel.org (Postfix) with ESMTP id 26F2B21974
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Sep 2020 18:36:19 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bSy/Ps+e"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727623AbgIPRw0 (ORCPT
+        id S1728014AbgIPSgQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Sep 2020 13:52:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42920 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727278AbgIPRwV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Sep 2020 13:52:21 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B5CA421973;
-        Wed, 16 Sep 2020 11:19:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600255155;
-        bh=5Jd9jVHxcOyK7zuQDeG8R+4sy3KRHCao0bv2UcrVMR8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Vkai1tLMJU4GdeUGCp9K11DMk7R5iO71tYJ7eFcDU3nm99EXhGeOnzgIeUyqh6jYO
-         3EJzlWcAATX/kACui7SjkEzA1PReh35fsj/Z/4CNqfgESq5kIwMYOqEyDyflnw/c1d
-         IUU4L3vob8oQNXHnLE1fSpalZax8hfd8OSfm9mFo=
-Date:   Wed, 16 Sep 2020 13:19:49 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Paras Sharma <parashar@codeaurora.org>
-Cc:     Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        akashast@codeaurora.org
-Subject: Re: [PATCH V4] serial: qcom_geni_serial: To correct QUP Version
- detection logic
-Message-ID: <20200916111949.GA969520@kroah.com>
-References: <1600067957-8216-1-git-send-email-parashar@codeaurora.org>
+        Wed, 16 Sep 2020 14:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728033AbgIPS3N (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 16 Sep 2020 14:29:13 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7E6C0A8897;
+        Wed, 16 Sep 2020 05:56:21 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id x8so5341604ybm.3;
+        Wed, 16 Sep 2020 05:56:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=cKaWYVxRkEWbSmE1Xcb5qQ3adbZiHgx8ByEmJ7c4d9U=;
+        b=bSy/Ps+eNqepLdsenjmyCaBg7NarZr3Dup815f2Yq6ozCRRgdaEuRhnaFqTm9HZN0O
+         cMAqlReM6jWcRcua+hSZ1Ow3boKULrs0YiTKq47/j+DQBLfm7GTDhbiBeDTU/QWS6VWR
+         J/Ar3EmSIFbvlQ9pl70OINmZdhv/zzUNK0xGtLJI7Qi9FpP1mkx2UC8p8GMyme4/B7TJ
+         6G71CM0K4gaXH/8fjGO6KpMKgTv+gdvm2CaJIKMKMGNWUtaJMnHw94v9iwZ38mwAM48D
+         sLOwl4T+h/MShljR0B976FhgErfOxvCu9YzcyI6A2PBCi8tPvAIbyxdy+MJKDpVcw8SP
+         PK4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=cKaWYVxRkEWbSmE1Xcb5qQ3adbZiHgx8ByEmJ7c4d9U=;
+        b=HlmVgS7AmejUpIQCmWYcpSOLe8aFt88tR+ID0NjEVgqZTAjj4CoYWbvYJGEeghbduK
+         GNOYCqgUr8cZYju7RVOdIzL8XiBYQ2VQXQriND+PuAEm4VwS2BYJFlqgB+fxp09Wzdsa
+         f57OFDed2TmniBWR6PG3lDMndO1R5F3tVv+W0ad7+dvlF+V24AhjdWFT/pEzez2twiS+
+         SCisstGSfshM89JRt81HIn8iTyRQ1AVlOSVnSTyW+qB3Jo/diIzCLkG/hrH4K71naf4o
+         57jPzBwqHxIVkA2CkMtMt80EJAiWWox5DhddT4sfje9/uSK3yneA3CkH/f5apin/ORLa
+         TWMQ==
+X-Gm-Message-State: AOAM531/Dj4NcG2/vALovRWEi8bYFx9HIF5ALAHTx68iI45w32C1VlnZ
+        FzK7m/v5NOpTRW5p1nPToudmPjZ2tUKf394KP2I=
+X-Google-Smtp-Source: ABdhPJwBRXx0VqH0uQv90grTq3eaZr1B9Xi7bR6RDuBjvqVkr9+yLtEzxhLOXaKlOplgfTn+AgnlmopGUOzw2Try13c=
+X-Received: by 2002:a25:b212:: with SMTP id i18mr34347976ybj.148.1600260981032;
+ Wed, 16 Sep 2020 05:56:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1600067957-8216-1-git-send-email-parashar@codeaurora.org>
+References: <20200727085132.29754-1-gengcixi@gmail.com> <CAF12kFuss4AQZSBX+A2G_fWjka3C4kpf4iDWU9QJY=AWigoxqg@mail.gmail.com>
+In-Reply-To: <CAF12kFuss4AQZSBX+A2G_fWjka3C4kpf4iDWU9QJY=AWigoxqg@mail.gmail.com>
+From:   Cixi Geng <gengcixi@gmail.com>
+Date:   Wed, 16 Sep 2020 20:55:45 +0800
+Message-ID: <CAF12kFtPQ0bUKrr4X8MjLCTfFYkRVk6BRaLb30W59GwtWQd6xA@mail.gmail.com>
+Subject: Re: [PATCH V7] GCOV: Add config to check the preqequisites situation
+To:     Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        linux-serial@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     Orson Zhai <orsonzhai@gmail.com>, zhang.lyra@gmail.com,
+        Cixi Geng <cixi.geng1@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 12:49:17PM +0530, Paras Sharma wrote:
-> The current implementation reduces the sampling rate by half
-> if qup HW version is  greater is than 2.5 by checking if the
+Hi ALL=EF=BC=9A
+Not recieve more advise for a long time ,
+Can this submission be merged recently?
 
-2 space characters?
-
-And what is "qup"?
-
-What is "HW"?
-
-> geni SE major version is greater than 2 and geni SE minor version
-
-what is "geni"?
-
-What is "SE"?
-
-> is greater than 5.This implementation fails when the version is
-> greater than or equal to 3.
-> 
-> Hence, a new macro QUP_SE_VERSION_2_5 is defined having value
-> for major number 2 and minor number 5 as 0x20050000.Hence,if 
-
-That's not a "macro", it is a simple #define.
-
-And can you use a ' ' after a '.' please?  That's all over this
-changelog, including trailing whitespace for some reason :(
-
-> ver is greater than this value,sampling rate is halved. 
-> This logic would work for any future qup version.
-
-"will work"?
-
-> 
-> Fixes: ce734600545f ("tty: serial: qcom_geni_serial: Update the oversampling rate")
-> Signed-off-by: Paras Sharma <parashar@codeaurora.org>
-> ---
-> Changes in V4:
-> Created a new macro QUP_SE_VERSION_2_5 for Qup se version 2.5
-> 
-
-What changed from previous versions than v4?
-
-thanks,
-
-greg k-h
+Cixi Geng <gengcixi@gmail.com> =E4=BA=8E2020=E5=B9=B48=E6=9C=8820=E6=97=A5=
+=E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=888:40=E5=86=99=E9=81=93=EF=BC=9A
+>
+> Hi All:
+>
+> Does this patch need more modification?
+>
+> <gengcixi@gmail.com> =E4=BA=8E2020=E5=B9=B47=E6=9C=8827=E6=97=A5=E5=91=A8=
+=E4=B8=80 =E4=B8=8B=E5=8D=884:51=E5=86=99=E9=81=93=EF=BC=9A
+> >
+> > From: Cixi Geng <cixi.geng1@unisoc.com>
+> >
+> > Introduce new configuration option GCOV_PROFILE_PREREQS that can be
+> > used to check whether the prerequisites for enabling gcov profiling
+> > for specific files and directories are met.
+> >
+> > Only add SERIAL_GCOV for an example.
+> >
+> > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> > ---
+> >  drivers/tty/serial/Kconfig  |  7 +++++++
+> >  drivers/tty/serial/Makefile |  1 +
+> >  kernel/gcov/Kconfig         | 12 ++++++++++++
+> >  3 files changed, 20 insertions(+)
+> >
+> > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> > index 780908d43557..55b128b6b31d 100644
+> > --- a/drivers/tty/serial/Kconfig
+> > +++ b/drivers/tty/serial/Kconfig
+> > @@ -1576,3 +1576,10 @@ endmenu
+> >
+> >  config SERIAL_MCTRL_GPIO
+> >         tristate
+> > +
+> > +config SERIAL_GCOV
+> > +       bool "Enable profile gcov for serial directory"
+> > +       depends on GCOV_PROFILE_PREREQS
+> > +       help
+> > +         The SERIAL_GCOV will add Gcov profiling flags when kernel com=
+piles.
+> > +         Say 'Y' here if you want the gcov data for the serial directo=
+ry,
+> > diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+> > index d056ee6cca33..17272733db95 100644
+> > --- a/drivers/tty/serial/Makefile
+> > +++ b/drivers/tty/serial/Makefile
+> > @@ -3,6 +3,7 @@
+> >  # Makefile for the kernel serial device drivers.
+> >  #
+> >
+> > +GCOV_PROFILE :=3D $(CONFIG_SERIAL_GCOV)
+> >  obj-$(CONFIG_SERIAL_CORE) +=3D serial_core.o
+> >
+> >  obj-$(CONFIG_SERIAL_EARLYCON) +=3D earlycon.o
+> > diff --git a/kernel/gcov/Kconfig b/kernel/gcov/Kconfig
+> > index 3110c77230c7..bb2e1fb85743 100644
+> > --- a/kernel/gcov/Kconfig
+> > +++ b/kernel/gcov/Kconfig
+> > @@ -51,4 +51,16 @@ config GCOV_PROFILE_ALL
+> >         larger and run slower. Also be sure to exclude files from profi=
+ling
+> >         which are not linked to the kernel image to prevent linker erro=
+rs.
+> >
+> > +config GCOV_PROFILE_PREREQS
+> > +       bool "Profile Kernel for prereqs"
+> > +       depends on GCOV_KERNEL
+> > +       depends on  !COMPILE_TEST
+> > +       def_bool y if GCOV_KERNEL && !COMPILE_TEST
+> > +       help
+> > +         This options activates profiling for the specified kernel mod=
+ules.
+> > +
+> > +         When some modules need Gcov data, enable this config, then co=
+nfigure
+> > +         with gcov on the corresponding modules,The directories or fil=
+es of
+> > +         these modules will be added profiling flags after kernel comp=
+ile.
+> > +
+> >  endmenu
+> > --
+> > 2.17.1
+> >
