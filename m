@@ -1,107 +1,111 @@
-Return-Path: <SRS0=keEz=C2=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=liNn=C3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0EBBC43464
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Sep 2020 20:05:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6665DC43464
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:06:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9B04C206BE
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Sep 2020 20:05:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2A2E1238E5
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:06:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1600394763;
+	bh=m+xSef4FwMZXVWA4SuamimpYJjfqv4oVJa3zM60QY7k=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=SnXzCyGfoMhAMd85gkGCZFMtEEhs1FlNiBOxgvjNSGNADGKGcweYKuOmeTYxtt8Kj
+	 hIO4wm9fxZLLSEkEkSUY9nWpXK76bJfF17/wWDASKdd5mh4lnOX0U8/gjnRDgS9izT
+	 FANQdL5IDdMJNvKuP6Dmi540r5Jk0rmYLt/g68AY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726667AbgIQUFf (ORCPT
+        id S1727693AbgIRCGB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Sep 2020 16:05:35 -0400
-Received: from mga06.intel.com ([134.134.136.31]:35244 "EHLO mga06.intel.com"
+        Thu, 17 Sep 2020 22:06:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54904 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726438AbgIQUFc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Sep 2020 16:05:32 -0400
-IronPort-SDR: 1EqDDV9SWySMMXQjgrHW1/Tq43ZTXe22s50bgNybd15hjg4bWdlaVn0ZUNNKZFGLILKPh0ZVw+
- 9up+rZjLo4DQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9747"; a="221336979"
-X-IronPort-AV: E=Sophos;i="5.77,271,1596524400"; 
-   d="scan'208";a="221336979"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 12:40:16 -0700
-IronPort-SDR: OJtaUmUU2VRk9KtKnU2JOdZ0Wx6lNOu+0+CFBjlBeB4odozE5Gxp9wTpGmmaUJi2k6Nfsj2iiR
- 1ryN5FpIrCvQ==
-X-IronPort-AV: E=Sophos;i="5.77,271,1596524400"; 
-   d="scan'208";a="483882946"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.151.155]) ([10.212.151.155])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2020 12:40:13 -0700
-Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
- break;
-To:     Keith Busch <kbusch@kernel.org>, Joe Perches <joe@perches.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Jiri Kosina <trivial@kernel.org>,
-        Kees Cook <kees.cook@canonical.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-mips@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-input@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-rdma@vger.kernel.org,
-        iommu@lists.linux-foundation.org, dm-devel@redhat.com,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, intel-wired-lan@lists.osuosl.org,
-        oss-drivers@netronome.com, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-nvme@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        storagedev@microchip.com, sparclinux@vger.kernel.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-parisc@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, ceph-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, bpf@vger.kernel.org,
-        dccp@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-sctp@vger.kernel.org,
-        alsa-devel <alsa-devel@alsa-project.org>
-References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
- <20200909205558.GA3384631@dhcp-10-100-145-180.wdl.wdc.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <321069c8-a4c1-56ff-49fb-4c2bce1e6352@intel.com>
-Date:   Thu, 17 Sep 2020 12:40:13 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1727001AbgIRCGA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:06:00 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BD48F2388B;
+        Fri, 18 Sep 2020 02:05:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600394759;
+        bh=m+xSef4FwMZXVWA4SuamimpYJjfqv4oVJa3zM60QY7k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PHp9AgTfUF/wViKMV4uDRiyqn8+K4rDQ3//Qz6CjbuGSE0seMVOmw2r9tqfb/lFX6
+         1CW2pD5UlgJ0mVfN/5hgC01DeVQ+gyspFV8k9cQbrrAQf9R6nTRhxY57HMep+G9gui
+         Y7o4z9wMgycOO6wV6t5IUL/HDyj/WXmY2I+TatHg=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 236/330] serial: uartps: Wait for tx_empty in console setup
+Date:   Thu, 17 Sep 2020 21:59:36 -0400
+Message-Id: <20200918020110.2063155-236-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
+References: <20200918020110.2063155-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20200909205558.GA3384631@dhcp-10-100-145-180.wdl.wdc.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
 
+[ Upstream commit 42e11948ddf68b9f799cad8c0ddeab0a39da33e8 ]
 
-On 9/9/2020 1:55 PM, Keith Busch wrote:
-> On Wed, Sep 09, 2020 at 01:06:39PM -0700, Joe Perches wrote:
->> diff --git a/crypto/tcrypt.c b/crypto/tcrypt.c
->> index eea0f453cfb6..8aac5bc60f4c 100644
->> --- a/crypto/tcrypt.c
->> +++ b/crypto/tcrypt.c
->> @@ -2464,7 +2464,7 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
->>  		test_hash_speed("streebog512", sec,
->>  				generic_hash_speed_template);
->>  		if (mode > 300 && mode < 400) break;
->> -		fallthrough;
->> +		break;
->>  	case 399:
->>  		break;
-> 
-> Just imho, this change makes the preceding 'if' look even more
-> pointless. Maybe the fallthrough was a deliberate choice? Not that my
-> opinion matters here as I don't know this module, but it looked a bit
-> odd to me.
-> 
+On some platforms, the log is corrupted while console is being
+registered. It is observed that when set_termios is called, there
+are still some bytes in the FIFO to be transmitted.
 
-Yea this does look very odd..
+So, wait for tx_empty inside cdns_uart_console_setup before calling
+set_termios.
+
+Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+Reviewed-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Link: https://lore.kernel.org/r/1586413563-29125-2-git-send-email-raviteja.narayanam@xilinx.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/xilinx_uartps.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 8948970f795e6..9359c80fbb9f5 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1248,6 +1248,7 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+ 	int bits = 8;
+ 	int parity = 'n';
+ 	int flow = 'n';
++	unsigned long time_out;
+ 
+ 	if (!port->membase) {
+ 		pr_debug("console on " CDNS_UART_TTY_NAME "%i not present\n",
+@@ -1258,6 +1259,13 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+ 
++	/* Wait for tx_empty before setting up the console */
++	time_out = jiffies + usecs_to_jiffies(TX_TIMEOUT);
++
++	while (time_before(jiffies, time_out) &&
++	       cdns_uart_tx_empty(port) != TIOCSER_TEMT)
++		cpu_relax();
++
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
+ 
+-- 
+2.25.1
+
