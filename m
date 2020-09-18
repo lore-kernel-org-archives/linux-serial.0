@@ -5,52 +5,53 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC90C43465
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E917EC43464
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:11:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DA50A23770
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:06:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AD692221EC
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:11:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600394799;
-	bh=qsmbx+LWYhW40jxyy4d6lzF0hG3ZSYrZoizFkJdgukA=;
+	s=default; t=1600395069;
+	bh=xHtK5ZBofi48UebHt83K9iVMvxfhA+Cef7KXu2AT7wA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=GPRfSNXO6NlaruAXyCn2sBX2NxyZ3txloc8NA51Ae9E++WmH5U2s9jZSwg8pKs5gI
-	 m/mXAFb/uP6GOX20ejZZzazPnS6mT1Pef1aoG/oh4/LcfeRt74fpQ7SONFTJonChyu
-	 Y8XsP9WdxKNeWDUAbSTIjNiLn7DnDlrTWVFmE8/c=
+	b=mJoHfTHPSO9kc7qJGlmvQfxm96bS58VUCz7j7PEKFDdUZUNrNQXGW8ZyT4TAV3Xw/
+	 JFS96ROo8AUZvxHAUuMqiH5cJgwz68DJ/bWFV5xXjvibc418LKOFVZ2Cq5F031dind
+	 DuxFExBMv0TfSvV5yjw9lz9FKONroFUSZJaxdwj8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727096AbgIRCGi (ORCPT
+        id S1728543AbgIRCK6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Sep 2020 22:06:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56052 "EHLO mail.kernel.org"
+        Thu, 17 Sep 2020 22:10:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727795AbgIRCGh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:06:37 -0400
+        id S1728538AbgIRCK5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:10:57 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 38FC123772;
-        Fri, 18 Sep 2020 02:06:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4D105208E4;
+        Fri, 18 Sep 2020 02:10:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394797;
-        bh=qsmbx+LWYhW40jxyy4d6lzF0hG3ZSYrZoizFkJdgukA=;
+        s=default; t=1600395056;
+        bh=xHtK5ZBofi48UebHt83K9iVMvxfhA+Cef7KXu2AT7wA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YRKe1QWg/HpzTVo0CJdpwxKW62a4m34YjklMxkXF811TpKdw4AoeKMpA+n0mqzC3t
-         A1+j1+9QbOgiWYS3/rIDPdPrBBUMhDBwWcHo2JlmbdFLGvgKkj02kUm6yrTw229xO4
-         E3vMu5zFGG8y0RupoRoOm937lR9NPuGCOLKnlUog=
+        b=i8STfrBv74RSSydk0KL9jnG89TMGse8gkpvJl+Vzl3lkxoR3dmmlDu+8dDlgZOtCW
+         1WpwSFCohKJjnI1q4sA3nwIvWZirwRMQVrszWoprvgqK4EiaXBqTYDlwEZfHEezvrq
+         WCOC7zJeyha7awxipp4U3k4lMbEAJhjRg3HhuBs8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
+Cc:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 266/330] tty: serial: samsung: Correct clock selection logic
-Date:   Thu, 17 Sep 2020 22:00:06 -0400
-Message-Id: <20200918020110.2063155-266-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 143/206] serial: uartps: Wait for tx_empty in console setup
+Date:   Thu, 17 Sep 2020 22:06:59 -0400
+Message-Id: <20200918020802.2065198-143-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
-References: <20200918020110.2063155-1-sashal@kernel.org>
+In-Reply-To: <20200918020802.2065198-1-sashal@kernel.org>
+References: <20200918020802.2065198-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,52 +60,52 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
 
-[ Upstream commit 7d31676a8d91dd18e08853efd1cb26961a38c6a6 ]
+[ Upstream commit 42e11948ddf68b9f799cad8c0ddeab0a39da33e8 ]
 
-Some variants of the samsung tty driver can pick which clock
-to use for their baud rate generation.  In the DT conversion,
-a default clock was selected to be used if a specific one wasn't
-assigned and then a comparison of which clock rate worked better
-was done.  Unfortunately, the comparison was implemented in such
-a way that only the default clock was ever actually compared.
-Fix this by iterating through all possible clocks, except when a
-specific clock has already been picked via clk_sel (which is
-only possible via board files).
+On some platforms, the log is corrupted while console is being
+registered. It is observed that when set_termios is called, there
+are still some bytes in the FIFO to be transmitted.
 
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-Link: https://lore.kernel.org/r/BN6PR04MB06604E63833EA41837EBF77BA3A30@BN6PR04MB0660.namprd04.prod.outlook.com
+So, wait for tx_empty inside cdns_uart_console_setup before calling
+set_termios.
+
+Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+Reviewed-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Link: https://lore.kernel.org/r/1586413563-29125-2-git-send-email-raviteja.narayanam@xilinx.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 71f99e9217592..c7683beb3412a 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1187,14 +1187,14 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
- 	struct s3c24xx_uart_info *info = ourport->info;
- 	struct clk *clk;
- 	unsigned long rate;
--	unsigned int cnt, baud, quot, clk_sel, best_quot = 0;
-+	unsigned int cnt, baud, quot, best_quot = 0;
- 	char clkname[MAX_CLK_NAME_LENGTH];
- 	int calc_deviation, deviation = (1 << 30) - 1;
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 31950a38f0fb7..23f9b0cdff086 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1236,6 +1236,7 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+ 	int bits = 8;
+ 	int parity = 'n';
+ 	int flow = 'n';
++	unsigned long time_out;
  
--	clk_sel = (ourport->cfg->clk_sel) ? ourport->cfg->clk_sel :
--			ourport->info->def_clk_sel;
- 	for (cnt = 0; cnt < info->num_clks; cnt++) {
--		if (!(clk_sel & (1 << cnt)))
-+		/* Keep selected clock if provided */
-+		if (ourport->cfg->clk_sel &&
-+			!(ourport->cfg->clk_sel & (1 << cnt)))
- 			continue;
+ 	if (!port->membase) {
+ 		pr_debug("console on " CDNS_UART_TTY_NAME "%i not present\n",
+@@ -1246,6 +1247,13 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
  
- 		sprintf(clkname, "clk_uart_baud%d", cnt);
++	/* Wait for tx_empty before setting up the console */
++	time_out = jiffies + usecs_to_jiffies(TX_TIMEOUT);
++
++	while (time_before(jiffies, time_out) &&
++	       cdns_uart_tx_empty(port) != TIOCSER_TEMT)
++		cpu_relax();
++
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
+ 
 -- 
 2.25.1
 
