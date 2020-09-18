@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74CBDC43465
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 03:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E22C43464
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 03:03:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 42376206B7
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 03:03:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E784020870
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 03:03:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600398195;
-	bh=JrV5sVkueBazySqufptnzl7LsYTayQ3slafpTrUBHkw=;
+	s=default; t=1600398213;
+	bh=siXwj0rYJfM0A6UG/dYuL14jfRWRzsXpgV4XZWY0O6g=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=YuMHaFDycbVszVSm0fVwBb0ln8dFPbv8L9zqIWCKca+e/TVjVAOa2ElOrGmdF1pnS
-	 mXHFdh2gfYsmg54IFksfSJfF4dMe4vU6pHM92Mp1WivRzYC8tr73jL8ynfdX6fm5BT
-	 Dcn5xUw8jTcZn4UVlUHCqrQjKFpTRtGvB5Rm4VQ0=
+	b=j7vkWvjOkcUuNjeaPlVwM+xGlNbpoRMwFFzQD9oeyCtruSunQDadLXoYo6faEL/vx
+	 Xn+slT0Y0PtA2pBh40pmW6qkyMo+DrwmWctIPScAyGYR6cRAIza1n3/O8AHMC/LHyc
+	 egDowEqBl8H4Q2Uk08oT3CfVA4QNSaEK/P4k3j84=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726737AbgIRCFI (ORCPT
+        id S1727412AbgIRDDY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Sep 2020 22:05:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53094 "EHLO mail.kernel.org"
+        Thu, 17 Sep 2020 23:03:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53046 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727449AbgIRCFH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:05:07 -0400
+        id S1727441AbgIRCFE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:05:04 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B320323718;
-        Fri, 18 Sep 2020 02:05:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 791502389E;
+        Fri, 18 Sep 2020 02:05:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600394706;
-        bh=JrV5sVkueBazySqufptnzl7LsYTayQ3slafpTrUBHkw=;
+        s=default; t=1600394704;
+        bh=siXwj0rYJfM0A6UG/dYuL14jfRWRzsXpgV4XZWY0O6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gcu7oyvZjKUl9HhBGWcYCu+PF3X0YqIexU37jylZ/0LTrzsRG0xhezr/577JG/aSZ
-         q5yNt1bAjyZQgK81SRwXSqbafeq5Wt7yGiX3c+Bsf9CW/AjrWVt34H9L30QZouzzBb
-         gWsc1n7vGfbJ8SabsHU6lNzZeOWL5KMnwxcjOBRg=
+        b=i+aViYLjJyD68ZzH4MmGNweIMZMcHljzS7qzVzvjXP5Ytn2JGvXRsaS4DEPmkfHqj
+         3eHqefQdeuv0q85cOGyYRviqY4CFhPPgcwGyeEBd8RNSJogcDIMBrHl8ESyK7+63i4
+         dXclKS+7QbDBNwEQnCb6eGo1wg5fKd70/mmtv2zk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 192/330] serial: 8250: 8250_omap: Terminate DMA before pushing data on RX timeout
-Date:   Thu, 17 Sep 2020 21:58:52 -0400
-Message-Id: <20200918020110.2063155-192-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 190/330] serial: 8250_port: Don't service RX FIFO if throttled
+Date:   Thu, 17 Sep 2020 21:58:50 -0400
+Message-Id: <20200918020110.2063155-190-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918020110.2063155-1-sashal@kernel.org>
 References: <20200918020110.2063155-1-sashal@kernel.org>
@@ -60,48 +60,65 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Vignesh Raghavendra <vigneshr@ti.com>
 
-[ Upstream commit 7cf4df30a98175033e9849f7f16c46e96ba47f41 ]
+[ Upstream commit f19c3f6c8109b8bab000afd35580929958e087a9 ]
 
-Terminate and flush DMA internal buffers, before pushing RX data to
-higher layer. Otherwise, this will lead to data corruption, as driver
-would end up pushing stale buffer data to higher layer while actual data
-is still stuck inside DMA hardware and has yet not arrived at the
-memory.
-While at that, replace deprecated dmaengine_terminate_all() with
-dmaengine_terminate_async().
+When port's throttle callback is called, it should stop pushing any more
+data into TTY buffer to avoid buffer overflow. This means driver has to
+stop HW from receiving more data and assert the HW flow control. For
+UARTs with auto HW flow control (such as 8250_omap) manual assertion of
+flow control line is not possible and only way is to allow RX FIFO to
+fill up, thus trigger auto HW flow control logic.
+
+Therefore make sure that 8250 generic IRQ handler does not drain data
+when port is stopped (i.e UART_LSR_DR is unset in read_status_mask). Not
+servicing, RX FIFO would trigger auto HW flow control when FIFO
+occupancy reaches preset threshold, thus halting RX.
+Since, error conditions in UART_LSR register are cleared just by reading
+the register, data has to be drained in case there are FIFO errors, else
+error information will lost.
 
 Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20200319110344.21348-2-vigneshr@ti.com
+Link: https://lore.kernel.org/r/20200319103230.16867-2-vigneshr@ti.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_omap.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 2624b5d083366..f2c6d9d3bb28f 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -790,7 +790,10 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
- 	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 90f09ed6e5ad3..5b673077639ba 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1816,6 +1816,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 	unsigned char status;
+ 	unsigned long flags;
+ 	struct uart_8250_port *up = up_to_u8250p(port);
++	bool skip_rx = false;
  
- 	count = dma->rx_size - state.residue;
--
-+	if (count < dma->rx_size)
-+		dmaengine_terminate_async(dma->rxchan);
-+	if (!count)
-+		goto unlock;
- 	ret = tty_insert_flip_string(tty_port, dma->rx_buf, count);
+ 	if (iir & UART_IIR_NO_INT)
+ 		return 0;
+@@ -1824,7 +1825,20 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
  
- 	p->port.icount.rx += ret;
-@@ -852,7 +855,6 @@ static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
- 	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
+ 	status = serial_port_in(port, UART_LSR);
  
- 	__dma_rx_do_complete(p);
--	dmaengine_terminate_all(dma->rxchan);
- }
- 
- static int omap_8250_rx_dma(struct uart_8250_port *p)
+-	if (status & (UART_LSR_DR | UART_LSR_BI)) {
++	/*
++	 * If port is stopped and there are no error conditions in the
++	 * FIFO, then don't drain the FIFO, as this may lead to TTY buffer
++	 * overflow. Not servicing, RX FIFO would trigger auto HW flow
++	 * control when FIFO occupancy reaches preset threshold, thus
++	 * halting RX. This only works when auto HW flow control is
++	 * available.
++	 */
++	if (!(status & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS)) &&
++	    (port->status & (UPSTAT_AUTOCTS | UPSTAT_AUTORTS)) &&
++	    !(port->read_status_mask & UART_LSR_DR))
++		skip_rx = true;
++
++	if (status & (UART_LSR_DR | UART_LSR_BI) && !skip_rx) {
+ 		if (!up->dma || handle_rx_dma(up, iir))
+ 			status = serial8250_rx_chars(up, status);
+ 	}
 -- 
 2.25.1
 
