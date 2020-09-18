@@ -5,49 +5,50 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE3A9C43465
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5311DC43464
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:21:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9080D23119
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:20:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 153222311C
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:21:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600395653;
-	bh=l/Lc3v9SvXX1BUfrzvpCyFibGpf8UuFWkaCjJFPWNGA=;
+	s=default; t=1600395669;
+	bh=HOJCFmhew8Uv0EmppdcZWnzPC9d77TXAn0Ux69ECHvs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=qIreF/5Nl9fB+tt8PBE2qY9RTCnBgy8TJc+YXH6ozB7J6jE9ZiNU11ZhSAUnzNa0S
-	 XjqPHfDw4ZHcotD8+6pRBe6XUI9cfLcI3kJf/usZgDXW6ehtyj3p0rjQDfFYVOPH2C
-	 kDQ7DF0L7Or3wweKecGJczEeWTJ5kPN63mmDx8CM=
+	b=QK5vwBy25Yx4OoNpr5uQOB58tjBexsJKtLsle+w8CKg1FpwRF+dodOPR+vlsNFfGj
+	 phVEylBCSThgXavxNU9QIsAY5Vdnz+nA0i4zRQ7ViqHuHCQdXyWhdAjL3vTw7SDegf
+	 zGAT+hS8a+yo/qngR0SkTGAJgJsvfy0AyleDNW7c=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729560AbgIRCRl (ORCPT
+        id S1729723AbgIRCUz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Sep 2020 22:17:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47998 "EHLO mail.kernel.org"
+        Thu, 17 Sep 2020 22:20:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728970AbgIRCR3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:17:29 -0400
+        id S1729553AbgIRCRg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:17:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F793239D2;
-        Fri, 18 Sep 2020 02:17:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF13923998;
+        Fri, 18 Sep 2020 02:17:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395448;
-        bh=l/Lc3v9SvXX1BUfrzvpCyFibGpf8UuFWkaCjJFPWNGA=;
+        s=default; t=1600395455;
+        bh=HOJCFmhew8Uv0EmppdcZWnzPC9d77TXAn0Ux69ECHvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PnfhfazzQNUhl5GlQU40x4Nx/9mpkvU+PSu+tJ/LlxGqxzicX7LclgBZlqnCH+VnV
-         2jXG2jd9KvUj+729SJc18Y5HRT2VEmTqIlP+qjt6oXTP1fweo3T2mLBBplTAhzY6At
-         PSXFo9Fw6YgLNb5QvzDRBt/SvHLjcIAHIslWQLs4=
+        b=liphfWw7B5ENXlNsBLofW0AZ5a0R9mYQsQ6KldI6AfmIlMR7DQUpk4E6Jpf6ZZjNM
+         OusND6DZKMDhaQkL+mwFSVxjV9DnSBbeQqXmPjO2omElYqbp6U7wGaEBeCie8pwAGY
+         9fUCZbOGaRPQp4zuPWRJFvO9cWCe4hFfCU0CClEU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+Cc:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 36/64] serial: 8250_omap: Fix sleeping function called from invalid context during probe
-Date:   Thu, 17 Sep 2020 22:16:15 -0400
-Message-Id: <20200918021643.2067895-36-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.4 42/64] serial: uartps: Wait for tx_empty in console setup
+Date:   Thu, 17 Sep 2020 22:16:21 -0400
+Message-Id: <20200918021643.2067895-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200918021643.2067895-1-sashal@kernel.org>
 References: <20200918021643.2067895-1-sashal@kernel.org>
@@ -59,84 +60,51 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+From: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
 
-[ Upstream commit 4ce35a3617c0ac758c61122b2218b6c8c9ac9398 ]
+[ Upstream commit 42e11948ddf68b9f799cad8c0ddeab0a39da33e8 ]
 
-When booting j721e the following bug is printed:
+On some platforms, the log is corrupted while console is being
+registered. It is observed that when set_termios is called, there
+are still some bytes in the FIFO to be transmitted.
 
-[    1.154821] BUG: sleeping function called from invalid context at kernel/sched/completion.c:99
-[    1.154827] in_atomic(): 0, irqs_disabled(): 128, non_block: 0, pid: 12, name: kworker/0:1
-[    1.154832] 3 locks held by kworker/0:1/12:
-[    1.154836]  #0: ffff000840030728 ((wq_completion)events){+.+.}, at: process_one_work+0x1d4/0x6e8
-[    1.154852]  #1: ffff80001214fdd8 (deferred_probe_work){+.+.}, at: process_one_work+0x1d4/0x6e8
-[    1.154860]  #2: ffff00084060b170 (&dev->mutex){....}, at: __device_attach+0x38/0x138
-[    1.154872] irq event stamp: 63096
-[    1.154881] hardirqs last  enabled at (63095): [<ffff800010b74318>] _raw_spin_unlock_irqrestore+0x70/0x78
-[    1.154887] hardirqs last disabled at (63096): [<ffff800010b740d8>] _raw_spin_lock_irqsave+0x28/0x80
-[    1.154893] softirqs last  enabled at (62254): [<ffff800010080c88>] _stext+0x488/0x564
-[    1.154899] softirqs last disabled at (62247): [<ffff8000100fdb3c>] irq_exit+0x114/0x140
-[    1.154906] CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.6.0-rc6-next-20200318-00094-g45e4089b0bd3 #221
-[    1.154911] Hardware name: Texas Instruments K3 J721E SoC (DT)
-[    1.154917] Workqueue: events deferred_probe_work_func
-[    1.154923] Call trace:
-[    1.154928]  dump_backtrace+0x0/0x190
-[    1.154933]  show_stack+0x14/0x20
-[    1.154940]  dump_stack+0xe0/0x148
-[    1.154946]  ___might_sleep+0x150/0x1f0
-[    1.154952]  __might_sleep+0x4c/0x80
-[    1.154957]  wait_for_completion_timeout+0x40/0x140
-[    1.154964]  ti_sci_set_device_state+0xa0/0x158
-[    1.154969]  ti_sci_cmd_get_device_exclusive+0x14/0x20
-[    1.154977]  ti_sci_dev_start+0x34/0x50
-[    1.154984]  genpd_runtime_resume+0x78/0x1f8
-[    1.154991]  __rpm_callback+0x3c/0x140
-[    1.154996]  rpm_callback+0x20/0x80
-[    1.155001]  rpm_resume+0x568/0x758
-[    1.155007]  __pm_runtime_resume+0x44/0xb0
-[    1.155013]  omap8250_probe+0x2b4/0x508
-[    1.155019]  platform_drv_probe+0x50/0xa0
-[    1.155023]  really_probe+0xd4/0x318
-[    1.155028]  driver_probe_device+0x54/0xe8
-[    1.155033]  __device_attach_driver+0x80/0xb8
-[    1.155039]  bus_for_each_drv+0x74/0xc0
-[    1.155044]  __device_attach+0xdc/0x138
-[    1.155049]  device_initial_probe+0x10/0x18
-[    1.155053]  bus_probe_device+0x98/0xa0
-[    1.155058]  deferred_probe_work_func+0x74/0xb0
-[    1.155063]  process_one_work+0x280/0x6e8
-[    1.155068]  worker_thread+0x48/0x430
-[    1.155073]  kthread+0x108/0x138
-[    1.155079]  ret_from_fork+0x10/0x18
+So, wait for tx_empty inside cdns_uart_console_setup before calling
+set_termios.
 
-To fix the bug we need to first call pm_runtime_enable() prior to any
-pm_runtime calls.
-
-Reported-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Link: https://lore.kernel.org/r/20200320125200.6772-1-peter.ujfalusi@ti.com
+Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+Reviewed-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Link: https://lore.kernel.org/r/1586413563-29125-2-git-send-email-raviteja.narayanam@xilinx.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_omap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/xilinx_uartps.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index c4383573cf668..0377b35d62b80 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1188,11 +1188,11 @@ static int omap8250_probe(struct platform_device *pdev)
- 	spin_lock_init(&priv->rx_dma_lock);
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 06efcef1b4953..5b4469098888a 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1152,6 +1152,7 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+ 	int bits = 8;
+ 	int parity = 'n';
+ 	int flow = 'n';
++	unsigned long time_out;
  
- 	device_init_wakeup(&pdev->dev, true);
-+	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_use_autosuspend(&pdev->dev);
- 	pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+ 	if (co->index < 0 || co->index >= CDNS_UART_NR_PORTS)
+ 		return -EINVAL;
+@@ -1165,6 +1166,13 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
  
- 	pm_runtime_irq_safe(&pdev->dev);
--	pm_runtime_enable(&pdev->dev);
- 
- 	pm_runtime_get_sync(&pdev->dev);
++	/* Wait for tx_empty before setting up the console */
++	time_out = jiffies + usecs_to_jiffies(TX_TIMEOUT);
++
++	while (time_before(jiffies, time_out) &&
++	       cdns_uart_tx_empty(port) != TIOCSER_TEMT)
++		cpu_relax();
++
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
  
 -- 
 2.25.1
