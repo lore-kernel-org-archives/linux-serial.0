@@ -5,40 +5,40 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5311DC43464
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D13BDC43468
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:25:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 153222311C
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:21:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 89848238A1
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:25:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600395669;
-	bh=HOJCFmhew8Uv0EmppdcZWnzPC9d77TXAn0Ux69ECHvs=;
+	s=default; t=1600395946;
+	bh=bKxXcVezWZPrhdR0vZrgzGUZW3VPtL3TKD7KAk5bSI4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=QK5vwBy25Yx4OoNpr5uQOB58tjBexsJKtLsle+w8CKg1FpwRF+dodOPR+vlsNFfGj
-	 phVEylBCSThgXavxNU9QIsAY5Vdnz+nA0i4zRQ7ViqHuHCQdXyWhdAjL3vTw7SDegf
-	 zGAT+hS8a+yo/qngR0SkTGAJgJsvfy0AyleDNW7c=
+	b=hL8hcqom/DSjF2NnMZBPTIWUa47W2sCkJEqEx9MeWTT0+PPuG3Uz9lZrTLU4Uf59q
+	 8i6rYfT1Lr8ZILAX8I4xhhc9aok8TzZWp81JHAa7pNpPMO/qKLlkXAXI1/Nv1JAV2H
+	 Pz8tXR0LrnBktCimK5feCZgeyzhCdKYpY1/F/Ts0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729723AbgIRCUz (ORCPT
+        id S1729225AbgIRCZd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Sep 2020 22:20:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48398 "EHLO mail.kernel.org"
+        Thu, 17 Sep 2020 22:25:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729553AbgIRCRg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:17:36 -0400
+        id S1728867AbgIRCQM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:16:12 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF13923998;
-        Fri, 18 Sep 2020 02:17:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 217DE23718;
+        Fri, 18 Sep 2020 02:16:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395455;
-        bh=HOJCFmhew8Uv0EmppdcZWnzPC9d77TXAn0Ux69ECHvs=;
+        s=default; t=1600395372;
+        bh=bKxXcVezWZPrhdR0vZrgzGUZW3VPtL3TKD7KAk5bSI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=liphfWw7B5ENXlNsBLofW0AZ5a0R9mYQsQ6KldI6AfmIlMR7DQUpk4E6Jpf6ZZjNM
-         OusND6DZKMDhaQkL+mwFSVxjV9DnSBbeQqXmPjO2omElYqbp6U7wGaEBeCie8pwAGY
-         9fUCZbOGaRPQp4zuPWRJFvO9cWCe4hFfCU0CClEU=
+        b=hUCUxGlDlUVRYDR6o5VHjm5s4WxXLaOx6oSbPsDIj1hYx2Ehd55UlghnSHbeDBHXM
+         VqkatH1ZhlUVmmb7wDj77ZuivZZGYZMa/k7gzK/MZhLLTHG4V1pEieoiS0H/tsc7h1
+         IeanuOJGqzk46pu/j5J2vINOsfBq3j5hktc6lvzY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
@@ -46,12 +46,12 @@ Cc:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.4 42/64] serial: uartps: Wait for tx_empty in console setup
-Date:   Thu, 17 Sep 2020 22:16:21 -0400
-Message-Id: <20200918021643.2067895-42-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 64/90] serial: uartps: Wait for tx_empty in console setup
+Date:   Thu, 17 Sep 2020 22:14:29 -0400
+Message-Id: <20200918021455.2067301-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918021643.2067895-1-sashal@kernel.org>
-References: <20200918021643.2067895-1-sashal@kernel.org>
+In-Reply-To: <20200918021455.2067301-1-sashal@kernel.org>
+References: <20200918021455.2067301-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -81,10 +81,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 06efcef1b4953..5b4469098888a 100644
+index eb61a07fcbbc3..07ea71a611678 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1152,6 +1152,7 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+@@ -1268,6 +1268,7 @@ static int cdns_uart_console_setup(struct console *co, char *options)
  	int bits = 8;
  	int parity = 'n';
  	int flow = 'n';
@@ -92,7 +92,7 @@ index 06efcef1b4953..5b4469098888a 100644
  
  	if (co->index < 0 || co->index >= CDNS_UART_NR_PORTS)
  		return -EINVAL;
-@@ -1165,6 +1166,13 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+@@ -1281,6 +1282,13 @@ static int cdns_uart_console_setup(struct console *co, char *options)
  	if (options)
  		uart_parse_options(options, &baud, &parity, &bits, &flow);
  
