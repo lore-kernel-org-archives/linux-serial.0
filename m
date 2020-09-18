@@ -5,51 +5,52 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9F2C43464
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 216D1C43464
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:41:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1A28123730
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:33:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D0AA223730
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:41:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600396385;
-	bh=9vYwt60WtS5kvhi3kyOZocDe+6ndIZqBUPH8QXk1Qus=;
+	s=default; t=1600396884;
+	bh=+P+U9mSFO151Sii+XC9R1Csq/D/2a2HmBrKt3rEpPxQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=ht3f6eBFltEGrVmXN880VGOS3a5z0dXvR+dtu3pfKubNs2c/KkUeBpg1JXg4XA7Mt
-	 m72TyyO2sl8rQRMd5o4EcRVFzicjGkb/X0as/YO0cJph1ymxnWVh+SO3k4VGYgH7RU
-	 /bcNy5IUGoDNOYQezvp8e04ajd2Sn13d5JyIZAJ4=
+	b=KO25lBoOJrP/e8kBmcyV4CAIcxnMr4qfeWwVmzXJy12jk6oTsMzcnIM74BPY3E3vW
+	 XPcqKYAkqfpWksBuxgOhma+7wVqjB2FoCInoUmJz4hfy+W9SxlFYJzpklnbz6qkYKB
+	 lYfryTV1myGCb2iVJTevqwufhVGGVxP0NZcZvDZU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728398AbgIRCN6 (ORCPT
+        id S1726986AbgIRClV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Sep 2020 22:13:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41182 "EHLO mail.kernel.org"
+        Thu, 17 Sep 2020 22:41:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728031AbgIRCNn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:13:43 -0400
+        id S1728615AbgIRCLV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:11:21 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DB2632388D;
-        Fri, 18 Sep 2020 02:13:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DA22F208E4;
+        Fri, 18 Sep 2020 02:11:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395222;
-        bh=9vYwt60WtS5kvhi3kyOZocDe+6ndIZqBUPH8QXk1Qus=;
+        s=default; t=1600395080;
+        bh=+P+U9mSFO151Sii+XC9R1Csq/D/2a2HmBrKt3rEpPxQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sj2/EeACZ1lJOAFvi0vxHbPF6ywVVgMozns7otKYUFam207+qEzwexpeUYymAVaqg
-         bw2u7XeRvePevsoPiwL2t6Snpl5iyBieJBfFDWgkjkD5YyU6jHd4RuH5HLc4j6nDMR
-         qrhm742pH95IUDr3FNbgUksAJ0mrXLswNfpf7v5c=
+        b=1abwTGpm3s4PiGqkUPcN/x2ON7hPuwvimmZ0kOhgE+AhP0upTASM35nA1t1cIXwao
+         PW5amRDz3wkg9/jlbp3EwnlWyKvNJ0IEhTI4cc9fBDS+iRh0x8Yzxfq5OA80RgCyKd
+         Z95DvcZPb/Y1veK7V0SpzmH3hkHaw9SAagLz3VkM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+Cc:     Jonathan Bakker <xc-racer2@live.ca>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 069/127] serial: 8250_port: Don't service RX FIFO if throttled
-Date:   Thu, 17 Sep 2020 22:11:22 -0400
-Message-Id: <20200918021220.2066485-69-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 163/206] tty: serial: samsung: Correct clock selection logic
+Date:   Thu, 17 Sep 2020 22:07:19 -0400
+Message-Id: <20200918020802.2065198-163-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918021220.2066485-1-sashal@kernel.org>
-References: <20200918021220.2066485-1-sashal@kernel.org>
+In-Reply-To: <20200918020802.2065198-1-sashal@kernel.org>
+References: <20200918020802.2065198-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,67 +59,52 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Vignesh Raghavendra <vigneshr@ti.com>
+From: Jonathan Bakker <xc-racer2@live.ca>
 
-[ Upstream commit f19c3f6c8109b8bab000afd35580929958e087a9 ]
+[ Upstream commit 7d31676a8d91dd18e08853efd1cb26961a38c6a6 ]
 
-When port's throttle callback is called, it should stop pushing any more
-data into TTY buffer to avoid buffer overflow. This means driver has to
-stop HW from receiving more data and assert the HW flow control. For
-UARTs with auto HW flow control (such as 8250_omap) manual assertion of
-flow control line is not possible and only way is to allow RX FIFO to
-fill up, thus trigger auto HW flow control logic.
+Some variants of the samsung tty driver can pick which clock
+to use for their baud rate generation.  In the DT conversion,
+a default clock was selected to be used if a specific one wasn't
+assigned and then a comparison of which clock rate worked better
+was done.  Unfortunately, the comparison was implemented in such
+a way that only the default clock was ever actually compared.
+Fix this by iterating through all possible clocks, except when a
+specific clock has already been picked via clk_sel (which is
+only possible via board files).
 
-Therefore make sure that 8250 generic IRQ handler does not drain data
-when port is stopped (i.e UART_LSR_DR is unset in read_status_mask). Not
-servicing, RX FIFO would trigger auto HW flow control when FIFO
-occupancy reaches preset threshold, thus halting RX.
-Since, error conditions in UART_LSR register are cleared just by reading
-the register, data has to be drained in case there are FIFO errors, else
-error information will lost.
-
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20200319103230.16867-2-vigneshr@ti.com
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Link: https://lore.kernel.org/r/BN6PR04MB06604E63833EA41837EBF77BA3A30@BN6PR04MB0660.namprd04.prod.outlook.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/tty/serial/samsung.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 07d5925791e1c..9880a50d664fc 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1865,6 +1865,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 	unsigned char status;
- 	unsigned long flags;
- 	struct uart_8250_port *up = up_to_u8250p(port);
-+	bool skip_rx = false;
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index fcb89bf2524d1..1528a7ba2bf4d 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1187,14 +1187,14 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+ 	struct s3c24xx_uart_info *info = ourport->info;
+ 	struct clk *clk;
+ 	unsigned long rate;
+-	unsigned int cnt, baud, quot, clk_sel, best_quot = 0;
++	unsigned int cnt, baud, quot, best_quot = 0;
+ 	char clkname[MAX_CLK_NAME_LENGTH];
+ 	int calc_deviation, deviation = (1 << 30) - 1;
  
- 	if (iir & UART_IIR_NO_INT)
- 		return 0;
-@@ -1873,7 +1874,20 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+-	clk_sel = (ourport->cfg->clk_sel) ? ourport->cfg->clk_sel :
+-			ourport->info->def_clk_sel;
+ 	for (cnt = 0; cnt < info->num_clks; cnt++) {
+-		if (!(clk_sel & (1 << cnt)))
++		/* Keep selected clock if provided */
++		if (ourport->cfg->clk_sel &&
++			!(ourport->cfg->clk_sel & (1 << cnt)))
+ 			continue;
  
- 	status = serial_port_in(port, UART_LSR);
- 
--	if (status & (UART_LSR_DR | UART_LSR_BI)) {
-+	/*
-+	 * If port is stopped and there are no error conditions in the
-+	 * FIFO, then don't drain the FIFO, as this may lead to TTY buffer
-+	 * overflow. Not servicing, RX FIFO would trigger auto HW flow
-+	 * control when FIFO occupancy reaches preset threshold, thus
-+	 * halting RX. This only works when auto HW flow control is
-+	 * available.
-+	 */
-+	if (!(status & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS)) &&
-+	    (port->status & (UPSTAT_AUTOCTS | UPSTAT_AUTORTS)) &&
-+	    !(port->read_status_mask & UART_LSR_DR))
-+		skip_rx = true;
-+
-+	if (status & (UART_LSR_DR | UART_LSR_BI) && !skip_rx) {
- 		if (!up->dma || handle_rx_dma(up, iir))
- 			status = serial8250_rx_chars(up, status);
- 	}
+ 		sprintf(clkname, "clk_uart_baud%d", cnt);
 -- 
 2.25.1
 
