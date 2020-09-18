@@ -7,51 +7,49 @@ X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E917EC43464
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 373EFC43465
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:13:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AD692221EC
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:11:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E99DB2389E
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Sep 2020 02:13:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600395069;
-	bh=xHtK5ZBofi48UebHt83K9iVMvxfhA+Cef7KXu2AT7wA=;
+	s=default; t=1600395230;
+	bh=u0gIlx+26lPy9i8hc8Z2XqPWMlpcGLOnbaDcSsjvkrE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=mJoHfTHPSO9kc7qJGlmvQfxm96bS58VUCz7j7PEKFDdUZUNrNQXGW8ZyT4TAV3Xw/
-	 JFS96ROo8AUZvxHAUuMqiH5cJgwz68DJ/bWFV5xXjvibc418LKOFVZ2Cq5F031dind
-	 DuxFExBMv0TfSvV5yjw9lz9FKONroFUSZJaxdwj8=
+	b=ktp0vYqzTpwcQngX48MUpOZ21SqTQaPz+uVGKOojN6DwDpWAhq1bevPR190Ch3YGr
+	 r4aZTt6U5y+hptllJ7a+5NEXZvASG56YoZp2uWpSo5QIHauvwhLDZcSnJAUFpL/Tzw
+	 tgB2goLzcgce4/tvh2S+63bTXOMY7/4cUjv00hAY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728543AbgIRCK6 (ORCPT
+        id S1728992AbgIRCNq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Sep 2020 22:10:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36038 "EHLO mail.kernel.org"
+        Thu, 17 Sep 2020 22:13:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41202 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728538AbgIRCK5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Sep 2020 22:10:57 -0400
+        id S1728989AbgIRCNp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Sep 2020 22:13:45 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4D105208E4;
-        Fri, 18 Sep 2020 02:10:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 257D9235F9;
+        Fri, 18 Sep 2020 02:13:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600395056;
-        bh=xHtK5ZBofi48UebHt83K9iVMvxfhA+Cef7KXu2AT7wA=;
+        s=default; t=1600395224;
+        bh=u0gIlx+26lPy9i8hc8Z2XqPWMlpcGLOnbaDcSsjvkrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i8STfrBv74RSSydk0KL9jnG89TMGse8gkpvJl+Vzl3lkxoR3dmmlDu+8dDlgZOtCW
-         1WpwSFCohKJjnI1q4sA3nwIvWZirwRMQVrszWoprvgqK4EiaXBqTYDlwEZfHEezvrq
-         WCOC7zJeyha7awxipp4U3k4lMbEAJhjRg3HhuBs8=
+        b=Z5pg1j9p4sVurAAACFFZR4LMj6SxkFmxT/8RxiSyrSPtVZMjzUhz1dpkh+c0yXmVs
+         IBU7ffkK2FF4Pm2W5SkSkFAiEgeVavH/JDttvdnAUPJM41rmRIBiRthSIYEswtNVud
+         4UXFtShQMHwSKF+pLfR40Poc56vsb8ZZAM3z73XQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 143/206] serial: uartps: Wait for tx_empty in console setup
-Date:   Thu, 17 Sep 2020 22:06:59 -0400
-Message-Id: <20200918020802.2065198-143-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 071/127] serial: 8250: 8250_omap: Terminate DMA before pushing data on RX timeout
+Date:   Thu, 17 Sep 2020 22:11:24 -0400
+Message-Id: <20200918021220.2066485-71-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200918020802.2065198-1-sashal@kernel.org>
-References: <20200918020802.2065198-1-sashal@kernel.org>
+In-Reply-To: <20200918021220.2066485-1-sashal@kernel.org>
+References: <20200918021220.2066485-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,52 +58,50 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+From: Vignesh Raghavendra <vigneshr@ti.com>
 
-[ Upstream commit 42e11948ddf68b9f799cad8c0ddeab0a39da33e8 ]
+[ Upstream commit 7cf4df30a98175033e9849f7f16c46e96ba47f41 ]
 
-On some platforms, the log is corrupted while console is being
-registered. It is observed that when set_termios is called, there
-are still some bytes in the FIFO to be transmitted.
+Terminate and flush DMA internal buffers, before pushing RX data to
+higher layer. Otherwise, this will lead to data corruption, as driver
+would end up pushing stale buffer data to higher layer while actual data
+is still stuck inside DMA hardware and has yet not arrived at the
+memory.
+While at that, replace deprecated dmaengine_terminate_all() with
+dmaengine_terminate_async().
 
-So, wait for tx_empty inside cdns_uart_console_setup before calling
-set_termios.
-
-Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-Reviewed-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Link: https://lore.kernel.org/r/1586413563-29125-2-git-send-email-raviteja.narayanam@xilinx.com
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20200319110344.21348-2-vigneshr@ti.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/xilinx_uartps.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/tty/serial/8250/8250_omap.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 31950a38f0fb7..23f9b0cdff086 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1236,6 +1236,7 @@ static int cdns_uart_console_setup(struct console *co, char *options)
- 	int bits = 8;
- 	int parity = 'n';
- 	int flow = 'n';
-+	unsigned long time_out;
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 33df33a9e646a..726852ebef855 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -773,7 +773,10 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
+ 	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
  
- 	if (!port->membase) {
- 		pr_debug("console on " CDNS_UART_TTY_NAME "%i not present\n",
-@@ -1246,6 +1247,13 @@ static int cdns_uart_console_setup(struct console *co, char *options)
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+ 	count = dma->rx_size - state.residue;
+-
++	if (count < dma->rx_size)
++		dmaengine_terminate_async(dma->rxchan);
++	if (!count)
++		goto unlock;
+ 	ret = tty_insert_flip_string(tty_port, dma->rx_buf, count);
  
-+	/* Wait for tx_empty before setting up the console */
-+	time_out = jiffies + usecs_to_jiffies(TX_TIMEOUT);
-+
-+	while (time_before(jiffies, time_out) &&
-+	       cdns_uart_tx_empty(port) != TIOCSER_TEMT)
-+		cpu_relax();
-+
- 	return uart_set_options(port, co, baud, parity, bits, flow);
+ 	p->port.icount.rx += ret;
+@@ -833,7 +836,6 @@ static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
+ 	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
+ 
+ 	__dma_rx_do_complete(p);
+-	dmaengine_terminate_all(dma->rxchan);
  }
  
+ static int omap_8250_rx_dma(struct uart_8250_port *p)
 -- 
 2.25.1
 
