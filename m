@@ -1,104 +1,87 @@
-Return-Path: <SRS0=IZPE=C4=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=gJKf=C5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8280C43464
-	for <linux-serial@archiver.kernel.org>; Sat, 19 Sep 2020 14:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D75C43465
+	for <linux-serial@archiver.kernel.org>; Sun, 20 Sep 2020 12:13:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B04E021582
-	for <linux-serial@archiver.kernel.org>; Sat, 19 Sep 2020 14:25:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6BC1F21531
+	for <linux-serial@archiver.kernel.org>; Sun, 20 Sep 2020 12:13:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600525512;
-	bh=kHRkKnYP82SMnFqUKvGenb2khehyXzI7WLF+nQ+tzgw=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=B0Prk71z30qe4p3fvSrRN4uqnSbMfyRE68egLwcOymmeKRT6fnVzZoeQK6puXGH7o
-	 MxQIItpgrens2XhuYhOoF0i2xtXRUbGR9AZb9MrnchaMgpnr24NMhzC8DkV07uL7Xx
-	 +jr6ET6yo79d37gCUPVVVa8QI68qPx4zOVxEOing=
+	s=default; t=1600604020;
+	bh=St34CU+hKennzLlK8KQtGoAKVzgqXhSP0qV5c5oRK1s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=qDCmEoeuJ5j9ar6XN6xGS0zk/eR9BT0qOcbkuRJec32P0k8k9LlidxOSS1H9jgQ/t
+	 miorfqqnfzw3Hh3r91nroH6RVSiga8L17H4LZu6WOrKWhGizH5VCDpz7ZWAU4XbVjX
+	 56PZTvDZvyJsdl7mtOkcHz0vlWLEFsLPr/OG0A6U=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgISOZL (ORCPT
+        id S1726293AbgITMNk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 19 Sep 2020 10:25:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57108 "EHLO mail.kernel.org"
+        Sun, 20 Sep 2020 08:13:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32798 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726434AbgISOZK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 19 Sep 2020 10:25:10 -0400
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726273AbgITMNj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 20 Sep 2020 08:13:39 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 60E4D21582;
-        Sat, 19 Sep 2020 14:25:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BC06C20EDD;
+        Sun, 20 Sep 2020 12:13:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600525509;
-        bh=kHRkKnYP82SMnFqUKvGenb2khehyXzI7WLF+nQ+tzgw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=2oYZ4BVC2fLdI6wdQldYFviXX+QrY8yA0ESlee7qs0Kg3rxm+3/6PF7RDdoanWhzk
-         7SCrbarFFlCxPmeN8jVVYZ6eN2Dx0WuxN9pBX7Bej1bF3XrffumU+pypQxtnac8AZo
-         1o0OYgAJM/AzKyeyqbeC+5fYnJHhdKDn1nORlUAE=
-Received: by mail-ej1-f50.google.com with SMTP id r7so11824075ejs.11;
-        Sat, 19 Sep 2020 07:25:09 -0700 (PDT)
-X-Gm-Message-State: AOAM532oRJHdcR+yYRD/+FzSvaJSpRXr9lctERxcnRkNsxrPBQ9JP2RJ
-        cRn2Nzdz5QLi/RRmIX6NtWC3RAaQZv6d2xxPMe0=
-X-Google-Smtp-Source: ABdhPJxqLwyyHgA5Kx4Q6V81m6PRoMJ6U0hi/KURq0qDLpn+NftnXz1sAVg2ynpJvB3sE/6Veg68lbEq0jaBtPYIvhc=
-X-Received: by 2002:a17:906:4046:: with SMTP id y6mr43178032ejj.148.1600525507972;
- Sat, 19 Sep 2020 07:25:07 -0700 (PDT)
+        s=default; t=1600604019;
+        bh=St34CU+hKennzLlK8KQtGoAKVzgqXhSP0qV5c5oRK1s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gZpKOrArKaRAvwTnvWOS5ihs8YMzxfoWS0jauFayh5wm4K6ILhrSVsaECe+o08eH9
+         SiP52kmKv/GbiWSnMbZj/uj1TtAYEL16G9BIH3k80ZQKpvYphlwSLaiHm335n/khgp
+         +3KAZ136kp3SE1ju1CoVg9FGysGjziqScHdxLk10=
+Date:   Sun, 20 Sep 2020 14:14:04 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     kernel-janitors@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/14] pch_uart: drop double zeroing
+Message-ID: <20200920121404.GA2830482@kroah.com>
+References: <1600601186-7420-1-git-send-email-Julia.Lawall@inria.fr>
+ <1600601186-7420-2-git-send-email-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-References: <20200904152404.20636-1-krzk@kernel.org> <20200904152404.20636-8-krzk@kernel.org>
- <81a8248f-0d02-5646-36b2-5d4c3a7c4211@linaro.org>
-In-Reply-To: <81a8248f-0d02-5646-36b2-5d4c3a7c4211@linaro.org>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Date:   Sat, 19 Sep 2020 16:24:56 +0200
-X-Gmail-Original-Message-ID: <CAJKOXPdJhfUsTqrTCouF+xQ1ChBWipBc6UaOBbewSPfrEw9Mtg@mail.gmail.com>
-Message-ID: <CAJKOXPdJhfUsTqrTCouF+xQ1ChBWipBc6UaOBbewSPfrEw9Mtg@mail.gmail.com>
-Subject: Re: [PATCH v3 07/14] dt-bindings: thermal: imx8mm-thermal: Add i.MX
- 8M Nano compatible
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1600601186-7420-2-git-send-email-Julia.Lawall@inria.fr>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 19 Sep 2020 at 13:48, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
->
-> On 04/09/2020 17:23, Krzysztof Kozlowski wrote:
-> > DTSes with new i.MX 8M SoCs introduce their own compatibles so add them
-> > to fix dtbs_check warnings like:
-> >
-> >   arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
-> >     compatible:0: 'fsl,imx8mn-tmu' is not one of ['fsl,imx8mm-tmu', 'fsl,imx8mp-tmu']
-> >     From schema: Documentation/devicetree/bindings/thermal/imx8mm-thermal.yaml
-> >
-> >   arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
-> >     compatible: ['fsl,imx8mn-tmu', 'fsl,imx8mm-tmu'] is too long
-> >
-> >   arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml: tmu@30260000:
-> >     compatible: Additional items are not allowed ('fsl,imx8mm-tmu' was unexpected)
-> >
-> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> > Reviewed-by: Rob Herring <robh@kernel.org>
-> > ---
->
-> Shall I pick this patch separately or did you merge the entire series ?
+On Sun, Sep 20, 2020 at 01:26:13PM +0200, Julia Lawall wrote:
+> sg_init_table zeroes its first argument, so the allocation of that argument
+> doesn't have to.
+> 
+> the semantic patch that makes this change is as follows:
+> (http://coccinelle.lip6.fr/)
+> 
+> // <smpl>
+> @@
+> expression x,n,flags;
+> @@
+> 
+> x = 
+> - kcalloc
+> + kmalloc_array
+>   (n,sizeof(struct scatterlist),flags)
+> ...
+> sg_init_table(x,n)
+> // </smpl>
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-Thanks. Rob already picked this up.
+It inits the first entry in the array, but what about all of the other
+ones?  Is that "safe" to have uninitialized data in them like your
+change causes to happen?
 
-Best regards,
-Krzysztof
+thanks,
+
+greg k-h
