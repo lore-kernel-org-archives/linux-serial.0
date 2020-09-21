@@ -2,71 +2,91 @@ Return-Path: <SRS0=VEyX=C6=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0742C43468
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Sep 2020 13:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF42C43465
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Sep 2020 16:59:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C06D82076E
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Sep 2020 13:11:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E25C2235F9
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Sep 2020 16:59:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1600707568;
+	bh=ilYPXYXOrK02dbgWO785dFtleHl2+7nPjk6K0R/PBvw=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:List-ID:From;
+	b=hIP/QyieUDcjMHga/eHv0UwUUAxwSr5itLpZ9t6iqT0pMJqwIYdd4ZSJ+kO6Dcn6Q
+	 LXZ8hjzBUY8Y3MhYMjiKt5NDrczcJpEnL65sUw3W66UaeazvqTRLJnS1kiPf71MnF5
+	 zF21AWM5B79gOvnU+6JAq3iZTaLrK4MPtUaooCHU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727484AbgIUNLH (ORCPT
+        id S1730330AbgIUQ71 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Sep 2020 09:11:07 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:13807 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727451AbgIUNLC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Sep 2020 09:11:02 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 46D57CD31CBB9DC7C72E;
-        Mon, 21 Sep 2020 21:10:50 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 21 Sep 2020 21:10:41 +0800
-From:   Qinglang Miao <miaoqinglang@huawei.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Qinglang Miao" <miaoqinglang@huawei.com>
-Subject: [PATCH -next] serial: mvebu-uart: simplify the return expression of mvebu_uart_probe()
-Date:   Mon, 21 Sep 2020 21:11:05 +0800
-Message-ID: <20200921131105.93177-1-miaoqinglang@huawei.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+        Mon, 21 Sep 2020 12:59:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40096 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730308AbgIUQ7O (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 21 Sep 2020 12:59:14 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4CAA5235FD;
+        Mon, 21 Sep 2020 16:59:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600707553;
+        bh=ilYPXYXOrK02dbgWO785dFtleHl2+7nPjk6K0R/PBvw=;
+        h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+        b=yyPOpwzx1pKltzf4H+v0LidZoBubumrt/74zHAY5TzeAVoIQ8re/YX4A1pDxLKPo6
+         Vv1/tJnpF8BhoP6or7Ck079oNkAaG4N9D7DU/T8PUoATLp0KQqEJ2DLkYD20jr0P0O
+         GwH9D2LvhnnnkrNBzbXQKA7gy9dil44xEFwmKaEQ=
+Date:   Mon, 21 Sep 2020 17:58:21 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     linux-spi@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     linux-serial@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-block@vger.kernel.org,
+        Yossi Leybovich <sleybo@amazon.com>,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-pci@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
+        Dan Williams <dan.j.williams@intel.com>,
+        rds-devel@oss.oracle.com
+In-Reply-To: <1600601186-7420-1-git-send-email-Julia.Lawall@inria.fr>
+References: <1600601186-7420-1-git-send-email-Julia.Lawall@inria.fr>
+Subject: Re: [PATCH 00/14] drop double zeroing
+Message-Id: <160070750168.56292.17961674601916397869.b4-ty@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Simplify the return expression.
+On Sun, 20 Sep 2020 13:26:12 +0200, Julia Lawall wrote:
+> sg_init_table zeroes its first argument, so the allocation of that argument
+> doesn't have to.
 
-Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
----
- drivers/tty/serial/mvebu-uart.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Applied to
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 4e9a59071..7443c0506 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -912,10 +912,7 @@ static int mvebu_uart_probe(struct platform_device *pdev)
- 	udelay(1);
- 	writel(0, port->membase + UART_CTRL(port));
- 
--	ret = uart_add_one_port(&mvebu_uart_driver, port);
--	if (ret)
--		return ret;
--	return 0;
-+	return uart_add_one_port(&mvebu_uart_driver, port);
- }
- 
- static struct mvebu_uart_driver_data uart_std_driver_data = {
--- 
-2.23.0
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
+Thanks!
+
+[1/1] spi/topcliff-pch: drop double zeroing
+      commit: ca03dba30f2b8ff45a2972c6691e4c96d8c52b3b
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
