@@ -2,117 +2,84 @@ Return-Path: <SRS0=vWxX=DA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E0FC2D0A8
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Sep 2020 16:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C482C2D0A8
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Sep 2020 16:57:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5160920BED
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Sep 2020 16:20:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CAAFA20C56
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Sep 2020 16:57:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1600880247;
+	bh=hIdSVVLt2zl1VTm4xEiFNczxwYeQMbtR2OaGzJVMESg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=RUvAiN0MxGgBAOzpvmGyPQWgiCWwxF8pfsmcX5H7tyvf8ATRxNVZNT5wOECVKNj20
+	 dCiNet4/Onpkqxg4mN9NwLPntOS//584YR5esfLvPI1EcHahouV3LjyMdN5TiBRoiK
+	 MZcSsLulk0CzazrELj0MyMnG+yDH5UbKjpEanI2E=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbgIWQUB (ORCPT
+        id S1726342AbgIWQ51 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Sep 2020 12:20:01 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:40222 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgIWQT6 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Sep 2020 12:19:58 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 9AC68803073C;
-        Wed, 23 Sep 2020 16:19:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at baikalelectronics.ru
-Received: from mail.baikalelectronics.ru ([127.0.0.1])
-        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Je9HNbMWeOV5; Wed, 23 Sep 2020 19:19:54 +0300 (MSK)
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 23 Sep 2020 12:57:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60002 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726184AbgIWQ51 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 23 Sep 2020 12:57:27 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4A69220BED;
+        Wed, 23 Sep 2020 16:57:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600880246;
+        bh=hIdSVVLt2zl1VTm4xEiFNczxwYeQMbtR2OaGzJVMESg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=frkDKHFkw1LNkAk9Hk3XL4hZDLPoU7jUkLN8nuMM/AI1vuMKuzNC7Da4YfuapGy2O
+         YHbtU7iCnrKFKaOzIysY3MfXEa4SD7bpvWbFjFHMCCr0WNUH5JvTWFvBprbc60YTF9
+         il8QBspfZvtbkFHbFCnfLuAnmXo4hcGQEtrDiY1E=
+Date:   Wed, 23 Sep 2020 18:57:45 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/3] serial: 8250_dw: Fix clk-notifier/port suspend deadlock
-Date:   Wed, 23 Sep 2020 19:19:47 +0300
-Message-ID: <20200923161950.6237-1-Sergey.Semin@baikalelectronics.ru>
+        =?utf-8?B?Qmxhxb4=?= Hrastnik <blaz@mxxn.io>,
+        Dorian Stoll <dorian.stoll@tmsp.io>
+Subject: Re: [RFC PATCH 1/9] misc: Add Surface Aggregator subsystem
+Message-ID: <20200923165745.GA3732240@kroah.com>
+References: <20200923151511.3842150-1-luzmaximilian@gmail.com>
+ <20200923151511.3842150-2-luzmaximilian@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200923151511.3842150-2-luzmaximilian@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hans has discovered that there is a potential deadlock between the ref
-clock change notifier and the port suspension procedures {see the link at
-the bottom of the letter}. Indeed the deadlock is possible if the port
-suspension is initiated during the ref clock rate change:
+On Wed, Sep 23, 2020 at 05:15:03PM +0200, Maximilian Luz wrote:
+> +/* -- Safe counters. -------------------------------------------------------- */
+> +
+> +/**
+> + * ssh_seq_reset() - Reset/initialize sequence ID counter.
+> + * @c: The counter to reset.
+> + */
+> +static void ssh_seq_reset(struct ssh_seq_counter *c)
+> +{
+> +	WRITE_ONCE(c->value, 0);
+> +}
 
-    CPU0 (suspend CPU/UART)   CPU1 (update clock)
-             ----                    ----
-    lock(&port->mutex);
-                              lock((work_completion)(&data->clk_work));
-                              lock(&port->mutex);
-    lock((work_completion)(&data->clk_work));
+These "counters" are odd, what exactly are they?
 
-    *** DEADLOCK ***
+They seem like a simple atomic counter, but not quite, so you have
+rolled your own pseudo-atomic variable.  Are you sure that it works
+properly?  If so, how?
 
-So the CPU performing the UART port shutdown procedure will wait until the
-ref clock change notifier is finished (worker is flushed), while the later
-will wait for a port mutex being released.
+What about just using an ida/idr structure instead?  Or just a simple
+atomic counter that avoids the values you can't touch, or better yet, a
+simple number with a correct lock protecting it :)
 
-A possible solution to bypass the deadlock is to move the worker flush out
-of the critical section protected by the TTY port mutex. For instance we
-can register and de-register the clock change notifier in the port probe
-and remove methods instead of having them called from the port
-startup/shutdown callbacks. But in order to do that we need to make sure
-that the serial8250_update_uartclk() method is safe to be used while the
-port is shutted down. Alas the current implementation doesn't provide that
-safety. The solution described above is introduced in the framework of
-this patchset. See individual patches for details.
+thanks,
 
-Link: https://lore.kernel.org/linux-serial/f1cd5c75-9cda-6896-a4e2-42c5bfc3f5c3@redhat.com
-
-Hans, could you test the patchset out on your Cherry Trail (x86)-based
-devices? After that we can merge it in into the kernels 5.8 and 5.9 if
-there is no objections against the fix.
-
-Note, in order to have the fix working for the older kernel all of patches
-need to be backported.
-
-Fixes: cc816969d7b5 ("serial: 8250_dw: Fix common clocks usage race condition")
-Fixes: 868f3ee6e452 ("serial: 8250: Add 8250 port clock update method")
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
-Serge Semin (3):
-  serial: 8250: Discard RTS/DTS setting from clock update method
-  serial: 8250: Skip uninitialized TTY port baud rate update
-  serial: 8250_dw: Fix clk-notifier/port suspend deadlock
-
- drivers/tty/serial/8250/8250_dw.c   | 54 ++++++++++-------------------
- drivers/tty/serial/8250/8250_port.c |  5 ++-
- 2 files changed, 23 insertions(+), 36 deletions(-)
-
--- 
-2.27.0
-
+greg k-h
