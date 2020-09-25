@@ -2,163 +2,153 @@ Return-Path: <SRS0=gGpx=DC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1FAC4363D
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 08:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B192C4741F
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 12:58:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5B8EF208A9
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 08:33:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b="Ndz2p70T"
+	by mail.kernel.org (Postfix) with ESMTP id 106592072E
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 12:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727132AbgIYId3 (ORCPT
+        id S1728575AbgIYMsi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Sep 2020 04:33:29 -0400
-Received: from mx1.tq-group.com ([62.157.118.193]:60904 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726990AbgIYId2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Sep 2020 04:33:28 -0400
-X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Fri, 25 Sep 2020 04:33:28 EDT
-IronPort-SDR: oukt6M82CajUSxmUI3NFGy+/eRMaQNpCdyRFjRXdYhvcXH+yPZNxZqv/9mDpWDEj/FS3ZQUoAO
- 5x3Z2HDIcow8spsV3lHRjho++hR80/EBfPVQlEEUT8axsGruIzYF6ULT4vqXwA147V5sVvTXRc
- L4lJtfJillK8mrS7gTf22lzNsyWFFpWaLZLYKGodOZtXVIB+iiHvuuLBqiWWVLB1VtnjJ0z7ro
- 3bbEuQqTmoKNsC2+nn3rHYs9PBIpTAg7FeCtRF0ESrI0mBSaw9gaoV5JYUMSncZa4wqpOiQ3SG
- 4dU=
-X-IronPort-AV: E=Sophos;i="5.77,301,1596492000"; 
-   d="scan'208";a="14020024"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 25 Sep 2020 10:26:19 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Fri, 25 Sep 2020 10:26:19 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Fri, 25 Sep 2020 10:26:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1601022379; x=1632558379;
-  h=from:to:cc:subject:date:message-id;
-  bh=wa4VDC7nYhm5Z0O3jCNMttNKrenLGZ76s9lR1PPSFmk=;
-  b=Ndz2p70TJxcP/HF+mJCDKAnS9exTlUWaZba0QMxZSo06G0DlX7OsiSC0
-   Ep9Jv6q1X9BupahCBqeFfPxB+75i5YKo0DWZ15R/BgOhtu6zMDCzD6CyM
-   4kC8Amr8oSeAoP+k8teu5ggq+9pxOiCJTOVjOi8DLQeOqpN3HFSey/wxN
-   0IUBcEhe6zx3XmcMFm+qgw1KXS9+todCJ92wJHcPrLiwveDMDQERUKzxT
-   SEZ/LtYutHV38/+uncqoNYQ7xaXWNHer1RZvbsNs0EhJAWOe8bl1pI5MD
-   DzCvNxMhJo6xPQRD5mzJnPBn/9EVw85eVXZrZ5GHM00NYYsoxEsBx0t9C
-   g==;
-IronPort-SDR: WOXDDWsnRCO4+uDrIDHyKZ5W0HGF4eNYnH3SogLviEQcXGb+xihJQgo/wf1N6D5GoZWYekR32j
- 5ClPcid/rnmYWzk66AgoojnEwhooxHw1qWSuM5iBuq+XpIzZGPCKhltWQHgDsU8OB8Do1p/c09
- UqYBB7GtMQdqo+sbwDsQgr8OEYTMMNKMt6c8R1aEQT7QVa3v/QR3nAVKFopZ6YN1lxKj5nUWwU
- FF5saJ3TiFy+jvrgw/Ut1Dzuvgj4l4edpKKO8ndLJ1S4DBblKjLjZ+nQUHbmGXBp5/BLCoFpDD
- 43w=
-X-IronPort-AV: E=Sophos;i="5.77,301,1596492000"; 
-   d="scan'208";a="14020023"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 25 Sep 2020 10:26:19 +0200
-Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.117.48.12])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id D3CDB280070;
-        Fri, 25 Sep 2020 10:26:18 +0200 (CEST)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Fri, 25 Sep 2020 08:48:38 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:34911 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728333AbgIYMsh (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 25 Sep 2020 08:48:37 -0400
+Received: by mail-ot1-f66.google.com with SMTP id s66so2168186otb.2;
+        Fri, 25 Sep 2020 05:48:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cZdQoGJq4BMnKc0+GHhmzKbwi3eQut4rt4DQHIPPa00=;
+        b=jgSDdKNOXBbGuMQpk/z4ET9PqM2NrpilZyt7jGFqWyhXtB8izZQuuhN3xZNoNBMqnp
+         uXUgx4C6jwd4mtAK9GCg0gQNMTnpCY6ezczuW7dSUOIh7Yz6UfRBsy/K9Lp7ZsTD7YdG
+         i6mn1e2vIgjkHUiDd/7/byquT15BOxaUsNc4mtQPtGJOkKBA1vjprNtaEqCC+3qEboZN
+         jrfPgJzJ1Z2b+DTqHMvI17Styj2vvumaE1vsoW8CtlKfhNTpf8YbPaBXDQl4nXCjUFdS
+         LFceTHR7PkVE4p7phtntSPq0ZcBTxtV71w48PruvFkqKYyusjTqGyIBuyoj91wL1Gsq1
+         XW5Q==
+X-Gm-Message-State: AOAM532L8xyBBUURSeDoJA6j5XxV59KXTE+LyYRij4XTzuG31A/K7h5Q
+        gZ20hVwXbi86BT9mvLOtBJeKgtNYBgbli2x+hfU=
+X-Google-Smtp-Source: ABdhPJyEECiGqQ4YhtmGHK4PB9VlUvTAmsww4fPctvrIYquFM8s2Gj+bjXohqp8HxxUs4QGzfupoX7xnA8O+y65QA7Y=
+X-Received: by 2002:a9d:3b76:: with SMTP id z109mr161216otb.250.1601038116851;
+ Fri, 25 Sep 2020 05:48:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200923120817.1667149-0-mholenko@antmicro.com> <20200923120817.1667149-2-mholenko@antmicro.com>
+In-Reply-To: <20200923120817.1667149-2-mholenko@antmicro.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 25 Sep 2020 14:48:25 +0200
+Message-ID: <CAMuHMdWCTg7g=Zu7Wp1Aee9A6Zr+yFguR-szywvm0ObPfH1cwg@mail.gmail.com>
+Subject: Re: [PATCH v11 2/5] dt-bindings: soc: document LiteX SoC Controller bindings
+To:     Mateusz Holenko <mholenko@antmicro.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
         Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH] tty: serial: imx: disable TXDC IRQ in imx_uart_shutdown() to avoid IRQ storm
-Date:   Fri, 25 Sep 2020 10:24:12 +0200
-Message-Id: <20200925082412.12960-1-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.17.1
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Gabriel L. Somlo" <gsomlo@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The IPG clock is disabled at the end of imx_uart_shutdown(); we really
-don't want to run any IRQ handlers after this point.
+Hi Mateusz,
 
-At least on i.MX8MN, the UART will happily continue to generate interrupts
-even with its clocks disabled, but in this state, all register writes are
-ignored (which will cause the shadow registers to differ from the actual
-register values, resulting in all kinds of weirdness).
+On Wed, Sep 23, 2020 at 12:09 PM Mateusz Holenko <mholenko@antmicro.com> wrote:
+> From: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
+>
+> Add documentation for LiteX SoC Controller bindings.
+>
+> Signed-off-by: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
+> Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-In a transfer without DMA, this could lead to the following sequence of
-events:
+Thanks for your patch!
 
-- The UART finishes its transmission while imx_uart_shutdown() is run,
-  triggering the TXDC interrupt (we can trigger this fairly reliably by
-  writing a single byte to the TTY and closing it right away)
-- imx_uart_shutdown() finishes, disabling the UART clocks
-- imx_uart_int() -> imx_uart_transmit_buffer() -> imx_uart_stop_tx()
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+> @@ -0,0 +1,39 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +# Copyright 2020 Antmicro <www.antmicro.com>
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/soc/litex/litex,soc-controller.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: LiteX SoC Controller driver
+> +
+> +description: |
+> +  This is the SoC Controller driver for the LiteX SoC Builder.
+> +  It's purpose is to verify LiteX CSR (Control&Status Register) access
 
-imx_uart_stop_tx() should now clear UCR4_TCEN to disable the TXDC
-interrupt, but this register write is ineffective. This results in an
-interrupt storm.
+Its
 
-To disable all interrupts in the same place, and to avoid setting UCR4
-twice, clearing UCR4_OREN is moved below del_timer_sync() as well; this
-should be harmless.
+> +  operations and provide function for other drivers to read/write CSRs
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
+functions
 
-While debugging this, I found one more instance of register writes with
-disabled clock: The IPG clock is disabled before calling
-uart_add_one_port() at the end of imx_uart_probe(). This results in the
-following call stack:
+> +  and to check if those accessors are ready to use.
 
-    imx_uart_writel+0x168/0x188
-    imx_uart_set_mctrl+0x3c/0xb8
-    uart_add_one_port+0x394/0x4c8
-    imx_uart_probe+0x530/0x810
+be used
 
-Fortunately, in this case the register already matches the value that is
-written, so no inconsistent state results. I assume we'll have to do
-something about the way we handle the clocks in this driver to fix
-this...
+> +
+> +maintainers:
+> +  - Karol Gugala <kgugala@antmicro.com>
+> +  - Mateusz Holenko <mholenko@antmicro.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: litex,soc-controller
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +examples:
+> +  - |
+> +    soc_ctrl0: soc-controller@f0000000 {
+> +        compatible = "litex,soc-controller";
+> +        reg = <0xf0000000 0xC>;
+
+Please be consistent w.r.t. lower/upper case: "0xc".
+
+> +        status = "okay";
+> +    };
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 
- drivers/tty/serial/imx.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 4e6ead1f650e..1731d9728865 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1552,10 +1552,6 @@ static void imx_uart_shutdown(struct uart_port *port)
- 	ucr2 = imx_uart_readl(sport, UCR2);
- 	ucr2 &= ~(UCR2_TXEN | UCR2_ATEN);
- 	imx_uart_writel(sport, ucr2, UCR2);
--
--	ucr4 = imx_uart_readl(sport, UCR4);
--	ucr4 &= ~UCR4_OREN;
--	imx_uart_writel(sport, ucr4, UCR4);
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 
- 	/*
-@@ -1568,10 +1564,15 @@ static void imx_uart_shutdown(struct uart_port *port)
- 	 */
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
-+
- 	ucr1 = imx_uart_readl(sport, UCR1);
- 	ucr1 &= ~(UCR1_TRDYEN | UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN | UCR1_RXDMAEN | UCR1_ATDMAEN);
--
- 	imx_uart_writel(sport, ucr1, UCR1);
-+
-+	ucr4 = imx_uart_readl(sport, UCR4);
-+	ucr4 &= ~(UCR4_OREN | UCR4_TCEN);
-+	imx_uart_writel(sport, ucr4, UCR4);
-+
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 
- 	clk_disable_unprepare(sport->clk_per);
--- 
-2.17.1
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
