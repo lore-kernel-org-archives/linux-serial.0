@@ -6,45 +6,45 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90094C4363D
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 13:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA33C4363D
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 13:41:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 61C142389E
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 13:16:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6C94C2083B
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 13:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728850AbgIYNQf (ORCPT
+        id S1728635AbgIYNlM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Sep 2020 09:16:35 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:44332 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728814AbgIYNQf (ORCPT
+        Fri, 25 Sep 2020 09:41:12 -0400
+Received: from mail-oo1-f66.google.com ([209.85.161.66]:37735 "EHLO
+        mail-oo1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727982AbgIYNlL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Sep 2020 09:16:35 -0400
-Received: by mail-oi1-f195.google.com with SMTP id 185so2704867oie.11;
-        Fri, 25 Sep 2020 06:16:34 -0700 (PDT)
+        Fri, 25 Sep 2020 09:41:11 -0400
+Received: by mail-oo1-f66.google.com with SMTP id y25so755231oog.4;
+        Fri, 25 Sep 2020 06:41:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=0B0zGuwlE5IXq5+CRBTpyf20tfnqDJ9kkPftjlq2jcs=;
-        b=EISQ2D5Vq5SoCUH3NrQkvFAOwMcU27X+m5SogcBvwjG8fGv8XRO6bHRPv5t2JNZIvD
-         lXc8uO6DBFrGQ4OhRo4IAUgTuTaIXVC/ptIcAa1C9Pl69lIb8ruLJ7b9Xfz7Oyq/W8MS
-         ol7dtod6GccR9CdMTABRGZKeMayLj9nZcpqAEV5IPiSgHehuxgXFgtJpgVBSpF23lurG
-         Ez6NuPtsmg+vMHqfHv8MQ1V7rx9ZLUOrszHJMxygzQAg/iHo4Uirs4VX1IcWr8C90v6j
-         C8NnLli6MY69z6LatkwcCq4cmQWnlEfYnqsHy/T7SviAIkk+wZTe0T9PYJzUoghCxOXy
-         jpsA==
-X-Gm-Message-State: AOAM532vqdoS5PnlUikgWqAn5RbMeI9Tz4fXO26/YkZF257PWvtooUGa
-        72C3CBLHAmUpZp2jPilM7fH2OLpEUHcUmWw/9Sg=
-X-Google-Smtp-Source: ABdhPJyGPTsmkodXXmXipVIfYg0SJYTSh9mpOHX1TQ8oOk0omx6zJdHRI8eC6aY6pMzpl6nYHQqv6rUWxzTyfmLsMeA=
-X-Received: by 2002:aca:3bc3:: with SMTP id i186mr203649oia.148.1601039794520;
- Fri, 25 Sep 2020 06:16:34 -0700 (PDT)
+        bh=ttB+wOXeGsBfIwTDAKr7IKOf7HwOyFNG/wkL5Jiz3tU=;
+        b=lVggYfvMaIhvODSzA3e7xcNfrnm9bU5/BcXrgReOXh60QEDHadWdefujCUCPmuw+79
+         HVXxOKUU6lurRjhYxAFb2SjdRufdwr3DNoNPOyWs0wgBV/fq+8y9z9lNGpqYL3PFLhXh
+         pjUcne/kFBu/aZXvmav/dyGsMalw4fBuZFdcJx7Cbw8Q7lutJMGpfvFLMDGG+u7EsVeX
+         b2T3c1vFY0yVYP6cSuXA7U0fWA4hxQGfYZ+hTZUk0GaAOKmOozCkB4myVMiCqtgOXJ2E
+         54LAKvDH9Q+OBOGGgoVwrz5rCIW9AKUUm3HzWC5BJtTFqFa6T0rimk7Xpzi5Y960yL0K
+         tDNA==
+X-Gm-Message-State: AOAM530JeecDHsaEljnJ8B/mCY1EvNI5KRmzr74jjVNkz1zl3lM32w1L
+        z20zJC/E0CilG55uI2+mD363DCKVOVXncspPY0E=
+X-Google-Smtp-Source: ABdhPJzQWsUM0amnsXlqz2X2JE8l+uDmhpaoRUAg7MTmoE3c+aBZzfn8lTyJKbncTychynZCqYy/tobmv0SuUZKn8a4=
+X-Received: by 2002:a4a:5d84:: with SMTP id w126mr884054ooa.1.1601041270660;
+ Fri, 25 Sep 2020 06:41:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200923120817.1667149-0-mholenko@antmicro.com> <20200923120817.1667149-4-mholenko@antmicro.com>
-In-Reply-To: <20200923120817.1667149-4-mholenko@antmicro.com>
+References: <20200923120817.1667149-0-mholenko@antmicro.com> <20200923120817.1667149-5-mholenko@antmicro.com>
+In-Reply-To: <20200923120817.1667149-5-mholenko@antmicro.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 25 Sep 2020 15:16:23 +0200
-Message-ID: <CAMuHMdXZ4QA4HX8xZJVnnj5P3USpefNn+8OFGz+Yo9T=UpNM4g@mail.gmail.com>
-Subject: Re: [PATCH v11 4/5] dt-bindings: serial: document LiteUART bindings
+Date:   Fri, 25 Sep 2020 15:40:59 +0200
+Message-ID: <CAMuHMdVzUJwV=E-AssEHHH1GQuXcHHBUGAJZ-+GwNyPFN_KL+A@mail.gmail.com>
+Subject: Re: [PATCH v11 5/5] drivers/tty/serial: add LiteUART driver
 To:     Mateusz Holenko <mholenko@antmicro.com>
 Cc:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -77,77 +77,115 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Mateusz,
 
-On Wed, Sep 23, 2020 at 12:10 PM Mateusz Holenko <mholenko@antmicro.com> wrote:
+On Wed, Sep 23, 2020 at 12:12 PM Mateusz Holenko <mholenko@antmicro.com> wrote:
 > From: Filip Kokosinski <fkokosinski@antmicro.com>
 >
-> Add documentation for LiteUART devicetree bindings.
+> This commit adds driver for the FPGA-based LiteUART serial controller
+> from LiteX SoC builder.
+>
+> The current implementation supports LiteUART configured
+> for 32 bit data width and 8 bit CSR bus width.
+>
+> It does not support IRQ.
 >
 > Signed-off-by: Filip Kokosinski <fkokosinski@antmicro.com>
 > Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
 
 Thanks for your patch!
 
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
-> @@ -0,0 +1,38 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/litex,liteuart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: LiteUART serial controller
-> +
-> +maintainers:
-> +  - Karol Gugala <kgugala@antmicro.com>
-> +  - Mateusz Holenko <mholenko@antmicro.com>
-> +
-> +description: |
-> +  LiteUART serial controller is a part of LiteX FPGA SoC builder. It supports
+> +++ b/drivers/tty/serial/liteuart.c
 
-part of the
-
-> +  multiple CPU architectures, currently including e.g. OpenRISC and RISC-V.
+> +static int liteuart_probe(struct platform_device *pdev)
+> +{
+> +       struct device_node *np = pdev->dev.of_node;
+> +       struct liteuart_port *uart;
+> +       struct uart_port *port;
+> +       struct xa_limit limit;
+> +       int dev_id, ret;
 > +
-> +properties:
-> +  compatible:
-> +    const: litex,liteuart
-
-Have you already decided how to handle future LiteUART variants that add
-new features (e.g. CTS/RTS, DMA)?
-
-
+> +       /* no device tree */
+> +       if (!np)
+> +               return -ENODEV;
 > +
-> +  reg:
-> +    maxItems: 1
+> +       /* look for aliases; auto-enumerate for free index if not found */
+> +       dev_id = of_alias_get_id(np, "serial");
+> +       if (dev_id < 0)
+> +               limit = XA_LIMIT(0, CONFIG_SERIAL_LITEUART_MAX_PORTS);
+> +       else
+> +               limit = XA_LIMIT(dev_id, dev_id);
 > +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +examples:
-> +  - |
-> +    uart0: serial@e0001800 {
-> +      compatible = "litex,liteuart";
-> +      reg = <0xe0001800 0x100>;
-> +      interrupts = <2>;
-> +    };
-> --
-> 2.25.1
->
+> +       uart = kzalloc(sizeof(struct liteuart_port), GFP_KERNEL);
 
+Who frees this memory? Use devm_kzalloc()?
 
---
+> +       if (!uart)
+> +               return -ENOMEM;
+> +
+> +       ret = xa_alloc(&liteuart_array, &dev_id, uart, limit, GFP_KERNEL);
+
+Who frees this entry?
+
+> +       if (ret)
+> +               return ret;
+> +
+> +       port = &uart->port;
+> +
+> +       /* get membase */
+> +       port->membase = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+> +       if (!port->membase)
+> +               return -ENXIO;
+> +
+> +       /* values not from device tree */
+> +       port->dev = &pdev->dev;
+> +       port->iotype = UPIO_MEM;
+> +       port->flags = UPF_BOOT_AUTOCONF;
+> +       port->ops = &liteuart_ops;
+> +       port->regshift = 2;
+> +       port->fifosize = 16;
+> +       port->iobase = 1;
+> +       port->type = PORT_UNKNOWN;
+> +       port->line = dev_id;
+> +       spin_lock_init(&port->lock);
+> +
+> +       return uart_add_one_port(&liteuart_driver, &uart->port);
+> +}
+
+> +static int __init liteuart_init(void)
+> +{
+> +       int res;
+> +
+> +       res = uart_register_driver(&liteuart_driver);
+> +       if (res)
+> +               return res;
+> +
+> +       res = platform_driver_register(&liteuart_platform_driver);
+> +       if (res) {
+> +               uart_unregister_driver(&liteuart_driver);
+> +               return res;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static void __exit liteuart_exit(void)
+> +{
+> +       platform_driver_unregister(&liteuart_platform_driver);
+> +       uart_unregister_driver(&liteuart_driver);
+> +}
+> +
+> +module_init(liteuart_init);
+> +module_exit(liteuart_exit);
+
+Several drivers call uart_{,un}register_driver() from their .probe()
+resp. .remove() callbacks, so they can use module_platform_driver()
+instead of the above boilerplate.  Greg, what's your stance on that?
+
 Gr{oetje,eeting}s,
 
                         Geert
 
---
+-- 
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
