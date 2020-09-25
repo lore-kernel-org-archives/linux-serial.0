@@ -1,131 +1,164 @@
-Return-Path: <SRS0=nVIq=DB=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=gGpx=DC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06FA0C4363D
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Sep 2020 21:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1FAC4363D
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 08:33:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A8D9922208
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Sep 2020 21:07:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5B8EF208A9
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Sep 2020 08:33:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b3e6P0jA"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b="Ndz2p70T"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726185AbgIXVHG (ORCPT
+        id S1727132AbgIYId3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Sep 2020 17:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgIXVHG (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Sep 2020 17:07:06 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62F8C0613CE;
-        Thu, 24 Sep 2020 14:07:05 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id p15so130884ejm.7;
-        Thu, 24 Sep 2020 14:07:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rkxYLB+lfWbz4FohLDcSfT4fdzwjyILNCZtO54fvfxI=;
-        b=b3e6P0jAHc8fH18e6EnBasnbrSS1Y89qgdBYDQFnRKGmFP41FMVRypE94oPHjgX+Hx
-         hdiNvUUOhHYZqft6UYcpKYV43DwrASN9Vr6pJWtbAI9rkU/riEWtdQrhgUwz1pORMC9s
-         YBLDDIk2o9eQzjC27luzrfPxr53HqqOQs5WGBVhLek/efR5xasv5av+tyueAcfV7kjGn
-         DHShoSHhuIIgDhzMMYl2UC/0A9Xd7n5vfjbH8T7lVZKwNO5MifIBPQzXfwef3ciYswjA
-         UaUj1DIKnx50aivBXGCKZYQz7oJt0ZkbV2y2PCUG+XtkVqjMq+F2pDLKbioFbuPcroz2
-         bjrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rkxYLB+lfWbz4FohLDcSfT4fdzwjyILNCZtO54fvfxI=;
-        b=SlADdq8/hhDSloa3XSkMqPEH5dO6kU3hGD6OxuLazuP0YOR0/SWEMdUwuWqY57q5fP
-         obOzk+sfnqNHBvuoEHlyLhlF9Xz005xn8okZpwmTKKwfHyWVYIY8v8E9SdFk6MrdlX8k
-         bBsSczop6lLkMNBZkciVq8ogICI9v29iBQPX/smR7yk5cjy2jmOn+E9P8rbU47eBbmLN
-         BuMdyKTnYHSxCV4RiuLDYCiehx1n6dM+F1jQTZOMFOHdffsYZj0LDAu1sm9BYE2Yeq0t
-         lxjHaEwfTzf9fBlnl5awjPah/nzZtmJMmRKNdLt/0Awj1QktJH+w/F/sOQicDLyTHxxp
-         SGdQ==
-X-Gm-Message-State: AOAM531r3U3k2bgVDIMM4OaPsRl3XTjXeknz1iuJgt9t/DAGWpxq1ehM
-        iaA2I6U7Z/FeBrNdghp6ALVzlEMpQHw=
-X-Google-Smtp-Source: ABdhPJwjvP7IOrZfSs603V1qE80+ZUlp0UcDrAemKRbBr7YUrivRy2EUsrUUcusf41pNBk/6Wbui1Q==
-X-Received: by 2002:a17:906:29ca:: with SMTP id y10mr499729eje.327.1600981624057;
-        Thu, 24 Sep 2020 14:07:04 -0700 (PDT)
-Received: from [192.168.2.202] (pd9e5a9d2.dip0.t-ipconnect.de. [217.229.169.210])
-        by smtp.gmail.com with ESMTPSA id t3sm257414edv.59.2020.09.24.14.07.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Sep 2020 14:07:03 -0700 (PDT)
-Subject: Re: [RFC PATCH 0/9] Add support for Microsoft Surface System
- Aggregator Module
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
+        Fri, 25 Sep 2020 04:33:29 -0400
+Received: from mx1.tq-group.com ([62.157.118.193]:60904 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726990AbgIYId2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 25 Sep 2020 04:33:28 -0400
+X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Fri, 25 Sep 2020 04:33:28 EDT
+IronPort-SDR: oukt6M82CajUSxmUI3NFGy+/eRMaQNpCdyRFjRXdYhvcXH+yPZNxZqv/9mDpWDEj/FS3ZQUoAO
+ 5x3Z2HDIcow8spsV3lHRjho++hR80/EBfPVQlEEUT8axsGruIzYF6ULT4vqXwA147V5sVvTXRc
+ L4lJtfJillK8mrS7gTf22lzNsyWFFpWaLZLYKGodOZtXVIB+iiHvuuLBqiWWVLB1VtnjJ0z7ro
+ 3bbEuQqTmoKNsC2+nn3rHYs9PBIpTAg7FeCtRF0ESrI0mBSaw9gaoV5JYUMSncZa4wqpOiQ3SG
+ 4dU=
+X-IronPort-AV: E=Sophos;i="5.77,301,1596492000"; 
+   d="scan'208";a="14020024"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 25 Sep 2020 10:26:19 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 25 Sep 2020 10:26:19 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 25 Sep 2020 10:26:19 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1601022379; x=1632558379;
+  h=from:to:cc:subject:date:message-id;
+  bh=wa4VDC7nYhm5Z0O3jCNMttNKrenLGZ76s9lR1PPSFmk=;
+  b=Ndz2p70TJxcP/HF+mJCDKAnS9exTlUWaZba0QMxZSo06G0DlX7OsiSC0
+   Ep9Jv6q1X9BupahCBqeFfPxB+75i5YKo0DWZ15R/BgOhtu6zMDCzD6CyM
+   4kC8Amr8oSeAoP+k8teu5ggq+9pxOiCJTOVjOi8DLQeOqpN3HFSey/wxN
+   0IUBcEhe6zx3XmcMFm+qgw1KXS9+todCJ92wJHcPrLiwveDMDQERUKzxT
+   SEZ/LtYutHV38/+uncqoNYQ7xaXWNHer1RZvbsNs0EhJAWOe8bl1pI5MD
+   DzCvNxMhJo6xPQRD5mzJnPBn/9EVw85eVXZrZ5GHM00NYYsoxEsBx0t9C
+   g==;
+IronPort-SDR: WOXDDWsnRCO4+uDrIDHyKZ5W0HGF4eNYnH3SogLviEQcXGb+xihJQgo/wf1N6D5GoZWYekR32j
+ 5ClPcid/rnmYWzk66AgoojnEwhooxHw1qWSuM5iBuq+XpIzZGPCKhltWQHgDsU8OB8Do1p/c09
+ UqYBB7GtMQdqo+sbwDsQgr8OEYTMMNKMt6c8R1aEQT7QVa3v/QR3nAVKFopZ6YN1lxKj5nUWwU
+ FF5saJ3TiFy+jvrgw/Ut1Dzuvgj4l4edpKKO8ndLJ1S4DBblKjLjZ+nQUHbmGXBp5/BLCoFpDD
+ 43w=
+X-IronPort-AV: E=Sophos;i="5.77,301,1596492000"; 
+   d="scan'208";a="14020023"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 25 Sep 2020 10:26:19 +0200
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.117.48.12])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id D3CDB280070;
+        Fri, 25 Sep 2020 10:26:18 +0200 (CEST)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        =?UTF-8?Q?Bla=c5=be_Hrastnik?= <blaz@mxxn.io>,
-        Dorian Stoll <dorian.stoll@tmsp.io>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>
-References: <20200923151511.3842150-1-luzmaximilian@gmail.com>
- <CAK8P3a3Qie_CP1dA-ERqyDv=EnaQQPnNbFYrGr3ySiY4mO0=Uw@mail.gmail.com>
- <dad42dce-15d0-245a-4d91-4733e54883a0@gmail.com>
- <CAK8P3a2ryzmsrHHApT9O=dvsw+=z18Sjd4ygVxvFrrDetKA+rQ@mail.gmail.com>
- <c4c1d999-9ab7-8988-906a-3cb6a70bc93d@gmail.com>
- <CAK8P3a2XegsP71yvd8Ku08_k6ecQfkU+V+t+QnjQBrJKF2MwCg@mail.gmail.com>
- <d07adfb3-9f79-c00a-cb70-e044aa0b19f8@gmail.com>
- <CAK8P3a23V8vug2U-9tXUOdO3DvQvEc5+GhZuQh7_HKtTavCqVQ@mail.gmail.com>
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-Message-ID: <0a861a86-e9eb-668c-f725-46336b48a86a@gmail.com>
-Date:   Thu, 24 Sep 2020 23:07:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <CAK8P3a23V8vug2U-9tXUOdO3DvQvEc5+GhZuQh7_HKtTavCqVQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH] tty: serial: imx: disable TXDC IRQ in imx_uart_shutdown() to avoid IRQ storm
+Date:   Fri, 25 Sep 2020 10:24:12 +0200
+Message-Id: <20200925082412.12960-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 9/24/20 9:38 PM, Arnd Bergmann wrote:
-> On Thu, Sep 24, 2020 at 8:59 PM Maximilian Luz <luzmaximilian@gmail.com> wrote:
->> On 9/24/20 10:26 AM, Arnd Bergmann wrote:
->>> On Thu, Sep 24, 2020 at 1:28 AM Maximilian Luz <luzmaximilian@gmail.com> wrote:
-> 
->>> Note that drivers that connect to the bus typically don't live in the
->>> same subdirectory as the driver that operates the bus. E.g. the
->>> battery driver would go into drivers/power/supply and the input
->>> would go into drivers/input/ or drivers/hid.
->>
->> Right. I wonder if this also holds for devices that are directly
->> dependent on a special platform though? It could make sense to have them
->> under plaform/surface rather than in the individual subsystems as they
->> are only ever going to be used on this platform. On the other hand, one
->> could argue that having them in the subsystem directories is better for
->> maintainability.
-> 
-> Yes, absolutely. The subsystem maintainers are the ones that are
-> most qualified of reviewing code that uses their subsystem, regardless
-> of which bus is used underneath the device, and having all drivers
-> for a subsystem in one place makes it much easier to refactor them
-> all at once in case the internal interfaces are changed or common bugs
-> are found in multiple drivers.
+The IPG clock is disabled at the end of imx_uart_shutdown(); we really
+don't want to run any IRQ handlers after this point.
 
-Got it.
+At least on i.MX8MN, the UART will happily continue to generate interrupts
+even with its clocks disabled, but in this state, all register writes are
+ignored (which will cause the shadow registers to differ from the actual
+register values, resulting in all kinds of weirdness).
 
-Thank you for bearing with me and answering all my (probably a bit
-silly) questions! I really appreciate it!
+In a transfer without DMA, this could lead to the following sequence of
+events:
 
-Regards,
-Max
+- The UART finishes its transmission while imx_uart_shutdown() is run,
+  triggering the TXDC interrupt (we can trigger this fairly reliably by
+  writing a single byte to the TTY and closing it right away)
+- imx_uart_shutdown() finishes, disabling the UART clocks
+- imx_uart_int() -> imx_uart_transmit_buffer() -> imx_uart_stop_tx()
+
+imx_uart_stop_tx() should now clear UCR4_TCEN to disable the TXDC
+interrupt, but this register write is ineffective. This results in an
+interrupt storm.
+
+To disable all interrupts in the same place, and to avoid setting UCR4
+twice, clearing UCR4_OREN is moved below del_timer_sync() as well; this
+should be harmless.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+
+While debugging this, I found one more instance of register writes with
+disabled clock: The IPG clock is disabled before calling
+uart_add_one_port() at the end of imx_uart_probe(). This results in the
+following call stack:
+
+    imx_uart_writel+0x168/0x188
+    imx_uart_set_mctrl+0x3c/0xb8
+    uart_add_one_port+0x394/0x4c8
+    imx_uart_probe+0x530/0x810
+
+Fortunately, in this case the register already matches the value that is
+written, so no inconsistent state results. I assume we'll have to do
+something about the way we handle the clocks in this driver to fix
+this...
+
+
+ drivers/tty/serial/imx.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 4e6ead1f650e..1731d9728865 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1552,10 +1552,6 @@ static void imx_uart_shutdown(struct uart_port *port)
+ 	ucr2 = imx_uart_readl(sport, UCR2);
+ 	ucr2 &= ~(UCR2_TXEN | UCR2_ATEN);
+ 	imx_uart_writel(sport, ucr2, UCR2);
+-
+-	ucr4 = imx_uart_readl(sport, UCR4);
+-	ucr4 &= ~UCR4_OREN;
+-	imx_uart_writel(sport, ucr4, UCR4);
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	/*
+@@ -1568,10 +1564,15 @@ static void imx_uart_shutdown(struct uart_port *port)
+ 	 */
+ 
+ 	spin_lock_irqsave(&sport->port.lock, flags);
++
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+ 	ucr1 &= ~(UCR1_TRDYEN | UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN | UCR1_RXDMAEN | UCR1_ATDMAEN);
+-
+ 	imx_uart_writel(sport, ucr1, UCR1);
++
++	ucr4 = imx_uart_readl(sport, UCR4);
++	ucr4 &= ~(UCR4_OREN | UCR4_TCEN);
++	imx_uart_writel(sport, ucr4, UCR4);
++
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	clk_disable_unprepare(sport->clk_per);
+-- 
+2.17.1
+
