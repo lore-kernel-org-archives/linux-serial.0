@@ -2,113 +2,89 @@ Return-Path: <SRS0=Gon6=DF=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1067DC2D0A8
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Sep 2020 12:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3CAC2D0A8
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Sep 2020 12:56:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AF43D2100A
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Sep 2020 12:20:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2806E2068E
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Sep 2020 12:56:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1601295632;
-	bh=xzxdCXA8dmS06Vmq0uM5K5r76AuJZ7eOVlE6AvLQaCA=;
+	s=default; t=1601297817;
+	bh=rHjWhbuQhSZ6wB39VTZ0cPR7QckRZkLswwO7ANcUPCw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=jmzBf8s7OT8AJWI3idaGX+srwlSfEZyl1THLjrZsIZQpuWOTYAgttvY1ogOc7QFTf
-	 AhpVWkWRBEgH6k9mrmYBiFH3zQFLX5GVblpyJ3z5h+rWDr4p6Mpk4ZUjn8fYOikAPn
-	 a/ZbrS5kHrgfA054e4rasNxUjNj+Q1Z5BYWFVrlU=
+	b=H7KI0aMNyF5TiqoeR9CVwNBF0UnyNhdY+NYJ2yTx1rFh23KBM79ufnkAsOmQf4UuQ
+	 YkX0gPUNF06DtRL7lzCkq/KrmxVRpQxqMII391CBmvn7usCCIlXOJ8Vp03uXepFhLz
+	 TOSJONV+8whw9U0UFukfEP0XVNCBlmILoMokrxXo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbgI1MUc (ORCPT
+        id S1726406AbgI1M44 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Sep 2020 08:20:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54886 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726380AbgI1MUc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Sep 2020 08:20:32 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DED5E2083B;
-        Mon, 28 Sep 2020 12:20:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601295631;
-        bh=xzxdCXA8dmS06Vmq0uM5K5r76AuJZ7eOVlE6AvLQaCA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ciCqRjyBvYDu3b8l3kGYzgjtFjANZwVxpNTF4XKqnQP1oxiVmWFbDoo6PInOXpR60
-         fPPodc0aNOGvmsm610LSSoltLnlK5NR9f8ildeSu8t4jleEz6YXc8XsDZ97gvO5azJ
-         aiSMS+SAYiPfup0ScL9W7qF3ygaHAcrbIZayZOOg=
-Date:   Mon, 28 Sep 2020 14:20:39 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     drolevar@gmail.com
-Cc:     linux-serial@vger.kernel.org, Andrij Abyzov <aabyzov@slb.com>
-Subject: Re: [PATCH v2 1/1] serial: 8250_fsl: Fix TX interrupt handling
- condition
-Message-ID: <20200928122039.GA682772@kroah.com>
-References: <20200928102841.43782-1-aabyzov@slb.com>
- <20200928102841.43782-2-aabyzov@slb.com>
+        Mon, 28 Sep 2020 08:56:56 -0400
+Received: from mail-oo1-f65.google.com ([209.85.161.65]:40542 "EHLO
+        mail-oo1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726348AbgI1M44 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 28 Sep 2020 08:56:56 -0400
+Received: by mail-oo1-f65.google.com with SMTP id r4so270313ooq.7;
+        Mon, 28 Sep 2020 05:56:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sMLPLFtdKygZNybR4cqmUVRj9twZY87y7rGYBclpkHA=;
+        b=HzlA7gbaX1krDq+D7Kvv4Vjjn3TAf+Bc/u6mGVGVTZ1sp/m3SHS76EI/x4Zx6PZ7lt
+         J9vleaKxLCFGmVzsTklWO8hgJESYZE1KgA6IEOYYEw46w8zkab+bxaUppiVwNxJsP8xl
+         pIMvo6AioJu4jVUh/9KBWpAw1A5vkOYPqO7RMENQRKuuJKyy/vvITEppoM2tKcRlGx7+
+         f/vLm3IUoAZsedIIlEhDi9dVoljPwW0LWZmGQxTA3PtyE6x2s7YXX4TgVyoFg9RLhifX
+         oDsD8Ll5hEBL+2b20gCeJ5KV3Sa0vKLrg39jHzOFuxxugOroOtS6sEj7xN7FvqP/3Ji4
+         rfqg==
+X-Gm-Message-State: AOAM5334Kl3uTKr/QIp2TT8jWvFswi0t+x3oghXgrnSP7WbQOV9KqrYT
+        EIZsvmRI3dnWTqKVIA7tvg==
+X-Google-Smtp-Source: ABdhPJyPbJ54E1pfq2XatL/TA4r2MuH0qFlT5Gyu3YLe5KnIICICh5/PgjEcenRs6saA0dCqcPGQ+A==
+X-Received: by 2002:a4a:5258:: with SMTP id d85mr726841oob.72.1601297808241;
+        Mon, 28 Sep 2020 05:56:48 -0700 (PDT)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id q81sm167968oia.46.2020.09.28.05.56.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2020 05:56:46 -0700 (PDT)
+Received: (nullmailer pid 2545734 invoked by uid 1000);
+        Mon, 28 Sep 2020 12:56:45 -0000
+Date:   Mon, 28 Sep 2020 07:56:45 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH] dt-bindings: serial: fsl-imx-uart: fix i.MX 53 and 6
+ compatible matching
+Message-ID: <20200928125645.GA2545321@bogus>
+References: <20200925212649.23183-1-krzk@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200928102841.43782-2-aabyzov@slb.com>
+In-Reply-To: <20200925212649.23183-1-krzk@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Sep 28, 2020 at 12:28:41PM +0200, drolevar@gmail.com wrote:
-> From: Andrij Abyzov <aabyzov@slb.com>
+On Fri, 25 Sep 2020 23:26:49 +0200, Krzysztof Kozlowski wrote:
+> The i.MX 53 and i.MX6Q DTS use two compatibles, i.MX 6SL/6SLL/SX three
+> so update the binding to fix dtbs_check warnings like:
 > 
-> This is the port of the commit db1b5bc047b3 ("serial: 8250: Fix TX
-> interrupt handling condition") to the 8250_fsl irq handling logic.
+>   serial@21ec000: compatible: ['fsl,imx6q-uart', 'fsl,imx21-uart'] is not valid under any of the given schemas
 > 
-> Interrupt handler checked THRE bit (transmitter holding register
-> empty) in LSR to detect if TX fifo is empty.
-> In case when there is only receive interrupts the TX handling
-> got called because THRE bit in LSR is set when there is no
-> transmission (FIFO empty). TX handling caused TX stop, which in
-> RS-485 half-duplex mode actually resets receiver FIFO. This is not
-> desired during reception because of possible data loss.
-> 
-> The fix is to check if THRI is set in IER in addition of the TX
-> fifo status. THRI in IER is set when TX is started and cleared
-> when TX is stopped.
-> This ensures that TX handling is only called when there is really
-> transmission on going and an interrupt for THRE and not when there
-> are only RX interrupts.
-> 
-> Signed-off-by: Andrij Abyzov <aabyzov@slb.com>
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 > ---
->  drivers/tty/serial/8250/8250_fsl.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
-> index 0d0c80905c58..ceac6cfce4c7 100644
-> --- a/drivers/tty/serial/8250/8250_fsl.c
-> +++ b/drivers/tty/serial/8250/8250_fsl.c
-> @@ -71,7 +71,7 @@ int fsl8250_handle_irq(struct uart_port *port)
->  
->  	serial8250_modem_status(up);
->  
-> -	if (lsr & UART_LSR_THRE)
-> +	if ((lsr & UART_LSR_THRE) && (up->ier & UART_IER_THRI))
->  		serial8250_tx_chars(up);
->  
->  	up->lsr_saved_flags = orig_lsr;
-> -- 
-> 2.25.1
+>  .../devicetree/bindings/serial/fsl-imx-uart.yaml          | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 > 
 
-What changed from v1?
-
-That goes below the --- line, as is asked for in the submitting patches
-document, right?
-
-Can you fix that up and send a v3?
-
-Also, why are you forwarding on a patch that you did not write or sign
-off on?  Please sign off on it yourself too.
-
-thanks,
-
-greg k-h
+Acked-by: Rob Herring <robh@kernel.org>
