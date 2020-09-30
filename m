@@ -1,262 +1,112 @@
-Return-Path: <SRS0=bP+p=DG=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=IvhS=DH=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79424C4727C
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Sep 2020 23:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA34FC2D0A8
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Sep 2020 06:05:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 23C5C21548
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Sep 2020 23:06:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 96D9A20739
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Sep 2020 06:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728156AbgI2XGz (ORCPT
+        id S1725385AbgI3GFp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Sep 2020 19:06:55 -0400
-Received: from mga14.intel.com ([192.55.52.115]:63644 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728113AbgI2XGz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Sep 2020 19:06:55 -0400
-IronPort-SDR: aQPCHv/88KMgxqfxaliSqiN+zh3dVGzBUh6sr0CwxiBQGVqTKjE4tMxawilPcPWp7KAZkDBXPR
- /TITtveI/kAQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9759"; a="161530371"
-X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; 
-   d="scan'208";a="161530371"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 16:06:54 -0700
-IronPort-SDR: 1iVwDdPzTD9Dxo36hsOb6VUWhPLHRRpmlUafPzH0lEyqB6XLSRCe2Zf88dqI1PAaiK56htpzGV
- Krf9LN4C+ipQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; 
-   d="scan'208";a="294424676"
-Received: from lkp-server02.sh.intel.com (HELO 10ae44db8633) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Sep 2020 16:06:52 -0700
-Received: from kbuild by 10ae44db8633 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1kNOhw-0000N6-7a; Tue, 29 Sep 2020 23:06:52 +0000
-Date:   Wed, 30 Sep 2020 07:05:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 58e49346672f738cf6eeb62009a5b0ae194374c4
-Message-ID: <5f73bdd4.B/xQpC0PG36l2geE%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+        Wed, 30 Sep 2020 02:05:45 -0400
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:4091 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725306AbgI3GFp (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 30 Sep 2020 02:05:45 -0400
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 29 Sep 2020 23:05:44 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 29 Sep 2020 23:05:42 -0700
+X-QCInternal: smtphost
+Received: from parashar-linux.qualcomm.com ([10.206.13.63])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 30 Sep 2020 11:35:29 +0530
+Received: by parashar-linux.qualcomm.com (Postfix, from userid 2363307)
+        id 03CE1213D0; Wed, 30 Sep 2020 11:35:27 +0530 (IST)
+From:   Paras Sharma <parashar@codeaurora.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        akashast@codeaurora.org, Paras Sharma <parashar@codeaurora.org>
+Subject: [PATCH V6] serial: qcom_geni_serial: To correct QUP Version detection logic
+Date:   Wed, 30 Sep 2020 11:35:26 +0530
+Message-Id: <1601445926-23673-1-git-send-email-parashar@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 58e49346672f738cf6eeb62009a5b0ae194374c4  serial: mvebu-uart: fix unused variable warning
+For QUP IP versions 2.5 and above the oversampling rate is
+halved from 32 to 16.
 
-elapsed time: 725m
+Commit ce734600545f ("tty: serial: qcom_geni_serial: Update
+the oversampling rate") is pushed to handle this scenario.
+But the existing logic is failing to classify QUP Version 3.0
+into the correct group ( 2.5 and above).
 
-configs tested: 188
-configs skipped: 3
+As result Serial Engine clocks are not configured properly for
+baud rate and garbage data is sampled to FIFOs from the line.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+So, fix the logic to detect QUP with versions 2.5 and above.
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-powerpc                 xes_mpc85xx_defconfig
-arc                      axs103_smp_defconfig
-arc                         haps_hs_defconfig
-arm                         orion5x_defconfig
-powerpc                      pcm030_defconfig
-arm                        shmobile_defconfig
-mips                         db1xxx_defconfig
-sh                          sdk7780_defconfig
-powerpc                 mpc8560_ads_defconfig
-csky                                defconfig
-m68k                            q40_defconfig
-arc                           tb10x_defconfig
-m68k                        mvme147_defconfig
-sh                  sh7785lcr_32bit_defconfig
-mips                         tb0219_defconfig
-mips                         bigsur_defconfig
-arc                             nps_defconfig
-h8300                            alldefconfig
-sh                            hp6xx_defconfig
-powerpc                 mpc8540_ads_defconfig
-arm                        mvebu_v7_defconfig
-arm                        spear3xx_defconfig
-ia64                        generic_defconfig
-mips                       rbtx49xx_defconfig
-powerpc                      pmac32_defconfig
-powerpc64                        alldefconfig
-sh                        sh7785lcr_defconfig
-s390                       zfcpdump_defconfig
-mips                      pistachio_defconfig
-ia64                            zx1_defconfig
-powerpc                     tqm8541_defconfig
-arm                         vf610m4_defconfig
-xtensa                         virt_defconfig
-powerpc                   bluestone_defconfig
-arm                         s5pv210_defconfig
-powerpc                    ge_imp3a_defconfig
-powerpc                      pasemi_defconfig
-powerpc                     sequoia_defconfig
-mips                           ip32_defconfig
-mips                      bmips_stb_defconfig
-mips                        maltaup_defconfig
-arm                           u8500_defconfig
-powerpc                     mpc512x_defconfig
-powerpc                    amigaone_defconfig
-sh                           se7751_defconfig
-mips                      malta_kvm_defconfig
-powerpc                     rainier_defconfig
-arm                           efm32_defconfig
-arm                      tct_hammer_defconfig
-powerpc                        icon_defconfig
-m68k                             alldefconfig
-arm                         socfpga_defconfig
-powerpc                 mpc832x_mds_defconfig
-arm                       spear13xx_defconfig
-powerpc                     kmeter1_defconfig
-arm                          gemini_defconfig
-i386                                defconfig
-powerpc                     stx_gp3_defconfig
-ia64                             allmodconfig
-xtensa                           allyesconfig
-mips                          rm200_defconfig
-m68k                       m5249evb_defconfig
-arc                    vdk_hs38_smp_defconfig
-arm                       versatile_defconfig
-arm                       omap2plus_defconfig
-powerpc                    socrates_defconfig
-parisc                generic-64bit_defconfig
-xtensa                  audio_kc705_defconfig
-m68k                        mvme16x_defconfig
-s390                                defconfig
-powerpc                 mpc837x_rdb_defconfig
-powerpc                      ep88xc_defconfig
-sh                         apsh4a3a_defconfig
-s390                             allyesconfig
-arm                            u300_defconfig
-sh                   sh7724_generic_defconfig
-powerpc                     tqm8555_defconfig
-sh                            shmin_defconfig
-xtensa                  cadence_csp_defconfig
-sh                           se7206_defconfig
-powerpc                      katmai_defconfig
-powerpc                     tqm8560_defconfig
-microblaze                    nommu_defconfig
-arc                            hsdk_defconfig
-powerpc                       eiger_defconfig
-arm                        multi_v5_defconfig
-arc                        vdk_hs38_defconfig
-mips                             allmodconfig
-m68k                                defconfig
-arm                      pxa255-idp_defconfig
-powerpc                mpc7448_hpc2_defconfig
-arm                          simpad_defconfig
-sh                        edosk7705_defconfig
-c6x                        evmc6457_defconfig
-arm                         s3c6400_defconfig
-arm                           sama5_defconfig
-powerpc                    mvme5100_defconfig
-powerpc                        fsp2_defconfig
-sh                   sh7770_generic_defconfig
-arm                           h5000_defconfig
-arm                         at91_dt_defconfig
-mips                         mpc30x_defconfig
-powerpc               mpc834x_itxgp_defconfig
-arm                       multi_v4t_defconfig
-sh                             shx3_defconfig
-microblaze                          defconfig
-mips                   sb1250_swarm_defconfig
-arm                          ep93xx_defconfig
-sh                           se7780_defconfig
-parisc                           alldefconfig
-arm                             mxs_defconfig
-mips                            gpr_defconfig
-c6x                        evmc6474_defconfig
-sh                      rts7751r2d1_defconfig
-alpha                            alldefconfig
-sh                           se7712_defconfig
-mips                     loongson1c_defconfig
-sh                          r7785rp_defconfig
-mips                         cobalt_defconfig
-xtensa                  nommu_kc705_defconfig
-um                           x86_64_defconfig
-arm                        multi_v7_defconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-c6x                              allyesconfig
-nds32                               defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-parisc                           allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-mips                             allyesconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-i386                 randconfig-a006-20200929
-i386                 randconfig-a002-20200929
-i386                 randconfig-a003-20200929
-i386                 randconfig-a004-20200929
-i386                 randconfig-a005-20200929
-i386                 randconfig-a001-20200929
-x86_64               randconfig-a011-20200929
-x86_64               randconfig-a013-20200929
-x86_64               randconfig-a015-20200929
-x86_64               randconfig-a014-20200929
-x86_64               randconfig-a016-20200929
-x86_64               randconfig-a012-20200929
-i386                 randconfig-a012-20200929
-i386                 randconfig-a016-20200929
-i386                 randconfig-a014-20200929
-i386                 randconfig-a013-20200929
-i386                 randconfig-a015-20200929
-i386                 randconfig-a011-20200929
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                            allmodconfig
-x86_64                                   rhel
-x86_64                           allyesconfig
-x86_64                    rhel-7.6-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                                  kexec
-
-clang tested configs:
-x86_64               randconfig-a005-20200929
-x86_64               randconfig-a003-20200929
-x86_64               randconfig-a004-20200929
-x86_64               randconfig-a002-20200929
-x86_64               randconfig-a006-20200929
-x86_64               randconfig-a001-20200929
-
+Fixes: ce734600545f ("tty: serial: qcom_geni_serial: Update the oversampling rate")
+Signed-off-by: Paras Sharma <parashar@codeaurora.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Changes in V6:
+Removed newline unneeded change
+
+Changes in V5:
+Moved QUP_SE_VERSION_2_5 to common header file qcom-geni-se.h
+
+Changes in V4:
+Created a new #define QUP_SE_VERSION_2_5 for Qup serial engine having version 2.5
+
+Changes in V3:
+Replaced the condition for detecting Qup version(2.5 or greater) with value 0x20050000
+
+Changes in V2:
+Changed subject line and logic for checking Qup version
+
+ drivers/tty/serial/qcom_geni_serial.c | 2 +-
+ include/linux/qcom-geni-se.h          | 3 +++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index f0b1b47..464ffc9 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1000,7 +1000,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	sampling_rate = UART_OVERSAMPLING;
+ 	/* Sampling rate is halved for IP versions >= 2.5 */
+ 	ver = geni_se_get_qup_hw_version(&port->se);
+-	if (GENI_SE_VERSION_MAJOR(ver) >= 2 && GENI_SE_VERSION_MINOR(ver) >= 5)
++	if (ver >= QUP_SE_VERSION_2_5)
+ 		sampling_rate /= 2;
+ 
+ 	clk_rate = get_clk_div_rate(baud, sampling_rate, &clk_div);
+diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+index 8f385fb..1c31f26 100644
+--- a/include/linux/qcom-geni-se.h
++++ b/include/linux/qcom-geni-se.h
+@@ -248,6 +248,9 @@ struct geni_se {
+ #define GENI_SE_VERSION_MINOR(ver) ((ver & HW_VER_MINOR_MASK) >> HW_VER_MINOR_SHFT)
+ #define GENI_SE_VERSION_STEP(ver) (ver & HW_VER_STEP_MASK)
+ 
++/* QUP SE VERSION value for major number 2 and minor number 5 */
++#define QUP_SE_VERSION_2_5                  0x20050000
++
+ /*
+  * Define bandwidth thresholds that cause the underlying Core 2X interconnect
+  * clock to run at the named frequency. These baseline values are recommended
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
+
