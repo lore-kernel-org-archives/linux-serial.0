@@ -2,145 +2,130 @@ Return-Path: <SRS0=IvhS=DH=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C81C4727E
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Sep 2020 12:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C2CC4727E
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Sep 2020 13:59:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1CDB620789
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Sep 2020 12:04:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1601467483;
-	bh=GykIBSaiDmEJ3XNEf9HGHAkoXZDo5xF4J1k3EoMvwoQ=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=N/Y3U+eN1ndXgM3HHxE+4YGU5cPO6TklWnZwPWzEkqpQOeTdRnSMQdNIENqw9vX1v
-	 0wyNRhR7DugSWLl2WQL99AFLttBYwzLyFMZMKkTzGgwgYOw91Nr1r3kR/J0wC49isz
-	 O/oUcuP+L0EV5I9Ir4teNqVs3C81dmulwIIYnO7g=
+	by mail.kernel.org (Postfix) with ESMTP id 361872071E
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Sep 2020 13:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729247AbgI3MEj (ORCPT
+        id S1730057AbgI3N7h (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Sep 2020 08:04:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59174 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728270AbgI3MEj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Sep 2020 08:04:39 -0400
-Received: from localhost.localdomain (236.31.169.217.in-addr.arpa [217.169.31.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4218C2076B;
-        Wed, 30 Sep 2020 12:04:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601467478;
-        bh=GykIBSaiDmEJ3XNEf9HGHAkoXZDo5xF4J1k3EoMvwoQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=f99KUqvqfomYjYMNPm/3zHNXcASLOTXscOvNPPIepLguIQ9EHBo0TzXHorvKVdW8b
-         QnkTrmvJoFqz2kBpm/RZr9+GXmKYNQ6aytmUsTT88cUsNDZlkW6Et5y9Q/+6ghXzHM
-         YrAcx89aIlNjuUc4MshU5oVeSU+CL2El+eM9NEk8=
-From:   Will Deacon <will@kernel.org>
-To:     linux-serial@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Peter Zijlstra <peterz@infradead.org>, stable@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH] serial: pl011: Fix lockdep splat when handling magic-sysrq interrupt
-Date:   Wed, 30 Sep 2020 13:04:32 +0100
-Message-Id: <20200930120432.16551-1-will@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Wed, 30 Sep 2020 09:59:37 -0400
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:57198 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729903AbgI3N7h (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 30 Sep 2020 09:59:37 -0400
+Received: from relay3-d.mail.gandi.net (unknown [217.70.183.195])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id C74DE3BA7E2;
+        Wed, 30 Sep 2020 13:52:06 +0000 (UTC)
+X-Originating-IP: 86.206.245.199
+Received: from localhost (lfbn-tou-1-420-199.w86-206.abo.wanadoo.fr [86.206.245.199])
+        (Authenticated sender: thomas.petazzoni@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 0D7F260008;
+        Wed, 30 Sep 2020 13:51:43 +0000 (UTC)
+From:   Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jan=20Kundr=C3=A1t?= <jan.kundrat@cesnet.cz>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-spi@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH] serial: max310x: rework RX interrupt handling
+Date:   Wed, 30 Sep 2020 15:51:37 +0200
+Message-Id: <20200930135137.197592-1-thomas.petazzoni@bootlin.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-GND-Spam-Score: 400
+X-GND-Status: SPAM
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+Currently, the RX interrupt logic uses the RXEMPTY interrupt, with the
+RXEMPTYINV bit set, which means we get an RX interrupt as soon as the
+RX FIFO is non-empty.
 
-Issuing a magic-sysrq via the PL011 causes the following lockdep splat,
-which is easily reproducible under QEMU:
+However, with the MAX310X having a FIFO of 128 bytes, this makes very
+poor use of the FIFO: we trigger an interrupt as soon as the RX FIFO
+has one byte, which means a lot of interrupts, each only collecting a
+few bytes from the FIFO, causing a significant CPU load.
 
-  | sysrq: Changing Loglevel
-  | sysrq: Loglevel set to 9
-  |
-  | ======================================================
-  | WARNING: possible circular locking dependency detected
-  | 5.9.0-rc7 #1 Not tainted
-  | ------------------------------------------------------
-  | systemd-journal/138 is trying to acquire lock:
-  | ffffab133ad950c0 (console_owner){-.-.}-{0:0}, at: console_lock_spinning_enable+0x34/0x70
-  |
-  | but task is already holding lock:
-  | ffff0001fd47b098 (&port_lock_key){-.-.}-{2:2}, at: pl011_int+0x40/0x488
-  |
-  | which lock already depends on the new lock.
+Instead this commit relies on two other RX interrupt events:
 
-  [...]
+ - MAX310X_IRQ_RXFIFO_BIT, which triggers when the RX FIFO has reached
+   a certain threshold, which we define to be half of the FIFO
+   size. This ensure we get an interrupt before the RX FIFO fills up.
 
-  |  Possible unsafe locking scenario:
-  |
-  |        CPU0                    CPU1
-  |        ----                    ----
-  |   lock(&port_lock_key);
-  |                                lock(console_owner);
-  |                                lock(&port_lock_key);
-  |   lock(console_owner);
-  |
-  |  *** DEADLOCK ***
+ - MAX310X_LSR_RXTO_BIT, which triggers when the RX FIFO has received
+   some bytes, and then no more bytes are received for a certain
+   time. Arbitrarily, this time is defined to the time is takes to
+   receive 4 characters.
 
-The issue being that CPU0 takes 'port_lock' on the irq path in pl011_int()
-before taking 'console_owner' on the printk() path, whereas CPU1 takes
-the two locks in the opposite order on the printk() path due to setting
-the "console_owner" prior to calling into into the actual console driver.
+On a Microchip SAMA5D3 platform that is receiving 20 bytes every 16ms
+over one MAX310X UART, this patch has allowed to reduce the CPU
+consumption of the interrupt handler thread from ~25% to 6-7%.
 
-Fix this in the same way as the msm-serial driver by dropping 'port_lock'
-before handling the sysrq.
-
-Cc: <stable@vger.kernel.org> # 4.19+
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Link: https://lore.kernel.org/r/20200811101313.GA6970@willie-the-truck
-Signed-off-by: Peter Zijlstra <peterz@infradead.org>
-Tested-by: Will Deacon <will@kernel.org>
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 ---
- drivers/tty/serial/amba-pl011.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/tty/serial/max310x.c | 29 ++++++++++++++++++++++++-----
+ 1 file changed, 24 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 67498594d7d7..87dc3fc15694 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -308,8 +308,9 @@ static void pl011_write(unsigned int val, const struct uart_amba_port *uap,
-  */
- static int pl011_fifo_to_tty(struct uart_amba_port *uap)
- {
--	u16 status;
- 	unsigned int ch, flag, fifotaken;
-+	int sysrq;
-+	u16 status;
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 8434bd5a8ec78..a1c80850d77ed 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1056,9 +1056,9 @@ static int max310x_startup(struct uart_port *port)
+ 	max310x_port_update(port, MAX310X_MODE1_REG,
+ 			    MAX310X_MODE1_TRNSCVCTRL_BIT, 0);
  
- 	for (fifotaken = 0; fifotaken != 256; fifotaken++) {
- 		status = pl011_read(uap, REG_FR);
-@@ -344,10 +345,12 @@ static int pl011_fifo_to_tty(struct uart_amba_port *uap)
- 				flag = TTY_FRAME;
- 		}
+-	/* Configure MODE2 register & Reset FIFOs*/
+-	val = MAX310X_MODE2_RXEMPTINV_BIT | MAX310X_MODE2_FIFORST_BIT;
+-	max310x_port_write(port, MAX310X_MODE2_REG, val);
++	/* Reset FIFOs*/
++	max310x_port_write(port, MAX310X_MODE2_REG,
++			   MAX310X_MODE2_FIFORST_BIT);
+ 	max310x_port_update(port, MAX310X_MODE2_REG,
+ 			    MAX310X_MODE2_FIFORST_BIT, 0);
  
--		if (uart_handle_sysrq_char(&uap->port, ch & 255))
--			continue;
-+		spin_unlock(&uap->port.lock);
-+		sysrq = uart_handle_sysrq_char(&uap->port, ch & 255);
-+		spin_lock(&uap->port.lock);
+@@ -1086,8 +1086,27 @@ static int max310x_startup(struct uart_port *port)
+ 	/* Clear IRQ status register */
+ 	max310x_port_read(port, MAX310X_IRQSTS_REG);
  
--		uart_insert_char(&uap->port, ch, UART011_DR_OE, ch, flag);
-+		if (!sysrq)
-+			uart_insert_char(&uap->port, ch, UART011_DR_OE, ch, flag);
- 	}
+-	/* Enable RX, TX, CTS change interrupts */
+-	val = MAX310X_IRQ_RXEMPTY_BIT | MAX310X_IRQ_TXEMPTY_BIT;
++	/*
++	 * Let's ask for an interrupt after a timeout equivalent to
++	 * the receiving time of 4 characters after the last character
++	 * has been received.
++	 */
++	max310x_port_write(port, MAX310X_RXTO_REG, 4);
++
++	/*
++	 * Make sure we also get RX interrupts when the RX FIFO is
++	 * filling up quickly, so get an interrupt when half of the RX
++	 * FIFO has been filled in.
++	 */
++	max310x_port_write(port, MAX310X_FIFOTRIGLVL_REG,
++			   MAX310X_FIFOTRIGLVL_RX(MAX310X_FIFO_SIZE / 2));
++
++	/* Enable RX timeout interrupt in LSR */
++	max310x_port_write(port, MAX310X_LSR_IRQEN_REG,
++			   MAX310X_LSR_RXTO_BIT);
++
++	/* Enable LSR, RX FIFO trigger, CTS change interrupts */
++	val = MAX310X_IRQ_LSR_BIT  | MAX310X_IRQ_RXFIFO_BIT | MAX310X_IRQ_TXEMPTY_BIT;
+ 	max310x_port_write(port, MAX310X_IRQEN_REG, val | MAX310X_IRQ_CTS_BIT);
  
- 	return fifotaken;
+ 	return 0;
 -- 
-2.28.0.709.gb0816b6eb0-goog
+2.26.2
 
