@@ -2,170 +2,256 @@ Return-Path: <SRS0=1Uan=DI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA31C4727F
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Oct 2020 11:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A328C4727E
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Oct 2020 22:09:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D9EB620872
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Oct 2020 11:35:54 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J8csKkj6"
+	by mail.kernel.org (Postfix) with ESMTP id 5173820738
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Oct 2020 22:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731925AbgJALfv (ORCPT
+        id S1727124AbgJAWJc (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Oct 2020 07:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59446 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731908AbgJALfv (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Oct 2020 07:35:51 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EADEC0613D0;
-        Thu,  1 Oct 2020 04:35:50 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id w7so4222307pfi.4;
-        Thu, 01 Oct 2020 04:35:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XyHiOZw6vpbNqA7DA0wYMswCxzbcImXpu3LbRG5y4FY=;
-        b=J8csKkj6C1iGRmU8Z2s9PR8mzu2M2Qs0mdc14WlwmmhCoZpYIUJzTskuONflNLvUar
-         hDHqy76EDetoeOGc2IkptlEYVt7STuIyJMvyKAb/c9U1vYLEB3kQ3C6zeNL9hNlxrQKX
-         RQybNZtdAlAJ5zzyjSQziT91ycAqz8+Xv2TyUHrezmE96wndFxS3ikyGjNWA76Wdn2Cp
-         lG7Yd0h0g/y0ggoMFqHkUakBG4sw6kaUPpe5/PS8gMEa3GUXzRzs5XnByOLD9b6veasw
-         riYk30x+vZLMFdUCRQ3GZ+vLxKWowGeso9hDPRbD4qunSpnTJ2iSTguPbkIlPfTnpO1f
-         DxkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XyHiOZw6vpbNqA7DA0wYMswCxzbcImXpu3LbRG5y4FY=;
-        b=X1pXIJB2Z4TKEvT++9gRsYbGF+U5cdH9XI0kyTQh2K0pGUGxI/0S+PDY9K6VaYxUoU
-         xfgIYntm1QIQRJ3BMIo4bmA44HZqLBzc7dt2ge5NcsaX0FTs7Y+jS8lVSd+WmBv7eFna
-         ScWCINoJSb8L1UOvtSoFQHxf2LTfpqkCnE7HwFd0vQLnn2OPBNNjdSmwdi87/tFl7wVW
-         djB0ZWNQiUe36WsLT3syWcOii4TTA9wmzb4LDOc2sMZBa8kr7Kxf82HSlp5+ah5en5US
-         860pL7iAg7kDmJtQyI/0eX0SNx6z3y2YMoQTpm4+hXsSUgfFPsnSelOhJhhzD89m0dpk
-         v+lA==
-X-Gm-Message-State: AOAM533iWrt0Ybr/dE7sQsCSqjFM7wLtuWLU5vehe3FjsLDZOE8pNpo3
-        YYe/uoeFGCiqK0uy7fj779aRdztzr8Uuu8bZt+w=
-X-Google-Smtp-Source: ABdhPJwv2e3TtgJ7tZ1wIs2RHI55rGZpOY2rkgaPqc67H6tses5x+SjZHcN+6mlfXIXb+IG2pMfbkzT2pGwSKlPzrBE=
-X-Received: by 2002:a63:ec4c:: with SMTP id r12mr5585605pgj.74.1601552149669;
- Thu, 01 Oct 2020 04:35:49 -0700 (PDT)
+        Thu, 1 Oct 2020 18:09:32 -0400
+Received: from mga12.intel.com ([192.55.52.136]:52110 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726731AbgJAWJb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 1 Oct 2020 18:09:31 -0400
+IronPort-SDR: 6znFRNn8/I3gGsdSAcYtEv1PzVyb32Ijql2qBdKfPflRVanh27Zxi7DclyoJ39qLEgBhjv3dpM
+ EPvE0pU47Sxw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9761"; a="142252735"
+X-IronPort-AV: E=Sophos;i="5.77,325,1596524400"; 
+   d="scan'208";a="142252735"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2020 15:09:31 -0700
+IronPort-SDR: N1Z0lx+IeLWmhxAclwuZoMZjr0PtOLELEfeWddYpx4lXLPrWrehPhavtH/y0KeIMty0mlUjJoU
+ KyzDlr5VzuAQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,325,1596524400"; 
+   d="scan'208";a="295135870"
+Received: from lkp-server02.sh.intel.com (HELO de448af6ea1b) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 01 Oct 2020 15:09:30 -0700
+Received: from kbuild by de448af6ea1b with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1kO6lV-0000lh-IX; Thu, 01 Oct 2020 22:09:29 +0000
+Date:   Fri, 02 Oct 2020 06:09:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ fce3c5c1a2d9cd888f2987662ce17c0c651916b2
+Message-ID: <5f765385.z7sDNZ0ZduI9S9o3%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20201001074415.349739-1-thomas.petazzoni@bootlin.com>
-In-Reply-To: <20201001074415.349739-1-thomas.petazzoni@bootlin.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 1 Oct 2020 14:35:31 +0300
-Message-ID: <CAHp75VdJBj_1j6JtA7wtbJ4Ji_s5sdjxunckv7mBHsxXE+t7Aw@mail.gmail.com>
-Subject: Re: [PATCH v2] serial: max310x: rework RX interrupt handling
-To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?SmFuIEt1bmRyw6F0?= <jan.kundrat@cesnet.cz>,
-        Mark Brown <broonie@kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 1, 2020 at 10:44 AM Thomas Petazzoni
-<thomas.petazzoni@bootlin.com> wrote:
->
-> Currently, the RX interrupt logic uses the RXEMPTY interrupt, with the
-> RXEMPTYINV bit set, which means we get an RX interrupt as soon as the
-> RX FIFO is non-empty.
->
-> However, with the MAX310X having a FIFO of 128 bytes, this makes very
-> poor use of the FIFO: we trigger an interrupt as soon as the RX FIFO
-> has one byte, which means a lot of interrupts, each only collecting a
-> few bytes from the FIFO, causing a significant CPU load.
->
-> Instead this commit relies on two other RX interrupt events:
->
->  - MAX310X_IRQ_RXFIFO_BIT, which triggers when the RX FIFO has reached
->    a certain threshold, which we define to be half of the FIFO
->    size. This ensure we get an interrupt before the RX FIFO fills up.
->
->  - MAX310X_LSR_RXTO_BIT, which triggers when the RX FIFO has received
->    some bytes, and then no more bytes are received for a certain
->    time. Arbitrarily, this time is defined to the time is takes to
->    receive 4 characters.
->
-> On a Microchip SAMA5D3 platform that is receiving 20 bytes every 16ms
-> over one MAX310X UART, this patch has allowed to reduce the CPU
-> consumption of the interrupt handler thread from ~25% to 6-7%.
->
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
+branch HEAD: fce3c5c1a2d9cd888f2987662ce17c0c651916b2  serial: max310x: rework RX interrupt handling
 
-You missed my tag :-(
+elapsed time: 725m
 
-> Signed-off-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-> ---
-> Changes since v1:
-> - Fix missing space when closing a comment
-> ---
->  drivers/tty/serial/max310x.c | 29 ++++++++++++++++++++++++-----
->  1 file changed, 24 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index 8434bd5a8ec7..21130af106bb 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -1056,9 +1056,9 @@ static int max310x_startup(struct uart_port *port)
->         max310x_port_update(port, MAX310X_MODE1_REG,
->                             MAX310X_MODE1_TRNSCVCTRL_BIT, 0);
->
-> -       /* Configure MODE2 register & Reset FIFOs*/
-> -       val = MAX310X_MODE2_RXEMPTINV_BIT | MAX310X_MODE2_FIFORST_BIT;
-> -       max310x_port_write(port, MAX310X_MODE2_REG, val);
-> +       /* Reset FIFOs */
-> +       max310x_port_write(port, MAX310X_MODE2_REG,
-> +                          MAX310X_MODE2_FIFORST_BIT);
->         max310x_port_update(port, MAX310X_MODE2_REG,
->                             MAX310X_MODE2_FIFORST_BIT, 0);
->
-> @@ -1086,8 +1086,27 @@ static int max310x_startup(struct uart_port *port)
->         /* Clear IRQ status register */
->         max310x_port_read(port, MAX310X_IRQSTS_REG);
->
-> -       /* Enable RX, TX, CTS change interrupts */
-> -       val = MAX310X_IRQ_RXEMPTY_BIT | MAX310X_IRQ_TXEMPTY_BIT;
-> +       /*
-> +        * Let's ask for an interrupt after a timeout equivalent to
-> +        * the receiving time of 4 characters after the last character
-> +        * has been received.
-> +        */
-> +       max310x_port_write(port, MAX310X_RXTO_REG, 4);
-> +
-> +       /*
-> +        * Make sure we also get RX interrupts when the RX FIFO is
-> +        * filling up quickly, so get an interrupt when half of the RX
-> +        * FIFO has been filled in.
-> +        */
-> +       max310x_port_write(port, MAX310X_FIFOTRIGLVL_REG,
-> +                          MAX310X_FIFOTRIGLVL_RX(MAX310X_FIFO_SIZE / 2));
-> +
-> +       /* Enable RX timeout interrupt in LSR */
-> +       max310x_port_write(port, MAX310X_LSR_IRQEN_REG,
-> +                          MAX310X_LSR_RXTO_BIT);
-> +
-> +       /* Enable LSR, RX FIFO trigger, CTS change interrupts */
-> +       val = MAX310X_IRQ_LSR_BIT  | MAX310X_IRQ_RXFIFO_BIT | MAX310X_IRQ_TXEMPTY_BIT;
->         max310x_port_write(port, MAX310X_IRQEN_REG, val | MAX310X_IRQ_CTS_BIT);
->
->         return 0;
-> --
-> 2.26.2
->
+configs tested: 183
+configs skipped: 3
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
--- 
-With Best Regards,
-Andy Shevchenko
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+sh                          landisk_defconfig
+sh                             sh03_defconfig
+arm64                            alldefconfig
+powerpc                 mpc832x_mds_defconfig
+m68k                        mvme147_defconfig
+powerpc                     rainier_defconfig
+powerpc                 mpc8540_ads_defconfig
+powerpc                 linkstation_defconfig
+c6x                         dsk6455_defconfig
+powerpc64                        alldefconfig
+arm                          gemini_defconfig
+mips                malta_qemu_32r6_defconfig
+mips                          malta_defconfig
+riscv                             allnoconfig
+arm                              alldefconfig
+mips                         tb0287_defconfig
+arm                       cns3420vb_defconfig
+arm                        realview_defconfig
+csky                                defconfig
+arm                         assabet_defconfig
+mips                       rbtx49xx_defconfig
+m68k                          hp300_defconfig
+arc                      axs103_smp_defconfig
+csky                             alldefconfig
+sh                            shmin_defconfig
+powerpc                        cell_defconfig
+c6x                        evmc6457_defconfig
+powerpc                     asp8347_defconfig
+arm                         mv78xx0_defconfig
+arm                           tegra_defconfig
+sh                           se7619_defconfig
+mips                        bcm63xx_defconfig
+nds32                            alldefconfig
+nios2                         10m50_defconfig
+xtensa                       common_defconfig
+sh                           sh2007_defconfig
+powerpc                  iss476-smp_defconfig
+mips                     cu1830-neo_defconfig
+arm                            mmp2_defconfig
+powerpc                    gamecube_defconfig
+mips                          ath79_defconfig
+arm                          simpad_defconfig
+mips                  cavium_octeon_defconfig
+arm                             mxs_defconfig
+mips                             allyesconfig
+microblaze                          defconfig
+arm                         bcm2835_defconfig
+powerpc                      mgcoge_defconfig
+powerpc                  storcenter_defconfig
+microblaze                      mmu_defconfig
+m68k                             allyesconfig
+s390                       zfcpdump_defconfig
+powerpc                       ppc64_defconfig
+powerpc                      ppc6xx_defconfig
+powerpc                     taishan_defconfig
+arm                           spitz_defconfig
+h8300                               defconfig
+sh                           se7750_defconfig
+m68k                            q40_defconfig
+arm                        multi_v5_defconfig
+arm                          lpd270_defconfig
+arm                        trizeps4_defconfig
+arm                           efm32_defconfig
+arm                   milbeaut_m10v_defconfig
+h8300                            alldefconfig
+arm                           viper_defconfig
+powerpc                      chrp32_defconfig
+arm                           stm32_defconfig
+x86_64                              defconfig
+mips                      loongson3_defconfig
+powerpc                      makalu_defconfig
+m68k                         apollo_defconfig
+sh                         apsh4a3a_defconfig
+sh                             shx3_defconfig
+m68k                          multi_defconfig
+arm                       imx_v6_v7_defconfig
+arc                    vdk_hs38_smp_defconfig
+mips                        bcm47xx_defconfig
+arm                             pxa_defconfig
+mips                           ip28_defconfig
+arm                         hackkit_defconfig
+sh                          rsk7269_defconfig
+sh                     magicpanelr2_defconfig
+arm                              zx_defconfig
+sh                           se7343_defconfig
+arm                            dove_defconfig
+mips                        nlm_xlr_defconfig
+sh                        edosk7705_defconfig
+arm                         axm55xx_defconfig
+m68k                        m5307c3_defconfig
+xtensa                  audio_kc705_defconfig
+mips                        jmr3927_defconfig
+powerpc                      katmai_defconfig
+powerpc                           allnoconfig
+nios2                               defconfig
+riscv                            alldefconfig
+arm                         palmz72_defconfig
+powerpc                     ksi8560_defconfig
+sh                        sh7785lcr_defconfig
+sh                          rsk7203_defconfig
+sh                   sh7724_generic_defconfig
+sh                             espt_defconfig
+arm                          iop32x_defconfig
+powerpc                 mpc837x_rdb_defconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+c6x                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+i386                 randconfig-a003-20200930
+i386                 randconfig-a002-20200930
+i386                 randconfig-a006-20200930
+i386                 randconfig-a005-20200930
+i386                 randconfig-a004-20200930
+i386                 randconfig-a001-20200930
+x86_64               randconfig-a015-20200930
+x86_64               randconfig-a013-20200930
+x86_64               randconfig-a012-20200930
+x86_64               randconfig-a016-20200930
+x86_64               randconfig-a014-20200930
+x86_64               randconfig-a011-20200930
+x86_64               randconfig-a012-20201001
+x86_64               randconfig-a015-20201001
+x86_64               randconfig-a014-20201001
+x86_64               randconfig-a013-20201001
+x86_64               randconfig-a011-20201001
+x86_64               randconfig-a016-20201001
+i386                 randconfig-a011-20200930
+i386                 randconfig-a015-20200930
+i386                 randconfig-a012-20200930
+i386                 randconfig-a014-20200930
+i386                 randconfig-a016-20200930
+i386                 randconfig-a013-20200930
+i386                 randconfig-a014-20201001
+i386                 randconfig-a015-20201001
+i386                 randconfig-a013-20201001
+i386                 randconfig-a016-20201001
+i386                 randconfig-a011-20201001
+i386                 randconfig-a012-20201001
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                                   rhel
+x86_64                           allyesconfig
+x86_64                    rhel-7.6-kselftests
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-a001-20200930
+x86_64               randconfig-a005-20200930
+x86_64               randconfig-a003-20200930
+x86_64               randconfig-a004-20200930
+x86_64               randconfig-a002-20200930
+x86_64               randconfig-a006-20200930
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
