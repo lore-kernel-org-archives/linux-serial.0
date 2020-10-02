@@ -2,94 +2,75 @@ Return-Path: <SRS0=IMut=DJ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5410C4363D
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Oct 2020 12:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E76C47423
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Oct 2020 12:41:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6E4E120795
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Oct 2020 12:40:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 63F7D20679
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Oct 2020 12:41:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1601642452;
-	bh=nXdzXzeAc1yMvHsj447ukLSP4Jtd85+JIsr3gszdND0=;
+	s=default; t=1601642499;
+	bh=M/lT3YH6Tnnvafox0OSBDVIrxXRVcmEkqpvUZB4Mn/s=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=j6ZjswRD2fxb6Sg1gvgcYMTzRumqRr08PmBcP+NUbQg+E4Jd+P8gpTHmQrx1TWD5k
-	 M8JdIP8RnSK4qvKDIRWrCj7kWsjx4JgTnc5LfahtFYbwKrLrr5faMV40KDmhPvTmzW
-	 ZgbJTkWP5g/RMnHbiZ7vd2LAzlbzC9J1G/Vi84fE=
+	b=Pj4zBvb56jKjgBiijDejBVST7KhaHPsMjonZQ/Kf0r5WNMTHJCjfYnz0yC5UaKaDU
+	 DFKoq/d+lGDWRwdJJwk7rr3y0uLhbWlKKgBX0fOOHmgZf94Tj2v/vUoUmUeIzt6PsO
+	 /Cr9c3EaD0WwfPEGGaK5Du7c867qHLDJvgc+xJjg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387491AbgJBMkt (ORCPT
+        id S2387814AbgJBMlb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Oct 2020 08:40:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51206 "EHLO mail.kernel.org"
+        Fri, 2 Oct 2020 08:41:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51424 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725964AbgJBMkt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Oct 2020 08:40:49 -0400
+        id S2387885AbgJBMl2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 2 Oct 2020 08:41:28 -0400
 Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1012F20644;
-        Fri,  2 Oct 2020 12:40:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3233720672;
+        Fri,  2 Oct 2020 12:41:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601642448;
-        bh=nXdzXzeAc1yMvHsj447ukLSP4Jtd85+JIsr3gszdND0=;
+        s=default; t=1601642487;
+        bh=M/lT3YH6Tnnvafox0OSBDVIrxXRVcmEkqpvUZB4Mn/s=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iHV8cFWzbZ7pyyl7oCJoGFe17c6E9A9b9TbOhzrfxt4VEBrTuQKBLIEHo0LciUwYl
-         4yN2ho+BA6T7EsEPAw7W87B7q875GGifrzjHMtEvxgdmozD/gt2ZKGtgsOffCKmwG2
-         2XnPWnXeQJ/MIWUWX9csVvb2iVJVk4Jp9bU+B/tU=
-Date:   Fri, 2 Oct 2020 14:40:47 +0200
+        b=AwV9J4TAktP10SFJ5Zw9X0ClFFyx7d8AP1/4PJVxhrgwz85hxwlI+w3THdKbkGqzw
+         QUZBMiiP5mNi25X+RIFWmVFjaQAcgXSUVBqbrczKdIInbxLdbGFubwyNjtf2rSGHjY
+         TJ5Dy8HZwX/njtKlWgnyrXpLCQjseV7kDqO2OLhc=
+Date:   Fri, 2 Oct 2020 14:41:26 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jan =?iso-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>,
-        Mark Brown <broonie@kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>
-Subject: Re: [PATCH] serial: max310x: rework RX interrupt handling
-Message-ID: <20201002124047.GA3348062@kroah.com>
-References: <20200930135137.197592-1-thomas.petazzoni@bootlin.com>
- <CAHp75VccK7hu51qCdRC4GaTO3XaSaYLD6TeuuqHLY9Tf1Tb67A@mail.gmail.com>
- <20200930165037.77813365@windsurf.home>
- <CAHp75VdU5N6dBKgDudod+0cHumAreHCHgi1+xGqXtvpkiLNz0Q@mail.gmail.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: serial: fsl-imx-uart: fix i.MX 53 and 6
+ compatible matching
+Message-ID: <20201002124126.GA3348316@kroah.com>
+References: <20200925212649.23183-1-krzk@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdU5N6dBKgDudod+0cHumAreHCHgi1+xGqXtvpkiLNz0Q@mail.gmail.com>
+In-Reply-To: <20200925212649.23183-1-krzk@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 05:54:15PM +0300, Andy Shevchenko wrote:
-> On Wed, Sep 30, 2020 at 5:50 PM Thomas Petazzoni
-> <thomas.petazzoni@bootlin.com> wrote:
-> > On Wed, 30 Sep 2020 17:24:48 +0300
-> > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+On Fri, Sep 25, 2020 at 11:26:49PM +0200, Krzysztof Kozlowski wrote:
+> The i.MX 53 and i.MX6Q DTS use two compatibles, i.MX 6SL/6SLL/SX three
+> so update the binding to fix dtbs_check warnings like:
 > 
-> > > > On a Microchip SAMA5D3 platform that is receiving 20 bytes every 16ms
-> > > > over one MAX310X UART, this patch has allowed to reduce the CPU
-> > > > consumption of the interrupt handler thread from ~25% to 6-7%.
-> > >
-> > > Was it always like this?
-> >
-> > As far as I can see, yes. I guess you were thinking about a Fixes: tag
-> > perhaps? I don't think a Fixes: tag really applies here, as we're not
-> > fixing a performance regression.
+>   serial@21ec000: compatible: ['fsl,imx6q-uart', 'fsl,imx21-uart'] is not valid under any of the given schemas
 > 
-> Thanks for elaboration.
-> 
-> ...
-> 
-> > > > +       /* Reset FIFOs*/
-> > >
-> > > Add a space before the asterisk.
-> >
-> > Indeed. Let me know if a v2 is needed, or if this small typo can be
-> > fixed when applying.
-> 
-> Greg usually doesn't touch commits, so v2 would be better.
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>  .../devicetree/bindings/serial/fsl-imx-uart.yaml          | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 
-Agreed, I don't like to edit things :)
+This doesn't apply to my tty tree :(
+
