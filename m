@@ -2,44 +2,28 @@ Return-Path: <SRS0=FbQs=DM=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30230C4363D
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Oct 2020 11:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A9BC4363A
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Oct 2020 15:01:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EDF09206CB
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Oct 2020 11:01:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1601895694;
-	bh=zT1ggZQfYdTWKaaKhhfthWc1Wmu2z51MEgqhMdjk+B0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=PXqFu/fRO4E5U8UdFOQgFDBel7xi0b6Gc3RxhqU1nYsGHOPdZ/iPVGuIq2lpyXNgA
-	 amYP03tyv5BnLrH0LppDF04hqYb4PEX7BHRuTi+/oWITbt3qJaMC0uXBXjybCwrWRe
-	 56Bn0AnLeCgQXcEHBFTTBK56OhvCVbqn2or6HOOo=
+	by mail.kernel.org (Postfix) with ESMTP id A521720665
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Oct 2020 15:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726476AbgJELB2 (ORCPT
+        id S1726521AbgJEPBs (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Oct 2020 07:01:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50218 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725891AbgJELB1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Oct 2020 07:01:27 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 831DF20578;
-        Mon,  5 Oct 2020 11:01:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601895686;
-        bh=zT1ggZQfYdTWKaaKhhfthWc1Wmu2z51MEgqhMdjk+B0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SD/Qgw9FIMuzORoe+m+VTXdFP3akbnWWNU81Odi9c5GKdU7J+GKmby2c8netpfgmA
-         adZ1oHsaoFEdzavqQfYQskxWQibYcQ5HrNcWX5oNl7SvediEUDK9mfzz+po5gPOLGv
-         GYaHousl0JgdpMqFSA4SRgxVcsLFkSnV03Ue+OnE=
-Date:   Mon, 5 Oct 2020 12:00:22 +0100
-From:   Mark Brown <broonie@kernel.org>
+        Mon, 5 Oct 2020 11:01:48 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:37172 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbgJEPBq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 5 Oct 2020 11:01:46 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 3DF5F1C0B7C; Mon,  5 Oct 2020 17:01:43 +0200 (CEST)
+Date:   Mon, 5 Oct 2020 17:01:42 +0200
+From:   Pavel Machek <pavel@denx.de>
 To:     Rob Herring <robh@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Thierry Reding <thierry.reding@gmail.com>,
@@ -58,6 +42,7 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bjorn Helgaas <bhelgaas@google.com>,
         Vinod Koul <vkoul@kernel.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Daniel Lezcano <daniel.lezcano@linaro.org>,
         linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
@@ -74,45 +59,51 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-usb@vger.kernel.org
 Subject: Re: [PATCH] dt-bindings: Another round of adding missing
  'additionalProperties'
-Message-ID: <20201005110022.GB5139@sirena.org.uk>
+Message-ID: <20201005150142.GA28675@duo.ucw.cz>
 References: <20201002234143.3570746-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6sX45UoQRIJXqkqR"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="xHFwDpU9dbj6ez1V"
 Content-Disposition: inline
 In-Reply-To: <20201002234143.3570746-1-robh@kernel.org>
-X-Cookie: Most of your faults are not your fault.
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---6sX45UoQRIJXqkqR
+--xHFwDpU9dbj6ez1V
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 02, 2020 at 06:41:43PM -0500, Rob Herring wrote:
+Hi!
 
 > Another round of wack-a-mole. The json-schema default is additional
 > unknown properties are allowed, but for DT all properties should be
 > defined.
 
-Acked-by: Mark Brown <broonie@kernel.org>
+for leds:
 
---6sX45UoQRIJXqkqR
+Acked-by: Pavel Machek <pavel@ucw.cz>
+
+I assume you apply it..?
+								Pavel
+							=09
+
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--xHFwDpU9dbj6ez1V
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl96/MYACgkQJNaLcl1U
-h9DVIAf/YahMxzxRA1HRo6CR552Pzfu8pWuFTeWzZTi4iIVW4oR/TUvjaBuMBAZF
-jIi3Kk2yR9lW+bCaPvUIjXsdB31S0iHgXORKR9ByRsx4fZS4MC/x9KFlv/v5dziQ
-nMO+lF+vyZQrYQrfwQmBJ5JdbeM9r2Oh+tUBcsKZkPsvg10glGuisr1mO1CEaEuL
-zcz31MfKpdGbLUEOlPzruZ5uNt0/FHU6FxOusAGW9lkYx+c7GjNWtdDh8h7gzd1n
-SzrDKnBlTWCZ+Owy2r9hJS6ow+fIjoYDT+Xtp6AvrSk9oJ6hggQ6NyxPpesZWbKV
-3Kfe7+KGLuHI4AMEU0u/czJWmNdEJw==
-=5yDb
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX3s1VgAKCRAw5/Bqldv6
+8owIAKDAkiq29W/tD49n7es9bNcHQLqXywCfWHIfHZ6OrlZTPZUQgy45PCK/EKM=
+=qVmv
 -----END PGP SIGNATURE-----
 
---6sX45UoQRIJXqkqR--
+--xHFwDpU9dbj6ez1V--
