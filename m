@@ -6,39 +6,39 @@ X-Spam-Status: No, score=-6.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBA5C47423
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Oct 2020 20:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98430C47426
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Oct 2020 20:03:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5D0A021527
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Oct 2020 20:03:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4DD7B21534
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Oct 2020 20:03:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1601928187;
-	bh=LDBMzSKRgXu0amszn1omwesfIy1frb2RvkSUHKCGJBk=;
+	s=default; t=1601928221;
+	bh=kAJPl5wTGCwkw+XuTKU5bbU4qKcWvd/W2QpX6dnKGVA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=bddt6cuY5PztIXtuHyfV/+wKsY6QG2dBBBrmZpEH5oJ2x79E9vYfjoi+KycatYQOJ
-	 B44OvydvLsEs6bBwL3aGX0gTarGZPeiyuwQEP/H8c0qNkJz7CpWnK5nBoz9AXfjxz+
-	 c1Fg8d3W/X/26yHSU44w6+5bGM0dV/Ad1MPIbhIU=
+	b=soPYDiF3wJSc3RRx3/DEME3DwIbnWVNv5v4+nRm1pxaOnUoYSLcdQKRsmtlmdveAt
+	 Ir/RlsUKbb/+yik2nXiRLq22oB0WNqJ4yN8SxsqVghFziVzUhcLuebikZjZueKH9NZ
+	 g6pQg297VKcNsse9I3BXxQy10FXO8uVMawaFLzIc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729596AbgJEUDF (ORCPT
+        id S1729633AbgJEUDj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Oct 2020 16:03:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59932 "EHLO mail.kernel.org"
+        Mon, 5 Oct 2020 16:03:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60568 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729424AbgJEUDD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Oct 2020 16:03:03 -0400
+        id S1729424AbgJEUDh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 5 Oct 2020 16:03:37 -0400
 Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4F4C920848;
-        Mon,  5 Oct 2020 20:03:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DBAA12100A;
+        Mon,  5 Oct 2020 20:03:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601928181;
-        bh=LDBMzSKRgXu0amszn1omwesfIy1frb2RvkSUHKCGJBk=;
+        s=default; t=1601928215;
+        bh=kAJPl5wTGCwkw+XuTKU5bbU4qKcWvd/W2QpX6dnKGVA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DbgBQYYNY8Z0bctQfKlo46vuzwcO7cAJTUA6WI13L1pEYpu6vA8L99qk3PZzFWPH2
-         fgJHuHFAkVTZdQ53sCs+i/L1PeWZsSHlt6UaHeg3IMRhnUNJ4vPDlRp6puBpdniGsC
-         UK6eoAqXgECVDuSR5AsDUKOCMwvFsyrqkopv5GUw=
-Date:   Mon, 5 Oct 2020 21:01:58 +0100
+        b=DZPhYhMW6eTtoKQB9RgWc2d2lES+UJhbkT7IA5z3WDU8NbIsrMjY7inei/w1HQtXV
+         ETrKpXZfdoc2j8f7iCRMCTk1xUpVenlivyiDIWBo2QXnl6+RynOUk0tqlJFgtkSNZR
+         Ki32ki/tWedE2ZYPKvawsqMQevQkwXPmMbu/rqNk=
+Date:   Mon, 5 Oct 2020 21:02:32 +0100
 From:   Mark Brown <broonie@kernel.org>
 To:     Rob Herring <robh@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -101,15 +101,16 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: Add missing 'unevaluatedProperties'
-Message-ID: <20201005200158.GG5139@sirena.org.uk>
+Subject: Re: [PATCH 2/4] dt-bindings: Use 'additionalProperties' instead of
+ 'unevaluatedProperties'
+Message-ID: <20201005200232.GH5139@sirena.org.uk>
 References: <20201005183830.486085-1-robh@kernel.org>
- <20201005183830.486085-2-robh@kernel.org>
+ <20201005183830.486085-3-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="E69HUUNAyIJqGpVn"
+        protocol="application/pgp-signature"; boundary="G44BJl3Aq1QbV/QL"
 Content-Disposition: inline
-In-Reply-To: <20201005183830.486085-2-robh@kernel.org>
+In-Reply-To: <20201005183830.486085-3-robh@kernel.org>
 X-Cookie: Most of your faults are not your fault.
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
@@ -117,30 +118,30 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---E69HUUNAyIJqGpVn
+--G44BJl3Aq1QbV/QL
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Mon, Oct 05, 2020 at 01:38:27PM -0500, Rob Herring wrote:
-> This doesn't yet do anything in the tools, but make it explicit so we can
-> check either 'unevaluatedProperties' or 'additionalProperties' is present
-> in schemas.
+On Mon, Oct 05, 2020 at 01:38:28PM -0500, Rob Herring wrote:
+> In cases where we don't reference another schema, 'additionalProperties'
+> can be used instead. This is preferred for now as 'unevaluatedProperties'
+> support isn't implemented yet.
 
 Acked-by: Mark Brown <broonie@kernel.org>
 
---E69HUUNAyIJqGpVn
+--G44BJl3Aq1QbV/QL
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl97e7UACgkQJNaLcl1U
-h9Cm0Af/WUxMT7VSA2xsxQr5K/rX2H6z1aD4Hr9f+lQLJCFBiUYhNvb9mQnNDvLq
-GQeaW1Z1gDtmjIiEOvan3CP1ZUF3VENvyt8orPUmES76eFXx7xEyryHHut1YFimr
-3LEvyKzDAcn3KGj/wv37knBc5sifrmqjF+Y1eYYZD6yKKVPbgpA7kKZ0EAqOLxiv
-/FbGoxWGWbB7Vfyaboo2dDw/SyuwkZ9+0pr+IhFWbCjIjgkeUq0v857luuRCJMxH
-GyPjPkM7+KaeIBbXlY1hRHLTKKbBL7G+dXQ16uS4Ny/DYIf8LXyitPDAfosxQisG
-FhLawubQBH3MNzD5RRYvcLznUaJJJA==
-=+I0x
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl97e9cACgkQJNaLcl1U
+h9CXkAf/fcrNGrdLapSqJwMLMbtJCS0D24DLJGYOMaq20DJF7wJFnGt99z6jdOhf
+r333/DPm2cGni5/89bsEzGA828aVzQineYY/7MBxsmCMR+qegRX1DfC3dWz4jeSJ
+TH7MaAw8Xfp5rRMBgBgb+rKGDNqVkzrHuLKEqqjXYKu/Utrgtz6pdj/FGAg0FRvv
+JPdkDP3WHgdNj3cmoLzF6FP8C4hjT/PLkR7t1gEOeL5p7P0ieXOzwZbLn58MNQfp
+5aJQdQ4UPjeqdwMySifyHNgRORfIVDHnEhgpnEadsg1EOaDOg4L1jOr/teo7vd56
+D2PNzf0BgKBODXIIiuEu0SMMMxO7UA==
+=ctKD
 -----END PGP SIGNATURE-----
 
---E69HUUNAyIJqGpVn--
+--G44BJl3Aq1QbV/QL--
