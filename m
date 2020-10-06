@@ -2,151 +2,187 @@ Return-Path: <SRS0=BKBA=DN=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E17CC47427
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 05:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D49CC47095
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 06:30:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4A9CA2078E
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 05:42:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B1BF720797
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 06:30:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="scAXD8Yu"
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="Aewfvkp8"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726007AbgJFFmk (ORCPT
+        id S1727022AbgJFGai (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Oct 2020 01:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39010 "EHLO
+        Tue, 6 Oct 2020 02:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727026AbgJFFmb (ORCPT
+        with ESMTP id S1727074AbgJFGah (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Oct 2020 01:42:31 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0D3C0613B1
-        for <linux-serial@vger.kernel.org>; Mon,  5 Oct 2020 22:42:31 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id h2so666319pll.11
-        for <linux-serial@vger.kernel.org>; Mon, 05 Oct 2020 22:42:31 -0700 (PDT)
+        Tue, 6 Oct 2020 02:30:37 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D596C0613A9
+        for <linux-serial@vger.kernel.org>; Mon,  5 Oct 2020 23:30:37 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id y14so5182733pfp.13
+        for <linux-serial@vger.kernel.org>; Mon, 05 Oct 2020 23:30:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FYOEybxQ9Y8nUxVZmzLLg+Qyso2tjlpbGNthFRqblLc=;
-        b=scAXD8YuBk8j/NF0iYDdCeaAVj2lJqU4ekQ7XmxKGRZD9n7rlAL/7uG23DDE1fcZ56
-         zF72mU8P6EdMfXizzEbowAVRT7aqB90B0ZPahldWPyAERYWd6msUiWvIw5u5I68GC10s
-         2mfO8dqRM6oWZLB0Q6RNjtouVvMzAMtCqHytHKbKwrjH25Far6tK8oMk2FL/+Ytm6yFo
-         ix24Oh/3R7FZgjcOmnnbZhO2Rnj4pwkEjTGIWiz4UAhFCmHcKJq5fJPHDGVhMb52+bja
-         GRW+sJiWWq/RfS6N9j6fS0MlegpQS8J4O6R0p/6fHQbNSKo6Dg2SOD+ESIa+qx/GxTp7
-         QQLQ==
+        d=antmicro.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jEZ/PphhBcpGSudk4zYqpeTRIANvOFR8+5eTx3w3Oj8=;
+        b=Aewfvkp8uF0ztDFZgaN+wNHZ+BrMN8FsafukdvDenr6aOGB0e523o+WcBp0c95lwqP
+         +KPJHrPDL9qUrMzBjOQKC9ReWS8jiHu/ayJ2mu2F5N6qFnnrUe9OAiReWQM9kUzbjGBe
+         iX7nl0CIrnIwIhR8ELaSSk/Hhj2FEyP4Z2Q/g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FYOEybxQ9Y8nUxVZmzLLg+Qyso2tjlpbGNthFRqblLc=;
-        b=ZACpYGY6aH2jyy76yiOnTY9HNs/irXy+S97KaJmJtkvUh7yPpapZxbWblKmqDUx10S
-         chS8MYAt2JvPd/LVJVgIjiC2Am/SSwVIwf8kL7q9Zhf9dEnRMzKoH1AkL+3/brO0WGfw
-         jLWRgrvUBeuQrVTUYWOQfleqL8/DnfVbTvjBCeHDVPys/9CVoQAQXK0KcFNHqM4VJcbc
-         RtBClB/Kb9tUwg5YriupIj/qXt6cTg2Eq0bz9IpOv8qhYjyUWzietoMhJnhL+qdl6iYz
-         csx5F3oXytihjBV/VnKK0Po6NBTBN4Z1qpfhvF3g2/Zfr48LsFyrp1ykfb7vKrlznc8o
-         nA2A==
-X-Gm-Message-State: AOAM533lTuOwfyqOzVdccwpr1GY+GvzZfPCg5oSlz+nsn3t5t7ZZfymK
-        zY5RQ8vEP1xVvJw/GhTp0GgPVg==
-X-Google-Smtp-Source: ABdhPJzo+T1F54fl8q16F3SuWBffglk48PEytQu7/wpxM8oR5iYvbOQGglf6EbVoa0EICQ893qG+lw==
-X-Received: by 2002:a17:90b:950:: with SMTP id dw16mr2661711pjb.200.1601962950652;
-        Mon, 05 Oct 2020 22:42:30 -0700 (PDT)
-Received: from localhost ([122.181.54.133])
-        by smtp.gmail.com with ESMTPSA id d145sm2005503pfd.136.2020.10.05.22.42.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 05 Oct 2020 22:42:29 -0700 (PDT)
-Date:   Tue, 6 Oct 2020 11:12:28 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>, dmaengine@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        dri-devel@lists.freedesktop.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Jens Axboe <axboe@kernel.dk>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Richard Weinberger <richard@nod.at>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: Explicitly allow additional properties
- in board/SoC schemas
-Message-ID: <20201006054228.ho3ajzfgpiew32ft@vireshk-i7>
-References: <20201005183830.486085-1-robh@kernel.org>
- <20201005183830.486085-4-robh@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jEZ/PphhBcpGSudk4zYqpeTRIANvOFR8+5eTx3w3Oj8=;
+        b=osYnGOm1RkQdVgs51MKixa91KkF9BB2/N+lgsRwGqCZMBDBGAvaEl27BWJmAQsyJmn
+         avPx4Uc/gtEpJiFDqZmtLk7cx2pnS5Xyqm8p0/bhs4LPIc36Rew3OOU+8wQfm1TuyaH5
+         nFVad5c5mP1JEofqvIKN+fdpFbFChXuwWp86ISVZFKjvhYJg/L9tmEe8PcJS3y/MgQv+
+         pJpkzyGqYVGhZZkLfxXek7oq342sVPc+gtBLkdRYMAiT/JCQR8boE7DbKQTf77FvZYCd
+         FLjpyTXGBhtC3tC/0t0BJqzpKRRoXqSdE7gtrSjA/2Q9z7ePUublIEUZjJUYp7/3o3cF
+         XZQw==
+X-Gm-Message-State: AOAM531HO0MD4OhY4zYhdBbhq6/G300I/BZTIy9jyswf/e+he52cQixb
+        bPtTEpb/345IvqLSAkS40QK7H9AOoP700sZjHKX8IFFidVIY7A==
+X-Google-Smtp-Source: ABdhPJzyGjwFiX82SqSnhgwuVLIPB0qX8/w2uOnQTTNNakJGClvpNe5x6G6gWDIyv8uvQNMjCiPMVzXhFa0JwutgfSw=
+X-Received: by 2002:a63:1a21:: with SMTP id a33mr2837088pga.305.1601965836782;
+ Mon, 05 Oct 2020 23:30:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201005183830.486085-4-robh@kernel.org>
-User-Agent: NeoMutt/20180716-391-311a52
+References: <20200923120817.1667149-0-mholenko@antmicro.com>
+ <20200923120817.1667149-2-mholenko@antmicro.com> <CAMuHMdWCTg7g=Zu7Wp1Aee9A6Zr+yFguR-szywvm0ObPfH1cwg@mail.gmail.com>
+In-Reply-To: <CAMuHMdWCTg7g=Zu7Wp1Aee9A6Zr+yFguR-szywvm0ObPfH1cwg@mail.gmail.com>
+From:   Mateusz Holenko <mholenko@antmicro.com>
+Date:   Tue, 6 Oct 2020 08:30:24 +0200
+Message-ID: <CAPk366RCSrUE=hwk1E0gh-01aa0YPUU78CL7s3c+dZMDiPZxFw@mail.gmail.com>
+Subject: Re: [PATCH v11 2/5] dt-bindings: soc: document LiteX SoC Controller bindings
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Gabriel L. Somlo" <gsomlo@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05-10-20, 13:38, Rob Herring wrote:
-> In order to add meta-schema checks for additional/unevaluatedProperties
-> being present, all schema need to make this explicit. As the top-level
-> board/SoC schemas always have additional properties, add
-> 'additionalProperties: true'.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/arm/spear.yaml               | 3 +++
+Hi Geert,
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+On Fri, Sep 25, 2020 at 2:48 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Mateusz,
+>
+> On Wed, Sep 23, 2020 at 12:09 PM Mateusz Holenko <mholenko@antmicro.com> wrote:
+> > From: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
+> >
+> > Add documentation for LiteX SoC Controller bindings.
+> >
+> > Signed-off-by: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
+> > Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+>
+> Thanks for your patch!
 
--- 
-viresh
+Thanks for your comments!
+
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+> > @@ -0,0 +1,39 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +# Copyright 2020 Antmicro <www.antmicro.com>
+> > +%YAML 1.2
+> > +---
+> > +$id: "http://devicetree.org/schemas/soc/litex/litex,soc-controller.yaml#"
+> > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> > +
+> > +title: LiteX SoC Controller driver
+> > +
+> > +description: |
+> > +  This is the SoC Controller driver for the LiteX SoC Builder.
+> > +  It's purpose is to verify LiteX CSR (Control&Status Register) access
+>
+> Its
+>
+> > +  operations and provide function for other drivers to read/write CSRs
+>
+> functions
+>
+> > +  and to check if those accessors are ready to use.
+>
+> be used
+
+I will fix the description as suggested.
+
+> > +
+> > +maintainers:
+> > +  - Karol Gugala <kgugala@antmicro.com>
+> > +  - Mateusz Holenko <mholenko@antmicro.com>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: litex,soc-controller
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +
+> > +examples:
+> > +  - |
+> > +    soc_ctrl0: soc-controller@f0000000 {
+> > +        compatible = "litex,soc-controller";
+> > +        reg = <0xf0000000 0xC>;
+>
+> Please be consistent w.r.t. lower/upper case: "0xc".
+
+Sure, I will use lowercase everywhere.
+
+> > +        status = "okay";
+> > +    };
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
+
+Best regards,
+Mateusz
+
+
+--
+Mateusz Holenko
+Antmicro Ltd | www.antmicro.com
+Roosevelta 22, 60-829 Poznan, Poland
