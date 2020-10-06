@@ -2,162 +2,271 @@ Return-Path: <SRS0=BKBA=DN=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08FC4C47420
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 08:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 144DCC4727E
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 08:38:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BBD3120FC3
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 08:25:14 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qHporHfA"
+	by mail.kernel.org (Postfix) with ESMTP id B9C2320853
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 08:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgJFIZO (ORCPT
+        id S1726006AbgJFIiY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Oct 2020 04:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726002AbgJFIZN (ORCPT
+        Tue, 6 Oct 2020 04:38:24 -0400
+Received: from mail-oo1-f66.google.com ([209.85.161.66]:39735 "EHLO
+        mail-oo1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725996AbgJFIiY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Oct 2020 04:25:13 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2672C0613D5
-        for <linux-serial@vger.kernel.org>; Tue,  6 Oct 2020 01:25:11 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id t9so3773345wrq.11
-        for <linux-serial@vger.kernel.org>; Tue, 06 Oct 2020 01:25:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YdhpNKlTW8M5AEVFobND3IcWnRcYsnTU1ylxUOoxLOQ=;
-        b=qHporHfANLglN4o1QtjGAQRWNnN7asjRL3cjazvXjsHh09RfWeLWPhNLVvwSLhWTRD
-         dq9W25RBebcUYOBXWtFq8Xg4Jpr5iwt1eXNmqsekvon7Xl48K0UpprSPFSz88KD7f3X5
-         mVcgrKZ1Q+07rFYOZ6TaIw9SiDE9zLlxqZ10OzeIv3M1P2sRohlLAogcHVmvgwhtbxWh
-         aDv0+4vxSuOdMGAP1BZwP0BlcnNmUE37U3q6XBhiOW2IywzQSNU0oPIf35dwBbDiZGem
-         YyfEcoZuw1vq+eSTNb3BPCippk6TyfUXDjeg7Imo0qPxxzlaz4AKfZHvUV+rJldsOuzH
-         6yMA==
+        Tue, 6 Oct 2020 04:38:24 -0400
+Received: by mail-oo1-f66.google.com with SMTP id c4so2996791oou.6;
+        Tue, 06 Oct 2020 01:38:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YdhpNKlTW8M5AEVFobND3IcWnRcYsnTU1ylxUOoxLOQ=;
-        b=nXm6yiOOKfHkh45NHdSAEdjfKSu4C9WrA4tFlwm2ygPb0ibYJ6WsdPBb+JdbZeoYsK
-         3RkJUAcpKlEvdjA84MbV1fIALQxF+1EwVwyS/9CWgU9aG1dhVoVDz6pirCmmXxWtJc+N
-         3K/KZiYfV1FROk+WDFFj4LCB1YS2dq//BCVupIFcf9EZWf0oMuB29pS6jxL1iqwOud4L
-         SeRJZhZl2EwJZNUGZGmF9DlJLxEMBklzxVcHGbiH0dbzDLslWt9XHP6z7ETXCXMZsjYj
-         dN3Zp708UE9/b60isjGCxiNiQffDWouxFEflu7rfzurVXShvPKuwfx7DRiHSartQdtrN
-         ok9A==
-X-Gm-Message-State: AOAM533S1LC9Txw5KgzztE5G6Ecx5ij18m5FtGq8y6gf5rBb2IADL6gg
-        0NMhdoZFAdYgqzdjW+9hbxuEoTFyiK7LFy45
-X-Google-Smtp-Source: ABdhPJxsjuEumsaEtaU67N9vbg2cBftfsc/wZW21wnFzsv2BjeMFHC1JmQFLaFRJtrvHxARri2Z8Zg==
-X-Received: by 2002:a5d:6409:: with SMTP id z9mr120080wru.391.1601972710164;
-        Tue, 06 Oct 2020 01:25:10 -0700 (PDT)
-Received: from [192.168.86.34] (cpc86377-aztw32-2-0-cust226.18-1.cable.virginm.net. [92.233.226.227])
-        by smtp.googlemail.com with ESMTPSA id y11sm3353486wrs.16.2020.10.06.01.25.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 06 Oct 2020 01:25:09 -0700 (PDT)
-Subject: Re: [PATCH 0/4] dt-bindings: additional/unevaluatedProperties
- clean-ups
-To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Albert Ou <aou@eecs.berkeley.edu>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>, dmaengine@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        dri-devel@lists.freedesktop.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Jens Axboe <axboe@kernel.dk>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Richard Weinberger <richard@nod.at>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-References: <20201005183830.486085-1-robh@kernel.org>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Message-ID: <d04c47dd-6e37-a7ac-f3c4-d6e6c308dbcd@linaro.org>
-Date:   Tue, 6 Oct 2020 09:25:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xkyFSVeXPFcsbuoieeW0AUnHq5y84+TIhXt/1+fuFLg=;
+        b=cK6h4Anqa0Qh61h0YPNeYzo1WEyJp6bBawNeUMXkA479q6ekTan5hf8GEbVWElvSYE
+         ntK00lj4YXqcWG8j+/3QYaH8JKPS8e9VTHE33cFsUkxxFTyZ40qjAQBHouOYPKArd/Rc
+         JXROiQJshdRtsa+DkD4/712Tdpxj5j9QaHnV+nBH++/xJjY0SIJkfNBRilmcxxDNw2x6
+         CFFZQJUCJbHCFQ1OWfYC8BNGGVQFwgGjAwwsU0NbbwxDircwusnTOkkPpgzXyiHkVYpx
+         H2WCJyr9RhU4oOulm+UE5eAW/+CzvL9nPX81UodiJQk06bXZVmYCdhjXYYhLaj/P8CYJ
+         BpDw==
+X-Gm-Message-State: AOAM532BJPQ/iBP81egM7VjodsRA+pKxBEUB0os1+EMDwh3eS7oNPmTL
+        cUEcX8rskaw9x6yLgvg7NoqEgdnv8x8lHFij10Y=
+X-Google-Smtp-Source: ABdhPJxKTdpVt2S29hcgjSF7YwOIEIpSgvR01nL/7DU7cwnmD5WMdO5cvi7neBjVDf6QrDPfqECOAzeUzfznhiANCFg=
+X-Received: by 2002:a4a:4f17:: with SMTP id c23mr2463324oob.11.1601973519305;
+ Tue, 06 Oct 2020 01:38:39 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201005183830.486085-1-robh@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200923120817.1667149-0-mholenko@antmicro.com>
+ <20200923120817.1667149-3-mholenko@antmicro.com> <CAMuHMdUBCf8DsRBvXxxrfrQsab3kOwy95u-KwkdvaSY0vXQnXQ@mail.gmail.com>
+ <CAPk366TxFJa-rqY6eFoGuMoc_r_=CFQgDMC-j2Pv0=dUR06b9A@mail.gmail.com>
+In-Reply-To: <CAPk366TxFJa-rqY6eFoGuMoc_r_=CFQgDMC-j2Pv0=dUR06b9A@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 6 Oct 2020 10:38:28 +0200
+Message-ID: <CAMuHMdUXxGGHmsUNhuwGPOk1horTs9OWSZa2u0B4pb8zTuUw-Q@mail.gmail.com>
+Subject: Re: [PATCH v11 3/5] drivers/soc/litex: add LiteX SoC Controller driver
+To:     Mateusz Holenko <mholenko@antmicro.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Gabriel L. Somlo" <gsomlo@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Mateusz,
 
+On Tue, Oct 6, 2020 at 10:02 AM Mateusz Holenko <mholenko@antmicro.com> wrote:
+> On Fri, Sep 25, 2020 at 3:16 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Wed, Sep 23, 2020 at 12:10 PM Mateusz Holenko <mholenko@antmicro.com> wrote:
+> > > From: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
+> > >
+> > > This commit adds driver for the FPGA-based LiteX SoC
+> > > Controller from LiteX SoC builder.
+> > >
+> > > Co-developed-by: Mateusz Holenko <mholenko@antmicro.com>
+> > > Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
+> > > Signed-off-by: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
 
-On 05/10/2020 19:38, Rob Herring wrote:
-> The default behavior for json-schema is any unknown property is allowed.
-> T
-> 
-> hat is generally not the behavior we want for DT. In order to disallow
-> extra properties, schemas need to define 'additionalProperties: false'
-> typically. Ideally, we'd just add that automatically with the tools, but
-> there are some exceptions so only making things explicit everywhere
-> really works. Missing 'additionalProperties' or 'unevaluatedProperties'
-> has been a constant source of review comments, so a meta-schema check is
-> really needed here.
-> 
->   Documentation/devicetree/bindings/nvmem/nvmem.yaml     |  2 ++
->   .../devicetree/bindings/nvmem/qcom,qfprom.yaml         |  2 ++
+> > > --- /dev/null
+> > > +++ b/drivers/soc/litex/Kconfig
+> > > @@ -0,0 +1,15 @@
+> > > +# SPDX-License_Identifier: GPL-2.0
+> > > +
+> > > +menu "Enable LiteX SoC Builder specific drivers"
+> > > +
+> > > +config LITEX_SOC_CONTROLLER
+> > > +       tristate "Enable LiteX SoC Controller driver"
+> > > +       depends on OF || COMPILE_TEST
+> > > +       help
+> > > +         This option enables the SoC Controller Driver which verifies
+> > > +         LiteX CSR access and provides common litex_get_reg/litex_set_reg
+> > > +         accessors.
+> > > +         All drivers that use functions from litex.h must depend on
+> > > +         LITEX_SOC_CONTROLLER.
+> >
+> > I'm wondering if it makes sense to have them depend on a "simpler"
+> > symbol instead, e.g. LITEX?
+> >
+> > Currently the SoC controller is limited to I/O accessors and a simple
+> > register compatibility check, but you may want to extend it with more
+> > features later, so you probably want to keep the LITEX_SOC_CONTROLLER.
+> > Hence you could add
+> >
+> >     config LITEX
+> >         bool
+> >
+> > and let LITEX_SOC_CONTROLLER select LITEX.
+>
+> But then if other drivers depend just on LITEX, it would not automatically
+> mean that the LITEX_SOC_CONTROLLER is selected, right?. And if it's not selected
+> litex_{g,s}et_reg() are not available and the compilation would fail.
 
-for nvmem parts,
+As the LITEX config symbol above uses plain "bool", without a
+description, it is invisible.  Hence it cannot be enabled by the user,
+only be selected by other symbols.
+If LITEX_SOC_CONTROLLER is the only symbol selecting LITEX, the
+dependency is met.
 
-Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> I could move the implementation of those functions directly to the
+> litex.h header
+> and avoid this KConfig dependency, but I'm not sure if they are not
+> too big to become a static inline.
+> What do you think?
 
+With the spinlock and the loop, they're too large to be inlined, IMHO.
 
-thanks,
---srini
+> > > --- /dev/null
+> > > +++ b/drivers/soc/litex/litex_soc_ctrl.c
+
+> > > + */
+> > > +#define LITEX_REG_SIZE             0x4
+> > > +#define LITEX_SUBREG_SIZE          0x1
+> > > +#define LITEX_SUBREG_SIZE_BIT      (LITEX_SUBREG_SIZE * 8)
+> > > +
+> > > +static DEFINE_SPINLOCK(csr_lock);
+> > > +
+> > > +/*
+> > > + * LiteX SoC Generator, depending on the configuration,
+> > > + * can split a single logical CSR (Control & Status Register)
+> > > + * into a series of consecutive physical registers.
+> > > + *
+> > > + * For example, in the configuration with 8-bit CSR Bus,
+> > > + * 32-bit aligned (the default one for 32-bit CPUs) a 32-bit
+> > > + * logical CSR will be generated as four 32-bit physical registers,
+> > > + * each one containing one byte of meaningful data.
+> > > + *
+> > > + * For details see: https://github.com/enjoy-digital/litex/wiki/CSR-Bus
+> > > + *
+> > > + * The purpose of `litex_set_reg`/`litex_get_reg` is to implement
+> > > + * the logic of writing to/reading from the LiteX CSR in a single
+> > > + * place that can be then reused by all LiteX drivers.
+> > > + */
+> > > +void litex_set_reg(void __iomem *reg, unsigned long reg_size,
+> > > +                   unsigned long val)
+> > > +{
+> > > +       unsigned long shifted_data, shift, i;
+> > > +       unsigned long flags;
+> > > +
+> > > +       spin_lock_irqsave(&csr_lock, flags);
+> > > +
+> > > +       for (i = 0; i < reg_size; ++i) {
+> > > +               shift = ((reg_size - i - 1) * LITEX_SUBREG_SIZE_BIT);
+> > > +               shifted_data = val >> shift;
+> > > +
+> > > +               writel((u32 __force)cpu_to_le32(shifted_data), reg + (LITEX_REG_SIZE * i));
+> > > +       }
+> > > +
+> > > +       spin_unlock_irqrestore(&csr_lock, flags);
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(litex_set_reg);
+> >
+> > I'm still wondering about the overhead of loops and multiple accesses,
+> > and the need for them (see also BenH's earlier comment).
+> > If e.g. the register widths change for LiteUART (currently they're
+> > hardcoded to one), would you still consider it using the same
+> > programming interface, and thus compatible with "litex,liteuart"?
+>
+> Since the amount of possible `reg_size` is practically limited we could
+> add explicit 8/32/64/128 accessors to eliminate loops.
+
+Good.
+
+(assuming 32-bit physical reg accesses below)
+
+> As for multiple writel/readl I don't really see an option to avoid
+> them for the 8-bit bus width.
+
+Sure, 64-bit register accesses consist of two 32-bit accesses on other
+32-bit platforms, too.
+
+> > The spinlock access will probably become the source of lock contention
+> > later, especially when considering SMP variants.
+>
+> Do you have any suggestions on how to handle this?
+> Dropping locks could lead to the situation when two cores write at the
+> same time leaving a wrong (mixed) value in the CSR.
+
+Is this due to the CSR bus or due to the CSR register?
+I mean can two 64-bit accesses to different CSR registers be done as
+four interleaved 32-bit accesses, or must they not be interleaved?
+
+If (hopefully) they can be interleaved, you just need serialization of
+accesses to the same 64-bit register.  As the same register is usually
+not accessed from multiple drivers, you can handle the serialization
+inside the driver, if it can ever happen at all (e.g. main driver
+operation and interrupt handler accessing the same register).
+That avoids the need for the spinlock in the generic register accessors.
+
+If they must not be interleaved, you indeed need serialization at the
+bus level, but only for the 64-bit accesses?  And I would strongly
+suggest to look into changing the CSR bus behavior at the hardware
+level, if possible...
+
+> > > +/*
+> > > + * Check LiteX CSR read/write access
+> > > + *
+> > > + * This function reads and writes a scratch register in order
+> > > + * to verify if CSR access works.
+> > > + *
+> > > + * In case any problems are detected, the driver should panic.
+> > > + *
+> > > + * Access to the LiteX CSR is, by design, done in CPU native
+> > > + * endianness. The driver should not dynamically configure
+> > > + * access functions when the endianness mismatch is detected.
+> > > + * Such situation indicates problems in the soft SoC design
+> > > + * and should be solved at the LiteX generator level,
+> > > + * not in the software.
+> > > + */
+> > > +static int litex_check_csr_access(void __iomem *reg_addr)
+> > > +{
+> > > +       unsigned long reg;
+> > > +
+> > > +       reg = litex_get_reg(reg_addr + SCRATCH_REG_OFF, SCRATCH_REG_SIZE);
+> > > +
+> > > +       if (reg != SCRATCH_REG_VALUE) {
+> > > +               panic("Scratch register read error! Expected: 0x%x but got: 0x%lx",
+> > > +                       SCRATCH_REG_VALUE, reg);
+> >
+> > Do you think the user will ever see this panic message? (see below)
+>
+> On UART most probably not, as broken CSRs mean broken UART driver as well.
+> But I believe you can retrieve logs from the memory and analyze them
+> post-mortem, isn't that right?
+
+Sure. Been there, done that ;-)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
