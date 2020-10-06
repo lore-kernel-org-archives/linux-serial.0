@@ -8,120 +8,101 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E3C6C4727E
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 22:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF9BC4363D
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 22:22:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 02A9F20B1F
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 22:22:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5B6DB208FE
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 22:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgJFWW0 (ORCPT
+        id S1726348AbgJFWW3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Oct 2020 18:22:26 -0400
-Received: from fgw23-7.mail.saunalahti.fi ([62.142.5.84]:28297 "EHLO
-        fgw23-7.mail.saunalahti.fi" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726348AbgJFWWZ (ORCPT
+        Tue, 6 Oct 2020 18:22:29 -0400
+Received: from fgw22-7.mail.saunalahti.fi ([62.142.5.83]:42556 "EHLO
+        fgw22-7.mail.saunalahti.fi" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726171AbgJFWW1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Oct 2020 18:22:25 -0400
-X-Greylist: delayed 818 seconds by postgrey-1.27 at vger.kernel.org; Tue, 06 Oct 2020 18:22:25 EDT
+        Tue, 6 Oct 2020 18:22:27 -0400
 Received: from localhost (88-115-248-186.elisa-laajakaista.fi [88.115.248.186])
-        by fgw23.mail.saunalahti.fi (Halon) with ESMTP
-        id 6833b380-0822-11eb-8ccd-005056bdfda7;
-        Wed, 07 Oct 2020 01:22:23 +0300 (EEST)
+        by fgw22.mail.saunalahti.fi (Halon) with ESMTP
+        id 68b25e9a-0822-11eb-88cb-005056bdf889;
+        Wed, 07 Oct 2020 01:22:24 +0300 (EEST)
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v1 1/2] serial: max310x: Make use of device properties
-Date:   Wed,  7 Oct 2020 01:22:21 +0300
-Message-Id: <20201006222222.583254-1-andy.shevchenko@gmail.com>
+Subject: [PATCH v1 2/2] serial: max310x: Use devm_clk_get_optional() to get the input clock
+Date:   Wed,  7 Oct 2020 01:22:22 +0300
+Message-Id: <20201006222222.583254-2-andy.shevchenko@gmail.com>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201006222222.583254-1-andy.shevchenko@gmail.com>
+References: <20201006222222.583254-1-andy.shevchenko@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Device property API allows to gather device resources from different sources,
-such as ACPI. Convert the drivers to unleash the power of device property API.
+Simplify the code which fetches the input clock by using
+devm_clk_get_optional(). If no input clock is present
+devm_clk_get_optional() will return NULL instead of an error
+which matches the behavior of the old code.
 
 Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/tty/serial/max310x.c | 27 +++++++++------------------
- 1 file changed, 9 insertions(+), 18 deletions(-)
+ drivers/tty/serial/max310x.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 21130af106bb..f25b9516109c 100644
+index f25b9516109c..9795b2e8b0b2 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -15,8 +15,8 @@
- #include <linux/device.h>
- #include <linux/gpio/driver.h>
- #include <linux/module.h>
--#include <linux/of.h>
--#include <linux/of_device.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/serial_core.h>
- #include <linux/serial.h>
-@@ -267,7 +267,7 @@ struct max310x_one {
- 	container_of(_port, struct max310x_one, port)
- 
- struct max310x_port {
--	struct max310x_devtype	*devtype;
-+	const struct max310x_devtype *devtype;
- 	struct regmap		*regmap;
- 	struct clk		*clk;
- #ifdef CONFIG_GPIOLIB
-@@ -1269,7 +1269,7 @@ static int max310x_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
- }
- #endif
- 
--static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
-+static int max310x_probe(struct device *dev, const struct max310x_devtype *devtype,
+@@ -1273,7 +1273,6 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
  			 struct regmap *regmap, int irq)
  {
  	int i, ret, fmin, fmax, freq, uartclk;
-@@ -1478,7 +1478,7 @@ static struct regmap_config regcfg = {
- #ifdef CONFIG_SPI_MASTER
- static int max310x_spi_probe(struct spi_device *spi)
- {
--	struct max310x_devtype *devtype;
-+	const struct max310x_devtype *devtype;
- 	struct regmap *regmap;
- 	int ret;
+-	struct clk *clk_osc, *clk_xtal;
+ 	struct max310x_port *s;
+ 	bool xtal = false;
  
-@@ -1490,18 +1490,9 @@ static int max310x_spi_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
+@@ -1287,23 +1286,24 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
+ 		return -ENOMEM;
+ 	}
  
--	if (spi->dev.of_node) {
--		const struct of_device_id *of_id =
--			of_match_device(max310x_dt_ids, &spi->dev);
--		if (!of_id)
--			return -ENODEV;
--
--		devtype = (struct max310x_devtype *)of_id->data;
--	} else {
--		const struct spi_device_id *id_entry = spi_get_device_id(spi);
--
--		devtype = (struct max310x_devtype *)id_entry->driver_data;
--	}
-+	devtype = device_get_match_data(&spi->dev);
-+	if (!devtype)
-+		devtype = (struct max310x_devtype *)spi_get_device_id(spi)->driver_data;
+-	clk_osc = devm_clk_get(dev, "osc");
+-	clk_xtal = devm_clk_get(dev, "xtal");
+-	if (!IS_ERR(clk_osc)) {
+-		s->clk = clk_osc;
++	s->clk = devm_clk_get_optional(dev, "osc");
++	if (IS_ERR(s->clk))
++		return PTR_ERR(s->clk);
++	if (s->clk) {
+ 		fmin = 500000;
+ 		fmax = 35000000;
+-	} else if (!IS_ERR(clk_xtal)) {
+-		s->clk = clk_xtal;
+-		fmin = 1000000;
+-		fmax = 4000000;
+-		xtal = true;
+-	} else if (PTR_ERR(clk_osc) == -EPROBE_DEFER ||
+-		   PTR_ERR(clk_xtal) == -EPROBE_DEFER) {
+-		return -EPROBE_DEFER;
+ 	} else {
+-		dev_err(dev, "Cannot get clock\n");
+-		return -EINVAL;
++		s->clk = devm_clk_get_optional(dev, "xtal");
++		if (IS_ERR(s->clk))
++			return PTR_ERR(s->clk);
++		if (s->clk) {
++			fmin = 1000000;
++			fmax = 4000000;
++			xtal = true;
++		} else {
++			dev_err(dev, "Cannot get clock\n");
++			return -EINVAL;
++		}
+ 	}
  
- 	regcfg.max_register = devtype->nr * 0x20 - 1;
- 	regmap = devm_regmap_init_spi(spi, &regcfg);
-@@ -1526,7 +1517,7 @@ MODULE_DEVICE_TABLE(spi, max310x_id_table);
- static struct spi_driver max310x_spi_driver = {
- 	.driver = {
- 		.name		= MAX310X_NAME,
--		.of_match_table	= of_match_ptr(max310x_dt_ids),
-+		.of_match_table	= max310x_dt_ids,
- 		.pm		= &max310x_pm_ops,
- 	},
- 	.probe		= max310x_spi_probe,
+ 	ret = clk_prepare_enable(s->clk);
 -- 
 2.28.0
 
