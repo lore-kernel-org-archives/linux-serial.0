@@ -2,66 +2,52 @@ Return-Path: <SRS0=BKBA=DN=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 796CBC41604
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 07:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FABC41604
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 07:07:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 12E6220797
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 07:01:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="W84ohUHy"
+	by mail.kernel.org (Postfix) with ESMTP id B68D52075A
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Oct 2020 07:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727105AbgJFHBF (ORCPT
+        id S1726938AbgJFHHV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Oct 2020 03:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726950AbgJFHBF (ORCPT
+        Tue, 6 Oct 2020 03:07:21 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:37045 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbgJFHHU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Oct 2020 03:01:05 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433C4C061755
-        for <linux-serial@vger.kernel.org>; Tue,  6 Oct 2020 00:01:05 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id h2so752593pll.11
-        for <linux-serial@vger.kernel.org>; Tue, 06 Oct 2020 00:01:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=antmicro.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kLnvcGYBW3K2JHWzUc8H3P/mWmh3X6aiUW1vORxEEk4=;
-        b=W84ohUHypmj3DBg8s+ZzDXVQ6kA9mRdTcNoOJkgWPvlicW1CRh+p6VASoV6JT9Lof9
-         i2cFX/BdUq1zT+mw/h/8Ekqn69vAzwwDDNWpfSbgbn/hJyJm19TP6hXUliGSLVEYqPmx
-         9I9pymggsZ2W2CFEInZUD22uUVY+3ty6L24Lk=
+        Tue, 6 Oct 2020 03:07:20 -0400
+Received: by mail-ot1-f66.google.com with SMTP id o8so11343407otl.4;
+        Tue, 06 Oct 2020 00:07:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kLnvcGYBW3K2JHWzUc8H3P/mWmh3X6aiUW1vORxEEk4=;
-        b=IiuGwhHzahbWrEGL5iR2/BF3gEGzoEntutXtw7eD6UJpjtkYwQmQIoloT+5OtPrvs/
-         uvTL152/6QWYcC7GJjI+XCM0c7Tcb8vltlz+VkpV9wx2K+5edu3+h/GgDUoIurx72NrD
-         zdjrBh1NCr3e4/7aixx+Nv8Zh+1DARHwo1UsflLFQ/S7htNHmtzhNRzjAJISgJ/4jQIw
-         fYF5ZubFpxCz+PI3Llrp2iaylGS7Ynb95vjfnpTOz1Ms+PlP4cdnmD/ndVMkckuq3IME
-         y17HTr3EjzCi4gHFdDdTIQjRDftoYMwA2L3uQf5HFIZtchvF+TfiJISmn6rtzenRYAEx
-         Kngg==
-X-Gm-Message-State: AOAM530DJNFrOGnEtsFjN5sd8YW1jUch3VBaNpZNmx/TEqy6KYdkOmJo
-        Za0vYwKFe/7dXtoZn5S8damBqbkecsBpYLpYYEg00g==
-X-Google-Smtp-Source: ABdhPJyB29qLcQldVmQot4jqrKIxicdkoymtFIjYVQcSuxZVdPXQi6caH4F8RSL3X0MepZkQzzu/+MNsEK9FUgO7seU=
-X-Received: by 2002:a17:902:9347:b029:d3:b2c6:1500 with SMTP id
- g7-20020a1709029347b02900d3b2c61500mr2057414plp.5.1601967664699; Tue, 06 Oct
- 2020 00:01:04 -0700 (PDT)
+        bh=IEjOVbc5CBTebJ+NkL7ECpC20QOFPXAJ42Fc/c1O0SY=;
+        b=NsBMiJCHkO5KL+Nxjj+1B5zTTlxsW5jiVmzATKmuU3jPCBH/9CiTP1nYvbP6CPiBMZ
+         CXOQ+AilbQH4OY9/gn1JBgJx724Ra6pDzP09tKdv+BtRNfo6V0MiQoK1V9ZxBRmwX5CN
+         TbnW3vb6x6nd+gouYaRKOtXP/FAbL/7FlZfnf8qyz0uljoBIWPib2isBdzHU3kVn3H4Y
+         5uBZ1cG5yPN5sDLVu/dRs29oObCj7MlzpOU/m5z7XGkQGi/4z4oMQzYrg7+aaXhek2pV
+         qTHV2fdyDTFCrJL/RftGKWkHF5ymB93gWujddHIhvYuYXelvIZ79smPUIp0DmAwMkMNs
+         /TbQ==
+X-Gm-Message-State: AOAM533E2eswGDbHmIprmCAHQAw6/PsQguc1zQug7UxTzcNUWLdDzh9w
+        vCc+0c2XFT6uBn03WAlZog1dyJxqRj/e0PnVljA=
+X-Google-Smtp-Source: ABdhPJyft7jjmM62xpHzFa1e5eDyNPLkIH/QmkvSYxRLkEx0Q7fnsMVR9bbUaRLw98zJcYaRRu5dXXCwl0ksw9d4EOk=
+X-Received: by 2002:a05:6830:1008:: with SMTP id a8mr1905233otp.107.1601968038374;
+ Tue, 06 Oct 2020 00:07:18 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200923120817.1667149-0-mholenko@antmicro.com>
  <20200923120817.1667149-4-mholenko@antmicro.com> <CAMuHMdXZ4QA4HX8xZJVnnj5P3USpefNn+8OFGz+Yo9T=UpNM4g@mail.gmail.com>
-In-Reply-To: <CAMuHMdXZ4QA4HX8xZJVnnj5P3USpefNn+8OFGz+Yo9T=UpNM4g@mail.gmail.com>
-From:   Mateusz Holenko <mholenko@antmicro.com>
-Date:   Tue, 6 Oct 2020 09:00:52 +0200
-Message-ID: <CAPk366TrN0AUp8En6Lf4DHfyor22FyitwzK1K3tYBfei1RsYeA@mail.gmail.com>
+ <CAPk366TrN0AUp8En6Lf4DHfyor22FyitwzK1K3tYBfei1RsYeA@mail.gmail.com>
+In-Reply-To: <CAPk366TrN0AUp8En6Lf4DHfyor22FyitwzK1K3tYBfei1RsYeA@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 6 Oct 2020 09:07:07 +0200
+Message-ID: <CAMuHMdUWehGyUAq07P3U4U+JNLQaJ=4vbPghOMar39k8fQDf5Q@mail.gmail.com>
 Subject: Re: [PATCH v11 4/5] dt-bindings: serial: document LiteUART bindings
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Mateusz Holenko <mholenko@antmicro.com>
 Cc:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -91,112 +77,58 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
+Hi Mateusz,
 
-On Fri, Sep 25, 2020 at 3:16 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Mateusz,
->
-> On Wed, Sep 23, 2020 at 12:10 PM Mateusz Holenko <mholenko@antmicro.com> wrote:
-> > From: Filip Kokosinski <fkokosinski@antmicro.com>
+On Tue, Oct 6, 2020 at 9:01 AM Mateusz Holenko <mholenko@antmicro.com> wrote:
+> On Fri, Sep 25, 2020 at 3:16 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Wed, Sep 23, 2020 at 12:10 PM Mateusz Holenko <mholenko@antmicro.com> wrote:
+> > > From: Filip Kokosinski <fkokosinski@antmicro.com>
+> > >
+> > > Add documentation for LiteUART devicetree bindings.
+> > >
+> > > Signed-off-by: Filip Kokosinski <fkokosinski@antmicro.com>
+> > > Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
+> > > Reviewed-by: Rob Herring <robh@kernel.org>
+
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+
+> > > +properties:
+> > > +  compatible:
+> > > +    const: litex,liteuart
 > >
-> > Add documentation for LiteUART devicetree bindings.
-> >
-> > Signed-off-by: Filip Kokosinski <fkokosinski@antmicro.com>
-> > Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
-> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > Have you already decided how to handle future LiteUART variants that add
+> > new features (e.g. CTS/RTS, DMA)?
 >
-> Thanks for your patch!
-
-Thanks for your review!
-
+> We were thinking of adding KConfig options, like
 >
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
-> > @@ -0,0 +1,38 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/serial/litex,liteuart.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: LiteUART serial controller
-> > +
-> > +maintainers:
-> > +  - Karol Gugala <kgugala@antmicro.com>
-> > +  - Mateusz Holenko <mholenko@antmicro.com>
-> > +
-> > +description: |
-> > +  LiteUART serial controller is a part of LiteX FPGA SoC builder. It supports
+> [ ] LiteUART serial port support
+> < >     LiteUART DMA support
 >
-> part of the
+> and using ifdefs in the code.
 
-Right, will fix that.
+That is the driver part, not the DT part.
+If enabled, the driver still needs to know if the feature is present and
+to be used, or not.
 
-> > +  multiple CPU architectures, currently including e.g. OpenRISC and RISC-V.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: litex,liteuart
+> The other option could be to extend LiteX itself so that the UART core
+> provides information about its configuration via the capabilities register.
+> That way the driver could configure itself automatically at runtime.
 >
-> Have you already decided how to handle future LiteUART variants that add
-> new features (e.g. CTS/RTS, DMA)?
+> This is, however, not decided yet.
 
-We were thinking of adding KConfig options, like
+A capabilities register sounds good to me.
+That means everything is handled automatically by the driver
+However, it does mean the DT schema checker cannot validate the
+use of optional DT properties related to optional features, if any.
 
-[ ] LiteUART serial port support
-< >     LiteUART DMA support
+Gr{oetje,eeting}s,
 
-and using ifdefs in the code.
+                        Geert
 
-The other option could be to extend LiteX itself so that the UART core
-provides information about its configuration via the capabilities register.
-That way the driver could configure itself automatically at runtime.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-This is, however, not decided yet.
-
->
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +examples:
-> > +  - |
-> > +    uart0: serial@e0001800 {
-> > +      compatible = "litex,liteuart";
-> > +      reg = <0xe0001800 0x100>;
-> > +      interrupts = <2>;
-> > +    };
-> > --
-> > 2.25.1
-> >
->
->
-> --
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
-
-Best regards,
-Mateusz
-
-
---
-Mateusz Holenko
-Antmicro Ltd | www.antmicro.com
-Roosevelta 22, 60-829 Poznan, Poland
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
