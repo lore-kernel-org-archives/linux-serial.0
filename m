@@ -2,74 +2,125 @@ Return-Path: <SRS0=cVGZ=DO=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5D5C4363C
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Oct 2020 07:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27791C47420
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Oct 2020 08:46:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DE3392075A
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Oct 2020 07:31:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602055912;
-	bh=K/XlL6HP9dRTABtPxA+ECp/xsKPeqpXJvl1JRYfjKh8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ukDk/khfQDJHpKZELWzdcUiocm3T+ATCCHz7oFhSlCPOyR18vxqb2dOz+nhfHknoK
-	 REBFgr3OAylx2ji8rKSpFqoAwIwy68/yNdumyP8jBu10PJCR0P9sC5OdbBkOXpTTc/
-	 AGn9N4qpotASiBr1H9TqXx90E4w/dPbjMPMO9D6E=
+	by mail.kernel.org (Postfix) with ESMTP id D4DD620797
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Oct 2020 08:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbgJGHbw (ORCPT
+        id S1728024AbgJGIqn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Oct 2020 03:31:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35196 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727629AbgJGHbt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Oct 2020 03:31:49 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 46EAD2075A;
-        Wed,  7 Oct 2020 07:31:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602055908;
-        bh=K/XlL6HP9dRTABtPxA+ECp/xsKPeqpXJvl1JRYfjKh8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vfYiIv1WeMZZl1EoHkRYA+X85mCJPbYaJ7w+oGFhf0gfUjRyuVTPd+md3S0EW3oYM
-         ygn6gAPHzGFWn8Xn0dCJRIkBtX5VW+meFRGoCO7hTyF1VeM8/xrH7kmVLLg8ElsL4S
-         Gxkf/yHxZCe11tTT4W96bTwPIylJCJ16BD296KUQ=
-Date:   Wed, 7 Oct 2020 09:32:32 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] serial: max310x: Make use of device properties
-Message-ID: <20201007073232.GB340590@kroah.com>
-References: <20201006222222.583254-1-andy.shevchenko@gmail.com>
+        Wed, 7 Oct 2020 04:46:43 -0400
+Received: from fgw20-7.mail.saunalahti.fi ([62.142.5.81]:15503 "EHLO
+        fgw20-7.mail.saunalahti.fi" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728088AbgJGIqm (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 7 Oct 2020 04:46:42 -0400
+Received: from localhost (88-115-248-186.elisa-laajakaista.fi [88.115.248.186])
+        by fgw20.mail.saunalahti.fi (Halon) with ESMTP
+        id 9cff9a4d-0879-11eb-ba23-005056bd6ce9;
+        Wed, 07 Oct 2020 11:46:38 +0300 (EEST)
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v2 1/2] serial: max310x: Make use of device properties
+Date:   Wed,  7 Oct 2020 11:46:34 +0300
+Message-Id: <20201007084635.594991-1-andy.shevchenko@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201006222222.583254-1-andy.shevchenko@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 07, 2020 at 01:22:21AM +0300, Andy Shevchenko wrote:
-> Device property API allows to gather device resources from different sources,
-> such as ACPI. Convert the drivers to unleash the power of device property API.
-> 
-> Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> ---
->  drivers/tty/serial/max310x.c | 27 +++++++++------------------
->  1 file changed, 9 insertions(+), 18 deletions(-)
-> 
+Device property API allows to gather device resources from different sources,
+such as ACPI. Convert the drivers to unleash the power of device property API.
 
-Did you send 2 copies of this patch series?
+Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/tty/serial/max310x.c | 27 +++++++++------------------
+ 1 file changed, 9 insertions(+), 18 deletions(-)
 
-Which is correct?
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 21130af106bb..f25b9516109c 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -15,8 +15,8 @@
+ #include <linux/device.h>
+ #include <linux/gpio/driver.h>
+ #include <linux/module.h>
+-#include <linux/of.h>
+-#include <linux/of_device.h>
++#include <linux/mod_devicetable.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial.h>
+@@ -267,7 +267,7 @@ struct max310x_one {
+ 	container_of(_port, struct max310x_one, port)
+ 
+ struct max310x_port {
+-	struct max310x_devtype	*devtype;
++	const struct max310x_devtype *devtype;
+ 	struct regmap		*regmap;
+ 	struct clk		*clk;
+ #ifdef CONFIG_GPIOLIB
+@@ -1269,7 +1269,7 @@ static int max310x_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
+ }
+ #endif
+ 
+-static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
++static int max310x_probe(struct device *dev, const struct max310x_devtype *devtype,
+ 			 struct regmap *regmap, int irq)
+ {
+ 	int i, ret, fmin, fmax, freq, uartclk;
+@@ -1478,7 +1478,7 @@ static struct regmap_config regcfg = {
+ #ifdef CONFIG_SPI_MASTER
+ static int max310x_spi_probe(struct spi_device *spi)
+ {
+-	struct max310x_devtype *devtype;
++	const struct max310x_devtype *devtype;
+ 	struct regmap *regmap;
+ 	int ret;
+ 
+@@ -1490,18 +1490,9 @@ static int max310x_spi_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (spi->dev.of_node) {
+-		const struct of_device_id *of_id =
+-			of_match_device(max310x_dt_ids, &spi->dev);
+-		if (!of_id)
+-			return -ENODEV;
+-
+-		devtype = (struct max310x_devtype *)of_id->data;
+-	} else {
+-		const struct spi_device_id *id_entry = spi_get_device_id(spi);
+-
+-		devtype = (struct max310x_devtype *)id_entry->driver_data;
+-	}
++	devtype = device_get_match_data(&spi->dev);
++	if (!devtype)
++		devtype = (struct max310x_devtype *)spi_get_device_id(spi)->driver_data;
+ 
+ 	regcfg.max_register = devtype->nr * 0x20 - 1;
+ 	regmap = devm_regmap_init_spi(spi, &regcfg);
+@@ -1526,7 +1517,7 @@ MODULE_DEVICE_TABLE(spi, max310x_id_table);
+ static struct spi_driver max310x_spi_driver = {
+ 	.driver = {
+ 		.name		= MAX310X_NAME,
+-		.of_match_table	= of_match_ptr(max310x_dt_ids),
++		.of_match_table	= max310x_dt_ids,
+ 		.pm		= &max310x_pm_ops,
+ 	},
+ 	.probe		= max310x_spi_probe,
+-- 
+2.28.0
 
-I'll drop both and wait for a v2 :)
-
-thanks,
-
-greg k-h
