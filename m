@@ -2,72 +2,106 @@ Return-Path: <SRS0=HiSo=DU=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=BAYES_05,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 111B9C433E7
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Oct 2020 08:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26AA3C433E7
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Oct 2020 08:37:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A817720E65
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Oct 2020 08:20:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=fastestway24.com header.i=@fastestway24.com header.b="cyfvumoH"
+	by mail.kernel.org (Postfix) with ESMTP id C1AEF2067D
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Oct 2020 08:37:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387981AbgJMIUC (ORCPT
+        id S1730575AbgJMIhk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Oct 2020 04:20:02 -0400
-Received: from mail.fastestway24.com ([5.249.159.217]:33004 "EHLO
-        mail.fastestway24.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730033AbgJMIUC (ORCPT
+        Tue, 13 Oct 2020 04:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730550AbgJMIhj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Oct 2020 04:20:02 -0400
-Received: by mail.fastestway24.com (Postfix, from userid 1001)
-        id 7DDF7A2EE9; Tue, 13 Oct 2020 09:11:29 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fastestway24.com;
-        s=mail; t=1602576720;
-        bh=YGOlxoddnI3PXnh41XMWUfU0z9xsorZLZcAPNbcZr/c=;
-        h=Date:From:To:Subject:From;
-        b=cyfvumoH1kogGqr96HB9hh5UXundCmy60D7Aomxmd23+Lp2/0SM+vVTlih/XczOxj
-         MWGBVgNmDSlt+yRYrDtDwFYubTIsLehLdOox51jgaE127Tj6Onhemjh9CCilFlZUVM
-         YCAZtoAmgLDVpgzAklE0evmQckDqeE4r3/j8atuWtGOxaJfivAtxCa2BXbaEDyoAIs
-         rs0jrR+ZmTDOpnF7FNmbHwFVJskEDEYXjpTjrEVC93P3gzg4vzh8Pfe2V/yoxko1kw
-         iXcS3Ly3QUI2TWaxVKHP2G1HblLe5Jho+wsqAp33rgMuvObipiorgyR27nYnqvCuZz
-         LvygorHCGauUQ==
-Received: by mail.fastestway24.com for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2020 08:11:18 GMT
-Message-ID: <20201013074502-0.1.4d.9kpn.0.j3ymvbs9yx@fastestway24.com>
-Date:   Tue, 13 Oct 2020 08:11:18 GMT
-From:   "William Jones" <william.jones@fastestway24.com>
-To:     <linux-serial@vger.kernel.org>
-Subject: Disinfectant
-X-Mailer: mail.fastestway24.com
+        Tue, 13 Oct 2020 04:37:39 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DB4C0613D0
+        for <linux-serial@vger.kernel.org>; Tue, 13 Oct 2020 01:37:39 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kSFoH-0004G7-3T; Tue, 13 Oct 2020 10:37:29 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kSFoF-0005UK-Ab; Tue, 13 Oct 2020 10:37:27 +0200
+Date:   Tue, 13 Oct 2020 10:37:27 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, kbuild-all@lists.01.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>, kernel@pengutronix.de,
+        linux-leds@vger.kernel.org
+Subject: Re: [PATCH v8 3/3] leds: trigger: implement a tty trigger
+Message-ID: <20201013083727.bii6p6yhdh53zbko@pengutronix.de>
+References: <20201012123358.1475928-4-u.kleine-koenig@pengutronix.de>
+ <202010122255.mTooYoPh-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="cnr3vbqepw63ca5h"
+Content-Disposition: inline
+In-Reply-To: <202010122255.mTooYoPh-lkp@intel.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Good morning,
 
-looking for companies interested in raising additional capital by diversi=
-fying their offer in soaps, liquids and gels for hand disinfection and co=
-smetics for body and hair care.
+--cnr3vbqepw63ca5h
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The distribution of innovative products corresponding to the current pref=
-erences of customers in the field of hygiene and preventive healthcare al=
-lows our partners to gain new markets and achieve better economic results=
-=2E
+Hello,
 
-In addition to products with bactericidal action, our range includes show=
-er gels, shampoos and hair conditioners, as well as efficient, concentrat=
-ed detergents.
+On Mon, Oct 12, 2020 at 10:16:59PM +0800, kernel test robot wrote:
+> Hi "Uwe,
 
-The versatility (suitable for all skin types) combined with an affordable=
- price means that customers make an informed choice of a product among ot=
-hers available on the market.
+I love your test report! Perhaps something to improve: The parser of the
+=46rom: line should drop the " :-)
 
-Are you interested in cooperation?
+>    drivers/leds/trigger/ledtrig-tty.c: In function 'ledtrig_tty_work':
+> >> drivers/leds/trigger/ledtrig-tty.c:92:7: warning: variable 'firstrun' =
+set but not used [-Wunused-but-set-variable]
+>       92 |  bool firstrun =3D false;
+>          |       ^~~~~~~~
 
+Indeed, this line should just be dropped. I won't resend yet, waiting
+for some feedback first and assuming reviewers are able to interpolate
+how v9 will look like :-)
 
-William Jones
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--cnr3vbqepw63ca5h
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+FZ0QACgkQwfwUeK3K
+7AlByQf/QetryfgvRVepJCPyfH15sS5n6kVfHoQRw59sz8GlbqraBNtO/mF6+UWx
+U4AhTHha/Da1T97IfvJFglYMj0j/MJnWMUvN++tk2LGF2pOYhW8sxixHihHjhGvH
+9zaE/1hPU96onIA7MCoi5DN1EOlEKVHQCgtoUWODYjB4JaaoJn9sUxwF8+mab2Au
+49H7rauA8Uu7F1mU8eBrbo+Jyo40rXeCpF7gmq2D/T454+2zpTfSo/Cg65Ot6faH
+OODgcnxIzA+OS02XJphoAvbPfa0gvnY5LEoj5Wcpw9Ten+azeB+gSFBmULItMlLH
+mtfb9jHM7E9W6HJ0P8aCzhur7fT7fQ==
+=JlDd
+-----END PGP SIGNATURE-----
+
+--cnr3vbqepw63ca5h--
