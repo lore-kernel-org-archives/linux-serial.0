@@ -1,182 +1,121 @@
-Return-Path: <SRS0=yTIQ=DY=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=dZFG=DZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A23C41604
-	for <linux-serial@archiver.kernel.org>; Sat, 17 Oct 2020 21:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E24BDC433DF
+	for <linux-serial@archiver.kernel.org>; Sun, 18 Oct 2020 00:32:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A1661208E4
-	for <linux-serial@archiver.kernel.org>; Sat, 17 Oct 2020 21:01:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 71A6D20878
+	for <linux-serial@archiver.kernel.org>; Sun, 18 Oct 2020 00:32:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel-com.20150623.gappssmtp.com header.i=@intel-com.20150623.gappssmtp.com header.b="ntIAxdfj"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pjFVxaXU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439291AbgJQVBn (ORCPT
+        id S2439991AbgJRAcS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 17 Oct 2020 17:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53854 "EHLO
+        Sat, 17 Oct 2020 20:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439261AbgJQVBm (ORCPT
+        with ESMTP id S2439988AbgJRAcS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 17 Oct 2020 17:01:42 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43237C061755
-        for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2020 14:01:41 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id c22so8494404ejx.0
-        for <linux-serial@vger.kernel.org>; Sat, 17 Oct 2020 14:01:41 -0700 (PDT)
+        Sat, 17 Oct 2020 20:32:18 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD3DC061755;
+        Sat, 17 Oct 2020 17:32:18 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id w11so3155265pll.8;
+        Sat, 17 Oct 2020 17:32:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QU5tUnKrk3cCgEOM6DUuSpHohPcIoidzngrqxPrVqlg=;
-        b=ntIAxdfj5B3UZZJPAO3W3zqpuYJdxZe6wmMN+Cg5+tfh5QjsxLbXR5o2amfdJQ2J48
-         +r9G2vZiMs4S/e6t6kNU+/1RisTXP2Yspklt8lksB4PhSQjsUISEYusYJeN2p0XCHoqr
-         5tX/QI+fZe3GQZJaviemAIYQlGxoIFC7s6aX8R5MJQLi2SOYJ/keQbrc62HNUeJ8pCOI
-         7WYztP0OE4axPIRoGDfVK4aq4k9dPY6fZ69Y4fL3/a70qb0GrKtNhloBSbp9yIhwtpgg
-         UECkhdkcAFyI2jUc3qFZfU7NKoc+E1dZJHZxhONiRQFFV//aVnbaYjp+hfJUaNjfh3TU
-         ik3w==
+        bh=S2bgd+e0UALuCUEud5wAO2L9WRMFqabg5wBMLwiT87k=;
+        b=pjFVxaXUBBMCfuuUGpTiKvOrwQ7p5OEsH4c9gfBpA/m7AgY78k0FkAr3CdLobBNJqD
+         MxXy0AiEfaJl0L3EzaWFNgA9zqQ5TF+J3lWaD0M27UYvPDAjZJPv83ZEow+nrLqBHl11
+         SaASWnUACNAMTfRXsI5WwO0YHV80ETMhXVwPR7AjM9tsrtnpV7lybJdab7xNExG6fW1e
+         dbQ5u+yuaMHwVMoUtKv+eEOA5bGe0f/OnllXtaBktDK00+d+RUR/NzDdBNgTsWvk3Cf8
+         qkYrSFMQ603eDlt05bW3P7m7wMUT1Wz+vQpFfyJwj29s/li0BT53qDKjZH2AFfTOuqhi
+         9+9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QU5tUnKrk3cCgEOM6DUuSpHohPcIoidzngrqxPrVqlg=;
-        b=GgKqRBvcRlU9Gg1UAWEc3f9ow/DRPX0ym/fN2bJh+vpZCO5RQvF5k5QSFuflR+eK18
-         af1Jnd5sIVYGXQyzfhhJ/a+Tow06bGVzx9tmHmuRgTXN3UdftORUcMIYcQ4hZJ1MKPV8
-         8QV8aodB9nSTEwYg2Pk1P3l4DaSldwgj2pj3gVRsQ3zr/hbcYLGg/OzhHAJp4gImefpd
-         HNBQUW4+NRN468Nnc1r1Bda7dKOwErabLTWStvdVzLOs2plwAcQvtwVBiXGcKJ4BBKnD
-         zOWZTmtZECCcoj1OThu0fDL37/+peovK8wkQRWKuIXmvervJk7KAOvM35Uq6VKlo+woG
-         +zCQ==
-X-Gm-Message-State: AOAM532kqZLIKxoswX96tbWUBzNKNtafz4w2+SGy7mEobgQn/hzY4kMG
-        J38oNF0DBfFme6j0jC6TON+Hp1r/jdz8aXRCOLdJVw==
-X-Google-Smtp-Source: ABdhPJzde2s6j/g/ekBLPPrgSH2EJqfd3KSDRuhe3Mnzr9w98lVRa6HniOngGCyhNuV4q/eDk1HFvyy/v8IqyEanGTA=
-X-Received: by 2002:a17:906:1a19:: with SMTP id i25mr9957370ejf.323.1602968492144;
- Sat, 17 Oct 2020 14:01:32 -0700 (PDT)
+        bh=S2bgd+e0UALuCUEud5wAO2L9WRMFqabg5wBMLwiT87k=;
+        b=Ai6ssQcGnmcD4UL8Qk5NbE4L66UgLVVUlMWB/ZMju5yqo3grEBfnUZpiStXQ7plOlN
+         Es1ruwQ4ZUhR1JzOJh6/MNJgQEMrOkoV9Y6AVnf/La9lCxOJpi9wpfPgK0FAQYkQ/H1C
+         Nr9Bso4/CE2GGscfaRbRHIWo+5+KuDUyNjXbII/HdyrSIhPHMZnSGfEmhEalnrNMj4DS
+         mqgUD7b7tLXgt/HUfyuq1mq0L1W2xz/yUg93HtoMi/2chGKUWxuuH4I8pBKfX9XD8tAw
+         o3mtcDaZt72lNjq5oNFgelx8AP5JILGHljGEFuePpTCzpV909XQAYPviSOt7pZ2mktyi
+         upHA==
+X-Gm-Message-State: AOAM533NZ3eFBzaggdXdB5r5sNuR7goH0SE7NWw67f8ON+NS7AYSSowY
+        WFB1X24pw9DeBAekdDxPdIvwib+t60Cr4+fr/pw=
+X-Google-Smtp-Source: ABdhPJxN6AqUcUwkYK2418A4yZbLATLA5NxZ1dHaSQzR0vBsOg/qcHLwKnad60pPI9dcsmaS+V7M9ff8iYJXzbeWejs=
+X-Received: by 2002:a17:90b:1b47:: with SMTP id nv7mr11003426pjb.101.1602981137603;
+ Sat, 17 Oct 2020 17:32:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201017160928.12698-1-trix@redhat.com>
-In-Reply-To: <20201017160928.12698-1-trix@redhat.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Sat, 17 Oct 2020 14:01:22 -0700
-Message-ID: <CAPcyv4jkSFxMXgMABX7sDbwmq8zJO=rLX2ww3Y9Tc0VAANY8xQ@mail.gmail.com>
-Subject: Re: [RFC] treewide: cleanup unreachable breaks
-To:     trix@redhat.com
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-edac@vger.kernel.org,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Linux-pm mailing list <linux-pm@vger.kernel.org>,
-        xen-devel <xen-devel@lists.xenproject.org>,
-        linux-block@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-crypto <linux-crypto@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-power@fi.rohmeurope.com, linux-gpio@vger.kernel.org,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, nouveau@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        spice-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
-        industrypack-devel@lists.sourceforge.net,
-        "Linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        MPT-FusionLinux.pdl@broadcom.com,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, ath10k@lists.infradead.org,
-        Linux Wireless List <linux-wireless@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com, linux-nfc@lists.01.org,
-        linux-nvdimm <linux-nvdimm@lists.01.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
-        storagedev@microchip.com, devel@driverdev.osuosl.org,
-        linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
-        usb-storage@lists.one-eyed-alien.net,
-        linux-watchdog@vger.kernel.org, ocfs2-devel@oss.oracle.com,
-        bpf@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        "open list:KEYS-TRUSTED" <keyrings@vger.kernel.org>,
-        alsa-devel@alsa-project.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>
+References: <20200923161950.6237-1-Sergey.Semin@baikalelectronics.ru> <20200923161950.6237-4-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20200923161950.6237-4-Sergey.Semin@baikalelectronics.ru>
+From:   Jonathan Liu <net147@gmail.com>
+Date:   Sun, 18 Oct 2020 11:32:06 +1100
+Message-ID: <CANwerB2GzDiM__UzzfHRn9ENvXYVabRZq8J9ArHcDmWT9zEKNA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] serial: 8250_dw: Fix clk-notifier/port suspend deadlock
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-serial@vger.kernel.org, Will Deacon <will@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Oct 17, 2020 at 9:10 AM <trix@redhat.com> wrote:
+On Wed, 23 Sep 2020 at 16:19, Serge Semin
+<Sergey.Semin@baikalelectronics.ru> wrote:
 >
-> From: Tom Rix <trix@redhat.com>
+> It has been discovered that there is a potential deadlock between
+> the clock-change-notifier thread and the UART port suspending one:
 >
-> This is a upcoming change to clean up a new warning treewide.
-> I am wondering if the change could be one mega patch (see below) or
-> normal patch per file about 100 patches or somewhere half way by collecting
-> early acks.
+>    CPU0 (suspend CPU/UART)   CPU1 (update clock)
+>             ----                    ----
+>    lock(&port->mutex);
+>                              lock((work_completion)(&data->clk_work));
+>                              lock(&port->mutex);
+>    lock((work_completion)(&data->clk_work));
 >
-> clang has a number of useful, new warnings see
-> https://clang.llvm.org/docs/DiagnosticsReference.html
+>    *** DEADLOCK ***
 >
-> This change cleans up -Wunreachable-code-break
-> https://clang.llvm.org/docs/DiagnosticsReference.html#wunreachable-code-break
-> for 266 of 485 warnings in this week's linux-next, allyesconfig on x86_64.
+> The best way to fix this is to eliminate the CPU0
+> port->mutex/work-completion scenario. So we suggest to register and
+> unregister the clock-notifier during the DW APB UART port probe/remove
+> procedures, instead of doing that at the points of the port
+> startup/shutdown.
 >
-> The method of fixing was to look for warnings where the preceding statement
-> was a simple statement and by inspection made the subsequent break unneeded.
-> In order of frequency these look like
+> Link: https://lore.kernel.org/linux-serial/f1cd5c75-9cda-6896-a4e2-42c5bfc3f5c3@redhat.com
 >
-> return and break
->
->         switch (c->x86_vendor) {
->         case X86_VENDOR_INTEL:
->                 intel_p5_mcheck_init(c);
->                 return 1;
-> -               break;
->
-> goto and break
->
->         default:
->                 operation = 0; /* make gcc happy */
->                 goto fail_response;
-> -               break;
->
-> break and break
->                 case COLOR_SPACE_SRGB:
->                         /* by pass */
->                         REG_SET(OUTPUT_CSC_CONTROL, 0,
->                                 OUTPUT_CSC_GRPH_MODE, 0);
->                         break;
-> -                       break;
->
-> The exception to the simple statement, is a switch case with a block
-> and the end of block is a return
->
->                         struct obj_buffer *buff = r->ptr;
->                         return scnprintf(str, PRIV_STR_SIZE,
->                                         "size=%u\naddr=0x%X\n", buff->size,
->                                         buff->addr);
->                 }
-> -               break;
->
-> Not considered obvious and excluded, breaks after
-> multi level switches
-> complicated if-else if-else blocks
-> panic() or similar calls
->
-> And there is an odd addition of a 'fallthrough' in drivers/tty/nozomi.c
-[..]
-> diff --git a/drivers/nvdimm/claim.c b/drivers/nvdimm/claim.c
-> index 5a7c80053c62..2f250874b1a4 100644
-> --- a/drivers/nvdimm/claim.c
-> +++ b/drivers/nvdimm/claim.c
-> @@ -200,11 +200,10 @@ ssize_t nd_namespace_store(struct device *dev,
->                 }
->                 break;
->         default:
->                 len = -EBUSY;
->                 goto out_attach;
-> -               break;
->         }
+> Fixes: cc816969d7b5 ("serial: 8250_dw: Fix common clocks usage race condition")
+> Reported-by: Hans de Goede <hdegoede@redhat.com>
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-Acked-by: Dan Williams <dan.j.williams@intel.com>
+Tested-by: Jonathan Liu <net147@gmail.com>
+
+Fixes hang while closing the serial port on RK3399 that I was
+experiencing often with Linux 5.9.
+After applying this patch, it no longer hangs while closing the serial port.
+No problems while rebooting either.
+
+Thanks.
+
+Regards,
+Jonathan
