@@ -2,120 +2,132 @@ Return-Path: <SRS0=dZFG=DZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43190C433E7
-	for <linux-serial@archiver.kernel.org>; Sun, 18 Oct 2020 19:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB63DC4363D
+	for <linux-serial@archiver.kernel.org>; Sun, 18 Oct 2020 20:40:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 157D420714
-	for <linux-serial@archiver.kernel.org>; Sun, 18 Oct 2020 19:52:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b="QOZMzgTQ";
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b="QOZMzgTQ"
+	by mail.kernel.org (Postfix) with ESMTP id C034E222D5
+	for <linux-serial@archiver.kernel.org>; Sun, 18 Oct 2020 20:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729188AbgJRTVD (ORCPT
+        id S1729057AbgJRUko (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 18 Oct 2020 15:21:03 -0400
-Received: from bedivere.hansenpartnership.com ([96.44.175.130]:39020 "EHLO
-        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729093AbgJRTVA (ORCPT
+        Sun, 18 Oct 2020 16:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728943AbgJRUkn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:21:00 -0400
-X-Greylist: delayed 424 seconds by postgrey-1.27 at vger.kernel.org; Sun, 18 Oct 2020 15:20:56 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 6E9191280300;
-        Sun, 18 Oct 2020 12:13:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
-        s=20151216; t=1603048418;
-        bh=z260bBy56dgN8y3lDRHRQeuKrIr1eALRZNoNPoXlSSo=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=QOZMzgTQH16i5avnDNVW0Ktw3okhOk0UWDzTWl7121p+F93A1Quw31cCRVLQH+SGW
-         zn7QBaZkwCTKpROUCnm6j2wnXTspVYtdUU68F1++PaWc9wHgdj5YeqG30CVReBaxSQ
-         7zgTTXbB0BvsKBkgxIK2UI/Iu/DopS5PndAYThf8=
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id JsjuUxZpqgrR; Sun, 18 Oct 2020 12:13:38 -0700 (PDT)
-Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:600:8280:66d1::c447])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 1ED2912802BA;
-        Sun, 18 Oct 2020 12:13:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
-        s=20151216; t=1603048418;
-        bh=z260bBy56dgN8y3lDRHRQeuKrIr1eALRZNoNPoXlSSo=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=QOZMzgTQH16i5avnDNVW0Ktw3okhOk0UWDzTWl7121p+F93A1Quw31cCRVLQH+SGW
-         zn7QBaZkwCTKpROUCnm6j2wnXTspVYtdUU68F1++PaWc9wHgdj5YeqG30CVReBaxSQ
-         7zgTTXbB0BvsKBkgxIK2UI/Iu/DopS5PndAYThf8=
-Message-ID: <45efa7780c79972eae9ca9bdeb9f7edbab4f3643.camel@HansenPartnership.com>
-Subject: Re: [Ocfs2-devel] [RFC] treewide: cleanup unreachable breaks
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Matthew Wilcox <willy@infradead.org>, trix@redhat.com
-Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        clang-built-linux@googlegroups.com, linux-iio@vger.kernel.org,
-        nouveau@lists.freedesktop.org, storagedev@microchip.com,
-        dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
-        ath10k@lists.infradead.org, MPT-FusionLinux.pdl@broadcom.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        usb-storage@lists.one-eyed-alien.net,
-        linux-watchdog@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-nvdimm@lists.01.org, amd-gfx@lists.freedesktop.org,
-        linux-acpi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        industrypack-devel@lists.sourceforge.net,
-        linux-pci@vger.kernel.org, spice-devel@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-nfc@lists.01.org, linux-pm@vger.kernel.org,
-        linux-can@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-gpio@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-amlogic@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org,
-        linux-integrity@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-crypto@vger.kernel.org, patches@opensource.cirrus.com,
-        bpf@vger.kernel.org, ocfs2-devel@oss.oracle.com,
-        linux-power@fi.rohmeurope.com
-Date:   Sun, 18 Oct 2020 12:13:35 -0700
-In-Reply-To: <20201018185943.GM20115@casper.infradead.org>
-References: <20201017160928.12698-1-trix@redhat.com>
-         <20201018185943.GM20115@casper.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        Sun, 18 Oct 2020 16:40:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BCAC0613CE
+        for <linux-serial@vger.kernel.org>; Sun, 18 Oct 2020 13:40:42 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kUFTl-0002Z8-RC; Sun, 18 Oct 2020 22:40:33 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kUFTk-0007Ik-BN; Sun, 18 Oct 2020 22:40:32 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>, linux-leds@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v9 2/3] tty: new helper function tty_get_icount()
+Date:   Sun, 18 Oct 2020 22:40:21 +0200
+Message-Id: <20201018204022.910815-3-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201018204022.910815-1-u.kleine-koenig@pengutronix.de>
+References: <20201018204022.910815-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 2020-10-18 at 19:59 +0100, Matthew Wilcox wrote:
-> On Sat, Oct 17, 2020 at 09:09:28AM -0700, trix@redhat.com wrote:
-> > clang has a number of useful, new warnings see
-> > https://urldefense.com/v3/__https://clang.llvm.org/docs/DiagnosticsReference.html__;!!GqivPVa7Brio!Krxz78O3RKcB9JBMVo_F98FupVhj_jxX60ddN6tKGEbv_cnooXc1nnBmchm-e_O9ieGnyQ$ 
-> 
-> Please get your IT department to remove that stupidity.  If you
-> can't, please send email from a non-Red Hat email address.
+For a given struct tty_struct this yields the corresponding statistics
+about sent and received characters (and some more) which is needed to
+implement an LED trigger for tty devices.
 
-Actually, the problem is at Oracle's end somewhere in the ocfs2 list
-... if you could fix it, that would be great.  The usual real mailing
-lists didn't get this transformation
+The new function is then used to simplify tty_tiocgicount().
 
-https://lore.kernel.org/bpf/20201017160928.12698-1-trix@redhat.com/
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/tty/tty_io.c | 29 +++++++++++++++++++++++++----
+ include/linux/tty.h  |  2 ++
+ 2 files changed, 27 insertions(+), 4 deletions(-)
 
-but the ocfs2 list archive did:
-
-https://oss.oracle.com/pipermail/ocfs2-devel/2020-October/015330.html
-
-I bet Oracle IT has put some spam filter on the list that mangles URLs
-this way.
-
-James
-
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 8aede3d2c1e0..9dc1cac7aab7 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2486,15 +2486,36 @@ static int tty_tiocmset(struct tty_struct *tty, unsigned int cmd,
+ 	return tty->ops->tiocmset(tty, set, clear);
+ }
+ 
++/**
++ *	tty_get_icount		-	get tty statistics
++ *	@tty: tty device
++ *	@icount: output parameter
++ *
++ *	Gets a copy of the tty's icount statistics.
++ *
++ *	Locking: none (up to the driver)
++ */
++int tty_get_icount(struct tty_struct *tty,
++		   struct serial_icounter_struct *icount)
++{
++	memset(icount, 0, sizeof(*icount));
++
++	if (tty->ops->get_icount)
++		return tty->ops->get_icount(tty, icount);
++	else
++		return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(tty_get_icount);
++
+ static int tty_tiocgicount(struct tty_struct *tty, void __user *arg)
+ {
+-	int retval = -EINVAL;
+ 	struct serial_icounter_struct icount;
+-	memset(&icount, 0, sizeof(icount));
+-	if (tty->ops->get_icount)
+-		retval = tty->ops->get_icount(tty, &icount);
++	int retval;
++
++	retval = tty_get_icount(tty, &icount);
+ 	if (retval != 0)
+ 		return retval;
++
+ 	if (copy_to_user(arg, &icount, sizeof(icount)))
+ 		return -EFAULT;
+ 	return 0;
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index c867d6fe67c4..3ac812b347de 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -497,6 +497,8 @@ extern void tty_unthrottle(struct tty_struct *tty);
+ extern int tty_throttle_safe(struct tty_struct *tty);
+ extern int tty_unthrottle_safe(struct tty_struct *tty);
+ extern int tty_do_resize(struct tty_struct *tty, struct winsize *ws);
++extern int tty_get_icount(struct tty_struct *tty,
++			  struct serial_icounter_struct *icount);
+ extern int is_current_pgrp_orphaned(void);
+ extern void tty_hangup(struct tty_struct *tty);
+ extern void tty_vhangup(struct tty_struct *tty);
+-- 
+2.28.0
 
