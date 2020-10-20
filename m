@@ -7,23 +7,23 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=BAYES_00,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE59C433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 12:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80558C433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 12:36:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2AD0A222C8
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 12:25:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C30C22283
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 12:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405915AbgJTMZ5 (ORCPT
+        id S2406250AbgJTMgN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Oct 2020 08:25:57 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:46730 "EHLO
+        Tue, 20 Oct 2020 08:36:13 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:47486 "EHLO
         jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405851AbgJTMZ5 (ORCPT
+        with ESMTP id S2406246AbgJTMgM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Oct 2020 08:25:57 -0400
+        Tue, 20 Oct 2020 08:36:12 -0400
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id B8D341C0B87; Tue, 20 Oct 2020 14:25:54 +0200 (CEST)
-Date:   Tue, 20 Oct 2020 14:25:54 +0200
+        id 04A411C0B8D; Tue, 20 Oct 2020 14:36:10 +0200 (CEST)
+Date:   Tue, 20 Oct 2020 14:36:09 +0200
 From:   Pavel Machek <pavel@denx.de>
 To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>
@@ -33,48 +33,153 @@ Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
         Jiri Slaby <jslaby@suse.com>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
         linux-leds@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v9 2/3] tty: new helper function tty_get_icount()
-Message-ID: <20201020122554.GC19856@duo.ucw.cz>
+Subject: Re: [PATCH v9 3/3] leds: trigger: implement a tty trigger
+Message-ID: <20201020123609.GD19856@duo.ucw.cz>
 References: <20201018204022.910815-1-u.kleine-koenig@pengutronix.de>
- <20201018204022.910815-3-u.kleine-koenig@pengutronix.de>
+ <20201018204022.910815-4-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="YD3LsXFS42OYHhNZ"
+        protocol="application/pgp-signature"; boundary="Xm/fll+QQv+hsKip"
 Content-Disposition: inline
-In-Reply-To: <20201018204022.910815-3-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20201018204022.910815-4-u.kleine-koenig@pengutronix.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---YD3LsXFS42OYHhNZ
+--Xm/fll+QQv+hsKip
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun 2020-10-18 22:40:21, Uwe Kleine-K=F6nig wrote:
-> For a given struct tty_struct this yields the corresponding statistics
-> about sent and received characters (and some more) which is needed to
-> implement an LED trigger for tty devices.
+Hi!
+
+> Usage is as follows:
 >=20
-> The new function is then used to simplify tty_tiocgicount().
+> 	myled=3Dledname
+> 	tty=3DttyS0
+>=20
+> 	echo tty > /sys/class/leds/$myled/trigger
+> 	echo $tty > /sys/class/leds/$myled/ttyname
+>=20
+> . When this new trigger is active it periodically checks the tty's
+> statistics and when it changed since the last check the led is flashed
+> once.
 >=20
 > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> ---
 
-Reviewed-by: Pavel Machek <pavel@ucw.cz>
+> +static ssize_t ttyname_show(struct device *dev,
+> +			    struct device_attribute *attr, char *buf)
+> +{
+> +	struct ledtrig_tty_data *trigger_data =3D led_trigger_get_drvdata(dev);
+> +	ssize_t len =3D 0;
+
+Unused value. Not sure if some checker will complain.
+
+> +static ssize_t ttyname_store(struct device *dev,
+> +			     struct device_attribute *attr, const char *buf,
+> +			     size_t size)
+> +{
+> +	struct ledtrig_tty_data *trigger_data =3D led_trigger_get_drvdata(dev);
+> +	char *ttyname;
+> +	ssize_t ret =3D size;
+
+> +	ledtrig_tty_halt(trigger_data);
+> +
+> +	mutex_lock(&trigger_data->mutex);
+> +
+> +	if (size > 0 && buf[size - 1] =3D=3D '\n')
+> +		size -=3D 1;
+> +
+> +	if (size) {
+> +		ttyname =3D kmemdup_nul(buf, size, GFP_KERNEL);
+> +		if (!ttyname) {
+> +			ret =3D -ENOMEM;
+> +			goto out_unlock;
+
+If this happens, you return error to the user and
+trigger_data->ttyname remains with the old value, but trigger is now
+stopped. That is not exactly consistent.
+
+
+> +static void ledtrig_tty_work(struct work_struct *work)
+> +{
+> +	struct ledtrig_tty_data *trigger_data =3D
+> +		container_of(work, struct ledtrig_tty_data, dwork.work);
+> +	struct serial_icounter_struct icount;
+> +	int ret;
+> +
+> +	mutex_lock(&trigger_data->mutex);
+> +
+> +	BUG_ON(!trigger_data->ttyname);
+> +
+> +	/* try to get the tty corresponding to $ttyname */
+> +	if (!trigger_data->tty) {
+> +		dev_t devno;
+> +		struct tty_struct *tty;
+> +		int ret;
+> +
+> +		ret =3D tty_dev_name_to_number(trigger_data->ttyname, &devno);
+> +		if (ret < 0)
+> +			/*
+> +			 * A device with this name might appear later, so keep
+> +			 * retrying.
+> +			 */
+> +			goto out;
+
+Poll every 100 msec... Hmm.... Okay, I guess?
+
+> +	ret =3D tty_get_icount(trigger_data->tty, &icount);
+> +	if (ret) {
+> +		mutex_unlock(&trigger_data->mutex);
+> +		dev_info(trigger_data->tty->dev, "Failed to get icount, stopped pollin=
+g\n");
+> +		mutex_unlock(&trigger_data->mutex);
+
+Eh?
+
+> +		return;
+> +	}
+> +
+> +	if (icount.rx !=3D trigger_data->rx ||
+> +	    icount.tx !=3D trigger_data->tx) {
+> +		led_set_brightness(trigger_data->led_cdev, LED_ON);
+
+Are you sure about LED_ON here? It should use current brightness
+selected by brightness file...
+
+> +static int ledtrig_tty_activate(struct led_classdev *led_cdev)
+> +{
+> +	struct ledtrig_tty_data *trigger_data;
+> +
+> +	trigger_data =3D kzalloc(sizeof(*trigger_data), GFP_KERNEL);
+> +	if (!trigger_data)
+> +		return -ENOMEM;
+> +
+> +	led_set_trigger_data(led_cdev, trigger_data);
+> +
+> +	INIT_DELAYED_WORK(&trigger_data->dwork, ledtrig_tty_work);
+> +	trigger_data->led_cdev =3D led_cdev;
+> +	mutex_init(&trigger_data->mutex);
+
+How is this protected from concurrent access from sysfs?
+
+Best regards,
+							Pavel
 
 --=20
 http://www.livejournal.com/~pavelmachek
 
---YD3LsXFS42OYHhNZ
+--Xm/fll+QQv+hsKip
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX47XUgAKCRAw5/Bqldv6
-8gBuAJ9dfrB+0yfyOPGsKHOGTEP7FPWQ1QCdHwOmZorGnrKXY05K5xmHFtmO/s8=
-=Wr3P
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX47ZuQAKCRAw5/Bqldv6
+8jLcAJ4yb82/HCdd/XZfoeI9zFLNCZgJagCgiWsD9kePtsTio6g9/pFmCBGVfN4=
+=WDRg
 -----END PGP SIGNATURE-----
 
---YD3LsXFS42OYHhNZ--
+--Xm/fll+QQv+hsKip--
