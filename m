@@ -2,124 +2,185 @@ Return-Path: <SRS0=UUkf=D3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-10.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3790C433E7
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 13:07:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81955C5517B
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 13:56:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 552B5224B8
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 13:07:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0492322283
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 13:56:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="G4l4GEUn"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ckht+6t3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407241AbgJTNHT (ORCPT
+        id S2407712AbgJTN4H (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Oct 2020 09:07:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35393 "EHLO
+        Tue, 20 Oct 2020 09:56:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27970 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2406825AbgJTNHS (ORCPT
+        by vger.kernel.org with ESMTP id S2407732AbgJTN4G (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Oct 2020 09:07:18 -0400
+        Tue, 20 Oct 2020 09:56:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603199237;
+        s=mimecast20190719; t=1603202164;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:content-type:content-type;
-        bh=2anAzapiudNNR8XpuCb8etqjbkocHf/cArg3i1fKpjA=;
-        b=G4l4GEUngMtccYXYpLvjP5OJN44Qo+j70S8nfm5SXCd/pCQzPC0pewJetP6U3q6K3xbG2Q
-        M4Cn13OK0U2UBzrK3Dk9Le6luMsjzzfQgK59lhVJ0rHdohORzUlzlHxomdIM/wU/TQRgUA
-        /Qg5DCX5tZE2W4kmroRB27lWtd7nt+w=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-590-MP1dPxyeOcqPI3RYv2Rvow-1; Tue, 20 Oct 2020 09:07:15 -0400
-X-MC-Unique: MP1dPxyeOcqPI3RYv2Rvow-1
-Received: by mail-qv1-f72.google.com with SMTP id x34so1279101qvx.7
-        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2020 06:07:15 -0700 (PDT)
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HyQ28xr5/lapv6azTtFCvHFT5XQ1+OzeHk+84iEm66Y=;
+        b=ckht+6t33lbUC2eMXrxd9VwzY1SOpc/b4diJYbQpU72IixDlBDYUWQX7nATvmzMyhJvlGC
+        IVuENBfDXNLkiSfKYfYjMt0M/Tam/PAd5BPSqYozN2w89+68e8nWSkAGF5w4eJcfvUve2m
+        TIFZJSbYBajL8w5CNz+PV0x6sMwdGvo=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-7VgVjcw6NQmiwCa3yFTIVQ-1; Tue, 20 Oct 2020 09:56:01 -0400
+X-MC-Unique: 7VgVjcw6NQmiwCa3yFTIVQ-1
+Received: by mail-qv1-f71.google.com with SMTP id eh4so1368064qvb.12
+        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2020 06:56:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=2anAzapiudNNR8XpuCb8etqjbkocHf/cArg3i1fKpjA=;
-        b=TIxj4qGY1yPDqG0/uNMltysvTBXdabPXMPoSUmvYESk7w/43H/dlDAomLe8ruDLNvM
-         ch1jNo6GZSRpueyx7wv8yo9GXS9JRyFMfcuFvbXJMm707Bo+2HtnMv0Lw6tDkojNVrXV
-         wh6AhUkurMONBZMfFWLxwDjpYnr79p7bAVYQvzpPSBnUuRVtDdIut4eke6PkWyHp5inP
-         aRbsYhmfGXcTy38yGlyodBtIBkjb6Kyy0FnRtdhTaPIbTEZEqaikFimzIVZ6xwD6oNh/
-         jxgsLFtpU9eBnb9jZMErCLHOxiVOPzyIK0Ms2BV4UEvac1jdCNuAMuQvblklHBVe3WXm
-         bjug==
-X-Gm-Message-State: AOAM530LladV2X7AX9/mjpA+LvhuhpzXH0k6y5BZ+ZtyrQQ7L5a1ansK
-        eFOb7wgttyrwtOVuQWaJjNHXPTF1zZ9xw1JiSzpGYY1DRFeMffc9e+JiIwkpNfF+Ej2glaHFSsy
-        BPijSVZgNNd4SoGzLt+FNNMZS
-X-Received: by 2002:aed:216b:: with SMTP id 98mr2299339qtc.233.1603199234933;
-        Tue, 20 Oct 2020 06:07:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxqNg7p1DO3AxkYDn6Hv+sy3YgDE6VecvNiBWMxgWFr77Yf6Q7cXLbaArbHxGEA5CBuDcGZyg==
-X-Received: by 2002:aed:216b:: with SMTP id 98mr2299314qtc.233.1603199234669;
-        Tue, 20 Oct 2020 06:07:14 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=HyQ28xr5/lapv6azTtFCvHFT5XQ1+OzeHk+84iEm66Y=;
+        b=js8OAfB1Mv2uaKPmWEimA0V393AgfsWmdTBhwAUmuD3+u9tL/siIY81QgpfCkdnKMq
+         SfYgFlwTK24w7EYv5xumneDtIh5nuMzfnS9gBaZnNXuJi9lu4USlL4eDCoMU+YDYEy3L
+         Yrjlaty90Jbsmwf25wV/eC0FUXqVira4VkTvcvqJgM/cMEOxNS/zot/RW6+mzuPWE+e3
+         4OA3B3QIkHkmC13ORQ6UwLoOdVGEDODfw8EXeMzB47r+cUaNxKTta3TBK0cYixFq+Ti+
+         o9AanDAiQ0YhyoucxP9BadnSTrvSOrwijc4H87Gy3005EC6/VotstOiH6DoxnNCJOd3L
+         rsUw==
+X-Gm-Message-State: AOAM530z+YjCjVs811gh8rmyAlwXTttgLOMPDWhXaop1l3UpSHWh3GaE
+        QGkK0SOERR7viOCSKa+UVm0AT8obP12TL5HFtRcxPqIs9RpD2d9qW1Z5I/oj6MuZvyTjgcFpERu
+        WPB0uZadhKogDU/PnAM2Id7Jl
+X-Received: by 2002:a05:6214:174f:: with SMTP id dc15mr3370422qvb.25.1603202160687;
+        Tue, 20 Oct 2020 06:56:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyLUAfqrAOJzxwKF3+voCBF5yQYNbMOvfOkDZhumkJj3bEnT15V4x8vUJ5iQ5pWt9KusIZtsQ==
+X-Received: by 2002:a05:6214:174f:: with SMTP id dc15mr3370377qvb.25.1603202160139;
+        Tue, 20 Oct 2020 06:56:00 -0700 (PDT)
 Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id 8sm760540qkm.0.2020.10.20.06.07.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Oct 2020 06:07:14 -0700 (PDT)
-From:   trix@redhat.com
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] tty: serial: imx: remove unneeded break
-Date:   Tue, 20 Oct 2020 06:07:09 -0700
-Message-Id: <20201020130709.28096-1-trix@redhat.com>
-X-Mailer: git-send-email 2.18.1
+        by smtp.gmail.com with ESMTPSA id b8sm775938qkn.133.2020.10.20.06.55.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Oct 2020 06:55:59 -0700 (PDT)
+Subject: Re: [RFC] treewide: cleanup unreachable breaks
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, linux-edac@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-power@fi.rohmeurope.com, linux-gpio@vger.kernel.org,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        nouveau@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org,
+        spice-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-can@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, ath10k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com, linux-nfc@lists.01.org,
+        linux-nvdimm <linux-nvdimm@lists.01.org>,
+        linux-pci@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
+        storagedev@microchip.com, devel@driverdev.osuosl.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        usb-storage@lists.one-eyed-alien.net,
+        linux-watchdog@vger.kernel.org, ocfs2-devel@oss.oracle.com,
+        bpf <bpf@vger.kernel.org>, linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org, keyrings@vger.kernel.org,
+        alsa-devel@alsa-project.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        George Burgess <gbiv@google.com>, Joe Perches <joe@perches.com>
+References: <20201017160928.12698-1-trix@redhat.com>
+ <20201018054332.GB593954@kroah.com>
+ <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <ca1f50d6-1005-8e3d-8d5c-98c82a704338@redhat.com>
+Date:   Tue, 20 Oct 2020 06:55:52 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
 Authentication-Results: relay.mimecast.com;
         auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=trix@redhat.com
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
 
-A break is not needed if it is preceded by a return
+On 10/19/20 12:42 PM, Nick Desaulniers wrote:
+> On Sat, Oct 17, 2020 at 10:43 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>> On Sat, Oct 17, 2020 at 09:09:28AM -0700, trix@redhat.com wrote:
+>>> From: Tom Rix <trix@redhat.com>
+>>>
+>>> This is a upcoming change to clean up a new warning treewide.
+>>> I am wondering if the change could be one mega patch (see below) or
+>>> normal patch per file about 100 patches or somewhere half way by collecting
+>>> early acks.
+>> Please break it up into one-patch-per-subsystem, like normal, and get it
+>> merged that way.
+>>
+>> Sending us a patch, without even a diffstat to review, isn't going to
+>> get you very far...
+> Tom,
+> If you're able to automate this cleanup, I suggest checking in a
+> script that can be run on a directory.  Then for each subsystem you
+> can say in your commit "I ran scripts/fix_whatever.py on this subdir."
+>  Then others can help you drive the tree wide cleanup.  Then we can
+> enable -Wunreachable-code-break either by default, or W=2 right now
+> might be a good idea.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
+I should have waited for Joe Perches's fixer addition to checkpatch :)
 
-v2: improve commit log
+The easy fixes I did only cover about 1/2 of the problems.
 
----
- drivers/tty/serial/imx.c | 5 -----
- 1 file changed, 5 deletions(-)
+Remaining are mostly nested switches, which from a complexity standpoint is bad.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 1731d9728865..09703079db7b 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -320,7 +320,6 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
- 	switch (offset) {
- 	case UCR1:
- 		return sport->ucr1;
--		break;
- 	case UCR2:
- 		/*
- 		 * UCR2_SRST is the only bit in the cached registers that might
-@@ -331,16 +330,12 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
- 		if (!(sport->ucr2 & UCR2_SRST))
- 			sport->ucr2 = readl(sport->port.membase + offset);
- 		return sport->ucr2;
--		break;
- 	case UCR3:
- 		return sport->ucr3;
--		break;
- 	case UCR4:
- 		return sport->ucr4;
--		break;
- 	case UFCR:
- 		return sport->ufcr;
--		break;
- 	default:
- 		return readl(sport->port.membase + offset);
- 	}
--- 
-2.18.1
+>
+> Ah, George (gbiv@, cc'ed), did an analysis recently of
+> `-Wunreachable-code-loop-increment`, `-Wunreachable-code-break`, and
+> `-Wunreachable-code-return` for Android userspace.  From the review:
+> ```
+> Spoilers: of these, it seems useful to turn on
+> -Wunreachable-code-loop-increment and -Wunreachable-code-return by
+> default for Android
+
+In my simple add-a-cflag bot, i see there are about 250
+
+issues for -Wunreachable-code-return.
+
+I'll see about doing this one next.
+
+> ...
+> While these conventions about always having break arguably became
+> obsolete when we enabled -Wfallthrough, my sample turned up zero
+> potential bugs caught by this warning, and we'd need to put a lot of
+> effort into getting a clean tree. So this warning doesn't seem to be
+> worth it.
+> ```
+> Looks like there's an order of magnitude of `-Wunreachable-code-break`
+> than the other two.
+>
+> We probably should add all 3 to W=2 builds (wrapped in cc-option).
+> I've filed https://github.com/ClangBuiltLinux/linux/issues/1180 to
+> follow up on.
+
+Yes, i think think these should be added.
+
+Tom
 
