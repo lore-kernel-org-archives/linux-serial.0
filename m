@@ -2,132 +2,160 @@ Return-Path: <SRS0=UUkf=D3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F358C433E7
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 07:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62090C433E7
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 08:49:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3CFB2223C6
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 07:38:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07A31222C8
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 08:49:16 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="q8gn83IP"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728338AbgJTHiB (ORCPT
+        id S2392132AbgJTItI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Oct 2020 03:38:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727857AbgJTHiB (ORCPT
+        Tue, 20 Oct 2020 04:49:08 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:41530 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389490AbgJTItF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Oct 2020 03:38:01 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50655C061755
-        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2020 00:38:01 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kUmDO-0005aE-0I; Tue, 20 Oct 2020 09:37:50 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kUmDN-0006Dc-6N; Tue, 20 Oct 2020 09:37:49 +0200
-Date:   Tue, 20 Oct 2020 09:37:49 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     trix@redhat.com
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: remove unneeded break
-Message-ID: <20201020073749.rxfdggobl5gv7vn4@pengutronix.de>
-References: <20201019175915.3718-1-trix@redhat.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="tfcchpa22t5gbr4t"
-Content-Disposition: inline
-In-Reply-To: <20201019175915.3718-1-trix@redhat.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+        Tue, 20 Oct 2020 04:49:05 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09K8i7rI188082;
+        Tue, 20 Oct 2020 08:48:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : message-id :
+ content-type : mime-version : subject : date : in-reply-to : cc : to :
+ references; s=corp-2020-01-29;
+ bh=UBSvDuZX45rcdCwz1yIzvCzCqfd2joSCizhea4x+Xao=;
+ b=q8gn83IPPWdFm1HT3taLhd9DUF/VTUU+yXtsd8f9nD6wriupB19ul4FsqzWGdtIZMcde
+ GW+G9oeRVHaGmJfZ8muagtVwvuWLE6AywXuhak+OXkSgdFP6EIR2H2OqKDUhR7yIW2Vz
+ zpamQMFlTWRfwdWHBA7I0p8HYGgPlEg7NOi5pNpKeOCI5/Zqu82RI3DyvlSb3YeNhNvu
+ 1nAbi2LxPOnr/RtC4QoVHdNGHfdCdQB+x9xvmqx+BqjtbEr8lrxt1aMjIali/bjhTn7W
+ dzqjxrXdOv4FjsFo2kwRKNjQX5RScYby9/qqSUitUFXIKeMy4YBvXYVTZYkhax1TMfnU 0w== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 347s8msmp0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 20 Oct 2020 08:48:12 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09K8is45150623;
+        Tue, 20 Oct 2020 08:48:12 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 348ahw07cp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 20 Oct 2020 08:48:12 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 09K8mAEe159753;
+        Tue, 20 Oct 2020 08:48:10 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 348ahw07bh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 20 Oct 2020 08:48:10 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 09K8lvTX021447;
+        Tue, 20 Oct 2020 08:47:58 GMT
+Received: from [10.175.164.120] (/10.175.164.120)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 20 Oct 2020 01:47:57 -0700
+From:   John Haxby <john.haxby@oracle.com>
+Message-Id: <27A23102-A7F5-48C5-8972-48CE4C283C6E@oracle.com>
+Content-Type: multipart/signed;
+        boundary="Apple-Mail=_9F9749E9-79EA-41AB-B516-003ECE07BEE3";
+        protocol="application/pgp-signature";
+        micalg=pgp-sha256
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [Ocfs2-devel] [RFC] treewide: cleanup unreachable breaks
+Date:   Tue, 20 Oct 2020 09:47:45 +0100
+In-Reply-To: <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+Cc:     Tom Rix <trix@redhat.com>, alsa-devel@alsa-project.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        storagedev@microchip.com,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        virtualization@lists.linux-foundation.org,
+        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
+        ath10k@lists.infradead.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        usb-storage@lists.one-eyed-alien.net,
+        linux-watchdog@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-nvdimm <linux-nvdimm@lists.01.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        linux-acpi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-pci@vger.kernel.org, spice-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-nfc@lists.01.org, linux-pm@vger.kernel.org,
+        linux-can@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-gpio@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linux-amlogic@lists.infradead.org,
+        openipmi-developer@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org,
+        linux-integrity@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, George Burgess <gbiv@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-usb@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-security-module@vger.kernel.org,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>, patches@opensource.cirrus.com,
+        bpf <bpf@vger.kernel.org>, ocfs2-devel@oss.oracle.com,
+        linux-power@fi.rohmeurope.com
+To:     Nick Desaulniers <ndesaulniers@google.com>
+References: <20201017160928.12698-1-trix@redhat.com>
+ <20201018054332.GB593954@kroah.com>
+ <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9779 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0
+ lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0
+ phishscore=0 clxscore=1011 bulkscore=0 impostorscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010200059
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---tfcchpa22t5gbr4t
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+--Apple-Mail=_9F9749E9-79EA-41AB-B516-003ECE07BEE3
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
 
-On Mon, Oct 19, 2020 at 10:59:15AM -0700, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
+
+
+> On 19 Oct 2020, at 20:42, Nick Desaulniers <ndesaulniers@google.com> =
+wrote:
 >=20
-> A break is not needed if it is preceded by a return
->=20
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/tty/serial/imx.c | 5 -----
->  1 file changed, 5 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 1731d9728865..09703079db7b 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -320,7 +320,6 @@ static u32 imx_uart_readl(struct imx_port *sport, u32=
- offset)
->  	switch (offset) {
->  	case UCR1:
->  		return sport->ucr1;
-> -		break;
->  	case UCR2:
->  		/*
->  		 * UCR2_SRST is the only bit in the cached registers that might
-> @@ -331,16 +330,12 @@ static u32 imx_uart_readl(struct imx_port *sport, u=
-32 offset)
->  		if (!(sport->ucr2 & UCR2_SRST))
->  			sport->ucr2 =3D readl(sport->port.membase + offset);
->  		return sport->ucr2;
-> -		break;
->  	case UCR3:
->  		return sport->ucr3;
-> -		break;
->  	case UCR4:
->  		return sport->ucr4;
-> -		break;
->  	case UFCR:
->  		return sport->ufcr;
-> -		break;
->  	default:
->  		return readl(sport->port.membase + offset);
->  	}
+> We probably should add all 3 to W=3D2 builds (wrapped in cc-option).
+> I've filed https://github.com/ClangBuiltLinux/linux/issues/1180 to
+> follow up on.
 
-this might be subjective, but I like the break being there for clearity.
-So I object to make a patch to remove them. In case I'm outvoted I'd at
-least want empty lines instead.
+It looks as though the URL mangling has been fixed.   If anyone sees =
+that specific URL mangled, please let me know.
 
-Best regards
-Uwe
+jch
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---tfcchpa22t5gbr4t
-Content-Type: application/pgp-signature; name="signature.asc"
+--Apple-Mail=_9F9749E9-79EA-41AB-B516-003ECE07BEE3
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP
 
 -----BEGIN PGP SIGNATURE-----
+Comment: GPGTools - http://gpgtools.org
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+Ok8oACgkQwfwUeK3K
-7AmutQgAl6jVgjKWwNF43KjCQWe0NKy9bCuHoGhhs6JNBOw0ODnglhn8nOADzFWb
-YJia9YC8rjqdPKBiKk/46Xdk0IH2NR/9rICG4nXCjYMCEezRA9+xRZc1g6nJfb6w
-Rd5h2jZZCXNMdx1wFlYoySbB0EmwMje/0acPiBK0NwSSsfbOZUnpiqGfr6UdMAIA
-LkuNkFKyTh4dAhnAiLsQlLYCBB2q/aQjhzcL10WnfLrdJ6B/RdnmXhHBlWKZ/vOL
-C+QTtRUXBOA99n1WAujw0XeHJHGK4zHD2sEJX9EcDtx6/OSPZmTeCpVLTDHSKyzb
-kq9VGoVRb7dvhBJyzULubMmUYatU3w==
-=It2d
+iHUEAREIAB0WIQT+pxvb11CFWUkNSOVFC7t+lC+jyAUCX46kMQAKCRBFC7t+lC+j
+yBKiAP90JVXdPzuAwtRGkROpw1eVCo7wCaZ5nOa8Oo0sN6gC9gD/S0eGTqQhmg+n
+sXPJxPYqQsg09qmS6k/HX+AP5Oz2AMo=
+=xx66
 -----END PGP SIGNATURE-----
 
---tfcchpa22t5gbr4t--
+--Apple-Mail=_9F9749E9-79EA-41AB-B516-003ECE07BEE3--
