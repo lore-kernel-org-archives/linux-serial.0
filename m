@@ -1,149 +1,133 @@
-Return-Path: <SRS0=RzGw=D2=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=UUkf=D3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F796C4363A
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Oct 2020 23:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F358C433E7
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 07:38:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 17A1A2244C
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Oct 2020 23:06:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="R0THCPfe"
+	by mail.kernel.org (Postfix) with ESMTP id 3CFB2223C6
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Oct 2020 07:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387920AbgJSXGA (ORCPT
+        id S1728338AbgJTHiB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Oct 2020 19:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37906 "EHLO
+        Tue, 20 Oct 2020 03:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728143AbgJSXFu (ORCPT
+        with ESMTP id S1727857AbgJTHiB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Oct 2020 19:05:50 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9153CC0613D9
-        for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2020 16:05:49 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id b8so24372ioh.11
-        for <linux-serial@vger.kernel.org>; Mon, 19 Oct 2020 16:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KZcwJitFojA7RhzeD/UU8gbzehCBdvf6g5ia0ZYCrq4=;
-        b=R0THCPfeT+NjRv5n7wRuWr3+iQQVH5mYQugrcFEorv7jMlZOJpq4gWO8x2sltRZ1S3
-         8+uXkfK+0xraFRPc7RLEyC+L1Eqn+lwfgcQ60rCu3Ir6T0iqCUlHxkXPI8IxQxljNihW
-         MxA7dERE+Fo0B6yhfEPLGm6gbjuMrGvt0ee7i4ozPAa6C0OwTV1SJBaz+sj8rzyyiIix
-         DQ1LhxNguLsVQ2r9xWcmCur9QDHoeimXQtC/UVpN+4Yl8O9ZbpYKUwlrKFZtzYHwjpgZ
-         iC+kREvCZvwgmOBCIm7DmgxG6/6ncKrp6QDCnbxkp/qIzrhuMyauJsg53LWTp//HSslk
-         z+3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KZcwJitFojA7RhzeD/UU8gbzehCBdvf6g5ia0ZYCrq4=;
-        b=EoNPdh0TqZukRfTLCrkzVVqP9/tHs/hh5SCOOpE5qNZdsm+5tZuILhSeIAGQB7Il80
-         hjvB2DldUj3fTosknj/puorHKGFDooW8COLXnFXMH9nJgbfQEjLG6CZGDEEkijTQ1so4
-         MdGfXOQ0KBdSrnOK+kG1tp6KdO3vzA9X/zEp1zO74t2hcp1139gQ8jnjtMN7fK+2L9vy
-         j4AbFHtR4uJAjLQMKc2HfASzVVGcGzXQ4KOLJjgRoHCVUi5o2I5kd/pPA82wOy49nYwq
-         vZ6cyPURdEBXMHQC8qDgg25rFSizddNl5A8Q8KaaSIGmdx/PunLT/3bSVZhlHUeXvyfa
-         Zzew==
-X-Gm-Message-State: AOAM5323DMihjq+13uXx+PyvumfhdT38n6qjqOO2FApXAyQlJbtNVjrk
-        6r48wrxZSs+ETeLTcpbVk8B5kw==
-X-Google-Smtp-Source: ABdhPJwE/qhLAedndnNRaUrUDMs331Onaq8Iz+VDEVRJN+4h4B5ckC67pNXDnvS9MRF/DxLJjNlnIQ==
-X-Received: by 2002:a6b:5019:: with SMTP id e25mr44377iob.123.1603148748578;
-        Mon, 19 Oct 2020 16:05:48 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id u8sm7938ilm.36.2020.10.19.16.05.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 16:05:47 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1kUeDq-002hRf-LL; Mon, 19 Oct 2020 20:05:46 -0300
-Date:   Mon, 19 Oct 2020 20:05:46 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Tom Rix <trix@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
-        linux-edac@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-pm@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-block@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-power@fi.rohmeurope.com, linux-gpio@vger.kernel.org,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        nouveau@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        spice-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
-        industrypack-devel@lists.sourceforge.net,
-        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-can@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, ath10k@lists.infradead.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com, linux-nfc@lists.01.org,
-        linux-nvdimm <linux-nvdimm@lists.01.org>,
-        linux-pci@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
-        storagedev@microchip.com, devel@driverdev.osuosl.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        usb-storage@lists.one-eyed-alien.net,
-        linux-watchdog@vger.kernel.org, ocfs2-devel@oss.oracle.com,
-        bpf <bpf@vger.kernel.org>, linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org, keyrings@vger.kernel.org,
-        alsa-devel@alsa-project.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        George Burgess <gbiv@google.com>
-Subject: Re: [RFC] treewide: cleanup unreachable breaks
-Message-ID: <20201019230546.GH36674@ziepe.ca>
-References: <20201017160928.12698-1-trix@redhat.com>
- <20201018054332.GB593954@kroah.com>
- <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+        Tue, 20 Oct 2020 03:38:01 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50655C061755
+        for <linux-serial@vger.kernel.org>; Tue, 20 Oct 2020 00:38:01 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kUmDO-0005aE-0I; Tue, 20 Oct 2020 09:37:50 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kUmDN-0006Dc-6N; Tue, 20 Oct 2020 09:37:49 +0200
+Date:   Tue, 20 Oct 2020 09:37:49 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     trix@redhat.com
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: remove unneeded break
+Message-ID: <20201020073749.rxfdggobl5gv7vn4@pengutronix.de>
+References: <20201019175915.3718-1-trix@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tfcchpa22t5gbr4t"
 Content-Disposition: inline
-In-Reply-To: <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+In-Reply-To: <20201019175915.3718-1-trix@redhat.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 19, 2020 at 12:42:15PM -0700, Nick Desaulniers wrote:
-> On Sat, Oct 17, 2020 at 10:43 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Sat, Oct 17, 2020 at 09:09:28AM -0700, trix@redhat.com wrote:
-> > > From: Tom Rix <trix@redhat.com>
-> > >
-> > > This is a upcoming change to clean up a new warning treewide.
-> > > I am wondering if the change could be one mega patch (see below) or
-> > > normal patch per file about 100 patches or somewhere half way by collecting
-> > > early acks.
-> >
-> > Please break it up into one-patch-per-subsystem, like normal, and get it
-> > merged that way.
-> >
-> > Sending us a patch, without even a diffstat to review, isn't going to
-> > get you very far...
-> 
-> Tom,
-> If you're able to automate this cleanup, I suggest checking in a
-> script that can be run on a directory.  Then for each subsystem you
-> can say in your commit "I ran scripts/fix_whatever.py on this subdir."
->  Then others can help you drive the tree wide cleanup.  Then we can
-> enable -Wunreachable-code-break either by default, or W=2 right now
-> might be a good idea.
 
-I remember using clang-modernize in the past to fix issues very
-similar to this, if clang machinery can generate the warning, can't
-something like clang-tidy directly generate the patch?
+--tfcchpa22t5gbr4t
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-You can send me a patch for drivers/infiniband/* as well
+On Mon, Oct 19, 2020 at 10:59:15AM -0700, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+>=20
+> A break is not needed if it is preceded by a return
+>=20
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  drivers/tty/serial/imx.c | 5 -----
+>  1 file changed, 5 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 1731d9728865..09703079db7b 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -320,7 +320,6 @@ static u32 imx_uart_readl(struct imx_port *sport, u32=
+ offset)
+>  	switch (offset) {
+>  	case UCR1:
+>  		return sport->ucr1;
+> -		break;
+>  	case UCR2:
+>  		/*
+>  		 * UCR2_SRST is the only bit in the cached registers that might
+> @@ -331,16 +330,12 @@ static u32 imx_uart_readl(struct imx_port *sport, u=
+32 offset)
+>  		if (!(sport->ucr2 & UCR2_SRST))
+>  			sport->ucr2 =3D readl(sport->port.membase + offset);
+>  		return sport->ucr2;
+> -		break;
+>  	case UCR3:
+>  		return sport->ucr3;
+> -		break;
+>  	case UCR4:
+>  		return sport->ucr4;
+> -		break;
+>  	case UFCR:
+>  		return sport->ufcr;
+> -		break;
+>  	default:
+>  		return readl(sport->port.membase + offset);
+>  	}
 
-Thanks,
-Jason
+this might be subjective, but I like the break being there for clearity.
+So I object to make a patch to remove them. In case I'm outvoted I'd at
+least want empty lines instead.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--tfcchpa22t5gbr4t
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+Ok8oACgkQwfwUeK3K
+7AmutQgAl6jVgjKWwNF43KjCQWe0NKy9bCuHoGhhs6JNBOw0ODnglhn8nOADzFWb
+YJia9YC8rjqdPKBiKk/46Xdk0IH2NR/9rICG4nXCjYMCEezRA9+xRZc1g6nJfb6w
+Rd5h2jZZCXNMdx1wFlYoySbB0EmwMje/0acPiBK0NwSSsfbOZUnpiqGfr6UdMAIA
+LkuNkFKyTh4dAhnAiLsQlLYCBB2q/aQjhzcL10WnfLrdJ6B/RdnmXhHBlWKZ/vOL
+C+QTtRUXBOA99n1WAujw0XeHJHGK4zHD2sEJX9EcDtx6/OSPZmTeCpVLTDHSKyzb
+kq9VGoVRb7dvhBJyzULubMmUYatU3w==
+=It2d
+-----END PGP SIGNATURE-----
+
+--tfcchpa22t5gbr4t--
