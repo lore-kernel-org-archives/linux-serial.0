@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C7BC4363A
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 17:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C70F2C388F9
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 17:58:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 504B7222C8
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 17:58:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 450162231B
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 17:58:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=beagleboard-org.20150623.gappssmtp.com header.i=@beagleboard-org.20150623.gappssmtp.com header.b="hKM+EPsF"
+	dkim=pass (2048-bit key) header.d=beagleboard-org.20150623.gappssmtp.com header.i=@beagleboard-org.20150623.gappssmtp.com header.b="CaGYb9fw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1788942AbgJZR62 (ORCPT
+        id S1782137AbgJZR6Y (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Oct 2020 13:58:28 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:37088 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1788934AbgJZR60 (ORCPT
+        Mon, 26 Oct 2020 13:58:24 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:33854 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1788915AbgJZR6P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Oct 2020 13:58:26 -0400
-Received: by mail-pg1-f195.google.com with SMTP id h6so6494069pgk.4
-        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2020 10:58:25 -0700 (PDT)
+        Mon, 26 Oct 2020 13:58:15 -0400
+Received: by mail-pg1-f196.google.com with SMTP id t14so6501311pgg.1
+        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2020 10:58:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=beagleboard-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=q9/6iMyuxRs29CcJNRGQlw3NkjK+ZAaS1DQKNOdZ49Y=;
-        b=hKM+EPsFhBXudgBvBD6S/N+2rd4p0d87n+1PsscRuF8xG8aOokGqs1Scy01fSvCylK
-         vFtVN5EVEStMT82Rv5AUwG7HaV95viWhftFrFm7Pjd8/H3nFJ1srA4+LYQdNcMX9ELOP
-         NtwOz1qez9ijYPcyDSgSwsG9dlxvuQ8A6NppwAb4Hc0xYclisfujp8nptwltUtB4p+x9
-         ldxOiwgJS3JsyKj2WHpa0s3C6i9/jmUy2HWSBwVM2xCGJrxi8K/Eoc1i236ds5H/G4wJ
-         xmXaC6bIw+9iwiba92w30PmnOojGPKtaLVBaot3yRtneEjVV5ZvXiGLCxaRjXgLn4+6r
-         SbNg==
+        bh=Yo0mnlsSy3YgKGeUG02IRLcGcjRgZwwdFoj2NxiD5lI=;
+        b=CaGYb9fwKX1t4/s7hL5McQiJsJosjdSgPtgRrXcOVEv9geNhsgv06QlYZxq9MmypsM
+         8h2YGCwMDt5AFwQAVzFT9qgQDYt93HasEwsXY9F8AWf+nt41cl4k+rKcfknOH1hgOUks
+         iNyNuzmEHIavPzF4GUjUo8btX9rmkJo7bx1Jo0qClUL2fxlqB+etlyZ4ygfoXJfgOFf9
+         y30GRFWWH1aR0AL5e2Pe/R/+yhSkRAj3Lbcg95C8vcfqdWrthKHcBeF1axLUW5Gif+CD
+         hUtko2x5J+g2cgiNr/cDNfys9Pg7rqVVOYO4UtgMHH7GZZmOPI9vgSEoW/ddjc6QnUcs
+         PgnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=q9/6iMyuxRs29CcJNRGQlw3NkjK+ZAaS1DQKNOdZ49Y=;
-        b=lgqyZ1S0/h3WCSMcHi212ay5c/pwekfz0aXtE32bwqnv4knbQuXZtEZT+3biBaBthF
-         jAnOIDLyLHZMVYERIK6BOl2FkQ+Tmz6M6LnOUdw+blv3CRSv6eMfYwWp8CKfKzAZCfOW
-         Ge2IjulSaQthFLT+iXGDpI/6ka6zSVvXfsf0Vb2uxKhuFnjZXf1gO4Ov1JBbSDEBDTh9
-         SW5T7IkBKNuzXcWmfE5KlSMn7wm+RVipU7q2hTH2dpPqzvmWOb59Y7n/AzXEfempSTYQ
-         Xauq4JRWbNx3rFjkrhNBq+gTrOOFZhE5esq6TY4jWaOXyPWtfosoeFwV87+Xpb7pmlMx
-         Bh1w==
-X-Gm-Message-State: AOAM531vTcbOpbFRhQztQb0h1jmgFcBNII5wk35yvLvPwrz2Ef0hgToL
-        V9ffnrTQFVsZi7kw9okIiOP7
-X-Google-Smtp-Source: ABdhPJw2lnv9eXuIfyKMaV0vZcd4W0AB+lLZP2R6KF9/aiT6U25wEoMJoTUI98wCUAp3d0KnHSTTnw==
-X-Received: by 2002:a62:148a:0:b029:156:857e:853f with SMTP id 132-20020a62148a0000b0290156857e853fmr9112632pfu.25.1603735104771;
-        Mon, 26 Oct 2020 10:58:24 -0700 (PDT)
+        bh=Yo0mnlsSy3YgKGeUG02IRLcGcjRgZwwdFoj2NxiD5lI=;
+        b=Q83Z88pOotL9Gcy71jPLuUuAp/yqcVu+5RQ8mfpu7U9XgjC7pA97IuSPRdzSTwjsqc
+         nJ+CRj8oVUqI6XT55mvxr5+xF5OktIRXVn2uMEOogKBhh5MN5P2E9Nm7kpmrdUfqtB70
+         xns93bXMI98iJB/qpQceLoJybz291hpHhX6g1gDcY8T40QLmT5cYFyyar9+aJRCbgISh
+         6BSkbntNcvdESsQcxkwHU8DNfaz6QKhOlALT13eY5C99eUR3NySQG2BItPEONWfnkc1X
+         cyGBJ5lBB5X4rEo79dq1G+7TNjaGrek6eqKxhaFDOc0kNBfXk2tQk5YjB8NqYk+CnEei
+         6B2Q==
+X-Gm-Message-State: AOAM532dUJOaJmXcu6eWS5rsMuawYYM2xIv+TV+u4kGqwq7w2JnD7IrE
+        bMBfrj+BddE4CEIHb4cscFW3
+X-Google-Smtp-Source: ABdhPJyKADO7GsN5K7F28og4HF+KdQfGGrByPskuE8rwr33F4aFXWfsWuMVwDc84lw/9USAHHy9q7A==
+X-Received: by 2002:a63:3e0a:: with SMTP id l10mr12627239pga.420.1603735094882;
+        Mon, 26 Oct 2020 10:58:14 -0700 (PDT)
 Received: from localhost.localdomain ([116.68.74.56])
-        by smtp.gmail.com with ESMTPSA id o65sm11583088pga.42.2020.10.26.10.58.20
+        by smtp.gmail.com with ESMTPSA id o65sm11583088pga.42.2020.10.26.10.58.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 10:58:24 -0700 (PDT)
+        Mon, 26 Oct 2020 10:58:14 -0700 (PDT)
 From:   Vaishnav M A <vaishnav@beagleboard.org>
 To:     johan@kernel.org
 Cc:     ribalda@kernel.org, robh@kernel.org, gregkh@linuxfoundation.org,
@@ -64,9 +64,9 @@ Cc:     ribalda@kernel.org, robh@kernel.org, gregkh@linuxfoundation.org,
         linux-serial@vger.kernel.org, linux-kbuild@vger.kernel.org,
         jkridner@beagleboard.org, drew@beagleboard.org,
         robertcnelson@beagleboard.org, vaishnav@beagleboard.org
-Subject: [RFC PATCH 5/5] gnss: change of_property_read to device_property_read
-Date:   Mon, 26 Oct 2020 23:27:18 +0530
-Message-Id: <20201026175718.965773-6-vaishnav@beagleboard.org>
+Subject: [RFC PATCH 4/5] gnss: ubx add MODULE_DEVICE_TABLE(serdev)
+Date:   Mon, 26 Oct 2020 23:27:17 +0530
+Message-Id: <20201026175718.965773-5-vaishnav@beagleboard.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201026175718.965773-1-vaishnav@beagleboard.org>
 References: <20201026175718.965773-1-vaishnav@beagleboard.org>
@@ -76,30 +76,39 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-change of_property_read_u32() for the current-speed property
-to use the device_property_read_u32() this helps passing the
-properties over a suitably populated struct property_entry.
+export serdev id table to the module header.
 
 Signed-off-by: Vaishnav M A <vaishnav@beagleboard.org>
 ---
- drivers/gnss/serial.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/gnss/ubx.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/gnss/serial.c b/drivers/gnss/serial.c
-index def64b36d994..473faeea6aae 100644
---- a/drivers/gnss/serial.c
-+++ b/drivers/gnss/serial.c
-@@ -110,10 +110,9 @@ static int gnss_serial_set_power(struct gnss_serial *gserial,
- static int gnss_serial_parse_dt(struct serdev_device *serdev)
- {
- 	struct gnss_serial *gserial = serdev_device_get_drvdata(serdev);
--	struct device_node *node = serdev->dev.of_node;
- 	u32 speed = 4800;
+diff --git a/drivers/gnss/ubx.c b/drivers/gnss/ubx.c
+index 7b05bc40532e..e50056cc4223 100644
+--- a/drivers/gnss/ubx.c
++++ b/drivers/gnss/ubx.c
+@@ -138,6 +138,14 @@ static const struct of_device_id ubx_of_match[] = {
+ MODULE_DEVICE_TABLE(of, ubx_of_match);
+ #endif
  
--	of_property_read_u32(node, "current-speed", &speed);
-+	device_property_read_u32(&serdev->dev, "current-speed", &speed);
- 
- 	gserial->speed = speed;
++static const struct serdev_device_id ubx_serdev_id[] = {
++	{ "neo-6m", },
++	{ "neo-8", },
++	{ "neo-m8", },
++	{}
++};
++MODULE_DEVICE_TABLE(serdev, ubx_serdev_id);
++
+ static struct serdev_device_driver ubx_driver = {
+ 	.driver	= {
+ 		.name		= "gnss-ubx",
+@@ -146,6 +154,7 @@ static struct serdev_device_driver ubx_driver = {
+ 	},
+ 	.probe	= ubx_probe,
+ 	.remove	= ubx_remove,
++	.id_table = ubx_serdev_id,
+ };
+ module_serdev_device_driver(ubx_driver);
  
 -- 
 2.25.1
