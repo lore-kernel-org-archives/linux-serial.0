@@ -2,97 +2,96 @@ Return-Path: <SRS0=yy8S=EB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBCAC2D0A3
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 05:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6819DC5DF9D
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 08:40:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 33FA82222C
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 05:54:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1ADB9223FD
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 08:40:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1603701642;
+	bh=3qF8xrz0rj+SD5jkKyuIPQ8cYRYJ/uoaks5b22g4fCA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=Wg2mURNA4HBRrVX/EQNh0zZptiHytr5B5CcjHG2zOr8mCVrGxrVwmGczCK1jEcsYu
+	 ENPzGTj05t2kcHR+ygDQ7pTGWr9Me4hGA8lxDyGqBboXk4aWO1r5Vp55D1JjiIDiy0
+	 okSX4Wd5qoft6wiahtnlFZFc/m5DAhpI+vYt1Vpc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1769899AbgJZFyV (ORCPT
+        id S1769904AbgJZIki (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Oct 2020 01:54:21 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51292 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1769866AbgJZFyV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Oct 2020 01:54:21 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 47A4CADA2;
-        Mon, 26 Oct 2020 05:54:20 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>, stable@vger.kernel.org,
-        Fabian Vogt <fvogt@suse.com>
-Subject: [PATCH] vt_ioctl: fix GIO_UNIMAP regression
-Date:   Mon, 26 Oct 2020 06:54:19 +0100
-Message-Id: <20201026055419.30518-1-jslaby@suse.cz>
-X-Mailer: git-send-email 2.29.1
+        Mon, 26 Oct 2020 04:40:38 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:42736 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1746866AbgJZIki (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 26 Oct 2020 04:40:38 -0400
+Received: by mail-ed1-f68.google.com with SMTP id v19so8382237edx.9;
+        Mon, 26 Oct 2020 01:40:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fPY3YUMaHx0SYLGgmZyNAyMNlSCq8nr0Au+mUxZwASo=;
+        b=V35cQF6bQXl6Tjm1KvJ2BH2QIJJxZWHCJcbPlvTlqsVrHGibEDS5Ay+8/qd7CSXMxX
+         aDa8Sfs7s96wBPMYgUCF6ZtuAYnxOIIMPjGIP7BtNKp0L6l74y6VLN3gC+IJozh3XZLb
+         L+UEnv8rJDdp05l5y2GwT6XxWCYDBnpsl1l1FherPwWGAa9IJqqVxkjbYNDBlXn/OgXR
+         e9VoF7dFba3gfToAdc4BO2gtmRUZ7rLZGd1nupaHDmFEYYgGPjzZwIp5ywwYHh0donDj
+         5mvWFgr8SZl8h7aA0xtHhwbglLdh/yxeU3OInwpMCjXgpZ5N5YukfbtSJlfikvt3ijhZ
+         QbAw==
+X-Gm-Message-State: AOAM531bWDXia5tRD3uKOL8jPeHe/fXvnI3vswP8NpdSYRETlGFvFatf
+        GTbT5w1z2GDRmsunG+u+dC4zVayPe3w=
+X-Google-Smtp-Source: ABdhPJzMNFAPm/G/FPe2T5GfoWx+hZWCWuIsNulsXqm9QWpIwDSzI0aXCpKKCmaS2zzfu6KxDgxn0A==
+X-Received: by 2002:a50:8f61:: with SMTP id 88mr14969192edy.175.1603701634845;
+        Mon, 26 Oct 2020 01:40:34 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.184])
+        by smtp.googlemail.com with ESMTPSA id u10sm5306057ejh.54.2020.10.26.01.40.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2020 01:40:33 -0700 (PDT)
+Date:   Mon, 26 Oct 2020 09:40:31 +0100
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: More whitespace clean-ups in schema files
+Message-ID: <20201026084031.GA7466@kozik-lap>
+References: <20201023192258.3126047-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201023192258.3126047-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In commit 5ba127878722, we shuffled with the check of 'perm'. But my
-brain somehow inverted the condition in 'do_unimap_ioctl' (I thought
-it is ||, not &&), so GIO_UNIMAP stopped working completely.
+On Fri, Oct 23, 2020 at 02:22:58PM -0500, Rob Herring wrote:
+> Clean-up incorrect indentation, extra spaces, and missing EOF newline in
+> schema files. Most of the clean-ups are for list indentation which
+> should always be 2 spaces more than the preceding keyword.
+> 
+> Found with yamllint (now integrated into the checks).
+> 
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-i2c@vger.kernel.org
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-mmc@vger.kernel.org
+> Cc: linux-mtd@lists.infradead.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
-Move the 'perm' checks back to do_unimap_ioctl and do them right again.
-In fact, this reverts this part of code to the pre-5ba127878722 state.
-Except 'perm' is now a bool.
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Fixes: 5ba127878722 ("vt_ioctl: move perm checks level up")
-Cc: stable@vger.kernel.org
-Reported-by:  Fabian Vogt <fvogt@suse.com>
----
- drivers/tty/vt/vt_ioctl.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
-index 0a33b8ababe3..2321775ef098 100644
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -549,7 +549,7 @@ static int vt_io_fontreset(struct console_font_op *op)
- }
- 
- static inline int do_unimap_ioctl(int cmd, struct unimapdesc __user *user_ud,
--		struct vc_data *vc)
-+		bool perm, struct vc_data *vc)
- {
- 	struct unimapdesc tmp;
- 
-@@ -557,9 +557,11 @@ static inline int do_unimap_ioctl(int cmd, struct unimapdesc __user *user_ud,
- 		return -EFAULT;
- 	switch (cmd) {
- 	case PIO_UNIMAP:
-+		if (!perm)
-+			return -EPERM;
- 		return con_set_unimap(vc, tmp.entry_ct, tmp.entries);
- 	case GIO_UNIMAP:
--		if (fg_console != vc->vc_num)
-+		if (!perm && fg_console != vc->vc_num)
- 			return -EPERM;
- 		return con_get_unimap(vc, tmp.entry_ct, &(user_ud->entry_ct),
- 				tmp.entries);
-@@ -639,10 +641,7 @@ static int vt_io_ioctl(struct vc_data *vc, unsigned int cmd, void __user *up,
- 
- 	case PIO_UNIMAP:
- 	case GIO_UNIMAP:
--		if (!perm)
--			return -EPERM;
--
--		return do_unimap_ioctl(cmd, up, vc);
-+		return do_unimap_ioctl(cmd, up, perm, vc);
- 
- 	default:
- 		return -ENOIOCTLCMD;
--- 
-2.29.1
-
+Best regards,
+Krzysztof
