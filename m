@@ -2,96 +2,87 @@ Return-Path: <SRS0=yy8S=EB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6819DC5DF9D
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 08:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A457C2D0A3
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 12:41:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1ADB9223FD
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 08:40:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1603701642;
-	bh=3qF8xrz0rj+SD5jkKyuIPQ8cYRYJ/uoaks5b22g4fCA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Wg2mURNA4HBRrVX/EQNh0zZptiHytr5B5CcjHG2zOr8mCVrGxrVwmGczCK1jEcsYu
-	 ENPzGTj05t2kcHR+ygDQ7pTGWr9Me4hGA8lxDyGqBboXk4aWO1r5Vp55D1JjiIDiy0
-	 okSX4Wd5qoft6wiahtnlFZFc/m5DAhpI+vYt1Vpc=
+	by mail.kernel.org (Postfix) with ESMTP id D8013239D2
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 12:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1769904AbgJZIki (ORCPT
+        id S1775361AbgJZMlE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Oct 2020 04:40:38 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:42736 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1746866AbgJZIki (ORCPT
+        Mon, 26 Oct 2020 08:41:04 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:3512 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1775360AbgJZMlE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Oct 2020 04:40:38 -0400
-Received: by mail-ed1-f68.google.com with SMTP id v19so8382237edx.9;
-        Mon, 26 Oct 2020 01:40:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fPY3YUMaHx0SYLGgmZyNAyMNlSCq8nr0Au+mUxZwASo=;
-        b=V35cQF6bQXl6Tjm1KvJ2BH2QIJJxZWHCJcbPlvTlqsVrHGibEDS5Ay+8/qd7CSXMxX
-         aDa8Sfs7s96wBPMYgUCF6ZtuAYnxOIIMPjGIP7BtNKp0L6l74y6VLN3gC+IJozh3XZLb
-         L+UEnv8rJDdp05l5y2GwT6XxWCYDBnpsl1l1FherPwWGAa9IJqqVxkjbYNDBlXn/OgXR
-         e9VoF7dFba3gfToAdc4BO2gtmRUZ7rLZGd1nupaHDmFEYYgGPjzZwIp5ywwYHh0donDj
-         5mvWFgr8SZl8h7aA0xtHhwbglLdh/yxeU3OInwpMCjXgpZ5N5YukfbtSJlfikvt3ijhZ
-         QbAw==
-X-Gm-Message-State: AOAM531bWDXia5tRD3uKOL8jPeHe/fXvnI3vswP8NpdSYRETlGFvFatf
-        GTbT5w1z2GDRmsunG+u+dC4zVayPe3w=
-X-Google-Smtp-Source: ABdhPJzMNFAPm/G/FPe2T5GfoWx+hZWCWuIsNulsXqm9QWpIwDSzI0aXCpKKCmaS2zzfu6KxDgxn0A==
-X-Received: by 2002:a50:8f61:: with SMTP id 88mr14969192edy.175.1603701634845;
-        Mon, 26 Oct 2020 01:40:34 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.184])
-        by smtp.googlemail.com with ESMTPSA id u10sm5306057ejh.54.2020.10.26.01.40.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 01:40:33 -0700 (PDT)
-Date:   Mon, 26 Oct 2020 09:40:31 +0100
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: More whitespace clean-ups in schema files
-Message-ID: <20201026084031.GA7466@kozik-lap>
-References: <20201023192258.3126047-1-robh@kernel.org>
+        Mon, 26 Oct 2020 08:41:04 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CKZFb5gxWzhZXx;
+        Mon, 26 Oct 2020 20:41:07 +0800 (CST)
+Received: from huawei.com (10.90.53.225) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Mon, 26 Oct 2020
+ 20:40:56 +0800
+From:   Zhang Qilong <zhangqilong3@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <shawnguo@kernel.org>,
+        <s.hauer@pengutronix.de>
+CC:     <kernel@pengutronix.de>, <festevam@gmail.com>, <linux-imx@nxp.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH -next] tty: serial: imx: remove unnecessary breaks
+Date:   Mon, 26 Oct 2020 20:51:42 +0800
+Message-ID: <20201026125142.21105-1-zhangqilong3@huawei.com>
+X-Mailer: git-send-email 2.26.0.106.g9fadedd
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201023192258.3126047-1-robh@kernel.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.53.225]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 02:22:58PM -0500, Rob Herring wrote:
-> Clean-up incorrect indentation, extra spaces, and missing EOF newline in
-> schema files. Most of the clean-ups are for list indentation which
-> should always be 2 spaces more than the preceding keyword.
-> 
-> Found with yamllint (now integrated into the checks).
-> 
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-i2c@vger.kernel.org
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-mmc@vger.kernel.org
-> Cc: linux-mtd@lists.infradead.org
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-usb@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+The 'break' is not possoble to be reached
+because of previous 'return', discard it.
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+---
+ drivers/tty/serial/imx.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 1731d9728865..09703079db7b 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -320,7 +320,6 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
+ 	switch (offset) {
+ 	case UCR1:
+ 		return sport->ucr1;
+-		break;
+ 	case UCR2:
+ 		/*
+ 		 * UCR2_SRST is the only bit in the cached registers that might
+@@ -331,16 +330,12 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
+ 		if (!(sport->ucr2 & UCR2_SRST))
+ 			sport->ucr2 = readl(sport->port.membase + offset);
+ 		return sport->ucr2;
+-		break;
+ 	case UCR3:
+ 		return sport->ucr3;
+-		break;
+ 	case UCR4:
+ 		return sport->ucr4;
+-		break;
+ 	case UFCR:
+ 		return sport->ufcr;
+-		break;
+ 	default:
+ 		return readl(sport->port.membase + offset);
+ 	}
+-- 
+2.17.1
+
