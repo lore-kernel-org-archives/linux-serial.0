@@ -1,115 +1,90 @@
-Return-Path: <SRS0=yy8S=EB=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=rQUO=EC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70F2C388F9
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 17:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F566C4363A
+	for <linux-serial@archiver.kernel.org>; Tue, 27 Oct 2020 08:55:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 450162231B
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Oct 2020 17:58:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=beagleboard-org.20150623.gappssmtp.com header.i=@beagleboard-org.20150623.gappssmtp.com header.b="CaGYb9fw"
+	by mail.kernel.org (Postfix) with ESMTP id 3C58A22258
+	for <linux-serial@archiver.kernel.org>; Tue, 27 Oct 2020 08:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1782137AbgJZR6Y (ORCPT
+        id S2509561AbgJ0IzQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Oct 2020 13:58:24 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33854 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1788915AbgJZR6P (ORCPT
+        Tue, 27 Oct 2020 04:55:16 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2483 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730933AbgJ0IzQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Oct 2020 13:58:15 -0400
-Received: by mail-pg1-f196.google.com with SMTP id t14so6501311pgg.1
-        for <linux-serial@vger.kernel.org>; Mon, 26 Oct 2020 10:58:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=beagleboard-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Yo0mnlsSy3YgKGeUG02IRLcGcjRgZwwdFoj2NxiD5lI=;
-        b=CaGYb9fwKX1t4/s7hL5McQiJsJosjdSgPtgRrXcOVEv9geNhsgv06QlYZxq9MmypsM
-         8h2YGCwMDt5AFwQAVzFT9qgQDYt93HasEwsXY9F8AWf+nt41cl4k+rKcfknOH1hgOUks
-         iNyNuzmEHIavPzF4GUjUo8btX9rmkJo7bx1Jo0qClUL2fxlqB+etlyZ4ygfoXJfgOFf9
-         y30GRFWWH1aR0AL5e2Pe/R/+yhSkRAj3Lbcg95C8vcfqdWrthKHcBeF1axLUW5Gif+CD
-         hUtko2x5J+g2cgiNr/cDNfys9Pg7rqVVOYO4UtgMHH7GZZmOPI9vgSEoW/ddjc6QnUcs
-         PgnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Yo0mnlsSy3YgKGeUG02IRLcGcjRgZwwdFoj2NxiD5lI=;
-        b=Q83Z88pOotL9Gcy71jPLuUuAp/yqcVu+5RQ8mfpu7U9XgjC7pA97IuSPRdzSTwjsqc
-         nJ+CRj8oVUqI6XT55mvxr5+xF5OktIRXVn2uMEOogKBhh5MN5P2E9Nm7kpmrdUfqtB70
-         xns93bXMI98iJB/qpQceLoJybz291hpHhX6g1gDcY8T40QLmT5cYFyyar9+aJRCbgISh
-         6BSkbntNcvdESsQcxkwHU8DNfaz6QKhOlALT13eY5C99eUR3NySQG2BItPEONWfnkc1X
-         cyGBJ5lBB5X4rEo79dq1G+7TNjaGrek6eqKxhaFDOc0kNBfXk2tQk5YjB8NqYk+CnEei
-         6B2Q==
-X-Gm-Message-State: AOAM532dUJOaJmXcu6eWS5rsMuawYYM2xIv+TV+u4kGqwq7w2JnD7IrE
-        bMBfrj+BddE4CEIHb4cscFW3
-X-Google-Smtp-Source: ABdhPJyKADO7GsN5K7F28og4HF+KdQfGGrByPskuE8rwr33F4aFXWfsWuMVwDc84lw/9USAHHy9q7A==
-X-Received: by 2002:a63:3e0a:: with SMTP id l10mr12627239pga.420.1603735094882;
-        Mon, 26 Oct 2020 10:58:14 -0700 (PDT)
-Received: from localhost.localdomain ([116.68.74.56])
-        by smtp.gmail.com with ESMTPSA id o65sm11583088pga.42.2020.10.26.10.58.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 10:58:14 -0700 (PDT)
-From:   Vaishnav M A <vaishnav@beagleboard.org>
-To:     johan@kernel.org
-Cc:     ribalda@kernel.org, robh@kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, masahiroy@kernel.org,
-        andriy.shevchenko@linux.intel.com, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        jkridner@beagleboard.org, drew@beagleboard.org,
-        robertcnelson@beagleboard.org, vaishnav@beagleboard.org
-Subject: [RFC PATCH 4/5] gnss: ubx add MODULE_DEVICE_TABLE(serdev)
-Date:   Mon, 26 Oct 2020 23:27:17 +0530
-Message-Id: <20201026175718.965773-5-vaishnav@beagleboard.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201026175718.965773-1-vaishnav@beagleboard.org>
-References: <20201026175718.965773-1-vaishnav@beagleboard.org>
+        Tue, 27 Oct 2020 04:55:16 -0400
+Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4CL5BZ1pL0zQkyQ;
+        Tue, 27 Oct 2020 16:55:18 +0800 (CST)
+Received: from dggema758-chm.china.huawei.com (10.1.198.200) by
+ DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Tue, 27 Oct 2020 16:54:59 +0800
+Received: from dggema755-chm.china.huawei.com (10.1.198.197) by
+ dggema758-chm.china.huawei.com (10.1.198.200) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Tue, 27 Oct 2020 16:54:58 +0800
+Received: from dggema755-chm.china.huawei.com ([10.1.198.197]) by
+ dggema755-chm.china.huawei.com ([10.1.198.197]) with mapi id 15.01.1913.007;
+ Tue, 27 Oct 2020 16:54:58 +0800
+From:   zhangqilong <zhangqilong3@huawei.com>
+To:     =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= 
+        <u.kleine-koenig@pengutronix.de>
+CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "linux-imx@nxp.com" <linux-imx@nxp.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggLW5leHRdIHR0eTogc2VyaWFsOiBpbXg6IHJlbW92?=
+ =?utf-8?Q?e_unnecessary_breaks?=
+Thread-Topic: [PATCH -next] tty: serial: imx: remove unnecessary breaks
+Thread-Index: AQHWq7YF/DlVG1G/CUaBiTKLyZ35CqmrI0NA
+Date:   Tue, 27 Oct 2020 08:54:58 +0000
+Message-ID: <e061702ccd9642c681d7d15c2e7fce7f@huawei.com>
+References: <20201026125142.21105-1-zhangqilong3@huawei.com>
+ <20201026163459.bnoxhmncnnf7cwca@pengutronix.de>
+In-Reply-To: <20201026163459.bnoxhmncnnf7cwca@pengutronix.de>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.179.28]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-export serdev id table to the module header.
-
-Signed-off-by: Vaishnav M A <vaishnav@beagleboard.org>
----
- drivers/gnss/ubx.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/drivers/gnss/ubx.c b/drivers/gnss/ubx.c
-index 7b05bc40532e..e50056cc4223 100644
---- a/drivers/gnss/ubx.c
-+++ b/drivers/gnss/ubx.c
-@@ -138,6 +138,14 @@ static const struct of_device_id ubx_of_match[] = {
- MODULE_DEVICE_TABLE(of, ubx_of_match);
- #endif
- 
-+static const struct serdev_device_id ubx_serdev_id[] = {
-+	{ "neo-6m", },
-+	{ "neo-8", },
-+	{ "neo-m8", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(serdev, ubx_serdev_id);
-+
- static struct serdev_device_driver ubx_driver = {
- 	.driver	= {
- 		.name		= "gnss-ubx",
-@@ -146,6 +154,7 @@ static struct serdev_device_driver ubx_driver = {
- 	},
- 	.probe	= ubx_probe,
- 	.remove	= ubx_remove,
-+	.id_table = ubx_serdev_id,
- };
- module_serdev_device_driver(ubx_driver);
- 
--- 
-2.25.1
-
+SGVsbG8NCg0KPiBPbiBNb24sIE9jdCAyNiwgMjAyMCBhdCAwODo1MTo0MlBNICswODAwLCBaaGFu
+ZyBRaWxvbmcgd3JvdGU6DQo+ID4gVGhlICdicmVhaycgaXMgbm90IHBvc3NvYmxlIHRvIGJlIHJl
+YWNoZWQNCj4gcy9wb3Nzb2JsZS9wb3NzaWJsZS8NCj4gDQo+ID4gYmVjYXVzZSBvZiBwcmV2aW91
+cyAncmV0dXJuJywgZGlzY2FyZCBpdC4NCj4gDQo+IEdpdmVuIHRoYXQgdGhpcyBzdWNoIGEgcGF0
+Y2ggd2FzIGFscmVhZHkgc2VudCBhIHdlZWsgYWdvWzFdLCBJIHdvbmRlciBpZiB0aGVyZQ0KPiBp
+cyBhIHRvb2wgdGhhdCBjb21wbGFpbnMgaGVyZT8gSWYgc28sIG1lbnRpb25pbmcgaXQgaW4gdGhl
+IGNvbW1pdCBsb2cgd291bGQgYmUNCj4gZ29vZC4NCj4gDQo+IE90aGVyIHRoYW4gdGhhdCBJIHN0
+aWxsIHRoaW5rIHRoYXQgdGhlcmUgc2hvdWxkIGJlIGF0IGxlYXN0IGFuIGVtcHR5IGxpbmUgaW5z
+dGVhZA0KPiBvZiB0aGUgYnJlYWssIGFzIEkgYWxyZWFkeSB3cm90ZSBpbiByZXBseSB0byB0aGUg
+Zmlyc3QgcGF0Y2guIEFuZCBoYXZpbmcgc2FpZCB0aGF0IEkNCj4gYWxzbyBkb24ndCB0aGluayB0
+aGlzIGlzIHdvcnRoICJmaXhpbmciLCBzZWVpbmcgdGhlIGJyZWFrIGluIGEgc3dpdGNoIHN0YXRl
+bWVudCBpcw0KPiBnb29kIGZvciBodW1hbiByZWFkZXJzLg0KPiANCj4gQmVzdCByZWdhcmRzDQo+
+IFV3ZQ0KDQpJIGhhdmUgc2VlbiB0aGF0IHBhdGNoLCB0aGFuayB5b3UgZm9yIG5pY2UgcmVtaW5k
+aW5nLiBJdCdzIG5vdCBhIHRvb2wgdGlwLiBJIGZpbmQgaXQNCndoZW4gcmVhZGluZyB0aGF0IGNv
+ZGUuIFNvIHNlbmRpbmcgdGhlIHBhdGNoIHRvIG9wdGltaXplIGl0LiBJdCBhbHNvIGxvb2tzIGdv
+b2QNCnRvIGtlZXAgJ2JyZWFrJy4NClRoYW5rcywgYmVzdCB3aXNoIHRvIHlvdSENClpoYW5nIFFp
+bG9uZw0KDQo+IA0KPiBbMV0gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvci8yMDIwMTAxOTE3NTkx
+NS4zNzE4LTEtdHJpeEByZWRoYXQuY29tDQo+IC0tDQo+IFBlbmd1dHJvbml4IGUuSy4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICB8IFV3ZSBLbGVpbmUtS8O2bmlnDQo+IHwNCj4gSW5kdXN0cmlh
+bCBMaW51eCBTb2x1dGlvbnMgICAgICAgICAgICAgICAgIHwgaHR0cHM6Ly93d3cucGVuZ3V0cm9u
+aXguZGUvIHwNCg==
