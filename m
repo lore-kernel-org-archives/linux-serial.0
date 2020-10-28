@@ -2,140 +2,102 @@ Return-Path: <SRS0=5GSE=ED=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-2.3 required=3.0 tests=BAYES_00,DATE_IN_PAST_06_12,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA5EC56202
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Oct 2020 22:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD39C61DD8
+	for <linux-serial@archiver.kernel.org>; Wed, 28 Oct 2020 22:33:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2B8B0246C5
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Oct 2020 22:10:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 055792070E
+	for <linux-serial@archiver.kernel.org>; Wed, 28 Oct 2020 22:33:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T+3BG2A2"
+	dkim=pass (2048-bit key) header.d=cesnet.cz header.i=@cesnet.cz header.b="e5UA9ya9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730170AbgJ1WKx (ORCPT
+        id S2388142AbgJ1WdH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 28 Oct 2020 18:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730543AbgJ1WKx (ORCPT
+        Wed, 28 Oct 2020 18:33:07 -0400
+Received: from office2.cesnet.cz ([195.113.144.244]:36732 "EHLO
+        office2.cesnet.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387983AbgJ1Wb4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 28 Oct 2020 18:10:53 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F16C0613CF;
-        Wed, 28 Oct 2020 15:10:53 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id n18so442905vsl.2;
-        Wed, 28 Oct 2020 15:10:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l34RAsDjkIoT455sRFUF1n5o2XK5yDgCNNHzh1eN1TA=;
-        b=T+3BG2A2ew3FRWpEF56WtR4KR177iEHzLj00/N1K0A1o/3zE3JgTHxmPdfeHqMp3zc
-         zLHomMT9E/YeWDeKGm8uj38YUZ9R4KHdD2lJnfLOyg5SoIPZFGK/REbPLOQX1fKGZIqR
-         H/YIRbo81Ki3hRxEYwtcx/YcplWwXA7JZYOd9LBhnNNBRvrq4yp2P0ztOvLOv/tvYmIj
-         J0PgSh9lD4lYiV3tU3Jp1nJo8Isw3dPl92PeVPD+CRaL152FK09iOL40wK7Y7M57xaTH
-         5ukzYkXOJtmppaIYmKbkfdr5vvGGAMgXKjaKAVwcSh9DtLPFJ36xml1qtNuzngiDZQyw
-         3lSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l34RAsDjkIoT455sRFUF1n5o2XK5yDgCNNHzh1eN1TA=;
-        b=t2giFVlrA/xY2546dCRyG6QoqgVQB21QtopYMRY0mDmq/k3ta07VMJJDHIiaP3lFEC
-         Has8ToG2Cz3krQ/jHQcD9i0Acoic2PSWsj4eh6z5NzIjTQeGedomWD7DQTZZAPCdP1hB
-         5gGxijqTd73sjBu2nn6clV8CluJKiNDDOsaINaKwwFVWKglmKG37WYj9xya7fsdpC0k5
-         CpMCkT1A4Kl7g5Kh5ys0fOwZlSvWyxqdvO8hDHbZ3L7PL6Hjr6p+O8S7vMJhc2I9KdgR
-         7YPU12U8XcF82Rn6HOg0Jz18XHNXjpA/f99Hr6apR4/J6lqWW2v9XsBLtRq1h0mr+9Su
-         eQ0g==
-X-Gm-Message-State: AOAM531tHqIeCwUUp5C+8I9SJJvIEnBIPGWuz66zsumhifSyE3p0BtRw
-        aReZa27/CSOcbkTXtLeVwaOUNKe/nzXfzA==
-X-Google-Smtp-Source: ABdhPJwfDUzLT99ajTLpya5Tg8j7YcHdWCsZAdNlP3l2PUOY+r9MvJhUJmgNHkYj2UptdPqUACjj6w==
-X-Received: by 2002:a17:902:a609:b029:d5:dde6:f135 with SMTP id u9-20020a170902a609b02900d5dde6f135mr7729608plq.75.1603890926726;
-        Wed, 28 Oct 2020 06:15:26 -0700 (PDT)
-Received: from bj616583pcu.spreadtrum.com ([117.18.48.82])
-        by smtp.gmail.com with ESMTPSA id mp13sm5252705pjb.36.2020.10.28.06.15.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 06:15:26 -0700 (PDT)
-From:   gengcixi@gmail.com
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        oberpar@linux.ibm.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     orsonzhai@gmail.com, zhang.lyra@gmail.com,
-        Cixi Geng <cixi.geng1@unisoc.com>
-Subject: [PATCH V8] GCOV: Add config to check the preqequisites situation
-Date:   Wed, 28 Oct 2020 21:15:05 +0800
-Message-Id: <20201028131505.482037-1-gengcixi@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 28 Oct 2020 18:31:56 -0400
+X-Greylist: delayed 891 seconds by postgrey-1.27 at vger.kernel.org; Wed, 28 Oct 2020 18:31:54 EDT
+Received: from localhost (ip-94-112-194-201.net.upcbroadband.cz [94.112.194.201])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by office2.cesnet.cz (Postfix) with ESMTPSA id 0E59840006C;
+        Wed, 28 Oct 2020 17:20:24 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cesnet.cz;
+        s=office2-2020; t=1603902025;
+        bh=FRibDlx3Yp7qZ17lscMO2+sg7G7lVTcO2Z4urA+IPno=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=e5UA9ya9CDjPccXm0zpAHIs3QLM/9+l5o4JCbiyoMwo/+YI2a9+2jCe1lMhcVcsjr
+         3Bdwrutxe++DGbJL1HkJZLAiKIYRLN1tynlSzlfcesBD3WCLUDMierbMOm6TP43GJH
+         JuPiHxYogAW/ugfXqp13he4XIZrvhhoudmGFlk0UBRQI0QSdupvUw4p6sSANTAe+Ys
+         R8oGw0LF09ln57rgGcpe2jIJZbJmVYtzljIxtukGvpGw2atj+Km9KiYQGml7zt4tNU
+         O7bSchZIaBay3h6dad2vlLYsd2/0/TTfFKYFnbLa0uHZkLVIaEsZfnCSU5TnG9GNcU
+         6wHyAja9PvleA==
+From:   =?iso-8859-1?Q?Jan_Kundr=E1t?= <jan.kundrat@cesnet.cz>
+To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        <linux-spi@vger.kernel.org>
+Subject: Re: [PATCH v2] serial: max310x: rework RX interrupt handling
+Date:   Wed, 28 Oct 2020 17:20:24 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <3841e43b-5f16-4b5c-9b43-4d3a90e57723@cesnet.cz>
+In-Reply-To: <20201001074415.349739-1-thomas.petazzoni@bootlin.com>
+References: <20201001074415.349739-1-thomas.petazzoni@bootlin.com>
+Organization: CESNET
+User-Agent: Trojita/unstable-2020-07-06; Qt/5.14.2; xcb; Linux; 
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Cixi Geng <cixi.geng1@unisoc.com>
+On =C4=8Dtvrtek 1. =C5=99=C3=ADjna 2020 9:44:15 CEST, Thomas Petazzoni wrote:=
 
-Introduce new configuration option GCOV_PROFILE_PREREQS that can be
-used to check whether the prerequisites for enabling gcov profiling
-for specific files and directories are met.
+> Currently, the RX interrupt logic uses the RXEMPTY interrupt, with the
+> RXEMPTYINV bit set, which means we get an RX interrupt as soon as the
+> RX FIFO is non-empty.
+>
+> However, with the MAX310X having a FIFO of 128 bytes, this makes very
+> poor use of the FIFO: we trigger an interrupt as soon as the RX FIFO
+> has one byte, which means a lot of interrupts, each only collecting a
+> few bytes from the FIFO, causing a significant CPU load.
 
-Only add SERIAL_GCOV for an example.
+Thanks for taking the time to write this patch. We're using MAX14830 on a=20
+Clearfog Base board via a 26 MHz SPI bus. Our code polls a custom=20
+peripheral over UART at 115200 baud ten times a second; the messages are=20
+typically shorter than 50 chars. Before this patch, `perf top --sort=20
+comm,dso` showed about 28% CPU load for the corresponding SPI kthread,=20
+after applying this patch it's between 3 and 5%. That's cool :).
 
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
----
- drivers/tty/serial/Kconfig  | 7 +++++++
- drivers/tty/serial/Makefile | 1 +
- kernel/gcov/Kconfig         | 9 +++++++++
- 3 files changed, 17 insertions(+)
+Tested-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
+Reviewed-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 1044fc387691..fa33710c8435 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1586,3 +1586,10 @@ endmenu
- 
- config SERIAL_MCTRL_GPIO
- 	tristate
-+
-+config SERIAL_GCOV
-+	bool "Enable profile gcov for serial directory"
-+	depends on GCOV_PROFILE_PREREQS
-+	help
-+	  The SERIAL_GCOV will add Gcov profiling flags when kernel compiles.
-+	  Say 'Y' here if you want the gcov data for the serial directory,
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index caf167f0c10a..4a4934622c3f 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -3,6 +3,7 @@
- # Makefile for the kernel serial device drivers.
- #
- 
-+GCOV_PROFILE := $(CONFIG_SERIAL_GCOV)
- obj-$(CONFIG_SERIAL_CORE) += serial_core.o
- 
- obj-$(CONFIG_SERIAL_EARLYCON) += earlycon.o
-diff --git a/kernel/gcov/Kconfig b/kernel/gcov/Kconfig
-index 3110c77230c7..ce9b8ce4e63b 100644
---- a/kernel/gcov/Kconfig
-+++ b/kernel/gcov/Kconfig
-@@ -51,4 +51,13 @@ config GCOV_PROFILE_ALL
- 	larger and run slower. Also be sure to exclude files from profiling
- 	which are not linked to the kernel image to prevent linker errors.
- 
-+config GCOV_PROFILE_PREREQS
-+	bool "Profile Kernel for prereqs"
-+	def_bool y if GCOV_KERNEL && !COMPILE_TEST
-+	help
-+	  This options activates profiling for the specified kernel modules.
-+	  When some modules need Gcov data, enable this config, then configure
-+	  with gcov on the corresponding modules,The directories or files of
-+	  these modules will be added profiling flags after kernel compile.
-+
- endmenu
--- 
-2.25.1
+(but see below, please)
 
+> +=09/* Enable LSR, RX FIFO trigger, CTS change interrupts */
+> +=09val =3D MAX310X_IRQ_LSR_BIT  | MAX310X_IRQ_RXFIFO_BIT |=20
+> MAX310X_IRQ_TXEMPTY_BIT;
+>  =09max310x_port_write(port, MAX310X_IRQEN_REG, val | MAX310X_IRQ_CTS_BIT);=
+
+
+This comment doesn't fully match that code, and also the effective value=20
+that is written to the register is split into two statements. What about=20
+just:
+
++=09/* Enable LSR, RX FIFO trigger, TX FIFO empty, CTS change interrupts */
++ =09max310x_port_write(port, MAX310X_IRQEN_REG, MAX310X_IRQ_LSR_BIT |=20
+MAX310X_IRQ_RXFIFO_BIT | MAX310X_IRQ_TXEMPTY_BIT | MAX310X_IRQ_CTS_BIT);
+
+With kind regards,
+Jan
