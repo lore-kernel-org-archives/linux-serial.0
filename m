@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A75AC55178
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Oct 2020 11:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A91C2D0A3
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Oct 2020 11:33:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 296B920719
+	by mail.kernel.org (Postfix) with ESMTP id ACFDB20796
 	for <linux-serial@archiver.kernel.org>; Thu, 29 Oct 2020 11:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727652AbgJ2Lcp (ORCPT
+        id S1727659AbgJ2Lc2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Oct 2020 07:32:45 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57248 "EHLO mx2.suse.de"
+        Thu, 29 Oct 2020 07:32:28 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57128 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727629AbgJ2Lc3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Oct 2020 07:32:29 -0400
+        id S1727398AbgJ2Lc1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 29 Oct 2020 07:32:27 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 46212ABF4;
-        Thu, 29 Oct 2020 11:32:25 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 14DC9B21A;
+        Thu, 29 Oct 2020 11:32:24 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 11/17] vt: keyboard, reorder user buffer handling in vt_do_kdgkb_ioctl
-Date:   Thu, 29 Oct 2020 12:32:16 +0100
-Message-Id: <20201029113222.32640-11-jslaby@suse.cz>
+Subject: [PATCH 06/17] vt: keyboard, extract vt_kdgkbent and vt_kdskbent
+Date:   Thu, 29 Oct 2020 12:32:11 +0100
+Message-Id: <20201029113222.32640-6-jslaby@suse.cz>
 X-Mailer: git-send-email 2.29.1
 In-Reply-To: <20201029113222.32640-1-jslaby@suse.cz>
 References: <20201029113222.32640-1-jslaby@suse.cz>
@@ -40,116 +40,243 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-KDGKBSENT (the getter) needs only 'user_kdgkb->kb_func' from the
-userspace, i.e. the index. Then it needs a buffer for a local copy of
-'kb_string'.
+Split vt_do_kdsk_ioctl into three functions:
+* getter (KDGKBENT/vt_kdgkbent)
+* setter (KDSKBENT/vt_kdskbent)
+* switch-case helper (vt_do_kdsk_ioctl)
 
-KDSKBSENT (the setter) needs a copy up to the length of
-'user_kdgkb->kb_string'.
-
-That means, we obtain the index before the switch-case and use it in
-both paths and:
-1) allocate full space in the getter case, and
-2) copy the string only in the setter case. We do it by strndup_user
-   helper now which was not available when this function was written.
-
-Given we copy the two members of 'struct kbsentry' separately, we no
-longer need a local definition. Hence we need to change all the sizeofs
-here too.
+This eliminates the need of ugly one-letter macros as we use parameters
+now:
+* i aka tmp.kb_index -> idx
+* s aka tmp.kb_table -> map
+* v aka tmp.kb_value -> val
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/keyboard.c | 42 +++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 22 deletions(-)
+ drivers/tty/vt/keyboard.c | 189 ++++++++++++++++++++------------------
+ 1 file changed, 102 insertions(+), 87 deletions(-)
 
 diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index 55014f57a3de..81afe0438b34 100644
+index 4545afd3ef2f..c1709b8dbb52 100644
 --- a/drivers/tty/vt/keyboard.c
 +++ b/drivers/tty/vt/keyboard.c
-@@ -2021,7 +2021,7 @@ int vt_do_kdsk_ioctl(int cmd, struct kbentry __user *user_kbe, int perm,
- /* FIXME: This one needs untangling */
- int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+@@ -1897,114 +1897,129 @@ int vt_do_kbkeycode_ioctl(int cmd, struct kbkeycode __user *user_kbkc,
+ 	return kc;
+ }
+ 
+-#define i (tmp.kb_index)
+-#define s (tmp.kb_table)
+-#define v (tmp.kb_value)
+-
+-int vt_do_kdsk_ioctl(int cmd, struct kbentry __user *user_kbe, int perm,
+-						int console)
++static unsigned short vt_kdgkbent(unsigned char kbdmode, unsigned char idx,
++		unsigned char map)
  {
--	struct kbsentry *kbs;
-+	char *kbs;
- 	u_char *q;
- 	int sz, fnw_sz;
- 	int delta;
-@@ -2034,39 +2034,37 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 	if (!capable(CAP_SYS_TTY_CONFIG))
- 		perm = 0;
+-	struct kbd_struct *kb = kbd_table + console;
+-	struct kbentry tmp;
+-	ushort *key_map, *new_map, val, ov;
++	unsigned short *key_map, val;
+ 	unsigned long flags;
  
--	kbs = kmalloc(sizeof(*kbs), GFP_KERNEL);
--	if (!kbs) {
--		ret = -ENOMEM;
--		goto reterr;
--	}
-+	if (get_user(kb_func, &user_kdgkb->kb_func))
-+		return -EFAULT;
+-	if (copy_from_user(&tmp, user_kbe, sizeof(struct kbentry)))
+-		return -EFAULT;
++	/* Ensure another thread doesn't free it under us */
++	spin_lock_irqsave(&kbd_event_lock, flags);
++	key_map = key_maps[map];
++	if (key_map) {
++		val = U(key_map[idx]);
++		if (kbdmode != VC_UNICODE && KTYP(val) >= NR_TYPES)
++			val = K_HOLE;
++	} else
++		val = idx ? K_HOLE : K_NOSUCHMAP;
++	spin_unlock_irqrestore(&kbd_event_lock, flags);
  
--	/* we mostly copy too much here (512bytes), but who cares ;) */
--	if (copy_from_user(kbs, user_kdgkb, sizeof(struct kbsentry))) {
--		ret = -EFAULT;
--		goto reterr;
--	}
--	kbs->kb_string[sizeof(kbs->kb_string)-1] = '\0';
--	kb_func = array_index_nospec(kbs->kb_func, MAX_NR_FUNC);
-+	kb_func = array_index_nospec(kb_func, MAX_NR_FUNC);
+-	if (!capable(CAP_SYS_TTY_CONFIG))
+-		perm = 0;
++	return val;
++}
  
- 	switch (cmd) {
- 	case KDGKBSENT: {
- 		/* size should have been a struct member */
- 		ssize_t len = sizeof(user_kdgkb->kb_string);
- 
-+		kbs = kmalloc(len, GFP_KERNEL);
-+		if (!kbs)
-+			return -ENOMEM;
+-	switch (cmd) {
+-	case KDGKBENT:
+-		/* Ensure another thread doesn't free it under us */
++static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
++		unsigned char map, unsigned short val)
++{
++	unsigned long flags;
++	unsigned short *key_map, *new_map, oldval;
 +
- 		spin_lock_irqsave(&func_buf_lock, flags);
--		len = strlcpy(kbs->kb_string, func_table[kb_func] ? : "", len);
-+		len = strlcpy(kbs, func_table[kb_func] ? : "", len);
- 		spin_unlock_irqrestore(&func_buf_lock, flags);
++	if (!idx && val == K_NOSUCHMAP) {
+ 		spin_lock_irqsave(&kbd_event_lock, flags);
+-		key_map = key_maps[s];
+-		if (key_map) {
+-		    val = U(key_map[i]);
+-		    if (kb->kbdmode != VC_UNICODE && KTYP(val) >= NR_TYPES)
+-			val = K_HOLE;
+-		} else
+-		    val = (i ? K_HOLE : K_NOSUCHMAP);
+-		spin_unlock_irqrestore(&kbd_event_lock, flags);
+-		return put_user(val, &user_kbe->kb_value);
+-	case KDSKBENT:
+-		if (!perm)
+-			return -EPERM;
+-		if (!i && v == K_NOSUCHMAP) {
+-			spin_lock_irqsave(&kbd_event_lock, flags);
+-			/* deallocate map */
+-			key_map = key_maps[s];
+-			if (s && key_map) {
+-			    key_maps[s] = NULL;
+-			    if (key_map[0] == U(K_ALLOCATED)) {
+-					kfree(key_map);
+-					keymap_count--;
+-			    }
++		/* deallocate map */
++		key_map = key_maps[map];
++		if (map && key_map) {
++			key_maps[map] = NULL;
++			if (key_map[0] == U(K_ALLOCATED)) {
++				kfree(key_map);
++				keymap_count--;
+ 			}
+-			spin_unlock_irqrestore(&kbd_event_lock, flags);
+-			break;
+ 		}
++		spin_unlock_irqrestore(&kbd_event_lock, flags);
  
--		ret = copy_to_user(user_kdgkb->kb_string, kbs->kb_string,
--				len + 1) ? -EFAULT : 0;
-+		ret = copy_to_user(user_kdgkb->kb_string, kbs, len + 1) ?
-+			-EFAULT : 0;
+-		if (KTYP(v) < NR_TYPES) {
+-		    if (KVAL(v) > max_vals[KTYP(v)])
+-				return -EINVAL;
+-		} else
+-		    if (kb->kbdmode != VC_UNICODE)
+-				return -EINVAL;
++		return 0;
++	}
  
- 		goto reterr;
- 	}
- 	case KDSKBSENT:
--		if (!perm) {
--			ret = -EPERM;
--			goto reterr;
--		}
+-		/* ++Geert: non-PC keyboards may generate keycode zero */
++	if (KTYP(val) < NR_TYPES) {
++		if (KVAL(val) > max_vals[KTYP(val)])
++			return -EINVAL;
++	} else if (kbdmode != VC_UNICODE)
++		return -EINVAL;
++
++	/* ++Geert: non-PC keyboards may generate keycode zero */
+ #if !defined(__mc68000__) && !defined(__powerpc__)
+-		/* assignment to entry 0 only tests validity of args */
+-		if (!i)
+-			break;
++	/* assignment to entry 0 only tests validity of args */
++	if (!idx)
++		return 0;
+ #endif
+ 
+-		new_map = kmalloc(sizeof(plain_map), GFP_KERNEL);
+-		if (!new_map)
+-			return -ENOMEM;
+-		spin_lock_irqsave(&kbd_event_lock, flags);
+-		key_map = key_maps[s];
+-		if (key_map == NULL) {
+-			int j;
+-
+-			if (keymap_count >= MAX_NR_OF_USER_KEYMAPS &&
+-			    !capable(CAP_SYS_RESOURCE)) {
+-				spin_unlock_irqrestore(&kbd_event_lock, flags);
+-				kfree(new_map);
+-				return -EPERM;
+-			}
+-			key_maps[s] = new_map;
+-			key_map = new_map;
+-			key_map[0] = U(K_ALLOCATED);
+-			for (j = 1; j < NR_KEYS; j++)
+-				key_map[j] = U(K_HOLE);
+-			keymap_count++;
+-		} else
+-			kfree(new_map);
++	new_map = kmalloc(sizeof(plain_map), GFP_KERNEL);
++	if (!new_map)
++		return -ENOMEM;
+ 
+-		ov = U(key_map[i]);
+-		if (v == ov)
+-			goto out;
+-		/*
+-		 * Attention Key.
+-		 */
+-		if (((ov == K_SAK) || (v == K_SAK)) && !capable(CAP_SYS_ADMIN)) {
++	spin_lock_irqsave(&kbd_event_lock, flags);
++	key_map = key_maps[map];
++	if (key_map == NULL) {
++		int j;
++
++		if (keymap_count >= MAX_NR_OF_USER_KEYMAPS &&
++		    !capable(CAP_SYS_RESOURCE)) {
+ 			spin_unlock_irqrestore(&kbd_event_lock, flags);
++			kfree(new_map);
+ 			return -EPERM;
+ 		}
+-		key_map[i] = U(v);
+-		if (!s && (KTYP(ov) == KT_SHIFT || KTYP(v) == KT_SHIFT))
+-			do_compute_shiftstate();
+-out:
++		key_maps[map] = new_map;
++		key_map = new_map;
++		key_map[0] = U(K_ALLOCATED);
++		for (j = 1; j < NR_KEYS; j++)
++			key_map[j] = U(K_HOLE);
++		keymap_count++;
++	} else
++		kfree(new_map);
++
++	oldval = U(key_map[idx]);
++	if (val == oldval)
++		goto out;
++
++	/* Attention Key */
++	if ((oldval == K_SAK || val == K_SAK) && !capable(CAP_SYS_ADMIN)) {
+ 		spin_unlock_irqrestore(&kbd_event_lock, flags);
+-		break;
++		return -EPERM;
++	}
++
++	key_map[idx] = U(val);
++	if (!map && (KTYP(oldval) == KT_SHIFT || KTYP(val) == KT_SHIFT))
++		do_compute_shiftstate();
++out:
++	spin_unlock_irqrestore(&kbd_event_lock, flags);
++
++	return 0;
++}
++
++int vt_do_kdsk_ioctl(int cmd, struct kbentry __user *user_kbe, int perm,
++						int console)
++{
++	struct kbd_struct *kb = kbd_table + console;
++	struct kbentry kbe;
++
++	if (copy_from_user(&kbe, user_kbe, sizeof(struct kbentry)))
++		return -EFAULT;
++
++	if (!capable(CAP_SYS_TTY_CONFIG))
++		perm = 0;
++
++	switch (cmd) {
++	case KDGKBENT:
++		return put_user(vt_kdgkbent(kb->kbdmode, kbe.kb_index,
++					kbe.kb_table),
++				&user_kbe->kb_value);
++	case KDSKBENT:
 +		if (!perm)
 +			return -EPERM;
-+
-+		kbs = strndup_user(user_kdgkb->kb_string,
-+				sizeof(user_kdgkb->kb_string));
-+		if (IS_ERR(kbs))
-+			return PTR_ERR(kbs);
- 
- 		fnw = NULL;
- 		fnw_sz = 0;
-@@ -2084,7 +2082,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 		else
- 			fj = first_free;
- 		/* buffer usage increase by new entry */
--		delta = (q ? -strlen(q) : 1) + strlen(kbs->kb_string);
-+		delta = (q ? -strlen(q) : 1) + strlen(kbs);
- 
- 		if (delta <= funcbufleft) { 	/* it fits in current buf */
- 		    if (j < MAX_NR_FUNC) {
-@@ -2136,7 +2134,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 		    funcbufsize = sz;
- 		}
- 		/* finally insert item itself */
--		strcpy(func_table[kb_func], kbs->kb_string);
-+		strcpy(func_table[kb_func], kbs);
- 		spin_unlock_irqrestore(&func_buf_lock, flags);
- 		break;
++		return vt_kdskbent(kb->kbdmode, kbe.kb_index, kbe.kb_table,
++				kbe.kb_value);
  	}
+ 	return 0;
+ }
+-#undef i
+-#undef s
+-#undef v
+ 
+ /* FIXME: This one needs untangling */
+ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
 -- 
 2.29.1
 
