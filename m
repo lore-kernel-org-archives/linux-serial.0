@@ -2,125 +2,87 @@ Return-Path: <SRS0=xb/S=EF=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08AEC4363A
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Oct 2020 10:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17291C4363A
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Oct 2020 13:43:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4CAE620825
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Oct 2020 10:25:40 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="l2ifPTg/"
+	by mail.kernel.org (Postfix) with ESMTP id B7D822076E
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Oct 2020 13:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726236AbgJ3KZj (ORCPT
+        id S1726178AbgJ3NnW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Oct 2020 06:25:39 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:7532 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725948AbgJ3KZj (ORCPT
+        Fri, 30 Oct 2020 09:43:22 -0400
+Received: from out28-77.mail.aliyun.com ([115.124.28.77]:37977 "EHLO
+        out28-77.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726101AbgJ3NnW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Oct 2020 06:25:39 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09UA9m60136302;
-        Fri, 30 Oct 2020 06:25:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=BAtE6Ob70yoHPBs9fGXumLJu/pahuZYKYKpQlaPGQ64=;
- b=l2ifPTg/kS+mEKGybalkN/9dmaPNBtWpmrJrXOvBn6pDa5l9Cp1U09OTlT8Ov4AI3W6w
- 7ybEaSjyIWQUyQT28jtCrcHNUF356IF6RfECkRDuuWwZnkWFAY9qP2BcPvU0sa/OV00w
- I5dY3+6EjaZQy22M5PufDk8mQ2lrYAxJNLbq42sudy7pwuCMDooADXzpi0dH06P0N9At
- N9XbtN0Jam7maRsbLnVdBQVRe5zHUM70XN2dnmgGzxZL3I0tIdr9TEyKyAEt78G5vC/l
- n95AyuCe06B+7pRotF2SkOMfZj89ZDKhUOO9Mny+ETGA25FUap/Yof+lnCJq6j8paRZQ Hg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34fww7xdbv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Oct 2020 06:25:29 -0400
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 09UAEu7o159555;
-        Fri, 30 Oct 2020 06:25:29 -0400
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34fww7xdb2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Oct 2020 06:25:29 -0400
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09UAMet4024766;
-        Fri, 30 Oct 2020 10:25:26 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 34g41xrmm1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Oct 2020 10:25:26 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09UAPOqT28901670
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Oct 2020 10:25:24 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5B4304204F;
-        Fri, 30 Oct 2020 10:25:24 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0922F4205F;
-        Fri, 30 Oct 2020 10:25:24 +0000 (GMT)
-Received: from [9.145.145.233] (unknown [9.145.145.233])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 30 Oct 2020 10:25:23 +0000 (GMT)
-Subject: Re: [PATCH V8] GCOV: Add config to check the preqequisites situation
-To:     gengcixi@gmail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     orsonzhai@gmail.com, zhang.lyra@gmail.com,
-        Cixi Geng <cixi.geng1@unisoc.com>
-References: <20201028131505.482037-1-gengcixi@gmail.com>
-From:   Peter Oberparleiter <oberpar@linux.ibm.com>
-Message-ID: <fb2bbd79-e17a-775e-6f2b-d97acd69b50f@linux.ibm.com>
-Date:   Fri, 30 Oct 2020 11:25:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <20201028131505.482037-1-gengcixi@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-30_01:2020-10-30,2020-10-30 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 spamscore=0
- clxscore=1011 mlxscore=0 priorityscore=1501 phishscore=0 adultscore=0
- malwarescore=0 mlxlogscore=999 bulkscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010300075
+        Fri, 30 Oct 2020 09:43:22 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1107079|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_alarm|0.0265387-0.00197939-0.971482;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047213;MF=liu.xiang@zlingsmart.com;NM=1;PH=DS;RN=5;RT=5;SR=0;TI=SMTPD_---.IqYD0cV_1604065398;
+Received: from localhost(mailfrom:liu.xiang@zlingsmart.com fp:SMTPD_---.IqYD0cV_1604065398)
+          by smtp.aliyun-inc.com(10.194.99.38);
+          Fri, 30 Oct 2020 21:43:18 +0800
+From:   Liu Xiang <liuxiang_1999@126.com>
+To:     linux-serial@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, Liu Xiang <liuxiang_1999@126.com>
+Subject: [PATCH] tty: serial: linflexuart: Remove unnecessary '|' operation and add error count
+Date:   Fri, 30 Oct 2020 21:43:11 +0800
+Message-Id: <1604065391-3790-1-git-send-email-liuxiang_1999@126.com>
+X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 28.10.2020 14:15, gengcixi@gmail.com wrote:
-> From: Cixi Geng <cixi.geng1@unisoc.com>
-> 
-> Introduce new configuration option GCOV_PROFILE_PREREQS that can be
-> used to check whether the prerequisites for enabling gcov profiling
-> for specific files and directories are met.
-> 
-> Only add SERIAL_GCOV for an example.
+The '|' operation of status in linflex_rxint is unnecessary,
+so it can be removed.
 
-[...]
+Signed-off-by: Liu Xiang <liuxiang_1999@126.com>
+---
+ drivers/tty/serial/fsl_linflexuart.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-> +config GCOV_PROFILE_PREREQS
-> +	bool "Profile Kernel for prereqs"
-> +	def_bool y if GCOV_KERNEL && !COMPILE_TEST
-> +	help
-> +	  This options activates profiling for the specified kernel modules.
-> +	  When some modules need Gcov data, enable this config, then configure
-> +	  with gcov on the corresponding modules,The directories or files of
-> +	  these modules will be added profiling flags after kernel compile.
-> +
->  endmenu
-
-This version still produces a prompt during make oldconfig. You need to
-remove the "bool" line and the "help" lines.
-
-Before sending another version please test it to make sure that it does
-not produce a prompt.
-
-
+diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+index 3e28be4..d870480 100644
+--- a/drivers/tty/serial/fsl_linflexuart.c
++++ b/drivers/tty/serial/fsl_linflexuart.c
+@@ -252,23 +252,22 @@ static irqreturn_t linflex_rxint(int irq, void *dev_id)
+ 		flg = TTY_NORMAL;
+ 		sport->icount.rx++;
+ 
+-		if (status & (LINFLEXD_UARTSR_BOF | LINFLEXD_UARTSR_SZF |
+-			      LINFLEXD_UARTSR_FEF | LINFLEXD_UARTSR_PE)) {
+-			if (status & LINFLEXD_UARTSR_SZF)
+-				status |= LINFLEXD_UARTSR_SZF;
++		if (status & (LINFLEXD_UARTSR_BOF | LINFLEXD_UARTSR_FEF |
++				LINFLEXD_UARTSR_PE)) {
+ 			if (status & LINFLEXD_UARTSR_BOF)
+-				status |= LINFLEXD_UARTSR_BOF;
++				sport->icount.overrun++;
+ 			if (status & LINFLEXD_UARTSR_FEF) {
+-				if (!rx)
++				if (!rx) {
+ 					brk = true;
+-				status |= LINFLEXD_UARTSR_FEF;
++					sport->icount.brk++;
++				} else
++					sport->icount.frame++;
+ 			}
+ 			if (status & LINFLEXD_UARTSR_PE)
+-				status |=  LINFLEXD_UARTSR_PE;
++				sport->icount.parity++;
+ 		}
+ 
+-		writel(status | LINFLEXD_UARTSR_RMB | LINFLEXD_UARTSR_DRFRFE,
+-		       sport->membase + UARTSR);
++		writel(status, sport->membase + UARTSR);
+ 		status = readl(sport->membase + UARTSR);
+ 
+ 		if (brk) {
 -- 
-Peter Oberparleiter
-Linux on Z Development - IBM Germany
+1.9.1
+
