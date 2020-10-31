@@ -1,88 +1,80 @@
-Return-Path: <SRS0=xb/S=EF=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=Jo6V=EG=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17291C4363A
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Oct 2020 13:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8C7C4742C
+	for <linux-serial@archiver.kernel.org>; Sat, 31 Oct 2020 01:13:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B7D822076E
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Oct 2020 13:43:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A9085221EB
+	for <linux-serial@archiver.kernel.org>; Sat, 31 Oct 2020 01:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726178AbgJ3NnW (ORCPT
+        id S1726099AbgJaBNX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Oct 2020 09:43:22 -0400
-Received: from out28-77.mail.aliyun.com ([115.124.28.77]:37977 "EHLO
-        out28-77.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726101AbgJ3NnW (ORCPT
+        Fri, 30 Oct 2020 21:13:23 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7011 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgJaBNX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Oct 2020 09:43:22 -0400
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1107079|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_alarm|0.0265387-0.00197939-0.971482;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047213;MF=liu.xiang@zlingsmart.com;NM=1;PH=DS;RN=5;RT=5;SR=0;TI=SMTPD_---.IqYD0cV_1604065398;
-Received: from localhost(mailfrom:liu.xiang@zlingsmart.com fp:SMTPD_---.IqYD0cV_1604065398)
-          by smtp.aliyun-inc.com(10.194.99.38);
-          Fri, 30 Oct 2020 21:43:18 +0800
-From:   Liu Xiang <liuxiang_1999@126.com>
-To:     linux-serial@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, Liu Xiang <liuxiang_1999@126.com>
-Subject: [PATCH] tty: serial: linflexuart: Remove unnecessary '|' operation and add error count
-Date:   Fri, 30 Oct 2020 21:43:11 +0800
-Message-Id: <1604065391-3790-1-git-send-email-liuxiang_1999@126.com>
-X-Mailer: git-send-email 1.9.1
+        Fri, 30 Oct 2020 21:13:23 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CNLlj0BVDzhdJg;
+        Sat, 31 Oct 2020 09:13:21 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
+ 14.3.487.0; Sat, 31 Oct 2020 09:13:10 +0800
+From:   Qinglang Miao <miaoqinglang@huawei.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Qinglang Miao" <miaoqinglang@huawei.com>
+Subject: [PATCH] serial: txx9: add missing platform_driver_unregister() on error in serial_txx9_init
+Date:   Sat, 31 Oct 2020 09:18:57 +0800
+Message-ID: <20201031011857.137352-1-miaoqinglang@huawei.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The '|' operation of status in linflex_rxint is unnecessary,
-so it can be removed.
+Add the missing platform_driver_unregister() before return
+from serial_txx9_init in the error handling case when failed
+to register serial_txx9_pci_driver with macro ENABLE_SERIAL_TXX9_PCI
+defined.
 
-Signed-off-by: Liu Xiang <liuxiang_1999@126.com>
+Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
 ---
- drivers/tty/serial/fsl_linflexuart.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ drivers/tty/serial/serial_txx9.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
-index 3e28be4..d870480 100644
---- a/drivers/tty/serial/fsl_linflexuart.c
-+++ b/drivers/tty/serial/fsl_linflexuart.c
-@@ -252,23 +252,22 @@ static irqreturn_t linflex_rxint(int irq, void *dev_id)
- 		flg = TTY_NORMAL;
- 		sport->icount.rx++;
+diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
+index b4d89e317..3d883cd55 100644
+--- a/drivers/tty/serial/serial_txx9.c
++++ b/drivers/tty/serial/serial_txx9.c
+@@ -1280,10 +1280,13 @@ static int __init serial_txx9_init(void)
  
--		if (status & (LINFLEXD_UARTSR_BOF | LINFLEXD_UARTSR_SZF |
--			      LINFLEXD_UARTSR_FEF | LINFLEXD_UARTSR_PE)) {
--			if (status & LINFLEXD_UARTSR_SZF)
--				status |= LINFLEXD_UARTSR_SZF;
-+		if (status & (LINFLEXD_UARTSR_BOF | LINFLEXD_UARTSR_FEF |
-+				LINFLEXD_UARTSR_PE)) {
- 			if (status & LINFLEXD_UARTSR_BOF)
--				status |= LINFLEXD_UARTSR_BOF;
-+				sport->icount.overrun++;
- 			if (status & LINFLEXD_UARTSR_FEF) {
--				if (!rx)
-+				if (!rx) {
- 					brk = true;
--				status |= LINFLEXD_UARTSR_FEF;
-+					sport->icount.brk++;
-+				} else
-+					sport->icount.frame++;
- 			}
- 			if (status & LINFLEXD_UARTSR_PE)
--				status |=  LINFLEXD_UARTSR_PE;
-+				sport->icount.parity++;
- 		}
+ #ifdef ENABLE_SERIAL_TXX9_PCI
+ 	ret = pci_register_driver(&serial_txx9_pci_driver);
++	if (ret)
++		goto unreg_platform_drv;
+ #endif
+-	if (ret == 0)
+-		goto out;
++	return 0;
  
--		writel(status | LINFLEXD_UARTSR_RMB | LINFLEXD_UARTSR_DRFRFE,
--		       sport->membase + UARTSR);
-+		writel(status, sport->membase + UARTSR);
- 		status = readl(sport->membase + UARTSR);
- 
- 		if (brk) {
++ unreg_platform_drv:
++	platform_driver_unregister(&serial_txx9_plat_driver);
+  del_dev:
+ 	platform_device_del(serial_txx9_plat_devs);
+  put_dev:
 -- 
-1.9.1
+2.23.0
 
