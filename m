@@ -5,76 +5,82 @@ X-Spam-Level:
 X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DD5C2D0A3
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B97DC2D0A3
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:36:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D044E2065D
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:36:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3950120657
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:36:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VxWQRFEV"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mDUmwxxs"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731414AbgKDTgc (ORCPT
+        id S1731544AbgKDTgn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 14:36:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37582 "EHLO
+        Wed, 4 Nov 2020 14:36:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730983AbgKDTgb (ORCPT
+        with ESMTP id S1731466AbgKDTgh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 14:36:31 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F36C0613D3
-        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:36:30 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id c16so3419302wmd.2
-        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:36:30 -0800 (PST)
+        Wed, 4 Nov 2020 14:36:37 -0500
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4AFC0613D4
+        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:36:36 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id k10so21997077wrw.13
+        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:36:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+W+IzJVlcwSw8IRMXBzJb1dzB3GDzrAyqgcs95IwTfA=;
-        b=VxWQRFEV0vC/Lf0jlmwNBvW8/0FLvKwzZEu+uH7X7FkNBGaGg76oETtihBzGB6HVq2
-         XK4SJALNsE0+8RJw6V9q4QjSsOGtnVDGq3e8I8p/X/R5VgutNA7Q50JpK+MLy1su0nFL
-         WNHLL9q3oM3G68w/0/99xDzA24KWCw0JLP3sZb20mex9BpL1V3jUrsoCzosgJPpAH7t9
-         MAyfOM2MiBBC5vKlcUH05ngWxEKclBvMkAmwYQ15XI360iUMoZeNQTaLWxLFJvKsuOyC
-         3nE9SEcMceJi5iN9U9n45tzdaucar/krRG6kuL23V8brq8Q3XZqLmK1ix+SV4gvPnj9U
-         llRw==
+        bh=LLsN4EencXRGtGh6NICYbwvfxRBgSaeY1vL5/hXBaSE=;
+        b=mDUmwxxsTe07lHZdCK2NULBQOzn4QryCvAiJRBiNod0SQqJoH9VRDVYsjyFYKGVo/W
+         reE/6DdkeQRZ5mln/8ZmhUKS1Roow+CuhxYEGWCbHlGiH6Qvhf2OzHgt7m1ca/RB6IfC
+         1Z/XDwPlOsKdZWNpKBMdu/7ai2sBwVtTD3IVxbySNMGnN2mYL5XCqTeOJDO84TsaAUgR
+         y4+ySv4XxyVtAkylZ1TZa2e5KfXHwqh1NYm4Q5nd7bi3EBSwCAabLS+uoRknth3lyNIL
+         4C639ZtdSlM3cWtK32QsZklz9nt/+PfSD/KdhAz8FygBldRS4KP1oWuJo4VC0x5CKunJ
+         1MpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+W+IzJVlcwSw8IRMXBzJb1dzB3GDzrAyqgcs95IwTfA=;
-        b=esFqyKSpDPg0R4/tNDxfR2HcByVbFZRzkSLzFuQ5a0Ktbzjl5STdP8hT2x43JhsgBu
-         robUDUunaTQjbYBwW4OJMdt6KRpzyqdDjcDQb2K+XsaPFzU90ktsIxb1RzwbUbHpfFnA
-         MsmsDu7UqTj+RxfIyhUFoVAGYghR1vOYooUscV4jzhTriqv2EYyzxGwMiu2qhk2VkcCk
-         p6mAybqJymy91LMOdvFZmCIjto9CJt7SVL482mqCbhNN53dEgSHKHiRGSEJYHnLZMwr5
-         ZJ+o6EImy2gA2JAFwwd+3eLf8mjrEE6InC1O/hZyfJkrkS1SAABf3HJGydg6XYE5DD+y
-         dDcA==
-X-Gm-Message-State: AOAM532kE+tUXxrofLT/4SNIw1reC6a2ozImVojRRyT5gVBnfIcxHsa7
-        sAasR+08Yq0uCQEnyWTINiOABw==
-X-Google-Smtp-Source: ABdhPJzdsHB0gRKZUlixDWWHCwavM98eiP6QAn36+VXXgHdWKN98UOhPp3e0gizULhrigHzF6tsHyA==
-X-Received: by 2002:a1c:81d7:: with SMTP id c206mr6119967wmd.140.1604518588914;
-        Wed, 04 Nov 2020 11:36:28 -0800 (PST)
+        bh=LLsN4EencXRGtGh6NICYbwvfxRBgSaeY1vL5/hXBaSE=;
+        b=jZjcpSQ8tn6F30uWeLo53EnYP1O579QT0qpPDUDcNX8oL7mAmKUYlebB/yo9/pCXuH
+         LDinpc10aIvJFFaVKNsiVOYWO6uwLcHQXdmP6QOrMU9vXjhFRoSRah9i8+g/V7y65LAJ
+         9FMz8LNBz3lw+wDCEepUR6ISMd9gvTHaOO4pMRNxmi/E2vxDVSDd6+JQGzuvATyfHTqh
+         gHnWDJ3TERLikvV5+anUpT0bPQkXkDBWopeP3KsMYHKISiu/PKfWpv6bqfHT3xbN4HPT
+         Dj78M2a67w1mGsdJGzt2BECejdR2yDgSl8JylnP7QkwOAIT8Cih5zyXPLXdu9Y+UU2c6
+         1qYA==
+X-Gm-Message-State: AOAM531uiug4+jJue3OAWh5rHz/5q8shn6xeykdEFqObL3/37TcdAG2G
+        0Wwo1nzaKNOFLYyku50WnjqC5Q==
+X-Google-Smtp-Source: ABdhPJwj69pglo5oKTGjibnfQaOnqOYeg+zi78YMRNFefrSr4xnzdjafE2tVb3anObZuT+KBZ5gsIg==
+X-Received: by 2002:adf:de89:: with SMTP id w9mr33569428wrl.212.1604518595494;
+        Wed, 04 Nov 2020 11:36:35 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.36.27
+        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.36.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 11:36:28 -0800 (PST)
+        Wed, 04 Nov 2020 11:36:34 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     lee.jones@linaro.org
 Cc:     linux-kernel@vger.kernel.org,
+        Laxman Dewangan <ldewangan@nvidia.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Filip Aben <f.aben@option.com>,
-        Joseph Barrow <d.barow@option.com>,
-        Jan Dumon <j.dumon@option.com>,
-        Russ Gorby <russ.gorby@intel.com>, linux-serial@vger.kernel.org
-Subject: [PATCH 21/36] tty: serial: ifx6x60: Fix function documentation headers
-Date:   Wed,  4 Nov 2020 19:35:34 +0000
-Message-Id: <20201104193549.4026187-22-lee.jones@linaro.org>
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org
+Subject: [PATCH 24/36] tty: serial: serial-tegra: Struct headers should start with 'struct <name>'
+Date:   Wed,  4 Nov 2020 19:35:37 +0000
+Message-Id: <20201104193549.4026187-25-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201104193549.4026187-1-lee.jones@linaro.org>
 References: <20201104193549.4026187-1-lee.jones@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -82,43 +88,39 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/tty/serial/ifx6x60.c:553: warning: Function parameter or member 'tty' not described in 'ifx_port_activate'
- drivers/tty/serial/ifx6x60.c:728: warning: Function parameter or member 't' not described in 'ifx_spi_io'
- drivers/tty/serial/ifx6x60.c:728: warning: Excess function parameter 'data' description in 'ifx_spi_io'
+ drivers/tty/serial/serial-tegra.c:85: warning: cannot understand function prototype: 'struct tegra_uart_chip_data '
 
+Cc: Laxman Dewangan <ldewangan@nvidia.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Filip Aben <f.aben@option.com>
-Cc: Joseph Barrow <d.barow@option.com>
-Cc: Jan Dumon <j.dumon@option.com>
-Cc: Russ Gorby <russ.gorby@intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>
+Cc: "Christian König" <christian.koenig@amd.com>
 Cc: linux-serial@vger.kernel.org
+Cc: linux-tegra@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linaro-mm-sig@lists.linaro.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/tty/serial/ifx6x60.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/serial-tegra.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-index 21d519c804cb9..182e0ccd60b2c 100644
---- a/drivers/tty/serial/ifx6x60.c
-+++ b/drivers/tty/serial/ifx6x60.c
-@@ -545,6 +545,7 @@ static void ifx_spi_hangup(struct tty_struct *tty)
- /**
-  *	ifx_port_activate
-  *	@port: our tty port
-+ *	@tty: our tty device
-  *
-  *	tty port activate method - called for first open. Serialized
-  *	with hangup and shutdown by the tty layer.
-@@ -719,7 +720,7 @@ static void ifx_spi_complete(void *ctx)
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index bd13014a1c537..c363ee0470f45 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -75,7 +75,7 @@
+ #define TEGRA_UART_FCR_IIR_FIFO_EN		0x40
  
  /**
-  *	ifx_spio_io		-	I/O tasklet
-- *	@data: our SPI device
-+ *	@t: tasklet construct used to fetch the SPI device
+- * tegra_uart_chip_data: SOC specific data.
++ * struct tegra_uart_chip_data: SOC specific data.
   *
-  *	Queue data for transmission if possible and then kick off the
-  *	transfer.
+  * @tx_fifo_full_status: Status flag available for checking tx fifo full.
+  * @allow_txfifo_reset_fifo_mode: allow_tx fifo reset with fifo mode or not.
 -- 
 2.25.1
 
