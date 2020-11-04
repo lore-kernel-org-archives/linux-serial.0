@@ -7,70 +7,67 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6665C4741F
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE671C4741F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:38:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 60FC220679
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:37:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 984A1221FA
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:38:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ms2JX/ol"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="n+SGLyXN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730295AbgKDThr (ORCPT
+        id S1732011AbgKDTiF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 14:37:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        Wed, 4 Nov 2020 14:38:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731210AbgKDTg1 (ORCPT
+        with ESMTP id S1730877AbgKDTgT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 14:36:27 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DC0C061A4C
-        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:36:27 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id g12so23287943wrp.10
-        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:36:27 -0800 (PST)
+        Wed, 4 Nov 2020 14:36:19 -0500
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CA1C061A4A
+        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:36:18 -0800 (PST)
+Received: by mail-wm1-x342.google.com with SMTP id c16so3418818wmd.2
+        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:36:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sjXTZO3THTknUKc+FF8iaHBvsw+0f6VMadCbFHOAPuM=;
-        b=ms2JX/olfhvXUd5gZU8GpM2AlBUdhsOVTqftJLAZsSd3S6CA4St9e8Z3GVUJOPmBH3
-         Wv+e5VL/yIgilU8EvaWEC11WiXxDDYSZTosDlw9sO3Gem/ACN7zcS+464DoBy798QAcH
-         OPG1s6i1ZL6NhVvbs5YXlsbdqZEHIzc0+LOC4YSprETgdP0IUwxP1HatTFbZr3Q1gVcv
-         i854ry1t+jafdMYbiPc8nv8BT3ro4yc3QyZESN0BlPVfflbvzS0u+2sy5v8ZA98Wm1GT
-         r3s419fmQ+DJ0EwoWS+et3BfGfkP9LbKal++RpqWiA5dqdiTmztKyhwwOy9HGefmTbgE
-         YXXg==
+        bh=qTLE3fDx+u6VjTzT6dpTTPCm/8rHPP6boBELCTFmpBg=;
+        b=n+SGLyXNvdQU4rjj4mubZsi4hwbLwsTcsnnLwzYDMPIhbwe63+nVO1NWaX3aS6dmUx
+         3L/2agKl25gvbYPSbv11aqzMRSZv7UekzcbL2Z9mLOgjzaBviP2JGHkvIB+ENAsZBE24
+         p+G+FPrfRxa40tohZRpg7hUd5mVHby44jPtaARISzVZpbjgyuZPQHOBKD5nTwEqQI0Vq
+         gwqlnt1aDiKbnT7CSkc1eH3UIV2qVrmFfe3YtZAnDa/D9H5yuzEfaEHhkfLYk5ETcxc0
+         3JKmbCti5Dkc3YvISF1bIqsTEKyvNXpzwSmk+IOF2D2nIHjg2/CPkBhUfTe60fEefXKq
+         h4XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sjXTZO3THTknUKc+FF8iaHBvsw+0f6VMadCbFHOAPuM=;
-        b=EKBWYpW1YVBCECYhotD7tPNivucPD61tRHu5lLHyK2xDzJaLT6YIuBJEGbb7KPqTcd
-         T5r6rnW0GZtMJWovZQ4V5hRT6cdtLS+lxTv+NPXPguUc1zUJUCiXTPOUTJEI2pHS0mM2
-         gL74jPETV1zkkg3/VbyOfXsfEDyiCZn6y5t3RBWzaVvhNaFJ6dP/OyGpXaBdlESg4QLQ
-         riJCMgWuV973W4U67fyN4GYlese5CkQoCp4uyvllPEX3N2Dzs6JU9i/1H9Ujh5ucPwZz
-         /K4amw1p9do9L65R7Sefzaurdk8PzOUAQNcx4q3lGxT+lcktQPEhuxJogUEWlTlCddgu
-         Au1A==
-X-Gm-Message-State: AOAM532lR7TetBo9Af9gS0FiYcnwgl7Wqe/dIvbKbeqcuqSOvnxFJb0+
-        L0zhfxMr55oPoI0fsdfT2uxu0w==
-X-Google-Smtp-Source: ABdhPJwbXgRf846UE4ULzw1UaKkRcnno8eWKOJyQ2YXTMjG5JuMVVZBJynEIcVUKav7QeoqCCWIriw==
-X-Received: by 2002:a5d:4c4f:: with SMTP id n15mr32969818wrt.137.1604518585814;
-        Wed, 04 Nov 2020 11:36:25 -0800 (PST)
+        bh=qTLE3fDx+u6VjTzT6dpTTPCm/8rHPP6boBELCTFmpBg=;
+        b=k5xf1QxAwV9WPRCsk0G+UHxGKHai0znZdpRGVORS6J3pXOXhGx+VPJYk3uOgouR8un
+         83R7uVJB/QNXa4AxfRzo80dCTWTOPTRetZBCyW5Nc6fNj3W6BdG/PKP/AMYIaFBk31cM
+         dW2zF5ZmfpsKCrIGkyugMh/0l4qqoXT3Wf/DuEw/HgfMpkq0Y4C0qqKNpPCeNFU7tS9X
+         3Iqs7stvyHb+lXOM9gNtoLOkMOfzQ5mjgmM/jUPjCBonVH4KNqJVN8dWuVSXJEz7EM3o
+         1BS4d+IVXohIr41S+0le2nksUwxR0pgB0MUhcOo+ZQRCp+Y+WmSw5fwhLzWp/kYFui4p
+         819g==
+X-Gm-Message-State: AOAM532WE4iaZLFeeE82WZAbf5D45tWmrE6OaU1j+Pa9ynKGsFA7eUls
+        Nmfg90ikSEeGDmFVhLozULT+Yg==
+X-Google-Smtp-Source: ABdhPJwiMgTaKQBz/vW+Q77lWF+7EeqsbsMelVL8C6QvCfsvxmsIndZmwUuB1UXHj60cFSp3ozaydA==
+X-Received: by 2002:a1c:bcd6:: with SMTP id m205mr6115133wmf.47.1604518577576;
+        Wed, 04 Nov 2020 11:36:17 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.36.24
+        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.36.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 11:36:25 -0800 (PST)
+        Wed, 04 Nov 2020 11:36:16 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     lee.jones@linaro.org
 Cc:     linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Kevin Wells <kevin.wells@nxp.com>,
-        Roland Stigge <stigge@antcom.de>, linux-serial@vger.kernel.org
-Subject: [PATCH 19/36] tty: serial: lpc32xx_hs: Remove unused variable 'tmp'
-Date:   Wed,  4 Nov 2020 19:35:32 +0000
-Message-Id: <20201104193549.4026187-20-lee.jones@linaro.org>
+        Mike Hudson <Exoray@isys.ca>, linux-serial@vger.kernel.org
+Subject: [PATCH 13/36] tty: serial: 8250: 8250_port: Staticify functions referenced by pointers
+Date:   Wed,  4 Nov 2020 19:35:26 +0000
+Message-Id: <20201104193549.4026187-14-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201104193549.4026187-1-lee.jones@linaro.org>
 References: <20201104193549.4026187-1-lee.jones@linaro.org>
@@ -83,39 +80,40 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/tty/serial/lpc32xx_hs.c: In function ‘__serial_uart_flush’:
- drivers/tty/serial/lpc32xx_hs.c:244:6: warning: variable ‘tmp’ set but not used [-Wunused-but-set-variable]
+ drivers/tty/serial/8250/8250_port.c:349:14: warning: no previous prototype for ‘au_serial_in’ [-Wmissing-prototypes]
+ drivers/tty/serial/8250/8250_port.c:359:6: warning: no previous prototype for ‘au_serial_out’ [-Wmissing-prototypes]
 
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Vladimir Zapolskiy <vz@mleia.com>
-Cc: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Cc: Kevin Wells <kevin.wells@nxp.com>
-Cc: Roland Stigge <stigge@antcom.de>
+Cc: Mike Hudson <Exoray@isys.ca>
 Cc: linux-serial@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/tty/serial/lpc32xx_hs.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-index b5898c9320361..1fa098d7aec4b 100644
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -241,12 +241,11 @@ static unsigned int __serial_get_clock_div(unsigned long uartclk,
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index b0af13074cd36..ebce4406dc289 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -346,7 +346,7 @@ static const s8 au_io_out_map[8] = {
+ 	-1,	/* UART_SCR (unmapped) */
+ };
  
- static void __serial_uart_flush(struct uart_port *port)
+-unsigned int au_serial_in(struct uart_port *p, int offset)
++static unsigned int au_serial_in(struct uart_port *p, int offset)
  {
--	u32 tmp;
- 	int cnt = 0;
- 
- 	while ((readl(LPC32XX_HSUART_LEVEL(port->membase)) > 0) &&
- 	       (cnt++ < FIFO_READ_LIMIT))
--		tmp = readl(LPC32XX_HSUART_FIFO(port->membase));
-+		readl(LPC32XX_HSUART_FIFO(port->membase));
+ 	if (offset >= ARRAY_SIZE(au_io_in_map))
+ 		return UINT_MAX;
+@@ -356,7 +356,7 @@ unsigned int au_serial_in(struct uart_port *p, int offset)
+ 	return __raw_readl(p->membase + (offset << p->regshift));
  }
  
- static void __serial_lpc32xx_rx(struct uart_port *port)
+-void au_serial_out(struct uart_port *p, int offset, int value)
++static void au_serial_out(struct uart_port *p, int offset, int value)
+ {
+ 	if (offset >= ARRAY_SIZE(au_io_out_map))
+ 		return;
 -- 
 2.25.1
 
