@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C79EDC55178
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 10:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E22AFC2D0A3
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 10:54:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 79DA3223BD
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 10:53:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8EBCD20867
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 10:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729430AbgKDKxw (ORCPT
+        id S1729361AbgKDKx7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 05:53:52 -0500
-Received: from mail-m17613.qiye.163.com ([59.111.176.13]:35682 "EHLO
+        Wed, 4 Nov 2020 05:53:59 -0500
+Received: from mail-m17613.qiye.163.com ([59.111.176.13]:35882 "EHLO
         mail-m17613.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729396AbgKDKxv (ORCPT
+        with ESMTP id S1729399AbgKDKx6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 05:53:51 -0500
+        Wed, 4 Nov 2020 05:53:58 -0500
 Received: from ubuntu.localdomain (unknown [58.213.83.156])
-        by mail-m17613.qiye.163.com (Hmail) with ESMTPA id 73C70482CF2;
-        Wed,  4 Nov 2020 18:53:48 +0800 (CST)
+        by mail-m17613.qiye.163.com (Hmail) with ESMTPA id 3E749482D14;
+        Wed,  4 Nov 2020 18:53:51 +0800 (CST)
 From:   Bernard Zhao <bernard@vivo.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -35,64 +35,61 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 Cc:     opensource.kernel@vivo.com, Bernard Zhao <bernard@vivo.com>
-Subject: [PATCH 1/2] drivers/tty: delete break after goto
-Date:   Wed,  4 Nov 2020 02:53:30 -0800
-Message-Id: <20201104105331.16654-2-bernard@vivo.com>
+Subject: [PATCH 2/2] drivers/tty: delete break after return
+Date:   Wed,  4 Nov 2020 02:53:31 -0800
+Message-Id: <20201104105331.16654-3-bernard@vivo.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20201104105331.16654-1-bernard@vivo.com>
 References: <20201104105331.16654-1-bernard@vivo.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZGh4eTEtPHUxIGUxLVkpNS09PQ0xJSUNMSU9VEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        oVCBIfWUFZS0MdGUsfGUIdSB4aVkpNS09PQ0xJSEpOSENVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
         FZT0tIVUpKS09ISFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OTo6Qjo5Dj8fNx8QA0MYCAwU
-        SDYKCU1VSlVKTUtPT0NMSUlCSk5OVTMWGhIXVRkeCRUaCR87DRINFFUYFBZFWVdZEgtZQVlOQ1VJ
-        SkhVQ0hVSk5NWVdZCAFZQUlNQ0g3Bg++
-X-HM-Tid: 0a7592e42cfa93bakuws73c70482cf2
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PCI6PSo6Mz8oNx8qA00ICE9I
+        HjoaCTBVSlVKTUtPT0NMSUhKQkxJVTMWGhIXVRkeCRUaCR87DRINFFUYFBZFWVdZEgtZQVlOQ1VJ
+        SkhVQ0hVSk5NWVdZCAFZQUlOQ0s3Bg++
+X-HM-Tid: 0a7592e437fa93bakuws3e749482d14
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Delete break after goto, which will never run.
+Delete break after return, which will never run.
 
 Signed-off-by: Bernard Zhao <bernard@vivo.com>
 ---
- drivers/tty/nozomi.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/tty/serial/imx.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
-index d42b854cb7df..946cc16827aa 100644
---- a/drivers/tty/nozomi.c
-+++ b/drivers/tty/nozomi.c
-@@ -414,11 +414,9 @@ static void read_mem32(u32 *buf, const void __iomem *mem_addr_start,
- 		buf16 = (u16 *) buf;
- 		*buf16 = __le16_to_cpu(readw(ptr));
- 		goto out;
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 1731d9728865..09703079db7b 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -320,7 +320,6 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
+ 	switch (offset) {
+ 	case UCR1:
+ 		return sport->ucr1;
 -		break;
- 	case 4:	/* 4 bytes */
- 		*(buf) = __le32_to_cpu(readl(ptr));
- 		goto out;
+ 	case UCR2:
+ 		/*
+ 		 * UCR2_SRST is the only bit in the cached registers that might
+@@ -331,16 +330,12 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
+ 		if (!(sport->ucr2 & UCR2_SRST))
+ 			sport->ucr2 = readl(sport->port.membase + offset);
+ 		return sport->ucr2;
 -		break;
+ 	case UCR3:
+ 		return sport->ucr3;
+-		break;
+ 	case UCR4:
+ 		return sport->ucr4;
+-		break;
+ 	case UFCR:
+ 		return sport->ufcr;
+-		break;
+ 	default:
+ 		return readl(sport->port.membase + offset);
  	}
- 
- 	while (i < size_bytes) {
-@@ -460,7 +458,6 @@ static u32 write_mem32(void __iomem *mem_addr_start, const u32 *buf,
- 		buf16 = (const u16 *)buf;
- 		writew(__cpu_to_le16(*buf16), ptr);
- 		return 2;
--		break;
- 	case 1: /*
- 		 * also needs to write 4 bytes in this case
- 		 * so falling through..
-@@ -468,7 +465,6 @@ static u32 write_mem32(void __iomem *mem_addr_start, const u32 *buf,
- 	case 4: /* 4 bytes */
- 		writel(__cpu_to_le32(*buf), ptr);
- 		return 4;
--		break;
- 	}
- 
- 	while (i < size_bytes) {
 -- 
 2.29.0
 
