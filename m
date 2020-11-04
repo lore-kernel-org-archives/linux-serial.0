@@ -2,102 +2,97 @@ Return-Path: <SRS0=3oyo=EK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B21ECC2D0A3
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 20:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC335C2D0A3
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 20:21:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 552E020759
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 20:04:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5D101206D9
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 20:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731510AbgKDUEt (ORCPT
+        id S1729880AbgKDUVW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 15:04:49 -0500
-Received: from mleia.com ([178.79.152.223]:55478 "EHLO mail.mleia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731503AbgKDUEt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 15:04:49 -0500
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id 0747A416CD3;
-        Wed,  4 Nov 2020 20:04:48 +0000 (UTC)
-Subject: Re: [PATCH 19/36] tty: serial: lpc32xx_hs: Remove unused variable
- 'tmp'
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org,
+        Wed, 4 Nov 2020 15:21:22 -0500
+Received: from hera.aquilenet.fr ([185.233.100.1]:40394 "EHLO
+        hera.aquilenet.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729633AbgKDUVW (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 4 Nov 2020 15:21:22 -0500
+X-Greylist: delayed 472 seconds by postgrey-1.27 at vger.kernel.org; Wed, 04 Nov 2020 15:21:22 EST
+Received: from localhost (localhost [127.0.0.1])
+        by hera.aquilenet.fr (Postfix) with ESMTP id 45895C1D;
+        Wed,  4 Nov 2020 21:13:25 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at aquilenet.fr
+Received: from hera.aquilenet.fr ([127.0.0.1])
+        by localhost (hera.aquilenet.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id EhNBdKwrLQ_R; Wed,  4 Nov 2020 21:13:24 +0100 (CET)
+Received: from function.youpi.perso.aquilenet.fr (lfbn-bor-1-56-204.w90-50.abo.wanadoo.fr [90.50.148.204])
+        by hera.aquilenet.fr (Postfix) with ESMTPSA id 7B56E9ED;
+        Wed,  4 Nov 2020 21:13:24 +0100 (CET)
+Received: from samy by function.youpi.perso.aquilenet.fr with local (Exim 4.94)
+        (envelope-from <samuel.thibault@ens-lyon.org>)
+        id 1kaP9n-003dhX-Cl; Wed, 04 Nov 2020 21:13:23 +0100
+Date:   Wed, 4 Nov 2020 21:13:23 +0100
+From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
+To:     Matthias Reichl <hias@horus.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Kevin Wells <kevin.wells@nxp.com>,
-        Roland Stigge <stigge@antcom.de>, linux-serial@vger.kernel.org
-References: <20201104193549.4026187-1-lee.jones@linaro.org>
- <20201104193549.4026187-20-lee.jones@linaro.org>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-Message-ID: <208ff62b-c6c0-4b2c-250c-7951f422ba54@mleia.com>
-Date:   Wed, 4 Nov 2020 22:04:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        Jiri Slaby <jirislaby@kernel.org>, speakup@linux-speakup.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Crash when specifying non-existent serial port in speakup /
+ tty_kopen
+Message-ID: <20201104201323.dzyt73tbd2jykcrt@function>
+Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Matthias Reichl <hias@horus.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, speakup@linux-speakup.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201104145737.GA11024@camel2.lan>
 MIME-Version: 1.0
-In-Reply-To: <20201104193549.4026187-20-lee.jones@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20201104_200448_073610_BFADF4C5 
-X-CRM114-Status: GOOD (  16.54  )
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201104145737.GA11024@camel2.lan>
+Organization: I am not organized
+User-Agent: NeoMutt/20170609 (1.8.3)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Lee,
+Hello,
 
-On 11/4/20 9:35 PM, Lee Jones wrote:
-> Fixes the following W=1 kernel build warning(s):
+Matthias Reichl, le mer. 04 nov. 2020 15:57:37 +0100, a ecrit:
+> I initially noticed this oops on x86_64 running kernel 5.4.59 when
+> I accidentally mistyped "ttyS0" as "ttyS9":
 > 
->   drivers/tty/serial/lpc32xx_hs.c: In function ‘__serial_uart_flush’:
->   drivers/tty/serial/lpc32xx_hs.c:244:6: warning: variable ‘tmp’ set but not used [-Wunused-but-set-variable]
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Vladimir Zapolskiy <vz@mleia.com>
-> Cc: Sylvain Lemieux <slemieux.tyco@gmail.com>
-> Cc: Kevin Wells <kevin.wells@nxp.com>
-> Cc: Roland Stigge <stigge@antcom.de>
-> Cc: linux-serial@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->   drivers/tty/serial/lpc32xx_hs.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-> index b5898c9320361..1fa098d7aec4b 100644
-> --- a/drivers/tty/serial/lpc32xx_hs.c
-> +++ b/drivers/tty/serial/lpc32xx_hs.c
-> @@ -241,12 +241,11 @@ static unsigned int __serial_get_clock_div(unsigned long uartclk,
->   
->   static void __serial_uart_flush(struct uart_port *port)
->   {
-> -	u32 tmp;
->   	int cnt = 0;
->   
->   	while ((readl(LPC32XX_HSUART_LEVEL(port->membase)) > 0) &&
->   	       (cnt++ < FIFO_READ_LIMIT))
-> -		tmp = readl(LPC32XX_HSUART_FIFO(port->membase));
-> +		readl(LPC32XX_HSUART_FIFO(port->membase));
->   }
->   
->   static void __serial_lpc32xx_rx(struct uart_port *port)
-> 
+> modprobe speakup_dummy dev=ttyS9
 
-Thank you for the change.
+> [   49.978481] tty_init_dev: ttyS driver does not set tty->port. This would crash the kernel. Fix the driver!
 
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+This looks like only a warning, did it actually crash?
 
-I'm sure the change is correct, likely the local variable was introduced
-to prevent an unwanted probable optimization by some odd/ancient compiler.
+> the missing tty->port is quite fatal.
 
---
-Best wishes,
-Vladimir
+It is fatal for module insertion yes (EINVAL) but IIRC that should be
+getting handled properly, making modprobe return the error?
+
+> It looks like spk_ttyio or tty_dev_name_to_number() / tty_kopen()
+> should perform some additional validation,
+
+spk_ttyio_initialise_ldisc only has a dev_t so can't do much beyond
+calling tty_kopen.
+
+tty_kopen is getting the index from the tty_lookup_driver call (actually
+get_tty_driver which uses p->minor_start and p->num) and passes it to
+tty_driver_lookup_tty. Perhaps in addition of p->num the driver should
+have another field to set, that tty_init_dev could use to reject with
+ENODEV indexes beyond what the driver actually provides?
+
+> I couldn't make the kernel warn/crash yet by specifying non-existent
+> ttyUSB ports yet though.
+
+That's probably because in the ttyUSB case the device allocation is
+dynamic and made exactly according to the number of actual devices,
+while for ttyS* there is a large overcommit of minor values.
+
+Samuel
