@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 722D9C55178
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0961FC2D0A3
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:38:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1FDF420679
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:38:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE84B20679
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:38:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="SrO3RCdI"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eDmsFAU7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730741AbgKDTgR (ORCPT
+        id S1729162AbgKDTgB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 14:36:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
+        Wed, 4 Nov 2020 14:36:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730732AbgKDTgQ (ORCPT
+        with ESMTP id S1728815AbgKDTf7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 14:36:16 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41ABEC0613D4
-        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:36:16 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id c17so3960172wrc.11
-        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:36:16 -0800 (PST)
+        Wed, 4 Nov 2020 14:35:59 -0500
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFEFDC0613D4
+        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:35:58 -0800 (PST)
+Received: by mail-wm1-x341.google.com with SMTP id p19so2555801wmg.0
+        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:35:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ADzQpX5A5QQGn5KGe8b3uSGzs1neIIdNiiTGg04Pmgw=;
-        b=SrO3RCdIyN9ljWbZI6XCZ7EywYfrOo1xL8zKsErdi7L1aIALt/FKwB1/2mjx1Kllud
-         tuurfpjJWEkhKTaVoIke0qteXbRh8SibXQ7RlvzTiWJ4Z/zFCcHciaQaD237p5F5iMtz
-         8oet6e9lsDIJbHOWAHI5YM4v7zUdCc/A5kCSKH3JXgfIT8ZKrolGsKEPL952SPz4VoP+
-         ZM1UoOLhvqGsV3JcGZNnOLEONBkfa3yya5gfvRY8Xgda+F0JHN7ibRTsBge5yoB/rukI
-         hvllAsPhVlwJI5kK767AMsXVF5HLO4GXv2jToESPDup0u4FMjQ3uabpPemajT9A1/yqI
-         0g9A==
+        bh=wH+6ay3ML2IZuG2ItERyIkPsniEGNFXIQf0sfM9xhn4=;
+        b=eDmsFAU7R/9xFhQgOZLSoSX4Ozyo7emaZvpoFzlYhKNIkMDz+wFqWLCCvpdbQvhFq8
+         ru8XqVU6zE7B6/3rxJWElO0jg8aRU4ZGGMgcpUY/ybI4fJEJZtA5qHFG1/qPv3D5ao4l
+         hvhhcYYE7pHbLhzxIlNiz78CcLLxGru7pDHJpWucJPZUkhA1yu5CK+VK047+eqUDGSCg
+         zoLNP36tEymkyuyGc6kuetKvRHfnu1GgmFtvoZ6sIqj2pA3Hn171mu5/7KpEpFELkmDK
+         OfeA39skAzWp4Kjb9IYniGlqNkpeZ310jPckyoU/haA5GL6VPZAAuQg1wr/tt5i+6xgW
+         Qt/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ADzQpX5A5QQGn5KGe8b3uSGzs1neIIdNiiTGg04Pmgw=;
-        b=KhuR/+S/gqowq8JWPATOlV9hCF8RUNx5R+L7oIQ5f02tKHwezMQW1T3JuRV7Ry9E1b
-         TKNS6YwbUc3qOdZ8Gwem/P+qTmNkrcJCI8MyPR0mXyxu3uqzv3UsbkNeVVKRcA2NDe1D
-         QljgHNuIHz7w0LxyA29BxrB64Am7L67YWQY46kEPsw5G+3KurbWGax24pPdn/E6ZciL1
-         DH2Cm2Vx5i0Vj6P/4oXvR5ZxKBsQGGmrF8juelgAajj5PNwjECRW0eeSz//9TnrAJafl
-         Sy0uMXMlv5anSqtWi/Kmx+Hqdz8XKhiEg6ibm3AL3jdxAS27cf2NbiDyQ3lDiQkIfJc5
-         NZfw==
-X-Gm-Message-State: AOAM530LDAJkCtB+Xv5KmGWvSoatTHFxQOLaaQh+XTA+SQO9rJEqlPOz
-        /Wqy4FemWhIOPdhD1ut3g+eUMx3UvJEko4id
-X-Google-Smtp-Source: ABdhPJxQWD9boor58blEPk13x9CFCIgel5vhuqRovBZZ3YXmGE4yGmokHOoAdvxrmYxznBnOUzlXSA==
-X-Received: by 2002:adf:e3c2:: with SMTP id k2mr33940946wrm.412.1604518574973;
-        Wed, 04 Nov 2020 11:36:14 -0800 (PST)
+        bh=wH+6ay3ML2IZuG2ItERyIkPsniEGNFXIQf0sfM9xhn4=;
+        b=X1ELCZsZ11j3AFpeAxtyo1vYCdU/1ik5uWCNd+eo7SCjLCgIYF4y/9Bmcy9AsYw35c
+         gpcQNPAUbpOOQrRuYHUEEFMcOGWbhNNy+UIEyVLLERPpIlqjReCpxPCjBFC/PDilYm5V
+         OXkfDRPW0ehb94s3iXUb2oMidp2rtusyZkcIfbh/4Bn5WxBOGUYGMz1G1CX4mfeqx92v
+         Ng5g0tXzQ+UOM+gWMBOFSzD5dCoYZAaX7+JibPEOUgJHTr4szKiSjYEsR/Mx9FIBPqTS
+         1GJg4Bxcw6miiRLb+7v2FS8XM5smw8gx8H4SjFec4dEr412zIaNNZxg3G/McDOnHJBFg
+         8SjA==
+X-Gm-Message-State: AOAM533pnIma4TZjj96hd1AWWh0Ncb6PDPzqmfHmEf/tVSQFGjMjoHG6
+        td7kwqKsvz9OnS0GWKXrpMk8jQ==
+X-Google-Smtp-Source: ABdhPJwv9KaK3YsFPmWngapSaiAdWGp0IVoe9eZG7kU0Utng+LM5h3HswS/vwkbPrp46bn+qVqtzSg==
+X-Received: by 2002:a1c:4b0c:: with SMTP id y12mr6696117wma.91.1604518557593;
+        Wed, 04 Nov 2020 11:35:57 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.36.13
+        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.35.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 11:36:14 -0800 (PST)
+        Wed, 04 Nov 2020 11:35:55 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org,
+Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH 11/36] tty: serial: jsm: jsm_cls: Remove unused variable 'discard'
-Date:   Wed,  4 Nov 2020 19:35:24 +0000
-Message-Id: <20201104193549.4026187-12-lee.jones@linaro.org>
+Subject: [PATCH 01/36] tty: serdev: core: Remove unused variable 'dummy'
+Date:   Wed,  4 Nov 2020 19:35:14 +0000
+Message-Id: <20201104193549.4026187-2-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201104193549.4026187-1-lee.jones@linaro.org>
 References: <20201104193549.4026187-1-lee.jones@linaro.org>
@@ -77,35 +77,41 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+No need to have a dummy variable here.
+
 Fixes the following W=1 kernel build warning(s):
 
- drivers/tty/serial/jsm/jsm_cls.c: In function ‘cls_copy_data_from_uart_to_queue’:
- drivers/tty/serial/jsm/jsm_cls.c:400:7: warning: variable ‘discard’ set but not used [-Wunused-but-set-variable]
+ drivers/tty/serdev/core.c: In function ‘serdev_controller_remove’:
+ drivers/tty/serdev/core.c:791:6: warning: variable ‘dummy’ set but not used [-Wunused-but-set-variable]
 
+Cc: Rob Herring <robh@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
 Cc: linux-serial@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/tty/serial/jsm/jsm_cls.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/tty/serdev/core.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
-index c061a7b7bd233..b507a2cec9269 100644
---- a/drivers/tty/serial/jsm/jsm_cls.c
-+++ b/drivers/tty/serial/jsm/jsm_cls.c
-@@ -397,10 +397,8 @@ static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
- 		 * which in this case is the break signal.
- 		 */
- 		if (linestatus & error_mask)  {
--			u8 discard;
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index c5f0d936b003a..fecc28a73b3b2 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -788,13 +788,10 @@ static int serdev_remove_device(struct device *dev, void *data)
+  */
+ void serdev_controller_remove(struct serdev_controller *ctrl)
+ {
+-	int dummy;
 -
- 			linestatus = 0;
--			discard = readb(&ch->ch_cls_uart->txrx);
-+			readb(&ch->ch_cls_uart->txrx);
- 			continue;
- 		}
+ 	if (!ctrl)
+ 		return;
  
+-	dummy = device_for_each_child(&ctrl->dev, NULL,
+-				      serdev_remove_device);
++	device_for_each_child(&ctrl->dev, NULL, serdev_remove_device);
+ 	pm_runtime_disable(&ctrl->dev);
+ 	device_del(&ctrl->dev);
+ }
 -- 
 2.25.1
 
