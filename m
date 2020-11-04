@@ -7,69 +7,69 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 329D1C4742C
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:36:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE80EC4741F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:36:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C4E892080D
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:36:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7441020729
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:36:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YHTiFMRk"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="p7liMTCG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731106AbgKDTgX (ORCPT
+        id S1731339AbgKDTg3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 14:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37536 "EHLO
+        Wed, 4 Nov 2020 14:36:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730971AbgKDTgU (ORCPT
+        with ESMTP id S1731283AbgKDTg3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 14:36:20 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0CBC0613D3
-        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:36:20 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id w1so23361862wrm.4
-        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:36:20 -0800 (PST)
+        Wed, 4 Nov 2020 14:36:29 -0500
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3EFC040201
+        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:36:28 -0800 (PST)
+Received: by mail-wm1-x343.google.com with SMTP id p19so2556565wmg.0
+        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:36:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZRGBxzQtBfGTRe7EqXYUnIcL2t2WHoGJ4hWtx+aHv4c=;
-        b=YHTiFMRkE/9n47TPA+A1i93yUz5O+ImX7W2Xhyx04uUSduApku9suwx2FzSaJonUjv
-         a5PHQ0i/GK4CbcDeK70V1zA0ZOBWfJ3fk2Uv4lCIVFBs5FB5EQq+t3ocSxZLRV1r/XHO
-         x6VwGq7e99bbQT4nil61aoKB0hqOdR4mlrIB5dxW6Cps44btfF82dRoyEb1OkrIYS8VX
-         BfcindWv8Z9YWFBpW++7Sr22VbItLakxYMCWqAxVYZBPmYGoWSmEM9JKNH6ECbm8faHs
-         qf5Ab9xOaLJGu7XkIhax8pLb5i7yP7YFn6q39FTKiOk0D+mQGZgEkeimJfS6FW5KLv8e
-         dDQA==
+        bh=G/d/JA64CofWKuwESK8kGZX0uiDeowkGXadKVAnwo0c=;
+        b=p7liMTCG1mLEWq/DKidLWgjNnOJKKwuTWcMv0KT6XCWEQ6mqWorLIKcFwmXjwYSwYR
+         pufeisJvFXX7BesNLGZMehzMFIzDSfamBBW0lash/5ccGK1ZfP3v8EUeIAUIFY5FCIw5
+         nL8CdyXDQNvyOYaDDkvDTI2OrgXsCygs0nhWVKEl7ge7xZuULfHjJX08RBS1Qg2V9JKo
+         hkTHEIKiOl80XiTYG9GAegV5C+V77Nk14gTIDOQrUMhgakn5xLxe/9KqWxKoFrMPvooX
+         l5nGRgrGJ0hgtiqhFZ4hI+xiClHWte29GGYd4mKSFXJLHsacQftIfINr/mY8KbaTWcCq
+         vBrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZRGBxzQtBfGTRe7EqXYUnIcL2t2WHoGJ4hWtx+aHv4c=;
-        b=OqgK0Kv5coZ/0Pqe8gldhZIrXjeYqCmFcbSDhq2KNicyBi/D90nEUQLKN5lZzsWNXR
-         GPWXBQzObpzD6k4/pTlfah+tkiAAfCTIuZ4p//TWVVZKKI4HgqJJBzoSjsrmYoNLgl84
-         /iAie0LdnHKTUBZ008HWLZkPJy7Xo90/fJ7Je1w2AAlruH51khw53ghrOSfaZY+5FsEa
-         iX9kPPW0kZwvZOwhIBQz04lz217CHABj2LEN7SnjX+CxGLanKLpiQ5eG+fvin0xuzfhl
-         FnA357OSewVsQ+nwYgQMsIxQ0UkVwdpQmV5AvDeVAAk1A4IzPiGplnq210HvOg9Uq/E6
-         zS2Q==
-X-Gm-Message-State: AOAM5319vvIeVrQVhYb5Arg3Fm/LvQ33aFvFBhuFp50zyWp+BF/PhA1y
-        vbX02Ag2sZTXnooFpVQb/hHvbQ==
-X-Google-Smtp-Source: ABdhPJzjdlEHI3sL271W1qkBQa43pmdUJBTxOaZr9G05Uu6C1ihR+7MN/MOPLi/I6w4LuoxiC4k5Ng==
-X-Received: by 2002:adf:c101:: with SMTP id r1mr32418679wre.87.1604518578909;
-        Wed, 04 Nov 2020 11:36:18 -0800 (PST)
+        bh=G/d/JA64CofWKuwESK8kGZX0uiDeowkGXadKVAnwo0c=;
+        b=MBudXj/V2pt0ioSWkosGuDooRvV+dFfqSuWAXRv6VDaLMob7FR4jkKS9azOQDXdoj3
+         qDZDCRv5a3r5J1itqgXm1m+ICrfR2ULn5Vi3EWvFDJbgqS6TDQb75h+cHo+RRkU4K1rK
+         0JRJLF0Y75g0EtfiZxsvSm9sM4MfBRf/pxy7xVaoPnDeI5lmkzbyuV23SHVdhqOP5bfk
+         aL49YQTcnHLxuRpT8E8JcHiSXsKBfyqMe3UZoaoa3rUolUIp0THJvjOZHTu3vB/jPtX+
+         JcQlGqLChUd6Sdcy8ErKYNZWEVbKPHqpTvIdWZdkDcuu/6/CNxJkbr1UGUz5NLd7jxXs
+         QfnA==
+X-Gm-Message-State: AOAM533UYRMGSUjKEfN60BAWvXb6D8Dlzt9RjMhZPF6Lovbvl4sjFvnR
+        ccRvHjU/y6OJtqFCPOJeHgvB3A==
+X-Google-Smtp-Source: ABdhPJwis0JJgtZ+lHi7Jy0xdXZWOM0yCqCPZvE1DmD9xUZV9MOkjgMPToCuLIiSif2j3dhE5XCBhA==
+X-Received: by 2002:a1c:e90e:: with SMTP id q14mr5957290wmc.64.1604518587505;
+        Wed, 04 Nov 2020 11:36:27 -0800 (PST)
 Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.36.17
+        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.36.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 11:36:18 -0800 (PST)
+        Wed, 04 Nov 2020 11:36:26 -0800 (PST)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org,
+Cc:     linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        "David A. Hinds" <dahinds@users.sourceforge.net>,
+        Robert Love <rlove@google.com>, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH 14/36] tty: serial: 8250: serial_cs: Remove unused/unchecked variable 'err'
-Date:   Wed,  4 Nov 2020 19:35:27 +0000
-Message-Id: <20201104193549.4026187-15-lee.jones@linaro.org>
+Subject: [PATCH 20/36] tty: serial: msm_serial: Remove set but unused variable 'status'
+Date:   Wed,  4 Nov 2020 19:35:33 +0000
+Message-Id: <20201104193549.4026187-21-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201104193549.4026187-1-lee.jones@linaro.org>
 References: <20201104193549.4026187-1-lee.jones@linaro.org>
@@ -82,42 +82,41 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/tty/serial/8250/serial_cs.c: In function ‘multi_config’:
- drivers/tty/serial/8250/serial_cs.c:562:7: warning: variable ‘err’ set but not used [-Wunused-but-set-variable]
+ drivers/tty/serial/msm_serial.c: In function ‘msm_complete_tx_dma’:
+ drivers/tty/serial/msm_serial.c:429:18: warning: variable ‘status’ set but not used [-Wunused-but-set-variable]
 
+Cc: Andy Gross <agross@kernel.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Colin Ian King <colin.king@canonical.com>
-Cc: "David A. Hinds" <dahinds@users.sourceforge.net>
+Cc: Robert Love <rlove@google.com>
+Cc: linux-arm-msm@vger.kernel.org
 Cc: linux-serial@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/tty/serial/8250/serial_cs.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/tty/serial/msm_serial.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
-index e3d10794dbba3..35ff6627c61be 100644
---- a/drivers/tty/serial/8250/serial_cs.c
-+++ b/drivers/tty/serial/8250/serial_cs.c
-@@ -559,16 +559,13 @@ static int multi_config(struct pcmcia_device *link)
- 	 */
- 	if (info->manfid == MANFID_OXSEMI || (info->manfid == MANFID_POSSIO &&
- 				info->prodid == PRODID_POSSIO_GCC)) {
--		int err;
--
- 		if (link->config_index == 1 ||
- 		    link->config_index == 3) {
--			err = setup_serial(link, info, base2,
--					link->irq);
-+			setup_serial(link, info, base2, link->irq);
- 			base2 = link->resource[0]->start;
- 		} else {
--			err = setup_serial(link, info, link->resource[0]->start,
--					link->irq);
-+			setup_serial(link, info, link->resource[0]->start,
-+				     link->irq);
- 		}
- 		info->c950ctrl = base2;
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 87f005e5d2aff..ec31a809644a5 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -426,7 +426,6 @@ static void msm_complete_tx_dma(void *args)
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	struct msm_dma *dma = &msm_port->tx_dma;
+ 	struct dma_tx_state state;
+-	enum dma_status status;
+ 	unsigned long flags;
+ 	unsigned int count;
+ 	u32 val;
+@@ -437,7 +436,7 @@ static void msm_complete_tx_dma(void *args)
+ 	if (!dma->count)
+ 		goto done;
+ 
+-	status = dmaengine_tx_status(dma->chan, dma->cookie, &state);
++	dmaengine_tx_status(dma->chan, dma->cookie, &state);
+ 
+ 	dma_unmap_single(port->dev, dma->phys, dma->count, dma->dir);
  
 -- 
 2.25.1
