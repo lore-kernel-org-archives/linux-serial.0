@@ -2,236 +2,264 @@ Return-Path: <SRS0=3oyo=EK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC60C2D0A3
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 15:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E8BC4741F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:35:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 66FD52067C
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 15:06:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CFA0C2080D
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:35:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=horus.com header.i=@horus.com header.b="meij+Wru"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tPpnG9Xq"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730061AbgKDPGp (ORCPT
+        id S1727070AbgKDTf5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 10:06:45 -0500
-Received: from mail.horus.com ([78.46.148.228]:51725 "EHLO mail.horus.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726919AbgKDPGo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 10:06:44 -0500
-X-Greylist: delayed 542 seconds by postgrey-1.27 at vger.kernel.org; Wed, 04 Nov 2020 10:06:42 EST
-Received: from [192.168.1.20] (178-190-199-171.adsl.highway.telekom.at [178.190.199.171])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "E-Mail Matthias Reichl", Issuer "HiassofT CA 2014" (not verified))
-        by mail.horus.com (Postfix) with ESMTPSA id 215E86409C;
-        Wed,  4 Nov 2020 15:57:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=horus.com;
-        s=20180324; t=1604501859;
-        bh=vULZlRXuj4eeNnS12RQ8YimPRwknpj8E1IiW4WwuTPU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=meij+WrusfeKvQObJ4iAMErt6vNuP1bzYQ/xRJRDKQPQztoLgo2SNuty7nJUusMJG
-         BkK7ctbnY2COEx52paI8HfcJDRVy0Qvxxgnt8x8h0UK64FdlKCBE3WUw3MZLxzHlUH
-         7lqrcMNQwC2zfyu9EHlh845iuh1XmOCIUX1trLgM=
-Received: by camel2.lan (Postfix, from userid 1000)
-        id E26381C75C3; Wed,  4 Nov 2020 15:57:37 +0100 (CET)
-Date:   Wed, 4 Nov 2020 15:57:37 +0100
-From:   Matthias Reichl <hias@horus.com>
-To:     Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Wed, 4 Nov 2020 14:35:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726779AbgKDTf4 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 4 Nov 2020 14:35:56 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331BBC061A4D
+        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:35:56 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id 23so2544846wmg.1
+        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:35:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jxJovM8uDqxzTsn9dVqfv0BrrWZVdtSmY0ZF8ZUveX8=;
+        b=tPpnG9Xq0fL6ljrah9eqo6gIO+7EFirJIIvgiced9ycP88Q8KlHpshTpZKcvgizvJN
+         DqVDEBLns8yBcUkmpYWgGUSuOeuHwc3TbeagV22ul0tUT7FGEaANe6mr2M3zH1Ec6Z05
+         dCH6ia3+OS223SMvWzLLHuXpDFCNLMIVdigWev4DmGI1eXmNginogEzXPeMA79X1yVLV
+         0qxxtJRnjyHJLEc/h2eBmqyGiNydmzfE3+aZSxanbJKMIY8u2keejYT051xW+oj82BfS
+         wy+JhFXK6BjGfUjjwLP8W/PJD/RldyJXs3gJlou3nOdWUM0pUSiSA9aD3ga+L1YtZxim
+         i6TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jxJovM8uDqxzTsn9dVqfv0BrrWZVdtSmY0ZF8ZUveX8=;
+        b=NhjCoS+LlRvMdZ5eEUEWqeW9eJ7syjnr2Ci04/2CJKuOlB1WC9swI51naOcs7g/KS9
+         hOdK1Ti0P7BXo/XIKfX3MesNFq1wJalfdfSYm4KZy7ofFAM1xXphXLa0YKcUzdGFlw8W
+         hkL1/ztwDC1J4VcnctKcQ4vNckQFAIH2i6/rmsYYYhUNygcq8Bh3TpdlYlRGgmADtKFE
+         tX4STw3BWCzTEnS4NkkSHEAcL7irCUVqM4WKlmIwBukDxz302uRbTJO/zI639TQu0VJe
+         n3FuI/DSi9TT44j5ZwRqNq4I17vFVQYp+M+KB+DvwMpDaowwjDrSPAxDMG4rWARoHm0X
+         THtA==
+X-Gm-Message-State: AOAM5311s/8LH3qFzp8vhNtw4iK2PMIAB7M8veaR7jZ0P/srYWobFLYu
+        QxZgxYw12XIlxzESx6MonFrqZA==
+X-Google-Smtp-Source: ABdhPJwDg2lxqbHlNGOB+b3ejFgNnWIzk2D54Jbj3ObyHrWkPcl/d3c3TSyNOcinZAfD1+eqPp2ICw==
+X-Received: by 2002:a1c:4e1a:: with SMTP id g26mr6283218wmh.98.1604518554550;
+        Wed, 04 Nov 2020 11:35:54 -0800 (PST)
+Received: from dell.default ([91.110.221.242])
+        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.35.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2020 11:35:53 -0800 (PST)
+From:   Lee Jones <lee.jones@linaro.org>
+To:     lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "Andrew J. Kroll" <ag784@freenet.buffalo.edu>,
+        Andrew Morton <andrewm@uow.edu.eu>,
+        Andy Gross <agross@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Bill Hawes <whawes@star.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "C. Scott Ananian" <cananian@alumni.princeton.edu>,
+        "David A. Hinds" <dahinds@users.sourceforge.net>,
+        dri-devel@lists.freedesktop.org, Filip Aben <f.aben@option.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     speakup@linux-speakup.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Crash when specifying non-existent serial port in speakup / tty_kopen
-Message-ID: <20201104145737.GA11024@camel2.lan>
-Mail-Followup-To: Matthias Reichl <hias@horus.com>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, speakup@linux-speakup.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+        Jakub Jelinek <jj@ultra.linux.cz>,
+        Jan Dumon <j.dumon@option.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Joseph Barrow <d.barow@option.com>,
+        -- <julian@uhunix.uhcc.hawaii.edu>,
+        Kevin Wells <kevin.wells@nxp.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        linaro-mm-sig@lists.linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-media@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-tegra@vger.kernel.org, Marko Kohtala <Marko.Kohtala@hut.fi>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Mike Hudson <Exoray@isys.ca>, Miloslav Trmac <mitr@redhat.com>,
+        Nick Holloway <alfie@dcs.warwick.ac.uk>,
+        Palmer Dabbelt <palmer@dabbelt.com>, paulkf@microgate.com,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        processes-Sapan Bhatia <sapan@corewars.org>,
+        Robert Love <rlove@google.com>, Rob Herring <robh@kernel.org>,
+        Roland Stigge <stigge@antcom.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Russell King <rmk@arm.linux.org.uk>,
+        Russ Gorby <russ.gorby@intel.com>,
+        Stanislav Voronyi <stas@cnti.uanet.kharkov.ua>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Vladimir Zapolskiy <vz@mleia.com>
+Subject: [PATCH 00/36] Rid W=1 issues from TTY
+Date:   Wed,  4 Nov 2020 19:35:13 +0000
+Message-Id: <20201104193549.4026187-1-lee.jones@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-I initially noticed this oops on x86_64 running kernel 5.4.59 when
-I accidentally mistyped "ttyS0" as "ttyS9":
+This set is part of a larger effort attempting to clean-up W=1
+kernel builds, which are currently overwhelmingly riddled with
+niggly little warnings.
 
-modprobe speakup_dummy dev=ttyS9
+Lee Jones (36):
+  tty: serdev: core: Remove unused variable 'dummy'
+  tty: serdev: core: Provide missing description for 'owner'
+  tty: tty_baudrate: Add missing description for 'tty'
+  tty: tty_io: Move 'tty_sysctl_init's prototype to shared space
+  tty: tty_buffer: Add missing description for 'limit'
+  tty: tty_port: Demote obvious abuse of kernel-doc formatting
+  tty: tty_jobctrl: Add missing function parameter descriptions
+  tty: tty_ldisc: Fix some kernel-doc related misdemeanours
+  tty: vt: consolemap: Demote weakly documented function header
+  tty: n_tty: Add 2 missing parameter descriptions
+  tty: serial: jsm: jsm_cls: Remove unused variable 'discard'
+  tty: tty_io: Fix some kernel-doc issues
+  tty: serial: 8250: 8250_port: Staticify functions referenced by
+    pointers
+  tty: serial: 8250: serial_cs: Remove unused/unchecked variable 'err'
+  tty: tty_audit: Demote non-conformant kernel-doc headers
+  tty: pty: Provide descriptions for the 'file' parameters
+  tty: serial: amba-pl011: Mark 'sbsa_uart_acpi_match' as __maybe_unused
+  tty: n_gsm: Demote obvious abuse of kernel-doc and supply other
+    missing docss
+  tty: serial: lpc32xx_hs: Remove unused variable 'tmp'
+  tty: serial: msm_serial: Remove set but unused variable 'status'
+  tty: serial: ifx6x60: Fix function documentation headers
+  tty: serial: xilinx_uartps: Supply description for missing member
+    'cts_override'
+  tty: synclink_gt: Demote one kernel-doc header and repair another
+  tty: serial: serial-tegra: Struct headers should start with 'struct
+    <name>'
+  tty: serial: sifive: Struct headers should start with 'struct <name>'
+  tty: synclinkmp: Add missing description for function param 'txqueue'
+  tty: synclinkmp: Mark never checked 'readval' as __always_unused
+  tty: serial: stm32-usart: Remove set but unused 'cookie' variables
+  tty: tty_ldisc: Supply missing description for 'tty_ldisc_get's 'tty'
+    param
+  tty: serial: serial-tegra: Provide some missing struct member
+    descriptions
+  powerpc: asm: hvconsole: Move 'hvc_vio_init_early's prototype to
+    shared location
+  tty: hvc: hvc_vio: Staticify function invoked only by reference
+  tty: hvc: hvc_opal: Staticify function invoked by reference
+  tty: serial: pmac_zilog: Make disposable variable __always_unused
+  tty: synclink: Mark disposable variables as __always_unused
+  tty: synclink: Provide missing description for 'hdlcdev_tx_timeout's
+    'txqueue' param
 
-x86_64/5.10-rc2 showed the same behaviour (see below), also
-5.9.3 on RPi with the ttyAMA driver. I couldn't make the kernel
-warn/crash yet by specifying non-existent ttyUSB ports yet though.
+ arch/powerpc/include/asm/hvconsole.h     |  3 +++
+ arch/powerpc/platforms/pseries/pseries.h |  3 ---
+ arch/powerpc/platforms/pseries/setup.c   |  1 +
+ drivers/tty/hvc/hvc_opal.c               |  2 +-
+ drivers/tty/hvc/hvc_vio.c                |  2 +-
+ drivers/tty/n_gsm.c                      |  4 +++-
+ drivers/tty/n_tty.c                      |  2 ++
+ drivers/tty/pty.c                        |  2 ++
+ drivers/tty/serdev/core.c                |  6 ++----
+ drivers/tty/serial/8250/8250_port.c      |  4 ++--
+ drivers/tty/serial/8250/serial_cs.c      |  9 +++------
+ drivers/tty/serial/amba-pl011.c          |  2 +-
+ drivers/tty/serial/ifx6x60.c             |  3 ++-
+ drivers/tty/serial/jsm/jsm_cls.c         |  4 +---
+ drivers/tty/serial/lpc32xx_hs.c          |  3 +--
+ drivers/tty/serial/msm_serial.c          |  3 +--
+ drivers/tty/serial/pmac_zilog.h          |  2 +-
+ drivers/tty/serial/serial-tegra.c        |  7 ++++++-
+ drivers/tty/serial/sifive.c              |  3 ++-
+ drivers/tty/serial/stm32-usart.c         |  6 ++----
+ drivers/tty/serial/xilinx_uartps.c       |  1 +
+ drivers/tty/synclink.c                   |  5 +++--
+ drivers/tty/synclink_gt.c                |  3 ++-
+ drivers/tty/synclinkmp.c                 |  3 ++-
+ drivers/tty/tty_audit.c                  | 12 ++++++------
+ drivers/tty/tty_baudrate.c               |  1 +
+ drivers/tty/tty_buffer.c                 |  1 +
+ drivers/tty/tty_io.c                     | 12 +++++++-----
+ drivers/tty/tty_jobctrl.c                |  3 +++
+ drivers/tty/tty_ldisc.c                  | 11 ++++++-----
+ drivers/tty/tty_port.c                   |  4 ++--
+ drivers/tty/vt/consolemap.c              |  3 +--
+ include/linux/tty.h                      |  1 +
+ 33 files changed, 73 insertions(+), 58 deletions(-)
 
-It looks like spk_ttyio or tty_dev_name_to_number() / tty_kopen()
-should perform some additional validation, as the missing tty->port
-is quite fatal.
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: "Andrew J. Kroll" <ag784@freenet.buffalo.edu>
+Cc: Andrew Morton <andrewm@uow.edu.eu>
+Cc: Andy Gross <agross@kernel.org>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Bill Hawes <whawes@star.net>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: "Christian König" <christian.koenig@amd.com>
+Cc: Colin Ian King <colin.king@canonical.com>
+Cc: "C. Scott Ananian" <cananian@alumni.princeton.edu>
+Cc: "David A. Hinds" <dahinds@users.sourceforge.net>
+Cc: dri-devel@lists.freedesktop.org
+Cc: Filip Aben <f.aben@option.com>
+Cc: Gerald Baeza <gerald.baeza@st.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jakub Jelinek <jj@ultra.linux.cz>
+Cc: Jan Dumon <j.dumon@option.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>
+Cc: Joseph Barrow <d.barow@option.com>
+Cc: -- <julian@uhunix.uhcc.hawaii.edu>
+Cc: Kevin Wells <kevin.wells@nxp.com>
+Cc: Laxman Dewangan <ldewangan@nvidia.com>
+Cc: linaro-mm-sig@lists.linaro.org
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-tegra@vger.kernel.org
+Cc: Marko Kohtala <Marko.Kohtala@hut.fi>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: Mike Hudson <Exoray@isys.ca>
+Cc: Miloslav Trmac <mitr@redhat.com>
+Cc: Nick Holloway <alfie@dcs.warwick.ac.uk>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: paulkf@microgate.com
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: processes-Sapan Bhatia <sapan@corewars.org>
+Cc: Robert Love <rlove@google.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Roland Stigge <stigge@antcom.de>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Russell King <rmk@arm.linux.org.uk>
+Cc: Russ Gorby <russ.gorby@intel.com>
+Cc: Stanislav Voronyi <stas@cnti.uanet.kharkov.ua>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>
+Cc: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Vladimir Zapolskiy <vz@mleia.com>
+-- 
+2.25.1
 
-Here's the I got on 5.10-rc2:
-
-[   49.967409] input: Speakup as /devices/virtual/input/input10
-[   49.967731] initialized device: /dev/synth, node (MAJOR 10, MINOR 61)
-[   49.968848] speakup 3.1.6: initialized
-[   49.968852] synth name on entry is: (null)
-[   49.978421] synth probe
-[   49.978477] ------------[ cut here ]------------
-[   49.978481] tty_init_dev: ttyS driver does not set tty->port. This would crash the kernel. Fix the driver!
-[   49.978522] WARNING: CPU: 1 PID: 283 at drivers/tty/tty_io.c:1351 tty_init_dev+0x17a/0x1d0
-[   49.978525] Modules linked in: speakup_dummy(+) speakup
-[   49.978538] CPU: 1 PID: 283 Comm: modprobe Not tainted 5.10.0-rc2 #5
-[   49.978541] Hardware name:  /8IPE775/-G, BIOS F5 08/31/2006
-[   49.978580] RIP: 0010:tty_init_dev+0x17a/0x1d0
-[   49.978586] Code: ff ff e8 f9 a6 f5 ff 85 c0 0f 84 43 ff ff ff 49 8b 46 10 48 c7 c6 98 30 07 82 48 c7 c7 b0 c0 26 82 48 8b 50 20 e8 95 37 69 00 <0f> 0b e9 21 ff ff ff e8 da da ff ff e9 ed fe ff ff 4c 89 f7 89 45
-[   49.978591] RSP: 0018:ffffc9000029bb88 EFLAGS: 00010282
-[   49.978596] RAX: 0000000000000000 RBX: ffffffffffffffea RCX: 0000000000000027
-[   49.978599] RDX: 0000000000000027 RSI: ffff88807dc97820 RDI: ffff88807dc97828
-[   49.978603] RBP: ffffc9000029bbb0 R08: 0000000000000000 R09: c0000000ffffdfff
-[   49.978605] R10: 0000000000000001 R11: ffffc9000029b958 R12: ffff88800386df00
-[   49.978608] R13: 0000000000000009 R14: ffff88800514c000 R15: ffffffffa001e500
-[   49.978613] FS:  00007faebf8ae540(0000) GS:ffff88807dc80000(0000) knlGS:0000000000000000
-[   49.978617] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   49.978621] CR2: 00007fff4ff25ff8 CR3: 000000000529a000 CR4: 00000000000006e0
-[   49.978624] Call Trace:
-[   49.978635]  tty_kopen+0x101/0x150
-[   49.978651]  spk_ttyio_synth_probe+0xd5/0x230 [speakup]
-[   49.978661]  ? _cond_resched+0x14/0x30
-[   49.978669]  ? do_init_module+0x22/0x200
-[   49.978678]  do_synth_init.cold.11+0x2d/0x15f [speakup]
-[   49.978686]  synth_add+0x95/0xa0 [speakup]
-[   49.978689]  ? 0xffffffffa0021000
-[   49.978696]  synth_dummy_init+0x10/0x1000 [speakup_dummy]
-[   49.978702]  do_one_initcall+0x45/0x1d0
-[   49.978707]  ? _cond_resched+0x14/0x30
-[   49.978714]  ? kmem_cache_alloc_trace+0x39/0x1b0
-[   49.978720]  do_init_module+0x5b/0x200
-[   49.978726]  load_module+0x25e6/0x2830
-[   49.978733]  __do_sys_finit_module+0xc1/0x120
-[   49.978737]  ? __do_sys_finit_module+0xc1/0x120
-[   49.978744]  __x64_sys_finit_module+0x15/0x20
-[   49.978750]  do_syscall_64+0x37/0x50
-[   49.978757]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   49.978762] RIP: 0033:0x7faebf9cf919
-[   49.978767] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 47 55 0c 00 f7 d8 64 89 01 48
-[   49.978771] RSP: 002b:00007fffb3a03018 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   49.978777] RAX: ffffffffffffffda RBX: 00005620ea9c58f0 RCX: 00007faebf9cf919
-[   49.978780] RDX: 0000000000000000 RSI: 00005620ea9c5e10 RDI: 0000000000000004
-[   49.978783] RBP: 0000000000040000 R08: 0000000000000000 R09: 0000000000000000
-[   49.978785] R10: 0000000000000004 R11: 0000000000000246 R12: 00005620ea9c5e10
-[   49.978788] R13: 0000000000000000 R14: 00005620ea9c5ab0 R15: 00005620ea9c58f0
-[   49.978795] CPU: 1 PID: 283 Comm: modprobe Not tainted 5.10.0-rc2 #5
-[   49.978798] Hardware name:  /8IPE775/-G, BIOS F5 08/31/2006
-[   49.978800] Call Trace:
-[   49.978806]  dump_stack+0x5e/0x74
-[   49.978813]  __warn.cold.13+0xe/0x3f
-[   49.978819]  ? tty_init_dev+0x17a/0x1d0
-[   49.978826]  report_bug+0xc5/0x100
-[   49.978831]  handle_bug+0x48/0x90
-[   49.978835]  exc_invalid_op+0x18/0x70
-[   49.978839]  asm_exc_invalid_op+0x12/0x20
-[   49.978844] RIP: 0010:tty_init_dev+0x17a/0x1d0
-[   49.978849] Code: ff ff e8 f9 a6 f5 ff 85 c0 0f 84 43 ff ff ff 49 8b 46 10 48 c7 c6 98 30 07 82 48 c7 c7 b0 c0 26 82 48 8b 50 20 e8 95 37 69 00 <0f> 0b e9 21 ff ff ff e8 da da ff ff e9 ed fe ff ff 4c 89 f7 89 45
-[   49.978852] RSP: 0018:ffffc9000029bb88 EFLAGS: 00010282
-[   49.978857] RAX: 0000000000000000 RBX: ffffffffffffffea RCX: 0000000000000027
-[   49.978860] RDX: 0000000000000027 RSI: ffff88807dc97820 RDI: ffff88807dc97828
-[   49.978863] RBP: ffffc9000029bbb0 R08: 0000000000000000 R09: c0000000ffffdfff
-[   49.978865] R10: 0000000000000001 R11: ffffc9000029b958 R12: ffff88800386df00
-[   49.978868] R13: 0000000000000009 R14: ffff88800514c000 R15: ffffffffa001e500
-[   49.978876]  ? tty_init_dev+0x17a/0x1d0
-[   49.978882]  tty_kopen+0x101/0x150
-[   49.978893]  spk_ttyio_synth_probe+0xd5/0x230 [speakup]
-[   49.978900]  ? _cond_resched+0x14/0x30
-[   49.978905]  ? do_init_module+0x22/0x200
-[   49.978915]  do_synth_init.cold.11+0x2d/0x15f [speakup]
-[   49.978923]  synth_add+0x95/0xa0 [speakup]
-[   49.978926]  ? 0xffffffffa0021000
-[   49.978932]  synth_dummy_init+0x10/0x1000 [speakup_dummy]
-[   49.978936]  do_one_initcall+0x45/0x1d0
-[   49.978941]  ? _cond_resched+0x14/0x30
-[   49.978947]  ? kmem_cache_alloc_trace+0x39/0x1b0
-[   49.978953]  do_init_module+0x5b/0x200
-[   49.978959]  load_module+0x25e6/0x2830
-[   49.978967]  __do_sys_finit_module+0xc1/0x120
-[   49.978973]  ? __do_sys_finit_module+0xc1/0x120
-[   49.978980]  __x64_sys_finit_module+0x15/0x20
-[   49.978985]  do_syscall_64+0x37/0x50
-[   49.978990]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   49.978994] RIP: 0033:0x7faebf9cf919
-[   49.978998] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 47 55 0c 00 f7 d8 64 89 01 48
-[   49.979001] RSP: 002b:00007fffb3a03018 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   49.979008] RAX: ffffffffffffffda RBX: 00005620ea9c58f0 RCX: 00007faebf9cf919
-[   49.979012] RDX: 0000000000000000 RSI: 00005620ea9c5e10 RDI: 0000000000000004
-[   49.979015] RBP: 0000000000040000 R08: 0000000000000000 R09: 0000000000000000
-[   49.979020] R10: 0000000000000004 R11: 0000000000000246 R12: 00005620ea9c5e10
-[   49.979023] R13: 0000000000000000 R14: 00005620ea9c5ab0 R15: 00005620ea9c58f0
-[   49.979028] ---[ end trace 6f832dacaff58cbe ]---
-[   49.979043] BUG: kernel NULL pointer dereference, address: 0000000000000090
-[   49.986001] #PF: supervisor write access in kernel mode
-[   49.991226] #PF: error_code(0x0002) - not-present page
-[   49.996361] PGD 0 P4D 0 
-[   49.998902] Oops: 0002 [#1] SMP PTI
-[   50.002393] CPU: 1 PID: 283 Comm: modprobe Tainted: G        W         5.10.0-rc2 #5
-[   50.010130] Hardware name:  /8IPE775/-G, BIOS F5 08/31/2006
-[   50.015697] RIP: 0010:release_tty+0x69/0x150
-[   50.019966] Code: ea ff ff 48 8b 7b 10 48 8b 87 a0 00 00 00 48 8b 40 10 48 85 c0 0f 84 9e 00 00 00 48 89 de e8 1e 19 92 00 48 8b 83 b8 02 00 00 <48> c7 80 90 00 00 00 00 00 00 00 48 8b 83 f8 01 00 00 48 85 c0 74
-[   50.038707] RSP: 0018:ffffc9000029bb70 EFLAGS: 00010246
-[   50.043933] RAX: 0000000000000000 RBX: ffff88800514c000 RCX: 00000000000015cb
-[   50.051055] RDX: 0000000000000009 RSI: ffffffff814e0923 RDI: ffff88800386df00
-[   50.058177] RBP: ffffc9000029bb78 R08: 0000000000000040 R09: c0000000ffffdfff
-[   50.065300] R10: ffff888005f1cac0 R11: ffffc9000029b958 R12: ffff88800386df00
-[   50.072424] R13: 0000000000000009 R14: ffff88800514c000 R15: ffffffffa001e500
-[   50.079548] FS:  00007faebf8ae540(0000) GS:ffff88807dc80000(0000) knlGS:0000000000000000
-[   50.087632] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   50.093367] CR2: 0000000000000090 CR3: 000000000529a000 CR4: 00000000000006e0
-[   50.100489] Call Trace:
-[   50.102938]  tty_init_dev+0xb5/0x1d0
-[   50.106515]  tty_kopen+0x101/0x150
-[   50.109925]  spk_ttyio_synth_probe+0xd5/0x230 [speakup]
-[   50.115147]  ? _cond_resched+0x14/0x30
-[   50.118898]  ? do_init_module+0x22/0x200
-[   50.122824]  do_synth_init.cold.11+0x2d/0x15f [speakup]
-[   50.128050]  synth_add+0x95/0xa0 [speakup]
-[   50.132144]  ? 0xffffffffa0021000
-[   50.135457]  synth_dummy_init+0x10/0x1000 [speakup_dummy]
-[   50.140855]  do_one_initcall+0x45/0x1d0
-[   50.144694]  ? _cond_resched+0x14/0x30
-[   50.148445]  ? kmem_cache_alloc_trace+0x39/0x1b0
-[   50.153065]  do_init_module+0x5b/0x200
-[   50.156815]  load_module+0x25e6/0x2830
-[   50.160560]  __do_sys_finit_module+0xc1/0x120
-[   50.164918]  ? __do_sys_finit_module+0xc1/0x120
-[   50.169450]  __x64_sys_finit_module+0x15/0x20
-[   50.173808]  do_syscall_64+0x37/0x50
-[   50.177388]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   50.182438] RIP: 0033:0x7faebf9cf919
-[   50.186007] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 47 55 0c 00 f7 d8 64 89 01 48
-[   50.204741] RSP: 002b:00007fffb3a03018 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   50.212306] RAX: ffffffffffffffda RBX: 00005620ea9c58f0 RCX: 00007faebf9cf919
-[   50.219428] RDX: 0000000000000000 RSI: 00005620ea9c5e10 RDI: 0000000000000004
-[   50.226551] RBP: 0000000000040000 R08: 0000000000000000 R09: 0000000000000000
-[   50.233674] R10: 0000000000000004 R11: 0000000000000246 R12: 00005620ea9c5e10
-[   50.240797] R13: 0000000000000000 R14: 00005620ea9c5ab0 R15: 00005620ea9c58f0
-[   50.247920] Modules linked in: speakup_dummy(+) speakup
-[   50.253146] CR2: 0000000000000090
-[   50.256538] ---[ end trace 6f832dacaff58cbf ]---
-[   50.261173] RIP: 0010:release_tty+0x69/0x150
-[   50.265464] Code: ea ff ff 48 8b 7b 10 48 8b 87 a0 00 00 00 48 8b 40 10 48 85 c0 0f 84 9e 00 00 00 48 89 de e8 1e 19 92 00 48 8b 83 b8 02 00 00 <48> c7 80 90 00 00 00 00 00 00 00 48 8b 83 f8 01 00 00 48 85 c0 74
-[   50.284221] RSP: 0018:ffffc9000029bb70 EFLAGS: 00010246
-[   50.289462] RAX: 0000000000000000 RBX: ffff88800514c000 RCX: 00000000000015cb
-[   50.296609] RDX: 0000000000000009 RSI: ffffffff814e0923 RDI: ffff88800386df00
-[   50.303750] RBP: ffffc9000029bb78 R08: 0000000000000040 R09: c0000000ffffdfff
-[   50.310900] R10: ffff888005f1cac0 R11: ffffc9000029b958 R12: ffff88800386df00
-[   50.318048] R13: 0000000000000009 R14: ffff88800514c000 R15: ffffffffa001e500
-[   50.325197] FS:  00007faebf8ae540(0000) GS:ffff88807dc80000(0000) knlGS:0000000000000000
-[   50.333297] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   50.339052] CR2: 0000000000000090 CR3: 000000000529a000 CR4: 00000000000006e0
-
-so long,
-
-Hias
