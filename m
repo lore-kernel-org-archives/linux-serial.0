@@ -2,94 +2,82 @@ Return-Path: <SRS0=3oyo=EK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E22AFC2D0A3
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 10:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 124EDC2D0A3
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 11:02:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8EBCD20867
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 10:54:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A5EC0221F9
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 11:02:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1604487724;
+	bh=W+3QSsbuXdJVSCV51q6c6auVI0NKTOuW/rHh0EGgt0k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=jA3wdyuRK/c38GkuMFxWrjqgf5QYpxT+e7Hl61xYPTtU7tLafGLOtU4QKWiAQfWSM
+	 RNu+S9l224qjwwUSnNG4KtCiSbgxlweqpmZ5lBQnmonQ8E7yIJglq0YgkYoujElLqx
+	 F+87jxLx9IsM1FbjKj1QLg/YbeG0r/lhNgsANoMk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729361AbgKDKx7 (ORCPT
+        id S1728607AbgKDLCE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 05:53:59 -0500
-Received: from mail-m17613.qiye.163.com ([59.111.176.13]:35882 "EHLO
-        mail-m17613.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729399AbgKDKx6 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 05:53:58 -0500
-Received: from ubuntu.localdomain (unknown [58.213.83.156])
-        by mail-m17613.qiye.163.com (Hmail) with ESMTPA id 3E749482D14;
-        Wed,  4 Nov 2020 18:53:51 +0800 (CST)
-From:   Bernard Zhao <bernard@vivo.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
+        Wed, 4 Nov 2020 06:02:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52330 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726344AbgKDLCE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 4 Nov 2020 06:02:04 -0500
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E6AE720867;
+        Wed,  4 Nov 2020 11:02:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604487723;
+        bh=W+3QSsbuXdJVSCV51q6c6auVI0NKTOuW/rHh0EGgt0k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nurarh21VMIMoEwhAIZMBHGPYSK7vnzTUaEbu4qlm6ac0+hwaMe2szcQdyW7SLwtz
+         7gXOC7gb3HAsGHN6RmrbRvoMtUDT0DfiOgRl2iYTBSUHqwxowv7t7dt7MO63/Nzt6x
+         CwKsFzkmJdQM04F4KthCnNwobMzSVyjaZ5Yf50t0=
+Date:   Wed, 4 Nov 2020 12:02:53 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bernard Zhao <bernard@vivo.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     opensource.kernel@vivo.com, Bernard Zhao <bernard@vivo.com>
-Subject: [PATCH 2/2] drivers/tty: delete break after return
-Date:   Wed,  4 Nov 2020 02:53:31 -0800
-Message-Id: <20201104105331.16654-3-bernard@vivo.com>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20201104105331.16654-1-bernard@vivo.com>
+        linux-arm-kernel@lists.infradead.org, opensource.kernel@vivo.com
+Subject: Re: [PATCH 0/2] drivers/tty: delete break after return or goto
+Message-ID: <20201104110253.GB1688848@kroah.com>
 References: <20201104105331.16654-1-bernard@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZS0MdGUsfGUIdSB4aVkpNS09PQ0xJSEpOSENVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS09ISFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PCI6PSo6Mz8oNx8qA00ICE9I
-        HjoaCTBVSlVKTUtPT0NMSUhKQkxJVTMWGhIXVRkeCRUaCR87DRINFFUYFBZFWVdZEgtZQVlOQ1VJ
-        SkhVQ0hVSk5NWVdZCAFZQUlOQ0s3Bg++
-X-HM-Tid: 0a7592e437fa93bakuws3e749482d14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201104105331.16654-1-bernard@vivo.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Delete break after return, which will never run.
+On Wed, Nov 04, 2020 at 02:53:29AM -0800, Bernard Zhao wrote:
+> This patch sereies optimise code like:
+> {
+> case XXX:
+> 	return XXX;
+> 	break; //The break is meanless, so just delete it.
+> case YYY:
+> 	goto YYY;
+> 	break; //The break is meanless, so just delete it.
+> ......
+> }
+> 
+> Signed-off-by: Bernard Zhao <bernard@vivo.com>
+> 
+> ---
+> Bernard Zhao (2):
+>   drivers/tty/nozomi.c: delete no use break after goto
+>   drivers/tty/serial/imx.c: delete no use break after return
 
-Signed-off-by: Bernard Zhao <bernard@vivo.com>
----
- drivers/tty/serial/imx.c | 5 -----
- 1 file changed, 5 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 1731d9728865..09703079db7b 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -320,7 +320,6 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
- 	switch (offset) {
- 	case UCR1:
- 		return sport->ucr1;
--		break;
- 	case UCR2:
- 		/*
- 		 * UCR2_SRST is the only bit in the cached registers that might
-@@ -331,16 +330,12 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
- 		if (!(sport->ucr2 & UCR2_SRST))
- 			sport->ucr2 = readl(sport->port.membase + offset);
- 		return sport->ucr2;
--		break;
- 	case UCR3:
- 		return sport->ucr3;
--		break;
- 	case UCR4:
- 		return sport->ucr4;
--		break;
- 	case UFCR:
- 		return sport->ufcr;
--		break;
- 	default:
- 		return readl(sport->port.membase + offset);
- 	}
--- 
-2.29.0
+That is not the subject of the patches you sent out, what broke?
 
