@@ -2,116 +2,102 @@ Return-Path: <SRS0=3oyo=EK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0961FC2D0A3
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B21ECC2D0A3
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 20:04:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AE84B20679
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 19:38:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eDmsFAU7"
+	by mail.kernel.org (Postfix) with ESMTP id 552E020759
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Nov 2020 20:04:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729162AbgKDTgB (ORCPT
+        id S1731510AbgKDUEt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 14:36:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728815AbgKDTf7 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Nov 2020 14:35:59 -0500
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFEFDC0613D4
-        for <linux-serial@vger.kernel.org>; Wed,  4 Nov 2020 11:35:58 -0800 (PST)
-Received: by mail-wm1-x341.google.com with SMTP id p19so2555801wmg.0
-        for <linux-serial@vger.kernel.org>; Wed, 04 Nov 2020 11:35:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wH+6ay3ML2IZuG2ItERyIkPsniEGNFXIQf0sfM9xhn4=;
-        b=eDmsFAU7R/9xFhQgOZLSoSX4Ozyo7emaZvpoFzlYhKNIkMDz+wFqWLCCvpdbQvhFq8
-         ru8XqVU6zE7B6/3rxJWElO0jg8aRU4ZGGMgcpUY/ybI4fJEJZtA5qHFG1/qPv3D5ao4l
-         hvhhcYYE7pHbLhzxIlNiz78CcLLxGru7pDHJpWucJPZUkhA1yu5CK+VK047+eqUDGSCg
-         zoLNP36tEymkyuyGc6kuetKvRHfnu1GgmFtvoZ6sIqj2pA3Hn171mu5/7KpEpFELkmDK
-         OfeA39skAzWp4Kjb9IYniGlqNkpeZ310jPckyoU/haA5GL6VPZAAuQg1wr/tt5i+6xgW
-         Qt/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wH+6ay3ML2IZuG2ItERyIkPsniEGNFXIQf0sfM9xhn4=;
-        b=X1ELCZsZ11j3AFpeAxtyo1vYCdU/1ik5uWCNd+eo7SCjLCgIYF4y/9Bmcy9AsYw35c
-         gpcQNPAUbpOOQrRuYHUEEFMcOGWbhNNy+UIEyVLLERPpIlqjReCpxPCjBFC/PDilYm5V
-         OXkfDRPW0ehb94s3iXUb2oMidp2rtusyZkcIfbh/4Bn5WxBOGUYGMz1G1CX4mfeqx92v
-         Ng5g0tXzQ+UOM+gWMBOFSzD5dCoYZAaX7+JibPEOUgJHTr4szKiSjYEsR/Mx9FIBPqTS
-         1GJg4Bxcw6miiRLb+7v2FS8XM5smw8gx8H4SjFec4dEr412zIaNNZxg3G/McDOnHJBFg
-         8SjA==
-X-Gm-Message-State: AOAM533pnIma4TZjj96hd1AWWh0Ncb6PDPzqmfHmEf/tVSQFGjMjoHG6
-        td7kwqKsvz9OnS0GWKXrpMk8jQ==
-X-Google-Smtp-Source: ABdhPJwv9KaK3YsFPmWngapSaiAdWGp0IVoe9eZG7kU0Utng+LM5h3HswS/vwkbPrp46bn+qVqtzSg==
-X-Received: by 2002:a1c:4b0c:: with SMTP id y12mr6696117wma.91.1604518557593;
-        Wed, 04 Nov 2020 11:35:57 -0800 (PST)
-Received: from dell.default ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id x10sm4034444wrp.62.2020.11.04.11.35.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 11:35:55 -0800 (PST)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Wed, 4 Nov 2020 15:04:49 -0500
+Received: from mleia.com ([178.79.152.223]:55478 "EHLO mail.mleia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731503AbgKDUEt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 4 Nov 2020 15:04:49 -0500
+Received: from mail.mleia.com (localhost [127.0.0.1])
+        by mail.mleia.com (Postfix) with ESMTP id 0747A416CD3;
+        Wed,  4 Nov 2020 20:04:48 +0000 (UTC)
+Subject: Re: [PATCH 19/36] tty: serial: lpc32xx_hs: Remove unused variable
+ 'tmp'
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH 01/36] tty: serdev: core: Remove unused variable 'dummy'
-Date:   Wed,  4 Nov 2020 19:35:14 +0000
-Message-Id: <20201104193549.4026187-2-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201104193549.4026187-1-lee.jones@linaro.org>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        Kevin Wells <kevin.wells@nxp.com>,
+        Roland Stigge <stigge@antcom.de>, linux-serial@vger.kernel.org
 References: <20201104193549.4026187-1-lee.jones@linaro.org>
+ <20201104193549.4026187-20-lee.jones@linaro.org>
+From:   Vladimir Zapolskiy <vz@mleia.com>
+Message-ID: <208ff62b-c6c0-4b2c-250c-7951f422ba54@mleia.com>
+Date:   Wed, 4 Nov 2020 22:04:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20201104193549.4026187-20-lee.jones@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
+X-CRM114-CacheID: sfid-20201104_200448_073610_BFADF4C5 
+X-CRM114-Status: GOOD (  16.54  )
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-No need to have a dummy variable here.
+Hi Lee,
 
-Fixes the following W=1 kernel build warning(s):
+On 11/4/20 9:35 PM, Lee Jones wrote:
+> Fixes the following W=1 kernel build warning(s):
+> 
+>   drivers/tty/serial/lpc32xx_hs.c: In function ‘__serial_uart_flush’:
+>   drivers/tty/serial/lpc32xx_hs.c:244:6: warning: variable ‘tmp’ set but not used [-Wunused-but-set-variable]
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: Vladimir Zapolskiy <vz@mleia.com>
+> Cc: Sylvain Lemieux <slemieux.tyco@gmail.com>
+> Cc: Kevin Wells <kevin.wells@nxp.com>
+> Cc: Roland Stigge <stigge@antcom.de>
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>   drivers/tty/serial/lpc32xx_hs.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
+> index b5898c9320361..1fa098d7aec4b 100644
+> --- a/drivers/tty/serial/lpc32xx_hs.c
+> +++ b/drivers/tty/serial/lpc32xx_hs.c
+> @@ -241,12 +241,11 @@ static unsigned int __serial_get_clock_div(unsigned long uartclk,
+>   
+>   static void __serial_uart_flush(struct uart_port *port)
+>   {
+> -	u32 tmp;
+>   	int cnt = 0;
+>   
+>   	while ((readl(LPC32XX_HSUART_LEVEL(port->membase)) > 0) &&
+>   	       (cnt++ < FIFO_READ_LIMIT))
+> -		tmp = readl(LPC32XX_HSUART_FIFO(port->membase));
+> +		readl(LPC32XX_HSUART_FIFO(port->membase));
+>   }
+>   
+>   static void __serial_lpc32xx_rx(struct uart_port *port)
+> 
 
- drivers/tty/serdev/core.c: In function ‘serdev_controller_remove’:
- drivers/tty/serdev/core.c:791:6: warning: variable ‘dummy’ set but not used [-Wunused-but-set-variable]
+Thank you for the change.
 
-Cc: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/tty/serdev/core.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Acked-by: Vladimir Zapolskiy <vz@mleia.com>
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index c5f0d936b003a..fecc28a73b3b2 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -788,13 +788,10 @@ static int serdev_remove_device(struct device *dev, void *data)
-  */
- void serdev_controller_remove(struct serdev_controller *ctrl)
- {
--	int dummy;
--
- 	if (!ctrl)
- 		return;
- 
--	dummy = device_for_each_child(&ctrl->dev, NULL,
--				      serdev_remove_device);
-+	device_for_each_child(&ctrl->dev, NULL, serdev_remove_device);
- 	pm_runtime_disable(&ctrl->dev);
- 	device_del(&ctrl->dev);
- }
--- 
-2.25.1
+I'm sure the change is correct, likely the local variable was introduced
+to prevent an unwanted probable optimization by some odd/ancient compiler.
 
+--
+Best wishes,
+Vladimir
