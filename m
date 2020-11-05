@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F01DEC4741F
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 03:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C91C4742C
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 03:47:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A21812078E
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 03:47:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7B8762072C
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 03:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733290AbgKEDru (ORCPT
+        id S1729867AbgKEDrv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Nov 2020 22:47:50 -0500
-Received: from mga01.intel.com ([192.55.52.88]:57560 "EHLO mga01.intel.com"
+        Wed, 4 Nov 2020 22:47:51 -0500
+Received: from mga17.intel.com ([192.55.52.151]:10342 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729867AbgKEDru (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1733135AbgKEDru (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 4 Nov 2020 22:47:50 -0500
-IronPort-SDR: +iL6+eBV+MHhD/lov3w3KpEoaznWw0fgTLoFVC5JfOIibDIsNQQdi7VBOx4bKLlslEgW3ZCzcg
- JCdtt2TtXc8A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9795"; a="187200611"
+IronPort-SDR: zltGo/Vxh3ztMKYxNn0aCSQvNPtvn2IOTUI6DK/CaAq3HA3fujVRJH9QFxYt29wCPGkGLhp3WA
+ KoPdk+JfUM4g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9795"; a="149177492"
 X-IronPort-AV: E=Sophos;i="5.77,452,1596524400"; 
-   d="scan'208";a="187200611"
+   d="scan'208";a="149177492"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2020 19:47:48 -0800
-IronPort-SDR: 3/qsuTYt2ee/K+raTR0W2tPfsg2QTVivnDxcO1kCEmPnKKajS2wQPYNb0UUAAT9XrKGOUYmWWZ
- GRDGSUSeM0LQ==
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2020 19:47:49 -0800
+IronPort-SDR: +w4VFCjqnUVhyToK+ZRqR6d8sdWZxqfBtWFmDtBNVekM38LQIVHBP4YhHJ1ykfNzb83DEn/Rh0
+ SP/9mxazqVZA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,452,1596524400"; 
-   d="scan'208";a="363674307"
+   d="scan'208";a="364203772"
 Received: from lkp-server02.sh.intel.com (HELO e61783667810) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Nov 2020 19:47:47 -0800
+  by orsmga007.jf.intel.com with ESMTP; 04 Nov 2020 19:47:47 -0800
 Received: from kbuild by e61783667810 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1kaWFX-0001DR-87; Thu, 05 Nov 2020 03:47:47 +0000
-Date:   Thu, 05 Nov 2020 11:47:31 +0800
+        id 1kaWFX-0001DU-9m; Thu, 05 Nov 2020 03:47:47 +0000
+Date:   Thu, 05 Nov 2020 11:47:33 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- c35f638fc2adbb9c439ce68b559d406387cbdbe8
-Message-ID: <5fa375d3.w7eg/BbmBU2YP0Hl%lkp@intel.com>
+Subject: [tty:tty-next] BUILD SUCCESS
+ 724ec7c190c1893ea55fd7143e7e1c8c5b61a0e7
+Message-ID: <5fa375d5.aXWgwZiphQFCOlLk%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -54,12 +54,12 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: c35f638fc2adbb9c439ce68b559d406387cbdbe8  vt: keyboard, use tty_insert_flip_string in puts_queue
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-next
+branch HEAD: 724ec7c190c1893ea55fd7143e7e1c8c5b61a0e7  Merge 5.10-rc2 into tty-next
 
-elapsed time: 723m
+elapsed time: 724m
 
-configs tested: 154
+configs tested: 157
 configs skipped: 2
 
 The following configs have been built successfully.
@@ -71,6 +71,11 @@ arm64                            allyesconfig
 arm64                               defconfig
 arm                              allyesconfig
 arm                              allmodconfig
+mips                      bmips_stb_defconfig
+powerpc                  storcenter_defconfig
+arm                      pxa255-idp_defconfig
+sh                             shx3_defconfig
+powerpc                      makalu_defconfig
 arm                        shmobile_defconfig
 sh                           se7751_defconfig
 arm                        vexpress_defconfig
@@ -85,7 +90,6 @@ powerpc                        fsp2_defconfig
 sh                          rsk7269_defconfig
 sh                   secureedge5410_defconfig
 mips                        maltaup_defconfig
-arm                      pxa255-idp_defconfig
 arm                          tango4_defconfig
 parisc                           alldefconfig
 powerpc               mpc834x_itxgp_defconfig
@@ -107,11 +111,16 @@ mips                       capcella_defconfig
 mips                       rbtx49xx_defconfig
 arc                              alldefconfig
 um                            kunit_defconfig
+powerpc                      cm5200_defconfig
+arc                            hsdk_defconfig
+mips                        jmr3927_defconfig
+powerpc                      ppc6xx_defconfig
+arm                      integrator_defconfig
+powerpc                 mpc837x_rdb_defconfig
 powerpc                     mpc5200_defconfig
 m68k                       m5475evb_defconfig
 m68k                          atari_defconfig
 sh                            titan_defconfig
-powerpc                  storcenter_defconfig
 arm                        clps711x_defconfig
 sh                        edosk7760_defconfig
 parisc                generic-64bit_defconfig
@@ -121,12 +130,6 @@ sh                           se7722_defconfig
 powerpc                       holly_defconfig
 mips                        bcm47xx_defconfig
 mips                            gpr_defconfig
-arm                             pxa_defconfig
-xtensa                         virt_defconfig
-powerpc                          allyesconfig
-c6x                        evmc6678_defconfig
-sh                        apsh4ad0a_defconfig
-mips                           ip22_defconfig
 powerpc                     taishan_defconfig
 arm                          ep93xx_defconfig
 powerpc                      katmai_defconfig
@@ -134,6 +137,10 @@ m68k                       bvme6000_defconfig
 sh                     sh7710voipgw_defconfig
 arm                         orion5x_defconfig
 riscv                    nommu_virt_defconfig
+sh                   sh7724_generic_defconfig
+powerpc                    klondike_defconfig
+mips                       lemote2f_defconfig
+riscv                            allmodconfig
 mips                            ar7_defconfig
 powerpc                        cell_defconfig
 sh                  sh7785lcr_32bit_defconfig
@@ -141,10 +148,6 @@ powerpc                  iss476-smp_defconfig
 arm                          moxart_defconfig
 m68k                             allmodconfig
 arc                           tb10x_defconfig
-ia64                        generic_defconfig
-arm                         mv78xx0_defconfig
-sh                            shmin_defconfig
-m68k                          multi_defconfig
 arm                          gemini_defconfig
 powerpc                     asp8347_defconfig
 powerpc                      ppc64e_defconfig
@@ -177,6 +180,7 @@ sparc                               defconfig
 i386                                defconfig
 mips                             allyesconfig
 mips                             allmodconfig
+powerpc                          allyesconfig
 powerpc                          allmodconfig
 powerpc                           allnoconfig
 i386                 randconfig-a004-20201104
@@ -207,7 +211,6 @@ riscv                            allyesconfig
 riscv                             allnoconfig
 riscv                               defconfig
 riscv                          rv32_defconfig
-riscv                            allmodconfig
 x86_64                                   rhel
 x86_64                           allyesconfig
 x86_64                    rhel-7.6-kselftests
