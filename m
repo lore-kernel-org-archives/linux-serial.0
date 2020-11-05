@@ -2,148 +2,92 @@ Return-Path: <SRS0=qe7h=EL=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50920C00A89
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 09:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D89BBC00A89
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 12:21:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D8DEA2068D
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 09:00:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3FA4F20739
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 12:21:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="iet3rID4"
+	dkim=pass (1024-bit key) header.d=horus.com header.i=@horus.com header.b="A235DEjC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730685AbgKEJAN (ORCPT
+        id S1726777AbgKEMVh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Nov 2020 04:00:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730559AbgKEJAL (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Nov 2020 04:00:11 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6E3C0613CF
-        for <linux-serial@vger.kernel.org>; Thu,  5 Nov 2020 01:00:10 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id p1so766361wrf.12
-        for <linux-serial@vger.kernel.org>; Thu, 05 Nov 2020 01:00:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=OC9aACGGqpKEo7MnuaDGqRBy9T/1FYSfYU5LJ+QJCl8=;
-        b=iet3rID42HqMn/ztHv9eczOUGQRszWGQ4gTxGQMciIqMK+4ZPQwPczqI+p4wnA/cls
-         3KMpzJRDwZTGeHEAeQVc7BwEYhYUIfRfgnb+QwIxCfjpzgRfhgcyu4G7eAawtxEQrieT
-         I7q/vTtpaF+Y+FefNaVDFIGfJ5CUMcwQgjKNB1eY/YlQtu6cVWya4DsiQakJEJxQjlfG
-         +0UUkxOV2E7+IlHLR4NPuAESrUTjFXcofSoMWk3L1njZdLJ1bmt9NX1bNEjCmWtPVjN1
-         3UBHONZSsQ3NQv9FyTFCvxkK0ZjfbtpubblFmrhhGCgdn9Sj1TqFUfzZTRiTbzbBhD8q
-         B0kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=OC9aACGGqpKEo7MnuaDGqRBy9T/1FYSfYU5LJ+QJCl8=;
-        b=X3jPibIiv15/jTRswDyXUsBdO2a2pILOV65L7VfSGk0c90i2OTt4RE43VzBSpaoH/s
-         nALEr1GheTGhIFUhZABUTh/8ilDx9mQUjHNYUdQL1et8fzEPaTt4OYL1JHJsGYDjI9s6
-         5VvbIFewB+l9zQASUvXh3r79pbM2JA3LhrCti7Zw043vWgsKRaF2kyo3JkDkutJhsbVY
-         AZ3XIU23KfDopksDRwmLeFoAd6FTtKwm2qg8N4t5LOcUwGDBcyIp5j2YkDmTzVWw3GFX
-         ZvLkidzXiKF7Pdcvb/oVfD6StCG8Tj0P6hID/wsTguW1ETkt/9y16gDQ4p3VAf4N5s68
-         YlsQ==
-X-Gm-Message-State: AOAM530AChAUOqrJZSRcLtq/tdetS2w7AL0LCZszdkoDpwS0E6PpGxFg
-        ytq82r/wGl9PH0n79cQZX50rOg==
-X-Google-Smtp-Source: ABdhPJz5YH+O3f4r5/BhYEyIUJbNVI13RXq1//82HKWKaWy7iY9wQSpO1aKBSoydNPOzuoqt70Vkcw==
-X-Received: by 2002:adf:f185:: with SMTP id h5mr1679324wro.10.1604566809726;
-        Thu, 05 Nov 2020 01:00:09 -0800 (PST)
-Received: from dell ([91.110.221.242])
-        by smtp.gmail.com with ESMTPSA id g23sm1567257wmh.21.2020.11.05.01.00.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2020 01:00:09 -0800 (PST)
-Date:   Thu, 5 Nov 2020 09:00:07 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thu, 5 Nov 2020 07:21:37 -0500
+Received: from mail.horus.com ([78.46.148.228]:50629 "EHLO mail.horus.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725468AbgKEMVh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Nov 2020 07:21:37 -0500
+Received: from [192.168.1.20] (178-190-199-171.adsl.highway.telekom.at [178.190.199.171])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "E-Mail Matthias Reichl", Issuer "HiassofT CA 2014" (not verified))
+        by mail.horus.com (Postfix) with ESMTPSA id 6C1C16409C;
+        Thu,  5 Nov 2020 13:21:35 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=horus.com;
+        s=20180324; t=1604578895;
+        bh=m7TWDGR/XOwMZ6PC2+scU+HaRp+UnMcyShuqW8iBPVY=;
+        h=Date:From:To:Subject:References:In-Reply-To:From;
+        b=A235DEjC61KEVIjZCxaUffmEsyZ9XE+w4H/xuX2tsmoWz8a7guhi0K4BgdlIelvil
+         eIeWOIJ5vfojwn/MZO4QgI2T1oHDC0AplV54D2PtD6h/Q6Jcp3Sh/s8gLpYw0h5PFG
+         /XPAMn4XiCMIKDb9LZHe8qOS01cZYZ0edUqWPnDA=
+Received: by camel2.lan (Postfix, from userid 1000)
+        id 6DFEB1C75C3; Thu,  5 Nov 2020 13:21:34 +0100 (CET)
+Date:   Thu, 5 Nov 2020 13:21:34 +0100
+From:   Matthias Reichl <hias@horus.com>
+To:     Samuel Thibault <samuel.thibault@ens-lyon.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Paul Mackerras <paulus@samba.org>, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 34/36] tty: serial: pmac_zilog: Make disposable variable
- __always_unused
-Message-ID: <20201105090007.GE4488@dell>
-References: <20201104193549.4026187-1-lee.jones@linaro.org>
- <20201104193549.4026187-35-lee.jones@linaro.org>
- <445a6440-b4c8-4536-891b-0cefc78e5f57@csgroup.eu>
- <e027b620-56f8-7d8b-84ff-54839f94a4c7@kernel.org>
- <20201105083626.GW4488@dell>
- <a6b63789-1315-cec1-9575-0d858a6da1d5@kernel.org>
+        Jiri Slaby <jirislaby@kernel.org>, speakup@linux-speakup.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Crash when specifying non-existent serial port in speakup /
+ tty_kopen
+Message-ID: <20201105122134.GA6084@camel2.lan>
+Mail-Followup-To: Matthias Reichl <hias@horus.com>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, speakup@linux-speakup.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201104145737.GA11024@camel2.lan>
+ <20201104201323.dzyt73tbd2jykcrt@function>
+ <20201104211504.GA20012@lenny.lan>
+ <20201104213005.khivjvcwkaz7kz4g@function>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a6b63789-1315-cec1-9575-0d858a6da1d5@kernel.org>
+In-Reply-To: <20201104213005.khivjvcwkaz7kz4g@function>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 05 Nov 2020, Jiri Slaby wrote:
+On Wed, Nov 04, 2020 at 10:30:05PM +0100, Samuel Thibault wrote:
+> Matthias Reichl, le mer. 04 nov. 2020 22:15:05 +0100, a ecrit:
+> > > This looks like only a warning, did it actually crash?
+> > 
+> > Yes, scroll down a bit, the null pointer oops followed almost
+> > immediately after that
+> > 
+> > [   49.979043] BUG: kernel NULL pointer dereference, address: 0000000000000090
+> 
+> Ah, [   50.102938]  tty_init_dev+0xb5/0x1d0
+> 
+> probably the trailing release_tty call that does
+> 
+> tty->port->itty = NULL;
+> (itty is after a struct tty_bufhead + the tty pointer, that looks
+> plausible).
+> 
+> so probably an if (tty->port) in release_tty could help?
 
-> On 05. 11. 20, 9:36, Lee Jones wrote:
-> > On Thu, 05 Nov 2020, Jiri Slaby wrote:
-> > 
-> > > On 05. 11. 20, 8:04, Christophe Leroy wrote:
-> > > > 
-> > > > 
-> > > > Le 04/11/2020 à 20:35, Lee Jones a écrit :
-> > > > > Fixes the following W=1 kernel build warning(s):
-> > > > > 
-> > > > >    drivers/tty/serial/pmac_zilog.h:365:58: warning: variable
-> > > > > ‘garbage’ set but not used [-Wunused-but-set-variable]
-> > > > 
-> > > > Explain how you are fixing this warning.
-> > > > 
-> > > > Setting  __always_unused is usually not the good solution for fixing
-> > > > this warning, but here I guess this is likely the good solution. But it
-> > > > should be explained why.
-> > 
-> > There are normally 3 ways to fix this warning;
-> > 
-> >   - Start using/checking the variable/result
-> >   - Remove the variable
-> >   - Mark it as __{always,maybe}_unused
-> > 
-> > The later just tells the compiler that not checking the resultant
-> > value is intentional.  There are some functions (as Jiri mentions
-> > below) which are marked as '__must_check' which *require* a dummy
-> > (garbage) variable to be used.
-> > 
-> > > Or, why is the "garbage =" needed in the first place? read_zsdata is not
-> > > defined with __warn_unused_result__.
-> > 
-> > I used '__always_used' here for fear of breaking something.
-> > 
-> > However, if it's safe to remove it, then all the better.
-> 
-> Yes please -- this "garbage" is one of the examples of volatile misuses. If
-> readb didn't work on volatile pointer, marking the return variable as
-> volatile wouldn't save it.
-> 
-> > > And even if it was, would (void)!read_zsdata(port) fix it?
-> > 
-> > That's hideous. :D
-> 
-> Sure, marking reads as must_check would be insane.
-> 
-> > *Much* better to just use '__always_used' in that use-case.
-> 
-> Then using a dummy variable to fool must_check must mean must_check is used
-> incorrectly, no :)? But there are always exceptions…
+Thanks a lot, good catch! This is indeed where the crash happens
+and checking for tty->port in release_tty() prevents that.
+I'll send a patch.
 
-Agreed on all points.
+so long,
 
-Will fix.
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Hias
