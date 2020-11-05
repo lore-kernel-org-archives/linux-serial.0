@@ -2,127 +2,151 @@ Return-Path: <SRS0=qe7h=EL=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0415BC00A89
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 07:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 871AEC00A89
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 08:20:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 913F520936
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 07:40:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2F97021D7F
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Nov 2020 08:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604562001;
-	bh=KHkNTPt3cIDP3t9rw9Ae0dWGwVDsCuhvWQGhvETGUKg=;
-	h=Subject:To:Cc:References:From:Date:In-Reply-To:List-ID:From;
-	b=RopnnGvqzVZEHmYaZOr3qobLVS3nFt4aXl3+bXEkU21e48GL/Ob4YufZGglDnf+I4
-	 kuAUEmNmlCQeqxyV0rMtGPKLAq/GaUMdTHiS0NrjO4Hz8p+MqvKcWgMvKcrqc4PElO
-	 CnK3G4n5JMekhpQn0aVe878Sq48Edr8ggiIZOozg=
+	s=default; t=1604564408;
+	bh=OxEccTE3bfAnA1ohOXHTDixCffF7U2d/NKMnHdBEUPs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=YmGcp9AX19MnZ1YI+3AYI6WOBPh5ctebjKX37Xev/r4CAiIXU1lR0sqJWi8HDuPyP
+	 3ivmJG4XSta5A3hLmUoKdLMFX8zH0a+9O0CRokiRtzGM9ksSVpL3DOMYCYVYuycNJj
+	 tf5W343/p1B/eWPJUJQNj3BPqNjmmhbU75YaHw30=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbgKEHkA (ORCPT
+        id S1728741AbgKEIUH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Nov 2020 02:40:00 -0500
-Received: from mail-ej1-f65.google.com ([209.85.218.65]:38364 "EHLO
-        mail-ej1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725320AbgKEHkA (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Nov 2020 02:40:00 -0500
-Received: by mail-ej1-f65.google.com with SMTP id za3so1195216ejb.5;
-        Wed, 04 Nov 2020 23:39:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/PoaxSQdQ0qc6MtVRWROcDbBKMBfI1ym4uPU4Lv069A=;
-        b=Q8khOIeRSL5Po8/WTjKtcVgVmzqqH6erORbHN5YaN+dCWQdF7oKR8NhU3lMDmN/ydb
-         3/uiH/SLOoZGK0LGmJci8tdRG7sconoo7laLeRA46Q9U0+LxXhu+S/SGCDzPbz7EkmQe
-         UBSrH4cTnEtqVlAUQ0eBwQvwsWNAfYv67H0cVbNTFD+zbe8hMe+hlpYSebmvH6EoQTDN
-         6//xr/HHtTccJJYgfdvXfxmNCZidH7OunD+TSgh4nMGqoX5oTVJdSh/sku1JveAImJS6
-         wsvD7324LUvsb3KiugYn5ezWiYreXz1DGvQ7jvhqaRNCO+/vw/vAHviDoprpp1uPVDd6
-         7ulw==
-X-Gm-Message-State: AOAM533cVVTxGd3r4nKKweHYSsaUi+owwzxZ1VgEjXgu0FGAbc9CB/Wu
-        p5YIbRk9Xh83UHg8S5MRzNZtPgBVqQc=
-X-Google-Smtp-Source: ABdhPJwEt20G0n1D11J5pSfi2tvzsZnG0AfTtqEF0ANZdbe1XXAbrjEon+3CwZuTF7sgXsf/suDDWQ==
-X-Received: by 2002:a17:906:7844:: with SMTP id p4mr1076205ejm.26.1604561998177;
-        Wed, 04 Nov 2020 23:39:58 -0800 (PST)
-Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id s3sm422116ejv.97.2020.11.04.23.39.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2020 23:39:57 -0800 (PST)
-Subject: Re: [PATCH 34/36] tty: serial: pmac_zilog: Make disposable variable
- __always_unused
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Paul Mackerras <paulus@samba.org>, linux-serial@vger.kernel.org
-References: <20201104193549.4026187-1-lee.jones@linaro.org>
- <20201104193549.4026187-35-lee.jones@linaro.org>
- <445a6440-b4c8-4536-891b-0cefc78e5f57@csgroup.eu>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <e027b620-56f8-7d8b-84ff-54839f94a4c7@kernel.org>
-Date:   Thu, 5 Nov 2020 08:39:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.3
+        Thu, 5 Nov 2020 03:20:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57942 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728632AbgKEIUH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Nov 2020 03:20:07 -0500
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C3B3421741;
+        Thu,  5 Nov 2020 08:20:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604564405;
+        bh=OxEccTE3bfAnA1ohOXHTDixCffF7U2d/NKMnHdBEUPs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BwOIWldtDEfpH4mV9CENSMvFbWehPOwfMD8Q/VJQ16do57HhPmuxUkkJ+jsQYV0Vn
+         AiUegYbpE57bVOJc0oDRB4tfz01CLQIk8AL7Y7FHutABjuITCVklzzc9v/FPuCf9/v
+         f6rnhRRcOpTVfqkrFbcP5xwq6iSTCxl/SScDX6kw=
+Date:   Thu, 5 Nov 2020 09:20:54 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bernard <bernard@vivo.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, opensource.kernel@vivo.com
+Subject: Re: Re: Re: [PATCH 0/2] drivers/tty: delete break after return or
+ goto
+Message-ID: <20201105082054.GA3426404@kroah.com>
+References: <20201104115903.GA1694605@kroah.com>
+ <AFMA0AACDZrecE*lgOxkLqot.3.1604561695441.Hmail.bernard@vivo.com>
 MIME-Version: 1.0
-In-Reply-To: <445a6440-b4c8-4536-891b-0cefc78e5f57@csgroup.eu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <AFMA0AACDZrecE*lgOxkLqot.3.1604561695441.Hmail.bernard@vivo.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05. 11. 20, 8:04, Christophe Leroy wrote:
+On Thu, Nov 05, 2020 at 03:34:55PM +0800, Bernard wrote:
+> From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> 
+> Date: 2020-11-04 19:59:03
+> To:  Bernard <bernard@vivo.com>
+> Cc:  Jiri Slaby <jirislaby@kernel.org>,Shawn Guo <shawnguo@kernel.org>,Sascha Hauer <s.hauer@pengutronix.de>,Pengutronix Kernel Team <kernel@pengutronix.de>,Fabio Estevam <festevam@gmail.com>,NXP Linux Team <linux-imx@nxp.com>,linux-kernel@vger.kernel.org,linux-serial@vger.kernel.org,linux-arm-kernel@lists.infradead.org,opensource.kernel@vivo.com
+> Subject: Re: Re: [PATCH 0/2] drivers/tty: delete break after return or goto>On Wed, Nov 04, 2020 at 07:17:56PM +0800, Bernard wrote:
+> >> 
+> >> 
+> >> From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> >> Date: 2020-11-04 19:02:53
+> >> To:  Bernard Zhao <bernard@vivo.com>
+> >> Cc:  Jiri Slaby <jirislaby@kernel.org>,Shawn Guo <shawnguo@kernel.org>,Sascha Hauer <s.hauer@pengutronix.de>,Pengutronix Kernel Team <kernel@pengutronix.de>,Fabio Estevam <festevam@gmail.com>,NXP Linux Team <linux-imx@nxp.com>,linux-kernel@vger.kernel.org,linux-serial@vger.kernel.org,linux-arm-kernel@lists.infradead.org,opensource.kernel@vivo.com
+> >> Subject: Re: [PATCH 0/2] drivers/tty: delete break after return or goto>On Wed, Nov 04, 2020 at 02:53:29AM -0800, Bernard Zhao wrote:
+> >> >> This patch sereies optimise code like:
+> >> >> {
+> >> >> case XXX:
+> >> >> 	return XXX;
+> >> >> 	break; //The break is meanless, so just delete it.
+> >> >> case YYY:
+> >> >> 	goto YYY;
+> >> >> 	break; //The break is meanless, so just delete it.
+> >> >> ......
+> >> >> }
+> >> >> 
+> >> >> Signed-off-by: Bernard Zhao <bernard@vivo.com>
+> >> >> 
+> >> >> ---
+> >> >> Bernard Zhao (2):
+> >> >>   drivers/tty/nozomi.c: delete no use break after goto
+> >> >>   drivers/tty/serial/imx.c: delete no use break after return
+> >> >
+> >> >That is not the subject of the patches you sent out, what broke?
+> >> 
+> >> Hi:
+> >> 
+> >> I am sorry that I am a little confused:
+> >> The patch series`s subject is "drivers/tty: delete break after return or goto"
+> >> and the blurb is:
+> >> This patch sereies optimise code like:
+> >> {
+> >> case XXX:
+> >> 	return XXX;
+> >> 	break; //The break is meanless, so just delete it.
+> >> case YYY:
+> >> 	goto YYY;
+> >> 	break; //The break is meanless, so just delete it.
+> >> ......
+> >> }
+> >> last, the modified files are:
+> >> Bernard Zhao (2):
+> >>   drivers/tty/nozomi.c: delete no use break after goto
+> >>   drivers/tty/serial/imx.c: delete no use break after return
+> >> 
+> >> Is there something wrong that I didn`t catch?
+> >
+> >The above lines do not match up with the subject lines of the patches
+> >you sent out, so something went wrong.
 > 
 > 
-> Le 04/11/2020 à 20:35, Lee Jones a écrit :
->> Fixes the following W=1 kernel build warning(s):
->>
->>   drivers/tty/serial/pmac_zilog.h:365:58: warning: variable ‘garbage’ 
->> set but not used [-Wunused-but-set-variable]
+> Hi, Greg:
 > 
-> Explain how you are fixing this warning.
-> 
-> Setting  __always_unused is usually not the good solution for fixing 
-> this warning, but here I guess this is likely the good solution. But it 
-> should be explained why.
+> Sorry to bother you.
+> I am a newcomer to the community, and this is my first time submitting a patch series.
 
-Or, why is the "garbage =" needed in the first place? read_zsdata is not 
-defined with __warn_unused_result__. And even if it was, would 
-(void)!read_zsdata(port) fix it?
+You might want to start in the drivers/staging/ part of the kernel to
+get your bearings and work out these types of things.  It's "easier"
+there as the code there needs lots of work and it's set up to handle new
+developers like yourself.
 
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Cc: Jiri Slaby <jirislaby@kernel.org>
->> Cc: Michael Ellerman <mpe@ellerman.id.au>
->> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
->> Cc: Paul Mackerras <paulus@samba.org>
->> Cc: linux-serial@vger.kernel.org
->> Cc: linuxppc-dev@lists.ozlabs.org
->> Signed-off-by: Lee Jones <lee.jones@linaro.org>
->> ---
->>   drivers/tty/serial/pmac_zilog.h | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/pmac_zilog.h 
->> b/drivers/tty/serial/pmac_zilog.h
->> index bb874e76810e0..968aec7c1cf82 100644
->> --- a/drivers/tty/serial/pmac_zilog.h
->> +++ b/drivers/tty/serial/pmac_zilog.h
->> @@ -362,7 +362,7 @@ static inline void zssync(struct uart_pmac_port 
->> *port)
->>   /* Misc macros */
->>   #define ZS_CLEARERR(port)    (write_zsreg(port, 0, ERR_RES))
->> -#define ZS_CLEARFIFO(port)   do { volatile unsigned char garbage; \
->> +#define ZS_CLEARFIFO(port)   do { volatile unsigned char 
->> __always_unused garbage; \
->>                        garbage = read_zsdata(port); \
->>                        garbage = read_zsdata(port); \
->>                        garbage = read_zsdata(port); \
->>
+> I am sorry that I still don't understand："The above lines do not match up with the subject lines of the patches you sent out, so something went wrong."
+> I compared my patch series with other people`s patch series, as shown in the picture below, they look the seem.
+> The only difference is that I made a signature here, so is this the issue that you mean?
 
-thanks,
--- 
-js
+the output of the git command that caused those lines to be written was
+taken from the subject lines of the patches in your tree.  Yet the
+subject lines of the patches you emailed us did not match that at all,
+so what you sent is not what you actually had here when you generated
+that cover letter.  So something went wrong with your process.
+
+Try deleting all patch files in the directory and generating them again,
+and then emailing the series to yourself to verify that everything
+matches up properly.
+
+hope this helps,
+
+greg k-h
