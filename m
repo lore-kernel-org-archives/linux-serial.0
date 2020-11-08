@@ -1,152 +1,159 @@
-Return-Path: <SRS0=t3fu=EN=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=hQyk=EO=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78827C388F9
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Nov 2020 14:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB84C388F9
+	for <linux-serial@archiver.kernel.org>; Sun,  8 Nov 2020 18:00:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4249B206ED
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Nov 2020 14:01:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DB0D5206CB
+	for <linux-serial@archiver.kernel.org>; Sun,  8 Nov 2020 18:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728135AbgKGOBo (ORCPT
+        id S1728738AbgKHSAi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 7 Nov 2020 09:01:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727298AbgKGOBo (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 7 Nov 2020 09:01:44 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4DAC0613D2
-        for <linux-serial@vger.kernel.org>; Sat,  7 Nov 2020 06:01:44 -0800 (PST)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kbOmg-0005WW-4R; Sat, 07 Nov 2020 15:01:38 +0100
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kbOmZ-00062N-4x; Sat, 07 Nov 2020 15:01:31 +0100
-Date:   Sat, 7 Nov 2020 15:01:29 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Bernard Zhao <bernard@vivo.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Sun, 8 Nov 2020 13:00:38 -0500
+Received: from [202.37.96.23] ([202.37.96.23]:44686 "HELO smtp1.taitradio.net"
+        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with SMTP
+        id S1727570AbgKHSAi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 8 Nov 2020 13:00:38 -0500
+X-Greylist: delayed 331 seconds by postgrey-1.27 at vger.kernel.org; Sun, 08 Nov 2020 13:00:37 EST
+Received: from ws3539.taitradio.net (unknown [10.200.21.55])
+        by smtp1.taitradio.net (Postfix) with ESMTP id ED8B71C0002;
+        Mon,  9 Nov 2020 06:55:03 +1300 (NZDT)
+From:   Sam Nobs <samuel.nobs@taitradio.com>
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, opensource.kernel@vivo.com
-Subject: Re: [PATCH 1/2] tty/serial: delete break after return
-Message-ID: <20201107140129.kpfhanzjidvdg662@pengutronix.de>
-References: <20201107032924.25044-1-bernard@vivo.com>
- <20201107032924.25044-2-bernard@vivo.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="r2yx3n4pwj2ycubx"
-Content-Disposition: inline
-In-Reply-To: <20201107032924.25044-2-bernard@vivo.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+        linux-serial@vger.kernel.org, Sam Nobs <samuel.nobs@taitradio.com>
+Subject: [PATCH] tty: serial: imx: fix potential deadlock
+Date:   Mon,  9 Nov 2020 06:54:55 +1300
+Message-Id: <1604858095-12477-1-git-send-email-samuel.nobs@taitradio.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Enabling the lock dependency validator has revealed
+that the way spinlocks are used in the IMX serial
+port could result in a deadlock. Note that the configuration
+I'm using has the IRQs forced to run in threads via
+the kernel parameter threadirqs.
 
---r2yx3n4pwj2ycubx
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Specifically, imx_uart_int() acquires a spinlock
+without disabling the interrupts, meaning that another
+interrupt could come along and try to acquire the same
+spinlock, potentially causing the two to wait for each
+other indefinitely.
 
-Hello,
+Use spin_lock_irqsave() instead to disable interrupts
+upon acquisition of the spinlock.
 
-the Subject is wrong, it should use a prefix similar to "serial: imx:".
-It's a good idea to check previous patches to the same file to pick a
-suitable prefix. (E.g. git log --oneline drivers/tty/serial/imx.c)
+Signed-off-by: Sam Nobs <samuel.nobs@taitradio.com>
+---
+Here's the lockdep splat for reference:
 
-On Fri, Nov 06, 2020 at 07:29:23PM -0800, Bernard Zhao wrote:
-> Delete break after return, which will never run.
->=20
-> Signed-off-by: Bernard Zhao <bernard@vivo.com>
-> ---
->  drivers/tty/serial/imx.c | 5 -----
->  1 file changed, 5 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 1731d9728865..09703079db7b 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -320,7 +320,6 @@ static u32 imx_uart_readl(struct imx_port *sport, u32=
- offset)
->  	switch (offset) {
->  	case UCR1:
->  		return sport->ucr1;
-> -		break;
->  	case UCR2:
->  		/*
->  		 * UCR2_SRST is the only bit in the cached registers that might
-> @@ -331,16 +330,12 @@ static u32 imx_uart_readl(struct imx_port *sport, u=
-32 offset)
->  		if (!(sport->ucr2 & UCR2_SRST))
->  			sport->ucr2 =3D readl(sport->port.membase + offset);
->  		return sport->ucr2;
-> -		break;
->  	case UCR3:
->  		return sport->ucr3;
-> -		break;
->  	case UCR4:
->  		return sport->ucr4;
-> -		break;
->  	case UFCR:
->  		return sport->ufcr;
-> -		break;
+   ================================
+   WARNING: inconsistent lock state
+   5.4.46 #1 Not tainted
+   --------------------------------
+   inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
+   irq/26-30860000/992 [HC0[0]:SC0[2]:HE1:SE0] takes:
+   ffff00006671d098 (&port_lock_key){?...}, at: imx_uart_int+0x28/0x338
+   {IN-HARDIRQ-W} state was registered at:
+     lock_acquire+0xd0/0x288
+     _raw_spin_lock_irqsave+0x58/0x80
+     imx_uart_console_write+0x1e4/0x220
+     console_unlock+0x2ac/0x610
+     vprintk_emit+0x178/0x330
+     vprintk_default+0x48/0x58
+     vprintk_func+0xe4/0x248
+     printk+0x70/0x90
+     crng_fast_load+0x1c4/0x1c8
+     add_interrupt_randomness+0x348/0x3e8
+     handle_irq_event_percpu+0x50/0x98
+     handle_irq_event+0x4c/0xd0
+     handle_fasteoi_irq+0xe0/0x188
+     generic_handle_irq+0x34/0x50
+     __handle_domain_irq+0x98/0x108
+     gic_handle_irq+0xd4/0x178
+     el1_irq+0xbc/0x180
+     arch_cpu_idle+0x34/0x220
+     default_idle_call+0x40/0x4c
+     do_idle+0x254/0x268
+     cpu_startup_entry+0x28/0x48
+     rest_init+0x1b4/0x284
+     arch_call_rest_init+0x14/0x1c
+     start_kernel+0x48c/0x4bc
+   irq event stamp: 30
+   hardirqs last  enabled at (29): [<ffff800010b22a60>] _raw_spin_unlock_irq+0x38/0x70
+   hardirqs last disabled at (28): [<ffff800010b1b060>] __schedule+0xb0/0x770
+   softirqs last  enabled at (0): [<ffff8000100b28c0>] copy_process+0x8d8/0x19b0
+   softirqs last disabled at (30): [<ffff8000101343f8>] irq_forced_thread_fn+0x0/0xc0
 
-you're the third to send this patch since October 20:
+   other info that might help us debug this:
+    Possible unsafe locking scenario:
 
-	https://lore.kernel.org/r/20201026125142.21105-1-zhangqilong3@huawei.com
-	https://lore.kernel.org/r/20201020130709.28096-1-trix@redhat.com
+          CPU0
+          ----
+     lock(&port_lock_key);
+     <Interrupt>
+       lock(&port_lock_key);
 
-My comment for these was:
+    *** DEADLOCK ***
 
-> this might be subjective, but I like the break being there for clearity.
-> So I object to make a patch to remove them. In case I'm outvoted I'd at
-> least want empty lines instead.
+   no locks held by irq/26-30860000/992.
 
-Zhang Qilong wrote he found the patch opportunity by manual code
-inspection, I would have expected that there is a tool that identifies a
-break after a return. If you had tool support, please mention the tool
-in the commit log (if you really want to keep following the patch's
-idea).
+   stack backtrace:
+   CPU: 0 PID: 992 Comm: irq/26-30860000 Not tainted 5.4.46 #1
+   Hardware name: Tait i.MX8MM smarc-rcb (DT)
+   Call trace:
+    dump_backtrace+0x0/0x178
+    show_stack+0x24/0x30
+    dump_stack+0xdc/0x144
+    print_usage_bug+0x1c8/0x1e0
+    mark_lock+0x57c/0x740
+    __lock_acquire+0x684/0x16d0
+    lock_acquire+0xd0/0x288
+    _raw_spin_lock+0x44/0x58
+    imx_uart_int+0x28/0x338
+    irq_forced_thread_fn+0x40/0xc0
+    irq_thread+0x1ac/0x280
+    kthread+0x138/0x140
+    ret_from_fork+0x10/0x18
 
-Best regards
-Uwe
+ drivers/tty/serial/imx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 1731d97..29ceaea 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -942,8 +942,9 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
+ 	struct imx_port *sport = dev_id;
+ 	unsigned int usr1, usr2, ucr1, ucr2, ucr3, ucr4;
+ 	irqreturn_t ret = IRQ_NONE;
++	unsigned long flags = 0;
+ 
+-	spin_lock(&sport->port.lock);
++	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	usr1 = imx_uart_readl(sport, USR1);
+ 	usr2 = imx_uart_readl(sport, USR2);
+@@ -1013,7 +1014,7 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
+ 		ret = IRQ_HANDLED;
+ 	}
+ 
+-	spin_unlock(&sport->port.lock);
++	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	return ret;
+ }
+-- 
+2.7.4
 
---r2yx3n4pwj2ycubx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+mqLYACgkQwfwUeK3K
-7AnNIgf/UHJ/DjPejB9zw25GzZ7IQLzdHiG9HlQ4ktJl4T6EJefgi94VOYy2OZJK
-Ca43/iMM8sYu4EpLg66ySRwjE0kfidPTmc3itd2uwl8En+i4+NgpsTAQkpddc+n9
-nosMbe2O/qaVx2vX/m4MXngw0erQ+5BECiaFAPdBGeuAph9HdYp9y+M5zw6ew5wp
-hyyyr/KyBaVvZo8sSz8pyL60hVdlflINzOt5A0pAFzDH1DQ3Om7mZDEQvKwtpkTh
-+Vyg9rmsw4FIqgQXsZWtOZcOfcaC946pn9/hiCu5KYn+DSBcDRNZ2AYAR3CmT46S
-uhvUEP0qqS7qN7pgi8lCHA+M5ANTrw==
-=xZYO
------END PGP SIGNATURE-----
-
---r2yx3n4pwj2ycubx--
