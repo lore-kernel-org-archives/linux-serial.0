@@ -2,118 +2,214 @@ Return-Path: <SRS0=KjKo=EP=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 857B4C2D0A3
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Nov 2020 03:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5FBC2D0A3
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Nov 2020 07:38:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4454D22244
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Nov 2020 03:46:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 43845206CB
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Nov 2020 07:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729218AbgKIDqn (ORCPT
+        id S1728873AbgKIHix (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 8 Nov 2020 22:46:43 -0500
-Received: from m176150.mail.qiye.163.com ([59.111.176.150]:39278 "EHLO
-        m176150.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728814AbgKIDqn (ORCPT
+        Mon, 9 Nov 2020 02:38:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728038AbgKIHix (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 8 Nov 2020 22:46:43 -0500
-Received: from vivo.com (wm-10.qy.internal [127.0.0.1])
-        by m176150.mail.qiye.163.com (Hmail) with ESMTP id C2D221A0FF7;
-        Mon,  9 Nov 2020 11:46:06 +0800 (CST)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Message-ID: <AOEAiAC-DcjiUQMyWDjC1qpx.3.1604893566790.Hmail.bernard@vivo.com>
-To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
+        Mon, 9 Nov 2020 02:38:53 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C65C0613CF
+        for <linux-serial@vger.kernel.org>; Sun,  8 Nov 2020 23:38:53 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kc1lH-0002lY-NQ; Mon, 09 Nov 2020 08:38:47 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kc1lG-0002kh-ND; Mon, 09 Nov 2020 08:38:46 +0100
+Date:   Mon, 9 Nov 2020 08:38:44 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Sam Nobs <samuel.nobs@taitradio.com>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, opensource.kernel@vivo.com
-Subject: =?UTF-8?B?UmU6UmU6IFtQQVRDSCAxLzJdIHR0eS9zZXJpYWw6IGRlbGV0ZSBicmVhayBhZnRlciByZXR1cm4=?=
-X-Priority: 3
-X-Mailer: HMail Webmail Server V2.0 Copyright (c) 2016-163.com
-X-Originating-IP: 58.213.83.157
-In-Reply-To: <20201107140129.kpfhanzjidvdg662@pengutronix.de>
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-serial@vger.kernel.org, jun qian <hangdianqj@163.com>,
+        Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH] tty: serial: imx: fix potential deadlock
+Message-ID: <20201109073844.5atunb5xr7elq55x@pengutronix.de>
+References: <1604858095-12477-1-git-send-email-samuel.nobs@taitradio.com>
 MIME-Version: 1.0
-Received: from bernard@vivo.com( [58.213.83.157) ] by ajax-webmail ( [127.0.0.1] ) ; Mon, 9 Nov 2020 11:46:06 +0800 (GMT+08:00)
-From:   Bernard <bernard@vivo.com>
-Date:   Mon, 9 Nov 2020 11:46:06 +0800 (GMT+08:00)
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZGUlNSx9OHk0YTExJVkpNS09DQkhOTU1MQkNVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS09ISFVLWQY+
-X-HM-Sender-Digest: e1kJHlYWEh9ZQU5CTUtCSkhDSEtMN1dZDB4ZWUEPCQ4eV1kSHx4VD1lB
-        WUc6ND46Ejo4Vj8YERIuKjYCLD8ROEoKCwNVSFVKTUtPQ0JITk1MSU9NVTMWGhIXVRkeCRUaCR87
-        DRINFFUYFBZFWVdZEgtZQVlOQ1VJSkhVQ0hVSk5MWVdZCAFZQUxLT0o3Bg++
-X-HM-Tid: 0a75ab1c675393b4kuwsc2d221a0ff7
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dmhwlv3br5s4zali"
+Content-Disposition: inline
+In-Reply-To: <1604858095-12477-1-git-send-email-samuel.nobs@taitradio.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-CkZyb206ICJVd2UgS2xlaW5lLUvDtm5pZyIgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5k
-ZT4KRGF0ZTogMjAyMC0xMS0wNyAyMjowMToyOQpUbzogIEJlcm5hcmQgWmhhbyA8YmVybmFyZEB2
-aXZvLmNvbT4KQ2M6ICBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24u
-b3JnPixKaXJpIFNsYWJ5IDxqaXJpc2xhYnlAa2VybmVsLm9yZz4sU2hhd24gR3VvIDxzaGF3bmd1
-b0BrZXJuZWwub3JnPixTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU+LFBlbmd1
-dHJvbml4IEtlcm5lbCBUZWFtIDxrZXJuZWxAcGVuZ3V0cm9uaXguZGU+LEZhYmlvIEVzdGV2YW0g
-PGZlc3RldmFtQGdtYWlsLmNvbT4sTlhQIExpbnV4IFRlYW0gPGxpbnV4LWlteEBueHAuY29tPixs
-aW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnLGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmcs
-bGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnLG9wZW5zb3VyY2Uua2VybmVsQHZp
-dm8uY29tClN1YmplY3Q6IFJlOiBbUEFUQ0ggMS8yXSB0dHkvc2VyaWFsOiBkZWxldGUgYnJlYWsg
-YWZ0ZXIgcmV0dXJuPkhlbGxvLAo+Cj50aGUgU3ViamVjdCBpcyB3cm9uZywgaXQgc2hvdWxkIHVz
-ZSBhIHByZWZpeCBzaW1pbGFyIHRvICJzZXJpYWw6IGlteDoiLgo+SXQncyBhIGdvb2QgaWRlYSB0
-byBjaGVjayBwcmV2aW91cyBwYXRjaGVzIHRvIHRoZSBzYW1lIGZpbGUgdG8gcGljayBhCj5zdWl0
-YWJsZSBwcmVmaXguIChFLmcuIGdpdCBsb2cgLS1vbmVsaW5lIGRyaXZlcnMvdHR5L3NlcmlhbC9p
-bXguYykKCkhpLCBVd2U6CgpUaGFuayB5b3UgZm9yIHlvdXIgc3VnZ2VzdGlvbiwgSSB3aWxsIG1h
-a2UgYSBtb3JlIGFjY3VyYXRlIHN1YmplY3QgaW4gbXkgZnV0dXJlIHBhdGNoZXMuCgo+T24gRnJp
-LCBOb3YgMDYsIDIwMjAgYXQgMDc6Mjk6MjNQTSAtMDgwMCwgQmVybmFyZCBaaGFvIHdyb3RlOgo+
-PiBEZWxldGUgYnJlYWsgYWZ0ZXIgcmV0dXJuLCB3aGljaCB3aWxsIG5ldmVyIHJ1bi4KPj4gCj4+
-IFNpZ25lZC1vZmYtYnk6IEJlcm5hcmQgWmhhbyA8YmVybmFyZEB2aXZvLmNvbT4KPj4gLS0tCj4+
-ICBkcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgfCA1IC0tLS0tCj4+ICAxIGZpbGUgY2hhbmdlZCwg
-NSBkZWxldGlvbnMoLSkKPj4gCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14
-LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPj4gaW5kZXggMTczMWQ5NzI4ODY1Li4wOTcw
-MzA3OWRiN2IgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+PiArKysg
-Yi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPj4gQEAgLTMyMCw3ICszMjAsNiBAQCBzdGF0aWMg
-dTMyIGlteF91YXJ0X3JlYWRsKHN0cnVjdCBpbXhfcG9ydCAqc3BvcnQsIHUzMiBvZmZzZXQpCj4+
-ICAJc3dpdGNoIChvZmZzZXQpIHsKPj4gIAljYXNlIFVDUjE6Cj4+ICAJCXJldHVybiBzcG9ydC0+
-dWNyMTsKPj4gLQkJYnJlYWs7Cj4+ICAJY2FzZSBVQ1IyOgo+PiAgCQkvKgo+PiAgCQkgKiBVQ1Iy
-X1NSU1QgaXMgdGhlIG9ubHkgYml0IGluIHRoZSBjYWNoZWQgcmVnaXN0ZXJzIHRoYXQgbWlnaHQK
-Pj4gQEAgLTMzMSwxNiArMzMwLDEyIEBAIHN0YXRpYyB1MzIgaW14X3VhcnRfcmVhZGwoc3RydWN0
-IGlteF9wb3J0ICpzcG9ydCwgdTMyIG9mZnNldCkKPj4gIAkJaWYgKCEoc3BvcnQtPnVjcjIgJiBV
-Q1IyX1NSU1QpKQo+PiAgCQkJc3BvcnQtPnVjcjIgPSByZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNl
-ICsgb2Zmc2V0KTsKPj4gIAkJcmV0dXJuIHNwb3J0LT51Y3IyOwo+PiAtCQlicmVhazsKPj4gIAlj
-YXNlIFVDUjM6Cj4+ICAJCXJldHVybiBzcG9ydC0+dWNyMzsKPj4gLQkJYnJlYWs7Cj4+ICAJY2Fz
-ZSBVQ1I0Ogo+PiAgCQlyZXR1cm4gc3BvcnQtPnVjcjQ7Cj4+IC0JCWJyZWFrOwo+PiAgCWNhc2Ug
-VUZDUjoKPj4gIAkJcmV0dXJuIHNwb3J0LT51ZmNyOwo+PiAtCQlicmVhazsKPgo+eW91J3JlIHRo
-ZSB0aGlyZCB0byBzZW5kIHRoaXMgcGF0Y2ggc2luY2UgT2N0b2JlciAyMDoKPgo+CWh0dHBzOi8v
-bG9yZS5rZXJuZWwub3JnL3IvMjAyMDEwMjYxMjUxNDIuMjExMDUtMS16aGFuZ3FpbG9uZzNAaHVh
-d2VpLmNvbQo+CWh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3IvMjAyMDEwMjAxMzA3MDkuMjgwOTYt
-MS10cml4QHJlZGhhdC5jb20KPgo+TXkgY29tbWVudCBmb3IgdGhlc2Ugd2FzOgo+Cj4+IHRoaXMg
-bWlnaHQgYmUgc3ViamVjdGl2ZSwgYnV0IEkgbGlrZSB0aGUgYnJlYWsgYmVpbmcgdGhlcmUgZm9y
-IGNsZWFyaXR5Lgo+PiBTbyBJIG9iamVjdCB0byBtYWtlIGEgcGF0Y2ggdG8gcmVtb3ZlIHRoZW0u
-IEluIGNhc2UgSSdtIG91dHZvdGVkIEknZCBhdAo+PiBsZWFzdCB3YW50IGVtcHR5IGxpbmVzIGlu
-c3RlYWQuCj4KPlpoYW5nIFFpbG9uZyB3cm90ZSBoZSBmb3VuZCB0aGUgcGF0Y2ggb3Bwb3J0dW5p
-dHkgYnkgbWFudWFsIGNvZGUKPmluc3BlY3Rpb24sIEkgd291bGQgaGF2ZSBleHBlY3RlZCB0aGF0
-IHRoZXJlIGlzIGEgdG9vbCB0aGF0IGlkZW50aWZpZXMgYQo+YnJlYWsgYWZ0ZXIgYSByZXR1cm4u
-IElmIHlvdSBoYWQgdG9vbCBzdXBwb3J0LCBwbGVhc2UgbWVudGlvbiB0aGUgdG9vbAo+aW4gdGhl
-IGNvbW1pdCBsb2cgKGlmIHlvdSByZWFsbHkgd2FudCB0byBrZWVwIGZvbGxvd2luZyB0aGUgcGF0
-Y2gncwo+aWRlYSkuCgpGb3IgdGhpcyBwYXJ0OgpJIHdyb3RlIGEgcHl0aG9uIHNjcmlwdCB0byBj
-aGVjayBpZiB0aGVyZSBpcyBhIGJyZWFrIGFmdGVyIGEgcmV0dXJuIG9yIGdvdG8uClRoZSBzY3Jp
-cHQgY3VycmVudGx5IGhhcyBzb21lIGlzc3VlcyBpbiBpdHMgaGFuZGxpbmcgb2Ygc3BlY2lhbCBj
-aGFyYWN0ZXJzLCB0aGUgc2VhcmNoIHJlc3VsdCBpcyBub3QgcHJlY2lzZSBlbm91Z2guIEl0IGlz
-IHN0aWxsIHVuZGVyIGRlYnVnZ2luZy4gClRoZXNlIGFyZSB0aGUgb25seSBwbGFjZXMgd2hpY2gg
-IHRoZSBzY3JpcHQgY2hlY2tzIG91dCBpbiBwYXRoOiBkcml2ZXIvdHR5LgpJIGFsc28gY2hlY2tl
-ZCBvdGhlciBwYXRoKGxpa2U6IGRyaXZlci92bWUvLCBkcml2ZXIvdmlkZW8sIGRyaXZlci91c2Ip
-LCB0aGVzZSBwYXRocyBhbHNvIGhhdmUgYSBjZXJ0YWluIG51bWJlciBvZiBzaW1pbGFyIGlzc3Vl
-cy4gQW5kIEkgd2lsbCB0cnkgdG8gc3VibWl0IHRoZXNlIHBhdGNoIGxhdGVyLgpUaGFua3MhCgpC
-Ui8vQmVybmFyZAoKPkJlc3QgcmVnYXJkcwo+VXdlCj4KPi0tIAo+UGVuZ3V0cm9uaXggZS5LLiAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIHwgVXdlIEtsZWluZS1Lw7ZuaWcgICAgICAgICAgICB8
-Cj5JbmR1c3RyaWFsIExpbnV4IFNvbHV0aW9ucyAgICAgICAgICAgICAgICAgfCBodHRwczovL3d3
-dy5wZW5ndXRyb25peC5kZS8gfAoNCg0K
+
+--dmhwlv3br5s4zali
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Nov 09, 2020 at 06:54:55AM +1300, Sam Nobs wrote:
+> Enabling the lock dependency validator has revealed
+> that the way spinlocks are used in the IMX serial
+> port could result in a deadlock. Note that the configuration
+> I'm using has the IRQs forced to run in threads via
+> the kernel parameter threadirqs.
+>=20
+> Specifically, imx_uart_int() acquires a spinlock
+> without disabling the interrupts, meaning that another
+> interrupt could come along and try to acquire the same
+> spinlock, potentially causing the two to wait for each
+> other indefinitely.
+
+That's because the console functions might be called with irqs off and
+so in these functions the _irqsave variants are used for locking.
+
+(In general not using spin_lock_irqsave but plain spin_lock in an irq
+handler is fine iff there are no other functions taking the lock that
+might run with irqs off.)
+
+> Use spin_lock_irqsave() instead to disable interrupts
+> upon acquisition of the spinlock.
+>=20
+> Signed-off-by: Sam Nobs <samuel.nobs@taitradio.com>
+> ---
+> Here's the lockdep splat for reference:
+>=20
+>    =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    WARNING: inconsistent lock state
+>    5.4.46 #1 Not tainted
+>    --------------------------------
+>    inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
+>    irq/26-30860000/992 [HC0[0]:SC0[2]:HE1:SE0] takes:
+>    ffff00006671d098 (&port_lock_key){?...}, at: imx_uart_int+0x28/0x338
+>    {IN-HARDIRQ-W} state was registered at:
+>      lock_acquire+0xd0/0x288
+>      _raw_spin_lock_irqsave+0x58/0x80
+>      imx_uart_console_write+0x1e4/0x220
+>      console_unlock+0x2ac/0x610
+>      vprintk_emit+0x178/0x330
+>      vprintk_default+0x48/0x58
+>      vprintk_func+0xe4/0x248
+>      printk+0x70/0x90
+>      crng_fast_load+0x1c4/0x1c8
+>      add_interrupt_randomness+0x348/0x3e8
+>      handle_irq_event_percpu+0x50/0x98
+>      handle_irq_event+0x4c/0xd0
+>      handle_fasteoi_irq+0xe0/0x188
+>      generic_handle_irq+0x34/0x50
+>      __handle_domain_irq+0x98/0x108
+>      gic_handle_irq+0xd4/0x178
+>      el1_irq+0xbc/0x180
+>      arch_cpu_idle+0x34/0x220
+>      default_idle_call+0x40/0x4c
+>      do_idle+0x254/0x268
+>      cpu_startup_entry+0x28/0x48
+>      rest_init+0x1b4/0x284
+>      arch_call_rest_init+0x14/0x1c
+>      start_kernel+0x48c/0x4bc
+>    irq event stamp: 30
+>    hardirqs last  enabled at (29): [<ffff800010b22a60>] _raw_spin_unlock_=
+irq+0x38/0x70
+>    hardirqs last disabled at (28): [<ffff800010b1b060>] __schedule+0xb0/0=
+x770
+>    softirqs last  enabled at (0): [<ffff8000100b28c0>] copy_process+0x8d8=
+/0x19b0
+>    softirqs last disabled at (30): [<ffff8000101343f8>] irq_forced_thread=
+_fn+0x0/0xc0
+>=20
+>    other info that might help us debug this:
+>     Possible unsafe locking scenario:
+>=20
+>           CPU0
+>           ----
+>      lock(&port_lock_key);
+>      <Interrupt>
+>        lock(&port_lock_key);
+>=20
+>     *** DEADLOCK ***
+>=20
+>    no locks held by irq/26-30860000/992.
+>=20
+>    stack backtrace:
+>    CPU: 0 PID: 992 Comm: irq/26-30860000 Not tainted 5.4.46 #1
+>    Hardware name: Tait i.MX8MM smarc-rcb (DT)
+>    Call trace:
+>     dump_backtrace+0x0/0x178
+>     show_stack+0x24/0x30
+>     dump_stack+0xdc/0x144
+>     print_usage_bug+0x1c8/0x1e0
+>     mark_lock+0x57c/0x740
+>     __lock_acquire+0x684/0x16d0
+>     lock_acquire+0xd0/0x288
+>     _raw_spin_lock+0x44/0x58
+>     imx_uart_int+0x28/0x338
+>     irq_forced_thread_fn+0x40/0xc0
+>     irq_thread+0x1ac/0x280
+>     kthread+0x138/0x140
+>     ret_from_fork+0x10/0x18
+>=20
+>  drivers/tty/serial/imx.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 1731d97..29ceaea 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -942,8 +942,9 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
+>  	struct imx_port *sport =3D dev_id;
+>  	unsigned int usr1, usr2, ucr1, ucr2, ucr3, ucr4;
+>  	irqreturn_t ret =3D IRQ_NONE;
+> +	unsigned long flags =3D 0;
+> =20
+> -	spin_lock(&sport->port.lock);
+> +	spin_lock_irqsave(&sport->port.lock, flags);
+
+There was an earlier commit (c974991d2620419fe21508fc4529014369d16df7)
+that changed spin_lock_irqsave to spin_lock under the assumption that in
+the irq handler irqs are disabled. I added the author and the reviewer
+of this patch to Cc.
+
+To prevent the next person to think this can be converted to spin_lock
+I'd like to have a comment here that tells about why we need the irqsave
+variant.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--dmhwlv3br5s4zali
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+o8gEACgkQwfwUeK3K
+7AmjQAf+P37dFbbkz3/T2uJYzMm8RnIgDY32my5ExaETDcEmPE67p5k9K8jVYv7n
+hFSen9uqIltQVfSRczAMpifx3XOKiIYt6y/3lryBxTvrUGGCjiAs10GFDDUCNHbP
+2QetELuqI6ROaxMGdxMLtGUs2vZ4BAWYgofxp13RD96/k/sluie/azsYUu3CgiGA
+NKNZZnAjMH6u6driTSvkBgjXRH4iYdooNspUYd3X7W6U0bZoZdCYWHrjUW79ocwM
+fefjljzXaUAXG7qXSXauYAea0xXdYm689PKBQCnQ81RC+r4OIgJbS0yCpfPVtYrX
+29ztDL2MTz/0qrDZaIQSHenOG0i2wg==
+=siug
+-----END PGP SIGNATURE-----
+
+--dmhwlv3br5s4zali--
