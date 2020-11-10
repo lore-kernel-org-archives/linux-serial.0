@@ -2,175 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD9FC2D0A3
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Nov 2020 00:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF9DC388F7
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Nov 2020 20:31:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A84EB206D8
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Nov 2020 00:30:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E18D92065E
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Nov 2020 20:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729452AbgKJAau (ORCPT
+        id S1726462AbgKJUbL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Nov 2020 19:30:50 -0500
-Received: from mga12.intel.com ([192.55.52.136]:51418 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729336AbgKJAau (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Nov 2020 19:30:50 -0500
-IronPort-SDR: kUOMWU2rl2sUuO0gPjWsdR1fLCE3dmTDldrCDMP8vWR57ds/HBvay0hAjH23vx7Tp5spmnexfz
- LC+n6nm7XHgw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9800"; a="149172201"
-X-IronPort-AV: E=Sophos;i="5.77,464,1596524400"; 
-   d="scan'208";a="149172201"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2020 16:30:49 -0800
-IronPort-SDR: uZizYGdn0WF0dbn/3oXw7NtTnUSSED3CMqdzfBY0pi9riyZ1tiXB41nh/PlEfh9HsOJdiG9INw
- jE594Yt4z+EQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,464,1596524400"; 
-   d="scan'208";a="541100596"
-Received: from lkp-server01.sh.intel.com (HELO d0be80f1a028) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 09 Nov 2020 16:30:47 -0800
-Received: from kbuild by d0be80f1a028 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1kcHYc-0000XA-IH; Tue, 10 Nov 2020 00:30:46 +0000
-Date:   Tue, 10 Nov 2020 08:30:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 9b085d6e889076928d307f05cabf76e35db1e63b
-Message-ID: <5fa9df1f./tpweWrOX9pfegy/%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 10 Nov 2020 15:31:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726400AbgKJUbL (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 10 Nov 2020 15:31:11 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A3CC0613D1
+        for <linux-serial@vger.kernel.org>; Tue, 10 Nov 2020 12:31:11 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kcaIH-0002RR-2K; Tue, 10 Nov 2020 21:31:09 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kcaIF-0007Ig-CH; Tue, 10 Nov 2020 21:31:07 +0100
+Date:   Tue, 10 Nov 2020 21:31:05 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Fugang Duan <fugang.duan@nxp.com>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        lukas@wunner.de
+Subject: Re: [PATCH tty/serial 1/1] tty: serial: imx: keep console clocks
+ always on
+Message-ID: <20201110203105.psro267now4cgctg@pengutronix.de>
+References: <20201109091403.12515-1-fugang.duan@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3hcps3huw4jqtwmu"
+Content-Disposition: inline
+In-Reply-To: <20201109091403.12515-1-fugang.duan@nxp.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 9b085d6e889076928d307f05cabf76e35db1e63b  Merge 5.10-rc3 into tty-next
 
-elapsed time: 882m
+--3hcps3huw4jqtwmu
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-configs tested: 102
-configs skipped: 2
+On Mon, Nov 09, 2020 at 05:14:03PM +0800, Fugang Duan wrote:
+> For below code, there has chance to cause deadlock in SMP system:
+> Thread 1:
+> clk_enable_lock();
+> pr_info("debug message");
+> clk_enable_unlock(flags);
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+flags?
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-powerpc                    sam440ep_defconfig
-powerpc                     pseries_defconfig
-m68k                         amcore_defconfig
-arm                         s5pv210_defconfig
-xtensa                  audio_kc705_defconfig
-m68k                          hp300_defconfig
-sh                           se7206_defconfig
-arm                          ep93xx_defconfig
-arc                        nsimosci_defconfig
-arc                                 defconfig
-mips                      fuloong2e_defconfig
-sh                         microdev_defconfig
-arm                            mmp2_defconfig
-arm                          collie_defconfig
-sh                        sh7757lcr_defconfig
-m68k                        m5307c3_defconfig
-arm                             rpc_defconfig
-m68k                        m5272c3_defconfig
-c6x                              alldefconfig
-powerpc                      pmac32_defconfig
-arm                          imote2_defconfig
-parisc                           alldefconfig
-arm                        shmobile_defconfig
-arm                   milbeaut_m10v_defconfig
-powerpc                     tqm8540_defconfig
-powerpc                     skiroot_defconfig
-arm                         shannon_defconfig
-nds32                               defconfig
-arm                           corgi_defconfig
-arm                          gemini_defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-c6x                              allyesconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a003-20201110
-x86_64               randconfig-a005-20201110
-x86_64               randconfig-a004-20201110
-x86_64               randconfig-a002-20201110
-x86_64               randconfig-a006-20201110
-x86_64               randconfig-a001-20201110
-i386                 randconfig-a004-20201109
-i386                 randconfig-a006-20201109
-i386                 randconfig-a005-20201109
-i386                 randconfig-a001-20201109
-i386                 randconfig-a003-20201109
-i386                 randconfig-a002-20201109
-i386                 randconfig-a014-20201109
-i386                 randconfig-a015-20201109
-i386                 randconfig-a013-20201109
-i386                 randconfig-a016-20201109
-i386                 randconfig-a011-20201109
-i386                 randconfig-a012-20201109
-riscv                    nommu_k210_defconfig
-riscv                    nommu_virt_defconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allyesconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                                  kexec
-x86_64                               rhel-8.3
-x86_64                                   rhel
-x86_64                    rhel-7.6-kselftests
+>=20
+> Thread 2:
+> imx_uart_console_write()
+> 	clk_enable()
+> 		clk_enable_lock();
+>=20
+> Thread 1:
+> Acuired clk enable_lock -> printk -> console_trylock_spinning
+> Thread 2:
+> console_unlock() -> imx_uart_console_write -> clk_disable -> Acquite clk =
+enable_lock
+>=20
+> So the patch is to keep console port clocks always on like
+> other console drivers.
+>=20
+> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
 
-clang tested configs:
-x86_64               randconfig-a012-20201109
-x86_64               randconfig-a015-20201109
-x86_64               randconfig-a013-20201109
-x86_64               randconfig-a011-20201109
-x86_64               randconfig-a014-20201109
-x86_64               randconfig-a016-20201109
+Depending on how old this problem is, identifying the commit that
+introduces the problem (and noting it in a Fixes: line) would be good.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--3hcps3huw4jqtwmu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+q+IUACgkQwfwUeK3K
+7AnR3Qf/UIxui9seNojVcvsf7u9QpKxNS0p86XgD628lthnSzr2VFXDWvrzvdR0+
+lJkgnYVQVnJMno9+/Bs1rvj2x2hJFzBD4WSV7OQGWtcEuEjZJhJAC/2uAdhf6FZX
+BfhP4wsnUjSncTpV0acUd3TsEiVKsAGOCQz1fjLiPfazuietW6iuOVxP4DcCsYj8
+ysjf7uGEg5REyjbwo8a4PldOBXu25Er3da17jgNjVjspe6suFjXwc9x9gIUJXjov
+ZybogDrwNA2Io0iSF3snI/sZNK6aX724JzAFraVPGuGH4A2jkjJpCnW8axNqkbto
+kmUdj21cKKUKCwXHL6umTNqsWxYIkQ==
+=6s5B
+-----END PGP SIGNATURE-----
+
+--3hcps3huw4jqtwmu--
