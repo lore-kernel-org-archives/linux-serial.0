@@ -2,95 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=0.6 required=3.0 tests=BAYES_50,DKIM_ADSP_CUSTOM_MED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FCCEC2D0E4
-	for <linux-serial@archiver.kernel.org>; Sun, 15 Nov 2020 15:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F8DC2D0E4
+	for <linux-serial@archiver.kernel.org>; Sun, 15 Nov 2020 16:00:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C7374223C7
-	for <linux-serial@archiver.kernel.org>; Sun, 15 Nov 2020 15:39:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B7DF722409
+	for <linux-serial@archiver.kernel.org>; Sun, 15 Nov 2020 16:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727156AbgKOPjj (ORCPT
+        id S1726727AbgKOP7y convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 15 Nov 2020 10:39:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727155AbgKOPjj (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 15 Nov 2020 10:39:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFA7C0613D1
-        for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2020 07:39:39 -0800 (PST)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1keK7s-0003Yn-VT; Sun, 15 Nov 2020 16:39:36 +0100
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1keK7r-0001Rs-Cb; Sun, 15 Nov 2020 16:39:35 +0100
-Date:   Sun, 15 Nov 2020 16:39:34 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        s.hauer@pengutronix.de, fugang.duan@nxp.com
-Subject: Re: [PATCH] serial: imx: Remove unused .id_table support
-Message-ID: <20201115153934.ywc5ld224zs6uifl@pengutronix.de>
-References: <20201115110341.22761-1-festevam@gmail.com>
+        Sun, 15 Nov 2020 10:59:54 -0500
+Received: from tigeramira.ro ([88.158.78.30]:55682 "EHLO mail.tigeramira.ro"
+        rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org with ESMTP
+        id S1726631AbgKOP7y (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 15 Nov 2020 10:59:54 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.tigeramira.ro (Postfix) with ESMTP id 7F4F2C54403
+        for <linux-serial@vger.kernel.org>; Sun, 15 Nov 2020 16:39:59 +0200 (EET)
+Received: from mail.tigeramira.ro ([127.0.0.1])
+        by localhost (mail.tigeramira.ro [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 7nQme2Lb9DaN for <linux-serial@vger.kernel.org>;
+        Sun, 15 Nov 2020 16:39:58 +0200 (EET)
+Received: from mail.tigeramira.ro (localhost [127.0.0.1])
+        by mail.tigeramira.ro (Postfix) with ESMTP id A8DB598CAA2
+        for <linux-serial@vger.kernel.org>; Fri, 13 Nov 2020 18:26:36 +0200 (EET)
+Received: from [156.96.44.214] (unknown [192.168.12.254])
+        by mail.tigeramira.ro (Postfix) with ESMTP id 61597D3FA18
+        for <linux-serial@vger.kernel.org>; Tue, 10 Nov 2020 17:09:06 +0200 (EET)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gdxxzssnm4fyv7cl"
-Content-Disposition: inline
-In-Reply-To: <20201115110341.22761-1-festevam@gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: Corporate and Personal Loan/
+To:     linux-serial@vger.kernel.org
+From:   "Investment  Corporate" <financialcapability6@gmail.com>
+Date:   Tue, 10 Nov 2020 06:09:34 -0800
+Reply-To: hmurrah39@gmail.com
+Message-Id: <20201110150907.61597D3FA18@mail.tigeramira.ro>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hello linux-serial@vger.kernel.org
 
---gdxxzssnm4fyv7cl
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hello,
+We are Base Investment Company offering Corporate and Personal Loan at 3% Interest Rate for a duration of 10Years.
 
-On Sun, Nov 15, 2020 at 08:03:41AM -0300, Fabio Estevam wrote:
-> Since 5.10-rc1 i.MX is a devicetree-only platform and the existing
-> .id_table support in this driver was only useful for old non-devicetree
-> platforms.
->=20
-> Get rid of the .id_table since it is no longer used.
->=20
-> Signed-off-by: Fabio Estevam <festevam@gmail.com>
 
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+We also pay 1% commission to brokers, who introduce project owners for finance or other opportunities.
 
-Best regards
-Uwe
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Please get back to me if you are interested for more
 
---gdxxzssnm4fyv7cl
-Content-Type: application/pgp-signature; name="signature.asc"
+details.
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+xS7MACgkQwfwUeK3K
-7Ak8Cgf/Sg2PbPBnnCqhydXsPPhnAsBfDR6Yypo9LmxDoFePLMfvNdeDZM8+DIzn
-ToYFZ7FC4TRQe5CDxstM3YKMTN9tCrt6APgibssf7+87nkA5shz02ujD5hyWBl7O
-AbFywNGp3TVm++P2A4FDRAdJIMaeLFUjQAzxZFpGbjBCrBDxm65djMLyJAp6X5Qc
-EesBgEJWoOxRfsFBbTzUGvW8jmGIuM0KXZcHB1sk5bxUccKi3g4IlR8uwBsyxQlu
-JvfgL0DKKsRCj9vmuQqDRDfn3UubeEDGSFhBlqjx1Ova/BBmyd9FnU9TX2B46ngW
-ezaTXa5V9PMyKg2TWJcenjx6e0OjRg==
-=RpJm
------END PGP SIGNATURE-----
+Yours faithfully,
 
---gdxxzssnm4fyv7cl--
+Hashim Murrah
