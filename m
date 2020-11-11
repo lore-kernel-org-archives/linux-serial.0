@@ -2,97 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B31C388F9
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Nov 2020 09:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C84C388F9
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Nov 2020 11:27:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5CBDD20729
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Nov 2020 09:57:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7603420795
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Nov 2020 11:27:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="DBGCCTtB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726024AbgKKJ5G (ORCPT
+        id S1726081AbgKKL1A (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Nov 2020 04:57:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727343AbgKKJ5G (ORCPT
+        Wed, 11 Nov 2020 06:27:00 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:36290 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbgKKL1A (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Nov 2020 04:57:06 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51173C0613D1
-        for <linux-serial@vger.kernel.org>; Wed, 11 Nov 2020 01:57:05 -0800 (PST)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kcmsB-00050V-Gs; Wed, 11 Nov 2020 10:57:03 +0100
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kcmsB-0007jl-5Y; Wed, 11 Nov 2020 10:57:03 +0100
-Date:   Wed, 11 Nov 2020 10:57:01 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     gregkh@linuxfoundation.org, s.hauer@pengutronix.de,
-        linux-serial@vger.kernel.org, fugang.duan@nxp.com
-Subject: Re: [PATCH] serial: imx: Remove unused platform data support
-Message-ID: <20201111095701.rnsuajzfgkstiwa5@pengutronix.de>
-References: <20201110214840.16768-1-festevam@gmail.com>
+        Wed, 11 Nov 2020 06:27:00 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0ABBQvqs038461;
+        Wed, 11 Nov 2020 05:26:57 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605094017;
+        bh=fWo/pDkDPv2VDqDbwex0pM/XKhddBQVetHiGj4PDgPE=;
+        h=From:To:CC:Subject:Date;
+        b=DBGCCTtB9c4Y0Np694tQRWcr5LWMn8MVybCjUDINbwYFrOq+Hnte8h5Yv1ArUEoIM
+         mPJ7tMx1AU9VW/OLj4DgaB0nuk8cD/AqExHgt1Rc7IvXzUUAGbL0KU+GTMR3oyw07k
+         WaYNdJwp9GA/9DQwHNdCwbZRYpMDTf63r0zPUkTE=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0ABBQvfw030692
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 11 Nov 2020 05:26:57 -0600
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 11
+ Nov 2020 05:26:56 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 11 Nov 2020 05:26:56 -0600
+Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0ABBQsLB076461;
+        Wed, 11 Nov 2020 05:26:54 -0600
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/2] serial: 8250: 8250_omap: Fix possible array out of bounds access
+Date:   Wed, 11 Nov 2020 16:56:52 +0530
+Message-ID: <20201111112653.2710-1-vigneshr@ti.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="463zvuxy3rkfl4lt"
-Content-Disposition: inline
-In-Reply-To: <20201110214840.16768-1-festevam@gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+k3_soc_devices array is missing a sentinel entry which may result in out
+of bounds access as reported by kernel KASAN.
 
---463zvuxy3rkfl4lt
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fix this by adding a sentinel entry.
 
-Hello,
+Fixes: 439c7183e5b9 ("serial: 8250: 8250_omap: Disable RX interrupt after DMA enable")
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+---
+ drivers/tty/serial/8250/8250_omap.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Tue, Nov 10, 2020 at 06:48:40PM -0300, Fabio Estevam wrote:
-> Since 5.10-rc1 i.MX is a devicetree-only platform and the existing
-> platform data support in this driver was only useful for old non-devicetr=
-ee
-> platforms.
->=20
-> Get rid of the platform data support since it is no longer used.
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 084e7bc51f0e..ab18ef035659 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1199,6 +1199,7 @@ static int omap8250_no_handle_irq(struct uart_port *port)
+ static const struct soc_device_attribute k3_soc_devices[] = {
+ 	{ .family = "AM65X",  },
+ 	{ .family = "J721E", .revision = "SR1.0" },
++	{ /* sentinel */ }
+ };
+ 
+ static struct omap8250_dma_params am654_dma = {
+-- 
+2.29.2
 
-Great, I missed that platform data support is gone.
-
-Is it a problem if you build with SERIAL_IMX=3Dy, COMPILE_TEST=3Dy and
-ARCH_MXC + CONFIG_OF unset?
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---463zvuxy3rkfl4lt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+rtWoACgkQwfwUeK3K
-7AlkMAgAly/UNzwIiIV1WTAzIDXKm4EtmzLF2c8qZpnYPm77QzpUQGDxfxiwY83M
-0hDtLPuK70XbbW1oKFF6CBmHw/7A67TqCPFDMwa1FqbCSYyM7Z1EAfLHejHz8nmA
-ULt7iG0uS1VU8HzkyiKbsEBzgusXRqZ1iPXRzL227TY3Z/rxakH0dPpM2OktVSGf
-4cG6WMdCsNPXZs+05Ye+1172MWfNkWjJhxRRKJkVZoKERUJiOW8XCZFNKwZjR3tg
-4EsOgOmsK3Ij7PLGnzDWwAGmpLr79wj8YvlsIz+r1AWAY65+liEZDt0V8KQGyWfm
-syEaLjbWcmfwoDw8QxUHJJS0zkF4vQ==
-=2l0R
------END PGP SIGNATURE-----
-
---463zvuxy3rkfl4lt--
