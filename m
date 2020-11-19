@@ -2,108 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 631D7C2D0E4
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Nov 2020 09:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A760C388F9
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Nov 2020 10:58:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 06C182100A
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Nov 2020 09:03:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0ED45246B0
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Nov 2020 10:58:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IKTM83cP"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725936AbgKSJDf (ORCPT
+        id S1726644AbgKSK6n (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Nov 2020 04:03:35 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:35584 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725648AbgKSJDf (ORCPT
+        Thu, 19 Nov 2020 05:58:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726480AbgKSK6n (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Nov 2020 04:03:35 -0500
-Received: by mail-ed1-f67.google.com with SMTP id cf17so1464230edb.2;
-        Thu, 19 Nov 2020 01:03:33 -0800 (PST)
+        Thu, 19 Nov 2020 05:58:43 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5559C0613CF
+        for <linux-serial@vger.kernel.org>; Thu, 19 Nov 2020 02:58:42 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id oq3so7277777ejb.7
+        for <linux-serial@vger.kernel.org>; Thu, 19 Nov 2020 02:58:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=yXed+0a74u3qm8TIqk9+SjxVFtPdt7Ar5Nm2jWwjYjo=;
+        b=IKTM83cPtwxniUW1z5nCG1FLZodxV3UoUwIedv+ri9QPLvCAxb23C+HhgXlRPWv2UK
+         sq3V81YvvR1ViDbORPNwY7b6yOXcFyIbRfOnrL55LK38l8zf6RX6AewZNBKPKt968SDQ
+         kMyiG1cX33Z8CuGKdnAcITY5+1iDEzlDnN7jOnwDTyK+GcqtXobEgE29urfRyISfNkan
+         EFTxCx+4WJCSOsAV442OofQewH8XCU0b0ARAMj2kSO59/4d6zDzHff3ju5NtrlPSnjWR
+         N3MHxneVN131yYrROecAVfW6M4MtBZxSArzkiM/BJ1xKYCDkmShjOldApN86xQFs5ZgL
+         HIFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4EQbK8dZn3wmlGNgXi+byhifmTHWQPZyV9gwXQJzxwQ=;
-        b=CN5/QZaGd+rDpapRyXs+Nfn4ucDGnmcsY/bSSk3RiDLU1LeSMmAqvYne5NiSzO2VZo
-         NgYSWSDq0lw84nVUCPd9pFBEybn9il6yz0gL2KN3bYYTEYeXejKLH28Ufdxpo9XGmYEM
-         xB70tvy3URsDyUNrs5HiHzgAw/LwZtcA3qp09bMM2eAhU8PmV1MtvvtPg06mw7ufsbOQ
-         gNmB6pqrnTcTa/eOMxhVd1ZPmZ4Hyi98tSxSh5ItFWBpXHGw+AkcHroX5V/bB9awwcS4
-         wpGyVlKPc5YRvHvW9vOZ6smIWhMQ3Hu7E1b1s/dNG2+0msxpheUyBe6jU0K+VR3RJtf6
-         z81g==
-X-Gm-Message-State: AOAM530oXhMs/bVom1ssLJqIdYEwqWeVSW7j3rEbmpBqNU2BZzLgKLmp
-        2EiQ39IiqyzJMrG4UStjzZw1FXhVjJA=
-X-Google-Smtp-Source: ABdhPJyCVoDl/4U59qZyrK2bLtGHzj2zS5F1Zh8a7W02AHfggCa6dmkvPIt3f3ZK0lWvU6+O11/LYw==
-X-Received: by 2002:aa7:c886:: with SMTP id p6mr28956302eds.352.1605776612681;
-        Thu, 19 Nov 2020 01:03:32 -0800 (PST)
-Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id n22sm773330edo.43.2020.11.19.01.03.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Nov 2020 01:03:31 -0800 (PST)
-Subject: Re: [PATCH] tty: serial: replace spin_lock_irqsave by spin_lock in
- hard IRQ
-To:     Tian Tao <tiantao6@hisilicon.com>, gregkh@linuxfoundation.org,
-        afaerber@suse.de, manivannan.sadhasivam@linaro.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <1605776489-16283-1-git-send-email-tiantao6@hisilicon.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <5d722862-f0a8-629e-b01e-5269350762e5@kernel.org>
-Date:   Thu, 19 Nov 2020 10:03:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <1605776489-16283-1-git-send-email-tiantao6@hisilicon.com>
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yXed+0a74u3qm8TIqk9+SjxVFtPdt7Ar5Nm2jWwjYjo=;
+        b=W7TvZcvP7UeXrzsNo4iLcOzUL5Z0svt3OIlbDJxKGElVzxctLdgJ5v4eIngY313tRn
+         XQe2oF/V0kuYxtyVTTo8rrTo9jvZH1e82mICnecd6hrRrRTL7zH7Y6lKSG5OrM7MyC7n
+         P/V2VmsESTtPcppdM78GOuC1WBNN8sw4FaHK8e/DsYF9v8uNMVIz62o9jul0TqAWTVWY
+         Hx0AYYwDC34aQoVpmbN4jBObY87pyaKLAdf14QWaVDTJOeWZ2UUmu+LY14uTMP2HP10G
+         CnbOpuh1ssn3Z6KgOd2VndbReSHBLmqRP7l3Mq8fIjrfeFUVH+15IhvIE72+ziqKKkZZ
+         US5A==
+X-Gm-Message-State: AOAM531ijcwlm9Wk45BdTBSLcBhvFUY5TWS0YOZ+b4+ZZW0rXNGRkdnp
+        82AY/4GOOm1BeGnWI1gXGPNjB2tQp5I=
+X-Google-Smtp-Source: ABdhPJyNCDz7gsTWMaa1VLJTvbYchiCseTI4o+c3OGM/A/Y+negmDvTegGR1zeMAN1o22RpYe/8FQw==
+X-Received: by 2002:a17:907:2063:: with SMTP id qp3mr28920817ejb.314.1605783521218;
+        Thu, 19 Nov 2020 02:58:41 -0800 (PST)
+Received: from gci-Precision-M2800.fritz.box ([2a02:8109:8b00:c24:8af:bf85:ef0f:2ed7])
+        by smtp.googlemail.com with ESMTPSA id j9sm14199963ejf.105.2020.11.19.02.58.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2020 02:58:40 -0800 (PST)
+From:   Giacinto Cifelli <gciofono@gmail.com>
+To:     linux-serial@vger.kernel.org
+Cc:     Giacinto Cifelli <gciofono@gmail.com>
+Subject: [PATCH] option: added support for Thales Cinterion MV31 option port.
+Date:   Thu, 19 Nov 2020 11:58:37 +0100
+Message-Id: <20201119105837.17735-1-gciofono@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 19. 11. 20, 10:01, Tian Tao wrote:
-> The code has been in a irq-disabled context since it is hard IRQ. There
-> is no necessity to do it again.
-> 
-> Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
+There is a single option port in this modem, and it is used as debug port
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Giacinto Cifelli <gciofono@gmail.com>
+---
+ drivers/usb/serial/option.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> ---
->   drivers/tty/serial/owl-uart.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-> index c149f8c3..472fdaf 100644
-> --- a/drivers/tty/serial/owl-uart.c
-> +++ b/drivers/tty/serial/owl-uart.c
-> @@ -251,10 +251,9 @@ static void owl_uart_receive_chars(struct uart_port *port)
->   static irqreturn_t owl_uart_irq(int irq, void *dev_id)
->   {
->   	struct uart_port *port = dev_id;
-> -	unsigned long flags;
->   	u32 stat;
->   
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	spin_lock(&port->lock);
->   
->   	stat = owl_uart_read(port, OWL_UART_STAT);
->   
-> @@ -268,7 +267,7 @@ static irqreturn_t owl_uart_irq(int irq, void *dev_id)
->   	stat |= OWL_UART_STAT_RIP | OWL_UART_STAT_TIP;
->   	owl_uart_write(port, stat, OWL_UART_STAT);
->   
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	spin_unlock(&port->lock);
->   
->   	return IRQ_HANDLED;
->   }
-> 
-
-
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index 54ca85cc920d..3ad86a6e8487 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -424,6 +424,7 @@ static void option_instat_callback(struct urb *urb);
+ #define CINTERION_PRODUCT_AHXX_2RMNET		0x0084
+ #define CINTERION_PRODUCT_AHXX_AUDIO		0x0085
+ #define CINTERION_PRODUCT_CLS8			0x00b0
++#define CINTERION_PRODUCT_EXS82			0x006c
+ 
+ /* Olivetti products */
+ #define OLIVETTI_VENDOR_ID			0x0b3c
+@@ -1908,6 +1909,8 @@ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE(SIEMENS_VENDOR_ID, CINTERION_PRODUCT_HC25_MDMNET) },
+ 	{ USB_DEVICE(SIEMENS_VENDOR_ID, CINTERION_PRODUCT_HC28_MDM) }, /* HC28 enumerates with Siemens or Cinterion VID depending on FW revision */
+ 	{ USB_DEVICE(SIEMENS_VENDOR_ID, CINTERION_PRODUCT_HC28_MDMNET) },
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_EXS82, 0xff),
++	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) },
+ 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD100),
+ 	  .driver_info = RSVD(4) },
+ 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD120),
 -- 
-js
-suse labs
+2.17.1
+
