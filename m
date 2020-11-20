@@ -2,157 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C23C56201
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Nov 2020 17:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79CA4C388F9
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Nov 2020 01:26:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 386292469D
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Nov 2020 17:36:18 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SFwmYQB+"
+	by mail.kernel.org (Postfix) with ESMTP id 27AB122256
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Nov 2020 01:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728746AbgKSRf5 (ORCPT
+        id S1726305AbgKTB0f (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Nov 2020 12:35:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36422 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728175AbgKSRf4 (ORCPT
+        Thu, 19 Nov 2020 20:26:35 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8004 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726295AbgKTB0f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Nov 2020 12:35:56 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6F2C0613CF;
-        Thu, 19 Nov 2020 09:35:56 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id y4so6701433edy.5;
-        Thu, 19 Nov 2020 09:35:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RsLldTWt03SahwoT1u6jHBmnbvDuG2f1cJeVhx0lFZ8=;
-        b=SFwmYQB+4kmPYts35/QnmiJX0+vl5jvjmY0xEwO5yDf/g4dSemKlTPwdszyGBcplGz
-         fccg8jT13IuNz8CsGrzCHYfXlqXLFJ0iXB5ArnK+Ki4KRbWeMH1RMjY4AnOHQPrUVj3M
-         Bs/1z+L8yMtUGeKUIhmEilTpZ1psIsVJzx0gEw+kHdoiBnRHeFhqWY/ggycQ5dMTTTID
-         vNAkAlxvytqCTTKlej3JsLZaqUkCW0sWW6t50kxdW6KKBoDSg7w4owv4BRNEdA29R3hN
-         svwLv+iaHIdLPTnqH8xb1KPr8AFcukyU0pd/5xA2rriNNeKx7iMbZK2V41Icucn0W4Wf
-         rixA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RsLldTWt03SahwoT1u6jHBmnbvDuG2f1cJeVhx0lFZ8=;
-        b=T7Zt5ItrJF8BU+BFbS1bSbRNLblva5bSGq8is9JFHNxlsRwe0f1NoRzTNGTNmzdrRU
-         pXnEDcZJySUOxftT5QwtdOBqMWO8B9qjMX33qw9u8/JTeEdY/jqZUWHLPEmjSmfCr8ug
-         NGY5BIbBNblSGjI6RQPC3n8CZrKva5f1aGxeCUfMSLnPrgOiCpzQ6zELjCcQO880pwj2
-         axlIlg/erTSuzu+Atcwy92y4dsRx2WiuRbMyxobGEy8ERIQZnis0CgfQicRN05ATs8tW
-         2Bi8azfuyIwN3bl3H+JleRBZQmGaPQRZy6+O1F/3gUOpJFktZCfFr9sosSCiBVvCNN8Y
-         VeKw==
-X-Gm-Message-State: AOAM532b8mKyNXoLq8x1t46PmvrMf1JPJfn/ADEsPG+sYLBwhsmcKMTX
-        GTz/qev2ALHTToLZ5bLjFi8gT8zeqVk=
-X-Google-Smtp-Source: ABdhPJx8xcX+oCllV118F+qizS9a6k5G+ecvcPOmKCsWERgrd3uKaRzfuwnJs53h5xdlOCJBs6H0Cw==
-X-Received: by 2002:a05:6402:1119:: with SMTP id u25mr33723485edv.37.1605807354723;
-        Thu, 19 Nov 2020 09:35:54 -0800 (PST)
-Received: from [192.168.2.202] (pd9ea3084.dip0.t-ipconnect.de. [217.234.48.132])
-        by smtp.gmail.com with ESMTPSA id a1sm66889edk.52.2020.11.19.09.35.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Nov 2020 09:35:53 -0800 (PST)
-Subject: Re: [PATCH 1/9] platform/surface: Add Surface Aggregator subsystem
-To:     =?UTF-8?Q?Barnab=c3=a1s_P=c5=91cze?= <pobrn@protonmail.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        =?UTF-8?Q?Bla=c5=be_Hrastnik?= <blaz@mxxn.io>,
-        Dorian Stoll <dorian.stoll@tmsp.io>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-References: <20201115192143.21571-1-luzmaximilian@gmail.com>
- <20201115192143.21571-2-luzmaximilian@gmail.com>
- <nJyowYoxGM_0dU6iqDLowrPuVIErZbgZLAkXASFlEKvvSkgGtLxGQ7wGFDpXAaqAc3wourELsji6s3lO7N4aHOb8sK0wI500Oq5ZMdeZwJ8=@protonmail.com>
- <68af3474-b576-da7e-2b11-3aa4c319cceb@gmail.com>
- <5Qk-wNPtfpjNiK7HHId4qBNTWj9K_2h7fNe15o2J80gZsrSOfVYoKzdzPE8-r3NT7PLjxIgx08YLv2s38CWROho_womMqN2yGl3v13dJlMg=@protonmail.com>
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-Message-ID: <dc6cc00a-4761-96e7-78f6-99dbf2447bad@gmail.com>
-Date:   Thu, 19 Nov 2020 18:35:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        Thu, 19 Nov 2020 20:26:35 -0500
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Ccf5P0kYFzhbYS;
+        Fri, 20 Nov 2020 09:26:17 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 20 Nov 2020 09:26:28 +0800
+From:   Tian Tao <tiantao6@hisilicon.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-unisoc@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] tty: serial: rad-uart: replace spin_lock_irqsave by spin_lock in hard IRQ
+Date:   Fri, 20 Nov 2020 09:26:53 +0800
+Message-ID: <1605835613-28359-1-git-send-email-tiantao6@hisilicon.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-In-Reply-To: <5Qk-wNPtfpjNiK7HHId4qBNTWj9K_2h7fNe15o2J80gZsrSOfVYoKzdzPE8-r3NT7PLjxIgx08YLv2s38CWROho_womMqN2yGl3v13dJlMg=@protonmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/19/20 4:54 PM, Barnabás Pőcze wrote:
-> Hi
+The code has been in a irq-disabled context since it is hard IRQ. There
+is no necessity to do it again.
 
-[...]
+Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
+---
+ drivers/tty/serial/rda-uart.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
->>>> +enum ssam_ssh_tc {
->>>> +	/* Known SSH/EC target categories. */
->>>> +				// category 0x00 is invalid for EC use
->>>> +	SSAM_SSH_TC_SAM = 0x01,	// generic system functionality, real-time clock
->>>> +	SSAM_SSH_TC_BAT = 0x02,	// battery/power subsystem
->>>> +	SSAM_SSH_TC_TMP = 0x03,	// thermal subsystem
->>>> +	SSAM_SSH_TC_PMC = 0x04,
->>>> +	SSAM_SSH_TC_FAN = 0x05,
->>>> +	SSAM_SSH_TC_PoM = 0x06,
->>>> +	SSAM_SSH_TC_DBG = 0x07,
->>>> +	SSAM_SSH_TC_KBD = 0x08,	// legacy keyboard (Laptop 1/2)
->>>> +	SSAM_SSH_TC_FWU = 0x09,
->>>> +	SSAM_SSH_TC_UNI = 0x0a,
->>>> +	SSAM_SSH_TC_LPC = 0x0b,
->>>> +	SSAM_SSH_TC_TCL = 0x0c,
->>>> +	SSAM_SSH_TC_SFL = 0x0d,
->>>> +	SSAM_SSH_TC_KIP = 0x0e,
->>>> +	SSAM_SSH_TC_EXT = 0x0f,
->>>> +	SSAM_SSH_TC_BLD = 0x10,
->>>> +	SSAM_SSH_TC_BAS = 0x11,	// detachment system (Surface Book 2/3)
->>>> +	SSAM_SSH_TC_SEN = 0x12,
->>>> +	SSAM_SSH_TC_SRQ = 0x13,
->>>> +	SSAM_SSH_TC_MCU = 0x14,
->>>> +	SSAM_SSH_TC_HID = 0x15,	// generic HID input subsystem
->>>> +	SSAM_SSH_TC_TCH = 0x16,
->>>> +	SSAM_SSH_TC_BKL = 0x17,
->>>> +	SSAM_SSH_TC_TAM = 0x18,
->>>> +	SSAM_SSH_TC_ACC = 0x19,
->>>> +	SSAM_SSH_TC_UFI = 0x1a,
->>>> +	SSAM_SSH_TC_USC = 0x1b,
->>>> +	SSAM_SSH_TC_PEN = 0x1c,
->>>> +	SSAM_SSH_TC_VID = 0x1d,
->>>> +	SSAM_SSH_TC_AUD = 0x1e,
->>>> +	SSAM_SSH_TC_SMC = 0x1f,
->>>> +	SSAM_SSH_TC_KPD = 0x20,
->>>> +	SSAM_SSH_TC_REG = 0x21,
->>>> +};
->>>
->>> Is it known what these abbreviations stand for? Maybe I missed them?
->>
->> The comments state all we really know about these (through observation
->> and experimentation). The table itself has been extracted from the
->> Windows driver, but the abbreviations and values are all we're getting
->> from it.
-> 
-> I see, thanks for the clarification. For some reason, I believed the
-> "Known SSH/EC target categories" comment means that those are known, as in,
-> it is known what they are for, etc., not just the abbreviation.
+diff --git a/drivers/tty/serial/rda-uart.c b/drivers/tty/serial/rda-uart.c
+index 85366e0..d6705a0 100644
+--- a/drivers/tty/serial/rda-uart.c
++++ b/drivers/tty/serial/rda-uart.c
+@@ -406,10 +406,9 @@ static void rda_uart_receive_chars(struct uart_port *port)
+ static irqreturn_t rda_interrupt(int irq, void *dev_id)
+ {
+ 	struct uart_port *port = dev_id;
+-	unsigned long flags;
+ 	u32 val, irq_mask;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	spin_lock(&port->lock);
+ 
+ 	/* Clear IRQ cause */
+ 	val = rda_uart_read(port, RDA_UART_IRQ_CAUSE);
+@@ -426,7 +425,7 @@ static irqreturn_t rda_interrupt(int irq, void *dev_id)
+ 		rda_uart_send_chars(port);
+ 	}
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	spin_unlock(&port->lock);
+ 
+ 	return IRQ_HANDLED;
+ }
+-- 
+2.7.4
 
-Right, that can be misunderstood, sorry. It's probably best if I add a
-comment explaining that in a bit more detail and noting where those
-values and abbreviations come from.
-
-Thanks,
-Max
