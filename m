@@ -2,154 +2,177 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E534C388F9
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Nov 2020 15:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDB4C64E75
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Nov 2020 23:40:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EB1512224C
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Nov 2020 15:17:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CAF7420A8B
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Nov 2020 23:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728080AbgKUPR2 (ORCPT
+        id S1726755AbgKUXkS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Nov 2020 10:17:28 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42076 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727867AbgKUPR1 (ORCPT
+        Sat, 21 Nov 2020 18:40:18 -0500
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:60574 "EHLO
+        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726560AbgKUXkS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Nov 2020 10:17:27 -0500
-Received: by mail-lf1-f68.google.com with SMTP id u18so17675319lfd.9;
-        Sat, 21 Nov 2020 07:17:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YhyylT6KFhdowDIfJnJ40q7bI+v1PdaWRmLJxQFG7pA=;
-        b=S3kEvDrwCE/i/Ta1ma7s1G1QFteFQlkJNxwJkApXFJ6VA7PPStDOFZoBqO1JRoRgHX
-         25PXGPAIr+ahNDmnxd4GpuTWTyd6uUC9w8iaNIXp//Z1Vc7cIw0HS7bqAp8CMDStc0Jo
-         EJXLHKP6e2lOb7U2QaPIBRmwH81dTWvw366X/ZjOaSY6yahmkjGcL3lZvHYFRad787R9
-         5qCSVUmHpkIAJQs5CPGhetA+NtdE4iMdKY50Iu4yq5AxhM2CJJd/qqocP6ANHhBvwuf4
-         aqLoGyejN5cOHDBWIfZyXdKx+07w751d80WEY6gT/RgZaKClehmgKs5DusT13E1OFfN1
-         GpKg==
-X-Gm-Message-State: AOAM533rmjno7LqSmt3vXu6IwNXk/OLLUBhz97SlO125r6xiCgqdNEzN
-        PQSrPdOtC9JoUqidiTBJqkb4CANE/HJEkw==
-X-Google-Smtp-Source: ABdhPJxG2SMsWy4gPbQN0ptYATRYhdlYy63rFINniGlIWK6dZehzcROeYtUq0q97YpOgpM4WDwn8yQ==
-X-Received: by 2002:a05:6512:10c9:: with SMTP id k9mr9807523lfg.40.1605971844938;
-        Sat, 21 Nov 2020 07:17:24 -0800 (PST)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id e14sm733549lfd.145.2020.11.21.07.17.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Nov 2020 07:17:23 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1kgUdm-0007CG-Q7; Sat, 21 Nov 2020 16:17:31 +0100
-Date:   Sat, 21 Nov 2020 16:17:30 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     'Johan Hovold' <johan@kernel.org>,
-        "tiantao (H)" <tiantao6@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tian Tao <tiantao6@hisilicon.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "afaerber@suse.de" <afaerber@suse.de>,
-        "manivannan.sadhasivam@linaro.org" <manivannan.sadhasivam@linaro.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] tty: serial: replace spin_lock_irqsave by spin_lock in
- hard IRQ
-Message-ID: <X7kviiRwuxvPxC8O@localhost>
-References: <1605776489-16283-1-git-send-email-tiantao6@hisilicon.com>
- <X7d85DKvisjA3nYv@localhost>
- <9ce93d7b-f769-58ed-e6bf-95c34bd0123e@huawei.com>
- <X7e7dYlYxPDsj71G@localhost>
- <40a52ea2273146b98b3ae3439a22d1eb@AcuMS.aculab.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <40a52ea2273146b98b3ae3439a22d1eb@AcuMS.aculab.com>
+        Sat, 21 Nov 2020 18:40:18 -0500
+Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
+        id 1C91429AB9; Sat, 21 Nov 2020 18:40:16 -0500 (EST)
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "Michael Ellerman" <mpe@ellerman.id.au>,
+        "Benjamin Herrenschmidt" <benh@kernel.crashing.org>,
+        "Paul Mackerras" <paulus@samba.org>,
+        "Joshua Thompson" <funaho@jurai.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Jiri Slaby" <jirislaby@kernel.org>, stable@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Message-Id: <0c0fe1e4f11ccec202d4df09ea7d9d98155d101a.1606001297.git.fthain@telegraphics.com.au>
+From:   Finn Thain <fthain@telegraphics.com.au>
+Subject: [PATCH v2] m68k: Fix WARNING splat in pmac_zilog driver
+Date:   Sun, 22 Nov 2020 10:28:17 +1100
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 08:00:05PM +0000, David Laight wrote:
-> From: Johan Hovold
-> > Sent: 20 November 2020 12:50
-> > 
-> > On Fri, Nov 20, 2020 at 07:25:03PM +0800, tiantao (H) wrote:
-> > > 在 2020/11/20 16:23, Johan Hovold 写道:
-> > > > On Thu, Nov 19, 2020 at 05:01:29PM +0800, Tian Tao wrote:
-> > > >> The code has been in a irq-disabled context since it is hard IRQ. There
-> > > >> is no necessity to do it again.
-> > > >>
-> > > >> Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
-> > > >> ---
-> > > >>   drivers/tty/serial/owl-uart.c | 5 ++---
-> > > >>   1 file changed, 2 insertions(+), 3 deletions(-)
-> > > >>
-> > > >> diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-> > > >> index c149f8c3..472fdaf 100644
-> > > >> --- a/drivers/tty/serial/owl-uart.c
-> > > >> +++ b/drivers/tty/serial/owl-uart.c
-> > > >> @@ -251,10 +251,9 @@ static void owl_uart_receive_chars(struct uart_port *port)
-> > > >>   static irqreturn_t owl_uart_irq(int irq, void *dev_id)
-> > > >>   {
-> > > >>   	struct uart_port *port = dev_id;
-> > > >> -	unsigned long flags;
-> > > >>   	u32 stat;
-> > > >>
-> > > >> -	spin_lock_irqsave(&port->lock, flags);
-> > > >> +	spin_lock(&port->lock);
-> > > >
-> > > > Same thing here; this will break with forced irq threading (i.e.
-> > > > "threadirqs") since the console code can still end up being called from
-> > > > interrupt context.
-> > 
-> > > As the following code shows, owl_uart_irq does not run in the irq
-> > > threading context.
-> > >   ret = request_irq(port->irq, owl_uart_irq, IRQF_TRIGGER_HIGH,
-> > >                          "owl-uart", port);
-> > >          if (ret)
-> > >                  return ret;
-> > 
-> > It still runs in a thread when interrupts are forced to be threaded
-> > using the kernel parameter "threadirqs".
-> > 
-> > We just had a revert of a change like yours after lockdep reported the
-> > resulting lock inversion with forced interrupt threading.
-> > 
-> > Whether drivers should have to care about "threadirqs" is a somewhat
-> > different question. Not sure how that's even supposed to work generally
-> > unless we mass-convert drivers to spin_lock_irqsave() (or mark their
-> > interrupts IRQF_NO_THREAD).
-> 
-> Isn't that backwards?
-> 
-> You need to use the 'irqsave' variant in code that might run with
-> interrupts enabled because an interrupt might try to acquire the
-> same lock having interrupted the code that already holds the lock.
-> 
-> If interrupts run as separate threads that can never happen.
-> So in that case all code can use the non-irqsave call.
-> 
-> So either lockdep is broken or you have a different bug.
+Don't add platform resources that won't be used. This avoids a
+recently-added warning from the driver core, that can show up on a
+multi-platform kernel when !MACH_IS_MAC.
 
-Not all interrupts run as threads with "threadirqs" so the lock can
-potentially still be taken in hard IRQ context also with forced
-threading.
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 0 at drivers/base/platform.c:224 platform_get_irq_optional+0x8e/0xce
+0 is an invalid IRQ number
+Modules linked in:
+CPU: 0 PID: 0 Comm: swapper Not tainted 5.9.0-multi #1
+Stack from 004b3f04:
+        004b3f04 00462c2f 00462c2f 004b3f20 0002e128 004754db 004b6ad4 004b3f4c
+        0002e19c 004754f7 000000e0 00285ba0 00000009 00000000 004b3f44 ffffffff
+        004754db 004b3f64 004b3f74 00285ba0 004754f7 000000e0 00000009 004754db
+        004fdf0c 005269e2 004fdf0c 00000000 004b3f88 00285cae 004b6964 00000000
+        004fdf0c 004b3fac 0051cc68 004b6964 00000000 004b6964 00000200 00000000
+        0051cc3e 0023c18a 004b3fc0 0051cd8a 004fdf0c 00000002 0052b43c 004b3fc8
+Call Trace: [<0002e128>] __warn+0xa6/0xd6
+ [<0002e19c>] warn_slowpath_fmt+0x44/0x76
+ [<00285ba0>] platform_get_irq_optional+0x8e/0xce
+ [<00285ba0>] platform_get_irq_optional+0x8e/0xce
+ [<00285cae>] platform_get_irq+0x12/0x4c
+ [<0051cc68>] pmz_init_port+0x2a/0xa6
+ [<0051cc3e>] pmz_init_port+0x0/0xa6
+ [<0023c18a>] strlen+0x0/0x22
+ [<0051cd8a>] pmz_probe+0x34/0x88
+ [<0051cde6>] pmz_console_init+0x8/0x28
+ [<00511776>] console_init+0x1e/0x28
+ [<0005a3bc>] printk+0x0/0x16
+ [<0050a8a6>] start_kernel+0x368/0x4ce
+ [<005094f8>] _sinittext+0x4f8/0xc48
+random: get_random_bytes called from print_oops_end_marker+0x56/0x80 with crng_init=0
+---[ end trace 392d8e82eed68d6c ]---
 
-For console drivers this can even happen for the same interrupt as the
-generic interrupt code can call printk(), and so can any other handler
-that isn't threaded (e.g. hrtimers or explicit IRQF_NO_THREAD).
+Commit a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid"),
+which introduced the WARNING, suggests that testing for irq == 0 is
+undesirable. Instead of that comparison, just test for resource existence.
 
-If a driver exposes an interface that can be called in hard IRQ context,
-it must use spin_lock_irqsave() in its interrupt handler (or use
-IRQF_NO_THREAD) because of "threadirqs".
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Joshua Thompson <funaho@jurai.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: stable@vger.kernel.org # v5.8+
+References: commit a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid")
+Reported-by: Laurent Vivier <laurent@vivier.eu>
+Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+---
+Changed since v1:
+ - Add a comment to explain the need for the global structs.
+ - Expand the commit log to better explain the intention of the patch.
+---
+ arch/m68k/mac/config.c          | 17 +++++++++--------
+ drivers/tty/serial/pmac_zilog.c | 14 +++++++++-----
+ 2 files changed, 18 insertions(+), 13 deletions(-)
 
-Johan
+diff --git a/arch/m68k/mac/config.c b/arch/m68k/mac/config.c
+index 0ac53d87493c..2bea1799b8de 100644
+--- a/arch/m68k/mac/config.c
++++ b/arch/m68k/mac/config.c
+@@ -777,16 +777,12 @@ static struct resource scc_b_rsrcs[] = {
+ struct platform_device scc_a_pdev = {
+ 	.name           = "scc",
+ 	.id             = 0,
+-	.num_resources  = ARRAY_SIZE(scc_a_rsrcs),
+-	.resource       = scc_a_rsrcs,
+ };
+ EXPORT_SYMBOL(scc_a_pdev);
+ 
+ struct platform_device scc_b_pdev = {
+ 	.name           = "scc",
+ 	.id             = 1,
+-	.num_resources  = ARRAY_SIZE(scc_b_rsrcs),
+-	.resource       = scc_b_rsrcs,
+ };
+ EXPORT_SYMBOL(scc_b_pdev);
+ 
+@@ -813,10 +809,15 @@ static void __init mac_identify(void)
+ 
+ 	/* Set up serial port resources for the console initcall. */
+ 
+-	scc_a_rsrcs[0].start = (resource_size_t) mac_bi_data.sccbase + 2;
+-	scc_a_rsrcs[0].end   = scc_a_rsrcs[0].start;
+-	scc_b_rsrcs[0].start = (resource_size_t) mac_bi_data.sccbase;
+-	scc_b_rsrcs[0].end   = scc_b_rsrcs[0].start;
++	scc_a_rsrcs[0].start     = (resource_size_t)mac_bi_data.sccbase + 2;
++	scc_a_rsrcs[0].end       = scc_a_rsrcs[0].start;
++	scc_a_pdev.num_resources = ARRAY_SIZE(scc_a_rsrcs);
++	scc_a_pdev.resource      = scc_a_rsrcs;
++
++	scc_b_rsrcs[0].start     = (resource_size_t)mac_bi_data.sccbase;
++	scc_b_rsrcs[0].end       = scc_b_rsrcs[0].start;
++	scc_b_pdev.num_resources = ARRAY_SIZE(scc_b_rsrcs);
++	scc_b_pdev.resource      = scc_b_rsrcs;
+ 
+ 	switch (macintosh_config->scc_type) {
+ 	case MAC_SCC_PSC:
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index 96e7aa479961..216b75ef5048 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -1693,22 +1693,26 @@ static int __init pmz_probe(void)
+ 
+ #else
+ 
++/* On PCI PowerMacs, pmz_probe() does an explicit search of the OpenFirmware
++ * tree to obtain the device_nodes needed to start the console before the
++ * macio driver. On Macs without OpenFirmware, global platform_devices take
++ * the place of those device_nodes.
++ */
+ extern struct platform_device scc_a_pdev, scc_b_pdev;
+ 
+ static int __init pmz_init_port(struct uart_pmac_port *uap)
+ {
+-	struct resource *r_ports;
+-	int irq;
++	struct resource *r_ports, *r_irq;
+ 
+ 	r_ports = platform_get_resource(uap->pdev, IORESOURCE_MEM, 0);
+-	irq = platform_get_irq(uap->pdev, 0);
+-	if (!r_ports || irq <= 0)
++	r_irq = platform_get_resource(uap->pdev, IORESOURCE_IRQ, 0);
++	if (!r_ports || !r_irq)
+ 		return -ENODEV;
+ 
+ 	uap->port.mapbase  = r_ports->start;
+ 	uap->port.membase  = (unsigned char __iomem *) r_ports->start;
+ 	uap->port.iotype   = UPIO_MEM;
+-	uap->port.irq      = irq;
++	uap->port.irq      = r_irq->start;
+ 	uap->port.uartclk  = ZS_CLOCK;
+ 	uap->port.fifosize = 1;
+ 	uap->port.ops      = &pmz_pops;
+-- 
+2.26.2
+
