@@ -2,177 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-25.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDB4C64E75
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Nov 2020 23:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBABC5519F
+	for <linux-serial@archiver.kernel.org>; Sun, 22 Nov 2020 11:42:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CAF7420A8B
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Nov 2020 23:40:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00CD520936
+	for <linux-serial@archiver.kernel.org>; Sun, 22 Nov 2020 11:42:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="dvjaQypO"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726755AbgKUXkS (ORCPT
+        id S1727373AbgKVLmN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Nov 2020 18:40:18 -0500
-Received: from kvm5.telegraphics.com.au ([98.124.60.144]:60574 "EHLO
-        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726560AbgKUXkS (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Nov 2020 18:40:18 -0500
-Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
-        id 1C91429AB9; Sat, 21 Nov 2020 18:40:16 -0500 (EST)
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     "Michael Ellerman" <mpe@ellerman.id.au>,
-        "Benjamin Herrenschmidt" <benh@kernel.crashing.org>,
-        "Paul Mackerras" <paulus@samba.org>,
-        "Joshua Thompson" <funaho@jurai.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>, stable@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Message-Id: <0c0fe1e4f11ccec202d4df09ea7d9d98155d101a.1606001297.git.fthain@telegraphics.com.au>
-From:   Finn Thain <fthain@telegraphics.com.au>
-Subject: [PATCH v2] m68k: Fix WARNING splat in pmac_zilog driver
-Date:   Sun, 22 Nov 2020 10:28:17 +1100
+        Sun, 22 Nov 2020 06:42:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33080 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727318AbgKVLmN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 22 Nov 2020 06:42:13 -0500
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 55222208C3;
+        Sun, 22 Nov 2020 11:42:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1606045332;
+        bh=BTIX4SRmJ9K3trvbwYZSzLzT5ufZbMHeP9ieJTfVPDw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=dvjaQypOyvnNE5CSV4GqtF6qR51aq6dCu/mSaM3bUpEJVgDoanaKoB7UHhgtfHTXN
+         ZFypWwYMIgt4+uAMu9aWfLTcDu1hZP+lrPxEFtjLaMvhWglOiYl5uB60sy4K7iOmWV
+         HRpQqqFKrgrp2ag18a6MvICdS+aKter7Y5WZixPo=
+Date:   Sun, 22 Nov 2020 12:42:50 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.10-rc5
+Message-ID: <X7pOurJAAFWxYMG/@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Don't add platform resources that won't be used. This avoids a
-recently-added warning from the driver core, that can show up on a
-multi-platform kernel when !MACH_IS_MAC.
+The following changes since commit f8394f232b1eab649ce2df5c5f15b0e528c92091:
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 0 at drivers/base/platform.c:224 platform_get_irq_optional+0x8e/0xce
-0 is an invalid IRQ number
-Modules linked in:
-CPU: 0 PID: 0 Comm: swapper Not tainted 5.9.0-multi #1
-Stack from 004b3f04:
-        004b3f04 00462c2f 00462c2f 004b3f20 0002e128 004754db 004b6ad4 004b3f4c
-        0002e19c 004754f7 000000e0 00285ba0 00000009 00000000 004b3f44 ffffffff
-        004754db 004b3f64 004b3f74 00285ba0 004754f7 000000e0 00000009 004754db
-        004fdf0c 005269e2 004fdf0c 00000000 004b3f88 00285cae 004b6964 00000000
-        004fdf0c 004b3fac 0051cc68 004b6964 00000000 004b6964 00000200 00000000
-        0051cc3e 0023c18a 004b3fc0 0051cd8a 004fdf0c 00000002 0052b43c 004b3fc8
-Call Trace: [<0002e128>] __warn+0xa6/0xd6
- [<0002e19c>] warn_slowpath_fmt+0x44/0x76
- [<00285ba0>] platform_get_irq_optional+0x8e/0xce
- [<00285ba0>] platform_get_irq_optional+0x8e/0xce
- [<00285cae>] platform_get_irq+0x12/0x4c
- [<0051cc68>] pmz_init_port+0x2a/0xa6
- [<0051cc3e>] pmz_init_port+0x0/0xa6
- [<0023c18a>] strlen+0x0/0x22
- [<0051cd8a>] pmz_probe+0x34/0x88
- [<0051cde6>] pmz_console_init+0x8/0x28
- [<00511776>] console_init+0x1e/0x28
- [<0005a3bc>] printk+0x0/0x16
- [<0050a8a6>] start_kernel+0x368/0x4ce
- [<005094f8>] _sinittext+0x4f8/0xc48
-random: get_random_bytes called from print_oops_end_marker+0x56/0x80 with crng_init=0
----[ end trace 392d8e82eed68d6c ]---
+  Linux 5.10-rc3 (2020-11-08 16:10:16 -0800)
 
-Commit a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid"),
-which introduced the WARNING, suggests that testing for irq == 0 is
-undesirable. Instead of that comparison, just test for resource existence.
+are available in the Git repository at:
 
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Joshua Thompson <funaho@jurai.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: stable@vger.kernel.org # v5.8+
-References: commit a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid")
-Reported-by: Laurent Vivier <laurent@vivier.eu>
-Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
----
-Changed since v1:
- - Add a comment to explain the need for the global structs.
- - Expand the commit log to better explain the intention of the patch.
----
- arch/m68k/mac/config.c          | 17 +++++++++--------
- drivers/tty/serial/pmac_zilog.c | 14 +++++++++-----
- 2 files changed, 18 insertions(+), 13 deletions(-)
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.10-rc5
 
-diff --git a/arch/m68k/mac/config.c b/arch/m68k/mac/config.c
-index 0ac53d87493c..2bea1799b8de 100644
---- a/arch/m68k/mac/config.c
-+++ b/arch/m68k/mac/config.c
-@@ -777,16 +777,12 @@ static struct resource scc_b_rsrcs[] = {
- struct platform_device scc_a_pdev = {
- 	.name           = "scc",
- 	.id             = 0,
--	.num_resources  = ARRAY_SIZE(scc_a_rsrcs),
--	.resource       = scc_a_rsrcs,
- };
- EXPORT_SYMBOL(scc_a_pdev);
- 
- struct platform_device scc_b_pdev = {
- 	.name           = "scc",
- 	.id             = 1,
--	.num_resources  = ARRAY_SIZE(scc_b_rsrcs),
--	.resource       = scc_b_rsrcs,
- };
- EXPORT_SYMBOL(scc_b_pdev);
- 
-@@ -813,10 +809,15 @@ static void __init mac_identify(void)
- 
- 	/* Set up serial port resources for the console initcall. */
- 
--	scc_a_rsrcs[0].start = (resource_size_t) mac_bi_data.sccbase + 2;
--	scc_a_rsrcs[0].end   = scc_a_rsrcs[0].start;
--	scc_b_rsrcs[0].start = (resource_size_t) mac_bi_data.sccbase;
--	scc_b_rsrcs[0].end   = scc_b_rsrcs[0].start;
-+	scc_a_rsrcs[0].start     = (resource_size_t)mac_bi_data.sccbase + 2;
-+	scc_a_rsrcs[0].end       = scc_a_rsrcs[0].start;
-+	scc_a_pdev.num_resources = ARRAY_SIZE(scc_a_rsrcs);
-+	scc_a_pdev.resource      = scc_a_rsrcs;
-+
-+	scc_b_rsrcs[0].start     = (resource_size_t)mac_bi_data.sccbase;
-+	scc_b_rsrcs[0].end       = scc_b_rsrcs[0].start;
-+	scc_b_pdev.num_resources = ARRAY_SIZE(scc_b_rsrcs);
-+	scc_b_pdev.resource      = scc_b_rsrcs;
- 
- 	switch (macintosh_config->scc_type) {
- 	case MAC_SCC_PSC:
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index 96e7aa479961..216b75ef5048 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -1693,22 +1693,26 @@ static int __init pmz_probe(void)
- 
- #else
- 
-+/* On PCI PowerMacs, pmz_probe() does an explicit search of the OpenFirmware
-+ * tree to obtain the device_nodes needed to start the console before the
-+ * macio driver. On Macs without OpenFirmware, global platform_devices take
-+ * the place of those device_nodes.
-+ */
- extern struct platform_device scc_a_pdev, scc_b_pdev;
- 
- static int __init pmz_init_port(struct uart_pmac_port *uap)
- {
--	struct resource *r_ports;
--	int irq;
-+	struct resource *r_ports, *r_irq;
- 
- 	r_ports = platform_get_resource(uap->pdev, IORESOURCE_MEM, 0);
--	irq = platform_get_irq(uap->pdev, 0);
--	if (!r_ports || irq <= 0)
-+	r_irq = platform_get_resource(uap->pdev, IORESOURCE_IRQ, 0);
-+	if (!r_ports || !r_irq)
- 		return -ENODEV;
- 
- 	uap->port.mapbase  = r_ports->start;
- 	uap->port.membase  = (unsigned char __iomem *) r_ports->start;
- 	uap->port.iotype   = UPIO_MEM;
--	uap->port.irq      = irq;
-+	uap->port.irq      = r_irq->start;
- 	uap->port.uartclk  = ZS_CLOCK;
- 	uap->port.fifosize = 1;
- 	uap->port.ops      = &pmz_pops;
--- 
-2.26.2
+for you to fetch changes up to 425af483523b76bc78e14674a430579d38b2a593:
 
+  serial: ar933x_uart: disable clk on error handling path in probe (2020-11-12 09:41:07 +0100)
+
+----------------------------------------------------------------
+TTY fixes for 5.10-rc5
+
+Here are some small tty/serial fixes for 5.10-rc5 that resolve some
+reported issues:
+	- speakup crash when telling the kernel to use a device that
+	  isn't really there
+	- imx serial driver fixes for reported problems
+	- ar933x_uart driver fix for probe error handling path
+
+All have been in linux-next for a while with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Fugang Duan (1):
+      tty: serial: imx: keep console clocks always on
+
+Sam Nobs (1):
+      tty: serial: imx: fix potential deadlock
+
+Samuel Thibault (1):
+      speakup: Do not let the line discipline be used several times
+
+Zheng Zengkai (1):
+      serial: ar933x_uart: disable clk on error handling path in probe
+
+ drivers/accessibility/speakup/spk_ttyio.c | 12 +++++++++++-
+ drivers/tty/serial/ar933x_uart.c          |  6 ++++--
+ drivers/tty/serial/imx.c                  | 30 +++++++++++-------------------
+ 3 files changed, 26 insertions(+), 22 deletions(-)
