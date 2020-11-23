@@ -2,138 +2,211 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32790C2D0E4
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Nov 2020 19:07:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E712AC63777
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Nov 2020 19:33:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C14DD2072C
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Nov 2020 19:06:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V+UdhNf9"
+	by mail.kernel.org (Postfix) with ESMTP id 944F62074B
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Nov 2020 19:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730254AbgKWTG7 (ORCPT
+        id S1729595AbgKWTdm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Nov 2020 14:06:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729048AbgKWTG7 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Nov 2020 14:06:59 -0500
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132A1C0613CF
-        for <linux-serial@vger.kernel.org>; Mon, 23 Nov 2020 11:06:59 -0800 (PST)
-Received: by mail-qk1-x741.google.com with SMTP id l2so18085589qkf.0
-        for <linux-serial@vger.kernel.org>; Mon, 23 Nov 2020 11:06:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=5PvnfMvYDfcN0BQQmDHZB8l5t0moTJhWRqDIZF3tEDY=;
-        b=V+UdhNf9EhhMu6g4fSr8ahJ81zI/Swc71dLVXlZjjShRTJmub8MsLuK+yCMfRjZ0jA
-         pa2EbbOv6GW1SX6jo2iyepeRb4mfLcFNX5Dd7Nf9wbYcMDsu41P9p8JnCS6BonK1l/xd
-         74Lpqxz3L3jEMSLUGO2KcN0o0mluLF7W1GLHMBXCkq7btH1Y8gRInX6ZSxV7SSY5DzH+
-         KH7MXhqYh3VpstLankofMjxndPKN1waaShBsmxk1PlveRIqtUZ2R/KxoWJDJsatV6z18
-         VGX1auDaBU4UU9hQ6FrWhsVU3iDR6jw3P0LFZqH8+jiBSBhVz34k928keNn/s2J0rmTv
-         WYmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5PvnfMvYDfcN0BQQmDHZB8l5t0moTJhWRqDIZF3tEDY=;
-        b=M6L74LafxHr82Iv5+2JjZ7RiVFK53FpzR1MThgcx4bEUIV5j6u68tQ9UXB4Gq4Duwm
-         nLrNCEV3eEEEWSLirrSWaDesU/a2Ee4SwpG8pBYXgGzprxSSUXxcTllBf/MQbRctfkyo
-         JimZMgIJMxd06WVhbJeVzrEdpDZjH2/YGCoCGcfyhnOeCaX1W3UAQzrx4F5srHPYeQGD
-         +20VZPA+NWADa9YE/9TAtmQ+FL08Ne0f8dZktBrS52PgLkJDF+/J9REXs4ppSCI8OppW
-         HoC01H18qzYHvwLHaN0WgVMjW9fGUfJxhkFp/wKZmR1qSBxt4CJH530To1QwaHznYkK2
-         G9jg==
-X-Gm-Message-State: AOAM531iD0vlWw6WyWK/H4RM+wVrUKwcEdvNaeLyZOnz2Kk7qMloroMx
-        4ft6DvU8//Lf0G6RDXZiB4M=
-X-Google-Smtp-Source: ABdhPJw1wB1PkLF34ZXwBcrUbqNO0dgqwTLWwekbf0D3ap805/5ycSJCTJg0OrMtgzGNimOfz2PihQ==
-X-Received: by 2002:a37:a4c:: with SMTP id 73mr935643qkk.451.1606158418119;
-        Mon, 23 Nov 2020 11:06:58 -0800 (PST)
-Received: from localhost.localdomain ([177.194.72.74])
-        by smtp.gmail.com with ESMTPSA id h125sm9842061qkc.36.2020.11.23.11.06.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 11:06:57 -0800 (PST)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, kernel@pengutronix.de,
-        Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH] serial: mxs-auart: Remove unneeded platform_device_id
-Date:   Mon, 23 Nov 2020 16:04:38 -0300
-Message-Id: <20201123190438.5636-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 23 Nov 2020 14:33:42 -0500
+Received: from mga12.intel.com ([192.55.52.136]:17311 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728553AbgKWTdl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 23 Nov 2020 14:33:41 -0500
+IronPort-SDR: n9YsiXWgRN0sXFohrKGe3KVQpLlq7LV+O+pvOIkUUOCGqOzuEHm7hJIbUXKKrGXv67230zUrkQ
+ bdeW8hetZlRQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9814"; a="151089105"
+X-IronPort-AV: E=Sophos;i="5.78,364,1599548400"; 
+   d="scan'208";a="151089105"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 11:33:41 -0800
+IronPort-SDR: rgCfX+HTNxk4USDVqxQ9s7XGsQJLsYdgWvv4DMVOZxCEt8wsTDHdkbmDLlF2hswAO7J4JvP0gj
+ vhObNWX25fyg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,364,1599548400"; 
+   d="scan'208";a="361570030"
+Received: from lkp-server01.sh.intel.com (HELO 1138cb5768e3) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 23 Nov 2020 11:33:40 -0800
+Received: from kbuild by 1138cb5768e3 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1khHal-0000AH-Dc; Mon, 23 Nov 2020 19:33:39 +0000
+Date:   Tue, 24 Nov 2020 03:33:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 3b3e23092449a57f4ba57cd60506ab14055b1642
+Message-ID: <5fbc0e8c.lE3DcxJMlRE+VevP%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The mxs-auart driver is only used for DT platforms and there is no
-need to use the platform_device_id structure.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
+branch HEAD: 3b3e23092449a57f4ba57cd60506ab14055b1642  Merge 5.10-rc5 into tty-next
 
-Get rid the platform_device_id structure and retrieve the data via
-of_device_get_match_data(), which simplifies the code.
+elapsed time: 725m
 
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
+configs tested: 138
+configs skipped: 2
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+m68k                          hp300_defconfig
+arm                         bcm2835_defconfig
+sh                               alldefconfig
+m68k                         apollo_defconfig
+sh                ecovec24-romimage_defconfig
+powerpc                 mpc832x_mds_defconfig
+xtensa                         virt_defconfig
+sh                          r7780mp_defconfig
+arm                       netwinder_defconfig
+xtensa                              defconfig
+arm                            u300_defconfig
+arm                         nhk8815_defconfig
+sh                               allmodconfig
+powerpc                      cm5200_defconfig
+arm                          badge4_defconfig
+powerpc                     tqm8540_defconfig
+microblaze                      mmu_defconfig
+arm                          simpad_defconfig
+x86_64                           allyesconfig
+sh                        apsh4ad0a_defconfig
+xtensa                          iss_defconfig
+powerpc                     skiroot_defconfig
+powerpc                      makalu_defconfig
+powerpc                        icon_defconfig
+arm                         cm_x300_defconfig
+arm64                            alldefconfig
+mips                         tb0226_defconfig
+powerpc                  iss476-smp_defconfig
+sh                           se7724_defconfig
+csky                             alldefconfig
+arm                            dove_defconfig
+m68k                           sun3_defconfig
+sh                   rts7751r2dplus_defconfig
+powerpc                     akebono_defconfig
+arm                         s3c6400_defconfig
+sparc                            alldefconfig
+mips                           ip32_defconfig
+sh                           se7721_defconfig
+powerpc                      ep88xc_defconfig
+c6x                         dsk6455_defconfig
+mips                        qi_lb60_defconfig
+arc                     nsimosci_hs_defconfig
+riscv                            allmodconfig
+mips                           gcw0_defconfig
+powerpc                   bluestone_defconfig
+mips                      fuloong2e_defconfig
+powerpc                   lite5200b_defconfig
+mips                          ath79_defconfig
+arm                         hackkit_defconfig
+mips                            ar7_defconfig
+arm                        realview_defconfig
+arm                      footbridge_defconfig
+arm                       mainstone_defconfig
+sparc64                          alldefconfig
+arm                         assabet_defconfig
+arm                  colibri_pxa270_defconfig
+powerpc                   motionpro_defconfig
+powerpc                      chrp32_defconfig
+sh                          rsk7269_defconfig
+mips                malta_qemu_32r6_defconfig
+arm                             rpc_defconfig
+powerpc                     pseries_defconfig
+xtensa                  audio_kc705_defconfig
+mips                       rbtx49xx_defconfig
+arm                            mps2_defconfig
+c6x                        evmc6474_defconfig
+arm                        spear3xx_defconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+c6x                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+parisc                              defconfig
+s390                             allyesconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a004-20201123
+i386                 randconfig-a003-20201123
+i386                 randconfig-a002-20201123
+i386                 randconfig-a005-20201123
+i386                 randconfig-a001-20201123
+i386                 randconfig-a006-20201123
+x86_64               randconfig-a015-20201123
+x86_64               randconfig-a011-20201123
+x86_64               randconfig-a014-20201123
+x86_64               randconfig-a016-20201123
+x86_64               randconfig-a012-20201123
+x86_64               randconfig-a013-20201123
+i386                 randconfig-a012-20201123
+i386                 randconfig-a013-20201123
+i386                 randconfig-a011-20201123
+i386                 randconfig-a016-20201123
+i386                 randconfig-a014-20201123
+i386                 randconfig-a015-20201123
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                                   rhel
+x86_64                    rhel-7.6-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-a006-20201123
+x86_64               randconfig-a003-20201123
+x86_64               randconfig-a004-20201123
+x86_64               randconfig-a005-20201123
+x86_64               randconfig-a002-20201123
+x86_64               randconfig-a001-20201123
+
 ---
- drivers/tty/serial/mxs-auart.c | 21 ++++-----------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index b784323a6a7b..8ecf622602cb 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -443,24 +443,16 @@ struct mxs_auart_port {
- 	bool			ms_irq_enabled;
- };
- 
--static const struct platform_device_id mxs_auart_devtype[] = {
--	{ .name = "mxs-auart-imx23", .driver_data = IMX23_AUART },
--	{ .name = "mxs-auart-imx28", .driver_data = IMX28_AUART },
--	{ .name = "as-auart-asm9260", .driver_data = ASM9260_AUART },
--	{ /* sentinel */ }
--};
--MODULE_DEVICE_TABLE(platform, mxs_auart_devtype);
--
- static const struct of_device_id mxs_auart_dt_ids[] = {
- 	{
- 		.compatible = "fsl,imx28-auart",
--		.data = &mxs_auart_devtype[IMX28_AUART]
-+		.data = (const void *)IMX28_AUART
- 	}, {
- 		.compatible = "fsl,imx23-auart",
--		.data = &mxs_auart_devtype[IMX23_AUART]
-+		.data = (const void *)IMX23_AUART
- 	}, {
- 		.compatible = "alphascale,asm9260-auart",
--		.data = &mxs_auart_devtype[ASM9260_AUART]
-+		.data = (const void *)ASM9260_AUART
- 	}, { /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, mxs_auart_dt_ids);
-@@ -1639,8 +1631,6 @@ static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
- 
- static int mxs_auart_probe(struct platform_device *pdev)
- {
--	const struct of_device_id *of_id =
--			of_match_device(mxs_auart_dt_ids, &pdev->dev);
- 	struct mxs_auart_port *s;
- 	u32 version;
- 	int ret, irq;
-@@ -1663,10 +1653,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	if (of_id) {
--		pdev->id_entry = of_id->data;
--		s->devtype = pdev->id_entry->driver_data;
--	}
-+	s->devtype = (enum mxs_auart_type)of_device_get_match_data(&pdev->dev);
- 
- 	ret = mxs_get_clks(s, pdev);
- 	if (ret)
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
