@@ -2,110 +2,78 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A47FAC56201
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Nov 2020 09:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88255C6379D
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Nov 2020 08:29:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 469EF206B5
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Nov 2020 09:06:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 26D0720DD4
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Nov 2020 08:29:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vMN23hZR"
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="rz0R6dlG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726250AbgKYJGZ (ORCPT
+        id S2387461AbgKZI24 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Nov 2020 04:06:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbgKYJGZ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Nov 2020 04:06:25 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9771BC0613D4
-        for <linux-serial@vger.kernel.org>; Wed, 25 Nov 2020 01:06:17 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id j10so1491157lja.5
-        for <linux-serial@vger.kernel.org>; Wed, 25 Nov 2020 01:06:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vgm+cuXiaDptZrOlwysn9B8OvEUyHXhxAdgDU6XRMMY=;
-        b=vMN23hZR7aJ52Ns+L69HWJRFvmaW/u2steBjq5+y8P56vX5Zl6AEB6iwWSNWkj2RIm
-         lMhi6xikogDwa7wr2QPBqSO4iUu3IM35npQgnPfElW4NSiQe10SIQYlBLabnlZ5svh7M
-         lb1Ox1qMcYJWmDpzhajYAj2aapuierujsiaGPtl6RXiVNPWVLu5CIDIAqR0Yz1xr3U/Q
-         Ulp/mifneAQ8aLMPGCXuUmtxcWDY7ujm5G7ODjwDN3f6qqNdWEFA5rQx1yoR9rJQOmSM
-         CbxX/nKWEl+1l3VnzwAf+vS+YvA7jpbbLYRR6PoRb99TWN7ZSphRJg+IqqNtGxWwRfOL
-         KbbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vgm+cuXiaDptZrOlwysn9B8OvEUyHXhxAdgDU6XRMMY=;
-        b=j3SRbSDt8NriqWoblmTIvHeEroLGPyxWXtXgmMPxxLjfX9YhzYxFDVdrsevR1SBj87
-         wREzk9IkeumBsDBSp6za2K5gGu+ZpC2SN268PZLZzBn+DmMkj8R1YM7d8yDIMI7un7sc
-         VCEuKf5b8Pnu0HYZ2RBlQX9d95xlznZONw8y5KRbVbP4Szf3ff7T8NoAsNatoc/Hmtwy
-         OWHBCiYhmkSDtk44XtV1I1gnnnbtfY/gftsneA3kSgxlVi2/nYUT36rmPnHK7iWHFYa0
-         8KeKfF0D3gvY3JHEwC2Io9T1x3bfs8zrQjKu7HdV10fLr6Et3epMhAJRAQ713vIViIzX
-         sSrg==
-X-Gm-Message-State: AOAM531jEc2SXfu0bX/rAbR1p66GB84OoDSDCMPj52qABQ5sRj0aYlJA
-        oARGzgKtZoaw3cHL5cvqh5o=
-X-Google-Smtp-Source: ABdhPJxUik8H1il9YYM658PYT3/4h79bL0gfnRbDCl98B514bQ8o161ysAWcw8xj1UThsNg4oPRiwQ==
-X-Received: by 2002:a05:651c:1195:: with SMTP id w21mr948492ljo.427.1606295176111;
-        Wed, 25 Nov 2020 01:06:16 -0800 (PST)
-Received: from elitebook.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id q20sm187217lfr.110.2020.11.25.01.06.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2020 01:06:15 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH V2] tty: serial: bcm63xx: lower driver dependencies
-Date:   Wed, 25 Nov 2020 10:06:08 +0100
-Message-Id: <20201125090608.28442-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201125081352.25409-1-zajec5@gmail.com>
-References: <20201125081352.25409-1-zajec5@gmail.com>
+        Thu, 26 Nov 2020 03:28:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60364 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726591AbgKZI24 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 26 Nov 2020 03:28:56 -0500
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C1D620872;
+        Thu, 26 Nov 2020 08:28:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1606379334;
+        bh=5KvXGI9RFJSJyRMweSifK1RqHqlX24baGxqNq/n4EiY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rz0R6dlG/wYGzKkon5TL5mSatmmC/5Ghn0hAQ1XO3Hi00GA+1BQxVBJi4pBN4hKV3
+         nVc/Cewdm3WOtJiBzpoWcz8VA9bvHV8GnwFG4mvEv8T/dNi5zipQ2bICpRSl/UBJoc
+         cJ/CCnAG7NR70B6xDqk0Bcad7FD3OdQMxJ7RMfkE=
+Date:   Thu, 26 Nov 2020 09:29:59 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Al Cooper <alcooperx@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Jim Quinlan <jquinlan@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 1/3] serial: 8250: of: Check for
+ CONFIG_SERIAL_8250_BCM7271
+Message-ID: <X79nh3UUzZfH17Qs@kroah.com>
+References: <20201120194305.8847-1-alcooperx@gmail.com>
+ <20201120194305.8847-2-alcooperx@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201120194305.8847-2-alcooperx@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On Fri, Nov 20, 2020 at 02:43:03PM -0500, Al Cooper wrote:
+> From: Jim Quinlan <jquinlan@broadcom.com>
+> 
+> This commit has of_platform_serial_probe() check specifically for the
+> "brcm,bcm7271-uart" and whether its companion driver is enabled. If it
+> is the case, and the clock provider is not ready, we want to make sure
+> that when the 8250_bcm7271.c driver returns EPROBE_DEFER, we are not
+> getting the UART registered via 8250_of.c.
+> 
+> Signed-off-by: Jim Quinlan <jquinlan@broadcom.com>
+> ---
 
-Hardware supported by bcm63xx is also used by BCM4908 SoCs family that
-is ARM64. In future more architectures may need it as well. There is
-nothing arch specific breaking compilation so just stick to requiring
-COMMON_CLK.
+When forwarding on patches from others, always include your
+signed-off-by: as well, to ensure that you have reviewed this and are ok
+with it.  I can't take this as-is, sorry.
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-V2: Just drop all ARCH_* dependencies. Thanks Greg!
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+And why did you include linux-usb@vger for this patch series?
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 28f22e58639c..cc67f02f5c32 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1133,7 +1133,7 @@ config SERIAL_TIMBERDALE
- config SERIAL_BCM63XX
- 	tristate "Broadcom BCM63xx/BCM33xx UART support"
- 	select SERIAL_CORE
--	depends on MIPS || ARM || COMPILE_TEST
-+	depends on COMMON_CLK
- 	help
- 	  This enables the driver for the onchip UART core found on
- 	  the following chipsets:
--- 
-2.26.2
+thanks,
 
+greg k-h
