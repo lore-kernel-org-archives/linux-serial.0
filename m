@@ -2,100 +2,334 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4ABC71155
-	for <linux-serial@archiver.kernel.org>; Sat, 28 Nov 2020 18:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9176BC64E7B
+	for <linux-serial@archiver.kernel.org>; Sun, 29 Nov 2020 20:53:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A0A6A246E2
-	for <linux-serial@archiver.kernel.org>; Sat, 28 Nov 2020 18:00:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nUuMvFjL"
+	by mail.kernel.org (Postfix) with ESMTP id 6064520786
+	for <linux-serial@archiver.kernel.org>; Sun, 29 Nov 2020 20:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731497AbgK1Rzy (ORCPT
+        id S1726626AbgK2Uwp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 28 Nov 2020 12:55:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732775AbgK1FCz (ORCPT
+        Sun, 29 Nov 2020 15:52:45 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:54226 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbgK2Uwp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 28 Nov 2020 00:02:55 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BE3C0613D1
-        for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2020 21:02:52 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id x24so6201905pfn.6
-        for <linux-serial@vger.kernel.org>; Fri, 27 Nov 2020 21:02:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+cY96tswXFUWhDQlszZdQ0Yp/NVqiaNXWKVJf0G/vq0=;
-        b=nUuMvFjLdQtXbI8VGvkB7g5V04GILmudOnymKoF9Lb3TiKMCajZfxQmmjT+CH+mP+r
-         tOsaQmRduBFJtuV7zv6gY8d2e1wEIcPtHZOJSQquHukTO7FGb7CFSNnfeXdZKDMTwnWF
-         8o2NC2p3blyxsT0XwtEGeYjMJHU5uKD7xq4UcY5xS5shuC56XiN3y/ekiHLq1sTPb+dQ
-         X9/8dUkpmuHtLtHbwnFrhtXoN7v2pmvFWSfFADZ1Y1d0avYYGB/7G8XqxMo06NqebnSH
-         gpPEZiBtdDqg+Jzrn9sOSgOQtw+groUdb+YINOT4fkpYYig4MqqaxqOFCqm2MhrbRyOO
-         Wr2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+cY96tswXFUWhDQlszZdQ0Yp/NVqiaNXWKVJf0G/vq0=;
-        b=DcLwlUPMZp1wD75qk7VFB9y9G1z8q0PgAjNcjJmdE5Bwli464aLucl+mcFXty9rHiU
-         LjUwJ0pcC9i4TnvXYN5ytgsgihw4IqzDbXbrC/gLPi1sYwxTzbaIl5BtYcI/fKgnxkyD
-         MnxPkn74eUUk59lJ0/UEz9bb6VYRlWVzUJxrc/fP2u2iaQUT8CwYCey62sRx+WUVGyR8
-         Tw36JR5fiIUYaJRfiXdidMnxSUzS7WehathAniO7UocdPoIjIiQIvCckrR4Yl55PyBwI
-         /n3AvFyGD7+OdSxt535JfFFqTwc1Xxc8s0LXw0LgktwuIZW8F1rJVbhJP4e9dOwVk0R0
-         exYw==
-X-Gm-Message-State: AOAM5333AAjkU/u4NHpFzUBQlQS544Uwmj/r6ai8CT871zk+mMkrBHUf
-        97xDXk0sfBmdlSluy797onc=
-X-Google-Smtp-Source: ABdhPJy4g6zDTXvoVRzRWSUFIKeiCQ/IrymfXj2aW3D1bavmpelH6rQrrFqXL2K5m0Vvus+sa5oCOA==
-X-Received: by 2002:a63:df05:: with SMTP id u5mr1471554pgg.73.1606539771821;
-        Fri, 27 Nov 2020 21:02:51 -0800 (PST)
-Received: from [10.230.28.242] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z3sm4480491pfn.38.2020.11.27.21.02.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Nov 2020 21:02:51 -0800 (PST)
-Subject: Re: [PATCH V2] tty: serial: bcm63xx: lower driver dependencies
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20201125081352.25409-1-zajec5@gmail.com>
- <20201125090608.28442-1-zajec5@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e625953a-333e-7824-7318-fde59de7992d@gmail.com>
-Date:   Fri, 27 Nov 2020 21:02:49 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.5.0
+        Sun, 29 Nov 2020 15:52:45 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 727651C0B7C; Sun, 29 Nov 2020 21:51:45 +0100 (CET)
+Date:   Sun, 29 Nov 2020 21:51:45 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        phone-devel@vger.kernel.org
+Subject: Re: [PATCH 1/6] tty: n_gsm: Add support for serdev drivers
+Message-ID: <20201129205144.GA15038@duo.ucw.cz>
+References: <20200512214713.40501-1-tony@atomide.com>
+ <20200512214713.40501-2-tony@atomide.com>
+ <20200528093102.GC10358@localhost>
 MIME-Version: 1.0
-In-Reply-To: <20201125090608.28442-1-zajec5@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="ReaqsoxgOBHFXBhH"
+Content-Disposition: inline
+In-Reply-To: <20200528093102.GC10358@localhost>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
+--ReaqsoxgOBHFXBhH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 11/25/2020 1:06 AM, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> Hardware supported by bcm63xx is also used by BCM4908 SoCs family that
-> is ARM64. In future more architectures may need it as well. There is
-> nothing arch specific breaking compilation so just stick to requiring
-> COMMON_CLK.
-> 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Hi!
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+This is neccessary for having useful Droid 4 support, so let me try to
+ressurect this.
+
+If there's newer version (I took mine from for-5.7 branch), let me
+know.
+
+On Thu 2020-05-28 11:31:02, Johan Hovold wrote:
+> On Tue, May 12, 2020 at 02:47:08PM -0700, Tony Lindgren wrote:
+> > I initially though about adding the serdev support into a separate file,
+> > but that will take some refactoring of n_gsm.c. And I'd like to have
+> > things working first. Then later on we might want to consider splitting
+> > n_gsm.c into three pieces for core, tty and serdev parts. And then maybe
+> > the serdev related parts can be just moved to live under something like
+> > drivers/tty/serdev/protocol/ngsm.c.
+>=20
+> Yeah, perhaps see where this lands first, but it should probably be done
+> before merging anything.
+
+Is drivers/tty/serdev/protocol/ngsm.c acceptable place for you?
+
+> And it doesn't really make sense exporting these interfaces without the
+> actual serdev driver as they are closely tied and cannot be reviewed
+> separately anyway.
+
+Ok, I guess keeping this in series with gnss driver makes sense? That
+one should be good example.
+
+> > @@ -150,6 +152,7 @@ struct gsm_dlci {
+> >  	/* Data handling callback */
+> >  	void (*data)(struct gsm_dlci *dlci, const u8 *data, int len);
+> >  	void (*prev_data)(struct gsm_dlci *dlci, const u8 *data, int len);
+> > +	struct gsm_serdev_dlci *ops; /* serdev dlci ops, if used */
+>=20
+> Please rename the struct with a "_operations" suffix as you refer to
+> this as "ops" throughout.
+
+"struct gsm_serdev_dlci_operations" is rather long, but I can do
+that; unless there's better idea? ...OTOH... yes, "ops" variable is
+used for this, but it is more than "operations" structure, so the new
+name is misleading. I may have to rename it back.
+
+> > +/**
+> > + * gsm_serdev_get_config - read ts 27.010 config
+> > + * @gsd:	serdev-gsm instance
+> > + * @c:		ts 27.010 config data
+> > + *
+> > + * See gsm_copy_config_values() for more information.
+>=20
+> Please document this properly since you're exporting these
+> interfaces.
+
+Actually, let me drop this for now.
+
+> > +/**
+> > + * gsm_serdev_set_config - set ts 27.010 config
+> > + * @gsd:	serdev-gsm instance
+> > + * @c:		ts 27.010 config data
+> > + *
+> > + * See gsm_config() for more information.
+> > + */
+> > +int gsm_serdev_set_config(struct gsm_serdev *gsd, struct gsm_config *c)
+> > +{
+> > +	struct gsm_mux *gsm;
+> > +
+> > +	if (!gsd || !gsd->serdev || !gsd->gsm)
+> > +		return -ENODEV;
+>=20
+> And why check for serdev here?
+
+Having exported interfaces somehow robust looks like good thing. Do
+you want me to remove it?
+
+> > +	gsm =3D gsd->gsm;
+> > +
+> > +	if (line < 1 || line >=3D 63)
+>=20
+> Line 62 is reserved as well.
+
+Thanks, fixed.
+
+> > +static int gsd_dlci_receive_buf(struct gsm_serdev_dlci *ops,
+> > +				const unsigned char *buf,
+> > +				size_t len)
+> > +{
+> > +	struct gsm_serdev *gsd =3D ops->gsd;
+>=20
+> This looks backwards, why not pass in gsd instead?
+
+gsm_serdev does not specify concrete dlci; we can go from dlci to gsd
+but not the other way around.
+
+=2E..which shows that gsm_serdev_dlci is not really "operations"
+structure and should not be named as such.
+
+> > +	struct gsm_mux *gsm =3D dlci->gsm;
+> > +	struct gsm_serdev *gsd =3D gsm->gsd;
+> > +
+> > +	if (!gsd || !dlci->ops)
+> > +		return;
+> > +
+> > +	switch (dlci->adaption) {
+> > +	case 0:
+>=20
+> 0 isn't valid, right?
+>=20
+> > +	case 1:
+> > +		if (dlci->ops->receive_buf)
+> > +			dlci->ops->receive_buf(dlci->ops, buf, len);
+> > +		break;
+>=20
+> What about adaption 2 with modem status? Why are you not reusing
+> gsm_dlci_data()?
+
+It is not needed in my application, I guess, so it would be difficult
+to test.
+
+> > +	default:
+> > +		pr_warn("dlci%i adaption %i not yet implemented\n",
+> > +			dlci->addr, dlci->adaption);
+>=20
+> This needs to be rate limited. Use the dev_ versions when you can.
+
+Ok.
+
+> > +	mutex_lock(&dlci->mutex);
+> > +	ops->gsd =3D gsd;
+> > +	dlci->ops =3D ops;
+> > +	dlci->modem_rx =3D 0;
+> > +	dlci->prev_data =3D dlci->data;
+>=20
+> I think this one is only used when bringing up a network interface.
+
+prev_data is used to store data pointer, so that it can be restored on
+unregister. Are you saying it is not neccessary?
+
+> > +	dlci->data =3D gsd_dlci_data;
+> > +	mutex_unlock(&dlci->mutex);
+> > +
+> > +	gsm_dlci_begin_open(dlci);
+>=20
+> Why is this here? This should be handled when opening the serial device
+> (i.e. by gsmtty_open()).
+
+This is for in-kernel users. When gnss device is opened, this is called.
+
+> > +	/*
+> > +	 * Allow some time for dlci to move to DLCI_OPEN state. Otherwise
+> > +	 * the serdev consumer driver can start sending data too early during
+> > +	 * the setup, and the response will be missed by gms_queue() if we
+> > +	 * still have DLCI_CLOSED state.
+> > +	 */
+> > +	for (retries =3D 10; retries > 0; retries--) {
+> > +		if (dlci->state =3D=3D DLCI_OPEN)
+> > +			break;
+> > +		msleep(100);
+> > +	}
+>=20
+> What if you time out? This should be handled properly.
+
+Ok.
+
+> > +static int gsd_receive_buf(struct serdev_device *serdev, const u8 *dat=
+a,
+> > +			   size_t count)
+> > +{
+> > +	struct gsm_serdev *gsd =3D serdev_device_get_drvdata(serdev);
+> > +	struct gsm_mux *gsm;
+> > +	const unsigned char *dp;
+> > +	int i;
+> > +
+> > +	if (WARN_ON(!gsd))
+> > +		return 0;
+>=20
+> Probably better to take the NULL-deref. Can this ever happen?
+
+Well, with warn_on we continue, so easier debugging. It obviously
+should not happen.
+
+> > +int gsm_serdev_register_tty_port(struct gsm_serdev *gsd, int line)
+> > +{
+> > +	struct gsm_serdev_dlci *ops;
+> > +	unsigned int base;
+> > +	int error;
+> > +
+> > +	if (line < 1)
+> > +		return -EINVAL;
+>=20
+> Upper limit?
+
+Actually, check should not be needed, as gsd_dlci_get() will check
+both limits for us. Let me remove it.
+
+> > +	ops =3D kzalloc(sizeof(*ops), GFP_KERNEL);
+> > +	if (!ops)
+> > +		return -ENOMEM;
+> > +
+> > +	ops->line =3D line;
+> > +	ops->receive_buf =3D gsd_dlci_receive_buf;
+> > +
+> > +	error =3D gsm_serdev_register_dlci(gsd, ops);
+> > +	if (error) {
+> > +		kfree(ops);
+> > +
+> > +		return error;
+> > +	}
+> > +
+> > +	base =3D mux_num_to_base(gsd->gsm);
+> > +	tty_register_device(gsm_tty_driver, base + ops->line, NULL);
+>=20
+> I would expect this to be tty_port_register_device_serdev() so that
+> serdev gets initialised properly for any client devices (e.g. gnss).
+>=20
+
+> > +void gsm_serdev_unregister_tty_port(struct gsm_serdev *gsd, int line)
+> > +{
+> > +	struct gsm_dlci *dlci;
+> > +	unsigned int base;
+> > +
+> > +	if (line < 1)
+> > +		return;
+>=20
+> As above.
+
+Ok.
+
+> > +int gsm_serdev_register_device(struct gsm_serdev *gsd)
+> > +{
+> > +	struct gsm_mux *gsm;
+> > +	int error;
+> > +
+> > +	if (WARN(!gsd || !gsd->serdev || !gsd->output,
+> > +		 "serdev and output must be initialized\n"))
+> > +		return -EINVAL;
+>=20
+> Just oops if the driver is buggy and fails to set essential fields.
+
+I find such robustness helpful, but I can remove it if you insist.
+
+> > +void gsm_serdev_unregister_device(struct gsm_serdev *gsd)
+> > +{
+> > +	gsm_cleanup_mux(gsd->gsm);
+> > +	mux_put(gsd->gsm);
+> > +	gsd->gsm =3D NULL;
+> > +}
+> > +EXPORT_SYMBOL_GPL(gsm_serdev_unregister_device);
+> > +
+> > +#endif	/* CONFIG_SERIAL_DEV_BUS */
+>=20
+> It looks like you may also have a problem with tty hangups, which serdev
+> does not support currently. There are multiple paths in n_gsm which can
+> trigger a hangup (e.g. based on remote input) and would likely lead to a
+> crash
+
+I don't believe we need to support hangups for the Droid 4, but
+obviously it would be good not to crash. But I don't know where to
+start looking, do you have any hints?
+
+Best regards,
+								Pavel
+
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--ReaqsoxgOBHFXBhH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX8QJ4AAKCRAw5/Bqldv6
+8ktlAJ4m4hfWc5FzWTdYyw0pcc2XZ1mn4QCgm/mP6cPGLsq7dSJVn1zYcUbKyv8=
+=cPhV
+-----END PGP SIGNATURE-----
+
+--ReaqsoxgOBHFXBhH--
