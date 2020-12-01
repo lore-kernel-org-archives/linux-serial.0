@@ -2,94 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DBDC63777
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Nov 2020 23:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C80ECC64E8A
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 05:49:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3BC9720715
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Nov 2020 23:37:07 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gyWeTNzl"
+	by mail.kernel.org (Postfix) with ESMTP id 756E32168B
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 05:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388177AbgK3Xgv (ORCPT
+        id S1726284AbgLAFt6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Nov 2020 18:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388050AbgK3Xgv (ORCPT
+        Tue, 1 Dec 2020 00:49:58 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:44376 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725979AbgLAFt5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Nov 2020 18:36:51 -0500
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE2EC0613D2;
-        Mon, 30 Nov 2020 15:36:10 -0800 (PST)
-Received: by mail-vs1-xe41.google.com with SMTP id u7so7291389vsq.11;
-        Mon, 30 Nov 2020 15:36:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=mDHtJHxDKIp9CgY2O+nZjtN8N0N6lB3CW2FBJTaTi0A=;
-        b=gyWeTNzlTl0DeF+0j42TkxN+JVx0t5Ty6AEA4GMo3p1pG1UeZWsjFN85M1+NC8ED7M
-         waOdFNX9+wA2TZG1FisaLxU7kjiKBeQzbPepI+sZMIeJQ68SaVx3yoYRuUnrwq84e/XW
-         BJpC6lGxL9t3BSdAprb4Jt0wUMzMRygmAiS0AcN50NdDGNAUKWJYvMvAbfDSIhhWMoHe
-         ZalE7aBD98I/bc4zPzPNJe4vJVA6UUJPX9fRM/p11qNHyD37Reea/+unr6HMUCqHcg1T
-         P/g0iPtav6PPCys55tJjAtkkJqqPnW+TXjMfoGnr38x2K+u6t6TN4s9MK7fF00BKC/Qz
-         Hakw==
+        Tue, 1 Dec 2020 00:49:57 -0500
+Received: by mail-ed1-f67.google.com with SMTP id l5so1312693edq.11;
+        Mon, 30 Nov 2020 21:49:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=mDHtJHxDKIp9CgY2O+nZjtN8N0N6lB3CW2FBJTaTi0A=;
-        b=gMMLRoJFixa0Sk05XiJ1qIeHjpWUQHjqh2CKjdr6IFYM/IUaM5m0yFlSUGMnjCaIKm
-         3xKC8lXixcx7AChhDBJTimXqpLc2iNPirzXNs2KB5EPHQo/O2Ms3pamLuGa8ygfZKC9v
-         Y9AhVfcu/Hpr85MtUCxhbB/1uzXSm513COvJEOPJcpquedvVltxmB6H4k+qjZhPHCAeF
-         dT8viwO7F/p2edtEXT9FQaIPkoqINQIQuzh0PkpGcmjbgpKvJ3KEeaC9aO0RXrf3fSa0
-         UZo6w3L5hvJxok3mOn0r+eHQlM0gh4fvOf/cxRWx3ndX08etvOLqvWtd2xNTgYlgvcrh
-         uikw==
-X-Gm-Message-State: AOAM530kNp0C02vTNV5gD2ujON8ichk7GMcJ2BdlGkDCCnbkyXdOrIDT
-        uEzHUKkSyU9Np8NeBAS9n325DYGKMf2dVc4zlmygbJzGXJhwFQ==
-X-Google-Smtp-Source: ABdhPJw8hWLwPNAhzCwQctQI+dhysoI8RR/URK0EQWh0dD/LVbWKdFbfaLlA/iTzKzaJ+EjITf+2+PQvD87dhbceFkQ=
-X-Received: by 2002:a67:f883:: with SMTP id h3mr169632vso.47.1606779370211;
- Mon, 30 Nov 2020 15:36:10 -0800 (PST)
-MIME-Version: 1.0
-Received: by 2002:ab0:6ecb:0:0:0:0:0 with HTTP; Mon, 30 Nov 2020 15:36:09
- -0800 (PST)
-In-Reply-To: <20201130153742.9163-2-johan@kernel.org>
-References: <20201130153742.9163-1-johan@kernel.org> <20201130153742.9163-2-johan@kernel.org>
-From:   Mychaela Falconia <mychaela.falconia@gmail.com>
-Date:   Mon, 30 Nov 2020 15:36:09 -0800
-Message-ID: <CA+uuBqZRyEw_YtNH7V2cSWhpLdKXWLgivkSbR6HqaLeH5CUaJg@mail.gmail.com>
-Subject: Re: [PATCH 1/5] tty: add port flag to suppress ready signalling on open
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Mychaela N . Falconia" <falcon@freecalypso.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=il4OrsFi/+ZmpHKzmwybykJE1rrEwD0WSXk3jzdi72I=;
+        b=fLn4lHcnXpH57H3ulw7kQpTsSQnQipnq35POuw4tZHmaTmEmXLB1XPakkRSRdPuWXM
+         qGTJwPE+ServoGSlJkVgT91O+yEnO0hrlhCVOrM6OMqH6fwmy6cE2LE0kKQjP324iyAc
+         H/f4+9TxriyY0H7dV9xnfBuXkd0VkOGJkSx3oPrBTvNHWR0fw6PeD/1bkVAvag0tQbqP
+         Hdu9F95IP7rdaTKSXGbaIao75SYcRYYaIHrsk8RO+LOiz1BYaWA0+hYyfdg/DAnvmS9o
+         Br3LZ5NyQNEWxct4yzoFKO88BHLJLJwfOanX4+ISYLn7T3mR5D0fegIAvOtF3PQbqn/n
+         5xEA==
+X-Gm-Message-State: AOAM530OLdicD/W3IPUZvAXQ9OpcQAEmBdEmdeEJbooVz8kvYCbgzkdP
+        X+XxDUm9aXJsvfK8qytNVIBg/1wB8+0=
+X-Google-Smtp-Source: ABdhPJwWPMSyk47AyVrRNMUatJNVHKwfArNXreja8lzZqzEHNBW6hFp0/8fHekt7sABXqBrcUmC7GQ==
+X-Received: by 2002:a50:fe14:: with SMTP id f20mr1343583edt.61.1606801749749;
+        Mon, 30 Nov 2020 21:49:09 -0800 (PST)
+Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id g15sm251467edj.49.2020.11.30.21.49.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Nov 2020 21:49:08 -0800 (PST)
+Subject: Re: [PATCH 1/5] tty: add port flag to suppress ready signalling on
+ open
+To:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "Mychaela N . Falconia" <falcon@freecalypso.org>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+References: <20201130153742.9163-1-johan@kernel.org>
+ <20201130153742.9163-2-johan@kernel.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <ffec9dbe-a238-4411-acdb-41bd33719288@kernel.org>
+Date:   Tue, 1 Dec 2020 06:49:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+MIME-Version: 1.0
+In-Reply-To: <20201130153742.9163-2-johan@kernel.org>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> Add a NORDY port flag to suppress raising the modem-control lines on
-> open to signal DTE readiness.
->
-> This can be used to implement a NORDY termios control flag to complement
-> HUPCL, which controls lowering of the modem-control lines on final
-> close.
->
-> Initially drivers can export the flag through sysfs, which also allows
-> control over the lines on first open.
->
-> This can be use to prevent undesirable side-effects on open for
-> applications where the DTR and RTS lines are used for non-standard
-> purposes such as generating power-on and reset pulses.
->
-> Signed-off-by: Johan Hovold <johan@kernel.org>
+On 30. 11. 20, 16:37, Johan Hovold wrote:
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -683,6 +684,19 @@ static inline void tty_port_set_kopened(struct tty_port *port, bool val)
+>   		clear_bit(TTY_PORT_KOPENED, &port->iflags);
+>   }
+>   
+> +static inline bool tty_port_nordy(struct tty_port *port)
 
-Reviewed-by: Mychaela N. Falconia <falcon@freecalypso.org>
+port can be const here.
+
+> +{
+> +	return test_bit(TTY_PORT_NORDY, &port->iflags);
+> +}
+> +
+> +static inline void tty_port_set_nordy(struct tty_port *port, bool val)
+> +{
+> +	if (val)
+> +		set_bit(TTY_PORT_NORDY, &port->iflags);
+> +	else
+> +		clear_bit(TTY_PORT_NORDY, &port->iflags);
+
+We have assign_bit() for these cases these days.
+
+thanks,
+-- 
+js
