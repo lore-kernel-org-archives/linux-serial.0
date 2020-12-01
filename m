@@ -2,98 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A042C83017
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 08:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBC5C71156
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:48:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0655921D46
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 08:55:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CEFB62080A
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:48:41 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aMgWetRk"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728602AbgLAIzY (ORCPT
+        id S1727007AbgLAKsl (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Dec 2020 03:55:24 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:33613 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729086AbgLAIzW (ORCPT
+        Tue, 1 Dec 2020 05:48:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbgLAKsl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Dec 2020 03:55:22 -0500
-Received: by mail-lf1-f65.google.com with SMTP id l11so2660462lfg.0;
-        Tue, 01 Dec 2020 00:55:05 -0800 (PST)
+        Tue, 1 Dec 2020 05:48:41 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95F2C0613D2;
+        Tue,  1 Dec 2020 02:48:00 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id p21so618202pjv.0;
+        Tue, 01 Dec 2020 02:48:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dAFYxzGzkBEUMFK3NS6Q6bqv6vlixBH5vwa4XwPAREI=;
+        b=aMgWetRkgiQlzBcnjuqoBLvrtDiSxk3dd7BF7laNfqg0dVZq/Ys9//QA8Y2dR50eoK
+         BjtC/FyBS43nFPuT+zDcSKLy5ierhmZpnciYRZRN08GLpfHfLPfEXXi4pf8tZkV+IJFQ
+         /5DvIVZ+Q5uAqowvcNOlX/PRPd1tbDPGff87umjMa+CmPJMncouOKtfLEkLrqXE8ggfs
+         l5p/yEEyS1M+stze1lNgg9AHJrzHIJMAm5SCLtsn4DtGwWQdHV6lQ1rbosqi1Cuzna3r
+         d5vyK5u7kEFgHKcVYWCwEXB1TPWjIWiQnvCqumUKqC4klCtnYyif3SdGUaCoEsgwZt+w
+         GcOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Eoetxd+qqAcyLnHuOQq9xz3lgBRMqPTNCIsZn7BlTow=;
-        b=CrloEC4C4fX0PK81hafRhybHV5IjWJ4r/byi35KM7qm0cWdpXRlierTIGEKt2BQjue
-         pvjfBW9y65uhrR90C3ERqygTRwobevfipU6raP5qFuVxJ2MvMgs1zzrW1cRmH+fddsWA
-         60YdN3ePMhSa4o0WlRUotflnFbCyAxxAnyuHJKkdtS2VbHAMnAoValKB3OBchYm88qAF
-         NxlEcWsX6DxhkGufDMAEqYPuHHGg0x7gQQ1cQ9BrtjDWPLiOjWeLQkuN6864xUEgjDTe
-         cEh76FoDk1yQvH1tegfm5jyi1UtYHhiY/qyB1/eWL2x7Vn9ePM8pvUEiXQW0Vja/7AG1
-         8+dw==
-X-Gm-Message-State: AOAM531xGk+65b3SKIvrKXri1doNPd7dvHdBINiE4JjtzAHDwbGA7tnI
-        e/7nvWqliC+6ZeZH84959T50NG2KD1opdg==
-X-Google-Smtp-Source: ABdhPJxLCzSdAHeLx4XymxVK0xA/59fNMrQKvCStaSPG1w1jdiRvsXhiblFe3hOduVIORHOF4fNOcg==
-X-Received: by 2002:a19:c658:: with SMTP id w85mr706881lff.560.1606812879829;
-        Tue, 01 Dec 2020 00:54:39 -0800 (PST)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id i14sm131927ljj.24.2020.12.01.00.54.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 00:54:39 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1kk1RE-0003Kk-Pm; Tue, 01 Dec 2020 09:55:08 +0100
-Date:   Tue, 1 Dec 2020 09:55:08 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dAFYxzGzkBEUMFK3NS6Q6bqv6vlixBH5vwa4XwPAREI=;
+        b=WGkiJf3xaMW6o0qKcnoPI83MyO0z7zQSOtOmKbi/53jhKzsmS1QqxH9VnBV1gci7Va
+         t8+3iKaOVHqvdn8NHh+SQOv999aBcPN99cXR59qSlF5nwBYzwV34XBNrRh8JUakO1vc9
+         9DMYXtSOosgSbQvl9A6CBd6BSmtcle0vKKARohku/HxTw6Tu7v4c4ac7o+a+7x6XR26g
+         nlBDb4PKfdEC/kYQ/OqqKyj0gv8ql4Ssf3MX+dOdzMHUZXH4vuagLtMICiFVme4GJCtc
+         L4KwmFfbKT1FBYjHitmRokmdBYzgEiz6GnBafOTADtdHEL7dVVYGxR57HsxxnS/5RgUa
+         Ma4g==
+X-Gm-Message-State: AOAM531WQe5+YbpK2w0AhaKDBzfkBsclOrMI9BMfCiqZtElpIB2Zcdh2
+        Q3YYnSFXqEX+ntb/adtFrfTg0KY7TcuRfczUlOC5kkcY6Lk=
+X-Google-Smtp-Source: ABdhPJybJttySzBcB8mUcCOhXY2iYo1MWFQ+O19jtlDiSo1oBka3wDfRWYJ98cDB/pPAriIxy6F+McyC4OGLXUQEyI4=
+X-Received: by 2002:a17:902:ac93:b029:d8:d2c5:e5b1 with SMTP id
+ h19-20020a170902ac93b02900d8d2c5e5b1mr2237976plr.17.1606819680128; Tue, 01
+ Dec 2020 02:48:00 -0800 (PST)
+MIME-Version: 1.0
+References: <20201130153742.9163-1-johan@kernel.org> <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
+In-Reply-To: <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 1 Dec 2020 12:48:48 +0200
+Message-ID: <CAHp75Vczx=qjNed-8nwm6iSq5sxUKE2mXzPSd70zUxumZ5sANQ@mail.gmail.com>
+Subject: Re: [PATCH 0/5] tty: add flag to suppress ready signalling on open
+To:     Mychaela Falconia <mychaela.falconia@gmail.com>
 Cc:     Johan Hovold <johan@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         "Mychaela N . Falconia" <falcon@freecalypso.org>,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] USB: serial: ftdi_sio: add support for FreeCalypso
- DUART28C adapter
-Message-ID: <X8YE7H+hdUY0WS9B@localhost>
-References: <20201130153742.9163-1-johan@kernel.org>
- <20201130153742.9163-6-johan@kernel.org>
- <8f38320e-0f1c-c8a0-208e-2fa689be52f0@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8f38320e-0f1c-c8a0-208e-2fa689be52f0@kernel.org>
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 07:54:10AM +0100, Jiri Slaby wrote:
-> On 30. 11. 20, 16:37, Johan Hovold wrote:
-> > --- a/drivers/usb/serial/ftdi_sio.c
-> > +++ b/drivers/usb/serial/ftdi_sio.c
-> ...
-> > @@ -2386,6 +2393,21 @@ static int ftdi_stmclite_probe(struct usb_serial *serial)
-> >   	return 0;
-> >   }
-> >   
-> > +/*
-> > + * FreeCalypso DUART28C is an FT2232D-based USB to dual UART adapter
-> > + * with a special quirk: Channel B RTS and DTR outputs (BDBUS2 and BDBUS4
-> > + * on the chip) have been repurposed to drive PWON and RESET controls.
-> > + */
-> > +static void ftdi_duart28c_setup(struct usb_serial_port *port)
-> > +{
-> > +	struct usb_serial *serial = port->serial;
-> > +	struct usb_interface *intf = serial->interface;
-> > +	int ifnum = intf->cur_altsetting->desc.bInterfaceNumber;
-> > +
-> > +	if (ifnum == 1)
-> > +		tty_port_set_nordy(&port->port, 1);
-> 
-> So s/1/true, provided the parameter is defined as bool now.
+On Mon, Nov 30, 2020 at 11:25 PM Mychaela Falconia
+<mychaela.falconia@gmail.com> wrote:
 
-Also here I'm following the convention used for the other port-flag
-helper which are used with numerical constants (just about) consistently
-throughout the tree. 
+...
 
-Johan
+> Johan's patch comments say that the new flag can also be brought out
+> to termios in the future, similarly to HUPCL, but I question the
+> usefulness of doing so, as it is a chicken and egg problem: one needs
+> to open the tty device in order to do termios ioctls on it, and if
+> that initial open triggers DTR/RTS hardware actions, then the end user
+> is still screwed.  If Johan or someone else can see a potential use
+> case for manipulating this new flag via termios (as opposed to sysfs
+> or USB-ID-based driver quirks), perhaps you could elaborate on it?
+
+Thanks for the very detailed description of what you are working on.
+Unfortunately I have no thoughts about alternative solutions.
+
+> Andy Shevchenko wrote:
+>
+> > > Add a nordy sysfs attribute to suppress raising the modem-control lines
+> > > on open to signal DTE readiness.
+> >
+> > Why not call it nomctrl ?
+>
+> I have no opinion one way or another as to what the new sysfs attribute
+> should be called - my use case won't involve this sysfs mechanism at
+> all, instead I care much more about the path where the tty port flag
+> gets set via a driver quirk upon seeing my custom USB ID. :)
+
+Then why do we bother with sysfs right now? It's an ABI and Johan is
+completely aware and knows that once it's in the kernel it is close to
+being carved in stone.
+I would vote to remove sysfs from now and see if we really need it in
+the future.
+
+-- 
+With Best Regards,
+Andy Shevchenko
