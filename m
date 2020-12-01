@@ -2,93 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8399FC64E7B
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 07:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C15DCC64E7B
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 07:15:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 10C78216C4
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 07:10:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h77mcHDP"
+	by mail.kernel.org (Postfix) with ESMTP id 67F35216C4
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 07:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727449AbgLAHKc (ORCPT
+        id S1727694AbgLAHOv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Dec 2020 02:10:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727358AbgLAHKc (ORCPT
+        Tue, 1 Dec 2020 02:14:51 -0500
+Received: from mail-ej1-f66.google.com ([209.85.218.66]:36316 "EHLO
+        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727109AbgLAHOv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Dec 2020 02:10:32 -0500
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2086DC0613CF;
-        Mon, 30 Nov 2020 23:09:52 -0800 (PST)
-Received: by mail-vs1-xe42.google.com with SMTP id k17so373471vsp.13;
-        Mon, 30 Nov 2020 23:09:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=gfdRiKeQS5ZmNSxKk+0c7aA/0vSf+2CP1Q0dHquDj5U=;
-        b=h77mcHDPePcZ7/fOj9ZY+/W/6wxnCxYQp4autpWzE+mKDxV3WaJ2aabwVGga8bLfAT
-         Eoah2exgYeba1xw9AAAv6IIMT47up8wmpxqGib9BZiF/2mxj0z7aZkRBRqF73ILNEmvC
-         da/a+YwGDz+4zimY68gVEyOsyMwqMo3qZf0Ckts2d/xL7EZRMD1xmhFVjTsn1e98gffe
-         7I/SUZPPOp8VgA2WbC4y2XJ72bH6ivW+ij/wMsgwOWIzO4bmcf04r7mtkWqlnsmy+rkw
-         B0nw/Pway54GA+UzZ8kSVSY9I9i81VBswTEo0/kq2p8TCOMN3tlGqEsQ90MMAohyYjkD
-         a7yg==
+        Tue, 1 Dec 2020 02:14:51 -0500
+Received: by mail-ej1-f66.google.com with SMTP id lt17so1996140ejb.3;
+        Mon, 30 Nov 2020 23:14:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=gfdRiKeQS5ZmNSxKk+0c7aA/0vSf+2CP1Q0dHquDj5U=;
-        b=C+ih5PzVqLZ1wr1HKqYJ6DMHDXshISUyHRP9SQ49mABwRJvLgWbuVlKEhDdH06IfO+
-         TQ2NAUORNavwq9SWJlNbMhuyrNOjoykcT/LvXCHh8XRiAbY+Ynk6fS2I++EDOCCXfpNb
-         tdDeOMnqfgEAkvlW/h99EzkIFNbEAY0yzE5pOzOZ7GzcLINzWTTvP/1HukL1QdsArJ3x
-         027ZzT2kNWaNBXTqX36YBiEN1AHuaR9q1GG17g2OgEOoQYSsXxpyN7rJbm+d4eSWMD57
-         c+ck8zvicTBFrYaEYZSY9wZxNdo37pGeQiW/NB5uJIbHhkTWZKczhaXkOb58lxn1l3UO
-         6QAg==
-X-Gm-Message-State: AOAM533Vz42fEbTl4/KtIY3HvuYTAfXekVR3/SqHxDQDauK/iQEk48fc
-        VgLOTf4az+nfeKEBT/ds4bqlL7wfJ1G4UMzST26QoBvvIhrHgw==
-X-Google-Smtp-Source: ABdhPJxWXgqOlhdu+xUTSc5snGEx/DQ7+VLorBci2PpS0Kb2zdFbkOnqyarP/7iBDakHtrxOWu0rqoEHSUqo+M22nRI=
-X-Received: by 2002:a67:87cd:: with SMTP id j196mr1352624vsd.43.1606806591417;
- Mon, 30 Nov 2020 23:09:51 -0800 (PST)
-MIME-Version: 1.0
-Received: by 2002:ab0:6ecb:0:0:0:0:0 with HTTP; Mon, 30 Nov 2020 23:09:50
- -0800 (PST)
-In-Reply-To: <ffec9dbe-a238-4411-acdb-41bd33719288@kernel.org>
-References: <20201130153742.9163-1-johan@kernel.org> <20201130153742.9163-2-johan@kernel.org>
- <ffec9dbe-a238-4411-acdb-41bd33719288@kernel.org>
-From:   Mychaela Falconia <mychaela.falconia@gmail.com>
-Date:   Mon, 30 Nov 2020 23:09:50 -0800
-Message-ID: <CA+uuBqa-k0Ztt18cetCdYs=6tBk8xTHufaFAcbpA3wert8nFAA@mail.gmail.com>
-Subject: Re: [PATCH 1/5] tty: add port flag to suppress ready signalling on open
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OZosIAZ5kQh+M6bi+XZwxMMNMZ/xJ39Rm7xM03MsjcM=;
+        b=Z9O5lhlGPN5n4qDVVBMLPbnCOOwpRJq/n86cJJYlpubfJKYeJevjoZdFWBchuQmG0D
+         FGZhAVeqa6Hdtn2X4ZpEScDz/8KbYo5ZCZ5G3L2alOU06f/JQRW3aQklOQuthw+fO06O
+         Yt7X+7At0Sliq1Lh7D2LSnyb7awy77cbbKbYM2e+l+GUGP+jmcAqbG4M9q/imNOGT10H
+         suc0VzAHiHA8/s3w1DBswcp/LF0Km3wGkKWohln2Rn30S8lTgK9XktkfJcPyAaU0gRFi
+         uhbxKSalmgmvQGxQjAhh7vNKvk7JdUr1/CWgyzq0GcBpHBzPJ68yD3e8mmwUN/zx/+QU
+         jUrg==
+X-Gm-Message-State: AOAM531XTrdzlWV24eONQgbOdsgo9+713zKA5Mm76wMp4gw6xPToJuyR
+        2iYZoyeUcoZ+ePeYQxh5do1V5otmz8M=
+X-Google-Smtp-Source: ABdhPJzRWz7vobwzkYeFLRzS9k+kWPNCUAcD5jS0op2Gx0uy8xzuSX1j+n1WCiMlDI7DwuVfsSqwvg==
+X-Received: by 2002:a17:906:358e:: with SMTP id o14mr1678870ejb.526.1606806848925;
+        Mon, 30 Nov 2020 23:14:08 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id j27sm191022ejo.61.2020.11.30.23.14.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Nov 2020 23:14:08 -0800 (PST)
+Subject: Re: [PATCH 0/5] tty: add flag to suppress ready signalling on open
+To:     Mychaela Falconia <mychaela.falconia@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Mychaela N . Falconia" <falcon@freecalypso.org>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+References: <20201130153742.9163-1-johan@kernel.org>
+ <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <c8f3e485-54c6-99c7-4888-6eef2e174bf6@kernel.org>
+Date:   Tue, 1 Dec 2020 08:14:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+MIME-Version: 1.0
+In-Reply-To: <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/30/20, Jiri Slaby <jirislaby@kernel.org> wrote:
-> port can be const here.
-> [...]
-> We have assign_bit() for these cases these days.
+On 30. 11. 20, 22:22, Mychaela Falconia wrote:
+> 2) For situations in which the luxury of a custom USB ID is not
+> available, e.g., a situation where the device that does not tolerate
+> automatic DTR/RTS assertion on open is a physical RS-232 device that
+> can be connected to "any" serial port, the new sysfs attribute comes
+> to the rescue.
+> 
+> Johan's patch comments say that the new flag can also be brought out
+> to termios in the future, similarly to HUPCL,
 
-Johan's patch adding test and set accessor inline functions for the
-new flag follows the style of the existing accessor inline functions
-for previously existing flags, for the sake of consistency. If we are
-going to use the new style (const for test functions, assign_bit() for
-set functions) for the new flag, then we should also change all
-existing ones for consistency. In terms of patch splitting, would it
-be most kosher to have one patch that updates the style of existing
-accessor inline functions, and then the interesting patch that adds
-the new flag?
+The difference to other control flags is that open raises DTR/RTS in any 
+case (i.e. including O_NONBLOCK) -- provided baud rate is set (and it is 
+for casual serials). That means you cannot open a port to configure it 
+(using e.g. setserial) without actually raising the DTR/RTS.
 
-M~
+> but I question the
+> usefulness of doing so, as it is a chicken and egg problem: one needs
+> to open the tty device in order to do termios ioctls on it, and if
+> that initial open triggers DTR/RTS hardware actions, then the end user
+> is still screwed.  If Johan or someone else can see a potential use
+> case for manipulating this new flag via termios (as opposed to sysfs
+> or USB-ID-based driver quirks), perhaps you could elaborate on it?
+
+We would need to (ab)use another open flag (e.g. O_DIRECT). I am not 
+biased to either of solutions.
+
+thanks,
+-- 
+js
