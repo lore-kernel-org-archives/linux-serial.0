@@ -7,65 +7,65 @@ X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBC5C71156
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33CD5C64E7B
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:56:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CEFB62080A
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:48:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C0BCE20809
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:56:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aMgWetRk"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gy1yls4A"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727007AbgLAKsl (ORCPT
+        id S1727330AbgLAKzr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Dec 2020 05:48:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
+        Tue, 1 Dec 2020 05:55:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbgLAKsl (ORCPT
+        with ESMTP id S1725899AbgLAKzq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Dec 2020 05:48:41 -0500
+        Tue, 1 Dec 2020 05:55:46 -0500
 Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95F2C0613D2;
-        Tue,  1 Dec 2020 02:48:00 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id p21so618202pjv.0;
-        Tue, 01 Dec 2020 02:48:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF0DC0613CF;
+        Tue,  1 Dec 2020 02:55:06 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id e5so1004195pjt.0;
+        Tue, 01 Dec 2020 02:55:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=dAFYxzGzkBEUMFK3NS6Q6bqv6vlixBH5vwa4XwPAREI=;
-        b=aMgWetRkgiQlzBcnjuqoBLvrtDiSxk3dd7BF7laNfqg0dVZq/Ys9//QA8Y2dR50eoK
-         BjtC/FyBS43nFPuT+zDcSKLy5ierhmZpnciYRZRN08GLpfHfLPfEXXi4pf8tZkV+IJFQ
-         /5DvIVZ+Q5uAqowvcNOlX/PRPd1tbDPGff87umjMa+CmPJMncouOKtfLEkLrqXE8ggfs
-         l5p/yEEyS1M+stze1lNgg9AHJrzHIJMAm5SCLtsn4DtGwWQdHV6lQ1rbosqi1Cuzna3r
-         d5vyK5u7kEFgHKcVYWCwEXB1TPWjIWiQnvCqumUKqC4klCtnYyif3SdGUaCoEsgwZt+w
-         GcOQ==
+        bh=i38OjRaT5QGFCtCwwPd1SCJNsYfsg7NYH5qbGP41LaE=;
+        b=gy1yls4AWND+ZkAKtaYVfm0KX7T5I3KQtm6rPo9I/pWU1SURLBXEYxK3Nx5Ztn1FJC
+         9MJpl/v45pAguKyhOaGHf49WG0M7bJDHumrMOi6Xy2dL/VSVLO+NDlncCUuWB3dY2l0A
+         aa5xWDVv/BRObEup7FHT0KUoXmoTuXPNsmZrWWSQXF5+2lJEORMBOzt8YldBXXBhUAq6
+         QKXd7ub6+ZUN/svp8aE0/9bKLHxyW1SacjW9g5JIjvFsuj8DmW0nLLPdvndN6mhscNOd
+         MZ1he+FW2xHgAmZSV4jqdAW+/nysDOjfJJwVaKdaN3W6C7NbtztLnus7brBXrsnbIaS0
+         nxvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dAFYxzGzkBEUMFK3NS6Q6bqv6vlixBH5vwa4XwPAREI=;
-        b=WGkiJf3xaMW6o0qKcnoPI83MyO0z7zQSOtOmKbi/53jhKzsmS1QqxH9VnBV1gci7Va
-         t8+3iKaOVHqvdn8NHh+SQOv999aBcPN99cXR59qSlF5nwBYzwV34XBNrRh8JUakO1vc9
-         9DMYXtSOosgSbQvl9A6CBd6BSmtcle0vKKARohku/HxTw6Tu7v4c4ac7o+a+7x6XR26g
-         nlBDb4PKfdEC/kYQ/OqqKyj0gv8ql4Ssf3MX+dOdzMHUZXH4vuagLtMICiFVme4GJCtc
-         L4KwmFfbKT1FBYjHitmRokmdBYzgEiz6GnBafOTADtdHEL7dVVYGxR57HsxxnS/5RgUa
-         Ma4g==
-X-Gm-Message-State: AOAM531WQe5+YbpK2w0AhaKDBzfkBsclOrMI9BMfCiqZtElpIB2Zcdh2
-        Q3YYnSFXqEX+ntb/adtFrfTg0KY7TcuRfczUlOC5kkcY6Lk=
-X-Google-Smtp-Source: ABdhPJybJttySzBcB8mUcCOhXY2iYo1MWFQ+O19jtlDiSo1oBka3wDfRWYJ98cDB/pPAriIxy6F+McyC4OGLXUQEyI4=
-X-Received: by 2002:a17:902:ac93:b029:d8:d2c5:e5b1 with SMTP id
- h19-20020a170902ac93b02900d8d2c5e5b1mr2237976plr.17.1606819680128; Tue, 01
- Dec 2020 02:48:00 -0800 (PST)
+        bh=i38OjRaT5QGFCtCwwPd1SCJNsYfsg7NYH5qbGP41LaE=;
+        b=QN2hl3JrqMTpZYa3ZOH4QMx7GBeOR3MTeIxJJ09lmUz7zM+y5PM0igNtBQKmfxL21c
+         uPr37t+kIF8DwocOklGmvxRqfv3O1hjo/rsMlsMMuZTq7muC8F6EnZuKMN0vuxAeXLxz
+         WMRTbQT+s1kkhdIcLuYVR2KlWTJk9b+fj20iTp9fDlzr9SkxKXCemh/a9RcO22KOTejw
+         xs+7AkCmyVL+HFmFEV43kvE4umjrSB3IXOYJQWVY9kBW7y2htgh+bCZ/E37UijSlguwD
+         9+TDJnGDY87BeNxspuA6xY1Fjmxbjx52Vnu7gjKpcwv9gznyyI7DfYUazA+UsMFlVFuV
+         1Z+A==
+X-Gm-Message-State: AOAM533xJ3vnKifKGcG4OlhuRyM8j3AKuuO4RqMBqRipW0K+2+9T/SQI
+        FjPCcV7ENAH6BSA2P07NndIu6PtAnryvojpba1o=
+X-Google-Smtp-Source: ABdhPJzPqmVEtEfeNfnNHED2wtu5NFar6uX+4pBneqsIFHYxmVj9mNmtNEcMOQyDrr1cQzLPNvaEvqZGxstIY8DXJmo=
+X-Received: by 2002:a17:90a:34cb:: with SMTP id m11mr2065322pjf.181.1606820106113;
+ Tue, 01 Dec 2020 02:55:06 -0800 (PST)
 MIME-Version: 1.0
-References: <20201130153742.9163-1-johan@kernel.org> <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
-In-Reply-To: <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
+References: <20201130153742.9163-1-johan@kernel.org> <20201130153742.9163-3-johan@kernel.org>
+ <CAHp75VdedN5iaGFpfiPFz6G=Ey3axgaZbKYtt95HEwwjWoWbmQ@mail.gmail.com> <X8X9B1jYujUIWXaK@localhost>
+In-Reply-To: <X8X9B1jYujUIWXaK@localhost>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 1 Dec 2020 12:48:48 +0200
-Message-ID: <CAHp75Vczx=qjNed-8nwm6iSq5sxUKE2mXzPSd70zUxumZ5sANQ@mail.gmail.com>
-Subject: Re: [PATCH 0/5] tty: add flag to suppress ready signalling on open
-To:     Mychaela Falconia <mychaela.falconia@gmail.com>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Date:   Tue, 1 Dec 2020 12:55:54 +0200
+Message-ID: <CAHp75VfQud=QxwZyhYRU9mtNvrudj0tS6LOuutfJDVdv=-ptXw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] serial: core: add sysfs attribute to suppress ready
+ signalling on open
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         "Mychaela N . Falconia" <falcon@freecalypso.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
@@ -76,40 +76,40 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 11:25 PM Mychaela Falconia
-<mychaela.falconia@gmail.com> wrote:
+On Tue, Dec 1, 2020 at 10:20 AM Johan Hovold <johan@kernel.org> wrote:
+> On Mon, Nov 30, 2020 at 08:27:54PM +0200, Andy Shevchenko wrote:
+> > On Mon, Nov 30, 2020 at 5:42 PM Johan Hovold <johan@kernel.org> wrote:
 
-...
-
-> Johan's patch comments say that the new flag can also be brought out
-> to termios in the future, similarly to HUPCL, but I question the
-> usefulness of doing so, as it is a chicken and egg problem: one needs
-> to open the tty device in order to do termios ioctls on it, and if
-> that initial open triggers DTR/RTS hardware actions, then the end user
-> is still screwed.  If Johan or someone else can see a potential use
-> case for manipulating this new flag via termios (as opposed to sysfs
-> or USB-ID-based driver quirks), perhaps you could elaborate on it?
-
-Thanks for the very detailed description of what you are working on.
-Unfortunately I have no thoughts about alternative solutions.
-
-> Andy Shevchenko wrote:
->
-> > > Add a nordy sysfs attribute to suppress raising the modem-control lines
-> > > on open to signal DTE readiness.
+> > > +       ret = kstrtouint(buf, 0, &val);
+> > > +       if (ret)
+> > > +               return ret;
 > >
-> > Why not call it nomctrl ?
+> > > +       if (val > 1)
+> > > +               return -EINVAL;
+> >
+> > Can't we utilise kstrtobool() instead?
 >
-> I have no opinion one way or another as to what the new sysfs attribute
-> should be called - my use case won't involve this sysfs mechanism at
-> all, instead I care much more about the path where the tty port flag
-> gets set via a driver quirk upon seeing my custom USB ID. :)
+> I chose not to as kstrtobool() results in a horrid interface. To many
+> options to do the same thing and you end up with confusing things like
+> "0x01" being accepted but treated as false (as only the first character
+> is considered).
 
-Then why do we bother with sysfs right now? It's an ABI and Johan is
-completely aware and knows that once it's in the kernel it is close to
-being carved in stone.
-I would vote to remove sysfs from now and see if we really need it in
-the future.
+And this is perfectly fine. 0x01 is not boolean.
+
+> Not sure how that ever made it into sysfs code...
+>
+> The attribute is read back as "0" or "1" and those are precisely the
+> values that can be written back (well, modulo radix).
+
+So, how does it affect the kstrtobool() interface?
+You read back 0 and 1 and they are pretty much accepted by it.
+
+> It's not relevant in this case, but tight control over the inputs also
+> allows for extending the range later.
+
+And kstrtobool() does it. So I don't see any difference except a few
+less lines of code and actually *stricter* rules than kstrtouint()
+has.
 
 -- 
 With Best Regards,
