@@ -2,121 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A5DAC64E7A
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 025F6C64E7A
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:58:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1D00520809
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:57:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fYUh0oko"
+	by mail.kernel.org (Postfix) with ESMTP id 9FBCA20809
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727356AbgLAK4z (ORCPT
+        id S1727432AbgLAK6Q (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Dec 2020 05:56:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726026AbgLAK4z (ORCPT
+        Tue, 1 Dec 2020 05:58:16 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:40074 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbgLAK6P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Dec 2020 05:56:55 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0091C0613CF;
-        Tue,  1 Dec 2020 02:56:14 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id r9so994380pjl.5;
-        Tue, 01 Dec 2020 02:56:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8p48Ecd4f2MK+ddbIBqEbyZIovy7SVRtFNAkfbfdX48=;
-        b=fYUh0okorSUB+aEZlT0TNXbgZDw4sJgYR26aoRTqbaePe0mgOdweGm/Pk9JaaXNix3
-         PamiXf0vw0JHZGFRIdjpBzGbHzeMJv0JO7fWFObntjAsh1ZZivMAD1sqo4zlZFRT3mlU
-         XTqp/WLxy+o3zdtxf5g2xfP2gJ5008PwfdF7M512gwDJJC06e4QMmW5T3P3f34cKJuh+
-         KsX4qDHU0sj10xfP1/Y12CssSF0rRB9kY0lxbFlsfl0OacKagOhRcvExojGZ/xwJ1uOs
-         EBDRoJHc9hd6qddUdkkyD6zfyG0H27rS38wHR6tdCRoUVmZ9nKSFButWMrfts0lwbMyx
-         hv+Q==
+        Tue, 1 Dec 2020 05:58:15 -0500
+Received: by mail-lf1-f66.google.com with SMTP id u19so3260996lfr.7;
+        Tue, 01 Dec 2020 02:57:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8p48Ecd4f2MK+ddbIBqEbyZIovy7SVRtFNAkfbfdX48=;
-        b=NQRBJfbllsYs3K0QKN30nw1/aaXnJVLpvP+MxxVVqQ3W7Hlvc8q/R4iU5jVm3601Qh
-         PgXc42TQPiymb0zV9UWplfPKTHRjF2AdJjfVi1/Sc9KW5jsarojM62+AyUERBscuoIpN
-         e01ipyPTZcjjTQ8FJPldJtPby6qtkNjlz+GXbKd6bLXS7OK7JcYKDnnmhBkvN6HrAL5t
-         /fNp6Oezr5D4VbrwZx5/hcWenSiDGsKFORli82h6UrcwWii5hLzxPLVjGllJIZXFF4Bb
-         0XAiFQT7N1SsFmhGcsQd8NGVYA8srIl7jrBathljBIgLYTx0VB+3BtTlfS2FFXmjcK0I
-         9xUQ==
-X-Gm-Message-State: AOAM533wjwC/hMf3c0uDnlbG/Qu7lr0JCQIrAYBkYb65VgUgFE5sMv0C
-        EOpDRZrZPk08MAmOuBxcyS4=
-X-Google-Smtp-Source: ABdhPJzGd2GdY/2ouYy9s3D6SOf1WoEa5QkSUrGCJyVmLETv5WHLpD5BwmkivI5QAENbwcR3WL9WpA==
-X-Received: by 2002:a17:902:b983:b029:da:8c9a:6acb with SMTP id i3-20020a170902b983b02900da8c9a6acbmr2207816pls.76.1606820174533;
-        Tue, 01 Dec 2020 02:56:14 -0800 (PST)
-Received: from localhost.localdomain ([2405:201:e004:f0c9:8d8b:3ec2:d4ff:d0b1])
-        by smtp.gmail.com with ESMTPSA id p127sm2217808pfp.93.2020.12.01.02.56.11
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=du7uqxSFDOlCM/d6eepPiXeCZVMNky/Lr2KTn2WudY4=;
+        b=IAMqSIRAh7QvKLiHcCM6q3RQMpXFiN4V/ttF5moY/5uworb0A5WAvsnygJp5dfhIgK
+         dQXFbg4hBvr0in0dF9t8y11r97p1ZwvG1AanKEoau7ztDdIvFYoZfPNeX+VsDsw5Tfay
+         +lOa4wcsJ5lMNsdoRZFyoz0/Rw3VTxOyvpYaIzhBfai16Sn7lhOpsYgaZl4fOx/1Haxl
+         rsXwTXwHhQxbpSL6z4kUE/vGyi9+H3Nzo3e6nmKociBgUyQ9dI90mlSzlRWW+dEi1+kj
+         I+YYKPvxPycX9TdFx/4jEMe5HzbVe9hoIJcbIm00HnQaGZ6HBrko2j9CwRT1XOO6xoui
+         T0Sg==
+X-Gm-Message-State: AOAM530IqG7WwPEkpuirPiIkn3eJvkxN/F7kpGz6LVLwqrE7pOgoOARV
+        iM3mQylFhThRrO+R5kVy1Q4=
+X-Google-Smtp-Source: ABdhPJwT47z4c6gcp5xcXM7WhIzVaegIW/1/ElHuQiuhC816et9p1/qKqS2CNVExVnI3Cp4rAU4cpA==
+X-Received: by 2002:ac2:4c9a:: with SMTP id d26mr932274lfl.427.1606820253539;
+        Tue, 01 Dec 2020 02:57:33 -0800 (PST)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id a22sm165777lfl.11.2020.12.01.02.57.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 02:56:14 -0800 (PST)
-From:   Clement Smith <rclemsmith@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Clement Smith <rclemsmith@gmail.com>
-Subject: [PATCH] tty: serial: jsm : jsm_tty.c : fixed file by adding spacing and removing assignment in if statement
-Date:   Tue,  1 Dec 2020 16:26:02 +0530
-Message-Id: <20201201105602.465899-1-rclemsmith@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Tue, 01 Dec 2020 02:57:32 -0800 (PST)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1kk3M9-0007Iw-Tz; Tue, 01 Dec 2020 11:58:02 +0100
+Date:   Tue, 1 Dec 2020 11:58:01 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Mychaela Falconia <mychaela.falconia@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Mychaela N . Falconia" <falcon@freecalypso.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/5] tty: add flag to suppress ready signalling on open
+Message-ID: <X8YhuQeBtMrbh42W@localhost>
+References: <20201130153742.9163-1-johan@kernel.org>
+ <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
+ <CAHp75Vczx=qjNed-8nwm6iSq5sxUKE2mXzPSd70zUxumZ5sANQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vczx=qjNed-8nwm6iSq5sxUKE2mXzPSd70zUxumZ5sANQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fixed a coding style issue
+On Tue, Dec 01, 2020 at 12:48:48PM +0200, Andy Shevchenko wrote:
+> On Mon, Nov 30, 2020 at 11:25 PM Mychaela Falconia
+> <mychaela.falconia@gmail.com> wrote:
 
-Signed-off-by: Clement Smith <rclemsmith@gmail.com>
----
- drivers/tty/serial/jsm/jsm_tty.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+> > > Why not call it nomctrl ?
+> >
+> > I have no opinion one way or another as to what the new sysfs attribute
+> > should be called - my use case won't involve this sysfs mechanism at
+> > all, instead I care much more about the path where the tty port flag
+> > gets set via a driver quirk upon seeing my custom USB ID. :)
+> 
+> Then why do we bother with sysfs right now? It's an ABI and Johan is
+> completely aware and knows that once it's in the kernel it is close to
+> being carved in stone.
+> I would vote to remove sysfs from now and see if we really need it in
+> the future.
 
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index 689774c073ca..047e962a4529 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -607,14 +607,14 @@ void jsm_input(struct jsm_channel *ch)
- 				 * Give the Linux ld the flags in the
- 				 * format it likes.
- 				 */
--				if (*(ch->ch_equeue +tail +i) & UART_LSR_BI)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i),  TTY_BREAK);
--				else if (*(ch->ch_equeue +tail +i) & UART_LSR_PE)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_PARITY);
--				else if (*(ch->ch_equeue +tail +i) & UART_LSR_FE)
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_FRAME);
-+				if (*(ch->ch_equeue + tail + i) & UART_LSR_BI)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i),  TTY_BREAK);
-+				else if (*(ch->ch_equeue + tail + i) & UART_LSR_PE)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_PARITY);
-+				else if (*(ch->ch_equeue + tail + i) & UART_LSR_FE)
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_FRAME);
- 				else
--					tty_insert_flip_char(port, *(ch->ch_rqueue +tail +i), TTY_NORMAL);
-+					tty_insert_flip_char(port, *(ch->ch_rqueue + tail + i), TTY_NORMAL);
- 			}
- 		} else {
- 			tty_insert_flip_string(port, ch->ch_rqueue + tail, s);
-@@ -742,7 +742,8 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
- 	int qleft;
- 
- 	/* Store how much space we have left in the queue */
--	if ((qleft = ch->ch_r_tail - ch->ch_r_head - 1) < 0)
-+	qleft = ch->ch_r_tail - ch->ch_r_head - 1;
-+	if (qleft  < 0)
- 		qleft += RQUEUEMASK + 1;
- 
- 	/*
--- 
-2.27.0
+Eh, because this is generally useful and has come up in the past. I'm
+not interested in adding quirks for odd devices that want non-standard
+behaviour that we need to maintain indefinitely; that's precisely why I
+proposed a general interface that can be use with any serial port.
 
+Johan
