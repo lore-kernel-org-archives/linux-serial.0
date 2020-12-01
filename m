@@ -5,89 +5,115 @@ X-Spam-Level:
 X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 025F6C64E7A
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 993B8C64E7B
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 11:05:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9FBCA20809
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 10:58:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D81F2080A
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Dec 2020 11:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727432AbgLAK6Q (ORCPT
+        id S1730216AbgLALFi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Dec 2020 05:58:16 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:40074 "EHLO
+        Tue, 1 Dec 2020 06:05:38 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:39294 "EHLO
         mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbgLAK6P (ORCPT
+        with ESMTP id S1726481AbgLALFh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Dec 2020 05:58:15 -0500
-Received: by mail-lf1-f66.google.com with SMTP id u19so3260996lfr.7;
-        Tue, 01 Dec 2020 02:57:59 -0800 (PST)
+        Tue, 1 Dec 2020 06:05:37 -0500
+Received: by mail-lf1-f66.google.com with SMTP id j205so3313897lfj.6;
+        Tue, 01 Dec 2020 03:05:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=du7uqxSFDOlCM/d6eepPiXeCZVMNky/Lr2KTn2WudY4=;
-        b=IAMqSIRAh7QvKLiHcCM6q3RQMpXFiN4V/ttF5moY/5uworb0A5WAvsnygJp5dfhIgK
-         dQXFbg4hBvr0in0dF9t8y11r97p1ZwvG1AanKEoau7ztDdIvFYoZfPNeX+VsDsw5Tfay
-         +lOa4wcsJ5lMNsdoRZFyoz0/Rw3VTxOyvpYaIzhBfai16Sn7lhOpsYgaZl4fOx/1Haxl
-         rsXwTXwHhQxbpSL6z4kUE/vGyi9+H3Nzo3e6nmKociBgUyQ9dI90mlSzlRWW+dEi1+kj
-         I+YYKPvxPycX9TdFx/4jEMe5HzbVe9hoIJcbIm00HnQaGZ6HBrko2j9CwRT1XOO6xoui
-         T0Sg==
-X-Gm-Message-State: AOAM530IqG7WwPEkpuirPiIkn3eJvkxN/F7kpGz6LVLwqrE7pOgoOARV
-        iM3mQylFhThRrO+R5kVy1Q4=
-X-Google-Smtp-Source: ABdhPJwT47z4c6gcp5xcXM7WhIzVaegIW/1/ElHuQiuhC816et9p1/qKqS2CNVExVnI3Cp4rAU4cpA==
-X-Received: by 2002:ac2:4c9a:: with SMTP id d26mr932274lfl.427.1606820253539;
-        Tue, 01 Dec 2020 02:57:33 -0800 (PST)
+        bh=4ZjTqWQg2jIPQhER2sb7NQwX/zIXr+mOf1RdttZR1ro=;
+        b=RYT3N2Iwj2+8Xkp4ch1LGRZ6k5OezEHJSghKb4UqfVPImb/uXwWr5ewWMNTVkDoxM8
+         bH5d/ceRIjOuowe/uIV5cQiQywe5f6tLwLv3rgSvJK8fT5Oi2858qhxHscvvtY7le5PR
+         G3kmNJwKQ33VW7Qx67L0PLTPmW74fssONHmg93vKWoVuoIYx/6wO2nUdSdKyfmYNjp+J
+         oF0w7BnAbelMAI9MW8ZH5TtYjSq4Lj2RXCi6KrjynQMO9a+mhJrNZbzkZD4r18M97Sjv
+         6Xri6KZIHgQnOC1lYxkbTPwNHTKw3V/Rueus2Tu3UpThfC02u67fFT+HtUzbtnTQOhmB
+         2Xaw==
+X-Gm-Message-State: AOAM5313tuaKhpeChaZJooD60ok13S+2eVe4KW4horEtUsZOWh7drrDO
+        F/uKheMANmv1M88gOubAQCg=
+X-Google-Smtp-Source: ABdhPJyh8cybXM/HYJz+NxigWFIexVLJjuUx8E9eZpx1SXTPfsYPSA/LATO9eFKq44PSpQq5k2i62w==
+X-Received: by 2002:a19:f504:: with SMTP id j4mr967582lfb.163.1606820695097;
+        Tue, 01 Dec 2020 03:04:55 -0800 (PST)
 Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id a22sm165777lfl.11.2020.12.01.02.57.32
+        by smtp.gmail.com with ESMTPSA id d19sm164950lfc.139.2020.12.01.03.04.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 02:57:32 -0800 (PST)
+        Tue, 01 Dec 2020 03:04:54 -0800 (PST)
 Received: from johan by xi.terra with local (Exim 4.93.0.4)
         (envelope-from <johan@kernel.org>)
-        id 1kk3M9-0007Iw-Tz; Tue, 01 Dec 2020 11:58:02 +0100
-Date:   Tue, 1 Dec 2020 11:58:01 +0100
+        id 1kk3TH-0007KC-GI; Tue, 01 Dec 2020 12:05:24 +0100
+Date:   Tue, 1 Dec 2020 12:05:23 +0100
 From:   Johan Hovold <johan@kernel.org>
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Mychaela Falconia <mychaela.falconia@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
+Cc:     Johan Hovold <johan@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         "Mychaela N . Falconia" <falcon@freecalypso.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         USB <linux-usb@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/5] tty: add flag to suppress ready signalling on open
-Message-ID: <X8YhuQeBtMrbh42W@localhost>
+Subject: Re: [PATCH 2/5] serial: core: add sysfs attribute to suppress ready
+ signalling on open
+Message-ID: <X8Yjc0+Q7fM0nZP+@localhost>
 References: <20201130153742.9163-1-johan@kernel.org>
- <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
- <CAHp75Vczx=qjNed-8nwm6iSq5sxUKE2mXzPSd70zUxumZ5sANQ@mail.gmail.com>
+ <20201130153742.9163-3-johan@kernel.org>
+ <CAHp75VdedN5iaGFpfiPFz6G=Ey3axgaZbKYtt95HEwwjWoWbmQ@mail.gmail.com>
+ <X8X9B1jYujUIWXaK@localhost>
+ <CAHp75VfQud=QxwZyhYRU9mtNvrudj0tS6LOuutfJDVdv=-ptXw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75Vczx=qjNed-8nwm6iSq5sxUKE2mXzPSd70zUxumZ5sANQ@mail.gmail.com>
+In-Reply-To: <CAHp75VfQud=QxwZyhYRU9mtNvrudj0tS6LOuutfJDVdv=-ptXw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 12:48:48PM +0200, Andy Shevchenko wrote:
-> On Mon, Nov 30, 2020 at 11:25 PM Mychaela Falconia
-> <mychaela.falconia@gmail.com> wrote:
-
-> > > Why not call it nomctrl ?
-> >
-> > I have no opinion one way or another as to what the new sysfs attribute
-> > should be called - my use case won't involve this sysfs mechanism at
-> > all, instead I care much more about the path where the tty port flag
-> > gets set via a driver quirk upon seeing my custom USB ID. :)
+On Tue, Dec 01, 2020 at 12:55:54PM +0200, Andy Shevchenko wrote:
+> On Tue, Dec 1, 2020 at 10:20 AM Johan Hovold <johan@kernel.org> wrote:
+> > On Mon, Nov 30, 2020 at 08:27:54PM +0200, Andy Shevchenko wrote:
+> > > On Mon, Nov 30, 2020 at 5:42 PM Johan Hovold <johan@kernel.org> wrote:
 > 
-> Then why do we bother with sysfs right now? It's an ABI and Johan is
-> completely aware and knows that once it's in the kernel it is close to
-> being carved in stone.
-> I would vote to remove sysfs from now and see if we really need it in
-> the future.
+> > > > +       ret = kstrtouint(buf, 0, &val);
+> > > > +       if (ret)
+> > > > +               return ret;
+> > >
+> > > > +       if (val > 1)
+> > > > +               return -EINVAL;
+> > >
+> > > Can't we utilise kstrtobool() instead?
+> >
+> > I chose not to as kstrtobool() results in a horrid interface. To many
+> > options to do the same thing and you end up with confusing things like
+> > "0x01" being accepted but treated as false (as only the first character
+> > is considered).
+> 
+> And this is perfectly fine. 0x01 is not boolean.
 
-Eh, because this is generally useful and has come up in the past. I'm
-not interested in adding quirks for odd devices that want non-standard
-behaviour that we need to maintain indefinitely; that's precisely why I
-proposed a general interface that can be use with any serial port.
+0x01 is 1 and is generally treated as boolean true as you know.
+
+So why should a sysfs-interface accept it as valid input and treat it as
+false? That's just bad design.
+
+> > Not sure how that ever made it into sysfs code...
+> >
+> > The attribute is read back as "0" or "1" and those are precisely the
+> > values that can be written back (well, modulo radix).
+> 
+> So, how does it affect the kstrtobool() interface?
+> You read back 0 and 1 and they are pretty much accepted by it.
+> 
+> > It's not relevant in this case, but tight control over the inputs also
+> > allows for extending the range later.
+> 
+> And kstrtobool() does it. So I don't see any difference except a few
+> less lines of code and actually *stricter* rules than kstrtouint()
+> has.
+
+You miss the point; kstrobool accepts "12" today and treats it as true.
+You cannot extend such an interface to later accept a larger range than
+0 and 1 as you didn't return an error for "12" from the start (as someone
+might now rely on "12" being treated as "1").
 
 Johan
