@@ -2,106 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11749C64E90
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Dec 2020 11:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D66A4C64E7C
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Dec 2020 13:06:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B78F02086A
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Dec 2020 11:49:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 852332222F
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Dec 2020 13:06:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgLBLsa (ORCPT
+        id S1730019AbgLBNGG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Dec 2020 06:48:30 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42715 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726539AbgLBLsa (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Dec 2020 06:48:30 -0500
-Received: by mail-lf1-f68.google.com with SMTP id u18so4152927lfd.9;
-        Wed, 02 Dec 2020 03:48:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=He+Sa9rFfqOxdvahQG2TB0WWdsTSDzRE0mk+yggW0ao=;
-        b=L7RnSdAkjos4papThhSAmN1ZULXFJ7B//oCM3aXMSreOIdeZzUyYF2DpBa1G/+DKZ8
-         erqL+UHsrjBoLxxvySiZDN+32adNQ5cDw5VPFPhNvqgbWWeVbvioQpjcG7rp+GqSUPXF
-         cQNUK3cwGfc7cK9uagvmIVuRNmN9pkTRLmsJq/12hdRfZnBOZo0C4Wt/B4V0e5zT5c20
-         54TbIdxWOT1O2v2QNoWR6MAUjjq0D7ciE5j8/684h1YuTv/6PvRa2sPdhN8MjwYAxyfy
-         QUWo+eVPOM4Xru+Dt0MUKKF7NOzSTHboL8NglP6MFEh0FIL4HXKMVTvNnFT0xafz8lOC
-         +A6w==
-X-Gm-Message-State: AOAM532xbcodSIyb8aD/+QZReZ6taEtZBIxP+vAWUtMq1CnoBHVLvvPm
-        Og+kQ+31EmMglQXCqu8GRyM=
-X-Google-Smtp-Source: ABdhPJy7nLm9BLIO+krjm7ukXB1GlbftAMWyr/RFqOThReZZAiAzUaEFva+vBw4tu5uh0nHmcJU0Dg==
-X-Received: by 2002:a19:5e5e:: with SMTP id z30mr1041757lfi.277.1606909667287;
-        Wed, 02 Dec 2020 03:47:47 -0800 (PST)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id u8sm386298lfo.168.2020.12.02.03.47.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 03:47:46 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1kkQcL-000751-39; Wed, 02 Dec 2020 12:48:17 +0100
-Date:   Wed, 2 Dec 2020 12:48:17 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Mychaela Falconia <mychaela.falconia@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Mychaela N . Falconia" <falcon@freecalypso.org>,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/5] tty: add flag to suppress ready signalling on open
-Message-ID: <X8d/Ac5Z4bT/W7ZA@localhost>
-References: <20201130153742.9163-1-johan@kernel.org>
- <CA+uuBqYmzJMiY75LrA_uKb_uL2=7oQTrzCFksb2ehT0XMXxrbw@mail.gmail.com>
- <c8f3e485-54c6-99c7-4888-6eef2e174bf6@kernel.org>
+        Wed, 2 Dec 2020 08:06:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727102AbgLBNGF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 2 Dec 2020 08:06:05 -0500
+Date:   Wed, 2 Dec 2020 13:04:53 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606914323;
+        bh=H/0q95DkccdCRUrw4XH+vTeIYaOMliOk5cchInyn50s=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XN4iwfS0e15JIk6QbbRWo06n83/17cHOf1EB50auZeul+QGtc/13lfbgtv6+wW0Is
+         Szfq7wPy1Fs1ozKlq6gWjB6qyzr37tkyRdpgHjzw5V8eWgDd+QwMnWfbFhnKKNczc1
+         6gbGvGbLNXfummISxh5gdd4ayEeG7bU34nc4LRp4=
+From:   Mark Brown <broonie@kernel.org>
+To:     Yash Shah <yash.shah@sifive.com>
+Cc:     linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
+        gregkh@linuxfoundation.org, aou@eecs.berkeley.edu,
+        lee.jones@linaro.org, u.kleine-koenig@pengutronix.de,
+        thierry.reding@gmail.com, andrew@lunn.ch, peter@korsgaard.com,
+        paul.walmsley@sifive.com, palmer@dabbelt.com, robh+dt@kernel.org,
+        bgolaszewski@baylibre.com, linus.walleij@linaro.org,
+        sachin.ghadi@sifive.com
+Subject: Re: [PATCH 1/4] dt-bindings: riscv: Update DT binding docs to
+ support SiFive FU740 SoC
+Message-ID: <20201202130452.GC5560@sirena.org.uk>
+References: <1606896236-62780-1-git-send-email-yash.shah@sifive.com>
+ <1606896236-62780-2-git-send-email-yash.shah@sifive.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Pk6IbRAofICFmK5e"
 Content-Disposition: inline
-In-Reply-To: <c8f3e485-54c6-99c7-4888-6eef2e174bf6@kernel.org>
+In-Reply-To: <1606896236-62780-2-git-send-email-yash.shah@sifive.com>
+X-Cookie: Sauron is alive in Argentina!
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 08:14:07AM +0100, Jiri Slaby wrote:
-> On 30. 11. 20, 22:22, Mychaela Falconia wrote:
-> > 2) For situations in which the luxury of a custom USB ID is not
-> > available, e.g., a situation where the device that does not tolerate
-> > automatic DTR/RTS assertion on open is a physical RS-232 device that
-> > can be connected to "any" serial port, the new sysfs attribute comes
-> > to the rescue.
-> > 
-> > Johan's patch comments say that the new flag can also be brought out
-> > to termios in the future, similarly to HUPCL,
-> 
-> The difference to other control flags is that open raises DTR/RTS in any 
-> case (i.e. including O_NONBLOCK) -- provided baud rate is set (and it is 
-> for casual serials). That means you cannot open a port to configure it 
-> (using e.g. setserial) without actually raising the DTR/RTS.
 
-Right, but depending on the application this may be ok (e.g. reset and
-initialise on first open after boot, which may have triggered a reset
-anyway).
+--Pk6IbRAofICFmK5e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-If control over first open is needed, the sysfs interface provides that
-out-of-band.
+On Wed, Dec 02, 2020 at 01:33:53PM +0530, Yash Shah wrote:
 
-> > but I question the
-> > usefulness of doing so, as it is a chicken and egg problem: one needs
-> > to open the tty device in order to do termios ioctls on it, and if
-> > that initial open triggers DTR/RTS hardware actions, then the end user
-> > is still screwed.  If Johan or someone else can see a potential use
-> > case for manipulating this new flag via termios (as opposed to sysfs
-> > or USB-ID-based driver quirks), perhaps you could elaborate on it?
-> 
-> We would need to (ab)use another open flag (e.g. O_DIRECT). I am not 
-> biased to either of solutions.
+> ---
+>  Documentation/devicetree/bindings/gpio/sifive,gpio.yaml     |  4 +++-
+>  Documentation/devicetree/bindings/i2c/i2c-ocores.txt        |  6 ++++--
+>  Documentation/devicetree/bindings/pwm/pwm-sifive.yaml       |  9 ++++++---
+>  Documentation/devicetree/bindings/riscv/cpus.yaml           |  6 ++++++
+>  Documentation/devicetree/bindings/serial/sifive-serial.yaml |  4 +++-
+>  Documentation/devicetree/bindings/spi/spi-sifive.yaml       | 10 ++++++----
+>  6 files changed, 28 insertions(+), 11 deletions(-)
 
-Forgot to mention that using open-flags would prevent using standard
-utilities like cat, echo and terminal programs. So for that reason a
-termios and/or sysfs interface is also preferred.
+The driver bindings for the various subsystems would normally be sent as
+independent patches to those subsystems.  Driver changes mostly get
+reviewed by subsystem maintainers rather than architecture maintainers.
 
-Johan
+--Pk6IbRAofICFmK5e
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl/HkPQACgkQJNaLcl1U
+h9D+bAf/RB0pMK5XXva0fPJseHnvrYMw0AwuOBd006M10fxLWLou777VnMt6gMI3
+oDXTEO2BXZU5QZ/QoKhAKqi2lsLUNrHZ94cii76pAe/eU18sRIDl146RkxGX0FtZ
+zcqLnhbpbS55c8dEDr06w5AEMGvEEQ9cir6/sOHCYnEc3Rd5UR1XunrviLyyxqhG
+MofmAaxxj+zqvd5e9JJxqfhpaw8dd20uKpcDoqdQnxeTqZ22yKbf0/NmysqI6kig
+WuO5Pr3X1S/NWKTAdz6m12kTRf2XhvI5pPJ6FM+yXb+qV7sp9OlyXknL1OKC1DUG
+fb8cYgkuBUdiyfcB+lBrsqrqDT3FAg==
+=b00E
+-----END PGP SIGNATURE-----
+
+--Pk6IbRAofICFmK5e--
