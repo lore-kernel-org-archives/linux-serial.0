@@ -3,57 +3,57 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF616C8301D
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Dec 2020 11:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B475CC64E7C
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Dec 2020 11:40:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7E83822206
+	by mail.kernel.org (Postfix) with ESMTP id 5318522203
 	for <linux-serial@archiver.kernel.org>; Wed,  2 Dec 2020 11:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729604AbgLBLkh (ORCPT
+        id S1729630AbgLBLki (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Dec 2020 06:40:37 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:36566 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728381AbgLBLkh (ORCPT
+        Wed, 2 Dec 2020 06:40:38 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:39033 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727664AbgLBLke (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Dec 2020 06:40:37 -0500
-Received: by mail-lf1-f67.google.com with SMTP id v14so4164867lfo.3;
-        Wed, 02 Dec 2020 03:40:14 -0800 (PST)
+        Wed, 2 Dec 2020 06:40:34 -0500
+Received: by mail-lj1-f193.google.com with SMTP id o24so3201811ljj.6;
+        Wed, 02 Dec 2020 03:40:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Qh172KviYxa9zp9+o3L4Po4UyIe5hNPQfMlxTZlddTg=;
-        b=cFD3bSXVoBcOe3UDCQEXB9HMMyzavhkudtAmLKt+4TDbFstwHuuUXHxwtPn0O3lpxA
-         K3A/KH/PdU8leRWYhEE7YKg8/ELpuSsHgx7bVJVZ7OyGIhUglziW2Mfexqo4fRm3bMLC
-         vSg7v8KRE20V52ftKcMY4TkB+37qphVX8JM+6lDJOF8oSSY9s7FxxEe991jOYMDHz3Ur
-         J4a5QeN6lJ5GavvQW3xXjAaVHpmQkLRus5zkLBxOk9W8wEAY7D9WrpVmsug/6v53S3qa
-         cJjwKpwIz0HDT1+b6oM6DnK3pBC/zC9v5kcHc+ap293/WwbhN8oxmeeojTLdnT9MXgBq
-         9uTw==
-X-Gm-Message-State: AOAM532F/AZEX2eCm2ncO0LyRH5wfUAYp95gVTOHuoLAKIv8sPcoKsT0
-        rY5UDHZNEI6ZSFIgee34Zms=
-X-Google-Smtp-Source: ABdhPJwoVdp8m2G7eivVLWdlKmMT+Mkq9450XQZv3A0x9keCOk8Do2wAIMeotyIiIlPfZDcI8vM4Mg==
-X-Received: by 2002:ac2:5087:: with SMTP id f7mr1174426lfm.369.1606909188621;
-        Wed, 02 Dec 2020 03:39:48 -0800 (PST)
+        bh=F2ypKkOamjttQVwgv5mmaq3G5mJZylZwjPDQAwTLqx0=;
+        b=OCqyoGj3zOuaMij0txoIVDfogxzH8fw5l7ZbDy27UgjQAsmwTRhA6pBVNg/ZyD0ttq
+         db4t1Ap0Ie+/2Tb+JxCDEDVqmgT9zVmXCqt0+Hsfe04FOoYC97Z9mkwAuuChB1vHSc/D
+         Xfizjo22JAFp6KppEqqgvuNkETQJyUtaPQ7Q8GkeMK6nGt9aNoy45bjH6MVZtXsB3Oe9
+         6W8PRmPqzsQIUTMGOiP5DPhwWIY25fzAs+7DsmMfXvo8SAyfUBIsTkmRD+Axt9mtf9Wc
+         E0CR4la9HimMMP0//pN0FLXiCzKD+VRw2ZCdkSg5+HDMS7tfBtkfzmUsQoEN26JVo6Rb
+         NEEA==
+X-Gm-Message-State: AOAM530fOOCLSkaN0eZ/3kTf319Jpu21PkRsLUi86lf83U9HmdKIfCgR
+        rOKAcIxWLT706xI7L7dxAEEGqcMCmXBj+Q==
+X-Google-Smtp-Source: ABdhPJyplTPn0nJsn80Zygl/EROVP3j8GB/CsH5P3t3301AG3y96QvioJWYVnT0U2BVwCRI4+l60RA==
+X-Received: by 2002:a2e:99d7:: with SMTP id l23mr973603ljj.303.1606909192214;
+        Wed, 02 Dec 2020 03:39:52 -0800 (PST)
 Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id r66sm379960lff.265.2020.12.02.03.39.47
+        by smtp.gmail.com with ESMTPSA id s20sm401932ljg.15.2020.12.02.03.39.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 03:39:47 -0800 (PST)
+        Wed, 02 Dec 2020 03:39:49 -0800 (PST)
 Received: from johan by xi.terra with local (Exim 4.93.0.4)
         (envelope-from <johan@xi.terra>)
-        id 1kkQUc-00072n-LD; Wed, 02 Dec 2020 12:40:18 +0100
+        id 1kkQUd-00073I-8a; Wed, 02 Dec 2020 12:40:19 +0100
 From:   Johan Hovold <johan@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>,
         "Mychaela N . Falconia" <falcon@freecalypso.org>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH v2 1/7] tty: use assign_bit() in port-flag accessors
-Date:   Wed,  2 Dec 2020 12:39:36 +0100
-Message-Id: <20201202113942.27024-2-johan@kernel.org>
+Subject: [PATCH v2 7/7] USB: serial: ftdi_sio: add support for FreeCalypso DUART28C adapter
+Date:   Wed,  2 Dec 2020 12:39:42 +0100
+Message-Id: <20201202113942.27024-8-johan@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201202113942.27024-1-johan@kernel.org>
 References: <20201202113942.27024-1-johan@kernel.org>
@@ -63,91 +63,104 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use the new assign_bit() wrapper in the port-flag accessors instead of
-open coding.
+From: "Mychaela N. Falconia" <falcon@freecalypso.org>
 
-Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+FreeCalypso DUART28C is an FT2232D-based USB to dual UART adapter
+with a special quirk: Channel B RTS and DTR outputs (BDBUS2 and BDBUS4
+on the chip) have been repurposed to drive PWON and RESET controls
+on Calypso targets.  The circuit is wired such that BDBUS[24] high
+(RTS/DTR inactive) is the normal state with Iota VRPC controls
+NOT activated, whereas BDBUS[24] low (RTS or DTR active) turn ON
+the corresponding open drain control signal drivers.
+
+A special ftdi_sio driver quirk is needed in order to suppress
+automatic assertion of DTR & RTS on device open: this device's
+special PWON and RESET control drivers MUST NOT be activated
+when the port is ordinarily opened for plain serial communication,
+instead they must only be activated when a special userspace
+application explicitly requests such activation with a TIOCMBIS ioctl.
+These special userspace applications are responsible for making the
+needed pulse with a TIOCMBIS, delay, TIOCMBIC sequence.
+
+The special quirk is conditionalized on the DUART28C adapter's custom
+USB ID, and is further limited to FT2232D Channel B only: Channel A
+is wired normally, with the chip's ADBUS2 and ADBUS4 outputs
+actually being RTS and DTR rather than something else.
+
+Signed-off-by: Mychaela N. Falconia <falcon@freecalypso.org>
+[johan: reimplement using new NORDY flag, trim quirk comment]
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- include/linux/tty.h | 30 ++++++------------------------
- 1 file changed, 6 insertions(+), 24 deletions(-)
+ drivers/usb/serial/ftdi_sio.c     | 22 ++++++++++++++++++++++
+ drivers/usb/serial/ftdi_sio_ids.h |  1 +
+ 2 files changed, 23 insertions(+)
 
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index a99e9b8e4e31..eca7fd5e9fd0 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -612,10 +612,7 @@ static inline bool tty_port_cts_enabled(struct tty_port *port)
+diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
+index b69032c9ec2b..1ba34ffe3a25 100644
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -97,6 +97,7 @@ static int   ftdi_stmclite_probe(struct usb_serial *serial);
+ static int   ftdi_8u2232c_probe(struct usb_serial *serial);
+ static void  ftdi_USB_UIRT_setup(struct usb_serial_port *port);
+ static void  ftdi_HE_TIRA1_setup(struct usb_serial_port *port);
++static void  ftdi_duart28c_setup(struct usb_serial_port *port);
  
- static inline void tty_port_set_cts_flow(struct tty_port *port, bool val)
- {
--	if (val)
--		set_bit(TTY_PORT_CTS_FLOW, &port->iflags);
--	else
--		clear_bit(TTY_PORT_CTS_FLOW, &port->iflags);
-+	assign_bit(TTY_PORT_CTS_FLOW, &port->iflags, val);
+ static const struct ftdi_sio_quirk ftdi_jtag_quirk = {
+ 	.probe	= ftdi_jtag_probe,
+@@ -122,6 +123,10 @@ static const struct ftdi_sio_quirk ftdi_8u2232c_quirk = {
+ 	.probe	= ftdi_8u2232c_probe,
+ };
+ 
++static const struct ftdi_sio_quirk ftdi_duart28c_quirk = {
++	.port_probe = ftdi_duart28c_setup,
++};
++
+ /*
+  * The 8U232AM has the same API as the sio except for:
+  * - it can support MUCH higher baudrates; up to:
+@@ -1042,6 +1047,8 @@ static const struct usb_device_id id_table_combined[] = {
+ 		.driver_info = (kernel_ulong_t)&ftdi_jtag_quirk },
+ 	{ USB_DEVICE(FTDI_VID, FTDI_FALCONIA_JTAG_UNBUF_PID),
+ 		.driver_info = (kernel_ulong_t)&ftdi_jtag_quirk },
++	{ USB_DEVICE(FTDI_VID, FTDI_FALCONIA_DUART28C_PID),
++		.driver_info = (kernel_ulong_t)&ftdi_duart28c_quirk },
+ 	{ }					/* Terminating entry */
+ };
+ 
+@@ -2386,6 +2393,21 @@ static int ftdi_stmclite_probe(struct usb_serial *serial)
+ 	return 0;
  }
  
- static inline bool tty_port_active(struct tty_port *port)
-@@ -625,10 +622,7 @@ static inline bool tty_port_active(struct tty_port *port)
- 
- static inline void tty_port_set_active(struct tty_port *port, bool val)
++/*
++ * FreeCalypso DUART28C is an FT2232D-based USB to dual UART adapter
++ * with a special quirk: Channel B RTS and DTR outputs (BDBUS2 and BDBUS4
++ * on the chip) have been repurposed to drive PWON and RESET controls.
++ */
++static void ftdi_duart28c_setup(struct usb_serial_port *port)
++{
++	struct usb_serial *serial = port->serial;
++	struct usb_interface *intf = serial->interface;
++	int ifnum = intf->cur_altsetting->desc.bInterfaceNumber;
++
++	if (ifnum == 1)
++		tty_port_set_nordy(&port->port, true);
++}
++
+ static int ftdi_sio_port_remove(struct usb_serial_port *port)
  {
--	if (val)
--		set_bit(TTY_PORT_ACTIVE, &port->iflags);
--	else
--		clear_bit(TTY_PORT_ACTIVE, &port->iflags);
-+	assign_bit(TTY_PORT_ACTIVE, &port->iflags, val);
- }
+ 	struct ftdi_private *priv = usb_get_serial_port_data(port);
+diff --git a/drivers/usb/serial/ftdi_sio_ids.h b/drivers/usb/serial/ftdi_sio_ids.h
+index 3d47c6d72256..3081b8916a0a 100644
+--- a/drivers/usb/serial/ftdi_sio_ids.h
++++ b/drivers/usb/serial/ftdi_sio_ids.h
+@@ -45,6 +45,7 @@
+  */
+ #define FTDI_FALCONIA_JTAG_BUF_PID	0x7150
+ #define FTDI_FALCONIA_JTAG_UNBUF_PID	0x7151
++#define FTDI_FALCONIA_DUART28C_PID	0x7152
  
- static inline bool tty_port_check_carrier(struct tty_port *port)
-@@ -638,10 +632,7 @@ static inline bool tty_port_check_carrier(struct tty_port *port)
- 
- static inline void tty_port_set_check_carrier(struct tty_port *port, bool val)
- {
--	if (val)
--		set_bit(TTY_PORT_CHECK_CD, &port->iflags);
--	else
--		clear_bit(TTY_PORT_CHECK_CD, &port->iflags);
-+	assign_bit(TTY_PORT_CHECK_CD, &port->iflags, val);
- }
- 
- static inline bool tty_port_suspended(struct tty_port *port)
-@@ -651,10 +642,7 @@ static inline bool tty_port_suspended(struct tty_port *port)
- 
- static inline void tty_port_set_suspended(struct tty_port *port, bool val)
- {
--	if (val)
--		set_bit(TTY_PORT_SUSPENDED, &port->iflags);
--	else
--		clear_bit(TTY_PORT_SUSPENDED, &port->iflags);
-+	assign_bit(TTY_PORT_SUSPENDED, &port->iflags, val);
- }
- 
- static inline bool tty_port_initialized(struct tty_port *port)
-@@ -664,10 +652,7 @@ static inline bool tty_port_initialized(struct tty_port *port)
- 
- static inline void tty_port_set_initialized(struct tty_port *port, bool val)
- {
--	if (val)
--		set_bit(TTY_PORT_INITIALIZED, &port->iflags);
--	else
--		clear_bit(TTY_PORT_INITIALIZED, &port->iflags);
-+	assign_bit(TTY_PORT_INITIALIZED, &port->iflags, val);
- }
- 
- static inline bool tty_port_kopened(struct tty_port *port)
-@@ -677,10 +662,7 @@ static inline bool tty_port_kopened(struct tty_port *port)
- 
- static inline void tty_port_set_kopened(struct tty_port *port, bool val)
- {
--	if (val)
--		set_bit(TTY_PORT_KOPENED, &port->iflags);
--	else
--		clear_bit(TTY_PORT_KOPENED, &port->iflags);
-+	assign_bit(TTY_PORT_KOPENED, &port->iflags, val);
- }
- 
- extern struct tty_struct *tty_port_tty_get(struct tty_port *port);
+ /* Sienna Serial Interface by Secyourit GmbH */
+ #define FTDI_SIENNA_PID		0x8348
 -- 
 2.26.2
 
