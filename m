@@ -7,26 +7,26 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87083C4361A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A54EFC4361B
 	for <linux-serial@archiver.kernel.org>; Fri,  4 Dec 2020 09:41:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E51A4227BF
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Dec 2020 09:41:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 42393227C3
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Dec 2020 09:41:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387623AbgLDJkg (ORCPT
+        id S2387584AbgLDJkg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Fri, 4 Dec 2020 04:40:36 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:9382 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729672AbgLDJkg (ORCPT
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8652 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729671AbgLDJkg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 4 Dec 2020 04:40:36 -0500
 Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CnSMy2GThz78RS;
-        Fri,  4 Dec 2020 17:39:26 +0800 (CST)
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CnSMx44wbz15XWc;
+        Fri,  4 Dec 2020 17:39:25 +0800 (CST)
 Received: from thunder-town.china.huawei.com (10.174.177.9) by
  DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 4 Dec 2020 17:39:44 +0800
+ 14.3.487.0; Fri, 4 Dec 2020 17:39:46 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Philipp Zabel <p.zabel@pengutronix.de>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
@@ -45,9 +45,9 @@ To:     Philipp Zabel <p.zabel@pengutronix.de>,
         devicetree <devicetree@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>
 CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 2/5] dt-bindings: serial: add the required property 'additionalProperties'
-Date:   Fri, 4 Dec 2020 17:38:10 +0800
-Message-ID: <20201204093813.1275-3-thunder.leizhen@huawei.com>
+Subject: [PATCH 4/5] dt-bindings: devapc: add the required property 'additionalProperties'
+Date:   Fri, 4 Dec 2020 17:38:12 +0800
+Message-ID: <20201204093813.1275-5-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20201204093813.1275-1-thunder.leizhen@huawei.com>
 References: <20201204093813.1275-1-thunder.leizhen@huawei.com>
@@ -63,28 +63,28 @@ X-Mailing-List: linux-serial@vger.kernel.org
 When I do dt_binding_check for any YAML file, below wanring is always
 reported:
 
-xxx/serial/litex,liteuart.yaml: 'additionalProperties' is a required property
-xxx/serial/litex,liteuart.yaml: ignoring, error in schema:
-warning: no schema found in file: xxx/serial/litex,liteuart.yaml
+xxx/soc/mediatek/devapc.yaml: 'additionalProperties' is a required property
+xxx/soc/mediatek/devapc.yaml: ignoring, error in schema:
+warning: no schema found in file: xxx/soc/mediatek/devapc.yaml
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- Documentation/devicetree/bindings/serial/litex,liteuart.yaml | 2 ++
+ Documentation/devicetree/bindings/soc/mediatek/devapc.yaml | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/litex,liteuart.yaml b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
-index bc79b3cca542437..c4f1f489dc2d091 100644
---- a/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
-+++ b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
-@@ -29,6 +29,8 @@ required:
-   - compatible
-   - reg
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/devapc.yaml b/Documentation/devicetree/bindings/soc/mediatek/devapc.yaml
+index 6c763f873a632d2..31e4d3c339bfe72 100644
+--- a/Documentation/devicetree/bindings/soc/mediatek/devapc.yaml
++++ b/Documentation/devicetree/bindings/soc/mediatek/devapc.yaml
+@@ -44,6 +44,8 @@ required:
+   - clocks
+   - clock-names
  
 +additionalProperties: false
 +
  examples:
    - |
-     uart0: serial@e0001800 {
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
 -- 
 1.8.3
 
