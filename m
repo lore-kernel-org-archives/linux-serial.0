@@ -5,24 +5,24 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 700A8C0018C
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Dec 2020 09:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87083C4361A
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Dec 2020 09:41:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3A75A227BF
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Dec 2020 09:40:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E51A4227BF
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Dec 2020 09:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387625AbgLDJki (ORCPT
+        id S2387623AbgLDJkg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Dec 2020 04:40:38 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:9381 "EHLO
+        Fri, 4 Dec 2020 04:40:36 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:9382 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbgLDJkh (ORCPT
+        with ESMTP id S1729672AbgLDJkg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Dec 2020 04:40:37 -0500
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CnSMy1H6Jz77x8;
+        Fri, 4 Dec 2020 04:40:36 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CnSMy2GThz78RS;
         Fri,  4 Dec 2020 17:39:26 +0800 (CST)
 Received: from thunder-town.china.huawei.com (10.174.177.9) by
  DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
@@ -45,9 +45,9 @@ To:     Philipp Zabel <p.zabel@pengutronix.de>,
         devicetree <devicetree@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>
 CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 1/5] media: dt-bindings: add the required property 'additionalProperties'
-Date:   Fri, 4 Dec 2020 17:38:09 +0800
-Message-ID: <20201204093813.1275-2-thunder.leizhen@huawei.com>
+Subject: [PATCH 2/5] dt-bindings: serial: add the required property 'additionalProperties'
+Date:   Fri, 4 Dec 2020 17:38:10 +0800
+Message-ID: <20201204093813.1275-3-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20201204093813.1275-1-thunder.leizhen@huawei.com>
 References: <20201204093813.1275-1-thunder.leizhen@huawei.com>
@@ -63,42 +63,28 @@ X-Mailing-List: linux-serial@vger.kernel.org
 When I do dt_binding_check for any YAML file, below wanring is always
 reported:
 
-xxx/media/coda.yaml: 'additionalProperties' is a required property
-xxx/media/coda.yaml: ignoring, error in schema:
-warning: no schema found in file: xxx/media/coda.yaml
-
-There are three properties defined in allOf, they should be explicitly
-declared. Otherwise, "additionalProperties: false" will prohibit them.
+xxx/serial/litex,liteuart.yaml: 'additionalProperties' is a required property
+xxx/serial/litex,liteuart.yaml: ignoring, error in schema:
+warning: no schema found in file: xxx/serial/litex,liteuart.yaml
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- Documentation/devicetree/bindings/media/coda.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/devicetree/bindings/serial/litex,liteuart.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/media/coda.yaml b/Documentation/devicetree/bindings/media/coda.yaml
-index 7bac0057faf7319..199b0826cd01cb6 100644
---- a/Documentation/devicetree/bindings/media/coda.yaml
-+++ b/Documentation/devicetree/bindings/media/coda.yaml
-@@ -52,6 +52,10 @@ properties:
-     description: phandle pointing to the SRAM device node
-     maxItems: 1
- 
-+  interrupts: true
-+  interrupt-names: true
-+  power-domains: true
-+
- required:
+diff --git a/Documentation/devicetree/bindings/serial/litex,liteuart.yaml b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+index bc79b3cca542437..c4f1f489dc2d091 100644
+--- a/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
++++ b/Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+@@ -29,6 +29,8 @@ required:
    - compatible
    - reg
-@@ -96,6 +100,8 @@ allOf:
-           description: phandle pointing to the PU power domain
-           maxItems: 1
  
 +additionalProperties: false
 +
  examples:
    - |
-     vpu: video-codec@63ff4000 {
+     uart0: serial@e0001800 {
 -- 
 1.8.3
 
