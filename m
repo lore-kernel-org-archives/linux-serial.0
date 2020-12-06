@@ -2,41 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD5A2C4167B
-	for <linux-serial@archiver.kernel.org>; Sun,  6 Dec 2020 10:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 829C1C433FE
+	for <linux-serial@archiver.kernel.org>; Sun,  6 Dec 2020 10:43:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9FECF229C5
-	for <linux-serial@archiver.kernel.org>; Sun,  6 Dec 2020 10:34:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 474FD22D2C
+	for <linux-serial@archiver.kernel.org>; Sun,  6 Dec 2020 10:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726602AbgLFKe1 (ORCPT
+        id S1726076AbgLFKnS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 6 Dec 2020 05:34:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33814 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726077AbgLFKe1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 6 Dec 2020 05:34:27 -0500
-Date:   Sun, 6 Dec 2020 12:33:39 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607250825;
-        bh=FFP6fQBmDCHm8swKoWnJVTxbDk9GrPHUWUpo9tW5yY0=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ekmrj4KTjNC1cgofE0oq5OF0cOcTyXji6tWvq7WBdjH8hxRcasbbJPoF0emiydafR
-         zYtiK9R/KI1pj6KdZjei7X4VncEwZTkF0Vb3A6pms8fveA/XlYAMm28d+FxQQitnJl
-         gJ79AHy3i7JfE4SP2q56oYBQvDTzMfJmznQQUp70xO8XV9NPy0X8DDm09apDp6E9sE
-         94K207uVjdFifSOWFV7dNouJeKHBcd6uA0jSUnRKYBpCzdK6R5TKv3KariwC5J2Xfy
-         J87Pfu2p8EFtaNxTyc2mtzb46IJp11o3tbE8x51kHJCox8excX9K/YMY24xYPlXTvl
-         DNjPW7wmCDhRw==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
+        Sun, 6 Dec 2020 05:43:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48415 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726077AbgLFKnS (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 6 Dec 2020 05:43:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607251311;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DGB1JYDSRnOOOUOqlFv/3mgP78JkLdIpK80wJrAOKSU=;
+        b=I4eLuiUwXNZv7/YBMPksjPUaYrkBqfqrPiTXZwINIb3+rQGbtdreix7u9uGC4aFbuL/m5y
+        vWQUPdTZVZbDOgLddeWCfG84feuhzPOuQMfRnrMp2o1GxsCI9CsqG6tYKtvnrgSYcb/uQu
+        U7OWuFe3zI3GEXpVKH+xYmWjtvHjLfU=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-175-nEcnru3QPo-ckqqJHzv8sQ-1; Sun, 06 Dec 2020 05:41:49 -0500
+X-MC-Unique: nEcnru3QPo-ckqqJHzv8sQ-1
+Received: by mail-ed1-f70.google.com with SMTP id l24so4420900edt.16
+        for <linux-serial@vger.kernel.org>; Sun, 06 Dec 2020 02:41:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DGB1JYDSRnOOOUOqlFv/3mgP78JkLdIpK80wJrAOKSU=;
+        b=ql9W1CAfwlWdEt3Zmxxr1xSdXgYuhmA58UTaarq8q1BuRcuLGVD1Hqcpgsd8FAjqt2
+         A5GJEIbir0wFpNIt1aoMFHnKCzEhaOHoDfPLNdNHiUz4FJc/out3CbfpICR2qK9smYm1
+         9DE1ZIxlVolC3nOXlBfkcGOybJwW6/zWDFhBYAvu3D7OcDNE6G+tw7ucHuuQ2ihL2EBN
+         OXZHiaek5mk5q5vA4uaKTFQYQrS+XbZ8vjOPV1MRR7EgYhX6/sZSBKSAap0UttEpOerK
+         +vseE8GKynWOcEU8myVN4yDJIXj2ST4PRqYtwTLdE5pA7XyOGcimVOD2DT3H2I+PsVXv
+         QJ9Q==
+X-Gm-Message-State: AOAM533HASXB5n20LzZl1/HHEo6KLk40ppkpD+obgI6c0EAkyPJmnOp7
+        1LVL6Rl07dNtSLA0WkUTn0aRe5euSmXhAqkoBXVRVEEDGf/XJe2u9jjVvCxWKZUeQvwKsGcmW8h
+        6j+KvJEVf0pfoQuOop+KKxIt3
+X-Received: by 2002:a17:906:1412:: with SMTP id p18mr14920056ejc.480.1607251308246;
+        Sun, 06 Dec 2020 02:41:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwMIc++XaaZp76MeeyQPNXmvAvqxtTa/qqjkqPQBgHHCNRABisppYTbhXm/z2wIDSQde6SWag==
+X-Received: by 2002:a17:906:1412:: with SMTP id p18mr14920037ejc.480.1607251308088;
+        Sun, 06 Dec 2020 02:41:48 -0800 (PST)
+Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
+        by smtp.gmail.com with ESMTPSA id u16sm2416359ejy.90.2020.12.06.02.41.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Dec 2020 02:41:47 -0800 (PST)
+Subject: Re: [PATCH v2 0/9] Add support for Microsoft Surface System
+ Aggregator Module
+To:     Leon Romanovsky <leon@kernel.org>
 Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org, Mark Gross <mgross@linux.intel.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>,
+        =?UTF-8?Q?Barnab=c3=a1s_P=c5=91cze?= <pobrn@protonmail.com>,
         Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         "Rafael J . Wysocki" <rjw@rjwysocki.net>,
@@ -46,206 +78,64 @@ Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
         Masahiro Yamada <masahiroy@kernel.org>,
         Michal Marek <michal.lkml@markovi.net>,
         Jonathan Corbet <corbet@lwn.net>,
-        =?utf-8?B?Qmxhxb4=?= Hrastnik <blaz@mxxn.io>,
+        =?UTF-8?Q?Bla=c5=be_Hrastnik?= <blaz@mxxn.io>,
         Dorian Stoll <dorian.stoll@tmsp.io>,
         platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-acpi@vger.kernel.org, linux-kbuild@vger.kernel.org,
         linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2 0/9] Add support for Microsoft Surface System
- Aggregator Module
-Message-ID: <20201206103339.GB693271@unreal>
 References: <20201203212640.663931-1-luzmaximilian@gmail.com>
  <20201206070705.GA686270@unreal>
  <052ecf4d-9e08-2c08-8a06-c30ba2b28d82@redhat.com>
  <20201206085631.GE210929@unreal>
  <f76b329a-b6f5-486d-b06a-452ec4c51979@redhat.com>
+ <20201206103339.GB693271@unreal>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <f2511463-3bb8-a640-7863-b206db136109@redhat.com>
+Date:   Sun, 6 Dec 2020 11:41:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f76b329a-b6f5-486d-b06a-452ec4c51979@redhat.com>
+In-Reply-To: <20201206103339.GB693271@unreal>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=hdegoede@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Dec 06, 2020 at 11:04:06AM +0100, Hans de Goede wrote:
-> Hi,
->
-> On 12/6/20 9:56 AM, Leon Romanovsky wrote:
-> > On Sun, Dec 06, 2020 at 09:41:21AM +0100, Hans de Goede wrote:
-> >> Hi Leon,
-> >>
-> >> On 12/6/20 8:07 AM, Leon Romanovsky wrote:
-> >>> On Thu, Dec 03, 2020 at 10:26:31PM +0100, Maximilian Luz wrote:
-> >>>> Hello,
-> >>>>
-> >>>> Here is version two of the Surface System Aggregator Module (SAM/SSAM)
-> >>>> driver series, adding initial support for the embedded controller on 5th
-> >>>> and later generation Microsoft Surface devices. Initial support includes
-> >>>> the ACPI interface to the controller, via which battery and thermal
-> >>>> information is provided on some of these devices.
-> >>>>
-> >>>> The previous version and cover letter detailing what this series is
-> >>>> about can be found at
-> >>>>
-> >>>>   https://lore.kernel.org/platform-driver-x86/20201115192143.21571-1-luzmaximilian@gmail.com/
-> >>>>
-> >>>> This patch-set can also be found at the following repository and
-> >>>> reference, if you prefer to look at a kernel tree instead of these
-> >>>> emails:
-> >>>>
-> >>>>   https://github.com/linux-surface/kernel tags/s/surface-aggregator/v2
-> >>>>
-> >>>> Thank you all for the feedback to v1, I hope I have addressed all
-> >>>> comments.
-> >>>
-> >>>
-> >>> I think that it is too far fetched to attempt and expose UAPI headers
-> >>> for some obscure char device that we are all know won't be around in
-> >>> a couple of years from now due to the nature of how this embedded world
-> >>> works.
-> >>
-> >> This is not for an embedded device, but for the popular line of
-> >> Microsoft Surface laptops / 2-in-1s...
-> >
-> > It is the naming, we don't have char device for every "laptop" vendor.
-> > Why is Microsoft different here?
->
-> Because their hardware department has invented a whole new way of dealing
-> with a bunch of things at the hardware level (for some reason).
+Hi,
 
-They are not different from any other vendor, it is much cheaper and easier
-to do not follow standard implementations.
+On 12/6/20 11:33 AM, Leon Romanovsky wrote:
+> On Sun, Dec 06, 2020 at 11:04:06AM +0100, Hans de Goede wrote:
 
->
-> Also almost all laptop vendors have a whole bunch of laptop vendor
-> specific userspace API in the form of sysfs files exported by
-> drivers/platform/x86/laptop-vendor.c drivers. E.g. do:
->
-> ls /sys/bus/platform/devices/thinkpad_acpi/
+<snip>
 
-It is different from the proposed /dev/surface... char device.
+>> But there is a difference between being careful and just nacking
+>> it because no new UAPI may be added at all (also see GKH's response).
+> 
+> I saw, the author misunderstood the Greg's comments.
 
->
-> An any IBM/Lenovo Thinkpad (and only on a Thinkpad) to see a bunch
-> of laptop vendor specific UAPI.
+Quoting from patch 8/9:
 
-Yes, it is gross, IBM did it in early days of Linux. Other vendors don't
-have anything like that.
+"
++==============================
++User-Space EC Interface (cdev)
++==============================
++
++The ``surface_aggregator_cdev`` module provides a misc-device for the SSAM
++controller to allow for a (more or less) direct connection from user-space to
++the SAM EC. It is intended to be used for development and debugging, and
++therefore should not be used or relied upon in any other way. Note that this
++module is not loaded automatically, but instead must be loaded manually.
+"
 
->
-> Since I've become the pdx86 subsys maintainer I've actually been
-> pushing back against adding more of this, instead trying to
-> either use existing UAPIs, or defining new common UAPIs which can
-> be shared between vendors.
->
-> So I agree very much with you that we need to be careful about
-> needlessly introducing new UAPI.
->
-> But there is a difference between being careful and just nacking
-> it because no new UAPI may be added at all (also see GKH's response).
+If I'm not mistaken that seems to be pretty much what Greg asked for.
 
-I saw, the author misunderstood the Greg's comments.
+Regards,
 
->
-> >>> More on that, the whole purpose of proposed interface is to debug and
-> >>> not intended to be used by any user space code.
-> >>
-> >> The purpose is to provide raw access to the Surface Serial Hub protocol,
-> >> just like we provide raw access to USB devices and have hidraw devices.
-> >
-> > USB devices implement standard protocol, this surface hub is nothing
-> > even close to that.
->
-> The USB protocol just defines a transport layer, outside of the USB classes
-> there are plenty of proprietary protocols on top of that transport.
->
-> And this chardev just offers access to the Surface Serial Hub transport
-> protocol. And if you want something even closer the i2cdev module offers
-> raw I2C transfer access and I2C defines no protocol other then
-> how to read or write a number of bytes.
->
-> I do a lot of hw enablement work and being able to poke HID / USB / I2C
-> devices directly from userspace is very useful for this.
+Hans
 
-Greg wrote how to do it.
-
->
-> >> So this goes a litle beyond just debugging; and eventually the choice
-> >> may be made to implement some functionality with userspace drivers,
-> >> just like we do for some HID and USB devices.
-> >
-> > I don't know how it goes in device/platform area, but in other large
-> > subsystems, UAPI should be presented with working user-space part.
-> >
-> >>
-> >> Still I agree with you that adding new userspace API is something which
-> >> needs to be considered carefully. So I will look at this closely when
-> >> reviewing this set.
->
-> So this ^^^ still stands, I agree with you that adding new UAPI needs
-> to be considered carefully and when I get around to reviewing this
-> that is exactly what I will do.
->
-> Maximilian, can you perhaps explain a bit more of what you want / expect
-> to use the chardev for, and maybe provide pointers to the matching
-> userspace utilities (which I presume you have) ?
->
-> >>> Also the idea that you are creating new bus just for this device doesn't
-> >>> really sound right. I recommend you to take a look on auxiliary bus and
-> >>> use it or come with very strong justifications why it is not fit yet.
-> >>
-> >> AFAIK the auxiliary bus is for sharing a single device between multiple
-> >> drivers, while the main device-driver also still offers functionality
-> >> (beyond the providing of access) itself.
-> >
-> > The idea behind auxiliary bus is to slice various functionalities into
-> > different sub-drivers, see it as a way to create subsystem inside one
-> > driver.
->
-> AFAIK the idea is to be able to combine multiple physical devices, e.g.
-> a PCI device + an ACPI enumerated platform device and then slice the
-> combination of those 2 up in new devices which may use parts of both
-> parent devices, quoting from:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git/tree/Documentation/driver-api/auxiliary_bus.rst?h=driver-core-next&id=7de3697e9cbd4bd3d62bafa249d57990e1b8f294
->
-> "multiple devices might implement a common intersection of functionality"
-
-It is one way, another is to take one device and create many small
-devices out of it.
-https://lore.kernel.org/alsa-devel/20201026111849.1035786-1-leon@kernel.org/
-
->
-> IOW this is for cases where the simpler bus + devices model does not
-> work well. AFAICT in this case the simpler bus + devices does work
-> well, so there is no need to use the auxiliary bus.
-
-It is designed to replace invention of custom buses.
-
->
-> >> This is more akin to how the WMI driver also models different WMI
-> >> functions as a bus + devices on the bus.
-> >>
-> >> Or how the SDIO driver multiplex a single SDIO device into its
-> >> functions by again using a bus + devices on the bus model.
-> >>
-> >> Also this has been in the works for quite a while now, the Linux on
-> >> Microsoft Surface devices community has been working on this out of
-> >> tree for a long time, see:
-> >> https://github.com/linux-surface/
-> >
-> > It is not relevant, the code is merged than it is ready.
->
-> It is relevant, you cannot expect drivers which were written during
-> the last 6 months to use functionality which is not even in the
-> mainline kernel yet (yes it is in -next, but not in mainline).
->
-> Now if that new functionality where to provide major benefits to
-> the code making it much cleaner / better then yes asking to rewrite
-> it to use that new functionality would make sense.
-
-And who will rewrite it? My experience shows that right code should be
-written from the beginning otherwise the code has too many chances to be
-abandoned.
-
-Thanks
