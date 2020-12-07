@@ -2,74 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC9FC2BB40
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Dec 2020 09:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D7CCC4361B
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Dec 2020 09:43:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 620AE233FA
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Dec 2020 09:12:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 465842220B
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Dec 2020 09:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726703AbgLGJMG (ORCPT
+        id S1726356AbgLGJmu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Dec 2020 04:12:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43742 "EHLO mail.kernel.org"
+        Mon, 7 Dec 2020 04:42:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57816 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726677AbgLGJMG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Dec 2020 04:12:06 -0500
-Date:   Mon, 7 Dec 2020 10:12:39 +0100
+        id S1726237AbgLGJmt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 7 Dec 2020 04:42:49 -0500
+Date:   Mon, 7 Dec 2020 10:43:19 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1607332289;
-        bh=pVcQnzFdOBdk2G2zSGbi6yAHzkwoQI7eBtrtT4e8Gk8=;
+        s=korg; t=1607334129;
+        bh=N36WJO4ls+mR/cWcgWvhDx0wdoQ4tATXeyYu8yA2r9E=;
         h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tocgW9/ZyJWYiEYa4KssrRl5HhEvRADojlLiDNxdpZFIBoEFdowIeJ34n671JFHA3
-         fSB+Em92Tm4ThDbPeYos1NroDMEoxpzHGtvPqdHt7tqav59vBUKFFLRKTm9W/dX1d5
-         O9+qIzi4fMSld3PcefFR0YpVuw8EGUNwREUa6pnI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        linux-kernel@vger.kernel.org, Mark Gross <mgross@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?utf-8?B?Qmxhxb4=?= Hrastnik <blaz@mxxn.io>,
-        Dorian Stoll <dorian.stoll@tmsp.io>,
-        platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2 0/9] Add support for Microsoft Surface System
- Aggregator Module
-Message-ID: <X83yB9/RbosOIdbm@kroah.com>
-References: <20201203212640.663931-1-luzmaximilian@gmail.com>
- <20201206070705.GA686270@unreal>
- <9dd05a66-efb7-74d2-4f5b-347655b710be@gmail.com>
- <aecfdbf2-32bf-1ee5-fe72-0c0923773507@redhat.com>
+        b=VQWcOTtpJy4jwqP1aoa4kokShC0h6QJy9vZwavk9ogQr2IJzSEB+PN4VyTCpy4rHL
+         0zRK0IOe+EQdBqnyHUjvyvfRJ84L73DSAda3rXItsOwpjUBWbBe8aueaXtkJMYsp7T
+         jQkEBUDmvMamZWCcaQujQiUKqYGbg5cWUzSJrmYk=
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     bjorn.andersson@linaro.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mka@chromium.org, dianders@chromium.org,
+        linux-kernel@vger.kernel.org, saravanak@google.com
+Subject: Re: [PATCH  3/3] Serial: Separate out earlycon support
+Message-ID: <X835NxSOLM7+17T6@kroah.com>
+References: <1607330847-15522-1-git-send-email-akashast@codeaurora.org>
+ <1607330847-15522-4-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aecfdbf2-32bf-1ee5-fe72-0c0923773507@redhat.com>
+In-Reply-To: <1607330847-15522-4-git-send-email-akashast@codeaurora.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 09:49:03AM +0100, Hans de Goede wrote:
-> Note if in the future you do see benefit in switching the auxiliary bus
-> I have no problems with that. But atm I don't really see any benefits of
-> doing so, so then we would just be switching over for the sake of switching
-> over which does not seem productive.
+On Mon, Dec 07, 2020 at 02:17:27PM +0530, Akash Asthana wrote:
+> Separate out earlycon support from serial driver and remove it's
+> dependency on QUP wrapper driver.
+> 
+> This enable us to manage earlycon independently and we can re-use the
+> same earlycon driver for android project which currently uses
+> downstream version of QUP drivers.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+>  drivers/tty/serial/Kconfig              |   9 +
+>  drivers/tty/serial/Makefile             |   1 +
+>  drivers/tty/serial/qcom_geni_earlycon.c | 649 ++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/qcom_geni_serial.c   |  97 -----
+>  4 files changed, 659 insertions(+), 97 deletions(-)
+>  create mode 100644 drivers/tty/serial/qcom_geni_earlycon.c
 
-I too do not see the benefit at this time to switch either.
+Nit, your subject line shoudl say somewhere that this is the qcom
+earlycon driver/support, not "earlycon in general".
 
 thanks,
 
