@@ -7,43 +7,43 @@ X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07120C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB2EC4361B
 	for <linux-serial@archiver.kernel.org>; Mon,  7 Dec 2020 23:25:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C388823A21
+	by mail.kernel.org (Postfix) with ESMTP id DE21523A31
 	for <linux-serial@archiver.kernel.org>; Mon,  7 Dec 2020 23:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726196AbgLGXZI (ORCPT
+        id S1726231AbgLGXZK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Dec 2020 18:25:08 -0500
-Received: from mga01.intel.com ([192.55.52.88]:21470 "EHLO mga01.intel.com"
+        Mon, 7 Dec 2020 18:25:10 -0500
+Received: from mga05.intel.com ([192.55.52.43]:32680 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726016AbgLGXZI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Dec 2020 18:25:08 -0500
-IronPort-SDR: rOvOgPtKtRXEewYxlppiEnlQ93zs94LXt3HBuoHpQQZN2y/+DtRtRP0PdnlPxvLZy2+tNZRq7J
- g9s3NSMmDqew==
-X-IronPort-AV: E=McAfee;i="6000,8403,9828"; a="192076766"
+        id S1726016AbgLGXZK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 7 Dec 2020 18:25:10 -0500
+IronPort-SDR: 6Mx3m8vjILqwmomguuWpO/sHgpud4MSariIeNUYLwr5yLhFt8sZl6ND2+YJ3rCIUlRKvm78BIB
+ jhKtsBno28dg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9828"; a="258507331"
 X-IronPort-AV: E=Sophos;i="5.78,401,1599548400"; 
-   d="scan'208";a="192076766"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2020 15:24:27 -0800
-IronPort-SDR: hLHKTCiBw7mTsrvgymYBNhqeIKPWPBJTozh3gMmbJ0Gt44ZcaY04jupUgNtzjfjpIMwqkaRe9g
- T0ex2ucL846Q==
+   d="scan'208";a="258507331"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2020 15:24:27 -0800
+IronPort-SDR: ZqxNmrR1VeHykHq/2y16DGfsk1ZMm6Vjp24/f4pscJTYs60M81fegUuaMxO2FHyx/GQN7FKgBs
+ L/ZH2vVhvRiw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.78,401,1599548400"; 
-   d="scan'208";a="317441692"
+   d="scan'208";a="437142797"
 Received: from lkp-server01.sh.intel.com (HELO f1d34cfde454) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 07 Dec 2020 15:24:26 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 07 Dec 2020 15:24:26 -0800
 Received: from kbuild by f1d34cfde454 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1kmPrl-0000C1-VE; Mon, 07 Dec 2020 23:24:25 +0000
-Date:   Tue, 08 Dec 2020 07:24:10 +0800
+        id 1kmPrm-0000C4-1V; Mon, 07 Dec 2020 23:24:26 +0000
+Date:   Tue, 08 Dec 2020 07:24:12 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 76437b340b242fd21952f54ba8965d21a1ffa8c8
-Message-ID: <5fceb99a.IJsi2BN+hQ4QrP/T%lkp@intel.com>
+Subject: [tty:tty-next] BUILD SUCCESS
+ ba3b8bb1263dfb87914ef0ccf5f3a78604b3686b
+Message-ID: <5fceb99c.q7JlFDFn/IJQyQYZ%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -52,41 +52,41 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 76437b340b242fd21952f54ba8965d21a1ffa8c8  earlycon: drop semicolon from earlycon macro
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-next
+branch HEAD: ba3b8bb1263dfb87914ef0ccf5f3a78604b3686b  Merge 5.10-rc7 into tty-next
 
 i386-tinyconfig vmlinux size:
 
 +-------+------------------------------+-------------------------------------------+
 | DELTA |            SYMBOL            |                  COMMIT                   |
 +-------+------------------------------+-------------------------------------------+
-| +1821 | TOTAL                        | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
+| +1821 | TOTAL                        | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
 |  +126 | TOTAL                        | ba3b8bb1263d Merge 5.10-rc7 into tty-next |
-| +1751 | TEXT                         | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
+| +1751 | TEXT                         | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
 |  +125 | TEXT                         | ba3b8bb1263d Merge 5.10-rc7 into tty-next |
-|   +68 | BSS                          | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|  +774 | seq_read_iter()              | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
+|   +68 | BSS                          | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|  +774 | seq_read_iter()              | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
 |  +255 | __add_to_page_cache_locked() | ba3b8bb1263d Merge 5.10-rc7 into tty-next |
-|  +250 | __invalidate_mapping_pages() | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|  +225 | intel_pmu_drain_pebs_icl()   | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|  +224 | intel_pmu_drain_pebs_nhm()   | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|  +201 | intel_pmu_drain_pebs_core()  | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|  +117 | init.text                    | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
+|  +250 | __invalidate_mapping_pages() | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|  +225 | intel_pmu_drain_pebs_icl()   | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|  +224 | intel_pmu_drain_pebs_nhm()   | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|  +201 | intel_pmu_drain_pebs_core()  | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|  +117 | init.text                    | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
 |  +103 | collect_syscall()            | ba3b8bb1263d Merge 5.10-rc7 into tty-next |
-|   +68 | dummy_iregs                  | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|   +66 | perf_event_aux_event()       | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|   +66 | perf_log_throttle()          | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|   -69 | __sb_start_write()           | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|   -78 | __ptrace_may_access()        | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|  -250 | __invalidate_mapping_pages() | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
+|   +68 | dummy_iregs                  | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|   +66 | perf_event_aux_event()       | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|   +66 | perf_log_throttle()          | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|   -69 | __sb_start_write()           | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|   -78 | __ptrace_may_access()        | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|  -250 | __invalidate_mapping_pages() | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
 |  -255 | __add_to_page_cache_locked() | ba3b8bb1263d Merge 5.10-rc7 into tty-next |
-|  -356 | __intel_pmu_pebs_event()     | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
-|  -470 | seq_read()                   | 3650b228f83a..76437b340b24 (ALL COMMITS)  |
+|  -356 | __intel_pmu_pebs_event()     | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
+|  -470 | seq_read()                   | 3650b228f83a..ba3b8bb1263d (ALL COMMITS)  |
 +-------+------------------------------+-------------------------------------------+
 
-elapsed time: 721m
+elapsed time: 722m
 
-configs tested: 129
+configs tested: 118
 configs skipped: 2
 
 The following configs have been built successfully.
@@ -96,51 +96,34 @@ gcc tested configs:
 arm                                 defconfig
 arm64                            allyesconfig
 arm64                               defconfig
-arm                              allyesconfig
 arm                              allmodconfig
-powerpc                 mpc836x_rdk_defconfig
-arc                     haps_hs_smp_defconfig
-mips                      fuloong2e_defconfig
-powerpc                     ksi8560_defconfig
+arm                              allyesconfig
 arm                         cm_x300_defconfig
-mips                      maltasmvp_defconfig
-arc                     nsimosci_hs_defconfig
-powerpc                     kilauea_defconfig
-s390                                defconfig
-powerpc                  mpc866_ads_defconfig
-xtensa                    smp_lx200_defconfig
-arm                        trizeps4_defconfig
-xtensa                generic_kc705_defconfig
-m68k                        mvme16x_defconfig
-m68k                          amiga_defconfig
-mips                      pistachio_defconfig
-sh                           se7750_defconfig
-mips                     cu1830-neo_defconfig
-powerpc                     pq2fads_defconfig
-mips                    maltaup_xpa_defconfig
-mips                         tb0226_defconfig
-arm                        multi_v7_defconfig
+powerpc                 xes_mpc85xx_defconfig
+powerpc                    mvme5100_defconfig
+arm                            pleb_defconfig
+mips                      bmips_stb_defconfig
+arm                       versatile_defconfig
 powerpc                      ep88xc_defconfig
 arm                         bcm2835_defconfig
 mips                        maltaup_defconfig
 powerpc                      makalu_defconfig
 m68k                          multi_defconfig
-mips                     loongson1b_defconfig
-arc                            hsdk_defconfig
-powerpc                     tqm8555_defconfig
-sh                            shmin_defconfig
-arm                  colibri_pxa270_defconfig
-c6x                              alldefconfig
+arc                      axs103_smp_defconfig
+powerpc                      walnut_defconfig
+sh                             sh03_defconfig
+powerpc                     asp8347_defconfig
+powerpc                     pq2fads_defconfig
+arc                     haps_hs_smp_defconfig
 arm                            mmp2_defconfig
 arm                          pcm027_defconfig
 m68k                         amcore_defconfig
 arm                          pxa168_defconfig
-powerpc                      pcm030_defconfig
-powerpc                 mpc8313_rdb_defconfig
-sparc                            alldefconfig
+mips                         db1xxx_defconfig
+mips                        omega2p_defconfig
+powerpc                   lite5200b_defconfig
+arm                        realview_defconfig
 arm                      footbridge_defconfig
-powerpc                      ppc40x_defconfig
-sh                            migor_defconfig
 arm                       mainstone_defconfig
 arm                           omap1_defconfig
 arc                              alldefconfig
@@ -150,6 +133,11 @@ powerpc                         ps3_defconfig
 powerpc                    ge_imp3a_defconfig
 powerpc                 mpc832x_rdb_defconfig
 powerpc                 mpc837x_rdb_defconfig
+powerpc                    sam440ep_defconfig
+powerpc                    klondike_defconfig
+m68k                          atari_defconfig
+powerpc                mpc7448_hpc2_defconfig
+sh                            migor_defconfig
 nds32                             allnoconfig
 arc                 nsimosci_hs_smp_defconfig
 mips                          rb532_defconfig
@@ -175,6 +163,7 @@ sh                               allmodconfig
 parisc                              defconfig
 s390                             allyesconfig
 parisc                           allyesconfig
+s390                                defconfig
 i386                             allyesconfig
 sparc                            allyesconfig
 sparc                               defconfig
