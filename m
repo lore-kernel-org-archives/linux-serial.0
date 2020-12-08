@@ -2,176 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFD3C4361B
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Dec 2020 14:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E69B0C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Dec 2020 15:31:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0700323A79
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Dec 2020 14:55:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 993F123A7B
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Dec 2020 15:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729916AbgLHOzD (ORCPT
+        id S1729619AbgLHPbu convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Dec 2020 09:55:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729386AbgLHOzD (ORCPT
+        Tue, 8 Dec 2020 10:31:50 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:37407 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729386AbgLHPbu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Dec 2020 09:55:03 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3892C0613D6;
-        Tue,  8 Dec 2020 06:54:22 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id c7so17858238edv.6;
-        Tue, 08 Dec 2020 06:54:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JsWjwoYEgAbELe13CUoCOO68+RuWkKxn3fV23mNX3vU=;
-        b=WzoFlR+1Wl6dnE5qW/Yq32zVEL3eblUGt6N9zW3IyPFozPs3eMxbyFvW9nuX2qbtDZ
-         22NwV0MjDtw+2o0260aJpquknaxeSuX0dbIP3bTsPfZVuotOrTR8FQgEHZIo232Na9e3
-         IeQt8sMpOQf7R4MX+tCNd2ydER/Vbj8zm6lC0pwi5Ik1UbdyY3y685xlWYYNKBG5EClc
-         HAwII2t4O0eiUgKFxNV/N/t2yIVYhnc5bFbLx6RGyvTkbwjhAP/elaBGjlJL29Wrk3Tf
-         g2FkTSqCZkf1D0UCVuOiwx6GY7eT84gcQ3Ic0ZzB7LXldsTHG8KxJ96o3OKMFtlrtLDR
-         y9aQ==
+        Tue, 8 Dec 2020 10:31:50 -0500
+Received: by mail-ot1-f65.google.com with SMTP id o11so13440701ote.4
+        for <linux-serial@vger.kernel.org>; Tue, 08 Dec 2020 07:31:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JsWjwoYEgAbELe13CUoCOO68+RuWkKxn3fV23mNX3vU=;
-        b=MiRAFNyNl1EdzKAIeUwp1+pzh7PtuEBOjzsFbAw/hW35AwOSvWqKQwBw+gOBa6DmK7
-         LgFbYYJXyzBMLVGbUL331jtJXzmEBomzCoY9UJbjg//gPI0DYkIkJ3nhE++E98x+Gv97
-         lzNeown28s7qrWjzYS8AWY80hkB4Y573rOKFg8zW8tEMhhA/5Om6lA7HnIVqsm1PkX6O
-         g6XIHcjePknMT0vqd/a04fZsf+YGwDuIRWDZNdo5rwr1HO6FRKh0QaNMboXrfWL3uYXR
-         CJmxRd4YBvk+t2qz8PFFztMR5HTkzy+ZKGtoH71NoCboOaObDgaU294pUPStUtR4gBk3
-         Sj/A==
-X-Gm-Message-State: AOAM530B07UbAl0ASKJmLBGJNk0/jwMRxegS3uf5NJ6bKXUSf9U1LuxH
-        BDlTHjbiugt0IJrSHuQg/SRy8vKS4sY=
-X-Google-Smtp-Source: ABdhPJxAxwIONKKlT41YQVw5zrtg7UmpONATTyuwBGEhqTDt71BnKRdiNWs5dzar2lnyLJm5hg5l/A==
-X-Received: by 2002:aa7:d6d8:: with SMTP id x24mr25369803edr.105.1607439261216;
-        Tue, 08 Dec 2020 06:54:21 -0800 (PST)
-Received: from [192.168.2.202] (pd9e5a486.dip0.t-ipconnect.de. [217.229.164.134])
-        by smtp.gmail.com with ESMTPSA id be6sm17603929edb.29.2020.12.08.06.54.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Dec 2020 06:54:20 -0800 (PST)
-Subject: Re: [PATCH v2 1/9] platform/surface: Add Surface Aggregator subsystem
-To:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Mark Gross <mgross@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?UTF-8?Q?Barnab=c3=a1s_P=c5=91cze?= <pobrn@protonmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        =?UTF-8?Q?Bla=c5=be_Hrastnik?= <blaz@mxxn.io>,
-        Dorian Stoll <dorian.stoll@tmsp.io>,
-        platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-References: <20201203212640.663931-1-luzmaximilian@gmail.com>
- <20201203212640.663931-2-luzmaximilian@gmail.com>
- <fd24d99a-e4f4-2030-e9bb-bcd549ce4bb9@redhat.com>
- <ac50a0c7-806e-d949-6440-620ec966099a@gmail.com>
- <9748d778-b5e9-c80c-5968-a77b3203d769@redhat.com>
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-Message-ID: <b77b74d2-b854-7e8f-fd8e-abee6cdd22ff@gmail.com>
-Date:   Tue, 8 Dec 2020 15:54:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=93g+Ol6Ot1+Wqz2qR0mY6H3PF8b97iQ3cDYJ4vzcDIM=;
+        b=IWPvSK7KSC9guB1mdTant/5UPKe1dRdA9qNqca0ybRnqhsdQaNOAVO38geXlD6XB2a
+         26KqrL48b8HFUpfzhkGGJEn8GMhWqe5NoWKK2IKgzmLiGn/U+KbyotaiQW24qiLPXsCu
+         lGFiqW4j/e2irzh3I9a6CuGNaNtR4CB9H1f5KgoWnls7bNFMzfoQ2giZyrpILWu8KENo
+         lBXZQKsBDLTYcE/7v9hWj4I8mOg5fm/PxOnN0yIU3cWgiMAVTHDGspFO3F8/0hv/pDJa
+         slAxBIk9RpPCWlPdhLTg21Oq4DLbvrJYNrOZeaYzPdgyt6XIGcw+JDChfrEZtikmdALj
+         cDOw==
+X-Gm-Message-State: AOAM530LOPU6VRQuZ/6qW72Vb+1CmDBJTLwKdqHBu7FvT5636ezfUjec
+        nECuwPFtr4/US61lbe9E13HGA3bSoiZs0Ia0er4=
+X-Google-Smtp-Source: ABdhPJwMJ12/HVj/+z4M6MTJQDnJv9cMD+A33Wzwf3d81Ntqr2LpDOnWwWjoP7zZK/BjqIHQpUdAzuCEn3E3T/cnd6Q=
+X-Received: by 2002:a05:6830:210a:: with SMTP id i10mr17136911otc.145.1607441469137;
+ Tue, 08 Dec 2020 07:31:09 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <9748d778-b5e9-c80c-5968-a77b3203d769@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20201125081352.25409-1-zajec5@gmail.com> <X74Uanu26sx4Hait@kroah.com>
+ <6b107933-9ab1-7c46-c383-ed39b71b4ecb@gmail.com> <X74bxfji0uTZV8y9@kroah.com>
+ <CAMuHMdXA+B_=abXAzCt5m3djjhLpzuDEtEhF_8UYkm95hu_4PA@mail.gmail.com> <805a393a-73c2-6016-da65-681ddbebebb3@gmail.com>
+In-Reply-To: <805a393a-73c2-6016-da65-681ddbebebb3@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 8 Dec 2020 16:30:58 +0100
+Message-ID: <CAMuHMdX9rz1_7QQiBvn-vL_dj3YxVpksznkz4a2T6mBgajUxGA@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: bcm63xx: allow building on ARM64
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Rafał,
 
+On Tue, Dec 8, 2020 at 11:59 AM Rafał Miłecki <zajec5@gmail.com> wrote:
+> Could you suggest & send some Documentation on that so we have a global rule
+> instead of per-tree / per-maintainer preferences, please? I'd really
+> appreciate that.
 
-On 12/8/20 3:43 PM, Hans de Goede wrote:
-> Hi,
-> 
-> On 12/8/20 3:37 PM, Maximilian Luz wrote:
-> 
-> <snip>
-> 
->>>> +
->>>> +    obj = acpi_evaluate_dsm_typed(handle, &SSAM_SSH_DSM_GUID,
->>>> +                      SSAM_SSH_DSM_REVISION, func, NULL,
->>>> +                      ACPI_TYPE_INTEGER);
->>>> +    if (!obj)
->>>> +        return -EIO;
->>>> +
->>>> +    val = obj->integer.value;
->>>> +    ACPI_FREE(obj);
->>>> +
->>>> +    if (val > U32_MAX)
->>>> +        return -ERANGE;
->>>> +
->>>> +    *ret = val;
->>>> +    return 0;
->>>> +}
->>
->> [...]
->>
->>>> +/**
->>>> + * ssam_controller_start() - Start the receiver and transmitter threads of the
->>>> + * controller.
->>>> + * @ctrl: The controller.
->>>> + *
->>>> + * Note: When this function is called, the controller should be properly
->>>> + * hooked up to the serdev core via &struct serdev_device_ops. Please refer
->>>> + * to ssam_controller_init() for more details on controller initialization.
->>>> + *
->>>> + * This function must be called from an exclusive context with regards to the
->>>> + * state, if necessary, by locking the controller via ssam_controller_lock().
->>>
->>> Again you are being a bit hand-wavy (I assume you know what I mean by that)
->>> wrt the locking requirements. If possible I would prefer clearly spelled out
->>> locking requirements in the form of "this and that lock must be held when
->>> calling this function". Preferably backed-up by lockdep_assert-s asserting
->>> these conditions.
->>
->> The reason for this is that this function specifically is currently only
->> called during initialization, when the controller has not been published
->> yet, i.e. when we have an exclusive reference to the controller.
->>
->> I'll change this to fully enforce locking (with lockdep_assert).
->>
->>> And maybe if you are a bit stricter with always holding the lock when
->>> calling this, you can also drop the WRITE_ONCE and the comment about it
->>> (in all places where you do this).
->>
->> The WRITE_ONCE is only there to ensure that the basic test in
->> ssam_request_sync_submit() can be done. I always try to be explicit
->> about access that can happen without the respective locks being held.
-> 
-> Yes I saw the matching READ_ONCE later on (as the comment indicated
-> I would), which made it more obvious to me why the WRITE_ONCE is here,'
-> so maybe I should have gone back and updated this comment.
+Thanks, good idea!
 
-No worries, always good to have another look at these kinds of things.
+[PATCH 0/2] Documentation/kbuild: Document COMPILE_TEST and platform
+dependencies
+https://lore.kernel.org/r/20201208152857.2162093-1-geert+renesas@glider.be
 
-> Anyways, keeping the WRITE_ONCE + READ_ONCE for this is fine.
-> 
->> Unfortunately it's not feasible to hold the reader lock in
->> ssam_request_sync_submit() due to reentrancy. Specifically, as the lock,
->> if at all (i.e. if this is not a client driver bound to the controller),
->> must be held not only during submission but until the request has been
->> completed. Note that if we would hold the lock during submission, this
->> is just a smoke-test.
-> 
-> Ack.
-> 
-> <more snip>
-> 
-> Regards,
-> 
-> Hans
-> 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
