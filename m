@@ -2,99 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC629C2BBCD
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Dec 2020 09:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6439AC1B0D8
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Dec 2020 09:18:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A807223B79
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Dec 2020 09:04:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3FC6D23B6B
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Dec 2020 09:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728728AbgLIJEM (ORCPT
+        id S1728670AbgLIJS1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Dec 2020 04:04:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40154 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728634AbgLIJDx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Dec 2020 04:03:53 -0500
-Date:   Wed, 9 Dec 2020 14:33:00 +0530
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607504585;
-        bh=Y8sKKGrlYezUfpA9QSrlmnL0kO7yXjvMcIxMPszDLQU=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZYv88C+wY/E/J2SeDl906oq3dpbKDT6luvBWvgQIoTtv6uk70LSXQOc4LV4/Ckte2
-         t2UovonfT5iDGd4TYZiJMKtE6Td0rbMVabgQIfxxzGAPJPouzmrrf7Cdq5VSoEWG56
-         q3+OKUTzYzW22kRBiuIhOsQUhVtGj0btEIGytZTd6kpR81vO0k3bNJzFp7kxiFMuAS
-         P2jivjBpreQyW8DQ9NQIzE3uS8JtbsnUyXVSE1qVpB3csHKn7duH6xd5l8cNGL9/dL
-         p0AYMZhW78mhf8JJeZgcCWjjWmJu/y/PpwrMg7iVUj5PLUcBVq4nuWF8fIxyWO+fHP
-         iGoo++aTYv9fg==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ion Badulescu <ionut@badula.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Adam Radford <aradford@gmail.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        James Smart <james.smart@broadcom.com>,
-        Dick Kennedy <dick.kennedy@broadcom.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Peter Chen <Peter.Chen@nxp.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        linux-doc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-ide@vger.kernel.org, dmaengine@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-parisc@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        SCSI development list <linux-scsi@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH] PCI: Remove pci_try_set_mwi
-Message-ID: <20201209090300.GI8403@vkoul-mobl>
-References: <4d535d35-6c8c-2bd8-812b-2b53194ce0ec@gmail.com>
+        Wed, 9 Dec 2020 04:18:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727348AbgLIJS0 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Dec 2020 04:18:26 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519C8C0617A7
+        for <linux-serial@vger.kernel.org>; Wed,  9 Dec 2020 01:17:46 -0800 (PST)
+Received: from dude02.hi.pengutronix.de ([2001:67c:670:100:1d::28])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <str@pengutronix.de>)
+        id 1kmvbT-0005wi-Gg; Wed, 09 Dec 2020 10:17:43 +0100
+Received: from str by dude02.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <str@pengutronix.de>)
+        id 1kmvbT-0000cq-5q; Wed, 09 Dec 2020 10:17:43 +0100
+From:   Steffen Trumtrar <s.trumtrar@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH 1/2] tty: serial: 8250: always call tx_chars under spinlock
+Date:   Wed,  9 Dec 2020 10:17:27 +0100
+Message-Id: <20201209091728.2357-1-s.trumtrar@pengutronix.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4d535d35-6c8c-2bd8-812b-2b53194ce0ec@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::28
+X-SA-Exim-Mail-From: str@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 09-12-20, 09:31, Heiner Kallweit wrote:
-> pci_set_mwi() and pci_try_set_mwi() do exactly the same, just that the
-> former one is declared as __must_check. However also some callers of
-> pci_set_mwi() have a comment that it's an optional feature. I don't
-> think there's much sense in this separation and the use of
-> __must_check. Therefore remove pci_try_set_mwi() and remove the
-> __must_check attribute from pci_set_mwi().
-> I don't expect either function to be used in new code anyway.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
-> patch applies on top of pci/misc for v5.11
-> ---
->  drivers/dma/dw/pci.c                          |  2 +-
->  drivers/dma/hsu/pci.c                         |  2 +-
+In most cases serial8250_tx_chars is called with spinlock held.
+Fix the remaining location, too.
 
-Acked-By: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+---
+ drivers/tty/serial/8250/8250_port.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index b0af13074cd3..3310c2b70138 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1559,6 +1559,7 @@ static void serial8250_stop_tx(struct uart_port *port)
+ static inline void __start_tx(struct uart_port *port)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
++	unsigned long flags;
+ 
+ 	if (up->dma && !up->dma->tx_dma(up))
+ 		return;
+@@ -1569,8 +1570,11 @@ static inline void __start_tx(struct uart_port *port)
+ 
+ 			lsr = serial_in(up, UART_LSR);
+ 			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+-			if (lsr & UART_LSR_THRE)
++			if (lsr & UART_LSR_THRE) {
++				spin_lock_irqsave(&port->lock, flags);
+ 				serial8250_tx_chars(up);
++				spin_unlock_irqrestore(&port->lock, flags);
++			}
+ 		}
+ 	}
+ 
 -- 
-~Vinod
+2.20.1
+
