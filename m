@@ -5,63 +5,63 @@ X-Spam-Level:
 X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF57C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 13:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF4BC4167B
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 13:36:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B13AD221E2
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 13:35:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 041F02312D
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 13:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389444AbgLJNfh (ORCPT
+        id S2389414AbgLJNg0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Dec 2020 08:35:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52260 "EHLO
+        Thu, 10 Dec 2020 08:36:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389404AbgLJNfa (ORCPT
+        with ESMTP id S2387691AbgLJNgO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Dec 2020 08:35:30 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC10C0613D6;
-        Thu, 10 Dec 2020 05:34:50 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id u203so4733283ybb.2;
-        Thu, 10 Dec 2020 05:34:50 -0800 (PST)
+        Thu, 10 Dec 2020 08:36:14 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B0CC0617B0;
+        Thu, 10 Dec 2020 05:35:08 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id u203so4734124ybb.2;
+        Thu, 10 Dec 2020 05:35:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=U/roqOTkuyKuA5LDRyyEuc0O+uuXLFYRIA0JUlY59Bk=;
-        b=I+i0gWaLA7UKfNFgJQDCwWrfCS9iCPpQ0A4zUjzU8Y4ZvassZGOITAyYroE6aiVQxp
-         3C7S5fsGAcLvMA+eO0LiCzFAgyULX0jvv67m3oN432kQWKEeC312EQnW9kOU3Nm7vWce
-         Ut5c1HlGF8+9XribssMqLCLY7I9i1aMW2lk0fCNwQphjzMxMT+gK001vflbpbYgzShJi
-         uDcK/EXnVddWy4lPExw0YitK4tkoB/hkd8bGOcAoimf6NKx1l9QZOa3CtXBOS8qL5eF1
-         IUJ/umFa6xMIOtZjhIlBnnFs/ayjL55MRiHZSmGPBddw+TYPs486F3uyhWOww9DiUad4
-         afHg==
+        bh=m1HP1yIoElif264wBbc+cWtKQMdT/dfCn4qH9f3uFvE=;
+        b=D+sXkGE27BvA8k13Mm/sLNkyOydzvwrVUbzyCyveTzQBfOflUmMnRdlUbE1OB+XKYW
+         xAmA/jH7hEgXzn/jR1xat4Jl1JTLn1LNyvDwFWOyN+rM5gvFGsX2gF5jV/1zz/+DHn1p
+         8GwqJ0+PjdYQGgBrXHoSoUxg8xvd1nCCjoet1SqORFlbPMQik1j9l0AqIccpUl/qOtje
+         DhtZol6YtZnv2IoYwJphso8ZDk/O+9P+Z33jGvem80h46ouMJ4798Sy1u3SBX/QLLlV6
+         LNMi9s4YUIU75yhG9QY+FS/b5Mh2TAC3FkdofTj8hYhqsvsCtdyzYHTTOsVJyyrrAMxi
+         yglg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U/roqOTkuyKuA5LDRyyEuc0O+uuXLFYRIA0JUlY59Bk=;
-        b=DQJCS0U535FpLdj0RiFfKZjpCA19ivlugstB7UBFtILVd3yI1enU3dsQgRmWVzDIne
-         RWXXACNBVJHeBDfO4giB1JexDQ2ftCKQnlVs7Gk3VshTR6U68N1TEtmXPgok/48ft1Vx
-         MkQ0i8GVeo17tydR0+jMBm8Zd+ejL+jg3QwyA4M93jpAqhnirNRDKSDzvgIMGqVqWbND
-         f8WUt+45Ml6hcT93Bphym6UkW9vMWQdlBJ4Tz8LrFfTC1PNNxbNnXWQ9uEHI3/rgBS8v
-         YfwRsxC/Vo0SHFlPXj8FSi7NvpEASSmtN1owKkr4RRe7YEC456KQPtzUZcX0uWS2uIMg
-         1rdQ==
-X-Gm-Message-State: AOAM533ISmZ8qDSjoS8jYaXJoCcko/P0mhd+dIuo9XIHKGizAQsNyciT
-        OArkVSp8Y4Qqnh1FTPqnEkdJW5xBtHq1MHjW7XA=
-X-Google-Smtp-Source: ABdhPJwOblTPqsGeuSVQCngMDfoO16GBD7DpLAVnesO53oahEPxk3iPPRkVlWRjT5EhD+gYUQuxuFgXEhYqvKK6vfrs=
-X-Received: by 2002:a25:690b:: with SMTP id e11mr10757041ybc.314.1607607289459;
- Thu, 10 Dec 2020 05:34:49 -0800 (PST)
+        bh=m1HP1yIoElif264wBbc+cWtKQMdT/dfCn4qH9f3uFvE=;
+        b=oDVGKAPzDykgWcCYrkjS4djmj0vY2cRAJktLZt1sJbqu4tqXIK0OXS9DgNUeDN75vE
+         e2Y9mtf7i1D/9imVOsSOMRdv2PglvGQl0olZ647n3JJbTT16aRpYDMzcOSA9YOt/de3s
+         +of0V/HlxQhGRtaaL9DR8QMg4GmiUVQ0p8JA+VLneL7Goxh9bg1glLqXWVtqAKHyKt+3
+         JJtnu3mpWBBf+NdIdqoHIzZ7+65F12xaQ2I2OCDF/44TsNNPr/4c0dVtnJ3/NJH+QmxD
+         d+zIxxoXXiRErSQEy9/qONkZ0Sf8wU8ZlfFWDU2ODUoqN86rjs40AJY+kt729xsQ98Tu
+         mSUA==
+X-Gm-Message-State: AOAM531XW3cpvzDhAUXSp2mHBQh/1zC2zgStu0RphX18oFA9HFi+ctUL
+        M4jQtSamROcTVAJa97NZYj3KJdCpik3ok6DbJzU=
+X-Google-Smtp-Source: ABdhPJyr0TYOgXzMuicga7wyBOkKbBeJ/YheB2Zrk4q9fKy+qC4mFj82XZKUw2JcVTA3YVjJ1ocGnBF5j6BpIIbt1WI=
+X-Received: by 2002:a25:bb50:: with SMTP id b16mr11643994ybk.152.1607607307674;
+ Thu, 10 Dec 2020 05:35:07 -0800 (PST)
 MIME-Version: 1.0
-References: <1607403341-57214-1-git-send-email-yash.shah@sifive.com> <1607403341-57214-2-git-send-email-yash.shah@sifive.com>
-In-Reply-To: <1607403341-57214-2-git-send-email-yash.shah@sifive.com>
+References: <1607403341-57214-1-git-send-email-yash.shah@sifive.com> <1607403341-57214-10-git-send-email-yash.shah@sifive.com>
+In-Reply-To: <1607403341-57214-10-git-send-email-yash.shah@sifive.com>
 From:   Bin Meng <bmeng.cn@gmail.com>
-Date:   Thu, 10 Dec 2020 21:34:37 +0800
-Message-ID: <CAEUhbmWVn=W7y+xFGrmpNhQUEqLP-SjKoqeWZ=xgeVaMo5qO=A@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] dt-bindings: riscv: Update DT binding docs to
- support SiFive FU740 SoC
+Date:   Thu, 10 Dec 2020 21:34:55 +0800
+Message-ID: <CAEUhbmVi7oVEJhyar+GyCVY=MrZri9h3DvQWOceZhcqFe544Kw@mail.gmail.com>
+Subject: Re: [PATCH v2 9/9] riscv: dts: add initial board data for the SiFive
+ HiFive Unmatched
 To:     Yash Shah <yash.shah@sifive.com>
 Cc:     linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-pwm@vger.kernel.org, linux-i2c@vger.kernel.org,
@@ -87,13 +87,30 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Tue, Dec 8, 2020 at 3:06 PM Yash Shah <yash.shah@sifive.com> wrote:
 >
-> Add new compatible strings in cpus.yaml to support the E71 and U74 CPU
-> cores ("harts") that are present on FU740-C000 SoC.
+> Add initial board data for the SiFive HiFive Unmatched A00.
+> This patch is dependent on Zong's Patchset[0].
+>
+> [0]: https://lore.kernel.org/linux-riscv/20201130082330.77268-4-zong.li@sifive.com/T/#u
+
+I think the dependency should be put below --, not in the commit message itself
+
 >
 > Signed-off-by: Yash Shah <yash.shah@sifive.com>
 > ---
->  Documentation/devicetree/bindings/riscv/cpus.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  arch/riscv/boot/dts/sifive/Makefile                |   3 +-
+>  .../riscv/boot/dts/sifive/hifive-unmatched-a00.dts | 253 +++++++++++++++++++++
+>  2 files changed, 255 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts
 >
+> diff --git a/arch/riscv/boot/dts/sifive/Makefile b/arch/riscv/boot/dts/sifive/Makefile
+> index 6d6189e..74c47fe 100644
+> --- a/arch/riscv/boot/dts/sifive/Makefile
+> +++ b/arch/riscv/boot/dts/sifive/Makefile
+> @@ -1,2 +1,3 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -dtb-$(CONFIG_SOC_SIFIVE) += hifive-unleashed-a00.dtb
+> +dtb-$(CONFIG_SOC_SIFIVE) += hifive-unleashed-a00.dtb \
+> +                           hifive-unmatched-a00.dtb
 
+Otherwise LGTM:
 Reviewed-by: Bin Meng <bin.meng@windriver.com>
