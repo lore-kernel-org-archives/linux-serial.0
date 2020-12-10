@@ -2,123 +2,218 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B6EC433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 06:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAAF9C4361B
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 06:55:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 81C1C235F7
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 06:01:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AAEE02332A
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 06:55:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732894AbgLJGBA (ORCPT
+        id S1728394AbgLJGz1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Dec 2020 01:01:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38860 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731841AbgLJGBA (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Dec 2020 01:01:00 -0500
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953ADC0613CF;
-        Wed,  9 Dec 2020 22:00:19 -0800 (PST)
-Received: by mail-wr1-x442.google.com with SMTP id l9so4136416wrt.13;
-        Wed, 09 Dec 2020 22:00:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XZ0GzFkMnql2mZ9ucABMri0aPX93XDgGP0zi1s6RhwA=;
-        b=lpPQkdebMIuW2w/cNOMG3wQQ6LBxUIp+8A+fz23QJ6YBfQHmYd2Q6TFsEzkd65Bz2Q
-         nnmjvPjeS+4gbIrHSjWnyZY7eigeX6MXbFvOHu9iqxzTfso5Xn4Ex20eiBA1DOc7Dqg1
-         gajDdftMTG6qbWO0ufCTvhUF7BOCqbI/Y9fc+bD3jzdCux81kf+U8V/S9SD+MsqxMfMn
-         P+KQhlhvWVTuXidYsGa2+Ghj1y15ukXr6DAbF+glgtNRLH2wLJZGbY9DftaZGhgcZZlW
-         W8VN8+Zp2vbP95uhZ1etegd9qAn7liSoWUXEfjb44h6WVNpPFg4jj52djNRPlRFWy4z0
-         wDnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XZ0GzFkMnql2mZ9ucABMri0aPX93XDgGP0zi1s6RhwA=;
-        b=dyArKJHorjqCp0RbMDPAJBu0OA0Tk/+pdO3Lmq4XwjESnqA+K4D9eAVNCch1AdLpfz
-         Rf6HR2boX27Gx5fErEC6T9mxDMPNzN708tHxU2cWfx4j/2OZBPsGU4Raer3vcfixjLH0
-         t7RZGvh/F+f2Gpf3uAPmfacWivPMuWQfN+aXNxivGNMWmUsbEpegfp/GSjc8doTYePoZ
-         cxbST9YyqwFFpQelunUds9zYMN6x8w+EmS58WoPj0bPwWA0SVDrIfhyMxLJnso+dLDbc
-         PnDxm8+GRIaYv491G1YFil5c5BKPav/Tq3fSCdVgYo58Y7rcfU4Ttu1RKt1tDyPMJBmr
-         btgg==
-X-Gm-Message-State: AOAM533TvHeO04ermift8cJCucVCppjEqQ+1fbtfs1uGN0VGYI92nfvC
-        wHntKB9j/+YF/ntD6Y7EVvFWvPjfxfep9g==
-X-Google-Smtp-Source: ABdhPJxIZm4jacRkxlweAry7ldEyr9Cs5Uph++CwJyZaxVGgzBK88btGmFHUxJq7aphOK+x0WV2vZQ==
-X-Received: by 2002:adf:916e:: with SMTP id j101mr6237868wrj.55.1607580018016;
-        Wed, 09 Dec 2020 22:00:18 -0800 (PST)
-Received: from giga-mm.localdomain ([195.245.17.255])
-        by smtp.gmail.com with ESMTPSA id q15sm7443906wrw.75.2020.12.09.22.00.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 22:00:17 -0800 (PST)
-From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
-To:     linux-serial@vger.kernel.org
-Cc:     Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH] serial: 8250_omap: Avoid FIFO corruption caused by MDR1 access
-Date:   Thu, 10 Dec 2020 06:52:57 +0100
-Message-Id: <20201210055257.1053028-1-alexander.sverdlin@gmail.com>
-X-Mailer: git-send-email 2.29.2
+        Thu, 10 Dec 2020 01:55:27 -0500
+Received: from mga03.intel.com ([134.134.136.65]:32463 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727852AbgLJGzR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Dec 2020 01:55:17 -0500
+IronPort-SDR: 9RLjNsE6AKL99Hhwksgpvz4tf1BHuJomWszGktwAmImRzDf9+kcmjTkzpmprqUq/b7V8Ji7p3B
+ 278AF1FUiEtg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="174323430"
+X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
+   d="scan'208";a="174323430"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 22:54:31 -0800
+IronPort-SDR: R+EHeBlz+1tKG7xaxHBFQ/Gi0G8u76zuKaBBwm3MTtMVlVYLsK1nvKpnL8Qv2dfSMwLbyQ44w1
+ cM04OIJcSrBw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
+   d="scan'208";a="438228256"
+Received: from lkp-server01.sh.intel.com (HELO ecc0cebe68d1) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 09 Dec 2020 22:54:29 -0800
+Received: from kbuild by ecc0cebe68d1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1knFqP-00007D-57; Thu, 10 Dec 2020 06:54:29 +0000
+Date:   Thu, 10 Dec 2020 14:53:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS WITH WARNING
+ 603012f78a3f5cb2e7f529b8e318321117a9cf7c
+Message-ID: <5fd1c5fe.LD8Yy4wNmeKUloNz%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It has been observed that once per 300-1300 port openings the first
-transmitted byte is being corrupted on AM3352 ("v" written to FIFO appeared
-as "e" on the wire). It only happened if single byte has been transmitted
-right after port open, which means, DMA is not used for this transfer and
-the corruption never happened afterwards.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
+branch HEAD: 603012f78a3f5cb2e7f529b8e318321117a9cf7c  serial: imx: Remove unneeded of_device_get_match_data() NULL check
 
-Therefore I've carefully re-read the MDR1 errata (link below), which says
-"when accessing the MDR1 registers that causes a dummy under-run condition
-that will freeze the UART in IrDA transmission. In UART mode, this may
-corrupt the transferred data". Strictly speaking,
-omap_8250_mdr1_errataset() performs a read access and if the value is the
-same as should be written, exits without errata-recommended FIFO reset.
+Warning reports:
 
-A brief check of the serial_omap_mdr1_errataset() from the competing
-omap-serial driver showed it has no read access of MDR1. After removing the
-read access from omap_8250_mdr1_errataset() the data corruption never
-happened any more.
+https://lore.kernel.org/linux-serial/202011270526.uhlQ2Ov9-lkp@intel.com
 
-Link: https://www.ti.com/lit/er/sprz360i/sprz360i.pdf
-Fixes: 61929cf0169d ("tty: serial: Add 8250-core based omap driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Warning in current branch:
+
+drivers/tty/serial/mxs-auart.c:1656:15: warning: cast to smaller integer type 'enum mxs_auart_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+
+Warning ids grouped by kconfigs:
+
+clang_recent_errors
+`-- powerpc64-randconfig-r031-20201209
+    `-- drivers-tty-serial-mxs-auart.c:warning:cast-to-smaller-integer-type-enum-mxs_auart_type-from-const-void
+
+elapsed time: 725m
+
+configs tested: 136
+configs skipped: 3
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+sh                          kfr2r09_defconfig
+x86_64                           alldefconfig
+arm                     am200epdkit_defconfig
+arm                  colibri_pxa270_defconfig
+arm                          lpd270_defconfig
+powerpc                      tqm8xx_defconfig
+arc                        vdk_hs38_defconfig
+powerpc                      walnut_defconfig
+ia64                         bigsur_defconfig
+m68k                         apollo_defconfig
+powerpc                     tqm8555_defconfig
+riscv                            allmodconfig
+m68k                        mvme16x_defconfig
+mips                        omega2p_defconfig
+ia64                        generic_defconfig
+um                             i386_defconfig
+mips                           gcw0_defconfig
+sh                           se7724_defconfig
+arc                 nsimosci_hs_smp_defconfig
+arm                           viper_defconfig
+arm                         socfpga_defconfig
+alpha                            alldefconfig
+arm                        vexpress_defconfig
+powerpc                      makalu_defconfig
+arm                    vt8500_v6_v7_defconfig
+mips                  maltasmvp_eva_defconfig
+sh                        edosk7760_defconfig
+arm                       imx_v6_v7_defconfig
+powerpc                 mpc85xx_cds_defconfig
+mips                         tb0219_defconfig
+mips                     cu1000-neo_defconfig
+powerpc                     rainier_defconfig
+arm                          pcm027_defconfig
+mips                          ath25_defconfig
+powerpc                 mpc834x_mds_defconfig
+arm                        oxnas_v6_defconfig
+s390                                defconfig
+arm                        spear6xx_defconfig
+arm                         s3c6400_defconfig
+mips                         db1xxx_defconfig
+mips                            ar7_defconfig
+arm                       versatile_defconfig
+powerpc                        icon_defconfig
+nios2                            alldefconfig
+arm                       aspeed_g5_defconfig
+powerpc                 canyonlands_defconfig
+sh                      rts7751r2d1_defconfig
+mips                         bigsur_defconfig
+mips                           xway_defconfig
+mips                         cobalt_defconfig
+mips                        nlm_xlp_defconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+c6x                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+parisc                           allyesconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                               tinyconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a004-20201209
+i386                 randconfig-a005-20201209
+i386                 randconfig-a001-20201209
+i386                 randconfig-a002-20201209
+i386                 randconfig-a006-20201209
+i386                 randconfig-a003-20201209
+i386                 randconfig-a001-20201210
+i386                 randconfig-a004-20201210
+i386                 randconfig-a003-20201210
+i386                 randconfig-a002-20201210
+i386                 randconfig-a005-20201210
+i386                 randconfig-a006-20201210
+x86_64               randconfig-a016-20201209
+x86_64               randconfig-a012-20201209
+x86_64               randconfig-a013-20201209
+x86_64               randconfig-a014-20201209
+x86_64               randconfig-a015-20201209
+x86_64               randconfig-a011-20201209
+i386                 randconfig-a013-20201209
+i386                 randconfig-a014-20201209
+i386                 randconfig-a011-20201209
+i386                 randconfig-a015-20201209
+i386                 randconfig-a012-20201209
+i386                 randconfig-a016-20201209
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                                   rhel
+x86_64                           allyesconfig
+x86_64                    rhel-7.6-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-a004-20201209
+x86_64               randconfig-a006-20201209
+x86_64               randconfig-a005-20201209
+x86_64               randconfig-a001-20201209
+x86_64               randconfig-a002-20201209
+x86_64               randconfig-a003-20201209
+x86_64               randconfig-a003-20201210
+x86_64               randconfig-a006-20201210
+x86_64               randconfig-a002-20201210
+x86_64               randconfig-a005-20201210
+x86_64               randconfig-a004-20201210
+x86_64               randconfig-a001-20201210
+
 ---
- drivers/tty/serial/8250/8250_omap.c | 5 -----
- 1 file changed, 5 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 562087df7d33..0cc6d35a0815 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -184,11 +184,6 @@ static void omap_8250_mdr1_errataset(struct uart_8250_port *up,
- 				     struct omap8250_priv *priv)
- {
- 	u8 timeout = 255;
--	u8 old_mdr1;
--
--	old_mdr1 = serial_in(up, UART_OMAP_MDR1);
--	if (old_mdr1 == priv->mdr1)
--		return;
- 
- 	serial_out(up, UART_OMAP_MDR1, priv->mdr1);
- 	udelay(2);
--- 
-2.29.2
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
