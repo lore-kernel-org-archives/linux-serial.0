@@ -2,78 +2,124 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B8CBC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 13:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81689C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 13:54:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 548A823EB1
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 13:41:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 374E523ED2
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 13:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392165AbgLKNjw (ORCPT
+        id S2388514AbgLKNyQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Dec 2020 08:39:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436904AbgLKNjt (ORCPT
+        Fri, 11 Dec 2020 08:54:16 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:50602 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727513AbgLKNxq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Dec 2020 08:39:49 -0500
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D368CC0613D3
-        for <linux-serial@vger.kernel.org>; Fri, 11 Dec 2020 05:39:08 -0800 (PST)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by andre.telenet-ops.be with bizsmtp
-        id 31f82400G4C55Sk011f8Ws; Fri, 11 Dec 2020 14:39:08 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1knidY-009iJz-6r; Fri, 11 Dec 2020 14:39:08 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1knidX-00CSlP-MR; Fri, 11 Dec 2020 14:39:07 +0100
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] serial: 8250_pci: Drop bogus __refdata annotation
-Date:   Fri, 11 Dec 2020 14:39:07 +0100
-Message-Id: <20201211133907.2970460-1-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+        Fri, 11 Dec 2020 08:53:46 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0BBDpswo066026;
+        Fri, 11 Dec 2020 07:51:54 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1607694714;
+        bh=qhUy6T1tzktns2p4haE3iBZHGYFn1qMsVGij1z6lae0=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=liHm7or+bpfNiM2anw47uag59dxlDqxG98m5v0Ei7Pr0YtKD3oXqT9YLtKUG2IHxI
+         50Qh9l9SRWBp3ue0u4z65HHi19nH27fwHc8KjMml9MgEsgPAyNia4wdqB54aOX7urv
+         WIPo3IpKbWOIkpg1DlTOlh6FdTMs5mCepSrIpF20=
+Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0BBDpsXX024937
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 11 Dec 2020 07:51:54 -0600
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 11
+ Dec 2020 07:51:54 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 11 Dec 2020 07:51:54 -0600
+Received: from [10.250.233.179] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0BBDppf2123942;
+        Fri, 11 Dec 2020 07:51:52 -0600
+Subject: Re: [PATCH] serial: 8250_omap: Avoid FIFO corruption caused by MDR1
+ access
+To:     Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        <linux-serial@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
+References: <20201210055257.1053028-1-alexander.sverdlin@gmail.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+Message-ID: <b6bc434b-d75d-1f04-9bb2-457333c46a92@ti.com>
+Date:   Fri, 11 Dec 2020 19:21:50 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201210055257.1053028-1-alexander.sverdlin@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since commit d73dfc6a4199e0e3 ("serial: 8250_pci: remove __devexit
-usage") in v3.9, the 8250/16550 PCI serial driver no longer has any code
-or data located in initmem, hence there is no need to annotate the
-pci_serial_quirks structure with __refdata.  Drop the annotation, to
-avoid suppressing future section warnings.
+Hi,
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/8250/8250_pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 12/10/20 11:22 AM, Alexander Sverdlin wrote:
+> It has been observed that once per 300-1300 port openings the first
+> transmitted byte is being corrupted on AM3352 ("v" written to FIFO appeared
+> as "e" on the wire). It only happened if single byte has been transmitted
+> right after port open, which means, DMA is not used for this transfer and
+> the corruption never happened afterwards.
+> 
+> Therefore I've carefully re-read the MDR1 errata (link below), which says
+> "when accessing the MDR1 registers that causes a dummy under-run condition
+> that will freeze the UART in IrDA transmission. In UART mode, this may
+> corrupt the transferred data". Strictly speaking,
+> omap_8250_mdr1_errataset() performs a read access and if the value is the
+> same as should be written, exits without errata-recommended FIFO reset.
+> 
+> A brief check of the serial_omap_mdr1_errataset() from the competing
+> omap-serial driver showed it has no read access of MDR1. After removing the
+> read access from omap_8250_mdr1_errataset() the data corruption never
+> happened any more.
+> 
+> Link: https://www.ti.com/lit/er/sprz360i/sprz360i.pdf
+> Fixes: 61929cf0169d ("tty: serial: Add 8250-core based omap driver")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index d5a513efb2613dff..689d8227f95f7dfb 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1964,7 +1964,7 @@ pci_moxa_setup(struct serial_private *priv,
-  * This list is ordered alphabetically by vendor then device.
-  * Specific entries must come before more generic entries.
-  */
--static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
-+static struct pci_serial_quirk pci_serial_quirks[] = {
- 	/*
- 	* ADDI-DATA GmbH communication cards <info@addi-data.com>
- 	*/
--- 
-2.25.1
+Thanks for the fix.
 
+Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
+
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 5 -----
+>  1 file changed, 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index 562087df7d33..0cc6d35a0815 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -184,11 +184,6 @@ static void omap_8250_mdr1_errataset(struct uart_8250_port *up,
+>  				     struct omap8250_priv *priv)
+>  {
+>  	u8 timeout = 255;
+> -	u8 old_mdr1;
+> -
+> -	old_mdr1 = serial_in(up, UART_OMAP_MDR1);
+> -	if (old_mdr1 == priv->mdr1)
+> -		return;
+>  
+>  	serial_out(up, UART_OMAP_MDR1, priv->mdr1);
+>  	udelay(2);
+> 
