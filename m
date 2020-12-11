@@ -2,143 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB625C4361B
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 19:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9810C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 00:59:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9CE0423DB4
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Dec 2020 19:48:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9060923100
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 00:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393619AbgLJTr7 (ORCPT
+        id S2394701AbgLKA6c (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Dec 2020 14:47:59 -0500
-Received: from bmail1.ministro.hu ([5.249.150.236]:42608 "EHLO
-        bmail1.ministro.hu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390148AbgLJTrw (ORCPT
+        Thu, 10 Dec 2020 19:58:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394684AbgLKA60 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Dec 2020 14:47:52 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by bmail1.ministro.hu (Postfix) with ESMTP id 3CC7F123B0D;
-        Thu, 10 Dec 2020 20:47:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ministro.hu;
-        s=201804; t=1607629622;
-        bh=snH8es/pngoy41pPpSJuMprO26ulqiCPUbM8LssoCrY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZXpoGjkoXzJOXEMF7nmYz302Yn/i9smNfqtMUy8dLMFsK4E4HNzn8T5sFaf7jpFsR
-         ZmGf3ItZMdKk/Ef6GWBm4uCLOG9xusllpclmerHg6rWZTKSGNvVrC5etZGO4DQavZy
-         Rzm39pxrFWXBsjxh/oG0jQ89RD7Sr/5QEa4pjV1BuKljfje8ULLjBKWwsHIBlPTvVV
-         2prJoMMyC9Ma8+Bx7y8/EJunM6Nx0fiRPWLx0L6Wi3woO7XDfMPk+jG7ADcMlZET1Y
-         6wiI8Atl9a4AtRReuiyaeYOk2EzePS1cVizIi8YWnuMo5Q6EgUYx7P7NMUX6HEv0Vj
-         qwxRm5FgWS3+A==
-X-Virus-Scanned: Debian amavisd-new at ministro.hu
-Received: from bmail1.ministro.hu ([127.0.0.1])
-        by localhost (bmail1.ministro.hu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id w2CtiJc9gyjG; Thu, 10 Dec 2020 20:46:29 +0100 (CET)
-Received: from dincontrollerdev (localhost [127.0.0.1])
-        by bmail1.ministro.hu (Postfix) with ESMTPSA id 63135123B09;
-        Thu, 10 Dec 2020 20:46:28 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ministro.hu;
-        s=201804; t=1607629589;
-        bh=snH8es/pngoy41pPpSJuMprO26ulqiCPUbM8LssoCrY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dSHS+7OotGppjefGM/Yx2MCEWP1nsiim1onZY2YaG5dK6gjazk0N5dJ4q/pO6Wf2/
-         T65sndyUDj5coHfQeYEnrSNfui8AovCbGi8MS480d304RM7lB+hQnHrnrDifLe0mwr
-         xBCbz1+Z6sA5PVjYOZDikYi3SZykWB2goLc4Q9f/kaKDRK1Ti0p1o37vwaj5v7Wxlc
-         WwgW+LenFBfZimrWiPg1hcfBZQt7auQRX0sT0PoQAIueW9g4HK9CJxraAZS2vDI8oV
-         u3Mhx1iBSzq29VGAJE10V6tIe90/9IS7jlTaV8edKbzWxx6p7OxoHkMubpms882oZP
-         1DI+xzxxJzQag==
-Date:   Thu, 10 Dec 2020 19:46:25 +0000
-From:   =?iso-8859-1?Q?J=F3zsef_Horv=E1th?= <info@ministro.hu>
-To:     'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc:     'Rob Herring' <robh+dt@kernel.org>,
-        'Jiri Slaby' <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Serial: silabs si4455 serial driver
-Message-ID: <20201210194625.GA17516@dincontrollerdev>
-References: <20201210170443.GA17304@dincontrollerdev>
- <X9Jw+srprdT8tquZ@kroah.com>
+        Thu, 10 Dec 2020 19:58:26 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A80C0613D3
+        for <linux-serial@vger.kernel.org>; Thu, 10 Dec 2020 16:57:46 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id g18so5997850pgk.1
+        for <linux-serial@vger.kernel.org>; Thu, 10 Dec 2020 16:57:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MTuxwf9KusT/ntlnVCF0gMBlWlskbWARxkaUDrHOkdo=;
+        b=ra/WyZQoH+AGVlTrKDauhvPdiS00/pxJvs9pj4d37efoZQNZVc+YC1W+GtSV7wDQMv
+         3Mvpwy7tvnA3/aqi6p8jyeGn0RiTWUQzE26nqhAEyR6TfToOa6tfqR/WnOi+SIx2rSjl
+         /Ps0Va+qa275/zgoJ4ATYKXWrjKpbYdpMxcm7iLqoC+1WKuYLh4B3j95Cz1dvR3hEXEw
+         AqPD+8q9+w7dwHS9riwHOjGYOsr05T3IFKZkynpELZtrlObf0jCMlMw/2M4ICCJQGYxr
+         d5hGfjj7Q2LHqEf0FebkxA0WQ+JAXOeSrNEh8ZScYqFJn8LIUmGoyRRvZHSe6LWnB/dn
+         EVnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MTuxwf9KusT/ntlnVCF0gMBlWlskbWARxkaUDrHOkdo=;
+        b=ThvZPUvdv62rfAbBSiCAKvoHCJ4o3aiuB5cDATXKKSb74bj3eQf82BLscFatQiAfcS
+         QeI6+QwINQl6sg8ar5UYXVzlbctrTb2tp1Yv+nxgMc77L6HNmflAfbor7OvrSJGqhkvR
+         BSC6zPaSZtNfkZstuedhx2bprgwedfPqkljelmSWsjCLn7wwILXbfwecItb2Z6XWVGVJ
+         SzhNLtQI3kUuDHJlcXD6VMEwiCm3N8gijNyg8Ke+xhOIt6JQlP1nMqPX+xGCNQmAD9Sf
+         TvvasDkkhM3iUT2Ow1SrYKQDhK0zwwdcpN95pZdJV2QqfBZKe/VmXccMBqeo/RHJcD2f
+         Gnzg==
+X-Gm-Message-State: AOAM533hMzSHTWMNFcHiCfGYsXoX8OKDJcWAwuLJFSB/04rnpdwVeLOd
+        Rnhg7/n174ww23OwGl0qtIFxzwBH/cBPM3PW
+X-Google-Smtp-Source: ABdhPJzfz9YK0z5xQjgX+uIRBOh+PmftuTdjF5WTgFEIpGyktmdOqbLubqsI53pFf5YA0q7+42Rq2g==
+X-Received: by 2002:a65:518a:: with SMTP id h10mr9153953pgq.340.1607648265788;
+        Thu, 10 Dec 2020 16:57:45 -0800 (PST)
+Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
+        by smtp.gmail.com with ESMTPSA id x6sm6829532pgr.20.2020.12.10.16.57.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Dec 2020 16:57:45 -0800 (PST)
+From:   Kevin Hilman <khilman@baylibre.com>
+To:     linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-kernel@vger.kernel.org (open list),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Amlogic Meson
+        SoC support),
+        linux-amlogic@lists.infradead.org (open list:ARM/Amlogic Meson SoC
+        support)
+Subject: [PATCH] tty: serial: meson: enable console as module
+Date:   Thu, 10 Dec 2020 16:57:44 -0800
+Message-Id: <20201211005744.12855-1-khilman@baylibre.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <X9Jw+srprdT8tquZ@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 08:03:22PM +0100, 'Greg Kroah-Hartman' wrote:
-> On Thu, Dec 10, 2020 at 05:04:46PM +0000, József Horváth wrote:
-> > This is a serial port driver for
-> > Silicon Labs Si4455 Sub-GHz transciver.
-> > 
-> > Signed-off-by: József Horváth <info@ministro.hu>
-> > ---
-> >  .../bindings/serial/silabs,si4455.yaml        |   53 +
-> >  MAINTAINERS                                   |    7 +
-> >  drivers/tty/serial/Kconfig                    |    8 +
-> >  drivers/tty/serial/Makefile                   |    1 +
-> >  drivers/tty/serial/si4455.c                   | 1235 +++++++++++++++++
-> >  drivers/tty/serial/si4455_api.h               |   56 +
-> 
-> First thing, a single .c file should not need a .h file.
-> 
-> But then I looked at the .h file and see:
-> 
-> > --- /dev/null
-> > +++ b/drivers/tty/serial/si4455_api.h
-> > @@ -0,0 +1,56 @@
-> > +/* SPDX-License-Identifier: GPL-2.0
-> > + *
-> > + * Copyright (C) 2020 József Horváth <info@ministro.hu>
-> > + *
-> > + */
-> > +#ifndef SI4455_API_H_
-> > +#define SI4455_API_H_
-> > +
-> > +struct si4455_iocbuff {
-> > +	uint32_t length;
-> > +	uint8_t	data[4096];
-> 
-> If you do have an ioctl, use proper data types.  These are not the
-> correct ones (hint, __u32 and __u8).
-> 
-> > +};
-> > +
-> > +#define BASE_TTYIOC_PRIVATE		0xA0
-> > +/* Set EZConfig.
-> > + * After this ioctl call, the driver restarts the si4455,
-> > + * then apply the new configuration and patch.
-> > + */
-> > +#define SI4455_IOC_SEZC		_IOW('T', \
-> > +				     BASE_TTYIOC_PRIVATE + 0x01, \
-> > +				     struct si4455_iocbuff)
-> 
-> Why does a serial driver have private ioctls?  Please no, don't do that.
+Enable serial driver to be built as a module.  To do so, init the
+console support on driver/module load instead of using
+console_initcall().
 
-I checked the ioctl.h and serial_core.h, but I not found any similar definition, like BASE_VIDIOC_PRIVATE in videodev2.h.
-In this case the name of macro BASE_TTYIOC_PRIVATE means the base value of special ioctl commands owned by this driver.
+Signed-off-by: Kevin Hilman <khilman@baylibre.com>
+---
+Yes, I'm well aware that having the serial console as a module makes
+devices hard to debug, so I'm not changing any default behavior.  The
+goal is just to enable building as a module for environments where
+serial debug is not available or needed.
 
-I can change it to BASE_TTYIOC or SI4455_IOC_BASE
+ drivers/tty/serial/Kconfig      | 2 +-
+ drivers/tty/serial/meson_uart.c | 8 +++++++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-> Implement the basic serial driver first, and then we can talk about
-> "custom" configurations and the like, using the correct apis.
-
-Without the SI4455_IOC_SEZC call, the driver can't configure the Si4455 and not working at all.
-The cofiguration for interface is provided by user for application.
-It contains the base frequency, channel spacing, modulation, and a lot of more stuff, and generated by Silicon Labs Wireless Development Suite.
-The generated configuration is in a non public(compressed, encrypted...who knows) format, so without this the driver can't provide configuration parameters to Si4455.
-
-> 
-> thanks,
-> 
-> greg k-h
-
-Üdvözlettel / Best regards:
-József Horváth
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 1044fc387691..c3fa78e63357 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -206,7 +206,7 @@ config SERIAL_MESON
+ 
+ config SERIAL_MESON_CONSOLE
+ 	bool "Support for console on meson"
+-	depends on SERIAL_MESON=y
++	depends on SERIAL_MESON
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+ 	help
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index d2c08b760f83..69eeef9edfa5 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -604,7 +604,6 @@ static int __init meson_serial_console_init(void)
+ 	register_console(&meson_serial_console);
+ 	return 0;
+ }
+-console_initcall(meson_serial_console_init);
+ 
+ static void meson_serial_early_console_write(struct console *co,
+ 					     const char *s,
+@@ -634,6 +633,9 @@ OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+ 
+ #define MESON_SERIAL_CONSOLE	(&meson_serial_console)
+ #else
++static int __init meson_serial_console_init(void) {
++	return 0;
++}
+ #define MESON_SERIAL_CONSOLE	NULL
+ #endif
+ 
+@@ -824,6 +826,10 @@ static int __init meson_uart_init(void)
+ {
+ 	int ret;
+ 
++	ret = meson_serial_console_init();
++	if (ret)
++		return ret;
++	
+ 	ret = uart_register_driver(&meson_uart_driver);
+ 	if (ret)
+ 		return ret;
+-- 
+2.29.2
 
