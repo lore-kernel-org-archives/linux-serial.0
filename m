@@ -2,144 +2,228 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9810C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 00:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9C2C4361B
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 03:34:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9060923100
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 00:59:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B630E23BF0
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 03:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394701AbgLKA6c (ORCPT
+        id S1733054AbgLKDd2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Dec 2020 19:58:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394684AbgLKA60 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Dec 2020 19:58:26 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A80C0613D3
-        for <linux-serial@vger.kernel.org>; Thu, 10 Dec 2020 16:57:46 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id g18so5997850pgk.1
-        for <linux-serial@vger.kernel.org>; Thu, 10 Dec 2020 16:57:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MTuxwf9KusT/ntlnVCF0gMBlWlskbWARxkaUDrHOkdo=;
-        b=ra/WyZQoH+AGVlTrKDauhvPdiS00/pxJvs9pj4d37efoZQNZVc+YC1W+GtSV7wDQMv
-         3Mvpwy7tvnA3/aqi6p8jyeGn0RiTWUQzE26nqhAEyR6TfToOa6tfqR/WnOi+SIx2rSjl
-         /Ps0Va+qa275/zgoJ4ATYKXWrjKpbYdpMxcm7iLqoC+1WKuYLh4B3j95Cz1dvR3hEXEw
-         AqPD+8q9+w7dwHS9riwHOjGYOsr05T3IFKZkynpELZtrlObf0jCMlMw/2M4ICCJQGYxr
-         d5hGfjj7Q2LHqEf0FebkxA0WQ+JAXOeSrNEh8ZScYqFJn8LIUmGoyRRvZHSe6LWnB/dn
-         EVnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MTuxwf9KusT/ntlnVCF0gMBlWlskbWARxkaUDrHOkdo=;
-        b=ThvZPUvdv62rfAbBSiCAKvoHCJ4o3aiuB5cDATXKKSb74bj3eQf82BLscFatQiAfcS
-         QeI6+QwINQl6sg8ar5UYXVzlbctrTb2tp1Yv+nxgMc77L6HNmflAfbor7OvrSJGqhkvR
-         BSC6zPaSZtNfkZstuedhx2bprgwedfPqkljelmSWsjCLn7wwILXbfwecItb2Z6XWVGVJ
-         SzhNLtQI3kUuDHJlcXD6VMEwiCm3N8gijNyg8Ke+xhOIt6JQlP1nMqPX+xGCNQmAD9Sf
-         TvvasDkkhM3iUT2Ow1SrYKQDhK0zwwdcpN95pZdJV2QqfBZKe/VmXccMBqeo/RHJcD2f
-         Gnzg==
-X-Gm-Message-State: AOAM533hMzSHTWMNFcHiCfGYsXoX8OKDJcWAwuLJFSB/04rnpdwVeLOd
-        Rnhg7/n174ww23OwGl0qtIFxzwBH/cBPM3PW
-X-Google-Smtp-Source: ABdhPJzfz9YK0z5xQjgX+uIRBOh+PmftuTdjF5WTgFEIpGyktmdOqbLubqsI53pFf5YA0q7+42Rq2g==
-X-Received: by 2002:a65:518a:: with SMTP id h10mr9153953pgq.340.1607648265788;
-        Thu, 10 Dec 2020 16:57:45 -0800 (PST)
-Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
-        by smtp.gmail.com with ESMTPSA id x6sm6829532pgr.20.2020.12.10.16.57.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Dec 2020 16:57:45 -0800 (PST)
-From:   Kevin Hilman <khilman@baylibre.com>
-To:     linux-serial@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-kernel@vger.kernel.org (open list),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Amlogic Meson
-        SoC support),
-        linux-amlogic@lists.infradead.org (open list:ARM/Amlogic Meson SoC
-        support)
-Subject: [PATCH] tty: serial: meson: enable console as module
-Date:   Thu, 10 Dec 2020 16:57:44 -0800
-Message-Id: <20201211005744.12855-1-khilman@baylibre.com>
-X-Mailer: git-send-email 2.29.2
+        Thu, 10 Dec 2020 22:33:28 -0500
+Received: from mga02.intel.com ([134.134.136.20]:50895 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390777AbgLKDcq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Dec 2020 22:32:46 -0500
+IronPort-SDR: MT/Z4NrWACZxYMLs9xhjM/nRdgnqufECIFOOAND66XLNWsiUBJgXeg7jyVnL70ANJv8NcS9G9s
+ uEufdT4MSI9Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9831"; a="161424792"
+X-IronPort-AV: E=Sophos;i="5.78,410,1599548400"; 
+   d="scan'208";a="161424792"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 19:32:05 -0800
+IronPort-SDR: 4D9xR04mMGL6v21OWTGsoBMJxtodrUAzP6s7DvAaHSiWs7/cl6fh6Qy1ixr5ECrKAqBi06eFnF
+ FaQ9xpXWkyhg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,410,1599548400"; 
+   d="scan'208";a="408926134"
+Received: from lkp-server01.sh.intel.com (HELO ecc0cebe68d1) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 10 Dec 2020 19:32:04 -0800
+Received: from kbuild by ecc0cebe68d1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1knZA4-0000j9-04; Fri, 11 Dec 2020 03:32:04 +0000
+Date:   Fri, 11 Dec 2020 11:31:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ d96f04d347e4011977abdbb4da5d8f303ebd26f8
+Message-ID: <5fd2e7fa.Fo1vxLdyKTvAFZyK%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Enable serial driver to be built as a module.  To do so, init the
-console support on driver/module load instead of using
-console_initcall().
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
+branch HEAD: d96f04d347e4011977abdbb4da5d8f303ebd26f8  serial: 8250_omap: Avoid FIFO corruption caused by MDR1 access
 
-Signed-off-by: Kevin Hilman <khilman@baylibre.com>
+elapsed time: 720m
+
+configs tested: 157
+configs skipped: 2
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+arc                         haps_hs_defconfig
+arm                          ixp4xx_defconfig
+arm                          simpad_defconfig
+sh                 kfr2r09-romimage_defconfig
+um                             i386_defconfig
+arc                            hsdk_defconfig
+mips                    maltaup_xpa_defconfig
+arm                          ep93xx_defconfig
+arm                            zeus_defconfig
+sh                           se7343_defconfig
+sh                            migor_defconfig
+mips                        vocore2_defconfig
+arm                         orion5x_defconfig
+powerpc                 mpc836x_mds_defconfig
+arm                     eseries_pxa_defconfig
+arm                      tct_hammer_defconfig
+powerpc                    mvme5100_defconfig
+powerpc                      acadia_defconfig
+sh                             shx3_defconfig
+arm                          imote2_defconfig
+mips                malta_kvm_guest_defconfig
+sh                          sdk7780_defconfig
+powerpc                 mpc8560_ads_defconfig
+arm                         lubbock_defconfig
+arm                          tango4_defconfig
+mips                           gcw0_defconfig
+powerpc                     asp8347_defconfig
+powerpc                         ps3_defconfig
+sh                           se7705_defconfig
+sh                        sh7763rdp_defconfig
+sparc64                          alldefconfig
+h8300                               defconfig
+sh                          rsk7201_defconfig
+mips                           rs90_defconfig
+arm                          collie_defconfig
+openrisc                    or1ksim_defconfig
+mips                        bcm63xx_defconfig
+alpha                            alldefconfig
+sh                         microdev_defconfig
+arm                           u8500_defconfig
+powerpc                        icon_defconfig
+m68k                             alldefconfig
+sh                          r7785rp_defconfig
+sh                   secureedge5410_defconfig
+ia64                          tiger_defconfig
+arm                        mini2440_defconfig
+sh                              ul2_defconfig
+c6x                                 defconfig
+mips                             allyesconfig
+mips                          rb532_defconfig
+mips                        bcm47xx_defconfig
+sh                          urquell_defconfig
+sh                          sdk7786_defconfig
+powerpc                      ppc64e_defconfig
+arm                         palmz72_defconfig
+sh                  sh7785lcr_32bit_defconfig
+arm                         shannon_defconfig
+sh                               j2_defconfig
+m68k                       m5249evb_defconfig
+arm                       versatile_defconfig
+sh                   rts7751r2dplus_defconfig
+powerpc                 mpc834x_itx_defconfig
+sh                               alldefconfig
+powerpc                      cm5200_defconfig
+powerpc                      ppc40x_defconfig
+mips                          rm200_defconfig
+arm                             mxs_defconfig
+riscv                            alldefconfig
+powerpc                      arches_defconfig
+m68k                        m5272c3_defconfig
+powerpc                 mpc837x_rdb_defconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+c6x                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                               defconfig
+i386                               tinyconfig
+i386                                defconfig
+sparc                            allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a004-20201209
+i386                 randconfig-a005-20201209
+i386                 randconfig-a001-20201209
+i386                 randconfig-a002-20201209
+i386                 randconfig-a006-20201209
+i386                 randconfig-a003-20201209
+i386                 randconfig-a001-20201210
+i386                 randconfig-a004-20201210
+i386                 randconfig-a003-20201210
+i386                 randconfig-a002-20201210
+i386                 randconfig-a005-20201210
+i386                 randconfig-a006-20201210
+x86_64               randconfig-a016-20201209
+x86_64               randconfig-a012-20201209
+x86_64               randconfig-a013-20201209
+x86_64               randconfig-a014-20201209
+x86_64               randconfig-a015-20201209
+x86_64               randconfig-a011-20201209
+i386                 randconfig-a013-20201209
+i386                 randconfig-a014-20201209
+i386                 randconfig-a011-20201209
+i386                 randconfig-a015-20201209
+i386                 randconfig-a012-20201209
+i386                 randconfig-a016-20201209
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                                   rhel
+x86_64                           allyesconfig
+x86_64                    rhel-7.6-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-a004-20201209
+x86_64               randconfig-a006-20201209
+x86_64               randconfig-a005-20201209
+x86_64               randconfig-a001-20201209
+x86_64               randconfig-a002-20201209
+x86_64               randconfig-a003-20201209
+x86_64               randconfig-a003-20201210
+x86_64               randconfig-a006-20201210
+x86_64               randconfig-a002-20201210
+x86_64               randconfig-a005-20201210
+x86_64               randconfig-a004-20201210
+x86_64               randconfig-a001-20201210
+
 ---
-Yes, I'm well aware that having the serial console as a module makes
-devices hard to debug, so I'm not changing any default behavior.  The
-goal is just to enable building as a module for environments where
-serial debug is not available or needed.
-
- drivers/tty/serial/Kconfig      | 2 +-
- drivers/tty/serial/meson_uart.c | 8 +++++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 1044fc387691..c3fa78e63357 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -206,7 +206,7 @@ config SERIAL_MESON
- 
- config SERIAL_MESON_CONSOLE
- 	bool "Support for console on meson"
--	depends on SERIAL_MESON=y
-+	depends on SERIAL_MESON
- 	select SERIAL_CORE_CONSOLE
- 	select SERIAL_EARLYCON
- 	help
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index d2c08b760f83..69eeef9edfa5 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -604,7 +604,6 @@ static int __init meson_serial_console_init(void)
- 	register_console(&meson_serial_console);
- 	return 0;
- }
--console_initcall(meson_serial_console_init);
- 
- static void meson_serial_early_console_write(struct console *co,
- 					     const char *s,
-@@ -634,6 +633,9 @@ OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
- 
- #define MESON_SERIAL_CONSOLE	(&meson_serial_console)
- #else
-+static int __init meson_serial_console_init(void) {
-+	return 0;
-+}
- #define MESON_SERIAL_CONSOLE	NULL
- #endif
- 
-@@ -824,6 +826,10 @@ static int __init meson_uart_init(void)
- {
- 	int ret;
- 
-+	ret = meson_serial_console_init();
-+	if (ret)
-+		return ret;
-+	
- 	ret = uart_register_driver(&meson_uart_driver);
- 	if (ret)
- 		return ret;
--- 
-2.29.2
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
