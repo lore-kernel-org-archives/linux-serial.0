@@ -2,82 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA3BC4361B
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 10:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B13E5C4167B
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 12:10:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7B14823F36
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 10:47:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 73E9222D2A
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Dec 2020 12:10:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390487AbgLKKr1 (ORCPT
+        id S1731482AbgLKMJj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Dec 2020 05:47:27 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:42496 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728980AbgLKKrK (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Dec 2020 05:47:10 -0500
-Received: by mail-lj1-f195.google.com with SMTP id y22so10330435ljn.9;
-        Fri, 11 Dec 2020 02:46:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dRa8+8T0/doCyxO8jlNrqWF9bR8w4xPSvOc8mqFfidI=;
-        b=GkRjOyByop67mPZU4KBxErD+xT3KiaTuGG7uCIK0ryjWFi9hPqCQ7Pvh9tNv9lP1Bw
-         nMFUqpKle557p+AUjs0HNXh4kDwuRwJj5R+XSRj0P56znTQpZggEMKAhdZ99eIKzqSpF
-         copzuAbs7km5xmG1yiZMAef4WKdOfE67qZr/9UphfJoHGtBhNdeRjZM6Hk8g9lmmovnl
-         qS0aWH+v0hRjeinpFQKgvRUh8C0an8C8HEhKI0ZYyHuUrltpzJkmL/Gpvj6h8NSs8Mss
-         W/EeL8M0bTLxGJk3Q+B/2PTZhaO7tMY6pFeiD3GLNc+xpjjUZKzpGZyU/ynAYBuvHzR5
-         p45A==
-X-Gm-Message-State: AOAM532oXhB2COuR9g+txsdXjI7bHtGJo1MljXivmGQTL+DkPJq/Ebn4
-        HBg6KBWBBaUBPinfqIV7rqM=
-X-Google-Smtp-Source: ABdhPJx0eK75XvUevDCsmqYfr+BPwS23tljwjADb07jfuaNvnTNuvi5wcgR9UGvhacHo3upAiIqEgw==
-X-Received: by 2002:a05:651c:1199:: with SMTP id w25mr4642238ljo.165.1607683588903;
-        Fri, 11 Dec 2020 02:46:28 -0800 (PST)
-Received: from xi.terra (c-d2ade455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.173.210])
-        by smtp.gmail.com with ESMTPSA id o8sm841166lft.101.2020.12.11.02.46.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 02:46:28 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1knfwR-0000u7-Eq; Fri, 11 Dec 2020 11:46:27 +0100
-Date:   Fri, 11 Dec 2020 11:46:27 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Maarten Brock <m.brock@vanmierlo.com>,
-        Mychaela Falconia <mychaela.falconia@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Mychaela N . Falconia" <falcon@freecalypso.org>,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        Fri, 11 Dec 2020 07:09:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51180 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389342AbgLKMJF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 11 Dec 2020 07:09:05 -0500
+Date:   Fri, 11 Dec 2020 13:09:35 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1607688503;
+        bh=41rS8U52qZEUqZ7Xg2L67KOIODeUL5vsHKWqEJrq3PY=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aHNI8D5uOwfHjKS+cWBLwZ0CjZq9PhyzDYeD/RKhSB8O2yaSz6s7CWRprq6HDrIpW
+         Y/LGtZrskpkFmtyZmHNjERogoKuUR0fTZvICbxeWa297qH/ZHEZW32TNbugsC76gTP
+         IEoWW4J62N7D8fqqEANDZScrAj6PO1FhFTvaLvyU=
+From:   'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?Q?J=F3zsef_Horv=E1th?= <info@ministro.hu>
+Cc:     'Rob Herring' <robh+dt@kernel.org>,
+        'Jiri Slaby' <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/7] tty: add flag to suppress ready signalling on open
-Message-ID: <X9NOAypxyiS5M3Ze@localhost>
-References: <20201202113942.27024-1-johan@kernel.org>
- <X9Dficb8sQGRut+S@kroah.com>
- <CA+uuBqYTzXCHGY8QnP+OQ5nRNAbqx2rMNzLM7OKLM1_4AzzinQ@mail.gmail.com>
- <6b81cca21561305b55ba8f019b78da28@vanmierlo.com>
- <X9H9i98E1Gro+mDP@kroah.com>
- <3fc3097ce1d35ce1e45fa5a3c7173666@vanmierlo.com>
- <X9IcKoofq+2iGZn7@kroah.com>
+Subject: Re: [PATCH v2] Serial: silabs si4455 serial driver
+Message-ID: <X9NhfyEuPTxezHt9@kroah.com>
+References: <X9Jw+srprdT8tquZ@kroah.com>
+ <20201210194625.GA17516@dincontrollerdev>
+ <X9MIwqJBG69M5uHq@kroah.com>
+ <20201211060943.GA1065@dincontrollerdev>
+ <X9MPuX1x4MezwkEj@kroah.com>
+ <20201211063752.GB1065@dincontrollerdev>
+ <X9MgvZ7bWX7HMNir@kroah.com>
+ <20201211081634.GC1065@dincontrollerdev>
+ <X9MxM+aEKIAHqd4G@kroah.com>
+ <20201211091823.GD1065@dincontrollerdev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <X9IcKoofq+2iGZn7@kroah.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201211091823.GD1065@dincontrollerdev>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 02:01:30PM +0100, Greg Kroah-Hartman wrote:
-> O_DIRECT is an interesting hack, has anyone seen if it violates the
-> posix rules for us to use it on a character device like this?
+On Fri, Dec 11, 2020 at 09:18:24AM +0000, József Horváth wrote:
+> On Fri, Dec 11, 2020 at 09:43:31AM +0100, 'Greg Kroah-Hartman' wrote:
+> > On Fri, Dec 11, 2020 at 08:16:34AM +0000, József Horváth wrote:
+> > > On Fri, Dec 11, 2020 at 08:33:17AM +0100, 'Greg Kroah-Hartman' wrote:
+> > > > On Fri, Dec 11, 2020 at 06:37:52AM +0000, József Horváth wrote:
+> > > > > On Fri, Dec 11, 2020 at 07:20:41AM +0100, 'Greg Kroah-Hartman' wrote:
+> > > > > > On Fri, Dec 11, 2020 at 06:09:43AM +0000, József Horváth wrote:
+> > > > > > > On Fri, Dec 11, 2020 at 06:50:58AM +0100, 'Greg Kroah-Hartman' wrote:
+> > > > > > > > On Thu, Dec 10, 2020 at 07:46:25PM +0000, József Horváth wrote:
+> > > > > > > > > On Thu, Dec 10, 2020 at 08:03:22PM +0100, 'Greg Kroah-Hartman' wrote:
+> > > > > > > > > > On Thu, Dec 10, 2020 at 05:04:46PM +0000, József Horváth wrote:
+> > > > > > > > > > > This is a serial port driver for
+> > > > > > > > > > > Silicon Labs Si4455 Sub-GHz transciver.
+> > > > > > > > > > > +
+> > > > > > > > > > > +#define BASE_TTYIOC_PRIVATE		0xA0
+> > > > > > > > > > > +/* Set EZConfig.
+> > > > > > > > > > > + * After this ioctl call, the driver restarts the si4455,
+> > > > > > > > > > > + * then apply the new configuration and patch.
+> > > > > > > > > > > + */
+> > > > > > > > > > > +#define SI4455_IOC_SEZC		_IOW('T', \
+> > > > > > > > > > > +				     BASE_TTYIOC_PRIVATE + 0x01, \
+> > > > > > > > > > > +				     struct si4455_iocbuff)
+> > > > > > > > > > 
+> > > > > > > > > > Why does a serial driver have private ioctls?  Please no, don't do that.
+> > > > > > > > > 
+> > > > > > > > > I checked the ioctl.h and serial_core.h, but I not found any similar definition, like BASE_VIDIOC_PRIVATE in videodev2.h.
+> > > > > > > > > In this case the name of macro BASE_TTYIOC_PRIVATE means the base value of special ioctl commands owned by this driver.
+> > > > > > > > 
+> > > > > > > > My point is, a serial driver should NOT have any custom ioctls.
+> > > > > > > > 
+> > > > > > > > > I can change it to BASE_TTYIOC or SI4455_IOC_BASE
+> > > > > > > > > 
+> > > > > > > > > > Implement the basic serial driver first, and then we can talk about
+> > > > > > > > > > "custom" configurations and the like, using the correct apis.
+> > > > > > > > > 
+> > > > > > > > > Without the SI4455_IOC_SEZC call, the driver can't configure the Si4455 and not working at all.
+> > > > > > > > > The cofiguration for interface is provided by user for application.
+> > > > > > > > 
+> > > > > > > > That is what a device tree is for, to configure the device to have the
+> > > > > > > > correct system configuration, why can't that be the same here?
+> > > > > > > > 
+> > > > > > > > > It contains the base frequency, channel spacing, modulation, and a lot
+> > > > > > > > > of more stuff, and generated by Silicon Labs Wireless Development
+> > > > > > > > > Suite.
+> > > > > > > > > The generated configuration is in a non public(compressed,
+> > > > > > > > > encrypted...who knows) format, so without this the driver can't
+> > > > > > > > > provide configuration parameters to Si4455.
+> > > > > > > > 
+> > > > > > > > So we have to take a "custom" userspace blob and send it to the device
+> > > > > > > > to configure it properly?  Like Jiri said, sounds like firmware, so just
+> > > > > > > > use that interface instead.
+> > > > > > > 
+> > > > > > > I checked Jiri's suggestion, and it is a good solution to replace SI4455_IOC_SEZC(configuration) and SI4455_IOC_SEZP(firmware patch).
+> > > > > > > I can move SI4455_IOC_SSIZ(package size) to device tree property.
+> > > > > > > 
+> > > > > > > Maybe you have good suggestion for the following:
+> > > > > > > SI4455_IOC_STXC -> Radio transmit channel index. It is a real use case to control this parameter by user at runtime.
+> > > > > > > SI4455_IOC_SRXC -> Radio receive channel index. It is a real use case to control this parameter by user at runtime.
+> > > > > > 
+> > > > > > These are not serial port things, why would a serial port care about
+> > > > > > these?
+> > > > > 
+> > > > > You are right, these are not regular serial port things, but this device is not a regular uart, it is a sub-GHz transciever, digital radio.
+> > > > > This driver tries to represent it as a serial port to user.
+> > > > 
+> > > > Is that the correct representation to be using here?  Why not act like a
+> > > > proper radio device instead?  That way you get to use the normal kernel
+> > > > apis for radio devices.
+> > > 
+> > > In my mind it is absolute a serial device by the application.
+> > 
+> > What is the application?  Traditionally serial ports don't need radio signals :)
+> 
+> The application is connecting newly developed sensors(with only rf interface) and legacy sensors(with regular serial communication over rs-485 with modbus) keeping the legacy user software.
+> 
+> User sw [Java]
+> 	<-> /dev/ttyXXX
+> 		<-> si4455[driver]
+> 			<-> si4455[hardware]
+> 				<---air---> new device[si4455+ARM Cortex-M0] 1
+> 					+-> new device[si4455+ARM Cortex-M0] 2
+> 					+-> new device[si4455+ARM Cortex-M0] n
+> 					+-> gateway[si4455+ARM Cortex-M0]<---RS485--> Legacy device 1
+> 										  +-> Legacy device 2
+> 										  +-> Legacy device n
 
-Jiri only mentioned O_DIRECT as an example of a flag which we might be
-able to repurpose/abuse for this. O_DIRECT is linux-specific, not in
-POSIX, so we'd still end up with a Linux-specific interface if we were
-to take this route.
+If these are "sensors", why are you using a tty interface at all, and
+not just using the correct iio interface for them?
 
-Johan
+thanks,
+
+greg k-h
