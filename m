@@ -2,89 +2,140 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A466DC1B0D8
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Dec 2020 12:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CA6C4361B
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Dec 2020 13:16:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7ACDE20728
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Dec 2020 12:56:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DA412205CB
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Dec 2020 13:16:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404928AbgLNM4W (ORCPT
+        id S2407818AbgLNNQS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Dec 2020 07:56:22 -0500
-Received: from bmail1.ministro.hu ([5.249.150.236]:40048 "EHLO
-        bmail1.ministro.hu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731990AbgLNM4W (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Dec 2020 07:56:22 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by bmail1.ministro.hu (Postfix) with ESMTP id DF4ED123B3D;
-        Mon, 14 Dec 2020 13:55:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ministro.hu;
-        s=201804; t=1607950539;
-        bh=8V5E5Pu+o3YKcYQ76fndo/VtVVHwpALTJPhg7qg6B+s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=K6bkd2eqmEsiIl9LyvZIJgP0NrWyUpfwvkTzhqC2IUjI/dZtwKGDoi9gKsp3IOwDQ
-         dc09vOQUhINlHSoJ4Tmc3R0Gd5lXbzEvN2pY1kvJkzsr4CTMmiTLY6MCrfag/UlIXr
-         VWf7swjObjft4NLoTfpcZH2i7pdr30bS7IueC3AtvDdHZmsuzwCtf+vJdeU0WWfhID
-         NTLDZhzErrcaJenoGcQ7q2r3mwJDxSIKZnInoelPCYG9TsvPiVFkaxeWDbk345TdeB
-         r6I1XBsIUKu9nnFJykWf03EgsOLHytHkxJrtsWhr8mB8P2W6s0EhljDFLLfYineCMn
-         ADc+atE7cBlNg==
-X-Virus-Scanned: Debian amavisd-new at ministro.hu
-Received: from bmail1.ministro.hu ([127.0.0.1])
-        by localhost (bmail1.ministro.hu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id hGhxen1l195o; Mon, 14 Dec 2020 13:55:12 +0100 (CET)
-Received: from dev (localhost [127.0.0.1])
-        by bmail1.ministro.hu (Postfix) with ESMTPSA id 4D548123B3B;
-        Mon, 14 Dec 2020 13:55:12 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ministro.hu;
-        s=201804; t=1607950512;
-        bh=8V5E5Pu+o3YKcYQ76fndo/VtVVHwpALTJPhg7qg6B+s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1Ayq8EgrfFLIoSfgP/H3sScDMb8tz3KOToy2iwXBAd+q51nLgow5wMMzXnh3rI19X
-         wh0sRq0p727Hbm4bsF4P8pxsTRJKas3oLGL+MraGPHFm3Jt2oK0Fy9V6I9LZHMaOC4
-         tQIz24pWstxZcKsVEms5Z61lc8n89RaY3exU8zv7BTMuuLJZvngsAsQ19zHzx88Jhd
-         Bgp3aEDgYTn6g3F0R6YZVi+hEZaVBN5CoCdbYCNZ3MSQtrjsFUggrbUtec6w93fxw7
-         Ov/clsnpQqMTKzJDeTWie8DjE8okNfJ2v7YCfyp75TJdoTzNqNOlCnW4FkQzSE66JT
-         0HTq6WpTwF3Hg==
-Date:   Mon, 14 Dec 2020 12:55:10 +0000
-From:   =?iso-8859-1?Q?J=F3zsef_Horv=E1th?= <info@ministro.hu>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>,
-        'Rob Herring' <robh+dt@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] Serial: silabs si4455 serial driver
-Message-ID: <20201214125510.GA21614@dev>
-References: <20201212070944.GA13909@dincontrollerdev>
- <2855efaf-79a5-f43b-ff8c-9c01a3f14df7@kernel.org>
- <20201214123519.GA10229@dev>
- <77bb5835-b1f2-125a-d2d1-ad67612b164d@kernel.org>
+        Mon, 14 Dec 2020 08:16:18 -0500
+Received: from smtp.asem.it ([151.1.184.197]:63404 "EHLO smtp.asem.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725763AbgLNNQL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 14 Dec 2020 08:16:11 -0500
+Received: from webmail.asem.it
+        by asem.it (smtp.asem.it)
+        (SecurityGateway 6.5.2)
+        with ESMTP id SG000667263.MSG 
+        for <linux-serial@vger.kernel.org>; Mon, 14 Dec 2020 14:15:12 +0100S
+Received: from ASAS044.asem.intra (172.16.16.44) by ASAS044.asem.intra
+ (172.16.16.44) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 14
+ Dec 2020 14:15:11 +0100
+Received: from flavio-x.asem.intra (172.16.17.208) by ASAS044.asem.intra
+ (172.16.16.44) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Mon, 14 Dec 2020 14:15:11 +0100
+From:   Flavio Suligoi <f.suligoi@asem.it>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Ji-Ze Hong <hpeter@gmail.com>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Flavio Suligoi <f.suligoi@asem.it>
+Subject: [PATCH v1] serial: 8250_fintek: Print Fintek chip name
+Date:   Mon, 14 Dec 2020 14:14:45 +0100
+Message-ID: <20201214131445.954822-1-f.suligoi@asem.it>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <77bb5835-b1f2-125a-d2d1-ad67612b164d@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-SGHeloLookup-Result: pass smtp.helo=webmail.asem.it (ip=172.16.16.44)
+X-SGSPF-Result: none (smtp.asem.it)
+X-SGOP-RefID: str=0001.0A782F29.5FD7655F.007E,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0 (_st=1 _vt=0 _iwf=0)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 01:39:09PM +0100, Jiri Slaby wrote:
-> On 14. 12. 20, 13:35, József Horváth wrote:
-> > I'm in trouble with the device tree binding schema of this driver too.
-> 
-> Sorry, someone else has to help you who actually masters DT details.
-> 
-> -- 
-> js
+At the moment, if a Fintek UART is detected, there is no
+printed information about this.
+The ttyS port is declared as a simple 16550A port, but,
+especially when we want to use the RS485 mode, it's
+very important understand if the Fintek UART is correctly
+detected as expected.
 
-Thank you anyway.
+Signed-off-by: Flavio Suligoi <f.suligoi@asem.it>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-Üdvözlettel / Best regards:
-József Horváth
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 31c9e83ea3cb..ef2303cb5176 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -97,6 +97,7 @@ struct fintek_8250 {
+ 	u16 base_port;
+ 	u8 index;
+ 	u8 key;
++	const char *chip_name;
+ };
+ 
+ static u8 sio_read_reg(struct fintek_8250 *pdata, u8 reg)
+@@ -140,9 +141,11 @@ static void fintek_8250_exit_key(u16 base_port)
+ 	release_region(base_port + ADDR_PORT, 2);
+ }
+ 
+-static int fintek_8250_check_id(struct fintek_8250 *pdata)
++static int fintek_8250_check_id(struct fintek_8250 *pdata,
++				struct uart_8250_port *uart)
+ {
+ 	u16 chip;
++	const char *chip_name;
+ 
+ 	if (sio_read_reg(pdata, VENDOR_ID1) != VENDOR_ID1_VAL)
+ 		return -ENODEV;
+@@ -155,17 +158,35 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
+ 
+ 	switch (chip) {
+ 	case CHIP_ID_F81865:
++		chip_name = "F81865";
++		break;
+ 	case CHIP_ID_F81866:
++		chip_name = "F81866";
++		break;
+ 	case CHIP_ID_F81966:
++		chip_name = "F81966";
++		break;
+ 	case CHIP_ID_F81216AD:
++		chip_name = "F81216AD";
++		break;
+ 	case CHIP_ID_F81216H:
++		chip_name = "F81216H";
++		break;
+ 	case CHIP_ID_F81216:
++		chip_name = "F81216";
+ 		break;
+ 	default:
+ 		return -ENODEV;
+ 	}
+ 
+ 	pdata->pid = chip;
++
++	pr_info("%s%s%s Fintek %s\n",
++		uart->port.dev ? dev_name(uart->port.dev) : "",
++		uart->port.dev ? ": " : "",
++		uart->port.name,
++		chip_name);
++
+ 	return 0;
+ }
+ 
+@@ -406,7 +427,7 @@ static int probe_setup_port(struct fintek_8250 *pdata,
+ 
+ 			if (fintek_8250_enter_key(addr[i], keys[j]))
+ 				continue;
+-			if (fintek_8250_check_id(pdata) ||
++			if (fintek_8250_check_id(pdata, uart) ||
+ 			    fintek_8250_get_ldn_range(pdata, &min, &max)) {
+ 				fintek_8250_exit_key(addr[i]);
+ 				continue;
+-- 
+2.25.1
 
