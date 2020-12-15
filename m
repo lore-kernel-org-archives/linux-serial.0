@@ -2,96 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF04C4361B
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Dec 2020 16:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A86C4361B
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Dec 2020 00:30:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0AE3320657
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Dec 2020 16:28:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C68722226A
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Dec 2020 00:30:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440069AbgLNQ2f (ORCPT
+        id S1729242AbgLOAa2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Dec 2020 11:28:35 -0500
-Received: from bmail1.ministro.hu ([5.249.150.236]:49876 "EHLO
-        bmail1.ministro.hu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439386AbgLNQ21 (ORCPT
+        Mon, 14 Dec 2020 19:30:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726319AbgLOAaY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Dec 2020 11:28:27 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by bmail1.ministro.hu (Postfix) with ESMTP id 4459D123B40;
-        Mon, 14 Dec 2020 17:27:34 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ministro.hu;
-        s=201804; t=1607963254;
-        bh=hu9iB9JUGNU/0E24WGPhmjcNTO4ODbRItq6MiPJhM44=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=y88L057RazIJRKp6wPqHe4gJ63jVhm+zybppiwdzP5ZOunqfFy3FX22vA+mW7PNSG
-         +Tu7PIAqVnw+psnFroOuaz9D22CSU6RTEkZ4VCjTKUK0M/+g8jGrSDcx9obsREGkFr
-         U0n55BnkfCWHNJ7+7MxYaE8R+SnwOGjX5g/BO55buVqwS7Ux47oklQnUYAXZe225gW
-         JzyMDF7ShOXopg0qGNqykzMduKn0GYlh1VQjq2MdvATPBHIwbE6M/u9nkTeXcvCLdW
-         Pc7JglveHkZdgOt0myFw4laehp0If/ccXq9eII/TN5ZXlV0OH0Xq/4VR6Rd0SvxO1h
-         hU678uHaPYYPQ==
-X-Virus-Scanned: Debian amavisd-new at ministro.hu
-Received: from bmail1.ministro.hu ([127.0.0.1])
-        by localhost (bmail1.ministro.hu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id bBFepFV1-_aB; Mon, 14 Dec 2020 17:27:04 +0100 (CET)
-Received: from dev (localhost [127.0.0.1])
-        by bmail1.ministro.hu (Postfix) with ESMTPSA id E347E123B3D;
-        Mon, 14 Dec 2020 17:27:03 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ministro.hu;
-        s=201804; t=1607963224;
-        bh=hu9iB9JUGNU/0E24WGPhmjcNTO4ODbRItq6MiPJhM44=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=9e4c25+ZX1pZdQmfIddhggMvDPyXadCj5KilaWVtnzhMe47XYsvn3NxOcH0VybpB8
-         Ru2RqZryK8RmPqrRP+6gdKUDqzIzl/QD2CIhW+HsEAJLdDtfJcRKN3hxgQQmSroD+l
-         KD6YZA8YfquIE7H90/X+dr+Jjcp34cp0s1zNrY+PXtwC6HHTuXp9RDUCxvXxyPxYQ1
-         RGwiA862/PUu7q6P3pRPQ615s6NGHQr0Q/lsrThd89Mkty8+IFLIpgo6Pabcfn79+X
-         8x4dqLBf2Fbqz+a3TSQNo0/xHqxPiT2t8+dl2RodWBipa+kpGY8gGkVv6jUBAoJo4m
-         pdHADZjZZINsw==
-Date:   Mon, 14 Dec 2020 16:27:02 +0000
-From:   =?iso-8859-1?Q?J=F3zsef_Horv=E1th?= <info@ministro.hu>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>,
-        'Rob Herring' <robh+dt@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] Serial: silabs si4455 serial driver
-Message-ID: <20201214162701.GA32214@dev>
-References: <20201212070944.GA13909@dincontrollerdev>
- <2855efaf-79a5-f43b-ff8c-9c01a3f14df7@kernel.org>
- <20201214123519.GA10229@dev>
- <77bb5835-b1f2-125a-d2d1-ad67612b164d@kernel.org>
+        Mon, 14 Dec 2020 19:30:24 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9BFC061793;
+        Mon, 14 Dec 2020 16:29:44 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id g18so14050146pgk.1;
+        Mon, 14 Dec 2020 16:29:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jL8gEw3KjszESCiPFTBqaClClb2pp1eS3R1B+8QHNwI=;
+        b=BFpZvX9tKF8LN/zcRBIJMD/HpdGXHKDX7v3fwNBMw9fObOLv43UQtrkyJbwHAnNJ82
+         SCDWeYl05r0N6dbHQfTsPAGfNzReRuLvXs4RNKIC7kkL4GHWEfF6hLt9x0+O10zBkB/w
+         tQpIr0pUBhnIpP1db0y5DX+DmOYhdEybgwfnq5ZKv3L91E4pZbLyuUZTpf8dsi36c8B/
+         3YHJKkyAShCPcn3AG8TvOE1lMolYSzOx5T0o9D9nc/rJwJ4VNSsk/zRozH46rJNR/kQT
+         w/D5YC56l5szvV7g6rx6DjFX8yA734tbWoP8mJlBIDZDtI6rMydJ3QpnqbAOV5ZZmMxX
+         VdvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jL8gEw3KjszESCiPFTBqaClClb2pp1eS3R1B+8QHNwI=;
+        b=U1JdH95FtBVaYy4BejoQy/RY7B74qYwhhWeCtjgeC4aTW8VDtPeCnfobn9yCV4rRUK
+         546Q1KH3QM8BHw8ZZzqghaKgBA1aVelZaeFjqWYaL1EHGDk1wL0MiC93ewDZkIIs2LpP
+         q6WK3Hn0/ntpqBwlGfciQjE6msNKcdz9IaVOk84ThkUau3FYvMwcsZn54VJxjG7CbHzx
+         x25t0yqh2vj0AGXDs4dcQKFEuFrGBaPLIiF2q6xXO2ISyfJbBG/mdKah9G2asUUWPIq+
+         nZojhp91y6qGzey16OUNclXRXLs/QS3XnZgdaz5Ntc+qZQDLxRp1sosAsNeFYHKrknmj
+         fOEA==
+X-Gm-Message-State: AOAM530T25TajZASeJyzXV67+T2Fs+R24+muVNrWj276+g09ScCNwWdp
+        LFBasJ3ZVGV+Yw54QHqDweFGpaHGMS/BFA==
+X-Google-Smtp-Source: ABdhPJxRieM0KSeN1Aw59xtHFgi21XDqajp6HP/I7XNNRrDTI0++uAeR8DOEdgR/jfEGmWP6wEXR0Q==
+X-Received: by 2002:a05:6a00:1593:b029:198:195:4d93 with SMTP id u19-20020a056a001593b029019801954d93mr26280189pfk.32.1607992183684;
+        Mon, 14 Dec 2020 16:29:43 -0800 (PST)
+Received: from [192.168.1.60] (59-120-186-245.HINET-IP.hinet.net. [59.120.186.245])
+        by smtp.gmail.com with ESMTPSA id jz20sm19380479pjb.4.2020.12.14.16.29.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Dec 2020 16:29:42 -0800 (PST)
+Subject: Re: [PATCH v1] serial: 8250_fintek: Print Fintek chip name
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Flavio Suligoi <f.suligoi@asem.it>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201214131445.954822-1-f.suligoi@asem.it>
+ <X9dr2IvOgPyhsalE@kroah.com>
+From:   "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Message-ID: <1b5f557d-165b-d2be-2c61-ef133019edf7@gmail.com>
+Date:   Tue, 15 Dec 2020 08:29:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <X9dr2IvOgPyhsalE@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <77bb5835-b1f2-125a-d2d1-ad67612b164d@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 01:39:09PM +0100, Jiri Slaby wrote:
-> On 14. 12. 20, 13:35, József Horváth wrote:
-> > I'm in trouble with the device tree binding schema of this driver too.
+Hi,
+
+Greg Kroah-Hartman æ–¼ 2020/12/14 ä¸‹åˆ 09:42 å¯«é“:
+>>   	pdata->pid = chip;
+>> +
+>> +	pr_info("%s%s%s Fintek %s\n",
+>> +		uart->port.dev ? dev_name(uart->port.dev) : "",
+>> +		uart->port.dev ? ": " : "",
+>> +		uart->port.name,
+>> +		chip_name);
 > 
-> Sorry, someone else has to help you who actually masters DT details.
+> Drivers, if all goes well, should not print anything to the kernel log.
+> This isn't ok.
 > 
-> -- 
-> js
+> And even if it was, dev_info() would be the correct thing to do...
 
-I have answer. I forgot read before write...
-The silabs,si4455.yaml was in wrong place, the good place is
- Documentation/devicetree/bindings/serial/silabs,si4455.yaml as Rob wrote earlier.
-Everything is fine now with it.
+Maybe can transform pr_info() to dev_dbg() for debug usage ?
 
-Sorry for this.
-
-Üdvözlettel / Best regards:
-József Horváth
-
-
-
+-- 
+With Best Regards,
+Peter Hong
