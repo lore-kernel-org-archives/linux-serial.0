@@ -2,92 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F09BEC352A6
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Dec 2020 21:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3FFC3526C
+	for <linux-serial@archiver.kernel.org>; Sat, 19 Dec 2020 09:29:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C844623BE2
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Dec 2020 21:18:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C7C5623BEE
+	for <linux-serial@archiver.kernel.org>; Sat, 19 Dec 2020 09:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727527AbgLRVSF (ORCPT
+        id S1726441AbgLSJ2g (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Dec 2020 16:18:05 -0500
-Received: from mail-oi1-f178.google.com ([209.85.167.178]:40602 "EHLO
-        mail-oi1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727117AbgLRVSE (ORCPT
+        Sat, 19 Dec 2020 04:28:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726367AbgLSJ2f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Dec 2020 16:18:04 -0500
-Received: by mail-oi1-f178.google.com with SMTP id p126so4317219oif.7;
-        Fri, 18 Dec 2020 13:17:48 -0800 (PST)
+        Sat, 19 Dec 2020 04:28:35 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51041C0617B0;
+        Sat, 19 Dec 2020 01:27:55 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id v2so3034312pfm.9;
+        Sat, 19 Dec 2020 01:27:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ctmRMSbwSXsaUJmiSd13cerYbuM3368cFgF1ybIbnTk=;
+        b=TJAl+FrXpE9DBSVN6HlpabGbK1T5ePXYs0WRG220mm555kBJcqf2uiFcVg3T7VaSGT
+         LQRfLBrNHh/aIt+fc1XuNI/sRDVQV1Y3KP95RaJDRVSk50P0NEFcEK4r9rleQFjV117a
+         hrr3pBCTPsyip+3lKtfsvF/xP1jJH43EjsTWQjQmVY8HZz4ioQxJVvLsB550cgnPA9lp
+         jexkeuw/XqO4ULcgY2XV1V6gAEl52d95gftoIhuPgDBYYlZggN+CvMvzBzV4D2FX+xrm
+         sQyq8N0lYFVlXT/MQlNlKnWArV+pS5YXkwKRo8GPI1Ib19T2H+YIsGd+FizMJrl5Sv2k
+         s4Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=l8NpM/ZXx3KvTES0GcT3wzVOs1+8KOFnRlCaHv0vQqg=;
-        b=Ff6IEDnLqo2swbfUZXbZPyqSziAh/VBSxNAZEuTqfIqqp1nKYlPk9EVQQY+TEVQpSK
-         fU0CjNk2prgP33Kjcg4joI7vn3BItwEXE9874KSkVTni8GAtVHaNsY4AvK9Sjcw+9gFE
-         PaRHdGVdh/3hmAng9YrBbKzqDJbl3peUkSpQDH/rGIZja9gFkJj/eEklk/nd1+comRq/
-         Zn0qKw3uqjK1IXKanXiENs2OoZdB0cUGZ2VakN5p1oyj/A2p5TGOhjbMh30a4BlBSyv+
-         SCKbHXTTv9gT1OOpUGh1mRb0E1pnBtTJbwlAdb+m1A1sq+TsuJmZ8K5VDk7i8AJdRYqI
-         wc8g==
-X-Gm-Message-State: AOAM531gEKl9D2NyRNKwsC8VMUYaJupU48Y8dg9OmfXfNgydd7m6C4Jy
-        tsnoeCSE6DHb9cS/p4dXZg==
-X-Google-Smtp-Source: ABdhPJzL2Cdk+fsnQO8ZXvFKbLhNOKv4lZI3fZ66X1EcYf/ouISSzRrfIxqRxLPlSTmS8yZ3GB1RBA==
-X-Received: by 2002:aca:3c57:: with SMTP id j84mr4146262oia.41.1608326243527;
-        Fri, 18 Dec 2020 13:17:23 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id p132sm917646oia.41.2020.12.18.13.17.21
+        bh=ctmRMSbwSXsaUJmiSd13cerYbuM3368cFgF1ybIbnTk=;
+        b=g4GIy2N3rxvQjpLujLqsV7Iaxx7uQcTl6R557ds3KBHRAaO45HDn094vpMOVnRl53T
+         PplzObH0P3p3Dr6ou27yJ19UQT8Jgi+I+kPBkTPpZF7uxj0nm+F6vqSFyUnq1feaJAHn
+         AL0zjettqVG4aYB9i0yqME/J/dQgWiCD3vaxBsluLKCbgFY1lCGdl+ZsDX98g2+CoZUE
+         fI4JgEuxPas3KaQleAxwlX08PoOCCih7a9sKUaYg6/B2lU7hks8bA8edzkYjwrqD0YMN
+         MocHLa8YNv3G0nkHHq5u9hXmjMr3n75pY5kEJnAzXZotuapyEMj7HeKvsm2cILfz1JNj
+         PiYA==
+X-Gm-Message-State: AOAM530JHkL/6dI8x55oYWZ8JJFWtiUrk05bNyAJS/whODl7yDqzOTOa
+        DY4+w6+I4ykzsnHaT6qD6NI=
+X-Google-Smtp-Source: ABdhPJwoWtXQBa4bBhOrr/hAGclT7oR71ftv1fFkA/FD/hXBOdJCLFtbTmZPAJbL75q6V94kP3HcKg==
+X-Received: by 2002:a63:5845:: with SMTP id i5mr7465833pgm.355.1608370074869;
+        Sat, 19 Dec 2020 01:27:54 -0800 (PST)
+Received: from localhost (g39.222-224-245.ppp.wakwak.ne.jp. [222.224.245.39])
+        by smtp.gmail.com with ESMTPSA id mz1sm9467603pjb.33.2020.12.19.01.27.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Dec 2020 13:17:22 -0800 (PST)
-Received: (nullmailer pid 2190902 invoked by uid 1000);
-        Fri, 18 Dec 2020 21:17:21 -0000
-Date:   Fri, 18 Dec 2020 15:17:21 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
+        Sat, 19 Dec 2020 01:27:54 -0800 (PST)
+Date:   Sat, 19 Dec 2020 18:27:51 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
         Karol Gugala <kgugala@antmicro.com>,
-        linux-media <linux-media@vger.kernel.org>,
-        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-mediatek <linux-mediatek@lists.infradead.org>,
         linux-kernel <linux-kernel@vger.kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-mediatek <linux-mediatek@lists.infradead.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mateusz Holenko <mholenko@antmicro.com>,
         Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
         devicetree <devicetree@vger.kernel.org>,
-        Stafford Horne <shorne@gmail.com>
-Subject: Re: [PATCH 4/5] dt-bindings: devapc: add the required property
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-media <linux-media@vger.kernel.org>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 3/5] dt-bindings: soc: add the required property
  'additionalProperties'
-Message-ID: <20201218211721.GA2190633@robh.at.kernel.org>
+Message-ID: <20201219092751.GI3168563@lianli.shorne-pla.net>
 References: <20201204093813.1275-1-thunder.leizhen@huawei.com>
- <20201204093813.1275-5-thunder.leizhen@huawei.com>
+ <20201204093813.1275-4-thunder.leizhen@huawei.com>
+ <20201218211706.GA2190351@robh.at.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201204093813.1275-5-thunder.leizhen@huawei.com>
+In-Reply-To: <20201218211706.GA2190351@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 04 Dec 2020 17:38:12 +0800, Zhen Lei wrote:
-> When I do dt_binding_check for any YAML file, below wanring is always
-> reported:
+On Fri, Dec 18, 2020 at 03:17:06PM -0600, Rob Herring wrote:
+> On Fri, 04 Dec 2020 17:38:11 +0800, Zhen Lei wrote:
+> > When I do dt_binding_check for any YAML file, below wanring is always
+> > reported:
+> > 
+> > xxx/soc/litex/litex,soc-controller.yaml: 'additionalProperties' is a required property
+> > xxx/soc/litex/litex,soc-controller.yaml: ignoring, error in schema:
+> > warning: no schema found in file: xxx/soc/litex/litex,soc-controller.yaml
+> > 
+> > Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> > ---
+> >  Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
 > 
-> xxx/soc/mediatek/devapc.yaml: 'additionalProperties' is a required property
-> xxx/soc/mediatek/devapc.yaml: ignoring, error in schema:
-> warning: no schema found in file: xxx/soc/mediatek/devapc.yaml
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  Documentation/devicetree/bindings/soc/mediatek/devapc.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+> Applied, thanks!
 
-Applied, thanks!
+Thank you!
+
+-Stafford
