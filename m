@@ -2,254 +2,768 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B51C43381
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Dec 2020 18:41:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC7B0C433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Dec 2020 01:21:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A2787225AA
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Dec 2020 18:41:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 79D1C22B43
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Dec 2020 01:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727203AbgLUSkx (ORCPT
+        id S1725852AbgLVBV6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Dec 2020 13:40:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726923AbgLUSkx (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Dec 2020 13:40:53 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90864C0613D6;
-        Mon, 21 Dec 2020 10:40:12 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id y23so11929625wmi.1;
-        Mon, 21 Dec 2020 10:40:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rlROzzTn5Mb2Qz9Q5wZHf9PvLJW5q9w0FyVoZJzVDho=;
-        b=J32rAch4N3gRz3FV6ZvvuqsqrXhXTqU9wPweWWpTLXuX9ijkq7AuDaoR0cHDisOInU
-         ECjspxRfSz4gjJWWwN9X6OCghrp9Nj9aY9GTIgxxcoP96tJ/0v9xsY2PX7AgTAxWlpmY
-         VKvWwHe5kG1dA+lk479OJLtys5sPJIc0O9Zc60t1GbPBcKQ+3SNG+NnBMjqsN/6Li3oq
-         5yG2g1AGa8EEPs2NrgozAy9AbMUWaZAP0XyJNOF6g6EKDt8IL0QxefmyVPAN7L1bW14k
-         S6DHAMqdFhpUgWF1tn0XgrZyVPbHBP1d1xOqZwcja1CgxQXmJ9l7AtbIHgXDS30VzDaU
-         Ki3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rlROzzTn5Mb2Qz9Q5wZHf9PvLJW5q9w0FyVoZJzVDho=;
-        b=jpSCKRBssHtmnRIPNGEEuULYsdN3BJk6LPkXVxe6qQ5KelVp/LQTYUpy0JGOfifgKS
-         WSdcadL+BKGhd9uXf3HtUkKhxRKHL3BsguDzOGkCaes/XKsd8GvctBq75O0uFZMTN1T+
-         sHNuhAXFald6lx/64O+8Cd+EvoUX8zlMdfAqVgDTDokcVcR79X0RvvMthafNQG+Jlgn+
-         9PZttRi9V4iyTOi5kKnBhp6dmENfgc2URb89nEIyx0bH0fs2sFfDJ79AsmIyDMliuIcU
-         YCmV854qzWHFwQWsUuVyidIL52vF7wQm14YD1bhGQ6Orh1jjf0qu57lEVcbnTSOX9UJ4
-         C/2w==
-X-Gm-Message-State: AOAM5301hW61KcnIRNmg7KG8ZC2PB9Wjh7I5rwN5YjezKOh2+JJCfLcj
-        qwbfqQnu9Mk19mHdxSbyu4jul3CPNTEflA==
-X-Google-Smtp-Source: ABdhPJz09ZzSBPs5dRL6xrY3GvjsWzrtt8hJnqSW+J9XiUReQP6DxMxErjCkij4V772ap5AtJvffNA==
-X-Received: by 2002:a1c:b407:: with SMTP id d7mr18196368wmf.34.1608576010844;
-        Mon, 21 Dec 2020 10:40:10 -0800 (PST)
-Received: from xws.fritz.box (pd9e5aae0.dip0.t-ipconnect.de. [217.229.170.224])
-        by smtp.gmail.com with ESMTPSA id j7sm24528310wmb.40.2020.12.21.10.40.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Dec 2020 10:40:09 -0800 (PST)
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?UTF-8?q?Barnab=C3=A1s=20P=C5=91cze?= <pobrn@protonmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?q?Bla=C5=BE=20Hrastnik?= <blaz@mxxn.io>,
-        Dorian Stoll <dorian.stoll@tmsp.io>,
-        platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH v3 0/9] Add support for Microsoft Surface System Aggregator Module
-Date:   Mon, 21 Dec 2020 19:39:50 +0100
-Message-Id: <20201221183959.1186143-1-luzmaximilian@gmail.com>
-X-Mailer: git-send-email 2.29.2
+        Mon, 21 Dec 2020 20:21:58 -0500
+Received: from mail.prewas.sk ([212.5.209.170]:58163 "EHLO mail.prewas.sk"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725841AbgLVBV5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 21 Dec 2020 20:21:57 -0500
+X-Greylist: delayed 7284 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Dec 2020 20:21:56 EST
+dkim-signature: v=1; a=rsa-sha256; d=3ksolutions.sk; s=mail.prewas.sk;
+        c=relaxed/relaxed; q=dns/txt; h=From:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Transfer-Encoding;
+        bh=auBEDWBmf7aYlVfpZA/b2NqrrsbRX4B4mzNnQ3FRxdY=;
+        b=UyN3yLeW4dvjQIs4Qgtf9MBrC86hElB+R7NJBSSZV3VJQPKorxdyBnUfykaw4jyQ5a2iEuyOrQ4XlmjSzMShLOYLg6KbReGS/X+AwKRIvVh0fqiXR8n8F5JMaJgiD7Rja78Yc0VHa7diWz8d0DOw3lUf8orFO8j5jKVfuOxymtVMO0LL//xd1lmRqhyNAWv7OuFpEK2NWmwktP0zT0qGRs25CMNUf/gnC0wXTYXxx/iOGgAJXL1RWJ17HB
+        JjDaqk7P8P1Srw0yVeOqJGHkX0aopMAncEeQbTwa4/VTGMP4iD5S1d68iG6p1YxwQwhiId7nEUrPW5cvgb0fBPfxMWyQ==
+Received: from localhost.localdomain (Unknown [10.0.1.41])
+        by mail.prewas.sk with ESMTPSA
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256)
+        ; Tue, 22 Dec 2020 00:19:24 +0100
+From:   Ivan Sistik <sistik@3ksolutions.sk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jslaby@suse.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Stefan Wahren <wahrenst@gmx.net>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Ivan Sistik <sistik@3ksolutions.sk>
+Subject: [PATCH] tty: serial: amba-pl011: added RS485 support
+Date:   Tue, 22 Dec 2020 00:18:48 +0100
+Message-Id: <20201221231848.55259-1-sistik@3ksolutions.sk>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+This patch is ported and corrected version of my previous patch which can
+be reviewed here:
+https://lore.kernel.org/lkml/20200106235203.27256-1-sistik@3ksolutions.sk/
 
-Here is version three of the Surface System Aggregator Module (SAM/SSAM)
-driver series, adding initial support for the embedded controller on 5th
-and later generation Microsoft Surface devices. Initial support includes
-the ACPI interface to the controller, via which battery and thermal
-information is provided on some of these devices.
+I have been waiting for some time to see if Lukas Wunner <lukas@wunner.de>
+will create patch with his own solution.
 
-The first version and cover letter detailing what this series is about
-can be found at
+Now I am successfully running my imeplementation for almost one year in
+production environment. There are no problems with it. I have made
+corrections to patch according to notes from Greg Kroah-Hartman
+<gregkh@linuxfoundation.org>.
 
-  https://lore.kernel.org/platform-driver-x86/20201115192143.21571-1-luzmaximilian@gmail.com/
+Patch content:
 
-the previous version (v2) at
+AMBA PL011 do not have hardware support for RS485. This implementation is
+for drive enable signal (DE), which switch direction of RS485 driver chip.
+This signal si drived by RTS pin. Correct multiplexor settings have to be
+provided to Device Tree. Usually it is 'ctsrts', which is used for enabling
+of HW flow control, too.
 
-  https://lore.kernel.org/platform-driver-x86/20201203212640.663931-1-luzmaximilian@gmail.com/
+DE signal is switched by starting transmition from serial core and data
+transfer is initiated by first hrtimer if there is delay before send
+enabled.
 
-This patch-set can also be found at the following repository and
-reference, if you prefer to look at a kernel tree instead of these
-emails:
+There is missing FIFO empty interrupt in PL011. It is replaced by second
+hrtimer which is started if there are no more data in port transmit buffer.
+Notice that port transmit buffer is not the same as HW TX FIFO. Time of
+this timmer is set to char send time and it is running until fifo is empty.
+This kind of implementation cause that there can be unwanted delay of one
+timer tick before DE signal is switched. This is used to prevent data loss
+during transmit. Second timer can start first if there is delay after send
+enabled.
 
-  https://github.com/linux-surface/kernel tags/s/surface-aggregator/v3
+Signed-off-by: Ivan Sistik <sistik@3ksolutions.sk>
+---
+ arch/arm/configs/bcm2835_defconfig |   1 +
+ drivers/tty/serial/Kconfig         |  11 +
+ drivers/tty/serial/amba-pl011.c    | 474 ++++++++++++++++++++++++++++-
+ 3 files changed, 483 insertions(+), 3 deletions(-)
 
-Thank you all for the feedback to and reviews of the previous versions,
-I hope I have addressed all comments.
-
-Regards,
-Max
-
-
-Note: In v3, I have dropped the explicit dependency of the core module
-and driver on CONFIG_ACPI due to the incoming
-
-  [PATCH] platform/surface: SURFACE_PLATFORMS should depend on ACPI
-
-Thus, this series depends on said patch. This patch can be found at
-
-  https://www.spinics.net/lists/platform-driver-x86/msg23929.html
-
-
-Changes in v1 (from RFC, overview):
- - move to platform/surface
- - add copyright lines
- - change SPDX identifier to GPL-2.0+ (was GPL-2.0-or-later)
- - change user-space interface from debugfs to misc-device
- - address issues in user-space interface
- - fix typos in commit messages and documentation
- - fix some bugs, address other issues
-
-Changes in v2 (overview):
- - simplify some code, mostly with regards to concurrency
- - add architectural overview to documentation
- - improve comments for documentation
- - use printk specifier for hex prefix instead of hard-coding it
- - spell check comments and strings, fix typos
- - unify comment style
- - run checkpatch --strict, fix these and other style issues
-
-Changes in v3 (overview):
- - remove explicit dependency on ACPI as this is going to be covered by
-   CONFIG_SURFACE_PLATFORMS
- - simplify locking requirements
- - help enforce locking requirements via lockdep assertions
- - fix false-positive lockdep warning
- - warn on event enablement reference counter exhaustion
- - don't warn about unhandled event if event handling failed
- - validate flags on request initialization
- - improve documentation/add comments
- - replace 'iff' with 'if' in documentation and comments
-
-Changes regarding specific patches (and more details) can be found on
-the individual patch.
-
-
-Maximilian Luz (9):
-  platform/surface: Add Surface Aggregator subsystem
-  platform/surface: aggregator: Add control packet allocation caching
-  platform/surface: aggregator: Add event item allocation caching
-  platform/surface: aggregator: Add trace points
-  platform/surface: aggregator: Add error injection capabilities
-  platform/surface: aggregator: Add dedicated bus and device type
-  docs: driver-api: Add Surface Aggregator subsystem documentation
-  platform/surface: Add Surface Aggregator user-space interface
-  platform/surface: Add Surface ACPI Notify driver
-
- Documentation/driver-api/index.rst            |    1 +
- .../surface_aggregator/client-api.rst         |   38 +
- .../driver-api/surface_aggregator/client.rst  |  393 +++
- .../surface_aggregator/clients/cdev.rst       |   87 +
- .../surface_aggregator/clients/index.rst      |   21 +
- .../surface_aggregator/clients/san.rst        |   44 +
- .../driver-api/surface_aggregator/index.rst   |   21 +
- .../surface_aggregator/internal-api.rst       |   67 +
- .../surface_aggregator/internal.rst           |  577 ++++
- .../surface_aggregator/overview.rst           |   77 +
- .../driver-api/surface_aggregator/ssh.rst     |  344 +++
- .../userspace-api/ioctl/ioctl-number.rst      |    2 +
- MAINTAINERS                                   |   13 +
- drivers/platform/surface/Kconfig              |   38 +
- drivers/platform/surface/Makefile             |    3 +
- drivers/platform/surface/aggregator/Kconfig   |   68 +
- drivers/platform/surface/aggregator/Makefile  |   17 +
- drivers/platform/surface/aggregator/bus.c     |  415 +++
- drivers/platform/surface/aggregator/bus.h     |   27 +
- .../platform/surface/aggregator/controller.c  | 2579 +++++++++++++++++
- .../platform/surface/aggregator/controller.h  |  285 ++
- drivers/platform/surface/aggregator/core.c    |  839 ++++++
- .../platform/surface/aggregator/ssh_msgb.h    |  205 ++
- .../surface/aggregator/ssh_packet_layer.c     | 2057 +++++++++++++
- .../surface/aggregator/ssh_packet_layer.h     |  190 ++
- .../platform/surface/aggregator/ssh_parser.c  |  228 ++
- .../platform/surface/aggregator/ssh_parser.h  |  154 +
- .../surface/aggregator/ssh_request_layer.c    | 1264 ++++++++
- .../surface/aggregator/ssh_request_layer.h    |  143 +
- drivers/platform/surface/aggregator/trace.h   |  632 ++++
- .../platform/surface/surface_acpi_notify.c    |  886 ++++++
- .../surface/surface_aggregator_cdev.c         |  303 ++
- include/linux/mod_devicetable.h               |   18 +
- include/linux/surface_acpi_notify.h           |   39 +
- include/linux/surface_aggregator/controller.h |  824 ++++++
- include/linux/surface_aggregator/device.h     |  423 +++
- include/linux/surface_aggregator/serial_hub.h |  672 +++++
- include/uapi/linux/surface_aggregator/cdev.h  |   78 +
- scripts/mod/devicetable-offsets.c             |    8 +
- scripts/mod/file2alias.c                      |   23 +
- 40 files changed, 14103 insertions(+)
- create mode 100644 Documentation/driver-api/surface_aggregator/client-api.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/client.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/clients/cdev.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/clients/index.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/clients/san.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/index.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/internal-api.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/internal.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/overview.rst
- create mode 100644 Documentation/driver-api/surface_aggregator/ssh.rst
- create mode 100644 drivers/platform/surface/aggregator/Kconfig
- create mode 100644 drivers/platform/surface/aggregator/Makefile
- create mode 100644 drivers/platform/surface/aggregator/bus.c
- create mode 100644 drivers/platform/surface/aggregator/bus.h
- create mode 100644 drivers/platform/surface/aggregator/controller.c
- create mode 100644 drivers/platform/surface/aggregator/controller.h
- create mode 100644 drivers/platform/surface/aggregator/core.c
- create mode 100644 drivers/platform/surface/aggregator/ssh_msgb.h
- create mode 100644 drivers/platform/surface/aggregator/ssh_packet_layer.c
- create mode 100644 drivers/platform/surface/aggregator/ssh_packet_layer.h
- create mode 100644 drivers/platform/surface/aggregator/ssh_parser.c
- create mode 100644 drivers/platform/surface/aggregator/ssh_parser.h
- create mode 100644 drivers/platform/surface/aggregator/ssh_request_layer.c
- create mode 100644 drivers/platform/surface/aggregator/ssh_request_layer.h
- create mode 100644 drivers/platform/surface/aggregator/trace.h
- create mode 100644 drivers/platform/surface/surface_acpi_notify.c
- create mode 100644 drivers/platform/surface/surface_aggregator_cdev.c
- create mode 100644 include/linux/surface_acpi_notify.h
- create mode 100644 include/linux/surface_aggregator/controller.h
- create mode 100644 include/linux/surface_aggregator/device.h
- create mode 100644 include/linux/surface_aggregator/serial_hub.h
- create mode 100644 include/uapi/linux/surface_aggregator/cdev.h
-
+diff --git a/arch/arm/configs/bcm2835_defconfig b/arch/arm/configs/bcm2835_defconfig
+index 519ff58e6..c2f630937 100644
+--- a/arch/arm/configs/bcm2835_defconfig
++++ b/arch/arm/configs/bcm2835_defconfig
+@@ -86,6 +86,7 @@ CONFIG_SERIAL_8250_SHARE_IRQ=y
+ CONFIG_SERIAL_8250_BCM2835AUX=y
+ CONFIG_SERIAL_AMBA_PL011=y
+ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
++CONFIG_SERIAL_AMBA_PL011_SOFT_RS485=y
+ CONFIG_SERIAL_DEV_BUS=y
+ CONFIG_TTY_PRINTK=y
+ CONFIG_I2C_CHARDEV=y
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index a9751a83d..c33461511 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -75,6 +75,17 @@ config SERIAL_AMBA_PL011_CONSOLE
+ 	  your boot loader (lilo or loadlin) about how to pass options to the
+ 	  kernel at boot time.)
+ 
++config SERIAL_AMBA_PL011_SOFT_RS485
++	bool "RS485 software direction switching for ARM AMBA PL011 serial"
++	depends on SERIAL_AMBA_PL011=y
++	help
++	  Enable RS485 software direction switching of driver enable (RTS pin)
++	  for ARM AMBA PL011 serial. AMBA PL011 does not have HW support for
++	  RS485. This driver use 2 hrtimers. One is used for rs485 delays.
++	  Secon one is used for polling of TX FIFO. There is not TX FIFO
++	  empty interrupt in PL011. Secondary timer is started by empty
++	  transmit buffer.
++
+ config SERIAL_EARLYCON_ARM_SEMIHOST
+ 	bool "Early console using ARM semihosting"
+ 	depends on ARM64 || ARM
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 16720c97a..f45b9042b 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -46,6 +46,7 @@
+ #include <linux/sizes.h>
+ #include <linux/io.h>
+ #include <linux/acpi.h>
++#include <linux/math64.h>
+ 
+ #include "amba-pl011.h"
+ 
+@@ -60,6 +61,18 @@
+ #define UART_DR_ERROR		(UART011_DR_OE|UART011_DR_BE|UART011_DR_PE|UART011_DR_FE)
+ #define UART_DUMMY_DR_RX	(1 << 16)
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++/*
++ * Enum with current status
++ */
++enum rs485_status {
++	rs485_receiving,
++	rs485_delay_before_send,
++	rs485_sending,
++	rs485_delay_after_send
++};
++#endif
++
+ static u16 pl011_std_offsets[REG_ARRAY_SIZE] = {
+ 	[REG_DR] = UART01x_DR,
+ 	[REG_FR] = UART01x_FR,
+@@ -270,6 +283,16 @@ struct uart_amba_port {
+ 	unsigned int		old_cr;		/* state during shutdown */
+ 	unsigned int		fixed_baud;	/* vendor-set fixed baud rate */
+ 	char			type[12];
++
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	enum rs485_status	rs485_current_status; /* status used for RTS */
++	enum rs485_status	rs485_next_status; /* this status after tick */
++	struct hrtimer		rs485_delay_timer;
++	struct hrtimer		rs485_tx_empty_poll_timer;
++	unsigned long		send_char_time;	/* send char (nanoseconds) */
++	bool			rs485_last_char_sending;
++#endif
++
+ #ifdef CONFIG_DMA_ENGINE
+ 	/* DMA stuff */
+ 	bool			using_tx_dma;
+@@ -280,6 +303,25 @@ struct uart_amba_port {
+ #endif
+ };
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++
++static void pl011_rs485_start_rts_delay(struct uart_amba_port *uap);
++
++#define RS485_SET_RTS_SIGNAL(pUAP, value)		\
++	do {						\
++		unsigned int rts_temp_cr;		\
++		rts_temp_cr = pl011_read(pUAP, REG_CR);	\
++		if (!(value))				\
++			rts_temp_cr |= UART011_CR_RTS;	\
++		else					\
++			rts_temp_cr &= ~UART011_CR_RTS;	\
++		pl011_write(rts_temp_cr, pUAP, REG_CR);	\
++	} while (0)
++
++#define RS485_TX_FIFO_EMPTY(pUAP)			\
++	(pl011_read(pUAP, REG_FR) & UART011_FR_TXFE)
++#endif
++
+ static unsigned int pl011_reg_to_offset(const struct uart_amba_port *uap,
+ 	unsigned int reg)
+ {
+@@ -1301,6 +1343,11 @@ static void pl011_stop_tx(struct uart_port *port)
+ 	uap->im &= ~UART011_TXIM;
+ 	pl011_write(uap->im, uap, REG_IMSC);
+ 	pl011_dma_tx_stop(uap);
++
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	if (uap->port.rs485.flags & SER_RS485_ENABLED)
++		pl011_rs485_start_rts_delay(uap);
++#endif
+ }
+ 
+ static bool pl011_tx_chars(struct uart_amba_port *uap, bool from_irq);
+@@ -1319,8 +1366,123 @@ static void pl011_start_tx(struct uart_port *port)
+ 	struct uart_amba_port *uap =
+ 	    container_of(port, struct uart_amba_port, port);
+ 
+-	if (!pl011_dma_tx_start(uap))
+-		pl011_start_tx_pio(uap);
++#define START_PL011_TX()				\
++	do {						\
++		if (!pl011_dma_tx_start(uap))		\
++			pl011_start_tx_pio(uap);	\
++	} while (0)
++
++#ifndef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	START_PL011_TX();
++#else
++
++#define CANCEL_RS485_TIMERS()						 \
++	do {								 \
++		hrtimer_try_to_cancel(&(uap->rs485_delay_timer));	 \
++		hrtimer_try_to_cancel(&(uap->rs485_tx_empty_poll_timer));\
++	} while (0)
++
++	if (uap->port.rs485.flags & SER_RS485_ENABLED) {
++		ktime_t ktime;
++
++		switch (uap->rs485_current_status) {
++		case rs485_delay_after_send:
++			/* stop old delay timer */
++			CANCEL_RS485_TIMERS();
++
++			/* check if timer expired */
++			if (uap->rs485_current_status
++					!= rs485_delay_after_send) {
++				/* Timer expired and RTS is in wrong state.*/
++				uap->rs485_current_status
++					= rs485_delay_before_send;
++				uap->rs485_next_status = rs485_sending;
++
++				/* Set RTS */
++				RS485_SET_RTS_SIGNAL(uap,
++					uap->port.rs485.flags
++						& SER_RS485_RTS_ON_SEND);
++
++				/* Start timer */
++				ktime = ktime_set(0,
++					  uap->port.rs485
++						.delay_rts_before_send
++					  * 1000000L);
++
++				hrtimer_start(
++					&(uap->rs485_delay_timer),
++					ktime,
++					HRTIMER_MODE_REL);
++				return;
++			}
++
++			/* timer was stopped and driver can continue sending */
++			uap->rs485_current_status = rs485_sending;
++			uap->rs485_next_status = rs485_sending;
++
++			/* driver is already in sending state */
++			START_PL011_TX();
++			break;
++
++
++		case rs485_sending:
++			/* stop old timer. There can be running timer	*/
++			/* which is checking TX FIFO empty flag		*/
++			CANCEL_RS485_TIMERS();
++
++			/* driver is already in sending state */
++			START_PL011_TX();
++			break;
++
++		case rs485_receiving:
++		default:
++			/* stop old timer. There can be running timer	*/
++			/* which is checking TX FIFO empty flag		*/
++			CANCEL_RS485_TIMERS();
++
++			/* Set RTS */
++			RS485_SET_RTS_SIGNAL(uap,
++				     uap->port.rs485.flags
++					     & SER_RS485_RTS_ON_SEND);
++
++			if (uap->port.rs485.delay_rts_before_send == 0) {
++				/* Change state */
++				uap->rs485_current_status
++					= rs485_sending;
++				uap->rs485_next_status
++					= rs485_sending;
++
++				/* driver is in sending state */
++				START_PL011_TX();
++				break;
++			}
++
++			/* Change state */
++			uap->rs485_current_status
++				= rs485_delay_before_send;
++			uap->rs485_next_status = rs485_sending;
++
++			/* Start timer */
++			ktime = ktime_set(0,
++				  uap->port.rs485.delay_rts_before_send
++				  * 1000000L);
++			hrtimer_start(&(uap->rs485_delay_timer),
++				ktime,
++				HRTIMER_MODE_REL);
++			break;
++
++		case rs485_delay_before_send:
++			/* do nothing because delay timer should be running */
++			break;
++		}
++	} else {
++		START_PL011_TX();
++	}
++#undef CANCEL_RS485_TIMERS
++
++#endif
++
++#undef START_PL011_TX
+ }
+ 
+ static void pl011_stop_rx(struct uart_port *port)
+@@ -1476,6 +1638,169 @@ static void check_apply_cts_event_workaround(struct uart_amba_port *uap)
+ 	dummy_read = pl011_read(uap, REG_ICR);
+ }
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++
++/*
++ * Change state according to pending delay
++ * Locking: port is locked in this function
++ */
++static enum hrtimer_restart
++pl011_rs485_tx_poll_timer(struct hrtimer *timer)
++{
++	unsigned long flags;
++	ktime_t ktime;
++
++	struct uart_amba_port *uap =
++		container_of(timer, struct uart_amba_port,
++			     rs485_tx_empty_poll_timer);
++
++	spin_lock_irqsave(&uap->port.lock, flags);
++
++	if (!(uart_circ_empty(&uap->port.state->xmit))) {
++		spin_unlock_irqrestore(&uap->port.lock, flags);
++		return HRTIMER_NORESTART;
++	}
++
++	if (!RS485_TX_FIFO_EMPTY(uap) || !uap->rs485_last_char_sending) {
++		/*
++		 *  FIFO is empty but there is last char in transmit shift
++		 * register so we need one more tick
++		 */
++		uap->rs485_last_char_sending = RS485_TX_FIFO_EMPTY(uap);
++
++		hrtimer_forward_now(timer, ktime_set(0, uap->send_char_time));
++
++		spin_unlock_irqrestore(&uap->port.lock, flags);
++		return HRTIMER_RESTART;
++	}
++
++	/* Check if delay after send is set*/
++	if (uap->port.rs485.delay_rts_after_send == 0) {
++		/* Change state */
++		uap->rs485_current_status = rs485_receiving;
++		uap->rs485_next_status = rs485_receiving;
++
++		/* if there is no delay after send change RTS value*/
++		RS485_SET_RTS_SIGNAL(uap,
++			     uap->port.rs485.flags
++				     & SER_RS485_RTS_AFTER_SEND);
++
++		spin_unlock_irqrestore(&uap->port.lock, flags);
++		return HRTIMER_NORESTART;
++	}
++
++	/* Change state */
++	uap->rs485_current_status = rs485_delay_after_send;
++	uap->rs485_next_status = rs485_receiving;
++
++	/* RTS will be set in timer handler */
++
++	/* Start delay timer */
++	ktime = ktime_set(0, (uap->port.rs485.delay_rts_after_send
++			* 1000000L));
++	hrtimer_start(&(uap->rs485_delay_timer), ktime, HRTIMER_MODE_REL);
++
++	spin_unlock_irqrestore(&uap->port.lock, flags);
++	return HRTIMER_NORESTART;
++}
++
++/*
++ * Change state according to pending delay
++ * Locking: port is locked in this function
++ */
++static enum hrtimer_restart
++pl011_rs485_timer(struct hrtimer *timer)
++{
++	unsigned long flags;
++
++	struct uart_amba_port *uap =
++		container_of(timer, struct uart_amba_port, rs485_delay_timer);
++
++	spin_lock_irqsave(&uap->port.lock, flags);
++
++	if (uap->rs485_current_status == uap->rs485_next_status) {
++		/* timer was canceled or handled */
++		spin_unlock_irqrestore(&uap->port.lock, flags);
++		return HRTIMER_NORESTART;
++	}
++
++	switch (uap->rs485_current_status) {
++	case rs485_delay_before_send:
++		uap->rs485_current_status = rs485_sending;
++		uap->rs485_next_status = rs485_sending;
++		if (!pl011_dma_tx_start(uap))
++			pl011_start_tx_pio(uap);
++
++		spin_unlock_irqrestore(&uap->port.lock, flags);
++		return HRTIMER_NORESTART;
++
++	case rs485_delay_after_send:
++		uap->rs485_current_status = rs485_receiving;
++		uap->rs485_next_status = rs485_receiving;
++		RS485_SET_RTS_SIGNAL(uap,
++			     uap->port.rs485.flags
++				     & SER_RS485_RTS_AFTER_SEND);
++
++		spin_unlock_irqrestore(&uap->port.lock, flags);
++		return HRTIMER_NORESTART;
++
++	default:
++		spin_unlock_irqrestore(&uap->port.lock, flags);
++		return HRTIMER_NORESTART;
++	}
++}
++
++/*
++ * Evaluate transmit buffer status and start delay to off
++ * Locking: called with port lock held and IRQs disabled
++ */
++static void pl011_rs485_start_rts_delay(struct uart_amba_port *uap)
++{
++	ktime_t ktime;
++
++	if (uap->rs485_current_status == rs485_receiving)
++		return;
++
++	/* if there is timeout in progress cancel it and start new */
++	hrtimer_try_to_cancel(&(uap->rs485_delay_timer));
++	hrtimer_try_to_cancel(&(uap->rs485_tx_empty_poll_timer));
++
++
++	if (!RS485_TX_FIFO_EMPTY(uap)
++			|| uap->port.rs485.delay_rts_after_send == 0) {
++		/*
++		 * Schedule validation timer if there is data in TX FIFO
++		 * because there is not TX FIFO empty interrupt
++		 */
++
++		uap->rs485_current_status = rs485_sending;
++		uap->rs485_next_status = rs485_sending;
++
++		uap->rs485_last_char_sending = false;
++
++		ktime = ktime_set(0, uap->send_char_time);
++		hrtimer_start(&(uap->rs485_tx_empty_poll_timer),
++			ktime,
++			HRTIMER_MODE_REL);
++		return;
++	}
++
++	/* Change state */
++	uap->rs485_current_status = rs485_delay_after_send;
++	uap->rs485_next_status = rs485_receiving;
++
++	/* RTS will be set in timer handler */
++
++	/* Start timer */
++	ktime = ktime_set(0, (uap->port.rs485.delay_rts_after_send
++			* 1000000L));
++
++	hrtimer_start(&(uap->rs485_delay_timer),
++		ktime,
++		HRTIMER_MODE_REL);
++}
++#endif
++
+ static irqreturn_t pl011_int(int irq, void *dev_id)
+ {
+ 	struct uart_amba_port *uap = dev_id;
+@@ -1499,9 +1824,11 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
+ 				else
+ 					pl011_rx_chars(uap);
+ 			}
++
+ 			if (status & (UART011_DSRMIS|UART011_DCDMIS|
+ 				      UART011_CTSMIS|UART011_RIMIS))
+ 				pl011_modem_status(uap);
++
+ 			if (status & UART011_TXIS)
+ 				pl011_tx_chars(uap, true);
+ 
+@@ -1618,6 +1945,11 @@ static void pl011_quiesce_irqs(struct uart_port *port)
+ 	 */
+ 	pl011_write(pl011_read(uap, REG_IMSC) & ~UART011_TXIM, uap,
+ 		    REG_IMSC);
++
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	if (uap->port.rs485.flags & SER_RS485_ENABLED)
++		pl011_rs485_start_rts_delay(uap);
++#endif
+ }
+ 
+ static int pl011_get_poll_char(struct uart_port *port)
+@@ -1690,6 +2022,27 @@ static int pl011_hwinit(struct uart_port *port)
+ 		if (plat->init)
+ 			plat->init();
+ 	}
++
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	/*
++	 * Initialize timers used for RS485
++	 */
++	hrtimer_init(&(uap->rs485_delay_timer),
++		CLOCK_MONOTONIC,
++		HRTIMER_MODE_REL);
++
++	uap->rs485_delay_timer.function = &pl011_rs485_timer;
++
++	hrtimer_init(&(uap->rs485_tx_empty_poll_timer),
++		CLOCK_MONOTONIC,
++		HRTIMER_MODE_REL);
++
++	uap->rs485_tx_empty_poll_timer.function = &pl011_rs485_tx_poll_timer;
++
++	uap->rs485_current_status = rs485_receiving;
++	RS485_SET_RTS_SIGNAL(uap, false);
++#endif
++
+ 	return 0;
+ }
+ 
+@@ -1873,6 +2226,16 @@ static void pl011_shutdown(struct uart_port *port)
+ 	struct uart_amba_port *uap =
+ 		container_of(port, struct uart_amba_port, port);
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	if (uap->port.rs485.flags & SER_RS485_ENABLED) {
++		hrtimer_try_to_cancel(&(uap->rs485_delay_timer));
++		hrtimer_try_to_cancel(&(uap->rs485_tx_empty_poll_timer));
++
++		uap->rs485_current_status = rs485_receiving;
++		RS485_SET_RTS_SIGNAL(uap, true);
++	}
++#endif
++
+ 	pl011_disable_interrupts(uap);
+ 
+ 	pl011_dma_shutdown(uap);
+@@ -1955,6 +2318,24 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	unsigned long flags;
+ 	unsigned int baud, quot, clkdiv;
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	unsigned int transfer_bit_count;
++	unsigned long char_transfer_time;
++
++	/*
++	 * Calculate bit count which will be send
++	 * by UART. It is used for calculation of
++	 * time required to start timer until TX FIFO (HW) is empty
++	 * There is not interrupt for FIFO empty in PL011.
++	 * There is only FIFO empty flag in REG_FR.
++	 */
++	transfer_bit_count = 0;
++
++#define	ADD_DATA_BITS(bits)	(transfer_bit_count += bits)
++#else
++#define	ADD_DATA_BITS(bits)
++#endif
++
+ 	if (uap->vendor->oversampling)
+ 		clkdiv = 8;
+ 	else
+@@ -1981,29 +2362,53 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	switch (termios->c_cflag & CSIZE) {
+ 	case CS5:
+ 		lcr_h = UART01x_LCRH_WLEN_5;
++		ADD_DATA_BITS(7);
+ 		break;
+ 	case CS6:
+ 		lcr_h = UART01x_LCRH_WLEN_6;
++		ADD_DATA_BITS(8);
+ 		break;
+ 	case CS7:
+ 		lcr_h = UART01x_LCRH_WLEN_7;
++		ADD_DATA_BITS(9);
+ 		break;
+ 	default: // CS8
+ 		lcr_h = UART01x_LCRH_WLEN_8;
++		ADD_DATA_BITS(10);
+ 		break;
+ 	}
+-	if (termios->c_cflag & CSTOPB)
++
++	if (termios->c_cflag & CSTOPB) {
+ 		lcr_h |= UART01x_LCRH_STP2;
++		ADD_DATA_BITS(1);
++	}
++
+ 	if (termios->c_cflag & PARENB) {
+ 		lcr_h |= UART01x_LCRH_PEN;
++		ADD_DATA_BITS(1);
++
+ 		if (!(termios->c_cflag & PARODD))
+ 			lcr_h |= UART01x_LCRH_EPS;
++
+ 		if (termios->c_cflag & CMSPAR)
+ 			lcr_h |= UART011_LCRH_SPS;
+ 	}
++
++#undef ADD_DATA_BITS
++
+ 	if (uap->fifosize > 1)
+ 		lcr_h |= UART01x_LCRH_FEN;
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	/* Calculate time required to send one char (nanoseconds) */
++	char_transfer_time =
++		(unsigned long) div_u64(
++				mul_u32_u32(
++					(u32)transfer_bit_count,
++					(u32)NSEC_PER_SEC),
++				(u32)baud);
++#endif
++
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/*
+@@ -2020,6 +2425,11 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	old_cr = pl011_read(uap, REG_CR);
+ 	pl011_write(0, uap, REG_CR);
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	/* Update send_char_time in locked context */
++	uap->send_char_time = char_transfer_time;
++#endif
++
+ 	if (termios->c_cflag & CRTSCTS) {
+ 		if (old_cr & UART011_CR_RTS)
+ 			old_cr |= UART011_CR_RTSEN;
+@@ -2091,6 +2501,7 @@ static const char *pl011_type(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+ 	    container_of(port, struct uart_amba_port, port);
++
+ 	return uap->port.type == PORT_AMBA ? uap->type : NULL;
+ }
+ 
+@@ -2122,6 +2533,47 @@ static void pl011_config_port(struct uart_port *port, int flags)
+ 	}
+ }
+ 
++/*
++ * Configure RS485
++ * Locking: called with port lock held and IRQs disabled
++ */
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++static int pl011_config_rs485(struct uart_port *port,
++			      struct serial_rs485 *rs485)
++{
++	bool was_disabled;
++	struct uart_amba_port *uap =
++			container_of(port, struct uart_amba_port, port);
++
++	was_disabled = !(port->rs485.flags & SER_RS485_ENABLED);
++
++	port->rs485.flags = rs485->flags;
++	port->rs485.delay_rts_after_send = rs485->delay_rts_after_send;
++	port->rs485.delay_rts_before_send = rs485->delay_rts_before_send;
++
++	if (port->rs485.flags & SER_RS485_ENABLED) {
++		unsigned int cr;
++
++		hrtimer_try_to_cancel(&(uap->rs485_delay_timer));
++		hrtimer_try_to_cancel(&(uap->rs485_tx_empty_poll_timer));
++
++		/* If RS485 is enabled, disable auto RTS */
++		cr = pl011_read(uap, REG_CR);
++		cr &= ~UART011_CR_RTSEN;
++		pl011_write(cr, uap, REG_CR);
++
++		uap->rs485_current_status = rs485_receiving;
++		RS485_SET_RTS_SIGNAL(uap,
++			     port->rs485.flags
++				     & SER_RS485_RTS_AFTER_SEND);
++	} else {
++		RS485_SET_RTS_SIGNAL(uap, true);
++	}
++
++	return 0;
++}
++#endif
++
+ /*
+  * verify the new serial_struct (for TIOCSSERIAL).
+  */
+@@ -2647,6 +3099,12 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	uap->port.irq = dev->irq[0];
+ 	uap->port.ops = &amba_pl011_pops;
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++	uap->port.rs485_config = &pl011_config_rs485;
++	uap->port.rs485.flags = 0;	/* RS485 is not enabled by default */
++	dev_info(&dev->dev, "Software switching for RS485 enabled\n");
++#endif
++
+ 	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
+ 
+ 	ret = pl011_setup_port(&dev->dev, uap, &dev->res, portnr);
+@@ -2819,10 +3277,15 @@ static struct amba_driver pl011_driver = {
+ 
+ static int __init pl011_init(void)
+ {
++#ifndef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
+ 	printk(KERN_INFO "Serial: AMBA PL011 UART driver\n");
++#else
++	printk(KERN_INFO "Serial: AMBA PL011 UART driver with soft RS485 support\n");
++#endif
+ 
+ 	if (platform_driver_register(&arm_sbsa_uart_platform_driver))
+ 		pr_warn("could not register SBSA UART platform driver\n");
++
+ 	return amba_driver_register(&pl011_driver);
+ }
+ 
+@@ -2832,6 +3295,11 @@ static void __exit pl011_exit(void)
+ 	amba_driver_unregister(&pl011_driver);
+ }
+ 
++#ifdef CONFIG_SERIAL_AMBA_PL011_SOFT_RS485
++#undef RS485_SET_RTS_SIGNAL
++#undef RS485_TX_FIFO_EMPTY
++#endif
++
+ /*
+  * While this can be a module, if builtin it's most likely the console
+  * So let's leave module_exit but move module_init to an earlier place
 -- 
-2.29.2
+2.25.1
+
 
