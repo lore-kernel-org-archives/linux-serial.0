@@ -7,43 +7,43 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50335C43219
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Dec 2020 02:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 507F5C43333
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Dec 2020 02:57:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3B03A22573
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Dec 2020 02:44:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 05D1C20706
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Dec 2020 02:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729087AbgLWCn6 (ORCPT
+        id S1728789AbgLWC5a (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Dec 2020 21:43:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52148 "EHLO mail.kernel.org"
+        Tue, 22 Dec 2020 21:57:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49514 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729832AbgLWCW5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:22:57 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 269E4225AA;
-        Wed, 23 Dec 2020 02:22:16 +0000 (UTC)
+        id S1729063AbgLWCUn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:20:43 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1D06D22202;
+        Wed, 23 Dec 2020 02:20:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690136;
-        bh=BbtAdIFgjwoHhKSVKJdvtiuvyo+q+gYt02aUQcUTrm4=;
+        s=k20201202; t=1608690002;
+        bh=O4qMQroSwZ+/X2Ecyn7WFV296lPaetdg1kz/ioPO50Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KW4vseZTOIReZFsNY1YcRGfFgdSVjSqSdenC0qqJN49QKxvEHsxb8iHiYV9SZh9cu
-         uGFAvUi0Gh7vIsy2b478efrS34hcZ2fEoYv5kdnIp6iS0ekDEOiAWeHiFK7W2uaZQD
-         8I6UTtC0EqjoN8dOX0pTYFUAx7HHzaYI4CKMNBcP+jl9ZBZsAauYjEPGs9iW+7MmRz
-         j8jCXRIi4EyKvqs1KvpcBuqtZBoNbrboigOUZAKn8i8HmiO4f89q7MygOK3e1TQO4n
-         7W14zKx1NZwzfAhzGobOKO9Tf0NCTYhGLbM1Tn9o6Xb4IiecXHjIwC3NyDYKeMz/Mx
-         bH+pPx0IyPGIg==
+        b=jPLBh5bVa1rW67lWELGYteOWxbtO7CfANo7XsjxBJSMIQrWiGELFPi1dQvuzuI84s
+         sso/PXmqgy7YDiN5O8NL6/NEsFHned2pvwjEFHSLGI+ZXLCxrj9B5CfIQvIC4jebj/
+         9R79ydcnF9wUk2w5xrRSIhXie1alIV9eh6TGOs/hPgfKMaE7gR3OA4j1FimVVCSGlt
+         ZFToUahRrr1Wh5phaP7WnpDXaaLdHOFoiMSJ5eT2yx1Hwes1MuRSVPnFZA8bI8pA4z
+         r6arHjgdY0G9m9XfZbqxsJ1l+8avUoCrY9dfqcjxfEiTrw6ZtJvtpcQmQLhLGDMX91
+         w/2fO9wBCMsEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Mingrui Ren <jiladahe1997@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 59/87] tty/serial/imx: Enable TXEN bit in imx_poll_init().
-Date:   Tue, 22 Dec 2020 21:20:35 -0500
-Message-Id: <20201223022103.2792705-59-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 084/130] tty/serial/imx: Enable TXEN bit in imx_poll_init().
+Date:   Tue, 22 Dec 2020 21:17:27 -0500
+Message-Id: <20201223021813.2791612-84-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201223022103.2792705-1-sashal@kernel.org>
-References: <20201223022103.2792705-1-sashal@kernel.org>
+In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
+References: <20201223021813.2791612-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -77,12 +77,12 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 7a6e26b12bf64..f3626ee1b06a2 100644
+index e5ed4ab2b08df..982953db58e95 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1784,7 +1784,7 @@ static int imx_uart_poll_init(struct uart_port *port)
+@@ -1811,7 +1811,7 @@ static int imx_uart_poll_init(struct uart_port *port)
  	ucr1 |= UCR1_UARTEN;
- 	ucr1 &= ~(UCR1_TXMPTYEN | UCR1_RTSDEN | UCR1_RRDYEN);
+ 	ucr1 &= ~(UCR1_TRDYEN | UCR1_RTSDEN | UCR1_RRDYEN);
  
 -	ucr2 |= UCR2_RXEN;
 +	ucr2 |= UCR2_RXEN | UCR2_TXEN;
