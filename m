@@ -2,29 +2,30 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF494C433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Dec 2020 08:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7DFC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Dec 2020 15:00:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4EBE1229CA
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Dec 2020 08:03:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3DCA722288
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Dec 2020 15:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726609AbgLXID0 (ORCPT
+        id S1727114AbgLXO7p (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Dec 2020 03:03:26 -0500
-Received: from muru.com ([72.249.23.125]:40270 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726159AbgLXID0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Dec 2020 03:03:26 -0500
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 779C580C2;
-        Thu, 24 Dec 2020 08:02:51 +0000 (UTC)
-Date:   Thu, 24 Dec 2020 10:02:39 +0200
-From:   Tony Lindgren <tony@atomide.com>
-To:     Pavel Machek <pavel@ucw.cz>
+        Thu, 24 Dec 2020 09:59:45 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:35460 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726609AbgLXO7p (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 24 Dec 2020 09:59:45 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 141511C0B96; Thu, 24 Dec 2020 15:59:02 +0100 (CET)
+Date:   Thu, 24 Dec 2020 15:59:01 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Tony Lindgren <tony@atomide.com>
 Cc:     Johan Hovold <johan@kernel.org>, phone-devel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh@kernel.org>,
@@ -37,57 +38,81 @@ Cc:     Johan Hovold <johan@kernel.org>, phone-devel@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 Subject: Re: [PATCHv6 0/4] n_gsm serdev support and protocol driver for
  droid4 modem
-Message-ID: <20201224080239.GF26857@atomide.com>
+Message-ID: <20201224145901.GA13643@duo.ucw.cz>
 References: <20200421232752.3070-1-tony@atomide.com>
  <20200423114326.GQ18608@localhost>
  <20200423153756.GE37466@atomide.com>
  <20200528082420.GA10358@localhost>
  <20201220224816.GA28213@duo.ucw.cz>
+ <20201224080239.GF26857@atomide.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="tKW2IUtsqtDRztdT"
 Content-Disposition: inline
-In-Reply-To: <20201220224816.GA28213@duo.ucw.cz>
+In-Reply-To: <20201224080239.GF26857@atomide.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
 
-* Pavel Machek <pavel@ucw.cz> [201220 22:48]:
-> Hi!
-> 
-> > Sorry about the late reply on this.
-> 
-> I'm afraid I'll need some more answers in near future, but for now:
-> 
-> Tony, do you remember / can you figure out what gsmtty GPS is on? I
-> never used it on that interface, and I can't seem to figure it out.
-> 
-> My notes say:
-> 
-> /dev/motmdm1 -- basic support, calls, on/off                                    
-> /dev/motmdm3 -- send sms interface                                              
-> /dev/motmdm9 -- receive sms interface                                           
->
-> (and gsmtty numbering is same)
+--tKW2IUtsqtDRztdT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Yes I have not had a chance to look at these for several months now,
-but have the latest set in droid4-pending-v5.10 branch in my github
-tree.
+Hi!
 
-The gnss device is at /dev/gsmtty6, see the current droid4-agps tool
-to upload the almanac also on github. That's has turned out to be a
-pretty good gsm serdev test too :)
+> > My notes say:
+> >=20
+> > /dev/motmdm1 -- basic support, calls, on/off                           =
+        =20
+> > /dev/motmdm3 -- send sms interface                                     =
+        =20
+> > /dev/motmdm9 -- receive sms interface                                  =
+        =20
+> >
+> > (and gsmtty numbering is same)
+>=20
+> Yes I have not had a chance to look at these for several months now,
+> but have the latest set in droid4-pending-v5.10 branch in my github
+> tree.
+>=20
+> The gnss device is at /dev/gsmtty6, see the current droid4-agps tool
+> to upload the almanac also on github. That's has turned out to be a
+> pretty good gsm serdev test too :)
 
-> For now I converted gnss driver to use serdev interface, and n_gsm to
-> provide it... Not yet finished but I believe I'm walking in the right
-> direction.
+Thanks a lot for the info! Is it this one?
+https://github.com/tmlind/droid4-agps . GPS worked for me even w/o
+AGPS support, but I broke even that, so I need to fix that first.
 
-Great, sounds good to me if you got things working with just serdev
-calls :) I'll try to take a look at this stuff again after I have
-the other pending droid4 issues out of the way like v5.12 charger
-and keyboard stuff.
+> > For now I converted gnss driver to use serdev interface, and n_gsm to
+> > provide it... Not yet finished but I believe I'm walking in the right
+> > direction.
+>=20
+> Great, sounds good to me if you got things working with just serdev
+> calls :) I'll try to take a look at this stuff again after I have
+> the other pending droid4 issues out of the way like v5.12 charger
+> and keyboard stuff.
 
-Regards,
+Just ask for latest code :-). I still believe I'm going right
+direction, but now I understand why you did it the way you did. Sound
+code needs to listen on gsmtty1, with the data still being provided
+for userspace.
 
-Tony
+Best regards,
+								Pavel
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--tKW2IUtsqtDRztdT
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX+SstQAKCRAw5/Bqldv6
+8q2XAKC32dUkwQADDsKasbqBoLCsPuZZWACeMPhDNUkIk389F+IIFLew3RD5ScE=
+=CsTh
+-----END PGP SIGNATURE-----
+
+--tKW2IUtsqtDRztdT--
