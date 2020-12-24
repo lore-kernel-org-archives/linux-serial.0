@@ -2,109 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F1FC433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Dec 2020 19:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF494C433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Dec 2020 08:03:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 52C1522225
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Dec 2020 19:20:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EBE1229CA
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Dec 2020 08:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbgLWTU3 (ORCPT
+        id S1726609AbgLXID0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Dec 2020 14:20:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57080 "EHLO mail.kernel.org"
+        Thu, 24 Dec 2020 03:03:26 -0500
+Received: from muru.com ([72.249.23.125]:40270 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727976AbgLWTU3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Dec 2020 14:20:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B57F7221FC;
-        Wed, 23 Dec 2020 19:19:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608751188;
-        bh=9coihf0UH+25WGPnIAMMnvqH8xa/SNz1A8l5yYJ/taM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=sWE47vxJY6W5kxwXQotEftSRoXdVJU0yn4/g999TT+/K3ess0vJufskkj7wN+F+3W
-         1njgHTAVYNgTUmfuMK/q4JCO8Q5/0B+Vd/uUu+snW9fZ16kzzmAaYYc1a0B3/rLO0y
-         pw0ah/TeODLSc/oUMyAbRwcVar8SglJgjNQMj3Rv0LHnGUifNft0y4pCvZlltpN9va
-         OEtOaI9/Mcz5UJqNmy63/xzLs60FNY6fmk9PCVn+WWWuMK1QRLf8sDHrQ8RyJKD2KN
-         fOYi7Gpo/To8j3qkmrxwH39D1UJWTohH95hyv2JbMJKInTD3cAu2oFK2qNx4mYhCTu
-         aIoruG0A0Xevg==
-Received: by pali.im (Postfix)
-        id 6C76C7F0; Wed, 23 Dec 2020 20:19:46 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH] serial: mvebu-uart: fix tx lost characters at power off
-Date:   Wed, 23 Dec 2020 20:19:31 +0100
-Message-Id: <20201223191931.18343-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        id S1726159AbgLXID0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 24 Dec 2020 03:03:26 -0500
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 779C580C2;
+        Thu, 24 Dec 2020 08:02:51 +0000 (UTC)
+Date:   Thu, 24 Dec 2020 10:02:39 +0200
+From:   Tony Lindgren <tony@atomide.com>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Johan Hovold <johan@kernel.org>, phone-devel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCHv6 0/4] n_gsm serdev support and protocol driver for
+ droid4 modem
+Message-ID: <20201224080239.GF26857@atomide.com>
+References: <20200421232752.3070-1-tony@atomide.com>
+ <20200423114326.GQ18608@localhost>
+ <20200423153756.GE37466@atomide.com>
+ <20200528082420.GA10358@localhost>
+ <20201220224816.GA28213@duo.ucw.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201220224816.GA28213@duo.ucw.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit c685af1108d7 ("serial: mvebu-uart: fix tx lost characters") fixed tx
-lost characters at low baud rates but started causing tx lost characters
-when kernel is going to power off or reboot.
+Hi,
 
-TX_EMP tells us when transmit queue is empty therefore all characters were
-transmitted. TX_RDY tells us when CPU can send a new character.
+* Pavel Machek <pavel@ucw.cz> [201220 22:48]:
+> Hi!
+> 
+> > Sorry about the late reply on this.
+> 
+> I'm afraid I'll need some more answers in near future, but for now:
+> 
+> Tony, do you remember / can you figure out what gsmtty GPS is on? I
+> never used it on that interface, and I can't seem to figure it out.
+> 
+> My notes say:
+> 
+> /dev/motmdm1 -- basic support, calls, on/off                                    
+> /dev/motmdm3 -- send sms interface                                              
+> /dev/motmdm9 -- receive sms interface                                           
+>
+> (and gsmtty numbering is same)
 
-Therefore we need to use different check prior transmitting new character
-and different check after all characters were sent.
+Yes I have not had a chance to look at these for several months now,
+but have the latest set in droid4-pending-v5.10 branch in my github
+tree.
 
-This patch splits polling code into two functions: wait_for_xmitr() which
-waits for TX_RDY and wait_for_xmite() which waits for TX_EMP.
+The gnss device is at /dev/gsmtty6, see the current droid4-agps tool
+to upload the almanac also on github. That's has turned out to be a
+pretty good gsm serdev test too :)
 
-When rebooting A3720 platform without this patch on UART is print only:
-[   42.699�
+> For now I converted gnss driver to use serdev interface, and n_gsm to
+> provide it... Not yet finished but I believe I'm walking in the right
+> direction.
 
-And with this patch on UART is full output:
-[   39.530216] reboot: Restarting system
+Great, sounds good to me if you got things working with just serdev
+calls :) I'll try to take a look at this stuff again after I have
+the other pending droid4 issues out of the way like v5.12 charger
+and keyboard stuff.
 
-Fixes: c685af1108d7 ("serial: mvebu-uart: fix tx lost characters")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/tty/serial/mvebu-uart.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+Regards,
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 118b29912289..e0c00a1b0763 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -648,6 +648,14 @@ static void wait_for_xmitr(struct uart_port *port)
- 				  (val & STAT_TX_RDY(port)), 1, 10000);
- }
- 
-+static void wait_for_xmite(struct uart_port *port)
-+{
-+	u32 val;
-+
-+	readl_poll_timeout_atomic(port->membase + UART_STAT, val,
-+				  (val & STAT_TX_EMP), 1, 10000);
-+}
-+
- static void mvebu_uart_console_putchar(struct uart_port *port, int ch)
- {
- 	wait_for_xmitr(port);
-@@ -675,7 +683,7 @@ static void mvebu_uart_console_write(struct console *co, const char *s,
- 
- 	uart_console_write(port, s, count, mvebu_uart_console_putchar);
- 
--	wait_for_xmitr(port);
-+	wait_for_xmite(port);
- 
- 	if (ier)
- 		writel(ier, port->membase + UART_CTRL(port));
--- 
-2.20.1
-
+Tony
