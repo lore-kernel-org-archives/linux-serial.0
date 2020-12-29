@@ -7,43 +7,43 @@ X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C8AC433E0
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Dec 2020 03:16:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E27C433DB
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Dec 2020 03:23:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6EE78207C5
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Dec 2020 03:16:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 13C9020784
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Dec 2020 03:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbgL2DQ5 (ORCPT
+        id S1726429AbgL2DXF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Dec 2020 22:16:57 -0500
-Received: from mga03.intel.com ([134.134.136.65]:20740 "EHLO mga03.intel.com"
+        Mon, 28 Dec 2020 22:23:05 -0500
+Received: from mga05.intel.com ([192.55.52.43]:39686 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726671AbgL2DQ4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Dec 2020 22:16:56 -0500
-IronPort-SDR: unCTaq/b3GlFbziJiZj+k+eQD3qcrQbXYcFBbz08VD5Fv8Kt4WisAPI6if7nT5xN7gFLOCfcr0
- k2wgq2q8Q+Xw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9848"; a="176548250"
+        id S1726014AbgL2DXF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 28 Dec 2020 22:23:05 -0500
+IronPort-SDR: L9wUMPSGs/fEZx3HYHcwuMwbiiyCmzxZGmaEJsccUB4eTtDQYlNU/P8KluztcHFN5f6BPMyn7I
+ pvmKx5J7A2Lw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9848"; a="261203891"
 X-IronPort-AV: E=Sophos;i="5.78,456,1599548400"; 
-   d="scan'208";a="176548250"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2020 19:16:15 -0800
-IronPort-SDR: 1Uy1N5Zc4+ql05MoAmfOwu+UkoyH5EbuJGIwaxRxH/px42/OX8aOZNl7iIdhs2B0LbDauzr6k6
- OuBoq4xx74Hg==
+   d="scan'208";a="261203891"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2020 19:22:24 -0800
+IronPort-SDR: jw+rHdFPXWX5/FxIEYag3UL2w31lT9CRCP98sTZwDszIUrZT+73lnqzetxlLxdPNnkQbWavUjW
+ aHV1B0VwYN9A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.78,456,1599548400"; 
-   d="scan'208";a="400148516"
+   d="scan'208";a="347223593"
 Received: from lkp-server02.sh.intel.com (HELO 4242b19f17ef) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Dec 2020 19:16:14 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 28 Dec 2020 19:22:23 -0800
 Received: from kbuild by 4242b19f17ef with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1ku5Ub-0003IA-G7; Tue, 29 Dec 2020 03:16:13 +0000
-Date:   Tue, 29 Dec 2020 11:15:32 +0800
+        id 1ku5aY-0003IP-EG; Tue, 29 Dec 2020 03:22:22 +0000
+Date:   Tue, 29 Dec 2020 11:21:46 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 01493ccb4436aadcaf8f33cd5d524a5d68f22836
-Message-ID: <5fea9f54.dCz9QTQZRbJAmEUY%lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 54ca955b5a4024e2ce0f206b03adb7109bc4da26
+Message-ID: <5feaa0ca.viifqz37ILf4txlN%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -52,12 +52,12 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 01493ccb4436aadcaf8f33cd5d524a5d68f22836  tty: serial: icom: Use DEFINE_SPINLOCK() for spinlock
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-linus
+branch HEAD: 54ca955b5a4024e2ce0f206b03adb7109bc4da26  serial: mvebu-uart: fix tx lost characters at power off
 
-elapsed time: 721m
+elapsed time: 723m
 
-configs tested: 147
+configs tested: 155
 configs skipped: 2
 
 The following configs have been built successfully.
@@ -74,15 +74,21 @@ powerpc                     rainier_defconfig
 powerpc                        warp_defconfig
 ia64                            zx1_defconfig
 arm                            mps2_defconfig
+m68k                          hp300_defconfig
+powerpc                    ge_imp3a_defconfig
+mips                  maltasmvp_eva_defconfig
+powerpc                    klondike_defconfig
+powerpc                     taishan_defconfig
 powerpc                     tqm8541_defconfig
 sh                           se7722_defconfig
 sh                 kfr2r09-romimage_defconfig
 sh                         ap325rxa_defconfig
 arm                       imx_v6_v7_defconfig
+arm                            qcom_defconfig
 powerpc                     powernv_defconfig
 arm                     am200epdkit_defconfig
-riscv                               defconfig
 riscv                          rv32_defconfig
+riscv                               defconfig
 sh                           se7705_defconfig
 sh                      rts7751r2d1_defconfig
 arm                         axm55xx_defconfig
@@ -122,11 +128,19 @@ mips                        jmr3927_defconfig
 arm                   milbeaut_m10v_defconfig
 mips                           ci20_defconfig
 powerpc                     kilauea_defconfig
+arm                             mxs_defconfig
+powerpc                     pseries_defconfig
+powerpc                     tqm8555_defconfig
+arm                        multi_v7_defconfig
+powerpc                 mpc836x_mds_defconfig
 mips                malta_kvm_guest_defconfig
 arc                     haps_hs_smp_defconfig
 mips                      fuloong2e_defconfig
-mips                  maltasmvp_eva_defconfig
 arm                      jornada720_defconfig
+h8300                     edosk2674_defconfig
+arm                         bcm2835_defconfig
+mips                      malta_kvm_defconfig
+sh                           se7780_defconfig
 ia64                             allmodconfig
 ia64                                defconfig
 ia64                             allyesconfig
@@ -188,12 +202,6 @@ i386                 randconfig-a016-20201228
 i386                 randconfig-a011-20201228
 i386                 randconfig-a015-20201228
 i386                 randconfig-a013-20201228
-x86_64               randconfig-a001-20201227
-x86_64               randconfig-a006-20201227
-x86_64               randconfig-a004-20201227
-x86_64               randconfig-a002-20201227
-x86_64               randconfig-a003-20201227
-x86_64               randconfig-a005-20201227
 riscv                            allyesconfig
 riscv                    nommu_virt_defconfig
 riscv                             allnoconfig
