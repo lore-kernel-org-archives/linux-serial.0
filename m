@@ -2,86 +2,182 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF611C433DB
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Dec 2020 20:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 070E0C433E6
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Jan 2021 16:56:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AF67220888
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Dec 2020 20:38:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CD0BB2247F
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Jan 2021 16:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbgLaUid (ORCPT
+        id S1727230AbhAAQ4T (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Dec 2020 15:38:33 -0500
-Received: from mail-ot1-f45.google.com ([209.85.210.45]:32950 "EHLO
-        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbgLaUic (ORCPT
+        Fri, 1 Jan 2021 11:56:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727115AbhAAQ4R (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Dec 2020 15:38:32 -0500
-Received: by mail-ot1-f45.google.com with SMTP id b24so18865135otj.0;
-        Thu, 31 Dec 2020 12:38:17 -0800 (PST)
+        Fri, 1 Jan 2021 11:56:17 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC9AC061573;
+        Fri,  1 Jan 2021 08:55:37 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id n3so3609507pjm.1;
+        Fri, 01 Jan 2021 08:55:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=L/gCv/bt29Lids4NqNMCGnupZanWu1rzMA+oLszbsEM=;
+        b=fVzoGZOLGPB0P1BXu3jr26HnZLLXZ13i/G70DkLSPqNdxyinjBjU2Z8rq8j/or/Jtd
+         5Wz6/lOt1FPHGcNde6aIj752AwkaDDx3J2kknebedpgJ7gQ0V/NsaWEGSpQQOVNUXVih
+         wwYz3C6VExmF+lZLOK6aeAI12qICJZIhU8BuyY26XSkzoxpVMzofKBuzflyIx7zLelwa
+         NQvI/r5l33gJXaVEf7d4Q4CAFP19BcG8onF0cung1F4sC1rauOMV5Qx3MaIynva9rwF+
+         j04ivImQN7RBpI+8+1wBd6KJmOcVJzQwveKuzrrJfTHq8f5ZifRWTZ/qQKLqNpzkggRm
+         qT/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=33mJBDwSaLXSZq9uIF9tHwsSa4/sQ0g8ozhF1F4Sc6E=;
-        b=nMKNLOWz7RJaZORa+VGpDjOHTGM7NJ5DUx3fVmYmsxCZQxtktvO7/NT+VmZA4AybcR
-         4T49EoLfLCGWHp1kC+B44x/gv+aEoMCHBR1+x0eWfpNe8qEb/0m3nAXw/pYNo7VdOO5L
-         tsOUrA/3AlGRTBJT7dWCNPI9CAFy70h7FUVyVZKQX2KeDrI/XaarAN9bxLx+50fyHJfG
-         G7ygRGXXNcPoOEcXx82vIY1CtZJTJeVCfAPpK9fmM5Nr0yQFCPMYGSiEh6cwLQVICRMa
-         +mulLIYNT5Rx/VVYCAQxmW5HZSl7NSuWBbZZzFputHRuzY8bwr6HJy1Wn1njWpyM3EI4
-         1pkA==
-X-Gm-Message-State: AOAM532NHyNGxJkQUSHPz6b7FHeG8RZVT8E3DtsFHJ4gSn51Q9F215d8
-        yywjnHbRFiD93oXZF0Jb2w==
-X-Google-Smtp-Source: ABdhPJzuS6mrQN9/NoCc6lwKj14DfBKazPXicm33pfgZnY6bLolOGpW9iV1iY/aGl6PBWH0MZYg+NQ==
-X-Received: by 2002:a05:6830:1252:: with SMTP id s18mr42780191otp.4.1609447071769;
-        Thu, 31 Dec 2020 12:37:51 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id j126sm11281512oib.13.2020.12.31.12.37.50
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=L/gCv/bt29Lids4NqNMCGnupZanWu1rzMA+oLszbsEM=;
+        b=Vjevyd/Z85zlTI6Dw1FRBwlz6/ozG3UwE5ErGOXbOwPD5r1G98S7/+8dupeuqB3OJd
+         0rc9vTdsVoyfeT2xo0R1emClT1pjjuMt7ENhl9gsnbUNBRLCG81dD0CNzSeey3thMVZp
+         /TsTSAPXHpldWNd0CpZt1OQyxLfTGmw7GO2exzfHMhzUeBT6tpXE25epKl+Lrbyybe15
+         2tdwIfuP3d+ZBLhgL8bG4Xe8TEQDQn8Ke7BpnRgUZ3P8Camw3kjaHZHC80qGtvrdsaAb
+         96IbLN/kEZbj37tAEyKBRt8OJuB4VMTbV2TmrbBO/jNVmmczVrrPZfB+0jMv5tOD5I5/
+         cudQ==
+X-Gm-Message-State: AOAM5320o8nrv9oApfPAm0bPJiS+C/DavB/KHNdIf6fFvEEwOd5x+pdn
+        hGlqzqcxEcXyzGDcva2FUaM=
+X-Google-Smtp-Source: ABdhPJxs/i/JADyQO9mxNRl6CW47gkY51PoANWqV9w//PRy+AIWEsNQMMeMTfC1dzEsLBpruFAB/bw==
+X-Received: by 2002:a17:90a:c396:: with SMTP id h22mr18709651pjt.84.1609520136798;
+        Fri, 01 Jan 2021 08:55:36 -0800 (PST)
+Received: from localhost.localdomain ([43.255.31.23])
+        by smtp.gmail.com with ESMTPSA id 84sm50002729pfy.9.2021.01.01.08.55.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Dec 2020 12:37:50 -0800 (PST)
-Received: (nullmailer pid 2321274 invoked by uid 1000);
-        Thu, 31 Dec 2020 20:37:49 -0000
-Date:   Thu, 31 Dec 2020 13:37:49 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     Erwan Le Ray <erwan.leray@foss.st.com>
-Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
-Subject: Re: [PATCH 5/8] dt-bindings: serial: stm32: update rts-gpios and
- cts-gpios
-Message-ID: <20201231203749.GA2321239@robh.at.kernel.org>
-References: <20201218190020.1572-1-erwan.leray@foss.st.com>
- <20201218190020.1572-6-erwan.leray@foss.st.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201218190020.1572-6-erwan.leray@foss.st.com>
+        Fri, 01 Jan 2021 08:55:35 -0800 (PST)
+From:   Yangtao Li <tiny.windzz@gmail.com>
+To:     myungjoo.ham@samsung.com, kyungmin.park@samsung.com,
+        cw00.choi@samsung.com, krzk@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, digetx@gmail.com, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, yuq825@gmail.com, airlied@linux.ie,
+        daniel@ffwll.ch, robdclark@gmail.com, sean@poorly.run,
+        robh@kernel.org, tomeu.vizoso@collabora.com, steven.price@arm.com,
+        alyssa.rosenzweig@collabora.com, stanimir.varbanov@linaro.org,
+        agross@kernel.org, bjorn.andersson@linaro.org, mchehab@kernel.org,
+        lukasz.luba@arm.com, adrian.hunter@intel.com,
+        ulf.hansson@linaro.org, vireshk@kernel.org, nm@ti.com,
+        sboyd@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, rjw@rjwysocki.net, jcrouse@codeaurora.org,
+        hoegsberg@google.com, eric@anholt.net, tzimmermann@suse.de,
+        marijn.suijten@somainline.org, gustavoars@kernel.org,
+        emil.velikov@collabora.com, jonathan@marek.ca,
+        akhilpo@codeaurora.org, smasetty@codeaurora.org,
+        airlied@redhat.com, masneyb@onstation.org, kalyan_t@codeaurora.org,
+        tanmay@codeaurora.org, tiny.windzz@gmail.com,
+        ddavenport@chromium.org, jsanka@codeaurora.org,
+        rnayak@codeaurora.org, tongtiangen@huawei.com,
+        miaoqinglang@huawei.com, khsieh@codeaurora.org,
+        abhinavk@codeaurora.org, chandanu@codeaurora.org,
+        groeck@chromium.org, varar@codeaurora.org, mka@chromium.org,
+        harigovi@codeaurora.org, rikard.falkeborn@gmail.com,
+        natechancellor@gmail.com, georgi.djakov@linaro.org,
+        akashast@codeaurora.org, parashar@codeaurora.org,
+        dianders@chromium.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH 00/31] Introduce devm_pm_opp_* API
+Date:   Fri,  1 Jan 2021 16:54:36 +0000
+Message-Id: <20210101165507.19486-1-tiny.windzz@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 18 Dec 2020 20:00:16 +0100, Erwan Le Ray wrote:
-> Update rts-gpios and cts-gpios:
-> - remove max-items as already defined in serial.yaml
-> - add a note describing rts-gpios and cts-gpios usage with stm32
-> 
-> Document the use of cts-gpios and rts-gpios for flow control in STM32 UART
-> controller. These properties can be used instead of 'uart-has-rtscts' or
-> 'st,hw-flow-ctrl' (deprecated) for making use of any gpio pins for flow
-> control instead of dedicated pins.
-> It should be noted that both cts-gpios/rts-gpios and 'uart-has-rtscts' or
-> 'st,hw-flow-ctrl' (deprecated) properties cannot co-exist in a design.
-> 
-> Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
-> 
+Hi,
 
-Acked-by: Rob Herring <robh@kernel.org>
+This patchset add devm_pm_opp_set_clkname, devm_pm_opp_put_clkname,
+devm_pm_opp_set_regulators, devm_pm_opp_put_regulators,
+devm_pm_opp_set_supported_hw, devm_pm_opp_of_add_table and
+devm_pm_opp_register_notifier.
+
+Yangtao Li (31):
+  opp: Add devres wrapper for dev_pm_opp_set_clkname and
+    dev_pm_opp_put_clkname
+  opp: Add devres wrapper for dev_pm_opp_set_regulators and
+    dev_pm_opp_put_regulators
+  opp: Add devres wrapper for dev_pm_opp_set_supported_hw
+  opp: Add devres wrapper for dev_pm_opp_of_add_table
+  opp: Add devres wrapper for dev_pm_opp_register_notifier
+  serial: qcom_geni_serial: fix potential mem leak in
+    qcom_geni_serial_probe()
+  serial: qcom_geni_serial: convert to use devm_pm_opp_* API
+  spi: spi-qcom-qspi: fix potential mem leak in spi_geni_probe()
+  spi: spi-qcom-qspi: fix potential mem leak in spi_geni_probe()
+  qcom-geni-se: remove opp_table
+  mmc: sdhci-msm: fix potential mem leak in sdhci_msm_probe()
+  mmc: sdhci-msm: convert to use devm_pm_opp_* API
+  spi: spi-qcom-qspi: fix potential mem leak in qcom_qspi_probe()
+  spi: spi-qcom-qspi: convert to use devm_pm_opp_* API
+  drm/msm: fix potential mem leak
+  drm/msm: convert to use devm_pm_opp_* API and remove dp_ctrl_put
+  drm/lima: convert to use devm_pm_opp_* API
+  drm/lima: remove unneeded devm_devfreq_remove_device()
+  drm/panfrost: convert to use devm_pm_opp_* API
+  media: venus: fix error check in core_get_v4()
+  media: venus: convert to use devm_pm_opp_* API
+  memory: samsung: exynos5422-dmc: fix return error in
+    exynos5_init_freq_table
+  memory: samsung: exynos5422-dmc: convert to use devm_pm_opp_* API
+  memory: tegra20: convert to use devm_pm_opp_* API
+  memory: tegra30: convert to use devm_pm_opp_* API
+  PM / devfreq: tegra30: convert to use devm_pm_opp_* API
+  PM / devfreq: rk3399_dmc: convert to use devm_pm_opp_* API
+  PM / devfreq: imx8m-ddrc: convert to use devm_pm_opp_* API
+  PM / devfreq: imx-bus: convert to use devm_pm_opp_* API
+  PM / devfreq: exynos: convert to use devm_pm_opp_* API
+  PM / devfreq: convert to devm_pm_opp_register_notifier and remove
+    unused API
+
+ drivers/devfreq/devfreq.c                     |  66 +------
+ drivers/devfreq/exynos-bus.c                  |  42 +----
+ drivers/devfreq/imx-bus.c                     |  14 +-
+ drivers/devfreq/imx8m-ddrc.c                  |  15 +-
+ drivers/devfreq/rk3399_dmc.c                  |  22 +--
+ drivers/devfreq/tegra30-devfreq.c             |  21 +--
+ drivers/gpu/drm/lima/lima_devfreq.c           |  45 +----
+ drivers/gpu/drm/lima/lima_devfreq.h           |   2 -
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c         |   2 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c         |   2 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c       |   2 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |  31 ++--
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h       |   2 -
+ drivers/gpu/drm/msm/dp/dp_ctrl.c              |  29 +--
+ drivers/gpu/drm/msm/dp/dp_ctrl.h              |   1 -
+ drivers/gpu/drm/msm/dp/dp_display.c           |   5 +-
+ drivers/gpu/drm/msm/dsi/dsi_host.c            |  23 ++-
+ drivers/gpu/drm/panfrost/panfrost_devfreq.c   |  34 +---
+ drivers/gpu/drm/panfrost/panfrost_devfreq.h   |   1 -
+ .../media/platform/qcom/venus/pm_helpers.c    |  22 +--
+ drivers/memory/samsung/exynos5422-dmc.c       |  13 +-
+ drivers/memory/tegra/tegra20-emc.c            |  29 +--
+ drivers/memory/tegra/tegra30-emc.c            |  29 +--
+ drivers/mmc/host/sdhci-msm.c                  |  27 ++-
+ drivers/opp/core.c                            | 173 ++++++++++++++++++
+ drivers/opp/of.c                              |  36 ++++
+ drivers/spi/spi-geni-qcom.c                   |  23 ++-
+ drivers/spi/spi-qcom-qspi.c                   |  25 ++-
+ drivers/tty/serial/qcom_geni_serial.c         |  31 ++--
+ include/linux/devfreq.h                       |  23 ---
+ include/linux/pm_opp.h                        |  38 ++++
+ include/linux/qcom-geni-se.h                  |   2 -
+ 32 files changed, 402 insertions(+), 428 deletions(-)
+
+-- 
+2.25.1
+
