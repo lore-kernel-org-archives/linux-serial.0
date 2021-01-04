@@ -2,81 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7445CC433DB
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jan 2021 10:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57BB3C433E0
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jan 2021 11:42:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 37EC321E92
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jan 2021 10:03:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 11A1F21D93
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jan 2021 11:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726492AbhADKDF (ORCPT
+        id S1725840AbhADLmt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jan 2021 05:03:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47302 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726465AbhADKDE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jan 2021 05:03:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AC53B20780;
-        Mon,  4 Jan 2021 10:02:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1609754544;
-        bh=DTQgfinQxH3xCqywDfhY454jpPb5ATM8H7eYA7h4GXk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WWT0quJnpKJqNAm4nX+AAQTwVQrJWVBZv+YuI81WWr07jSpyESECSAPQ+0VkOnair
-         lujVi/C2OSKQRhdbVLq8aLrCd4VKHpaikcwUWypNfK/aNfQfIchbD/KpwB60qyvqLf
-         rcYl4Dy2McyP6wEMdkKey1k23Irij6Ky0xiAPXBI=
-Date:   Mon, 4 Jan 2021 11:03:50 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Tamseel Shams <m.shams@samsung.com>
-Cc:     kgene@kernel.org, krzk@kernel.org, jslaby@suse.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com
-Subject: Re: [PATCH] serial: samsung: Checks the return value of function
-Message-ID: <X/LoBqoVf9H6wI8U@kroah.com>
-References: <CGME20210104082958epcas5p12c5c0e78dec7f106375b4f507a3b152b@epcas5p1.samsung.com>
- <20210104083551.1393-1-m.shams@samsung.com>
+        Mon, 4 Jan 2021 06:42:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725830AbhADLmt (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 4 Jan 2021 06:42:49 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1562CC061574
+        for <linux-serial@vger.kernel.org>; Mon,  4 Jan 2021 03:42:09 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0] helo=leviathan.pengutronix.de)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <s.trumtrar@pengutronix.de>)
+        id 1kwOFT-0007tp-IS; Mon, 04 Jan 2021 12:42:07 +0100
+References: <20201209091728.2357-1-s.trumtrar@pengutronix.de>
+ <X9CzrUVgyqeuREKK@localhost>
+User-agent: mu4e 1.4.12; emacs 28.0.50
+From:   Steffen Trumtrar <s.trumtrar@pengutronix.de>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/2] tty: serial: 8250: always call tx_chars under spinlock
+In-reply-to: <X9CzrUVgyqeuREKK@localhost>
+Date:   Mon, 04 Jan 2021 12:42:06 +0100
+Message-ID: <87eej1dj3l.fsf@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210104083551.1393-1-m.shams@samsung.com>
+Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: s.trumtrar@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 04, 2021 at 02:05:51PM +0530, Tamseel Shams wrote:
-> "uart_add_one_port" function call may fail and return
-> some error code, so adding a check for return value.
-> If it is returning some error code, then displaying the
-> result and returning back from there.
-> 
-> Signed-off-by: Tamseel Shams <m.shams@samsung.com>
-> ---
->  drivers/tty/serial/samsung_tty.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 6ef614d8648c..a220ba166ffe 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -2072,7 +2072,11 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
->  	}
->  
->  	dev_dbg(&pdev->dev, "%s: adding port\n", __func__);
-> -	uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
-> +	ret = uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "Failed to add uart port, err %d\n", ret);
-> +		return ret;
 
-Why are you not unwinding the other logic that happened above?  If this
-fails, you need to properly do that as well, otherwise the driver is
-still registered, right?
+Hi!
 
-thanks,
+Johan Hovold <johan@kernel.org> writes:
 
-greg k-h
+> On Wed, Dec 09, 2020 at 10:17:27AM +0100, Steffen Trumtrar wrote:
+>> In most cases serial8250_tx_chars is called with spinlock held.
+>> Fix the remaining location, too.
+>
+> Please explain where __start_tx() is called without holding the port
+> lock and consider fixing that up.
+>
+>> Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+>> ---
+>>  drivers/tty/serial/8250/8250_port.c | 6 +++++-
+>>  1 file changed, 5 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+>> index b0af13074cd3..3310c2b70138 100644
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -1559,6 +1559,7 @@ static void serial8250_stop_tx(struct uart_port *port)
+>>  static inline void __start_tx(struct uart_port *port)
+>>  {
+>>  	struct uart_8250_port *up = up_to_u8250p(port);
+>> +	unsigned long flags;
+>>
+>>  	if (up->dma && !up->dma->tx_dma(up))
+>>  		return;
+>> @@ -1569,8 +1570,11 @@ static inline void __start_tx(struct uart_port *port)
+>>
+>>  			lsr = serial_in(up, UART_LSR);
+>>  			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+>> -			if (lsr & UART_LSR_THRE)
+>> +			if (lsr & UART_LSR_THRE) {
+>> +				spin_lock_irqsave(&port->lock, flags);
+>>  				serial8250_tx_chars(up);
+>> +				spin_unlock_irqrestore(&port->lock, flags);
+>> +			}
+>
+> Since several callers of __start_tx() do hold the lock, this change will
+> introduce a deadlock.
+>
+
+Meh, yeah :(
+
+Seem like the correct solution would be to fix start_tx_rs485 and
+serial8250_start_tx instead.
+
+
+Best regards,
+Steffen Trumtrar
+
+--
+Pengutronix e.K.                | Dipl.-Inform. Steffen Trumtrar |
+Steuerwalder Str. 21            | https://www.pengutronix.de/    |
+31137 Hildesheim, Germany       | Phone: +49-5121-206917-0       |
+Amtsgericht Hildesheim, HRA 2686| Fax:   +49-5121-206917-5555    |
