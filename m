@@ -2,219 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	FREEMAIL_REPLYTO_END_DIGIT,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8CEC433E9
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 05:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8A9C433E6
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 07:34:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4D05F225AC
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 05:38:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C975022581
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 07:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726096AbhAEFiE (ORCPT
+        id S1726776AbhAEHea (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jan 2021 00:38:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58926 "EHLO
+        Tue, 5 Jan 2021 02:34:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbhAEFiE (ORCPT
+        with ESMTP id S1725822AbhAEHe3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jan 2021 00:38:04 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6795BC061574;
-        Mon,  4 Jan 2021 21:37:23 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id y19so69706107lfa.13;
-        Mon, 04 Jan 2021 21:37:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=BJ/BPOn4zLwcKVC4z1IVu61Cm54JUVzrqo0fobfeksQ=;
-        b=M2Es2CYFztXBLoaAP1ExQ7Vg6pKuoSXUrIU64+JTXYurORjVHO4RUkWy9a4XEoyOmG
-         p+VIGZyFQ/Ing35CuPyPBd6B4LN5jbTFWoeaA6uNlz16qXwUa5QLGdINIx92MIRiXt7L
-         Zr2800UU5QComKFAIo/5zErU+/CEX/4DxD1wTH9rYHenrgCp8KW1mnHqhljdneV9CceE
-         iqZGVqZc1D9tzQGGs54/GpfLBIPz2RVk4vGUsoB8JaGKT8svSxHoGEdC1W3xaidDname
-         k13zeTaPJz88q5qUalH7p2qGQftucEcvNP+dpZhBsrFsu193HiFOUS2RkJzRrsvQmy5X
-         /6uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=BJ/BPOn4zLwcKVC4z1IVu61Cm54JUVzrqo0fobfeksQ=;
-        b=dSGIWRMrGV2wI6AAe9Hd0nYjc//DnIiTX+tz3BwTWbpotphs3DeuqCpo7Tl4jHdS/J
-         uA4GCNr8zuRC6iDP2Aa0A9GTJpazNAxv6oQ+rKDf6Az40Ot9h85irthFiKIS82PWlsbM
-         GYBIBDxReE5Cy11faNNXhRBLXixXylvt1myreWmmcGzk6i0t8oDOLecqmI/gPNKPnRsn
-         rXiqqo93MNI91exC4qMrv+IdtD2bolb4w9U+d8ybnsiTebgrvSVGCxZS3JRovK1GoOds
-         Bkph9nHZGqT/HbJOFO79C/qwbNxbKbWlqvFMTU0RLagKkW0TAaw4TBJu9K/2F35GFgLP
-         RxMg==
-X-Gm-Message-State: AOAM530j0EM4TUHTEZl7YtpwC1K2F2vjwXFJCsyBVrVUtnjQTJcqZbOC
-        k1ditAJWsuUSoHiqi5O9gZjzyGisRZ/kCnUf8xg=
-X-Google-Smtp-Source: ABdhPJxBh2b69EQE0oS8msD6rntMrwUkYVv9SESod0vmy4ovFZpV4FPqGzA4LTLOdctSMhxU1bPsvxj13MHhmKM2D30=
-X-Received: by 2002:a05:6512:2e9:: with SMTP id m9mr32046955lfq.118.1609825041442;
- Mon, 04 Jan 2021 21:37:21 -0800 (PST)
+        Tue, 5 Jan 2021 02:34:29 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719E3C061574
+        for <linux-serial@vger.kernel.org>; Mon,  4 Jan 2021 23:33:49 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0] helo=leviathan.pengutronix.de)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <s.trumtrar@pengutronix.de>)
+        id 1kwgqe-0003Gm-7x; Tue, 05 Jan 2021 08:33:44 +0100
+References: <20201209091728.2357-1-s.trumtrar@pengutronix.de>
+ <X9CzrUVgyqeuREKK@localhost> <87ft3hdj3n.fsf@pengutronix.de>
+User-agent: mu4e 1.4.12; emacs 28.0.50
+From:   Steffen Trumtrar <s.trumtrar@pengutronix.de>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/2] tty: serial: 8250: always call tx_chars under spinlock
+In-reply-to: <87ft3hdj3n.fsf@pengutronix.de>
+Date:   Tue, 05 Jan 2021 08:33:43 +0100
+Message-ID: <87r1mzon1k.fsf@pengutronix.de>
 MIME-Version: 1.0
-References: <20210103035706.24168-1-tiny.windzz@gmail.com>
-In-Reply-To: <20210103035706.24168-1-tiny.windzz@gmail.com>
-Reply-To: cwchoi00@gmail.com
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-Date:   Tue, 5 Jan 2021 14:36:44 +0900
-Message-ID: <CAGTfZH0s0iiR1jaebU8KyJ7mdvZMOUQXfmuxGh0PJ_v0diXtfA@mail.gmail.com>
-Subject: Re: [PATCH 31/31] PM / devfreq: convert to devm_pm_opp_register_notifier
- and remove unused API
-To:     Yangtao Li <tiny.windzz@gmail.com>
-Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>, yuq825@gmail.com,
-        David Airlie <airlied@linux.ie>, daniel@ffwll.ch,
-        robdclark@gmail.com, sean@poorly.run,
-        Rob Herring <robh@kernel.org>, tomeu.vizoso@collabora.com,
-        steven.price@arm.com, alyssa.rosenzweig@collabora.com,
-        stanimir.varbanov@linaro.org, agross@kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        mchehab@kernel.org, Lukasz Luba <lukasz.luba@arm.com>,
-        adrian.hunter@intel.com, Ulf Hansson <ulf.hansson@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, jcrouse@codeaurora.org,
-        hoegsberg@google.com, eric@anholt.net, tzimmermann@suse.de,
-        marijn.suijten@somainline.org, gustavoars@kernel.org,
-        emil.velikov@collabora.com, jonathan@marek.ca,
-        akhilpo@codeaurora.org, smasetty@codeaurora.org,
-        airlied@redhat.com, masneyb@onstation.org, kalyan_t@codeaurora.org,
-        tanmay@codeaurora.org, ddavenport@chromium.org,
-        jsanka@codeaurora.org, rnayak@codeaurora.org,
-        tongtiangen@huawei.com, miaoqinglang@huawei.com,
-        khsieh@codeaurora.org, abhinavk@codeaurora.org,
-        chandanu@codeaurora.org, Guenter Roeck <groeck@chromium.org>,
-        varar@codeaurora.org, Matthias Kaehlcke <mka@chromium.org>,
-        harigovi@codeaurora.org, rikard.falkeborn@gmail.com,
-        natechancellor@gmail.com, Georgi Djakov <georgi.djakov@linaro.org>,
-        akashast@codeaurora.org, parashar@codeaurora.org,
-        Doug Anderson <dianders@chromium.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-tegra@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        lima@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: s.trumtrar@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Jan 3, 2021 at 12:59 PM Yangtao Li <tiny.windzz@gmail.com> wrote:
->
->  Use devm_pm_opp_* API to simplify code.
->
-> Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-> ---
->  drivers/devfreq/devfreq.c | 66 +--------------------------------------
->  include/linux/devfreq.h   | 23 --------------
->  2 files changed, 1 insertion(+), 88 deletions(-)
->
-> diff --git a/drivers/devfreq/devfreq.c b/drivers/devfreq/devfreq.c
-> index 6aa10de792b3..f593f30529ec 100644
-> --- a/drivers/devfreq/devfreq.c
-> +++ b/drivers/devfreq/devfreq.c
-> @@ -2004,40 +2004,6 @@ struct dev_pm_opp *devfreq_recommended_opp(struct device *dev,
->  }
->  EXPORT_SYMBOL(devfreq_recommended_opp);
->
-> -/**
-> - * devfreq_register_opp_notifier() - Helper function to get devfreq notified
-> - *                                  for any changes in the OPP availability
-> - *                                  changes
-> - * @dev:       The devfreq user device. (parent of devfreq)
-> - * @devfreq:   The devfreq object.
-> - */
-> -int devfreq_register_opp_notifier(struct device *dev, struct devfreq *devfreq)
-> -{
-> -       return dev_pm_opp_register_notifier(dev, &devfreq->nb);
-> -}
-> -EXPORT_SYMBOL(devfreq_register_opp_notifier);
-> -
-> -/**
-> - * devfreq_unregister_opp_notifier() - Helper function to stop getting devfreq
-> - *                                    notified for any changes in the OPP
-> - *                                    availability changes anymore.
-> - * @dev:       The devfreq user device. (parent of devfreq)
-> - * @devfreq:   The devfreq object.
-> - *
-> - * At exit() callback of devfreq_dev_profile, this must be included if
-> - * devfreq_recommended_opp is used.
-> - */
-> -int devfreq_unregister_opp_notifier(struct device *dev, struct devfreq *devfreq)
-> -{
-> -       return dev_pm_opp_unregister_notifier(dev, &devfreq->nb);
-> -}
-> -EXPORT_SYMBOL(devfreq_unregister_opp_notifier);
-> -
-> -static void devm_devfreq_opp_release(struct device *dev, void *res)
-> -{
-> -       devfreq_unregister_opp_notifier(dev, *(struct devfreq **)res);
-> -}
-> -
->  /**
->   * devm_devfreq_register_opp_notifier() - Resource-managed
->   *                                       devfreq_register_opp_notifier()
-> @@ -2047,40 +2013,10 @@ static void devm_devfreq_opp_release(struct device *dev, void *res)
->  int devm_devfreq_register_opp_notifier(struct device *dev,
->                                        struct devfreq *devfreq)
->  {
-> -       struct devfreq **ptr;
-> -       int ret;
-> -
-> -       ptr = devres_alloc(devm_devfreq_opp_release, sizeof(*ptr), GFP_KERNEL);
-> -       if (!ptr)
-> -               return -ENOMEM;
-> -
-> -       ret = devfreq_register_opp_notifier(dev, devfreq);
-> -       if (ret) {
-> -               devres_free(ptr);
-> -               return ret;
-> -       }
-> -
-> -       *ptr = devfreq;
-> -       devres_add(dev, ptr);
-> -
-> -       return 0;
-> +       return devm_pm_opp_register_notifier(dev, &devfreq->nb);
->  }
->  EXPORT_SYMBOL(devm_devfreq_register_opp_notifier);
->
-> -/**
-> - * devm_devfreq_unregister_opp_notifier() - Resource-managed
-> - *                                         devfreq_unregister_opp_notifier()
-> - * @dev:       The devfreq user device. (parent of devfreq)
-> - * @devfreq:   The devfreq object.
-> - */
-> -void devm_devfreq_unregister_opp_notifier(struct device *dev,
-> -                                        struct devfreq *devfreq)
-> -{
-> -       WARN_ON(devres_release(dev, devm_devfreq_opp_release,
-> -                              devm_devfreq_dev_match, devfreq));
-> -}
-> -EXPORT_SYMBOL(devm_devfreq_unregister_opp_notifier);
 
-Need to support devm_devfreq_unregister_opp_notifier()
-because sometimes, the user wants to release the resource by himself.
+Steffen Trumtrar <s.trumtrar@pengutronix.de> writes:
 
-(snip)
+> Hi!
+>
+> Johan Hovold <johan@kernel.org> writes:
+>
+>> On Wed, Dec 09, 2020 at 10:17:27AM +0100, Steffen Trumtrar wrote:
+>>> In most cases serial8250_tx_chars is called with spinlock held.
+>>> Fix the remaining location, too.
+>>
+>> Please explain where __start_tx() is called without holding the port
+>> lock and consider fixing that up.
+>>
+>>> Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+>>> ---
+>>>  drivers/tty/serial/8250/8250_port.c | 6 +++++-
+>>>  1 file changed, 5 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+>>> index b0af13074cd3..3310c2b70138 100644
+>>> --- a/drivers/tty/serial/8250/8250_port.c
+>>> +++ b/drivers/tty/serial/8250/8250_port.c
+>>> @@ -1559,6 +1559,7 @@ static void serial8250_stop_tx(struct uart_port *port)
+>>>  static inline void __start_tx(struct uart_port *port)
+>>>  {
+>>>  	struct uart_8250_port *up = up_to_u8250p(port);
+>>> +	unsigned long flags;
+>>>
+>>>  	if (up->dma && !up->dma->tx_dma(up))
+>>>  		return;
+>>> @@ -1569,8 +1570,11 @@ static inline void __start_tx(struct uart_port *port)
+>>>
+>>>  			lsr = serial_in(up, UART_LSR);
+>>>  			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+>>> -			if (lsr & UART_LSR_THRE)
+>>> +			if (lsr & UART_LSR_THRE) {
+>>> +				spin_lock_irqsave(&port->lock, flags);
+>>>  				serial8250_tx_chars(up);
+>>> +				spin_unlock_irqrestore(&port->lock, flags);
+>>> +			}
+>>
+>> Since several callers of __start_tx() do hold the lock, this change will
+>> introduce a deadlock.
+>>
+>
+> Meh, yeah :(
+>
+> Seem like the correct solution would be to fix start_tx_rs485 and
+> serial8250_start_tx instead.
+>
 
-Best Regards,
-Chanwoo Choi
+Scratch that. This patch is bogus, I'm stupid, port-lock is already held
+by uart_write apart from the hrtimer-callback.
+
+Sorry for the noise.
+
+
+Best regards,
+Steffen Trumtrar
+
+--
+Pengutronix e.K.                | Dipl.-Inform. Steffen Trumtrar |
+Steuerwalder Str. 21            | https://www.pengutronix.de/    |
+31137 Hildesheim, Germany       | Phone: +49-5121-206917-0       |
+Amtsgericht Hildesheim, HRA 2686| Fax:   +49-5121-206917-5555    |
