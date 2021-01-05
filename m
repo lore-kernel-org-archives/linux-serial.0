@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DF6C43332
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C921C433DB
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CC17D22AAD
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C7F522AEC
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729984AbhAEMEE (ORCPT
+        id S1729763AbhAEMEW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jan 2021 07:04:04 -0500
-Received: from mx2.suse.de ([195.135.220.15]:39238 "EHLO mx2.suse.de"
+        Tue, 5 Jan 2021 07:04:22 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39250 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726074AbhAEMED (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1729977AbhAEMED (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Tue, 5 Jan 2021 07:04:03 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 398EAADCA;
-        Tue,  5 Jan 2021 12:02:41 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 7B1D7AE1C;
+        Tue,  5 Jan 2021 12:02:42 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 07/12] vt/consolemap: do font sum unsigned
-Date:   Tue,  5 Jan 2021 13:02:34 +0100
-Message-Id: <20210105120239.28031-7-jslaby@suse.cz>
+Subject: [PATCH 12/12] tty: drop termiox user definitions
+Date:   Tue,  5 Jan 2021 13:02:39 +0100
+Message-Id: <20210105120239.28031-12-jslaby@suse.cz>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210105120239.28031-1-jslaby@suse.cz>
 References: <20210105120239.28031-1-jslaby@suse.cz>
@@ -40,29 +40,42 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The constant 20 makes the font sum computation signed which can lead to
-sign extensions and signed wraps. It's not much of a problem as we build
-with -fno-strict-overflow. But if we ever decide not to, be ready, so
-switch the constant to unsigned.
+As was concluded in a follow-up discussion of commit e0efb3168d34 (tty:
+Remove dead termiox code) [1], termiox ioctls never worked, so there is
+barely anyone using this interface. We can safely remove the user
+definitions for this never adopted interface.
+
+[1] https://lore.kernel.org/lkml/c1c9fc04-02eb-2260-195b-44c357f057c0@kernel.org/t/#u
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/uapi/linux/termios.h | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index f7d015c67963..d815ac98b39e 100644
---- a/drivers/tty/vt/consolemap.c
-+++ b/drivers/tty/vt/consolemap.c
-@@ -495,7 +495,7 @@ con_insert_unipair(struct uni_pagedir *p, u_short unicode, u_short fontpos)
+diff --git a/include/uapi/linux/termios.h b/include/uapi/linux/termios.h
+index 33961d4e4de0..e6da9d4433d1 100644
+--- a/include/uapi/linux/termios.h
++++ b/include/uapi/linux/termios.h
+@@ -5,19 +5,4 @@
+ #include <linux/types.h>
+ #include <asm/termios.h>
  
- 	p2[unicode & 0x3f] = fontpos;
- 	
--	p->sum += (fontpos << 20) + unicode;
-+	p->sum += (fontpos << 20U) + unicode;
- 
- 	return 0;
- }
+-#define NFF	5
+-
+-struct termiox
+-{
+-	__u16	x_hflag;
+-	__u16	x_cflag;
+-	__u16	x_rflag[NFF];
+-	__u16	x_sflag;
+-};
+-
+-#define	RTSXOFF		0x0001		/* RTS flow control on input */
+-#define	CTSXON		0x0002		/* CTS flow control on output */
+-#define	DTRXOFF		0x0004		/* DTR flow control on input */
+-#define DSRXON		0x0008		/* DCD flow control on output */
+-
+ #endif
 -- 
 2.30.0
 
