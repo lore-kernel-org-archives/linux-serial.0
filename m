@@ -4,122 +4,132 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD8EC433E0
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F44DC43381
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9D0D622A84
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 29E7922B3A
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729900AbhAEMDW (ORCPT
+        id S1729941AbhAEMDj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jan 2021 07:03:22 -0500
-Received: from mx2.suse.de ([195.135.220.15]:38628 "EHLO mx2.suse.de"
+        Tue, 5 Jan 2021 07:03:39 -0500
+Received: from mx2.suse.de ([195.135.220.15]:38668 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726074AbhAEMDV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jan 2021 07:03:21 -0500
+        id S1729885AbhAEMDW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 5 Jan 2021 07:03:22 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id B8F7CAA7C;
-        Tue,  5 Jan 2021 12:02:39 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 690EAAD75;
+        Tue,  5 Jan 2021 12:02:40 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 01/12] vt: move set_leds to keyboard.c
-Date:   Tue,  5 Jan 2021 13:02:28 +0100
-Message-Id: <20210105120239.28031-1-jslaby@suse.cz>
+Subject: [PATCH 04/12] vt: keyboard, defkeymap.c_shipped, approach the unicode table
+Date:   Tue,  5 Jan 2021 13:02:31 +0100
+Message-Id: <20210105120239.28031-4-jslaby@suse.cz>
 X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210105120239.28031-1-jslaby@suse.cz>
+References: <20210105120239.28031-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-set_leds and compute_shiftstate are called from a single place in vt.c.
-Let's combine these two into vt_set_leds_compute_shiftstate. This allows
-for making keyboard_tasklet local in the next patch.
+Commit 5ce2087ed0eb (Fix default compose table initialization) fixed
+unicode table so that the values are not sign extended. The upstream
+(kbd package) chose a different approach. They use hexadecimal values.
+So use the same, so that the output of loadkeys and our shipped file
+correspond more to each other.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/keyboard.c | 11 ++++++++++-
- drivers/tty/vt/vt.c       |  3 +--
- include/linux/kbd_kern.h  |  8 +-------
- 3 files changed, 12 insertions(+), 10 deletions(-)
+ drivers/tty/vt/defkeymap.c_shipped | 68 +++++++++++++++---------------
+ 1 file changed, 34 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index 52922d21a49f..32ec4242b1f2 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -372,6 +372,12 @@ static void to_utf8(struct vc_data *vc, uint c)
- 	}
- }
+diff --git a/drivers/tty/vt/defkeymap.c_shipped b/drivers/tty/vt/defkeymap.c_shipped
+index cac1fcbd55c7..094d95bf0005 100644
+--- a/drivers/tty/vt/defkeymap.c_shipped
++++ b/drivers/tty/vt/defkeymap.c_shipped
+@@ -224,40 +224,40 @@ char *func_table[MAX_NR_FUNC] = {
+ };
  
-+/* FIXME: review locking for vt.c callers */
-+static void set_leds(void)
-+{
-+	tasklet_schedule(&keyboard_tasklet);
-+}
-+
- /*
-  * Called after returning from RAW mode or when changing consoles - recompute
-  * shift_down[] and shift_state from key_down[] maybe called when keymap is
-@@ -401,9 +407,12 @@ static void do_compute_shiftstate(void)
- }
+ struct kbdiacruc accent_table[MAX_DIACR] = {
+-	{'`', 'A', 0300},	{'`', 'a', 0340},
+-	{'\'', 'A', 0301},	{'\'', 'a', 0341},
+-	{'^', 'A', 0302},	{'^', 'a', 0342},
+-	{'~', 'A', 0303},	{'~', 'a', 0343},
+-	{'"', 'A', 0304},	{'"', 'a', 0344},
+-	{'O', 'A', 0305},	{'o', 'a', 0345},
+-	{'0', 'A', 0305},	{'0', 'a', 0345},
+-	{'A', 'A', 0305},	{'a', 'a', 0345},
+-	{'A', 'E', 0306},	{'a', 'e', 0346},
+-	{',', 'C', 0307},	{',', 'c', 0347},
+-	{'`', 'E', 0310},	{'`', 'e', 0350},
+-	{'\'', 'E', 0311},	{'\'', 'e', 0351},
+-	{'^', 'E', 0312},	{'^', 'e', 0352},
+-	{'"', 'E', 0313},	{'"', 'e', 0353},
+-	{'`', 'I', 0314},	{'`', 'i', 0354},
+-	{'\'', 'I', 0315},	{'\'', 'i', 0355},
+-	{'^', 'I', 0316},	{'^', 'i', 0356},
+-	{'"', 'I', 0317},	{'"', 'i', 0357},
+-	{'-', 'D', 0320},	{'-', 'd', 0360},
+-	{'~', 'N', 0321},	{'~', 'n', 0361},
+-	{'`', 'O', 0322},	{'`', 'o', 0362},
+-	{'\'', 'O', 0323},	{'\'', 'o', 0363},
+-	{'^', 'O', 0324},	{'^', 'o', 0364},
+-	{'~', 'O', 0325},	{'~', 'o', 0365},
+-	{'"', 'O', 0326},	{'"', 'o', 0366},
+-	{'/', 'O', 0330},	{'/', 'o', 0370},
+-	{'`', 'U', 0331},	{'`', 'u', 0371},
+-	{'\'', 'U', 0332},	{'\'', 'u', 0372},
+-	{'^', 'U', 0333},	{'^', 'u', 0373},
+-	{'"', 'U', 0334},	{'"', 'u', 0374},
+-	{'\'', 'Y', 0335},	{'\'', 'y', 0375},
+-	{'T', 'H', 0336},	{'t', 'h', 0376},
+-	{'s', 's', 0337},	{'"', 'y', 0377},
+-	{'s', 'z', 0337},	{'i', 'j', 0377},
++	{'`', 'A', 0x00c0},	{'`', 'a', 0x00e0},
++	{'\'', 'A', 0x00c1},	{'\'', 'a', 0x00e1},
++	{'^', 'A', 0x00c2},	{'^', 'a', 0x00e2},
++	{'~', 'A', 0x00c3},	{'~', 'a', 0x00e3},
++	{'"', 'A', 0x00c4},	{'"', 'a', 0x00e4},
++	{'O', 'A', 0x00c5},	{'o', 'a', 0x00e5},
++	{'0', 'A', 0x00c5},	{'0', 'a', 0x00e5},
++	{'A', 'A', 0x00c5},	{'a', 'a', 0x00e5},
++	{'A', 'E', 0x00c6},	{'a', 'e', 0x00e6},
++	{',', 'C', 0x00c7},	{',', 'c', 0x00e7},
++	{'`', 'E', 0x00c8},	{'`', 'e', 0x00e8},
++	{'\'', 'E', 0x00c9},	{'\'', 'e', 0x00e9},
++	{'^', 'E', 0x00ca},	{'^', 'e', 0x00ea},
++	{'"', 'E', 0x00cb},	{'"', 'e', 0x00eb},
++	{'`', 'I', 0x00cc},	{'`', 'i', 0x00ec},
++	{'\'', 'I', 0x00cd},	{'\'', 'i', 0x00ed},
++	{'^', 'I', 0x00ce},	{'^', 'i', 0x00ee},
++	{'"', 'I', 0x00cf},	{'"', 'i', 0x00ef},
++	{'-', 'D', 0x00d0},	{'-', 'd', 0x00f0},
++	{'~', 'N', 0x00d1},	{'~', 'n', 0x00f1},
++	{'`', 'O', 0x00d2},	{'`', 'o', 0x00f2},
++	{'\'', 'O', 0x00d3},	{'\'', 'o', 0x00f3},
++	{'^', 'O', 0x00d4},	{'^', 'o', 0x00f4},
++	{'~', 'O', 0x00d5},	{'~', 'o', 0x00f5},
++	{'"', 'O', 0x00d6},	{'"', 'o', 0x00f6},
++	{'/', 'O', 0x00d8},	{'/', 'o', 0x00f8},
++	{'`', 'U', 0x00d9},	{'`', 'u', 0x00f9},
++	{'\'', 'U', 0x00da},	{'\'', 'u', 0x00fa},
++	{'^', 'U', 0x00db},	{'^', 'u', 0x00fb},
++	{'"', 'U', 0x00dc},	{'"', 'u', 0x00fc},
++	{'\'', 'Y', 0x00dd},	{'\'', 'y', 0x00fd},
++	{'T', 'H', 0x00de},	{'t', 'h', 0x00fe},
++	{'s', 's', 0x00df},	{'"', 'y', 0x00ff},
++	{'s', 'z', 0x00df},	{'i', 'j', 0x00ff},
+ };
  
- /* We still have to export this method to vt.c */
--void compute_shiftstate(void)
-+void vt_set_leds_compute_shiftstate(void)
- {
- 	unsigned long flags;
-+
-+	set_leds();
-+
- 	spin_lock_irqsave(&kbd_event_lock, flags);
- 	do_compute_shiftstate();
- 	spin_unlock_irqrestore(&kbd_event_lock, flags);
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index d04a162939a4..fe4fedbc0386 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -1036,8 +1036,7 @@ void redraw_screen(struct vc_data *vc, int is_switch)
- 	}
- 	set_cursor(vc);
- 	if (is_switch) {
--		set_leds();
--		compute_shiftstate();
-+		vt_set_leds_compute_shiftstate();
- 		notify_update(vc);
- 	}
- }
-diff --git a/include/linux/kbd_kern.h b/include/linux/kbd_kern.h
-index 82f29aa35062..adf98004624b 100644
---- a/include/linux/kbd_kern.h
-+++ b/include/linux/kbd_kern.h
-@@ -71,12 +71,6 @@ extern void (*kbd_ledfunc)(unsigned int led);
- extern int set_console(int nr);
- extern void schedule_console_callback(void);
- 
--/* FIXME: review locking for vt.c callers */
--static inline void set_leds(void)
--{
--	tasklet_schedule(&keyboard_tasklet);
--}
--
- static inline int vc_kbd_mode(struct kbd_struct * kbd, int flag)
- {
- 	return ((kbd->modeflags >> flag) & 1);
-@@ -135,7 +129,7 @@ static inline void chg_vc_kbd_led(struct kbd_struct * kbd, int flag)
- 
- struct console;
- 
--void compute_shiftstate(void);
-+void vt_set_leds_compute_shiftstate(void);
- 
- /* defkeymap.c */
- 
+ unsigned int accent_table_size = 68;
 -- 
 2.30.0
 
