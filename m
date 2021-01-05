@@ -4,170 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C37C43333
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 13:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A65ADC43381
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 13:21:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DCF3A22AAC
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 13:03:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 808BB2255F
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 13:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730468AbhAENDd (ORCPT
+        id S1728714AbhAENVE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jan 2021 08:03:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57172 "EHLO mail.kernel.org"
+        Tue, 5 Jan 2021 08:21:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33656 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729685AbhAENDc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jan 2021 08:03:32 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2E2CA22AAC;
-        Tue,  5 Jan 2021 13:02:50 +0000 (UTC)
+        id S1728009AbhAENVE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 5 Jan 2021 08:21:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4547F2255F;
+        Tue,  5 Jan 2021 13:20:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1609851770;
-        bh=/Tnbq4FC5ordGqRMZzBmEF2707cpXLotVuL1pB4INEg=;
+        s=korg; t=1609852823;
+        bh=zA5DtIeOvG2pZAiWgUaakzH1u5nm6GWCrS33DADbJaI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b7A+HlihRW0BWkxuWeObIBnymtaP0ufAI6iZqP+I33dmJaItT4s02eE21hd20fF/X
-         d/gLGOgVM5jXbgjwt3xldxp8Yx05uXAdpw5ayzs7kX/HEqtzXpXUB3oUcRe35cTc//
-         0LAxDBVV/TNR3PSOx4/g/7uEn2gJ4Mz3qDyRHQzw=
-Date:   Tue, 5 Jan 2021 14:04:14 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>, Stephen Boyd <sboyd@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-ide@vger.kernel.org,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Add missing array size constraints
-Message-ID: <X/RjziK30y56uZUj@kroah.com>
-References: <20210104230253.2805217-1-robh@kernel.org>
+        b=OVLGxHqlEXiK/KmyjD08kFUQx3n1OM/MrRg+P1ZzeqdbgAdIVxEgQXzNgqYTvknlX
+         fOJu+f2LcbJ8RAfFGyfafEr9WV/nu+/yPtxdM6flmGsXSi+WelAatjBqpiI3q/fqB8
+         vToF07UEUrd4LP+K9J+VvtB5AIETSXuZdx2020qg=
+Date:   Tue, 5 Jan 2021 14:21:47 +0100
+From:   'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?Q?J=F3zsef_Horv=E1th?= <info@ministro.hu>
+Cc:     'Rob Herring' <robh+dt@kernel.org>,
+        'Jiri Slaby' <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7,2/2] Serial: silabs si4455 serial driver
+Message-ID: <X/Rn62w/IpMHit5j@kroah.com>
+References: <20210105104347.GA18688@dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210104230253.2805217-1-robh@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210105104347.GA18688@dev>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 04, 2021 at 04:02:53PM -0700, Rob Herring wrote:
-> DT properties which can have multiple entries need to specify what the
-> entries are and define how many entries there can be. In the case of
-> only a single entry, just 'maxItems: 1' is sufficient.
+On Tue, Jan 05, 2021 at 10:43:49AM +0000, József Horváth wrote:
+> This is a device tree schema for serial port driver for
+>  Silicon Labs Si4455 Sub-GHz transciver.
 > 
-> Add the missing entry constraints. These were found with a modified
-> meta-schema. Unfortunately, there are a few cases where the size
-> constraints are not defined such as common bindings, so the meta-schema
-> can't be part of the normal checks.
+> Datasheet: https://www.silabs.com/documents/public/data-sheets/Si4455.pdf
 > 
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
-> Cc: Chanwoo Choi <cw00.choi@samsung.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> Guide: https://github.com/dministro/linux-serial-si4455
+> 
+> Signed-off-by: Jozsef Horvath <info@ministro.hu>
+> ---
 
-<snip>
+Your subject line is incorrect here :(
 
-> diff --git a/Documentation/devicetree/bindings/usb/generic-ehci.yaml b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
-> index 247ef00381ea..f76b25f7fc7a 100644
-> --- a/Documentation/devicetree/bindings/usb/generic-ehci.yaml
-> +++ b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
-> @@ -83,6 +83,7 @@ properties:
->        Phandle of a companion.
->  
->    phys:
-> +    maxItems: 1
->      description: PHY specifier for the USB PHY
->  
->    phy-names:
-> diff --git a/Documentation/devicetree/bindings/usb/generic-ohci.yaml b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-> index 2178bcc401bc..8e2bd61f2075 100644
-> --- a/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-> +++ b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-> @@ -71,6 +71,7 @@ properties:
->        Overrides the detected port count
->  
->    phys:
-> +    maxItems: 1
->      description: PHY specifier for the USB PHY
->  
->    phy-names:
-> diff --git a/Documentation/devicetree/bindings/usb/ingenic,musb.yaml b/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
-> index 678396eeeb78..f506225a4d57 100644
-> --- a/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
-> +++ b/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
-> @@ -40,7 +40,7 @@ properties:
->        - const: mc
->  
->    phys:
-> -    description: PHY specifier for the USB PHY
-> +    maxItems: 1
->  
->    usb-role-switch:
->      type: boolean
-
-Any reason you dropped the description for this entry, but not the other
-ones above?
-
-> diff --git a/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml b/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
-> index 388245b91a55..adce36e48bc9 100644
-> --- a/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
-> +++ b/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
-> @@ -15,13 +15,14 @@ properties:
->        - const: ti,j721e-usb
->  
->    reg:
-> -    description: module registers
-> +    maxItems: 1
->  
->    power-domains:
->      description:
->        PM domain provider node and an args specifier containing
->        the USB device id value. See,
->        Documentation/devicetree/bindings/soc/ti/sci-pm-domain.txt
-> +    maxItems: 1
->  
->    clocks:
->      description: Clock phandles to usb2_refclk and lpm_clk
-
-Same here, why remove the description?
+Please fix up and resend the series properly threaded (git send-email
+will do it for you.)
 
 thanks,
 
