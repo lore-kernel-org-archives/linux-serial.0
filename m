@@ -2,185 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AC6C433E9
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 18:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D456CC433DB
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 18:20:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A09CB22D57
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 18:12:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 75BF222D6D
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 18:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728234AbhAESMo (ORCPT
+        id S1728739AbhAESUL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jan 2021 13:12:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56244 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726132AbhAESMm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jan 2021 13:12:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1791722D06;
-        Tue,  5 Jan 2021 18:12:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1609870321;
-        bh=/reYBV40Ygz4hCARqF75dpeeGG0UhQDuHeRU1Mh/CCA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Dz7ZYIQwZi2PGezSrfZYXMAyFlGgRS3XZShhWjyXT3ufXIdHDHMXjuLt80KX6GoPf
-         GG9vLFuw58bgfcX32hBzQHrbWIbM7IXR3efJsGv2iQnRdRw/2HGqFmSWyIJMZ/uav6
-         zW8xJU3VSIzNihZH289zC2LwLXOyr6xIMVOafDGE=
-Date:   Tue, 5 Jan 2021 19:13:25 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>, Stephen Boyd <sboyd@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-ide@vger.kernel.org,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Add missing array size constraints
-Message-ID: <X/SsRVbYVXRX8Psq@kroah.com>
-References: <20210104230253.2805217-1-robh@kernel.org>
- <X/RjziK30y56uZUj@kroah.com>
- <20210105174008.GB1875909@robh.at.kernel.org>
+        Tue, 5 Jan 2021 13:20:11 -0500
+Received: from mail-ot1-f45.google.com ([209.85.210.45]:41247 "EHLO
+        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726651AbhAESUK (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 5 Jan 2021 13:20:10 -0500
+Received: by mail-ot1-f45.google.com with SMTP id x13so556789oto.8;
+        Tue, 05 Jan 2021 10:19:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mLDmkFDuqbDYj1G7znQagvP5MQGrjvz1ZtbFc7sI7Vw=;
+        b=hHLfqAq9iY5o4DFZQQJnIoBucv2VJj8zflBo+tvECdVIME9yINgImwtbFzx55YmqBb
+         46OOMQWuAaoWC4YgOv9Q0thwCc4q6ran/mNnoJRoRRtfpAvYY/2R4mLNnGhjNWL3wxDB
+         lwsAcT8ePieY3np7hm2x/Q0EQ8yOaCL7goTm0KW/5YdPOu/C44dGIbNRY1ZTgTE+VrN0
+         n8YYBw7rMziBrl/UiFDl/JtD/cDsUt9YZfpsrbCp6kH6aEgzyCMERYXHWhudDs6wASbW
+         7Ga+1ODz5uBHlTBeohwmcVPexHzS0gHuaxWmiI1gucsLUmgMeugpm/1SYpGGYGkWApn9
+         zf4Q==
+X-Gm-Message-State: AOAM533DHska6+q6rlDozjBXiSJ6Zg3j3dRC8Ke4Qth23AuUvBBLZpFy
+        w79VF2hkvt+lvxlKquD1uTSEMnXgZmaO/8Lf5ic=
+X-Google-Smtp-Source: ABdhPJwdISUovk05672ZFZNTgEp/VEh0H+IhJDl4EbOWW7zKJITnIUadjXwUsiM9ASzIxTLq+mYl6UcGpwXD/4//rZg=
+X-Received: by 2002:a9d:c01:: with SMTP id 1mr539735otr.107.1609870769846;
+ Tue, 05 Jan 2021 10:19:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210105174008.GB1875909@robh.at.kernel.org>
+References: <20201228112715.14947-1-wsa+renesas@sang-engineering.com> <20201228112715.14947-4-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20201228112715.14947-4-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 5 Jan 2021 19:19:18 +0100
+Message-ID: <CAMuHMdWwg2OfyT3Dis4Z0_Eex9r9k_4HxcOhgpA27tkbjpNszw@mail.gmail.com>
+Subject: Re: [PATCH 3/6] dt-bindings: serial: renesas,hscif: Add r8a779a0 support
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 10:40:08AM -0700, Rob Herring wrote:
-> On Tue, Jan 05, 2021 at 02:04:14PM +0100, Greg Kroah-Hartman wrote:
-> > On Mon, Jan 04, 2021 at 04:02:53PM -0700, Rob Herring wrote:
-> > > DT properties which can have multiple entries need to specify what the
-> > > entries are and define how many entries there can be. In the case of
-> > > only a single entry, just 'maxItems: 1' is sufficient.
-> > > 
-> > > Add the missing entry constraints. These were found with a modified
-> > > meta-schema. Unfortunately, there are a few cases where the size
-> > > constraints are not defined such as common bindings, so the meta-schema
-> > > can't be part of the normal checks.
-> > > 
-> > > Cc: Jens Axboe <axboe@kernel.dk>
-> > > Cc: Stephen Boyd <sboyd@kernel.org>
-> > > Cc: Thierry Reding <thierry.reding@gmail.com>
-> > > Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
-> > > Cc: Chanwoo Choi <cw00.choi@samsung.com>
-> > > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > > Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > > Cc: Jonathan Cameron <jic23@kernel.org>
-> > > Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > Cc: Marc Zyngier <maz@kernel.org>
-> > > Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> > > Cc: Chen-Yu Tsai <wens@csie.org>
-> > > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > Cc: Jakub Kicinski <kuba@kernel.org>
-> > > Cc: Sebastian Reichel <sre@kernel.org>
-> > > Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> > > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Signed-off-by: Rob Herring <robh@kernel.org>
-> > 
-> > <snip>
-> > 
-> > > diff --git a/Documentation/devicetree/bindings/usb/generic-ehci.yaml b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
-> > > index 247ef00381ea..f76b25f7fc7a 100644
-> > > --- a/Documentation/devicetree/bindings/usb/generic-ehci.yaml
-> > > +++ b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
-> > > @@ -83,6 +83,7 @@ properties:
-> > >        Phandle of a companion.
-> > >  
-> > >    phys:
-> > > +    maxItems: 1
-> > >      description: PHY specifier for the USB PHY
-> > >  
-> > >    phy-names:
-> > > diff --git a/Documentation/devicetree/bindings/usb/generic-ohci.yaml b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-> > > index 2178bcc401bc..8e2bd61f2075 100644
-> > > --- a/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-> > > +++ b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-> > > @@ -71,6 +71,7 @@ properties:
-> > >        Overrides the detected port count
-> > >  
-> > >    phys:
-> > > +    maxItems: 1
-> > >      description: PHY specifier for the USB PHY
-> > >  
-> > >    phy-names:
-> > > diff --git a/Documentation/devicetree/bindings/usb/ingenic,musb.yaml b/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
-> > > index 678396eeeb78..f506225a4d57 100644
-> > > --- a/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
-> > > +++ b/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
-> > > @@ -40,7 +40,7 @@ properties:
-> > >        - const: mc
-> > >  
-> > >    phys:
-> > > -    description: PHY specifier for the USB PHY
-> > > +    maxItems: 1
-> > >  
-> > >    usb-role-switch:
-> > >      type: boolean
-> > 
-> > Any reason you dropped the description for this entry, but not the other
-> > ones above?
-> 
-> No, I should have dropped those too. I dropped cases of genericish 
-> descriptions on common properties. There's nothing specific to this 
-> binding here really.
-> 
-> > 
-> > > diff --git a/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml b/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
-> > > index 388245b91a55..adce36e48bc9 100644
-> > > --- a/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
-> > > +++ b/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
-> > > @@ -15,13 +15,14 @@ properties:
-> > >        - const: ti,j721e-usb
-> > >  
-> > >    reg:
-> > > -    description: module registers
-> > > +    maxItems: 1
-> > >  
-> > >    power-domains:
-> > >      description:
-> > >        PM domain provider node and an args specifier containing
-> > >        the USB device id value. See,
-> > >        Documentation/devicetree/bindings/soc/ti/sci-pm-domain.txt
-> > > +    maxItems: 1
-> > >  
-> > >    clocks:
-> > >      description: Clock phandles to usb2_refclk and lpm_clk
-> > 
-> > Same here, why remove the description?
-> 
-> Really, the question is why keep 'description' on power-domains. Perhaps 
-> there's a little value in the reference to sci-pm-domain.txt, so I left 
-> it.
+On Mon, Dec 28, 2020 at 12:27 PM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Ok, if you are fine with this, that's ok with me, just didn't look very
-consistent :)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
