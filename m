@@ -2,75 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D456CC433DB
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 18:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65491C433DB
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 18:24:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 75BF222D6D
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 18:20:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2270822D6D
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 18:24:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728739AbhAESUL (ORCPT
+        id S1726982AbhAESYh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jan 2021 13:20:11 -0500
-Received: from mail-ot1-f45.google.com ([209.85.210.45]:41247 "EHLO
-        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726651AbhAESUK (ORCPT
+        Tue, 5 Jan 2021 13:24:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726258AbhAESYh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jan 2021 13:20:10 -0500
-Received: by mail-ot1-f45.google.com with SMTP id x13so556789oto.8;
-        Tue, 05 Jan 2021 10:19:55 -0800 (PST)
+        Tue, 5 Jan 2021 13:24:37 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA23C061574
+        for <linux-serial@vger.kernel.org>; Tue,  5 Jan 2021 10:23:56 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id g24so1617567edw.9
+        for <linux-serial@vger.kernel.org>; Tue, 05 Jan 2021 10:23:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=7dXcqeLHf/FMxBSyHLovWXUvXpzSB49eYDEiSZMKJeA=;
+        b=TmngahV1zAE0HyBX2jBnnJB6lbvm+N4eyHDCz6e4b2MBNw7akH0ru22r6dhUgWXDWI
+         lQLjzJo0MKUlf8A5Wjri/3gNXksTFnpKz81RP68Od043IZx/ENpiHJChTvz6nDN93MMd
+         2t4x1AGbDC/4DvaIrSiPYomcRo8YnG5xcrtHcLhAmvbtf0+2BgXVR9Crx/ZtCod6Bv8F
+         IpUq4bV3cdt3ISc2kwhSCpUqW2b14YzST3C8rHWOJzdkn8/Pt6hibBTEEXRz01vaimvs
+         66TtxeHhNvkgb3wIwqmdZaXbQp/O3X1if+YBOfjgJY+8UHMSDz5EXSkTv4hM06yyq7LL
+         IS0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mLDmkFDuqbDYj1G7znQagvP5MQGrjvz1ZtbFc7sI7Vw=;
-        b=hHLfqAq9iY5o4DFZQQJnIoBucv2VJj8zflBo+tvECdVIME9yINgImwtbFzx55YmqBb
-         46OOMQWuAaoWC4YgOv9Q0thwCc4q6ran/mNnoJRoRRtfpAvYY/2R4mLNnGhjNWL3wxDB
-         lwsAcT8ePieY3np7hm2x/Q0EQ8yOaCL7goTm0KW/5YdPOu/C44dGIbNRY1ZTgTE+VrN0
-         n8YYBw7rMziBrl/UiFDl/JtD/cDsUt9YZfpsrbCp6kH6aEgzyCMERYXHWhudDs6wASbW
-         7Ga+1ODz5uBHlTBeohwmcVPexHzS0gHuaxWmiI1gucsLUmgMeugpm/1SYpGGYGkWApn9
-         zf4Q==
-X-Gm-Message-State: AOAM533DHska6+q6rlDozjBXiSJ6Zg3j3dRC8Ke4Qth23AuUvBBLZpFy
-        w79VF2hkvt+lvxlKquD1uTSEMnXgZmaO/8Lf5ic=
-X-Google-Smtp-Source: ABdhPJwdISUovk05672ZFZNTgEp/VEh0H+IhJDl4EbOWW7zKJITnIUadjXwUsiM9ASzIxTLq+mYl6UcGpwXD/4//rZg=
-X-Received: by 2002:a9d:c01:: with SMTP id 1mr539735otr.107.1609870769846;
- Tue, 05 Jan 2021 10:19:29 -0800 (PST)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=7dXcqeLHf/FMxBSyHLovWXUvXpzSB49eYDEiSZMKJeA=;
+        b=QLWN4IdVrB3c97U7lgFczetnqzSwENWAz882vO2H94ZmG+bb1N+2Mvkr7m88CmXSlg
+         DaXtqe0bxy/vWg29URL4QbgVetO6YvYmNY16FEtM6qrkBKyv8KjbyN/hLwDy6za832JL
+         aD8EhGO1QAovbtenUGwGKpLFHzpGvJwU0Lcl3QUaIhGTRL68BsRO0MGS/PC1NsJBhPKJ
+         Hm0ha4pNOECvSTo0SuOF9WMc+3VdffP8orgbMNaaULhtkAceHywWviLEz2xIWa5D5Eqg
+         UHMKvGYTc6GljjBOYwhGwsZqd+xGrKcIz0vraHPJkpbu5AQL7vYjq0Bc7LE7lJq1QUrM
+         pK3A==
+X-Gm-Message-State: AOAM532+tiWd7xCFhIF/GDvaMBPTeeKoHv89ZiWzlAL0Y16Le4x5XvdP
+        nidYmPRC/sIDGpEboc+woecvRdWl1ZY3cfPoCDKelw==
+X-Google-Smtp-Source: ABdhPJx+OGjzRjuHT6CuJVFCFu37Zr+M3TCT6z/5KN/72u6Ne5EADP2ghsJi/3EUU7+ZnkxP9I7plpLg7BFr/Hi89KY=
+X-Received: by 2002:a05:6402:1597:: with SMTP id c23mr1108306edv.212.1609871034788;
+ Tue, 05 Jan 2021 10:23:54 -0800 (PST)
 MIME-Version: 1.0
-References: <20201228112715.14947-1-wsa+renesas@sang-engineering.com> <20201228112715.14947-4-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20201228112715.14947-4-wsa+renesas@sang-engineering.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 5 Jan 2021 19:19:18 +0100
-Message-ID: <CAMuHMdWwg2OfyT3Dis4Z0_Eex9r9k_4HxcOhgpA27tkbjpNszw@mail.gmail.com>
-Subject: Re: [PATCH 3/6] dt-bindings: serial: renesas,hscif: Add r8a779a0 support
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Tue, 5 Jan 2021 10:23:43 -0800
+Message-ID: <CAJ+vNU1XJCisZWpr-huf5gt3V592gz8kX+VHga58iM-Kx+h5=Q@mail.gmail.com>
+Subject: Linux gnss driver SPI support?
+To:     Johan Hovold <johan@kernel.org>
+Cc:     linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 28, 2020 at 12:27 PM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Johan,
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+I have noticed you maintain a gnss receiver subsystem and according to
+the device-tree binding Documentation it looks like it supports SPI
+but I'm not seeing any code support for SPI. Am I missing something or
+would that support need to be added for use?
 
-Gr{oetje,eeting}s,
+Best regards,
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Tim
