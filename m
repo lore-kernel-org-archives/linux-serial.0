@@ -4,33 +4,33 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C921C433DB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6978DC433E0
 	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C7F522AEC
+	by mail.kernel.org (Postfix) with ESMTP id 21D2122AAE
 	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 12:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729763AbhAEMEW (ORCPT
+        id S1730007AbhAEMEL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jan 2021 07:04:22 -0500
-Received: from mx2.suse.de ([195.135.220.15]:39250 "EHLO mx2.suse.de"
+        Tue, 5 Jan 2021 07:04:11 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39242 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729977AbhAEMED (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jan 2021 07:04:03 -0500
+        id S1729974AbhAEMEE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 5 Jan 2021 07:04:04 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 7B1D7AE1C;
-        Tue,  5 Jan 2021 12:02:42 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 7EF7DADD8;
+        Tue,  5 Jan 2021 12:02:41 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 12/12] tty: drop termiox user definitions
-Date:   Tue,  5 Jan 2021 13:02:39 +0100
-Message-Id: <20210105120239.28031-12-jslaby@suse.cz>
+Subject: [PATCH 08/12] vt: drop old FONT ioctls
+Date:   Tue,  5 Jan 2021 13:02:35 +0100
+Message-Id: <20210105120239.28031-8-jslaby@suse.cz>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210105120239.28031-1-jslaby@suse.cz>
 References: <20210105120239.28031-1-jslaby@suse.cz>
@@ -40,42 +40,308 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As was concluded in a follow-up discussion of commit e0efb3168d34 (tty:
-Remove dead termiox code) [1], termiox ioctls never worked, so there is
-barely anyone using this interface. We can safely remove the user
-definitions for this never adopted interface.
+Drop support for these ioctls:
+* PIO_FONT, PIO_FONTX
+* GIO_FONT, GIO_FONTX
+* PIO_FONTRESET
 
-[1] https://lore.kernel.org/lkml/c1c9fc04-02eb-2260-195b-44c357f057c0@kernel.org/t/#u
+As was demonstrated by commit 90bfdeef83f1 (tty: make FONTX ioctl use
+the tty pointer they were actually passed), these ioctls are not used
+from userspace, as:
+1) they used to be broken (set up font on current console, not the open
+   one) and racy (before the commit above)
+2) KDFONTOP ioctl is used for years instead
+
+Note that PIO_FONTRESET is defunct on most systems as VGA_CONSOLE is set
+on them for ages. That turns on BROKEN_GRAPHICS_PROGRAMS which makes
+PIO_FONTRESET just return an error.
+
+We are removing KD_FONT_FLAG_OLD here as it was used only by these
+removed ioctls. kd.h header exists both in kernel and uapi headers, so
+we can remove the kernel one completely. Everyone includeing kd.h will
+now automatically get the uapi one.
+
+There are now unused definitions of the ioctl numbers and "struct
+consolefontdesc" in kd.h, but as it is a uapi header, I am not touching
+these.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- include/uapi/linux/termios.h | 15 ---------------
- 1 file changed, 15 deletions(-)
+ drivers/tty/vt/vt.c       |  39 +---------
+ drivers/tty/vt/vt_ioctl.c | 151 --------------------------------------
+ include/linux/kd.h        |   8 --
+ 3 files changed, 3 insertions(+), 195 deletions(-)
+ delete mode 100644 include/linux/kd.h
 
-diff --git a/include/uapi/linux/termios.h b/include/uapi/linux/termios.h
-index 33961d4e4de0..e6da9d4433d1 100644
---- a/include/uapi/linux/termios.h
-+++ b/include/uapi/linux/termios.h
-@@ -5,19 +5,4 @@
- #include <linux/types.h>
- #include <asm/termios.h>
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index fe4fedbc0386..284b07224c55 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -4583,16 +4583,8 @@ static int con_font_get(struct vc_data *vc, struct console_font_op *op)
  
--#define NFF	5
+ 	if (op->data && font.charcount > op->charcount)
+ 		rc = -ENOSPC;
+-	if (!(op->flags & KD_FONT_FLAG_OLD)) {
+-		if (font.width > op->width || font.height > op->height) 
+-			rc = -ENOSPC;
+-	} else {
+-		if (font.width != 8)
+-			rc = -EIO;
+-		else if ((op->height && font.height > op->height) ||
+-			 font.height > 32)
+-			rc = -ENOSPC;
+-	}
++	if (font.width > op->width || font.height > op->height)
++		rc = -ENOSPC;
+ 	if (rc)
+ 		goto out;
+ 
+@@ -4620,7 +4612,7 @@ static int con_font_set(struct vc_data *vc, struct console_font_op *op)
+ 		return -EINVAL;
+ 	if (op->charcount > 512)
+ 		return -EINVAL;
+-	if (op->width <= 0 || op->width > 32 || op->height > 32)
++	if (op->width <= 0 || op->width > 32 || !op->height || op->height > 32)
+ 		return -EINVAL;
+ 	size = (op->width+7)/8 * 32 * op->charcount;
+ 	if (size > max_font_size)
+@@ -4630,31 +4622,6 @@ static int con_font_set(struct vc_data *vc, struct console_font_op *op)
+ 	if (IS_ERR(font.data))
+ 		return PTR_ERR(font.data);
+ 
+-	if (!op->height) {		/* Need to guess font height [compat] */
+-		int h, i;
+-		u8 *charmap = font.data;
 -
--struct termiox
+-		/*
+-		 * If from KDFONTOP ioctl, don't allow things which can be done
+-		 * in userland,so that we can get rid of this soon
+-		 */
+-		if (!(op->flags & KD_FONT_FLAG_OLD)) {
+-			kfree(font.data);
+-			return -EINVAL;
+-		}
+-
+-		for (h = 32; h > 0; h--)
+-			for (i = 0; i < op->charcount; i++)
+-				if (charmap[32*i+h-1])
+-					goto nonzero;
+-
+-		kfree(font.data);
+-		return -EINVAL;
+-
+-	nonzero:
+-		op->height = h;
+-	}
+-
+ 	font.charcount = op->charcount;
+ 	font.width = op->width;
+ 	font.height = op->height;
+diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+index 3813c40f1b48..4a4cbd4a5f37 100644
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -484,70 +484,6 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 	return 0;
+ }
+ 
+-static inline int do_fontx_ioctl(struct vc_data *vc, int cmd,
+-		struct consolefontdesc __user *user_cfd,
+-		struct console_font_op *op)
 -{
--	__u16	x_hflag;
--	__u16	x_cflag;
--	__u16	x_rflag[NFF];
--	__u16	x_sflag;
+-	struct consolefontdesc cfdarg;
+-	int i;
+-
+-	if (copy_from_user(&cfdarg, user_cfd, sizeof(struct consolefontdesc)))
+-		return -EFAULT;
+-
+-	switch (cmd) {
+-	case PIO_FONTX:
+-		op->op = KD_FONT_OP_SET;
+-		op->flags = KD_FONT_FLAG_OLD;
+-		op->width = 8;
+-		op->height = cfdarg.charheight;
+-		op->charcount = cfdarg.charcount;
+-		op->data = cfdarg.chardata;
+-		return con_font_op(vc, op);
+-
+-	case GIO_FONTX:
+-		op->op = KD_FONT_OP_GET;
+-		op->flags = KD_FONT_FLAG_OLD;
+-		op->width = 8;
+-		op->height = cfdarg.charheight;
+-		op->charcount = cfdarg.charcount;
+-		op->data = cfdarg.chardata;
+-		i = con_font_op(vc, op);
+-		if (i)
+-			return i;
+-		cfdarg.charheight = op->height;
+-		cfdarg.charcount = op->charcount;
+-		if (copy_to_user(user_cfd, &cfdarg, sizeof(struct consolefontdesc)))
+-			return -EFAULT;
+-		return 0;
+-	}
+-	return -EINVAL;
+-}
+-
+-static int vt_io_fontreset(struct vc_data *vc, struct console_font_op *op)
+-{
+-	int ret;
+-
+-	if (__is_defined(BROKEN_GRAPHICS_PROGRAMS)) {
+-		/*
+-		 * With BROKEN_GRAPHICS_PROGRAMS defined, the default font is
+-		 * not saved.
+-		 */
+-		return -ENOSYS;
+-	}
+-
+-	op->op = KD_FONT_OP_SET_DEFAULT;
+-	op->data = NULL;
+-	ret = con_font_op(vc, op);
+-	if (ret)
+-		return ret;
+-
+-	console_lock();
+-	con_set_default_unimap(vc);
+-	console_unlock();
+-
+-	return 0;
+-}
+-
+ static inline int do_unimap_ioctl(int cmd, struct unimapdesc __user *user_ud,
+ 		bool perm, struct vc_data *vc)
+ {
+@@ -572,29 +508,7 @@ static inline int do_unimap_ioctl(int cmd, struct unimapdesc __user *user_ud,
+ static int vt_io_ioctl(struct vc_data *vc, unsigned int cmd, void __user *up,
+ 		bool perm)
+ {
+-	struct console_font_op op;	/* used in multiple places here */
+-
+ 	switch (cmd) {
+-	case PIO_FONT:
+-		if (!perm)
+-			return -EPERM;
+-		op.op = KD_FONT_OP_SET;
+-		op.flags = KD_FONT_FLAG_OLD | KD_FONT_FLAG_DONT_RECALC;	/* Compatibility */
+-		op.width = 8;
+-		op.height = 0;
+-		op.charcount = 256;
+-		op.data = up;
+-		return con_font_op(vc, &op);
+-
+-	case GIO_FONT:
+-		op.op = KD_FONT_OP_GET;
+-		op.flags = KD_FONT_FLAG_OLD;
+-		op.width = 8;
+-		op.height = 32;
+-		op.charcount = 256;
+-		op.data = up;
+-		return con_font_op(vc, &op);
+-
+ 	case PIO_CMAP:
+ 		if (!perm)
+ 			return -EPERM;
+@@ -603,20 +517,6 @@ static int vt_io_ioctl(struct vc_data *vc, unsigned int cmd, void __user *up,
+ 	case GIO_CMAP:
+ 		return con_get_cmap(up);
+ 
+-	case PIO_FONTX:
+-		if (!perm)
+-			return -EPERM;
+-
+-		fallthrough;
+-	case GIO_FONTX:
+-		return do_fontx_ioctl(vc, cmd, up, &op);
+-
+-	case PIO_FONTRESET:
+-		if (!perm)
+-			return -EPERM;
+-
+-		return vt_io_fontreset(vc, &op);
+-
+ 	case PIO_SCRNMAP:
+ 		if (!perm)
+ 			return -EPERM;
+@@ -1059,54 +959,6 @@ void vc_SAK(struct work_struct *work)
+ 
+ #ifdef CONFIG_COMPAT
+ 
+-struct compat_consolefontdesc {
+-	unsigned short charcount;       /* characters in font (256 or 512) */
+-	unsigned short charheight;      /* scan lines per character (1-32) */
+-	compat_caddr_t chardata;	/* font data in expanded form */
 -};
 -
--#define	RTSXOFF		0x0001		/* RTS flow control on input */
--#define	CTSXON		0x0002		/* CTS flow control on output */
--#define	DTRXOFF		0x0004		/* DTR flow control on input */
--#define DSRXON		0x0008		/* DCD flow control on output */
+-static inline int
+-compat_fontx_ioctl(struct vc_data *vc, int cmd,
+-		   struct compat_consolefontdesc __user *user_cfd,
+-		   int perm, struct console_font_op *op)
+-{
+-	struct compat_consolefontdesc cfdarg;
+-	int i;
 -
- #endif
+-	if (copy_from_user(&cfdarg, user_cfd, sizeof(struct compat_consolefontdesc)))
+-		return -EFAULT;
+-
+-	switch (cmd) {
+-	case PIO_FONTX:
+-		if (!perm)
+-			return -EPERM;
+-		op->op = KD_FONT_OP_SET;
+-		op->flags = KD_FONT_FLAG_OLD;
+-		op->width = 8;
+-		op->height = cfdarg.charheight;
+-		op->charcount = cfdarg.charcount;
+-		op->data = compat_ptr(cfdarg.chardata);
+-		return con_font_op(vc, op);
+-
+-	case GIO_FONTX:
+-		op->op = KD_FONT_OP_GET;
+-		op->flags = KD_FONT_FLAG_OLD;
+-		op->width = 8;
+-		op->height = cfdarg.charheight;
+-		op->charcount = cfdarg.charcount;
+-		op->data = compat_ptr(cfdarg.chardata);
+-		i = con_font_op(vc, op);
+-		if (i)
+-			return i;
+-		cfdarg.charheight = op->height;
+-		cfdarg.charcount = op->charcount;
+-		if (copy_to_user(user_cfd, &cfdarg, sizeof(struct compat_consolefontdesc)))
+-			return -EFAULT;
+-		return 0;
+-	}
+-	return -EINVAL;
+-}
+-
+ struct compat_console_font_op {
+ 	compat_uint_t op;        /* operation code KD_FONT_OP_* */
+ 	compat_uint_t flags;     /* KD_FONT_FLAG_* */
+@@ -1183,9 +1035,6 @@ long vt_compat_ioctl(struct tty_struct *tty,
+ 	/*
+ 	 * these need special handlers for incompatible data structures
+ 	 */
+-	case PIO_FONTX:
+-	case GIO_FONTX:
+-		return compat_fontx_ioctl(vc, cmd, up, perm, &op);
+ 
+ 	case KDFONTOP:
+ 		return compat_kdfontop_ioctl(up, perm, &op, vc);
+diff --git a/include/linux/kd.h b/include/linux/kd.h
+deleted file mode 100644
+index b130a18f860f..000000000000
+--- a/include/linux/kd.h
++++ /dev/null
+@@ -1,8 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _LINUX_KD_H
+-#define _LINUX_KD_H
+-
+-#include <uapi/linux/kd.h>
+-
+-#define KD_FONT_FLAG_OLD		0x80000000	/* Invoked via old interface [compat] */
+-#endif /* _LINUX_KD_H */
 -- 
 2.30.0
 
