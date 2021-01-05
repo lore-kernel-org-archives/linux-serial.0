@@ -2,143 +2,197 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10968C433DB
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 17:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73152C433E9
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 17:41:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B381022CE3
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 17:03:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 34BBA22D06
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jan 2021 17:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730327AbhAERCr (ORCPT
+        id S1730607AbhAERk5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jan 2021 12:02:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730185AbhAERCr (ORCPT
+        Tue, 5 Jan 2021 12:40:57 -0500
+Received: from mail-io1-f47.google.com ([209.85.166.47]:38559 "EHLO
+        mail-io1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729802AbhAERk4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jan 2021 12:02:47 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA6BC061574;
-        Tue,  5 Jan 2021 09:02:06 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id b73so1161584edf.13;
-        Tue, 05 Jan 2021 09:02:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nXr5ak/ayXG0mLNUO+7vuO7bjdOSjjDtr/aQD9ygt94=;
-        b=UwfxheqcSiLFAO91/TjnnIkUrkB6PT/YCmY7jZlQU1agpQXOc4Lgx0mjoaWIonFNm9
-         NwSOwSKa/6cNJBSYGuHlskmt+jsZGbOrKs42zEqMaKZngfCwrPwSmmps69qOExcTKA+r
-         HROEOg6T4QQlkx2GNhyvajHaF/YFKD0amleuLP8xL1ovnE8PaOBHg275uRsGPb8CRx6g
-         70y01GVqGmEXhGe4W1CzFvJ0z4O+216TS3lsA4HUtIDxiymtCjc8VeQNzrvia4wBw8Q6
-         LAU0gZ0Nh/FZ46C6Mnry1LONCCVo3MoTxY+dGSACqNAQoqZD4mRssNHuxksJkMI9KLH8
-         ugSQ==
+        Tue, 5 Jan 2021 12:40:56 -0500
+Received: by mail-io1-f47.google.com with SMTP id y5so121844iow.5;
+        Tue, 05 Jan 2021 09:40:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nXr5ak/ayXG0mLNUO+7vuO7bjdOSjjDtr/aQD9ygt94=;
-        b=K9wLS6P9ThjMwjUF9I9v/I/brNWErdcvRl/McYc6uGvgHKs+gZURslyraJyVybHFRV
-         25HEzxgv3INILImmuooV1zE49SN6tBrJuB8MuMmgjs0JG+NsY4g3y6qCWfYkptCpL5R8
-         oueE+EwL1BiV27N0hXh1Yo0ANdhw93r16GJZs0ZuOt6jh1XifFLi2ylcZ5MTNJlfi2zD
-         kvIAk0LGnjZczduIDB+ccme+hITNagcq+Q4yv62E0EClgzI0hSxXCKPWLoz6w5x7qgH9
-         uNtG8iJ0tjLRXIalpZ39rQ7NAm5pyDfMs62ZbHMiUfIJmWVrqip0wXkWt7SrcdTQP9IU
-         PTMg==
-X-Gm-Message-State: AOAM531WHFu7OHXovtIfVsgVZlyK7AEXKb5/FsSO47SQn2MKKmtFYYcG
-        T7C7ZvXqPcTTI+39VzT0qek=
-X-Google-Smtp-Source: ABdhPJxTHWpX5TO4IyFPB3yzCKjStI6pzZednGNDFCMMLEcZkJn1sMxbR0ie6QI0LnZd5NB+IZyBmA==
-X-Received: by 2002:a50:8a90:: with SMTP id j16mr687135edj.334.1609866125260;
-        Tue, 05 Jan 2021 09:02:05 -0800 (PST)
-Received: from localhost.localdomain ([188.24.159.61])
-        by smtp.gmail.com with ESMTPSA id u2sm99711ejb.65.2021.01.05.09.02.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8QCUqXr2bzGc5ddkxZAj8Vxc5oTvsGwo9juSuaK/DNc=;
+        b=dpiv0CpJakEgMYIkHp0lhaNf0d461HGJWH+aCceAtiK06rRDsTcTMmlKY49hvYeBLh
+         7Ty71HBKHYeiO7tR4vDt/nbyfS3So6W770LrQdh92+7tJttY7v6bNEPz9K6DyPt4FMLd
+         PIt1LLKtkEtRi0UIF/SrTqyc8+lLr/NyjHzBXZIkwKKYOWTnsle1FsD/3tdAJzYQHLJ8
+         5Wa4nrxHRmF4wbzaj7iiS8vhXcoFeE1qz694yyOGkLCUx5hT7HoR59vm5/MhqoPl6WyI
+         nwHivuhmthkX8gk5c3+LEXbUBtsKZCYBaNRO66SiQA1AkHaiy4ksJgdTlgLtAmm1z8Vq
+         VM5g==
+X-Gm-Message-State: AOAM5321qcVRq9N6s7VVvE3mTC6HsP7wLE0n3Y4SZ+nWozJ+Mbu4gJm/
+        A2rP/pRkkVNdQnfCttBO7A==
+X-Google-Smtp-Source: ABdhPJxCW42aLPbGC5oVtd7TRg3rkrFk+Qrm1SC6TjLARKSfiB9JNiyQ7YL2gLDjCHBjUScpozxZgA==
+X-Received: by 2002:a02:7692:: with SMTP id z140mr666018jab.21.1609868414264;
+        Tue, 05 Jan 2021 09:40:14 -0800 (PST)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id y15sm121208ili.65.2021.01.05.09.40.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jan 2021 09:02:04 -0800 (PST)
-From:   Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/1] tty: serial: owl: Add support for kernel debugger
-Date:   Tue,  5 Jan 2021 19:02:02 +0200
-Message-Id: <036c09732183a30eaab230884114f65ca42ca3b9.1609865007.git.cristian.ciocaltea@gmail.com>
-X-Mailer: git-send-email 2.30.0
+        Tue, 05 Jan 2021 09:40:13 -0800 (PST)
+Received: (nullmailer pid 426116 invoked by uid 1000);
+        Tue, 05 Jan 2021 17:40:08 -0000
+Date:   Tue, 5 Jan 2021 10:40:08 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>, Stephen Boyd <sboyd@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-ide@vger.kernel.org,
+        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Add missing array size constraints
+Message-ID: <20210105174008.GB1875909@robh.at.kernel.org>
+References: <20210104230253.2805217-1-robh@kernel.org>
+ <X/RjziK30y56uZUj@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <X/RjziK30y56uZUj@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Implement 'poll_put_char' and 'poll_get_char' callbacks in struct
-'owl_uart_ops' that enables OWL UART to be used for kernel debugging
-over serial line.
+On Tue, Jan 05, 2021 at 02:04:14PM +0100, Greg Kroah-Hartman wrote:
+> On Mon, Jan 04, 2021 at 04:02:53PM -0700, Rob Herring wrote:
+> > DT properties which can have multiple entries need to specify what the
+> > entries are and define how many entries there can be. In the case of
+> > only a single entry, just 'maxItems: 1' is sufficient.
+> > 
+> > Add the missing entry constraints. These were found with a modified
+> > meta-schema. Unfortunately, there are a few cases where the size
+> > constraints are not defined such as common bindings, so the meta-schema
+> > can't be part of the normal checks.
+> > 
+> > Cc: Jens Axboe <axboe@kernel.dk>
+> > Cc: Stephen Boyd <sboyd@kernel.org>
+> > Cc: Thierry Reding <thierry.reding@gmail.com>
+> > Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
+> > Cc: Chanwoo Choi <cw00.choi@samsung.com>
+> > Cc: Linus Walleij <linus.walleij@linaro.org>
+> > Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > Cc: Marc Zyngier <maz@kernel.org>
+> > Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> > Cc: Chen-Yu Tsai <wens@csie.org>
+> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Sebastian Reichel <sre@kernel.org>
+> > Cc: Ohad Ben-Cohen <ohad@wizery.com>
+> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> 
+> <snip>
+> 
+> > diff --git a/Documentation/devicetree/bindings/usb/generic-ehci.yaml b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
+> > index 247ef00381ea..f76b25f7fc7a 100644
+> > --- a/Documentation/devicetree/bindings/usb/generic-ehci.yaml
+> > +++ b/Documentation/devicetree/bindings/usb/generic-ehci.yaml
+> > @@ -83,6 +83,7 @@ properties:
+> >        Phandle of a companion.
+> >  
+> >    phys:
+> > +    maxItems: 1
+> >      description: PHY specifier for the USB PHY
+> >  
+> >    phy-names:
+> > diff --git a/Documentation/devicetree/bindings/usb/generic-ohci.yaml b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
+> > index 2178bcc401bc..8e2bd61f2075 100644
+> > --- a/Documentation/devicetree/bindings/usb/generic-ohci.yaml
+> > +++ b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
+> > @@ -71,6 +71,7 @@ properties:
+> >        Overrides the detected port count
+> >  
+> >    phys:
+> > +    maxItems: 1
+> >      description: PHY specifier for the USB PHY
+> >  
+> >    phy-names:
+> > diff --git a/Documentation/devicetree/bindings/usb/ingenic,musb.yaml b/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
+> > index 678396eeeb78..f506225a4d57 100644
+> > --- a/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
+> > +++ b/Documentation/devicetree/bindings/usb/ingenic,musb.yaml
+> > @@ -40,7 +40,7 @@ properties:
+> >        - const: mc
+> >  
+> >    phys:
+> > -    description: PHY specifier for the USB PHY
+> > +    maxItems: 1
+> >  
+> >    usb-role-switch:
+> >      type: boolean
+> 
+> Any reason you dropped the description for this entry, but not the other
+> ones above?
 
-Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
----
-Changes in v2:
- - Reverted unnecessary changes per Andreas feedback
- - Optimized implementation for 'owl_uart_poll_get_char()'
-   and 'owl_uart_poll_put_char()' callbacks
+No, I should have dropped those too. I dropped cases of genericish 
+descriptions on common properties. There's nothing specific to this 
+binding here really.
 
- drivers/tty/serial/owl-uart.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+> 
+> > diff --git a/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml b/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
+> > index 388245b91a55..adce36e48bc9 100644
+> > --- a/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
+> > +++ b/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
+> > @@ -15,13 +15,14 @@ properties:
+> >        - const: ti,j721e-usb
+> >  
+> >    reg:
+> > -    description: module registers
+> > +    maxItems: 1
+> >  
+> >    power-domains:
+> >      description:
+> >        PM domain provider node and an args specifier containing
+> >        the USB device id value. See,
+> >        Documentation/devicetree/bindings/soc/ti/sci-pm-domain.txt
+> > +    maxItems: 1
+> >  
+> >    clocks:
+> >      description: Clock phandles to usb2_refclk and lpm_clk
+> 
+> Same here, why remove the description?
 
-diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-index c149f8c30007..54b24669ebc5 100644
---- a/drivers/tty/serial/owl-uart.c
-+++ b/drivers/tty/serial/owl-uart.c
-@@ -12,6 +12,7 @@
- #include <linux/console.h>
- #include <linux/delay.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-@@ -461,6 +462,26 @@ static void owl_uart_config_port(struct uart_port *port, int flags)
- 	}
- }
- 
-+#ifdef CONFIG_CONSOLE_POLL
-+
-+static int owl_uart_poll_get_char(struct uart_port *port)
-+{
-+	if (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_RFEM)
-+		return NO_POLL_CHAR;
-+
-+	return owl_uart_read(port, OWL_UART_RXDAT);
-+}
-+
-+static void owl_uart_poll_put_char(struct uart_port *port, unsigned char ch)
-+{
-+	while (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TFFU)
-+		cpu_relax();
-+
-+	owl_uart_write(port, ch, OWL_UART_TXDAT);
-+}
-+
-+#endif /* CONFIG_CONSOLE_POLL */
-+
- static const struct uart_ops owl_uart_ops = {
- 	.set_mctrl = owl_uart_set_mctrl,
- 	.get_mctrl = owl_uart_get_mctrl,
-@@ -476,6 +497,10 @@ static const struct uart_ops owl_uart_ops = {
- 	.request_port = owl_uart_request_port,
- 	.release_port = owl_uart_release_port,
- 	.verify_port = owl_uart_verify_port,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_get_char = owl_uart_poll_get_char,
-+	.poll_put_char = owl_uart_poll_put_char,
-+#endif
- };
- 
- #ifdef CONFIG_SERIAL_OWL_CONSOLE
--- 
-2.30.0
+Really, the question is why keep 'description' on power-domains. Perhaps 
+there's a little value in the reference to sci-pm-domain.txt, so I left 
+it.
 
+Rob
