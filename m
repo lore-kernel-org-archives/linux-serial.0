@@ -2,104 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65129C433DB
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Jan 2021 16:25:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC65C43381
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Jan 2021 18:18:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 36FBE2312E
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Jan 2021 16:25:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D3F8323136
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Jan 2021 18:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727176AbhAFQZC (ORCPT
+        id S1726701AbhAFSS3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Jan 2021 11:25:02 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:32812 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726251AbhAFQZC (ORCPT
+        Wed, 6 Jan 2021 13:18:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725789AbhAFSS2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Jan 2021 11:25:02 -0500
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 106GH6AZ010869;
-        Wed, 6 Jan 2021 17:24:13 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=n+cExBFo80dtEPZ2+yAMwXdepDZXx0+zmtl1xFWwJnM=;
- b=aHhR4lkXe9JZEAA/0JlKnNlJCp2BLrto/tgE+TAZ7iPtpHtTWly9y175IK4E9R7q9bkS
- 5lbyAXR1iIHsIHWrYBjuyyVgQ5uGtN+jDiTPSByrm86pIn2kbzOk2JsNptUxlcQ7NQ19
- 7vKN8+dkXTYjZknSuHi5Hg7ZcOnLOqeP3HW+P3h4KsC5X9hH4p2T14Z86QlioXUmHdqT
- V7t1gFmtBxgVlF6Lfk4Ss3N9edJ6IpL1U+4RujrdVz+xWsmnlDKytMzEInqnLJ5aH3Xk
- +drhesenuYHU4ut6a7dUxLfSk+fpmYRcIAdlDhnP2l7ZFoXoqR+f22hs6i+e9PTjM51N GA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 35th25us11-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Jan 2021 17:24:13 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AC4A110002A;
-        Wed,  6 Jan 2021 17:24:12 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9F0652417A8;
-        Wed,  6 Jan 2021 17:24:12 +0100 (CET)
-Received: from localhost (10.75.127.48) by SFHDAG2NODE3.st.com (10.75.127.6)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 6 Jan 2021 17:24:12
- +0100
-From:   Erwan Le Ray <erwan.leray@foss.st.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>
-Subject: [PATCH v2 8/8] serial: stm32: update transmission complete error message in shutdown
-Date:   Wed, 6 Jan 2021 17:22:03 +0100
-Message-ID: <20210106162203.28854-9-erwan.leray@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210106162203.28854-1-erwan.leray@foss.st.com>
-References: <20210106162203.28854-1-erwan.leray@foss.st.com>
+        Wed, 6 Jan 2021 13:18:28 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDC1C061575;
+        Wed,  6 Jan 2021 10:17:48 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id b26so8604119lff.9;
+        Wed, 06 Jan 2021 10:17:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HYWLWTmJNILkmHihZoZqMnAVOHO5Z+JPD1TRn5rR9L8=;
+        b=GYiaiaGEtT4BPqTlK0KXvA/lu341yArrXOfwIqhkoVUJgJS2obaAQT2iqcnRMLlEj2
+         86dYKLxag/6o7FFGTh1Vt5TIkPdSdG+zPtevOxa7j54gud87De0pnPPNNbmeyzFcKIe1
+         4YIh5yiiCYo2x6drTLogG5BS1FtgZ7nId5Q/AwMgojxtj5XPEyq3STR1fkLiu+XesnUc
+         QU5ia5w8dG/71l1Z55HnJQmRQInADBb1sNl7x6aeuUT/y6q1BPYSDCvgpmBhWeM+Z+mh
+         AXVxDGWhMUV9j3VOAFcsUFiIntWY+dOOFoXQpYyyfUUEdyjbQguMaGGbtpj5p1vrw984
+         ODXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HYWLWTmJNILkmHihZoZqMnAVOHO5Z+JPD1TRn5rR9L8=;
+        b=gUHBZ8U2efQmGA2O1aY6esLBhZl22SEnXW8Fg6IvFjlC6YPcI6t4svX7qrsllTpKY2
+         qnqBhZHo9dzi7Ik0Na8bh5zb9ngAq7jr9blVbuTAFs/XjqypBbdvPyMehnhMrUvuYjc2
+         7w+AKcDQhk69mFYiwD7Eixso8A68MAROJ4XwUC99aO7jA1eApLZOGYODtcvsU6grjkUX
+         H5gfZmIvNCgFu7rq9TL2ay0hnjzMQ+M/idp4lEwYrYwlpAuUe6Y1zpD312uSDwdQWg2p
+         VZnSUJUCEgj+QJCly0ojIyZeywW5CFSp29LVpDN6Rg6fKmmHf3tSGqcRl0ePd8BhhuQ6
+         eiyg==
+X-Gm-Message-State: AOAM531UAHmQL5aOHOBQbGkx5C0zo0uWUwMB5HTWi2i0fvlFY/fbiVkB
+        NqZO05oBgz0pc6OV8rZGinuEvNvNm+A=
+X-Google-Smtp-Source: ABdhPJyPxFIsokqex0tU1bZCyssoNhQcXmbMg7xmBfVSnpJHRzc1xaOuhg1qqDeBQDzHj7VlWoc+4Q==
+X-Received: by 2002:a19:2358:: with SMTP id j85mr2490159lfj.264.1609957066448;
+        Wed, 06 Jan 2021 10:17:46 -0800 (PST)
+Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
+        by smtp.googlemail.com with ESMTPSA id q7sm556364ljp.77.2021.01.06.10.17.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jan 2021 10:17:45 -0800 (PST)
+Subject: Re: [PATCH 26/31] PM / devfreq: tegra30: convert to use devm_pm_opp_*
+ API
+To:     cwchoi00@gmail.com, Yangtao Li <tiny.windzz@gmail.com>
+Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>, yuq825@gmail.com,
+        David Airlie <airlied@linux.ie>, daniel@ffwll.ch,
+        robdclark@gmail.com, sean@poorly.run,
+        Rob Herring <robh@kernel.org>, tomeu.vizoso@collabora.com,
+        steven.price@arm.com, alyssa.rosenzweig@collabora.com,
+        stanimir.varbanov@linaro.org, agross@kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        mchehab@kernel.org, Lukasz Luba <lukasz.luba@arm.com>,
+        adrian.hunter@intel.com, Ulf Hansson <ulf.hansson@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>, jcrouse@codeaurora.org,
+        hoegsberg@google.com, eric@anholt.net, tzimmermann@suse.de,
+        marijn.suijten@somainline.org, gustavoars@kernel.org,
+        emil.velikov@collabora.com, jonathan@marek.ca,
+        akhilpo@codeaurora.org, smasetty@codeaurora.org,
+        airlied@redhat.com, masneyb@onstation.org, kalyan_t@codeaurora.org,
+        tanmay@codeaurora.org, ddavenport@chromium.org,
+        jsanka@codeaurora.org, rnayak@codeaurora.org,
+        tongtiangen@huawei.com, miaoqinglang@huawei.com,
+        khsieh@codeaurora.org, abhinavk@codeaurora.org,
+        chandanu@codeaurora.org, Guenter Roeck <groeck@chromium.org>,
+        varar@codeaurora.org, Matthias Kaehlcke <mka@chromium.org>,
+        harigovi@codeaurora.org, rikard.falkeborn@gmail.com,
+        natechancellor@gmail.com, Georgi Djakov <georgi.djakov@linaro.org>,
+        akashast@codeaurora.org, parashar@codeaurora.org,
+        Doug Anderson <dianders@chromium.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-tegra@vger.kernel.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        lima@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20210103035445.23696-1-tiny.windzz@gmail.com>
+ <CAGTfZH0sLh=8XhBVOzUr9qO2w_=jp-OuWoh5vgNpnmXq6EzYHA@mail.gmail.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <e49d60f3-f753-6679-7148-f7ea72973197@gmail.com>
+Date:   Wed, 6 Jan 2021 21:17:42 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG1NODE2.st.com (10.75.127.2) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-06_09:2021-01-06,2021-01-06 signatures=0
+In-Reply-To: <CAGTfZH0sLh=8XhBVOzUr9qO2w_=jp-OuWoh5vgNpnmXq6EzYHA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The transmission complete error message provides the status of the
-ISR_USART_TC bit. This bit, when set, indicates that the transmission
-has not been completed.
-The bit status indication is not a very understandable information.
-The error message sent on console should indicate that the transmission is
-not complete, instead of providing USART_TC bit status.
-Update the error message and add a comment for better understanding.
+05.01.2021 06:47, Chanwoo Choi пишет:
+> You might remove the 'devm_pm_opp_remove_all_dynamic(&pdev->dev)
+> under ' remove_opp' goto statement.kkkk
 
-Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
-
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 9d73f6976586..6a9a5ef5f5ba 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -687,8 +687,9 @@ static void stm32_usart_shutdown(struct uart_port *port)
- 					 isr, (isr & USART_SR_TC),
- 					 10, 100000);
- 
-+	/* Send the TC error message only when ISR_TC is not set */
- 	if (ret)
--		dev_err(port->dev, "transmission complete not set\n");
-+		dev_err(port->dev, "Transmission is not complete\n");
- 
- 	stm32_usart_clr_bits(port, ofs->cr1, val);
- 
--- 
-2.17.1
-
+Good catch, thank you.
