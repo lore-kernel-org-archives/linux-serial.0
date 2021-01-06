@@ -2,130 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC65C43381
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Jan 2021 18:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 229D6C4332E
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Jan 2021 20:17:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D3F8323136
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Jan 2021 18:18:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE00A2313F
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Jan 2021 20:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbhAFSS3 (ORCPT
+        id S1727330AbhAFURz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Jan 2021 13:18:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
+        Wed, 6 Jan 2021 15:17:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725789AbhAFSS2 (ORCPT
+        with ESMTP id S1726963AbhAFURy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Jan 2021 13:18:28 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDC1C061575;
-        Wed,  6 Jan 2021 10:17:48 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id b26so8604119lff.9;
-        Wed, 06 Jan 2021 10:17:48 -0800 (PST)
+        Wed, 6 Jan 2021 15:17:54 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EECFC06134C
+        for <linux-serial@vger.kernel.org>; Wed,  6 Jan 2021 12:17:13 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id jx16so6687455ejb.10
+        for <linux-serial@vger.kernel.org>; Wed, 06 Jan 2021 12:17:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HYWLWTmJNILkmHihZoZqMnAVOHO5Z+JPD1TRn5rR9L8=;
-        b=GYiaiaGEtT4BPqTlK0KXvA/lu341yArrXOfwIqhkoVUJgJS2obaAQT2iqcnRMLlEj2
-         86dYKLxag/6o7FFGTh1Vt5TIkPdSdG+zPtevOxa7j54gud87De0pnPPNNbmeyzFcKIe1
-         4YIh5yiiCYo2x6drTLogG5BS1FtgZ7nId5Q/AwMgojxtj5XPEyq3STR1fkLiu+XesnUc
-         QU5ia5w8dG/71l1Z55HnJQmRQInADBb1sNl7x6aeuUT/y6q1BPYSDCvgpmBhWeM+Z+mh
-         AXVxDGWhMUV9j3VOAFcsUFiIntWY+dOOFoXQpYyyfUUEdyjbQguMaGGbtpj5p1vrw984
-         ODXA==
+        d=gateworks-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/LXigFpPNOCeOqHnGy6mQiQq0ybJHedQswcmkfdAhmQ=;
+        b=eHMqPJyrc7py5Tjh67Tr30SRYf+31s4cEkTv6+CXFfZ+afA+qwUYaLAiLwICN2DQpz
+         yhgzDSuYuv0QMZYyogVRQ0NHCbLeL2Wm5b//IqHZ3sU/QjkQNDprtmLOf2xItQGhagsj
+         yTMh+QH+BzinSF/ORXnBfiAkC9DdpBOithl7vuTDAfhy/zmyowyEFvX5vSPYEXfEHjh8
+         uZ8KRDXSetai0ywfqk+PsllVnK9l6OKkQte8NQsVbCEKZv2UdnfxGWy0Cpykdu0C27Xj
+         2SgIsDtOHnU2PCEWKQqfxgSV7CVU44k2CP+w+bNwZtUBOrddsWnREyvJz56R2icLMFoF
+         qhFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HYWLWTmJNILkmHihZoZqMnAVOHO5Z+JPD1TRn5rR9L8=;
-        b=gUHBZ8U2efQmGA2O1aY6esLBhZl22SEnXW8Fg6IvFjlC6YPcI6t4svX7qrsllTpKY2
-         qnqBhZHo9dzi7Ik0Na8bh5zb9ngAq7jr9blVbuTAFs/XjqypBbdvPyMehnhMrUvuYjc2
-         7w+AKcDQhk69mFYiwD7Eixso8A68MAROJ4XwUC99aO7jA1eApLZOGYODtcvsU6grjkUX
-         H5gfZmIvNCgFu7rq9TL2ay0hnjzMQ+M/idp4lEwYrYwlpAuUe6Y1zpD312uSDwdQWg2p
-         VZnSUJUCEgj+QJCly0ojIyZeywW5CFSp29LVpDN6Rg6fKmmHf3tSGqcRl0ePd8BhhuQ6
-         eiyg==
-X-Gm-Message-State: AOAM531UAHmQL5aOHOBQbGkx5C0zo0uWUwMB5HTWi2i0fvlFY/fbiVkB
-        NqZO05oBgz0pc6OV8rZGinuEvNvNm+A=
-X-Google-Smtp-Source: ABdhPJyPxFIsokqex0tU1bZCyssoNhQcXmbMg7xmBfVSnpJHRzc1xaOuhg1qqDeBQDzHj7VlWoc+4Q==
-X-Received: by 2002:a19:2358:: with SMTP id j85mr2490159lfj.264.1609957066448;
-        Wed, 06 Jan 2021 10:17:46 -0800 (PST)
-Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
-        by smtp.googlemail.com with ESMTPSA id q7sm556364ljp.77.2021.01.06.10.17.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 10:17:45 -0800 (PST)
-Subject: Re: [PATCH 26/31] PM / devfreq: tegra30: convert to use devm_pm_opp_*
- API
-To:     cwchoi00@gmail.com, Yangtao Li <tiny.windzz@gmail.com>
-Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>, yuq825@gmail.com,
-        David Airlie <airlied@linux.ie>, daniel@ffwll.ch,
-        robdclark@gmail.com, sean@poorly.run,
-        Rob Herring <robh@kernel.org>, tomeu.vizoso@collabora.com,
-        steven.price@arm.com, alyssa.rosenzweig@collabora.com,
-        stanimir.varbanov@linaro.org, agross@kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        mchehab@kernel.org, Lukasz Luba <lukasz.luba@arm.com>,
-        adrian.hunter@intel.com, Ulf Hansson <ulf.hansson@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, jcrouse@codeaurora.org,
-        hoegsberg@google.com, eric@anholt.net, tzimmermann@suse.de,
-        marijn.suijten@somainline.org, gustavoars@kernel.org,
-        emil.velikov@collabora.com, jonathan@marek.ca,
-        akhilpo@codeaurora.org, smasetty@codeaurora.org,
-        airlied@redhat.com, masneyb@onstation.org, kalyan_t@codeaurora.org,
-        tanmay@codeaurora.org, ddavenport@chromium.org,
-        jsanka@codeaurora.org, rnayak@codeaurora.org,
-        tongtiangen@huawei.com, miaoqinglang@huawei.com,
-        khsieh@codeaurora.org, abhinavk@codeaurora.org,
-        chandanu@codeaurora.org, Guenter Roeck <groeck@chromium.org>,
-        varar@codeaurora.org, Matthias Kaehlcke <mka@chromium.org>,
-        harigovi@codeaurora.org, rikard.falkeborn@gmail.com,
-        natechancellor@gmail.com, Georgi Djakov <georgi.djakov@linaro.org>,
-        akashast@codeaurora.org, parashar@codeaurora.org,
-        Doug Anderson <dianders@chromium.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-tegra@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        lima@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20210103035445.23696-1-tiny.windzz@gmail.com>
- <CAGTfZH0sLh=8XhBVOzUr9qO2w_=jp-OuWoh5vgNpnmXq6EzYHA@mail.gmail.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <e49d60f3-f753-6679-7148-f7ea72973197@gmail.com>
-Date:   Wed, 6 Jan 2021 21:17:42 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/LXigFpPNOCeOqHnGy6mQiQq0ybJHedQswcmkfdAhmQ=;
+        b=LFNhmEZMocDqw9NiMdSpYTcK1dY4l3eDiNWk7DNJ4k7AC3wkm3IEE0ld3GAXZSVsaE
+         O5k47n7P4bDZWEQhe5ZqCRdVKzGE/7Gfsv/xK34S2BMnLSgHzGGAYOd88x+r7/Fwe45V
+         uK5BfCOpndjEaZekJluCN1YAxnI4KxXtqizRv3xsHNcegFwAqEhQU2fUdKvmtumhUTWW
+         1dyZvYpqu9X+arXM9oI/uyML0R7qK7u3iiQy2Ydxy9FFCVOKEyIq2vpNH76mFQ+IJ66q
+         umg3FSss3lpf19A4YquWgtM8ekjJhjNjHLiG593JiHtAgUTqd97Zsym6GXShxsOn8qAR
+         q98g==
+X-Gm-Message-State: AOAM533zD/+iqqFeK8bRwezG3PfntDUcy52tRTf2eJz3Ia5o7DuFkQhc
+        pvZGPXIoBGduh9TwCtz8puNl6PgTkUq1DcMzUjO3xg==
+X-Google-Smtp-Source: ABdhPJw3btoGzIXnkKpV6UbQEtZs4ktrsUYZkwUTams7nFpWW/etLT7hvyrfxDbluFAJ/SLMgMSOZ7/z33yocuNFrZc=
+X-Received: by 2002:a17:906:2b50:: with SMTP id b16mr3877909ejg.255.1609964232355;
+ Wed, 06 Jan 2021 12:17:12 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAGTfZH0sLh=8XhBVOzUr9qO2w_=jp-OuWoh5vgNpnmXq6EzYHA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CAJ+vNU1XJCisZWpr-huf5gt3V592gz8kX+VHga58iM-Kx+h5=Q@mail.gmail.com>
+ <X/WdJ6WEWtK1zix+@hovoldconsulting.com>
+In-Reply-To: <X/WdJ6WEWtK1zix+@hovoldconsulting.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Wed, 6 Jan 2021 12:17:01 -0800
+Message-ID: <CAJ+vNU3WyXT5ozp1mc2EnxHrPGxzEGy8Tt1sNVLV+5WSfeAA+w@mail.gmail.com>
+Subject: Re: Linux gnss driver SPI support?
+To:     Johan Hovold <johan@kernel.org>
+Cc:     linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-05.01.2021 06:47, Chanwoo Choi пишет:
-> You might remove the 'devm_pm_opp_remove_all_dynamic(&pdev->dev)
-> under ' remove_opp' goto statement.kkkk
+On Wed, Jan 6, 2021 at 3:21 AM Johan Hovold <johan@kernel.org> wrote:
+>
+> On Tue, Jan 05, 2021 at 10:23:43AM -0800, Tim Harvey wrote:
+> > Johan,
+> >
+> > I have noticed you maintain a gnss receiver subsystem and according to
+> > the device-tree binding Documentation it looks like it supports SPI
+> > but I'm not seeing any code support for SPI. Am I missing something or
+> > would that support need to be added for use?
+>
+> Correct, there are currently no drivers supporting SPI and hence no
+> shared implementation either like there is for UART interfaces.
+>
+> The driver for your device would need to handle the SPI bits itself for
+> now. What kind of device is it?
 
-Good catch, thank you.
+Johan,
+
+It is the u-blox ZOE-M8Q which has a UART as well as SPI/I2C/SQI
+interface. The particular board design we are working on is
+unfortunately out of UART's which is why we were looking at connecting
+it via SPI.
+
+I did come across a posting about this [1] which uses a userspace app
+that creates a spy to pty bridge but it seems like they ran into some
+performance/latency issues.
+
+Tim
+[1] https://portal.u-blox.com/s/question/0D52p00008jOh43CAC/using-neo-m8p-over-spi-as-a-high-accuracy-time-source-with-chrony
