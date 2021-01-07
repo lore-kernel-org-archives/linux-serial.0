@@ -2,144 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9411C43333
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Jan 2021 09:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B567C433E0
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Jan 2021 15:14:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A26F2333D
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Jan 2021 09:11:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4FB18233F8
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Jan 2021 15:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727273AbhAGJLp (ORCPT
+        id S1726165AbhAGPOe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Jan 2021 04:11:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727156AbhAGJLp (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Jan 2021 04:11:45 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C8BC0612A1
-        for <linux-serial@vger.kernel.org>; Thu,  7 Jan 2021 01:10:20 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id a12so12948623lfl.6
-        for <linux-serial@vger.kernel.org>; Thu, 07 Jan 2021 01:10:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T+iZKNW1gmpT+HQqIiqmRRpQMcaG8pgogUVWa/pKYOM=;
-        b=cyz7QwbTfHcC+qnorIFVkv7DnbL/oyA5L+VJJAN8XWkNMg42oKdig8X5tU4xa7X7pN
-         01zspKzmEcVvu5fY2nzlSr3geA/q2812tr8Wz0sUieGMHhvg1aGrsz+m0J4b8Wmr2jr4
-         Bxuqd5E5gXQb8ARkFssKYAOK0W62M412pmNUBd9NwRQD04zf23syAxjzcLmFBod8VeLt
-         Wkczn2W4OJkxg0o6mQ3tRUOpKTABRCCUpHtxAiPQFjxJEJCf/WQ1QzYZHEZTgGgMtnu2
-         jNC0bNdR63+2S3cfHE4fDoxHLsYIWb3l6Ja+q5Vt8aM4kBs1TbyhYMIEDY91gB4GZfH3
-         2CvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T+iZKNW1gmpT+HQqIiqmRRpQMcaG8pgogUVWa/pKYOM=;
-        b=g52WNQ/pf3dPMIOIW3SH/Di+pZc16XiWFAafyGaPK0eSMieu3uOop3MrVm11nIiSek
-         Box6vrShlCvWxE9Gjqz1D0UAHsMqTTbKQfv/RKQ6WJ9j83W2/VxFIIZz14n48FQ6GkrW
-         SxXFn0w/Yy5dFb5dUQ65RahFSbPNv1OY+YDsaOy44qMtLgUXmqDcwb11qXnGcaP49/Ux
-         eOR3uCImL6Mm+2Txn0F7/U6yRYkvCT3ctqIh2QEJC8627A+90l+JmdZ9pypQHPxt+ysx
-         A8AQoXzmTFmTtlxPHI+9ck+Z5eJhtZ6S3mCgCe80Yi2gdTYA/T6wv3zKZb9R/dODV0nM
-         gQ1A==
-X-Gm-Message-State: AOAM532E2B9t7TP7PHmbSOiB6VVtJ98/Yt7K1ygnqN4en1fPav0P28d1
-        DgsyW3NKzOHX0R1KOdRbiEBT+SZJQi29eiAsJrXhxg==
-X-Google-Smtp-Source: ABdhPJz6FNuZKYGADUxlk9Tv8Rh/lJVu/2CmZBJO3UIrMaB/edLmB9ZlsVBcuBoQ7GbjgHsRrGXCE/gOnIldpK4OwK0=
-X-Received: by 2002:a19:495d:: with SMTP id l29mr3392190lfj.465.1610010618615;
- Thu, 07 Jan 2021 01:10:18 -0800 (PST)
+        Thu, 7 Jan 2021 10:14:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57860 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725965AbhAGPOe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 7 Jan 2021 10:14:34 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 49031233F6;
+        Thu,  7 Jan 2021 15:13:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1610032433;
+        bh=hmkOGG92RRXz7BEJQDKw/xkmVnvkEqfCdqeGjl3cgXo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OSV8G/ovhjz9X/mQ56knTN11DMny8iGIhwgClAXYJ07eTiBpvwk5vjNe+dYFptWUN
+         AQjdung1lB/Hc3A/4Un6w0Dp42q9W67J3HhXjSF0LICBCu4K+mfKVkR3n30SqHD2e5
+         MheqXezXD1ea9GI54LfTPL213drm5B6u1Z9yU8IA=
+Date:   Thu, 7 Jan 2021 16:15:13 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     zhangqiumiao1@huawei.com
+Cc:     jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] tty: make pl011 serial port driver support 485 mode
+Message-ID: <X/clgcNQJXN72Ys/@kroah.com>
+References: <1610000201-4117-1-git-send-email-zhangqiumiao1@huawei.com>
 MIME-Version: 1.0
-References: <20210104230253.2805217-1-robh@kernel.org>
-In-Reply-To: <20210104230253.2805217-1-robh@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 7 Jan 2021 10:10:07 +0100
-Message-ID: <CACRpkdZVC8RE-DTes+p6g-1EAHxQWpu2u+sBCX2ei32cvaCrDA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Add missing array size constraints
-To:     Rob Herring <robh@kernel.org>
-Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, Stephen Boyd <sboyd@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>, linux-clk <linux-clk@vger.kernel.org>,
-        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Input <linux-input@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
-        <alsa-devel@alsa-project.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-usb <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1610000201-4117-1-git-send-email-zhangqiumiao1@huawei.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 5, 2021 at 12:03 AM Rob Herring <robh@kernel.org> wrote:
+On Thu, Jan 07, 2021 at 02:16:41PM +0800, zhangqiumiao1@huawei.com wrote:
+> From: Qiumiao Zhang <zhangqiumiao1@huawei.com>
+> 
+> make pl011 serial port support 485 mode full duplex communication
+> 
+> Signed-off-by: Qiumiao Zhang <zhangqiumiao1@huawei.com>
+> ---
+> Changes in v2:
+>  - Fix two compilation errors
 
-> DT properties which can have multiple entries need to specify what the
-> entries are and define how many entries there can be. In the case of
-> only a single entry, just 'maxItems: 1' is sufficient.
->
-> Add the missing entry constraints. These were found with a modified
-> meta-schema. Unfortunately, there are a few cases where the size
-> constraints are not defined such as common bindings, so the meta-schema
-> can't be part of the normal checks.
->
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: MyungJoo Ham <myungjoo.ham@samsung.com>
-> Cc: Chanwoo Choi <cw00.choi@samsung.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Rob Herring <robh@kernel.org>
+What changed from the version you sent yesterday with this same subject
+line?
 
-This is good. The stricter the better.
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+>  drivers/tty/serial/amba-pl011.c | 38 +++++++++++++++++++++++++++++++++
+>  1 file changed, 38 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index c255476cce28..f6a7fe61e699 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -44,6 +44,7 @@
+> 
+>  #include "amba-pl011.h"
+> 
+> +#define ISEMPTY			1
+>  #define UART_NR			14
+> 
+>  #define SERIAL_AMBA_MAJOR	204
+> @@ -1284,14 +1285,33 @@ static inline bool pl011_dma_rx_running(struct uart_amba_port *uap)
+>  #define pl011_dma_flush_buffer	NULL
+>  #endif
+> 
+> +static unsigned int pl011_tx_empty(struct uart_port *port);
+> +
+>  static void pl011_stop_tx(struct uart_port *port)
+>  {
+> +	unsigned int cr;
+> +	unsigned int result;
 
-Yours,
-Linus Walleij
+But below the uap definition please, like kernel style normally is.
+
+>  	struct uart_amba_port *uap =
+>  	    container_of(port, struct uart_amba_port, port);
+> 
+>  	uap->im &= ~UART011_TXIM;
+>  	pl011_write(uap->im, uap, REG_IMSC);
+>  	pl011_dma_tx_stop(uap);
+> +	if (port->rs485.flags & SER_RS485_ENABLED) {
+> +		while(1) {
+> +			result = pl011_tx_empty(port);
+> +			if (ISEMPTY == result) {
+> +				break;
+> +			}
+
+It's not ok to busy loop forever, sorry.
+
+> +		}
+> +		cr = pl011_read(uap, REG_CR);
+> +		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND) {
+> +			cr |= UART011_CR_RTS;
+> +		} else {
+> +			cr &= ~UART011_CR_RTS;
+> +		}
+
+Did you run checkpatch on this code?  Please fix up.
+
+thanks,
+
+greg k-h
