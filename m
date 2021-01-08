@@ -2,118 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 483C0C4332D
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Jan 2021 18:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78BB0C433E0
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Jan 2021 03:13:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CD8AF233FD
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Jan 2021 18:17:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 44DA32370D
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Jan 2021 03:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729235AbhAGSQy (ORCPT
+        id S1726851AbhAHDNI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Jan 2021 13:16:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35458 "EHLO
+        Thu, 7 Jan 2021 22:13:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729234AbhAGSQx (ORCPT
+        with ESMTP id S1727100AbhAHDNI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Jan 2021 13:16:53 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9243DC0612F5;
-        Thu,  7 Jan 2021 10:16:08 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id g20so11076437ejb.1;
-        Thu, 07 Jan 2021 10:16:08 -0800 (PST)
+        Thu, 7 Jan 2021 22:13:08 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046A8C0612F6
+        for <linux-serial@vger.kernel.org>; Thu,  7 Jan 2021 19:12:28 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id s21so5329335pfu.13
+        for <linux-serial@vger.kernel.org>; Thu, 07 Jan 2021 19:12:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Xw3+iv4jWbYW97YeUypwG7nXusRKeVRrFbIKS0p0C4Q=;
-        b=J6lRL3JoxLzgWSk2bres0wN6NMur16znBTo5G/6SfORLVzqj4LISPZgYwxFf1b93J0
-         5wU+iGKtasRmjtko9hRKqeQAjX5OcSSu2lgRmplNGM8r1qHQRAyN3WHf2D8LcEuAde5w
-         /Yr7BzY69ZanYET+IXg0x2hQ16nqb8sbCDpUhMQIml4ikAQ7JmqX+z/v8S8+E3Q/E7MB
-         +eDaijn9TOILv+OeM3q0Xo22swHJswkEWsL2M2dOmw2LR9ir8b+m/jDs9DDmTEOJBjTG
-         Q8n9qwVsQEl+ou8Jn/GZUHpfxv1l9Z4+fyO5LSUyAMbTTweUXWvjuH0A+dOb7Re1RgcB
-         /WIg==
+        d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SjIxw593j/BG7x2X3ksVVnxB2uu71tEZmxrMsCj4BiM=;
+        b=h2ktI7s4n8xCoqkoSVH4EHqwEk9bp/enKaHzfXG4daTjSVem3smhzGjWZOERytTBt1
+         uct1LT+TzDwe1P+tWsKICLXw/a9f1Y5NGttqGWBIlq7W0terFsRHlavDYV15Cf8egItt
+         ssfplpyFYDBmZLa4Bss7IeleNkqZcrj7JtyEEWkZPzvoHbtHiUCt9ectPN4fr1muZPpM
+         ywgRFdcUijDEgD1cnBXSpdui63N7Pur/ocDaLM3e7YxpSFI76doqdNO0TUcSv7NbVbUQ
+         egGDX7XIhDuYYpHZ5nnBoNW06xDqi3t8gF0kGVKM7WpiLVNcmrFR1T8datur+4zctrQd
+         fHgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Xw3+iv4jWbYW97YeUypwG7nXusRKeVRrFbIKS0p0C4Q=;
-        b=FdqEC62XwZSuCb87gVFK3nO5E/7O1qNfCcXN80yzhhNJXhah2rglK6nUcfBmKfGarv
-         l/4nqrCiPxrQtLTptmH+xSuJGhXzsZCcARdsbBjPTz4KUy8z2XvRArKgV3dxLPA+Fq2V
-         EB62EYQqAM73mY1TxFlEizJTcnjJm7rwbfyu3ICVffye1ajAz3OECP5vfnkjohtcbfrH
-         ybEODaTDYAF4T+2UdAcWVYopkDZnjtq7KxA9dRS2vDtmB0R4aECoPPM12KN1IjXko3NE
-         H5T2Dm6IiGL3kos80ZVMpyEkmXhHk5PWO5c2gX/rmDyTYDoPbHDvu8vWmdu4IQTHQh4m
-         u4Mg==
-X-Gm-Message-State: AOAM532XShD6zzeIITefQ+Re/td2XocC/PNMBhcIt53+pZT/BHN4/T69
-        QANL/GsdtYUtSg5rePAyI1g=
-X-Google-Smtp-Source: ABdhPJwK9ItKYY98MYFMnpwlqVeRDt7Zu9FaY6RcOPw0FA8Rl8SNjtzI2LmVs9WPpi6Ps4eSkyCo4Q==
-X-Received: by 2002:a17:906:3999:: with SMTP id h25mr47734eje.146.1610043367343;
-        Thu, 07 Jan 2021 10:16:07 -0800 (PST)
-Received: from BV030612LT ([188.24.159.61])
-        by smtp.gmail.com with ESMTPSA id z12sm2739571ejr.17.2021.01.07.10.16.05
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=SjIxw593j/BG7x2X3ksVVnxB2uu71tEZmxrMsCj4BiM=;
+        b=Am2K1FfsB/kBnsy6QhXuFv789F/oVWoyTtFd8mvM6dVIYA0qhFF2R7pdAQYhALsrxt
+         qF+TIbo5pA8tnMlo1u+1fIOoXFAboJe17EyCg21mWQ8Tl91FZmR8/Bgo//2d8Lwi0NYG
+         J6BAtRtlCF1bsfx6KFaec1PNjz0P/K7sozZoLk59sX+NH93Pxo5VVHbKkH9bvixKfQV2
+         eGKesqJiwPnBE+D5+gxlwsnVJK0yZFokGmfDW8WAi6fZ7YQMEIlrRaY21GhfrCa6xkXg
+         Ik9BsGuzGaKirb6msLfPKil0ZkPkbotW/JmOQQjsuYy75yzcJwhWTSn3ir/2/6s94Pda
+         4MrQ==
+X-Gm-Message-State: AOAM532ixk41t+JfU6Q45kR6J4AiLcjm8Et127wI7cCSFZIoX+TIHiC1
+        1UYJYLQ0Ghmx5UzMptbkWo+hLg==
+X-Google-Smtp-Source: ABdhPJxeTiUgNKGaw5qtkvFU0vf1c4xAKljKlMnfqJb88DCjQRxBowLvlBQ4gqSHPM+ucT8Xlx08sQ==
+X-Received: by 2002:a63:1f47:: with SMTP id q7mr4962672pgm.10.1610075547296;
+        Thu, 07 Jan 2021 19:12:27 -0800 (PST)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id r185sm6938981pfc.53.2021.01.07.19.12.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 10:16:06 -0800 (PST)
-Date:   Thu, 7 Jan 2021 20:16:04 +0200
-From:   Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] tty: serial: owl: Add support for kernel debugger
-Message-ID: <20210107181604.GA427955@BV030612LT>
-References: <036c09732183a30eaab230884114f65ca42ca3b9.1609865007.git.cristian.ciocaltea@gmail.com>
- <X/cm1+wVQpoXj5Xr@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X/cm1+wVQpoXj5Xr@kroah.com>
+        Thu, 07 Jan 2021 19:12:26 -0800 (PST)
+Date:   Thu, 07 Jan 2021 19:12:26 -0800 (PST)
+X-Google-Original-Date: Thu, 07 Jan 2021 17:52:56 PST (-0800)
+Subject:     Re: [PATCH v2 0/9] arch: riscv: add board and SoC DT file support
+In-Reply-To: <1607403341-57214-1-git-send-email-yash.shah@sifive.com>
+CC:     linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
+        broonie@kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        aou@eecs.berkeley.edu, lee.jones@linaro.org,
+        u.kleine-koenig@pengutronix.de, thierry.reding@gmail.com,
+        andrew@lunn.ch, peter@korsgaard.com,
+        Paul Walmsley <paul.walmsley@sifive.com>, robh+dt@kernel.org,
+        bgolaszewski@baylibre.com, linus.walleij@linaro.org,
+        yash.shah@sifive.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     yash.shah@sifive.com
+Message-ID: <mhng-abbd57b3-7d81-4c66-9883-67bc11f1f3a3@palmerdabbelt-glaptop>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
+On Mon, 07 Dec 2020 20:55:32 PST (-0800), yash.shah@sifive.com wrote:
+> Start board support by adding initial support for the SiFive FU740 SoC
+> and the first development board that uses it, the SiFive HiFive
+> Unmatched A00.
+>
+> Boot-tested on Linux 5.10-rc4 on a HiFive Unmatched A00 board using the
+> U-boot and OpenSBI.
+>
+> This patch series is dependent on Zong's Patchset[0]. The patchset also
+> adds two new nodes in dtsi file. The binding documentation patch
+> for these nodes are already posted on the mailing list[1][2].
+>
+> [0]: https://lore.kernel.org/linux-riscv/20201130082330.77268-4-zong.li@sifive.com/T/#u
+> [1]: https://lore.kernel.org/linux-riscv/1606714984-16593-1-git-send-email-yash.shah@sifive.com/T/#t
+> [2]: https://lore.kernel.org/linux-riscv/20201126030043.67390-1-zong.li@sifive.com/T/#u
+>
+> Changes in v2:
+> - The dt bindings patch is split into several individual patches.
+> - Expand the full list for compatible strings in i2c-ocores.txt
+>
+> Yash Shah (9):
+>   dt-bindings: riscv: Update DT binding docs to support SiFive FU740 SoC
+>   dt-bindings: spi: Update DT binding docs to support SiFive FU740 SoC
+>   dt-bindings: pwm: Update DT binding docs to support SiFive FU740 SoC
+>   dt-bindings: serial: Update DT binding docs to support SiFive FU740
+>     SoC
+>   dt-bindings: gpio: Update DT binding docs to support SiFive FU740 SoC
+>   dt-bindings: i2c: Update DT binding docs to support SiFive FU740 SoC
+>   riscv: dts: add initial support for the SiFive FU740-C000 SoC
+>   dt-bindings: riscv: Update YAML doc to support SiFive HiFive Unmatched
+>     board
+>   riscv: dts: add initial board data for the SiFive HiFive Unmatched
+>
+>  .../devicetree/bindings/gpio/sifive,gpio.yaml      |   4 +-
+>  .../devicetree/bindings/i2c/i2c-ocores.txt         |   8 +-
+>  .../devicetree/bindings/pwm/pwm-sifive.yaml        |   9 +-
+>  Documentation/devicetree/bindings/riscv/cpus.yaml  |   6 +
+>  .../devicetree/bindings/riscv/sifive.yaml          |  17 +-
+>  .../devicetree/bindings/serial/sifive-serial.yaml  |   4 +-
+>  .../devicetree/bindings/spi/spi-sifive.yaml        |  10 +-
+>  arch/riscv/boot/dts/sifive/Makefile                |   3 +-
+>  arch/riscv/boot/dts/sifive/fu740-c000.dtsi         | 293 +++++++++++++++++++++
+>  .../riscv/boot/dts/sifive/hifive-unmatched-a00.dts | 253 ++++++++++++++++++
+>  10 files changed, 590 insertions(+), 17 deletions(-)
+>  create mode 100644 arch/riscv/boot/dts/sifive/fu740-c000.dtsi
+>  create mode 100644 arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts
 
-Thank you for the review!
+Thanks, these are on for-next.  There was one checkpatch warning about the
+missing ISSI device tree entry, but we already had that in the FU540 so I'm OK
+letting it slide.
 
-On Thu, Jan 07, 2021 at 04:20:55PM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Jan 05, 2021 at 07:02:02PM +0200, Cristian Ciocaltea wrote:
-> > Implement 'poll_put_char' and 'poll_get_char' callbacks in struct
-> > 'owl_uart_ops' that enables OWL UART to be used for kernel debugging
-> > over serial line.
-> > 
-> > Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+I'm also not really sure this is the right way to do this sort of thing: most
+of the patches here really aren't RISC-V things, they're SiFive SOC things.
+Some of these patches have been picked up by other trees, but I just took the
+rest.  I'm not all that happy about taking DT bindings for things like GPIO or
+PWM bindings, but as they're pretty small I'm OK doing it in this instance.
 
-[...]
-
-> > +
-> > +static void owl_uart_poll_put_char(struct uart_port *port, unsigned char ch)
-> > +{
-> > +	while (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TFFU)
-> > +		cpu_relax();
-> 
-> Unbounded loops?  What could possibly go wrong?
-> 
-> :(
-> 
-> Please don't do that in the kernel, put a max bound on this.
-
-I didn't realize the issue since I had encountered this pattern in many
-other serial drivers, as well: altera_uart, arc_uart, atmel_serial, etc.
-
-> And are you _SURE_ that cpu_relax() is what you want to call here?
-
-I'm thinking of replacing the loop with 'readl_poll_timeout_atomic()',
-if that would be a better approach.
-
-Kind regards,
-Cristi
-
-> thanks,
-> 
-> greg k-h
+In the future it would really be better to split these up and land them via
+their respectitve trees, rather than trying to do all the SOC stuff over here.
+I know that can be a headache, but we have that SOC group for this purpose to
+try and keep things a bit more together -- I know it was a while ago and there
+really hasn't been much SOC activity on the RISC-V side of things so maybe it
+hasn't been that widley discussed, but that was really designed to solve these
+sorts of problems.
