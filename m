@@ -2,49 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6330C433DB
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jan 2021 09:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A39C433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jan 2021 10:00:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C69B22AAD
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jan 2021 09:58:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A630821744
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jan 2021 10:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728444AbhAKJ65 (ORCPT
+        id S1728848AbhAKKAZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jan 2021 04:58:57 -0500
-Received: from mail-ej1-f49.google.com ([209.85.218.49]:33695 "EHLO
-        mail-ej1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728179AbhAKJ65 (ORCPT
+        Mon, 11 Jan 2021 05:00:25 -0500
+Received: from mail-ej1-f53.google.com ([209.85.218.53]:40746 "EHLO
+        mail-ej1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbhAKKAZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jan 2021 04:58:57 -0500
-Received: by mail-ej1-f49.google.com with SMTP id b9so23949715ejy.0;
-        Mon, 11 Jan 2021 01:58:40 -0800 (PST)
+        Mon, 11 Jan 2021 05:00:25 -0500
+Received: by mail-ej1-f53.google.com with SMTP id x16so23809327ejj.7;
+        Mon, 11 Jan 2021 02:00:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=udVCXM7Wn35aQirz5a19QL8QpKzWmV0LS9M/curg0D0=;
-        b=hewb9nzUIuPy/0EnWdpiHotg1K2M4IuKAsiXEqsP6AznGy8pd7hJEJc3G4CRtuR1gE
-         1jCQtTZw58KkgZ0arMyaYC/Jd9sboJJpYvuVC3u5Ts7HpG1GmKLSnRRWi7HqxhsCwR5Q
-         p36li4Hdk/1n8kDjTjADHU7vdIfilyCRdQsdt0DWku1ZDsV23a5z6VOmf3FiJQFjmNm1
-         cixzdH2HiXlrJ3RJW91END9fcK3nrYsx1q0lYU52ApqALQcli0Fl7/7c2+Q7R6HDotYP
-         QPU4UMeA70AUmQOOYIp5x2QhPNQ3kkGi2n0lXfrInLGiuKUbuYeR/5IxYeZtdoL3ukaT
-         Z/qg==
-X-Gm-Message-State: AOAM530HVVDrnYXtSRUUQOv3A71vIEHKd1xAX4rpXuWZTkRNLWnteigM
-        m6k4BhXoAK8yw7ZiN8HxCBCL4CbU42sdXg==
-X-Google-Smtp-Source: ABdhPJyVCsq5rTpUoTohT6CO72JxfdIzcL6xyKG3YEeMy01WtRt4r8yKJY30OCuOioOtV5QLCMAfsA==
-X-Received: by 2002:a17:906:edb2:: with SMTP id sa18mr9801943ejb.264.1610359094509;
-        Mon, 11 Jan 2021 01:58:14 -0800 (PST)
+        bh=T8T/O0ZlTJGLCjZbDX0PD9JZEkqddMeqh2KTM2iKu8k=;
+        b=ohT8YdtKk17FeFIR3YugMEE+o0rMNpoeCKtgp1L89IIHmX/h2jqSLhA05VD164kZwL
+         s6e6zJjxZIFEISQb3bxM6F5FhMQYIjTerx5Ahm2KVd9y7Yf9hZ+PltDFtjygTCvAd/C6
+         jDfOGnCLgva7uqenqhLXqUkJ9+CVt5x01ATWnz+Xb0XRDTnCpgVWY8425FEbE1w2BU16
+         wQZW6p10/4/X/nJwquj0YMt+1HF/lepwo+yUnrqanDFglknkiWW+suF/pkmrRuYdXOB8
+         J0OuIxzq8SW9m62obE6DdxGUqTtsGRhQ57Z1j+aYw2tsVjrDOR4JmG32xDiuIDgcD24a
+         MFIg==
+X-Gm-Message-State: AOAM530c4rPrJM4VGJAY/PW8F6AuYh2RaFVxb8ZOcjVzxuFfhEcYwPaN
+        WzIeCy8is5Z9kehmqaexf5g=
+X-Google-Smtp-Source: ABdhPJznV8Dt+uZrNWIQOGNosnX8IcpJUXUdaTHl1pHDy/ueH99EE7egorYvLE83L8+vlNI0OoPEEQ==
+X-Received: by 2002:a17:906:4c55:: with SMTP id d21mr10257637ejw.116.1610359183463;
+        Mon, 11 Jan 2021 01:59:43 -0800 (PST)
 Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id r21sm7390769eds.91.2021.01.11.01.58.12
+        by smtp.gmail.com with ESMTPSA id a6sm7483946edv.74.2021.01.11.01.59.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jan 2021 01:58:13 -0800 (PST)
-Subject: Re: [PATCH v2 2/8] serial: stm32: fix code cleaning warnings and
- checks
+        Mon, 11 Jan 2021 01:59:42 -0800 (PST)
+Subject: Re: [PATCH v2 4/8] serial: stm32: add author
 To:     Erwan Le Ray <erwan.leray@foss.st.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -56,14 +56,14 @@ Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
         Valentin Caron <valentin.caron@foss.st.com>
 References: <20210106162203.28854-1-erwan.leray@foss.st.com>
- <20210106162203.28854-3-erwan.leray@foss.st.com>
+ <20210106162203.28854-5-erwan.leray@foss.st.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <72c81157-4bd1-6a3e-2415-92a2fb29ab6d@kernel.org>
-Date:   Mon, 11 Jan 2021 10:58:12 +0100
+Message-ID: <e1d17cb6-a057-f427-dc77-6be139d39624@kernel.org>
+Date:   Mon, 11 Jan 2021 10:59:41 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20210106162203.28854-3-erwan.leray@foss.st.com>
+In-Reply-To: <20210106162203.28854-5-erwan.leray@foss.st.com>
 Content-Type: text/plain; charset=iso-8859-2; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,33 +72,29 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 06. 01. 21, 17:21, Erwan Le Ray wrote:
+> Update email address add new author in authors list.
+
+Parsing error :).
+
+> Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+> 
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index 717a97759928..938d2c4aeaed 100644
 > --- a/drivers/tty/serial/stm32-usart.c
 > +++ b/drivers/tty/serial/stm32-usart.c
-...
-> @@ -973,18 +971,17 @@ static int stm32_init_port(struct stm32_port *stm32port,
->   	struct resource *res;
->   	int ret;
->   
-> +	ret = platform_get_irq(pdev, 0);
-> +	if (ret <= 0)
-> +		return ret ? : -ENODEV;
-> +
->   	port->iotype	= UPIO_MEM;
->   	port->flags	= UPF_BOOT_AUTOCONF;
->   	port->ops	= &stm32_uart_ops;
->   	port->dev	= &pdev->dev;
->   	port->fifosize	= stm32port->info->cfg.fifosize;
->   	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_STM32_CONSOLE);
-> -
-> -	ret = platform_get_irq(pdev, 0);
-> -	if (ret <= 0)
-> -		return ret ? : -ENODEV;
->   	port->irq = ret;
+> @@ -3,7 +3,8 @@
+>    * Copyright (C) Maxime Coquelin 2015
+>    * Copyright (C) STMicroelectronics SA 2017
+>    * Authors:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> - *	     Gerald Baeza <gerald.baeza@st.com>
+> + *	     Gerald Baeza <gerald.baeza@foss.st.com>
+> + *	     Erwan Le Ray <erwan.leray@foss.st.com>
+>    *
+>    * Inspired by st-asc.c from STMicroelectronics (c)
+>    */
+> 
 
-I would move this set from ret above too. Or introduce a new variable, 
-e.g. "irq".
 
-thanks,
 -- 
 js
 suse labs
