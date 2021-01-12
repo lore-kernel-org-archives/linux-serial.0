@@ -2,153 +2,168 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46979C4332B
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Jan 2021 17:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D23C072AF
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Jan 2021 21:42:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0CF1623125
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Jan 2021 17:47:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D45A123123
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Jan 2021 21:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391055AbhALRr0 (ORCPT
+        id S2406399AbhALVh1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Jan 2021 12:47:26 -0500
-Received: from bmail1.ministro.hu ([5.249.150.236]:47494 "EHLO
-        bmail1.ministro.hu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389660AbhALRr0 (ORCPT
+        Tue, 12 Jan 2021 16:37:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36066 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437071AbhALU4e (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Jan 2021 12:47:26 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by bmail1.ministro.hu (Postfix) with ESMTP id E40B411FFB1;
-        Tue, 12 Jan 2021 18:46:42 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ministro.hu;
-        s=201804; t=1610473602;
-        bh=//DIcFXDZIAYmFU2LDqtdLkGc3tYcmYhiwmP/GcTx3w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mv0LnyYFLowUG3bUX6y6qwcecYBu/ZTnMRD4vmpYc55ZESt3n4JMETbLiE7EYRGip
-         EFMIj7jzpTzb5bT0JxW1APTCEPjThwXqYKuv0L4MVsICsIjKX+Un4LQZawyHnYGB+n
-         ygPd3byxsTn/SeysROoq7+QTlkEJdqLeAgLBdd6tQApvWGXslf+0C/RWLcmZFilAb/
-         b8gR7c2EKZpGc07zwsjj9vI5WxDUq0wGTeQehQySa4pRVjKUS6k2JPC2Oln28T53Ez
-         xjVjH9I6eNhf4tW4/AHsTZiksZLwV39SvCEf1bgib55VU5lF3ZdxXGtgbqfMzAQCDK
-         ILBgRNZn5vwig==
-X-Virus-Scanned: Debian amavisd-new at ministro.hu
-Received: from bmail1.ministro.hu ([127.0.0.1])
-        by localhost (bmail1.ministro.hu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 2wTmrbJY3-u0; Tue, 12 Jan 2021 18:46:16 +0100 (CET)
-Received: from dev (localhost [127.0.0.1])
-        by bmail1.ministro.hu (Postfix) with ESMTPSA id 88B7C11FFAC;
-        Tue, 12 Jan 2021 18:46:15 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ministro.hu;
-        s=201804; t=1610473576;
-        bh=//DIcFXDZIAYmFU2LDqtdLkGc3tYcmYhiwmP/GcTx3w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tig1Hp130I94YYjJ3L3vecbHhZfPopyLIwHPEs2A2BuGOjU3eBHsomv65WJUnhGZ1
-         GDXQAHBA5v3SJ0syJB++lRkcyTKe1PUoLxHc+aCrWViMgNYXhwhdTB+vJ7wNlAvSrs
-         h5EXQfBqmeLenBOsG2GtlzWYhr2ejUhdZI7lk9OJh40qPacYYC/wZTLlTENIFbzQYh
-         ZL235ajM+rkOyqBxdVbabcoK1ypkQeFsVkZoAdtHzd/KPvULQT7A7BF8m96pKQrnhf
-         8poKXE9lEvxVip/CkgdLe2ieuHOef4oc1VdwD7EEGkCY8yELL6r+RXMH3QQmhiWKU8
-         IINC7SEZqhbwg==
-Date:   Tue, 12 Jan 2021 17:46:13 +0000
-From:   =?iso-8859-1?Q?J=F3zsef_Horv=E1th?= <info@ministro.hu>
-To:     'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc:     'Rob Herring' <robh+dt@kernel.org>,
-        'Jiri Slaby' <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 1/2] Serial: silabs si4455 serial driver
-Message-ID: <20210112174613.GA8782@dev>
-References: <20210112101831.GA12483@dev>
- <X/15uOstG/7bj2Lm@kroah.com>
- <20210112154322.GA31198@dev>
- <X/3KnP3S4siAxTfG@kroah.com>
+        Tue, 12 Jan 2021 15:56:34 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F7BC0617A2;
+        Tue, 12 Jan 2021 12:55:42 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id d17so5428009ejy.9;
+        Tue, 12 Jan 2021 12:55:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mB4awCptdOD4XxS2R3y9RjPkKqrjcCd8XVKkJUf17lY=;
+        b=EXEloGtCq2Y1xv2n/lKx4y+IKjFMhuasWC47llqnFU3lg9F+ErefoQzMzs4QWaGb1I
+         sSJLXccTNlo514WRLeswXNX0/Pv5Tzd5cWnuQapOZgbbNlBVAV7yTxtcdSDz6AL+78tc
+         ndvNtdhcK7lQsyosQ/m2Jl+QTAdBbZ0xkRSJBBRxEEhxHkwocTWNcPKm/tgkwOeuK2y0
+         jPhEWe8YX8gEn9hMRYhZ71fsnGOni0VWoVZGVd+Q/DrJYwuoh0q/d59c+Hbt2oASCWfn
+         AABzI+gMYxMc/G8WJ5EB++xOmDY9qkWynY425QYj1nuKYOdBvfEQ4aBChJ/EJEtJZg+j
+         aY/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mB4awCptdOD4XxS2R3y9RjPkKqrjcCd8XVKkJUf17lY=;
+        b=TA+dVlMG8k8qA6Qlh97uRWAWrVIBPY66UaNFUZTFKG4UM+nrbjuNHiifWxxObki+w+
+         R9FpWfBT4boeYKLAogGfN2CeYMHN3p1rSwJSgYvrEWdu9SBKFjCr3W5ZMzJtWyHju3+W
+         KRMCG116Z0Qlhp4dUOrgMTPGb09FcsRNKh3Td53Itxi/RlCP47Ksg1nD4lP0N30USMjT
+         pZ0E3q5z1+O5dbD5BGJ0bqMYRKcpu317vjqRbb1JgPiGWpsV/4V0kTp19KqclMxK6n0n
+         3vrmajsB5Upc+SOJ0PvqMGrrbkbNlUQcSMJhvXGPmRmAjkZUQLv7JBxgBvWj2RkMkXQ3
+         S5dQ==
+X-Gm-Message-State: AOAM533soNebZdO5ZuCTqKLl8uIW/3zCTM3ox38UY/dhCtkzBQOravFx
+        uBG7JeRExQ3GvRE9uoETAt4=
+X-Google-Smtp-Source: ABdhPJzwm/B8mmx3+HAGXVJ6HOwVSe5dwtB1AqDsh46+Tlxnnni5L0R7Nfumpd9EybxYCubE4esVsw==
+X-Received: by 2002:a17:906:7804:: with SMTP id u4mr467339ejm.97.1610484940921;
+        Tue, 12 Jan 2021 12:55:40 -0800 (PST)
+Received: from localhost.localdomain ([188.24.159.61])
+        by smtp.gmail.com with ESMTPSA id p3sm1641423ejx.0.2021.01.12.12.55.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jan 2021 12:55:40 -0800 (PST)
+From:   Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/1] tty: serial: owl: Add support for kernel debugger
+Date:   Tue, 12 Jan 2021 22:55:38 +0200
+Message-Id: <026543195b9aeefb339d90abc5660a6ac7463c63.1610484108.git.cristian.ciocaltea@gmail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <X/3KnP3S4siAxTfG@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 05:13:16PM +0100, 'Greg Kroah-Hartman' wrote:
-> On Tue, Jan 12, 2021 at 03:43:22PM +0000, József Horváth wrote:
-> > On Tue, Jan 12, 2021 at 11:28:08AM +0100, 'Greg Kroah-Hartman' wrote:
-> > > On Tue, Jan 12, 2021 at 10:18:33AM +0000, Jozsef Horvath wrote:
-> > > > --- a/include/uapi/linux/serial_core.h
-> > > > +++ b/include/uapi/linux/serial_core.h
-> > > > @@ -279,4 +279,7 @@
-> > > >  /* Freescale LINFlexD UART */
-> > > >  #define PORT_LINFLEXUART	122
-> > > >  
-> > > > +/* Silicon Labs SI4455 */
-> > > > +#define PORT_SI4455     123
-> > > 
-> > > What userspace tool is going to need this value?
-> > 
-> > The PORT_SI4455 is defined for using as port type value in struct uart_port.
-> > I checked other serial drivers under drivers/tty/serial and the port types
-> > used by serial drivers are defined in two places:
-> > 
-> > include/uapi/linux/serial_core.h
-> > include/uapi/linux/serial.h
-> > 
-> > The port type is required by serial_core, and its value goes back to
-> > user space with TIOCGSERIAL ioctl call.
-> 
-> What is it required for?  Who uses this?
-> 
-> > I can't set port type value to 0(PORT_UNKNOWN).
-> 
-> Why not?
+Implement 'poll_put_char' and 'poll_get_char' callbacks in struct
+'owl_uart_ops' that enables OWL UART to be used for kernel debugging
+over serial line.
 
-In drivers/tty/serial/serial_core.c
-1784:	uart_port_activate(...)
-1799:		->	uart_startup(...)
-260:			->	uart_port_startup(...)
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+---
+Changes in v3:
+ - Used 'readl_poll_timeout_atomic()' in 'owl_uart_poll_put_char()'
+   to get rid of 'cpu_relax()' and provide a max bound to the loop,
+   as indicated by Greg and Jiri
 
-183:	static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
-184:			int init_hw)
-...
-191:		if (uport->type == PORT_UNKNOWN)
-192:			return 1;
-...
-221:		retval = uport->ops->startup(uport);	<--This is the reason. The drivers
- startup function is not get called if type==PORT_UNKNOWN
-...
+Changes in v2:
+ - Reverted unnecessary changes per Andreas feedback
+ - Optimized implementation for 'owl_uart_poll_get_char()'
+   and 'owl_uart_poll_put_char()' callbacks
 
-> 
-> > I think my drivers source is not the best place to defining PORT_SI4455,
-> >  but I can't find better place then include/uapi/linux/serial_core.h
-> > 
-> > Could you please help me where is the correct location for this definition?
-> 
-> I ask as I am trying to figure out why we keep adding these ids, yet no
-> tool that i know of seems to actually use them.
-> 
-> If you don't have a tool that needs to use a new id, then I would
-> recommend not adding it, right?
+ drivers/tty/serial/owl-uart.c | 38 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-This definition is not my requirement, but I would avoid collision with other
- drivers port type value.
-At this point as I understand your words, these definitions will be obsolete
- or optional soon and I can choose any value for drivers port type.
-
-Right?
-
-I would ask you about dev name (ttySSi).
-Is it okay?
-
-I didnt find any similar.
-
-> 
-> thanks,
-> 
-> greg k-h
-
-Üdvözlettel / Best regards:
-József Horváth
+diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+index c149f8c30007..abc6042f0378 100644
+--- a/drivers/tty/serial/owl-uart.c
++++ b/drivers/tty/serial/owl-uart.c
+@@ -12,6 +12,7 @@
+ #include <linux/console.h>
+ #include <linux/delay.h>
+ #include <linux/io.h>
++#include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+@@ -62,6 +63,9 @@
+ #define OWL_UART_STAT_TRFL_MASK		GENMASK(16, 11)
+ #define OWL_UART_STAT_UTBB		BIT(17)
+ 
++#define OWL_UART_POLL_USEC		5
++#define OWL_UART_TIMEOUT_USEC		10000
++
+ static struct uart_driver owl_uart_driver;
+ 
+ struct owl_uart_info {
+@@ -461,6 +465,36 @@ static void owl_uart_config_port(struct uart_port *port, int flags)
+ 	}
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++
++static int owl_uart_poll_get_char(struct uart_port *port)
++{
++	if (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_RFEM)
++		return NO_POLL_CHAR;
++
++	return owl_uart_read(port, OWL_UART_RXDAT);
++}
++
++static void owl_uart_poll_put_char(struct uart_port *port, unsigned char ch)
++{
++	u32 reg;
++	int ret;
++
++	/* Wait while FIFO is full or timeout */
++	ret = readl_poll_timeout_atomic(port->membase + OWL_UART_STAT, reg,
++					!(reg & OWL_UART_STAT_TFFU),
++					OWL_UART_POLL_USEC,
++					OWL_UART_TIMEOUT_USEC);
++	if (ret == -ETIMEDOUT) {
++		dev_err(port->dev, "Timeout waiting while UART TX FULL\n");
++		return;
++	}
++
++	owl_uart_write(port, ch, OWL_UART_TXDAT);
++}
++
++#endif /* CONFIG_CONSOLE_POLL */
++
+ static const struct uart_ops owl_uart_ops = {
+ 	.set_mctrl = owl_uart_set_mctrl,
+ 	.get_mctrl = owl_uart_get_mctrl,
+@@ -476,6 +510,10 @@ static const struct uart_ops owl_uart_ops = {
+ 	.request_port = owl_uart_request_port,
+ 	.release_port = owl_uart_release_port,
+ 	.verify_port = owl_uart_verify_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char = owl_uart_poll_get_char,
++	.poll_put_char = owl_uart_poll_put_char,
++#endif
+ };
+ 
+ #ifdef CONFIG_SERIAL_OWL_CONSOLE
+-- 
+2.30.0
 
