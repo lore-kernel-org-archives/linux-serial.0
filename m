@@ -2,222 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D71C072AD
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Jan 2021 00:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB35C433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Jan 2021 10:03:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DA00C22D57
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Jan 2021 00:27:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 498912085B
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Jan 2021 10:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403769AbhALA0D (ORCPT
+        id S2392903AbhALKDk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jan 2021 19:26:03 -0500
-Received: from mail-oo1-f49.google.com ([209.85.161.49]:42713 "EHLO
-        mail-oo1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404129AbhAKXbb (ORCPT
+        Tue, 12 Jan 2021 05:03:40 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:60656 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725877AbhALKDk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jan 2021 18:31:31 -0500
-Received: by mail-oo1-f49.google.com with SMTP id x203so164444ooa.9;
-        Mon, 11 Jan 2021 15:31:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Uknbc1xGolFNlNAiQcwBCWCnZAbMbcUXo++S6Xq6PEE=;
-        b=RUeLFbSFyrUjGM/abUa3L3LZ57pEY3l2x2wDoTgV6X52sz3YPjpUFUWuXms1+WYdij
-         qIN+fleXNLRoi5TZ8hVWLd7mQA+5FLoYkBRS/pV3nT1g7obdAN1iT2glAChw0BSVMjqu
-         v3X+H/4pd7lBomixodWbdHqDi8s/mKKSQzw/dUeYu+RObOd5keEt3O7vGxoWyRVFrqJs
-         NfocwsDreovN1mtgiMc4YZovGPdl4/HbtXtOKbtr552RsTmicgd9pALO/U2La3Mecglb
-         1lN0gEk5LRX2946ypksQAd/o7et6TXXspfVIW7YpY4xhfq8svqW3MxpQU1yyIBgXk3Wa
-         TO3w==
-X-Gm-Message-State: AOAM530a/lgkuXb5NmEDEPqDmLZw3CQ3jFdduncG2mgJHUxoQvLaYsYG
-        z1Po52VpEvfwqpjlSlnlbQ==
-X-Google-Smtp-Source: ABdhPJweJ8rbeoE1Ac+/EnQKCqetMX4SfaRxu3UZACsdHvAw9DRNpRbnFgZjBw3DMMPhlhWmJC+owQ==
-X-Received: by 2002:a4a:4592:: with SMTP id y140mr1085458ooa.26.1610407849857;
-        Mon, 11 Jan 2021 15:30:49 -0800 (PST)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id j11sm220854oos.47.2021.01.11.15.30.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jan 2021 15:30:48 -0800 (PST)
-Received: (nullmailer pid 3257128 invoked by uid 1000);
-        Mon, 11 Jan 2021 23:30:48 -0000
-Date:   Mon, 11 Jan 2021 17:30:48 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?J=F3zsef_Horv=E1th?= <info@ministro.hu>
-Cc:     'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>,
-        'Jiri Slaby' <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7,2/2] dt: bindings: add silabs,si4455 schema
-Message-ID: <20210111233048.GA3252430@robh.at.kernel.org>
-References: <20210105103027.GA15137@dev>
+        Tue, 12 Jan 2021 05:03:40 -0500
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10C9wVex011901;
+        Tue, 12 Jan 2021 11:02:47 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=E546pFVq1ta2uBxokyZK/xre7E5ZXuq5jUCSw1MfC58=;
+ b=Y6hRWkg+NBgd9p/YBnc5aYcGBj8SOazNom2XLz6UjT5dZsCRpML6xGkCKcR7uxyikqCt
+ 0gEczWtKdLTpnUTV7Rc/gY+YnCQ1IY0bCGoedHt+CeoQlr6kh4x5Uj057yPjhO+lOcyz
+ txdAEejI3mMUo6fdP4eLMxYMimOcksWU+O5PIHQv2TxzXtlLCHqjQ6+9UqCa9eE9K5ko
+ V7cxz7MkPp4dUcOVgYrLZgtfudRn69OVx7bElHz4VCuUm56zYjXSHg2Q7mNW7FmEiOHK
+ N38FqA5hTo4NK45u7FSz2a/mU6S8eoJjmk7+oywUeeTSl5+qCwXxmb+Pu8LjwTpQx7W4 Ow== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 35y5kyfpxq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jan 2021 11:02:47 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 607BF100034;
+        Tue, 12 Jan 2021 11:02:45 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4E0F323770C;
+        Tue, 12 Jan 2021 11:02:45 +0100 (CET)
+Received: from lmecxl0566.lme.st.com (10.75.127.44) by SFHDAG2NODE3.st.com
+ (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 12 Jan
+ 2021 11:02:44 +0100
+Subject: Re: [PATCH v2 2/8] serial: stm32: fix code cleaning warnings and
+ checks
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>
+References: <20210106162203.28854-1-erwan.leray@foss.st.com>
+ <20210106162203.28854-3-erwan.leray@foss.st.com>
+ <72c81157-4bd1-6a3e-2415-92a2fb29ab6d@kernel.org>
+From:   Erwan LE RAY <erwan.leray@foss.st.com>
+Message-ID: <667eb6bd-b612-fd78-0b09-d61eff72d139@foss.st.com>
+Date:   Tue, 12 Jan 2021 11:02:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <72c81157-4bd1-6a3e-2415-92a2fb29ab6d@kernel.org>
+Content-Type: text/plain; charset="iso-8859-2"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210105103027.GA15137@dev>
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG3NODE3.st.com (10.75.127.9) To SFHDAG2NODE3.st.com
+ (10.75.127.6)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-12_06:2021-01-11,2021-01-12 signatures=0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 10:30:29AM +0000, József Horváth wrote:
-> This is a device tree schema for serial port driver for
->  Silicon Labs Si4455 Sub-GHz transciver.
-> 
-> Datasheet: https://www.silabs.com/documents/public/data-sheets/Si4455.pdf
-> 
-> Guide: https://github.com/dministro/linux-serial-si4455
-> 
-> Signed-off-by: Jozsef Horvath <info@ministro.hu>
-> ---
-> 
-> changes v1:
->  - fixed: dt: bindings: rename sdn-gpios to shutdown-gpios
-> 
-> changes v3:
->  - fixed: dt: bindings: silabs,si4455: more detailed description
->  - added: dt: bindings: silabs,si4455: properties silabs,package-size,
->    silabs,tx-channel, silabs,rx-channel, silabs,ez-config
-> 
-> changes v4:
->  - fixed: dt: bindings: silabs,si4455: $id
->    from http://devicetree.org/schemas/serial/silabs,si4455.yaml
->    to http://devicetree.org/schemas/staging/serial/silabs,si4455.yaml
-> 
-> changes v5:
->  - fixed: dt: bindings: silabs,si4455: $id
->    from http://devicetree.org/schemas/staging/serial/silabs,si4455.yaml
->    to http://devicetree.org/schemas/serial/silabs,si4455.yaml
->  - fixed: dt: bindings: silabs,si4455: serial.yaml reference added
-> 
-> changes v7:
->  - added: dt: bindings: silabs,si4455: silabs,tx-timeout property definition
-> ---
->  .../bindings/serial/silabs,si4455.yaml        | 105 ++++++++++++++++++
->  1 file changed, 105 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/silabs,si4455.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/silabs,si4455.yaml b/Documentation/devicetree/bindings/serial/silabs,si4455.yaml
-> new file mode 100644
-> index 000000000000..8ba4956064b4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/silabs,si4455.yaml
-> @@ -0,0 +1,105 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/serial/silabs,si4455.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Silicon Labs Si4455 device tree bindings
-> +
-> +maintainers:
-> +  - József Horváth <info@ministro.hu>
-> +
-> +description:
-> +  This document is for describing the required device tree parameters for si4455 serial driver.
-> +  The si4455 driver tries to represent the Silicon Labs Si4455 sub-GHz transceiver device
-> +  like a serial port. The required parameters for proper operation are described below.
-> +  https://www.silabs.com/documents/public/data-sheets/Si4455.pdf
-> +
-> +allOf:
-> +  - $ref: "serial.yaml#"
-> +
-> +properties:
-> +  compatible:
-> +    const: silabs,si4455
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    description: maximum clock frequency on SPI port
-> +    maximum: 500000
-> +
-> +  shutdown-gpios:
-> +    description: gpio pin for SDN
-> +    maxItems: 1
-> +
-> +  silabs,package-size:
-> +    description:
-> +      Radio payload length, variable packet length is not supported by driver.
-> +      This value should equal with EZConfig payload length.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    maximum: 64
-> +    minimum: 1
-> +
-> +  silabs,tx-channel:
-> +    description:
-> +      Radio transmit channel selection.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    maximum: 255
-> +    minimum: 0
-> +
-> +  silabs,rx-channel:
-> +    description:
-> +      Radio receive channel selection.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    maximum: 255
-> +    minimum: 0
-> +
-> +  silabs,tx-timeout:
-> +    description:
-> +      Radio transmit timeout(ms)
+Hello Greg,
 
-Use a unit suffix as defined in property-units.txt.
+As the V2 is already in your tty-next branch, how do want me to proceed 
+to deliver the fix for Jiri remark ?
+Do you expect a V3 or a new fix ?
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32
+Best Regards, Erwan.
 
-With that, you can drop the type.
 
-> +    maximum: 1000
-> +    minimum: 1
-> +
-> +  firmware-name:
-> +    description:
-> +      Radio configuration data file name.
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    items:
-> +      pattern: ^[0-9a-z\._\-]{1,255}$
-> +
-> +required:
-> +  - reg
-> +  - interrupts
-> +  - spi-max-frequency
-> +  - shutdown-gpios
-> +  - silabs,package-size
-> +  - silabs,tx-channel
-> +  - silabs,rx-channel
-> +  - firmware-name
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    spi {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      si4455_0: serial@0 {
-> +        compatible = "silabs,si4455";
-> +        reg = <0>;
-> +        interrupt-parent = <&gpio>;
-> +        interrupts = <7 2>;
-> +        shutdown-gpios = <&gpio 26 1>;
-> +        spi-max-frequency = <300000>;
-> +        silabs,package-size = <30>;
-> +        silabs,tx-channel = <1>;
-> +        silabs,rx-channel = <2>;
-> +        firmware-name = "si4455_spi0_0.ez.bin";
-> +      };
-> +    };
-> +...
-> -- 
-> 2.17.1
+On 1/11/21 10:58 AM, Jiri Slaby wrote:
+> On 06. 01. 21, 17:21, Erwan Le Ray wrote:
+>> --- a/drivers/tty/serial/stm32-usart.c
+>> +++ b/drivers/tty/serial/stm32-usart.c
+> ...
+>> @@ -973,18 +971,17 @@ static int stm32_init_port(struct stm32_port 
+>> *stm32port,
+>>       struct resource *res;
+>>       int ret;
+>> +    ret = platform_get_irq(pdev, 0);
+>> +    if (ret <= 0)
+>> +        return ret ? : -ENODEV;
+>> +
+>>       port->iotype    = UPIO_MEM;
+>>       port->flags    = UPF_BOOT_AUTOCONF;
+>>       port->ops    = &stm32_uart_ops;
+>>       port->dev    = &pdev->dev;
+>>       port->fifosize    = stm32port->info->cfg.fifosize;
+>>       port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_STM32_CONSOLE);
+>> -
+>> -    ret = platform_get_irq(pdev, 0);
+>> -    if (ret <= 0)
+>> -        return ret ? : -ENODEV;
+>>       port->irq = ret;
 > 
+> I would move this set from ret above too. Or introduce a new variable, 
+> e.g. "irq".
+> 
+> thanks,
