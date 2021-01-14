@@ -2,61 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D335FC4332D
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Jan 2021 15:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB72C433DB
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Jan 2021 15:53:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9B38323B00
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Jan 2021 15:18:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 34E4323B2F
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Jan 2021 15:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729405AbhANPR7 (ORCPT
+        id S1729364AbhANPxI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Jan 2021 10:17:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47142 "EHLO
+        Thu, 14 Jan 2021 10:53:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729391AbhANPR7 (ORCPT
+        with ESMTP id S1729282AbhANPxI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Jan 2021 10:17:59 -0500
+        Thu, 14 Jan 2021 10:53:08 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D79FC061574
-        for <linux-serial@vger.kernel.org>; Thu, 14 Jan 2021 07:16:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63881C061574
+        for <linux-serial@vger.kernel.org>; Thu, 14 Jan 2021 07:52:28 -0800 (PST)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1l04MS-00021i-Rp; Thu, 14 Jan 2021 16:16:32 +0100
+        id 1l04vC-0006hJ-Rq; Thu, 14 Jan 2021 16:52:26 +0100
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1l04MR-00012i-O9; Thu, 14 Jan 2021 16:16:31 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mark Brown <broonie@kernel.org>, Wolfram Sang <wsa@kernel.org>
+        id 1l04vC-0003NV-9k; Thu, 14 Jan 2021 16:52:26 +0100
+Date:   Thu, 14 Jan 2021 16:52:26 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: <soc.lore.kernel.org>
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <uwe.kleine-koenig@pengutronix.de>, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel@pengutronix.de, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v1 0/7] Remove ARM platform efm32
-Date:   Thu, 14 Jan 2021 16:16:23 +0100
-Message-Id: <20210114151630.128830-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+Cc:     linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        soc@kernel.org, kernel@pengutronix.de,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v1 6/7] tty: Drop unused efm32 serial driver
+Message-ID: <20210114155226.fwca655hxkj43ksf@pengutronix.de>
+References: <20210114151630.128830-1-u.kleine-koenig@pengutronix.de>
+ <20210114151630.128830-7-u.kleine-koenig@pengutronix.de>
+ <YABkcwgOLhrRZqRK@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wq4o5ql7etxfthma"
+Content-Disposition: inline
+In-Reply-To: <YABkcwgOLhrRZqRK@kroah.com>
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -65,83 +59,51 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Uwe Kleine-König <uwe.kleine-koenig@pengutronix.de>
 
-Hello,
+--wq4o5ql7etxfthma
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-there are no known active users of the efm32 platform. Given that the
-only machine that is supported has only 4 MiB of RAM its use is also
-quite limited.
+On Thu, Jan 14, 2021 at 04:34:11PM +0100, Greg Kroah-Hartman wrote:
+> On Thu, Jan 14, 2021 at 04:16:29PM +0100, Uwe Kleine-K=F6nig wrote:
+> > Support for this machine was just removed, so drop the now unused UART
+> > driver, too.
+> >=20
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> >  drivers/tty/serial/Kconfig       | 13 -------------
+> >  drivers/tty/serial/Makefile      |  1 -
+> >  include/uapi/linux/serial_core.h |  3 ---
+> >  3 files changed, 17 deletions(-)
+>=20
+> Shouldn't you delete the .c file for the serial driver in this patch as
+> well?
 
-Back then it served as the platform to develop ARMv7-M support in Linux
-which was quite fun and still is a blissful memory.
+Yes indeed. I did so in the wrong patch (#1) :-\
 
-Still given that the code serves no purpose and this probably won't
-change anytime soon, remove all platform support.
-
-I'm unsure what to do with the device tree bindings. Should we delete
-them, too?
+I will fix this in my tree for v2.
 
 Best regards
 Uwe
 
-Uwe Kleine-König (7):
-  ARM: drop efm32 platform
-  clk: Drop unused efm32gg driver
-  clocksource: Drop unused efm32 timer code
-  spi: Drop unused efm32 bus driver
-  i2c: Drop unused efm32 bus driver
-  tty: Drop unused efm32 serial driver
-  MAINTAINERS: Remove deleted platform efm32
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
- MAINTAINERS                              |   7 -
- arch/arm/Kconfig                         |  10 +-
- arch/arm/Kconfig.debug                   |  17 -
- arch/arm/Makefile                        |   1 -
- arch/arm/boot/dts/Makefile               |   2 -
- arch/arm/boot/dts/efm32gg-dk3750.dts     |  88 ---
- arch/arm/boot/dts/efm32gg.dtsi           | 177 -----
- arch/arm/configs/efm32_defconfig         |  98 ---
- arch/arm/include/debug/efm32.S           |  45 --
- arch/arm/mach-efm32/Makefile             |   2 -
- arch/arm/mach-efm32/Makefile.boot        |   4 -
- arch/arm/mach-efm32/dtmachine.c          |  16 -
- arch/arm/mm/Kconfig                      |   1 -
- drivers/clk/Makefile                     |   1 -
- drivers/clk/clk-efm32gg.c                |  84 ---
- drivers/clocksource/Kconfig              |   9 -
- drivers/clocksource/Makefile             |   1 -
- drivers/clocksource/timer-efm32.c        | 278 --------
- drivers/i2c/busses/Kconfig               |   7 -
- drivers/i2c/busses/Makefile              |   1 -
- drivers/i2c/busses/i2c-efm32.c           | 469 -------------
- drivers/spi/Kconfig                      |   7 -
- drivers/spi/Makefile                     |   1 -
- drivers/spi/spi-efm32.c                  | 462 ------------
- drivers/tty/serial/Kconfig               |  13 -
- drivers/tty/serial/Makefile              |   1 -
- drivers/tty/serial/efm32-uart.c          | 852 -----------------------
- include/linux/platform_data/efm32-spi.h  |  15 -
- include/linux/platform_data/efm32-uart.h |  19 -
- include/uapi/linux/serial_core.h         |   3 -
- 30 files changed, 1 insertion(+), 2690 deletions(-)
- delete mode 100644 arch/arm/boot/dts/efm32gg-dk3750.dts
- delete mode 100644 arch/arm/boot/dts/efm32gg.dtsi
- delete mode 100644 arch/arm/configs/efm32_defconfig
- delete mode 100644 arch/arm/include/debug/efm32.S
- delete mode 100644 arch/arm/mach-efm32/Makefile
- delete mode 100644 arch/arm/mach-efm32/Makefile.boot
- delete mode 100644 arch/arm/mach-efm32/dtmachine.c
- delete mode 100644 drivers/clk/clk-efm32gg.c
- delete mode 100644 drivers/clocksource/timer-efm32.c
- delete mode 100644 drivers/i2c/busses/i2c-efm32.c
- delete mode 100644 drivers/spi/spi-efm32.c
- delete mode 100644 drivers/tty/serial/efm32-uart.c
- delete mode 100644 include/linux/platform_data/efm32-spi.h
- delete mode 100644 include/linux/platform_data/efm32-uart.h
+--wq4o5ql7etxfthma
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-base-commit: 5c8fe583cce542aa0b84adc939ce85293de36e5e
--- 
-2.29.2
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmAAaLUACgkQwfwUeK3K
+7AkmUgf/XBt8Jep6Xkng+vi6OrgT1qzAsT+LfPwQJOyDuViFOqs+4Ci7T8U7tzUm
+YL49y9Hlf5Erkg61cQ4VUbOpmTubKElJuqkoQeY75LkGyxRzNIloWtJioWXXacYk
+H/8UMNh3lSj7DcyTj3oponcvPd/KWwM1k5JrqdFkgYq+jB4kp/0+7Fdt8E/KVXw7
+gVV1AOy6YlAwrI8bEWCGb/MQgcgKuONYIiZ0oLr1UrNrHHGvQM4Yb7x3Etxa/LZ8
+G6X0lK2kJOxEvn3M31g1upsZlt2JEsJiXu41Ji0TvCII/YUKFp5H+7pKkTqllHei
+KyMdxs1bU/3MY7rIHSQqthl/VcPx2Q==
+=MH6m
+-----END PGP SIGNATURE-----
 
+--wq4o5ql7etxfthma--
