@@ -8,62 +8,63 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A96BC433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Jan 2021 12:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B62C433DB
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Jan 2021 15:25:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1D2F2222BB
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Jan 2021 12:49:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 60E1C22C9D
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Jan 2021 15:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404288AbhARMth (ORCPT
+        id S2405315AbhARPZK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Jan 2021 07:49:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60504 "EHLO
+        Mon, 18 Jan 2021 10:25:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404204AbhARMtV (ORCPT
+        with ESMTP id S2393469AbhARPZB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Jan 2021 07:49:21 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A783C061573
-        for <linux-serial@vger.kernel.org>; Mon, 18 Jan 2021 04:48:38 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id et9so7383395qvb.10
-        for <linux-serial@vger.kernel.org>; Mon, 18 Jan 2021 04:48:38 -0800 (PST)
+        Mon, 18 Jan 2021 10:25:01 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663A1C061573
+        for <linux-serial@vger.kernel.org>; Mon, 18 Jan 2021 07:24:21 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id j26so11454710qtq.8
+        for <linux-serial@vger.kernel.org>; Mon, 18 Jan 2021 07:24:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=xydc51+z4sZUkAzP0EzVSCwIwAWl1TRLUIIItZuIWGE=;
-        b=u/4wJwKIqFJdMzqtI680Jnw+IUq3j3XXaVtaLEM/55a1x7YlS895MDdBcR3SN3IDas
-         y+6ottwYE5rq+WVL8qYWaZEap9p+clJung0YRoMcV4b0L0qcWBBF9uzLjoGhm8jHptym
-         alnoxJmBuJ+L84gQ6BrLiVGyYSfodImQdxnjO9XOPE+3vumHEMOREj488Ku9GVq8Qyym
-         g84V7chg7SdVytUxGxDrjI/JLfV+FWV13NWt+hcx//3pE8OrHgUOCjWiIgtCel3gorhB
-         HrmWbiB4gOQvNVVJRTpuPQ3Rp59OeTZul8TWwHVdP1DMYcplC1eYjSfkjT3BwOsKmWOi
-         +sHw==
+        bh=Dges+8rc9mC60Dzdsn4EOhtdZ0f0IJQqf0D6xNtM6zw=;
+        b=gz6tsWjsAxvp6EbYqrezkrSOYiC8tsGAmvmCZD/wYa47kkBrxDs9JrPdukIPTdEjN1
+         NBCpw8Vy8WsUhtkqii9xiWG7DD4ZFpHQ8RchtWQS06sgcKDszIaBSXoZyT5UoTzVHRYi
+         s96u2j6+ONEyYZL4DD8MzmBXXVjLsNFLo8w6WaSasIP2mgdf97gjROhRiGb8polsxUS0
+         REV5lQm2nucWIGEjeHJFgxCWR+qsKjPV1yAzbudSJR84U1R0OOP2xb9abwhrTW7B5dNI
+         SB29qokMYPq7CKIeSPXmVbPBrcCdPFhBSdwRHBdoXYGr6rNPBUcmfVrBEewGmLSTZRZy
+         6OxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=xydc51+z4sZUkAzP0EzVSCwIwAWl1TRLUIIItZuIWGE=;
-        b=oIoXxLg+AoH/b4s8KQ53OO85Yi6Jdf+CgDZKONIevDOiqPB5bWmE3OFghPHqtaXbW7
-         XaBw8aq1jsZys87iBokPJ0ciWKlpkrXMaEq5H0Tc2VxWbe6YOMH8f0GW93X0dSf7C5Sh
-         a56kazaBVzLsSk+fLdULp4tbI8GYtJEzvyydiUARMBYUa0sVXVtl+bHGJXBIDwXbRfCF
-         4kVjEpOTpqRtDwSDooHnZaaGxrgr+TgPRt/iag1rN0juQL4t8hr42AI3drgPNlG2hej9
-         b5+Jh8r6kgytG9OiCiM+TYEgNg6GzHKh202FTC7pRYpuBTGftI1KTiIGCLaQfb1qiNBj
-         M93Q==
-X-Gm-Message-State: AOAM531A09w3zpYWSczLHWmS8OuawV3+K3pdm1d0ci1Q8dhDJHGSdd9p
-        fw9GVafExkHWpUpqvnOJXR/ZX5mK/Cw=
-X-Google-Smtp-Source: ABdhPJxHpvu/gcHKdG6w/r2O3iV6qkyG+sNeQBfsUtc3wPBJ53BekFZZ8mcmQD7DGBxqhdjy95w4/g==
-X-Received: by 2002:a0c:e351:: with SMTP id a17mr24105949qvm.46.1610974117761;
-        Mon, 18 Jan 2021 04:48:37 -0800 (PST)
+        bh=Dges+8rc9mC60Dzdsn4EOhtdZ0f0IJQqf0D6xNtM6zw=;
+        b=A5ZACZI5ZF1QCUvnlcqSaUcQ6DrPb5ylay8nSYrMBeCyxEENLF2TdPAz7kg8J0h/XX
+         2rG1WcM0cfogS8m27wzqIH0VdYlCMWv6MVWVrgiWR/31qP7qLEK4zxAX7aL2YT4KRLua
+         Y2Y5lGhy/Dr8FUeDJBgNZaitSzTu+jcOGJGyL3zqfWROXdz1CTWyY2ZDA91c5ih/RKtS
+         JTunajq0ZQBHDjcyBAopyPOZiy4FMt9r1zdFBPkypdN+SP39cxjJ0/BJj/gIzskANBoz
+         jBC/hiMBfyn5T+0POjhaA/7YQBevAPljOLCEHzq0BW6fG4eq+IKTZ9MGfogDatRfaURh
+         5TpA==
+X-Gm-Message-State: AOAM530xEExPp2qlx+d3mW+GelNdViHqP2l8ReoHD0xuSfURPdrDF4l5
+        S2Q3WdipbB06BzVYPQQ8/mZxghmlzYg=
+X-Google-Smtp-Source: ABdhPJwXP3XBbNZfd7qnbgKQFFqR09bNMRtHfgfPVwf08Kxui+KUjryqh5lO05T/qhu0Uk06uwBMRw==
+X-Received: by 2002:ac8:4e05:: with SMTP id c5mr64582qtw.359.1610983460195;
+        Mon, 18 Jan 2021 07:24:20 -0800 (PST)
 Received: from localhost.localdomain ([177.194.79.136])
-        by smtp.gmail.com with ESMTPSA id o20sm10320311qki.93.2021.01.18.04.48.35
+        by smtp.gmail.com with ESMTPSA id b12sm10284404qtj.12.2021.01.18.07.24.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 04:48:37 -0800 (PST)
+        Mon, 18 Jan 2021 07:24:19 -0800 (PST)
 From:   Fabio Estevam <festevam@gmail.com>
 To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH] serial: fsl_lpuart: Use of_device_get_match_data()
-Date:   Mon, 18 Jan 2021 09:44:47 -0300
-Message-Id: <20210118124447.1632092-1-festevam@gmail.com>
+Cc:     u.kleine-koenig@pengutronix.de, linux-serial@vger.kernel.org,
+        Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH 1/2] serial: mxs-auart: Remove serial_mxs_probe_dt()
+Date:   Mon, 18 Jan 2021 12:21:53 -0300
+Message-Id: <20210118152154.1644569-1-festevam@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -71,31 +72,86 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The retrieval of driver data via of_device_get_match_data() can make
-the code simpler.
+The mxs platform is devicetree-only, so there is no need to check
+whether it was instantiated via devicetree.
 
-Use of_device_get_match_data() to simplify the code.
+Simplify the code my removing serial_mxs_probe_dt() and add its
+content into the main probe function.
 
 Signed-off-by: Fabio Estevam <festevam@gmail.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/tty/serial/mxs-auart.c | 43 +++++++++-------------------------
+ 1 file changed, 11 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index bd047e1f9bea..794035041744 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2580,9 +2580,7 @@ static struct uart_driver lpuart_reg = {
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 8ecf622602cb..01fedb41cf93 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -1535,34 +1535,6 @@ static int mxs_get_clks(struct mxs_auart_port *s,
+ 	return err;
+ }
  
- static int lpuart_probe(struct platform_device *pdev)
+-/*
+- * This function returns 1 if pdev isn't a device instatiated by dt, 0 if it
+- * could successfully get all information from dt or a negative errno.
+- */
+-static int serial_mxs_probe_dt(struct mxs_auart_port *s,
+-		struct platform_device *pdev)
+-{
+-	struct device_node *np = pdev->dev.of_node;
+-	int ret;
+-
+-	if (!np)
+-		/* no device tree device */
+-		return 1;
+-
+-	ret = of_alias_get_id(np, "serial");
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "failed to get alias id: %d\n", ret);
+-		return ret;
+-	}
+-	s->port.line = ret;
+-
+-	if (of_get_property(np, "uart-has-rtscts", NULL) ||
+-	    of_get_property(np, "fsl,uart-has-rtscts", NULL) /* deprecated */)
+-		set_bit(MXS_AUART_RTSCTS, &s->flags);
+-
+-	return 0;
+-}
+-
+ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
  {
--	const struct of_device_id *of_id = of_match_device(lpuart_dt_ids,
--							   &pdev->dev);
--	const struct lpuart_soc_data *sdata = of_id->data;
-+	const struct lpuart_soc_data *sdata = of_device_get_match_data(&pdev->dev);
- 	struct device_node *np = pdev->dev.of_node;
- 	struct lpuart_port *sport;
- 	struct resource *res;
+ 	enum mctrl_gpio_idx i;
+@@ -1631,6 +1603,7 @@ static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
+ 
+ static int mxs_auart_probe(struct platform_device *pdev)
+ {
++	struct device_node *np = pdev->dev.of_node;
+ 	struct mxs_auart_port *s;
+ 	u32 version;
+ 	int ret, irq;
+@@ -1643,11 +1616,17 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	s->port.dev = &pdev->dev;
+ 	s->dev = &pdev->dev;
+ 
+-	ret = serial_mxs_probe_dt(s, pdev);
+-	if (ret > 0)
+-		s->port.line = pdev->id < 0 ? 0 : pdev->id;
+-	else if (ret < 0)
++	ret = of_alias_get_id(np, "serial");
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed to get alias id: %d\n", ret);
+ 		return ret;
++	}
++	s->port.line = ret;
++
++	if (of_get_property(np, "uart-has-rtscts", NULL) ||
++	    of_get_property(np, "fsl,uart-has-rtscts", NULL) /* deprecated */)
++		set_bit(MXS_AUART_RTSCTS, &s->flags);
++
+ 	if (s->port.line >= ARRAY_SIZE(auart_port)) {
+ 		dev_err(&pdev->dev, "serial%d out of range\n", s->port.line);
+ 		return -EINVAL;
 -- 
 2.17.1
 
