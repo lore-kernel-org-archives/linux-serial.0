@@ -5,45 +5,45 @@ X-Spam-Level:
 X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C5CC433DB
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 02:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B85FC433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 03:34:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0B3DB230FE
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 02:29:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 533A82312B
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 03:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731172AbhATC3m (ORCPT
+        id S1731129AbhATC3j (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Jan 2021 21:29:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47354 "EHLO mail.kernel.org"
+        Tue, 19 Jan 2021 21:29:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47300 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728883AbhATB26 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Jan 2021 20:28:58 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2767E233A1;
-        Wed, 20 Jan 2021 01:27:14 +0000 (UTC)
+        id S1729162AbhATB2I (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:28:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7CBED23142;
+        Wed, 20 Jan 2021 01:26:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611106035;
-        bh=g6IpG4eWGbmWOQ1Y69WDY67vRJiXh3rDqu11EkXtRAM=;
+        s=k20201202; t=1611105982;
+        bh=9uNivUSLfoWxjuidh93RwflJqr4GN2MeQteNSR8ysB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CVs31EpxD05GZkmMpyhzgtxBBIdZvJpRI7OVNtUtkWTybGX0d6QIUQ2qSmt+fM74F
-         CDcNCxR9xt1la7QnkG9tw5cfZ/yCh11u9emdg2RrLPN64zAEbsE0ezPW6GIS1vGZIx
-         62c3s+3UJjh8lZIy4eK6JeF5zv6GrlcuFCbU5BkOFLZwBLSpIlxVn4kPeXdp5Ha1f+
-         I9MG98qpMq79ydVPNlNvViylzzrJ7uFRcgR3+U4tGoGO/PA8ACfhaAqB5RB2TU7ZzK
-         tbHwffPwyKUWyj0LzjK9YN1zBw75x+gPBzj3VkTy3e4CKpUf4/8ebZmF+ze4QlS8ul
-         gYY1O6eVMimdw==
+        b=RvEtW/kyeWNy07VwDWn9yIFBxALWmW/r4EMhT942rIFQ91QWUYDIDl5zf93bGTNF+
+         RftuJUBifafmXgbnf3XLra+5kM3WQSe3Gb7nSN7I+xRkRnLORQwAs60vNMTrBWfYZ7
+         DwPrzuOdNY4oRXwyaHKul1WttC+6K+bLb7XeoNBSxk2KrQjDTn9S65jz5iz2XPB7ZL
+         GTNkKwwN+Hw8bWlSIXgI+XuHOlRLcqtsi1YzeqH7QU11Zoa1b5NvqCPsS92LvyouBp
+         ImTxmr3tdZJrtbWXFijCqLuYmCmx4/Hd1YlwpdtcP6b6JrQqlLpmvn5vPsnmDwUJJU
+         4EHOUE/z76S1w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Damien Le Moal <damien.lemoal@wdc.com>,
         Palmer Dabbelt <palmerdabbelt@google.com>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
         linux-riscv@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 08/26] riscv: Fix sifive serial driver
-Date:   Tue, 19 Jan 2021 20:26:45 -0500
-Message-Id: <20210120012704.770095-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 15/45] riscv: Fix sifive serial driver
+Date:   Tue, 19 Jan 2021 20:25:32 -0500
+Message-Id: <20210120012602.769683-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210120012704.770095-1-sashal@kernel.org>
-References: <20210120012704.770095-1-sashal@kernel.org>
+In-Reply-To: <20210120012602.769683-1-sashal@kernel.org>
+References: <20210120012602.769683-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -78,10 +78,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index b4343c6aa6512..6a2dc823ea828 100644
+index 13eadcb8aec4e..214bf3086c68a 100644
 --- a/drivers/tty/serial/sifive.c
 +++ b/drivers/tty/serial/sifive.c
-@@ -973,6 +973,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
+@@ -999,6 +999,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
  	/* Set up clock divider */
  	ssp->clkin_rate = clk_get_rate(ssp->clk);
  	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
