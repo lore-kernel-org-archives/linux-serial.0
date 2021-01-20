@@ -2,63 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-14.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 279B4C433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC78C433DB
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:10:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DEF25233A1
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:02:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 27BF3233E2
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391081AbhATQCV (ORCPT
+        id S1731999AbhATPyg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Jan 2021 11:02:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
+        Wed, 20 Jan 2021 10:54:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730476AbhATQCH (ORCPT
+        with ESMTP id S2390562AbhATPx3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Jan 2021 11:02:07 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB3BC061575;
-        Wed, 20 Jan 2021 08:01:26 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id j3so6978679ljb.9;
-        Wed, 20 Jan 2021 08:01:26 -0800 (PST)
+        Wed, 20 Jan 2021 10:53:29 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FE4C061575;
+        Wed, 20 Jan 2021 07:52:49 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id o17so34757590lfg.4;
+        Wed, 20 Jan 2021 07:52:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3vLouel+HcUHHsPlMzqt3dQ9xZtrUWZy628SJkSoWOA=;
-        b=So3BD8K3remfQXHH4nf3lm2QXaIQO4LrSFWPfSDvDdczajiT1zZjM+X6Pyp7oVzACX
-         DQUhSNJKGaVBpUrEqB2a/mHhoP+IRYbbfm6S1exUM7PYOdO46swf9U2vYc08fUMud/Om
-         KNU09pGDtuJ5Vrzf8SK12hTxQWfkm/uNAwh3DapnBcYJxtZFkfX9+19cfAiUdqMhHp16
-         Qh5kUbWPdBWb+x6KeA5VyA2mjFhWlxuF9ELdk4uBa2909R4NP4kq2b6Y9+Ktn17HGRJk
-         Pd0gmvlCI6tzooR9HKEBx0LTif4oRiwF3FqvYNnvRW5pmoLQjfOeSrfixFQbqTUF4UZU
-         rZxA==
+        bh=/KIgJpukkTUseLKOL+nfTNs+iHfOcLiaf/sA4jMSc7o=;
+        b=b2NLVokQPZCUuJAyv3kiWNUb/D7/YvKoWfUJcCHR1heKGaiZjLpcSwBstX7Q3YX8MD
+         0VSL3nGarP20z1Z7t1EQA7XA2H4vpXyhlGms2qwFGmlN5vFPCkNOEwhXvgcl2dX2OHl0
+         Fk8lwe7s8eUZ2wwS5RMH6/mUWuXSRNmTjNvQCAwK5Dd3NdzmkpZHt4llHrw8Ni5khkmn
+         myMjJRhAiEUeq/sHdT1yh60NnMmGAROPatvIjJ8mP6HQeV19cvk6YGXY87IpFAtncwaV
+         v00shKKr9e/yxCXAB3jbsK18rnr4dn0SL3OuJ8SyDsoqZnywmH2zxXJFRB0YEqFQqi04
+         OP8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=3vLouel+HcUHHsPlMzqt3dQ9xZtrUWZy628SJkSoWOA=;
-        b=UTOeU5qYDz3R35LRrEBADg1p+452zxxkoAt4eGs1YhpPj762W8Hm+q8hTWwVwtV/ew
-         r+QjyGc2e2mLbJeVP08doYs6hCrYmRaBR+ADw7OwTHpZ6ePij++pw/25cBSX7JGe5Hpd
-         Kppmdy2Ldf3iFiaBNH+xpjqeCRbcOfJ9/SkcEbOEyNxgUVLTCtV91hgvTAN3vzh+UYrz
-         7M4PgIa8KvK0ln+RMGDZlEUP+KDehr2sx1ikBpwedrd7GJjBiKZB0ws+3kiIkGxlb6Wo
-         Ha757KxulQ8VEQRt2fE+lJPjoj1FNr9gAqtCzLrEf9a5KS4vTgqQKs8B6z1Y4D+ErAgQ
-         wu+w==
-X-Gm-Message-State: AOAM531tHcXA1f0pohs9aErPwznhhlvpz6cg8/TJtyKIerPY47QzHNQH
-        aPk7mxrZWzPapOnM+NWwRxMli8ei9yE=
-X-Google-Smtp-Source: ABdhPJxufcMcdT1icHlQjBl7jPyg+FoY9nCNToNRuMAX2IYS0ZUuPjE9ss2lk3IaPlt5ucol79aNfw==
-X-Received: by 2002:a2e:a310:: with SMTP id l16mr4849551lje.142.1611158484855;
-        Wed, 20 Jan 2021 08:01:24 -0800 (PST)
+        bh=/KIgJpukkTUseLKOL+nfTNs+iHfOcLiaf/sA4jMSc7o=;
+        b=nbGUUFMp2tvkeX6XBsXTytoIiQPoz2eDIbHMmu4obTt01NoNLbaj2f9zx3wVyrCp4j
+         XIEjmjHhN6R1F1fnjSKUn9LIH2fe1HWXJOARadqqsVIByKni7NkJOPdLj+5chmh06SoZ
+         6TH9b14hriqgE1+ThonVV1NND8L1OGT9qf8dXWsrbFRjvgVWZ0Hv2ANhdQP7Pp0rUInH
+         DdyJhS2vnOcnkWMdS4WMk+TAwt6OmI0ezULfIAVj4iUL3FbjIeIkwceqBm8ZxGEFnVmy
+         1k1exhCfw1zlHcU/HC6vF73fyQJL7udqR/YCzWTZyBsWL6xCKgckEZ+apslDjtXdNUTt
+         jDZQ==
+X-Gm-Message-State: AOAM5338hi7aA1pHPOm9dFhgTGZXp4CKCcQIfKiU3dvNwEKhL+T6Bgjo
+        K/NSxyBc5oPD2aA5LNiSlbJh8+WQmjY=
+X-Google-Smtp-Source: ABdhPJz54jp4p6N7ro9OB4UGTlGLwMbj9w9A1NhmVFwuW25RiB7kgYemoqd4C3nN1Esa+ddCNU5GUA==
+X-Received: by 2002:a19:ac45:: with SMTP id r5mr4942869lfc.305.1611157967504;
+        Wed, 20 Jan 2021 07:52:47 -0800 (PST)
 Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
-        by smtp.googlemail.com with ESMTPSA id i14sm234976lfo.189.2021.01.20.08.01.22
+        by smtp.googlemail.com with ESMTPSA id b4sm74228ljp.53.2021.01.20.07.52.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jan 2021 08:01:24 -0800 (PST)
-Subject: Re: [PATCH 00/31] Introduce devm_pm_opp_* API
+        Wed, 20 Jan 2021 07:52:46 -0800 (PST)
+Subject: Re: [PATCH 02/31] opp: Add devres wrapper for
+ dev_pm_opp_set_regulators and dev_pm_opp_put_regulators
 To:     Yangtao Li <tiny.windzz@gmail.com>, myungjoo.ham@samsung.com,
         kyungmin.park@samsung.com, cw00.choi@samsung.com, krzk@kernel.org,
         shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
@@ -94,13 +96,14 @@ Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20210101165507.19486-1-tiny.windzz@gmail.com>
+ <20210101165507.19486-3-tiny.windzz@gmail.com>
 From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <6bd6730c-6f4e-df93-65cd-93fa4785a8d8@gmail.com>
-Date:   Wed, 20 Jan 2021 19:01:21 +0300
+Message-ID: <43c251a2-430a-040c-4152-94cf10c884e0@gmail.com>
+Date:   Wed, 20 Jan 2021 18:52:43 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.4.2
 MIME-Version: 1.0
-In-Reply-To: <20210101165507.19486-1-tiny.windzz@gmail.com>
+In-Reply-To: <20210101165507.19486-3-tiny.windzz@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -109,13 +112,14 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 01.01.2021 19:54, Yangtao Li пишет:
-> Hi,
+> Add devres wrapper for dev_pm_opp_set_regulators()
+> dev_pm_opp_put_regulators () to simplify driver code.
 > 
-> This patchset add devm_pm_opp_set_clkname, devm_pm_opp_put_clkname,
-> devm_pm_opp_set_regulators, devm_pm_opp_put_regulators,
-> devm_pm_opp_set_supported_hw, devm_pm_opp_of_add_table and
-> devm_pm_opp_register_notifier.
+> Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+> ---
+>  drivers/opp/core.c     | 50 ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/pm_opp.h |  9 ++++++++
+>  2 files changed, 59 insertions(+)
 
-Hello Yangtao,
-
-Thank you for your effort, looking forward to v2!
+Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
+Tested-by: Dmitry Osipenko <digetx@gmail.com>
