@@ -2,124 +2,158 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D009DC43332
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEAAC433E6
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:51:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A9A7E233ED
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:21:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 65474233F7
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403782AbhATQUk (ORCPT
+        id S2391611AbhATQsC (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Jan 2021 11:20:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
+        Wed, 20 Jan 2021 11:48:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726694AbhATPyA (ORCPT
+        with ESMTP id S2391641AbhATQrs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Jan 2021 10:54:00 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E386C061757;
-        Wed, 20 Jan 2021 07:53:20 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id f17so26614029ljg.12;
-        Wed, 20 Jan 2021 07:53:20 -0800 (PST)
+        Wed, 20 Jan 2021 11:47:48 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D497C0613C1;
+        Wed, 20 Jan 2021 08:47:04 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id m6so14857964pfk.1;
+        Wed, 20 Jan 2021 08:47:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lE0By9BdqcLq0DFuPQl1N1WFBOvj2HiI4v8fCey86OI=;
-        b=O8YbneSc0EPrK+x+ACTtxER1MN0M1XBi9LAGKH0nJM/5YJ1U79U/haRbmcrTpw14Ng
-         lBaEFHTJj6uIY63LJCsu0OOLazGC+3p3cBzv4s5khXMYyJCLeRJM3f/UJi7Rf3bv7HNz
-         k0aqDb53e+mRms17Zo1upTYQlWehrToOd/0vHZ7fRfi1mE9K/82zL3j5wsS+Se83qP/e
-         xJAYfHeMu3zMp0M4hy//z7iIh2UPaY0XFSze5PIVkL8fgXJw/hKGhv8n54eHuLqO+3jk
-         XMsUhVHZrUptWva+QjeF42vhw1p0cSAIbp9cNnBd1rO1Ez8jfoRVI+SaUV/sESqO5CFJ
-         xJSA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rI55C5R2Ib+0Rd7/giiUezyr291JCSLEI1Z384+KvVY=;
+        b=s1zHKUfXoRjGrKTJJxaYl7s7Ha8O7YCs7O1775EhIt7rVEMQ78+MGJysUShJ8Qo+31
+         uFfp8GS6DUZt2xQcl7//37wP3jc2S2aUNachb9KtLvr7GgLTq/UNr9fJGqomPIUS/URP
+         EsGWzAnWDz9a7K3T1z+9+oGHCs8r6ZmoWnDXYfCuU/b8yIrX2YI/osDfpM1Aed5CDBwt
+         yIpQPmWnRoK//R9/1bG+PR/EhMmrpH29k29Mp1wj5mn0Iw4xd2p/NpJBG5snV0ZRsvmc
+         X/YyeCPdm9K7BBUWuMTeBf/x9SWyHOZV2LvVX8SthGkkMmJERPKWHa69v8yxL+j6cskv
+         5+9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lE0By9BdqcLq0DFuPQl1N1WFBOvj2HiI4v8fCey86OI=;
-        b=G/qkOJG89j1/4D02sop5zAUjwYix+kQpe0eYSS+LTFmocrxl2HAAf5BTWfvu8pqhvX
-         MpXeubbdZbmk2lLcDtJC+M4ojSza5cfrYmkLZzFnRm4KUyiL3+dtCrAt5hm6hnQS7UXd
-         wfaRTjq667VzvGq49YB4EBZLaVPhP3uwevjN0Je/R+5K+zF3h4xDAH7k+VwTbQIALG9l
-         1LTteBXqZJ1TJjVBtIh52Tq1T3SXSk2eistEvmj2ptkZvNb3L3knhpA/kSJ2tmJt14bt
-         aSmV5VB2qYu1DZfCQSoJbzVDrWkYf8aifIH7pTe0YhcZAD43DiOlOGLElaXmaezF4LTv
-         fbyQ==
-X-Gm-Message-State: AOAM5309kl+IeJfedEDaTEsY/ZKmku/vEnr12aRXYmHmSrBLuMcN8k7G
-        2pXBYCNptFfNy3Z0Gvn7M6Np+u01T4A=
-X-Google-Smtp-Source: ABdhPJyBy+9sQjBpII9U0Ep8TbQz3BXDkf0PkENZMYoEspvmyYtpJD0VWDKPNhL7YKEOT6kR2w2cOw==
-X-Received: by 2002:a2e:a366:: with SMTP id i6mr4945023ljn.427.1611157998525;
-        Wed, 20 Jan 2021 07:53:18 -0800 (PST)
-Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
-        by smtp.googlemail.com with ESMTPSA id w13sm188387ljw.115.2021.01.20.07.53.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jan 2021 07:53:17 -0800 (PST)
-Subject: Re: [PATCH 03/31] opp: Add devres wrapper for
- dev_pm_opp_set_supported_hw
-To:     Yangtao Li <tiny.windzz@gmail.com>, myungjoo.ham@samsung.com,
-        kyungmin.park@samsung.com, cw00.choi@samsung.com, krzk@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, yuq825@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, robdclark@gmail.com, sean@poorly.run,
-        robh@kernel.org, tomeu.vizoso@collabora.com, steven.price@arm.com,
-        alyssa.rosenzweig@collabora.com, stanimir.varbanov@linaro.org,
-        agross@kernel.org, bjorn.andersson@linaro.org, mchehab@kernel.org,
-        lukasz.luba@arm.com, adrian.hunter@intel.com,
-        ulf.hansson@linaro.org, vireshk@kernel.org, nm@ti.com,
-        sboyd@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, rjw@rjwysocki.net, jcrouse@codeaurora.org,
-        hoegsberg@google.com, eric@anholt.net, tzimmermann@suse.de,
-        marijn.suijten@somainline.org, gustavoars@kernel.org,
-        emil.velikov@collabora.com, jonathan@marek.ca,
-        akhilpo@codeaurora.org, smasetty@codeaurora.org,
-        airlied@redhat.com, masneyb@onstation.org, kalyan_t@codeaurora.org,
-        tanmay@codeaurora.org, ddavenport@chromium.org,
-        jsanka@codeaurora.org, rnayak@codeaurora.org,
-        tongtiangen@huawei.com, miaoqinglang@huawei.com,
-        khsieh@codeaurora.org, abhinavk@codeaurora.org,
-        chandanu@codeaurora.org, groeck@chromium.org, varar@codeaurora.org,
-        mka@chromium.org, harigovi@codeaurora.org,
-        rikard.falkeborn@gmail.com, natechancellor@gmail.com,
-        georgi.djakov@linaro.org, akashast@codeaurora.org,
-        parashar@codeaurora.org, dianders@chromium.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20210101165507.19486-1-tiny.windzz@gmail.com>
- <20210101165507.19486-4-tiny.windzz@gmail.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <fc9a1f79-639c-4384-c324-87249ac576fd@gmail.com>
-Date:   Wed, 20 Jan 2021 18:53:15 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rI55C5R2Ib+0Rd7/giiUezyr291JCSLEI1Z384+KvVY=;
+        b=OOCmXKRsFQPjauS7I89IN/ApLiNXgen2ojAmYqTtbLfmiGzW8o69J04QKHhcdTpz8m
+         ke/t2Lv6PgfjGT1C21b/iTpUTtLwwoDmKafsO7hSBjc/YemfbNWPecaRFrwqTOjqfOXP
+         0cj7Jiu6iRIzcoNLzyqDWewL/YvAYHFCJq5bRbFCdcGmeze/0qnbzDsRJGVgcOzLOJhx
+         3+tIWYTruE2eF8NzkMmoFV/j6qpIorzekEqWXQ9yeJndlax+VmzyDipTqo7195YsIOUU
+         SBY9cPzhux0Eo3UfxX5eEhI11qZcx4HNWqutYUl/aj30awoo/7Z0eg5Mz7EUsovcROn9
+         HtGg==
+X-Gm-Message-State: AOAM530XT0veDwLw3uW79gQXm/ErqsC75HZdj92BbeO2JuzwsBefLN2X
+        VEtZ3o7NP6CuS0lGBQTutUrqjPx759KuMP8bQKw=
+X-Google-Smtp-Source: ABdhPJyrMn3IRyo0TyefSx6BpNfLQtd9Ybt6FKSJMpt+UY+Cd3SudbChqJoPM1x0xgoyhDn+KIm2H6Ni6STKEp89b1c=
+X-Received: by 2002:a62:445:0:b029:19c:162b:bbef with SMTP id
+ 66-20020a6204450000b029019c162bbbefmr9882734pfe.40.1611161223528; Wed, 20 Jan
+ 2021 08:47:03 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210101165507.19486-4-tiny.windzz@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210115211543.33563-1-alcooperx@gmail.com> <20210115211543.33563-3-alcooperx@gmail.com>
+ <CAHp75VdQPQK8jTF3QDKx6mF1QzOg-qiuHrTiojnWn7GskokfoA@mail.gmail.com> <71d58a3e-2707-69d7-8074-c67235912e06@gmail.com>
+In-Reply-To: <71d58a3e-2707-69d7-8074-c67235912e06@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 20 Jan 2021 18:47:52 +0200
+Message-ID: <CAHp75VfNumFBwbytCuA_YK1w-+kN20vRF+GhogtU+DDG3EB_7g@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] serial: 8250: Add new 8250-core based Broadcom STB driver
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Al Cooper <alcooperx@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-01.01.2021 19:54, Yangtao Li пишет:
-> Add devres wrapper for dev_pm_opp_set_supported_hw() to simplify driver
-> code.
-> 
-> Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-> ---
->  drivers/opp/core.c     | 38 ++++++++++++++++++++++++++++++++++++++
->  include/linux/pm_opp.h |  8 ++++++++
->  2 files changed, 46 insertions(+)
+On Tue, Jan 19, 2021 at 8:16 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> On 1/19/2021 7:21 AM, Andy Shevchenko wrote:
+> > On Fri, Jan 15, 2021 at 11:19 PM Al Cooper <alcooperx@gmail.com> wrote:
+> >>
+> >> Add a UART driver for the new Broadcom 8250 based STB UART. The new
+> >> UART is backward compatible with the standard 8250, but has some
+> >> additional features. The new features include a high accuracy baud
+> >> rate clock system and DMA support.
+> >>
+> >> The driver will use the new optional BAUD MUX clock to select the best
+> >> one of the four master clocks (81MHz, 108MHz, 64MHz and 48MHz) to feed
+> >> the baud rate selection logic for any requested baud rate.  This allows
+> >> for more accurate BAUD rates when high speed baud rates are selected.
+> >>
+> >> The driver will use the new UART DMA hardware if the UART DMA registers
+> >> are specified in Device Tree "reg" property. The DMA functionality can
+> >> be disabled on kernel boot with the argument:
+> >> "8250_bcm7271.disable_dma=Y".
+> >>
+> >> The driver also set the UPSTAT_AUTOCTS flag when hardware flow control
+> >> is enabled. This flag is needed for UARTs that don't assert a CTS
+> >> changed interrupt when CTS changes and AFE (Hardware Flow Control) is
+> >> enabled.
+> >>
+> >> The driver also contains a workaround for a bug in the Synopsis 8250
+> >> core. The problem is that at high baud rates, the RX partial FIFO
+> >> timeout interrupt can occur but there is no RX data (DR not set in
+> >> the LSR register). In this case the driver will not read the Receive
+> >> Buffer Register, which clears the interrupt, and the system will get
+> >> continuous UART interrupts until the next RX character arrives. The
+> >> fix originally suggested by Synopsis was to read the Receive Buffer
+> >> Register and discard the character when the DR bit in the LSR was
+> >> not set, to clear the interrupt. The problem was that occasionally
+> >> a character would arrive just after the DR bit check and a valid
+> >> character would be discarded. The fix that was added will clear
+> >> receive interrupts to stop the interrupt, deassert RTS to insure
+> >> that no new data can arrive, wait for 1.5 character times for the
+> >> sender to react to RTS and then check for data and either do a dummy
+> >> read or a valid read. Sysfs error counters were also added and were
+> >> used to help create test software that would cause the error condition.
+> >> The counters can be found at:
+> >> /sys/devices/platform/rdb/*serial/rx_bad_timeout_late_char
+> >> /sys/devices/platform/rdb/*serial/rx_bad_timeout_no_char
+> >
+> > Brief looking into the code raises several questions:
+> >  - is it driver from the last decade?
+>
+> Work on this driver started back in 2018, that was indeed the last decade.
+>
+> >  - why it's not using what kernel provides?
+> >  - we have a lot of nice helpers:
+> >    - DMA Engine API
+>
+> Not sure this makes sense, given that the DMA hardware that was added to
+> this UART block is only used by the UART block and no other pieces of HW
+> in the system, nor will they ever be. Not sure it makes sense to pay the
+> cost of an extra indirection and subsystem unless there are at least two
+> consumers of that DMA hardware to warrant modeling it after a dmaengine
+> driver. I also remember that Al researched before whether 8250_dma.c
+> could work, and came to the conclusion that it would not, but I will let
+> him comment on the specifics.
 
-Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
-Tested-by: Dmitry Osipenko <digetx@gmail.com>
+I see. In any case I still believe that the driver can be shrinked by
+a notable amount of lines.
+
+> >    - BIT() and GENMASK() macros
+> >    - tons of different helpers like regmap API (if you wish to dump
+> > registers via debugfs)
+> >
+> > Can you shrink this driver by 20-30% (I truly believe it's possible)
+> > and split DMA driver to drivers/dma (which may already have something
+> > similar there)?
+>
+> See previous response.
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
