@@ -2,114 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C93CC433DB
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Jan 2021 22:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C5CC433DB
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 02:29:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2C26323104
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Jan 2021 22:18:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0B3DB230FE
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 02:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729854AbhASWRi (ORCPT
+        id S1731172AbhATC3m (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Jan 2021 17:17:38 -0500
-Received: from www.zeus03.de ([194.117.254.33]:35788 "EHLO mail.zeus03.de"
+        Tue, 19 Jan 2021 21:29:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729686AbhASWR1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Jan 2021 17:17:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=Tvs8pg44S10SnvU7Vfn6Lyi1Ih2C
-        n2uq3D4AyozPauE=; b=qg6kMS/whKZ3RVB00xvRN2S/4I6YmcquDb9RvNWZgQS0
-        QFcuHjbonM1SfmjlL9lnN5kLNUNJydeAfH5wM32f0CDy0+hgLiYyV1YrIHUa6LTq
-        kDImjJgj2zKLcpEg7/gj7w+Hh6Q2Oa3AS8+0+c1xQCc/Z9HWr6EgueriPobyfMs=
-Received: (qmail 1218336 invoked from network); 19 Jan 2021 23:16:34 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 19 Jan 2021 23:16:34 +0100
-X-UD-Smtp-Session: l3s3148p1@DARzMEi5FKQgAwDPXw7XAOd/1ZKxv5fl
-Date:   Tue, 19 Jan 2021 23:16:24 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-renesas-soc@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/6] dt-bindings: serial: renesas,hscif: Add r8a779a0
- support
-Message-ID: <20210119221624.GA3651@kunai>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201228112715.14947-1-wsa+renesas@sang-engineering.com>
- <20201228112715.14947-4-wsa+renesas@sang-engineering.com>
+        id S1728883AbhATB26 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:28:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2767E233A1;
+        Wed, 20 Jan 2021 01:27:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611106035;
+        bh=g6IpG4eWGbmWOQ1Y69WDY67vRJiXh3rDqu11EkXtRAM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CVs31EpxD05GZkmMpyhzgtxBBIdZvJpRI7OVNtUtkWTybGX0d6QIUQ2qSmt+fM74F
+         CDcNCxR9xt1la7QnkG9tw5cfZ/yCh11u9emdg2RrLPN64zAEbsE0ezPW6GIS1vGZIx
+         62c3s+3UJjh8lZIy4eK6JeF5zv6GrlcuFCbU5BkOFLZwBLSpIlxVn4kPeXdp5Ha1f+
+         I9MG98qpMq79ydVPNlNvViylzzrJ7uFRcgR3+U4tGoGO/PA8ACfhaAqB5RB2TU7ZzK
+         tbHwffPwyKUWyj0LzjK9YN1zBw75x+gPBzj3VkTy3e4CKpUf4/8ebZmF+ze4QlS8ul
+         gYY1O6eVMimdw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Damien Le Moal <damien.lemoal@wdc.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 08/26] riscv: Fix sifive serial driver
+Date:   Tue, 19 Jan 2021 20:26:45 -0500
+Message-Id: <20210120012704.770095-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210120012704.770095-1-sashal@kernel.org>
+References: <20210120012704.770095-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vkogqOf2sHV7VnPd"
-Content-Disposition: inline
-In-Reply-To: <20201228112715.14947-4-wsa+renesas@sang-engineering.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Damien Le Moal <damien.lemoal@wdc.com>
 
---vkogqOf2sHV7VnPd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit 1f1496a923b6ba16679074fe77100e1b53cdb880 ]
 
-On Mon, Dec 28, 2020 at 12:27:10PM +0100, Wolfram Sang wrote:
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
+Setup the port uartclk in sifive_serial_probe() so that the base baud
+rate is correctly printed during device probe instead of always showing
+"0".  I.e. the probe message is changed from
 
-Can we apply this via the serial tree? Or shall we take it via
-renesas-soc? Thanks!
+38000000.serial: ttySIF0 at MMIO 0x38000000 (irq = 1,
+base_baud = 0) is a SiFive UART v0
 
->  Documentation/devicetree/bindings/serial/renesas,hscif.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml =
-b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-> index c139c5edb93e..512a84942f78 100644
-> --- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-> @@ -51,6 +51,7 @@ properties:
->                - renesas,hscif-r8a77980     # R-Car V3H
->                - renesas,hscif-r8a77990     # R-Car E3
->                - renesas,hscif-r8a77995     # R-Car D3
-> +              - renesas,hscif-r8a779a0     # R-Car V3U
->            - const: renesas,rcar-gen3-hscif # R-Car Gen3 and RZ/G2
->            - const: renesas,hscif           # generic HSCIF compatible UA=
-RT
-> =20
-> --=20
-> 2.29.2
->=20
+to the correct:
 
---vkogqOf2sHV7VnPd
-Content-Type: application/pgp-signature; name="signature.asc"
+38000000.serial: ttySIF0 at MMIO 0x38000000 (irq = 1,
+base_baud = 115200) is a SiFive UART v0
 
------BEGIN PGP SIGNATURE-----
+Signed-off-by: Damien Le Moal <damien.lemoal@wdc.com>
+Reviewed-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Acked-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/sifive.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmAHWjQACgkQFA3kzBSg
-KbbushAAh8VZmaIq8BcIedVSLt9mwtYU9iJ6PFD4s+QwcHaLo3/+HeRPj2y60X4h
-2TgvgKZrJ1jj6FEe/lrmxJ4b+Ja2Gd/2lNr0ZEOj2TNTIBTN9t84TdgFQIrkRDD9
-smBgo4IZtdrFLcAjTDEwO5yWcMdHJ+2IVl5ZYRlLXltAkaHlHdWvdJkgHQl3QZi2
-SOR/pQ8FT4dUqTinOa53ZbiljA/8DEV8FbxxMPoDaUeda+d8CnVT2txK4LkeDx6c
-kQf/MC9IRfihh5F57OcSuIAWTt0gMRhW8H9aqkFZ4wMQhDfETOxiZyySbnmcALS0
-IE9PLsOTKvUJvq3QT11IAmUe7F5fidbsOUDFGQEU/uQXYflQ6njy/A+n3hsBURsl
-A8AKyySCX1llZSJPZ+MkXa8eVqy7J9j98Ktu9J8BPvC929QjgFaUl6yvD0fzAK0p
-sLz5/kTfRwT/36AFs5acX+IE247kTk/+prliAaBqN+HVrWO9tNRHwrX0vEAC3TQI
-bnQPPaX6ytkZqaibXTXkx6JBNUFMDunhQvSiHVZjjEPYq5tiPxNdO5l7jvTfq3bA
-favvJFCPQr+IjToQhi+IK1dvFG7A1CXa0z4lCMGw+uzxTdb+cTK+Pfsu0zDZSqmy
-VKiwozDpVpe2WCFbW1brt/H6ychnhOenuzt3ILlqivHEuB9vwSk=
-=WX0p
------END PGP SIGNATURE-----
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index b4343c6aa6512..6a2dc823ea828 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -973,6 +973,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
+ 	/* Set up clock divider */
+ 	ssp->clkin_rate = clk_get_rate(ssp->clk);
+ 	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
++	ssp->port.uartclk = ssp->baud_rate * 16;
+ 	__ssp_update_div(ssp);
+ 
+ 	platform_set_drvdata(pdev, ssp);
+-- 
+2.27.0
 
---vkogqOf2sHV7VnPd--
