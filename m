@@ -2,94 +2,124 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11026C433E6
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 08:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08131C433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:02:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B6CC82313A
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 08:05:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BCF092339E
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jan 2021 16:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730507AbhATIEb (ORCPT
+        id S2391036AbhATQCT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Jan 2021 03:04:31 -0500
-Received: from mail-ot1-f50.google.com ([209.85.210.50]:37251 "EHLO
-        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730077AbhATIDv (ORCPT
+        Wed, 20 Jan 2021 11:02:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391211AbhATQBE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Jan 2021 03:03:51 -0500
-Received: by mail-ot1-f50.google.com with SMTP id o11so22600533ote.4;
-        Wed, 20 Jan 2021 00:03:35 -0800 (PST)
+        Wed, 20 Jan 2021 11:01:04 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C5FC061575;
+        Wed, 20 Jan 2021 08:00:23 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id q8so3172464lfm.10;
+        Wed, 20 Jan 2021 08:00:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6pR6fg/vKnYn4hcu/THLeviR1hmHEHC9vnXYnmcjF/Q=;
+        b=abtLr1uy/58LoLQJLzYbf0L+o2zJbLuT/uYCyd48HpLF2JAhOx0hrfWwOfIcXeXTgE
+         9HOfUHGHmtSumGGVFBAuddWJ/pQvwtaaVjlR8LOgYJgvOr0axxti6ZdEumKE2Pdt5BDV
+         FdhlVFIlj6sF2mxWlGuxZfNjGlGpgOG+qnZ8Et4+3QqTh7tvZ5Ct1Xh1dbAdXTf2umqX
+         8x4F+Ku4eBtZ7uQ6IoiGOouZ5VCOxgk5/J7a8NInuLXOSX16zmC+Z7HYRrj5QDJifKoe
+         cNs1iMgtdoOFx+imchuo2kJ4HyYbPQwyxvWWVEV3zFd+tqiJgOtPAD/z2arSBt5IR3Cd
+         InCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yK/ie3EIPWE7RkFQwOhdBJJ8g6b1r6m+2mIGzWMnhyU=;
-        b=bhgmKOrt03g/TpPBL29W6SMX+a9cPtiwRc7yDjEYjSTrmaLmoHtv7rDI5WzXwYVe30
-         XO/2qfl/IKsL2HHuO73nemaBoW2WC+5m7eOpBMHvcXxcjTnkmTKOS6Edgla4lU/nCwkq
-         w/M8AHXS0abf4BwSpYI/KQxB8Q+N/kELQrxHSbbGciR0qqYVUiL6/eTbogC8s2HvS6mN
-         iu2xS9CsfucLjhlks/Y8G/RI7PQDJQ17+8Dn6uitzDaDesascCTnXbGhYNBj6nJ7EJgy
-         kM7CQOZGRM8qh7sQUpAsr5gzwCUpBEtWX9YqYZ6XieBuL+ItRLnxSBVKCg1oaJKUdkLO
-         kYFA==
-X-Gm-Message-State: AOAM530Mtel//K8jNTT0il/+wmjju3M+hJjVmbMAToe1CwydybBaAXHX
-        bjiDDi/ACTGJ5Lkd9l3VwgSEm2l3zoMTzqEcWN/XPhDpk+4=
-X-Google-Smtp-Source: ABdhPJzevJPBcvky5yCg7XX71DeoBect44zX/F7XQhp9USLrJHRkB9vJdBGn+ivHRuBVbyh0mvtqYYe2kmG87Qos4qU=
-X-Received: by 2002:a05:6830:210a:: with SMTP id i10mr6240929otc.145.1611129789904;
- Wed, 20 Jan 2021 00:03:09 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6pR6fg/vKnYn4hcu/THLeviR1hmHEHC9vnXYnmcjF/Q=;
+        b=RjbihLs+ibnaGKRrtYsjPcyjTXNDV7TTEnrV4jv84GzBkhRCsf6C4+9ml9v9Ij1aiQ
+         cI+S5b/gQeCFcPYKEPyle9eSkE0VAcnHeGGChLKUt+QgIhfZ7MvGUFrB4p/L3/nenipY
+         WjQjso/bCG0pLaERjWTQoymZkrAwkW9MqeQhYfMg0ZAjQ9Soy+r34Gb+AnVTBYDxJjRs
+         M8V5I3+CdZudBI/QbdyJQ4vXynJC/jCmDOQSHy54jFcUm9VJAYbQTbkqn+YdcrMN2kNr
+         7utFUyomsaV2R11NuP+OLVmfxhZpCQqDJxTGo4F0d2Sd5HZMrctP0FYAMssiHnhLArbQ
+         JpXQ==
+X-Gm-Message-State: AOAM5328VRFpEImjdkhWz/tdhNBxlx2bY1/ImzfpKcMKILrUtjsm7HLB
+        sIFCN0EiJ3ybcJaz+VAdQTB6EjiP2aI=
+X-Google-Smtp-Source: ABdhPJx4ryhDhUccrXGgvid3ZVbrnrbevGoNExSyx1pGmnWuOH6PWddYTRxvkvma6v12P7EIGAI0ZA==
+X-Received: by 2002:ac2:58f2:: with SMTP id v18mr4396795lfo.623.1611158422110;
+        Wed, 20 Jan 2021 08:00:22 -0800 (PST)
+Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
+        by smtp.googlemail.com with ESMTPSA id 76sm233715lfh.163.2021.01.20.08.00.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jan 2021 08:00:21 -0800 (PST)
+Subject: Re: [PATCH 24/31] memory: tegra20: convert to use devm_pm_opp_* API
+To:     Yangtao Li <tiny.windzz@gmail.com>, myungjoo.ham@samsung.com,
+        kyungmin.park@samsung.com, cw00.choi@samsung.com, krzk@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, yuq825@gmail.com, airlied@linux.ie,
+        daniel@ffwll.ch, robdclark@gmail.com, sean@poorly.run,
+        robh@kernel.org, tomeu.vizoso@collabora.com, steven.price@arm.com,
+        alyssa.rosenzweig@collabora.com, stanimir.varbanov@linaro.org,
+        agross@kernel.org, bjorn.andersson@linaro.org, mchehab@kernel.org,
+        lukasz.luba@arm.com, adrian.hunter@intel.com,
+        ulf.hansson@linaro.org, vireshk@kernel.org, nm@ti.com,
+        sboyd@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, rjw@rjwysocki.net, jcrouse@codeaurora.org,
+        hoegsberg@google.com, eric@anholt.net, tzimmermann@suse.de,
+        marijn.suijten@somainline.org, gustavoars@kernel.org,
+        emil.velikov@collabora.com, jonathan@marek.ca,
+        akhilpo@codeaurora.org, smasetty@codeaurora.org,
+        airlied@redhat.com, masneyb@onstation.org, kalyan_t@codeaurora.org,
+        tanmay@codeaurora.org, ddavenport@chromium.org,
+        jsanka@codeaurora.org, rnayak@codeaurora.org,
+        tongtiangen@huawei.com, miaoqinglang@huawei.com,
+        khsieh@codeaurora.org, abhinavk@codeaurora.org,
+        chandanu@codeaurora.org, groeck@chromium.org, varar@codeaurora.org,
+        mka@chromium.org, harigovi@codeaurora.org,
+        rikard.falkeborn@gmail.com, natechancellor@gmail.com,
+        georgi.djakov@linaro.org, akashast@codeaurora.org,
+        parashar@codeaurora.org, dianders@chromium.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20210101165507.19486-1-tiny.windzz@gmail.com>
+ <20210101165507.19486-25-tiny.windzz@gmail.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <b9f19bb2-c225-b64d-a995-1f84926bd18b@gmail.com>
+Date:   Wed, 20 Jan 2021 19:00:19 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.2
 MIME-Version: 1.0
-References: <20201228112715.14947-1-wsa+renesas@sang-engineering.com>
- <20201228112715.14947-4-wsa+renesas@sang-engineering.com> <20210119221624.GA3651@kunai>
- <YAfjJwije0H56wp7@kroah.com>
-In-Reply-To: <YAfjJwije0H56wp7@kroah.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 20 Jan 2021 09:02:58 +0100
-Message-ID: <CAMuHMdVYmW3kkYv2xTCS2X4pFpChknX7yy7N06EOegGTzK=DmQ@mail.gmail.com>
-Subject: Re: [PATCH 3/6] dt-bindings: serial: renesas,hscif: Add r8a779a0 support
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210101165507.19486-25-tiny.windzz@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
+01.01.2021 19:55, Yangtao Li пишет:
+> Use devm_pm_opp_* API to simplify code.
+> 
+> Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+> ---
+>  drivers/memory/tegra/tegra20-emc.c | 29 +++++++++--------------------
+>  1 file changed, 9 insertions(+), 20 deletions(-)
 
-On Wed, Jan 20, 2021 at 9:00 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> On Tue, Jan 19, 2021 at 11:16:24PM +0100, Wolfram Sang wrote:
-> > On Mon, Dec 28, 2020 at 12:27:10PM +0100, Wolfram Sang wrote:
-> > > Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> > > ---
-> >
-> > Can we apply this via the serial tree? Or shall we take it via
-> > renesas-soc? Thanks!
->
-> I can take it, but normally I try to wait for a DT maintainer ack.
->
-> If you want to take it, feel free to as well.
+There are also tegra30-emc.c and tegra124-emc.c with a similar OPP code.
 
-Acked on Jan 8:
-https://lore.kernel.org/linux-devicetree/20210108034114.GA1845830@robh.at.kernel.org/
-
-Thanks for applying!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+But could we please not touch these memory drivers? I already have a
+prepared patch which replaces all the tegra_emc_opp_table_init() with a
+single common helper that will use devm_opp_* helpers.
