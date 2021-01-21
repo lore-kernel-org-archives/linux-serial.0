@@ -2,708 +2,222 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D41C433E6
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Jan 2021 09:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93338C433DB
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Jan 2021 09:41:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 20F1823975
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Jan 2021 09:39:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4067E23975
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Jan 2021 09:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728077AbhAUJ3x (ORCPT
+        id S1726487AbhAUJlN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Jan 2021 04:29:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37080 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728010AbhAUJCE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Jan 2021 04:02:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 28BDF239E4;
-        Thu, 21 Jan 2021 09:00:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1611219652;
-        bh=UEzc46VrYmW6n1mix+Oa4G0Zmm13KIrP1n1V3pNaAOQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BGaO8zH5l9kYzWKa8QzrFky6vGCIEe+Dy8G8Wq59+Yj7gVKbPldASmIsVGwDl2GaA
-         nVoNAPuBlRCYFxBx1gGgL9mPQxiMp5LZyF1DyJLI8SdVdtpiffT0+xyTXohW6pwE+H
-         55tPj9cDKPYMnpLK+6IwFpAkbmH82kQWq+AeM6KE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     jirislaby@kernel.org, linux-serial@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, hch@lst.de, viro@zeniv.linux.org.uk,
-        linux-kernel@vger.kernel.org, ohw.giles@gmail.com,
-        r.karszniewicz@phytec.de,
+        Thu, 21 Jan 2021 04:41:13 -0500
+Received: from mail-ej1-f49.google.com ([209.85.218.49]:45765 "EHLO
+        mail-ej1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728677AbhAUJkp (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 21 Jan 2021 04:40:45 -0500
+Received: by mail-ej1-f49.google.com with SMTP id ke15so1632034ejc.12;
+        Thu, 21 Jan 2021 01:40:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N2K+N67nLg17oc17iRiM37F6/UhrQxKklC0Dn+MIhww=;
+        b=EI1D5MqXZTsSyOyEI4hHFo7wuz6V9bYdNrm5heNTjcbxv14C9mIUh7cJMSGkMyYeA8
+         cmA/ZEwWcNBiAknnzSnc1IG68Qxkq+i5ciXDLs+93Gs+Wf2mLfnVXKge9WcVoCEKJbc/
+         /sTJe1Xk0nGY7/XkMkyxzujtHk+CvpHnJmwZtdVfo64OwcawRDDP9Joidzf+d/yWIhRL
+         aUjHoEp7lQ3xhcT7ngAYaXwRU2hyv0EBLmuC86r+hOHNN94Pod8gaLSgVOmWzPfZPDZl
+         iBUj185stygrDj4EhiFPOJHV5LIq0sjhA4qtkCOzHLv6xUIGoPJlEM0bNd6lZTV4hq/k
+         lyPw==
+X-Gm-Message-State: AOAM5335rpNwOWBjFDs8vjHLgioSDeQ3fPuNVvOo+1R0XGNJgnWyftSX
+        py7WJjzONL71TOy6DOgL4CA=
+X-Google-Smtp-Source: ABdhPJwbCFtlCf9hzBp4r+jA6JL2dMQZqLBvsLJjb3fooVUyL0VJYmUA7PYB6mHKID23yB9genpyOQ==
+X-Received: by 2002:a17:907:e9e:: with SMTP id ho30mr8946657ejc.529.1611222000183;
+        Thu, 21 Jan 2021 01:40:00 -0800 (PST)
+Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id i6sm1972011ejd.110.2021.01.21.01.39.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jan 2021 01:39:59 -0800 (PST)
+Subject: Re: [PATCH 1/6] tty: implement write_iter
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Cc:     hch@lst.de, viro@zeniv.linux.org.uk, linux-kernel@vger.kernel.org,
+        ohw.giles@gmail.com, r.karszniewicz@phytec.de,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 2/6] tty: convert tty_ldisc_ops 'read()' function to take a kernel pointer
-Date:   Thu, 21 Jan 2021 10:00:16 +0100
-Message-Id: <20210121090020.3147058-2-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210121090020.3147058-1-gregkh@linuxfoundation.org>
 References: <20210121090020.3147058-1-gregkh@linuxfoundation.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <f4c72a0a-25e6-5c7a-559b-6d3b7c930100@kernel.org>
+Date:   Thu, 21 Jan 2021 10:39:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210121090020.3147058-1-gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+On 21. 01. 21, 10:00, Greg Kroah-Hartman wrote:
+> From: Linus Torvalds <torvalds@linux-foundation.org>
+> 
+> This makes the tty layer use the .write_iter() function instead of the
+> traditional .write() functionality.
+> 
+> That allows writev(), but more importantly also makes it possible to
+> enable .splice_write() for ttys, reinstating the "splice to tty"
+> functionality that was lost in commit 36e2c7421f02 ("fs: don't allow
+> splice read/write without explicit ops").
+> 
+> Fixes: 36e2c7421f02 ("fs: don't allow splice read/write without explicit ops")
+> Reported-by: Oliver Giles <ohw.giles@gmail.com>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Al Viro <viro@zeniv.linux.org.uk>
+> Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+> ---
+>   drivers/tty/tty_io.c | 48 ++++++++++++++++++++++++--------------------
+>   1 file changed, 26 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 56ade99ef99f..338bc4ef5549 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -143,9 +143,8 @@ LIST_HEAD(tty_drivers);			/* linked list of tty drivers */
+>   DEFINE_MUTEX(tty_mutex);
+>   
+>   static ssize_t tty_read(struct file *, char __user *, size_t, loff_t *);
+> -static ssize_t tty_write(struct file *, const char __user *, size_t, loff_t *);
+> -ssize_t redirected_tty_write(struct file *, const char __user *,
+> -							size_t, loff_t *);
+> +static ssize_t tty_write(struct kiocb *, struct iov_iter *);
+> +ssize_t redirected_tty_write(struct kiocb *, struct iov_iter *);
+>   static __poll_t tty_poll(struct file *, poll_table *);
+>   static int tty_open(struct inode *, struct file *);
+>   long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
+> @@ -478,7 +477,8 @@ static void tty_show_fdinfo(struct seq_file *m, struct file *file)
+>   static const struct file_operations tty_fops = {
+>   	.llseek		= no_llseek,
+>   	.read		= tty_read,
+> -	.write		= tty_write,
+> +	.write_iter	= tty_write,
+> +	.splice_write	= iter_file_splice_write,
+>   	.poll		= tty_poll,
+>   	.unlocked_ioctl	= tty_ioctl,
+>   	.compat_ioctl	= tty_compat_ioctl,
+> @@ -491,7 +491,8 @@ static const struct file_operations tty_fops = {
+>   static const struct file_operations console_fops = {
+>   	.llseek		= no_llseek,
+>   	.read		= tty_read,
+> -	.write		= redirected_tty_write,
+> +	.write_iter	= redirected_tty_write,
+> +	.splice_write	= iter_file_splice_write,
+>   	.poll		= tty_poll,
+>   	.unlocked_ioctl	= tty_ioctl,
+>   	.compat_ioctl	= tty_compat_ioctl,
+> @@ -607,9 +608,9 @@ static void __tty_hangup(struct tty_struct *tty, int exit_session)
+>   	/* This breaks for file handles being sent over AF_UNIX sockets ? */
+>   	list_for_each_entry(priv, &tty->tty_files, list) {
+>   		filp = priv->file;
+> -		if (filp->f_op->write == redirected_tty_write)
+> +		if (filp->f_op->write_iter == redirected_tty_write)
+>   			cons_filp = filp;
+> -		if (filp->f_op->write != tty_write)
+> +		if (filp->f_op->write_iter != tty_write)
 
-The tty line discipline .read() function was passed the final user
-pointer destination as an argument, which doesn't match the 'write()'
-function, and makes it very inconvenient to do a splice method for
-ttys.
+This now relies on implicit value of hung_up_tty_fops.write_iter (i.e. 
+NULL), okay.
 
-This is a conversion to use a kernel buffer instead.
+>   			continue;
+>   		closecount++;
+>   		__tty_fasync(-1, filp, 0);	/* can't block */
+ > 		filp->f_op = &hung_up_tty_fops;
 
-NOTE! It does this by passing the tty line discipline ->read() function
-an additional "cookie" to fill in, and an offset into the cookie data.
+Isn't this racy with VFS layer in vfs_write:
+         if (file->f_op->write)
+                 ret = file->f_op->write(file, buf, count, pos);
+         else if (file->f_op->write_iter)
+                 ret = new_sync_write(file, buf, count, pos);
 
-The line discipline can fill in the cookie data with its own private
-information, and then the reader will repeat the read until either the
-cookie is cleared or it runs out of data.
+? hung_up_tty_fops do not set iter_write and tty_fops do not set write. 
+When we switch from one to the other here, right after the 'if', but 
+before the call, what happens? Likely nothing for the ->write case 
+immediately as compilers cache the value, but for ->write_iter, I'm not 
+sure. Anyway, this looks broken to me. (Read on.)
 
-The only real user of this is N_HDLC, which can use this to handle big
-packets, even if the kernel buffer is smaller than the whole packet.
+> @@ -956,14 +957,20 @@ static inline ssize_t do_tty_write(
+>   		size_t size = count;
+>   		if (size > chunk)
+>   			size = chunk;
+> +
+>   		ret = -EFAULT;
+> -		if (copy_from_user(tty->write_buf, buf, size))
+> +		if (copy_from_iter(tty->write_buf, size, from) != size)
+>   			break;
+> +
+>   		ret = write(tty, file, tty->write_buf, size);
+>   		if (ret <= 0)
+>   			break;
+> +
+> +		/* FIXME! Have Al check this! */
+> +		if (ret != size)
+> +			iov_iter_revert(from, size-ret);
+> +
+>   		written += ret;
+> -		buf += ret;
+>   		count -= ret;
+>   		if (!count)
+>   			break;
+> @@ -1023,9 +1030,9 @@ void tty_write_message(struct tty_struct *tty, char *msg)
+>    *	write method will not be invoked in parallel for each device.
+>    */
+>   
+> -static ssize_t tty_write(struct file *file, const char __user *buf,
+> -						size_t count, loff_t *ppos)
+> +static ssize_t tty_write(struct kiocb *iocb, struct iov_iter *from)
+>   {
+> +	struct file *file = iocb->ki_filp;
+>   	struct tty_struct *tty = file_tty(file);
+>    	struct tty_ldisc *ld;
+>   	ssize_t ret;
+> @@ -1038,18 +1045,15 @@ static ssize_t tty_write(struct file *file, const char __user *buf,
+>   	if (tty->ops->write_room == NULL)
+>   		tty_err(tty, "missing write_room method\n");
+>   	ld = tty_ldisc_ref_wait(tty);
+> -	if (!ld)
+> -		return hung_up_tty_write(file, buf, count, ppos);
+> -	if (!ld->ops->write)
+> +	if (!ld || !ld->ops->write)
+>   		ret = -EIO;
+>   	else
+> -		ret = do_tty_write(ld->ops->write, tty, file, buf, count);
+> +		ret = do_tty_write(ld->ops->write, tty, file, from);
+>   	tty_ldisc_deref(ld);
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
----
- drivers/bluetooth/hci_ldisc.c | 34 +++++++--------
- drivers/input/serio/serport.c |  4 +-
- drivers/net/ppp/ppp_async.c   |  3 +-
- drivers/net/ppp/ppp_synctty.c |  3 +-
- drivers/tty/n_gsm.c           |  3 +-
- drivers/tty/n_hdlc.c          | 60 +++++++++++++++++--------
- drivers/tty/n_null.c          |  3 +-
- drivers/tty/n_r3964.c         | 10 ++---
- drivers/tty/n_tracerouter.c   |  4 +-
- drivers/tty/n_tracesink.c     |  4 +-
- drivers/tty/n_tty.c           | 82 +++++++++++++++--------------------
- drivers/tty/tty_io.c          | 64 +++++++++++++++++++++++++--
- include/linux/tty_ldisc.h     |  3 +-
- net/nfc/nci/uart.c            |  3 +-
- 14 files changed, 178 insertions(+), 102 deletions(-)
+Ok, here belongs my earlier note: "if ld == NULL => crash here." That is 
+if hangup happens during the ldisc wait, the kernel will crash in 
+tty_ldisc_deref.
 
-diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
-index f83d67eafc9f..dd92aea15b8b 100644
---- a/drivers/bluetooth/hci_ldisc.c
-+++ b/drivers/bluetooth/hci_ldisc.c
-@@ -802,7 +802,8 @@ static int hci_uart_tty_ioctl(struct tty_struct *tty, struct file *file,
-  * We don't provide read/write/poll interface for user space.
-  */
- static ssize_t hci_uart_tty_read(struct tty_struct *tty, struct file *file,
--				 unsigned char __user *buf, size_t nr)
-+				 unsigned char *buf, size_t nr,
-+				 void **cookie, unsigned long offset)
- {
- 	return 0;
- }
-@@ -819,29 +820,28 @@ static __poll_t hci_uart_tty_poll(struct tty_struct *tty,
- 	return 0;
- }
- 
-+static struct tty_ldisc_ops hci_uart_ldisc = {
-+	.owner		= THIS_MODULE,
-+	.magic		= TTY_LDISC_MAGIC,
-+	.name		= "n_hci",
-+	.open		= hci_uart_tty_open,
-+	.close		= hci_uart_tty_close,
-+	.read		= hci_uart_tty_read,
-+	.write		= hci_uart_tty_write,
-+	.ioctl		= hci_uart_tty_ioctl,
-+	.compat_ioctl	= hci_uart_tty_ioctl,
-+	.poll		= hci_uart_tty_poll,
-+	.receive_buf	= hci_uart_tty_receive,
-+	.write_wakeup	= hci_uart_tty_wakeup,
-+};
-+
- static int __init hci_uart_init(void)
- {
--	static struct tty_ldisc_ops hci_uart_ldisc;
- 	int err;
- 
- 	BT_INFO("HCI UART driver ver %s", VERSION);
- 
- 	/* Register the tty discipline */
--
--	memset(&hci_uart_ldisc, 0, sizeof(hci_uart_ldisc));
--	hci_uart_ldisc.magic		= TTY_LDISC_MAGIC;
--	hci_uart_ldisc.name		= "n_hci";
--	hci_uart_ldisc.open		= hci_uart_tty_open;
--	hci_uart_ldisc.close		= hci_uart_tty_close;
--	hci_uart_ldisc.read		= hci_uart_tty_read;
--	hci_uart_ldisc.write		= hci_uart_tty_write;
--	hci_uart_ldisc.ioctl		= hci_uart_tty_ioctl;
--	hci_uart_ldisc.compat_ioctl	= hci_uart_tty_ioctl;
--	hci_uart_ldisc.poll		= hci_uart_tty_poll;
--	hci_uart_ldisc.receive_buf	= hci_uart_tty_receive;
--	hci_uart_ldisc.write_wakeup	= hci_uart_tty_wakeup;
--	hci_uart_ldisc.owner		= THIS_MODULE;
--
- 	err = tty_register_ldisc(N_HCI, &hci_uart_ldisc);
- 	if (err) {
- 		BT_ERR("HCI line discipline registration failed. (%d)", err);
-diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
-index 8ac970a423de..33e9d9bfd036 100644
---- a/drivers/input/serio/serport.c
-+++ b/drivers/input/serio/serport.c
-@@ -156,7 +156,9 @@ static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *c
-  * returning 0 characters.
-  */
- 
--static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file, unsigned char __user * buf, size_t nr)
-+static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file,
-+				  unsigned char *kbuf, size_t nr,
-+				  void **cookie, unsigned long offset)
- {
- 	struct serport *serport = (struct serport*) tty->disc_data;
- 	struct serio *serio;
-diff --git a/drivers/net/ppp/ppp_async.c b/drivers/net/ppp/ppp_async.c
-index 29a0917a81e6..f14a9d190de9 100644
---- a/drivers/net/ppp/ppp_async.c
-+++ b/drivers/net/ppp/ppp_async.c
-@@ -259,7 +259,8 @@ static int ppp_asynctty_hangup(struct tty_struct *tty)
-  */
- static ssize_t
- ppp_asynctty_read(struct tty_struct *tty, struct file *file,
--		  unsigned char __user *buf, size_t count)
-+		  unsigned char *buf, size_t count,
-+		  void **cookie, unsigned long offset)
- {
- 	return -EAGAIN;
- }
-diff --git a/drivers/net/ppp/ppp_synctty.c b/drivers/net/ppp/ppp_synctty.c
-index 0f338752c38b..f774b7e52da4 100644
---- a/drivers/net/ppp/ppp_synctty.c
-+++ b/drivers/net/ppp/ppp_synctty.c
-@@ -257,7 +257,8 @@ static int ppp_sync_hangup(struct tty_struct *tty)
-  */
- static ssize_t
- ppp_sync_read(struct tty_struct *tty, struct file *file,
--	       unsigned char __user *buf, size_t count)
-+	      unsigned char *buf, size_t count,
-+	      void **cookie, unsigned long offset)
- {
- 	return -EAGAIN;
- }
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 25f3152089c2..fea1eeac5b90 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2557,7 +2557,8 @@ static void gsmld_write_wakeup(struct tty_struct *tty)
-  */
- 
- static ssize_t gsmld_read(struct tty_struct *tty, struct file *file,
--			 unsigned char __user *buf, size_t nr)
-+			  unsigned char *buf, size_t nr,
-+			  void **cookie, unsigned long offset)
- {
- 	return -EOPNOTSUPP;
- }
-diff --git a/drivers/tty/n_hdlc.c b/drivers/tty/n_hdlc.c
-index 12557ee1edb6..1363e659dc1d 100644
---- a/drivers/tty/n_hdlc.c
-+++ b/drivers/tty/n_hdlc.c
-@@ -416,13 +416,19 @@ static void n_hdlc_tty_receive(struct tty_struct *tty, const __u8 *data,
-  * Returns the number of bytes returned or error code.
-  */
- static ssize_t n_hdlc_tty_read(struct tty_struct *tty, struct file *file,
--			   __u8 __user *buf, size_t nr)
-+			   __u8 *kbuf, size_t nr,
-+			   void **cookie, unsigned long offset)
- {
- 	struct n_hdlc *n_hdlc = tty->disc_data;
- 	int ret = 0;
- 	struct n_hdlc_buf *rbuf;
- 	DECLARE_WAITQUEUE(wait, current);
- 
-+	/* Is this a repeated call for an rbuf we already found earlier? */
-+	rbuf = *cookie;
-+	if (rbuf)
-+		goto have_rbuf;
-+
- 	add_wait_queue(&tty->read_wait, &wait);
- 
- 	for (;;) {
-@@ -436,25 +442,8 @@ static ssize_t n_hdlc_tty_read(struct tty_struct *tty, struct file *file,
- 		set_current_state(TASK_INTERRUPTIBLE);
- 
- 		rbuf = n_hdlc_buf_get(&n_hdlc->rx_buf_list);
--		if (rbuf) {
--			if (rbuf->count > nr) {
--				/* too large for caller's buffer */
--				ret = -EOVERFLOW;
--			} else {
--				__set_current_state(TASK_RUNNING);
--				if (copy_to_user(buf, rbuf->buf, rbuf->count))
--					ret = -EFAULT;
--				else
--					ret = rbuf->count;
--			}
--
--			if (n_hdlc->rx_free_buf_list.count >
--			    DEFAULT_RX_BUF_COUNT)
--				kfree(rbuf);
--			else
--				n_hdlc_buf_put(&n_hdlc->rx_free_buf_list, rbuf);
-+		if (rbuf)
- 			break;
--		}
- 
- 		/* no data */
- 		if (tty_io_nonblock(tty, file)) {
-@@ -473,6 +462,39 @@ static ssize_t n_hdlc_tty_read(struct tty_struct *tty, struct file *file,
- 	remove_wait_queue(&tty->read_wait, &wait);
- 	__set_current_state(TASK_RUNNING);
- 
-+	if (!rbuf)
-+		return ret;
-+	*cookie = rbuf;
-+
-+have_rbuf:
-+	/* Have we used it up entirely? */
-+	if (offset >= rbuf->count)
-+		goto done_with_rbuf;
-+
-+	/* More data to go, but can't copy any more? EOVERFLOW */
-+	ret = -EOVERFLOW;
-+	if (!nr)
-+		goto done_with_rbuf;
-+
-+	/* Copy as much data as possible */
-+	ret = rbuf->count - offset;
-+	if (ret > nr)
-+		ret = nr;
-+	memcpy(kbuf, rbuf->buf+offset, ret);
-+	offset += ret;
-+
-+	/* If we still have data left, we leave the rbuf in the cookie */
-+	if (offset < rbuf->count)
-+		return ret;
-+
-+done_with_rbuf:
-+	*cookie = NULL;
-+
-+	if (n_hdlc->rx_free_buf_list.count > DEFAULT_RX_BUF_COUNT)
-+		kfree(rbuf);
-+	else
-+		n_hdlc_buf_put(&n_hdlc->rx_free_buf_list, rbuf);
-+
- 	return ret;
- 
- }	/* end of n_hdlc_tty_read() */
-diff --git a/drivers/tty/n_null.c b/drivers/tty/n_null.c
-index 96feabae4740..ce03ae78f5c6 100644
---- a/drivers/tty/n_null.c
-+++ b/drivers/tty/n_null.c
-@@ -20,7 +20,8 @@ static void n_null_close(struct tty_struct *tty)
- }
- 
- static ssize_t n_null_read(struct tty_struct *tty, struct file *file,
--			   unsigned char __user * buf, size_t nr)
-+			   unsigned char *buf, size_t nr,
-+			   void **cookie, unsigned long offset)
- {
- 	return -EOPNOTSUPP;
- }
-diff --git a/drivers/tty/n_r3964.c b/drivers/tty/n_r3964.c
-index 934dd2fb2ec8..3161f0a535e3 100644
---- a/drivers/tty/n_r3964.c
-+++ b/drivers/tty/n_r3964.c
-@@ -129,7 +129,7 @@ static void remove_client_block(struct r3964_info *pInfo,
- static int r3964_open(struct tty_struct *tty);
- static void r3964_close(struct tty_struct *tty);
- static ssize_t r3964_read(struct tty_struct *tty, struct file *file,
--		unsigned char __user * buf, size_t nr);
-+		void *cookie, unsigned char *buf, size_t nr);
- static ssize_t r3964_write(struct tty_struct *tty, struct file *file,
- 		const unsigned char *buf, size_t nr);
- static int r3964_ioctl(struct tty_struct *tty, struct file *file,
-@@ -1058,7 +1058,8 @@ static void r3964_close(struct tty_struct *tty)
- }
- 
- static ssize_t r3964_read(struct tty_struct *tty, struct file *file,
--			  unsigned char __user * buf, size_t nr)
-+			  unsigned char *kbuf, size_t nr,
-+			  void **cookie, unsigned long offset)
- {
- 	struct r3964_info *pInfo = tty->disc_data;
- 	struct r3964_client_info *pClient;
-@@ -1109,10 +1110,7 @@ static ssize_t r3964_read(struct tty_struct *tty, struct file *file,
- 		kfree(pMsg);
- 		TRACE_M("r3964_read - msg kfree %p", pMsg);
- 
--		if (copy_to_user(buf, &theMsg, ret)) {
--			ret = -EFAULT;
--			goto unlock;
--		}
-+		memcpy(kbuf, &theMsg, ret);
- 
- 		TRACE_PS("read - return %d", ret);
- 		goto unlock;
-diff --git a/drivers/tty/n_tracerouter.c b/drivers/tty/n_tracerouter.c
-index 4479af4d2fa5..3490ed51b1a3 100644
---- a/drivers/tty/n_tracerouter.c
-+++ b/drivers/tty/n_tracerouter.c
-@@ -118,7 +118,9 @@ static void n_tracerouter_close(struct tty_struct *tty)
-  *	 -EINVAL
-  */
- static ssize_t n_tracerouter_read(struct tty_struct *tty, struct file *file,
--				  unsigned char __user *buf, size_t nr) {
-+				  unsigned char *buf, size_t nr,
-+				  void **cookie, unsigned long offset)
-+{
- 	return -EINVAL;
- }
- 
-diff --git a/drivers/tty/n_tracesink.c b/drivers/tty/n_tracesink.c
-index d96ba82cc356..1d9931041fd8 100644
---- a/drivers/tty/n_tracesink.c
-+++ b/drivers/tty/n_tracesink.c
-@@ -115,7 +115,9 @@ static void n_tracesink_close(struct tty_struct *tty)
-  *	 -EINVAL
-  */
- static ssize_t n_tracesink_read(struct tty_struct *tty, struct file *file,
--				unsigned char __user *buf, size_t nr) {
-+				unsigned char *buf, size_t nr,
-+				void **cookie, unsigned long offset)
-+{
- 	return -EINVAL;
- }
- 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 7e5e36315260..4a34a9f43b29 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -164,29 +164,24 @@ static void zero_buffer(struct tty_struct *tty, u8 *buffer, int size)
- 		memset(buffer, 0x00, size);
- }
- 
--static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
--			    size_t tail, size_t n)
-+static void tty_copy(struct tty_struct *tty, void *to, size_t tail, size_t n)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t size = N_TTY_BUF_SIZE - tail;
- 	void *from = read_buf_addr(ldata, tail);
--	int uncopied;
- 
- 	if (n > size) {
- 		tty_audit_add_data(tty, from, size);
--		uncopied = copy_to_user(to, from, size);
--		zero_buffer(tty, from, size - uncopied);
--		if (uncopied)
--			return uncopied;
-+		memcpy(to, from, size);
-+		zero_buffer(tty, from, size);
- 		to += size;
- 		n -= size;
- 		from = ldata->read_buf;
- 	}
- 
- 	tty_audit_add_data(tty, from, n);
--	uncopied = copy_to_user(to, from, n);
--	zero_buffer(tty, from, n - uncopied);
--	return uncopied;
-+	memcpy(to, from, n);
-+	zero_buffer(tty, from, n);
- }
- 
- /**
-@@ -1942,15 +1937,16 @@ static inline int input_available_p(struct tty_struct *tty, int poll)
- /**
-  *	copy_from_read_buf	-	copy read data directly
-  *	@tty: terminal device
-- *	@b: user data
-+ *	@kbp: data
-  *	@nr: size of data
-  *
-  *	Helper function to speed up n_tty_read.  It is only called when
-- *	ICANON is off; it copies characters straight from the tty queue to
-- *	user space directly.  It can be profitably called twice; once to
-- *	drain the space from the tail pointer to the (physical) end of the
-- *	buffer, and once to drain the space from the (physical) beginning of
-- *	the buffer to head pointer.
-+ *	ICANON is off; it copies characters straight from the tty queue.
-+ *
-+ *	It can be profitably called twice; once to drain the space from
-+ *	the tail pointer to the (physical) end of the buffer, and once
-+ *	to drain the space from the (physical) beginning of the buffer
-+ *	to head pointer.
-  *
-  *	Called under the ldata->atomic_read_lock sem
-  *
-@@ -1960,7 +1956,7 @@ static inline int input_available_p(struct tty_struct *tty, int poll)
-  */
- 
- static int copy_from_read_buf(struct tty_struct *tty,
--				      unsigned char __user **b,
-+				      unsigned char **kbp,
- 				      size_t *nr)
- 
- {
-@@ -1976,8 +1972,7 @@ static int copy_from_read_buf(struct tty_struct *tty,
- 	n = min(*nr, n);
- 	if (n) {
- 		unsigned char *from = read_buf_addr(ldata, tail);
--		retval = copy_to_user(*b, from, n);
--		n -= retval;
-+		memcpy(*kbp, from, n);
- 		is_eof = n == 1 && *from == EOF_CHAR(tty);
- 		tty_audit_add_data(tty, from, n);
- 		zero_buffer(tty, from, n);
-@@ -1986,7 +1981,7 @@ static int copy_from_read_buf(struct tty_struct *tty,
- 		if (L_EXTPROC(tty) && ldata->icanon && is_eof &&
- 		    (head == ldata->read_tail))
- 			n = 0;
--		*b += n;
-+		*kbp += n;
- 		*nr -= n;
- 	}
- 	return retval;
-@@ -1995,12 +1990,12 @@ static int copy_from_read_buf(struct tty_struct *tty,
- /**
-  *	canon_copy_from_read_buf	-	copy read data in canonical mode
-  *	@tty: terminal device
-- *	@b: user data
-+ *	@kbp: data
-  *	@nr: size of data
-  *
-  *	Helper function for n_tty_read.  It is only called when ICANON is on;
-  *	it copies one line of input up to and including the line-delimiting
-- *	character into the user-space buffer.
-+ *	character into the result buffer.
-  *
-  *	NB: When termios is changed from non-canonical to canonical mode and
-  *	the read buffer contains data, n_tty_set_termios() simulates an EOF
-@@ -2016,14 +2011,14 @@ static int copy_from_read_buf(struct tty_struct *tty,
-  */
- 
- static int canon_copy_from_read_buf(struct tty_struct *tty,
--				    unsigned char __user **b,
-+				    unsigned char **kbp,
- 				    size_t *nr)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t n, size, more, c;
- 	size_t eol;
- 	size_t tail;
--	int ret, found = 0;
-+	int found = 0;
- 
- 	/* N.B. avoid overrun if nr == 0 */
- 	if (!*nr)
-@@ -2059,10 +2054,8 @@ static int canon_copy_from_read_buf(struct tty_struct *tty,
- 	n_tty_trace("%s: eol:%zu found:%d n:%zu c:%zu tail:%zu more:%zu\n",
- 		    __func__, eol, found, n, c, tail, more);
- 
--	ret = tty_copy_to_user(tty, *b, tail, n);
--	if (ret)
--		return -EFAULT;
--	*b += n;
-+	tty_copy(tty, *kbp, tail, n);
-+	*kbp += n;
- 	*nr -= n;
- 
- 	if (found)
-@@ -2130,10 +2123,11 @@ static int job_control(struct tty_struct *tty, struct file *file)
-  */
- 
- static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
--			 unsigned char __user *buf, size_t nr)
-+			  unsigned char *kbuf, size_t nr,
-+			  void **cookie, unsigned long offset)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
--	unsigned char __user *b = buf;
-+	unsigned char *kb = kbuf;
- 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
- 	int c;
- 	int minimum, time;
-@@ -2179,17 +2173,13 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 		/* First test for status change. */
- 		if (packet && tty->link->ctrl_status) {
- 			unsigned char cs;
--			if (b != buf)
-+			if (kb != kbuf)
- 				break;
- 			spin_lock_irq(&tty->link->ctrl_lock);
- 			cs = tty->link->ctrl_status;
- 			tty->link->ctrl_status = 0;
- 			spin_unlock_irq(&tty->link->ctrl_lock);
--			if (put_user(cs, b)) {
--				retval = -EFAULT;
--				break;
--			}
--			b++;
-+			*kb++ = cs;
- 			nr--;
- 			break;
- 		}
-@@ -2232,24 +2222,20 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 		}
- 
- 		if (ldata->icanon && !L_EXTPROC(tty)) {
--			retval = canon_copy_from_read_buf(tty, &b, &nr);
-+			retval = canon_copy_from_read_buf(tty, &kb, &nr);
- 			if (retval)
- 				break;
- 		} else {
- 			int uncopied;
- 
- 			/* Deal with packet mode. */
--			if (packet && b == buf) {
--				if (put_user(TIOCPKT_DATA, b)) {
--					retval = -EFAULT;
--					break;
--				}
--				b++;
-+			if (packet && kb == kbuf) {
-+				*kb++ = TIOCPKT_DATA;
- 				nr--;
- 			}
- 
--			uncopied = copy_from_read_buf(tty, &b, &nr);
--			uncopied += copy_from_read_buf(tty, &b, &nr);
-+			uncopied = copy_from_read_buf(tty, &kb, &nr);
-+			uncopied += copy_from_read_buf(tty, &kb, &nr);
- 			if (uncopied) {
- 				retval = -EFAULT;
- 				break;
-@@ -2258,7 +2244,7 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 
- 		n_tty_check_unthrottle(tty);
- 
--		if (b - buf >= minimum)
-+		if (kb - kbuf >= minimum)
- 			break;
- 		if (time)
- 			timeout = time;
-@@ -2270,8 +2256,8 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 	remove_wait_queue(&tty->read_wait, &wait);
- 	mutex_unlock(&ldata->atomic_read_lock);
- 
--	if (b - buf)
--		retval = b - buf;
-+	if (kb - kbuf)
-+		retval = kb - kbuf;
- 
- 	return retval;
- }
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 338bc4ef5549..a34f8bcf875e 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -833,6 +833,65 @@ static void tty_update_time(struct timespec64 *time)
- 		time->tv_sec = sec;
- }
- 
-+/*
-+ * Iterate on the ldisc ->read() function until we've gotten all
-+ * the data the ldisc has for us.
-+ *
-+ * The "cookie" is something that the ldisc read function can fill
-+ * in to let us know that there is more data to be had.
-+ *
-+ * We promise to continue to call the ldisc until it stops returning
-+ * data or clears the cookie. The cookie may be something that the
-+ * ldisc maintains state for and needs to free.
-+ */
-+static int iterate_tty_read(struct tty_ldisc *ld, struct tty_struct *tty, struct file *file,
-+		char __user *buf, size_t count)
-+{
-+	int retval = 0;
-+	void *cookie = NULL;
-+	unsigned long offset = 0;
-+	char kernel_buf[64];
-+
-+	do {
-+		int size, uncopied;
-+
-+		size = count > sizeof(kernel_buf) ? sizeof(kernel_buf) : count;
-+		size = ld->ops->read(tty, file, kernel_buf, size, &cookie, offset);
-+		if (!size)
-+			break;
-+
-+		/*
-+		 * A ldisc read error return will override any previously copied
-+		 * data (eg -EOVERFLOW from HDLC)
-+		 */
-+		if (size < 0) {
-+			memzero_explicit(kernel_buf, sizeof(kernel_buf));
-+			return size;
-+		}
-+
-+		uncopied = copy_to_user(buf+offset, kernel_buf, size);
-+		size -= uncopied;
-+		offset += size;
-+		count -= size;
-+
-+		/*
-+		 * If the user copy failed, we still need to do another ->read()
-+		 * call if we had a cookie to let the ldisc clear up.
-+		 *
-+		 * But make sure size is zeroed.
-+		 */
-+		if (unlikely(uncopied)) {
-+			count = 0;
-+			retval = -EFAULT;
-+		}
-+	} while (cookie);
-+
-+	/* We always clear tty buffer in case they contained passwords */
-+	memzero_explicit(kernel_buf, sizeof(kernel_buf));
-+	return offset ? offset : retval;
-+}
-+
-+
- /**
-  *	tty_read	-	read method for tty device files
-  *	@file: pointer to tty file
-@@ -866,10 +925,9 @@ static ssize_t tty_read(struct file *file, char __user *buf, size_t count,
- 	ld = tty_ldisc_ref_wait(tty);
- 	if (!ld)
- 		return hung_up_tty_read(file, buf, count, ppos);
-+	i = -EIO;
- 	if (ld->ops->read)
--		i = ld->ops->read(tty, file, buf, count);
--	else
--		i = -EIO;
-+		i = iterate_tty_read(ld, tty, file, buf, count);
- 	tty_ldisc_deref(ld);
- 
- 	if (i > 0)
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index b1e6043e9917..572a07976116 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -185,7 +185,8 @@ struct tty_ldisc_ops {
- 	void	(*close)(struct tty_struct *);
- 	void	(*flush_buffer)(struct tty_struct *tty);
- 	ssize_t	(*read)(struct tty_struct *tty, struct file *file,
--			unsigned char __user *buf, size_t nr);
-+			unsigned char *buf, size_t nr,
-+			void **cookie, unsigned long offset);
- 	ssize_t	(*write)(struct tty_struct *tty, struct file *file,
- 			 const unsigned char *buf, size_t nr);
- 	int	(*ioctl)(struct tty_struct *tty, struct file *file,
-diff --git a/net/nfc/nci/uart.c b/net/nfc/nci/uart.c
-index 11b554ce07ff..1204c438e87d 100644
---- a/net/nfc/nci/uart.c
-+++ b/net/nfc/nci/uart.c
-@@ -292,7 +292,8 @@ static int nci_uart_tty_ioctl(struct tty_struct *tty, struct file *file,
- 
- /* We don't provide read/write/poll interface for user space. */
- static ssize_t nci_uart_tty_read(struct tty_struct *tty, struct file *file,
--				 unsigned char __user *buf, size_t nr)
-+				 unsigned char *buf, size_t nr,
-+				 void **cookie, unsigned long offset)
- {
- 	return 0;
- }
+Is there a reason not to convert hung_up_tty_fops too and leave the 
+return hung_up_tty_write here intact? This would also solve the comments 
+above.
+
+>   	return ret;
+>   }
+>   
+> -ssize_t redirected_tty_write(struct file *file, const char __user *buf,
+> -						size_t count, loff_t *ppos)
+> +ssize_t redirected_tty_write(struct kiocb *iocb, struct iov_iter *iter)
+>   {
+>   	struct file *p = NULL;
+>   
+
+thanks,
 -- 
-2.30.0
-
+js
