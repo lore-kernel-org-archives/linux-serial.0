@@ -6,88 +6,73 @@ X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5534C433DB
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Jan 2021 17:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A417C433DB
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Jan 2021 17:59:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 53AE6207C5
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Jan 2021 17:48:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E020522B45
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Jan 2021 17:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388516AbhAURsg (ORCPT
+        id S2389239AbhAUR7P (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Jan 2021 12:48:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389138AbhAURr6 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Jan 2021 12:47:58 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FF0C06174A
-        for <linux-serial@vger.kernel.org>; Thu, 21 Jan 2021 09:47:17 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id j3so3470169ljb.9
-        for <linux-serial@vger.kernel.org>; Thu, 21 Jan 2021 09:47:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kykA4foeTxbLS8CWzJvsbjzmd7nBL3addKFMK7SYEtY=;
-        b=iMK3aw8mffMX36Y2EfAfZFJwILSWj2+hpckNL/ptc1M+mDKqVH7G2Xfr1xPz5MKBWT
-         LzzZ0TZfDZ1vdcpvPg1LakBoHzZQR/oPP/dJSYoEjHwrolgId+nUmqluTElLkH2f+t9Y
-         1pxoCYScqNMWRHqBZ2Opt52NmMZq6sI0K+NSQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kykA4foeTxbLS8CWzJvsbjzmd7nBL3addKFMK7SYEtY=;
-        b=ZhW9Sf3ci9b4mFuyVceMjRrYkkK/tvNRrrIdkJUp3NWmms8ja+eXkwtKu+zo6qEfhK
-         PtwhcCfu6RvF07RsrItzRN4s9Gifeiu73jNK8B3/AlXupTWOyvksZOlJbrDBIe6BfbLr
-         F4DGw69xvy0r1QskzJ8oV1+8Zcng2qMyeEAQOISsZDSAFI4QzPv/pITWuya0lz5T3YaK
-         hgbizMC/FCPhRwKfB/fqw73d9aNQsMVe9BScgdG/lbYDg93Ued6zoevwHxBZMXTXwKiV
-         1l5RTQoqHjiLPk0DfNrz7KGUq3sfbFcQUJH+1f6Q9MpY1bXn2j/4hze6rGdxb6jzQBL0
-         q8MA==
-X-Gm-Message-State: AOAM531++AYKc/BAJ3YE9kqKRtiwdTh8gW60pZSH33ER+ND9nK+bobKg
-        Q5sbmdlbCWne+mIqRSVNTaotw2tjba6eZQ==
-X-Google-Smtp-Source: ABdhPJxlSEObzno/sFduEOzn/T990082FhE6tlEMmJR7bxzv9mr4eREj2PVVtMzs1YVONlymD2TJgg==
-X-Received: by 2002:a2e:9153:: with SMTP id q19mr217407ljg.173.1611251236054;
-        Thu, 21 Jan 2021 09:47:16 -0800 (PST)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
-        by smtp.gmail.com with ESMTPSA id v63sm591554lfa.89.2021.01.21.09.47.15
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jan 2021 09:47:15 -0800 (PST)
-Received: by mail-lj1-f169.google.com with SMTP id j3so3470064ljb.9
-        for <linux-serial@vger.kernel.org>; Thu, 21 Jan 2021 09:47:15 -0800 (PST)
-X-Received: by 2002:a2e:8995:: with SMTP id c21mr214331lji.251.1611251234794;
- Thu, 21 Jan 2021 09:47:14 -0800 (PST)
-MIME-Version: 1.0
-References: <20210121090020.3147058-1-gregkh@linuxfoundation.org>
- <20210121090020.3147058-2-gregkh@linuxfoundation.org> <ff6709dc-bb42-1e52-b348-c52036960bdd@kernel.org>
-In-Reply-To: <ff6709dc-bb42-1e52-b348-c52036960bdd@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 21 Jan 2021 09:46:58 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whMm=NM4=ch++YqFn3W=ceNDOhLTFqdP47nxayzVt41Qw@mail.gmail.com>
-Message-ID: <CAHk-=whMm=NM4=ch++YqFn3W=ceNDOhLTFqdP47nxayzVt41Qw@mail.gmail.com>
-Subject: Re: [PATCH 2/6] tty: convert tty_ldisc_ops 'read()' function to take
- a kernel pointer
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Thu, 21 Jan 2021 12:59:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54764 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389386AbhAUR6A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 21 Jan 2021 12:58:00 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F2C8622B2B;
+        Thu, 21 Jan 2021 17:57:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1611251839;
+        bh=CPvmyOW2bRiXfP//uUD6u2Ir6tIrXcUxIlhVD+i7/wA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mzx0KWCegesg8aIqxYvZtpPkMgSeKKmP0HbR10VJEiE8sppwLXjyCKeD7FfDMno08
+         aQFw7pEgPOopSn5y18csmWHVeaGptF4mZ5NykxYfVT/cNQcihPxVe94YqYla5ricD+
+         Z/jg3e9Ht3z+N4d4uUicakMOrXVRGnRrp0bGLCTo=
+Date:   Thu, 21 Jan 2021 18:57:16 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>,
         Al Viro <viro@zeniv.linux.org.uk>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Oliver Giles <ohw.giles@gmail.com>,
         Robert Karszniewicz <r.karszniewicz@phytec.de>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 1/6] tty: implement write_iter
+Message-ID: <YAnAfNcE8Bw95+SV@kroah.com>
+References: <20210121090020.3147058-1-gregkh@linuxfoundation.org>
+ <f4c72a0a-25e6-5c7a-559b-6d3b7c930100@kernel.org>
+ <CAHk-=whE3fmgWx+aNvC6qkNqJtWPre3dVnv-_qYj7GaWnW72Vg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whE3fmgWx+aNvC6qkNqJtWPre3dVnv-_qYj7GaWnW72Vg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 3:02 AM Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> n_hdlc_tty_read will return EOVERFLOW when size is 0, so this EFAULT is
-> never propagated, if I am looking correctly? n_tty seems to be fine
-> (returns zero for zeroed size).
+On Thu, Jan 21, 2021 at 09:44:17AM -0800, Linus Torvalds wrote:
+> On Thu, Jan 21, 2021 at 1:40 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> >
+> > Ok, here belongs my earlier note: "if ld == NULL => crash here." That is
+> > if hangup happens during the ldisc wait, the kernel will crash in
+> > tty_ldisc_deref.
+> 
+> Right you are, good catch.
+> 
+> > Is there a reason not to convert hung_up_tty_fops too and leave the
+> > return hung_up_tty_write here intact? This would also solve the comments
+> > above.
+> 
+> No, no reason. I started out just changing that one tty_write, then
+> noticed that I had to change the redirect case too, but never then got
+> to "yeah, I should have changed the hup case as well".
+> 
+> Greg, do you prefer a new series, or incremental patches?
 
-I'll fix that up too.
+Incremental patches please as these are already in my public branches
+and I would have to revert them and add new ones but that's messy, so
+fixes on top is fine.
 
-Greg - same question - do you want an incremental patch, or just a new series?
+thanks,
 
-              Linus
+greg k-h
