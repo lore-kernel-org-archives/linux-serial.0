@@ -2,112 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C239C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Jan 2022 17:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37035C433FE
+	for <linux-serial@archiver.kernel.org>; Sun, 23 Jan 2022 04:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351610AbiAURXh (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Jan 2022 12:23:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56182 "EHLO
+        id S231765AbiAWEKV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 22 Jan 2022 23:10:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351585AbiAURXg (ORCPT
+        with ESMTP id S230305AbiAWEKV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Jan 2022 12:23:36 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2FDC06173B;
-        Fri, 21 Jan 2022 09:23:36 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id o12so1943780eju.13;
-        Fri, 21 Jan 2022 09:23:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8NXAiWtMIfeUxiSKSX8KITUpdvgnK1eV2MyEqdhz4Tw=;
-        b=Yn+aa26mkRWKYicHrBF9lv87j17KpEy8yL4Xezg1BnxKgY7jDRRv5fAYktUdU2YoIn
-         S7y4rkc43EhraYHBpAHXj86eIwxiNIUNL9koznpqvpwhdqvKSvzRGfG1Fn5VuPPRioGs
-         P33+rL5rTgiVdt8+gMnzUxWBEQBjR8IVNBlxMXJEBAXDapsZQGyiUJXNScsd0bv7mS4o
-         6Cbyfo96WmRwj9is//o8+v4DkQkf3dDJqLdJ36yFJbG/6Z8K2zckz54LwFe2aYQqhc0W
-         rPfNJ0ib54IN7tC2Jf8eiFuXckAeMkB9Nf8l7ogbH1dzZlA8NdU7D57WzJ1Cxuafoq3W
-         HS4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8NXAiWtMIfeUxiSKSX8KITUpdvgnK1eV2MyEqdhz4Tw=;
-        b=VMefmzxsn4xpwzS/YEY6xgeaQkSdEvKU6ltTkPTf6acHnce2X3z7gdPuDOoh3T5RZW
-         5EEBOiw8GpsG9VPBkPV/RI1LpEkuXMk+amopxSHpdKxIw++gmemPXJ7bk8m784GIUI06
-         wDQsHxzGMGBrgHhuGscZaeS4ypsZ59EjvYPUJ7EJHDHWtFyBLQnW85wFYmmJ8PysR4VG
-         I7y7L5p7aLvC2wAr+2SLiHIQXd1KQ8QeVhb7Nkn0KXAUhQ5EgY9DPgbUcD9MZYEIUcz4
-         bJcBgCBZ1W34OZaow9vHdIkVcCO3I/qWi8eaqVapupRkf3VX3KtgSMs0pOhdwS7TPzya
-         QzHg==
-X-Gm-Message-State: AOAM5332Qo0lRM8h67+xfEJdUxvlYWLlEQonhO31GoGTigOXFs3PN+im
-        UEHiJqZVRfENQqHQVy+hoSuDk//Zj+rB/02l9nw=
-X-Google-Smtp-Source: ABdhPJxiMuqJI6e97nmWPPdBUq6TS6UCdQgeJ/EHh7s4SfFiRe1tWU9lTjaKe6WX7nZESIBAH+Gz03gyJOr6dOvI2o4=
-X-Received: by 2002:a17:907:968c:: with SMTP id hd12mr4024576ejc.639.1642785814310;
- Fri, 21 Jan 2022 09:23:34 -0800 (PST)
-MIME-Version: 1.0
-References: <20220118194857.26546-1-julianmarcusschroeder@gmail.com>
-In-Reply-To: <20220118194857.26546-1-julianmarcusschroeder@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 21 Jan 2022 19:22:57 +0200
-Message-ID: <CAHp75VdFGC5yXSmR_uNOv4=aEseMzWdJ=xNqqo1KKuGkajhb3g@mail.gmail.com>
-Subject: Re: [PATCH] fix serdev bind/unbind
-To:     julian schroeder <julianmarcusschroeder@gmail.com>
-Cc:     Rob Herring <robh@kernel.org>, bhanumaiya@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Sat, 22 Jan 2022 23:10:21 -0500
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9D4C06173B
+        for <linux-serial@vger.kernel.org>; Sat, 22 Jan 2022 20:10:21 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 496D7100D9411;
+        Sun, 23 Jan 2022 05:10:17 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 12B4A40DA1; Sun, 23 Jan 2022 05:10:17 +0100 (CET)
+Message-Id: <85fa3323ba8c307943969b7343e23f34c3e652ba.1642909284.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Sun, 23 Jan 2021 05:10:14 +0100
+Subject: [PATCH 1/2] serial: pl011: Fix incorrect rs485 RTS polarity on
+ set_mctrl
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Jochen Mades <jochen@mades.net>,
+        "Su Bao Cheng" <baocheng.su@siemens.com>,
+        "Su Bao Cheng" <baocheng_su@163.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Chao Zeng <chao.zeng@siemens.com>, linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 8:55 AM julian schroeder
-<julianmarcusschroeder@gmail.com> wrote:
->
-> On some chromebooks, the serdev is used to communicate with
+From: Jochen Mades <jochen@mades.net>
 
-Chromebooks ?
+Commit 8d479237727c ("serial: amba-pl011: add RS485 support") sought to
+keep RTS deasserted on set_mctrl if rs485 is enabled.  However it did so
+only if deasserted RTS polarity is high.  Fix it in case it's low.
 
-> an embedded controller. When the controller is updated, the
-> regular ttyS* is needed. Therefore unbind/bind needs to work
-> to be able to switch between the two modes without having to
-> reboot. In the case of ACPI enabled platforms, the underlying
-> serial device is marked as enumerated but this is not cleared
-> upon remove (unbind). In this state it can not be bound as
-> serdev.
+Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
+Signed-off-by: Jochen Mades <jochen@mades.net>
+[lukas: copyedit commit message, add stable designation]
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: stable@vger.kernel.org # v5.15+
+Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+---
+ drivers/tty/serial/amba-pl011.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Seems legit (we do this for i2c and spi serial buses in ACPI case).
-After addressing the following nit-pick
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-...
-
->  void serdev_device_remove(struct serdev_device *serdev)
->  {
->         struct serdev_controller *ctrl = serdev->ctrl;
-> +       struct acpi_device *adev;
-
-> +       adev = ACPI_COMPANION(&serdev->dev);
-> +       if (adev)
-> +               acpi_device_clear_enumerated(adev);
-
-As I mentioned i2c and SPI cases, I think it would be nice to use same
-pattern of this code, i.e.
-
-
-  if (ACPI_COMPANION(&serdev->dev))
-    acpi_device_clear_enumerated(ACPI_COMPANION(&serdev->dev));
-
-drivers/i2c/i2c-core-base.c, line 1007
-drivers/spi/spi.c, line 779
-
->         device_unregister(&serdev->dev);
->         ctrl->serdev = NULL;
->  }
-
-
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 1f1df46242f9..f64c475a1379 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1582,8 +1582,12 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 	    container_of(port, struct uart_amba_port, port);
+ 	unsigned int cr;
+ 
+-	if (port->rs485.flags & SER_RS485_ENABLED)
+-		mctrl &= ~TIOCM_RTS;
++	if (port->rs485.flags & SER_RS485_ENABLED) {
++		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
++			mctrl &= ~TIOCM_RTS;
++		else
++			mctrl |= TIOCM_RTS;
++	}
+ 
+ 	cr = pl011_read(uap, REG_CR);
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.34.1
+
