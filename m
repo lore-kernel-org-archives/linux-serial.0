@@ -2,138 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF0BDC433E6
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Jan 2021 13:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2013C43331
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Jan 2021 13:18:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 80987207A3
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Jan 2021 13:17:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 965A52076E
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Jan 2021 13:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S313444AbhAZWmU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Jan 2021 17:42:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47448 "EHLO mail.kernel.org"
+        id S313186AbhAZWlm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Jan 2021 17:41:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37158 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729073AbhAZSV7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Jan 2021 13:21:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7E859207BC;
-        Tue, 26 Jan 2021 18:21:17 +0000 (UTC)
+        id S2388864AbhAZRbZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 26 Jan 2021 12:31:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D541121919;
+        Tue, 26 Jan 2021 17:30:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611685277;
-        bh=MXfhwHib5lhIxe0d2EionO+qD1p7JOcTGIR5T//GcjU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Vyv6zeCgPBGRmLOGE+ZvJN/iEJbaZMbXGNiKs6W7mrLLyXtdvyXRRMjhIUG4flGz0
-         SObPNEWXGHHwcJfUJNuiMDGYMFH/8ozn34f5YEANN+7bqYaurnkm8GG9NwrvNlziq/
-         O+icUTumPpIZFw8RhAofdIEpRpC2YkiAovXOWMQqJg9uQPP3e+v84gtclOugTGmOcV
-         ++aSNFIc4sQpch4zq96vzAnzS+3zaa/mBeaevzYjYP5n9QywZGVOgMQYAiyYmOP+pZ
-         Sq1U3Xwms5ZLaHqaPI4yniW31jcyXpj/T+SM9Ctu5ovfB008PliOds9wV4CCoDyhwc
-         GyVUoh4d1+tyA==
-Received: by mail-ed1-f43.google.com with SMTP id c6so20960185ede.0;
-        Tue, 26 Jan 2021 10:21:17 -0800 (PST)
-X-Gm-Message-State: AOAM531+bSa8/wfSUxTkMkqCWoYP6KAcEK0RB3tUKorghTKbVy0gruDu
-        l16YNSHn7Vbd0RkSMdhlUX5JAJttecisG/5fnw==
-X-Google-Smtp-Source: ABdhPJwqon1vbLCOlmss6J+2GsHVOo4w9BY+GyxQEwzER9kIB9CkFOtLUal0HAuyf9bfo2h5vrYSv5GPYVZbdJOig20=
-X-Received: by 2002:a05:6402:1751:: with SMTP id v17mr5717873edx.289.1611685276124;
- Tue, 26 Jan 2021 10:21:16 -0800 (PST)
-MIME-Version: 1.0
-References: <20210123034428.2841052-1-swboyd@chromium.org>
-In-Reply-To: <20210123034428.2841052-1-swboyd@chromium.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 26 Jan 2021 12:21:04 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+voSRnHEEkUZSasdKGrXiBs3yCmzHp6Ua4WNuAgnh4AQ@mail.gmail.com>
-Message-ID: <CAL_Jsq+voSRnHEEkUZSasdKGrXiBs3yCmzHp6Ua4WNuAgnh4AQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] Stop NULLifying match pointer in of_match_device()
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jean Delvare <jdelvare@suse.com>, Jiri Slaby <jslaby@suse.com>,
-        Linux HWMON List <linux-hwmon@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        "open list:MEDIA DRIVERS FOR RENESAS - FCP" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        s=k20201202; t=1611682245;
+        bh=p9tGPF9ccd/d++aM4n9LyAfYAIV1RaM4Dz9iiSI4D3c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=upI/kMhl7eE4+5uUph8S2tnMemQz5UbOopsKlNTDclqyTUBBILQcZKMXkwORHX8Yq
+         cJWujimFLxD3PUXP3Q6R5vs2zcoQMtooqvBAs2SfrBJr86tAjNEuPYdfB5MvusQjhA
+         rfnXzeJTXEVfQT42qqoxlu/1tgXRz2T+JTiZP73bnjiQwVao3xvBwc5M7G4UXf469U
+         VF6liyETyFxIuLw+hAqs6DjITpSX4hILsnFHO/EYiFxk0F2hgX4ucJit2xkGTa6SJ/
+         LEzImN7uvO2sCqNSCL4qH0V6E+R6lLaPerEq4KlBRAb7BizMVwvcu+25e7achCvt2Z
+         DlVP64TyyHfRA==
+Date:   Tue, 26 Jan 2021 23:00:40 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Eric Anholt <eric@anholt.net>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Richard Leitner <richard.leitner@skidata.com>
-Content-Type: text/plain; charset="UTF-8"
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
+        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-i2c@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: Re: [PATCH v3 4/5] amba: Make the remove callback return void
+Message-ID: <20210126173040.GY2771@vkoul-mobl>
+References: <20210126165835.687514-1-u.kleine-koenig@pengutronix.de>
+ <20210126165835.687514-5-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210126165835.687514-5-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 9:44 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> (This is a continuation of this series[1] per Rob's request. I've picked
-> up the acks, etc. with b4 and compile tested the patches along with an
-> arm64 allmodconfig build. Presumably Rob will pick these up directly.)
->
-> of_match_device() uses of_match_ptr() to make the match table argument
-> NULL via the pre-processor when CONFIG_OF=n. This makes life harder for
-> compilers who think that match tables are never used and warn about
-> unused variables when CONFIG_OF=n. This series changes various callers
-> to use of_device_get_match_data() instead, which doesn't have this
-> problem, and removes the of_match_ptr() usage from of_match_device() so
-> that the compiler can stop complaining about unused variables. It will
-> do dead code elimination instead and remove the match table if it isn't
-> actually used.
->
-> [1] https://lore.kernel.org/r/20191004214334.149976-1-swboyd@chromium.org
->
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Frank Rowand <frowand.list@gmail.com>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Jacopo Mondi <jacopo@jmondi.org>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: <linux-hwmon@vger.kernel.org>
-> Cc: <linux-kernel@vger.kernel.org>,
-> Cc: <linux-media@vger.kernel.org>
-> Cc: <linux-omap@vger.kernel.org>
-> Cc: <linux-renesas-soc@vger.kernel.org>
-> Cc: <linux-serial@vger.kernel.org>
-> Cc: <linux-usb@vger.kernel.org>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Richard Leitner <richard.leitner@skidata.com>
-> Cc: Rob Herring <robh+dt@kernel.org>
->
-> Stephen Boyd (6):
->   media: renesas-ceu: Use of_device_get_match_data()
->   drivers: net: davinci_mdio: Use of_device_get_match_data()
->   serial: stm32: Use of_device_get_match_data()
->   usb: usb251xb: Use of_device_get_match_data()
->   hwmon: (lm70) Avoid undefined reference to match table
->   of/device: Don't NULLify match table in of_match_device() with
->     CONFIG_OF=n
->
->  drivers/hwmon/lm70.c                   |  2 +-
->  drivers/media/platform/renesas-ceu.c   |  2 +-
->  drivers/net/ethernet/ti/davinci_mdio.c | 12 ++---
->  drivers/tty/serial/stm32-usart.c       | 71 ++++++++++++--------------
->  drivers/tty/serial/stm32-usart.h       |  2 +-
->  drivers/usb/misc/usb251xb.c            | 12 ++---
->  include/linux/of_device.h              |  4 +-
->  7 files changed, 47 insertions(+), 58 deletions(-)
+On 26-01-21, 17:58, Uwe Kleine-König wrote:
+> All amba drivers return 0 in their remove callback. Together with the
+> driver core ignoring the return value anyhow, it doesn't make sense to
+> return a value here.
+> 
+> Change the remove prototype to return void, which makes it explicit that
+> returning an error value doesn't work as expected. This simplifies changing
+> the core remove callback to return void, too.
+> 
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Acked-by: Krzysztof Kozlowski <krzk@kernel.org> # for drivers/memory
+> Acked-by: Mark Brown <broonie@kernel.org>
+> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/amba/bus.c                                 | 5 ++---
+>  drivers/char/hw_random/nomadik-rng.c               | 3 +--
+>  drivers/dma/pl330.c                                | 3 +--
 
-Series applied.
+For dmaengine:
 
+Acked-By: Vinod Koul <vkoul@kernel.org>
 
-Rob
+-- 
+~Vinod
