@@ -2,113 +2,190 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9286C433DB
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Jan 2021 13:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9D8C433DB
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Jan 2021 11:58:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 77FEA207B0
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Jan 2021 13:19:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A8E3760235
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Jan 2021 11:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S313710AbhAZWlF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Jan 2021 17:41:05 -0500
-Received: from foss.arm.com ([217.140.110.172]:48778 "EHLO foss.arm.com"
+        id S231137AbhA1L6E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Jan 2021 06:58:04 -0500
+Received: from mga04.intel.com ([192.55.52.120]:59557 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729902AbhAZRL2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Jan 2021 12:11:28 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 843DFD6E;
-        Tue, 26 Jan 2021 09:08:55 -0800 (PST)
-Received: from [10.57.40.145] (unknown [10.57.40.145])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 099A63F66E;
-        Tue, 26 Jan 2021 09:08:45 -0800 (PST)
-Subject: Re: [PATCH v3 4/5] amba: Make the remove callback return void
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Eric Anholt <eric@anholt.net>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
-        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-i2c@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
-References: <20210126165835.687514-1-u.kleine-koenig@pengutronix.de>
- <20210126165835.687514-5-u.kleine-koenig@pengutronix.de>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-Message-ID: <3e42b2ea-c713-31b2-9c86-c49a70d8e1f4@arm.com>
-Date:   Tue, 26 Jan 2021 17:08:40 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S229661AbhA1L5t (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 28 Jan 2021 06:57:49 -0500
+IronPort-SDR: gp1eRMnn9vCJg46Fq+JP3ym9OefboLRbowCW4PxQ6TeNpZtJOUC88dIGZJLGex/EEBED4tGc09
+ YM1fN3XYh0ig==
+X-IronPort-AV: E=McAfee;i="6000,8403,9877"; a="177657512"
+X-IronPort-AV: E=Sophos;i="5.79,382,1602572400"; 
+   d="scan'208";a="177657512"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2021 03:57:06 -0800
+IronPort-SDR: UnRDygF+gdWzxaZNB1DLdSRTHUbGkYkA4jPrcCgv7DI8kt+ShhJ2rvw8MazW9meBegIXfuoQXo
+ XgRjfXu4S6hw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,382,1602572400"; 
+   d="scan'208";a="394389496"
+Received: from lkp-server02.sh.intel.com (HELO 625d3a354f04) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 28 Jan 2021 03:57:05 -0800
+Received: from kbuild by 625d3a354f04 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1l55v6-0002rp-Ql; Thu, 28 Jan 2021 11:57:04 +0000
+Date:   Thu, 28 Jan 2021 19:56:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 9159835a978f4092bf00a69b51256e69c961edb9
+Message-ID: <6012a663./jriW+24t8A5hB9W%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-In-Reply-To: <20210126165835.687514-5-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 9159835a978f4092bf00a69b51256e69c961edb9  vt: keyboard, use new API for keyboard_tasklet
 
-On 1/26/21 4:58 PM, Uwe Kleine-König wrote:
-> All amba drivers return 0 in their remove callback. Together with the
-> driver core ignoring the return value anyhow, it doesn't make sense to
-> return a value here.
-> 
-> Change the remove prototype to return void, which makes it explicit that
-> returning an error value doesn't work as expected. This simplifies changing
-> the core remove callback to return void, too.
-> 
-> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Acked-by: Krzysztof Kozlowski <krzk@kernel.org> # for drivers/memory
-> Acked-by: Mark Brown <broonie@kernel.org>
-  > Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+elapsed time: 721m
 
+configs tested: 120
+configs skipped: 2
 
->   drivers/hwtracing/coresight/coresight-etm4x-core.c | 4 +---
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-You are most likely to have a conflict for the above file, with what is
-in coresight/next. It should be easy to resolve.
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+powerpc                      mgcoge_defconfig
+powerpc                          g5_defconfig
+powerpc                         ps3_defconfig
+nds32                            alldefconfig
+c6x                        evmc6457_defconfig
+m68k                            q40_defconfig
+m68k                       m5208evb_defconfig
+sh                            titan_defconfig
+mips                           ip28_defconfig
+alpha                            alldefconfig
+powerpc                    gamecube_defconfig
+sparc                       sparc32_defconfig
+mips                         tb0226_defconfig
+xtensa                           allyesconfig
+mips                      pic32mzda_defconfig
+powerpc                     pseries_defconfig
+arm                          ep93xx_defconfig
+openrisc                    or1ksim_defconfig
+nios2                            allyesconfig
+sh                         apsh4a3a_defconfig
+arm                       aspeed_g5_defconfig
+arm                        mvebu_v5_defconfig
+m68k                       m5275evb_defconfig
+powerpc                      ppc44x_defconfig
+arm                       aspeed_g4_defconfig
+c6x                        evmc6678_defconfig
+mips                          malta_defconfig
+arc                           tb10x_defconfig
+xtensa                generic_kc705_defconfig
+sh                          rsk7269_defconfig
+mips                            ar7_defconfig
+arm                       multi_v4t_defconfig
+powerpc                      tqm8xx_defconfig
+arm                          moxart_defconfig
+mips                         bigsur_defconfig
+arc                        nsim_700_defconfig
+ia64                         bigsur_defconfig
+powerpc                 canyonlands_defconfig
+openrisc                            defconfig
+ia64                        generic_defconfig
+openrisc                 simple_smp_defconfig
+sh                          r7780mp_defconfig
+mips                       capcella_defconfig
+mips                          ath79_defconfig
+mips                       lemote2f_defconfig
+mips                 decstation_r4k_defconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+c6x                              allyesconfig
+nds32                               defconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                               tinyconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a003-20210128
+i386                 randconfig-a006-20210128
+i386                 randconfig-a001-20210128
+i386                 randconfig-a002-20210128
+i386                 randconfig-a004-20210128
+i386                 randconfig-a005-20210128
+x86_64               randconfig-a012-20210128
+x86_64               randconfig-a015-20210128
+x86_64               randconfig-a016-20210128
+x86_64               randconfig-a011-20210128
+x86_64               randconfig-a013-20210128
+x86_64               randconfig-a014-20210128
+i386                 randconfig-a013-20210128
+i386                 randconfig-a011-20210128
+i386                 randconfig-a012-20210128
+i386                 randconfig-a016-20210128
+i386                 randconfig-a014-20210128
+i386                 randconfig-a015-20210128
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                                   rhel
+x86_64                           allyesconfig
+x86_64                    rhel-7.6-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                      rhel-8.3-kbuiltin
+x86_64                                  kexec
 
-Otherwise, the changes look good for the drivers/hwtracing/coresight/*
+clang tested configs:
+x86_64               randconfig-a002-20210128
+x86_64               randconfig-a003-20210128
+x86_64               randconfig-a001-20210128
+x86_64               randconfig-a005-20210128
+x86_64               randconfig-a006-20210128
+x86_64               randconfig-a004-20210128
 
-Acked-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
