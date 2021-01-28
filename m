@@ -2,190 +2,183 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9D8C433DB
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Jan 2021 11:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B213C433E6
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Jan 2021 17:33:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A8E3760235
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Jan 2021 11:58:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EA0964E05
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Jan 2021 17:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231137AbhA1L6E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Jan 2021 06:58:04 -0500
-Received: from mga04.intel.com ([192.55.52.120]:59557 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229661AbhA1L5t (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Jan 2021 06:57:49 -0500
-IronPort-SDR: gp1eRMnn9vCJg46Fq+JP3ym9OefboLRbowCW4PxQ6TeNpZtJOUC88dIGZJLGex/EEBED4tGc09
- YM1fN3XYh0ig==
-X-IronPort-AV: E=McAfee;i="6000,8403,9877"; a="177657512"
-X-IronPort-AV: E=Sophos;i="5.79,382,1602572400"; 
-   d="scan'208";a="177657512"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2021 03:57:06 -0800
-IronPort-SDR: UnRDygF+gdWzxaZNB1DLdSRTHUbGkYkA4jPrcCgv7DI8kt+ShhJ2rvw8MazW9meBegIXfuoQXo
- XgRjfXu4S6hw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,382,1602572400"; 
-   d="scan'208";a="394389496"
-Received: from lkp-server02.sh.intel.com (HELO 625d3a354f04) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 28 Jan 2021 03:57:05 -0800
-Received: from kbuild by 625d3a354f04 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1l55v6-0002rp-Ql; Thu, 28 Jan 2021 11:57:04 +0000
-Date:   Thu, 28 Jan 2021 19:56:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 9159835a978f4092bf00a69b51256e69c961edb9
-Message-ID: <6012a663./jriW+24t8A5hB9W%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S232906AbhA1Rcz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Jan 2021 12:32:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54040 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232653AbhA1Rcf (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 28 Jan 2021 12:32:35 -0500
+X-Greylist: delayed 517 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jan 2021 09:31:33 PST
+Received: from unicorn.mansr.com (unicorn.mansr.com [IPv6:2001:8b0:ca0d:8d8e::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC16C061573
+        for <linux-serial@vger.kernel.org>; Thu, 28 Jan 2021 09:31:33 -0800 (PST)
+Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
+        by unicorn.mansr.com (Postfix) with ESMTPS id 028AD15360;
+        Thu, 28 Jan 2021 17:22:54 +0000 (GMT)
+Received: by raven.mansr.com (Postfix, from userid 51770)
+        id C69D121A3C6; Thu, 28 Jan 2021 17:22:53 +0000 (GMT)
+From:   Mans Rullgard <mans@mansr.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250: add option to disable registration of legacy ISA ports
+Date:   Thu, 28 Jan 2021 17:22:44 +0000
+Message-Id: <20210128172244.22859-1-mans@mansr.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 9159835a978f4092bf00a69b51256e69c961edb9  vt: keyboard, use new API for keyboard_tasklet
+On systems that do not have the traditional PC ISA serial ports, the
+8250 driver still creates non-functional device nodes.  This change
+makes only ports that actually exist (PCI, DT, ...) get device nodes.
 
-elapsed time: 721m
-
-configs tested: 120
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-powerpc                      mgcoge_defconfig
-powerpc                          g5_defconfig
-powerpc                         ps3_defconfig
-nds32                            alldefconfig
-c6x                        evmc6457_defconfig
-m68k                            q40_defconfig
-m68k                       m5208evb_defconfig
-sh                            titan_defconfig
-mips                           ip28_defconfig
-alpha                            alldefconfig
-powerpc                    gamecube_defconfig
-sparc                       sparc32_defconfig
-mips                         tb0226_defconfig
-xtensa                           allyesconfig
-mips                      pic32mzda_defconfig
-powerpc                     pseries_defconfig
-arm                          ep93xx_defconfig
-openrisc                    or1ksim_defconfig
-nios2                            allyesconfig
-sh                         apsh4a3a_defconfig
-arm                       aspeed_g5_defconfig
-arm                        mvebu_v5_defconfig
-m68k                       m5275evb_defconfig
-powerpc                      ppc44x_defconfig
-arm                       aspeed_g4_defconfig
-c6x                        evmc6678_defconfig
-mips                          malta_defconfig
-arc                           tb10x_defconfig
-xtensa                generic_kc705_defconfig
-sh                          rsk7269_defconfig
-mips                            ar7_defconfig
-arm                       multi_v4t_defconfig
-powerpc                      tqm8xx_defconfig
-arm                          moxart_defconfig
-mips                         bigsur_defconfig
-arc                        nsim_700_defconfig
-ia64                         bigsur_defconfig
-powerpc                 canyonlands_defconfig
-openrisc                            defconfig
-ia64                        generic_defconfig
-openrisc                 simple_smp_defconfig
-sh                          r7780mp_defconfig
-mips                       capcella_defconfig
-mips                          ath79_defconfig
-mips                       lemote2f_defconfig
-mips                 decstation_r4k_defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-c6x                              allyesconfig
-nds32                               defconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                               tinyconfig
-i386                                defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-i386                 randconfig-a003-20210128
-i386                 randconfig-a006-20210128
-i386                 randconfig-a001-20210128
-i386                 randconfig-a002-20210128
-i386                 randconfig-a004-20210128
-i386                 randconfig-a005-20210128
-x86_64               randconfig-a012-20210128
-x86_64               randconfig-a015-20210128
-x86_64               randconfig-a016-20210128
-x86_64               randconfig-a011-20210128
-x86_64               randconfig-a013-20210128
-x86_64               randconfig-a014-20210128
-i386                 randconfig-a013-20210128
-i386                 randconfig-a011-20210128
-i386                 randconfig-a012-20210128
-i386                 randconfig-a016-20210128
-i386                 randconfig-a014-20210128
-i386                 randconfig-a015-20210128
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                                   rhel
-x86_64                           allyesconfig
-x86_64                    rhel-7.6-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                      rhel-8.3-kbuiltin
-x86_64                                  kexec
-
-clang tested configs:
-x86_64               randconfig-a002-20210128
-x86_64               randconfig-a003-20210128
-x86_64               randconfig-a001-20210128
-x86_64               randconfig-a005-20210128
-x86_64               randconfig-a006-20210128
-x86_64               randconfig-a004-20210128
-
+Signed-off-by: Mans Rullgard <mans@mansr.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/tty/serial/8250/8250_core.c | 26 ++++++++++++++++++++------
+ drivers/tty/serial/8250/Kconfig     |  5 +++++
+ 2 files changed, 25 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index cae61d1ebec5..49695dd3677c 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -555,6 +555,7 @@ static void __init serial8250_isa_init_ports(void)
+ 	}
+ }
+ 
++#ifdef CONFIG_SERIAL_8250_ISA
+ static void __init
+ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+ {
+@@ -575,6 +576,7 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+ 		uart_add_one_port(drv, &up->port);
+ 	}
+ }
++#endif
+ 
+ #ifdef CONFIG_SERIAL_8250_CONSOLE
+ 
+@@ -797,6 +799,7 @@ void serial8250_resume_port(int line)
+ }
+ EXPORT_SYMBOL(serial8250_resume_port);
+ 
++#ifdef CONFIG_SERIAL_8250_ISA
+ /*
+  * Register a set of serial devices attached to a platform device.  The
+  * list is terminated with a zero flags entry, which means we expect
+@@ -907,6 +910,7 @@ static struct platform_driver serial8250_isa_driver = {
+  * in the table in include/asm/serial.h
+  */
+ static struct platform_device *serial8250_isa_devs;
++#endif
+ 
+ /*
+  * serial8250_register_8250_port and serial8250_unregister_port allows for
+@@ -1149,6 +1153,8 @@ void serial8250_unregister_port(int line)
+ 	}
+ 
+ 	uart_remove_one_port(&serial8250_reg, &uart->port);
++	uart->port.dev = NULL;
++#ifdef CONFIG_SERIAL_8250_ISA
+ 	if (serial8250_isa_devs) {
+ 		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
+ 		uart->port.type = PORT_UNKNOWN;
+@@ -1156,9 +1162,8 @@ void serial8250_unregister_port(int line)
+ 		uart->capabilities = 0;
+ 		serial8250_apply_quirks(uart);
+ 		uart_add_one_port(&serial8250_reg, &uart->port);
+-	} else {
+-		uart->port.dev = NULL;
+ 	}
++#endif
+ 	mutex_unlock(&serial_mutex);
+ }
+ EXPORT_SYMBOL(serial8250_unregister_port);
+@@ -1188,6 +1193,7 @@ static int __init serial8250_init(void)
+ 	if (ret)
+ 		goto unreg_uart_drv;
+ 
++#ifdef CONFIG_SERIAL_8250_ISA
+ 	serial8250_isa_devs = platform_device_alloc("serial8250",
+ 						    PLAT8250_DEV_LEGACY);
+ 	if (!serial8250_isa_devs) {
+@@ -1202,26 +1208,33 @@ static int __init serial8250_init(void)
+ 	serial8250_register_ports(&serial8250_reg, &serial8250_isa_devs->dev);
+ 
+ 	ret = platform_driver_register(&serial8250_isa_driver);
+-	if (ret == 0)
+-		goto out;
++	if (ret)
++		goto del_dev;
++#endif
+ 
++out:
++	return ret;
++
++#ifdef CONFIG_SERIAL_8250_ISA
++del_dev:
+ 	platform_device_del(serial8250_isa_devs);
+ put_dev:
+ 	platform_device_put(serial8250_isa_devs);
+ unreg_pnp:
+ 	serial8250_pnp_exit();
++#endif
+ unreg_uart_drv:
+ #ifdef CONFIG_SPARC
+ 	sunserial_unregister_minors(&serial8250_reg, UART_NR);
+ #else
+ 	uart_unregister_driver(&serial8250_reg);
+ #endif
+-out:
+-	return ret;
++	goto out;
+ }
+ 
+ static void __exit serial8250_exit(void)
+ {
++#ifdef CONFIG_SERIAL_8250_ISA
+ 	struct platform_device *isa_dev = serial8250_isa_devs;
+ 
+ 	/*
+@@ -1233,6 +1246,7 @@ static void __exit serial8250_exit(void)
+ 
+ 	platform_driver_unregister(&serial8250_isa_driver);
+ 	platform_device_unregister(isa_dev);
++#endif
+ 
+ 	serial8250_pnp_exit();
+ 
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 603137da4736..683f81675a77 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -52,6 +52,11 @@ config SERIAL_8250_DEPRECATED_OPTIONS
+ 	  If you did not notice yet and/or you have userspace from pre-3.7, it
+ 	  is safe (and recommended) to say N here.
+ 
++config SERIAL_8250_ISA
++	bool "8250/16550 ISA device support" if EXPERT
++	depends on SERIAL_8250
++	default y
++
+ config SERIAL_8250_PNP
+ 	bool "8250/16550 PNP device support" if EXPERT
+ 	depends on SERIAL_8250 && PNP
+-- 
+2.30.0
+
