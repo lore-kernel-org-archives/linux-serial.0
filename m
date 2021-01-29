@@ -2,270 +2,602 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4C2C433E0
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Jan 2021 16:46:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F9AC4332D
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Jan 2021 17:15:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 438F164E05
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Jan 2021 16:46:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B84C464E15
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Jan 2021 17:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbhA2Qqd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Jan 2021 11:46:33 -0500
-Received: from mx0a-002ab301.pphosted.com ([148.163.150.161]:21232 "EHLO
-        mx0a-002ab301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230249AbhA2Qpm (ORCPT
+        id S232338AbhA2RO6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Jan 2021 12:14:58 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:15302 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230525AbhA2RNH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Jan 2021 11:45:42 -0500
-Received: from pps.filterd (m0118791.ppops.net [127.0.0.1])
-        by mx0a-002ab301.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10TGLT7R005152;
-        Fri, 29 Jan 2021 11:22:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=distech-controls.com; h=subject :
- to : cc : references : from : message-id : date : in-reply-to :
- content-type : content-transfer-encoding : mime-version; s=pps-02182019;
- bh=L/d35nB6fySuN54/oOrZvszbEeMI2+QG6o0yITzfIXQ=;
- b=Rpx9MfE6BXKUEw6POczpNDV8MBDNFNcQRnVvgfxATrxn1Rrh65NP1y1hp7dXNvitCPc4
- 56SbMNQVhTqotzwVlr/lXAMxdi1u4iHGRhZ44HJqdVvd0BctGliNviq087ualyDp3x+I
- CMgUcK3vn0GTElYm4S5RQdLKvab5WoM+kNHYNYuIwxfsT7MqKOclS31534KbnHvuTKQi
- xL9tzqHQpWA6mutRNrLdunuiOS+wQRVBdaFkPhEqPcUZ1lY7X0EM8hIgGscb90H+TqX4
- LDCB2OPq0f9hehz2Z1XuJ9d7Y2P/NkHx1uQWi4nAfTdI+Z50G5ok0mCttka6vKo/w7Uh UA== 
-Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2057.outbound.protection.outlook.com [104.47.37.57])
-        by mx0a-002ab301.pphosted.com with ESMTP id 36byx9900u-1
+        Fri, 29 Jan 2021 12:13:07 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10TGMEb7004690;
+        Fri, 29 Jan 2021 17:23:37 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=STMicroelectronics;
+ bh=nHENikI4D+1UCudoekYAKYLiYsT5Xl4/aqeywy5nnw8=;
+ b=QJdt8L3Z8oPpcqiLpxE1eCfQ8/VSoPFadRFs/kDX/E9wWTRBoOpiGnst1qpndelqysQg
+ svE+ZOSwGmmlkJ4nN8BbK3FnGSz1WpkmzadsC2AivJHobuvscxiMgWOnoPqQwSwFHDcM
+ cZmLtYNUZ5xVU65Kv/TyUbXlIWTd5neTl8cdOqD52lic1ecgoDLoseYp1nLmelK/5dGS
+ dvw13V2w6485bqtaR0O4Y6ptypUfzVhmv8BJbKYct+PwVxk0PuB/8Q9YQxPAuXshHK8u
+ kL5Fk+jM2DnusDnvtsH3bzO2+fpCxwWAi0JU4w7Ston0GfRCihMuSLNa08RrPQ1Jo4SW aQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 3689teew8p-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Jan 2021 11:22:09 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hFxlTRFc4o4x9/63RHIStwFhZ23EIGY8aJqSIs9LqH52B+XP9BfBvPO5x7tAA+/noc74M1N++KmLUZKA4gXprP8Z2y/u7WDYVvfLGfm512NGfqFYNG1EZZGbOZUxpBuOOMrTXd47Ui25tQT5uIsJgnjrZ2brNpSucama32fGCjXnSgsrmQtPGUqSRvkVT0FonxYrwCK+ogOZB3Gxle/lxvRe3igEmnLqDg5biw4bQvPdHIOJE/In2H0/gvzDfhX3KMnTuwT88TaPHDWbzCyEqLbFMJZP8QiD9r+iGEhvnfToIrF2W6Ysw7scgTh5TUBfj3TMrDw1dnCNY6iNfploTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L/d35nB6fySuN54/oOrZvszbEeMI2+QG6o0yITzfIXQ=;
- b=cpgBzeYSwYwsehXLq4HjjJa+EEX3myLI/S/GD9vuucO1ivb0BIr+FaWK+yi/Z+UTqYvIkDWBtyT50FEDWKhzy3uLXrxYiKavw4X74EGBL4AwlKxhYt4N283M0VzQj//NkJiN6XzdF6o1+8//ySCDz+xoRWu/wCoEwBGXUd4kGh4PbH07zAVVLbHiELS9ZJwJXrMdky3we4VfHH0wGbdcXrgZ40HkpWPOcfc3ltuu9XY79js6FQTwwgHJhbuwIeMIvAs4Tmy4HGTu0LIeFikBAPd8oMKHMfgFwj8JMd08p94lFvGOutvKyRfPiPKEGBgxJFl/Ysc6HR7MngUxTHFTqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=distech-controls.com; dmarc=pass action=none
- header.from=distech-controls.com; dkim=pass header.d=distech-controls.com;
- arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=distech-controls.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L/d35nB6fySuN54/oOrZvszbEeMI2+QG6o0yITzfIXQ=;
- b=VVpc6oVWbYrw8TQS0e1huF47Q1o5oUfnyY1iU99YLBgVHG1/lxA82jV0UuGtkM7tPc0HjziS0w6sMniggqs01P2he3DGqZ2EIvQM7G+ns5M2aia+G45hIXj2cdEf9FzOG8PAvxrKMmqJ4FoOCvtrRQKtJo8cL9m4WGX7bcYPLKg=
-Authentication-Results: theobroma-systems.com; dkim=none (message not signed)
- header.d=none;theobroma-systems.com; dmarc=none action=none
- header.from=distech-controls.com;
-Received: from DM5PR01MB2457.prod.exchangelabs.com (2603:10b6:3:41::21) by
- DM6PR01MB4458.prod.exchangelabs.com (2603:10b6:5:7d::16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3784.17; Fri, 29 Jan 2021 16:22:06 +0000
-Received: from DM5PR01MB2457.prod.exchangelabs.com
- ([fe80::9de6:ce8a:e281:8e63]) by DM5PR01MB2457.prod.exchangelabs.com
- ([fe80::9de6:ce8a:e281:8e63%11]) with mapi id 15.20.3805.020; Fri, 29 Jan
- 2021 16:22:06 +0000
-Subject: Re: [PATCH 1/3] serial: 8250: Handle UART without interrupt on TEMT
- using em485
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        matwey.kornilov@gmail.com, giulio.benetti@micronovasrl.com,
-        lukas@wunner.de, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com, heiko@sntech.de,
-        heiko.stuebner@theobroma-systems.com
-References: <20210128233629.4164-1-etremblay@distech-controls.com>
- <20210128233629.4164-2-etremblay@distech-controls.com>
- <YBPv/EA5LwA6jxId@smile.fi.intel.com>
-From:   Eric Tremblay <etremblay@distech-controls.com>
-Message-ID: <ab4bed42-a3d1-0cb4-ba9b-d37dd807204d@distech-controls.com>
-Date:   Fri, 29 Jan 2021 11:22:03 -0500
+        Fri, 29 Jan 2021 17:23:37 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AC72E10002A;
+        Fri, 29 Jan 2021 17:23:34 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4F607219816;
+        Fri, 29 Jan 2021 17:23:34 +0100 (CET)
+Received: from lmecxl0912.lme.st.com (10.75.127.44) by SFHDAG3NODE2.st.com
+ (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 29 Jan
+ 2021 17:23:33 +0100
+Subject: Re: [PATCH] dt-bindings: Cleanup standard unit properties
+To:     Rob Herring <robh@kernel.org>, <devicetree@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Wolfram Sang <wolfram@the-dreams.de>,
+        <linux-hwmon@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-input@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-watchdog@vger.kernel.org>
+References: <20210128194515.743252-1-robh@kernel.org>
+From:   Alexandre Torgue <alexandre.torgue@st.com>
+Message-ID: <a234af98-a86a-69cd-80d8-265779ca9330@st.com>
+Date:   Fri, 29 Jan 2021 17:23:32 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
-In-Reply-To: <YBPv/EA5LwA6jxId@smile.fi.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [2607:fa49:6d60:7d00:d104:219a:c8a0:bca5]
-X-ClientProxiedBy: YQBPR01CA0100.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c01:3::36) To DM5PR01MB2457.prod.exchangelabs.com
- (2603:10b6:3:41::21)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2607:fa49:6d60:7d00:d104:219a:c8a0:bca5] (2607:fa49:6d60:7d00:d104:219a:c8a0:bca5) by YQBPR01CA0100.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:c01:3::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.16 via Frontend Transport; Fri, 29 Jan 2021 16:22:05 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: cf430490-2cfb-4424-999c-08d8c472051e
-X-MS-TrafficTypeDiagnostic: DM6PR01MB4458:
-X-Microsoft-Antispam-PRVS: <DM6PR01MB4458AC8C48D415B1C83BC1E095B99@DM6PR01MB4458.prod.exchangelabs.com>
-x-pp-identifier: acuityo365
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Jk5Gs32HRWbgijIaT6EJbG6jZopwV/Td4a23iehI+cMXX3r3DcgAM4dQbsN/YO5JWa8r//jv74baubsJID1PeLr/NQJCksl+wgwi9UF/wehO5B06UPRE4SYod9/PcySCekgZ1uagU/Hmmqmmfx0esyG6wXsJ3NxqMZ2eukaHYXbCTJ1aScLn3vis0X+qzwL2qIp3Ur4jb00xslU9WYMToNnGalPvFz8tz1N0oOZvvYEovuveQ/e0s9z63d14IRM29qnABXAQvRCcVw0jlrQ+ytMMJ4yciC5bpKMjcC9nNhgOcAR/fq11O8qQqb8H9oBFGUY6BhFa9FSlA3yEwAuBPNa/WI79ye/V/GZsLEOvWUXbhKluCk19u2nqTpeAWdA6CabyNBcbccAjaLXLhsh9j/MChmyBG59+VNB6JWU0xJ3o4/lKQAewYyW8n0Bv8d/GrIzUnmXHEn/8Lho8WwUUFxuYnGZU4uCp69O9FFl3L0eYu36Hi36hf+eH3Zs1uCKgj0a7PdJDVpcPDSq3/Ev76pJPGVWe/DAoz0S5UslcixfJK8hodbzTlPx5Ee5KbKQnasObaRwl2I6U5bTQ6bg7WgOp/4wTDN+VP6EaoclZFBo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR01MB2457.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(396003)(346002)(376002)(136003)(478600001)(31696002)(6916009)(52116002)(8676002)(31686004)(53546011)(4326008)(316002)(186003)(7416002)(16526019)(36756003)(66946007)(2906002)(6486002)(86362001)(66476007)(5660300002)(2616005)(83380400001)(8936002)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?WS9NMm9kWFRFaGJ5S01qcFpFdmRMWVh4S3ZEVDU0dWMzMmR4L0ZDWU9vY2dD?=
- =?utf-8?B?dnhBbkMyT0g5QnBzR0Q3d0MyaFB4R0RjTDlpOFlHK0tkZkd0Rk9JOFV3WWhM?=
- =?utf-8?B?OVFkOGxYditWMmpvY2l2d3pYTytWLzBlMGgxWERoWC9MMklqckl3dmhodHEx?=
- =?utf-8?B?N0xOb1VleUlnT2dKU3pSSzVLUWpkL1dmei91NnJob3Bjb1FqWDdESXhpakk3?=
- =?utf-8?B?YmZFa2g0OW9pcXZJTmNRdEx3ZnlYckVHY1FkZk5KVkwydVh2TTFFRktrbmUr?=
- =?utf-8?B?cjNpWW5haVZYT0JRNHg4dzg1UUhqRExXR2syNzEwL2Jld3lUQ2ZPeFExcjBF?=
- =?utf-8?B?dm90d1NXOXdSVTdiT1FVWjdJLzhURWQ3MlRYYm9abjlYaEpZM0NOZmRTMjE1?=
- =?utf-8?B?c2VPZ3JiOEhGQjJJTUxXY3Z2WE9EaXdXZ3dBTXRyTzVTZE5tR3BYeFhOOTZT?=
- =?utf-8?B?R3pRNVArRkNLbGxSRGdMQ2tpN2ZxZ0lSZG5sN2d0WVh3MjZGcDhlMUtkbHY4?=
- =?utf-8?B?b3RwcGhYM1g3ZVJIdFUyVWhra1kwSGs3TDJYb1VOTThvVExVTkNtMk5KdlQ3?=
- =?utf-8?B?QU96UDdadnpOL0FaSkxaZ1poRE8rTk5qVHF2UXZqNWZmVW9pRjRCT20wdFlp?=
- =?utf-8?B?TGNOVHovUHppWDI5eENjYWtOVnNZTEtxRTNOYzlna1JZOVNYQzVrdkFTNWYr?=
- =?utf-8?B?K2Nlam8wWC9YdXJ2eC94eTZtZXo5ZW1scjBKMVcrQlNRMkZIUU4walh1eGV2?=
- =?utf-8?B?dXlJVHpjRm5DYk9jWlI1Qlg1T0ExdmRXYmJXQXRHQU40TzYrUFVoTFBId2Q4?=
- =?utf-8?B?U0tFb0dVcVVUZVg3QjM3SFhMUTZxbTRheU5jM0xIeFFhSlJLWWN5SmU0T2JN?=
- =?utf-8?B?ZXdIZ2lSclJRUzZWWE5FdkErYjA4b2gxTlJUTFZ2dW1XZ2FmcE94R3IvdHFn?=
- =?utf-8?B?ZnJ3dTMxVWNCSjI0MjFLcnNGamxVWDBVaVBkTjVkU2lQUktmS3QwR3I4a3FY?=
- =?utf-8?B?OTBJNmU0S1RXTlZFMGxXcTB5bWpQRUY0OG00MVBjaE53SzVIT3dFTFV6Um5k?=
- =?utf-8?B?UmpqcTJOa3FUSURhcGpvNE1sdk1qWmh1RkIrVW8wWGZLQWJ5RWc3aDlkaFNh?=
- =?utf-8?B?R0R3Q1pGQTBsYnJ2YzJpMkNIcjF6VklHc1lzQnh6V3I4bVY2TFBILzc5NDNX?=
- =?utf-8?B?RW4xTnBmWGh3QXJJMkZ6TnVjcU9UaXF4bUw3Z3ZmZDNQQkJWZWh6eWhYUGxN?=
- =?utf-8?B?RkJpU1hjamMzWWpoZWw0NUtwVmNDa3FsZXRpZmFsS3U4RFE3WDZOM2tCcWVu?=
- =?utf-8?B?SFREWTZ6b3JlQ0JLUlllS0E5WTY0YWJvWTRFRnQwSWhzSXFJcDFuUWM0K1g2?=
- =?utf-8?B?SVc5aG9icG9LWVN5aHRwQ2kzRllsYmNiU3hqNGkxNXdlbEtUWnlqREhwOEFj?=
- =?utf-8?B?NHBEVGFhaFdpUmJrUlNtRCtsSy9HZ1B3M1FVVVFhQ0hXVFNLdlpsRjhqUldY?=
- =?utf-8?Q?i/+MU3RDRM8o9c9euEE+WM29I4n?=
-X-OriginatorOrg: distech-controls.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf430490-2cfb-4424-999c-08d8c472051e
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR01MB2457.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2021 16:22:06.6951
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: caadbe96-024e-4f67-82ec-fb28ff53d16d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tOZqCS7FaF2X00Vz8VdoQVCYDkHCVlHcQ2njSY0rEIzkFeNeXshgc0r/Uf3N2sfFiy6ADx9n8xWyZOFYoBdIUQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR01MB4458
-X-Proofpoint-Processed: True
-X-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score=0 bulkscore=0
- suspectscore=0 phishscore=0 priorityscore=1501 malwarescore=0 mlxscore=0
- mlxlogscore=999 spamscore=0 adultscore=0 lowpriorityscore=0 clxscore=1015
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101290081
+In-Reply-To: <20210128194515.743252-1-robh@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG3NODE3.st.com (10.75.127.9) To SFHDAG3NODE2.st.com
+ (10.75.127.8)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-01-29_05:2021-01-29,2021-01-29 signatures=0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2021-01-29 6:22 a.m., Andy Shevchenko wrote:
-> On Thu, Jan 28, 2021 at 06:36:27PM -0500, Eric Tremblay wrote:
->> The patch introduce the UART_CAP_TEMT capability which is by default
->> assigned to all 8250 UART since the code assume that device has the
->> interrupt on TEMT
-> You have missed periods in the sentences here and there. Please, check the
-> grammar and punctuation everywhere.
->
->> In the case where the device does not support it, we calculate the
->> maximum of time it could take for the transmitter to empty the
-> maximum time
->
->> shift register. When we get in the situation where we get the
->> THRE interrupt but the TEMT bit is not set we start the timer
->> and recall __stop_tx after the delay
-> __stop_tx()
-
-I will review the grammar and spelling, thanks for mentioning it
-
->
-> ...
->
->>  	/* initialize data */
->> -	up.capabilities = UART_CAP_FIFO | UART_CAP_MINI;
->> +	data->uart.capabilities = UART_CAP_FIFO | UART_CAP_MINI | UART_CAP_TEMT;
-> I didn't get, if you state that CAP_TEMT is default on all UARTs, why you have
-> this?
-
-It's a merge mistake, sorry for that. The next version will use the 
-reverse capability like Jiri Slaby suggested, there will be no needs to
-modify other driver.
-
->
->> -	up.capabilities = UART_CAP_FIFO;
->> +	up.capabilities = UART_CAP_FIFO | UART_CAP_TEMT;
-> And so this?
->
-> ...
->
->> +static inline void serial8250_em485_update_temt_delay(struct uart_8250_port *p,
->> +			unsigned int cflag, unsigned int baud)
->> +{
->> +	unsigned int bits;
->> +
->> +	if (!p->em485)
->> +		return;
->> +
->> +	/* byte size and parity */
->> +	switch (cflag & CSIZE) {
->> +	case CS5:
->> +		bits = 7;
->> +		break;
->> +	case CS6:
->> +		bits = 8;
->> +		break;
->> +	case CS7:
->> +		bits = 9;
->> +		break;
->> +	default:
->> +		bits = 10;
->> +		break; /* CS8 */
->> +	}
->> +
->> +	if (cflag & CSTOPB)
->> +		bits++;
->> +	if (cflag & PARENB)
->> +		bits++;
-> This is repetition of uart_update_timeout(). Find a way to deduplicate.
->
->> +	p->em485->no_temt_delay = bits*1000000/baud;
-> Use spaces.
-> Is this magic should be defined as HZ_PER_MHZ?
->
->> +}
-> ...
->
->> +static void start_hrtimer_us(struct hrtimer *hrt, unsigned long usec)
->> +{
->> +	long sec = usec / 1000000;
->> +	long nsec = (usec % 1000000) * 1000;
->
-> USEC_PER_SEC
-> NSEC_PER_USEC
->
->> +	ktime_t t = ktime_set(sec, nsec);
->> +
->> +	hrtimer_start(hrt, t, HRTIMER_MODE_REL);
->> +}
-> ...
->
->> +		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY) {
->> +			/*
->> +			 * On devices with no interrupt on TEMT available
-> "with no TEMT interrupt available"
->
->> +			 * start a timer for a byte time, the timer will recall
->> +			 * __stop_tx
-> __stop_tx().
->
->> +			 */
->> +			if (!(p->capabilities & UART_CAP_TEMT) && (lsr & UART_LSR_THRE)) {
->> +				em485->active_timer = &em485->no_temt_timer;
->> +				start_hrtimer_us(&em485->no_temt_timer, em485->no_temt_delay);
->> +			}
-> Perhaps
-> 			if ((p->capabilities & UART_CAP_TEMT) && (lsr & UART_LSR_THRE))
-> 				return;
->
-> 			em485->active_timer = &em485->no_temt_timer;
-> 			start_hrtimer_us(&em485->no_temt_timer, em485->no_temt_delay);
->
-> ?
-
-I also prefer that form, I will apply it in next version
-
->
->>  			return;
->> +		}
 
 
+On 1/28/21 8:45 PM, Rob Herring wrote:
+> Properties with standard unit suffixes already have a type and don't need
+> type definitions. They also default to a single entry, so 'maxItems: 1'
+> can be dropped.
+> 
+> adi,ad5758 is an oddball which defined an enum of arrays. While a valid
+> schema, it is simpler as a whole to only define scalar constraints.
+> 
+> Cc: Jean Delvare <jdelvare@suse.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Serge Semin <fancer.lancer@gmail.com>
+> Cc: Wolfram Sang <wolfram@the-dreams.de>
+> Cc: linux-hwmon@vger.kernel.org
+> Cc: linux-i2c@vger.kernel.org
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-mmc@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-rtc@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-watchdog@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>   .../devicetree/bindings/arm/cpus.yaml         |  1 -
+>   .../bindings/extcon/wlf,arizona.yaml          |  1 -
+>   .../bindings/hwmon/adi,ltc2947.yaml           |  1 -
+>   .../bindings/hwmon/baikal,bt1-pvt.yaml        |  8 ++--
+>   .../devicetree/bindings/hwmon/ti,tmp513.yaml  |  1 -
+>   .../devicetree/bindings/i2c/i2c-gpio.yaml     |  2 -
+>   .../bindings/i2c/snps,designware-i2c.yaml     |  3 --
+>   .../bindings/iio/adc/maxim,max9611.yaml       |  1 -
+>   .../bindings/iio/adc/st,stm32-adc.yaml        |  1 -
+>   .../bindings/iio/adc/ti,palmas-gpadc.yaml     |  2 -
+>   .../bindings/iio/dac/adi,ad5758.yaml          | 41 ++++++++++++-------
+>   .../bindings/iio/health/maxim,max30100.yaml   |  1 -
+>   .../input/touchscreen/touchscreen.yaml        |  2 -
+>   .../bindings/mmc/mmc-controller.yaml          |  1 -
+>   .../bindings/mmc/mmc-pwrseq-simple.yaml       |  2 -
+>   .../bindings/net/ethernet-controller.yaml     |  2 -
+>   .../devicetree/bindings/net/snps,dwmac.yaml   |  1 -
+>   .../bindings/power/supply/battery.yaml        |  3 --
+>   .../bindings/power/supply/bq2515x.yaml        |  1 -
+>   .../bindings/regulator/dlg,da9121.yaml        |  1 -
+>   .../bindings/regulator/fixed-regulator.yaml   |  2 -
+>   .../devicetree/bindings/rtc/rtc.yaml          |  2 -
+>   .../devicetree/bindings/serial/pl011.yaml     |  2 -
+>   .../devicetree/bindings/sound/sgtl5000.yaml   |  2 -
+>   .../bindings/watchdog/watchdog.yaml           |  1 -
+>   25 files changed, 29 insertions(+), 56 deletions(-)
+
+For stm32:
+Acked-by: Alexandre TORGUE <alexandre.torgue@foss.st.com>
+
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/cpus.yaml b/Documentation/devicetree/bindings/arm/cpus.yaml
+> index 14cd727d3c4b..f02fd10de604 100644
+> --- a/Documentation/devicetree/bindings/arm/cpus.yaml
+> +++ b/Documentation/devicetree/bindings/arm/cpus.yaml
+> @@ -232,7 +232,6 @@ properties:
+>         by this cpu (see ./idle-states.yaml).
+>   
+>     capacity-dmips-mhz:
+> -    $ref: '/schemas/types.yaml#/definitions/uint32'
+>       description:
+>         u32 value representing CPU capacity (see ./cpu-capacity.txt) in
+>         DMIPS/MHz, relative to highest capacity-dmips-mhz
+> diff --git a/Documentation/devicetree/bindings/extcon/wlf,arizona.yaml b/Documentation/devicetree/bindings/extcon/wlf,arizona.yaml
+> index 5fe784f487c5..efdf59abb2e1 100644
+> --- a/Documentation/devicetree/bindings/extcon/wlf,arizona.yaml
+> +++ b/Documentation/devicetree/bindings/extcon/wlf,arizona.yaml
+> @@ -85,7 +85,6 @@ properties:
+>     wlf,micd-timeout-ms:
+>       description:
+>         Timeout for microphone detection, specified in milliseconds.
+> -    $ref: "/schemas/types.yaml#/definitions/uint32"
+>   
+>     wlf,micd-force-micbias:
+>       description:
+> diff --git a/Documentation/devicetree/bindings/hwmon/adi,ltc2947.yaml b/Documentation/devicetree/bindings/hwmon/adi,ltc2947.yaml
+> index eef614962b10..bf04151b63d2 100644
+> --- a/Documentation/devicetree/bindings/hwmon/adi,ltc2947.yaml
+> +++ b/Documentation/devicetree/bindings/hwmon/adi,ltc2947.yaml
+> @@ -49,7 +49,6 @@ properties:
+>       description:
+>         This property controls the Accumulation Dead band which allows to set the
+>         level of current below which no accumulation takes place.
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       maximum: 255
+>       default: 0
+>   
+> diff --git a/Documentation/devicetree/bindings/hwmon/baikal,bt1-pvt.yaml b/Documentation/devicetree/bindings/hwmon/baikal,bt1-pvt.yaml
+> index 00a6511354e6..5d3ce641fcde 100644
+> --- a/Documentation/devicetree/bindings/hwmon/baikal,bt1-pvt.yaml
+> +++ b/Documentation/devicetree/bindings/hwmon/baikal,bt1-pvt.yaml
+> @@ -73,11 +73,9 @@ properties:
+>       description: |
+>         Temperature sensor trimming factor. It can be used to manually adjust the
+>         temperature measurements within 7.130 degrees Celsius.
+> -    maxItems: 1
+> -    items:
+> -      default: 0
+> -      minimum: 0
+> -      maximum: 7130
+> +    default: 0
+> +    minimum: 0
+> +    maximum: 7130
+>   
+>   additionalProperties: false
+>   
+> diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp513.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp513.yaml
+> index 8020d739a078..1502b22c77cc 100644
+> --- a/Documentation/devicetree/bindings/hwmon/ti,tmp513.yaml
+> +++ b/Documentation/devicetree/bindings/hwmon/ti,tmp513.yaml
+> @@ -52,7 +52,6 @@ properties:
+>     ti,bus-range-microvolt:
+>       description: |
+>         This is the operating range of the bus voltage in microvolt
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       enum: [16000000, 32000000]
+>       default: 32000000
+>   
+> diff --git a/Documentation/devicetree/bindings/i2c/i2c-gpio.yaml b/Documentation/devicetree/bindings/i2c/i2c-gpio.yaml
+> index cc3aa2a5e70b..ff99344788ab 100644
+> --- a/Documentation/devicetree/bindings/i2c/i2c-gpio.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/i2c-gpio.yaml
+> @@ -39,11 +39,9 @@ properties:
+>   
+>     i2c-gpio,delay-us:
+>       description: delay between GPIO operations (may depend on each platform)
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>     i2c-gpio,timeout-ms:
+>       description: timeout to get data
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>     # Deprecated properties, do not use in new device tree sources:
+>     gpios:
+> diff --git a/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml b/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
+> index c22b66b6219e..d9293c57f573 100644
+> --- a/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
+> @@ -66,21 +66,18 @@ properties:
+>       default: 400000
+>   
+>     i2c-sda-hold-time-ns:
+> -    maxItems: 1
+>       description: |
+>         The property should contain the SDA hold time in nanoseconds. This option
+>         is only supported in hardware blocks version 1.11a or newer or on
+>         Microsemi SoCs.
+>   
+>     i2c-scl-falling-time-ns:
+> -    maxItems: 1
+>       description: |
+>         The property should contain the SCL falling time in nanoseconds.
+>         This value is used to compute the tLOW period.
+>       default: 300
+>   
+>     i2c-sda-falling-time-ns:
+> -    maxItems: 1
+>       description: |
+>         The property should contain the SDA falling time in nanoseconds.
+>         This value is used to compute the tHIGH period.
+> diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max9611.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max9611.yaml
+> index 9475a9e6e920..95774a55629d 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/maxim,max9611.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/maxim,max9611.yaml
+> @@ -23,7 +23,6 @@ properties:
+>       maxItems: 1
+>   
+>     shunt-resistor-micro-ohms:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description: |
+>         Value in micro Ohms of the shunt resistor connected between the RS+ and
+>         RS- inputs, across which the current is measured.  Value needed to compute
+> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> index 6364ede9bb5f..a58334c3bb76 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> @@ -248,7 +248,6 @@ patternProperties:
+>             Resolution (bits) to use for conversions:
+>               - can be 6, 8, 10 or 12 on stm32f4
+>               - can be 8, 10, 12, 14 or 16 on stm32h7 and stm32mp1
+> -        $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>         st,adc-channels:
+>           description: |
+> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
+> index 692dacd0fee5..7b895784e008 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
+> @@ -42,7 +42,6 @@ properties:
+>       const: 1
+>   
+>     ti,channel0-current-microamp:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description: Channel 0 current in uA.
+>       enum:
+>         - 0
+> @@ -51,7 +50,6 @@ properties:
+>         - 20
+>   
+>     ti,channel3-current-microamp:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description: Channel 3 current in uA.
+>       enum:
+>         - 0
+> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
+> index 626ccb6fe21e..fd4edca34a28 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
+> @@ -46,31 +46,42 @@ properties:
+>         two properties must be present:
+>   
+>     adi,range-microvolt:
+> -    $ref: /schemas/types.yaml#/definitions/int32-array
+>       description: |
+>         Voltage output range specified as <minimum, maximum>
+> -    enum:
+> -      - [[0, 5000000]]
+> -      - [[0, 10000000]]
+> -      - [[-5000000, 5000000]]
+> -      - [[-10000000, 10000000]]
+> +    oneOf:
+> +      - items:
+> +          - const: 0
+> +          - enum: [5000000, 10000000]
+> +      - items:
+> +          - const: -5000000
+> +          - const: 5000000
+> +      - items:
+> +          - const: -10000000
+> +          - const: 10000000
+>   
+>     adi,range-microamp:
+> -    $ref: /schemas/types.yaml#/definitions/int32-array
+>       description: |
+>         Current output range specified as <minimum, maximum>
+> -    enum:
+> -      - [[0, 20000]]
+> -      - [[0, 24000]]
+> -      - [[4, 24000]]
+> -      - [[-20000, 20000]]
+> -      - [[-24000, 24000]]
+> -      - [[-1000, 22000]]
+> +    oneOf:
+> +      - items:
+> +          - const: 0
+> +          - enum: [20000, 24000]
+> +      - items:
+> +          - const: 4
+> +          - const: 24000
+> +      - items:
+> +          - const: -20000
+> +          - const: 20000
+> +      - items:
+> +          - const: -24000
+> +          - const: 24000
+> +      - items:
+> +          - const: -1000
+> +          - const: 22000
+>   
+>     reset-gpios: true
+>   
+>     adi,dc-dc-ilim-microamp:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       enum: [150000, 200000, 250000, 300000, 350000, 400000]
+>       description: |
+>         The dc-to-dc converter current limit.
+> diff --git a/Documentation/devicetree/bindings/iio/health/maxim,max30100.yaml b/Documentation/devicetree/bindings/iio/health/maxim,max30100.yaml
+> index 64b862637039..967778fb0ce8 100644
+> --- a/Documentation/devicetree/bindings/iio/health/maxim,max30100.yaml
+> +++ b/Documentation/devicetree/bindings/iio/health/maxim,max30100.yaml
+> @@ -21,7 +21,6 @@ properties:
+>       description: Connected to ADC_RDY pin.
+>   
+>     maxim,led-current-microamp:
+> -    $ref: /schemas/types.yaml#/definitions/uint32-array
+>       minItems: 2
+>       maxItems: 2
+>       description: |
+> diff --git a/Documentation/devicetree/bindings/input/touchscreen/touchscreen.yaml b/Documentation/devicetree/bindings/input/touchscreen/touchscreen.yaml
+> index a771a15f053f..046ace461cc9 100644
+> --- a/Documentation/devicetree/bindings/input/touchscreen/touchscreen.yaml
+> +++ b/Documentation/devicetree/bindings/input/touchscreen/touchscreen.yaml
+> @@ -70,11 +70,9 @@ properties:
+>   
+>     touchscreen-x-mm:
+>       description: horizontal length in mm of the touchscreen
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>     touchscreen-y-mm:
+>       description: vertical length in mm of the touchscreen
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>   dependencies:
+>     touchscreen-size-x: [ touchscreen-size-y ]
+> diff --git a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+> index df4ee4c778ae..e141330c1114 100644
+> --- a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+> @@ -261,7 +261,6 @@ properties:
+>         waiting for I/O signalling and card power supply to be stable,
+>         regardless of whether pwrseq-simple is used. Default to 10ms if
+>         no available.
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       default: 10
+>   
+>     supports-cqe:
+> diff --git a/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml b/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml
+> index 6cd57863c1db..226fb191913d 100644
+> --- a/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml
+> @@ -41,13 +41,11 @@ properties:
+>       description:
+>         Delay in ms after powering the card and de-asserting the
+>         reset-gpios (if any).
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>     power-off-delay-us:
+>       description:
+>         Delay in us after asserting the reset-gpios (if any)
+>         during power off of the card.
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>   required:
+>     - compatible
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> index 0965f6515f9e..dac4aadb6e2e 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> @@ -122,7 +122,6 @@ properties:
+>         such as flow control thresholds.
+>   
+>     rx-internal-delay-ps:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description: |
+>         RGMII Receive Clock Delay defined in pico seconds.
+>         This is used for controllers that have configurable RX internal delays.
+> @@ -140,7 +139,6 @@ properties:
+>         is used for components that can have configurable fifo sizes.
+>   
+>     tx-internal-delay-ps:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description: |
+>         RGMII Transmit Clock Delay defined in pico seconds.
+>         This is used for controllers that have configurable TX internal delays.
+> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> index b2f6083f556a..9ac77b8cb767 100644
+> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> @@ -208,7 +208,6 @@ properties:
+>         Triplet of delays. The 1st cell is reset pre-delay in micro
+>         seconds. The 2nd cell is reset pulse in micro seconds. The 3rd
+>         cell is reset post-delay in micro seconds.
+> -    $ref: /schemas/types.yaml#/definitions/uint32-array
+>       minItems: 3
+>       maxItems: 3
+>   
+> diff --git a/Documentation/devicetree/bindings/power/supply/battery.yaml b/Documentation/devicetree/bindings/power/supply/battery.yaml
+> index 0c7e2e44793b..c3b4b7543591 100644
+> --- a/Documentation/devicetree/bindings/power/supply/battery.yaml
+> +++ b/Documentation/devicetree/bindings/power/supply/battery.yaml
+> @@ -83,21 +83,18 @@ properties:
+>         for each of the battery capacity lookup table.
+>   
+>     operating-range-celsius:
+> -    $ref: /schemas/types.yaml#/definitions/uint32-array
+>       description: operating temperature range of a battery
+>       items:
+>         - description: minimum temperature at which battery can operate
+>         - description: maximum temperature at which battery can operate
+>   
+>     ambient-celsius:
+> -    $ref: /schemas/types.yaml#/definitions/uint32-array
+>       description: safe range of ambient temperature
+>       items:
+>         - description: alert when ambient temperature is lower than this value
+>         - description: alert when ambient temperature is higher than this value
+>   
+>     alert-celsius:
+> -    $ref: /schemas/types.yaml#/definitions/uint32-array
+>       description: safe range of battery temperature
+>       items:
+>         - description: alert when battery temperature is lower than this value
+> diff --git a/Documentation/devicetree/bindings/power/supply/bq2515x.yaml b/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
+> index 75a56773be4a..813d6afde606 100644
+> --- a/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
+> +++ b/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
+> @@ -50,7 +50,6 @@ properties:
+>       maxItems: 1
+>   
+>     input-current-limit-microamp:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description: Maximum input current in micro Amps.
+>       minimum: 50000
+>       maximum: 500000
+> diff --git a/Documentation/devicetree/bindings/regulator/dlg,da9121.yaml b/Documentation/devicetree/bindings/regulator/dlg,da9121.yaml
+> index 6f2164f7bc57..228018c87bea 100644
+> --- a/Documentation/devicetree/bindings/regulator/dlg,da9121.yaml
+> +++ b/Documentation/devicetree/bindings/regulator/dlg,da9121.yaml
+> @@ -62,7 +62,6 @@ properties:
+>       description: IRQ line information.
+>   
+>     dlg,irq-polling-delay-passive-ms:
+> -    $ref: "/schemas/types.yaml#/definitions/uint32"
+>       minimum: 1000
+>       maximum: 10000
+>       description: |
+> diff --git a/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml b/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
+> index d3d0dc13dd8b..8850c01bd470 100644
+> --- a/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
+> +++ b/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
+> @@ -72,11 +72,9 @@ properties:
+>   
+>     startup-delay-us:
+>       description: startup time in microseconds
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>     off-on-delay-us:
+>       description: off delay time in microseconds
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>   
+>     enable-active-high:
+>       description:
+> diff --git a/Documentation/devicetree/bindings/rtc/rtc.yaml b/Documentation/devicetree/bindings/rtc/rtc.yaml
+> index d30dc045aac6..0ec3551f12dd 100644
+> --- a/Documentation/devicetree/bindings/rtc/rtc.yaml
+> +++ b/Documentation/devicetree/bindings/rtc/rtc.yaml
+> @@ -27,7 +27,6 @@ properties:
+>         1: chargeable
+>   
+>     quartz-load-femtofarads:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description:
+>         The capacitive load of the quartz(x-tal), expressed in femto
+>         Farad (fF). The default value shall be listed (if optional),
+> @@ -47,7 +46,6 @@ properties:
+>       deprecated: true
+>   
+>     trickle-resistor-ohms:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description:
+>         Selected resistor for trickle charger. Should be given
+>         if trickle charger should be enabled.
+> diff --git a/Documentation/devicetree/bindings/serial/pl011.yaml b/Documentation/devicetree/bindings/serial/pl011.yaml
+> index c23c93b400f0..07fa6d26f2b4 100644
+> --- a/Documentation/devicetree/bindings/serial/pl011.yaml
+> +++ b/Documentation/devicetree/bindings/serial/pl011.yaml
+> @@ -88,14 +88,12 @@ properties:
+>       description:
+>         Rate at which poll occurs when auto-poll is set.
+>         default 100ms.
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       default: 100
+>   
+>     poll-timeout-ms:
+>       description:
+>         Poll timeout when auto-poll is set, default
+>         3000ms.
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       default: 3000
+>   
+>   required:
+> diff --git a/Documentation/devicetree/bindings/sound/sgtl5000.yaml b/Documentation/devicetree/bindings/sound/sgtl5000.yaml
+> index d116c174b545..70b4a8831073 100644
+> --- a/Documentation/devicetree/bindings/sound/sgtl5000.yaml
+> +++ b/Documentation/devicetree/bindings/sound/sgtl5000.yaml
+> @@ -41,14 +41,12 @@ properties:
+>         values of 2k, 4k or 8k. If set to 0 it will be off. If this node is not
+>         mentioned or if the value is unknown, then micbias resistor is set to
+>         4k.
+> -    $ref: "/schemas/types.yaml#/definitions/uint32"
+>       enum: [ 0, 2, 4, 8 ]
+>   
+>     micbias-voltage-m-volts:
+>       description: The bias voltage to be used in mVolts. The voltage can take
+>         values from 1.25V to 3V by 250mV steps. If this node is not mentioned
+>         or the value is unknown, then the value is set to 1.25V.
+> -    $ref: "/schemas/types.yaml#/definitions/uint32"
+>       enum: [ 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000 ]
+>   
+>     lrclk-strength:
+> diff --git a/Documentation/devicetree/bindings/watchdog/watchdog.yaml b/Documentation/devicetree/bindings/watchdog/watchdog.yaml
+> index 4e2c26cd981d..e3dfb02f0ca5 100644
+> --- a/Documentation/devicetree/bindings/watchdog/watchdog.yaml
+> +++ b/Documentation/devicetree/bindings/watchdog/watchdog.yaml
+> @@ -19,7 +19,6 @@ properties:
+>       pattern: "^watchdog(@.*|-[0-9a-f])?$"
+>   
+>     timeout-sec:
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+>       description:
+>         Contains the watchdog timeout in seconds.
+>   
+> 
