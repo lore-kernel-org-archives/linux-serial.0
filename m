@@ -2,99 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C06C433E0
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Feb 2021 22:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42302C433E6
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Feb 2021 22:09:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CFBE664F95
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Feb 2021 22:04:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F246C64FA8
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Feb 2021 22:09:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233013AbhBEWDs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Feb 2021 17:03:48 -0500
-Received: from mga12.intel.com ([192.55.52.136]:10451 "EHLO mga12.intel.com"
+        id S233009AbhBEWIX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Feb 2021 17:08:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44342 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232859AbhBEOyy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Feb 2021 09:54:54 -0500
-IronPort-SDR: fbow1SMS9mnoBCZ8GswElMHBZJsSnWoS4gsEUnFXzRLOL1jurmc22naBE0JqKf+QPYTOXSU0/Y
- CEcP08WQzAIA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="160595538"
-X-IronPort-AV: E=Sophos;i="5.81,155,1610438400"; 
-   d="scan'208";a="160595538"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2021 06:20:06 -0800
-IronPort-SDR: bJv9HjO06iK3CnORcnUqhd/OCT5yH1n20ago7+MetwsPjFUjOHaWLAn6glEntGlOvPxRhkJ+P/
- d0PWVU8iDrCw==
-X-IronPort-AV: E=Sophos;i="5.81,155,1610438400"; 
-   d="scan'208";a="484205707"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2021 06:20:03 -0800
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1l81xo-002Any-MC; Fri, 05 Feb 2021 16:20:00 +0200
-Date:   Fri, 5 Feb 2021 16:20:00 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Eric Tremblay <etremblay@distech-controls.com>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        matwey.kornilov@gmail.com, giulio.benetti@micronovasrl.com,
-        lukas@wunner.de, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com, heiko@sntech.de,
-        heiko.stuebner@theobroma-systems.com
-Subject: Re: [PATCH v2 0/3] Handle UART without interrupt on TEMT using em485
-Message-ID: <YB1UEHEPVQCAjsMO@smile.fi.intel.com>
-References: <20210204161158.643-1-etremblay@distech-controls.com>
+        id S232881AbhBEOwM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 5 Feb 2021 09:52:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 36E5C64FC9;
+        Fri,  5 Feb 2021 14:04:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1612533851;
+        bh=T1jLO24sF0pYkT3lQr2onlwV1fj0AbfnrcXXdUAochg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BZOBBDws+/yhmPTxNLP4zonarclKLQMtK4MPPXtDYExmUzHRLjxXcJnfGq14VQa4L
+         yZhVB9oNHiU0DzaVx6si8j0aXHMHTj1MM3VS8xDsEeLmU5/b+5mHQBkgW7cT1CQKhX
+         bLMDr8tZSM1SipNLwaZFpx+i2Ki4uOTJ99+ziw0o=
+Date:   Fri, 5 Feb 2021 15:04:08 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        kvm@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Jaroslav Kysela <perex@perex.cz>,
+        Eric Anholt <eric@anholt.net>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig.org@pengutronix.de>, linux-i2c@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-watchdog@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Takashi Iwai <tiwai@suse.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Mike Leach <mike.leach@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        alsa-devel@alsa-project.org,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, Vladimir Zapolskiy <vz@mleia.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matt Mackall <mpm@selenic.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        linux-crypto@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+        Leo Yan <leo.yan@linaro.org>, dmaengine@vger.kernel.org
+Subject: Re: [PATCH] coresight: etm4x: Fix merge resolution for amba rework
+Message-ID: <YB1QWFWPennQZmjw@kroah.com>
+References: <20210205130848.20009-1-uwe@kleine-koenig.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210204161158.643-1-etremblay@distech-controls.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210205130848.20009-1-uwe@kleine-koenig.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 04, 2021 at 11:11:55AM -0500, Eric Tremblay wrote:
-> Thanks everyone for the comments. I apply most of the comments on version 1
-> but there is still a pending point with the Jiri comment about the safety of:
-> struct tty_struct *tty = p->port.state->port.tty;
-> I thought about adding a check with tty_port_initialized() before accessing
-> the pointer, but I saw some other places where that same pointer is accessed
-> without further protection, at least from what I see.
-
-Thanks for the update. Unfortunately I'm a bit busy with other prioritized
-stuff, but I will review this next week.
-
-> Changes from v1 to v2:
-> - Use UART_CAP_NOTEMT instead of UART_CAP_TEMT
-> - Use some predefined macro to reduce magicness
-> - Reset active_timer in temt timer handler
-> - add uart_get_byte_size
-> - set UART_CAP_NOTEMT in uart_config for PORT_16550A_FSL64
-> - Improve commit messages
-> - Improve grammar and spelling
-> - Add Giulio and Heiko SoB to reflect previous work
+On Fri, Feb 05, 2021 at 02:08:47PM +0100, Uwe Kleine-König wrote:
+> This was non-trivial to get right because commits
+> c23bc382ef0e ("coresight: etm4x: Refactor probing routine") and
+> 5214b563588e ("coresight: etm4x: Add support for sysreg only devices")
+> changed the code flow considerably. With this change the driver can be
+> built again.
 > 
-> Eric Tremblay (3):
->   serial: 8250: Handle UART without interrupt on TEMT using em485
->   serial: 8250: Add UART_CAP_NOTEMT on PORT_16550A_FSL64
->   serial: 8250: add compatible for fsl,16550-FIFO64
-> 
->  drivers/tty/serial/8250/8250.h      |  1 +
->  drivers/tty/serial/8250/8250_of.c   |  2 +
->  drivers/tty/serial/8250/8250_port.c | 68 ++++++++++++++++++++++++++++-
->  drivers/tty/serial/serial_core.c    | 29 ++++++++----
->  include/linux/serial_8250.h         |  2 +
->  include/linux/serial_core.h         |  2 +
->  6 files changed, 94 insertions(+), 10 deletions(-)
-> 
-> -- 
-> 2.17.1
-> 
+> Fixes: 0573d3fa4864 ("Merge branch 'devel-stable' of git://git.armlinux.org.uk/~rmk/linux-arm into char-misc-next")
+> Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
 
--- 
-With Best Regards,
-Andy Shevchenko
+Now queued up, thanks!
 
-
+greg k-h
