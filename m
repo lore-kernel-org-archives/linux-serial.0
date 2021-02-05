@@ -2,139 +2,236 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A54C433DB
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Feb 2021 22:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9891C4332B
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Feb 2021 09:53:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C773764FAC
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Feb 2021 22:23:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A1C8964E49
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Feb 2021 09:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbhBDWXq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 Feb 2021 17:23:46 -0500
-Received: from mail-eopbgr1300043.outbound.protection.outlook.com ([40.107.130.43]:61312
-        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229511AbhBDWXp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 Feb 2021 17:23:45 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QK0wT120jPisxI+RbR2Erd4qDBPlvbhhbEu3HdFHsOJicg/oS7GQuNV0C/+PUe1LXsW0o/dIcwiQpIR2pH0Tf+S2lVRYqU+4z5Z+Ag8Gr7h/1dxBz8sd4HMh24F2VR0gkbU4eoW7fZTS+2JY8P6fETlwE7QGLQncbeZS56Ix0b4erpZLTm4HM1ocPmsB02quGPtOZn5foBweO8n4oaBmSLSxMLAumI9SB1tRpu+x2efTWWMVBJpGoL4B4Ro3206ojEqJx9Tj8GAjdpJHsCU45JRa1QcQwLKQV/p3xih5IVoIkSBVkTss0GPwLfmhzLCY/nDhLeneVODMwbkEkXSiWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FMq4CoXfVre4tDLm4yYnN4pcX1j9IT3EfbEZn0W873w=;
- b=YuoQ4+VMoLmwIjnN9o9kurut7rOZD+TrlQ2ZA4dLkK/gS1ZLvubsbif4Z4N7/W8aNSVbsu9Dic66obhnPPDL+IQxBGKFmZP6IX+haFRtLfn17A927rvHHWj8vEkLdyoB16SoXjMmm9VF+QhMxN0TmxZiAqQuQ15Kt4NFO6ErHXO4nrPWOO3/1DJ8vxq+9eYvFe5l7E1SM4fXnVig32C6EOnBHR3Bnrs1P7P/hxYYApeSyR3gcETlvqhEOSRdzJEdsNG35QPXE2wvdgFpYs3ap6iaeo5xXCzsqCyxpHaZGb7jmxvv81ypMJ1M5/AS66Ahc92a/Q9kkcLLt49gXDrFCg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cortina-access.com; dmarc=pass action=none
- header.from=cortina-access.com; dkim=pass header.d=cortina-access.com;
- arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=CortinaAccess.onmicrosoft.com; s=selector2-CortinaAccess-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FMq4CoXfVre4tDLm4yYnN4pcX1j9IT3EfbEZn0W873w=;
- b=uLKdekuLtwdrv8icQfCXAsbPCmxyBRSAdqmUa5TpFU0UiwAeG1iT99dmJR4K5mBDX6wbWyUKi/0cwtfiJUjzAaCmf1JB6rhR7y4sbY5QfLf5KCbnZDk3d+tNZybYd5GNfT/6QVJNIo3mPd8qIPBE/vJwe1IOYaUsDBL42P8x/gk=
-Received: from PS2PR01MB2504.apcprd01.prod.exchangelabs.com
- (2603:1096:300:3e::11) by PS1PR01MB3530.apcprd01.prod.exchangelabs.com
- (2603:1096:300:7c::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.24; Thu, 4 Feb
- 2021 22:22:09 +0000
-Received: from PS2PR01MB2504.apcprd01.prod.exchangelabs.com
- ([fe80::a5a3:f135:b16e:7329]) by PS2PR01MB2504.apcprd01.prod.exchangelabs.com
- ([fe80::a5a3:f135:b16e:7329%7]) with mapi id 15.20.3825.021; Thu, 4 Feb 2021
- 22:22:08 +0000
-From:   Alex Nemirovsky <Alex.Nemirovsky@cortina-access.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
-        Jason Li <jason.li@cortina-access.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH 1/3] tty: serial: Add UART driver for Cortina-Access
- platform
-Thread-Topic: [PATCH 1/3] tty: serial: Add UART driver for Cortina-Access
- platform
-Thread-Index: AQHW+w1gIDlYU0uPg0iNd3+S47j5m6pIkj2A
-Date:   Thu, 4 Feb 2021 22:22:08 +0000
-Message-ID: <B05184D2-DEB3-4ACB-ADB1-AE21AB323689@cortina-access.com>
-References: <1612425530-20483-1-git-send-email-alex.nemirovsky@cortina-access.com>
- <YBwXoCwKwkcMPYvy@kroah.com>
-In-Reply-To: <YBwXoCwKwkcMPYvy@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linuxfoundation.org; dkim=none (message not signed)
- header.d=none;linuxfoundation.org; dmarc=none action=none
- header.from=cortina-access.com;
-x-originating-ip: [70.58.207.205]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 88a3d86c-5c2a-4ab1-b1dc-08d8c95b4fa6
-x-ms-traffictypediagnostic: PS1PR01MB3530:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PS1PR01MB353022B3330E8B460FC01236CBB39@PS1PR01MB3530.apcprd01.prod.exchangelabs.com>
-x-ld-processed: 0694623c-6669-497c-89c3-3a32a9934313,ExtAddr
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DKA2FFqMToZKFFzN5yqKEQqdm9WKAat9ORgX7zZEmhmOjuz5Om5U2l1UWQuVtOHvPMycknp9FPdi0aM82B74g8VE7qCUNGmIqutsIKkSsIdvdOPVvKZwGr5ilx4nOQf6jRCoA3U7IRdnnJrLdhKkJfISta9im5iHcaMNEs2Z/trTFjn6TQkmLbBnJZqJtWbThNuiQ1sTIaUJ3TSViIg/hMt4fy6ODZAlCJEhYw24ZYROR8idMoLsKoft33x9NmpABXTCvdlfjRLdVIq/hBGnrjYbrRDxWw+Ktq3oD1qZ0SAMWLR02nxtQ/2W+RENbIX87+EzJc1qIHHrtJPBoS3Vcl79QPyx6maxiNqNLFrlGtZfJiu4XwAqK/M9t9WekRkO9/0xgcPkT1o5dgo+6a7tDnofUf619sUxTsdRCrIIoQxuAT+eTOojNl6TX9Zqi2nKkEV5kawh7e/oziyvzozDSuT3yZE6UaS5quhL8uf6Vqb+8+caJ0WooyG9wDrliNW+zWLy5+Mv3x4HTjTPD7Xitw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PS2PR01MB2504.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39840400004)(396003)(346002)(136003)(376002)(478600001)(8936002)(186003)(4744005)(316002)(2906002)(2616005)(71200400001)(4326008)(6486002)(6512007)(54906003)(36756003)(66556008)(26005)(66946007)(76116006)(64756008)(66446008)(6916009)(66476007)(91956017)(33656002)(8676002)(86362001)(5660300002)(6506007)(53546011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?hT3eAe8YVY9rauuGeDgFAl/OIEfKXFyponoW0q37KYtIUxrDrY0P3NA4Yj3i?=
- =?us-ascii?Q?/AGvuwtsZTcD3O/UDvPXIThS97fPW6A/DDgvwZX9MSMQxU1JOMmHdFRKjkib?=
- =?us-ascii?Q?d00BwpstKvKPMP02ogbFBScbT3SYwT6x6pcqumZkJ8/5R1Xe7qlM3jcXVKjC?=
- =?us-ascii?Q?PiNgM1l+yXqV4rrS3iHDuK5oO9Ta+QGDybD4/3v5UbkpaK0pbqS+XWqPcfyn?=
- =?us-ascii?Q?YV2QtphUM2CbOmxxbF+jA5bmGjWiN4IaNcgQxspJ5GYuhaDtlUgHOM/S/CWW?=
- =?us-ascii?Q?GjJwe3wAG9OBtaTJZKRV9XTe9cXlcV/HznZIInEFlLYwusplzWPXT8eGGGsS?=
- =?us-ascii?Q?XxfIoqm+D5LOWd6AENlLqWPlmpSBgv9Os79fY4QmukLpUjnWfRoLkpH7HB9H?=
- =?us-ascii?Q?Wvm9+xrrf3ZXfa0xzXIqRQNsUpQYYvykCuzadz8llaymtYAwjpqhWjSUp5rI?=
- =?us-ascii?Q?Y2/3BLm08u8aRDpC0b0WST2uhjF9y0pbk7qMK62lZTkVMGQ1WIyWNq+CBU1B?=
- =?us-ascii?Q?UqLav47RYfsYnUtTW+1+IDQO6vUVGV0SoUEvJbTsQ33gwNhD7eRRBcj/8XqZ?=
- =?us-ascii?Q?TiMrAqHLWNLkflJjb/kNs/57ccMFALNIzzkFZpWg6TYtdzY4eC5CY0ixZhuj?=
- =?us-ascii?Q?5cx4DWDeGMmxFluvVFR8rq/mVt3YiC+y5wgihXhfBIGuMyGOph5wQtm8n7NK?=
- =?us-ascii?Q?ydMenjpHpaTZ4IsS/O6I2LcAIAOEJ/zY/K2EvY9ps0gygYCNOKrCrfNQC/Ya?=
- =?us-ascii?Q?UIKGgRohy4hPFfcPVLy4+hTk4wXOBqNjBeMHWsAqR8OFzpCDPL8wcrK6uu9f?=
- =?us-ascii?Q?MmeKitTGoZRmjNj7cooH1zNAxJ060wi+3zxm6F6EO2rVCp6tIxIxZkhjg9RZ?=
- =?us-ascii?Q?Oldllf362ihCi9Bw36IZqkUZFp7+8wyMgRYmZcdi8ivbt0Hk88rWIZOr7PTx?=
- =?us-ascii?Q?g1seaKfScu3aCNmx0qss7UwYwFnLvqWKIvYX6CCIotTPLYdhvork1GlRMPNV?=
- =?us-ascii?Q?sPpw+Jam6eYxRZrDof9ObBPNwzQ/vsCOJa5X1DO/4lRP8oYQq08dmy+qtf7c?=
- =?us-ascii?Q?7/aGvx1faTt80EFEgjygQG6YR9gEpoT159QDvSMgu8WewSXMNJjiRJzQtBko?=
- =?us-ascii?Q?ieqVpeitE2PMSuv+pgd0F9zAd4t7lWua0L7/Cwnxb/dKUN/RcX7Z7ceAs+wU?=
- =?us-ascii?Q?vqGERVEax5C6VxUf7oHMevXv8awFp8fj/oNdvgKY/kSWzFh4w6hPr1TNt8Vo?=
- =?us-ascii?Q?hiV5cdGl1ckVea+A3OnryEF1ke214Yq0Y/hx4HentiyypnxCyJbs35yCGcTI?=
- =?us-ascii?Q?ze2KsEaHInD89FKF7UC3xn9Y?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A8E2AEC9B5AA1C48ACA35F95FEB6F7F2@apcprd01.prod.exchangelabs.com>
-Content-Transfer-Encoding: quoted-printable
+        id S229934AbhBEJxs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Feb 2021 04:53:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229963AbhBEJqc (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 5 Feb 2021 04:46:32 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7760BC061356
+        for <linux-serial@vger.kernel.org>; Fri,  5 Feb 2021 01:45:23 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l7xYm-0002y5-Rk; Fri, 05 Feb 2021 10:37:52 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l7xYf-0000Uu-2W; Fri, 05 Feb 2021 10:37:45 +0100
+Date:   Fri, 5 Feb 2021 10:37:44 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-fbdev@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        kvm@vger.kernel.org,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org,
+        Jaroslav Kysela <perex@perex.cz>,
+        Eric Anholt <eric@anholt.net>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig.org@pengutronix.de>, linux-i2c@vger.kernel.org,
+        linux-spi@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-watchdog@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Mike Leach <mike.leach@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, Vladimir Zapolskiy <vz@mleia.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matt Mackall <mpm@selenic.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>, linux-crypto@vger.kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>, Leo Yan <leo.yan@linaro.org>,
+        dmaengine@vger.kernel.org
+Subject: Re: [GIT PULL] immutable branch for amba changes targeting v5.12-rc1
+Message-ID: <20210205093744.kr4rc7yvfiq6wimq@pengutronix.de>
+References: <20210126165835.687514-1-u.kleine-koenig@pengutronix.de>
+ <20210202135350.36nj3dmcoq3t7gcf@pengutronix.de>
+ <YBlcTXlxemmC2lgr@kroah.com>
+ <20210204165224.GA1463@shell.armlinux.org.uk>
+ <YBwnUrQqlAz2LDPI@kroah.com>
+ <20210204165951.GB1463@shell.armlinux.org.uk>
+ <20210204181551.ethtuzm65flujmwe@pengutronix.de>
 MIME-Version: 1.0
-X-OriginatorOrg: CORTINA-ACCESS.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PS2PR01MB2504.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88a3d86c-5c2a-4ab1-b1dc-08d8c95b4fa6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Feb 2021 22:22:08.7557
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0694623c-6669-497c-89c3-3a32a9934313
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VfWXAKwFNL98nHlhPCxCxYZzgdestl946QL41se7Xl06y39WrddkcXs8Tb+dKco7v0Bhvub/3SHvHFlD9otKCn6wXN63eSOUtJM2gQL7I7Gom6IdCvULKSbDKvpEj9bM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS1PR01MB3530
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dwvdydyqhaortnqv"
+Content-Disposition: inline
+In-Reply-To: <20210204181551.ethtuzm65flujmwe@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thanks Greg. Will fix this and add a change history.
 
-> On Feb 4, 2021, at 7:49 AM, Greg Kroah-Hartman <gregkh@linuxfoundation.or=
-g> wrote:
->=20
-> On Wed, Feb 03, 2021 at 11:58:47PM -0800, Alex Nemirovsky wrote:
->> +static uintptr_t *cortina_uart_ports;
->=20
-> Note, "uintptr_t" is not a valid kernel type.
->=20
-> Please use a pointer to a real thing, no void pointers please.
->=20
-> thanks,
->=20
-> greg k-h
+--dwvdydyqhaortnqv
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+Hello Russell, hello Greg,
+
+On Thu, Feb 04, 2021 at 07:15:51PM +0100, Uwe Kleine-K=F6nig wrote:
+> On Thu, Feb 04, 2021 at 04:59:51PM +0000, Russell King - ARM Linux admin =
+wrote:
+> > On Thu, Feb 04, 2021 at 05:56:50PM +0100, Greg Kroah-Hartman wrote:
+> > > On Thu, Feb 04, 2021 at 04:52:24PM +0000, Russell King - ARM Linux ad=
+min wrote:
+> > > > On Tue, Feb 02, 2021 at 03:06:05PM +0100, Greg Kroah-Hartman wrote:
+> > > > > I'm glad to take this through my char/misc tree, as that's where =
+the
+> > > > > other coresight changes flow through.  So if no one else objects,=
+ I will
+> > > > > do so...
+> > > >=20
+> > > > Greg, did you end up pulling this after all? If not, Uwe produced a=
+ v2.
+> > > > I haven't merged v2 yet as I don't know what you've done.
+> > >=20
+> > > I thought you merged this?
+> >=20
+> > I took v1, and put it in a branch I've promised in the past not to
+> > rebase/rewind. Uwe is now asking for me to take a v2 or apply a patch
+> > on top.
+> >=20
+> > The only reason to produce an "immutable" branch is if it's the basis
+> > for some dependent work and you need that branch merged into other
+> > people's trees... so the whole "lets produce a v2" is really odd
+> > workflow... I'm confused about what I should do, and who has to be
+> > informed which option I take.
+> >=20
+> > I'm rather lost here too.
+>=20
+> Sorry to have cause this confusion. After I saw that my initial tag
+> missed to adapt a driver I wanted to make it easy for you to fix the
+> situation.
+> So I created a patch to fix it and created a second tag with the patch
+> squashed in. Obviously only one of them have to be picked and I hoped
+> you (=3D Russell + Greg) would agree which option to pick.
+>=20
+> My preference would be if you both pick up v2 of the tag to yield a
+> history that is bisectable without build problems, but if Russell (who
+> already picked up the broken tag) considers his tree immutable and so
+> isn't willing to rebase, then picking up the patch is the way to go.
+
+OK, the current state is that Russell applied the patch fixing
+drivers/mailbox/arm_mhuv2.c on top of merging my first tag.
+
+So the way forward now is that Greg pulls
+
+	git://git.armlinux.org.uk/~rmk/linux-arm.git devel-stable
+
+which currently points to=20
+
+	860660fd829e ("ARM: 9055/1: mailbox: arm_mhuv2: make remove callback retur=
+n void")
+
+, into his tree that contains the hwtracing changes that conflict with my
+changes. @Greg: Is this good enough, or do you require a dedicated tag
+to pull that?
+
+I think these conflicting hwtracing changes are not yet in any of Greg's
+trees (at least they are not in next).
+
+When I pull
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/coresight/linux.git next
+
+(currently pointing to 4e73ff249184 ("coresight: etm4x: Handle accesses
+to TRCSTALLCTLR")) into 860660fd829e, I get a conflict in
+drivers/hwtracing/coresight/coresight-etm4x-core.c as expected. My
+resolution looks as follows:
+
+diff --cc drivers/hwtracing/coresight/coresight-etm4x-core.c
+index 82787cba537d,5017d33ba4f5..000000000000
+--- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+@@@ -1703,6 -1906,28 +1906,27 @@@ static int __exit etm4_remove_dev(struc
+  	cpus_read_unlock();
+ =20
+  	coresight_unregister(drvdata->csdev);
++=20
++ 	return 0;
++ }
++=20
+ -static int __exit etm4_remove_amba(struct amba_device *adev)
+++static void __exit etm4_remove_amba(struct amba_device *adev)
++ {
++ 	struct etmv4_drvdata *drvdata =3D dev_get_drvdata(&adev->dev);
++=20
++ 	if (drvdata)
+ -		return etm4_remove_dev(drvdata);
+ -	return 0;
+++		etm4_remove_dev(drvdata);
++ }
++=20
++ static int __exit etm4_remove_platform_dev(struct platform_device *pdev)
++ {
++ 	int ret =3D 0;
++ 	struct etmv4_drvdata *drvdata =3D dev_get_drvdata(&pdev->dev);
++=20
++ 	if (drvdata)
++ 		ret =3D etm4_remove_dev(drvdata);
++ 	pm_runtime_disable(&pdev->dev);
++ 	return ret;
+  }
+ =20
+  static const struct amba_id etm4_ids[] =3D {
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--dwvdydyqhaortnqv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmAdEeUACgkQwfwUeK3K
+7Ane0Qf9H0OwQL3TRduboeQKbgkaD83Bg/PYQdMDZUa5dVcE0RU0HyCLlq9GoMuz
+KrRmhln3aYFhE4V9gj+XxGnEwOjL33RzaKsx19Z3dt8Pr8nNrL/vuZnyAMaA5vTZ
+0EqjJssY68yu0JIKUorjKKUUA2mbDP7Go8cLatIepLPN8TIK9kSO3LXxPp1YvBqk
+gSxN/QtokRPZIfXz3AJLBLWYVnTTIv0UEomfkkOnfattTycwKhpMwAxdvLjAUoXw
+LOjVyp/jJ2dF6tM7oivKXffLZ2/w1i88cLU4JloNlRIqW+QNgWN+yKANQhPEYYzA
+1gxRAaLiMaiyEYmYSpsVZyRDdzWUBw==
+=YQY8
+-----END PGP SIGNATURE-----
+
+--dwvdydyqhaortnqv--
