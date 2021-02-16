@@ -2,247 +2,252 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-25.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90829C433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Feb 2021 16:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C90CC433DB
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Feb 2021 11:29:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5B63864DFF
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Feb 2021 16:30:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0AB9D64E08
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Feb 2021 11:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbhBOQaX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Feb 2021 11:30:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34182 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232049AbhBOQ2R (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Feb 2021 11:28:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DC30460200;
-        Mon, 15 Feb 2021 16:27:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1613406441;
-        bh=BliUV72ji+FDfrLN09W99a1LVlldaxjMnaHHvvvEdwE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fT4Gf596fMrFBXuMQ3nRd1zF3Y4b7CNYi9Izdzvvp6jaBxtQyg3SIPEh0QpRN9js+
-         aOEdteq98jmFx8T3Qvaxtrrr6MbeYvDQGFoxee6Oko3Oq8RSpcRf6OlqhOk8M7nySa
-         nnHNd6tDp+TU088aMD/z2iumylegg5jQaGf9pgNI=
-Date:   Mon, 15 Feb 2021 17:27:18 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY / Serial driver changes for 5.12-rc1
-Message-ID: <YCqg5ufpr1yD9tvk@kroah.com>
+        id S229771AbhBPL3f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Feb 2021 06:29:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229742AbhBPL30 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 16 Feb 2021 06:29:26 -0500
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19162C061574;
+        Tue, 16 Feb 2021 03:28:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=KUscxVs+rrWNv2kr6TsDxHeqHd9L/LtdwqhXLvBu+7w=; b=PoSxaYKW6vIzdysd+/slTJ2kaF
+        AjV8jDph1Sw7Tdd3F1tXxNHDguiVMvl1tjdqhIjv60groA8DXOzGqbVHHaRj1QNkqqQBNa234H+Mm
+        vbuKLf0VB41BwaoQ8opqZQkfcupfQdLHpR+oi5cj6LC30pPKH85k0dgTZYeTDrmNGCx5hNjqAI40A
+        52JBu0kNQNczl/wTjmWVazOsyxMzg2fCTH1M3JX7N3+kN8O6a01Jt32IHXmikka0mxMc5fTSdDNCZ
+        SbvDJ1oapIiNCW3OsjzRClo1Oz11qOXj3Tp2OOXaSDbUM5KcSjekJ8N8I/do7zp/jzDMxPbYy21Dt
+        rORkFNeg==;
+Received: from dsl-hkibng22-54f986-236.dhcp.inet.fi ([84.249.134.236] helo=[192.168.1.10])
+        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1lByX4-0007AW-F7; Tue, 16 Feb 2021 13:28:42 +0200
+Subject: Re: [PATCH] tty: serial: Add earlycon driver for Tegra Combined UART
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Mikko Perttunen <mperttunen@nvidia.com>,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jonathanh@nvidia.com, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
+References: <20210213115824.3306965-1-mperttunen@nvidia.com>
+ <YCpMF7MyJYB8x7Zi@ulmo.localdomain>
+ <2cdba410-7cc8-6ad3-53ab-d9c24e58a028@kapsi.fi>
+ <YCpkeJKs/ZnTwgXJ@ulmo.localdomain>
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+Message-ID: <afcd39a4-84f3-eabb-4444-12325230d9a6@kapsi.fi>
+Date:   Tue, 16 Feb 2021 13:28:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YCpkeJKs/ZnTwgXJ@ulmo.localdomain>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 84.249.134.236
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 6ee1d745b7c9fd573fba142a2efdad76a9f1cb04:
+On 2/15/21 2:09 PM, Thierry Reding wrote:
+> On Mon, Feb 15, 2021 at 12:35:31PM +0200, Mikko Perttunen wrote:
+>> On 2/15/21 12:25 PM, Thierry Reding wrote:
+>>> On Sat, Feb 13, 2021 at 01:58:24PM +0200, Mikko Perttunen wrote:
+>>>> Add an earlycon driver for platforms with TCU, namely Tegra194.
+>>>> The driver is compatible with boot parameters passed by NVIDIA
+>>>> boot chains.
+>>>
+>>> I'm not sure I understand the latter part of this description. What boot
+>>> parameters is this compatible with? Looking at the setup function there
+>>> doesn't seem to be anything out of the ordinary here, so I'm wondering
+>>> if that's just confusing. If there's anything special, it might be worth
+>>> specifically pointing out what that is. Perhaps both in the commit
+>>> message and in a code comment, so it's properly documented.
+>>
+>> It's that the name of the driver 'tegra_comb_uart' matches what the boot
+>> chain passes; and that OF_EARLYCON_DECLARE is not used. (OF_EARLYCON_DECLARE
+>> cannot anyway be used due to the mailbox indirection in device tree).
+> 
+> This is all not immediately obvious. Perhaps you can add more of this
+> into the commit message and perhaps provide an example of how this would
+> be used on the kernel command-line.
 
-  Linux 5.11-rc5 (2021-01-24 16:47:14 -0800)
+Will do.
 
-are available in the Git repository at:
+> 
+> You say "mailbox indirection" and looking at the implementation this
+> does seem to use the mailbox's base address as a sort of TX FIFO, which
+> I think is all good. However, I'm wondering if we couldn't somehow
+> detect this all dynamically at runtime. Don't we have access to the
+> device tree node at this point? If so, couldn't we parse all the
+> necessary information from the DT instead of relying on the user
+> providing the mailbox address on the command-line?
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.12-rc1
+Sure, I will look at parsing the address from DT manually at init time.
 
-for you to fetch changes up to a157270fbf37f822e1fa9e9faa8ed8c81da1eb28:
+> 
+> I realize that this would all make things a bit more complicated in this
+> driver, but at the same time it'd make life so much easier for users, so
+> I think it's worth at least considering.
+> 
+> To elaborate on this a bit, I think it'd be much more useful if users
+> could specify something like this:
+> 
+> 	earlycon=tegra-tcu
+> 
+> rather than:
+> 
+> 	earlycon=tegra_comb_uart,0xc150000
+> 
+> Note that I'm not even sure if that's a correct address. It'd be even
+> better if all of this can just be derived from the device tree. My
+> recollection is that earlycon always needs to be explicitly enabled, but
+> I thought it was also possible to derive which console to use from the
+> /chose/stdout-path property in device tree.
 
-  serial: core: Remove BUG_ON(in_interrupt()) check (2021-02-09 11:45:04 +0100)
+The reason I don't think this is that complicated is that that is what 
+cboot is already passing to the kernel. Maybe we could support both 
+options since it's just 2 or 3 extra lines.
 
-----------------------------------------------------------------
-TTY/Serial driver changes for 5.12-rc1
+> 
+>>>> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+>>>> ---
+>>>>    drivers/tty/serial/Kconfig              | 12 +++++
+>>>>    drivers/tty/serial/Makefile             |  1 +
+>>>>    drivers/tty/serial/tegra-tcu-earlycon.c | 72 +++++++++++++++++++++++++
+>>>>    3 files changed, 85 insertions(+)
+>>>>    create mode 100644 drivers/tty/serial/tegra-tcu-earlycon.c
+>>>>
+>>>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+>>>> index 34a2899e69c0..d941785e3f46 100644
+>>>> --- a/drivers/tty/serial/Kconfig
+>>>> +++ b/drivers/tty/serial/Kconfig
+>>>> @@ -331,6 +331,18 @@ config SERIAL_TEGRA_TCU_CONSOLE
+>>>>    	  If unsure, say Y.
+>>>> +config SERIAL_TEGRA_TCU_EARLYCON
+>>>> +	bool "Earlycon on NVIDIA Tegra Combined UART"
+>>>> +	depends on ARCH_TEGRA || COMPILE_TEST
+>>>> +	select SERIAL_EARLYCON
+>>>> +	select SERIAL_CORE_CONSOLE
+>>>> +	default y if SERIAL_TEGRA_TCU_CONSOLE
+>>>> +	help
+>>>> +	  If you say Y here, TCU output will be supported during the earlycon
+>>>> +	  phase of the boot.
+>>>> +
+>>>> +	  If unsure, say Y.
+>>>> +
+>>>>    config SERIAL_MAX3100
+>>>>    	tristate "MAX3100 support"
+>>>>    	depends on SPI
+>>>> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+>>>> index b85d53f9e9ff..408144326fed 100644
+>>>> --- a/drivers/tty/serial/Makefile
+>>>> +++ b/drivers/tty/serial/Makefile
+>>>> @@ -72,6 +72,7 @@ obj-$(CONFIG_SERIAL_XILINX_PS_UART) += xilinx_uartps.o
+>>>>    obj-$(CONFIG_SERIAL_SIRFSOC) += sirfsoc_uart.o
+>>>>    obj-$(CONFIG_SERIAL_TEGRA) += serial-tegra.o
+>>>>    obj-$(CONFIG_SERIAL_TEGRA_TCU) += tegra-tcu.o
+>>>> +obj-$(CONFIG_SERIAL_TEGRA_TCU_EARLYCON) += tegra-tcu-earlycon.o
+>>>>    obj-$(CONFIG_SERIAL_AR933X)   += ar933x_uart.o
+>>>>    obj-$(CONFIG_SERIAL_EFM32_UART) += efm32-uart.o
+>>>>    obj-$(CONFIG_SERIAL_ARC)	+= arc_uart.o
+>>>> diff --git a/drivers/tty/serial/tegra-tcu-earlycon.c b/drivers/tty/serial/tegra-tcu-earlycon.c
+>>>> new file mode 100644
+>>>> index 000000000000..9decfbced0a7
+>>>> --- /dev/null
+>>>> +++ b/drivers/tty/serial/tegra-tcu-earlycon.c
+>>>> @@ -0,0 +1,72 @@
+>>>> +// SPDX-License-Identifier: GPL-2.0
+>>>> +/*
+>>>> + * Copyright (c) 2017-2021, NVIDIA CORPORATION.  All rights reserved.
+>>>> + */
+>>>> +
+>>>> +#include <linux/console.h>
+>>>> +#include <linux/io.h>
+>>>> +#include <linux/serial_core.h>
+>>>> +
+>>>> +#define NUM_BYTES_FIELD_BIT	24
+>>>> +#define FLUSH_BIT		26
+>>>
+>>> This one seems to be unused.
+>>
+>> True, I'll remove it.
+>>
+>>>
+>>>> +#define INTR_TRIGGER_BIT	31
+>>>
+>>> I wonder if this could somehow be integrated with the existing TCU
+>>> driver since we have these bits defined there already. And really this
+>>> is basically a skeleton version of the same driver.
+>>>
+>>>> +/*
+>>>> + * This function splits the string to be printed (const char *s) into multiple
+>>>> + * packets. Each packet contains a max of 3 characters. Packets are sent to the
+>>>> + * SPE-based combined UART server for printing. Communication with SPE is done
+>>>> + * through mailbox registers which can generate interrupts for SPE.
+>>>> + */
+>>>> +static void early_tcu_write(struct console *console, const char *s, unsigned int count)
+>>>> +{
+>>>> +	struct earlycon_device *device = console->data;
+>>>> +	u8 __iomem *addr = device->port.membase;
+>>>> +	u32 mbox_val = BIT(INTR_TRIGGER_BIT);
+>>>> +	unsigned int i;
+>>>> +
+>>>> +	/* Loop for processing each 3 char packet */
+>>>> +	for (i = 0; i < count; i++) {
+>>>> +		if (s[i] == '\n')
+>>>> +			mbox_val = update_and_send_mbox(addr, mbox_val, '\r');
+>>>> +		mbox_val = update_and_send_mbox(addr, mbox_val, s[i]);
+>>>> +	}
+>>>> +
+>>>> +	if ((mbox_val >> NUM_BYTES_FIELD_BIT) & 0x3) {
+>>>> +		while (readl(addr) & BIT(INTR_TRIGGER_BIT))
+>>>> +			cpu_relax();
+>>>> +		writel(mbox_val, addr);
+>>>> +	}
+>>>> +}
+>>>
+>>> For example this function already exists in the Tegra TCU driver and
+>>> perhaps some of that could be refactored to work for both cases.
+>>
+>> This is very similar to the main tegra_tcu driver, but considering how
+>> simple this driver is, and the main driver using the mailbox framework
+>> making the actual implementation incompatible, I was thinking that it's
+>> easier to just have this be independent.
+> 
+> I don't have a strong objection to keeping these functions separate,
+> especially since they are fairly small and not likely to ever change, so
+> the maintenance burden is going to be small in any case.
+> 
+> But even so it might be nice to stash this all into the same file. After
+> all, people aren't going to enable this configuration option if they
+> have the Tegra TCU driver disabled. Once these are integrated, it's also
+> likely not worth even having a separate Kconfig option because the added
+> code is so little.
 
-Here is the big set of tty/serial driver changes for 5.12-rc1.
+Will look into integrating this into tegra-tcu.c.
 
-Nothing huge, just lots of good cleanups and additions:
-	- Your n_tty line discipline cleanups
-	- vt core cleanups and reworks to make the code more "modern"
-	- stm32 driver additions
-	- tty led support added to the tty core and led layer
-	- minor serial driver fixups and additions
+> 
+> Thierry
+> 
 
-All of these have been in linux-next for a while with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Ahmed S. Darwish (2):
-      vt_ioctl: Remove in_interrupt() check
-      serial: core: Remove BUG_ON(in_interrupt()) check
-
-Andy Shevchenko (1):
-      serial: ifx6x60: Remove driver for deprecated platform
-
-Arnd Bergmann (1):
-      serial: remove sirf prima/atlas driver
-
-Christophe Leroy (1):
-      tty: serial: cpm_uart: Add udbg support for enabling xmon
-
-Corey Minyard (2):
-      tty: Export redirect release
-      drivers:tty:pty: Fix a race causing data loss on close
-
-Cristian Ciocaltea (1):
-      tty: serial: owl: Add support for kernel debugger
-
-Emil Renner Berthing (1):
-      vt: keyboard, use new API for keyboard_tasklet
-
-Erwan Le Ray (9):
-      serial: stm32: fix DMA initialization error handling
-      serial: stm32: fix code cleaning warnings and checks
-      serial: stm32: add "_usart" prefix in functions name
-      serial: stm32: add author
-      dt-bindings: serial: stm32: update rts-gpios and cts-gpios
-      serial: stm32: update conflicting RTS/CTS config comment
-      serial: stm32: clean probe and remove port deinit
-      serial: stm32: update transmission complete error message in shutdown
-      serial: stm32: improve platform_get_irq condition handling in init_port
-
-Fabio Estevam (4):
-      serial: fsl_lpuart: Use of_device_get_match_data()
-      serial: mxs-auart: Remove serial_mxs_probe_dt()
-      serial: mxs-auart: Remove <asm/cacheflush.h>
-      dt-bindings: serial: imx: Switch to my personal address
-
-Greg Kroah-Hartman (2):
-      Merge branch 'tty-splice' of git://git.kernel.org/.../torvalds/linux into tty-next
-      Merge 5.11-rc5 into tty-next
-
-Jiri Slaby (12):
-      vt: move set_leds to keyboard.c
-      vt: keyboard, make keyboard_tasklet local
-      vt: keyboard, defkeymap.c_shipped, approach the definitions
-      vt: keyboard, defkeymap.c_shipped, approach the unicode table
-      tty: pty, remove BUG_ON from pty_close
-      8250_tegra: clean up tegra_uart_handle_break
-      vt/consolemap: do font sum unsigned
-      vt: drop old FONT ioctls
-      vgacon: drop BROKEN_GRAPHICS_PROGRAMS
-      tty: cpm_uart, use port->flags instead of low_latency
-      tty_port: drop last traces of low_latency
-      tty: drop termiox user definitions
-
-Linus Torvalds (8):
-      tty: convert tty_ldisc_ops 'read()' function to take a kernel pointer
-      tty: implement read_iter
-      tty: clean up legacy leftovers from n_tty line discipline
-      tty: teach n_tty line discipline about the new "cookie continuations"
-      tty: teach the n_tty ICANON case about the new "cookie continuations" too
-      tty: fix up hung_up_tty_write() conversion
-      tty: fix up hung_up_tty_read() conversion
-      tty: fix up iterate_tty_read() EOVERFLOW handling
-
-Uwe Kleine-König (7):
-      tty: rename tty_kopen() and add new function tty_kopen_shared()
-      tty: new helper function tty_get_icount()
-      tty: hvcs: Drop unnecessary if block
-      tty: vcc: Drop unnecessary if block
-      tty: vcc: Drop impossible to hit WARN_ON
-      leds: trigger: implement a tty trigger
-      tty: serial: Drop unused efm32 serial driver
-
-Wolfram Sang (1):
-      dt-bindings: serial: renesas,hscif: Add r8a779a0 support
-
-Yan.Gao (1):
-      tty: Protect disc_data in n_tty_close and n_tty_flush_buffer
-
-Zheng Yongjun (3):
-      tty/serial/imx: convert comma to semicolon
-      tty/serial/lantiq: convert comma to semicolon
-      tty: serial: icom: Use DEFINE_SPINLOCK() for spinlock
-
- .../ABI/testing/sysfs-class-led-trigger-tty        |    6 +
- .../devicetree/bindings/serial/fsl-imx-uart.yaml   |    2 +-
- .../devicetree/bindings/serial/fsl-mxs-auart.yaml  |    2 +-
- .../devicetree/bindings/serial/renesas,hscif.yaml  |    1 +
- .../devicetree/bindings/serial/sirf-uart.txt       |   34 -
- .../devicetree/bindings/serial/st,stm32-uart.yaml  |   13 +-
- Documentation/networking/caif/caif.rst             |    1 -
- drivers/accessibility/speakup/spk_ttyio.c          |    2 +-
- drivers/bluetooth/hci_ldisc.c                      |   34 +-
- drivers/char/pcmcia/synclink_cs.c                  |    2 -
- drivers/input/serio/serport.c                      |    4 +-
- drivers/leds/trigger/Kconfig                       |    9 +
- drivers/leds/trigger/Makefile                      |    1 +
- drivers/leds/trigger/ledtrig-tty.c                 |  183 +++
- drivers/net/caif/caif_serial.c                     |    3 +-
- drivers/net/ppp/ppp_async.c                        |    3 +-
- drivers/net/ppp/ppp_synctty.c                      |    3 +-
- drivers/s390/char/con3215.c                        |    1 -
- drivers/s390/char/sclp_tty.c                       |    1 -
- drivers/s390/char/sclp_vt220.c                     |    1 -
- drivers/s390/char/tty3270.c                        |    2 -
- drivers/tty/amiserial.c                            |    3 -
- drivers/tty/hvc/hvcs.c                             |    5 +-
- drivers/tty/ipwireless/tty.c                       |    1 -
- drivers/tty/mxser.c                                |    1 -
- drivers/tty/n_gsm.c                                |    3 +-
- drivers/tty/n_hdlc.c                               |   60 +-
- drivers/tty/n_null.c                               |    3 +-
- drivers/tty/n_r3964.c                              |   10 +-
- drivers/tty/n_tracerouter.c                        |    4 +-
- drivers/tty/n_tracesink.c                          |    4 +-
- drivers/tty/n_tty.c                                |  153 +-
- drivers/tty/pty.c                                  |   16 +-
- drivers/tty/serial/8250/8250_tegra.c               |   11 +-
- drivers/tty/serial/Kconfig                         |   42 -
- drivers/tty/serial/Makefile                        |    3 -
- drivers/tty/serial/cpm_uart/cpm_uart_core.c        |   43 +-
- drivers/tty/serial/efm32-uart.c                    |  852 -----------
- drivers/tty/serial/fsl_lpuart.c                    |    4 +-
- drivers/tty/serial/icom.c                          |    4 +-
- drivers/tty/serial/ifx6x60.c                       | 1390 ------------------
- drivers/tty/serial/ifx6x60.h                       |  118 --
- drivers/tty/serial/imx.c                           |    2 +-
- drivers/tty/serial/lantiq.c                        |    2 +-
- drivers/tty/serial/max3100.c                       |    3 -
- drivers/tty/serial/mxs-auart.c                     |   45 +-
- drivers/tty/serial/owl-uart.c                      |   38 +
- drivers/tty/serial/serial_core.c                   |   11 +-
- drivers/tty/serial/sirfsoc_uart.c                  | 1503 --------------------
- drivers/tty/serial/sirfsoc_uart.h                  |  447 ------
- drivers/tty/serial/stm32-usart.c                   |  419 +++---
- drivers/tty/synclink_gt.c                          |    1 -
- drivers/tty/tty_io.c                               |  210 ++-
- drivers/tty/vcc.c                                  |   10 +-
- drivers/tty/vt/consolemap.c                        |    2 +-
- drivers/tty/vt/defkeymap.c_shipped                 |   82 +-
- drivers/tty/vt/keyboard.c                          |   18 +-
- drivers/tty/vt/vt.c                                |   42 +-
- drivers/tty/vt/vt_ioctl.c                          |  154 +-
- drivers/video/console/vgacon.c                     |   19 -
- include/linux/kbd_kern.h                           |   10 +-
- include/linux/kd.h                                 |    8 -
- include/linux/platform_data/efm32-uart.h           |   19 -
- include/linux/spi/ifx_modem.h                      |   15 -
- include/linux/tty.h                                |   11 +-
- include/linux/tty_ldisc.h                          |    3 +-
- include/linux/vt_kern.h                            |   12 -
- include/uapi/linux/serial_core.h                   |    3 -
- include/uapi/linux/termios.h                       |   15 -
- net/nfc/nci/uart.c                                 |    3 +-
- 70 files changed, 958 insertions(+), 5187 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-class-led-trigger-tty
- delete mode 100644 Documentation/devicetree/bindings/serial/sirf-uart.txt
- create mode 100644 drivers/leds/trigger/ledtrig-tty.c
- delete mode 100644 drivers/tty/serial/efm32-uart.c
- delete mode 100644 drivers/tty/serial/ifx6x60.c
- delete mode 100644 drivers/tty/serial/ifx6x60.h
- delete mode 100644 drivers/tty/serial/sirfsoc_uart.c
- delete mode 100644 drivers/tty/serial/sirfsoc_uart.h
- delete mode 100644 include/linux/kd.h
- delete mode 100644 include/linux/platform_data/efm32-uart.h
- delete mode 100644 include/linux/spi/ifx_modem.h
+Thanks!
+Mikko
