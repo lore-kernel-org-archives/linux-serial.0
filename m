@@ -2,113 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 132A9C433DB
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Feb 2021 15:00:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6670C433DB
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Feb 2021 08:45:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D7ED564E07
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Feb 2021 15:00:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 62C0364DE0
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Feb 2021 08:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbhBPO7r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Feb 2021 09:59:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38558 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229812AbhBPO7p (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Feb 2021 09:59:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D200464E04;
-        Tue, 16 Feb 2021 14:59:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1613487545;
-        bh=FFjQkSWfLHAHFzmT+m4+bHCqYWL2XWupRvA3pBa4aq0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=0iHhT+6e9Mau/XcUgxufFJYoVva8T/S8EXRQ7D6y5dbUudHFrC7hSH/oPEaHd5nhu
-         +IHc5Do2jrc5PKTI2bn/x1p+9EkEz95LntrFZMRJVmifKbAYGOHrtAT7Nhn495BlqP
-         6YaltMNilL4AseRp+LV6sP7BaRGOd9eYK+2o2rrs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        id S231853AbhBQIpg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 Feb 2021 03:45:36 -0500
+Received: from fallback23.m.smailru.net ([94.100.187.222]:52162 "EHLO
+        fallback23.mail.ru" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229459AbhBQIpf (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 17 Feb 2021 03:45:35 -0500
+X-Greylist: delayed 2258 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Feb 2021 03:45:33 EST
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail2;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=B4F9I5TO3PfM8THwTc/4hCHd4LOg9KbhZuYYWIhNYNs=;
+        b=js5yFwxPKq3s2+pl/QxhwTgafL2fvW3mRQv/eTfKWYqX4aCypCjM2Ns6jy2MOMaTsDwQWg/eSGBRSKAinphwYszYrsaq7yNINxpYQASyh2oAQGHB7+Mi9rV+2yAgpjyhdRUN5kNWdyVTx0AMZTuTENc/qFDzDMrVTdxrJxUCuNU=;
+Received: from [10.161.64.46] (port=59606 helo=smtp38.i.mail.ru)
+        by fallback23.m.smailru.net with esmtp (envelope-from <shc_work@mail.ru>)
+        id 1lCHrT-0004lL-HQ; Wed, 17 Feb 2021 11:07:03 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=B4F9I5TO3PfM8THwTc/4hCHd4LOg9KbhZuYYWIhNYNs=;
+        b=TK7PYCpBrfyeMwFZjx0OjV8itPNynKF/5VZ4yM5xcNTO4LJsJJjZFwkHel8LqouHgubDMQKT8f5ZoN2mp/vLvquokE+xN1gKUSLDSBJWBxgtdqKDlE25VOZX1LTLK93q4QV+VupQ+/GEFPuxsR5y4Hd5ZQ0+vRechE8Pw+fJsls=;
+Received: by smtp38.i.mail.ru with esmtpa (envelope-from <shc_work@mail.ru>)
+        id 1lCHqd-0004f6-0q; Wed, 17 Feb 2021 11:06:11 +0300
+From:   Alexander Shiyan <shc_work@mail.ru>
 To:     linux-serial@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH] tty: serial: pch_uart.c: remove debugfs dentry pointer
-Date:   Tue, 16 Feb 2021 15:59:00 +0100
-Message-Id: <20210216145900.3835160-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.1
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] Revert "serial: max310x: rework RX interrupt handling"
+Date:   Wed, 17 Feb 2021 11:06:08 +0300
+Message-Id: <20210217080608.31192-1-shc_work@mail.ru>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD91883A1EE8D2E9932147046C009FE7103E1819F397FE8CCAE182A05F5380850408C7755737DDF3CC05B2005A158642AC8AA8AC61F7459571EBC7F6664CF6B1FCA
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE76D9A64DA33E5B915EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F79006378F586D843116CFB2EA1F7E6F0F101C674E70A05D1297E1BBC6CDE5D1141D2B1C448E4EDA4D8925CCEEF1FF70AA37B2E0BEF42F347C3524D39FA2833FD35BB23D9E625A9149C048EE33AC447995A7AD182CC0D3CB04F14752D2E47CDBA5A96583BD4B6F7A4D31EC0BC014FD901B82EE079FA2833FD35BB23D27C277FBC8AE2E8B60CDF180582EB8FBA471835C12D1D977C4224003CC836476EB9C4185024447017B076A6E789B0E975F5C1EE8F4F765FC913C91C796649C823AA81AA40904B5D9CF19DD082D7633A078D18283394535A93AA81AA40904B5D98AA50765F79006373B986890454121B2D81D268191BDAD3D698AB9A7B718F8C442539A7722CA490C13377AFFFEAFD26923F8577A6DFFEA7CB24F08513AFFAC7993EC92FD9297F6715571747095F342E857739F23D657EF2BD5E8D9A59859A8B67122B551D37F75FD089D37D7C0E48F6C5571747095F342E857739F23D657EF2B6825BDBE14D8E702ABEDDA51113D120200306258E7E6ABB4E4A6367B16DE6309
+X-B7AD71C0: AC4F5C86D027EB782CDD5689AFBDA7A24A6D60772A99906F8E1CD14B953EB46DBD699E685A679866355D89D7DBCDD132
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975CF81F587C2CCB1933B50466ABBD69FFECC3FA13B31F5A91949C2B6934AE262D3EE7EAB7254005DCED2BDA8E650F3E0BDA1E0A4E2319210D9B64D260DF9561598F01A9E91200F654B047F3662BFF48AA648E8E86DC7131B365E7726E8460B7C23C
+X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D34951738D4D62E58A422B010A152D8B2FF5C3179C8F853A72B5DB0BDA6E042AD17BAB80BFA81B8AD721D7E09C32AA3244C295FED0FC2A70C12B997A574E097C8E5435BF7150578642F83B48618A63566E0
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojJkVkVdRHm/9POiAqRx+/xA==
+X-Mailru-Sender: 8261CADE3D3FA0B4C2F1292954F703E9C92787E6EA03C202ECF27643BCB4B6D0F3988C97BF8F0C606B3B2BD4812BFD4DC77752E0C033A69E93554C27080790AB3B25A7FBAAF806F0AE208404248635DF
+X-Mras: Ok
+X-7564579A: B8F34718100C35BD
+X-77F55803: 6242723A09DB00B492078447A8AA947A9BC2B6645DCA5479D7CE7039F97F696B049FFFDB7839CE9ECACF5275A6186BFC52C3D07AB6DB9CD38BB028B334881EBFB20F9346BEC8BC24
+X-7FA49CB5: 0D63561A33F958A56B0AB1FC551E66951C0943BEF026C40D5F3086011458C4738941B15DA834481FA18204E546F3947C9ECE72BF5266115FF6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F7900637D364C8B9A17AC2FF389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F790063743349E7DCD42F854D81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636A7F4EDE966BC389F9E8FC8737B5C2249AC294AFEFA671E80089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7CCB718973C3B1084543847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148F53FDB0A1CE3EC88B3B503F486389A921A5CC5B56E945C8DA
+X-B7AD71C0: 6FEFE4C63DFE2D85469AD6E133326EAB664F5199923B286E81C2AD9CFA0FBF5C9C2BBA594F31363B5803BE1F3B17DC36E8F7B195E1C978317D1BA4D709F7B41DB24383D33A8A987E
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975CF81F587C2CCB1933E13D84B4797ED3F7FF6C4830244461B09C2B6934AE262D3EE7EAB7254005DCED2BDA8E650F3E0BDA699F904B3F4130E343918A1A30D5E7FCCB5012B2E24CD356
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojJkVkVdRHm//o9J87tVh0LA==
+X-Mailru-MI: 1000000000800
+X-Mailru-Sender: A5480F10D64C90056E4657EF76348BF2FE718F697F575445873D6F0C2588958179D0F6AC9C0BD8DB3786569BE0651809D50E20E2BC48EF5AFF3C6AF3E48A3A73EAB4BC95F72C04283CDA0F3B3F5B9367
+X-Mras: Ok
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-No need to keep around the dentry pointer for the debugfs file if all it
-is used for is to remove it when we are wanting to clean up, as the
-pointer can be looked up directly from debugfs instead.
+This reverts commit fce3c5c1a2d9cd888f2987662ce17c0c651916b2.
 
-This also removes pointless #ifdef CONFIG_DEBUG_FS brackets as the
-compiler is smart enough to handle this properly if debugfs is disabled
-without us having to worry about it.
+FIFO is triggered 4 intervals after receiving a byte, it's good
+when we don't care about the time of reception, but are only
+interested in the presence of any activity on the line.
+Unfortunately, this method is not suitable for all tasks,
+for example, the RS-485 protocol will not work properly,
+since the state machine must track the request-response time
+and after the timeout expires, a decision is made that the device
+on the line is not responding.
 
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
 ---
- drivers/tty/serial/pch_uart.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ drivers/tty/serial/max310x.c | 29 +++++------------------------
+ 1 file changed, 5 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index a7363bc66c11..e9e79d181f0e 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -236,7 +236,6 @@ struct eg20t_port {
- 	void				*rx_buf_virt;
- 	dma_addr_t			rx_buf_dma;
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 9795b2e8b0b2..1b61d26bb7af 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1056,9 +1056,9 @@ static int max310x_startup(struct uart_port *port)
+ 	max310x_port_update(port, MAX310X_MODE1_REG,
+ 			    MAX310X_MODE1_TRNSCVCTRL_BIT, 0);
  
--	struct dentry	*debugfs;
- #define IRQ_NAME_SIZE 17
- 	char				irq_name[IRQ_NAME_SIZE];
+-	/* Reset FIFOs */
+-	max310x_port_write(port, MAX310X_MODE2_REG,
+-			   MAX310X_MODE2_FIFORST_BIT);
++	/* Configure MODE2 register & Reset FIFOs*/
++	val = MAX310X_MODE2_RXEMPTINV_BIT | MAX310X_MODE2_FIFORST_BIT;
++	max310x_port_write(port, MAX310X_MODE2_REG, val);
+ 	max310x_port_update(port, MAX310X_MODE2_REG,
+ 			    MAX310X_MODE2_FIFORST_BIT, 0);
  
-@@ -1735,9 +1734,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	int fifosize;
- 	int port_type;
- 	struct pch_uart_driver_data *board;
--#ifdef CONFIG_DEBUG_FS
--	char name[32];	/* for debugfs file name */
--#endif
-+	char name[32];
+@@ -1086,27 +1086,8 @@ static int max310x_startup(struct uart_port *port)
+ 	/* Clear IRQ status register */
+ 	max310x_port_read(port, MAX310X_IRQSTS_REG);
  
- 	board = &drv_dat[id->driver_data];
- 	port_type = board->port_type;
-@@ -1813,11 +1810,9 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	if (ret < 0)
- 		goto init_port_hal_free;
+-	/*
+-	 * Let's ask for an interrupt after a timeout equivalent to
+-	 * the receiving time of 4 characters after the last character
+-	 * has been received.
+-	 */
+-	max310x_port_write(port, MAX310X_RXTO_REG, 4);
+-
+-	/*
+-	 * Make sure we also get RX interrupts when the RX FIFO is
+-	 * filling up quickly, so get an interrupt when half of the RX
+-	 * FIFO has been filled in.
+-	 */
+-	max310x_port_write(port, MAX310X_FIFOTRIGLVL_REG,
+-			   MAX310X_FIFOTRIGLVL_RX(MAX310X_FIFO_SIZE / 2));
+-
+-	/* Enable RX timeout interrupt in LSR */
+-	max310x_port_write(port, MAX310X_LSR_IRQEN_REG,
+-			   MAX310X_LSR_RXTO_BIT);
+-
+-	/* Enable LSR, RX FIFO trigger, CTS change interrupts */
+-	val = MAX310X_IRQ_LSR_BIT  | MAX310X_IRQ_RXFIFO_BIT | MAX310X_IRQ_TXEMPTY_BIT;
++	/* Enable RX, TX, CTS change interrupts */
++	val = MAX310X_IRQ_RXEMPTY_BIT | MAX310X_IRQ_TXEMPTY_BIT;
+ 	max310x_port_write(port, MAX310X_IRQEN_REG, val | MAX310X_IRQ_CTS_BIT);
  
--#ifdef CONFIG_DEBUG_FS
--	snprintf(name, sizeof(name), "uart%d_regs", board->line_no);
--	priv->debugfs = debugfs_create_file(name, S_IFREG | S_IRUGO,
--				NULL, priv, &port_regs_ops);
--#endif
-+	snprintf(name, sizeof(name), "uart%d_regs", priv->port.line);
-+	debugfs_create_file(name, S_IFREG | S_IRUGO, NULL, priv,
-+			    &port_regs_ops);
- 
- 	return priv;
- 
-@@ -1835,10 +1830,10 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 
- static void pch_uart_exit_port(struct eg20t_port *priv)
- {
-+	char name[32];
- 
--#ifdef CONFIG_DEBUG_FS
--	debugfs_remove(priv->debugfs);
--#endif
-+	snprintf(name, sizeof(name), "uart%d_regs", priv->port.line);
-+	debugfs_remove(debugfs_lookup(name, NULL));
- 	uart_remove_one_port(&pch_uart_driver, &priv->port);
- 	free_page((unsigned long)priv->rxbuf.buf);
- }
+ 	return 0;
 -- 
-2.30.1
+2.26.2
 
