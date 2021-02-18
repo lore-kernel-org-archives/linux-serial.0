@@ -2,94 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69629C433DB
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Feb 2021 08:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A464DC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Feb 2021 12:17:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1EC8D64E68
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Feb 2021 08:11:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4CBDB64DEC
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Feb 2021 12:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230306AbhBRILA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Feb 2021 03:11:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42462 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231419AbhBRIIi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Feb 2021 03:08:38 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2E38764DE9;
-        Thu, 18 Feb 2021 08:07:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1613635674;
-        bh=dDLRi1y42gMPNm2n3QtzXA3mGmPiMWvagjUX2xeep/c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2TbbycayOCp9VzxAgrFDhyDrTphx0oPWrgu4TO1ITeAHjo8KhD+lQO1PIwjb4Esyr
-         1Y4pJ7yh6woY8vi+4QD4B2p+Nyfmi5Tp4IbVrBmrzBhXvovJXxEfzLLOLivRsEXjmp
-         2X8tkCs5Cwbv7eHaAHwRDIoMAZd4vdcH4C9srWjY=
-Date:   Thu, 18 Feb 2021 09:07:52 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Cc:     Alexander Shiyan <shc_work@mail.ru>, linux-serial@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] Revert "serial: max310x: rework RX interrupt handling"
-Message-ID: <YC4gWOlwAkjBz+qf@kroah.com>
-References: <20210217080608.31192-1-shc_work@mail.ru>
- <20210217235345.7326201b@windsurf.home>
- <20210218065553.864bbf0cc2b3d398504c5b95@mail.ru>
- <20210218075127.5023d878@windsurf.home>
- <YC4TJQew3QK4iPvP@kroah.com>
- <20210218082051.648b8122@windsurf.home>
+        id S231912AbhBRMQd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Feb 2021 07:16:33 -0500
+Received: from fieber.vanmierlo.com ([84.243.197.177]:40423 "EHLO
+        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230283AbhBRL60 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 18 Feb 2021 06:58:26 -0500
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by kerio9.vanmierlo.com (Kerio Connect 9.3.1) with ESMTPA;
+        Thu, 18 Feb 2021 11:49:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210218082051.648b8122@windsurf.home>
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Thu, 18 Feb 2021 11:49:42 +0100
+From:   Maarten Brock <m.brock@vanmierlo.com>
+To:     =?UTF-8?Q?M=C3=A5ns_Rullg=C3=A5rd?= <mans@mansr.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250: add option to disable registration of
+ legacy ISA ports
+In-Reply-To: <yw1xwnvtcki0.fsf@mansr.com>
+References: <20210128172244.22859-1-mans@mansr.com>
+ <YBam2m2VMowH5Yth@kroah.com> <yw1xwnvtcki0.fsf@mansr.com>
+Message-ID: <e0ac606ecc9f116f41fe4fccbf67a6bb@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+User-Agent: Roundcube Webmail/1.3.3
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 08:20:51AM +0100, Thomas Petazzoni wrote:
-> Hello Greg,
+On 2021-01-31 14:18, Måns Rullgård wrote:
+>> What userspace visable change will be caused by this?
 > 
-> On Thu, 18 Feb 2021 08:11:33 +0100
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> 
-> > What aspects need configuring and why is this uart so unique from all
-> > others that it can't use the normal configuration methods?
-> 
-> What makes is stand out from other UARTs is that it is over SPI. So
-> accessing every single register of the UART is much more expensive than
-> with UART controllers on MMIO.
-> 
-> As explained in commit fce3c5c1a2d9cd888f2987662ce17c0c651916b2, in its
-> original state, the driver was configuring the UART to get an interrupt
-> for every single byte being received, causing a huge CPU load (25% in
-> my use case) for a very simple workload that consists in receiving 20
-> bytes every 16ms.
-> 
-> What fce3c5c1a2d9cd888f2987662ce17c0c651916b2 does it to configure the
-> UART controller to not interrupt at every byte being received, but only
-> when the RX FIFO has reached a certain threshold *or* after some time
-> without receiving data. Clearly, this is trading throughput against
-> latency.
-> 
-> So what needs to be configured are two aspects:
-> 
->  * How many bytes the UART will receive before triggering an interrupt
->    and delivering data to the TTY layer/userspace.
+> There won't be /dev/ttyS devices for ports that don't exist.
 
-Odds are, this is already an ioctl for the tty layer given that this
-seems like a common thing even for "normal" uarts.  Has anyone looked?
+Oh yes, please!
 
->  * How much time with no data received before the UART triggers and
->    interrupt, and received data is delivered to the TTY layer/userspace.
+That would mean I can create ttyS2 and upward while keeping ttyPS0 and 
+ttyPS1 (which invaded the serial<N> alias namespace) at the lower 
+numbers.
 
-Again, that should already be an option we support, if not, I would be
-surprised.  I don't have the time to dig through the
-kernel/documentation at the moment, but if someone that cares about this
-can, I would appreciate it :)
+>> Will ports get renumbered?
+> 
+> Not if they had predictable numbers to begin with.
 
-thanks,
+It is hard to make predictable numbers with the backward operating 
+serial<N> aliases in the device tree. It makes relations in the wrong 
+direction.
 
-greg k-h
+If a system has two ttyPS<N> uarts (xilinx_uartps) and needs them at 
+ttyPS0 and ttyPS1 (or at least <=ttyPS9, due to another bug in 
+start_getty) and 10 ttyS<N> (8250) you can configure the kernel for 10 
+8250 devices and give 8 of them the predictable ttyS2 to ttyS9. The last 
+two will get the remaining ttyS0 and ttyS1. You cannot assign them their 
+number, because the serial0 and serial1 alias are required for the 
+ttyPS0 and ttyPS1.
+
+However with this option it would be possible to configure for 12 8250 
+devices and not use nor see ttyS0 and ttyS1.
+
+The best option would of course be to not even instantiate kernel 
+drivers for non-existing devices.
+
+Maarten
+
