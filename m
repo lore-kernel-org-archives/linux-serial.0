@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06AB6C433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90206C433DB
 	for <linux-serial@archiver.kernel.org>; Fri, 19 Feb 2021 13:34:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B47A864ED5
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Feb 2021 13:34:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C97D64EBF
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Feb 2021 13:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbhBSNed (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S230257AbhBSNed (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Fri, 19 Feb 2021 08:34:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbhBSNec (ORCPT
+        with ESMTP id S230188AbhBSNec (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 19 Feb 2021 08:34:32 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8A1C061794
-        for <linux-serial@vger.kernel.org>; Fri, 19 Feb 2021 05:33:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E48BC061793
+        for <linux-serial@vger.kernel.org>; Fri, 19 Feb 2021 05:33:13 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lD5u9-0007P7-8B; Fri, 19 Feb 2021 14:33:09 +0100
+        id 1lD5u9-0007P6-8A; Fri, 19 Feb 2021 14:33:09 +0100
 Received: from ukl by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lD5u8-0001aN-Q6; Fri, 19 Feb 2021 14:33:08 +0100
+        id 1lD5u8-0001aK-Pc; Fri, 19 Feb 2021 14:33:08 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Pavel Machek <pavel@ucw.cz>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     kernel@pengutronix.de, linux-leds@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v2 2/2] leds: trigger/tty: Use led_set_brightness_sync() from workqueue
-Date:   Fri, 19 Feb 2021 14:33:07 +0100
-Message-Id: <20210219133307.4840-3-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 1/2] leds: trigger: Fix error path to not unlock the unlocked mutex
+Date:   Fri, 19 Feb 2021 14:33:06 +0100
+Message-Id: <20210219133307.4840-2-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210219133307.4840-1-u.kleine-koenig@pengutronix.de>
 References: <20210219133307.4840-1-u.kleine-koenig@pengutronix.de>
@@ -54,38 +54,42 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-led_set_brightness() involves scheduling a workqueue. As here the led's
-brightness setting is done in context of the trigger's workqueue this is
-unjustified overhead and it's more sensible to use
-led_set_brightness_sync().
+ttyname is allocated before the mutex is taken, so it must not be
+unlocked in the error path.
 
 Reported-by: Pavel Machek <pavel@ucw.cz>
 Fixes: fd4a641ac88f ("leds: trigger: implement a tty trigger")
 Acked-by: Pavel Machek <pavel@ucw.cz>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/leds/trigger/ledtrig-tty.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/leds/trigger/ledtrig-tty.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/ledtrig-tty.c
-index af61281dc6a1..f62db7e520b5 100644
+index d2ab6ab080ac..af61281dc6a1 100644
 --- a/drivers/leds/trigger/ledtrig-tty.c
 +++ b/drivers/leds/trigger/ledtrig-tty.c
-@@ -122,12 +122,12 @@ static void ledtrig_tty_work(struct work_struct *work)
+@@ -51,10 +51,8 @@ static ssize_t ttyname_store(struct device *dev,
  
- 	if (icount.rx != trigger_data->rx ||
- 	    icount.tx != trigger_data->tx) {
--		led_set_brightness(trigger_data->led_cdev, LED_ON);
-+		led_set_brightness_sync(trigger_data->led_cdev, LED_ON);
- 
- 		trigger_data->rx = icount.rx;
- 		trigger_data->tx = icount.tx;
+ 	if (size) {
+ 		ttyname = kmemdup_nul(buf, size, GFP_KERNEL);
+-		if (!ttyname) {
+-			ret = -ENOMEM;
+-			goto out_unlock;
+-		}
++		if (!ttyname)
++			return -ENOMEM;
  	} else {
--		led_set_brightness(trigger_data->led_cdev, LED_OFF);
-+		led_set_brightness_sync(trigger_data->led_cdev, LED_OFF);
+ 		ttyname = NULL;
  	}
+@@ -69,7 +67,6 @@ static ssize_t ttyname_store(struct device *dev,
  
- out:
+ 	trigger_data->ttyname = ttyname;
+ 
+-out_unlock:
+ 	mutex_unlock(&trigger_data->mutex);
+ 
+ 	if (ttyname && !running)
 -- 
 2.29.2
 
