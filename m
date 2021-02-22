@@ -2,103 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D464FC433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Feb 2021 12:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC665C433DB
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Feb 2021 13:21:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8DB4A64E41
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Feb 2021 12:49:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 80CC264DE9
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Feb 2021 13:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbhBVMtO convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Feb 2021 07:49:14 -0500
-Received: from beige.elm.relay.mailchannels.net ([23.83.212.16]:16638 "EHLO
-        beige.elm.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231293AbhBVMsq (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Feb 2021 07:48:46 -0500
-X-Sender-Id: dreamhost|x-authsender|smtp@contentfirst.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 2FDF1101F76;
-        Mon, 22 Feb 2021 12:39:47 +0000 (UTC)
-Received: from pdx1-sub0-mail-a46.g.dreamhost.com (100-98-118-117.trex.outbound.svc.cluster.local [100.98.118.117])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id A8D15101A4D;
-        Mon, 22 Feb 2021 12:39:46 +0000 (UTC)
-X-Sender-Id: dreamhost|x-authsender|smtp@contentfirst.com
-Received: from pdx1-sub0-mail-a46.g.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384)
-        by 100.98.118.117 (trex/6.0.2);
-        Mon, 22 Feb 2021 12:39:47 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|smtp@contentfirst.com
-X-MailChannels-Auth-Id: dreamhost
-X-Spot-Chief: 77190bf72eb2d824_1613997586973_340005202
-X-MC-Loop-Signature: 1613997586973:2902972099
-X-MC-Ingress-Time: 1613997586973
-Received: from pdx1-sub0-mail-a46.g.dreamhost.com (localhost [127.0.0.1])
-        by pdx1-sub0-mail-a46.g.dreamhost.com (Postfix) with ESMTP id 7169F88D85;
-        Mon, 22 Feb 2021 04:39:46 -0800 (PST)
-Received: from industrynumbers.com (pool-100-15-209-187.washdc.fios.verizon.net [100.15.209.187])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: smtp@contentfirst.com)
-        by pdx1-sub0-mail-a46.g.dreamhost.com (Postfix) with ESMTPSA id 0E3E17FDDB;
-        Mon, 22 Feb 2021 04:39:44 -0800 (PST)
-Received: from industrynumbers.com (localhost [127.0.0.1])
-        by industrynumbers.com (Postfix) with ESMTP id 776F5282D7A;
-        Mon, 22 Feb 2021 07:39:42 -0500 (EST)
-To:     Johan Hovold <johan@kernel.org>, charles-yeh@prolific.com.tw
-Cc:     linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        Charles Yeh <charlesyeh522@gmail.com>,
+        id S230349AbhBVNVI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Feb 2021 08:21:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35678 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231429AbhBVNTD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 22 Feb 2021 08:19:03 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AC8E064DE9;
+        Mon, 22 Feb 2021 13:18:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613999902;
+        bh=LpfbMjpV7u/zvEEqjzs85NmoChmWc6GDwNKgZCrBLbI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j0tWtN8cnhX+czxlRxykgyXUWnTJiX87CohV/GnALUjS4umRWFzTnu2kZDpEE8+Is
+         09PK4DM98jxFhPsGEYgQdqwOP235S0s4ZZR9G+6bxli/fPnD3NQwW3zKCdsjGPVJBt
+         VCtHK7upilYldyYlMarDvbcuvhQgTDLnZTD95Bdqms1OS52CtoQrV0DX+sP11sg+0V
+         E0gl+j5wDxJYVBki2PVtn4xfFu2tV9k1Y5QMNMUXfycbhmsACkpN+4kzXIY1eWQtp0
+         CuxBksyMWRcezdGkpwpGOgPDuPbhO8557MxZiAbmcgijDXISlSjeloqnXWHcEu5OXM
+         0GisOprAFbQNg==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1lEB6k-0005Yc-5k; Mon, 22 Feb 2021 14:18:38 +0100
+Date:   Mon, 22 Feb 2021 14:18:38 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     "Michael G. Katzmann" <michaelk@IEEE.org>
+Cc:     charles-yeh@prolific.com.tw, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, Charles Yeh <charlesyeh522@gmail.com>,
         Joe Abbott <jabbott@rollanet.org>
+Subject: Re: non-standard baud rates with Prolific 2303 USB-serial
+Message-ID: <YDOvLseYXaUHs0lS@hovoldconsulting.com>
 References: <3aee5708-7961-f464-8c5f-6685d96920d6@IEEE.org>
  <dc3458f1-830b-284b-3464-20124dc3900a@IEEE.org>
  <YDNwxtDxd7JntAXt@hovoldconsulting.com>
-X-DH-BACKEND: pdx1-sub0-mail-a46
-From:   "Michael G. Katzmann" <michaelk@IEEE.org>
-Subject: Re: non-standard baud rates with Prolific 2303 USB-serial
-Message-ID: <e2dcc839-3b43-2c80-6ad1-2d97e639b46a@IEEE.org>
-Date:   Mon, 22 Feb 2021 07:39:42 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+ <e2dcc839-3b43-2c80-6ad1-2d97e639b46a@IEEE.org>
 MIME-Version: 1.0
-In-Reply-To: <YDNwxtDxd7JntAXt@hovoldconsulting.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Content-Language: en-US
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e2dcc839-3b43-2c80-6ad1-2d97e639b46a@IEEE.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2/22/21 3:52 AM, Johan Hovold wrote:
-> Does your updated algorithm also result in 110 baud (8n1) being encoded
-> as:
->
-> 	a8 a6 01 80 00 02 07
->
-> And are you using some official Prolific Windows driver or something
-> that came with the device?
+On Mon, Feb 22, 2021 at 07:39:42AM -0500, Michael G. Katzmann wrote:
+> On 2/22/21 3:52 AM, Johan Hovold wrote:
+> > Does your updated algorithm also result in 110 baud (8n1) being encoded
+> > as:
+> >
+> > 	a8 a6 01 80 00 02 07
+> >
+> > And are you using some official Prolific Windows driver or something
+> > that came with the device?
+> 
+> Johan,
+> 
+>   On Windows I did not install a new driver. It was recognized by the
+> system and uses the Microsoft provided Prolific driver Ver 3.8.38.2.
 
-Johan,
+Thanks for confirming. Then this sounds like something which Prolific
+should be very well aware of.
 
-  On Windows I did not install a new driver. It was recognized by the system and uses the Microsoft provided Prolific driver Ver 3.8.38.2.
+> On windows everything looks fine (no sign of distress (i.e. no yellow
+> caution triangle)).
+> 
+> Where should I look for the encoding (a8 a6 01 80 00 02 07) ? (110bd
+> encodes as 80 00 C3 54 using the algorithm I described))
 
-On windows everything looks fine (no sign of distress (i.e. no yellow caution triangle)).
+That was the encoding used by Joe's device (same driver I think) for
+110n81.
 
-Where should I look for the encoding (a8 a6 01 80 00 02 07) ? (110bd encodes as 80 00 C3 54 using the algorithm I described))
+It may not work with your device, but 0x10000 could just be a
+2-prescaler bit:
 
-cheers,
+	32 * 12*10^6 / (2 * 0x6a8 * 4^5) = ~110.03521126760563380282
 
-   Michael
+where as you would have:
 
-> I tried asking Prolific about this but I'm still not sure whether these
-> are official chips or counterfeit. 0x0300 is supposed to be a PL2303TA
-> and Prolific claims that the current driver is working fine with these
-> so we'd need to key off something more than just bcdDevice.
+	32 * 12*10^6 / (0x354 * 4^6) = ~110.03521126760563380282
 
+Could you try hardcoding 0x1a6a8 and and see if you end up with 110 bd?
 
+> > I tried asking Prolific about this but I'm still not sure whether these
+> > are official chips or counterfeit. 0x0300 is supposed to be a PL2303TA
+> > and Prolific claims that the current driver is working fine with these
+> > so we'd need to key off something more than just bcdDevice.
+
+Johan
