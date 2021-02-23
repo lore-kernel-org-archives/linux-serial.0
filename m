@@ -2,115 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 589CFC433E6
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Feb 2021 11:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE561C43381
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Feb 2021 13:26:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0101B64E58
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Feb 2021 11:24:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE89664DF3
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Feb 2021 13:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232091AbhBWLYm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Feb 2021 06:24:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35054 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231591AbhBWLYk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Feb 2021 06:24:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0DA6E64E58;
-        Tue, 23 Feb 2021 11:23:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1614079439;
-        bh=7dt3WFcKWgMb17C1fabScSgpfGbLICDn6coc0lLO/Ko=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=y/IR/5jEBIqIMCL6h+smpsP71zMAAcNMreRaGQbwiQCsDmPtjxIgwzUCQ27Uk1TGh
-         iV79xVfcA3nUiHJwMY5D9DnQk79pmyn7MiuE8/KxpE/7rTC12Kz3dphj/uYD5qGCTG
-         xInK+LQa/ed6GdbFmjUP+aw70PNWmLApzWQ5UUOA=
-Date:   Tue, 23 Feb 2021 12:23:55 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     dingsenjie@163.com
-Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dingsenjie <dingsenjie@yulong.com>
-Subject: Re: [PATCH] tty/serial:Remove superfluous "breaks"
-Message-ID: <YDTly/pUCjsgVpDG@kroah.com>
-References: <20210223080630.44644-1-dingsenjie@163.com>
+        id S232855AbhBWN0M convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Feb 2021 08:26:12 -0500
+Received: from beige.elm.relay.mailchannels.net ([23.83.212.16]:5214 "EHLO
+        beige.elm.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232853AbhBWN0L (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Feb 2021 08:26:11 -0500
+X-Sender-Id: dreamhost|x-authsender|smtp@contentfirst.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 1659E7E31C8;
+        Tue, 23 Feb 2021 13:25:29 +0000 (UTC)
+Received: from pdx1-sub0-mail-a45.g.dreamhost.com (100-96-13-41.trex.outbound.svc.cluster.local [100.96.13.41])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 8AA677E2B6B;
+        Tue, 23 Feb 2021 13:25:28 +0000 (UTC)
+X-Sender-Id: dreamhost|x-authsender|smtp@contentfirst.com
+Received: from pdx1-sub0-mail-a45.g.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384)
+        by 100.96.13.41 (trex/6.0.2);
+        Tue, 23 Feb 2021 13:25:28 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|smtp@contentfirst.com
+X-MailChannels-Auth-Id: dreamhost
+X-Suffer-Vacuous: 3b89499900c11f82_1614086728848_406775145
+X-MC-Loop-Signature: 1614086728848:1177074307
+X-MC-Ingress-Time: 1614086728848
+Received: from pdx1-sub0-mail-a45.g.dreamhost.com (localhost [127.0.0.1])
+        by pdx1-sub0-mail-a45.g.dreamhost.com (Postfix) with ESMTP id 548897F11C;
+        Tue, 23 Feb 2021 05:25:28 -0800 (PST)
+Received: from industrynumbers.com (pool-100-15-209-187.washdc.fios.verizon.net [100.15.209.187])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: smtp@contentfirst.com)
+        by pdx1-sub0-mail-a45.g.dreamhost.com (Postfix) with ESMTPSA id 958747F13C;
+        Tue, 23 Feb 2021 05:25:24 -0800 (PST)
+Received: from industrynumbers.com (localhost [127.0.0.1])
+        by industrynumbers.com (Postfix) with ESMTP id 68CC3282D7A;
+        Tue, 23 Feb 2021 08:25:23 -0500 (EST)
+Subject: Re: non-standard baud rates with Prolific 2303 USB-serial
+To:     =?UTF-8?B?WWVoLkNoYXJsZXMgW+iRieamrumRq10=?= 
+        <charles-yeh@prolific.com.tw>, Johan Hovold <johan@kernel.org>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        Charles Yeh <charlesyeh522@gmail.com>,
+        Joe Abbott <jabbott@rollanet.org>
+References: <3aee5708-7961-f464-8c5f-6685d96920d6@IEEE.org>
+ <dc3458f1-830b-284b-3464-20124dc3900a@IEEE.org>
+ <YDNwxtDxd7JntAXt@hovoldconsulting.com>
+ <e2dcc839-3b43-2c80-6ad1-2d97e639b46a@IEEE.org>
+ <YDOvLseYXaUHs0lS@hovoldconsulting.com>
+ <fb1489c2-b972-619b-b7ce-4ae8e1d2cc0f@IEEE.org>
+ <YDPO/JprcDTaPmR4@hovoldconsulting.com>
+ <0f9caf26-af58-13a9-9947-47bb646f505e@IEEE.org>
+ <YDPS3AP63/PwmwJU@hovoldconsulting.com>
+ <cd92ea17-4e0a-2b6c-1032-9a81727841c9@IEEE.org>
+ <43da22ced8e14442bbc8babea77e4ed7@MailHC2.prolific.com.tw>
+X-DH-BACKEND: pdx1-sub0-mail-a45
+From:   "Michael G. Katzmann" <michaelk@IEEE.org>
+Message-ID: <f91e9f1b-affc-8b13-19eb-a1ab19771032@IEEE.org>
+Date:   Tue, 23 Feb 2021 08:25:23 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210223080630.44644-1-dingsenjie@163.com>
+In-Reply-To: <43da22ced8e14442bbc8babea77e4ed7@MailHC2.prolific.com.tw>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Feb 23, 2021 at 04:06:30PM +0800, dingsenjie@163.com wrote:
-> From: dingsenjie <dingsenjie@yulong.com>
-> 
-> Remove superfluous "breaks", as there is a "return" before them.
-> 
-> Signed-off-by: dingsenjie <dingsenjie@yulong.com>
-> ---
->  drivers/tty/serial/imx.c | 5 -----
->  1 file changed, 5 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 425624d..6c1c31a 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -300,7 +300,6 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
->  	switch (offset) {
->  	case UCR1:
->  		return sport->ucr1;
-> -		break;
->  	case UCR2:
->  		/*
->  		 * UCR2_SRST is the only bit in the cached registers that might
-> @@ -311,16 +310,12 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
->  		if (!(sport->ucr2 & UCR2_SRST))
->  			sport->ucr2 = readl(sport->port.membase + offset);
->  		return sport->ucr2;
-> -		break;
->  	case UCR3:
->  		return sport->ucr3;
-> -		break;
->  	case UCR4:
->  		return sport->ucr4;
-> -		break;
->  	case UFCR:
->  		return sport->ufcr;
-> -		break;
->  	default:
->  		return readl(sport->port.membase + offset);
->  	}
-> -- 
-> 1.9.1
-> 
+The markings on the device I have are
+PL2303TA
+G19101E
+CDH81920
 
-Hi,
+... and yes I had to destroy it to open it 8-(
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Photo here..... https://photos.app.goo.gl/ontHBzGBbaDV6FWu6
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+Michael.  
 
-- It looks like you did not use your "real" name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file, Documentation/SubmittingPatches
-  for how to do this correctly.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+On 2/23/21 5:14 AM, Yeh.Charles [葉榮鑫] wrote:
+> I set 110 bps / 8 data bits/ none parity / 1 stop bit.
+> I used PL2303TA , I got the data is d5 0e 00 80 00 00 08 on 5.8.0-41 kernel.
+> Please refer to attached file : PL2303TA.png.
+>
+> The divider algorithm is OK on Linux for my test.
+>
+> Can you use you PL2303TA board to print log?
+> What are the differences between the log you printed and the log printed in the attachment?
