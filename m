@@ -2,63 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95B2C433DB
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Feb 2021 16:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 634DAC433DB
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Feb 2021 16:52:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A8A4D61494
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Feb 2021 16:31:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 121D161606
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Feb 2021 16:52:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233311AbhBWQb3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Feb 2021 11:31:29 -0500
-Received: from beige.elm.relay.mailchannels.net ([23.83.212.16]:32230 "EHLO
-        beige.elm.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231742AbhBWQb2 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Feb 2021 11:31:28 -0500
-X-Sender-Id: dreamhost|x-authsender|smtp@contentfirst.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 45B51542F50;
-        Tue, 23 Feb 2021 16:30:45 +0000 (UTC)
-Received: from pdx1-sub0-mail-a45.g.dreamhost.com (100-96-17-34.trex.outbound.svc.cluster.local [100.96.17.34])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id B9DAD542DB0;
-        Tue, 23 Feb 2021 16:30:44 +0000 (UTC)
-X-Sender-Id: dreamhost|x-authsender|smtp@contentfirst.com
-Received: from pdx1-sub0-mail-a45.g.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384)
-        by 100.96.17.34 (trex/6.0.2);
-        Tue, 23 Feb 2021 16:30:45 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|smtp@contentfirst.com
-X-MailChannels-Auth-Id: dreamhost
-X-White-Abortive: 4c82e4e341bffef3_1614097845037_1763475294
-X-MC-Loop-Signature: 1614097845037:1705731403
-X-MC-Ingress-Time: 1614097845036
-Received: from pdx1-sub0-mail-a45.g.dreamhost.com (localhost [127.0.0.1])
-        by pdx1-sub0-mail-a45.g.dreamhost.com (Postfix) with ESMTP id 70CD77F04B;
-        Tue, 23 Feb 2021 08:30:44 -0800 (PST)
-Received: from industrynumbers.com (pool-100-15-209-187.washdc.fios.verizon.net [100.15.209.187])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: smtp@contentfirst.com)
-        by pdx1-sub0-mail-a45.g.dreamhost.com (Postfix) with ESMTPSA id DA9C37F03D;
-        Tue, 23 Feb 2021 08:30:42 -0800 (PST)
-Received: from industrynumbers.com (localhost [127.0.0.1])
-        by industrynumbers.com (Postfix) with ESMTP id BD586282D7A;
-        Tue, 23 Feb 2021 11:30:41 -0500 (EST)
-Subject: Re: non-standard baud rates with Prolific 2303 USB-serial
-To:     Johan Hovold <johan@kernel.org>
+        id S232982AbhBWQw1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Feb 2021 11:52:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42524 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231915AbhBWQw0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Feb 2021 11:52:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D1D3F64E61;
+        Tue, 23 Feb 2021 16:51:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614099105;
+        bh=eMrPfZ45f1kslps9cQ6Pq/QDF0YNzTrMUdC1uyr4tw8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J7EjFxOCV/leUi57VQwGwr54yFXYE+0gfeqzucZDHiMTYt3rJptJ2s9o21yPw7MAd
+         zpE0LxE58ZsR2dhta9c2tj9Rt0+jqI0s5ogTfZbVB8H3igF07w55gpo6W0OPJVmona
+         aoQk/cPvGdzJNSv/4kYBItJUZEtI/OTTaiUfGm4LWsZlc/n211zemSz2dpFBZTe4aG
+         lC04WJHISMOiLHsbaNeA6GIplnUn1ZIg/l8qUHuxWNUweHii1dltXwy5Ozn54yVKL4
+         NIqZwo30jB8PxsSvEFJ8HjHn22jW/O75ZRQ0cHnsePLBsTNkTgnp/FWpyobrPkweFG
+         xSqd3QZMgvUQg==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1lEaun-0006iZ-0s; Tue, 23 Feb 2021 17:52:01 +0100
+Date:   Tue, 23 Feb 2021 17:52:01 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     "Michael G. Katzmann" <michaelk@IEEE.org>
 Cc:     charles-yeh@prolific.com.tw, linux-serial@vger.kernel.org,
         linux-usb@vger.kernel.org, Charles Yeh <charlesyeh522@gmail.com>,
         Joe Abbott <jabbott@rollanet.org>
-References: <YDNwxtDxd7JntAXt@hovoldconsulting.com>
- <e2dcc839-3b43-2c80-6ad1-2d97e639b46a@IEEE.org>
- <YDOvLseYXaUHs0lS@hovoldconsulting.com>
+Subject: Re: non-standard baud rates with Prolific 2303 USB-serial
+Message-ID: <YDUysZY90FfVhrHK@hovoldconsulting.com>
+References: <YDOvLseYXaUHs0lS@hovoldconsulting.com>
  <fb1489c2-b972-619b-b7ce-4ae8e1d2cc0f@IEEE.org>
  <YDPO/JprcDTaPmR4@hovoldconsulting.com>
  <0f9caf26-af58-13a9-9947-47bb646f505e@IEEE.org>
@@ -67,26 +50,30 @@ References: <YDNwxtDxd7JntAXt@hovoldconsulting.com>
  <YDUiuLtwRkZ0D0Mi@hovoldconsulting.com>
  <f63df659-6cdf-bba6-f892-1012b98f82e2@IEEE.org>
  <YDUp0tIThOZSTHJt@hovoldconsulting.com>
-X-DH-BACKEND: pdx1-sub0-mail-a45
-From:   "Michael G. Katzmann" <michaelk@IEEE.org>
-Message-ID: <93584ae4-665e-1e67-01e0-cc53f987bee4@IEEE.org>
-Date:   Tue, 23 Feb 2021 11:30:41 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+ <93584ae4-665e-1e67-01e0-cc53f987bee4@IEEE.org>
 MIME-Version: 1.0
-In-Reply-To: <YDUp0tIThOZSTHJt@hovoldconsulting.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <93584ae4-665e-1e67-01e0-cc53f987bee4@IEEE.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2/23/21 11:14 AM, Johan Hovold wrote:
-> I only have an HXD (and a GC) here.
->
-> The HXD has bcdUSB as 1.10 unlike your TA with 2.00, but not sure that
-> helps.
+On Tue, Feb 23, 2021 at 11:30:41AM -0500, Michael G. Katzmann wrote:
+> On 2/23/21 11:14 AM, Johan Hovold wrote:
+> > I only have an HXD (and a GC) here.
+> >
+> > The HXD has bcdUSB as 1.10 unlike your TA with 2.00, but not sure that
+> > helps.
+> 
+> Sound promising .. why do you think this is this not reliable?
 
-Sound promising .. why do you think this is this not reliable?
+Perhaps it is. Perhaps even bcdDevice of 3.00 is enough (includes some
+older variants that the TA replaced supposedly). Not sure anyone ever
+tried the current scheme on those older models.
 
+Charles, could you post the output of "lsusb -v" for your PL2303TA? And
+did you verify that you actually got 110 Bd with the current Linux
+driver?
+
+Johan
