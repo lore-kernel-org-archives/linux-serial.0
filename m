@@ -2,103 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E9DC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Feb 2021 04:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A3DC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Feb 2021 08:43:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BAF0C64ED3
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Feb 2021 04:44:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C770264EDC
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Feb 2021 08:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbhBYEn5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Feb 2021 23:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231284AbhBYEnz (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Feb 2021 23:43:55 -0500
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3008C061574;
-        Wed, 24 Feb 2021 20:43:14 -0800 (PST)
-Received: by mail-qv1-xf2a.google.com with SMTP id s3so2215563qvn.7;
-        Wed, 24 Feb 2021 20:43:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BpH2WLAgEi+fdSNJUF/deVfq/pc+38vVzPZo3+8bUEY=;
-        b=ZLu8LwDjiZ6hTBJ8EKFnj4flF1OzWaiw8qFaSE0uLgYk16fr6wlf9ivwcmWpKBPm5e
-         GuRhO7yhVcfYuSAK8fkBrt5BzieK9MioV1GRdO9liN6NaB7GOX7Dr8l90fZ1KHUWM+ME
-         Mn/ShlV7ZWP3rP7LlvVcWVRiZ1hrdJ/gCpIRqgTgz5bNiMZZsQSVNP8qvHkDWuzReJzn
-         KiU7jTaPebVc4PxSUOXd9zDFANyFueCANcV3DKW7yhI/YhlVJKdm8vsFzNZIhQfeo6TU
-         TOSATDFoc2HnjfY2D8wcH5Y/WfYNasw7QGZvOZnvi/3lxZn/NGw7Turoso7b/1uedqMA
-         v/zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=BpH2WLAgEi+fdSNJUF/deVfq/pc+38vVzPZo3+8bUEY=;
-        b=h6u1xsV2adXjzraE6wTU5yLl/2Yjd9ybo337YjS5tuS0A3HWMuRse8ZQ6gEEddtGNy
-         b7oHBjfE6p+e8cIBgdwA7cLJvrh71lZLEvwhEyGsIG72T75IdxEdMe+9BJ9/dFKJtO1h
-         twKNi5lxY030kiQ4pjQAaR2cvOTVwUT7cfU/i4DIr6J54y/8YAc1HVC5lEmKRFxT78W9
-         xbe8CJ3rUjU+NupzXKU0JyWQdHGxrh8g2gKtLWuqm7Z9HPC+74ktOyFe84gp1Xc0IZ9F
-         JU0jYs/RZbD26VKj+r2z1Z3N+NwJQ0GgDxSBr5H0fjUcFEV2zvSjwipk4a9Mw1N5LG0P
-         qsPA==
-X-Gm-Message-State: AOAM530miUvaRPzHGaQhUtIRmnByJmk2Ov4AFQ4RgwGgXa9HMhoDsASU
-        SJrZbMOygxNabWZZN6CITug=
-X-Google-Smtp-Source: ABdhPJxNLK3vAP880pR9Eh53/Lh1XoYB/VP4FCQph+xXhwRJEM1VXD4SDtgtEbWmiDKFM3vtWvk6hQ==
-X-Received: by 2002:ad4:5ba3:: with SMTP id 3mr1059098qvq.43.1614228193957;
-        Wed, 24 Feb 2021 20:43:13 -0800 (PST)
-Received: from kde-neon-desktop.orld.fl.wtsky.net ([208.64.158.251])
-        by smtp.gmail.com with ESMTPSA id 184sm3224040qkd.119.2021.02.24.20.43.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Feb 2021 20:43:13 -0800 (PST)
-Sender: Julian Braha <julian.braha@gmail.com>
-From:   Julian Braha <julianbraha@gmail.com>
-To:     jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers: tty: serial: fix Kconfig dependency on SERIAL_CORE
-Date:   Wed, 24 Feb 2021 23:42:48 -0500
-Message-Id: <20210225044248.4745-1-julianbraha@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S235951AbhBYImp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Feb 2021 03:42:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40338 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235313AbhBYImo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 25 Feb 2021 03:42:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 433EE64EDB;
+        Thu, 25 Feb 2021 08:42:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614242522;
+        bh=QBi0B0RUXEm0tnf/vuL2s9mtVapBPFsksrkFZovRl2c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FR/B9mFzRMSj6WTidFhV5qRUTJrBSR8ohnVl0fqHKIHfod5sdJR8juKrMYh6a5cm6
+         1v/AWJJaOndrUqfrm9k+RQWa01RjbsWhsWFU78Rjwvnjb5EyipF9cWcDfZOcsFgRiC
+         /Lbidmj3aAAL2OFsHiJirT6wSEpYPYRv5pqDTh3Cg3doaPI/yczjl9rZO5XiIB8GG3
+         VFVMWXdf6ObbveTXg1KKMakUvOoDgrZ8cs0d0Z8pNxc3CPSSwLhYc5uu8q1G0FJ0Lh
+         QO78rnQ2evadvWWhPv7EuhmULDeu4S++14kPdzxBoZsK0WEr8NAtpcjvNjR9A9fcSm
+         3o5T8U6O7mqew==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1lFCE0-00082Q-CI; Thu, 25 Feb 2021 09:42:21 +0100
+Date:   Thu, 25 Feb 2021 09:42:20 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     "Michael G. Katzmann" <michaelk@IEEE.org>
+Cc:     charles-yeh@prolific.com.tw, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, Charles Yeh <charlesyeh522@gmail.com>,
+        Joe Abbott <jabbott@rollanet.org>
+Subject: Re: non-standard baud rates with Prolific 2303 USB-serial
+Message-ID: <YDdi7NcnzgQDMzZH@hovoldconsulting.com>
+References: <YDPS3AP63/PwmwJU@hovoldconsulting.com>
+ <780b9aa6-890d-47fd-d6b2-cd9a39f7634a@IEEE.org>
+ <YDUiuLtwRkZ0D0Mi@hovoldconsulting.com>
+ <f63df659-6cdf-bba6-f892-1012b98f82e2@IEEE.org>
+ <YDUp0tIThOZSTHJt@hovoldconsulting.com>
+ <93584ae4-665e-1e67-01e0-cc53f987bee4@IEEE.org>
+ <YDUysZY90FfVhrHK@hovoldconsulting.com>
+ <4edfb35f-ed81-bade-daee-38a1d7a60a7d@IEEE.org>
+ <YDaHEtQCGkiM/pad@hovoldconsulting.com>
+ <2162ce18-32e9-e54c-f266-47febdea11f1@IEEE.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <2162ce18-32e9-e54c-f266-47febdea11f1@IEEE.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When SERIAL_IMX_EARLYCON is enabled, and SERIAL_CORE is disabled,
-Kbuild gives the following warning:
+On Wed, Feb 24, 2021 at 01:13:39PM -0500, Michael G. Katzmann wrote:
+> On 2/24/21 12:04 PM, Johan Hovold wrote:
+> > Perhaps you can even figure out how to poll for an empty TX FIFO from
+> > it, unless Charles is able to provide some details on that separate
+> > matter?
+> 
+> I presume from the code below, that when the device is closed, all
+> data waiting to send is clobbered (if so, so the problem is the driver
+> and not the device)
+> 
+> I would have thought that the driver should drain the buffers. I can
+> see that this might be a problem if there is flow control (it may
+> never drain) but the current method seems pretty brutal.
 
-WARNING: unmet direct dependencies detected for SERIAL_EARLYCON
-  Depends on [n]: TTY [=y] && HAS_IOMEM [=y] && SERIAL_CORE [=n]
-  Selected by [y]:
-  - SERIAL_IMX_EARLYCON [=y] && TTY [=y] && HAS_IOMEM [=y] && (ARCH_MXC [=y] || COMPILE_TEST [=n]) && OF [=y]
+We do; the code below isn't called until after we've waited for the
+buffers to drain (driver buffers + device FIFO).
 
-This is because SERIAL_IMX_EARLYCON selects SERIAL_EARLYCON,
-without selecting SERIAL_CORE, despite that config option depending
-on SERIAL_CORE.
+I'll provide a patch so that you can extend the timeout for draining the
+driver buffers (defaults to 30 s), but the main problem is that we don't
+know how to query the PL2303 FIFO fill level.
 
-Signed-off-by: Julian Braha <julianbraha@gmail.com>
----
- drivers/tty/serial/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+> 119 void usb_serial_generic_close(struct usb_serial_port *port)
+> 120 {
+> 121         unsigned long flags;
+> 122         int i;
+> 123
+> 124         if (port->bulk_out_size) {
+> 125                 for (i = 0; i < ARRAY_SIZE(port->write_urbs); ++i)
+> 126                         usb_kill_urb(port->write_urbs[i]);
+> 127
+> 128                 spin_lock_irqsave(&port->lock, flags);
+> 129                 kfifo_reset_out(&port->write_fifo);
+> 130                 spin_unlock_irqrestore(&port->lock, flags);
+> 131         }
+> 132         if (port->bulk_in_size) {
+> 133                 for (i = 0; i < ARRAY_SIZE(port->read_urbs); ++i)
+> 134                         usb_kill_urb(port->read_urbs[i]);
+> 135         }
+> 136 }
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 0c4cd4a348f4..5105fdfb71b8 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -498,6 +498,7 @@ config SERIAL_IMX_EARLYCON
- 	bool "Earlycon on IMX serial port"
- 	depends on ARCH_MXC || COMPILE_TEST
- 	depends on OF
-+	select SERIAL_CORE
- 	select SERIAL_EARLYCON
- 	select SERIAL_CORE_CONSOLE
- 	default y if SERIAL_IMX_CONSOLE
---
-2.27.0
+Johan
