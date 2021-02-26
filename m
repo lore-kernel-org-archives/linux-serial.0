@@ -2,75 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5777FC433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Feb 2021 08:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9827C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Feb 2021 21:16:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0497364EDC
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Feb 2021 08:44:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 71A2A64F0E
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Feb 2021 21:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235347AbhBYIog (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Feb 2021 03:44:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40526 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232177AbhBYIof (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Feb 2021 03:44:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E9F0664EDB;
-        Thu, 25 Feb 2021 08:43:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614242635;
-        bh=sY37LZRDH2NSxM7aPCZY8CcPd+J+Ezs0qyk2hFBUfTo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q4nvq3VDtzyykRLWl0/vWxdtnxdHrhCGkKYXd3t7tDgDhHhDp5+ZckRmrOibPNt5d
-         JV/Un5ZT+ne46ktj9W71s/r+Ps9pgV747UQWcYk+RNYxuTdbcEvcr2fHsZRWuNk79G
-         ghPR3JFN2ePowRHjtXvWWHV3D33KD0x3nW0feNJCz7cnr/rOkPVObXAVoI12/uuNlu
-         DxSkUMc/3HRmMlVykQJ/I6smCTFMDTfuyt44gnXwoCDkSty411e9S4Naxxrk6Z9KrJ
-         J9YQSoSsJcKnSqq0iZre8ggPz1Xz571SAhJkYACI9obZ5OxozMJWM/ekxVBDEos0Dd
-         3a9GNBj6wQnTg==
-Received: from johan by xi.lan with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1lFCFp-0008Cx-IV; Thu, 25 Feb 2021 09:44:13 +0100
-Date:   Thu, 25 Feb 2021 09:44:13 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Joe Abbott <jabbott@rollanet.org>
-Cc:     "Michael G. Katzmann" <michaelk@ieee.org>,
-        charles-yeh@prolific.com.tw, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, Charles Yeh <charlesyeh522@gmail.com>
-Subject: Re: non-standard baud rates with Prolific 2303 USB-serial
-Message-ID: <YDdjXXokOlCbYU7b@hovoldconsulting.com>
-References: <YDNwxtDxd7JntAXt@hovoldconsulting.com>
- <e2dcc839-3b43-2c80-6ad1-2d97e639b46a@IEEE.org>
- <YDOvLseYXaUHs0lS@hovoldconsulting.com>
- <fb1489c2-b972-619b-b7ce-4ae8e1d2cc0f@IEEE.org>
- <YDPO/JprcDTaPmR4@hovoldconsulting.com>
- <0f9caf26-af58-13a9-9947-47bb646f505e@IEEE.org>
- <YDPS3AP63/PwmwJU@hovoldconsulting.com>
- <cd92ea17-4e0a-2b6c-1032-9a81727841c9@IEEE.org>
- <YDPgVZ4GbNq6cGDP@hovoldconsulting.com>
- <CADuz4ON8Jj5unz_eeD--7n5kp2uQmqeyM_2-DTrTFKFwFtoudw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADuz4ON8Jj5unz_eeD--7n5kp2uQmqeyM_2-DTrTFKFwFtoudw@mail.gmail.com>
+        id S230019AbhBZVQe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Feb 2021 16:16:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229571AbhBZVQb (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 26 Feb 2021 16:16:31 -0500
+X-Greylist: delayed 395 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 26 Feb 2021 13:15:51 PST
+Received: from orac.theglitchworks.net (orac.theglitchworks.net [IPv6:2607:f058:186:1::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FB4C061756
+        for <linux-serial@vger.kernel.org>; Fri, 26 Feb 2021 13:15:51 -0800 (PST)
+Received: from z420.bv.theglitchworks.net (z420.bv.theglitchworks.net [IPv6:2001:470:1f07:b75:7646:a0ff:feba:d1d3])
+        by orac.theglitchworks.net (OpenSMTPD) with ESMTPSA id b0132eda (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
+        for <linux-serial@vger.kernel.org>;
+        Fri, 26 Feb 2021 16:09:07 -0500 (EST)
+Date:   Fri, 26 Feb 2021 16:09:05 -0500
+From:   Jonathan Chapman <glitch@glitchwrks.com>
+To:     linux-serial@vger.kernel.org
+Subject: Sealevel Systems 7202 PCI Serial Card
+Message-Id: <20210226160905.4809b6eef1b515b6790953cc@glitchwrks.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.31; x86_64-slackware-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 05:08:28PM -0600, Joe Abbott wrote:
-> On Mon, Feb 22, 2021 at 10:48 AM Johan Hovold <johan@kernel.org> wrote:
+Below is the information for a PCI dual-port serial card I use:
 
-> > Joe, would you mind posting the output of "lsusb -v" for your device as
-> > well?
-> >
-> Bus 007 Device 002: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
-> Device Descriptor:
+Manufacturer: Sealevel Systems INC.
+Name/Model: 7202 Dual Port RS-232 Interface
 
-> Also, here's the 110b windows wireshark capture
-> https://drive.google.com/file/d/1HP5RMRtP11zm4uQNzqlcbILGwebDJaOz/view?usp=sharing
+Output of `lspci -vv`:
 
-Thanks, Joe!
+00:11.0 Serial controller: Sealevel Systems Inc Dual Port RS-232 Interface (rev 01) (prog-if 02 [16550])
+        Subsystem: Sealevel Systems Inc Dual Port RS-232 Interface
+        Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Interrupt: pin A routed to IRQ 12
+        Region 0: Memory at e9100000 (32-bit, non-prefetchable) [size=128]
+        Region 1: I/O ports at d800 [size=128]
+        Region 2: I/O ports at dc00 [size=8]
+        Region 3: I/O ports at e000 [size=8]
+        Kernel driver in use: serial
 
-Johan
+Lines from `dmesg`:
+
+[    0.981647] serial 0000:00:11.0: found PCI INT A -> IRQ 12
+[    0.982022] serial 0000:00:11.0: 0000:00:11.0: Redundant entry in serial pci_table.
+               Please send the output of lspci -vv, this
+               message (0x135e,0x7202,0x135e,0x7202), the
+               manufacturer and name of serial board or
+               modem board to <linux-serial@vger.kernel.org>.
+
+Thanks,
+
+Jonathan Chapman
+Glitch Works, LLC
+http://www.glitchwrks.com/
