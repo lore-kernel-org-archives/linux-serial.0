@@ -2,73 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9827C433E0
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Feb 2021 21:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1855C433E9
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Feb 2021 17:05:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 71A2A64F0E
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Feb 2021 21:16:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C92D64E84
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Feb 2021 17:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbhBZVQe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Feb 2021 16:16:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54110 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbhBZVQb (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Feb 2021 16:16:31 -0500
-X-Greylist: delayed 395 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 26 Feb 2021 13:15:51 PST
-Received: from orac.theglitchworks.net (orac.theglitchworks.net [IPv6:2607:f058:186:1::5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FB4C061756
-        for <linux-serial@vger.kernel.org>; Fri, 26 Feb 2021 13:15:51 -0800 (PST)
-Received: from z420.bv.theglitchworks.net (z420.bv.theglitchworks.net [IPv6:2001:470:1f07:b75:7646:a0ff:feba:d1d3])
-        by orac.theglitchworks.net (OpenSMTPD) with ESMTPSA id b0132eda (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
-        for <linux-serial@vger.kernel.org>;
-        Fri, 26 Feb 2021 16:09:07 -0500 (EST)
-Date:   Fri, 26 Feb 2021 16:09:05 -0500
-From:   Jonathan Chapman <glitch@glitchwrks.com>
-To:     linux-serial@vger.kernel.org
-Subject: Sealevel Systems 7202 PCI Serial Card
-Message-Id: <20210226160905.4809b6eef1b515b6790953cc@glitchwrks.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.31; x86_64-slackware-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S230310AbhB0RFU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 27 Feb 2021 12:05:20 -0500
+Received: from ms9.eaxlabs.cz ([147.135.177.209]:60280 "EHLO ms9.eaxlabs.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230202AbhB0RCH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 27 Feb 2021 12:02:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=eaxlabs.cz; s=mail;
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=eOs4SLRlAzsZ6cq4rK82CE++LJAeAcVjjxdMbB7lWMU=;
+        b=Rx5I971fCaF8TayhMAbvvEUAhxGgYr1jPVgmB8i8nYoSENiKF/s0aIn15Ir/0Fgw1IDP9h7afe2u7Islsn7RcNMZpIeB2m7fpjgUviQBk026uhy9QB6XRP16Syo559ehrOH5wxMxsbZOTjg3ew7tMyZrg8wIO/PiHGdRxyuU31Y=;
+Received: from [82.99.129.6] (helo=localhost.localdomain)
+        by ms9.eaxlabs.cz with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.84_2)
+        (envelope-from <devik@eaxlabs.cz>)
+        id 1lG2fZ-0005pS-MJ; Sat, 27 Feb 2021 17:42:19 +0100
+From:   Martin Devera <devik@eaxlabs.cz>
+To:     linux-kernel@vger.kernel.org
+Cc:     Martin Devera <devik@eaxlabs.cz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jiri Slaby <jirislaby@kernel.org>, Le Ray <erwan.leray@st.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 1/2] tty/serial: Add rx-tx-swap OF option to stm32-usart
+Date:   Sat, 27 Feb 2021 17:41:56 +0100
+Message-Id: <20210227164157.30971-1-devik@eaxlabs.cz>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <CAL_JsqK8+M=Vg0PiDXP2f1LrEp4hSVea6piAASMGu1H=pxme6Q@mail.gmail.com>
+References: <CAL_JsqK8+M=Vg0PiDXP2f1LrEp4hSVea6piAASMGu1H=pxme6Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Below is the information for a PCI dual-port serial card I use:
+STM32 F7/H7 usarts supports RX & TX pin swapping.
+Add option to turn it on.
+Tested on STM32MP157.
 
-Manufacturer: Sealevel Systems INC.
-Name/Model: 7202 Dual Port RS-232 Interface
+Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+---
+ drivers/tty/serial/stm32-usart.c | 3 ++-
+ drivers/tty/serial/stm32-usart.h | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-Output of `lspci -vv`:
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index b3675cf25a69..3650c8798061 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -758,7 +758,7 @@ static void stm32_usart_set_termios(struct uart_port *port,
+ 	cr1 = USART_CR1_TE | USART_CR1_RE;
+ 	if (stm32_port->fifoen)
+ 		cr1 |= USART_CR1_FIFOEN;
+-	cr2 = 0;
++	cr2 = stm32_port->swap ? USART_CR2_SWAP : 0;
+ 	cr3 = readl_relaxed(port->membase + ofs->cr3);
+ 	cr3 &= USART_CR3_TXFTIE | USART_CR3_RXFTCFG_MASK | USART_CR3_RXFTIE
+ 		| USART_CR3_TXFTCFG_MASK;
+@@ -1078,6 +1078,7 @@ static struct stm32_port *stm32_usart_of_get_port(struct platform_device *pdev)
+ 	stm32_ports[id].hw_flow_control =
+ 		of_property_read_bool (np, "st,hw-flow-ctrl") /*deprecated*/ ||
+ 		of_property_read_bool (np, "uart-has-rtscts");
++	stm32_ports[id].swap = of_property_read_bool(np, "rx-tx-swap");
+ 	stm32_ports[id].port.line = id;
+ 	stm32_ports[id].cr1_irq = USART_CR1_RXNEIE;
+ 	stm32_ports[id].cr3_irq = 0;
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index cb4f327c46db..2f054e2dc0ab 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -271,6 +271,7 @@ struct stm32_port {
+ 	int last_res;
+ 	bool tx_dma_busy;	 /* dma tx busy               */
+ 	bool hw_flow_control;
++	bool swap;		 /* swap RX & TX pins */
+ 	bool fifoen;
+ 	int wakeirq;
+ 	int rdr_mask;		/* receive data register mask */
+-- 
+2.11.0
 
-00:11.0 Serial controller: Sealevel Systems Inc Dual Port RS-232 Interface (rev 01) (prog-if 02 [16550])
-        Subsystem: Sealevel Systems Inc Dual Port RS-232 Interface
-        Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
-        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-        Interrupt: pin A routed to IRQ 12
-        Region 0: Memory at e9100000 (32-bit, non-prefetchable) [size=128]
-        Region 1: I/O ports at d800 [size=128]
-        Region 2: I/O ports at dc00 [size=8]
-        Region 3: I/O ports at e000 [size=8]
-        Kernel driver in use: serial
-
-Lines from `dmesg`:
-
-[    0.981647] serial 0000:00:11.0: found PCI INT A -> IRQ 12
-[    0.982022] serial 0000:00:11.0: 0000:00:11.0: Redundant entry in serial pci_table.
-               Please send the output of lspci -vv, this
-               message (0x135e,0x7202,0x135e,0x7202), the
-               manufacturer and name of serial board or
-               modem board to <linux-serial@vger.kernel.org>.
-
-Thanks,
-
-Jonathan Chapman
-Glitch Works, LLC
-http://www.glitchwrks.com/
