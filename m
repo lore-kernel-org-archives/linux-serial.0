@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6505C28CFB
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE29C28D14
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 62C9764E76
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2536064E75
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240645AbhCCCQp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Mar 2021 21:16:45 -0500
-Received: from mx2.suse.de ([195.135.220.15]:39916 "EHLO mx2.suse.de"
+        id S1347729AbhCCCRA (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Mar 2021 21:17:00 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39930 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1835890AbhCBGYp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Mar 2021 01:24:45 -0500
+        id S1835897AbhCBGZB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 2 Mar 2021 01:25:01 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 3FE4CB02E;
-        Tue,  2 Mar 2021 06:22:20 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 9F106B03A;
+        Tue,  2 Mar 2021 06:22:21 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
-Subject: [PATCH 28/44] tty: vcc, remove useless tty checks
-Date:   Tue,  2 Mar 2021 07:21:58 +0100
-Message-Id: <20210302062214.29627-28-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 35/44] tty: let tty_unregister_driver return void
+Date:   Tue,  2 Mar 2021 07:22:05 +0100
+Message-Id: <20210302062214.29627-35-jslaby@suse.cz>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210302062214.29627-1-jslaby@suse.cz>
 References: <20210302062214.29627-1-jslaby@suse.cz>
@@ -40,128 +40,58 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-All these functions are called with a valid tty pointer, no need to
-check that.
+Now that noone checks the return value, switch the return type of
+tty_unregister_driver to void. We can do that as we always return zero.
+
+Generally, drivers are not allowed to call tty_unregister_driver while
+there are open devices.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: sparclinux@vger.kernel.org
 ---
- drivers/tty/vcc.c | 45 ---------------------------------------------
- 1 file changed, 45 deletions(-)
+ drivers/tty/tty_io.c | 9 +--------
+ include/linux/tty.h  | 2 +-
+ 2 files changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
-index a6cdbd170a61..04a792749816 100644
---- a/drivers/tty/vcc.c
-+++ b/drivers/tty/vcc.c
-@@ -726,11 +726,6 @@ static int vcc_open(struct tty_struct *tty, struct file *vcc_file)
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 74733ec8f565..c8cbf08b6dcf 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3525,21 +3525,14 @@ EXPORT_SYMBOL(tty_register_driver);
+ /*
+  * Called by a tty driver to unregister itself.
+  */
+-int tty_unregister_driver(struct tty_driver *driver)
++void tty_unregister_driver(struct tty_driver *driver)
  {
- 	struct vcc_port *port;
- 
--	if (unlikely(!tty)) {
--		pr_err("VCC: open: Invalid TTY handle\n");
--		return -ENXIO;
--	}
+-#if 0
+-	/* FIXME */
+-	if (driver->refcount)
+-		return -EBUSY;
+-#endif
+ 	unregister_chrdev_region(MKDEV(driver->major, driver->minor_start),
+ 				driver->num);
+ 	mutex_lock(&tty_mutex);
+ 	list_del(&driver->tty_drivers);
+ 	mutex_unlock(&tty_mutex);
+-	return 0;
+ }
 -
- 	if (tty->count > 1)
- 		return -EBUSY;
+ EXPORT_SYMBOL(tty_unregister_driver);
  
-@@ -764,11 +759,6 @@ static int vcc_open(struct tty_struct *tty, struct file *vcc_file)
- 
- static void vcc_close(struct tty_struct *tty, struct file *vcc_file)
- {
--	if (unlikely(!tty)) {
--		pr_err("VCC: close: Invalid TTY handle\n");
--		return;
--	}
--
- 	if (unlikely(tty->count > 1))
- 		return;
- 
-@@ -796,11 +786,6 @@ static void vcc_hangup(struct tty_struct *tty)
- {
- 	struct vcc_port *port;
- 
--	if (unlikely(!tty)) {
--		pr_err("VCC: hangup: Invalid TTY handle\n");
--		return;
--	}
--
- 	port = vcc_get_ne(tty->index);
- 	if (unlikely(!port)) {
- 		pr_err("VCC: hangup: Failed to find VCC port\n");
-@@ -830,11 +815,6 @@ static int vcc_write(struct tty_struct *tty, const unsigned char *buf,
- 	int tosend = 0;
- 	int rv = -EINVAL;
- 
--	if (unlikely(!tty)) {
--		pr_err("VCC: write: Invalid TTY handle\n");
--		return -ENXIO;
--	}
--
- 	port = vcc_get_ne(tty->index);
- 	if (unlikely(!port)) {
- 		pr_err("VCC: write: Failed to find VCC port");
-@@ -895,11 +875,6 @@ static int vcc_write_room(struct tty_struct *tty)
- 	struct vcc_port *port;
- 	u64 num;
- 
--	if (unlikely(!tty)) {
--		pr_err("VCC: write_room: Invalid TTY handle\n");
--		return -ENXIO;
--	}
--
- 	port = vcc_get_ne(tty->index);
- 	if (unlikely(!port)) {
- 		pr_err("VCC: write_room: Failed to find VCC port\n");
-@@ -918,11 +893,6 @@ static int vcc_chars_in_buffer(struct tty_struct *tty)
- 	struct vcc_port *port;
- 	u64 num;
- 
--	if (unlikely(!tty)) {
--		pr_err("VCC: chars_in_buffer: Invalid TTY handle\n");
--		return -ENXIO;
--	}
--
- 	port = vcc_get_ne(tty->index);
- 	if (unlikely(!port)) {
- 		pr_err("VCC: chars_in_buffer: Failed to find VCC port\n");
-@@ -941,11 +911,6 @@ static int vcc_break_ctl(struct tty_struct *tty, int state)
- 	struct vcc_port *port;
- 	unsigned long flags;
- 
--	if (unlikely(!tty)) {
--		pr_err("VCC: break_ctl: Invalid TTY handle\n");
--		return -ENXIO;
--	}
--
- 	port = vcc_get_ne(tty->index);
- 	if (unlikely(!port)) {
- 		pr_err("VCC: break_ctl: Failed to find VCC port\n");
-@@ -976,11 +941,6 @@ static int vcc_install(struct tty_driver *driver, struct tty_struct *tty)
- 	struct tty_port *port_tty;
- 	int ret;
- 
--	if (unlikely(!tty)) {
--		pr_err("VCC: install: Invalid TTY handle\n");
--		return -ENXIO;
--	}
--
- 	if (tty->index >= VCC_MAX_PORTS)
- 		return -EINVAL;
- 
-@@ -1015,11 +975,6 @@ static void vcc_cleanup(struct tty_struct *tty)
- {
- 	struct vcc_port *port;
- 
--	if (unlikely(!tty)) {
--		pr_err("VCC: cleanup: Invalid TTY handle\n");
--		return;
--	}
--
- 	port = vcc_get(tty->index, true);
- 	if (port) {
- 		port->tty = NULL;
+ dev_t tty_devnum(struct tty_struct *tty)
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 95fc2f100f12..51f56e5ec955 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -482,7 +482,7 @@ extern void stop_tty(struct tty_struct *tty);
+ extern void __start_tty(struct tty_struct *tty);
+ extern void start_tty(struct tty_struct *tty);
+ extern int tty_register_driver(struct tty_driver *driver);
+-extern int tty_unregister_driver(struct tty_driver *driver);
++extern void tty_unregister_driver(struct tty_driver *driver);
+ extern struct device *tty_register_device(struct tty_driver *driver,
+ 					  unsigned index, struct device *dev);
+ extern struct device *tty_register_device_attr(struct tty_driver *driver,
 -- 
 2.30.1
 
