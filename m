@@ -2,125 +2,145 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0BDC28EBD
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB074C2BA11
 	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6465664E75
+	by mail.kernel.org (Postfix) with ESMTP id 8D36364E7A
 	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349048AbhCCCR2 (ORCPT
+        id S1349163AbhCCCRb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Mar 2021 21:17:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447518AbhCBNl1 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Mar 2021 08:41:27 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C0CC061756;
-        Tue,  2 Mar 2021 05:40:38 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id q25so11076955lfc.8;
-        Tue, 02 Mar 2021 05:40:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sy2937whkD36NnxmnEnOHu/2WmMpJHhESVIp923Q2ms=;
-        b=WR417b2TXL4XluWU3Q62QUJQT2KHPwbcPUhvSl9ZQVrVxjti1bnY0rVY28lskvQOQ9
-         Wd4ONpWLQsrq2U9ZfDpZJ9FfQ0enFUDeq957Rh8PhHNklfHjRCfh4w3CGHcGpKedn3JL
-         JU325/yJb/LyWrSRbGakExDJSSgUVg+qczoU+PFZZ2dZHklZkgt4nYBqwUHa/sX6A7Vq
-         KcMVXJKg88SR6oBSveZT8yEuJBNqlxOaa9sbDxhpRkGsJXaBT3wgy8o8QOEuUJEnZHii
-         cNSLUqZnaK/Zmp1Gtp5hNnFenxB8+j+e6Auapc+QBS0WcKBPGyzm5C2dO3+rub2odxvy
-         Guzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sy2937whkD36NnxmnEnOHu/2WmMpJHhESVIp923Q2ms=;
-        b=EhoMuAQ7DKnyEuzgvbgptxDcLLMmpunXnYHxlPxyQYlBX0OjfsollGtZPKjopFc4Lg
-         40uNKjaP3JVWNk8+DhBnFwh+LBgGeIjsGt1KOGWWPQ6QdlGquhp9IGcyncV8+zJ9+2f5
-         G8iTj7VRvZcK7Q2lH57ZD6t4xt7SuCdvGwj+LwntDW857ylrcIbL/0VPpgQHQjkEYJta
-         5Lo7y4tW9K19X3AOCHs7IMsOarZG9apGXTnCmJi+bn106t5rMpMZinFyvug+/mNeArqF
-         njguiz5NpnMpZqLrAVnYeMA/vQhlwJ7Ba2xQkbipd1eT1OAM52UoQc7J32a3skK9648c
-         92eQ==
-X-Gm-Message-State: AOAM531ECC0QCVft70Sjj/KRUzLAwuj20RwAe+0fj/VW89xsh5eOzvau
-        65n4IeFIMCeoXganNFUiRbwUBmbuuUo=
-X-Google-Smtp-Source: ABdhPJxRPWPVr1JuoC8bNRBtDqyUDprT1LYGiwQlldtoe/FBCoxaKt0EfpMAr+/aLHyNPv+Ih4vpaQ==
-X-Received: by 2002:ac2:4ecd:: with SMTP id p13mr5165188lfr.421.1614692436754;
-        Tue, 02 Mar 2021 05:40:36 -0800 (PST)
-Received: from [192.168.2.145] (109-252-193-52.dynamic.spd-mgts.ru. [109.252.193.52])
-        by smtp.googlemail.com with ESMTPSA id 192sm2462749ljj.95.2021.03.02.05.40.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Mar 2021 05:40:36 -0800 (PST)
-Subject: Re: [PATCH 00/31] Introduce devm_pm_opp_* API
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Yangtao Li <tiny.windzz@gmail.com>, myungjoo.ham@samsung.com,
-        kyungmin.park@samsung.com, cw00.choi@samsung.com, krzk@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, yuq825@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, robdclark@gmail.com, sean@poorly.run,
-        robh@kernel.org, tomeu.vizoso@collabora.com, steven.price@arm.com,
-        alyssa.rosenzweig@collabora.com, stanimir.varbanov@linaro.org,
-        agross@kernel.org, bjorn.andersson@linaro.org, mchehab@kernel.org,
-        lukasz.luba@arm.com, adrian.hunter@intel.com,
-        ulf.hansson@linaro.org, vireshk@kernel.org, nm@ti.com,
-        sboyd@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, rjw@rjwysocki.net, jcrouse@codeaurora.org,
-        hoegsberg@google.com, eric@anholt.net, tzimmermann@suse.de,
-        marijn.suijten@somainline.org, gustavoars@kernel.org,
-        emil.velikov@collabora.com, jonathan@marek.ca,
-        akhilpo@codeaurora.org, smasetty@codeaurora.org,
-        airlied@redhat.com, masneyb@onstation.org, kalyan_t@codeaurora.org,
-        tanmay@codeaurora.org, ddavenport@chromium.org,
-        jsanka@codeaurora.org, rnayak@codeaurora.org,
-        tongtiangen@huawei.com, miaoqinglang@huawei.com,
-        khsieh@codeaurora.org, abhinavk@codeaurora.org,
-        chandanu@codeaurora.org, groeck@chromium.org, varar@codeaurora.org,
-        mka@chromium.org, harigovi@codeaurora.org,
-        rikard.falkeborn@gmail.com, natechancellor@gmail.com,
-        georgi.djakov@linaro.org, akashast@codeaurora.org,
-        parashar@codeaurora.org, dianders@chromium.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20210101165507.19486-1-tiny.windzz@gmail.com>
- <6bd6730c-6f4e-df93-65cd-93fa4785a8d8@gmail.com>
-Message-ID: <c7a246a4-ab25-a193-f74a-98351780135e@gmail.com>
-Date:   Tue, 2 Mar 2021 16:40:34 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.2
-MIME-Version: 1.0
-In-Reply-To: <6bd6730c-6f4e-df93-65cd-93fa4785a8d8@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Tue, 2 Mar 2021 21:17:31 -0500
+Received: from ms9.eaxlabs.cz ([147.135.177.209]:46936 "EHLO ms9.eaxlabs.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1384624AbhCBPda (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 2 Mar 2021 10:33:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=eaxlabs.cz; s=mail;
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=DV5p333v2jKUPIpG+adysRuHr9qmQs+BdQUH7O5bVcU=;
+        b=1/GVlipD6xAf2VV4JGK4d5RrHTbw/uYOs2CAue7JLK+s6zMwQ/8O/+5XxEj5+CD6AyC2HZlO4hLOe+unnJ4pMVqKfy7DleP1RsjgRU8Ud2NNmpkue0l2ke/r5rIpLAQqoMKMYutmVqRC0XDZPtALXougjadCABKFX5wTPNhOQOc=;
+Received: from [82.99.129.6] (helo=localhost.localdomain)
+        by ms9.eaxlabs.cz with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.84_2)
+        (envelope-from <devik@eaxlabs.cz>)
+        id 1lH4sn-0000g6-K5; Tue, 02 Mar 2021 14:16:15 +0100
+From:   Martin Devera <devik@eaxlabs.cz>
+To:     linux-kernel@vger.kernel.org
+Cc:     Martin Devera <devik@eaxlabs.cz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jiri Slaby <jirislaby@kernel.org>, Le Ray <erwan.leray@st.com>,
+        fabrice.gasnier@foss.st.com, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 2/2] tty/serial: Add rx-tx-swap OF option to stm32-usart
+Date:   Tue,  2 Mar 2021 14:15:58 +0100
+Message-Id: <20210302131558.19375-2-devik@eaxlabs.cz>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20210302131558.19375-1-devik@eaxlabs.cz>
+References: <439a0d7a-cc0e-764b-7ed8-668b5a85f4a7@foss.st.com>
+ <20210302131558.19375-1-devik@eaxlabs.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-20.01.2021 19:01, Dmitry Osipenko пишет:
-> 01.01.2021 19:54, Yangtao Li пишет:
->> Hi,
->>
->> This patchset add devm_pm_opp_set_clkname, devm_pm_opp_put_clkname,
->> devm_pm_opp_set_regulators, devm_pm_opp_put_regulators,
->> devm_pm_opp_set_supported_hw, devm_pm_opp_of_add_table and
->> devm_pm_opp_register_notifier.
-> 
-> Hello Yangtao,
-> 
-> Thank you for your effort, looking forward to v2!
+STM32 F7/H7 usarts supports RX & TX pin swapping.
+Add option to turn it on.
+Tested on STM32MP157.
 
-Yangtao, could you please let me know what is the status of this series?
-Will you be able to make a v2 anytime soon?
+Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+---
+ drivers/tty/serial/stm32-usart.c | 11 ++++++++++-
+ drivers/tty/serial/stm32-usart.h |  5 +++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index b3675cf25a69..d390f7da1441 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -644,6 +644,12 @@ static int stm32_usart_startup(struct uart_port *port)
+ 	if (ret)
+ 		return ret;
+ 
++	if (stm32_port->swap) {
++		val = readl_relaxed(port->membase + ofs->cr2);
++		val |= USART_CR2_SWAP;
++		writel_relaxed(val, port->membase + ofs->cr2);
++	}
++
+ 	/* RX FIFO Flush */
+ 	if (ofs->rqr != UNDEF_REG)
+ 		stm32_usart_set_bits(port, ofs->rqr, USART_RQR_RXFRQ);
+@@ -758,7 +764,7 @@ static void stm32_usart_set_termios(struct uart_port *port,
+ 	cr1 = USART_CR1_TE | USART_CR1_RE;
+ 	if (stm32_port->fifoen)
+ 		cr1 |= USART_CR1_FIFOEN;
+-	cr2 = 0;
++	cr2 = stm32_port->swap ? USART_CR2_SWAP : 0;
+ 	cr3 = readl_relaxed(port->membase + ofs->cr3);
+ 	cr3 &= USART_CR3_TXFTIE | USART_CR3_RXFTCFG_MASK | USART_CR3_RXFTIE
+ 		| USART_CR3_TXFTCFG_MASK;
+@@ -1006,6 +1012,9 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
+ 			return stm32port->wakeirq ? : -ENODEV;
+ 	}
+ 
++	stm32port->swap = stm32port->info->cfg.has_swap &&
++		of_property_read_bool(pdev->dev.of_node, "rx-tx-swap");
++
+ 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index cb4f327c46db..bd18dd1c1bcd 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -25,6 +25,7 @@ struct stm32_usart_offsets {
+ struct stm32_usart_config {
+ 	u8 uart_enable_bit; /* USART_CR1_UE */
+ 	bool has_7bits_data;
++	bool has_swap;
+ 	bool has_wakeup;
+ 	bool has_fifo;
+ 	int fifosize;
+@@ -55,6 +56,7 @@ struct stm32_usart_info stm32f4_info = {
+ 	.cfg = {
+ 		.uart_enable_bit = 13,
+ 		.has_7bits_data = false,
++		.has_swap = false,
+ 		.fifosize = 1,
+ 	}
+ };
+@@ -76,6 +78,7 @@ struct stm32_usart_info stm32f7_info = {
+ 	.cfg = {
+ 		.uart_enable_bit = 0,
+ 		.has_7bits_data = true,
++		.has_swap = true,
+ 		.fifosize = 1,
+ 	}
+ };
+@@ -97,6 +100,7 @@ struct stm32_usart_info stm32h7_info = {
+ 	.cfg = {
+ 		.uart_enable_bit = 0,
+ 		.has_7bits_data = true,
++		.has_swap = true,
+ 		.has_wakeup = true,
+ 		.has_fifo = true,
+ 		.fifosize = 16,
+@@ -271,6 +275,7 @@ struct stm32_port {
+ 	int last_res;
+ 	bool tx_dma_busy;	 /* dma tx busy               */
+ 	bool hw_flow_control;
++	bool swap;		 /* swap RX & TX pins */
+ 	bool fifoen;
+ 	int wakeirq;
+ 	int rdr_mask;		/* receive data register mask */
+-- 
+2.11.0
+
