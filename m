@@ -2,139 +2,173 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D75BC4151A
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E21E6C28E88
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DED4064E76
+	by mail.kernel.org (Postfix) with ESMTP id B783C64E75
 	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348998AbhCCCR0 (ORCPT
+        id S1348786AbhCCCRZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Mar 2021 21:17:26 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:41702 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1379949AbhCBKWF (ORCPT
+        Tue, 2 Mar 2021 21:17:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1836270AbhCBHAC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Mar 2021 05:22:05 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 122AHmce015298;
-        Tue, 2 Mar 2021 11:20:10 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=AHNRA07W/8XeOi1fcP+UwN+hE9l5HeWlAvjNP7Od2XQ=;
- b=K44Nf8dxpJTK46y0qHK1yIq2djKmoAPatyObmNxYQPiIHtUDRntpEEGxwmjemolYJOln
- TwbbG4a5qd9k9WdP1v6bqkilm8txSV4YWh2FMjdeyLo0GsgGF4KSKVWDkXaI3jzl75y+
- x84hXPiJBBmoociIaR/6Cv4F1QVmeyaMRocSFDuzJ7i0ljHCHU0VoSRtZyMIprqvkHEP
- Gsq7KBRJwOD0nOLLa0NZI6Q1MTY1hjGfS1xcN/CMXD4DTnGW0mdvpZNxSbwWD3l50Yfj
- r6gBbq9PjvdEQl60wr1Shi3WdX2iPAmaoNBZQ8kSJnLQpKWrnkDlvCnxz13uddjcsCbQ 8g== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 36yf9q1dun-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 02 Mar 2021 11:20:10 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 93F86100034;
-        Tue,  2 Mar 2021 11:20:09 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 717022C38D2;
-        Tue,  2 Mar 2021 11:20:09 +0100 (CET)
-Received: from [10.211.13.170] (10.75.127.50) by SFHDAG2NODE3.st.com
- (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Mar
- 2021 11:20:08 +0100
-Subject: Re: [PATCH v2 1/2] tty/serial: Add rx-tx-swap OF option to
- stm32-usart
-To:     Martin DEVERA <devik@eaxlabs.cz>, <linux-kernel@vger.kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <linux-serial@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Le Ray <erwan.leray@st.com>
-References: <CAL_JsqK8+M=Vg0PiDXP2f1LrEp4hSVea6piAASMGu1H=pxme6Q@mail.gmail.com>
- <20210227164157.30971-1-devik@eaxlabs.cz>
- <439a0d7a-cc0e-764b-7ed8-668b5a85f4a7@foss.st.com>
- <fbdce86c-a17f-7626-51e4-9e48ea25001e@eaxlabs.cz>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Message-ID: <019b62e9-ec9b-d366-ee77-59c980d66a07@foss.st.com>
-Date:   Tue, 2 Mar 2021 11:20:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 2 Mar 2021 02:00:02 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26110C061756
+        for <linux-serial@vger.kernel.org>; Mon,  1 Mar 2021 22:59:22 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lGz03-0006AE-MD; Tue, 02 Mar 2021 07:59:19 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lGz02-0007lr-Pm; Tue, 02 Mar 2021 07:59:18 +0100
+Date:   Tue, 2 Mar 2021 07:59:18 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, Fabio Estevam <festevam@gmail.com>,
+        linux-serial@vger.kernel.org,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [PATCH 10/44] tty: imx, use ms_to_ktime
+Message-ID: <20210302065918.cbxwen6vz2pz4msn@pengutronix.de>
+References: <20210302062214.29627-1-jslaby@suse.cz>
+ <20210302062214.29627-10-jslaby@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <fbdce86c-a17f-7626-51e4-9e48ea25001e@eaxlabs.cz>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG3NODE2.st.com (10.75.127.8) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-02_03:2021-03-01,2021-03-02 signatures=0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="liehcxyzb5az342c"
+Content-Disposition: inline
+In-Reply-To: <20210302062214.29627-10-jslaby@suse.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/1/21 11:40 PM, Martin DEVERA wrote:
-> On 3/1/21 11:28 AM, Fabrice Gasnier wrote:
->> On 2/27/21 5:41 PM, Martin Devera wrote:
->>> STM32 F7/H7 usarts supports RX & TX pin swapping.
->>> Add option to turn it on.
->>> Tested on STM32MP157.
->>>
->>> Signed-off-by: Martin Devera <devik@eaxlabs.cz>
->>> ---
->>>   drivers/tty/serial/stm32-usart.c | 3 ++-
->>>   drivers/tty/serial/stm32-usart.h | 1 +
->>>   2 files changed, 3 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/tty/serial/stm32-usart.c
->>> b/drivers/tty/serial/stm32-usart.c
->>> index b3675cf25a69..3650c8798061 100644
->>> --- a/drivers/tty/serial/stm32-usart.c
->>> +++ b/drivers/tty/serial/stm32-usart.c
->>> @@ -758,7 +758,7 @@ static void stm32_usart_set_termios(struct
->>> uart_port *port,
->>>       cr1 = USART_CR1_TE | USART_CR1_RE;
->>>       if (stm32_port->fifoen)
->>>           cr1 |= USART_CR1_FIFOEN;
->>> -    cr2 = 0;
->>> +    cr2 = stm32_port->swap ? USART_CR2_SWAP : 0;
->> Hi Martin,
->>
->> Same could be done in the startup routine, that enables the port for
->> reception (as described in Documentation/driver-api/serial/driver.rst)
-> Hello Fabrice,
-> 
-> I already incorporated all your comments but I'm struggling with the one
-> above.
-> The code must be in stm32_usart_set_termios too, because CR2 is modified.
 
-Hi Martin,
+--liehcxyzb5az342c
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Yes, sure,
+Hello Jiri,
 
-> What is the reason to have it in startup() ?
+On Tue, Mar 02, 2021 at 07:21:40AM +0100, Jiri Slaby wrote:
+> This really eliminates multiplications from the assembly. I would have
+> thought they are optimized by inlining ktime_set, but not on x86_64 with
+> gcc 10.
+>=20
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+> Cc: Fabio Estevam <festevam@gmail.com>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> ---
+>  drivers/tty/serial/imx.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 8257597d034d..3f69356937ef 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -394,11 +394,7 @@ static void imx_uart_rts_inactive(struct imx_port *s=
+port, u32 *ucr2)
+> =20
+>  static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
+>  {
+> -       long sec =3D msec / MSEC_PER_SEC;
+> -       long nsec =3D (msec % MSEC_PER_SEC) * 1000000;
+> -       ktime_t t =3D ktime_set(sec, nsec);
+> -
+> -       hrtimer_start(hrt, t, HRTIMER_MODE_REL);
+> +       hrtimer_start(hrt, ms_to_ktime(msec), HRTIMER_MODE_REL);
+>  }
 
-RX is enabled at both places. So the swap setting should be there too.
+What about:
 
-> Is it because USART can be started without calling set_termios at all ?
 
-Yes, that's what the driver API expects: "startup(port)" ... "Enable the
-port for reception."
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8257597d034d..8731d4f82cb8 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -392,15 +392,6 @@ static void imx_uart_rts_inactive(struct imx_port *spo=
+rt, u32 *ucr2)
+ 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
+ }
+=20
+-static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
+-{
+-       long sec =3D msec / MSEC_PER_SEC;
+-       long nsec =3D (msec % MSEC_PER_SEC) * 1000000;
+-       ktime_t t =3D ktime_set(sec, nsec);
+-
+-       hrtimer_start(hrt, t, HRTIMER_MODE_REL);
+-}
+-
+ /* called with port.lock taken and irqs off */
+ static void imx_uart_start_rx(struct uart_port *port)
+ {
+@@ -457,8 +448,9 @@ static void imx_uart_stop_tx(struct uart_port *port)
+ 	if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		if (sport->tx_state =3D=3D SEND) {
+ 			sport->tx_state =3D WAIT_AFTER_SEND;
+-			start_hrtimer_ms(&sport->trigger_stop_tx,
+-					 port->rs485.delay_rts_after_send);
++			hrtimer_start(&sport->trigger_stop_tx,
++				      ms_to_ktime(port->rs485.delay_rts_after_send),
++				      HRTIMER_MODE_REL);
+ 			return;
+ 		}
+=20
+@@ -697,8 +689,9 @@ static void imx_uart_start_tx(struct uart_port *port)
+ 				imx_uart_stop_rx(port);
+=20
+ 			sport->tx_state =3D WAIT_AFTER_RTS;
+-			start_hrtimer_ms(&sport->trigger_start_tx,
+-					 port->rs485.delay_rts_before_send);
++			hrtimer_start(&sport->trigger_start_tx,
++				      ms_to_ktime(port->rs485.delay_rts_before_send),
++				      HRTIMER_MODE_REL);
+ 			return;
+ 		}
+=20
+instead?
 
-Best Regards,
-Fabrice
+Best regards
+Uwe
 
-> Like
-> to reuse bootloader's last settings ?
-> 
-> Thanks, Martin
-> 
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--liehcxyzb5az342c
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmA94kMACgkQwfwUeK3K
+7Ak5yAf/elCUD1wY43QrLTTiAo8JYngSwH5rR2S7DKZ79hEmWcd7BAXbSkpS4lVJ
+aloUGw7g2WqlzQ1fa7UQrm7e/Xdrp5oraHkO0RStDuCDW8dVRoAuixl5CSLEKBJq
++JSGIVQ0O0qwOQnZH9XOhBuR1C+f1SiBdXIk+hMIS/CyTuFxBB4NVlo9OUH6R07a
+KrsOk7+nbGy5B5XcTEwFSVVyeO6h603nVBSmRnURwbKO5boea1SmcDO2povuDcYm
+QJYG7qYDXDO9+VIlH0Zs1tWsm9+nY/uJ2wRd2H5kHcobEXiFeo9KV3XAeAIjyT99
+gE+Iyd47vsFR0loi7gjIBMx6SqemoA==
+=cAGD
+-----END PGP SIGNATURE-----
+
+--liehcxyzb5az342c--
