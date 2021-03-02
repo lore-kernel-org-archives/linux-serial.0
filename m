@@ -8,59 +8,59 @@ X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F9CC28E87
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF78AC28E86
 	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 627096023B
+	by mail.kernel.org (Postfix) with ESMTP id 9069A64E7C
 	for <linux-serial@archiver.kernel.org>; Wed,  3 Mar 2021 02:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348590AbhCCCRY (ORCPT
+        id S1348969AbhCCCR0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Mar 2021 21:17:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
+        Tue, 2 Mar 2021 21:17:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345799AbhCBG5D (ORCPT
+        with ESMTP id S1836816AbhCBHVD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Mar 2021 01:57:03 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21955C061788;
-        Mon,  1 Mar 2021 22:55:51 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id l12so23818128edt.3;
-        Mon, 01 Mar 2021 22:55:51 -0800 (PST)
+        Tue, 2 Mar 2021 02:21:03 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3489C06178A;
+        Mon,  1 Mar 2021 23:12:36 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id g3so23834854edb.11;
+        Mon, 01 Mar 2021 23:12:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FkQlyQkx4YlaiWtPjbjtcm8QF/fjSftYDKk5kkfUey0=;
-        b=PFlj/AbLsGqPbk3apdT1uKeW7cFiUGggPb7txtL2cKFfBRSbsjVq7tDgupMkQPci6d
-         /5Dfpsl3vX9oWzTRVuabWzMsmgWHDjBzvWmqsHV8XprenQE/dvM7mFPa/NOnP/ihT08z
-         autad4M91CAFPFT68Iz8XNgOS6s2O2A3oxw/r0QeN+S0ZcMsa2fKXWYmyGt/GpxR4AcV
-         V1bFbBANndmxqnxiJheuZbykHCfz+OCKdxvdfXdGKsdGVMZojiY0Hnq1djYlXz32jwW3
-         AJDi60j6zN59bgJhyp1zd8Ywv73MhRPiWhHcrIMs4mv1hRfAQUP2FnRotdda5+Qekj5u
-         8CvA==
+        bh=AFPfuv+YOm+k4DkSctX34qa+OTvzsdZXK2vjFfw1Tm0=;
+        b=S+JgmgnHbH90N1HKUqeQ8Ew6otkHcSonG1aR/anE8nDB8d+/JSrnIw0cAhBEC8BVq/
+         kMjmMdEUwb5hPNJKX8x3iXHlplNGC4CvUuOTaleLTBpTGngbrTgMIAMbs8IP2qW4Jkck
+         GKec9aQBiT1xpE8kX7CaZ0Ibp85vzRvpkobBvQtWrAJ67WdZZFDEfHXKI1AtuPIPuSoc
+         CnKdgAOmn8VuruQPAtWpv1ZAEBz3Asako335glZHIoToRXkTcUp04EMNF9D8xb9dcdvc
+         HQxzZUB1mTXJXYeP0z7UZ6bGTRdykeNYwaIKxJiO0bjqGDFbRu71FXnZs8jeusysVsPJ
+         X0tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FkQlyQkx4YlaiWtPjbjtcm8QF/fjSftYDKk5kkfUey0=;
-        b=R0MRviwapnKABnTt+JoBQM43VFN0HCx7eaZn7aFctNZwEXFJboNhxl6M9Tp5BZqm2T
-         NNjTgpe+nPzzoYPSlQ0T1u0+NBQ3/RXGPLmrBGaiFEJUVAzVf2OyY1ZJ/swjiXJmyIhU
-         FLuKMPqWDI0d3gfSUD7Me/0XFnK0nvDN+rDvfc2G6+5Qt+DaL9TWrwm95l5eSM3LByOE
-         eAy4vF3K+KbNDLinT1EzbcqagYbIoMqdfjbZOTwUJadrIV6s9dRNLQoYp1eSCCRhohUG
-         0ODZex7qBpt31P2kW+KyAGY7Fe/GwJWMaYgJysxvEqI5rROl/cOqf0oPZZ5B5KLK7Rxx
-         rqew==
-X-Gm-Message-State: AOAM531vCjvvGCH/bXYS5/luYrlJwZGUZuFHqWU0obpXNVZ5+dr3/6xP
-        8JlmxTkWzj46FQ+R6mTjmYBJsUmZYopt4inpQqM=
-X-Google-Smtp-Source: ABdhPJybh6pmK5GtQmq/c3vvZGuCHaTR3ln7l9rsmzuuQ7BXZx12cEyOKZV8gpU8repWmjDUKkUnlpWFKdYgBsD+7XA=
-X-Received: by 2002:a50:d987:: with SMTP id w7mr19419656edj.350.1614668149868;
- Mon, 01 Mar 2021 22:55:49 -0800 (PST)
+        bh=AFPfuv+YOm+k4DkSctX34qa+OTvzsdZXK2vjFfw1Tm0=;
+        b=olDccLxc1bHG/n0APMv1VaTiyiFFupESqyvOm0tohbgz5cW2e+xt1wP3zsp3/E7r82
+         UgoL5MxGSIdv0Ksz8lSZPUBxaM0WFaDyPsF+1nza8nzxT1fBEWTSlRRyzMswpMrf9B+W
+         1+Bo6+j2h+1fLPx9bxTuyUsfTICwaOeyOAvwJIBZlBHr+UBwA485Coj3P+b60sHtlB+i
+         6uBqAs7t+tKoGfusIrIom2meo+5eRqgKFByVMeghBSOl7UrXM7y0+m7xJgY2sL5T+YG5
+         VIEJn0kLTm3//tgRD50ZNzaKsjJa53lTtQ0nL/i7yB8TEJA+Zu5c2ZMgB7hRPK7UkjdC
+         AIDA==
+X-Gm-Message-State: AOAM530c8OMFNqTWRmzSdXlYKY2iuAxtEi0f21TovfkvRsK8IO8N3cPQ
+        hCiraZ8rWfN2z+dNx5Nz3fZbuZqxiCm++E9h/YE=
+X-Google-Smtp-Source: ABdhPJy7opFJLI5d73Hqpi8Cv4/3I+seAygBh3QYLYVMuD5pEdzAuf6uvBUmy2PBrlAtB7jJvHh88gZ9YwZuW7j1DH0=
+X-Received: by 2002:a05:6402:888:: with SMTP id e8mr11730080edy.51.1614669155407;
+ Mon, 01 Mar 2021 23:12:35 -0800 (PST)
 MIME-Version: 1.0
-References: <20210302062214.29627-1-jslaby@suse.cz> <20210302062214.29627-33-jslaby@suse.cz>
-In-Reply-To: <20210302062214.29627-33-jslaby@suse.cz>
+References: <20210302062214.29627-1-jslaby@suse.cz> <20210302062214.29627-30-jslaby@suse.cz>
+In-Reply-To: <20210302062214.29627-30-jslaby@suse.cz>
 From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Mon, 1 Mar 2021 22:55:38 -0800
-Message-ID: <CAMo8BfJ=-ORUowT4aUrQsYyZC+Kvpa6Xk-v5u7ah_GAkcAVpCA@mail.gmail.com>
-Subject: Re: [PATCH 33/44] tty: xtensa/iss, make rs_init static
+Date:   Mon, 1 Mar 2021 23:12:24 -0800
+Message-ID: <CAMo8BfL0Frrd6A=j+LXmExAkcKRLBm5a_3rM1hyz+W6p9i91xQ@mail.gmail.com>
+Subject: Re: [PATCH 30/44] tty: xtensa/iss, don't reassign to tty->port
 To:     Jiri Slaby <jslaby@suse.cz>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
@@ -74,16 +74,17 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Mon, Mar 1, 2021 at 10:22 PM Jiri Slaby <jslaby@suse.cz> wrote:
 >
-> To fix the warning:
-> warning: no previous prototype for 'rs_init'
+> We already do tty_port_link_device in rs_init, so we don't need to
+> reassign a port to tty->port. It would be too late in tty::ops::open
+> anyway.
 >
 > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 > Cc: Chris Zankel <chris@zankel.net>
 > Cc: Max Filippov <jcmvbkbc@gmail.com>
 > Cc: linux-xtensa@linux-xtensa.org
 > ---
->  arch/xtensa/platforms/iss/console.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  arch/xtensa/platforms/iss/console.c | 1 -
+>  1 file changed, 1 deletion(-)
 
 Acked-by: Max Filippov <jcmvbkbc@gmail.com>
 
