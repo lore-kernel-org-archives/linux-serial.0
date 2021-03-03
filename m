@@ -2,151 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED910C433E0
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 00:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8326FC433E6
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 00:07:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AD52E64EDF
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 00:04:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 30E6664EBA
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 00:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238310AbhCDAAB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 3 Mar 2021 19:00:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        id S239129AbhCDAAC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 3 Mar 2021 19:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835986AbhCCIDc (ORCPT
+        with ESMTP id S1843004AbhCCKXq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 3 Mar 2021 03:03:32 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5749DC0617AA
-        for <linux-serial@vger.kernel.org>; Tue,  2 Mar 2021 23:44:43 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lHMBU-0002s8-Rd; Wed, 03 Mar 2021 08:44:40 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lHMBQ-0006Qi-JT; Wed, 03 Mar 2021 08:44:36 +0100
-Date:   Wed, 3 Mar 2021 08:44:36 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jiri Slaby <jslaby@suse.cz>, Michael Ellerman <mpe@ellerman.id.au>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH 40/44] tty: hvc, drop unneeded forward declarations
-Message-ID: <20210303074436.keguljsgyvan6d5g@pengutronix.de>
-References: <20210302062214.29627-1-jslaby@suse.cz>
- <20210302062214.29627-40-jslaby@suse.cz>
+        Wed, 3 Mar 2021 05:23:46 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C8DC06121E;
+        Wed,  3 Mar 2021 00:31:43 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id v9so17989081lfa.1;
+        Wed, 03 Mar 2021 00:31:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dA8KKHZiMQ0M1dMyQ+8WM+bKH9WXXF3VYD9qxoBSYVM=;
+        b=Q2BL7+lc+ylMlu+ydH2KPz1PqTODp5OqgVZiHR9jqO4OZm50aqIxSjjmz78JiiooFH
+         i7YC35lXSOUX9yg/ckanbCMcDnIlEnFIWaLOgdtj+UDXrH5hO9M8tW0d4lY0F73Zgtv0
+         EP4JLr8ALm6ZBEyiThejlCrrfIVjY9pIOHj19FhIOTMenDf39h9gGiIWXvyNDLGkM5mo
+         m/2nGyP009dWktprR8h6cgF5Vdo4NdkfBfb3BDPwDqJkwoi523txy9Y1R+1aHRYDxFMU
+         pbUa9veKiX8fC3Qy7J68bxgQZFZPn42rhUh6PUmrP6NqhAMjEwXXM5pQ+2lI5jRGc3fG
+         Miaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dA8KKHZiMQ0M1dMyQ+8WM+bKH9WXXF3VYD9qxoBSYVM=;
+        b=f6ZSIMX8nAv5AFjL21Ejo5Bv3NJ3Rp8ijmSTbsKlQYt6Ekl94iKE9TQIHIFyeDf+eT
+         4U32HV13v5mTABQ3WNlZOivEzWGS1py9zHDoZZ6zFdY3g3+sfbqcspgY/f8SK3sTER5N
+         09uXG0t5uD2JUyWzIs0kA838rkFolPnrW+qjLsRR4EdvOGDZQ5dt0oiXEWGDRqNCc1vf
+         6YIgnCjMyKJCssoimM7iGriqww+KbKAaP3idu40E9el3QnDkQ7mdUdKnvVq+pDFA2i35
+         6uVUiZofGRHsrGdBUzcyXf31pXUoMJCHfRBq9hRRhjNCuNChYx9NHWqj2Ba6DxCP+7Ix
+         0Bww==
+X-Gm-Message-State: AOAM530n4Tohk0m88Dm8GcAfvRhgv+oALZsuZxkYrxBffq71r+aHyhk5
+        D6rUONzoAxuMVY/19AH/6iXMbEuXb0s=
+X-Google-Smtp-Source: ABdhPJyVYXtuCpQJixD14PrCS9E2RYkwzmpI6ancOTzzhejj1erUKOBHDXNJht8WUd/TI7wGU6pDCw==
+X-Received: by 2002:a05:6512:110b:: with SMTP id l11mr15110220lfg.468.1614760301712;
+        Wed, 03 Mar 2021 00:31:41 -0800 (PST)
+Received: from [192.168.2.145] (109-252-193-52.dynamic.spd-mgts.ru. [109.252.193.52])
+        by smtp.googlemail.com with ESMTPSA id 192sm2767251ljj.95.2021.03.03.00.31.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Mar 2021 00:31:41 -0800 (PST)
+Subject: Re: [PATCH 00/31] Introduce devm_pm_opp_* API
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Yangtao Li <tiny.windzz@gmail.com>, myungjoo.ham@samsung.com,
+        kyungmin.park@samsung.com, cw00.choi@samsung.com, krzk@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, yuq825@gmail.com, airlied@linux.ie,
+        daniel@ffwll.ch, robdclark@gmail.com, sean@poorly.run,
+        robh@kernel.org, tomeu.vizoso@collabora.com, steven.price@arm.com,
+        alyssa.rosenzweig@collabora.com, stanimir.varbanov@linaro.org,
+        agross@kernel.org, bjorn.andersson@linaro.org, mchehab@kernel.org,
+        lukasz.luba@arm.com, adrian.hunter@intel.com,
+        ulf.hansson@linaro.org, vireshk@kernel.org, nm@ti.com,
+        sboyd@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, rjw@rjwysocki.net, jcrouse@codeaurora.org,
+        hoegsberg@google.com, eric@anholt.net, tzimmermann@suse.de,
+        marijn.suijten@somainline.org, gustavoars@kernel.org,
+        emil.velikov@collabora.com, jonathan@marek.ca,
+        akhilpo@codeaurora.org, smasetty@codeaurora.org,
+        airlied@redhat.com, masneyb@onstation.org, kalyan_t@codeaurora.org,
+        tanmay@codeaurora.org, ddavenport@chromium.org,
+        jsanka@codeaurora.org, rnayak@codeaurora.org,
+        tongtiangen@huawei.com, miaoqinglang@huawei.com,
+        khsieh@codeaurora.org, abhinavk@codeaurora.org,
+        chandanu@codeaurora.org, groeck@chromium.org, varar@codeaurora.org,
+        mka@chromium.org, harigovi@codeaurora.org,
+        rikard.falkeborn@gmail.com, natechancellor@gmail.com,
+        georgi.djakov@linaro.org, akashast@codeaurora.org,
+        parashar@codeaurora.org, dianders@chromium.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20210101165507.19486-1-tiny.windzz@gmail.com>
+ <6bd6730c-6f4e-df93-65cd-93fa4785a8d8@gmail.com>
+ <c7a246a4-ab25-a193-f74a-98351780135e@gmail.com>
+ <20210303040119.hpeybankxph4fyuj@vireshk-i7>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <9e5edc16-abfa-632b-97e9-1367c24ef8bc@gmail.com>
+Date:   Wed, 3 Mar 2021 11:31:37 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="prjodd2hjuh6jp2h"
-Content-Disposition: inline
-In-Reply-To: <20210302062214.29627-40-jslaby@suse.cz>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20210303040119.hpeybankxph4fyuj@vireshk-i7>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+03.03.2021 07:01, Viresh Kumar пишет:
+> On 02-03-21, 16:40, Dmitry Osipenko wrote:
+>> 20.01.2021 19:01, Dmitry Osipenko пишет:
+>>> 01.01.2021 19:54, Yangtao Li пишет:
+>>>> Hi,
+>>>>
+>>>> This patchset add devm_pm_opp_set_clkname, devm_pm_opp_put_clkname,
+>>>> devm_pm_opp_set_regulators, devm_pm_opp_put_regulators,
+>>>> devm_pm_opp_set_supported_hw, devm_pm_opp_of_add_table and
+>>>> devm_pm_opp_register_notifier.
+>>>
+>>> Hello Yangtao,
+>>>
+>>> Thank you for your effort, looking forward to v2!
+>>
+>> Yangtao, could you please let me know what is the status of this series?
+>> Will you be able to make a v2 anytime soon?
+> 
+> Dmitry, if Yangtao doesn't reply back this week with a proposal, please go ahead
+> and respin the patches yourself. Thanks.
+> 
 
---prjodd2hjuh6jp2h
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello Jiri,
-
-On Tue, Mar 02, 2021 at 07:22:10AM +0100, Jiri Slaby wrote:
-> Forward declarations make the code larger and rewrites harder. Harder as
-> they are often omitted from global changes. Remove forward declarations
-> which are not really needed, i.e. the definition of the function is
-> before its first use.
->=20
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: linuxppc-dev@lists.ozlabs.org
-> ---
->  drivers/tty/hvc/hvcs.c | 25 -------------------------
-
-note this conflicts with commit 386a966f5ce71a0364b158c5d0a6971f4e418ea8
-that currently sits in the powerpc tree. I think it's easy to resolve.
-
-Other than that:
-
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Best regards
-Uwe
-
->  1 file changed, 25 deletions(-)
->=20
-> diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-> index c90848919644..0b89d878a108 100644
-> --- a/drivers/tty/hvc/hvcs.c
-> +++ b/drivers/tty/hvc/hvcs.c
-> @@ -290,36 +290,11 @@ static LIST_HEAD(hvcs_structs);
->  static DEFINE_SPINLOCK(hvcs_structs_lock);
->  static DEFINE_MUTEX(hvcs_init_mutex);
-> =20
-> -static void hvcs_unthrottle(struct tty_struct *tty);
-> -static void hvcs_throttle(struct tty_struct *tty);
-> -static irqreturn_t hvcs_handle_interrupt(int irq, void *dev_instance);
-> -
-> -static int hvcs_write(struct tty_struct *tty,
-> -		const unsigned char *buf, int count);
-> -static int hvcs_write_room(struct tty_struct *tty);
-> -static int hvcs_chars_in_buffer(struct tty_struct *tty);
-> -
-> -static int hvcs_has_pi(struct hvcs_struct *hvcsd);
-> -static void hvcs_set_pi(struct hvcs_partner_info *pi,
-> -		struct hvcs_struct *hvcsd);
->  static int hvcs_get_pi(struct hvcs_struct *hvcsd);
->  static int hvcs_rescan_devices_list(void);
-> =20
-> -static int hvcs_partner_connect(struct hvcs_struct *hvcsd);
->  static void hvcs_partner_free(struct hvcs_struct *hvcsd);
-> =20
-> -static int hvcs_enable_device(struct hvcs_struct *hvcsd,
-> -		uint32_t unit_address, unsigned int irq, struct vio_dev *dev);
-> -
-> -static int hvcs_open(struct tty_struct *tty, struct file *filp);
-> -static void hvcs_close(struct tty_struct *tty, struct file *filp);
-> -static void hvcs_hangup(struct tty_struct * tty);
-> -
-> -static int hvcs_probe(struct vio_dev *dev,
-> -		const struct vio_device_id *id);
-> -static int hvcs_remove(struct vio_dev *dev);
-> -static int __init hvcs_module_init(void);
-> -static void __exit hvcs_module_exit(void);
->  static int hvcs_initialize(void);
-> =20
->  #define HVCS_SCHED_READ	0x00000001
-> --=20
-> 2.30.1
->=20
->=20
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---prjodd2hjuh6jp2h
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmA/PmEACgkQwfwUeK3K
-7Ak/+QgAoaMQF3clqadoCfC+pLPxWDoOB9ZNxnHO1dNcFLtQHZEAJNwMZw9h/mxr
-DY6thVwediWE2JI/e/c2XaF78mUy9KrMtd8TwTjKHCMhOzAlF9fRNra9eTLP+gBJ
-QOJOIQntpeiolTtZTuy4bphiJe09YuuEZSr4zx0HgaECI811eyG+qLZWmPKeK2Jl
-EYoZtx1uoKnlwrZOqbhkopk2U9st6Kt/oxzEjBF3NcMXDKjCfFvz9eCaklbwctPq
-2e8MFy7Jg2dq2hrNIHBxRIAOu7H7Ba7oPMFnlJkoLdGdg3jyqMjjpQccJjZaSI+j
-d6/csnS/+InQyjvZWcGPMCrZSCxvjg==
-=/Ai0
------END PGP SIGNATURE-----
-
---prjodd2hjuh6jp2h--
+Alright!
