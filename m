@@ -2,156 +2,151 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 854A1C432C3
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 00:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED910C433E0
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 00:04:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6015B64EEE
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 00:03:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AD52E64EDF
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 00:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241318AbhCDAAC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 3 Mar 2021 19:00:02 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:42740 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233449AbhCCRZl (ORCPT
+        id S238310AbhCDAAB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 3 Mar 2021 19:00:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1835986AbhCCIDc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 3 Mar 2021 12:25:41 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 123HI5r2010143;
-        Wed, 3 Mar 2021 18:23:27 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=VZlYydjoa19ZfjiGy/7lae6d4RmJH4yQmK8Bw6psmbI=;
- b=Wg3ENRICMBCFHPNUtQPnFZC83FWwJbdPyPaY5UsoYMtvOIvB23fu7ukniD+S77ZcpysY
- 8tDhE1lAqGIq+/Djb1ml0SkXuXtaeYRLyGGAkErLEcxnmfeUEshPbey1k3/DXzQiOAhL
- 6VMJZrytZ85knSx6Gr6BgtBz6kT4NSGAuYPPLFuurg5Vpe2CbEVGokG53gMlplcj+Jwk
- JWA6akb4QX3MdTencFg/WWxjXSw5q5dpDF3NVAVHfLsvghFPl0VUkN7iYxQwdD+Jxsex
- mlqW6RwVUroKM3S4+pv3thNPyUeXMR0UlPQI+BlioeMq2T6FjbQQhyQS1J/M7v6odhsx FQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 36yf9qaac5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 03 Mar 2021 18:23:27 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 43B82100034;
-        Wed,  3 Mar 2021 18:23:27 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2412520CE3A;
-        Wed,  3 Mar 2021 18:23:27 +0100 (CET)
-Received: from [10.211.2.167] (10.75.127.51) by SFHDAG2NODE3.st.com
- (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 3 Mar
- 2021 18:23:25 +0100
-Subject: Re: [PATCH v4 1/2] dt-bindings: serial: Add rx-tx-swap to stm32-usart
-To:     Martin Devera <devik@eaxlabs.cz>, <linux-kernel@vger.kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Alexandre Torgue" <alexandre.torgue@st.com>,
-        Jiri Slaby <jirislaby@kernel.org>, Le Ray <erwan.leray@st.com>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <aeefa74e-fa19-6c31-5240-0f14fca89298@foss.st.com>
- <20210302190303.28630-1-devik@eaxlabs.cz>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Message-ID: <86ae0975-0f6b-f121-09c4-d909f081a635@foss.st.com>
-Date:   Wed, 3 Mar 2021 18:23:25 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Wed, 3 Mar 2021 03:03:32 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5749DC0617AA
+        for <linux-serial@vger.kernel.org>; Tue,  2 Mar 2021 23:44:43 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lHMBU-0002s8-Rd; Wed, 03 Mar 2021 08:44:40 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lHMBQ-0006Qi-JT; Wed, 03 Mar 2021 08:44:36 +0100
+Date:   Wed, 3 Mar 2021 08:44:36 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jiri Slaby <jslaby@suse.cz>, Michael Ellerman <mpe@ellerman.id.au>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 40/44] tty: hvc, drop unneeded forward declarations
+Message-ID: <20210303074436.keguljsgyvan6d5g@pengutronix.de>
+References: <20210302062214.29627-1-jslaby@suse.cz>
+ <20210302062214.29627-40-jslaby@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20210302190303.28630-1-devik@eaxlabs.cz>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-03_05:2021-03-03,2021-03-03 signatures=0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="prjodd2hjuh6jp2h"
+Content-Disposition: inline
+In-Reply-To: <20210302062214.29627-40-jslaby@suse.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/2/21 8:03 PM, Martin Devera wrote:
-> Add new rx-tx-swap property to allow for RX & TX pin swapping.
-> 
-> Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+
+--prjodd2hjuh6jp2h
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello Jiri,
+
+On Tue, Mar 02, 2021 at 07:22:10AM +0100, Jiri Slaby wrote:
+> Forward declarations make the code larger and rewrites harder. Harder as
+> they are often omitted from global changes. Remove forward declarations
+> which are not really needed, i.e. the definition of the function is
+> before its first use.
+>=20
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: linuxppc-dev@lists.ozlabs.org
 > ---
->  .../devicetree/bindings/serial/st,stm32-uart.yaml  | 32 +++++++++++++++-------
->  1 file changed, 22 insertions(+), 10 deletions(-)
-> 
+>  drivers/tty/hvc/hvcs.c | 25 -------------------------
 
-Hi Martin,
+note this conflicts with commit 386a966f5ce71a0364b158c5d0a6971f4e418ea8
+that currently sits in the powerpc tree. I think it's easy to resolve.
 
-I'm only wondering on moving the allOf and the st,hw-flow-ctrl prop. But
-others may comment on this.
+Other than that:
 
-Feel free to add my:
-Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-Thanks!
-Fabrice
+Best regards
+Uwe
 
-> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> index 8631678283f9..6eab2debebb5 100644
-> --- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> @@ -9,9 +9,6 @@ maintainers:
->  
->  title: STMicroelectronics STM32 USART bindings
->  
-> -allOf:
-> -  - $ref: rs485.yaml
+>  1 file changed, 25 deletions(-)
+>=20
+> diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
+> index c90848919644..0b89d878a108 100644
+> --- a/drivers/tty/hvc/hvcs.c
+> +++ b/drivers/tty/hvc/hvcs.c
+> @@ -290,36 +290,11 @@ static LIST_HEAD(hvcs_structs);
+>  static DEFINE_SPINLOCK(hvcs_structs_lock);
+>  static DEFINE_MUTEX(hvcs_init_mutex);
+> =20
+> -static void hvcs_unthrottle(struct tty_struct *tty);
+> -static void hvcs_throttle(struct tty_struct *tty);
+> -static irqreturn_t hvcs_handle_interrupt(int irq, void *dev_instance);
 > -
->  properties:
->    compatible:
->      enum:
-> @@ -40,6 +37,10 @@ properties:
->  
->    uart-has-rtscts: true
->  
-> +  rx-tx-swap:
-> +    type: boolean
-> +    maxItems: 1
-> +
->    dmas:
->      minItems: 1
->      maxItems: 2
-> @@ -66,13 +67,24 @@ properties:
->    linux,rs485-enabled-at-boot-time: true
->    rs485-rx-during-tx: true
->  
-> -if:
-> -  required:
-> -    - st,hw-flow-ctrl
-> -then:
-> -  properties:
-> -    cts-gpios: false
-> -    rts-gpios: false
-> +allOf:
-> +  - $ref: rs485.yaml
-> +  - if:
-> +      required:
-> +        - st,hw-flow-ctrl
-> +    then:
-> +      properties:
-> +        cts-gpios: false
-> +        rts-gpios: false
-> +  - if:
-> +      required:
-> +        - rx-tx-swap
-> +    then:
-> +      properties:
-> +        compatible:
-> +          enum:
-> +            - st,stm32f7-uart
-> +            - st,stm32h7-uart
->  
->  required:
->    - compatible
-> 
+> -static int hvcs_write(struct tty_struct *tty,
+> -		const unsigned char *buf, int count);
+> -static int hvcs_write_room(struct tty_struct *tty);
+> -static int hvcs_chars_in_buffer(struct tty_struct *tty);
+> -
+> -static int hvcs_has_pi(struct hvcs_struct *hvcsd);
+> -static void hvcs_set_pi(struct hvcs_partner_info *pi,
+> -		struct hvcs_struct *hvcsd);
+>  static int hvcs_get_pi(struct hvcs_struct *hvcsd);
+>  static int hvcs_rescan_devices_list(void);
+> =20
+> -static int hvcs_partner_connect(struct hvcs_struct *hvcsd);
+>  static void hvcs_partner_free(struct hvcs_struct *hvcsd);
+> =20
+> -static int hvcs_enable_device(struct hvcs_struct *hvcsd,
+> -		uint32_t unit_address, unsigned int irq, struct vio_dev *dev);
+> -
+> -static int hvcs_open(struct tty_struct *tty, struct file *filp);
+> -static void hvcs_close(struct tty_struct *tty, struct file *filp);
+> -static void hvcs_hangup(struct tty_struct * tty);
+> -
+> -static int hvcs_probe(struct vio_dev *dev,
+> -		const struct vio_device_id *id);
+> -static int hvcs_remove(struct vio_dev *dev);
+> -static int __init hvcs_module_init(void);
+> -static void __exit hvcs_module_exit(void);
+>  static int hvcs_initialize(void);
+> =20
+>  #define HVCS_SCHED_READ	0x00000001
+> --=20
+> 2.30.1
+>=20
+>=20
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--prjodd2hjuh6jp2h
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmA/PmEACgkQwfwUeK3K
+7Ak/+QgAoaMQF3clqadoCfC+pLPxWDoOB9ZNxnHO1dNcFLtQHZEAJNwMZw9h/mxr
+DY6thVwediWE2JI/e/c2XaF78mUy9KrMtd8TwTjKHCMhOzAlF9fRNra9eTLP+gBJ
+QOJOIQntpeiolTtZTuy4bphiJe09YuuEZSr4zx0HgaECI811eyG+qLZWmPKeK2Jl
+EYoZtx1uoKnlwrZOqbhkopk2U9st6Kt/oxzEjBF3NcMXDKjCfFvz9eCaklbwctPq
+2e8MFy7Jg2dq2hrNIHBxRIAOu7H7Ba7oPMFnlJkoLdGdg3jyqMjjpQccJjZaSI+j
+d6/csnS/+InQyjvZWcGPMCrZSCxvjg==
+=/Ai0
+-----END PGP SIGNATURE-----
+
+--prjodd2hjuh6jp2h--
