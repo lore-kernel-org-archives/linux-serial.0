@@ -7,29 +7,29 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA0DC4361B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B724FC15504
 	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:42:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6727665015
+	by mail.kernel.org (Postfix) with ESMTP id 982C265007
 	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240468AbhCDVmB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S240390AbhCDVmB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 4 Mar 2021 16:42:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236866AbhCDVlm (ORCPT
+        with ESMTP id S240193AbhCDVl1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 Mar 2021 16:41:42 -0500
+        Thu, 4 Mar 2021 16:41:27 -0500
 Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE288C061574;
-        Thu,  4 Mar 2021 13:41:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E176BC061763;
+        Thu,  4 Mar 2021 13:40:46 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id EA1C0425B5;
-        Thu,  4 Mar 2021 21:40:09 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id D2F6E424BA;
+        Thu,  4 Mar 2021 21:40:38 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
@@ -53,9 +53,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFT PATCH v3 07/27] arm64: arch_timer: implement support for interrupt-names
-Date:   Fri,  5 Mar 2021 06:38:42 +0900
-Message-Id: <20210304213902.83903-8-marcan@marcan.st>
+Subject: [RFT PATCH v3 11/27] arm64: Implement ioremap_np() to map MMIO as nGnRnE
+Date:   Fri,  5 Mar 2021 06:38:46 +0900
+Message-Id: <20210304213902.83903-12-marcan@marcan.st>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210304213902.83903-1-marcan@marcan.st>
 References: <20210304213902.83903-1-marcan@marcan.st>
@@ -65,82 +65,26 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This allows the devicetree to correctly represent the available set of
-timers, which varies from device to device, without the need for fake
-dummy interrupts for unavailable slots.
-
-Also add the hyp-virt timer/PPI, which is not currently used, but worth
-representing.
+This is used on Apple ARM platforms, which require most MMIO
+(except PCI devices) to be mapped as nGnRnE.
 
 Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Tony Lindgren <tony@atomide.com>
 ---
- drivers/clocksource/arm_arch_timer.c | 24 +++++++++++++++++++++---
- include/clocksource/arm_arch_timer.h |  1 +
- 2 files changed, 22 insertions(+), 3 deletions(-)
+ arch/arm64/include/asm/io.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
-index d0177824c518..ee2501a17697 100644
---- a/drivers/clocksource/arm_arch_timer.c
-+++ b/drivers/clocksource/arm_arch_timer.c
-@@ -63,6 +63,14 @@ struct arch_timer {
- static u32 arch_timer_rate;
- static int arch_timer_ppi[ARCH_TIMER_MAX_TIMER_PPI];
+diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
+index 5ea8656a2030..953b8703af60 100644
+--- a/arch/arm64/include/asm/io.h
++++ b/arch/arm64/include/asm/io.h
+@@ -169,6 +169,7 @@ extern void __iomem *ioremap_cache(phys_addr_t phys_addr, size_t size);
  
-+static const char *arch_timer_ppi_names[ARCH_TIMER_MAX_TIMER_PPI] = {
-+	[ARCH_TIMER_PHYS_SECURE_PPI]	= "phys-secure",
-+	[ARCH_TIMER_PHYS_NONSECURE_PPI]	= "phys",
-+	[ARCH_TIMER_VIRT_PPI]		= "virt",
-+	[ARCH_TIMER_HYP_PPI]		= "hyp-phys",
-+	[ARCH_TIMER_HYP_VIRT_PPI]	= "hyp-virt",
-+};
-+
- static struct clock_event_device __percpu *arch_timer_evt;
+ #define ioremap(addr, size)		__ioremap((addr), (size), __pgprot(PROT_DEVICE_nGnRE))
+ #define ioremap_wc(addr, size)		__ioremap((addr), (size), __pgprot(PROT_NORMAL_NC))
++#define ioremap_np(addr, size)		__ioremap((addr), (size), __pgprot(PROT_DEVICE_nGnRnE))
  
- static enum arch_timer_ppi_nr arch_timer_uses_ppi = ARCH_TIMER_VIRT_PPI;
-@@ -1280,8 +1288,9 @@ static void __init arch_timer_populate_kvm_info(void)
- 
- static int __init arch_timer_of_init(struct device_node *np)
- {
--	int i, ret;
-+	int i, irq, ret;
- 	u32 rate;
-+	bool has_names;
- 
- 	if (arch_timers_present & ARCH_TIMER_TYPE_CP15) {
- 		pr_warn("multiple nodes in dt, skipping\n");
-@@ -1289,8 +1298,17 @@ static int __init arch_timer_of_init(struct device_node *np)
- 	}
- 
- 	arch_timers_present |= ARCH_TIMER_TYPE_CP15;
--	for (i = ARCH_TIMER_PHYS_SECURE_PPI; i < ARCH_TIMER_MAX_TIMER_PPI; i++)
--		arch_timer_ppi[i] = irq_of_parse_and_map(np, i);
-+
-+	has_names = of_property_read_bool(np, "interrupt-names");
-+
-+	for (i = ARCH_TIMER_PHYS_SECURE_PPI; i < ARCH_TIMER_MAX_TIMER_PPI; i++) {
-+		if (has_names)
-+			irq = of_irq_get_byname(np, arch_timer_ppi_names[i]);
-+		else
-+			irq = of_irq_get(np, i);
-+		if (irq > 0)
-+			arch_timer_ppi[i] = irq;
-+	}
- 
- 	arch_timer_populate_kvm_info();
- 
-diff --git a/include/clocksource/arm_arch_timer.h b/include/clocksource/arm_arch_timer.h
-index 1d68d5613dae..73c7139c866f 100644
---- a/include/clocksource/arm_arch_timer.h
-+++ b/include/clocksource/arm_arch_timer.h
-@@ -32,6 +32,7 @@ enum arch_timer_ppi_nr {
- 	ARCH_TIMER_PHYS_NONSECURE_PPI,
- 	ARCH_TIMER_VIRT_PPI,
- 	ARCH_TIMER_HYP_PPI,
-+	ARCH_TIMER_HYP_VIRT_PPI,
- 	ARCH_TIMER_MAX_TIMER_PPI
- };
- 
+ /*
+  * PCI configuration space mapping function.
 -- 
 2.30.0
 
