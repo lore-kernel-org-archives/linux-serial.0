@@ -5,31 +5,31 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1E7C43381
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70862C43332
 	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:44:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E8C9264FF0
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:44:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 51B8564F84
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232946AbhCDVne (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 Mar 2021 16:43:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
+        id S240969AbhCDVnf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 4 Mar 2021 16:43:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240900AbhCDVnH (ORCPT
+        with ESMTP id S240923AbhCDVnY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 Mar 2021 16:43:07 -0500
+        Thu, 4 Mar 2021 16:43:24 -0500
 Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1629C061760;
-        Thu,  4 Mar 2021 13:42:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FE3C061756;
+        Thu,  4 Mar 2021 13:42:44 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 756F042713;
-        Thu,  4 Mar 2021 21:42:18 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 0C02E426FC;
+        Thu,  4 Mar 2021 21:41:49 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
@@ -52,11 +52,10 @@ Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [RFT PATCH v3 25/27] tty: serial: samsung_tty: Add earlycon support for Apple UARTs
-Date:   Fri,  5 Mar 2021 06:39:00 +0900
-Message-Id: <20210304213902.83903-26-marcan@marcan.st>
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFT PATCH v3 21/27] tty: serial: samsung_tty: IRQ rework
+Date:   Fri,  5 Mar 2021 06:38:56 +0900
+Message-Id: <20210304213902.83903-22-marcan@marcan.st>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210304213902.83903-1-marcan@marcan.st>
 References: <20210304213902.83903-1-marcan@marcan.st>
@@ -66,49 +65,131 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Earlycon support is identical to S3C2410, but Apple SoCs also need
-MMIO mapped as nGnRnE. This is handled generically for normal drivers
-including the normal UART path here, but earlycon uses fixmap and
-runs before that scaffolding is ready.
+* Split out s3c24xx_serial_tx_chars from s3c24xx_serial_tx_irq,
+  where only the latter acquires the port lock. This will be necessary
+  on platforms which have edge-triggered IRQs, as we need to call
+  s3c24xx_serial_tx_chars to kick off transmission from outside IRQ
+  context, with the port lock held.
 
-Since this is the only case where we need this fix, it makes more
-sense to do it here in the UART driver instead of introducing a
-whole fdt nonposted-mmio resolver just for earlycon/fixmap.
+* Rename s3c24xx_serial_rx_chars to s3c24xx_serial_rx_irq for
+  consistency with the above. All it does now is call two other
+  functions anyway.
 
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/tty/serial/samsung_tty.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/tty/serial/samsung_tty.c | 34 +++++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 5ef37c4538ce..80df842bf4c7 100644
+index 39b2eb165bdc..7106eb238d8c 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -3001,6 +3001,23 @@ OF_EARLYCON_DECLARE(s5pv210, "samsung,s5pv210-uart",
- 			s5pv210_early_console_setup);
- OF_EARLYCON_DECLARE(exynos4210, "samsung,exynos4210-uart",
- 			s5pv210_early_console_setup);
-+
-+/* Apple S5L */
-+static int __init apple_s5l_early_console_setup(struct earlycon_device *device,
-+						const char *opt)
-+{
-+	/* Close enough to S3C2410 for earlycon... */
-+	device->port.private_data = &s3c2410_early_console_data;
-+
-+#ifdef CONFIG_ARM64
-+	/* ... but we need to override the existing fixmap entry as nGnRnE */
-+	__set_fixmap(FIX_EARLYCON_MEM_BASE, device->port.mapbase,
-+		     __pgprot(PROT_DEVICE_nGnRnE));
-+#endif
-+	return samsung_early_console_setup(device, opt);
+@@ -827,7 +827,7 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static irqreturn_t s3c24xx_serial_rx_chars(int irq, void *dev_id)
++static irqreturn_t s3c24xx_serial_rx_irq(int irq, void *dev_id)
+ {
+ 	struct s3c24xx_uart_port *ourport = dev_id;
+ 
+@@ -836,16 +836,12 @@ static irqreturn_t s3c24xx_serial_rx_chars(int irq, void *dev_id)
+ 	return s3c24xx_serial_rx_chars_pio(dev_id);
+ }
+ 
+-static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
++static void s3c24xx_serial_tx_chars(struct s3c24xx_uart_port *ourport)
+ {
+-	struct s3c24xx_uart_port *ourport = id;
+ 	struct uart_port *port = &ourport->port;
+ 	struct circ_buf *xmit = &port->state->xmit;
+-	unsigned long flags;
+ 	int count, dma_count = 0;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+-
+ 	count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
+ 
+ 	if (ourport->dma && ourport->dma->tx_chan &&
+@@ -862,7 +858,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 		wr_reg(port, S3C2410_UTXH, port->x_char);
+ 		port->icount.tx++;
+ 		port->x_char = 0;
+-		goto out;
++		return;
+ 	}
+ 
+ 	/* if there isn't anything more to transmit, or the uart is now
+@@ -871,7 +867,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 
+ 	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+ 		s3c24xx_serial_stop_tx(port);
+-		goto out;
++		return;
+ 	}
+ 
+ 	/* try and drain the buffer... */
+@@ -893,7 +889,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 
+ 	if (!count && dma_count) {
+ 		s3c24xx_serial_start_tx_dma(ourport, dma_count);
+-		goto out;
++		return;
+ 	}
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
+@@ -904,8 +900,18 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 
+ 	if (uart_circ_empty(xmit))
+ 		s3c24xx_serial_stop_tx(port);
 +}
 +
-+OF_EARLYCON_DECLARE(s5l, "apple,s5l-uart", apple_s5l_early_console_setup);
- #endif
++static irqreturn_t s3c24xx_serial_tx_irq(int irq, void *id)
++{
++	struct s3c24xx_uart_port *ourport = id;
++	struct uart_port *port = &ourport->port;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	s3c24xx_serial_tx_chars(ourport);
  
- MODULE_ALIAS("platform:samsung-uart");
+-out:
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 	return IRQ_HANDLED;
+ }
+@@ -919,11 +925,11 @@ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
+ 	irqreturn_t ret = IRQ_HANDLED;
+ 
+ 	if (pend & S3C64XX_UINTM_RXD_MSK) {
+-		ret = s3c24xx_serial_rx_chars(irq, id);
++		ret = s3c24xx_serial_rx_irq(irq, id);
+ 		wr_regl(port, S3C64XX_UINTP, S3C64XX_UINTM_RXD_MSK);
+ 	}
+ 	if (pend & S3C64XX_UINTM_TXD_MSK) {
+-		ret = s3c24xx_serial_tx_chars(irq, id);
++		ret = s3c24xx_serial_tx_irq(irq, id);
+ 		wr_regl(port, S3C64XX_UINTP, S3C64XX_UINTM_TXD_MSK);
+ 	}
+ 	return ret;
+@@ -1155,7 +1161,7 @@ static int s3c24xx_serial_startup(struct uart_port *port)
+ 
+ 	ourport->rx_enabled = 1;
+ 
+-	ret = request_irq(ourport->rx_irq, s3c24xx_serial_rx_chars, 0,
++	ret = request_irq(ourport->rx_irq, s3c24xx_serial_rx_irq, 0,
+ 			  s3c24xx_serial_portname(port), ourport);
+ 
+ 	if (ret != 0) {
+@@ -1169,7 +1175,7 @@ static int s3c24xx_serial_startup(struct uart_port *port)
+ 
+ 	ourport->tx_enabled = 1;
+ 
+-	ret = request_irq(ourport->tx_irq, s3c24xx_serial_tx_chars, 0,
++	ret = request_irq(ourport->tx_irq, s3c24xx_serial_tx_irq, 0,
+ 			  s3c24xx_serial_portname(port), ourport);
+ 
+ 	if (ret) {
 -- 
 2.30.0
 
