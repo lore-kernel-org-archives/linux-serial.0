@@ -2,34 +2,34 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UPPERCASE_50_75,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BB4C4361A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA0DC4361B
 	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:42:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4421364FF0
+	by mail.kernel.org (Postfix) with ESMTP id 6727665015
 	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240480AbhCDVmC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 Mar 2021 16:42:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43692 "EHLO
+        id S240468AbhCDVmB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 4 Mar 2021 16:42:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240384AbhCDVls (ORCPT
+        with ESMTP id S236866AbhCDVlm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 Mar 2021 16:41:48 -0500
+        Thu, 4 Mar 2021 16:41:42 -0500
 Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3820AC061756;
-        Thu,  4 Mar 2021 13:41:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE288C061574;
+        Thu,  4 Mar 2021 13:41:01 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 305BA426F3;
-        Thu,  4 Mar 2021 21:40:59 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id EA1C0425B5;
+        Thu,  4 Mar 2021 21:40:09 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
@@ -53,9 +53,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFT PATCH v3 14/27] arm64: move ICH_ sysreg bits from arm-gic-v3.h to sysreg.h
-Date:   Fri,  5 Mar 2021 06:38:49 +0900
-Message-Id: <20210304213902.83903-15-marcan@marcan.st>
+Subject: [RFT PATCH v3 07/27] arm64: arch_timer: implement support for interrupt-names
+Date:   Fri,  5 Mar 2021 06:38:42 +0900
+Message-Id: <20210304213902.83903-8-marcan@marcan.st>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210304213902.83903-1-marcan@marcan.st>
 References: <20210304213902.83903-1-marcan@marcan.st>
@@ -65,160 +65,82 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-These definitions are in arm-gic-v3.h for historical reasons which no
-longer apply. Move them to sysreg.h so the AIC driver can use them, as
-it needs to peek into vGIC registers to deal with the GIC maintentance
-interrupt.
+This allows the devicetree to correctly represent the available set of
+timers, which varies from device to device, without the need for fake
+dummy interrupts for unavailable slots.
+
+Also add the hyp-virt timer/PPI, which is not currently used, but worth
+representing.
 
 Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Tony Lindgren <tony@atomide.com>
 ---
- arch/arm64/include/asm/sysreg.h    | 60 ++++++++++++++++++++++++++++++
- include/linux/irqchip/arm-gic-v3.h | 56 ----------------------------
- 2 files changed, 60 insertions(+), 56 deletions(-)
+ drivers/clocksource/arm_arch_timer.c | 24 +++++++++++++++++++++---
+ include/clocksource/arm_arch_timer.h |  1 +
+ 2 files changed, 22 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/include/asm/sysreg.h b/arch/arm64/include/asm/sysreg.h
-index dfd4edbfe360..645926490ada 100644
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -1024,6 +1024,66 @@
- #define TRFCR_ELx_ExTRE			BIT(1)
- #define TRFCR_ELx_E0TRE			BIT(0)
+diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
+index d0177824c518..ee2501a17697 100644
+--- a/drivers/clocksource/arm_arch_timer.c
++++ b/drivers/clocksource/arm_arch_timer.c
+@@ -63,6 +63,14 @@ struct arch_timer {
+ static u32 arch_timer_rate;
+ static int arch_timer_ppi[ARCH_TIMER_MAX_TIMER_PPI];
  
++static const char *arch_timer_ppi_names[ARCH_TIMER_MAX_TIMER_PPI] = {
++	[ARCH_TIMER_PHYS_SECURE_PPI]	= "phys-secure",
++	[ARCH_TIMER_PHYS_NONSECURE_PPI]	= "phys",
++	[ARCH_TIMER_VIRT_PPI]		= "virt",
++	[ARCH_TIMER_HYP_PPI]		= "hyp-phys",
++	[ARCH_TIMER_HYP_VIRT_PPI]	= "hyp-virt",
++};
 +
-+/* GIC Hypervisor interface registers */
-+/* ICH_MISR_EL2 bit definitions */
-+#define ICH_MISR_EOI		(1 << 0)
-+#define ICH_MISR_U		(1 << 1)
-+
-+/* ICH_LR*_EL2 bit definitions */
-+#define ICH_LR_VIRTUAL_ID_MASK	((1ULL << 32) - 1)
-+
-+#define ICH_LR_EOI		(1ULL << 41)
-+#define ICH_LR_GROUP		(1ULL << 60)
-+#define ICH_LR_HW		(1ULL << 61)
-+#define ICH_LR_STATE		(3ULL << 62)
-+#define ICH_LR_PENDING_BIT	(1ULL << 62)
-+#define ICH_LR_ACTIVE_BIT	(1ULL << 63)
-+#define ICH_LR_PHYS_ID_SHIFT	32
-+#define ICH_LR_PHYS_ID_MASK	(0x3ffULL << ICH_LR_PHYS_ID_SHIFT)
-+#define ICH_LR_PRIORITY_SHIFT	48
-+#define ICH_LR_PRIORITY_MASK	(0xffULL << ICH_LR_PRIORITY_SHIFT)
-+
-+/* ICH_HCR_EL2 bit definitions */
-+#define ICH_HCR_EN		(1 << 0)
-+#define ICH_HCR_UIE		(1 << 1)
-+#define ICH_HCR_NPIE		(1 << 3)
-+#define ICH_HCR_TC		(1 << 10)
-+#define ICH_HCR_TALL0		(1 << 11)
-+#define ICH_HCR_TALL1		(1 << 12)
-+#define ICH_HCR_EOIcount_SHIFT	27
-+#define ICH_HCR_EOIcount_MASK	(0x1f << ICH_HCR_EOIcount_SHIFT)
-+
-+/* ICH_VMCR_EL2 bit definitions */
-+#define ICH_VMCR_ACK_CTL_SHIFT	2
-+#define ICH_VMCR_ACK_CTL_MASK	(1 << ICH_VMCR_ACK_CTL_SHIFT)
-+#define ICH_VMCR_FIQ_EN_SHIFT	3
-+#define ICH_VMCR_FIQ_EN_MASK	(1 << ICH_VMCR_FIQ_EN_SHIFT)
-+#define ICH_VMCR_CBPR_SHIFT	4
-+#define ICH_VMCR_CBPR_MASK	(1 << ICH_VMCR_CBPR_SHIFT)
-+#define ICH_VMCR_EOIM_SHIFT	9
-+#define ICH_VMCR_EOIM_MASK	(1 << ICH_VMCR_EOIM_SHIFT)
-+#define ICH_VMCR_BPR1_SHIFT	18
-+#define ICH_VMCR_BPR1_MASK	(7 << ICH_VMCR_BPR1_SHIFT)
-+#define ICH_VMCR_BPR0_SHIFT	21
-+#define ICH_VMCR_BPR0_MASK	(7 << ICH_VMCR_BPR0_SHIFT)
-+#define ICH_VMCR_PMR_SHIFT	24
-+#define ICH_VMCR_PMR_MASK	(0xffUL << ICH_VMCR_PMR_SHIFT)
-+#define ICH_VMCR_ENG0_SHIFT	0
-+#define ICH_VMCR_ENG0_MASK	(1 << ICH_VMCR_ENG0_SHIFT)
-+#define ICH_VMCR_ENG1_SHIFT	1
-+#define ICH_VMCR_ENG1_MASK	(1 << ICH_VMCR_ENG1_SHIFT)
-+
-+/* ICH_VTR_EL2 bit definitions */
-+#define ICH_VTR_PRI_BITS_SHIFT	29
-+#define ICH_VTR_PRI_BITS_MASK	(7 << ICH_VTR_PRI_BITS_SHIFT)
-+#define ICH_VTR_ID_BITS_SHIFT	23
-+#define ICH_VTR_ID_BITS_MASK	(7 << ICH_VTR_ID_BITS_SHIFT)
-+#define ICH_VTR_SEIS_SHIFT	22
-+#define ICH_VTR_SEIS_MASK	(1 << ICH_VTR_SEIS_SHIFT)
-+#define ICH_VTR_A3V_SHIFT	21
-+#define ICH_VTR_A3V_MASK	(1 << ICH_VTR_A3V_SHIFT)
-+
- #ifdef __ASSEMBLY__
+ static struct clock_event_device __percpu *arch_timer_evt;
  
- 	.irp	num,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30
-diff --git a/include/linux/irqchip/arm-gic-v3.h b/include/linux/irqchip/arm-gic-v3.h
-index f6d092fdb93d..81cbf85f73de 100644
---- a/include/linux/irqchip/arm-gic-v3.h
-+++ b/include/linux/irqchip/arm-gic-v3.h
-@@ -575,67 +575,11 @@
- #define ICC_SRE_EL1_DFB			(1U << 1)
- #define ICC_SRE_EL1_SRE			(1U << 0)
+ static enum arch_timer_ppi_nr arch_timer_uses_ppi = ARCH_TIMER_VIRT_PPI;
+@@ -1280,8 +1288,9 @@ static void __init arch_timer_populate_kvm_info(void)
  
--/*
-- * Hypervisor interface registers (SRE only)
-- */
--#define ICH_LR_VIRTUAL_ID_MASK		((1ULL << 32) - 1)
--
--#define ICH_LR_EOI			(1ULL << 41)
--#define ICH_LR_GROUP			(1ULL << 60)
--#define ICH_LR_HW			(1ULL << 61)
--#define ICH_LR_STATE			(3ULL << 62)
--#define ICH_LR_PENDING_BIT		(1ULL << 62)
--#define ICH_LR_ACTIVE_BIT		(1ULL << 63)
--#define ICH_LR_PHYS_ID_SHIFT		32
--#define ICH_LR_PHYS_ID_MASK		(0x3ffULL << ICH_LR_PHYS_ID_SHIFT)
--#define ICH_LR_PRIORITY_SHIFT		48
--#define ICH_LR_PRIORITY_MASK		(0xffULL << ICH_LR_PRIORITY_SHIFT)
--
- /* These are for GICv2 emulation only */
- #define GICH_LR_VIRTUALID		(0x3ffUL << 0)
- #define GICH_LR_PHYSID_CPUID_SHIFT	(10)
- #define GICH_LR_PHYSID_CPUID		(7UL << GICH_LR_PHYSID_CPUID_SHIFT)
+ static int __init arch_timer_of_init(struct device_node *np)
+ {
+-	int i, ret;
++	int i, irq, ret;
+ 	u32 rate;
++	bool has_names;
  
--#define ICH_MISR_EOI			(1 << 0)
--#define ICH_MISR_U			(1 << 1)
--
--#define ICH_HCR_EN			(1 << 0)
--#define ICH_HCR_UIE			(1 << 1)
--#define ICH_HCR_NPIE			(1 << 3)
--#define ICH_HCR_TC			(1 << 10)
--#define ICH_HCR_TALL0			(1 << 11)
--#define ICH_HCR_TALL1			(1 << 12)
--#define ICH_HCR_EOIcount_SHIFT		27
--#define ICH_HCR_EOIcount_MASK		(0x1f << ICH_HCR_EOIcount_SHIFT)
--
--#define ICH_VMCR_ACK_CTL_SHIFT		2
--#define ICH_VMCR_ACK_CTL_MASK		(1 << ICH_VMCR_ACK_CTL_SHIFT)
--#define ICH_VMCR_FIQ_EN_SHIFT		3
--#define ICH_VMCR_FIQ_EN_MASK		(1 << ICH_VMCR_FIQ_EN_SHIFT)
--#define ICH_VMCR_CBPR_SHIFT		4
--#define ICH_VMCR_CBPR_MASK		(1 << ICH_VMCR_CBPR_SHIFT)
--#define ICH_VMCR_EOIM_SHIFT		9
--#define ICH_VMCR_EOIM_MASK		(1 << ICH_VMCR_EOIM_SHIFT)
--#define ICH_VMCR_BPR1_SHIFT		18
--#define ICH_VMCR_BPR1_MASK		(7 << ICH_VMCR_BPR1_SHIFT)
--#define ICH_VMCR_BPR0_SHIFT		21
--#define ICH_VMCR_BPR0_MASK		(7 << ICH_VMCR_BPR0_SHIFT)
--#define ICH_VMCR_PMR_SHIFT		24
--#define ICH_VMCR_PMR_MASK		(0xffUL << ICH_VMCR_PMR_SHIFT)
--#define ICH_VMCR_ENG0_SHIFT		0
--#define ICH_VMCR_ENG0_MASK		(1 << ICH_VMCR_ENG0_SHIFT)
--#define ICH_VMCR_ENG1_SHIFT		1
--#define ICH_VMCR_ENG1_MASK		(1 << ICH_VMCR_ENG1_SHIFT)
--
--#define ICH_VTR_PRI_BITS_SHIFT		29
--#define ICH_VTR_PRI_BITS_MASK		(7 << ICH_VTR_PRI_BITS_SHIFT)
--#define ICH_VTR_ID_BITS_SHIFT		23
--#define ICH_VTR_ID_BITS_MASK		(7 << ICH_VTR_ID_BITS_SHIFT)
--#define ICH_VTR_SEIS_SHIFT		22
--#define ICH_VTR_SEIS_MASK		(1 << ICH_VTR_SEIS_SHIFT)
--#define ICH_VTR_A3V_SHIFT		21
--#define ICH_VTR_A3V_MASK		(1 << ICH_VTR_A3V_SHIFT)
--
- #define ICC_IAR1_EL1_SPURIOUS		0x3ff
+ 	if (arch_timers_present & ARCH_TIMER_TYPE_CP15) {
+ 		pr_warn("multiple nodes in dt, skipping\n");
+@@ -1289,8 +1298,17 @@ static int __init arch_timer_of_init(struct device_node *np)
+ 	}
  
- #define ICC_SRE_EL2_SRE			(1 << 0)
+ 	arch_timers_present |= ARCH_TIMER_TYPE_CP15;
+-	for (i = ARCH_TIMER_PHYS_SECURE_PPI; i < ARCH_TIMER_MAX_TIMER_PPI; i++)
+-		arch_timer_ppi[i] = irq_of_parse_and_map(np, i);
++
++	has_names = of_property_read_bool(np, "interrupt-names");
++
++	for (i = ARCH_TIMER_PHYS_SECURE_PPI; i < ARCH_TIMER_MAX_TIMER_PPI; i++) {
++		if (has_names)
++			irq = of_irq_get_byname(np, arch_timer_ppi_names[i]);
++		else
++			irq = of_irq_get(np, i);
++		if (irq > 0)
++			arch_timer_ppi[i] = irq;
++	}
+ 
+ 	arch_timer_populate_kvm_info();
+ 
+diff --git a/include/clocksource/arm_arch_timer.h b/include/clocksource/arm_arch_timer.h
+index 1d68d5613dae..73c7139c866f 100644
+--- a/include/clocksource/arm_arch_timer.h
++++ b/include/clocksource/arm_arch_timer.h
+@@ -32,6 +32,7 @@ enum arch_timer_ppi_nr {
+ 	ARCH_TIMER_PHYS_NONSECURE_PPI,
+ 	ARCH_TIMER_VIRT_PPI,
+ 	ARCH_TIMER_HYP_PPI,
++	ARCH_TIMER_HYP_VIRT_PPI,
+ 	ARCH_TIMER_MAX_TIMER_PPI
+ };
+ 
 -- 
 2.30.0
 
