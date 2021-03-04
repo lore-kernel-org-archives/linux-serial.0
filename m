@@ -2,34 +2,34 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-21.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE348C43619
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DDDC433E6
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:44:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BBC2F64FFD
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:44:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 91FF664F84
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 21:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240959AbhCDVnf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 Mar 2021 16:43:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        id S234882AbhCDVoF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 4 Mar 2021 16:44:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240922AbhCDVnW (ORCPT
+        with ESMTP id S240922AbhCDVnm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 Mar 2021 16:43:22 -0500
+        Thu, 4 Mar 2021 16:43:42 -0500
 Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31876C061574;
-        Thu,  4 Mar 2021 13:42:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F23EC061762;
+        Thu,  4 Mar 2021 13:43:01 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id E3EF042720;
-        Thu,  4 Mar 2021 21:42:32 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 5B5B84270F;
+        Thu,  4 Mar 2021 21:42:11 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
@@ -53,9 +53,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFT PATCH v3 27/27] arm64: apple: Add initial Apple Mac mini (M1, 2020) devicetree
-Date:   Fri,  5 Mar 2021 06:39:02 +0900
-Message-Id: <20210304213902.83903-28-marcan@marcan.st>
+Subject: [RFT PATCH v3 24/27] tty: serial: samsung_tty: Add support for Apple UARTs
+Date:   Fri,  5 Mar 2021 06:38:59 +0900
+Message-Id: <20210304213902.83903-25-marcan@marcan.st>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210304213902.83903-1-marcan@marcan.st>
 References: <20210304213902.83903-1-marcan@marcan.st>
@@ -65,253 +65,442 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This currently supports:
+Apple SoCs are a distant descendant of Samsung designs and use yet
+another variant of their UART style, with different interrupt handling.
 
-* SMP (via spin-tables)
-* AIC IRQs
-* Serial (with earlycon)
-* Framebuffer
+In particular, this variant has the following differences with existing
+ones:
 
-A number of properties are dynamic, and based on system firmware
-decisions that vary from version to version. These are expected
-to be filled in by the loader.
+* It includes a built-in interrupt controller with different registers,
+  using only a single platform IRQ
+
+* Internal interrupt sources are treated as edge-triggered, even though
+  the IRQ output is level-triggered. This chiefly affects the TX IRQ
+  path: the driver can no longer rely on the TX buffer empty IRQ
+  immediately firing after TX is enabled, but instead must prime the
+  FIFO with data directly.
 
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- MAINTAINERS                              |   1 +
- arch/arm64/boot/dts/Makefile             |   1 +
- arch/arm64/boot/dts/apple/Makefile       |   2 +
- arch/arm64/boot/dts/apple/t8103-j274.dts |  45 ++++++++
- arch/arm64/boot/dts/apple/t8103.dtsi     | 135 +++++++++++++++++++++++
- 5 files changed, 184 insertions(+)
- create mode 100644 arch/arm64/boot/dts/apple/Makefile
- create mode 100644 arch/arm64/boot/dts/apple/t8103-j274.dts
- create mode 100644 arch/arm64/boot/dts/apple/t8103.dtsi
+ drivers/tty/serial/Kconfig       |   2 +-
+ drivers/tty/serial/samsung_tty.c | 238 +++++++++++++++++++++++++++++--
+ include/linux/serial_s3c.h       |  16 +++
+ 3 files changed, 247 insertions(+), 9 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 28bd46f4f7a7..d5e4d93a536a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1647,6 +1647,7 @@ C:	irc://chat.freenode.net/asahi-dev
- T:	git https://github.com/AsahiLinux/linux.git
- F:	Documentation/devicetree/bindings/arm/apple.yaml
- F:	Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
-+F:	arch/arm64/boot/dts/apple/
- F:	arch/arm64/include/asm/sysreg_apple.h
- F:	drivers/irqchip/irq-apple-aic.c
- F:	include/dt-bindings/interrupt-controller/apple-aic.h
-diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
-index f1173cd93594..639e01a4d855 100644
---- a/arch/arm64/boot/dts/Makefile
-+++ b/arch/arm64/boot/dts/Makefile
-@@ -6,6 +6,7 @@ subdir-y += amazon
- subdir-y += amd
- subdir-y += amlogic
- subdir-y += apm
-+subdir-y += apple
- subdir-y += arm
- subdir-y += bitmain
- subdir-y += broadcom
-diff --git a/arch/arm64/boot/dts/apple/Makefile b/arch/arm64/boot/dts/apple/Makefile
-new file mode 100644
-index 000000000000..cbbd701ebf05
---- /dev/null
-+++ b/arch/arm64/boot/dts/apple/Makefile
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0
-+dtb-$(CONFIG_ARCH_APPLE) += t8103-j274.dtb
-diff --git a/arch/arm64/boot/dts/apple/t8103-j274.dts b/arch/arm64/boot/dts/apple/t8103-j274.dts
-new file mode 100644
-index 000000000000..8afc2ed70361
---- /dev/null
-+++ b/arch/arm64/boot/dts/apple/t8103-j274.dts
-@@ -0,0 +1,45 @@
-+// SPDX-License-Identifier: GPL-2.0+ OR MIT
-+/*
-+ * Apple Mac mini (M1, 2020)
-+ *
-+ * target-type: J174
-+ *
-+ * Copyright The Asahi Linux Contributors
-+ */
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 0c4cd4a348f4..3ba31ea20d8a 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -236,7 +236,7 @@ config SERIAL_CLPS711X_CONSOLE
+ 
+ config SERIAL_SAMSUNG
+ 	tristate "Samsung SoC serial support"
+-	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
++	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || ARCH_APPLE || COMPILE_TEST
+ 	select SERIAL_CORE
+ 	help
+ 	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 26cb05992e9f..5ef37c4538ce 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -59,6 +59,7 @@
+ enum s3c24xx_port_type {
+ 	TYPE_S3C24XX,
+ 	TYPE_S3C6400,
++	TYPE_APPLE_S5L,
+ };
+ 
+ struct s3c24xx_uart_info {
+@@ -151,6 +152,8 @@ struct s3c24xx_uart_port {
+ #endif
+ };
+ 
++static void s3c24xx_serial_tx_chars(struct s3c24xx_uart_port *ourport);
 +
-+/dts-v1/;
+ /* conversion functions */
+ 
+ #define s3c24xx_dev_to_port(__dev) dev_get_drvdata(__dev)
+@@ -290,6 +293,9 @@ static void s3c24xx_serial_stop_tx(struct uart_port *port)
+ 	case TYPE_S3C6400:
+ 		s3c24xx_set_bit(port, S3C64XX_UINTM_TXD, S3C64XX_UINTM);
+ 		break;
++	case TYPE_APPLE_S5L:
++		s3c24xx_clear_bit(port, APPLE_S5L_UCON_TXTHRESH_ENA, S3C2410_UCON);
++		break;
+ 	default:
+ 		disable_irq_nosync(ourport->tx_irq);
+ 		break;
+@@ -358,6 +364,9 @@ static void enable_tx_dma(struct s3c24xx_uart_port *ourport)
+ 	case TYPE_S3C6400:
+ 		s3c24xx_set_bit(port, S3C64XX_UINTM_TXD, S3C64XX_UINTM);
+ 		break;
++	case TYPE_APPLE_S5L:
++		WARN_ON(1); // No DMA
++		break;
+ 	default:
+ 		disable_irq_nosync(ourport->tx_irq);
+ 		break;
+@@ -396,12 +405,23 @@ static void enable_tx_pio(struct s3c24xx_uart_port *ourport)
+ 		s3c24xx_clear_bit(port, S3C64XX_UINTM_TXD,
+ 				  S3C64XX_UINTM);
+ 		break;
++	case TYPE_APPLE_S5L:
++		ucon |= APPLE_S5L_UCON_TXTHRESH_ENA_MSK;
++		wr_regl(port, S3C2410_UCON, ucon);
++		break;
+ 	default:
+ 		enable_irq(ourport->tx_irq);
+ 		break;
+ 	}
+ 
+ 	ourport->tx_mode = S3C24XX_TX_PIO;
 +
-+#include "t8103.dtsi"
++	/*
++	 * The Apple version only has edge triggered TX IRQs, so we need
++	 * to kick off the process by sending some characters here.
++	 */
++	if (ourport->info->type == TYPE_APPLE_S5L)
++		s3c24xx_serial_tx_chars(ourport);
+ }
+ 
+ static void s3c24xx_serial_start_tx_pio(struct s3c24xx_uart_port *ourport)
+@@ -527,6 +547,10 @@ static void s3c24xx_serial_stop_rx(struct uart_port *port)
+ 			s3c24xx_set_bit(port, S3C64XX_UINTM_RXD,
+ 					S3C64XX_UINTM);
+ 			break;
++		case TYPE_APPLE_S5L:
++			s3c24xx_clear_bit(port, APPLE_S5L_UCON_RXTHRESH_ENA, S3C2410_UCON);
++			s3c24xx_clear_bit(port, APPLE_S5L_UCON_RXTO_ENA, S3C2410_UCON);
++			break;
+ 		default:
+ 			disable_irq_nosync(ourport->rx_irq);
+ 			break;
+@@ -664,14 +688,18 @@ static void enable_rx_pio(struct s3c24xx_uart_port *ourport)
+ 
+ 	/* set Rx mode to DMA mode */
+ 	ucon = rd_regl(port, S3C2410_UCON);
+-	ucon &= ~(S3C64XX_UCON_TIMEOUT_MASK |
+-			S3C64XX_UCON_EMPTYINT_EN |
+-			S3C64XX_UCON_DMASUS_EN |
+-			S3C64XX_UCON_TIMEOUT_EN |
+-			S3C64XX_UCON_RXMODE_MASK);
+-	ucon |= 0xf << S3C64XX_UCON_TIMEOUT_SHIFT |
+-			S3C64XX_UCON_TIMEOUT_EN |
+-			S3C64XX_UCON_RXMODE_CPU;
++	ucon &= ~S3C64XX_UCON_RXMODE_MASK;
++	ucon |= S3C64XX_UCON_RXMODE_CPU;
 +
-+/ {
-+	compatible = "apple,j274", "apple,t8103", "apple,arm-platform";
-+	model = "Apple Mac mini (M1, 2020)";
++	/* Apple types use these bits for IRQ masks */
++	if (ourport->info->type != TYPE_APPLE_S5L) {
++		ucon &= ~(S3C64XX_UCON_TIMEOUT_MASK |
++				S3C64XX_UCON_EMPTYINT_EN |
++				S3C64XX_UCON_DMASUS_EN |
++				S3C64XX_UCON_TIMEOUT_EN);
++		ucon |= 0xf << S3C64XX_UCON_TIMEOUT_SHIFT |
++				S3C64XX_UCON_TIMEOUT_EN;
++	}
+ 	wr_regl(port, S3C2410_UCON, ucon);
+ 
+ 	ourport->rx_mode = S3C24XX_RX_PIO;
+@@ -935,6 +963,27 @@ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
+ 	return ret;
+ }
+ 
++/* interrupt handler for Apple SoC's.*/
++static irqreturn_t apple_serial_handle_irq(int irq, void *id)
++{
++	struct s3c24xx_uart_port *ourport = id;
++	struct uart_port *port = &ourport->port;
++	unsigned int pend = rd_regl(port, S3C2410_UTRSTAT);
++	irqreturn_t ret = IRQ_NONE;
 +
-+	aliases {
-+		serial0 = &serial0;
-+	};
++	if (pend & (APPLE_S5L_UTRSTAT_RXTHRESH | APPLE_S5L_UTRSTAT_RXTO)) {
++		wr_regl(port, S3C2410_UTRSTAT,
++			APPLE_S5L_UTRSTAT_RXTHRESH | APPLE_S5L_UTRSTAT_RXTO);
++		ret = s3c24xx_serial_rx_irq(irq, id);
++	}
++	if (pend & APPLE_S5L_UTRSTAT_TXTHRESH) {
++		wr_regl(port, S3C2410_UTRSTAT, APPLE_S5L_UTRSTAT_TXTHRESH);
++		ret = s3c24xx_serial_tx_irq(irq, id);
++	}
 +
-+	chosen {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
++	return ret;
++}
 +
-+		stdout-path = "serial0";
+ static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
+ {
+ 	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
+@@ -1154,6 +1203,32 @@ static void s3c64xx_serial_shutdown(struct uart_port *port)
+ 	ourport->tx_in_progress = 0;
+ }
+ 
++static void apple_s5l_serial_shutdown(struct uart_port *port)
++{
++	struct s3c24xx_uart_port *ourport = to_ourport(port);
 +
-+		framebuffer0: framebuffer@0 {
-+			compatible = "apple,simple-framebuffer", "simple-framebuffer";
-+			reg = <0 0 0 0>; /* To be filled by loader */
-+			/* Format properties will be added by loader */
-+			status = "disabled";
-+		};
-+	};
++	unsigned int ucon;
 +
-+	memory@800000000 {
-+		device_type = "memory";
-+		reg = <0x8 0 0x2 0>; /* To be filled by loader */
-+	};
++	ucon = rd_regl(port, S3C2410_UCON);
++	ucon &= ~(APPLE_S5L_UCON_TXTHRESH_ENA_MSK |
++		  APPLE_S5L_UCON_RXTHRESH_ENA_MSK |
++		  APPLE_S5L_UCON_RXTO_ENA_MSK);
++	wr_regl(port, S3C2410_UCON, ucon);
++
++	wr_regl(port, S3C2410_UTRSTAT, APPLE_S5L_UTRSTAT_ALL_FLAGS);
++
++	free_irq(port->irq, ourport);
++
++	ourport->tx_enabled = 0;
++	ourport->tx_mode = 0;
++	ourport->rx_enabled = 0;
++
++	if (ourport->dma)
++		s3c24xx_serial_release_dma(ourport);
++
++	ourport->tx_in_progress = 0;
++}
++
+ static int s3c24xx_serial_startup(struct uart_port *port)
+ {
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+@@ -1241,6 +1316,45 @@ static int s3c64xx_serial_startup(struct uart_port *port)
+ 	return ret;
+ }
+ 
++static int apple_s5l_serial_startup(struct uart_port *port)
++{
++	struct s3c24xx_uart_port *ourport = to_ourport(port);
++	unsigned long flags;
++	unsigned int ufcon;
++	int ret;
++
++	wr_regl(port, S3C2410_UTRSTAT, APPLE_S5L_UTRSTAT_ALL_FLAGS);
++
++	ret = request_irq(port->irq, apple_serial_handle_irq, 0,
++			  s3c24xx_serial_portname(port), ourport);
++	if (ret) {
++		dev_err(port->dev, "cannot get irq %d\n", port->irq);
++		return ret;
++	}
++
++	/* For compatibility with s3c24xx Soc's */
++	ourport->rx_enabled = 1;
++	ourport->tx_enabled = 0;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	ufcon = rd_regl(port, S3C2410_UFCON);
++	ufcon |= S3C2410_UFCON_RESETRX | S5PV210_UFCON_RXTRIG8;
++	if (!uart_console(port))
++		ufcon |= S3C2410_UFCON_RESETTX;
++	wr_regl(port, S3C2410_UFCON, ufcon);
++
++	enable_rx_pio(ourport);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	/* Enable Rx Interrupt */
++	s3c24xx_set_bit(port, APPLE_S5L_UCON_RXTHRESH_ENA, S3C2410_UCON);
++	s3c24xx_set_bit(port, APPLE_S5L_UCON_RXTO_ENA, S3C2410_UCON);
++
++	return ret;
++}
++
+ /* power power management control */
+ 
+ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+@@ -1568,6 +1682,8 @@ static const char *s3c24xx_serial_type(struct uart_port *port)
+ 		return "S3C24XX";
+ 	case TYPE_S3C6400:
+ 		return "S3C6400/10";
++	case TYPE_APPLE_S5L:
++		return "APPLE S5L";
+ 	default:
+ 		return NULL;
+ 	}
+@@ -1659,6 +1775,27 @@ static const struct uart_ops s3c64xx_serial_ops = {
+ #endif
+ };
+ 
++static const struct uart_ops apple_s5l_serial_ops = {
++	.pm		= s3c24xx_serial_pm,
++	.tx_empty	= s3c24xx_serial_tx_empty,
++	.get_mctrl	= s3c24xx_serial_get_mctrl,
++	.set_mctrl	= s3c24xx_serial_set_mctrl,
++	.stop_tx	= s3c24xx_serial_stop_tx,
++	.start_tx	= s3c24xx_serial_start_tx,
++	.stop_rx	= s3c24xx_serial_stop_rx,
++	.break_ctl	= s3c24xx_serial_break_ctl,
++	.startup	= apple_s5l_serial_startup,
++	.shutdown	= apple_s5l_serial_shutdown,
++	.set_termios	= s3c24xx_serial_set_termios,
++	.type		= s3c24xx_serial_type,
++	.config_port	= s3c24xx_serial_config_port,
++	.verify_port	= s3c24xx_serial_verify_port,
++#if defined(CONFIG_SERIAL_SAMSUNG_CONSOLE) && defined(CONFIG_CONSOLE_POLL)
++	.poll_get_char = s3c24xx_serial_get_poll_char,
++	.poll_put_char = s3c24xx_serial_put_poll_char,
++#endif
 +};
 +
-+&serial0 {
-+	status = "okay";
+ static struct uart_driver s3c24xx_uart_drv = {
+ 	.owner		= THIS_MODULE,
+ 	.driver_name	= "s3c2410_serial",
+@@ -1975,6 +2112,18 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		wr_regl(port, S3C64XX_UINTP, 0xf);
+ 		wr_regl(port, S3C64XX_UINTSP, 0xf);
+ 		break;
++	case TYPE_APPLE_S5L: {
++		unsigned int ucon;
++
++		ucon = rd_regl(port, S3C2410_UCON);
++		ucon &= ~(APPLE_S5L_UCON_TXTHRESH_ENA_MSK |
++			APPLE_S5L_UCON_RXTHRESH_ENA_MSK |
++			APPLE_S5L_UCON_RXTO_ENA_MSK);
++		wr_regl(port, S3C2410_UCON, ucon);
++
++		wr_regl(port, S3C2410_UTRSTAT, APPLE_S5L_UTRSTAT_ALL_FLAGS);
++		break;
++	}
+ 	default:
+ 		break;
+ 	}
+@@ -2054,6 +2203,9 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	case TYPE_S3C6400:
+ 		ourport->port.ops = &s3c64xx_serial_ops;
+ 		break;
++	case TYPE_APPLE_S5L:
++		ourport->port.ops = &apple_s5l_serial_ops;
++		break;
+ 	}
+ 
+ 	if (np) {
+@@ -2196,6 +2348,43 @@ static int s3c24xx_serial_resume_noirq(struct device *dev)
+ 			clk_disable_unprepare(ourport->clk);
+ 			break;
+ 		}
++		case TYPE_APPLE_S5L: {
++			unsigned int ucon;
++			int ret;
++
++			ret = clk_prepare_enable(ourport->clk);
++			if (ret) {
++				dev_err(dev, "clk_enable clk failed: %d\n", ret);
++				return ret;
++			}
++			if (!IS_ERR(ourport->baudclk)) {
++				ret = clk_prepare_enable(ourport->baudclk);
++				if (ret) {
++					dev_err(dev, "clk_enable baudclk failed: %d\n", ret);
++					clk_disable_unprepare(ourport->clk);
++					return ret;
++				}
++			}
++
++			ucon = rd_regl(port, S3C2410_UCON);
++
++			ucon &= ~(APPLE_S5L_UCON_TXTHRESH_ENA_MSK |
++				  APPLE_S5L_UCON_RXTHRESH_ENA_MSK |
++				  APPLE_S5L_UCON_RXTO_ENA_MSK);
++
++			if (ourport->tx_enabled)
++				ucon |= APPLE_S5L_UCON_TXTHRESH_ENA_MSK;
++			if (ourport->rx_enabled)
++				ucon |= APPLE_S5L_UCON_RXTHRESH_ENA_MSK |
++					APPLE_S5L_UCON_RXTO_ENA_MSK;
++
++			wr_regl(port, S3C2410_UCON, ucon);
++
++			if (!IS_ERR(ourport->baudclk))
++				clk_disable_unprepare(ourport->baudclk);
++			clk_disable_unprepare(ourport->clk);
++			break;
++		}
+ 		default:
+ 			break;
+ 		}
+@@ -2605,6 +2794,34 @@ static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
+ #define EXYNOS5433_SERIAL_DRV_DATA (kernel_ulong_t)NULL
+ #endif
+ 
++#ifdef CONFIG_ARCH_APPLE
++static struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
++	.info = &(struct s3c24xx_uart_info) {
++		.name		= "Apple S5L UART",
++		.type		= TYPE_APPLE_S5L,
++		.port_type	= PORT_8250,
++		.fifosize	= 16,
++		.rx_fifomask	= S3C2410_UFSTAT_RXMASK,
++		.rx_fifoshift	= S3C2410_UFSTAT_RXSHIFT,
++		.rx_fifofull	= S3C2410_UFSTAT_RXFULL,
++		.tx_fifofull	= S3C2410_UFSTAT_TXFULL,
++		.tx_fifomask	= S3C2410_UFSTAT_TXMASK,
++		.tx_fifoshift	= S3C2410_UFSTAT_TXSHIFT,
++		.def_clk_sel	= S3C2410_UCON_CLKSEL0,
++		.num_clks	= 1,
++		.clksel_mask	= 0,
++		.clksel_shift	= 0,
++	},
++	.def_cfg = &(struct s3c2410_uartcfg) {
++		.ucon		= APPLE_S5L_UCON_DEFAULT,
++		.ufcon		= S3C2410_UFCON_DEFAULT,
++	},
 +};
-diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
-new file mode 100644
-index 000000000000..aac9e4e6abc5
---- /dev/null
-+++ b/arch/arm64/boot/dts/apple/t8103.dtsi
-@@ -0,0 +1,135 @@
-+// SPDX-License-Identifier: GPL-2.0+ OR MIT
-+/*
-+ * Apple T8103 "M1" SoC
-+ *
-+ * Other names: H13G, "Tonga"
-+ *
-+ * Copyright The Asahi Linux Contributors
-+ */
++#define S5L_SERIAL_DRV_DATA ((kernel_ulong_t)&s5l_serial_drv_data)
++#else
++#define S5L_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
++#endif
 +
-+#include <dt-bindings/interrupt-controller/apple-aic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
+ static const struct platform_device_id s3c24xx_serial_driver_ids[] = {
+ 	{
+ 		.name		= "s3c2410-uart",
+@@ -2627,6 +2844,9 @@ static const struct platform_device_id s3c24xx_serial_driver_ids[] = {
+ 	}, {
+ 		.name		= "exynos5433-uart",
+ 		.driver_data	= EXYNOS5433_SERIAL_DRV_DATA,
++	}, {
++		.name		= "s5l-uart",
++		.driver_data	= S5L_SERIAL_DRV_DATA,
+ 	},
+ 	{ },
+ };
+@@ -2648,6 +2868,8 @@ static const struct of_device_id s3c24xx_uart_dt_match[] = {
+ 		.data = (void *)EXYNOS4210_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,exynos5433-uart",
+ 		.data = (void *)EXYNOS5433_SERIAL_DRV_DATA },
++	{ .compatible = "apple,s5l-uart",
++		.data = (void *)S5L_SERIAL_DRV_DATA },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
+diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
+index ca2c5393dc6b..f6c3323fc4c5 100644
+--- a/include/linux/serial_s3c.h
++++ b/include/linux/serial_s3c.h
+@@ -246,6 +246,22 @@
+ 				 S5PV210_UFCON_TXTRIG4 |	\
+ 				 S5PV210_UFCON_RXTRIG4)
+ 
++#define APPLE_S5L_UCON_RXTO_ENA		9
++#define APPLE_S5L_UCON_RXTHRESH_ENA	12
++#define APPLE_S5L_UCON_TXTHRESH_ENA	13
++#define APPLE_S5L_UCON_RXTO_ENA_MSK	(1 << APPLE_S5L_UCON_RXTO_ENA)
++#define APPLE_S5L_UCON_RXTHRESH_ENA_MSK	(1 << APPLE_S5L_UCON_RXTHRESH_ENA)
++#define APPLE_S5L_UCON_TXTHRESH_ENA_MSK	(1 << APPLE_S5L_UCON_TXTHRESH_ENA)
 +
-+/ {
-+	compatible = "apple,t8103", "apple,arm-platform";
++#define APPLE_S5L_UCON_DEFAULT		(S3C2410_UCON_TXIRQMODE | \
++					 S3C2410_UCON_RXIRQMODE | \
++					 S3C2410_UCON_RXFIFO_TOI)
 +
-+	#address-cells = <2>;
-+	#size-cells = <2>;
++#define APPLE_S5L_UTRSTAT_RXTHRESH	(1<<4)
++#define APPLE_S5L_UTRSTAT_TXTHRESH	(1<<5)
++#define APPLE_S5L_UTRSTAT_RXTO		(1<<9)
++#define APPLE_S5L_UTRSTAT_ALL_FLAGS	(0x3f0)
 +
-+	cpus {
-+		#address-cells = <2>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			compatible = "apple,icestorm";
-+			device_type = "cpu";
-+			reg = <0x0 0x0>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0 0>; /* To be filled by loader */
-+		};
-+
-+		cpu1: cpu@1 {
-+			compatible = "apple,icestorm";
-+			device_type = "cpu";
-+			reg = <0x0 0x1>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0 0>; /* To be filled by loader */
-+		};
-+
-+		cpu2: cpu@2 {
-+			compatible = "apple,icestorm";
-+			device_type = "cpu";
-+			reg = <0x0 0x2>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0 0>; /* To be filled by loader */
-+		};
-+
-+		cpu3: cpu@3 {
-+			compatible = "apple,icestorm";
-+			device_type = "cpu";
-+			reg = <0x0 0x3>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0 0>; /* To be filled by loader */
-+		};
-+
-+		cpu4: cpu@10100 {
-+			compatible = "apple,firestorm";
-+			device_type = "cpu";
-+			reg = <0x0 0x10100>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0 0>; /* To be filled by loader */
-+		};
-+
-+		cpu5: cpu@10101 {
-+			compatible = "apple,firestorm";
-+			device_type = "cpu";
-+			reg = <0x0 0x10101>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0 0>; /* To be filled by loader */
-+		};
-+
-+		cpu6: cpu@10102 {
-+			compatible = "apple,firestorm";
-+			device_type = "cpu";
-+			reg = <0x0 0x10102>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0 0>; /* To be filled by loader */
-+		};
-+
-+		cpu7: cpu@10103 {
-+			compatible = "apple,firestorm";
-+			device_type = "cpu";
-+			reg = <0x0 0x10103>;
-+			enable-method = "spin-table";
-+			cpu-release-addr = <0 0>; /* To be filled by loader */
-+		};
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&aic>;
-+		interrupt-names = "hyp-phys", "hyp-virt", "phys", "virt";
-+		interrupts = <AIC_FIQ AIC_TMR_HV_PHYS IRQ_TYPE_LEVEL_HIGH>,
-+			     <AIC_FIQ AIC_TMR_HV_VIRT IRQ_TYPE_LEVEL_HIGH>,
-+			     <AIC_FIQ AIC_TMR_GUEST_PHYS IRQ_TYPE_LEVEL_HIGH>,
-+			     <AIC_FIQ AIC_TMR_GUEST_VIRT IRQ_TYPE_LEVEL_HIGH>;
-+	};
-+
-+	clk24: clock-24m {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <24000000>;
-+		clock-output-names = "clk24";
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+
-+		ranges;
-+		nonposted-mmio;
-+
-+		aic: interrupt-controller@23b100000 {
-+			compatible = "apple,t8103-aic", "apple,aic";
-+			#interrupt-cells = <3>;
-+			interrupt-controller;
-+			reg = <0x2 0x3b100000 0x0 0x8000>;
-+		};
-+
-+		serial0: serial@235200000 {
-+			compatible = "apple,s5l-uart";
-+			reg = <0x2 0x35200000 0x0 0x1000>;
-+			reg-io-width = <4>;
-+			interrupt-parent = <&aic>;
-+			interrupts = <AIC_IRQ 605 IRQ_TYPE_LEVEL_HIGH>;
-+			/*
-+			 * TODO: figure out the clocking properly, there may
-+			 * be a third selectable clock.
-+			 */
-+			clocks = <&clk24>, <&clk24>;
-+			clock-names = "uart", "clk_uart_baud0";
-+			status = "disabled";
-+		};
-+	};
-+};
+ #ifndef __ASSEMBLY__
+ 
+ #include <linux/serial_core.h>
 -- 
 2.30.0
 
