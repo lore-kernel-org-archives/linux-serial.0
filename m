@@ -2,116 +2,198 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D1AC4361B
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 16:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3523BC433E9
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 20:28:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DADC164F51
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 16:25:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EEED864F6B
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Mar 2021 20:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237222AbhCDQY0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 Mar 2021 11:24:26 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:39566 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237037AbhCDQYK (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 Mar 2021 11:24:10 -0500
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 124GB9YJ003292;
-        Thu, 4 Mar 2021 17:23:22 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=WrtOmysTqy2QzPtzKw9QyQG2otxiyRbpfVahFna0HqQ=;
- b=XGcR6e7MYDdHi5Vx+jyTwXUZKki2VBOTrfMp88HYfpI221q4NYZT3lRIUNSFI+8wnZpX
- pUK/lePhaRsirFY8K4tUk1MB5RqTdFJvLIB+KBsab6O48h+W1tWkVlX7GAVORqVNRFPW
- ERbdy+Rf0IUxWzlFvcbTgyzdqllFx+b0WZfpPwtW/LnzduaBKxEZeoRcQeeeaJPtoPQr
- FcuBPpGIUZXRy8qjzOvMUDWHPTtxuKd8uoMBdJke54BRuU/5CxCj/W1xtqPMQTLml9sF
- +QeIpnvMVd21Fv8uaAfAJkLZeI9yqkbPrWPPxSNpk4Q5PSn7719yaUuKTKF5NwOz/A8J fw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 370xej5ays-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 04 Mar 2021 17:23:21 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 93D6710002A;
-        Thu,  4 Mar 2021 17:23:21 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8674420741B;
-        Thu,  4 Mar 2021 17:23:21 +0100 (CET)
-Received: from localhost (10.75.127.50) by SFHDAG2NODE3.st.com (10.75.127.6)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 4 Mar 2021 17:23:21
- +0100
-From:   Erwan Le Ray <erwan.leray@foss.st.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>
-Subject: [PATCH v2 13/13] serial: stm32: add support for "flush_buffer" ops
-Date:   Thu, 4 Mar 2021 17:23:08 +0100
-Message-ID: <20210304162308.8984-14-erwan.leray@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210304162308.8984-1-erwan.leray@foss.st.com>
-References: <20210304162308.8984-1-erwan.leray@foss.st.com>
+        id S232821AbhCDU1d (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 4 Mar 2021 15:27:33 -0500
+Received: from mga07.intel.com ([134.134.136.100]:18257 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238634AbhCDU11 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 4 Mar 2021 15:27:27 -0500
+IronPort-SDR: s8g5MSugK/yPvoS140N3/D0jTcJr6h9d7OFtULzbpYgouXWTAI2NpcMIx+2IQ9JQzDH19BkZsn
+ LVFglrgcbS9A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9913"; a="251539633"
+X-IronPort-AV: E=Sophos;i="5.81,223,1610438400"; 
+   d="scan'208";a="251539633"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2021 12:26:47 -0800
+IronPort-SDR: Zg758I9f3A4iDZJpUh2lWMsvPyNVVNN0P2C9Wela2jC/oH9M9vA2rr/WKW7eKzkLEAOuO3Xh+b
+ oHy6KmCkKYlg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,223,1610438400"; 
+   d="scan'208";a="435989529"
+Received: from lkp-server02.sh.intel.com (HELO 2482ff9f8ac0) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 04 Mar 2021 12:26:45 -0800
+Received: from kbuild by 2482ff9f8ac0 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1lHuYW-0002NN-Mp; Thu, 04 Mar 2021 20:26:44 +0000
+Date:   Fri, 05 Mar 2021 04:26:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ d1c1b2005dadca26cb1689063af3366de4398f78
+Message-ID: <60414260.noIjiYx4ZqJ0E+JO%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-04_05:2021-03-03,2021-03-04 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add the support for "flush_buffer" ops in order to flush any write buffers,
-reset any DMA state and stop any ongoing DMA transfers when the
-port->state->xmit circular buffer is cleared.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: d1c1b2005dadca26cb1689063af3366de4398f78  drivers: tty: serial: IMX_EARLYCON: fix Kconfig dependency on SERIAL_CORE
 
-Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+elapsed time: 721m
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 99dfa884cbef..9db6708e3d9f 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -597,6 +597,19 @@ static void stm32_usart_start_tx(struct uart_port *port)
- 	stm32_usart_transmit_chars(port);
- }
- 
-+/* Flush the transmit buffer. */
-+static void stm32_usart_flush_buffer(struct uart_port *port)
-+{
-+	struct stm32_port *stm32_port = to_stm32_port(port);
-+	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
-+
-+	if (stm32_port->tx_ch) {
-+		dmaengine_terminate_async(stm32_port->tx_ch);
-+		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
-+		stm32_port->tx_dma_busy = false;
-+	}
-+}
-+
- /* Throttle the remote when input buffer is about to overflow. */
- static void stm32_usart_throttle(struct uart_port *port)
- {
-@@ -992,6 +1005,7 @@ static const struct uart_ops stm32_uart_ops = {
- 	.break_ctl	= stm32_usart_break_ctl,
- 	.startup	= stm32_usart_startup,
- 	.shutdown	= stm32_usart_shutdown,
-+	.flush_buffer	= stm32_usart_flush_buffer,
- 	.set_termios	= stm32_usart_set_termios,
- 	.pm		= stm32_usart_pm,
- 	.type		= stm32_usart_type,
--- 
-2.17.1
+configs tested: 128
+configs skipped: 2
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+arm                             pxa_defconfig
+xtensa                         virt_defconfig
+powerpc                          allyesconfig
+powerpc                 mpc8313_rdb_defconfig
+powerpc                        icon_defconfig
+arm                         axm55xx_defconfig
+sparc                               defconfig
+mips                           jazz_defconfig
+h8300                    h8300h-sim_defconfig
+riscv                          rv32_defconfig
+mips                malta_kvm_guest_defconfig
+arm                          badge4_defconfig
+arm                            mps2_defconfig
+arm                        multi_v7_defconfig
+mips                      maltaaprp_defconfig
+arc                          axs103_defconfig
+powerpc                     ep8248e_defconfig
+mips                      bmips_stb_defconfig
+alpha                               defconfig
+arm                        multi_v5_defconfig
+mips                        vocore2_defconfig
+sh                           se7780_defconfig
+mips                         tb0287_defconfig
+m68k                        m5307c3_defconfig
+arc                 nsimosci_hs_smp_defconfig
+arm                          imote2_defconfig
+arm                         hackkit_defconfig
+um                             i386_defconfig
+mips                        maltaup_defconfig
+powerpc                     sequoia_defconfig
+arm                             ezx_defconfig
+arm                         s3c2410_defconfig
+powerpc                 mpc832x_rdb_defconfig
+mips                      malta_kvm_defconfig
+m68k                         amcore_defconfig
+arm                          ep93xx_defconfig
+powerpc                      pmac32_defconfig
+microblaze                          defconfig
+mips                      fuloong2e_defconfig
+m68k                       m5208evb_defconfig
+powerpc                       ebony_defconfig
+sh                            titan_defconfig
+mips                     loongson1c_defconfig
+riscv                            allmodconfig
+powerpc                     akebono_defconfig
+powerpc                 mpc8272_ads_defconfig
+powerpc               mpc834x_itxgp_defconfig
+powerpc                      pasemi_defconfig
+powerpc64                           defconfig
+ia64                                defconfig
+powerpc                      bamboo_defconfig
+powerpc                     mpc83xx_defconfig
+powerpc                      chrp32_defconfig
+xtensa                generic_kc705_defconfig
+m68k                        m5407c3_defconfig
+arm64                            alldefconfig
+mips                          rb532_defconfig
+arm                        trizeps4_defconfig
+powerpc                 mpc8315_rdb_defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                               tinyconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a006-20210304
+x86_64               randconfig-a001-20210304
+x86_64               randconfig-a004-20210304
+x86_64               randconfig-a005-20210304
+x86_64               randconfig-a002-20210304
+x86_64               randconfig-a003-20210304
+i386                 randconfig-a005-20210304
+i386                 randconfig-a003-20210304
+i386                 randconfig-a002-20210304
+i386                 randconfig-a004-20210304
+i386                 randconfig-a006-20210304
+i386                 randconfig-a001-20210304
+i386                 randconfig-a016-20210304
+i386                 randconfig-a012-20210304
+i386                 randconfig-a013-20210304
+i386                 randconfig-a014-20210304
+i386                 randconfig-a011-20210304
+i386                 randconfig-a015-20210304
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-7.6-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                      rhel-8.3-kbuiltin
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-a013-20210304
+x86_64               randconfig-a016-20210304
+x86_64               randconfig-a015-20210304
+x86_64               randconfig-a014-20210304
+x86_64               randconfig-a012-20210304
+x86_64               randconfig-a011-20210304
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
