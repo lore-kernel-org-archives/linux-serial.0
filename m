@@ -2,79 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF679C433DB
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 215DEC433E9
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:12:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C0EED64F6E
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:11:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E9B9D6501E
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbhCEKK6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Mar 2021 05:10:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48640 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230086AbhCEKKg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Mar 2021 05:10:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B81764F5B;
-        Fri,  5 Mar 2021 10:10:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614939036;
-        bh=sQJUXg0/iRhz8c6mjuijyXWDNM/W7C7VLNOrYX2GVbI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CYjeg3NXH6muEdhd8Viw8B+hzFAWKBZFBhCrgOdmLDOBCWQKNVFzA30ZFf7kMyQQS
-         Hnsr13hmJZuqF6Jt1i+qAegQY5Ju71rDOi4TrYFGGu1gkHjq9yH+w4SzRG/nyPYQsB
-         vQp51QXIlhz388uF2HcrbMhG5P4o0hmqFKtdjlnBuUJ6sUZ4CZVzwl8Vs+Oqlty4HJ
-         XiriYRbvgbySA95IEFTRKAHwiFmJ8DJ8e5TeMf2JYkDYqnF0mz6Os2FBCFBp8UjrVn
-         amgBphEJX+4LTT+2LvikK+7sAcnfyd0rI6JXRzgsT6+5lDDLJY23t3jy3mg9hfjOft
-         UgXmEwD8rVXfg==
-Received: from johan by xi.lan with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1lI7Q3-0001JA-3M; Fri, 05 Mar 2021 11:10:51 +0100
-Date:   Fri, 5 Mar 2021 11:10:51 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 37/44] USB: serial/keyspan, drop unneeded forward
- declarations
-Message-ID: <YEIDq4n7eSagyY9F@hovoldconsulting.com>
-References: <20210302062214.29627-1-jslaby@suse.cz>
- <20210302062214.29627-37-jslaby@suse.cz>
- <YD/gt/U2fzaV+yNh@kroah.com>
+        id S230130AbhCEKLa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Mar 2021 05:11:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229899AbhCEKLR (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 5 Mar 2021 05:11:17 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6788C061574;
+        Fri,  5 Mar 2021 02:11:16 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 2953542450;
+        Fri,  5 Mar 2021 10:11:08 +0000 (UTC)
+Subject: Re: [RFT PATCH v3 00/27] Apple M1 SoC platform bring-up
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Tony Lindgren <tony@atomide.com>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>,
+        Alexander Graf <graf@amazon.com>,
+        Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210304213902.83903-1-marcan@marcan.st>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <7ab042aa-7969-a7d4-6ed1-23dc3428a271@marcan.st>
+Date:   Fri, 5 Mar 2021 19:11:07 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YD/gt/U2fzaV+yNh@kroah.com>
+In-Reply-To: <20210304213902.83903-1-marcan@marcan.st>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: es-ES
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 03, 2021 at 08:17:11PM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Mar 02, 2021 at 07:22:07AM +0100, Jiri Slaby wrote:
-> > Forward declarations make the code larger, harder to follow and rewrite.
-> > Harder as the declarations are often omitted from global changes. Remove
-> > forward declarations which are not really needed, i.e. when the
-> > definition of the function is before its first use.
-> > 
-> > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> > Cc: Johan Hovold <johan@kernel.org>
-> > ---
-> >  drivers/usb/serial/keyspan.c | 20 --------------------
-> >  1 file changed, 20 deletions(-)
+On 05/03/2021 06.38, Hector Martin wrote:
+> == Merge notes ==
 > 
-> I'll let Johan take this through his tree:
-> 
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> This patchset depends on both the nVHE changes that are already in
+> 5.12-rc1, as well as the FIQ support work currently being reviewed
+> at [1]. A tree containing this patchset on top of the required
+> dependencies is available at [2][3]. Alternatively, you may apply
+> this series on top of Mark's tree at the arm64-fiq-20210302 tag [4][5].
 
-Thanks, I'll pick these two up next week.
+Important warning: these trees are all based on v5.12-rc1, which has a 
+bad bug that causes your filesystems to go kaboom if you use a swap file 
+[1].
 
-Jiri, was there ever a cover letter to this series? It took a while for
-all 44 (!) patches to hit the lists (or my inbox), but I never could
-figure out whether there was an overall theme to it that made you post
-it all as a single series in the first place.
+This doesn't affect M1 since we don't *have* storage, but for folks 
+testing for regressions on on e.g. Samsung or other ARM boards, please 
+make sure you don't use swap files.
 
-Johan
+[1] 
+https://lore.kernel.org/lkml/CAHk-=wjnzdLSP3oDxhf9eMTYo7GF-QjaNLBUH1Zk3c4A7X75YA@mail.gmail.com/
+
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
