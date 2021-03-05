@@ -1,137 +1,114 @@
-Return-Path: <linux-serial-owner@kernel.org>
+Return-Path: <SRS0=s89U=ID=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D945DC433E9
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 12:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C53C433E0
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 14:47:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AB6A465033
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 12:43:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2E10364FDF
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 14:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbhCEMnU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Mar 2021 07:43:20 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:37744 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233191AbhCEMm4 (ORCPT
+        id S229666AbhCEOqe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Mar 2021 09:46:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37872 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229578AbhCEOqK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Mar 2021 07:42:56 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: sre)
-        with ESMTPSA id D6A701F40EA4
-Received: by earth.universe (Postfix, from userid 1000)
-        id CDD143C0C96; Fri,  5 Mar 2021 13:42:52 +0100 (CET)
-Date:   Fri, 5 Mar 2021 13:42:52 +0100
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>, Ian Ray <ian.ray@ge.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        kernel@collabora.com
-Subject: Re: [PATCHv4] serial: imx: Add DMA buffer configuration via sysfs
-Message-ID: <20210305124252.c3ffgca6wjqpkn45@earth.universe>
-References: <20210305115058.92284-1-sebastian.reichel@collabora.com>
- <YEIetFdcuYZU98s/@kroah.com>
+        Fri, 5 Mar 2021 09:46:10 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1198C061574;
+        Fri,  5 Mar 2021 06:46:09 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id fu20so1994750pjb.2;
+        Fri, 05 Mar 2021 06:46:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SLYTD0kAvjqxy4t6HYU1DX6C4LCII/OyaiVaeCrW9qM=;
+        b=ukIyLWd7IPrGz9FmT55xeMgIjS0mmGxYHjvHsblVSvKp5DH+2v6c1csGjb8bjvqpKP
+         6jd95CW7LyETGi+XP/VoNTtJ7cSHj5EU7NQ2C3CsL2hRV102BUM5CmUjGiXeAIjnya0R
+         uvCpCzW+CMQi/sEkyfgtYPgLPK/9TnxDx6U9w9TRkMHKwSYBX+ubyuVgPOubpU62azrO
+         Ap8ZLiSMWMpP9qijIog4MyARVO3i+Te3juTjZTuch5RCT5iKDnbTMJUurMN3dWSTlPpe
+         rM84CWmNWYc/zecadzic8UHPKKOIU/6BHSQfX5MtKZAaz8GepkfJGAsESZs93jl2574K
+         cCTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SLYTD0kAvjqxy4t6HYU1DX6C4LCII/OyaiVaeCrW9qM=;
+        b=pBi5F3bVIaKBNI0bz6R5pNR8F3uM8pX+wVqI4ZZhwA6817cK44+sWUFfPsisH19w/C
+         QE8IDHrnVGifHIteIKv7cLjAIX2tTfCCqf8jpXphrGrOioFsYpMfmJim1QShn91/hnb2
+         GeolswU4RXO/6RhCGhq2DphoyuF/C7c/NDIZRC5IUfmOEsgHxI/MkESHHETNcLgWILxJ
+         8J7cV1AuH0jSc9dWeSErNiZZccIyrx/1CErlIXztJT9RZCtaGsjFGL9w/wxq2KnNCdao
+         RpOM5hiEPDDMdl1F+F1McS2J0V7oCnqtKu/XPMhnO5v+2U/PXbxI1ndDqysMObsEr8VY
+         n5UQ==
+X-Gm-Message-State: AOAM533LQIvsbtPDEcRddPhdiQF3ZRVkZpu0bYXTZHxchpKeN992RF90
+        vbs7YhCCMhlbS/81Ait6u2iXIfdVoNCQi9fgUNE=
+X-Google-Smtp-Source: ABdhPJy1hcFeT7++NM/FsF4zGG36/dA0n6KUzt61a1Rr+S1F6UUjFavqe8V/stSRz3GNxaBc6EYTzdQVZaZ3LMDXf+g=
+X-Received: by 2002:a17:90a:c84:: with SMTP id v4mr10807897pja.228.1614955569419;
+ Fri, 05 Mar 2021 06:46:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="66fnbwp2soxqs2g5"
-Content-Disposition: inline
-In-Reply-To: <YEIetFdcuYZU98s/@kroah.com>
+References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-9-marcan@marcan.st>
+In-Reply-To: <20210304213902.83903-9-marcan@marcan.st>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 5 Mar 2021 16:45:53 +0200
+Message-ID: <CAHp75Ven4piceFaBhn1kc=vtwM4o-GXmz3eAZoNhU8w+iP5qxQ@mail.gmail.com>
+Subject: Re: [RFT PATCH v3 08/27] asm-generic/io.h: Add a non-posted variant
+ of ioremap()
+To:     Hector Martin <marcan@marcan.st>
+Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Tony Lindgren <tony@atomide.com>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>,
+        Alexander Graf <graf@amazon.com>,
+        Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, Mar 4, 2021 at 11:40 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> ARM64 currently defaults to posted MMIO (nGnRnE), but some devices
+> require the use of non-posted MMIO (nGnRE). Introduce a new ioremap()
+> variant to handle this case. ioremap_np() is aliased to ioremap() by
+> default on arches that do not implement this variant.
 
---66fnbwp2soxqs2g5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hmm... But isn't it basically a requirement to those device drivers to
+use readX()/writeX() instead of readX_relaxed() / writeX_relaxed()?
 
-Hi Greg,
+...
 
-On Fri, Mar 05, 2021 at 01:06:12PM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Mar 05, 2021 at 12:50:58PM +0100, Sebastian Reichel wrote:
-> > From: Fabien Lahoudere <fabien.lahoudere@collabora.com>
-> >=20
-> > In order to optimize serial communication (performance/throughput VS
-> > latency), we may need to tweak DMA period number and size. This adds
-> > sysfs attributes to configure those values before initialising DMA.
-> > The defaults will stay the same as before (16 buffers with a size of
-> > 1024 bytes). Afterwards the values can be read/write with the
-> > following sysfs files:
-> >=20
-> > /sys/class/tty/ttymxc*/dma_buffer_size
-> > /sys/class/tty/ttymxc*/dma_buffer_count
->=20
-> Ick no.  Custom sysfs attributes for things like serial ports are crazy.
->=20
-> > This is mainly needed for GEHC CS ONE (arch/arm/boot/dts/imx53-ppd.dts),
-> > which has multiple microcontrollers connected via UART controlling. One
-> > of the UARTs is connected to an on-board microcontroller at 19200 baud,
-> > which constantly pushes critical data (so aging character detect
-> > interrupt will never trigger). This data must be processed at 50-200 Hz,
-> > so UART should return data in less than 5-20ms. With 1024 byte DMA
-> > buffer (and a constant data stream) the read operation instead needs
-> > 1024 byte / 19200 baud =3D 53.333ms, which is way too long (note: Worst
-> > Case would be remote processor sending data with short pauses <=3D 7
-> > characters, which would further increase this number). The current
-> > downstream kernel instead configures 24 bytes resulting in 1.25ms,
-> > but that is obviously not sensible for normal UART use cases and cannot
-> > be used as new default.
->=20
-> Why can't this be a device tree attribute? Why does this have to be a
-> sysfs thing that no one will know how to tune and set over time.  This
-> hardware should not force a user to manually tune it to get it to work
-> properly, this isn't the 1990's anymore :(
->=20
-> Please never force a user to choose stuff like this, they never will
-> know what to do.
+>  #define IORESOURCE_MEM_32BIT           (3<<3)
+>  #define IORESOURCE_MEM_SHADOWABLE      (1<<5)  /* dup: IORESOURCE_SHADOWABLE */
+>  #define IORESOURCE_MEM_EXPANSIONROM    (1<<6)
+> +#define IORESOURCE_MEM_NONPOSTED       (1<<7)
 
-This used to be a DT attribute in PATCHv1. It has been moved over to
-sysfs since PATCHv2, since it does not describe the hardware, but
-configuration. Unfortunately lore.kernel.org does not have the full
-thread, but this is the discussion:
+Not sure it's the right location (in a bit field) for this flag.
 
-https://lore.kernel.org/linux-serial/20170629182618.jpahpmuq364ldcv2@pengut=
-ronix.de/
-
-=46rom downstream POV this can be done either by adding a DT property
-to the UART node, or by adding a udev rule.
-
-=46rom my POV there is not a huge difference. In both cases we will
-be bound by an ABI afterwards, in both cases people will usually
-stick to the default value and in both cases people that do deviate
-=66rom the default probably ran into problems and started to look
-for a solution.
-
-Thanks,
-
--- Sebastian
-
---66fnbwp2soxqs2g5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmBCJ0QACgkQ2O7X88g7
-+prIHg/7BN/DGiQXMineQuVl0TvfhROTkESg7Wf58yyWPCWWZVCyVHf4Mcebebq7
-+0umIHr8gf5d2K78CdfCuflLpl36JCdP2lhYPR1qXnMBOPlN182JdUqtqyLX88z8
-0yTfO20adwNIxld0Bpucc8cquwS2RPP4jWDyrdhU8H2RJEk+pUaQD4TsXRTSwcvd
-sIyKTBCDVgfmKwrDJ97iHJhKLddF7ys0z4qF8W/oZIVCJTCljsuLKNx+sxrjhO87
-vKxuGM/9LOhaIyfRo2byMeqfNiwEGQGXXSyPPRz0PvBLj5Ftz/SkLuCD+nOxpWLk
-KjU6qs0tb9y7X2IYnx3G2Xocep6FxuKGifmMtVJyBpxMdLnSDm6VjCXSouhLaQIi
-caVHBa97kJbbfPKihFQvgMNRE+beqN5+z11REtUPH10c68OBdU3RieTK7lxz+gGb
-+4tBSKmpkaHCwWf1tjonc4QBfPi3H1vc2ZxafXiHsYAvFgjuupy1Ddfk2Wzt6aFu
-rQrGCrHOfKXFA2vPF29wva2q/i5f7SHiOmSliwYL7+Zsu3CoIBHzbMxOtdg60Txs
-JLw/JV7Ac/38Xnic7DMBC/W1z9LxyoAoNyje/PRVPQmDgDKMX3Zjh6tKmcNnCgV6
-hYFWmQgjptGQctxYHMJTVx9Y6qoO2dTz246QWY/x7/OZdC2+igs=
-=vMr7
------END PGP SIGNATURE-----
-
---66fnbwp2soxqs2g5--
+-- 
+With Best Regards,
+Andy Shevchenko
