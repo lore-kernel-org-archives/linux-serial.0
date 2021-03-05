@@ -2,140 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AB3C433E6
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:35:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AEFC433E6
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:47:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 60FE06501D
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:35:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 90A5E65017
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbhCEKet (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Mar 2021 05:34:49 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:50156 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbhCEKel (ORCPT
+        id S229651AbhCEKrB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Mar 2021 05:47:01 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:45984 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229558AbhCEKqk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Mar 2021 05:34:41 -0500
-Received: from mail-wm1-f72.google.com ([209.85.128.72])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lI7n5-0007Yz-3Y
-        for linux-serial@vger.kernel.org; Fri, 05 Mar 2021 10:34:39 +0000
-Received: by mail-wm1-f72.google.com with SMTP id a65so247798wmh.1
-        for <linux-serial@vger.kernel.org>; Fri, 05 Mar 2021 02:34:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RWwbwcqn7+V68bGLU4ZDn1q+MKGqnLhOEC9uAVuE8zc=;
-        b=Kc27NOCNXEse1pzC1MfxEElvsSfYKSMYkI6VlWWn3ec99o3y/Hl6m1XcMKSUfOTHYu
-         ZmDRH+0WtQ3BmWYdjP2KiLWN1OX1tDVP9dVzsk48EcqteR1H0o8OdR3RR71qQcDXlPjw
-         8XQY/fAn+UFfk2xbUEUQ79Vp9pbNTd78fnLbTkezPxDkHhh4oEKVIM9bBYddb+uS82qy
-         XrMV8mIIAFxWUziqwUuz8L+CApr7cyyCVfz/qCden4vvf77pDxylGHyBPgRd26gyeWjz
-         xSxTDXoA65p5EFqwsFWTi/Fwtl0RQlP6at5tiZPB1Rj7jLXdxc/OBOpwXLmjapJzMZgz
-         8n+g==
-X-Gm-Message-State: AOAM531fKndO4uFtAR+XoV3yKrS2/ZNQ8zVT6SbfJ8eyD5KCUYDFR/bJ
-        kW9IhOiVAtqkiAFjtqgDNcteGx9c2+1Nn4C+XhBk+y8EdM/7z7vXQuRsYya+4JpYxBqwgzcwZjK
-        8mqfSivulLbzx1VXO9HHqbAFRzwRlw0PDkNGN2o2Xmw==
-X-Received: by 2002:adf:fe01:: with SMTP id n1mr8647736wrr.341.1614940478802;
-        Fri, 05 Mar 2021 02:34:38 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxL/xW+AO3OBrJBdGRjyMx7XXgn/DcEVAjw6nrX4rZjq/i98eqo/Tr07xkBjjsbwJ/68iC9lg==
-X-Received: by 2002:adf:fe01:: with SMTP id n1mr8647714wrr.341.1614940478678;
-        Fri, 05 Mar 2021 02:34:38 -0800 (PST)
-Received: from [192.168.1.116] (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.gmail.com with ESMTPSA id p6sm3759537wru.2.2021.03.05.02.34.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Mar 2021 02:34:38 -0800 (PST)
-Subject: Re: [RFT PATCH v3 19/27] tty: serial: samsung_tty: Add ucon_mask
- parameter
-To:     Hector Martin <marcan@marcan.st>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Tony Lindgren <tony@atomide.com>,
-        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
-        Stan Skowronek <stan@corellium.com>,
-        Alexander Graf <graf@amazon.com>,
-        Will Deacon <will@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Fri, 5 Mar 2021 05:46:40 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 57AFC1C0B7D; Fri,  5 Mar 2021 11:46:35 +0100 (CET)
+Date:   Fri, 5 Mar 2021 11:46:35 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Rob Herring <robh@kernel.org>, Tony Lindgren <tony@atomide.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210304213902.83903-1-marcan@marcan.st>
- <20210304213902.83903-20-marcan@marcan.st>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <1e665346-15eb-3a9f-6dc3-7494a8050972@canonical.com>
-Date:   Fri, 5 Mar 2021 11:34:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCH 3/6] dt-bindings: serdev: ngsm: Add binding for GNSS
+ child node
+Message-ID: <20210305104635.GA16695@duo.ucw.cz>
+References: <20200512214713.40501-1-tony@atomide.com>
+ <20200512214713.40501-4-tony@atomide.com>
+ <20200527192817.GA2587830@bogus>
+ <20200528095151.GE10358@localhost>
 MIME-Version: 1.0
-In-Reply-To: <20210304213902.83903-20-marcan@marcan.st>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="CE+1k2dSO48ffgeK"
+Content-Disposition: inline
+In-Reply-To: <20200528095151.GE10358@localhost>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 04/03/2021 22:38, Hector Martin wrote:
-> This simplifies the code by removing the only distinction between the
-> S3C2410 and S3C2440 codepaths.
-> 
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  drivers/tty/serial/samsung_tty.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 78dc6e9240fb..33b421dbeb83 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -70,6 +70,7 @@ struct s3c24xx_uart_info {
->  	unsigned long		num_clks;
->  	unsigned long		clksel_mask;
->  	unsigned long		clksel_shift;
-> +	unsigned long		ucon_mask;
->  
->  	/* uart port features */
->  
-> @@ -1736,14 +1737,9 @@ static void s3c24xx_serial_resetport(struct uart_port *port,
->  {
->  	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
->  	unsigned long ucon = rd_regl(port, S3C2410_UCON);
-> -	unsigned int ucon_mask;
->  
-> -	ucon_mask = info->clksel_mask;
-> -	if (info->type == PORT_S3C2440)
-> -		ucon_mask |= S3C2440_UCON0_DIVMASK;
-> -
-> -	ucon &= ucon_mask;
-> -	wr_regl(port, S3C2410_UCON,  ucon | cfg->ucon);
-> +	ucon &= (info->clksel_mask | info->ucon_mask);
-> +	wr_regl(port, S3C2410_UCON, ucon | cfg->ucon);
 
-This line (wr_regl()) is not related, please split it to separate
-white-space cleanups.
+--CE+1k2dSO48ffgeK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-With the change:
+Hi!
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Tested-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> > > For motorola modem case, we may have a GNSS device on channel 4.
+> > > Let's add that to the binding and example.
+> > >=20
+> > > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> > > ---
+> > >  .../devicetree/bindings/serdev/serdev-ngsm.yaml          | 9 +++++++=
+++
+> > >  1 file changed, 9 insertions(+)
 
+>=20
+> And since we're describing a mux, I think you need nodes for the virtual
+> ports rather than a reg property in what should be a serial client. That
+> is something like
+>=20
+> 	serial@nnn {
+> 		modem {
+> 			compatible =3D "etsi,ts27001-mux";
+>=20
+> 			serial@4 {
+> 				compatible =3D "etsi,ts27001-serial";
+> 				reg =3D <4>;
+>=20
+> 				gnss {
+> 					compatible =3D "motorola,motmdm-gnss";
+> 				};
+> 			};
+> 		};
+> 	};
+>=20
+> This way you can actually use serdev for the client drivers (e.g. for
+> gnss), and those drivers also be used for non-muxed ports if needed
+> (e.g. over USB).
+
+I have done changes you requested, and then hit "serdev is busy
+because it can have at most one child" limit in the code. You have
+pretty clean driver in your inbox, and no reply. No help with serdev
+core limitations, either. Can you start to communicate?
 
 Best regards,
-Krzysztof
+								Pavel
+
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--CE+1k2dSO48ffgeK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYEIMCwAKCRAw5/Bqldv6
+8vX6AKDEZXZzQRsFq96/zZjnwyH4M5OK9ACgvXWJAfROdL/PovAeI57QNdO1xfY=
+=nOBS
+-----END PGP SIGNATURE-----
+
+--CE+1k2dSO48ffgeK--
