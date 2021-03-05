@@ -2,107 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F8DEC433DB
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ECF7C433DB
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:18:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1CF436146D
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:17:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0BB9965017
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbhCEKQv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Mar 2021 05:16:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229854AbhCEKQk (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Mar 2021 05:16:40 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0491DC061760
-        for <linux-serial@vger.kernel.org>; Fri,  5 Mar 2021 02:16:39 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id y12so2023124ljj.12
-        for <linux-serial@vger.kernel.org>; Fri, 05 Mar 2021 02:16:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qbH2XnLnL+zeqgwenkERgBp6OdMalagNgmjddUY2upo=;
-        b=oosQD1k0ihuNWvZd/OBh3mc8nkdjesc2ilrBKyxU54uLyH7RvMV3qxaKGuxGmyTP9w
-         7caTG2bAlHb4RIuwWBoXXdwLHI1wuF1UhzSYqvKKVuPJo2A4M4tpwRjXeJj+xZVUonDX
-         UdSpwPE1UpnxNlqFw+lq4Gu6zhZBXm/vANy7gThzJHkn3fTMng4OD0VcMKLNGAbJ8n7Z
-         W0DkubhzB0Y3TdGjmmV7fLpOP0x3K5jmP4uOJi8LKa53fUQqinUuitoq9vPbc6ObUogr
-         0YzEgMGg0uCnBgL74LwDVEecmp+20X7oEJNr4U+Q+ONNvPT2dwJ+XUWBfEzrflscGCAS
-         3YRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qbH2XnLnL+zeqgwenkERgBp6OdMalagNgmjddUY2upo=;
-        b=KDKzTseMHqM3E4Ab3WfpZTUwpwS+nD1lceTD/U0J4Wk+djwU47+mUK6kXC7qPC1WJ1
-         NykptJE1BV2vamSXr97GGvwgWsxXbzBVIJaJ6s9AngAz33AG8wi3A/VDkcGYxAdj7xc2
-         HHs5+A38JDeoxVI3OkKqYH7SVdoDu/3EpKlgZo04INj0xtOxfmH3NtvSBUlRE1UqpGiJ
-         j8o+EFMJbJMuDu26FBQ2FNi7TcdbYnfAVUZWohSDCixAiFPuWM8QG2v6TjMAOZwomRk1
-         cx7imVToYVUGoEWhsb8dehNf4OW/TjhILHOacPkbzlTkPoDFWnoNToKipUchFaj4+Lq5
-         uCYw==
-X-Gm-Message-State: AOAM5312YyjIo5oi5k8rIiIKm2h99+UihfAIjT1050YeznwvgU7mVzpB
-        NUXCtHzn3rjHdqN7CpwEoPuOq8nWSLX1/OTKsm/9GA==
-X-Google-Smtp-Source: ABdhPJxEx/lpierUGPxwT0L2+ZEtm4VbumUeVdUGn8v87RY30yCJpt4gIIgfdrlbQP0GGfAVxM0ky6MFjfiSwQhsyRg=
-X-Received: by 2002:a2e:1649:: with SMTP id 9mr4991292ljw.74.1614939398241;
- Fri, 05 Mar 2021 02:16:38 -0800 (PST)
+        id S229528AbhCEKRz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Mar 2021 05:17:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50084 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229642AbhCEKRx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 5 Mar 2021 05:17:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C0F0A64F5B;
+        Fri,  5 Mar 2021 10:17:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614939472;
+        bh=Q99OUDVwugO76Y8/5sQpyC2yeh8JaKwhwvwsQwPpdqE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Yoj8XHzg0B5+TNWALZqqHw9CnJgS7ZS07tOtdRCy+/7QJSH5rXfy302Doxf3QqEbG
+         yzqO8fIV+97xRnU03+5IOsJ27sDqii2fo6XDfDabCaZwZQEximU6C0qNs2MxUQaXfK
+         w3JhZcOpO9OgCZ0Dd6akaAKSEtkYQWHwdfbBTPISywWHPx8HSROFWdH1WS3OOktX+K
+         49h34KzKEv8sG6pUTML5Y1Es4XZWf+EkFSNcc1qRL+utxee10cXiJbHTsuQcLsPcGS
+         sMGHPVeJ3UY0g7vIi8NoupwuofMtb2GLduXe3sU46O3jlkUcQobljzpO9YWuKiY1zT
+         3zXBR8Ch8X/kA==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1lI7X4-0001KO-GI; Fri, 05 Mar 2021 11:18:07 +0100
+Date:   Fri, 5 Mar 2021 11:18:06 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 44/44] tty: make everyone's write_room return >= 0
+Message-ID: <YEIFXiFx5/gLmGfQ@hovoldconsulting.com>
+References: <20210302062214.29627-1-jslaby@suse.cz>
+ <20210302062214.29627-44-jslaby@suse.cz>
 MIME-Version: 1.0
-References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-4-marcan@marcan.st>
-In-Reply-To: <20210304213902.83903-4-marcan@marcan.st>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 5 Mar 2021 11:16:26 +0100
-Message-ID: <CACRpkdbrEch04BFE+suqmmUHtgHrRBoUtS4_cv8gackqbDYoQQ@mail.gmail.com>
-Subject: Re: [RFT PATCH v3 03/27] dt-bindings: arm: apple: Add bindings for
- Apple ARM platforms
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Tony Lindgren <tony@atomide.com>,
-        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
-        Stan Skowronek <stan@corellium.com>,
-        Alexander Graf <graf@amazon.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210302062214.29627-44-jslaby@suse.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 4, 2021 at 10:39 PM Hector Martin <marcan@marcan.st> wrote:
+On Tue, Mar 02, 2021 at 07:22:14AM +0100, Jiri Slaby wrote:
+> The tty line disciplines don't expect tty_operations::write_room to
+> return negative values. Fix the five drivers which violate this.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> ---
+>  drivers/staging/gdm724x/gdm_tty.c | 2 +-
+>  drivers/tty/ipwireless/tty.c      | 4 ++--
+>  drivers/tty/n_gsm.c               | 2 +-
+>  drivers/tty/vcc.c                 | 2 +-
+>  drivers/usb/serial/mos7720.c      | 2 +-
+>  5 files changed, 6 insertions(+), 6 deletions(-)
 
-> This introduces bindings for all three 2020 Apple M1 devices:
->
-> * apple,j274 - Mac mini (M1, 2020)
-> * apple,j293 - MacBook Pro (13-inch, M1, 2020)
-> * apple,j313 - MacBook Air (M1, 2020)
->
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+> diff --git a/drivers/usb/serial/mos7720.c b/drivers/usb/serial/mos7720.c
+> index 701dfb32b129..bb3d39307d93 100644
+> --- a/drivers/usb/serial/mos7720.c
+> +++ b/drivers/usb/serial/mos7720.c
+> @@ -1042,7 +1042,7 @@ static int mos7720_write_room(struct tty_struct *tty)
+>  
+>  	mos7720_port = usb_get_serial_port_data(port);
+>  	if (mos7720_port == NULL)
+> -		return -ENODEV;
+> +		return 0;
 
-This way of specifying the SoC makes sense to me.
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+This test is bogus and could just be removed, but that's for another
+patch.
 
-Yours,
-Linus Walleij
+>  
+>  	/* FIXME: Locking */
+>  	for (i = 0; i < NUM_URBS; ++i) {
+
+Johan
