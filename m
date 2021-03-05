@@ -7,52 +7,53 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C503DC43381
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 764FEC433E9
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:55:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9DDB965018
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:53:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 395AF6501B
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 10:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229730AbhCEKw2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Mar 2021 05:52:28 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:50836 "EHLO
+        id S229597AbhCEKzJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Mar 2021 05:55:09 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:50923 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhCEKv6 (ORCPT
+        with ESMTP id S229611AbhCEKzB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Mar 2021 05:51:58 -0500
+        Fri, 5 Mar 2021 05:55:01 -0500
 Received: from mail-wr1-f70.google.com ([209.85.221.70])
         by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lI83o-0000hx-LR
-        for linux-serial@vger.kernel.org; Fri, 05 Mar 2021 10:51:56 +0000
-Received: by mail-wr1-f70.google.com with SMTP id e13so893483wrg.4
-        for <linux-serial@vger.kernel.org>; Fri, 05 Mar 2021 02:51:56 -0800 (PST)
+        id 1lI86l-0000tH-Ai
+        for linux-serial@vger.kernel.org; Fri, 05 Mar 2021 10:54:59 +0000
+Received: by mail-wr1-f70.google.com with SMTP id h30so895457wrh.10
+        for <linux-serial@vger.kernel.org>; Fri, 05 Mar 2021 02:54:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=T/nIKyVeLDjnLO0XxbWZvWwMQYyfC7R4FZ0wj435gLk=;
-        b=WtbkoRLYzZd2wSf+AJ05sgb4VWAJzqtVlCFDBxQjfL9Z+qp6ffcQymHLeeeEzccChu
-         xKbR9Hy9K06I83peIkBmc+Zp0uXFf/MYxRISaI7vG652NuhtwCBu65cx9mrO4Zwoj9nA
-         jIDbMEq5foGOWkp1o3a9xRsHfZKLXtr+JXCaOJdTUrKdLvhBMmSiv9GLPZVtUDmWuzeQ
-         V8tSIewyW5eebN+nfHKQOAks7UgnEAKF9GrKLsO+BI/MOBp/zRVP60dt/cDjBcQubou0
-         DiN5EjIjvtWnlA7okb96snlCD3cGW23FkmqqhADIGBKUBruc8ZhtvyADwCjdhndT7/rC
-         uq0w==
-X-Gm-Message-State: AOAM532/5pj05LE5JrmBocPVhk6LCSKDezHHpxuPbkcfYGn9/RRwOwZV
-        3w6djtKv/6zN1rjXPV8LmFC+W6htrAw9DNVsZO7hIYvODYCpuCVnbV/dXLzOp8bqtBFacIaR4oD
-        CTxLZB3ElbGTB7dP0CajnnbNSiGuu8rsnzaFBMGDw9Q==
-X-Received: by 2002:a05:6000:181b:: with SMTP id m27mr8873172wrh.363.1614941516466;
-        Fri, 05 Mar 2021 02:51:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwSLx+ynSvyErVHtHDHShr+sqcaIVDFi0ZCngX/tDgR4DOKXKtYquKT+n+xo53Vaj5WTHxikg==
-X-Received: by 2002:a05:6000:181b:: with SMTP id m27mr8873154wrh.363.1614941516303;
-        Fri, 05 Mar 2021 02:51:56 -0800 (PST)
+        bh=zSEM++y1rebUisHLCtkG+UNXZIjCmpiRoJ42u2ytX3M=;
+        b=JjjyxFhcnE4nROY8/ia6AhMdj6FupdNbWaEFYoHO4FJZvFaMjrA6+uiu9woa0aqajG
+         ljG3Q9kTq0vAX+9N1kZPu86jNgs7b7tKYlTMKJkgOFQKiSffWeTsUcpZEFKLFX6IKlAC
+         cZjVrJtx4SPH3Dq4rRyfrIr1vOkaxiBj4eHZXY3tIsFB6YMtSz5b2AdsGzvXdPC53KJs
+         ZLtqHczFuxlDjWONmUftFuNuBpL4pQ0a4y873OykoDPw1R1FkpURXP3PD3VwpHzmeKHO
+         FRot4EINnr2mY0L2ZqJj4+IsMG6otZ0GtVBQQLitdYD4QA9SKgXjWwqFD7xkSOvcmk4H
+         Gemw==
+X-Gm-Message-State: AOAM531oa/u95t5jhNVJQV0ivf2xy+IBpRvK+gcBoMuDnLQe5jeI/F3i
+        YLyCymuEqAbPNibQECDtxziJG1zxDDRA6oS+3eEKm4plx9UbmD8OTAGFHS+np//W3xvae2qbthx
+        o+Jwb3TQgWfXYKc2Zqaxtkw0JTJNn9sbfhh1zxzUvdg==
+X-Received: by 2002:a7b:c1c4:: with SMTP id a4mr8453975wmj.122.1614941699043;
+        Fri, 05 Mar 2021 02:54:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyVP9HaZ/X6h/g7Ggd5kC4cMtRdG0Xd39MHNruIlJ/V8+Cs+3v2YX2SK0aMTtOO80rSXOLn5A==
+X-Received: by 2002:a7b:c1c4:: with SMTP id a4mr8453958wmj.122.1614941698935;
+        Fri, 05 Mar 2021 02:54:58 -0800 (PST)
 Received: from [192.168.1.116] (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.gmail.com with ESMTPSA id l21sm2344908wmg.41.2021.03.05.02.51.55
+        by smtp.gmail.com with ESMTPSA id s23sm3761833wmc.29.2021.03.05.02.54.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Mar 2021 02:51:56 -0800 (PST)
-Subject: Re: [RFT PATCH v3 21/27] tty: serial: samsung_tty: IRQ rework
+        Fri, 05 Mar 2021 02:54:58 -0800 (PST)
+Subject: Re: [RFT PATCH v3 22/27] tty: serial: samsung_tty: Use
+ devm_ioremap_resource
 To:     Hector Martin <marcan@marcan.st>,
         linux-arm-kernel@lists.infradead.org
 Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -76,14 +77,14 @@ Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
         linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20210304213902.83903-1-marcan@marcan.st>
- <20210304213902.83903-22-marcan@marcan.st>
+ <20210304213902.83903-23-marcan@marcan.st>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <ed2ead63-5832-62fb-dd1b-4a64942678b1@canonical.com>
-Date:   Fri, 5 Mar 2021 11:51:55 +0100
+Message-ID: <fe2cbf68-8b88-5128-035d-f941a9d17d74@canonical.com>
+Date:   Fri, 5 Mar 2021 11:54:57 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210304213902.83903-22-marcan@marcan.st>
+In-Reply-To: <20210304213902.83903-23-marcan@marcan.st>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -92,21 +93,17 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 04/03/2021 22:38, Hector Martin wrote:
-> * Split out s3c24xx_serial_tx_chars from s3c24xx_serial_tx_irq,
->   where only the latter acquires the port lock. This will be necessary
->   on platforms which have edge-triggered IRQs, as we need to call
->   s3c24xx_serial_tx_chars to kick off transmission from outside IRQ
->   context, with the port lock held.
+> This picks up the non-posted I/O mode needed for Apple platforms to
+> work properly.
 > 
-> * Rename s3c24xx_serial_rx_chars to s3c24xx_serial_rx_irq for
->   consistency with the above. All it does now is call two other
->   functions anyway.
+> This removes the request/release functions, which are no longer
+> necessary, since devm_ioremap_resource takes care of that already. Most
+> other drivers already do it this way, anyway.
 > 
 > Signed-off-by: Hector Martin <marcan@marcan.st>
 > ---
->  drivers/tty/serial/samsung_tty.c | 34 +++++++++++++++++++-------------
->  1 file changed, 20 insertions(+), 14 deletions(-)
-> 
+>  drivers/tty/serial/samsung_tty.c | 25 +++----------------------
+>  1 file changed, 3 insertions(+), 22 deletions(-)
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Tested-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
