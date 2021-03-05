@@ -2,122 +2,128 @@ Return-Path: <SRS0=s89U=ID=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A9F4C433E9
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 20:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCDB4C433E0
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 21:18:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EBE916509B
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 20:50:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B988564EF6
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Mar 2021 21:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbhCEUt4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Mar 2021 15:49:56 -0500
-Received: from mail-oo1-f43.google.com ([209.85.161.43]:42879 "EHLO
-        mail-oo1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbhCEUtk (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Mar 2021 15:49:40 -0500
-Received: by mail-oo1-f43.google.com with SMTP id g46so743627ooi.9;
-        Fri, 05 Mar 2021 12:49:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tnTipdodrhezdr0qtRmFWS1eLHElQWNq0/37BBeYMdE=;
-        b=ATOXTDDwJ2lZQ0rVZFsmxM0xdP0JLo5wYvcdz1JSz7tBaaCui/SVuurDvA4RoHKlwu
-         pr392Yj1RlLhOyOh6vNUqiEHT0TYKPRgTftZTIAMe3CM+itXruyhLL9iUkY91CkXykbP
-         grzwqAD6zTo1Kw3ddEK6gkJd59RBSrWqf1szjWZzACbhMWsgqk4soRcP5gdVTvQJ081n
-         Dh1RXHdA8NbJnkv7yGL0/0hi7BgZtTdhnA8M7OrngPp7G3k9OIBYhPk433FXybkqbGsy
-         DkiHvj5rujf+CHXhVIJEgjzdYgUw062v73FB3QSP9wc/y7fGp7Fgl4d0TS3uRGSzv2s+
-         4yrQ==
-X-Gm-Message-State: AOAM5305pe6AeqZ0kY3VXUgcE9BoKCMjj/rd/XnZCgEnMSwxUVngsypt
-        2gcxJTh7UWFh88aEEsAK7aqxUrbDWw==
-X-Google-Smtp-Source: ABdhPJzo6ZfNqVjcYA3VmxyzGIsyYKo4B3883JMz6dmzdwvUn5AZno6ENRQgxm/A+KC06hqpfYhYcA==
-X-Received: by 2002:a4a:e1e4:: with SMTP id u4mr9254495ood.41.1614977379986;
-        Fri, 05 Mar 2021 12:49:39 -0800 (PST)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id v22sm822524otj.57.2021.03.05.12.49.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Mar 2021 12:49:39 -0800 (PST)
-Received: (nullmailer pid 620933 invoked by uid 1000);
-        Fri, 05 Mar 2021 20:49:38 -0000
-Date:   Fri, 5 Mar 2021 14:49:38 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: serial: samsung: include generic
- dtschema to match bluetooth child
-Message-ID: <20210305204938.GA613254@robh.at.kernel.org>
-References: <20210212163905.70171-1-krzk@kernel.org>
- <20210212163905.70171-2-krzk@kernel.org>
+        id S229690AbhCEVRe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Mar 2021 16:17:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52704 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229716AbhCEVRb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 5 Mar 2021 16:17:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BD21A650A3;
+        Fri,  5 Mar 2021 21:17:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614979050;
+        bh=Uq2IgJr9kfuVZlHKajDc//q6GSI/XAvfSiCyKzo1V8Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=lRdKSARLHY86Mf+trKqlx5nDF6gUxXjau8jUulM0OvPHJnGHI+M8ySKktY8XXjiyh
+         gPgeYM/hOkWA4pMjlJBG1uE3K67vpVrBNMG/PLuFLxreBluK7TN771IUBPk0n+Q+8m
+         5aB2L2Fm24Sb5y0llCK3eB4e9semIXGj8Gk5B9jGiSxqIgHAk5WWHM5WV9BqyYS7ka
+         U5jPmZBMU21t0Kk5r//0EHI6e0rxIvN2x05/oinlGGebESgDGGUGa8aU+z8zYR8O/G
+         eYaEoUL45CG6w7DeJ8XM1Orfk3FuygeAiRz8Fm/I6OvluvPaW88PVV95UXoj8xQ6ER
+         XAa1IhBeRCPng==
+Received: by mail-oi1-f174.google.com with SMTP id j1so4052533oiw.3;
+        Fri, 05 Mar 2021 13:17:30 -0800 (PST)
+X-Gm-Message-State: AOAM530dA6UOr9jnM5OrYtXqtNf0U7+CGMl5YFfkHAHPYsXgeWGLrxmR
+        5dY6TKh2vJd1VFqHzAZCHCRd/KqEHL3/rlrzzOs=
+X-Google-Smtp-Source: ABdhPJxuxTnyW6QlTJAPT3FkZfYcbHpraEjPrLMerJHage2MvI0443wfkGa8phS23+Oq983m1NS18jdBnjhB5h3CRcA=
+X-Received: by 2002:aca:5e85:: with SMTP id s127mr8198762oib.67.1614979049957;
+ Fri, 05 Mar 2021 13:17:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210212163905.70171-2-krzk@kernel.org>
+References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-13-marcan@marcan.st>
+ <CAL_JsqJF2Hz=4U7FR_GOSjCxqt3dpf-CAWFNfsSrDjDLpHqgCA@mail.gmail.com> <6e4880b3-1fb6-0cbf-c1a5-7a46fd9ccf62@marcan.st>
+In-Reply-To: <6e4880b3-1fb6-0cbf-c1a5-7a46fd9ccf62@marcan.st>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 5 Mar 2021 22:17:13 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0Hmwt-ywzS-2eEmqyQ0v2SxLsLxFwfTUoWwbzCrBNhsQ@mail.gmail.com>
+Message-ID: <CAK8P3a0Hmwt-ywzS-2eEmqyQ0v2SxLsLxFwfTUoWwbzCrBNhsQ@mail.gmail.com>
+Subject: Re: [RFT PATCH v3 12/27] of/address: Add infrastructure to declare
+ MMIO as non-posted
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Rob Herring <robh@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Tony Lindgren <tony@atomide.com>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>,
+        Alexander Graf <graf@amazon.com>,
+        Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 05:39:05PM +0100, Krzysztof Kozlowski wrote:
-> Include the generic serial.yaml dtschema so the child node like
-> "bluetooh" will be properly matched:
-> 
->   arch/arm/boot/dts/exynos4210-universal_c210.dt.yaml:
->     serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  .../bindings/serial/samsung_uart.yaml         | 26 ++++++++++++++++++-
->  1 file changed, 25 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> index 3e29b561223d..f4faf32ab00f 100644
-> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> @@ -78,9 +78,11 @@ required:
->    - interrupts
->    - reg
->  
-> -additionalProperties: false
-> +unevaluatedProperties: false
->  
->  allOf:
-> +  - $ref: /schemas/serial.yaml#
-> +
->    - if:
->        properties:
->          compatible:
-> @@ -134,3 +136,25 @@ examples:
->                   <&clocks SCLK_UART>;
->          samsung,uart-fifosize = <16>;
->      };
-> +
-> +  - |
-> +    #include <dt-bindings/clock/exynos4.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    serial@13800000 {
-> +        compatible = "samsung,exynos4210-uart";
-> +        reg = <0x13800000 0x100>;
-> +        interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&clock CLK_UART0>, <&clock CLK_SCLK_UART0>;
-> +        clock-names = "uart", "clk_uart_baud0";
-> +        dmas = <&pdma0 15>, <&pdma0 16>;
-> +        dma-names = "rx", "tx";
-> +        pinctrl-0 = <&uart0_data &uart0_fctl>;
-> +        pinctrl-names = "default";
-> +
-> +        bluetooth {
-> +            compatible = "brcm,bcm4330-bt";
+On Fri, Mar 5, 2021 at 7:18 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> On 06/03/2021 02.39, Rob Herring wrote:
+> >> -       return ioremap(res.start, resource_size(&res));
+> >> +       if (res.flags & IORESOURCE_MEM_NONPOSTED)
+> >> +               return ioremap_np(res.start, resource_size(&res));
+> >> +       else
+> >> +               return ioremap(res.start, resource_size(&res));
+> >
+> > This and the devm variants all scream for a ioremap_extended()
+> > function. IOW, it would be better if the ioremap flavor was a
+> > parameter. Unless we could implement that just for arm64 first, that's
+> > a lot of refactoring...
+>
+> I agree, but yeah... that's one big refactor to try to do now...
 
-Do we need a whole new example for this?
+FWIW, there is ioremap_prot() that Christoph introduced in 2019
+for a few architectures.  I suppose it would be nice to lift
+that out architecture specific code and completely replace the
+unusual variants, leaving only ioremap(), ioremap_prot() and
+memremap() but dropping the _nc, _cached, _wc, _wt and _np
+versions in favor of an extensible set of flags.
 
-I'm also trying to get rid compatibles without a schema so we can turn 
-on warnings for that, but fortunately Linus is converting Broadcom BT. 
-And looks like it should pass.
+Then again, I would not make that a prerequisite for the merge
+of the M1 support.
 
-Rob
+> > What's the code path using these functions on the M1 where we need to
+> > return 'posted'? It's just downstream PCI mappings (PCI memory space),
+> > right? Those would never hit these paths because they don't have a DT
+> > node or if they do the memory space is not part of it. So can't the
+> > check just be:
+> >
+> > bool of_mmio_is_nonposted(struct device_node *np)
+> > {
+> >      return np && of_machine_is_compatible("apple,arm-platform");
+> > }
+>
+> Yes; the implementation was trying to be generic, but AIUI we don't need
+> this on M1 because the PCI mappings don't go through this codepath, and
+> nothing else needs posted mode. My first hack was something not too
+> unlike this, then I was going to get rid of apple,arm-platform and just
+> have this be a generic mechanism with the properties, but then we added
+> the optimization to not do the lookups on other platforms, and now we're
+> coming full circle... :-)
+
+I never liked the idea of having a list of platforms that need a
+special hack, please let's not go back to that.
+
+         Arnd
