@@ -2,126 +2,113 @@ Return-Path: <SRS0=PbAg=IF=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E24C433DB
-	for <linux-serial@archiver.kernel.org>; Sun,  7 Mar 2021 11:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 420AEC433E0
+	for <linux-serial@archiver.kernel.org>; Sun,  7 Mar 2021 16:03:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5580564FF2
-	for <linux-serial@archiver.kernel.org>; Sun,  7 Mar 2021 11:43:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 06F85650E7
+	for <linux-serial@archiver.kernel.org>; Sun,  7 Mar 2021 16:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230070AbhCGLmr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 7 Mar 2021 06:42:47 -0500
-Received: from mail-ej1-f53.google.com ([209.85.218.53]:43842 "EHLO
-        mail-ej1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbhCGLmf (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 7 Mar 2021 06:42:35 -0500
-Received: by mail-ej1-f53.google.com with SMTP id p8so14237536ejb.10;
-        Sun, 07 Mar 2021 03:42:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bpPJ6IkOTz50xq4H5ZvnUgMjnZj0Dmv5rdRTqFH842A=;
-        b=bNKYnkY7fXyPlqmdzd/fdL9PH+iIPJYoGcBAiQFhx29Bzia+V3FO+2dGQVmTrK3FGf
-         HcYWuQE4xVZmcT5827Qn+GUFYHp1fkNb3jz/qfq2vmU5MOnZvTZCsZBLbW4vsfiF6BoW
-         0/qR52yuWCAbupE4E39C+8dUdmDSm4Cg4EUbXnVGc+Z+4ZCiJXgwqm8SZPmoEwyM8PCA
-         gFyCELh5ucIJJDyc2kTFGNovI8N13gEjwyfLEbsj/xAVBTHzEu0d6rYpZBU7DFD1NdpE
-         +ZsO0XOJJUjwg1YIYNTmePrzCM+ccNgLIeMZdQYQUpMaJXXfMPYtYA76c/yIaE2SMuwT
-         KICQ==
-X-Gm-Message-State: AOAM5328M5IjB+Hk3zfemQZ7BD+voQ4NQRpKoUpnFQ0H1G59aIedMJMI
-        SfaiVx8PrZUQiNxG7DgVw2KFtiHtqD4=
-X-Google-Smtp-Source: ABdhPJw8bkYXg0UrngrTNBlLXiMcM4iLzMiC1wwB0BKVtRhAJLIdnEQhfmvNOaPmXgihmfT4n3FlCQ==
-X-Received: by 2002:a17:907:9863:: with SMTP id ko3mr10480992ejc.543.1615117352917;
-        Sun, 07 Mar 2021 03:42:32 -0800 (PST)
-Received: from [192.168.1.116] (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.googlemail.com with ESMTPSA id x21sm5210276eds.53.2021.03.07.03.42.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Mar 2021 03:42:32 -0800 (PST)
-Subject: Re: [PATCH 2/2] dt-bindings: serial: samsung: include generic
- dtschema to match bluetooth child
-To:     Rob Herring <robh@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210212163905.70171-1-krzk@kernel.org>
- <20210212163905.70171-2-krzk@kernel.org>
- <20210305204938.GA613254@robh.at.kernel.org>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Message-ID: <6ff17125-5c71-70f9-5042-c73eac12f4c9@kernel.org>
-Date:   Sun, 7 Mar 2021 12:42:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S232389AbhCGQCk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 7 Mar 2021 11:02:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39472 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232383AbhCGQCN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 7 Mar 2021 11:02:13 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B322650FA;
+        Sun,  7 Mar 2021 16:02:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615132932;
+        bh=W3DWtdKbzB/Ewq0JXP5uIPr5sVdrpUWScZRv+BpwOOQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=uvTAugzrUQYpKuCcE5EB2V7uskUn7uQ1kw3Ti9BBAyqQTmqLgQKYlYnumatE5cRFc
+         TxVpaDX8t7wop24oROmlUS96NMdVeY7PBHDIW/T3WSmx/aCPFFh9v3xHu0e6GSI/Rx
+         ViYKo1BNlVsFC65pNKLgytdDsWIOhzT8pO1yqotAUcGPJGH0Nj83z5XIkuCh3gzRaP
+         RCvB3K4RyMw+BKYpyVQxCNekIzPX2+xiiY9/RoaX+oINmRapsa/7H7PofVuHzmkqdE
+         iMY49sccaS1j16kG5oQvyCvriltmludfQy+PNzABu+/0WPz+XC05tDuL+SaC1iYVBI
+         NrHiOR3ly/7qQ==
+Received: by mail-oi1-f176.google.com with SMTP id x78so8416232oix.1;
+        Sun, 07 Mar 2021 08:02:12 -0800 (PST)
+X-Gm-Message-State: AOAM530y6b8oPrrVJXGClw9xhwoqQGy/mg1Cjs168qlZpXpvZdilevcY
+        QxGhW2KOMGlKtNwmvWNCSSg2hvTE1tOXKtV04i4=
+X-Google-Smtp-Source: ABdhPJzpPsfCCAkRmVKn193+pHQBjk17f8dkofO2rKwjX7TbuYoBS5vX7tmjl8lFu8yM18ZXMOLeGO7Q06knumxhjeE=
+X-Received: by 2002:aca:5e85:: with SMTP id s127mr13583208oib.67.1615132931842;
+ Sun, 07 Mar 2021 08:02:11 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210305204938.GA613254@robh.at.kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-22-marcan@marcan.st>
+ <CAHp75Vc+t9_FNHZ0xYNaJ1+Ny+FFeZKA79abxV2NAsZvpBh3Bg@mail.gmail.com>
+ <535ff48e-160e-4ba4-23ac-54e478a2f3ee@marcan.st> <CAHp75Vd_kwdjbus3iq_39+p_xRk3rum2ek3nLLFbBDzMwggnKA@mail.gmail.com>
+ <05ccc09f-ffea-71cd-4288-beed3020bd45@marcan.st> <d33fffec-28bd-99b2-a8b1-cc83b628e4b3@canonical.com>
+In-Reply-To: <d33fffec-28bd-99b2-a8b1-cc83b628e4b3@canonical.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Sun, 7 Mar 2021 17:01:55 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0o4NHjXZ+ePj_Xpcw6ZmonoiR1dfkcsv=3i1JBEF4arA@mail.gmail.com>
+Message-ID: <CAK8P3a0o4NHjXZ+ePj_Xpcw6ZmonoiR1dfkcsv=3i1JBEF4arA@mail.gmail.com>
+Subject: Re: [RFT PATCH v3 21/27] tty: serial: samsung_tty: IRQ rework
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Tony Lindgren <tony@atomide.com>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>,
+        Alexander Graf <graf@amazon.com>,
+        Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05/03/2021 21:49, Rob Herring wrote:
-> On Fri, Feb 12, 2021 at 05:39:05PM +0100, Krzysztof Kozlowski wrote:
->> Include the generic serial.yaml dtschema so the child node like
->> "bluetooh" will be properly matched:
->>
->>   arch/arm/boot/dts/exynos4210-universal_c210.dt.yaml:
->>     serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
->>
->> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
->> ---
->>  .../bindings/serial/samsung_uart.yaml         | 26 ++++++++++++++++++-
->>  1 file changed, 25 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
->> index 3e29b561223d..f4faf32ab00f 100644
->> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
->> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
->> @@ -78,9 +78,11 @@ required:
->>    - interrupts
->>    - reg
->>  
->> -additionalProperties: false
->> +unevaluatedProperties: false
->>  
->>  allOf:
->> +  - $ref: /schemas/serial.yaml#
->> +
->>    - if:
->>        properties:
->>          compatible:
->> @@ -134,3 +136,25 @@ examples:
->>                   <&clocks SCLK_UART>;
->>          samsung,uart-fifosize = <16>;
->>      };
->> +
->> +  - |
->> +    #include <dt-bindings/clock/exynos4.h>
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +
->> +    serial@13800000 {
->> +        compatible = "samsung,exynos4210-uart";
->> +        reg = <0x13800000 0x100>;
->> +        interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
->> +        clocks = <&clock CLK_UART0>, <&clock CLK_SCLK_UART0>;
->> +        clock-names = "uart", "clk_uart_baud0";
->> +        dmas = <&pdma0 15>, <&pdma0 16>;
->> +        dma-names = "rx", "tx";
->> +        pinctrl-0 = <&uart0_data &uart0_fctl>;
->> +        pinctrl-names = "default";
->> +
->> +        bluetooth {
->> +            compatible = "brcm,bcm4330-bt";
-> 
-> Do we need a whole new example for this?
+On Sun, Mar 7, 2021 at 12:34 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
+> On 05/03/2021 17:29, Hector Martin wrote:
+> > On 06/03/2021 01.20, Andy Shevchenko wrote:
+> >>> I am just splitting an
+> >>> existing function into two, where one takes the lock and the other does
+> >>> the work. Do you mean using a different locking function? I'm not
+> >>> entirely sure what you're suggesting.
+> >>
+> >> Yes, as a prerequisite
+> >>
+> >> spin_lock_irqsave -> spin_lock().
+> >
+> > Krzysztof, is this something you want in this series? I was trying to
+> > avoid logic changes to the non-Apple paths.
+>
+> I don't quite get the need for such change (the code will be still
+> called in interrupt handler, right?), but assuming the "why?" is
+> properly documented, it can be a separate patch here.
 
-No, we don't need it. I find examples useful but if you prefer to have
-them smaller, then I can skip it.
+This is only for readability: the common rule is to not disable
+interrupts when they are already disabled, so a reader might wonder
+if this instance of the handler is special in some case that it might
+be called with interrupts enabled.
 
-Best regards,
-Krzysztof
+There is also a small overhead in accessing the global irq mask
+register on some architectures, but for a uart that does not make
+any difference of course.
+
+While I'm generally in favor of that kind of cleanup, I'd also
+prefer to leave it out of this series -- once you get into details
+like this the series gets harder to review.
+
+        Arnd
