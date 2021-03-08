@@ -6,145 +6,90 @@ X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB18C4332D
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Mar 2021 19:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74444C4332E
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Mar 2021 20:27:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 15333652A4
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Mar 2021 19:21:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4559E652C0
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Mar 2021 20:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbhCHTUz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Mar 2021 14:20:55 -0500
-Received: from mail-il1-f182.google.com ([209.85.166.182]:39342 "EHLO
-        mail-il1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbhCHTUn (ORCPT
+        id S231249AbhCHU0n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 Mar 2021 15:26:43 -0500
+Received: from mail-io1-f45.google.com ([209.85.166.45]:44637 "EHLO
+        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229637AbhCHU0X (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Mar 2021 14:20:43 -0500
-Received: by mail-il1-f182.google.com with SMTP id d5so9893383iln.6;
-        Mon, 08 Mar 2021 11:20:42 -0800 (PST)
+        Mon, 8 Mar 2021 15:26:23 -0500
+Received: by mail-io1-f45.google.com with SMTP id 81so11377066iou.11;
+        Mon, 08 Mar 2021 12:26:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=1L6btlnZFWT2wUztSO9tevXV6NJv+ZeIlELKczZZaFw=;
-        b=fiBkEUwIBB2ZVI4HgXNGwSh5aYF0eU2WpWUEtsMn9N2qAwIZ+/k3qfXi9n5RoZr3Q7
-         SQHMmOsyIhdoNxEayvuoSas6YiH57naDQ6CoW6Af8UOHDFw3rDn0jJ1TvmXV7XraiksP
-         5A1yp5VlZNAprxBvmJOoqcN5dW5n7KzqIp06Jgd99k+DvCnO5x8d4iY0/szF/3v6tuUN
-         2sMRQTnL6kHo/qIz7dZjQVblqq3HySJQGM4tG6bxkIBXpULEAcvs/b7mW7+hKTPBsE4M
-         O6CguMWDa9N+JKFewtcjvIo2W86GULccvbr4LXaJ9BRdkpznfrWQ1lGEpIKC5xCpSQee
-         yXAQ==
-X-Gm-Message-State: AOAM532MXfbcSBj13rFIOpBhChWztK8iyvFD/EGEntVjQfQgqkZnu6/r
-        dcXaN6Orp8+7bje4Nwfk0l3nIS+HHw==
-X-Google-Smtp-Source: ABdhPJxNZi/akTGS5KF27FuIlkC3rfNJTzbmnPnH89Rfz7vgq18ujwtUCYa7gJdG40A1z3VSgdqRRA==
-X-Received: by 2002:a92:c102:: with SMTP id p2mr21010388ile.227.1615231242427;
-        Mon, 08 Mar 2021 11:20:42 -0800 (PST)
+        bh=6UTjJ3jOvKiCus9H3n1TcHEJKB0LVrltl+hAbPpXslY=;
+        b=r8tw7LXpdXG1ZJ9JOm72egImX4nXFEu1u+nYI5Bz+sSxrLMFjzkTyN+mEVxhGARD6v
+         GvLkKDrjd3FQPMdUpAiIQ/wyZtUFU6GR/mkHLRcgw/zEXuFmZCgiQQGMl+3nxSGSCYvn
+         9deTBWFE1vnmstVzyPwmXDpsLlnrhZk5EENBIEe7MOgZvmgdOGvfQ1PWwlbua0H06jza
+         Fh6EKEM4RDBJur1Ji/lYqZNdpNWtm1kQfwz79V0x2YSd+a4I8FbAVC3aLP6u2WOMb6/M
+         gF8Q5CGYJuuZaMXoDMCLEAB0rn/dOtop5fm+khrk2hEd1oDwhlAujJf4h1/eXdAYwAHJ
+         +fsA==
+X-Gm-Message-State: AOAM532e9O+1hUyFtALIiAuDePU1KnrUxCK0IBS787wIXjNFW7aaYaDB
+        cn+urJ20zw8TyLHo5YTZoQ==
+X-Google-Smtp-Source: ABdhPJwOBTaPE0xKY0k0bCLQdONZXa85agktHmthvLzU6KA0D/iYjgFAJ9bn940AtIEul0SRUWlLAw==
+X-Received: by 2002:a02:7086:: with SMTP id f128mr24916049jac.104.1615235182626;
+        Mon, 08 Mar 2021 12:26:22 -0800 (PST)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id a4sm3426705iow.55.2021.03.08.11.20.40
+        by smtp.gmail.com with ESMTPSA id m4sm6704226ilc.53.2021.03.08.12.26.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Mar 2021 11:20:41 -0800 (PST)
-Received: (nullmailer pid 2816246 invoked by uid 1000);
-        Mon, 08 Mar 2021 19:20:40 -0000
-Date:   Mon, 8 Mar 2021 12:20:40 -0700
+        Mon, 08 Mar 2021 12:26:21 -0800 (PST)
+Received: (nullmailer pid 2904189 invoked by uid 1000);
+        Mon, 08 Mar 2021 20:26:19 -0000
+Date:   Mon, 8 Mar 2021 13:26:19 -0700
 From:   Rob Herring <robh@kernel.org>
-To:     Martin Devera <devik@eaxlabs.cz>
-Cc:     linux-kernel@vger.kernel.org,
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Alexander Graf <graf@amazon.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-arch@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        devicetree@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
+        Olof Johansson <olof@lixom.net>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jiri Slaby <jirislaby@kernel.org>, Le Ray <erwan.leray@st.com>,
-        fabrice.gasnier@foss.st.com, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 1/2] dt-bindings: serial: Add rx-tx-swap to stm32-usart
-Message-ID: <20210308192040.GA2807217@robh.at.kernel.org>
-References: <aeefa74e-fa19-6c31-5240-0f14fca89298@foss.st.com>
- <20210302190303.28630-1-devik@eaxlabs.cz>
+        linux-samsung-soc@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Arnd Bergmann <arnd@kernel.org>, Will Deacon <will@kernel.org>,
+        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Marc Zyngier <maz@kernel.org>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>
+Subject: Re: [RFT PATCH v3 02/27] dt-bindings: vendor-prefixes: Add apple
+ prefix
+Message-ID: <20210308202619.GA2904129@robh.at.kernel.org>
+References: <20210304213902.83903-1-marcan@marcan.st>
+ <20210304213902.83903-3-marcan@marcan.st>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210302190303.28630-1-devik@eaxlabs.cz>
+In-Reply-To: <20210304213902.83903-3-marcan@marcan.st>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 02, 2021 at 08:03:02PM +0100, Martin Devera wrote:
-> Add new rx-tx-swap property to allow for RX & TX pin swapping.
+On Fri, 05 Mar 2021 06:38:37 +0900, Hector Martin wrote:
+> This is different from the legacy AAPL prefix used on PPC, but
+> consensus is that we prefer `apple` for these new platforms.
 > 
-> Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
->  .../devicetree/bindings/serial/st,stm32-uart.yaml  | 32 +++++++++++++++-------
->  1 file changed, 22 insertions(+), 10 deletions(-)
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> index 8631678283f9..6eab2debebb5 100644
-> --- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> @@ -9,9 +9,6 @@ maintainers:
->  
->  title: STMicroelectronics STM32 USART bindings
->  
-> -allOf:
-> -  - $ref: rs485.yaml
-> -
->  properties:
->    compatible:
->      enum:
-> @@ -40,6 +37,10 @@ properties:
->  
->    uart-has-rtscts: true
->  
-> +  rx-tx-swap:
-> +    type: boolean
-> +    maxItems: 1
 
-Type is boolean, but 'maxItems' applies to arrays.
-
-In any case, this is already defined in serial.yaml, so just 
-'rx-tx-swap: true' here.
-
-> +
->    dmas:
->      minItems: 1
->      maxItems: 2
-> @@ -66,13 +67,24 @@ properties:
->    linux,rs485-enabled-at-boot-time: true
->    rs485-rx-during-tx: true
->  
-> -if:
-> -  required:
-> -    - st,hw-flow-ctrl
-> -then:
-> -  properties:
-> -    cts-gpios: false
-> -    rts-gpios: false
-> +allOf:
-
-And add '- $ref: serial.yaml#' here.
-
-> +  - $ref: rs485.yaml
-> +  - if:
-> +      required:
-> +        - st,hw-flow-ctrl
-> +    then:
-> +      properties:
-> +        cts-gpios: false
-> +        rts-gpios: false
-> +  - if:
-> +      required:
-> +        - rx-tx-swap
-> +    then:
-> +      properties:
-> +        compatible:
-> +          enum:
-> +            - st,stm32f7-uart
-> +            - st,stm32h7-uart
-
-The normal pattern is the 'if' has compatible. You can put the other 
-compatible strings in the if, and then 'then' is:
-
-then:
-  properties:
-    rx-tx-swap: false
-
-
-Rob
+Reviewed-by: Rob Herring <robh@kernel.org>
