@@ -1,35 +1,35 @@
-Return-Path: <SRS0=xc1G=IG=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD2AC43381
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Mar 2021 13:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7221C433DB
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Mar 2021 15:36:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 44EA6651CF
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Mar 2021 13:31:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8EE6B65218
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Mar 2021 15:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229701AbhCHNbX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Mar 2021 08:31:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57666 "EHLO mail.kernel.org"
+        id S229893AbhCHPfk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 Mar 2021 10:35:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33018 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229591AbhCHNbE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Mar 2021 08:31:04 -0500
+        id S229821AbhCHPfY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 8 Mar 2021 10:35:24 -0500
 Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B7206651C2;
-        Mon,  8 Mar 2021 13:31:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7747565208;
+        Mon,  8 Mar 2021 15:35:23 +0000 (UTC)
 Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=why.misterjones.org)
         by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94)
         (envelope-from <maz@kernel.org>)
-        id 1lJFyP-000L8E-P9; Mon, 08 Mar 2021 13:31:01 +0000
-Date:   Mon, 08 Mar 2021 13:31:00 +0000
-Message-ID: <874khlzsa3.wl-maz@kernel.org>
+        id 1lJHuj-000MeL-Ec; Mon, 08 Mar 2021 15:35:21 +0000
+Date:   Mon, 08 Mar 2021 15:35:20 +0000
+Message-ID: <871rcpzmiv.wl-maz@kernel.org>
 From:   Marc Zyngier <maz@kernel.org>
 To:     Hector Martin <marcan@marcan.st>
 Cc:     linux-arm-kernel@lists.infradead.org,
@@ -53,10 +53,10 @@ Cc:     linux-arm-kernel@lists.infradead.org,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFT PATCH v3 16/27] irqchip/apple-aic: Add support for the Apple Interrupt Controller
-In-Reply-To: <20210304213902.83903-17-marcan@marcan.st>
+Subject: Re: [RFT PATCH v3 17/27] arm64: Kconfig: Introduce CONFIG_ARCH_APPLE
+In-Reply-To: <20210304213902.83903-18-marcan@marcan.st>
 References: <20210304213902.83903-1-marcan@marcan.st>
-        <20210304213902.83903-17-marcan@marcan.st>
+        <20210304213902.83903-18-marcan@marcan.st>
 User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
  FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
  (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
@@ -70,118 +70,32 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 04 Mar 2021 21:38:51 +0000,
+On Thu, 04 Mar 2021 21:38:52 +0000,
 Hector Martin <marcan@marcan.st> wrote:
 > 
-> This is the root interrupt controller used on Apple ARM SoCs such as the
-> M1. This irqchip driver performs multiple functions:
+> This adds a Kconfig option to toggle support for Apple ARM SoCs.
+> At this time this targets the M1 and later "Apple Silicon" Mac SoCs.
 > 
-> * Handles both IRQs and FIQs
-> 
-> * Drives the AIC peripheral itself (which handles IRQs)
-> 
-> * Dispatches FIQs to downstream hard-wired clients (currently the ARM
->   timer).
-> 
-> * Implements a virtual IPI multiplexer to funnel multiple Linux IPIs
->   into a single hardware IPI
->
-
-[...]
-
 > Signed-off-by: Hector Martin <marcan@marcan.st>
-> +static void __exception_irq_entry aic_handle_irq(struct pt_regs *regs)
-> +{
-> +	struct aic_irq_chip *ic = aic_irqc;
-> +	u32 event, type, irq;
-> +
-> +	do {
-> +		/*
-> +		 * We cannot use a relaxed read here, as DMA needs to be
-> +		 * ordered with respect to the IRQ firing.
-> +		 */
-> +		event = readl(ic->base + AIC_EVENT);
-> +		type = FIELD_GET(AIC_EVENT_TYPE, event);
-> +		irq = FIELD_GET(AIC_EVENT_NUM, event);
-> +
-> +		if (type == AIC_EVENT_TYPE_HW)
-> +			handle_domain_irq(aic_irqc->hw_domain, irq, regs);
-> +		else if (type == AIC_EVENT_TYPE_IPI && irq == 1)
-> +			aic_handle_ipi(regs);
-> +		else if (event != 0)
-> +			pr_err("Unknown IRQ event %d, %d\n", type, irq);
-> +	} while (event);
-> +
-> +	/*
-> +	 * vGIC maintenance interrupts end up here too, so we need to check
-> +	 * for them separately. Just report and disable vGIC for now, until
-> +	 * we implement this properly.
-> +	 */
-> +	if ((read_sysreg_s(SYS_ICH_HCR_EL2) & ICH_HCR_EN) &&
-> +		read_sysreg_s(SYS_ICH_MISR_EL2) != 0) {
-> +		pr_err("vGIC IRQ fired, disabling.\n");
+> ---
+>  arch/arm64/Kconfig.platforms | 8 ++++++++
+>  arch/arm64/configs/defconfig | 1 +
+>  2 files changed, 9 insertions(+)
+> 
+> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> index cdfd5fed457f..c2b5791e3d69 100644
+> --- a/arch/arm64/Kconfig.platforms
+> +++ b/arch/arm64/Kconfig.platforms
+> @@ -36,6 +36,14 @@ config ARCH_ALPINE
+>  	  This enables support for the Annapurna Labs Alpine
+>  	  Soc family.
+>  
+> +config ARCH_APPLE
+> +	bool "Apple Silicon SoC family"
+> +	select APPLE_AIC
+> +	select ARM64_FIQ_SUPPORT
 
-Please add a _ratelimited here. Whilst debugging KVM on this machine,
-I ended up with this firing at such a rate that it was impossible to
-do anything useful. Ratelimiting it allowed me to pinpoint the
-problem.
-
-[...]
-
-> +/*
-> + * FIQ irqchip
-> + */
-> +
-> +static void aic_fiq_mask(struct irq_data *d)
-> +{
-> +	/* Only the guest timers have real mask bits, unfortunately. */
-> +	switch (d->hwirq) {
-> +	case AIC_TMR_GUEST_PHYS:
-> +		sysreg_clear_set_s(SYS_APL_VM_TMR_FIQ_ENA_EL1, VM_TMR_FIQ_ENABLE_P, 0);
-> +		break;
-> +	case AIC_TMR_GUEST_VIRT:
-> +		sysreg_clear_set_s(SYS_APL_VM_TMR_FIQ_ENA_EL1, VM_TMR_FIQ_ENABLE_V, 0);
-> +		break;
-> +	}
-> +}
-> +
-> +static void aic_fiq_unmask(struct irq_data *d)
-> +{
-> +	switch (d->hwirq) {
-> +	case AIC_TMR_GUEST_PHYS:
-> +		sysreg_clear_set_s(SYS_APL_VM_TMR_FIQ_ENA_EL1, 0, VM_TMR_FIQ_ENABLE_P);
-> +		break;
-> +	case AIC_TMR_GUEST_VIRT:
-> +		sysreg_clear_set_s(SYS_APL_VM_TMR_FIQ_ENA_EL1, 0, VM_TMR_FIQ_ENABLE_V);
-> +		break;
-> +	}
-> +}
-> +
-> +static void aic_fiq_eoi(struct irq_data *d)
-> +{
-> +	/* We mask to ack (where we can), so we need to unmask at EOI. */
-> +	if (!irqd_irq_disabled(d) && !irqd_irq_masked(d))
-
-Ah, be careful here: irqd_irq_masked() doesn't do what you think it
-does for per-CPU interrupts. It's been on my list to fix for the rVIC
-implementation, but I never got around to doing it, and all decent ICs
-hide this from SW by having a HW-managed mask, similar to what is on
-the IRQ side.
-
-I can see two possibilities:
-
-- you can track the masked state directly and use that instead of
-  these predicates
-
-- you can just drop the masking altogether as this is only useful to a
-  hosted hypervisor (KVM), which will have to do its own masking
-  behind the scenes anyway
-
-> +		aic_fiq_unmask(d);
-> +}
-> +
-
-The rest looks good to me.
+Do we still need this FIQ symbol? I though it was now gone...
 
 Thanks,
 
