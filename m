@@ -2,55 +2,66 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBA0C433E9
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 16:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E1EC433DB
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 16:38:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C93E664FBD
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 16:12:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D204C651A8
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 16:38:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbhCIQLw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 9 Mar 2021 11:11:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33714 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231919AbhCIQL3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 9 Mar 2021 11:11:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D2F4C64FBD;
-        Tue,  9 Mar 2021 16:11:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615306289;
-        bh=jP4SlGRYL9z9+eyGPwRsaTLzvGEXcjhnvO8W76wpgNg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ZVrTVRlsTUZ6UvAFSqnFRXzFTuQ+RTH+KKVz80hwNJhcVb8oPDqu3VUXPxU08MljE
-         KwQn8X4P+k3aO/P71x48UcI3mUXon9e0sO13vmZTlYMgq5vLgEnwqAFq9sKDfMkxTd
-         mDT80HetJ45/BY6gIZetj74YgC344aL8/8eHU48l2pI2a5a9g64isjQpFurdbGLNpM
-         1ycmOuKDCP2N2pkLoFejOEAw0aDIBrZeyVy/G/6GwYn4rhVAfdqB5arhHGktPsqT5V
-         PeMh/vzPynAhkBZcSvYJte7w9F2ZVQNfDAeX5D1G++lMklup3F8WUxdNtaqCcjZCBh
-         DYVpOQRq4uP0g==
-Received: by mail-ej1-f51.google.com with SMTP id mm21so29127530ejb.12;
-        Tue, 09 Mar 2021 08:11:28 -0800 (PST)
-X-Gm-Message-State: AOAM532T7NmkX/hNtCfMVF5q3eEgNw8crSJFhcaNx+IFZWOk9iNMQg71
-        ErdB+TjmR+QOtRKIININtW9Sa+63bED9c4aPjg==
-X-Google-Smtp-Source: ABdhPJyUkLV5udpIPwopun4y9FIyMOM7Kb/GLOh2/MhA1kzOLho0N807A6srQjeEqqxkaM/xpiP2WAOCDXgqauEOczc=
-X-Received: by 2002:a17:906:25c4:: with SMTP id n4mr21228200ejb.359.1615306287477;
- Tue, 09 Mar 2021 08:11:27 -0800 (PST)
+        id S231264AbhCIQiZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 9 Mar 2021 11:38:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231463AbhCIQiH (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 9 Mar 2021 11:38:07 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F2EC061762
+        for <linux-serial@vger.kernel.org>; Tue,  9 Mar 2021 08:38:06 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id u4so28141515lfs.0
+        for <linux-serial@vger.kernel.org>; Tue, 09 Mar 2021 08:38:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DXEn5JSpgBw/y2eHpwVO9g48Km7rMDXnZlE1bBW2r8s=;
+        b=XbafCFFSFzMS+QhMLTOXgWvBugQJw48RI2zwRMEER0qGPENxJ5iZchaFs+rKwEnikM
+         1tw9Xx483823KTezlF5evj1N7lBynSwiixNRWDWfNIVwAwowxVk550YYcbVzT4P0nXjo
+         zmqi+9cd7JD9CdkiObbpmaNyz8VKgVTn9dhW1K1yaPxT+7VZEao5sP53AUdNGDXHri3j
+         k4lx6fKk6tszQoyJgAFHNqhhGRyB8+9bsJ/F3zZC4Xcu2m+9UA3oJ7PGHWX2fITVWdQk
+         Ps67OIw9ivU5AytiWUd3KoemZe4H9sK75XQy3jxZH8dQNjSC9JWOYLeMiNGL+Nh+KsVk
+         lpYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DXEn5JSpgBw/y2eHpwVO9g48Km7rMDXnZlE1bBW2r8s=;
+        b=P25QYOuuBcoMwfgFAUV0nOcNkeXfRJszsWpMLmRT1vr8xq+Ti7TXSo4dNPHLMZWSB4
+         RmV/Mhq5qbN+VC7zYFpumSakGvvoP7dfx27/wKyw0k/wFY1Yl2/gpGS/LE68CaI5hbkQ
+         v4RHhfyNH5mGSZOY8090gry22WdsmSSus2ThsAw4X0Lm1YsUyVD6UhNR8OkFwZcviYEZ
+         lIDvR9I8ok/WTHXngrqdGBBBjAdV42iP11azSJsyjeGdhIiwPJhNZott5PeKUqhoE+AC
+         WGdrpSWIX5pXerELoyVIwD6r/6xAjbge6zS0RAuZhiLCMSBhzE0AZ0ureDZLGDxbpYhN
+         Emcg==
+X-Gm-Message-State: AOAM533is0MUlZIHFoburWRqOBgdnXRNCbfcOuOQVqM5qvzZ5ZNPmBTf
+        dgOMukxuzzUIDcz9/queGUCBLDVvDoUIe5FKSZ6C6Q==
+X-Google-Smtp-Source: ABdhPJzph/W4+niKbEazqjfqIFq8ME97OA1IS7zhqExaRlDOuU14W5Llytf7OgyeKHYK9RZaGHLYo9BD0e1mWXcMU3o=
+X-Received: by 2002:a19:6b13:: with SMTP id d19mr17882973lfa.291.1615307885055;
+ Tue, 09 Mar 2021 08:38:05 -0800 (PST)
 MIME-Version: 1.0
-References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-7-marcan@marcan.st>
- <20210308203841.GA2906683@robh.at.kernel.org> <87zgzdqnbs.wl-maz@kernel.org>
-In-Reply-To: <87zgzdqnbs.wl-maz@kernel.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 9 Mar 2021 09:11:15 -0700
-X-Gmail-Original-Message-ID: <CAL_JsqJVmr+23HDN-7Wjbrkh5jt=4dbU9y1iUqDu1nPOV2+38Q@mail.gmail.com>
-Message-ID: <CAL_JsqJVmr+23HDN-7Wjbrkh5jt=4dbU9y1iUqDu1nPOV2+38Q@mail.gmail.com>
-Subject: Re: [RFT PATCH v3 06/27] dt-bindings: timer: arm,arch_timer: Add
- interrupt-names support
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Hector Martin <marcan@marcan.st>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-27-marcan@marcan.st>
+In-Reply-To: <20210304213902.83903-27-marcan@marcan.st>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 9 Mar 2021 17:37:54 +0100
+Message-ID: <CACRpkdYzkOCurtLaeyZ+A6EWnSPGU66by4gYoCpLcn=52hTEPQ@mail.gmail.com>
+Subject: Re: [RFT PATCH v3 26/27] dt-bindings: display: Add apple,simple-framebuffer
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
         Arnd Bergmann <arnd@kernel.org>,
         Olof Johansson <olof@lixom.net>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -60,7 +71,6 @@ Cc:     Hector Martin <marcan@marcan.st>,
         Stan Skowronek <stan@corellium.com>,
         Alexander Graf <graf@amazon.com>,
         Will Deacon <will@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -68,137 +78,29 @@ Cc:     Hector Martin <marcan@marcan.st>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Christoph Hellwig <hch@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
-        <linux-arch@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 8, 2021 at 3:42 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Mon, 08 Mar 2021 20:38:41 +0000,
-> Rob Herring <robh@kernel.org> wrote:
-> >
-> > On Fri, Mar 05, 2021 at 06:38:41AM +0900, Hector Martin wrote:
-> > > Not all platforms provide the same set of timers/interrupts, and Linux
-> > > only needs one (plus kvm/guest ones); some platforms are working around
-> > > this by using dummy fake interrupts. Implementing interrupt-names allows
-> > > the devicetree to specify an arbitrary set of available interrupts, so
-> > > the timer code can pick the right one.
-> > >
-> > > This also adds the hyp-virt timer/interrupt, which was previously not
-> > > expressed in the fixed 4-interrupt form.
-> > >
-> > > Signed-off-by: Hector Martin <marcan@marcan.st>
-> > > ---
-> > >  .../devicetree/bindings/timer/arm,arch_timer.yaml  | 14 ++++++++++++++
-> > >  1 file changed, 14 insertions(+)
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/timer/arm,arch_timer.yaml b/Documentation/devicetree/bindings/timer/arm,arch_timer.yaml
-> > > index 2c75105c1398..ebe9b0bebe41 100644
-> > > --- a/Documentation/devicetree/bindings/timer/arm,arch_timer.yaml
-> > > +++ b/Documentation/devicetree/bindings/timer/arm,arch_timer.yaml
-> > > @@ -34,11 +34,25 @@ properties:
-> > >                - arm,armv8-timer
-> > >
-> > >    interrupts:
-> > > +    minItems: 1
-> > > +    maxItems: 5
-> > >      items:
-> > >        - description: secure timer irq
-> > >        - description: non-secure timer irq
-> > >        - description: virtual timer irq
-> > >        - description: hypervisor timer irq
-> > > +      - description: hypervisor virtual timer irq
-> > > +
-> > > +  interrupt-names:
-> > > +    minItems: 1
-> > > +    maxItems: 5
-> > > +    items:
-> > > +      enum:
-> > > +        - phys-secure
-> > > +        - phys
-> > > +        - virt
-> > > +        - hyp-phys
-> > > +        - hyp-virt
-> >
-> > phys-secure and hyp-phys is not very consistent. secure-phys or sec-phys
-> > instead?
-> >
-> > This allows any order which is not ideal (unfortunately json-schema
-> > doesn't have a way to define order with optional entries in the middle).
-> > How many possible combinations are there which make sense? If that's a
-> > reasonable number, I'd rather see them listed out.
->
-> The available of interrupts are a function of the number of security
-> states, privileged exception levels and architecture revisions, as
-> described in D11.1.1:
->
-> <quote>
-> - An EL1 physical timer.
-> - A Non-secure EL2 physical timer.
-> - An EL3 physical timer.
-> - An EL1 virtual timer.
-> - A Non-secure EL2 virtual timer.
-> - A Secure EL2 virtual timer.
-> - A Secure EL2 physical timer.
-> </quote>
->
-> * Single security state, EL1 only, ARMv7 & ARMv8.0+ (assumed NS):
->   - physical, virtual
->
-> * Single security state, EL1 + EL2, ARMv7 & ARMv8.0 (assumed NS)
->   - physical, virtual, hyp physical
->
-> * Single security state, EL1 + EL2, ARMv8.1+ (assumed NS)
->   - physical, virtual, hyp physical, hyp virtual
->
-> * Two security states, EL1 + EL3, ARMv7 & ARMv8.0+:
->   - secure physical, physical, virtual
->
-> * Two security states, EL1 + EL2 + EL3, ARMv7 & ARMv8.0
->   - secure physical, physical, virtual, hyp physical
->
-> * Two security states, EL1 + EL2 + EL3, ARMv8.1+
->   - secure physical, physical, virtual, hyp physical, hyp virtual
->
-> * Two security states, EL1 + EL2 + S-EL2 + EL3, ARMv8.4+
->   - secure physical, physical, virtual, hyp physical, hyp virtual,
->     secure hyp physical, secure hyp virtual
->
-> Nobody has seen the last combination in the wild (that is, outside of
-> a SW model).
->
-> I'm really not convinced we want to express this kind of complexity in
-> the binding (each of the 7 cases), specially given that we don't
-> encode the underlying HW architecture level or number of exception
-> levels anywhere, and have ho way to validate such information.
+On Thu, Mar 4, 2021 at 10:42 PM Hector Martin <marcan@marcan.st> wrote:
 
-Actually, we can simplify this down to 2 cases:
+> Apple SoCs run firmware that sets up a simplefb-compatible framebuffer
+> for us. Add a compatible for it, and two missing supported formats.
+>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
 
-oneOf:
-  - minItems: 2
-    items:
-      - const: phys
-      - const: virt
-      - const: hyp-phys
-      - const: hyp-virt
-  - minItems: 3
-    items:
-      - const: sec-phys
-      - const: phys
-      - const: virt
-      - const: hyp-phys
-      - const: hyp-virt
-      - const: sec-hyp-phy
-      - const: sec-hyp-virt
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-And that's below my threshold for not worth the complexity.
+Marcan: tell me if you need me to apply this to the drm-misc tree
+and I'll fix it.
 
-Rob
+Yours,
+Linus Walleij
