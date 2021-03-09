@@ -2,68 +2,36 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E1EC433DB
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 16:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B136C4332B
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 20:25:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D204C651A8
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 16:38:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E24F065266
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 20:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231264AbhCIQiZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 9 Mar 2021 11:38:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58488 "EHLO
+        id S231517AbhCIUYW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 9 Mar 2021 15:24:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231463AbhCIQiH (ORCPT
+        with ESMTP id S231272AbhCIUX7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 9 Mar 2021 11:38:07 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F2EC061762
-        for <linux-serial@vger.kernel.org>; Tue,  9 Mar 2021 08:38:06 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id u4so28141515lfs.0
-        for <linux-serial@vger.kernel.org>; Tue, 09 Mar 2021 08:38:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DXEn5JSpgBw/y2eHpwVO9g48Km7rMDXnZlE1bBW2r8s=;
-        b=XbafCFFSFzMS+QhMLTOXgWvBugQJw48RI2zwRMEER0qGPENxJ5iZchaFs+rKwEnikM
-         1tw9Xx483823KTezlF5evj1N7lBynSwiixNRWDWfNIVwAwowxVk550YYcbVzT4P0nXjo
-         zmqi+9cd7JD9CdkiObbpmaNyz8VKgVTn9dhW1K1yaPxT+7VZEao5sP53AUdNGDXHri3j
-         k4lx6fKk6tszQoyJgAFHNqhhGRyB8+9bsJ/F3zZC4Xcu2m+9UA3oJ7PGHWX2fITVWdQk
-         Ps67OIw9ivU5AytiWUd3KoemZe4H9sK75XQy3jxZH8dQNjSC9JWOYLeMiNGL+Nh+KsVk
-         lpYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DXEn5JSpgBw/y2eHpwVO9g48Km7rMDXnZlE1bBW2r8s=;
-        b=P25QYOuuBcoMwfgFAUV0nOcNkeXfRJszsWpMLmRT1vr8xq+Ti7TXSo4dNPHLMZWSB4
-         RmV/Mhq5qbN+VC7zYFpumSakGvvoP7dfx27/wKyw0k/wFY1Yl2/gpGS/LE68CaI5hbkQ
-         v4RHhfyNH5mGSZOY8090gry22WdsmSSus2ThsAw4X0Lm1YsUyVD6UhNR8OkFwZcviYEZ
-         lIDvR9I8ok/WTHXngrqdGBBBjAdV42iP11azSJsyjeGdhIiwPJhNZott5PeKUqhoE+AC
-         WGdrpSWIX5pXerELoyVIwD6r/6xAjbge6zS0RAuZhiLCMSBhzE0AZ0ureDZLGDxbpYhN
-         Emcg==
-X-Gm-Message-State: AOAM533is0MUlZIHFoburWRqOBgdnXRNCbfcOuOQVqM5qvzZ5ZNPmBTf
-        dgOMukxuzzUIDcz9/queGUCBLDVvDoUIe5FKSZ6C6Q==
-X-Google-Smtp-Source: ABdhPJzph/W4+niKbEazqjfqIFq8ME97OA1IS7zhqExaRlDOuU14W5Llytf7OgyeKHYK9RZaGHLYo9BD0e1mWXcMU3o=
-X-Received: by 2002:a19:6b13:: with SMTP id d19mr17882973lfa.291.1615307885055;
- Tue, 09 Mar 2021 08:38:05 -0800 (PST)
-MIME-Version: 1.0
-References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-27-marcan@marcan.st>
-In-Reply-To: <20210304213902.83903-27-marcan@marcan.st>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 9 Mar 2021 17:37:54 +0100
-Message-ID: <CACRpkdYzkOCurtLaeyZ+A6EWnSPGU66by4gYoCpLcn=52hTEPQ@mail.gmail.com>
-Subject: Re: [RFT PATCH v3 26/27] dt-bindings: display: Add apple,simple-framebuffer
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
+        Tue, 9 Mar 2021 15:23:59 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4F5C06175F;
+        Tue,  9 Mar 2021 12:23:59 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id E5D233FA6A;
+        Tue,  9 Mar 2021 20:23:49 +0000 (UTC)
+To:     Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
         Krzysztof Kozlowski <krzk@kernel.org>,
         Mark Kettenis <mark.kettenis@xs4all.nl>,
         Tony Lindgren <tony@atomide.com>,
@@ -71,6 +39,7 @@ Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Stan Skowronek <stan@corellium.com>,
         Alexander Graf <graf@amazon.com>,
         Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -78,29 +47,73 @@ Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Christoph Hellwig <hch@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+References: <20210304213902.83903-1-marcan@marcan.st>
+ <20210304213902.83903-13-marcan@marcan.st>
+ <CAL_JsqJF2Hz=4U7FR_GOSjCxqt3dpf-CAWFNfsSrDjDLpHqgCA@mail.gmail.com>
+ <6e4880b3-1fb6-0cbf-c1a5-7a46fd9ccf62@marcan.st>
+ <CAK8P3a0Hmwt-ywzS-2eEmqyQ0v2SxLsLxFwfTUoWwbzCrBNhsQ@mail.gmail.com>
+ <CAL_JsqJHRM59GC3FjvaGLCELemy1uspnGvTEFH6q0OdyBPVSjA@mail.gmail.com>
+ <CAK8P3a0_GBB-VYFO5NaySyBJDN2Ra-WMH4WfFrnzgOejmJVG8g@mail.gmail.com>
+ <20210308211306.GA2920998@robh.at.kernel.org>
+ <CAK8P3a2GfzUevuQNZeQarJ4GNFsuDj0g7oFuN940Hdaw06YJbA@mail.gmail.com>
+ <CAL_JsqK8FagJyQVyG5DAocUjLGZT91b6NzDm_DNMW1hdCz51Xg@mail.gmail.com>
+From:   Hector Martin <marcan@marcan.st>
+Subject: Re: [RFT PATCH v3 12/27] of/address: Add infrastructure to declare
+ MMIO as non-posted
+Message-ID: <c5693760-3b18-e8f1-18b6-bae42c05d329@marcan.st>
+Date:   Wed, 10 Mar 2021 05:23:47 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <CAL_JsqK8FagJyQVyG5DAocUjLGZT91b6NzDm_DNMW1hdCz51Xg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: es-ES
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 4, 2021 at 10:42 PM Hector Martin <marcan@marcan.st> wrote:
+On 10/03/2021 00.48, Rob Herring wrote:
+> On Mon, Mar 8, 2021 at 2:56 PM Arnd Bergmann <arnd@kernel.org> wrote:
+>>
+>> On Mon, Mar 8, 2021 at 10:14 PM Rob Herring <robh@kernel.org> wrote:
+>>> On Mon, Mar 08, 2021 at 09:29:54PM +0100, Arnd Bergmann wrote:
+>>>> On Mon, Mar 8, 2021 at 4:56 PM Rob Herring <robh@kernel.org> wrote:
+>>>
+>>> Let's just stick with 'nonposted-mmio', but drop 'posted-mmio'. I'd
+>>> rather know if and when we need 'posted-mmio'. It does need to be added
+>>> to the DT spec[1] and schema[2] though (GH PRs are fine for both).
+>>
+>> I think the reason for having "posted-mmio" is that you cannot properly
+>> define the PCI host controller nodes on the M1 without that: Since
+>> nonposted-mmio applies to all child nodes, this would mean the PCI
+>> memory space gets declared as nonposted by the DT, but the hardware
+>> requires it to be mapped as posted.
+> 
+> I don't think so. PCI devices wouldn't use any of the code paths in
+> this patch. They would map their memory space with plain ioremap()
+> which is posted.
 
-> Apple SoCs run firmware that sets up a simplefb-compatible framebuffer
-> for us. Add a compatible for it, and two missing supported formats.
->
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+My main concern here is that this creates an inconsistency in the device 
+tree representation that only works because PCI drivers happen not to 
+use these code paths. Logically, having "nonposted-mmio" above the PCI 
+controller would imply that it applies to that bus too. Sure, it doesn't 
+matter for Linux since it is ignored, but this creates an implicit 
+exception that PCI buses always use posted modes.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Then if a device comes along that due to some twisted fabric logic needs 
+nonposted nGnRnE mappings for PCIe (even though the actual PCIe ops will 
+end up posted at the bus anyway)... how do we represent that? Declare 
+that another "nonposted-mmio" on the PCIe bus means "no, really, use 
+nonposted mmio for this"?
 
-Marcan: tell me if you need me to apply this to the drm-misc tree
-and I'll fix it.
-
-Yours,
-Linus Walleij
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
