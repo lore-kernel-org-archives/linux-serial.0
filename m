@@ -2,198 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2218C433E0
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 21:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13CE8C433E6
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 22:07:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 87FD864FCE
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 21:49:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D990365049
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Mar 2021 22:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231607AbhCIVsu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 9 Mar 2021 16:48:50 -0500
-Received: from mga11.intel.com ([192.55.52.93]:3183 "EHLO mga11.intel.com"
+        id S231985AbhCIWGt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 9 Mar 2021 17:06:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44584 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232066AbhCIVsu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 9 Mar 2021 16:48:50 -0500
-IronPort-SDR: OAPgWj7h6FW7YYwH1aoD+5SgDltcyWXi3uqyCKrRbO5UpRKoGNw71iCboXL4QHVEdUXqK9x80W
- K3xkjCox+7JA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9917"; a="184969207"
-X-IronPort-AV: E=Sophos;i="5.81,236,1610438400"; 
-   d="scan'208";a="184969207"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2021 13:48:46 -0800
-IronPort-SDR: SSPKAsyl/a9Wf4bSFml6nYex7bSvcJeozldKjXgHU2Ijtn+2nZYAA+HjC6vT6+/KyAZN9kcZA4
- qkWNxwr5Jy0g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,236,1610438400"; 
-   d="scan'208";a="369929548"
-Received: from lkp-server01.sh.intel.com (HELO 3e992a48ca98) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 09 Mar 2021 13:48:44 -0800
-Received: from kbuild by 3e992a48ca98 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lJkDb-0001qM-H3; Tue, 09 Mar 2021 21:48:43 +0000
-Date:   Wed, 10 Mar 2021 05:48:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-next] BUILD SUCCESS
- ead791522faf8957e716731dcba3027aef2a9275
-Message-ID: <6047ed2e.OYdO4DFtZ8GbB6kF%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S230173AbhCIWG0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 9 Mar 2021 17:06:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BD71165092;
+        Tue,  9 Mar 2021 22:06:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615327585;
+        bh=Yv8N+lvXzeDwu/BV9QWlF/ECq72HLpbo3iSHF+ZDqfA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=b9PbhBz+g4RuhQnFFoZGqEnaAdoqx/n8ibHQd9UksEzDN3OCX8g8VaguKgjXoL8J9
+         aK9u69eyvc/BWTuwS8lIYuYCkHy59HLZXXgXNYp9FjDiau6yjAt2HeUm+013Kw5Je2
+         fOmbG/pfsOiHIO87xqtO5925x7LNyMkFRL8jPM+CqOD5WKNM8wZsVtU+E/xPq3BAgh
+         yD6Xj9V9NiRiYM65qk/6iUIk20/73ihjOCansOlQuZAZb99W+QpfrcANFglpfGkGoK
+         O/oUo6ct+GlE7wJQiPrS/ZXY9h2uDPHBVRRnlHVtGMPgVJlSGmB+yRs1lzMXstoZju
+         IJg8ssOyCZa/A==
+Received: by mail-qv1-f54.google.com with SMTP id x13so7242173qvj.7;
+        Tue, 09 Mar 2021 14:06:25 -0800 (PST)
+X-Gm-Message-State: AOAM532qu2xyOXoypO2VVCZQqxMgebdhYqG4qhMXKNL4yOgMSpEUqAyY
+        1Iu+rWriPgAtHc2G/20/myanriqS9kdq89tdVw==
+X-Google-Smtp-Source: ABdhPJy1C6AzP09b9wus1ZVT5E/CtXLEugZNjwqSvxHP9P4lOiRLRzFWXQ3jpvPXSnSw2MikeoWzpKJ2j9KJLzk621o=
+X-Received: by 2002:a0c:f092:: with SMTP id g18mr201509qvk.11.1615327584670;
+ Tue, 09 Mar 2021 14:06:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-13-marcan@marcan.st>
+ <CAL_JsqJF2Hz=4U7FR_GOSjCxqt3dpf-CAWFNfsSrDjDLpHqgCA@mail.gmail.com>
+ <6e4880b3-1fb6-0cbf-c1a5-7a46fd9ccf62@marcan.st> <CAK8P3a0Hmwt-ywzS-2eEmqyQ0v2SxLsLxFwfTUoWwbzCrBNhsQ@mail.gmail.com>
+ <CAL_JsqJHRM59GC3FjvaGLCELemy1uspnGvTEFH6q0OdyBPVSjA@mail.gmail.com>
+ <CAK8P3a0_GBB-VYFO5NaySyBJDN2Ra-WMH4WfFrnzgOejmJVG8g@mail.gmail.com>
+ <20210308211306.GA2920998@robh.at.kernel.org> <CAK8P3a2GfzUevuQNZeQarJ4GNFsuDj0g7oFuN940Hdaw06YJbA@mail.gmail.com>
+ <CAL_JsqK8FagJyQVyG5DAocUjLGZT91b6NzDm_DNMW1hdCz51Xg@mail.gmail.com> <c5693760-3b18-e8f1-18b6-bae42c05d329@marcan.st>
+In-Reply-To: <c5693760-3b18-e8f1-18b6-bae42c05d329@marcan.st>
+From:   Rob Herring <robh@kernel.org>
+Date:   Tue, 9 Mar 2021 15:06:13 -0700
+X-Gmail-Original-Message-ID: <CAL_Jsq+VLLPa98iaTvOkK-tjuBH4qY7FNEGtufYGv7rXAbwegQ@mail.gmail.com>
+Message-ID: <CAL_Jsq+VLLPa98iaTvOkK-tjuBH4qY7FNEGtufYGv7rXAbwegQ@mail.gmail.com>
+Subject: Re: [RFT PATCH v3 12/27] of/address: Add infrastructure to declare
+ MMIO as non-posted
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Tony Lindgren <tony@atomide.com>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>,
+        Alexander Graf <graf@amazon.com>,
+        Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-branch HEAD: ead791522faf8957e716731dcba3027aef2a9275  Merge v5.12-rc2 into tty-next
+On Tue, Mar 9, 2021 at 1:24 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> On 10/03/2021 00.48, Rob Herring wrote:
+> > On Mon, Mar 8, 2021 at 2:56 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> >>
+> >> On Mon, Mar 8, 2021 at 10:14 PM Rob Herring <robh@kernel.org> wrote:
+> >>> On Mon, Mar 08, 2021 at 09:29:54PM +0100, Arnd Bergmann wrote:
+> >>>> On Mon, Mar 8, 2021 at 4:56 PM Rob Herring <robh@kernel.org> wrote:
+> >>>
+> >>> Let's just stick with 'nonposted-mmio', but drop 'posted-mmio'. I'd
+> >>> rather know if and when we need 'posted-mmio'. It does need to be added
+> >>> to the DT spec[1] and schema[2] though (GH PRs are fine for both).
+> >>
+> >> I think the reason for having "posted-mmio" is that you cannot properly
+> >> define the PCI host controller nodes on the M1 without that: Since
+> >> nonposted-mmio applies to all child nodes, this would mean the PCI
+> >> memory space gets declared as nonposted by the DT, but the hardware
+> >> requires it to be mapped as posted.
+> >
+> > I don't think so. PCI devices wouldn't use any of the code paths in
+> > this patch. They would map their memory space with plain ioremap()
+> > which is posted.
+>
+> My main concern here is that this creates an inconsistency in the device
+> tree representation that only works because PCI drivers happen not to
+> use these code paths. Logically, having "nonposted-mmio" above the PCI
+> controller would imply that it applies to that bus too. Sure, it doesn't
+> matter for Linux since it is ignored, but this creates an implicit
+> exception that PCI buses always use posted modes.
 
-elapsed time: 724m
+We could be stricter that "nonposted-mmio" must be in the immediate
+parent. That's kind of in line with how addressing already works.
+Every level has to have 'ranges' to be an MMIO address, and the
+address cell size is set by the immediate parent.
 
-configs tested: 129
-configs skipped: 2
+> Then if a device comes along that due to some twisted fabric logic needs
+> nonposted nGnRnE mappings for PCIe (even though the actual PCIe ops will
+> end up posted at the bus anyway)... how do we represent that? Declare
+> that another "nonposted-mmio" on the PCIe bus means "no, really, use
+> nonposted mmio for this"?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+If we're strict, yes. The PCI host bridge would have to have "nonposted-mmio".
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-mips                        workpad_defconfig
-sh                           se7724_defconfig
-mips                         bigsur_defconfig
-mips                          ath25_defconfig
-m68k                           sun3_defconfig
-powerpc                  mpc866_ads_defconfig
-mips                           gcw0_defconfig
-arm                            lart_defconfig
-sh                        edosk7705_defconfig
-powerpc                 xes_mpc85xx_defconfig
-sh                               alldefconfig
-powerpc64                           defconfig
-sh                        edosk7760_defconfig
-mips                        jmr3927_defconfig
-arm                            hisi_defconfig
-arm                          pxa3xx_defconfig
-m68k                             alldefconfig
-arm                          moxart_defconfig
-powerpc                  storcenter_defconfig
-arm                             ezx_defconfig
-mips                       lemote2f_defconfig
-powerpc                     tqm8541_defconfig
-powerpc                     pq2fads_defconfig
-arm                           stm32_defconfig
-mips                 decstation_r4k_defconfig
-powerpc                    amigaone_defconfig
-powerpc                    mvme5100_defconfig
-arc                            hsdk_defconfig
-arm                        multi_v5_defconfig
-sh                              ul2_defconfig
-riscv             nommu_k210_sdcard_defconfig
-xtensa                          iss_defconfig
-powerpc                     kmeter1_defconfig
-sh                   rts7751r2dplus_defconfig
-arm                             mxs_defconfig
-arm                        cerfcube_defconfig
-sh                           se7343_defconfig
-sh                        sh7785lcr_defconfig
-mips                     cu1830-neo_defconfig
-sh                           se7722_defconfig
-nios2                         3c120_defconfig
-powerpc                 linkstation_defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                               tinyconfig
-i386                                defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-i386                 randconfig-a005-20210309
-i386                 randconfig-a003-20210309
-i386                 randconfig-a002-20210309
-i386                 randconfig-a006-20210309
-i386                 randconfig-a004-20210309
-i386                 randconfig-a001-20210309
-x86_64               randconfig-a013-20210309
-x86_64               randconfig-a016-20210309
-x86_64               randconfig-a015-20210309
-x86_64               randconfig-a014-20210309
-x86_64               randconfig-a011-20210309
-x86_64               randconfig-a012-20210309
-i386                 randconfig-a016-20210309
-i386                 randconfig-a012-20210309
-i386                 randconfig-a014-20210309
-i386                 randconfig-a013-20210309
-i386                 randconfig-a011-20210309
-i386                 randconfig-a015-20210309
-x86_64               randconfig-a006-20210308
-x86_64               randconfig-a001-20210308
-x86_64               randconfig-a004-20210308
-x86_64               randconfig-a002-20210308
-x86_64               randconfig-a005-20210308
-x86_64               randconfig-a003-20210308
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                           allyesconfig
-x86_64                    rhel-7.6-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                      rhel-8.3-kbuiltin
-x86_64                                  kexec
-
-clang tested configs:
-x86_64               randconfig-a006-20210309
-x86_64               randconfig-a001-20210309
-x86_64               randconfig-a004-20210309
-x86_64               randconfig-a002-20210309
-x86_64               randconfig-a005-20210309
-x86_64               randconfig-a003-20210309
-x86_64               randconfig-a013-20210308
-x86_64               randconfig-a016-20210308
-x86_64               randconfig-a015-20210308
-x86_64               randconfig-a014-20210308
-x86_64               randconfig-a011-20210308
-x86_64               randconfig-a012-20210308
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Rob
