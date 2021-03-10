@@ -2,158 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2F2C433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 03:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A07C433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 08:28:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 91D5F64F7E
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 03:35:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 50D9264FE8
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 08:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230458AbhCJDfP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 9 Mar 2021 22:35:15 -0500
-Received: from mga09.intel.com ([134.134.136.24]:3411 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230094AbhCJDfJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 9 Mar 2021 22:35:09 -0500
-IronPort-SDR: CcaOqOe7dqhFhyvBlc3WNZfCU2yoq+wRTs9TMUwGFhYQETTclOZAj9F5ffQiMh5dfKE/cj1Mer
- mdLRcUhZlGBQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9917"; a="188476553"
-X-IronPort-AV: E=Sophos;i="5.81,236,1610438400"; 
-   d="scan'208";a="188476553"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2021 19:35:08 -0800
-IronPort-SDR: U4AN+0glTKbwuPN8aUGpdec37by6z78O9iNyklhDBG1lC4URWlazwT0VPraZ7oWx/Qw+wBLZK9
- HyJY97hGM40w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,236,1610438400"; 
-   d="scan'208";a="602902331"
-Received: from lkp-server01.sh.intel.com (HELO 3e992a48ca98) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 09 Mar 2021 19:35:07 -0800
-Received: from kbuild by 3e992a48ca98 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lJpco-000200-HN; Wed, 10 Mar 2021 03:35:06 +0000
-Date:   Wed, 10 Mar 2021 11:34:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- b25e4c2d262cda29acde36413e6dd7cffd3d35a6
-Message-ID: <60483e60.XhVINuSVHURInU7i%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S229632AbhCJI1i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 Mar 2021 03:27:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37332 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229516AbhCJI1F (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 10 Mar 2021 03:27:05 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCC2C06174A;
+        Wed, 10 Mar 2021 00:27:05 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 1091B3FA1B;
+        Wed, 10 Mar 2021 08:26:56 +0000 (UTC)
+Subject: Re: [RFT PATCH v3 12/27] of/address: Add infrastructure to declare
+ MMIO as non-posted
+To:     Rob Herring <robh@kernel.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Tony Lindgren <tony@atomide.com>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>,
+        Alexander Graf <graf@amazon.com>,
+        Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210304213902.83903-1-marcan@marcan.st>
+ <20210304213902.83903-13-marcan@marcan.st>
+ <CAL_JsqJF2Hz=4U7FR_GOSjCxqt3dpf-CAWFNfsSrDjDLpHqgCA@mail.gmail.com>
+ <6e4880b3-1fb6-0cbf-c1a5-7a46fd9ccf62@marcan.st>
+ <CAK8P3a0Hmwt-ywzS-2eEmqyQ0v2SxLsLxFwfTUoWwbzCrBNhsQ@mail.gmail.com>
+ <CAL_JsqJHRM59GC3FjvaGLCELemy1uspnGvTEFH6q0OdyBPVSjA@mail.gmail.com>
+ <CAK8P3a0_GBB-VYFO5NaySyBJDN2Ra-WMH4WfFrnzgOejmJVG8g@mail.gmail.com>
+ <20210308211306.GA2920998@robh.at.kernel.org>
+ <CAK8P3a2GfzUevuQNZeQarJ4GNFsuDj0g7oFuN940Hdaw06YJbA@mail.gmail.com>
+ <CAL_JsqK8FagJyQVyG5DAocUjLGZT91b6NzDm_DNMW1hdCz51Xg@mail.gmail.com>
+ <c5693760-3b18-e8f1-18b6-bae42c05d329@marcan.st>
+ <CAL_Jsq+VLLPa98iaTvOkK-tjuBH4qY7FNEGtufYGv7rXAbwegQ@mail.gmail.com>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <332c0b9a-dcfd-4c3b-9038-47cbda90eb3f@marcan.st>
+Date:   Wed, 10 Mar 2021 17:26:54 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAL_Jsq+VLLPa98iaTvOkK-tjuBH4qY7FNEGtufYGv7rXAbwegQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: es-ES
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: b25e4c2d262cda29acde36413e6dd7cffd3d35a6  serial: stm32: add support for "flush_buffer" ops
+On 10/03/2021 07.06, Rob Herring wrote:
+>> My main concern here is that this creates an inconsistency in the device
+>> tree representation that only works because PCI drivers happen not to
+>> use these code paths. Logically, having "nonposted-mmio" above the PCI
+>> controller would imply that it applies to that bus too. Sure, it doesn't
+>> matter for Linux since it is ignored, but this creates an implicit
+>> exception that PCI buses always use posted modes.
+> 
+> We could be stricter that "nonposted-mmio" must be in the immediate
+> parent. That's kind of in line with how addressing already works.
+> Every level has to have 'ranges' to be an MMIO address, and the
+> address cell size is set by the immediate parent.
+> 
+>> Then if a device comes along that due to some twisted fabric logic needs
+>> nonposted nGnRnE mappings for PCIe (even though the actual PCIe ops will
+>> end up posted at the bus anyway)... how do we represent that? Declare
+>> that another "nonposted-mmio" on the PCIe bus means "no, really, use
+>> nonposted mmio for this"?
+> 
+> If we're strict, yes. The PCI host bridge would have to have "nonposted-mmio".
 
-elapsed time: 724m
+Works for me; then let's just make it non-recursive.
 
-configs tested: 90
-configs skipped: 2
+Do you think we can get rid of the Apple-only optimization if we do 
+this? It would mean only looking at the parent during address 
+resolution, not recursing all the way to the top, so presumably the 
+performance impact would be quite minimal.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-sparc                            allyesconfig
-mips                         db1xxx_defconfig
-powerpc                     tqm8540_defconfig
-powerpc                      ppc44x_defconfig
-powerpc                     pq2fads_defconfig
-powerpc                      obs600_defconfig
-powerpc                       holly_defconfig
-powerpc                     kmeter1_defconfig
-riscv                          rv32_defconfig
-arm                         hackkit_defconfig
-sh                               j2_defconfig
-mips                        omega2p_defconfig
-arm                       versatile_defconfig
-sh                        sh7757lcr_defconfig
-powerpc                 mpc832x_mds_defconfig
-arm                         s3c2410_defconfig
-mips                          ath79_defconfig
-riscv                               defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                               defconfig
-i386                               tinyconfig
-i386                                defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-i386                 randconfig-a005-20210308
-i386                 randconfig-a003-20210308
-i386                 randconfig-a002-20210308
-i386                 randconfig-a006-20210308
-i386                 randconfig-a004-20210308
-i386                 randconfig-a001-20210308
-x86_64               randconfig-a013-20210309
-x86_64               randconfig-a016-20210309
-x86_64               randconfig-a015-20210309
-x86_64               randconfig-a014-20210309
-x86_64               randconfig-a011-20210309
-x86_64               randconfig-a012-20210309
-i386                 randconfig-a016-20210309
-i386                 randconfig-a012-20210309
-i386                 randconfig-a014-20210309
-i386                 randconfig-a013-20210309
-i386                 randconfig-a011-20210309
-i386                 randconfig-a015-20210309
-x86_64               randconfig-a006-20210308
-x86_64               randconfig-a001-20210308
-x86_64               randconfig-a004-20210308
-x86_64               randconfig-a002-20210308
-x86_64               randconfig-a005-20210308
-x86_64               randconfig-a003-20210308
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-x86_64                           allyesconfig
-x86_64                    rhel-7.6-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                      rhel-8.3-kbuiltin
-x86_64                                  kexec
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
