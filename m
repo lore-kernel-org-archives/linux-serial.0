@@ -2,230 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6366C433E9
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 22:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA8E8C433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 23:12:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9033264FCD
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 22:07:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E60564FCE
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 23:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233007AbhCJWG5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 Mar 2021 17:06:57 -0500
-Received: from mga11.intel.com ([192.55.52.93]:22631 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234013AbhCJWGi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 Mar 2021 17:06:38 -0500
-IronPort-SDR: aP0bIsDrtEOr5MZDrcocazLHQ2CxsUfowg5lQGgyDKJTuWAtkVhRNTm6SbwIxJcufGzktqMtdA
- CE/gQkRiMy+w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9919"; a="185217430"
-X-IronPort-AV: E=Sophos;i="5.81,238,1610438400"; 
-   d="scan'208";a="185217430"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2021 14:06:38 -0800
-IronPort-SDR: pyoRqPDLLoKysev9slGU7mn5t0/MHV/NQhvWaH40sHKYCtZZSzA+bjIkDdV1F89uAJrLLuGQpV
- uylxgWihZ2wQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,238,1610438400"; 
-   d="scan'208";a="370350186"
-Received: from lkp-server02.sh.intel.com (HELO ce64c092ff93) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 10 Mar 2021 14:06:36 -0800
-Received: from kbuild by ce64c092ff93 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lK6yS-0000PI-2B; Wed, 10 Mar 2021 22:06:36 +0000
-Date:   Thu, 11 Mar 2021 06:05:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- c776b77a279c327fe9e7710e71a3400766554255
-Message-ID: <604942c0.WoLPMhLxKIGKW3sL%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S233781AbhCJXMF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 Mar 2021 18:12:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232523AbhCJXLf (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 10 Mar 2021 18:11:35 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB92DC061764
+        for <linux-serial@vger.kernel.org>; Wed, 10 Mar 2021 15:11:34 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id m11so27814127lji.10
+        for <linux-serial@vger.kernel.org>; Wed, 10 Mar 2021 15:11:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fsUvZGKYC5fgx4oei9Q5/ic2uEIxVNyjDNMh2AgyO6I=;
+        b=YFJ7SMDaL74sPgY4t2M2TveLoai2GpxFH7T+w02cY0yAPfz4d7STzMXwN2LMQ2iEoZ
+         AC3wFDsX/B+jYJXVNzs+y4D9tGf/wEA3njzRA4m7PPgqfVi486jFs5jC4rjhpItvLjMl
+         feX0SL4sSjFQxxMpaHtUG3m/yP5ZsWGY2bHZ1JzjeRWLuH3LgTM/weeATOW14t4za+lM
+         0oejehpKlmlwaemoSaXKHgvkv/wgRR/MCed4z76h2TRaPLDfBO1rpazJRuqEpn9HXUuZ
+         gZsRlyCIDNbKHWfuIFLOxVswPmSPuq2apnjiVRCSHJ7mbVzB2AtDRB2jPCfVazu7Yozu
+         i7/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fsUvZGKYC5fgx4oei9Q5/ic2uEIxVNyjDNMh2AgyO6I=;
+        b=TN1RS3XV2sOKesr4e6zHuFirSqlQgO2ZCbn+hyLsk/vL3YGuVN2FV6qaORnJ64PrBy
+         dj3FCxpZd3PMFePxz2BG1w9lbBC7RnDDYy5Bf6MSduwreU+XmpmPxaIx8PPRIXjW329b
+         kTw+knpOiQoOkTpbGmKafDlA2Ab+p2v4WopmbayTIOokgsJO4jiVsmrCfYUK9jGZhzXp
+         94M/2akvZZOuRyLBiI5azPcFiYn2enUALzPMZJlxM6o+7LzeVZvCswo2v0xla+0VprFE
+         JP1GCxwsuzj7/9n+W7NLStlo99XvI9mfsSbREEiwj8Woms8xpsHN7LhNwHHleH3mIVnB
+         UUbg==
+X-Gm-Message-State: AOAM5326tEMKZypryI9MpNMsYnl6lyywhU9ygcySIYBZTTE42yLusqr8
+        LwDBt5Jj55VhmJHGi2Mm4arOAaOP9hFwx36cxtN63w==
+X-Google-Smtp-Source: ABdhPJzmo5G8NylnSmgEyDfdbat9eWDptGx3+8/H3Ywrq5Z5I67GtCUd0mY3fRoJZXOwQZI5bSexUvc4wSg5BOhWX4M=
+X-Received: by 2002:a2e:7001:: with SMTP id l1mr3125411ljc.200.1615417892988;
+ Wed, 10 Mar 2021 15:11:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-26-marcan@marcan.st>
+In-Reply-To: <20210304213902.83903-26-marcan@marcan.st>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 11 Mar 2021 00:11:22 +0100
+Message-ID: <CACRpkdZrFfP3nx=eU-hKKVUfxHHX2J2-__6tjV8hTPgX3qtBDA@mail.gmail.com>
+Subject: Re: [RFT PATCH v3 25/27] tty: serial: samsung_tty: Add earlycon
+ support for Apple UARTs
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Tony Lindgren <tony@atomide.com>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>,
+        Alexander Graf <graf@amazon.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: c776b77a279c327fe9e7710e71a3400766554255  Revert "drivers:tty:pty: Fix a race causing data loss on close"
+On Thu, Mar 4, 2021 at 10:42 PM Hector Martin <marcan@marcan.st> wrote:
 
-elapsed time: 728m
+> Earlycon support is identical to S3C2410, but Apple SoCs also need
+> MMIO mapped as nGnRnE. This is handled generically for normal drivers
+> including the normal UART path here, but earlycon uses fixmap and
+> runs before that scaffolding is ready.
+>
+> Since this is the only case where we need this fix, it makes more
+> sense to do it here in the UART driver instead of introducing a
+> whole fdt nonposted-mmio resolver just for earlycon/fixmap.
+>
+> Suggested-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
 
-configs tested: 160
-configs skipped: 2
+This is as elegant as it gets!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-mips                         tb0287_defconfig
-mips                     cu1830-neo_defconfig
-powerpc                 mpc8540_ads_defconfig
-mips                           jazz_defconfig
-sh                          r7785rp_defconfig
-m68k                          hp300_defconfig
-powerpc                    adder875_defconfig
-powerpc                 mpc8313_rdb_defconfig
-powerpc                      ppc40x_defconfig
-mips                      pistachio_defconfig
-powerpc                 mpc837x_rdb_defconfig
-sh                          landisk_defconfig
-sh                          rsk7264_defconfig
-sh                          r7780mp_defconfig
-m68k                        mvme16x_defconfig
-powerpc                    mvme5100_defconfig
-sh                   sh7770_generic_defconfig
-arm                             ezx_defconfig
-powerpc                       eiger_defconfig
-ia64                            zx1_defconfig
-sh                                  defconfig
-powerpc                 mpc832x_rdb_defconfig
-arm                       cns3420vb_defconfig
-m68k                       m5275evb_defconfig
-h8300                               defconfig
-mips                        bcm63xx_defconfig
-mips                  maltasmvp_eva_defconfig
-h8300                    h8300h-sim_defconfig
-mips                            gpr_defconfig
-powerpc64                        alldefconfig
-powerpc                     tqm8541_defconfig
-sh                          urquell_defconfig
-arc                    vdk_hs38_smp_defconfig
-m68k                       bvme6000_defconfig
-x86_64                              defconfig
-arm                        spear3xx_defconfig
-sh                      rts7751r2d1_defconfig
-powerpc                    ge_imp3a_defconfig
-arm                         hackkit_defconfig
-mips                     loongson1b_defconfig
-h8300                            alldefconfig
-arm                       omap2plus_defconfig
-arm                      tct_hammer_defconfig
-arm                         lubbock_defconfig
-arm                            hisi_defconfig
-mips                           ip32_defconfig
-sh                          lboxre2_defconfig
-powerpc                 mpc832x_mds_defconfig
-arm                         s3c2410_defconfig
-mips                          ath79_defconfig
-riscv                               defconfig
-mips                             allyesconfig
-arm                            xcep_defconfig
-arc                           tb10x_defconfig
-arm                          ep93xx_defconfig
-powerpc                     stx_gp3_defconfig
-arm                          pxa910_defconfig
-powerpc                        icon_defconfig
-m68k                        m5307c3_defconfig
-powerpc                     tqm5200_defconfig
-xtensa                          iss_defconfig
-sh                         ap325rxa_defconfig
-arm                        multi_v5_defconfig
-m68k                        m5272c3_defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                               tinyconfig
-i386                                defconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a006-20210308
-x86_64               randconfig-a001-20210308
-x86_64               randconfig-a004-20210308
-x86_64               randconfig-a002-20210308
-x86_64               randconfig-a005-20210308
-x86_64               randconfig-a003-20210308
-i386                 randconfig-a005-20210309
-i386                 randconfig-a003-20210309
-i386                 randconfig-a002-20210309
-i386                 randconfig-a006-20210309
-i386                 randconfig-a004-20210309
-i386                 randconfig-a001-20210309
-x86_64               randconfig-a013-20210309
-x86_64               randconfig-a016-20210309
-x86_64               randconfig-a015-20210309
-x86_64               randconfig-a014-20210309
-x86_64               randconfig-a011-20210309
-x86_64               randconfig-a012-20210309
-x86_64               randconfig-a011-20210310
-x86_64               randconfig-a016-20210310
-x86_64               randconfig-a013-20210310
-x86_64               randconfig-a015-20210310
-x86_64               randconfig-a014-20210310
-x86_64               randconfig-a012-20210310
-i386                 randconfig-a016-20210309
-i386                 randconfig-a012-20210309
-i386                 randconfig-a014-20210309
-i386                 randconfig-a013-20210309
-i386                 randconfig-a011-20210309
-i386                 randconfig-a015-20210309
-i386                 randconfig-a016-20210308
-i386                 randconfig-a012-20210308
-i386                 randconfig-a014-20210308
-i386                 randconfig-a013-20210308
-i386                 randconfig-a011-20210308
-i386                 randconfig-a015-20210308
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                           allyesconfig
-x86_64                    rhel-7.6-kselftests
-x86_64                               rhel-8.3
-x86_64                      rhel-8.3-kbuiltin
-x86_64                                  kexec
-
-clang tested configs:
-x86_64               randconfig-a006-20210309
-x86_64               randconfig-a001-20210309
-x86_64               randconfig-a004-20210309
-x86_64               randconfig-a002-20210309
-x86_64               randconfig-a005-20210309
-x86_64               randconfig-a003-20210309
-x86_64               randconfig-a013-20210308
-x86_64               randconfig-a016-20210308
-x86_64               randconfig-a015-20210308
-x86_64               randconfig-a014-20210308
-x86_64               randconfig-a011-20210308
-x86_64               randconfig-a012-20210308
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Yours,
+Linus Walleij
