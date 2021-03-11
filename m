@@ -2,119 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52122C433E6
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 13:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF05CC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 13:36:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AC87F64E3F
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 13:09:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 76B3264ED5
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 13:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233207AbhCKNI2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 11 Mar 2021 08:08:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231296AbhCKNIS (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 11 Mar 2021 08:08:18 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482E1C061574
-        for <linux-serial@vger.kernel.org>; Thu, 11 Mar 2021 05:08:18 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id w11so1778233wrr.10
-        for <linux-serial@vger.kernel.org>; Thu, 11 Mar 2021 05:08:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qrZXdv7fA+TcxxTTrB5ztlGjFi4s6fIUC/dA2snL+J4=;
-        b=H1Mx4eM+pBm8MyWuGXMOKHl3WtuARTV9DvGf+45bIvtmO0jV3xm/8C3F3IzIlvCuWB
-         /sJU/QgidjO8Yc7gPPwK3BePumHRo34w09nStf7KTuFip2dqg6aQOUR8jnO1rK8qgpfd
-         jV0YXuHYWNxUEr8ckF70BRM49DclZ2EjZg9RY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=qrZXdv7fA+TcxxTTrB5ztlGjFi4s6fIUC/dA2snL+J4=;
-        b=Tot7R8lMEPNvjwM5p68c2aUslDIlRzMymggSK9TIZb93A2Kju/owIlRyL7VZI2eziR
-         7y6NrR53aOWaIeA0imv/ahcLQ1CdfoFzOpa5WBuAMOGXNdjFQUPvcxMxcWoy+KBI2CHs
-         Fw3weX5+jeIqs1Z1ChzVGj7EUAbv+UzPHn4sutfskwH/3DWPoBz8mDSWHq4pWdiwaA2Z
-         6weL3BFxIlUswOt3hmhKWEtI5sqBAm9+yLNtBjE7TKuYIUJrLK6oGfo0c6pw9FUIi5wW
-         9bP+BCNhGVgZg0ChP0jHVCSykNuaKSaVhIJyFftdOvbVDXajnppNzG8c4JVTbIeY9M8g
-         sqKA==
-X-Gm-Message-State: AOAM5311H85KOxcYAUBUWXiVOAILAe4WvmPifpXhejMgXQTLzLSFsS6Y
-        B6pj0iC6dQrsFkU9vw8u/JHW6+q5QwZ8PY07
-X-Google-Smtp-Source: ABdhPJw/Fk5Unx0u9LEM2CG3q6jKm9fGk6h7EJuj5MzNUKYgO1OO/uCt2XtGHsu0Cdq/UlAXo2DtKg==
-X-Received: by 2002:a5d:58e8:: with SMTP id f8mr8698775wrd.102.1615468097072;
-        Thu, 11 Mar 2021 05:08:17 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id j12sm3883091wrx.59.2021.03.11.05.08.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Mar 2021 05:08:16 -0800 (PST)
-Date:   Thu, 11 Mar 2021 14:08:14 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     gregkh@linuxfoundation.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH 04/44] vgacon: comment on vga_rolled_over
-Message-ID: <YEoWPoXq0Ob5+2yS@phenom.ffwll.local>
-Mail-Followup-To: Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
-References: <20210302062214.29627-1-jslaby@suse.cz>
- <20210302062214.29627-4-jslaby@suse.cz>
+        id S233614AbhCKNfq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 11 Mar 2021 08:35:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43020 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233603AbhCKNfX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 11 Mar 2021 08:35:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C174464FF5;
+        Thu, 11 Mar 2021 13:35:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615469722;
+        bh=6q4IiXUJWgYscOCHecS9Mt3djdFy8TY6aKd4onYASzw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=UqYI40kpdj9pTyDaevY8Rj3aeYiZ42jbr3bj19Mi76nRVXy04kZ924TdIsyUPe5nI
+         kVHCtANhj9MAOhAsi4EcR9R2xtU4MvIMQr7ZTEzzjdilqv+4kCNlORUhtjd8pMR2TR
+         a5HSjhZpsqZyxNzVFKbM1y69DNNfFHM24NsdO67YBiYrU14vwxDLEm6ecS2AiOzBc9
+         4SaZgpwGtDHuQC9aKCe8UCl1mVfahUsXDBZvkbTfyKbiCpAGeKylgMr9UdZ6gr8xb+
+         GjGi8i8c01jNVRFO8iKW48+xTZ+NV+BcVcnm/aJ83vcD+4RmlPuxgYInkS79eYQnk7
+         IxUX0bVdkDD8A==
+Received: by mail-oi1-f174.google.com with SMTP id u198so18155082oia.4;
+        Thu, 11 Mar 2021 05:35:22 -0800 (PST)
+X-Gm-Message-State: AOAM532+Ces9QDIaU/LU6w45qWc3ktC+O6h9xmA/qhDkN8dL6z/uTpDG
+        dr3KBk9UwQU3d5GwGf+egq8FbHrimebEd9Ewrps=
+X-Google-Smtp-Source: ABdhPJxVF0HenIu8QBC6I7NhfOa4G3V0f41d1dKsWotCdWeJNJpyBNdwAHcVht7bLnu5j10LoEjZUejMgModqVzmgxA=
+X-Received: by 2002:aca:5e85:: with SMTP id s127mr6048962oib.67.1615469721794;
+ Thu, 11 Mar 2021 05:35:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210302062214.29627-4-jslaby@suse.cz>
-X-Operating-System: Linux phenom 5.7.0-1-amd64 
+References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-13-marcan@marcan.st>
+ <CAL_JsqJF2Hz=4U7FR_GOSjCxqt3dpf-CAWFNfsSrDjDLpHqgCA@mail.gmail.com>
+ <6e4880b3-1fb6-0cbf-c1a5-7a46fd9ccf62@marcan.st> <CAK8P3a0Hmwt-ywzS-2eEmqyQ0v2SxLsLxFwfTUoWwbzCrBNhsQ@mail.gmail.com>
+ <CAL_JsqJHRM59GC3FjvaGLCELemy1uspnGvTEFH6q0OdyBPVSjA@mail.gmail.com>
+ <CAK8P3a0_GBB-VYFO5NaySyBJDN2Ra-WMH4WfFrnzgOejmJVG8g@mail.gmail.com>
+ <20210308211306.GA2920998@robh.at.kernel.org> <CAK8P3a2GfzUevuQNZeQarJ4GNFsuDj0g7oFuN940Hdaw06YJbA@mail.gmail.com>
+ <CAL_JsqK8FagJyQVyG5DAocUjLGZT91b6NzDm_DNMW1hdCz51Xg@mail.gmail.com>
+ <c5693760-3b18-e8f1-18b6-bae42c05d329@marcan.st> <CAL_Jsq+VLLPa98iaTvOkK-tjuBH4qY7FNEGtufYGv7rXAbwegQ@mail.gmail.com>
+ <332c0b9a-dcfd-4c3b-9038-47cbda90eb3f@marcan.st> <CAL_Jsq+X7JPm-xrxmy5bGKSuLO59yk6S=EuXmdMn0FwhpZAD7A@mail.gmail.com>
+ <CAK8P3a2HWbHc-aGHk792TVh6ea2j+aKswYrB6EBsjPA6fH1=xA@mail.gmail.com> <7ee4a1ac-9fd4-3eca-853d-d12a16ddbb60@marcan.st>
+In-Reply-To: <7ee4a1ac-9fd4-3eca-853d-d12a16ddbb60@marcan.st>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 11 Mar 2021 14:35:05 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1-7nybm5kRVN6WP-+0vy+TWzqHJsMXwz8QtH2jhW+1gQ@mail.gmail.com>
+Message-ID: <CAK8P3a1-7nybm5kRVN6WP-+0vy+TWzqHJsMXwz8QtH2jhW+1gQ@mail.gmail.com>
+Subject: Re: [RFT PATCH v3 12/27] of/address: Add infrastructure to declare
+ MMIO as non-posted
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Rob Herring <robh@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Tony Lindgren <tony@atomide.com>,
+        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+        Stan Skowronek <stan@corellium.com>,
+        Alexander Graf <graf@amazon.com>,
+        Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 02, 2021 at 07:21:34AM +0100, Jiri Slaby wrote:
-> Long time ago, I figured out what this number is good for and documented
-> that locally. But never submitted, so do it now.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-fbdev@vger.kernel.org
+On Thu, Mar 11, 2021 at 1:11 PM Hector Martin <marcan@marcan.st> wrote:
+> On 11/03/2021 18.12, Arnd Bergmann wrote:
+> > On Wed, Mar 10, 2021 at 6:01 PM Rob Herring <robh@kernel.org> wrote:
+> >> On Wed, Mar 10, 2021 at 1:27 AM Hector Martin <marcan@marcan.st> wrote:
+> >>> Works for me; then let's just make it non-recursive.
+> >>>
+> >>> Do you think we can get rid of the Apple-only optimization if we do
+> >>> this? It would mean only looking at the parent during address
+> >>> resolution, not recursing all the way to the top, so presumably the
+> >>> performance impact would be quite minimal.
+> >
+> > Works for me.
+>
+> Incidentally, even though it would now be unused, I'd like to keep the
+> apple,arm-platform compatible at this point; we've already been pretty
+> close to a use case for it, and I don't want to have to fall back to a
+> list of SoC compatibles if we ever need another quirk for all Apple ARM
+> SoCs (or break backwards compat). It doesn't really hurt to have it in
+> the binding and devicetrees, right?
 
-I think Greg volunteered to take care of these ... Also my brain is toast
-and I'm not even close to ready to grok vc code to review this properly
-:-/
+Yes, keeping the compatible string is a good idea regardless.
 
-Cheers, Daniel
-> ---
->  drivers/video/console/vgacon.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
-> index 962c12be9774..0d26e821e73b 100644
-> --- a/drivers/video/console/vgacon.c
-> +++ b/drivers/video/console/vgacon.c
-> @@ -96,7 +96,7 @@ static bool 		vga_is_gfx;
->  static bool 		vga_512_chars;
->  static int 		vga_video_font_height;
->  static int 		vga_scan_lines		__read_mostly;
-> -static unsigned int 	vga_rolled_over;
-> +static unsigned int 	vga_rolled_over; /* last vc_origin offset before wrap */
->  
->  static bool vgacon_text_mode_force;
->  static bool vga_hardscroll_enabled;
-> -- 
-> 2.30.1
-> 
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/dri-devel
+> >> Yeah, that should be fine. I'd keep an IS_ENABLED() config check
+> >> though. Then I'll also know if anyone else needs this.
+> >
+> > Ok, makes sense.
+> >
+> > Conceptually, I'd like to then see a check that verifies that the
+> > property is only set for nodes whose parent also has it set, since
+> > that is how AXI defines it: A bus can wait for the ack from its
+> > child node, or it can acknowledge the write to its parent early.
+> > However, this breaks down as soon as a bus does the early ack:
+> > all its children by definition use posted writes (as seen by the
+> > CPU), even if they wait for stores that come from other masters.
+> >
+> > Does this make sense to you?
+>
+> Makes sense. This shouldn't really be something the kernel concerns
+> itself with at runtime, just something for the dts linting, right?
+>
+> I assume this isn't representable in json-schema, so it would presumably
+> need some ad-hoc validation code.
 
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Agreed, having a check in either dtc or expressed in the json scheme
+is better than a runtime check. I assume Rob would know how to best
+add such a check.
+
+     Arnd
