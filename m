@@ -2,69 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA8E8C433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 23:12:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4489FC43381
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 09:13:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9E60564FCE
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Mar 2021 23:12:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0A3CC64FC4
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 09:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233781AbhCJXMF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 Mar 2021 18:12:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232523AbhCJXLf (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 Mar 2021 18:11:35 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB92DC061764
-        for <linux-serial@vger.kernel.org>; Wed, 10 Mar 2021 15:11:34 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id m11so27814127lji.10
-        for <linux-serial@vger.kernel.org>; Wed, 10 Mar 2021 15:11:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fsUvZGKYC5fgx4oei9Q5/ic2uEIxVNyjDNMh2AgyO6I=;
-        b=YFJ7SMDaL74sPgY4t2M2TveLoai2GpxFH7T+w02cY0yAPfz4d7STzMXwN2LMQ2iEoZ
-         AC3wFDsX/B+jYJXVNzs+y4D9tGf/wEA3njzRA4m7PPgqfVi486jFs5jC4rjhpItvLjMl
-         feX0SL4sSjFQxxMpaHtUG3m/yP5ZsWGY2bHZ1JzjeRWLuH3LgTM/weeATOW14t4za+lM
-         0oejehpKlmlwaemoSaXKHgvkv/wgRR/MCed4z76h2TRaPLDfBO1rpazJRuqEpn9HXUuZ
-         gZsRlyCIDNbKHWfuIFLOxVswPmSPuq2apnjiVRCSHJ7mbVzB2AtDRB2jPCfVazu7Yozu
-         i7/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fsUvZGKYC5fgx4oei9Q5/ic2uEIxVNyjDNMh2AgyO6I=;
-        b=TN1RS3XV2sOKesr4e6zHuFirSqlQgO2ZCbn+hyLsk/vL3YGuVN2FV6qaORnJ64PrBy
-         dj3FCxpZd3PMFePxz2BG1w9lbBC7RnDDYy5Bf6MSduwreU+XmpmPxaIx8PPRIXjW329b
-         kTw+knpOiQoOkTpbGmKafDlA2Ab+p2v4WopmbayTIOokgsJO4jiVsmrCfYUK9jGZhzXp
-         94M/2akvZZOuRyLBiI5azPcFiYn2enUALzPMZJlxM6o+7LzeVZvCswo2v0xla+0VprFE
-         JP1GCxwsuzj7/9n+W7NLStlo99XvI9mfsSbREEiwj8Woms8xpsHN7LhNwHHleH3mIVnB
-         UUbg==
-X-Gm-Message-State: AOAM5326tEMKZypryI9MpNMsYnl6lyywhU9ygcySIYBZTTE42yLusqr8
-        LwDBt5Jj55VhmJHGi2Mm4arOAaOP9hFwx36cxtN63w==
-X-Google-Smtp-Source: ABdhPJzmo5G8NylnSmgEyDfdbat9eWDptGx3+8/H3Ywrq5Z5I67GtCUd0mY3fRoJZXOwQZI5bSexUvc4wSg5BOhWX4M=
-X-Received: by 2002:a2e:7001:: with SMTP id l1mr3125411ljc.200.1615417892988;
- Wed, 10 Mar 2021 15:11:32 -0800 (PST)
+        id S231931AbhCKJMq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 11 Mar 2021 04:12:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46640 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231960AbhCKJMV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 11 Mar 2021 04:12:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E02B64FD3;
+        Thu, 11 Mar 2021 09:12:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615453940;
+        bh=UNAIXrkfTNShut/I3gLeR6MyhyTRWg+W8FSgOB8eYQ4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=DI4pa8FmJBv1+nb41cqRzZo7Hptz7QQQzvlRjcJTBIw0e/bhAXWQ7W/gwVc+jd0k9
+         ZhqqzIBC7e8rnatmT33kA0ARL5vzlopH0zM+MiiCEFAq49oH9QUGlrZhDDZ9HowwEy
+         lrFjsqsuQtlzhtCZWchRd9MeM8YeCZe0xYbzjGaWZf+kyrzeZ0vM7VHhwB5ReoXTvT
+         e0QH/bJZxd66iwjZbtaqAuumCK8Xo5edq0Kim+f5qYxrZ+QJHZefURHKQ5iK9hMsKl
+         YzNhCe3+7KZ+eKoEl/RBKaSAA+e1J4B+4QeR+cRu3cQSFA7S2n8+W3egWk1uEsn7G1
+         xl69qAw6Tm39g==
+Received: by mail-oo1-f52.google.com with SMTP id e19-20020a4a73530000b02901b62c0e1bb6so511976oof.11;
+        Thu, 11 Mar 2021 01:12:20 -0800 (PST)
+X-Gm-Message-State: AOAM530a8gom26bMc/UCqdtbMuFQLu0HhU4qH5U5jPPwOAtgQHdFOqgY
+        cssk5aZXoZppqGwhxvF5z2j/AxQJlgHyE2imuN4=
+X-Google-Smtp-Source: ABdhPJygUghNxY2XSM2ghWokFwLHqZ3nZ8W75yDA/iVYNJIzeGBm7t3OFNlQOYjAFsneiZxfCa4ihGnIYWF71hoNWi4=
+X-Received: by 2002:a4a:8ed2:: with SMTP id c18mr5911583ool.66.1615453939509;
+ Thu, 11 Mar 2021 01:12:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-26-marcan@marcan.st>
-In-Reply-To: <20210304213902.83903-26-marcan@marcan.st>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 11 Mar 2021 00:11:22 +0100
-Message-ID: <CACRpkdZrFfP3nx=eU-hKKVUfxHHX2J2-__6tjV8hTPgX3qtBDA@mail.gmail.com>
-Subject: Re: [RFT PATCH v3 25/27] tty: serial: samsung_tty: Add earlycon
- support for Apple UARTs
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
+References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-13-marcan@marcan.st>
+ <CAL_JsqJF2Hz=4U7FR_GOSjCxqt3dpf-CAWFNfsSrDjDLpHqgCA@mail.gmail.com>
+ <6e4880b3-1fb6-0cbf-c1a5-7a46fd9ccf62@marcan.st> <CAK8P3a0Hmwt-ywzS-2eEmqyQ0v2SxLsLxFwfTUoWwbzCrBNhsQ@mail.gmail.com>
+ <CAL_JsqJHRM59GC3FjvaGLCELemy1uspnGvTEFH6q0OdyBPVSjA@mail.gmail.com>
+ <CAK8P3a0_GBB-VYFO5NaySyBJDN2Ra-WMH4WfFrnzgOejmJVG8g@mail.gmail.com>
+ <20210308211306.GA2920998@robh.at.kernel.org> <CAK8P3a2GfzUevuQNZeQarJ4GNFsuDj0g7oFuN940Hdaw06YJbA@mail.gmail.com>
+ <CAL_JsqK8FagJyQVyG5DAocUjLGZT91b6NzDm_DNMW1hdCz51Xg@mail.gmail.com>
+ <c5693760-3b18-e8f1-18b6-bae42c05d329@marcan.st> <CAL_Jsq+VLLPa98iaTvOkK-tjuBH4qY7FNEGtufYGv7rXAbwegQ@mail.gmail.com>
+ <332c0b9a-dcfd-4c3b-9038-47cbda90eb3f@marcan.st> <CAL_Jsq+X7JPm-xrxmy5bGKSuLO59yk6S=EuXmdMn0FwhpZAD7A@mail.gmail.com>
+In-Reply-To: <CAL_Jsq+X7JPm-xrxmy5bGKSuLO59yk6S=EuXmdMn0FwhpZAD7A@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 11 Mar 2021 10:12:02 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2HWbHc-aGHk792TVh6ea2j+aKswYrB6EBsjPA6fH1=xA@mail.gmail.com>
+Message-ID: <CAK8P3a2HWbHc-aGHk792TVh6ea2j+aKswYrB6EBsjPA6fH1=xA@mail.gmail.com>
+Subject: Re: [RFT PATCH v3 12/27] of/address: Add infrastructure to declare
+ MMIO as non-posted
+To:     Rob Herring <robh@kernel.org>
+Cc:     Hector Martin <marcan@marcan.st>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
         Krzysztof Kozlowski <krzk@kernel.org>,
         Mark Kettenis <mark.kettenis@xs4all.nl>,
         Tony Lindgren <tony@atomide.com>,
@@ -72,6 +65,7 @@ Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Stan Skowronek <stan@corellium.com>,
         Alexander Graf <graf@amazon.com>,
         Will Deacon <will@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -79,35 +73,65 @@ Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Christoph Hellwig <hch@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 4, 2021 at 10:42 PM Hector Martin <marcan@marcan.st> wrote:
-
-> Earlycon support is identical to S3C2410, but Apple SoCs also need
-> MMIO mapped as nGnRnE. This is handled generically for normal drivers
-> including the normal UART path here, but earlycon uses fixmap and
-> runs before that scaffolding is ready.
+On Wed, Mar 10, 2021 at 6:01 PM Rob Herring <robh@kernel.org> wrote:
 >
-> Since this is the only case where we need this fix, it makes more
-> sense to do it here in the UART driver instead of introducing a
-> whole fdt nonposted-mmio resolver just for earlycon/fixmap.
->
-> Suggested-by: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+> On Wed, Mar 10, 2021 at 1:27 AM Hector Martin <marcan@marcan.st> wrote:
+> >
+> > On 10/03/2021 07.06, Rob Herring wrote:
+> > >> My main concern here is that this creates an inconsistency in the device
+> > >> tree representation that only works because PCI drivers happen not to
+> > >> use these code paths. Logically, having "nonposted-mmio" above the PCI
+> > >> controller would imply that it applies to that bus too. Sure, it doesn't
+> > >> matter for Linux since it is ignored, but this creates an implicit
+> > >> exception that PCI buses always use posted modes.
+> > >
+> > > We could be stricter that "nonposted-mmio" must be in the immediate
+> > > parent. That's kind of in line with how addressing already works.
+> > > Every level has to have 'ranges' to be an MMIO address, and the
+> > > address cell size is set by the immediate parent.
+> > >
+> > >> Then if a device comes along that due to some twisted fabric logic needs
+> > >> nonposted nGnRnE mappings for PCIe (even though the actual PCIe ops will
+> > >> end up posted at the bus anyway)... how do we represent that? Declare
+> > >> that another "nonposted-mmio" on the PCIe bus means "no, really, use
+> > >> nonposted mmio for this"?
+> > >
+> > > If we're strict, yes. The PCI host bridge would have to have "nonposted-mmio".
+> >
+> > Works for me; then let's just make it non-recursive.
+> >
+> > Do you think we can get rid of the Apple-only optimization if we do
+> > this? It would mean only looking at the parent during address
+> > resolution, not recursing all the way to the top, so presumably the
+> > performance impact would be quite minimal.
 
-This is as elegant as it gets!
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Works for me.
 
-Yours,
-Linus Walleij
+> Yeah, that should be fine. I'd keep an IS_ENABLED() config check
+> though. Then I'll also know if anyone else needs this.
+
+Ok, makes sense.
+
+Conceptually, I'd like to then see a check that verifies that the
+property is only set for nodes whose parent also has it set, since
+that is how AXI defines it: A bus can wait for the ack from its
+child node, or it can acknowledge the write to its parent early.
+However, this breaks down as soon as a bus does the early ack:
+all its children by definition use posted writes (as seen by the
+CPU), even if they wait for stores that come from other masters.
+
+Does this make sense to you?
+
+       Arnd
