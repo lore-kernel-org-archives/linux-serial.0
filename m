@@ -2,120 +2,182 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF36C2BA1B
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 18:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB26FC2BA13
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 19:22:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E6CA16503B
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 18:11:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 03C6764FA7
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 19:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbhCKSLQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 11 Mar 2021 13:11:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55496 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230300AbhCKSKf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 11 Mar 2021 13:10:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 773FA65018;
-        Thu, 11 Mar 2021 18:10:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615486234;
-        bh=tmt8DXL/NkkK3fqsKzp1sa5x/enHlRdNBSlE6sT3Ol4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Ew/NIGH8ca6hopkG3U8b9r6qb4RL4623K9fly5yItiT+8ubil19Ek3W1I9uzZkXaV
-         SS/wUSc4qF2N/+CEdEEjiosqyXdPlQDV6gmsZyGoYiofROwQuELtuvpXLsg41ZUl+I
-         zTxb4YH7gGW2lP+bk0UmqouHE1A4Ct9j5CBAZIb/EyFukR+wc5+426TEG3xvSqlTNs
-         zrISTJo7Bcn1PT6Tt7VvH6wBUv/FOVlzZjPhhFRyf24OBWtBR8UkBxZNOxnGayUlL3
-         qdG/KlD2b/NUv3xynLWzvL7xQCfBHPzi0d+rEqHmljXgXkL98TRQxiPn6hmAPOYpfu
-         pO74we79VATfg==
-Received: by mail-ej1-f43.google.com with SMTP id e19so48236776ejt.3;
-        Thu, 11 Mar 2021 10:10:34 -0800 (PST)
-X-Gm-Message-State: AOAM532gIRH9bm3Fo+i0EbsHlRjhxiPQWK5SP7fJE/Yz0D30C1g5zyPH
-        LQhMi4sqcRq0QAngd7NwMBkwIHB/s3Zjf6bAFg==
-X-Google-Smtp-Source: ABdhPJyUsXPtzO/H83nHUMgfPs1p3wnAlKlkTmdKFFzieSp9RKRftdZy73PPYTvjnRjgXVDraWLRvsEKaxzbwKml2jg=
-X-Received: by 2002:a17:906:c405:: with SMTP id u5mr4327186ejz.341.1615486232876;
- Thu, 11 Mar 2021 10:10:32 -0800 (PST)
-MIME-Version: 1.0
-References: <20210304213902.83903-1-marcan@marcan.st> <20210304213902.83903-13-marcan@marcan.st>
- <CAL_JsqJF2Hz=4U7FR_GOSjCxqt3dpf-CAWFNfsSrDjDLpHqgCA@mail.gmail.com>
- <6e4880b3-1fb6-0cbf-c1a5-7a46fd9ccf62@marcan.st> <CAK8P3a0Hmwt-ywzS-2eEmqyQ0v2SxLsLxFwfTUoWwbzCrBNhsQ@mail.gmail.com>
- <CAL_JsqJHRM59GC3FjvaGLCELemy1uspnGvTEFH6q0OdyBPVSjA@mail.gmail.com>
- <CAK8P3a0_GBB-VYFO5NaySyBJDN2Ra-WMH4WfFrnzgOejmJVG8g@mail.gmail.com>
- <20210308211306.GA2920998@robh.at.kernel.org> <CAK8P3a2GfzUevuQNZeQarJ4GNFsuDj0g7oFuN940Hdaw06YJbA@mail.gmail.com>
- <CAL_JsqK8FagJyQVyG5DAocUjLGZT91b6NzDm_DNMW1hdCz51Xg@mail.gmail.com>
- <c5693760-3b18-e8f1-18b6-bae42c05d329@marcan.st> <CAL_Jsq+VLLPa98iaTvOkK-tjuBH4qY7FNEGtufYGv7rXAbwegQ@mail.gmail.com>
- <332c0b9a-dcfd-4c3b-9038-47cbda90eb3f@marcan.st> <CAL_Jsq+X7JPm-xrxmy5bGKSuLO59yk6S=EuXmdMn0FwhpZAD7A@mail.gmail.com>
- <CAK8P3a2HWbHc-aGHk792TVh6ea2j+aKswYrB6EBsjPA6fH1=xA@mail.gmail.com>
- <CAL_JsqKYpsXKvcw7xbbYx6z7Cg3P9DxcpLUnOG+m0xeSRO7v_g@mail.gmail.com> <CAK8P3a2iASEZf-YRh2SHYhNdUtpo8sdkuoxfk_MonXpXBk1kbg@mail.gmail.com>
-In-Reply-To: <CAK8P3a2iASEZf-YRh2SHYhNdUtpo8sdkuoxfk_MonXpXBk1kbg@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 11 Mar 2021 11:10:20 -0700
-X-Gmail-Original-Message-ID: <CAL_JsqK200WcxD3PP1FToc5w2dyF3b6TYnf2oNd9Mpz77g68og@mail.gmail.com>
-Message-ID: <CAL_JsqK200WcxD3PP1FToc5w2dyF3b6TYnf2oNd9Mpz77g68og@mail.gmail.com>
-Subject: Re: [RFT PATCH v3 12/27] of/address: Add infrastructure to declare
- MMIO as non-posted
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Hector Martin <marcan@marcan.st>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Tony Lindgren <tony@atomide.com>,
-        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
-        Stan Skowronek <stan@corellium.com>,
-        Alexander Graf <graf@amazon.com>,
-        Will Deacon <will@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        id S231184AbhCKTWQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 11 Mar 2021 14:22:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229921AbhCKTVl (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 11 Mar 2021 14:21:41 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96B6C061760;
+        Thu, 11 Mar 2021 11:21:40 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id e7so41684587lft.2;
+        Thu, 11 Mar 2021 11:21:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fsTd46l5Jglw9pw96E7Isv1iNj315cStq2faVWwmZQY=;
+        b=O48j2praIpm6d4Lp3KF4U9fKQJiq115WXRZyxaVlSiDpKYaJ5MxRkLsSoiTsVizFyZ
+         9mtbn7uErT2P61NT7bKf000cXQyaFBqQgwnt31jXAlIGlGjt3rVlQOporBs+rNCSvjax
+         +V0MWKdv5j0hhD3Yc9XvHYoJG+vHeSnUcx2bB5yWiBIK6m7QtTqBGqhfhvpft0zAO8N6
+         hJAFrAIkZF+01WGNygJw7ROr1mbs1Fnm6rvVRSSsNARhvbYhqkyAtGP5mU0LZvld5DNp
+         x1y6gUv514RtQMOLAbB+TQVu4DbWFxoNvaoRCTTyJCqElg9Lc3SWLoX46LlnmraZAZMG
+         n49Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fsTd46l5Jglw9pw96E7Isv1iNj315cStq2faVWwmZQY=;
+        b=mJDUPNzY6kWj2h9/8FaR+++JOwYfBFZeOVced8bRoT0hr1e+OELVt8uazEiP9REm4w
+         RIvjaN21frmP4hG0JvB3QMMXP0BdDueQnwQVp0fTh0j/ub7fgwzWkF1oQWsIwm/TIc+j
+         orwL+UGnNmbZKT1vvn3Ftj6x5LXIpnAV3wsdwjXSU2PMo3nXWZkkmNLer+pVx7EXH0eH
+         6xOEe08m5/yfnBJkTnaehXn+k9AESsjmV2tG8vVOpj8ZP3eUuCf49zszSGxPPDOxcIBU
+         D68acsD5dgzlyZEz+eMHAzftww3G69SueFfNH6AwOXk2CaMa9SwbMHdQqf7vGKCCVgAD
+         pYoQ==
+X-Gm-Message-State: AOAM530j6JrUF3VxhcvV3aONwfYKKAoFowpX0cCO63IhNtdskvNd9QnJ
+        quqNgj35uhN6Z097nbq9pM8=
+X-Google-Smtp-Source: ABdhPJwYRhhMQoWzZIiXQPyd+9sZC33xOfDiT6XWugm+Ut7Eo3DAK83JRVu3uJVYd9XFqktMJp+AEg==
+X-Received: by 2002:a19:f510:: with SMTP id j16mr3211024lfb.301.1615490497638;
+        Thu, 11 Mar 2021 11:21:37 -0800 (PST)
+Received: from localhost.localdomain (109-252-193-52.dynamic.spd-mgts.ru. [109.252.193.52])
+        by smtp.gmail.com with ESMTPSA id u14sm1121153lfl.40.2021.03.11.11.21.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Mar 2021 11:21:37 -0800 (PST)
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <sean@poorly.run>, Rob Herring <robh@kernel.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
-        <linux-arch@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jirislaby@kernel.org>,
+        Yangtao Li <tiny.windzz@gmail.com>
+Cc:     Daniel Vetter <daniel@ffwll.ch>, dri-devel@lists.freedesktop.org,
+        lima@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH v2 01/14] opp: Add devres wrapper for dev_pm_opp_set_clkname
+Date:   Thu, 11 Mar 2021 22:20:52 +0300
+Message-Id: <20210311192105.14998-2-digetx@gmail.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210311192105.14998-1-digetx@gmail.com>
+References: <20210311192105.14998-1-digetx@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 9:48 AM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> On Thu, Mar 11, 2021 at 5:10 PM Rob Herring <robh@kernel.org> wrote:
-> > On Thu, Mar 11, 2021 at 2:12 AM Arnd Bergmann <arnd@kernel.org> wrote:
-> > > On Wed, Mar 10, 2021 at 6:01 PM Rob Herring <robh@kernel.org> wrote:
-> > > Ok, makes sense.
-> > >
-> > > Conceptually, I'd like to then see a check that verifies that the
-> > > property is only set for nodes whose parent also has it set, since
-> > > that is how AXI defines it: A bus can wait for the ack from its
-> > > child node, or it can acknowledge the write to its parent early.
-> > > However, this breaks down as soon as a bus does the early ack:
-> > > all its children by definition use posted writes (as seen by the
-> > > CPU), even if they wait for stores that come from other masters.
-> > >
-> > > Does this make sense to you?
-> >
-> > BTW, I don't think it's clear in this thread, but the current
-> > definition proposed for the spec[1] and schema is 'nonposted-mmio' is
-> > specific to 'simple-bus'. I like this restriction and we can expand
-> > where 'nonposted-mmio' is allowed later if needed.
->
-> That sounds ok, as long as we can express everything for the mac
-> at the moment. Do we need to explicitly add a description to allow
-> the property in the root node in addition to simple-bus to be able
-> to enforce the rule about parent buses also having it?
+From: Yangtao Li <tiny.windzz@gmail.com>
 
-IMO it should not be allowed in the root node. That's a failure to
-define a bus node. Also, would that mean your memory has to be
-non-posted!?
+Add devres wrapper for dev_pm_opp_set_clkname() to simplify drivers code.
 
-Rob
+Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+---
+ drivers/opp/core.c     | 36 ++++++++++++++++++++++++++++++++++++
+ include/linux/pm_opp.h |  6 ++++++
+ 2 files changed, 42 insertions(+)
+
+diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+index 150be4c28c99..3345ab8da6b2 100644
+--- a/drivers/opp/core.c
++++ b/drivers/opp/core.c
+@@ -2119,6 +2119,42 @@ void dev_pm_opp_put_clkname(struct opp_table *opp_table)
+ }
+ EXPORT_SYMBOL_GPL(dev_pm_opp_put_clkname);
+ 
++static void devm_pm_opp_clkname_release(void *data)
++{
++	dev_pm_opp_put_clkname(data);
++}
++
++/**
++ * devm_pm_opp_set_clkname() - Set clk name for the device
++ * @dev: Device for which clk name is being set.
++ * @name: Clk name.
++ *
++ * In order to support OPP switching, OPP layer needs to get pointer to the
++ * clock for the device. Simple cases work fine without using this routine (i.e.
++ * by passing connection-id as NULL), but for a device with multiple clocks
++ * available, the OPP core needs to know the exact name of the clk to use.
++ *
++ * This must be called before any OPPs are initialized for the device.
++ *
++ * The opp_table structure will be freed after the device is destroyed.
++ */
++struct opp_table *devm_pm_opp_set_clkname(struct device *dev, const char *name)
++{
++	struct opp_table *opp_table;
++	int err;
++
++	opp_table = dev_pm_opp_set_clkname(dev, name);
++	if (IS_ERR(opp_table))
++		return opp_table;
++
++	err = devm_add_action_or_reset(dev, devm_pm_opp_clkname_release, opp_table);
++	if (err)
++		opp_table = ERR_PTR(err);
++
++	return opp_table;
++}
++EXPORT_SYMBOL_GPL(devm_pm_opp_set_clkname);
++
+ /**
+  * dev_pm_opp_register_set_opp_helper() - Register custom set OPP helper
+  * @dev: Device for which the helper is getting registered.
+diff --git a/include/linux/pm_opp.h b/include/linux/pm_opp.h
+index c0371efa4a0f..6fb992168f1e 100644
+--- a/include/linux/pm_opp.h
++++ b/include/linux/pm_opp.h
+@@ -150,6 +150,7 @@ struct opp_table *dev_pm_opp_set_regulators(struct device *dev, const char * con
+ void dev_pm_opp_put_regulators(struct opp_table *opp_table);
+ struct opp_table *dev_pm_opp_set_clkname(struct device *dev, const char *name);
+ void dev_pm_opp_put_clkname(struct opp_table *opp_table);
++struct opp_table *devm_pm_opp_set_clkname(struct device *dev, const char *name);
+ struct opp_table *dev_pm_opp_register_set_opp_helper(struct device *dev, int (*set_opp)(struct dev_pm_set_opp_data *data));
+ void dev_pm_opp_unregister_set_opp_helper(struct opp_table *opp_table);
+ struct opp_table *devm_pm_opp_register_set_opp_helper(struct device *dev, int (*set_opp)(struct dev_pm_set_opp_data *data));
+@@ -355,6 +356,11 @@ static inline struct opp_table *dev_pm_opp_set_clkname(struct device *dev, const
+ 
+ static inline void dev_pm_opp_put_clkname(struct opp_table *opp_table) {}
+ 
++static inline struct opp_table *devm_pm_opp_set_clkname(struct device *dev, const char *name)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
++
+ static inline struct opp_table *dev_pm_opp_attach_genpd(struct device *dev, const char **names, struct device ***virt_devs)
+ {
+ 	return ERR_PTR(-EOPNOTSUPP);
+-- 
+2.29.2
+
