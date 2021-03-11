@@ -2,116 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E95C433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 19:53:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C99C433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 22:35:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8856664FDA
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 19:53:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6E56364F88
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 22:35:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbhCKTw6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 11 Mar 2021 14:52:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbhCKTwe (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 11 Mar 2021 14:52:34 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A27CC061574;
-        Thu, 11 Mar 2021 11:52:33 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id 9so3731859ljd.7;
-        Thu, 11 Mar 2021 11:52:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NzktC61WLHyGiWXBjMZlD5s3DKyEhRdHqxU4GfY6M6c=;
-        b=aAhQavJLtQkk/nECiXIlx+O/QFcYOij/vUvk4Wb3id8VTVQ0DyGKOupLcfPcnhws9M
-         iTylNQCipW5MSqd0wNcpVw4dB3diCb3QY/PKAwT+/BxAHD4yYg+lSPtwGG/DTHT3NehP
-         CaoEl5t7uGJD3ud2WDG316ejAt9g9t9FDMn5fpvYV9Ui71GaGzvyAItDW9kJ2gOneKSC
-         asVAk7ZuMTAk2n+46AdJFDyaKPMsG4xv/4UfEf6ULxafrkhpkpzYK2+5iVazZOxsor5w
-         uTljITefaZioOQJAu4nlANrdsnfQbXc2UvMRBg4l1oavRU/lcVlrzwLCJQ86EbOo4P7r
-         Jzvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NzktC61WLHyGiWXBjMZlD5s3DKyEhRdHqxU4GfY6M6c=;
-        b=BaGPppYF6xa0YcL/sZY7Ar6+pmg+KaMaCVBr2SG6QNwUxvcxjNvEbu8OfDDRGXFRvl
-         EdL5peQ2xA0AW3XVFpNvoQVr4e/ypgj7xZVQrpunrU78ZHwMAOxby4N4BVL8HM7u8+GN
-         1mAoKCPjbryUD9D3aeSnnJYVL7a88O8F8OEV8QYshO3YnyKUciBKzSWdziLGULtWg+eZ
-         wAPA+qHH/kzPmrmJwnHIVpZ/yEsf7o8+g25rb4pOKfsWhgAW6LytWCq9SYY3Jd321YPX
-         xK50aAsb8i3pbkiHzHjqq37DkDathrnNJPif2PQoQIS6y3cLTtb9Bq6fWiUHoqDkBg76
-         95eQ==
-X-Gm-Message-State: AOAM532Vqs93wweySnn/BOuuhOh00+Jk9b2G24m9egrACVp/g8DElKQu
-        3vMFwlQ1887T/D7psBtTrj8U13XWePg=
-X-Google-Smtp-Source: ABdhPJy1BIvKdq3/KI+BkHi/0PnhadIhGpaaLM0alJjY9nXsG8WO7V4czzQ/EgXdXTqTkrhNdbzLPg==
-X-Received: by 2002:a05:651c:303:: with SMTP id a3mr285703ljp.290.1615492351563;
-        Thu, 11 Mar 2021 11:52:31 -0800 (PST)
-Received: from [192.168.2.145] (109-252-193-52.dynamic.spd-mgts.ru. [109.252.193.52])
-        by smtp.googlemail.com with ESMTPSA id d14sm1075232lfg.128.2021.03.11.11.52.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Mar 2021 11:52:31 -0800 (PST)
-Subject: Re: [PATCH v2 07/14] spi: spi-geni-qcom: Convert to use
- resource-managed OPP API
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <sean@poorly.run>, Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        id S229872AbhCKWee (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 11 Mar 2021 17:34:34 -0500
+Received: from smtp.wifcom.cz ([85.207.3.150]:46947 "EHLO smtp.wifcom.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229803AbhCKWe2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 11 Mar 2021 17:34:28 -0500
+X-Greylist: delayed 2413 seconds by postgrey-1.27 at vger.kernel.org; Thu, 11 Mar 2021 17:34:27 EST
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=eaxlabs.cz; s=mail;
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=+eJYocYta1yRGzhhxPi392ziGWhQ3NokAmXjS+Zjhks=;
+        b=Xl3qJz66BkN8iWIvcxd2J69AwdaTimQY9pIxpGf2ADlbOjk8ZQueD4E7+mYAO8izsjWrw4b316tTgyFfGdlvRL85tGw4JRo/TDq6VuBFC3eXXQCBZYv86k1iSsXgj2XcpeOLaYhtw2K+DSThLHQLyy+6VIc/GgugsoOzMxp17A4=;
+From:   Martin Devera <devik@eaxlabs.cz>
+To:     linux-kernel@vger.kernel.org
+Cc:     Martin Devera <devik@eaxlabs.cz>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-media@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
-References: <20210311192105.14998-1-digetx@gmail.com>
- <20210311192105.14998-8-digetx@gmail.com>
- <20210311194428.GK4962@sirena.org.uk>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <552bb8fe-cd46-a420-8646-3fbe8975f01d@gmail.com>
-Date:   Thu, 11 Mar 2021 22:52:29 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.2
-MIME-Version: 1.0
-In-Reply-To: <20210311194428.GK4962@sirena.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jiri Slaby <jirislaby@kernel.org>, Le Ray <erwan.leray@st.com>,
+        fabrice.gasnier@foss.st.com, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v5 2/2] tty/serial: Add rx-tx-swap OF option to stm32-usart
+Date:   Thu, 11 Mar 2021 22:51:53 +0100
+Message-Id: <20210311215153.676-2-devik@eaxlabs.cz>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20210311215153.676-1-devik@eaxlabs.cz>
+References: <20210308192040.GA2807217@robh.at.kernel.org>
+ <20210311215153.676-1-devik@eaxlabs.cz>
+X-Antivirus-Scanner: Clean mail though you should still use an Antivirus
+X-Wif-ss:  ()
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-11.03.2021 22:44, Mark Brown пишет:
-> On Thu, Mar 11, 2021 at 10:20:58PM +0300, Dmitry Osipenko wrote:
-> 
->> Acked-by: Mark brown <broonie@kernel.org>
-> 
-> Typo there.
-> 
+STM32 F7/H7 usarts supports RX & TX pin swapping.
+Add option to turn it on.
+Tested on STM32MP157.
 
-Good catch! Although, that should be a patchwork fault since it
-auto-added acks when I downloaded v1 patches and I haven't changed them.
-I'll fix it in v3 or, if there won't be anything else to improve, then
-maybe Viresh could fix it up while applying patches.
+Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+ drivers/tty/serial/stm32-usart.c | 11 ++++++++++-
+ drivers/tty/serial/stm32-usart.h |  4 ++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index b3675cf25a69..d390f7da1441 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -644,6 +644,12 @@ static int stm32_usart_startup(struct uart_port *port)
+ 	if (ret)
+ 		return ret;
+ 
++	if (stm32_port->swap) {
++		val = readl_relaxed(port->membase + ofs->cr2);
++		val |= USART_CR2_SWAP;
++		writel_relaxed(val, port->membase + ofs->cr2);
++	}
++
+ 	/* RX FIFO Flush */
+ 	if (ofs->rqr != UNDEF_REG)
+ 		stm32_usart_set_bits(port, ofs->rqr, USART_RQR_RXFRQ);
+@@ -758,7 +764,7 @@ static void stm32_usart_set_termios(struct uart_port *port,
+ 	cr1 = USART_CR1_TE | USART_CR1_RE;
+ 	if (stm32_port->fifoen)
+ 		cr1 |= USART_CR1_FIFOEN;
+-	cr2 = 0;
++	cr2 = stm32_port->swap ? USART_CR2_SWAP : 0;
+ 	cr3 = readl_relaxed(port->membase + ofs->cr3);
+ 	cr3 &= USART_CR3_TXFTIE | USART_CR3_RXFTCFG_MASK | USART_CR3_RXFTIE
+ 		| USART_CR3_TXFTCFG_MASK;
+@@ -1006,6 +1012,9 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
+ 			return stm32port->wakeirq ? : -ENODEV;
+ 	}
+ 
++	stm32port->swap = stm32port->info->cfg.has_swap &&
++		of_property_read_bool(pdev->dev.of_node, "rx-tx-swap");
++
+ 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index cb4f327c46db..a85391e71e8e 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -25,6 +25,7 @@ struct stm32_usart_offsets {
+ struct stm32_usart_config {
+ 	u8 uart_enable_bit; /* USART_CR1_UE */
+ 	bool has_7bits_data;
++	bool has_swap;
+ 	bool has_wakeup;
+ 	bool has_fifo;
+ 	int fifosize;
+@@ -76,6 +77,7 @@ struct stm32_usart_info stm32f7_info = {
+ 	.cfg = {
+ 		.uart_enable_bit = 0,
+ 		.has_7bits_data = true,
++		.has_swap = true,
+ 		.fifosize = 1,
+ 	}
+ };
+@@ -97,6 +99,7 @@ struct stm32_usart_info stm32h7_info = {
+ 	.cfg = {
+ 		.uart_enable_bit = 0,
+ 		.has_7bits_data = true,
++		.has_swap = true,
+ 		.has_wakeup = true,
+ 		.has_fifo = true,
+ 		.fifosize = 16,
+@@ -271,6 +274,7 @@ struct stm32_port {
+ 	int last_res;
+ 	bool tx_dma_busy;	 /* dma tx busy               */
+ 	bool hw_flow_control;
++	bool swap;		 /* swap RX & TX pins */
+ 	bool fifoen;
+ 	int wakeirq;
+ 	int rdr_mask;		/* receive data register mask */
+-- 
+2.11.0
+
