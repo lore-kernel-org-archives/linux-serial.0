@@ -7,22 +7,21 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C99C433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 22:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE267C433E6
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 22:35:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6E56364F88
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 22:35:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ACE4A64F9E
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Mar 2021 22:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229872AbhCKWee (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 11 Mar 2021 17:34:34 -0500
-Received: from smtp.wifcom.cz ([85.207.3.150]:46947 "EHLO smtp.wifcom.cz"
+        id S229524AbhCKWfG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 11 Mar 2021 17:35:06 -0500
+Received: from smtp.wifcom.cz ([85.207.3.150]:46831 "EHLO smtp.wifcom.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229803AbhCKWe2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 11 Mar 2021 17:34:28 -0500
-X-Greylist: delayed 2413 seconds by postgrey-1.27 at vger.kernel.org; Thu, 11 Mar 2021 17:34:27 EST
+        id S230084AbhCKWfC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 11 Mar 2021 17:35:02 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=eaxlabs.cz; s=mail;
-        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=+eJYocYta1yRGzhhxPi392ziGWhQ3NokAmXjS+Zjhks=;
-        b=Xl3qJz66BkN8iWIvcxd2J69AwdaTimQY9pIxpGf2ADlbOjk8ZQueD4E7+mYAO8izsjWrw4b316tTgyFfGdlvRL85tGw4JRo/TDq6VuBFC3eXXQCBZYv86k1iSsXgj2XcpeOLaYhtw2K+DSThLHQLyy+6VIc/GgugsoOzMxp17A4=;
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=piH+W7G8o4tu104d7E8TX2p2+fWtR9O66CliOchKbHo=;
+        b=LGBzB7oy24zIyxTLtiyIvWteCVUnJom9w5ucogM2I7fzPLAacErJst13S7HmvEP9jUPmEid8ZWNxKY+yt+m/NkveG+gxp4KibCsbIP+69nOqzoIBsk+G06h4cmQW79NPn6tkrPF8LxRcRwGzRSpfiUaibTXBrYe/w7mS1gbVUCw=;
 From:   Martin Devera <devik@eaxlabs.cz>
 To:     linux-kernel@vger.kernel.org
 Cc:     Martin Devera <devik@eaxlabs.cz>,
@@ -35,102 +34,80 @@ Cc:     Martin Devera <devik@eaxlabs.cz>,
         devicetree@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v5 2/2] tty/serial: Add rx-tx-swap OF option to stm32-usart
-Date:   Thu, 11 Mar 2021 22:51:53 +0100
-Message-Id: <20210311215153.676-2-devik@eaxlabs.cz>
+Subject: [PATCH v5 1/2] dt-bindings: serial: Add rx-tx-swap to stm32-usart
+Date:   Thu, 11 Mar 2021 22:51:52 +0100
+Message-Id: <20210311215153.676-1-devik@eaxlabs.cz>
 X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20210311215153.676-1-devik@eaxlabs.cz>
+In-Reply-To: <20210308192040.GA2807217@robh.at.kernel.org>
 References: <20210308192040.GA2807217@robh.at.kernel.org>
- <20210311215153.676-1-devik@eaxlabs.cz>
 X-Antivirus-Scanner: Clean mail though you should still use an Antivirus
 X-Wif-ss:  ()
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-STM32 F7/H7 usarts supports RX & TX pin swapping.
-Add option to turn it on.
-Tested on STM32MP157.
+Add new rx-tx-swap property to allow for RX & TX pin swapping.
 
 Signed-off-by: Martin Devera <devik@eaxlabs.cz>
 Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
- drivers/tty/serial/stm32-usart.c | 11 ++++++++++-
- drivers/tty/serial/stm32-usart.h |  4 ++++
- 2 files changed, 14 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/serial/st,stm32-uart.yaml  | 29 ++++++++++++++--------
+ 1 file changed, 19 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index b3675cf25a69..d390f7da1441 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -644,6 +644,12 @@ static int stm32_usart_startup(struct uart_port *port)
- 	if (ret)
- 		return ret;
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+index 8631678283f9..68a0f3ce8328 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+@@ -9,9 +9,6 @@ maintainers:
  
-+	if (stm32_port->swap) {
-+		val = readl_relaxed(port->membase + ofs->cr2);
-+		val |= USART_CR2_SWAP;
-+		writel_relaxed(val, port->membase + ofs->cr2);
-+	}
+ title: STMicroelectronics STM32 USART bindings
+ 
+-allOf:
+-  - $ref: rs485.yaml
+-
+ properties:
+   compatible:
+     enum:
+@@ -40,6 +37,8 @@ properties:
+ 
+   uart-has-rtscts: true
+ 
++  rx-tx-swap: true
 +
- 	/* RX FIFO Flush */
- 	if (ofs->rqr != UNDEF_REG)
- 		stm32_usart_set_bits(port, ofs->rqr, USART_RQR_RXFRQ);
-@@ -758,7 +764,7 @@ static void stm32_usart_set_termios(struct uart_port *port,
- 	cr1 = USART_CR1_TE | USART_CR1_RE;
- 	if (stm32_port->fifoen)
- 		cr1 |= USART_CR1_FIFOEN;
--	cr2 = 0;
-+	cr2 = stm32_port->swap ? USART_CR2_SWAP : 0;
- 	cr3 = readl_relaxed(port->membase + ofs->cr3);
- 	cr3 &= USART_CR3_TXFTIE | USART_CR3_RXFTCFG_MASK | USART_CR3_RXFTIE
- 		| USART_CR3_TXFTCFG_MASK;
-@@ -1006,6 +1012,9 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
- 			return stm32port->wakeirq ? : -ENODEV;
- 	}
+   dmas:
+     minItems: 1
+     maxItems: 2
+@@ -66,13 +65,23 @@ properties:
+   linux,rs485-enabled-at-boot-time: true
+   rs485-rx-during-tx: true
  
-+	stm32port->swap = stm32port->info->cfg.has_swap &&
-+		of_property_read_bool(pdev->dev.of_node, "rx-tx-swap");
-+
- 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
+-if:
+-  required:
+-    - st,hw-flow-ctrl
+-then:
+-  properties:
+-    cts-gpios: false
+-    rts-gpios: false
++allOf:
++  - $ref: rs485.yaml#
++  - $ref: serial.yaml#
++  - if:
++      required:
++        - st,hw-flow-ctrl
++    then:
++      properties:
++        cts-gpios: false
++        rts-gpios: false
++  - if:
++      properties:
++        compatible:
++           const: st,stm32-uart
++    then:
++      properties:
++        rx-tx-swap: false
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index cb4f327c46db..a85391e71e8e 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -25,6 +25,7 @@ struct stm32_usart_offsets {
- struct stm32_usart_config {
- 	u8 uart_enable_bit; /* USART_CR1_UE */
- 	bool has_7bits_data;
-+	bool has_swap;
- 	bool has_wakeup;
- 	bool has_fifo;
- 	int fifosize;
-@@ -76,6 +77,7 @@ struct stm32_usart_info stm32f7_info = {
- 	.cfg = {
- 		.uart_enable_bit = 0,
- 		.has_7bits_data = true,
-+		.has_swap = true,
- 		.fifosize = 1,
- 	}
- };
-@@ -97,6 +99,7 @@ struct stm32_usart_info stm32h7_info = {
- 	.cfg = {
- 		.uart_enable_bit = 0,
- 		.has_7bits_data = true,
-+		.has_swap = true,
- 		.has_wakeup = true,
- 		.has_fifo = true,
- 		.fifosize = 16,
-@@ -271,6 +274,7 @@ struct stm32_port {
- 	int last_res;
- 	bool tx_dma_busy;	 /* dma tx busy               */
- 	bool hw_flow_control;
-+	bool swap;		 /* swap RX & TX pins */
- 	bool fifoen;
- 	int wakeirq;
- 	int rdr_mask;		/* receive data register mask */
+ required:
+   - compatible
 -- 
 2.11.0
 
