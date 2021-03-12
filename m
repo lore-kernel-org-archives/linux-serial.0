@@ -2,101 +2,149 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 381CAC43381
-	for <linux-serial@archiver.kernel.org>; Fri, 12 Mar 2021 15:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD351C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 12 Mar 2021 15:40:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0F38464FD6
-	for <linux-serial@archiver.kernel.org>; Fri, 12 Mar 2021 15:06:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9DE4164FE0
+	for <linux-serial@archiver.kernel.org>; Fri, 12 Mar 2021 15:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231925AbhCLPFl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 12 Mar 2021 10:05:41 -0500
-Received: from smtp.wifcom.cz ([85.207.3.150]:42468 "EHLO smtp.wifcom.cz"
+        id S232182AbhCLPjo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 12 Mar 2021 10:39:44 -0500
+Received: from smtp.wifcom.cz ([85.207.3.150]:52254 "EHLO smtp.wifcom.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232131AbhCLPFh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 12 Mar 2021 10:05:37 -0500
+        id S231709AbhCLPjj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 12 Mar 2021 10:39:39 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=eaxlabs.cz; s=mail;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject; bh=UwtzL4pDkwTQcSrJ+2meBQW1w8X0nrXrsAaZqyjKa0A=;
-        b=c0+fb+RWYoBtShUccUrvuuwXJIkZbe8H4zynmm4WiYTT2OrDz69F37RSVs2ybenTn8pacujGhlyGxSBK+BgQwMfQl6Qks72QXBUuwD9L9mtQD46DJXx0wOW2Ty9ud2ydBrxsNgZLINLkREhbjC7/YAqRhzyz/z1pgBbyK7yPN8w=;
-Subject: Re: [PATCH v6 1/2] dt-bindings: serial: Add rx-tx-swap to stm32-usart
-From:   Martin DEVERA <devik@eaxlabs.cz>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Le Ray <erwan.leray@st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        fabrice.gasnier@foss.st.com, linux-arm-kernel@lists.infradead.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=kSXHXTR/TeMt8/zrDo1WiK6sqLAP5dPJKbJ+mSkPfN4=;
+        b=e2Q+SqAyLIJ7yR/vQT8I0y/kY8Iw9CSblfWZEtJIqo8fMHkgMYGV69ndEzaPGALV/s9X1L72QmM0a3D57B6iK3qMC9vLwIjmfP9qjAkODP2t+SVyXtdEEWV20r820YAV7SJ8omiRUyTRe/lI4sAc/p3JJUVofY50m07bxMplQNg=;
+From:   Martin Devera <devik@eaxlabs.cz>
+To:     linux-kernel@vger.kernel.org
+Cc:     Martin Devera <devik@eaxlabs.cz>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-References: <YEsjMJae3cGOdyjG@kroah.com>
- <20210312102713.27776-1-devik@eaxlabs.cz>
- <1615559009.788146.2976052.nullmailer@robh.at.kernel.org>
- <e1cee5c4-8802-bf6b-be06-e453af559e62@eaxlabs.cz>
-Message-ID: <f1762dc1-d359-e499-ace7-f957bca519b8@eaxlabs.cz>
-Date:   Fri, 12 Mar 2021 16:03:27 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <e1cee5c4-8802-bf6b-be06-e453af559e62@eaxlabs.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jiri Slaby <jirislaby@kernel.org>, Le Ray <erwan.leray@st.com>,
+        fabrice.gasnier@foss.st.com, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v7 2/2] tty/serial: Add rx-tx-swap OF option to stm32-usart
+Date:   Fri, 12 Mar 2021 16:37:02 +0100
+Message-Id: <20210312153702.12349-2-devik@eaxlabs.cz>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20210312153702.12349-1-devik@eaxlabs.cz>
+References: <1615559009.788146.2976052.nullmailer@robh.at.kernel.org>
+ <20210312153702.12349-1-devik@eaxlabs.cz>
 X-Antivirus-Scanner: Clean mail though you should still use an Antivirus
 X-Wif-ss: -2.9 (--)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/12/21 3:56 PM, Martin DEVERA wrote:
-> On 3/12/21 3:23 PM, Rob Herring wrote:
->> On Fri, 12 Mar 2021 11:27:12 +0100, Martin Devera wrote:
->>> Add new rx-tx-swap property to allow for RX & TX pin swapping.
->>>
->>> Signed-off-by: Martin Devera <devik@eaxlabs.cz>
->>> Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
->>> ---
->>> v6:
->>>    - add version changelog
->>> v5:
->>>    - yaml fixes based on Rob Herring comments
->>>      - add serial.yaml reference
->>>      - move compatible from 'then' to 'if'
->>> v3:
->>>    - don't allow rx-tx-swap for st,stm32-uart (suggested
->>>      by Fabrice Gasnier)
->>> v2:
->>>    - change st,swap to rx-tx-swap (suggested by Rob Herring)
->>> ---
->>>   .../devicetree/bindings/serial/st,stm32-uart.yaml  | 29 
->>> ++++++++++++++--------
->>>   1 file changed, 19 insertions(+), 10 deletions(-)
->>>
->> My bot found errors running 'make dt_binding_check' on your patch:
->>
->> yamllint warnings/errors:
->> ./Documentation/devicetree/bindings/serial/st,stm32-uart.yaml:81:12: 
->> [warning] wrong indentation: expected 10 but found 11 (indentation)
->>
->> dtschema/dtc warnings/errors:
->>
->> See https://patchwork.ozlabs.org/patch/1451861
->>
->> This check can fail if there are any dependencies. The base for a patch
->> series is generally the most recent rc1.
->>
->> If you already ran 'make dt_binding_check' and didn't see the above
->> error(s), then make sure 'yamllint' is installed and dt-schema is up to
->> date:
->>
->> pip3 install dtschema --upgrade
->>
-> Yoy are right, there is one extra space. But for some reason the check 
-> doesn't
-> find it: 
-Argh... sorry, ignore it please. It seems I removed yamllint.
-I see the error now.
+STM32 F7/H7 usarts supports RX & TX pin swapping.
+Add option to turn it on.
+Tested on STM32MP157.
+
+Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+v6: 
+  - add version changelog
+v4:
+  - delete superfluous has_swap=false
+v3:
+  - add has_swap to stm32_usart_info (because F4 line
+    doesn't support swapping)
+  - move swap variable init from stm32_usart_of_get_port
+    to stm32_usart_init_port because info struct is not
+    initialized in stm32_usart_of_get_port yet
+  - set USART_CR2_SWAP in stm32_usart_startup too
+v2:
+  - change st,swap to rx-tx-swap (pointed out by Rob Herring)
+  - rebase patches as suggested by Greg Kroah-Hartman
+---
+ drivers/tty/serial/stm32-usart.c | 11 ++++++++++-
+ drivers/tty/serial/stm32-usart.h |  4 ++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index b3675cf25a69..d390f7da1441 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -644,6 +644,12 @@ static int stm32_usart_startup(struct uart_port *port)
+ 	if (ret)
+ 		return ret;
+ 
++	if (stm32_port->swap) {
++		val = readl_relaxed(port->membase + ofs->cr2);
++		val |= USART_CR2_SWAP;
++		writel_relaxed(val, port->membase + ofs->cr2);
++	}
++
+ 	/* RX FIFO Flush */
+ 	if (ofs->rqr != UNDEF_REG)
+ 		stm32_usart_set_bits(port, ofs->rqr, USART_RQR_RXFRQ);
+@@ -758,7 +764,7 @@ static void stm32_usart_set_termios(struct uart_port *port,
+ 	cr1 = USART_CR1_TE | USART_CR1_RE;
+ 	if (stm32_port->fifoen)
+ 		cr1 |= USART_CR1_FIFOEN;
+-	cr2 = 0;
++	cr2 = stm32_port->swap ? USART_CR2_SWAP : 0;
+ 	cr3 = readl_relaxed(port->membase + ofs->cr3);
+ 	cr3 &= USART_CR3_TXFTIE | USART_CR3_RXFTCFG_MASK | USART_CR3_RXFTIE
+ 		| USART_CR3_TXFTCFG_MASK;
+@@ -1006,6 +1012,9 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
+ 			return stm32port->wakeirq ? : -ENODEV;
+ 	}
+ 
++	stm32port->swap = stm32port->info->cfg.has_swap &&
++		of_property_read_bool(pdev->dev.of_node, "rx-tx-swap");
++
+ 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index cb4f327c46db..a85391e71e8e 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -25,6 +25,7 @@ struct stm32_usart_offsets {
+ struct stm32_usart_config {
+ 	u8 uart_enable_bit; /* USART_CR1_UE */
+ 	bool has_7bits_data;
++	bool has_swap;
+ 	bool has_wakeup;
+ 	bool has_fifo;
+ 	int fifosize;
+@@ -76,6 +77,7 @@ struct stm32_usart_info stm32f7_info = {
+ 	.cfg = {
+ 		.uart_enable_bit = 0,
+ 		.has_7bits_data = true,
++		.has_swap = true,
+ 		.fifosize = 1,
+ 	}
+ };
+@@ -97,6 +99,7 @@ struct stm32_usart_info stm32h7_info = {
+ 	.cfg = {
+ 		.uart_enable_bit = 0,
+ 		.has_7bits_data = true,
++		.has_swap = true,
+ 		.has_wakeup = true,
+ 		.has_fifo = true,
+ 		.fifosize = 16,
+@@ -271,6 +274,7 @@ struct stm32_port {
+ 	int last_res;
+ 	bool tx_dma_busy;	 /* dma tx busy               */
+ 	bool hw_flow_control;
++	bool swap;		 /* swap RX & TX pins */
+ 	bool fifoen;
+ 	int wakeirq;
+ 	int rdr_mask;		/* receive data register mask */
+-- 
+2.11.0
+
