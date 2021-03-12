@@ -2,66 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C38A5C433E0
-	for <linux-serial@archiver.kernel.org>; Fri, 12 Mar 2021 10:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D55C4332D
+	for <linux-serial@archiver.kernel.org>; Fri, 12 Mar 2021 13:18:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9B84765031
-	for <linux-serial@archiver.kernel.org>; Fri, 12 Mar 2021 10:37:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AC1D6614A5
+	for <linux-serial@archiver.kernel.org>; Fri, 12 Mar 2021 13:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232920AbhCLKh1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 12 Mar 2021 05:37:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
+        id S231276AbhCLNRf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 12 Mar 2021 08:17:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233534AbhCLKhZ (ORCPT
+        with ESMTP id S230302AbhCLNRY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 12 Mar 2021 05:37:25 -0500
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9AFC061765
-        for <linux-serial@vger.kernel.org>; Fri, 12 Mar 2021 02:37:24 -0800 (PST)
-Received: by mail-vs1-xe35.google.com with SMTP id m18so12289704vsa.1
-        for <linux-serial@vger.kernel.org>; Fri, 12 Mar 2021 02:37:24 -0800 (PST)
+        Fri, 12 Mar 2021 08:17:24 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD956C061574;
+        Fri, 12 Mar 2021 05:17:23 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id u4so45734764lfs.0;
+        Fri, 12 Mar 2021 05:17:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K3/Vc1Ah6eKHyLWI1pgidt8/nWh+3HJqZHQUqW0QsJY=;
-        b=e/OV4wNhRA/Hs5pdnjxqlm48AcxIBgreDOOJNjy58xe/C+lYYaCP1LvYHtxw5nNMDd
-         ALc5X7QtHJfqYjQJtkk29KbBS+sCEO+r861cukBYcKfIkwG7Ou4nlCW1n/UmnxXDl8UZ
-         Z/fv7WEl9eLwGeyto13VUunS/sfPRI2c3QsnbpFtyEdc7Gfom8B6Uyb0CQaIhkyCgJpI
-         Vsh00DPD7rj87XdaxRSYPfBsBAN7FvwewFG9kAbAybHO8w6BrDs7Q/oHkpYaTspxVr8g
-         hG55hBJ9e6DnKN6cjQsuVlY7/n4MxMQTtSF3SukeI2+Zdfpe9OF7WCVtCu8zUxSY8ajX
-         hHEQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kKylRMS171DSUAUGLyXWsq2Tz6pdoiZRigFrFZwqxVY=;
+        b=eUHZSSaI5vPFgCHKI71eDK0ms124Rbgs1AggoS8af2xSFxsDK5SvDdHRqKZcudOXj/
+         P7eWD2DuQ5pSSwttIk03LP1GI7IELva1IQj4teSCKjz3NCQwiCFLuZMBEceMFlJ/Q1xY
+         fAI3aAvftZ2OHaAcIFUk7dDlK2lrsGn1EcjsP+1W8S29zE8n11MaBaYGTkBsM9mRoPay
+         RgR6eXgSRUoKyXx8TzB+ivVIhA/LkIC/9w9Y0n02pjNGA5d2nv8si4OmOFrXBQWnb8s0
+         +cr8J/K96dWe6Y8YAwMIUDn+/X+fQ0+L/LRGlc77yg5sWB3K8cC4YDGz6y4OjHy6cSh0
+         Tv6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K3/Vc1Ah6eKHyLWI1pgidt8/nWh+3HJqZHQUqW0QsJY=;
-        b=WrkaFLMI/a595dnq+fUho4OgJ0ZmOOnRTMEENUpPThSmUDu7YedGUhVOgmmBIfVcdi
-         EhGpXw14psC1KsXPvU3U3u37SD9oFmArSUz1wbSho3I5zdsmjohjSCgQY5kMkqfwFWjt
-         TRzCTRqhDThoB5BrB+brvWo46Kcx/zL3g7ScHPOkn3KTRMKfDL5Fvjp4Qj0Q3yjwS13D
-         q52PuMgQwD17r+DjiijgVNYRKhEG2Xjqwt4ySohdqxK1SMEEHuCOGxSZ0AJdtALueyBk
-         itnJsbWdejoyKrjyXp3EnVB5yZoaTk/t3EX+v2uAbt1gn9DL6AQlpTsR2WizNEJXXYgo
-         y3FA==
-X-Gm-Message-State: AOAM532H78fGUw+Jn6bnkx8yJBuE3HAv639JATNfC50G8YluYJYIpXj/
-        jXVGcxrD8mc7GD2YXX16jgAOAE30XeGG0TFK3e2JEA==
-X-Google-Smtp-Source: ABdhPJyLTgXQd1zTmLlKpEGuucdoDu6MxM1Ifem4y53cs/Xb9ONexPA+wPxOnpJgqOBWr4/fpZSZO+YOQXGKhLX6tmk=
-X-Received: by 2002:a67:6942:: with SMTP id e63mr8188302vsc.48.1615545442849;
- Fri, 12 Mar 2021 02:37:22 -0800 (PST)
-MIME-Version: 1.0
-References: <20210311192105.14998-1-digetx@gmail.com> <20210311192105.14998-2-digetx@gmail.com>
- <20210312053312.zgke2mzjkqmwn67i@vireshk-i7>
-In-Reply-To: <20210312053312.zgke2mzjkqmwn67i@vireshk-i7>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 12 Mar 2021 11:36:46 +0100
-Message-ID: <CAPDyKFqrUCjTfrNqZ4gFfQS6LpoQCevGc-tv4WVOwuGhx5iiBg@mail.gmail.com>
-Subject: Re: [PATCH v2 01/14] opp: Add devres wrapper for dev_pm_opp_set_clkname
-To:     Viresh Kumar <viresh.kumar@linaro.org>,
-        Dmitry Osipenko <digetx@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kKylRMS171DSUAUGLyXWsq2Tz6pdoiZRigFrFZwqxVY=;
+        b=YHgox1TxUbIyzP/V39oDzT+cU2hLJEQjq4ye5xytBMQE0BLiEw+ySHecF5rHFjQu5v
+         tqLXoX8dTOgRoSixTGDTpEfNX/sByZGotsXT82EYmDj0BwfDisRi1do0ot5N0i3CnCkl
+         IJQSSAhxdqlN4cZoD0oI2jMtpSEokbtR0VlVcf3uyb1wn5nrL7IGYqihOp2qQs0iUjh+
+         S10Sv2ZF2Psx4Yr2aE/BNxk57HHSRPw5AyDk9WWSI/hpRdfhkzmt0EHxCALxXS0Koad1
+         qzxdyBDnZgpisPHTd1+FDYMuSCFgBg1C6R2HOdBZBalm+BGrxXpjxTe3IsITqjoIaVwS
+         mDkQ==
+X-Gm-Message-State: AOAM53178vLO7o/ryNY5SFFGhQux3LIHZIi4rL0LGSsNEP5V9E99uXrr
+        HW39Oruo262L6JdAkHi7IsUzJ7T8qFM=
+X-Google-Smtp-Source: ABdhPJyyXw4QXGPCVy0ERilhNXqz3whUGsc8C9NeIrl8gS+TKEhNS13UCZoBdLhL/YqNG5x1dPt40w==
+X-Received: by 2002:ac2:5603:: with SMTP id v3mr5617629lfd.67.1615555042189;
+        Fri, 12 Mar 2021 05:17:22 -0800 (PST)
+Received: from [192.168.2.145] (109-252-193-52.dynamic.spd-mgts.ru. [109.252.193.52])
+        by smtp.googlemail.com with ESMTPSA id k6sm1959405ljb.110.2021.03.12.05.17.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Mar 2021 05:17:21 -0800 (PST)
+Subject: Re: [PATCH v2 05/14] opp: Add devres wrapper for
+ dev_pm_opp_register_notifier
+To:     Viresh Kumar <viresh.kumar@linaro.org>
 Cc:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
         Sean Paul <sean@poorly.run>, Rob Herring <robh@kernel.org>,
         Tomeu Vizoso <tomeu.vizoso@collabora.com>,
@@ -74,6 +73,7 @@ Cc:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
         Lukasz Luba <lukasz.luba@arm.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
         Stephen Boyd <sboyd@kernel.org>,
         Mark Brown <broonie@kernel.org>,
@@ -81,52 +81,45 @@ Cc:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
         Jiri Slaby <jirislaby@kernel.org>,
         Yangtao Li <tiny.windzz@gmail.com>,
         Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        lima@lists.freedesktop.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        linux-tegra <linux-tegra@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, linux-media@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
+References: <20210311192105.14998-1-digetx@gmail.com>
+ <20210311192105.14998-6-digetx@gmail.com>
+ <20210312052659.uih7ikjdnkc5kl4j@vireshk-i7>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <7c288641-99ad-c938-1e5e-8c1ca19c9ea4@gmail.com>
+Date:   Fri, 12 Mar 2021 16:17:20 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.2
+MIME-Version: 1.0
+In-Reply-To: <20210312052659.uih7ikjdnkc5kl4j@vireshk-i7>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 12 Mar 2021 at 06:33, Viresh Kumar <viresh.kumar@linaro.org> wrote:
->
+12.03.2021 08:26, Viresh Kumar пишет:
 > On 11-03-21, 22:20, Dmitry Osipenko wrote:
-> > +struct opp_table *devm_pm_opp_set_clkname(struct device *dev, const char *name)
-> > +{
-> > +     struct opp_table *opp_table;
-> > +     int err;
-> > +
-> > +     opp_table = dev_pm_opp_set_clkname(dev, name);
-> > +     if (IS_ERR(opp_table))
-> > +             return opp_table;
-> > +
-> > +     err = devm_add_action_or_reset(dev, devm_pm_opp_clkname_release, opp_table);
-> > +     if (err)
-> > +             opp_table = ERR_PTR(err);
-> > +
-> > +     return opp_table;
-> > +}
->
-> I wonder if we still need to return opp_table from here, or a simple
-> integer is fine.. The callers shouldn't be required to use the OPP
-> table directly anymore I believe and so better simplify the return
-> part of this and all other routines you are adding here..
+>> From: Yangtao Li <tiny.windzz@gmail.com>
+>>
+>> Add devres wrapper for dev_pm_opp_register_notifier() to simplify driver
+>> code.
+>>
+>> Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>> ---
+>>  drivers/opp/core.c     | 38 ++++++++++++++++++++++++++++++++++++++
+>>  include/linux/pm_opp.h |  6 ++++++
+>>  2 files changed, 44 insertions(+)
+> 
+> As I said in the previous version, I am not sure if we need this patch
+> at all. This has only one user.
+> 
 
-Yes, please. I was thinking along the same lines, when I reviewed the
-mmc patch (patch9).
-
->
-> If there is a user which needs the opp_table, let it use the regular
-> non-devm variant.
-
-Kind regards
-Uffe
+I'll drop this patch in v3, thanks.
