@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88049C2BC0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A27C2BC11
 	for <linux-serial@archiver.kernel.org>; Sun, 14 Mar 2021 16:35:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 78A5F64EF5
+	by mail.kernel.org (Postfix) with ESMTP id A0B5B64E25
 	for <linux-serial@archiver.kernel.org>; Sun, 14 Mar 2021 16:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234728AbhCNQft (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 Mar 2021 12:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52006 "EHLO
+        id S234760AbhCNQfw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 14 Mar 2021 12:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234085AbhCNQex (ORCPT
+        with ESMTP id S234168AbhCNQe7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 Mar 2021 12:34:53 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271E7C061762;
-        Sun, 14 Mar 2021 09:34:52 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id n11-20020a05600c4f8bb029010e5cf86347so1259198wmq.1;
-        Sun, 14 Mar 2021 09:34:52 -0700 (PDT)
+        Sun, 14 Mar 2021 12:34:59 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E4FC061574;
+        Sun, 14 Mar 2021 09:34:58 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id w11so7451409wrr.10;
+        Sun, 14 Mar 2021 09:34:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ekucTjVivEQ90zhQvUqUcTjBwjviVC3YtIBQBVEBzF4=;
-        b=Qd9you/7YOWedpOG1hvsUbVfiK6yVG8ZIN1eeu8EeN0oBoynBCJqewyO2AUV65SZK4
-         I3/qUxhda2DRofX+y5Vqzu7fqIzYlw2DqB+9jK9UAHSKpj5NqscMLcQGNg5ShHKQfseN
-         8ivwaU4F/qGeJzS3bjBg9hwpVynsI36qfyRUWF5oAsyeMHhD9eyj9sanwrZaRgjA1csz
-         yXvSdS9/m9UEcj2BykHoqz+Qc9Y3YRGVU05CVjS9XwXdFImfbjbQRIGqwNEkZjWrmoX8
-         NG4olmzn8kZdcomDkFWi0DHlUc491i2dog4piB204tHMBvUEHJJW7aM4l7e/XtJyJMo5
-         HACw==
+        bh=yf+iKFcas/0uJoCP5/vtaWj8GnADCEOBO/yEczpj9kI=;
+        b=ppsS1pK7H2N/OHPVt818su8ZmgPauDF+VE0HF6n30iy9PosMmhRbW+xFPtmKOHdsEf
+         aXtWn7eRzpckEKaGNbtTvXoErtPQ9/zRLQ3HYUCbTQFSs1BEiYUkxAmkCwlb7mYcLSbR
+         rTeCySKnUjuDcS0wtPKCqixjQfN8pwzCyoSxsU5iZRHWS2dfWWbfHw2MOoEw/W6tGK6s
+         GrWUeJu9IsMAyYSnUhkBjLoF4T8IQb5XREczYr3d28EzqAKc/mOe0a5GFmDG0jTHUwEG
+         Wni8zBOfBtfyTEsQTou3erE1gmwHrzwKzMvk7GGAAeXb/vB9hYcXICRMNhv/Gljz1VCK
+         ffQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ekucTjVivEQ90zhQvUqUcTjBwjviVC3YtIBQBVEBzF4=;
-        b=MmJhOqwsFYn9Fl3WRMz7xd6CM673ki6rcWGClibGLPedmJ2llBKjoJElV+/TTKCT8v
-         3UeFEEEvuDT4TEsWig9qwiGk/j5fOZQ5wpLqUNNN8qzAkRFXGFqBtWE6gdai32VrwSJk
-         9vWfY+vQn8fo6kJDwYyxbZQDpMqTbHPYZLzHtFNZEbTcN5e3/r4NfLX5pZfk7v4vs/tT
-         bFChO1p2o5lzANXkKNOh5Wj+B9xo09OODWDfSBhFj6razCsdYxG0VeBok8hDGygv+Lvu
-         8WzxYpaPZvSRvNaJDAnJLe4CckECbrLpb0+PyS4AnWybzvtO8CQXCgmt7llGRuzDW3g4
-         8X8Q==
-X-Gm-Message-State: AOAM533zNbj63znIDH6lbbbZWL/MPp9s+DCLeVBAHrh3He5eo4RqDtpq
-        VQpKV5e5vzq8ZlJo3WzOKI4=
-X-Google-Smtp-Source: ABdhPJxCnEzz9dJy2Xdztr6bWqPxnNPEWIx01FtULZIwAIx6ZrM+uJHA7UaOro3z3yHFaKdZAMcN2g==
-X-Received: by 2002:a05:600c:4013:: with SMTP id i19mr16812944wmm.33.1615739690935;
-        Sun, 14 Mar 2021 09:34:50 -0700 (PDT)
+        bh=yf+iKFcas/0uJoCP5/vtaWj8GnADCEOBO/yEczpj9kI=;
+        b=s7lSLZvVi8bf6EFeBSQaw+u54cl4mRvNOGVplJ515jFXTxg2bWMkxWda+5f4SVNuO5
+         Mmk8GfHk7a+6x38Jq0x3Nv/Ra4mDZlvoyxNhqd8r9hfQokpqw0tEYxchyTXSBfqBDjIh
+         6JixBlD5Y1R3x/R9ELFK+OoT9j1E/XO2JD4HE8ZMGCN7JXJ1mMbtp7ppy3znqcQ1Ctb8
+         cEcYcWLghElhz6nulQw1XavKX994chwyo0Qxgj2GEudfEORzYswReg/5RrrxR6jd7Vcn
+         J81m4nVZJiOXUJvNK6O9lvfU4obQY1p7iP+EdN3OZXcLtI2Qa+zov8VfbubO8sAcHzrC
+         EU1w==
+X-Gm-Message-State: AOAM533kQ+aq7dxTlCk+hBD3SFJ1hEqAXpbDqGcvN3+Zc3jVkdI25Pcn
+        COg8LTv32/duVxxYMDDS2AY=
+X-Google-Smtp-Source: ABdhPJyBQvV7xZv9vCfna5TuO6tJlXlewHlW50bnTQPbzuJunn1EI5WEi80mIYlzX20zsmb/XNcBXA==
+X-Received: by 2002:a05:6000:10c5:: with SMTP id b5mr23293529wrx.347.1615739697207;
+        Sun, 14 Mar 2021 09:34:57 -0700 (PDT)
 Received: from localhost.localdomain (109-252-193-52.dynamic.spd-mgts.ru. [109.252.193.52])
-        by smtp.gmail.com with ESMTPSA id o7sm15723239wrs.16.2021.03.14.09.34.48
+        by smtp.gmail.com with ESMTPSA id o7sm15723239wrs.16.2021.03.14.09.34.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Mar 2021 09:34:50 -0700 (PDT)
+        Sun, 14 Mar 2021 09:34:57 -0700 (PDT)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
         Sean Paul <sean@poorly.run>, Rob Herring <robh@kernel.org>,
@@ -84,9 +84,9 @@ Cc:     Daniel Vetter <daniel@ffwll.ch>, dri-devel@lists.freedesktop.org,
         linux-samsung-soc@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-tegra@vger.kernel.org
-Subject: [PATCH v3 10/15] mmc: sdhci-msm: Convert to use resource-managed OPP API
-Date:   Sun, 14 Mar 2021 19:34:03 +0300
-Message-Id: <20210314163408.22292-11-digetx@gmail.com>
+Subject: [PATCH v3 13/15] drm/panfrost: Convert to use resource-managed OPP API
+Date:   Sun, 14 Mar 2021 19:34:06 +0300
+Message-Id: <20210314163408.22292-14-digetx@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210314163408.22292-1-digetx@gmail.com>
 References: <20210314163408.22292-1-digetx@gmail.com>
@@ -101,74 +101,121 @@ From: Yangtao Li <tiny.windzz@gmail.com>
 Use resource-managed OPP API to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/mmc/host/sdhci-msm.c | 19 +++++--------------
- 1 file changed, 5 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/panfrost/panfrost_devfreq.c | 37 +++++----------------
+ drivers/gpu/drm/panfrost/panfrost_devfreq.h |  2 --
+ 2 files changed, 9 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
-index 5e1da4df096f..d170c919e6e4 100644
---- a/drivers/mmc/host/sdhci-msm.c
-+++ b/drivers/mmc/host/sdhci-msm.c
-@@ -264,7 +264,6 @@ struct sdhci_msm_host {
- 	struct clk_bulk_data bulk_clks[5];
- 	unsigned long clk_rate;
- 	struct mmc_host *mmc;
+diff --git a/drivers/gpu/drm/panfrost/panfrost_devfreq.c b/drivers/gpu/drm/panfrost/panfrost_devfreq.c
+index 56b3f5935703..c878391f3e8c 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_devfreq.c
++++ b/drivers/gpu/drm/panfrost/panfrost_devfreq.c
+@@ -89,29 +89,25 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
+ 	unsigned long cur_freq;
+ 	struct device *dev = &pfdev->pdev->dev;
+ 	struct devfreq *devfreq;
 -	struct opp_table *opp_table;
- 	bool use_14lpp_dll_reset;
- 	bool tuning_done;
- 	bool calibration_done;
-@@ -2551,17 +2550,15 @@ static int sdhci_msm_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto bus_clk_disable;
+ 	struct thermal_cooling_device *cooling;
+ 	struct panfrost_devfreq *pfdevfreq = &pfdev->pfdevfreq;
  
--	msm_host->opp_table = dev_pm_opp_set_clkname(&pdev->dev, "core");
--	if (IS_ERR(msm_host->opp_table)) {
--		ret = PTR_ERR(msm_host->opp_table);
-+	ret = devm_pm_opp_set_clkname(&pdev->dev, "core");
-+	if (ret)
- 		goto bus_clk_disable;
--	}
- 
- 	/* OPP table is optional */
--	ret = dev_pm_opp_of_add_table(&pdev->dev);
-+	ret = devm_pm_opp_of_add_table(&pdev->dev);
- 	if (ret && ret != -ENODEV) {
- 		dev_err(&pdev->dev, "Invalid OPP table in Device tree\n");
--		goto opp_put_clkname;
-+		goto bus_clk_disable;
+-	opp_table = dev_pm_opp_set_regulators(dev, pfdev->comp->supply_names,
+-					      pfdev->comp->num_supplies);
+-	if (IS_ERR(opp_table)) {
+-		ret = PTR_ERR(opp_table);
++	ret = devm_pm_opp_set_regulators(dev, pfdev->comp->supply_names,
++					 pfdev->comp->num_supplies);
++	if (ret) {
+ 		/* Continue if the optional regulator is missing */
+ 		if (ret != -ENODEV) {
+ 			DRM_DEV_ERROR(dev, "Couldn't set OPP regulators\n");
+-			goto err_fini;
++			return ret;
+ 		}
+-	} else {
+-		pfdevfreq->regulators_opp_table = opp_table;
  	}
  
- 	/* Vote for maximum clock rate for maximum performance */
-@@ -2587,7 +2584,7 @@ static int sdhci_msm_probe(struct platform_device *pdev)
- 	ret = clk_bulk_prepare_enable(ARRAY_SIZE(msm_host->bulk_clks),
- 				      msm_host->bulk_clks);
- 	if (ret)
--		goto opp_cleanup;
-+		goto bus_clk_disable;
+-	ret = dev_pm_opp_of_add_table(dev);
++	ret = devm_pm_opp_of_add_table(dev);
+ 	if (ret) {
+ 		/* Optional, continue without devfreq */
+ 		if (ret == -ENODEV)
+ 			ret = 0;
+-		goto err_fini;
++		return ret;
+ 	}
+ 	pfdevfreq->opp_of_table_added = true;
  
- 	/*
- 	 * xo clock is needed for FLL feature of cm_dll.
-@@ -2732,10 +2729,6 @@ static int sdhci_msm_probe(struct platform_device *pdev)
- clk_disable:
- 	clk_bulk_disable_unprepare(ARRAY_SIZE(msm_host->bulk_clks),
- 				   msm_host->bulk_clks);
--opp_cleanup:
--	dev_pm_opp_of_remove_table(&pdev->dev);
--opp_put_clkname:
--	dev_pm_opp_put_clkname(msm_host->opp_table);
- bus_clk_disable:
- 	if (!IS_ERR(msm_host->bus_clk))
- 		clk_disable_unprepare(msm_host->bus_clk);
-@@ -2754,8 +2747,6 @@ static int sdhci_msm_remove(struct platform_device *pdev)
+@@ -122,10 +118,8 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
+ 	cur_freq = clk_get_rate(pfdev->clock);
  
- 	sdhci_remove_host(host, dead);
+ 	opp = devfreq_recommended_opp(dev, &cur_freq, 0);
+-	if (IS_ERR(opp)) {
+-		ret = PTR_ERR(opp);
+-		goto err_fini;
+-	}
++	if (IS_ERR(opp))
++		return PTR_ERR(opp);
  
--	dev_pm_opp_of_remove_table(&pdev->dev);
--	dev_pm_opp_put_clkname(msm_host->opp_table);
- 	pm_runtime_get_sync(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
- 	pm_runtime_put_noidle(&pdev->dev);
+ 	panfrost_devfreq_profile.initial_freq = cur_freq;
+ 	dev_pm_opp_put(opp);
+@@ -134,8 +128,7 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
+ 					  DEVFREQ_GOV_SIMPLE_ONDEMAND, NULL);
+ 	if (IS_ERR(devfreq)) {
+ 		DRM_DEV_ERROR(dev, "Couldn't initialize GPU devfreq\n");
+-		ret = PTR_ERR(devfreq);
+-		goto err_fini;
++		return PTR_ERR(devfreq);
+ 	}
+ 	pfdevfreq->devfreq = devfreq;
+ 
+@@ -146,10 +139,6 @@ int panfrost_devfreq_init(struct panfrost_device *pfdev)
+ 		pfdevfreq->cooling = cooling;
+ 
+ 	return 0;
+-
+-err_fini:
+-	panfrost_devfreq_fini(pfdev);
+-	return ret;
+ }
+ 
+ void panfrost_devfreq_fini(struct panfrost_device *pfdev)
+@@ -160,14 +149,6 @@ void panfrost_devfreq_fini(struct panfrost_device *pfdev)
+ 		devfreq_cooling_unregister(pfdevfreq->cooling);
+ 		pfdevfreq->cooling = NULL;
+ 	}
+-
+-	if (pfdevfreq->opp_of_table_added) {
+-		dev_pm_opp_of_remove_table(&pfdev->pdev->dev);
+-		pfdevfreq->opp_of_table_added = false;
+-	}
+-
+-	dev_pm_opp_put_regulators(pfdevfreq->regulators_opp_table);
+-	pfdevfreq->regulators_opp_table = NULL;
+ }
+ 
+ void panfrost_devfreq_resume(struct panfrost_device *pfdev)
+diff --git a/drivers/gpu/drm/panfrost/panfrost_devfreq.h b/drivers/gpu/drm/panfrost/panfrost_devfreq.h
+index db6ea48e21f9..210269944687 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_devfreq.h
++++ b/drivers/gpu/drm/panfrost/panfrost_devfreq.h
+@@ -8,14 +8,12 @@
+ #include <linux/ktime.h>
+ 
+ struct devfreq;
+-struct opp_table;
+ struct thermal_cooling_device;
+ 
+ struct panfrost_device;
+ 
+ struct panfrost_devfreq {
+ 	struct devfreq *devfreq;
+-	struct opp_table *regulators_opp_table;
+ 	struct thermal_cooling_device *cooling;
+ 	bool opp_of_table_added;
+ 
 -- 
 2.30.2
 
