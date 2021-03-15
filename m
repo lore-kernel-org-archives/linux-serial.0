@@ -2,63 +2,64 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B49C4332D
-	for <linux-serial@archiver.kernel.org>; Sun, 14 Mar 2021 16:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C283C433DB
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Mar 2021 04:04:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2600964EC6
-	for <linux-serial@archiver.kernel.org>; Sun, 14 Mar 2021 16:36:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3F23264E3F
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Mar 2021 04:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234765AbhCNQfx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 Mar 2021 12:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52032 "EHLO
+        id S229570AbhCOEEI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Mar 2021 00:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234211AbhCNQfB (ORCPT
+        with ESMTP id S229748AbhCOEDm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 Mar 2021 12:35:01 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6F7C061762;
-        Sun, 14 Mar 2021 09:35:00 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id t9so4484619wrn.11;
-        Sun, 14 Mar 2021 09:35:00 -0700 (PDT)
+        Mon, 15 Mar 2021 00:03:42 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F251DC061762
+        for <linux-serial@vger.kernel.org>; Sun, 14 Mar 2021 21:03:30 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id ha17so7304833pjb.2
+        for <linux-serial@vger.kernel.org>; Sun, 14 Mar 2021 21:03:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mgZKFLRFAbBRu7Q5z215LMK01y6B/VlLhTD6jZqDHxk=;
-        b=H8o2FrMfH9tVu1ztan+gWiBd5bSVUm05dSFXZPAoZffhE06GKaXK7RxLEX2BIZ+OSg
-         KmSaaU1WbXyqIzqzbi4zmt4+Zz1ark29b9LV0ic78Irq7sIv+PRFji3Ht8MMMFTvs/WG
-         R6rLeHeZQ0fInZZchJpX7vd9vxb3hDGw6d/bHB6xzSstme+lgVDvHrn5ilkZDuSw8Cy4
-         NGS+cBsEtmktgYM2PICmTgp5kmLeZIn9q3pgc7idtv+GgAPwtDgfyNgy8+QpfB62MN0c
-         hN7U4R348CTb70GQ15NLtWFsJNSF0ifkPMrnYf4SLCgu8BzQ5S3L+nbbns+OXXy8iyCg
-         AiuQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=c7OJnHCRmwFk8fofgO7P2TCmA9anENj2NKzvbROCVrw=;
+        b=hqFTPqznnNTRx313WjH/Y3rQxyT1qRk2tsjcNVxk6Hrjol4OfsLVJAACk5S5GCeBIN
+         DUPZ/2/BGxScEjnruZkDvsVu7pnsFXZ7N4zstn9qEl8Fgh/HQaGB5JV/pkl9Br3HoCOi
+         i64U4nBnHPt+1Xi5F2gQwMxITwYJMb1Um+iYOQ6ojSR1WU9DezeWcNfnJiJ8w11ERSEr
+         UChVNzm6vqvXvOO1iZ7xVRBakAg/WIocWyURqM6EHJjAujbHTyE6NgBKuUb+t/F7avLm
+         rWQq2i6tEhG/s1AIiG+/WUpZhYbj36Vuiav5Pq8c+WaDHPXcR8LK3WT+pRJ2r6gMw6bd
+         ep6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mgZKFLRFAbBRu7Q5z215LMK01y6B/VlLhTD6jZqDHxk=;
-        b=UbwQK9ZBIXG6YjkGIJGTwlYo4/EEWKurblqBf/bAvTUkbmXl5cCOBiAJnRwFqpE3fQ
-         ArJnK1EstLFmRu8uqRxNvx9ZH0WLUkMkt7yOr3leu4yqnr+5AF2Mwl14FSjkeuhASCkF
-         Zmp6CVO930FAbraYjCZhaJxeP6Xy1QGZMAEdHMz1ATXNtJFagBm4N5bFBfp3EpQZ1qWJ
-         iIBnS4A+UoOvOC3NEU1LGdjDxXXFedhfaBHli3O7nGpi3vTDOlu3Y8YJvV28jo5C5+q1
-         NX8qdP9CCjLpLLDFRgrqjDA57LV/XKkjPM3mg2lwhDvDLTYzfoD9gRZ8jjpuNjMt+ygo
-         /EkA==
-X-Gm-Message-State: AOAM530jCQkk2QZIC84pRXik9xL5YfTrv0OZE53/zfVgikZc7Wt1RpIG
-        0LB36/5emEJ/BO7Z7MySqek=
-X-Google-Smtp-Source: ABdhPJwPZqEVDSr9D0mUwH6ne5arFGsjVko9cENT/XLUXmmB5qBPOLoqvm+C5z1r87vsWkwte6sPcQ==
-X-Received: by 2002:adf:fa08:: with SMTP id m8mr23720418wrr.12.1615739699340;
-        Sun, 14 Mar 2021 09:34:59 -0700 (PDT)
-Received: from localhost.localdomain (109-252-193-52.dynamic.spd-mgts.ru. [109.252.193.52])
-        by smtp.gmail.com with ESMTPSA id o7sm15723239wrs.16.2021.03.14.09.34.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Mar 2021 09:34:59 -0700 (PDT)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=c7OJnHCRmwFk8fofgO7P2TCmA9anENj2NKzvbROCVrw=;
+        b=ex0KIkLe/SEWW8n9/SZnMHIlLsAMVKezea16bO+YFwGC1/J1YhbBJI8Z3GQN6fyGho
+         U9eKSaFA2n2goVtVLWXAfhdIUiR5/Lg2lXCCvDjn9CQsCGHKth30JJg60tl9/iWQuUgc
+         IhCLOcnf+NgvxNcSy5Wv+w9YpO+TeS1ZPV7xpLI8ZejmRMUqbbPcg+A6b8arvIhRTx9X
+         mGd5GFkR3wiMfOwmzh3Nh98tvbQ8YTb0QNhEtFcAjH308u1jYejIdY7ogwW6ua4gQTEC
+         5xIEXbGe5E+EdRxRWll/FBl8/Rk3wsc6Dk57Vg/2Ja+CnuK9mxYSkZ3RgkGiH/vjATmy
+         I5uA==
+X-Gm-Message-State: AOAM532BQmOcDhmdIsq06E/lT2Dx1K0gtjL1G6vt2W8tGibX/EEhz/g4
+        YKPMXGP57E5lYlMrXUoaLxdcZw==
+X-Google-Smtp-Source: ABdhPJxRDau7gIDAmMsnWR7FCOk4vgRj39P8KqGrKbOykRijnyhWvAXlMXcpaXxZjPuzVl/GOTJ9CQ==
+X-Received: by 2002:a17:902:7889:b029:e6:b9c3:bc0d with SMTP id q9-20020a1709027889b02900e6b9c3bc0dmr5992pll.23.1615781010271;
+        Sun, 14 Mar 2021 21:03:30 -0700 (PDT)
+Received: from localhost ([122.171.124.15])
+        by smtp.gmail.com with ESMTPSA id r23sm9182422pje.38.2021.03.14.21.03.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 14 Mar 2021 21:03:29 -0700 (PDT)
+Date:   Mon, 15 Mar 2021 09:33:27 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
         Sean Paul <sean@poorly.run>, Rob Herring <robh@kernel.org>,
         Tomeu Vizoso <tomeu.vizoso@collabora.com>,
         Steven Price <steven.price@arm.com>,
@@ -76,150 +77,52 @@ To:     Qiang Yu <yuq825@gmail.com>, Rob Clark <robdclark@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Yangtao Li <tiny.windzz@gmail.com>
-Cc:     Daniel Vetter <daniel@ffwll.ch>, dri-devel@lists.freedesktop.org,
-        lima@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH v3 14/15] media: venus: Convert to use resource-managed OPP API
-Date:   Sun, 14 Mar 2021 19:34:07 +0300
-Message-Id: <20210314163408.22292-15-digetx@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210314163408.22292-1-digetx@gmail.com>
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, linux-media@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v3 11/15] drm/msm: Convert to use resource-managed OPP API
+Message-ID: <20210315040327.qwn4rt75yqs5datl@vireshk-i7>
 References: <20210314163408.22292-1-digetx@gmail.com>
+ <20210314163408.22292-12-digetx@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210314163408.22292-12-digetx@gmail.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Yangtao Li <tiny.windzz@gmail.com>
+On 14-03-21, 19:34, Dmitry Osipenko wrote:
+> From: Yangtao Li <tiny.windzz@gmail.com>
+> 
+> Use resource-managed OPP API to simplify code.
+> 
+> Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+> ---
+>  drivers/gpu/drm/msm/adreno/a5xx_gpu.c   |  2 +-
+>  drivers/gpu/drm/msm/adreno/a6xx_gmu.c   |  2 +-
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu.c   | 11 +++------
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu.h   |  2 --
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.c |  2 +-
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 23 +++++++------------
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h |  2 --
+>  drivers/gpu/drm/msm/dp/dp_ctrl.c        | 30 +++++--------------------
+>  drivers/gpu/drm/msm/dp/dp_ctrl.h        |  1 -
+>  drivers/gpu/drm/msm/dp/dp_display.c     |  5 +----
+>  drivers/gpu/drm/msm/dsi/dsi_host.c      | 13 ++++-------
+>  11 files changed, 25 insertions(+), 68 deletions(-)
 
-Use resource-managed OPP API to simplify code.
+This patch has some updates in linux-next, which I don't have. Please
+get this merged with the drm tree over 5.13-rc1 later.
 
-Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
----
- drivers/media/platform/qcom/venus/core.h      |  1 -
- .../media/platform/qcom/venus/pm_helpers.c    | 35 +++++--------------
- 2 files changed, 8 insertions(+), 28 deletions(-)
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
 
-diff --git a/drivers/media/platform/qcom/venus/core.h b/drivers/media/platform/qcom/venus/core.h
-index a252ed32cc14..d35f60d2cb56 100644
---- a/drivers/media/platform/qcom/venus/core.h
-+++ b/drivers/media/platform/qcom/venus/core.h
-@@ -125,7 +125,6 @@ struct venus_core {
- 	struct clk *vcodec1_clks[VIDC_VCODEC_CLKS_NUM_MAX];
- 	struct icc_path *video_path;
- 	struct icc_path *cpucfg_path;
--	struct opp_table *opp_table;
- 	bool has_opp_table;
- 	struct device *pmdomains[VIDC_PMDOMAINS_NUM_MAX];
- 	struct device_link *opp_dl_venus;
-diff --git a/drivers/media/platform/qcom/venus/pm_helpers.c b/drivers/media/platform/qcom/venus/pm_helpers.c
-index 43c4e3d9e281..e61317220b9a 100644
---- a/drivers/media/platform/qcom/venus/pm_helpers.c
-+++ b/drivers/media/platform/qcom/venus/pm_helpers.c
-@@ -756,7 +756,6 @@ static int venc_power_v4(struct device *dev, int on)
- static int vcodec_domains_get(struct device *dev)
- {
- 	int ret;
--	struct opp_table *opp_table;
- 	struct device **opp_virt_dev;
- 	struct venus_core *core = dev_get_drvdata(dev);
- 	const struct venus_resources *res = core->res;
-@@ -779,11 +778,9 @@ static int vcodec_domains_get(struct device *dev)
- 		return 0;
- 
- 	/* Attach the power domain for setting performance state */
--	opp_table = dev_pm_opp_attach_genpd(dev, res->opp_pmdomain, &opp_virt_dev);
--	if (IS_ERR(opp_table)) {
--		ret = PTR_ERR(opp_table);
-+	ret = devm_pm_opp_attach_genpd(dev, res->opp_pmdomain, &opp_virt_dev);
-+	if (ret)
- 		goto opp_attach_err;
--	}
- 
- 	core->opp_pmdomain = *opp_virt_dev;
- 	core->opp_dl_venus = device_link_add(dev, core->opp_pmdomain,
-@@ -792,13 +789,11 @@ static int vcodec_domains_get(struct device *dev)
- 					     DL_FLAG_STATELESS);
- 	if (!core->opp_dl_venus) {
- 		ret = -ENODEV;
--		goto opp_dl_add_err;
-+		goto opp_attach_err;
- 	}
- 
- 	return 0;
- 
--opp_dl_add_err:
--	dev_pm_opp_detach_genpd(core->opp_table);
- opp_attach_err:
- 	for (i = 0; i < res->vcodec_pmdomains_num; i++) {
- 		if (IS_ERR_OR_NULL(core->pmdomains[i]))
-@@ -830,8 +825,6 @@ static void vcodec_domains_put(struct device *dev)
- 
- 	if (core->opp_dl_venus)
- 		device_link_del(core->opp_dl_venus);
--
--	dev_pm_opp_detach_genpd(core->opp_table);
- }
- 
- static int core_get_v4(struct device *dev)
-@@ -860,45 +853,33 @@ static int core_get_v4(struct device *dev)
- 	if (legacy_binding)
- 		return 0;
- 
--	core->opp_table = dev_pm_opp_set_clkname(dev, "core");
--	if (IS_ERR(core->opp_table))
--		return PTR_ERR(core->opp_table);
-+	ret = devm_pm_opp_set_clkname(dev, "core");
-+	if (ret)
-+		return ret;
- 
- 	if (core->res->opp_pmdomain) {
--		ret = dev_pm_opp_of_add_table(dev);
-+		ret = devm_pm_opp_of_add_table(dev);
- 		if (!ret) {
- 			core->has_opp_table = true;
- 		} else if (ret != -ENODEV) {
- 			dev_err(dev, "invalid OPP table in device tree\n");
--			dev_pm_opp_put_clkname(core->opp_table);
- 			return ret;
- 		}
- 	}
- 
- 	ret = vcodec_domains_get(dev);
--	if (ret) {
--		if (core->has_opp_table)
--			dev_pm_opp_of_remove_table(dev);
--		dev_pm_opp_put_clkname(core->opp_table);
-+	if (ret)
- 		return ret;
--	}
- 
- 	return 0;
- }
- 
- static void core_put_v4(struct device *dev)
- {
--	struct venus_core *core = dev_get_drvdata(dev);
--
- 	if (legacy_binding)
- 		return;
- 
- 	vcodec_domains_put(dev);
--
--	if (core->has_opp_table)
--		dev_pm_opp_of_remove_table(dev);
--	dev_pm_opp_put_clkname(core->opp_table);
--
- }
- 
- static int core_power_v4(struct device *dev, int on)
 -- 
-2.30.2
-
+viresh
