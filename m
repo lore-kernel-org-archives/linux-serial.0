@@ -8,75 +8,75 @@ X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,DATE_IN_PAST_06_12,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3B1C433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Mar 2021 23:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C091C43381
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Mar 2021 23:12:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ADEA064F5C
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Mar 2021 23:11:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CF1C664F67
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Mar 2021 23:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231928AbhCOXK6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Mar 2021 19:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
+        id S233525AbhCOXMI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Mar 2021 19:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232455AbhCOXK4 (ORCPT
+        with ESMTP id S233563AbhCOXLl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Mar 2021 19:10:56 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2650C06174A;
-        Mon, 15 Mar 2021 16:10:55 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id h18so11000819ils.2;
-        Mon, 15 Mar 2021 16:10:55 -0700 (PDT)
+        Mon, 15 Mar 2021 19:11:41 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3986C06174A;
+        Mon, 15 Mar 2021 16:11:40 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id e7so10976659ile.7;
+        Mon, 15 Mar 2021 16:11:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1/8bjLHF9FtwMFaIrmHVFR/MayJhXwBukDib3cdY7GY=;
-        b=ArUXuTwfe8COX+YyUDzgYs7tL4IE2ubSbkRBYlCZOMSbT2GdqG1uj6sTeUJgdNdUJM
-         oGbVsgw2CClsa0ULMBnC31/ovkbf0KM+xsdXHXFbejIHVahNiTyBN2h/XyAAaFWJfsDQ
-         ZWtZ3yqz0G3PyIta1U77o9zaaz9DfA8P1maD8jBJWj5y/cRXJWKp87pj991BTyH+YeoD
-         H45xdxbpOWQPlX+pyL/RdQd0+R6gVLdtCCfn8JCJTHOgsXWhLlvzL1+r60dSiYh+0KLp
-         1wrIGnSRZgFFzTlkve80Ki7xdCVHajOvzs1RBurxDSQrTNP0LeInFHVRsghzj1WR8rVt
-         JQRA==
+        bh=OWwHR8Ne423+zbtI1q+8mLttBfXbDb6VslhtXcXanQg=;
+        b=tDmV3Clxxrt5CYW6RR5YvvuFRnN750yidjGLYegOB42Ae9zwMhBjB8qjfA173QHAlG
+         oAWC+SYJO1hS9ifiZSDX1U/sGOQyigND3hHv1grdytMkoojG5raNQxL+9HUwT8RXSxG5
+         asX49ilTHb6G06bDtHYtIwSjlpYCbnTABKe5yHIEm0h6g3ojlhxqhL/N/XeIsyXy0zPW
+         dWpvNMJRikRoHV1IjjcsOPy404NrmT5eMpPXTQ24R2ibgtXXbLBzX2E7xLn4hSne7pu9
+         K3Rr8c7Ky8R3vo28DEHiwdx5ppLMUJ61kCV1q/KGy1Ek/yPqrxVJh2vOtr0Ou014TA9B
+         AwGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1/8bjLHF9FtwMFaIrmHVFR/MayJhXwBukDib3cdY7GY=;
-        b=UzIbyJDLL/wxIA9GeMmnI/xSxt9/SzdxyygTC3U0yGtWWhSo4GuQp5VE0JM5qCyqdw
-         RzyzxHPDpKulzeH9j/9sMvzSSOhbcaU/LDsnYqwDaD+BHgnef3Kd23RaluntQsvQnvMY
-         E8xmQt/nmezLGJl0dcDstZCCXOuxDc2QBAF8Mq8MfjD/om07Lzrj49lk8/BryIKI4zjF
-         Mi0xoCAO89c7EBUk+6TTF8mVj97RZgsjGKHAqxN+SrJErUcYmV3hrm6cKlwuUrdFxHSc
-         5Y2K6ltGbv88gzeXSjQ9S3zfQPlBs+h39xjUz/y5vzpB2rxgXuqmxJm6sigf566SpQzF
-         rHdQ==
-X-Gm-Message-State: AOAM530wSmBU7s79kf5XZv6y+DYegUyLsS2qML8KQulXRFDMbp66Y9wr
-        p2guPfCpnxTvxZpJShBDlh54cwpFHzgP47LmpoU=
-X-Google-Smtp-Source: ABdhPJyOYSFpXTa2hRSPkxFSDK+rvPWmRI8qKW6ZsEElM5ncKyvXcpmfHxslLd2IPthmEFnvRPuMpJPXT3yxupgu674=
-X-Received: by 2002:a92:1e12:: with SMTP id e18mr1567010ile.270.1615849855463;
- Mon, 15 Mar 2021 16:10:55 -0700 (PDT)
+        bh=OWwHR8Ne423+zbtI1q+8mLttBfXbDb6VslhtXcXanQg=;
+        b=CAo4GWTOQIoI92jFrY/bFM1Rj1ABsUdH88c5lojR8Ot8QsFYJCESpkwfzKYV/wjAMj
+         4qqFEubQZ9FDVfn+0S3yW/gnQsZWxEliHYBBbAzN2oIeaJaaVnpO6tlrAyl7UCc51Z9J
+         /nY4kFOZVAJzWk2c6mXGNztY5Todyinx0qeaXO6k+KAfQ5CnYULSXDw56gSBuTqmtm15
+         JiYJLHUp+y0/ZYuz5QrqTFyZal5KXsJRRoAlYGhi82PVxhrRLW7dhWyZS34iXXY4QTAC
+         jLUSU8osD//zSTO0RnrP298Eg3FKcfmJE+L8ipXFBRjkAiMPdlG1p9crh4XZyccEUxdm
+         yENg==
+X-Gm-Message-State: AOAM531TYHrnQ0qBmsTF74STQ6JKY6sjwD8IfzIWND9sQQtaUajP+6ob
+        a+JR/Rn1+kuTLNP4ymc/IJEf7SpPj+aDMeSXwFY=
+X-Google-Smtp-Source: ABdhPJyIMGxVLSY13hI+sOxMMBbHkVYSuVizx6fGRZmxlv5OglFxTSdwX1GBMv9JMdlw2kMfPpdh3pViASu367w3Gpc=
+X-Received: by 2002:a05:6e02:dcd:: with SMTP id l13mr1430957ilj.271.1615849900503;
+ Mon, 15 Mar 2021 16:11:40 -0700 (PDT)
 MIME-Version: 1.0
 References: <1615801436-3016-1-git-send-email-dillon.minfei@gmail.com>
- <1615801436-3016-3-git-send-email-dillon.minfei@gmail.com> <20210315162645.GA981570@robh.at.kernel.org>
-In-Reply-To: <20210315162645.GA981570@robh.at.kernel.org>
+ <1615801436-3016-4-git-send-email-dillon.minfei@gmail.com> <20210315162648.GB981570@robh.at.kernel.org>
+In-Reply-To: <20210315162648.GB981570@robh.at.kernel.org>
 From:   dillon min <dillon.minfei@gmail.com>
-Date:   Mon, 15 Mar 2021 23:10:19 +0800
-Message-ID: <CAL9mu0+19AVE7NidQcRukUhBkrMQZ0J_Tw15oz-4WiZq9RZdig@mail.gmail.com>
-Subject: Re: [PATCH v3 2/9] dt-bindings: arm: stm32: Add compatible strings
- for ART-PI board
+Date:   Mon, 15 Mar 2021 23:11:04 +0800
+Message-ID: <CAL9mu0+T++RotJt_ayPDFmbxjLL6G20FzR0aQ2FMjn6Dz0qaFw@mail.gmail.com>
+Subject: Re: [PATCH v3 3/9] dt-bindings: pinctrl: stm32: Add stm32h750 pinctrl
 To:     Rob Herring <robh@kernel.org>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Alexandre TORGUE <alexandre.torgue@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        linux@armlinux.org.uk, Vladimir Murzin <vladimir.murzin@arm.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        erwan.leray@foss.st.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        gregkh@linuxfoundation.org, erwan.leray@st.com,
-        linux-serial@vger.kernel.org, afzal.mohd.ma@gmail.com
+        gregkh@linuxfoundation.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-serial@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, linux@armlinux.org.uk,
+        erwan.leray@st.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        erwan.leray@foss.st.com,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>, afzal.mohd.ma@gmail.com,
+        Vladimir Murzin <vladimir.murzin@arm.com>,
+        Alexandre TORGUE <alexandre.torgue@foss.st.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -84,23 +84,19 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Tue, Mar 16, 2021 at 12:26 AM Rob Herring <robh@kernel.org> wrote:
 >
-> On Mon, 15 Mar 2021 17:43:49 +0800, dillon.minfei@gmail.com wrote:
+> On Mon, 15 Mar 2021 17:43:50 +0800, dillon.minfei@gmail.com wrote:
 > > From: dillon min <dillon.minfei@gmail.com>
 > >
-> > Art-pi based on stm32h750xbh6, with following resources:
+> > This patch intend to add pinctrl configuration support for
+> > stm32h750 value line
 > >
-> > -8MiB QSPI flash
-> > -16MiB SPI flash
-> > -32MiB SDRAM
-> > -AP6212 wifi, bt, fm
-> >
-> > detail information can be found at:
-> > https://art-pi.gitee.io/website/
+> > The datasheet of stm32h750 value line can be found at:
+> > https://www.st.com/resource/en/datasheet/stm32h750ib.pdf
 > >
 > > Signed-off-by: dillon min <dillon.minfei@gmail.com>
 > > ---
-> >  Documentation/devicetree/bindings/arm/stm32/stm32.yaml | 4 ++++
-> >  1 file changed, 4 insertions(+)
+> >  Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
 > >
 >
 >
@@ -110,8 +106,8 @@ On Tue, Mar 16, 2021 at 12:26 AM Rob Herring <robh@kernel.org> wrote:
 >
 > If a tag was not added on purpose, please state why and what changed.
 >
-Sorry for that, i forgot to remove patch 2 from v2/v3 theris, there
-are no changes in v2/v3. please just ignore it , thanks.
+Sorry for that, i forgot to remove patch 3 from v2/v3 theris, there are no
+changes in v2/v3. please just ignore it , thanks.
 
 Dillon,
 Best Regards.
