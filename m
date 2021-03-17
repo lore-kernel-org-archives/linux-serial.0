@@ -2,134 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3155C433E9
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Mar 2021 21:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C463AC43331
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Mar 2021 01:36:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CDE8F64F92
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Mar 2021 21:16:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8FCC864F97
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Mar 2021 01:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232839AbhCPVQS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Mar 2021 17:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55484 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232793AbhCPVPr (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Mar 2021 17:15:47 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58CBCC06174A;
-        Tue, 16 Mar 2021 14:15:46 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id p24so9284248ota.11;
-        Tue, 16 Mar 2021 14:15:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=yor1EiHWBTylh9kpWP/wCw+xZkPtpXh/+Ths3TbYe0w=;
-        b=FHM728QhNdZyvNZnbLRwhMr7POs7HeQb93i3aK0NTjbEX0TCRXWXK+IqWNF5miwyj1
-         bcjH00mGyQ+dmGW7HrZOByZv0XDKLsK9gF2fV+6Ds2ef1uQ015/RVugX8UyqARMpNkuT
-         481x4m8K8+wGUjDl/aZcOU67x2qh3biB4O3MwxvxySiQrTYE0Cjvnb9arnosXi1rWfvl
-         HJZritG/sbhEsBCdbFb2lSWOljRPCkLq1tXYwzfgRO3rPglkBjwfSMDmLAtXxIXrrOuD
-         HZ8kBN2rJr/i2EMRZ5WU/TSik1ttHnZF4Cvzl6qLtq1pqY2GHNLGiZHtt9IrL8U9s6Cy
-         hXzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=yor1EiHWBTylh9kpWP/wCw+xZkPtpXh/+Ths3TbYe0w=;
-        b=n03d5JERUBS/EreMYoDb8OdjvIGsnFMgA6VbemTyFHWfgQt8AQhcTt9WsOyS6jVDn8
-         pp0tlPg5bf45UKDGUzxgcXvLp/3ykQ1+/rOuDwTTZXV+LhnqyWvI4gCvRrjTrY2fGy8j
-         jF/ecDCY9V0SkTgZdHPA9Q0CMxiMdpuxNYc0BZ08ATvffX6TyGM/eerNeO+uw4R0BpSQ
-         fJQDb20QTLUFdQ8FHW+4nB4G1YOJlfrDxTdgK/h0ASkno/0VYdCedbBxJ/zbPxCVifpl
-         YM40sqiZxnMg0GG3+k370G9Hk0tYHBmgztKptheEoCG+MtgqsoBlP5vd5y58LPCSB2m7
-         zU7Q==
-X-Gm-Message-State: AOAM530pjYy+fk3M3KIpWFEaoGrSslF7090vTrX7pq3O1xkbdjKvaw7k
-        iFpvtVd82RRIapBh2gOu9jc=
-X-Google-Smtp-Source: ABdhPJz+tI/5qUoyqoIXj+lrmspTrR6p+9F7dSCgDDDieF1KKvij53ZFQt/vbOIgPzPDzCZKyrjFFg==
-X-Received: by 2002:a9d:7545:: with SMTP id b5mr579421otl.223.1615929345829;
-        Tue, 16 Mar 2021 14:15:45 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id o197sm8075424ooo.44.2021.03.16.14.15.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 16 Mar 2021 14:15:45 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 16 Mar 2021 14:15:44 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Seiya Wang <seiya.wang@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Wenbin Mei <wenbin.mei@mediatek.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Bayi Cheng <bayi.cheng@mediatek.com>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        srv_heupstream@mediatek.com
-Subject: Re: [PATCH 03/10] dt-bindings: watchdog: Add compatible for Mediatek
- MT8195
-Message-ID: <20210316211544.GE60156@roeck-us.net>
-References: <20210316111443.3332-1-seiya.wang@mediatek.com>
- <20210316111443.3332-4-seiya.wang@mediatek.com>
+        id S230108AbhCQBfu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Mar 2021 21:35:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59450 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229490AbhCQBfs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 16 Mar 2021 21:35:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4F4F364E76;
+        Wed, 17 Mar 2021 01:35:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615944948;
+        bh=wfVsG34NpnkPgDNvkfeM6rHhymxXjOqDbCNsoIlma9s=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=YIqypZavA3LNYBIPc1EreM/QDPJFqyeB+Xdvbxq1wCfvXWZPydjiMAe93cDQh4+eP
+         gNfTj7D7paWO1O1uNQp5ZMkVeXR4tM+BdMTxVPf7ZHJgcbbQYFnHQUnkS0MbaK6aBI
+         1lYIEDicUaOY6H5SCN9STWjcGvWH9N6oQxERx16WPgjZ+GZOtcqa4v8Cv9dr0er7bD
+         zXQaQIScBIieUeVWBkI/izQUVGrDePmYFQnkIK9ggZdGQlXuXgCXkOD/lXjuMFUPAa
+         ElY2b6rfq+i9r07KPQ0xNtZvpLo2I2UF9Ks3/hgj/xLiUs+4v6dyI4uRkLJEViE+go
+         QGH6AH4BQz8Jg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210316111443.3332-4-seiya.wang@mediatek.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210316194918.3528417-1-robh@kernel.org>
+References: <20210316194918.3528417-1-robh@kernel.org>
+Subject: Re: [PATCH] dt-bindings: Clean-up undocumented compatible strings
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-clk@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Date:   Tue, 16 Mar 2021 18:35:46 -0700
+Message-ID: <161594494696.1478170.13888306623342465859@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 07:14:36PM +0800, Seiya Wang wrote:
-> This commit adds dt-binding documentation of watchdog for Mediatek MT8195 SoC
-> Platform.
-> 
-> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
-
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-
-Guenter
-
+Quoting Rob Herring (2021-03-16 12:49:18)
+> Adding checks for undocumented compatible strings reveals a bunch of
+> warnings in the DT binding examples. Fix the cases which are typos, just
+> a mismatch between the schema and the example, or aren't documented at al=
+l.
+> In a couple of cases, fixing the compatible revealed some schema errors
+> which are fixed.
+>=20
+> There's a bunch of others remaining after this which have bindings, but
+> those aren't converted to schema yet.
+>=20
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-clk@vger.kernel.org
+> Cc: dmaengine@vger.kernel.org
+> Cc: linux-i3c@lists.infradead.org
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-spi@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
->  Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> index e36ba60de829..a658a0b92b9a 100644
-> --- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> +++ b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> @@ -13,6 +13,7 @@ Required properties:
->  	"mediatek,mt8183-wdt": for MT8183
->  	"mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
->  	"mediatek,mt8192-wdt": for MT8192
-> +	"mediatek,mt8195-wdt", "mediatek,mt6589-wdt": for MT8195
->  
->  - reg : Specifies base physical address and size of the registers.
->  
-> -- 
-> 2.14.1
-> 
+
+Acked-by: Stephen Boyd <sboyd@kernel.org>
