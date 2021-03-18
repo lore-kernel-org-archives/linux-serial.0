@@ -2,33 +2,34 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4E5C433DB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A62C433E9
 	for <linux-serial@archiver.kernel.org>; Thu, 18 Mar 2021 11:11:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D6F7F64F2A
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Mar 2021 11:11:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3D73764F6B
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Mar 2021 11:11:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbhCRLLQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S230243AbhCRLLQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 18 Mar 2021 07:11:16 -0400
 Received: from alexa-out.qualcomm.com ([129.46.98.28]:11361 "EHLO
         alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbhCRLKq (ORCPT
+        with ESMTP id S230356AbhCRLKp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Mar 2021 07:10:46 -0400
+        Thu, 18 Mar 2021 07:10:45 -0400
 Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 18 Mar 2021 04:10:47 -0700
+  by alexa-out.qualcomm.com with ESMTP; 18 Mar 2021 04:10:45 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 18 Mar 2021 04:10:44 -0700
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 18 Mar 2021 04:10:42 -0700
 X-QCInternal: smtphost
 Received: from c-rojay-linux.qualcomm.com ([10.206.21.80])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 18 Mar 2021 16:40:11 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 18 Mar 2021 16:40:14 +0530
 Received: by c-rojay-linux.qualcomm.com (Postfix, from userid 88981)
-        id C7D3F313A; Thu, 18 Mar 2021 16:40:10 +0530 (IST)
+        id B582A313A; Thu, 18 Mar 2021 16:40:13 +0530 (IST)
 From:   Roja Rani Yarubandi <rojay@codeaurora.org>
 To:     agross@kernel.org, bjorn.andersson@linaro.org,
         gregkh@linuxfoundation.org, mka@chromium.org, robh+dt@kernel.org
@@ -37,29 +38,61 @@ Cc:     linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         Rajendra Nayak <rnayak@codeaurora.org>,
         akashast@codeaurora.org, msavaliy@qti.qualcomm.com,
         Roja Rani Yarubandi <rojay@codeaurora.org>
-Subject: [PATCH V2 0/2] Separate out earlycon 
-Date:   Thu, 18 Mar 2021 16:40:07 +0530
-Message-Id: <20210318111009.30365-1-rojay@codeaurora.org>
+Subject: [PATCH V2 2/2] arm64: dts: qcom: sc7180: Remove QUP-CORE ICC path
+Date:   Thu, 18 Mar 2021 16:40:09 +0530
+Message-Id: <20210318111009.30365-3-rojay@codeaurora.org>
 X-Mailer: git-send-email 2.29.0
+In-Reply-To: <20210318111009.30365-1-rojay@codeaurora.org>
+References: <20210318111009.30365-1-rojay@codeaurora.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dropped below patch as it is not required:
-[3/3] Serial: Separate out earlycon support
+We had introduced the QUP-CORE ICC path to put proxy votes from
+QUP wrapper on behalf of earlycon, if other users of QUP-CORE turn
+off this clock before the real console is probed, unclocked access
+to HW was seen from earlycon.
 
-Roja Rani Yarubandi (2):
-  soc: qcom-geni-se: Cleanup the code to remove proxy votes
-  arm64: dts: qcom: sc7180: Remove QUP-CORE ICC path
+With ICC sync state support proxy votes are no longer need as ICC
+will ensure that the default bootloader votes are not removed until
+all it's consumer are probed.
 
- arch/arm64/boot/dts/qcom/sc7180.dtsi  |  4 --
- drivers/soc/qcom/qcom-geni-se.c       | 74 ---------------------------
- drivers/tty/serial/qcom_geni_serial.c |  7 ---
- include/linux/qcom-geni-se.h          |  2 -
- 4 files changed, 87 deletions(-)
+We can safely remove ICC path for QUP-CORE clock from QUP wrapper
+device.
 
+Signed-off-by: Roja Rani Yarubandi <rojay@codeaurora.org>
+Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+---
+Changes in V2:
+ - No chage
+
+ arch/arm64/boot/dts/qcom/sc7180.dtsi | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+index 83fbb481cae5..2709051740d1 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+@@ -768,8 +768,6 @@ qupv3_id_0: geniqup@8c0000 {
+ 			#size-cells = <2>;
+ 			ranges;
+ 			iommus = <&apps_smmu 0x43 0x0>;
+-			interconnects = <&qup_virt MASTER_QUP_CORE_0 0 &qup_virt SLAVE_QUP_CORE_0 0>;
+-			interconnect-names = "qup-core";
+ 			status = "disabled";
+ 
+ 			i2c0: i2c@880000 {
+@@ -1059,8 +1057,6 @@ qupv3_id_1: geniqup@ac0000 {
+ 			#size-cells = <2>;
+ 			ranges;
+ 			iommus = <&apps_smmu 0x4c3 0x0>;
+-			interconnects = <&qup_virt MASTER_QUP_CORE_1 0 &qup_virt SLAVE_QUP_CORE_1 0>;
+-			interconnect-names = "qup-core";
+ 			status = "disabled";
+ 
+ 			i2c6: i2c@a80000 {
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
 of Code Aurora Forum, hosted by The Linux Foundation
