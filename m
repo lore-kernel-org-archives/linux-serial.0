@@ -2,83 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29BA6C433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Mar 2021 08:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4E5C433DB
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Mar 2021 11:11:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CA4DD64F18
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Mar 2021 08:52:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D6F7F64F2A
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Mar 2021 11:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbhCRIwL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Mar 2021 04:52:11 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:56192 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbhCRIvv (ORCPT
+        id S230408AbhCRLLQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Mar 2021 07:11:16 -0400
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:11361 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230480AbhCRLKq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Mar 2021 04:51:51 -0400
-Date:   Thu, 18 Mar 2021 09:51:48 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1616057509;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WbKRW0ALtGqtp8JBnGSzXq4UxYgK5mjnvsywKEIjCPg=;
-        b=1qoC7vCLJpH/OCMdMSr8ef8YNh5zBOLuU/Gl6mpJYn3KmJyZ8Ukms9GHyeeS6wBgWavycj
-        2SysWbHbADnjbDLUI1ceDxLYV/UVt917SBhd9ppRH5fsxJjNW7RFRRF2csWZbCCEbY7O/Z
-        Jy0PwXq2KQVHuzwFWUBbxw7UWunIrtZ+b5gh2lRk5jTG2fWIZQU8XrYGseU46LC8jRu2Lz
-        rVYAzwDXj5Ry3ybjthj43q+RXxKlIbd32nARou+D/nWGuI7ZL2NxNYt/2/BsU35FK1imXy
-        44YVF97puGwZOn/Rbh2KwYjpgr8ROePmySc2G/w8JmFCf3k8cnllDLR7O49oxQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1616057509;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WbKRW0ALtGqtp8JBnGSzXq4UxYgK5mjnvsywKEIjCPg=;
-        b=e8DFLvJdg1874kkgvTmumjj0rpxjLnaS1/24bK2yjCSv0035Q8A2LXFI49GziEGETbk1kO
-        peVAS7gU4B1aieBw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [patch 1/1] genirq: Disable interrupts for force threaded
- handlers
-Message-ID: <20210318085148.3gnvlvzukqsmo2p2@linutronix.de>
-References: <20210317143859.513307808@linutronix.de>
- <20210317144806.y4dogv6n2s62fpnw@linutronix.de>
- <YFItC/biHWUCkKt0@hovoldconsulting.com>
+        Thu, 18 Mar 2021 07:10:46 -0400
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 18 Mar 2021 04:10:47 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 18 Mar 2021 04:10:44 -0700
+X-QCInternal: smtphost
+Received: from c-rojay-linux.qualcomm.com ([10.206.21.80])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 18 Mar 2021 16:40:11 +0530
+Received: by c-rojay-linux.qualcomm.com (Postfix, from userid 88981)
+        id C7D3F313A; Thu, 18 Mar 2021 16:40:10 +0530 (IST)
+From:   Roja Rani Yarubandi <rojay@codeaurora.org>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, mka@chromium.org, robh+dt@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        akashast@codeaurora.org, msavaliy@qti.qualcomm.com,
+        Roja Rani Yarubandi <rojay@codeaurora.org>
+Subject: [PATCH V2 0/2] Separate out earlycon 
+Date:   Thu, 18 Mar 2021 16:40:07 +0530
+Message-Id: <20210318111009.30365-1-rojay@codeaurora.org>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YFItC/biHWUCkKt0@hovoldconsulting.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2021-03-17 17:23:39 [+0100], Johan Hovold wrote:
-> > > thread(irq_A)
-> > >   irq_handler(A)
-> > >     spin_lock(&foo->lock);
-> > > 
-> > > interrupt(irq_B)
-> > >   irq_handler(B)
-> > >     spin_lock(&foo->lock);
-> > 
-> > It will not because both threads will wake_up(thread).
-> 
-> Note that the above says "interrupt(irq_B)" suggesting it's a
-> non-threaded interrupt unlike irq_A.
+Dropped below patch as it is not required:
+[3/3] Serial: Separate out earlycon support
 
-I missed that bit, thanks.
+Roja Rani Yarubandi (2):
+  soc: qcom-geni-se: Cleanup the code to remove proxy votes
+  arm64: dts: qcom: sc7180: Remove QUP-CORE ICC path
 
-Sebastian
+ arch/arm64/boot/dts/qcom/sc7180.dtsi  |  4 --
+ drivers/soc/qcom/qcom-geni-se.c       | 74 ---------------------------
+ drivers/tty/serial/qcom_geni_serial.c |  7 ---
+ include/linux/qcom-geni-se.h          |  2 -
+ 4 files changed, 87 deletions(-)
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
+
