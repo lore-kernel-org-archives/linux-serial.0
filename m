@@ -2,36 +2,36 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50BD7C4332E
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 02:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B648EC43381
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 02:37:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 25A1364F1F
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 02:36:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8638A61580
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 02:37:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233471AbhCSCg0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Mar 2021 22:36:26 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:58469 "EHLO
+        id S233538AbhCSCg4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Mar 2021 22:36:56 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:58910 "EHLO
         mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231241AbhCSCgO (ORCPT
+        with ESMTP id S233225AbhCSCgu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Mar 2021 22:36:14 -0400
-X-UUID: 9c2cd749ec4943e9b38d03b44d4d55af-20210319
-X-UUID: 9c2cd749ec4943e9b38d03b44d4d55af-20210319
+        Thu, 18 Mar 2021 22:36:50 -0400
+X-UUID: 3475e399929e4e469fa022095722ac8d-20210319
+X-UUID: 3475e399929e4e469fa022095722ac8d-20210319
 Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
         (envelope-from <seiya.wang@mediatek.com>)
         (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 742009533; Fri, 19 Mar 2021 10:36:11 +0800
+        with ESMTP id 242716842; Fri, 19 Mar 2021 10:36:47 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs08n1.mediatek.inc (172.21.101.55) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 19 Mar 2021 10:36:09 +0800
+ mtkmbs08n2.mediatek.inc (172.21.101.56) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 19 Mar 2021 10:36:44 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas07.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 19 Mar 2021 10:36:09 +0800
+ Transport; Fri, 19 Mar 2021 10:36:45 +0800
 From:   Seiya Wang <seiya.wang@mediatek.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>
@@ -62,39 +62,47 @@ CC:     Jonathan Cameron <jic23@kernel.org>,
         <linux-mediatek@lists.infradead.org>,
         <linux-serial@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
         <srv_heupstream@mediatek.com>
-Subject: [PATCH v2 5/8] dt-bindings: iio: adc: Add compatible for Mediatek MT8195
-Date:   Fri, 19 Mar 2021 10:34:24 +0800
-Message-ID: <20210319023427.16711-7-seiya.wang@mediatek.com>
+Subject: [PATCH v2 7/8] dt-bindings: phy: fix dt_binding_check warning in mediatek,ufs-phy.yaml
+Date:   Fri, 19 Mar 2021 10:34:26 +0800
+Message-ID: <20210319023427.16711-9-seiya.wang@mediatek.com>
 X-Mailer: git-send-email 2.14.1
 In-Reply-To: <20210319023427.16711-1-seiya.wang@mediatek.com>
 References: <20210319023427.16711-1-seiya.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-TM-SNTS-SMTP: 16B6F3E0B1145B5C935B2BD6375BDE6750CB4D037C14A96FA1220AB1C58CBF842000:8
 X-MTK:  N
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This commit adds dt-binding documentation of auxadc for Mediatek MT8195 SoC
-Platform.
+This commit fixes the warning messages of make dt_binding_check from
+newly added mediatek,mt8195-ufsphy in mediatek,ufs-phy.yaml
 
 Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
 ---
- Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/phy/mediatek,ufs-phy.yaml | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-index 5b21a9fba5dd..b939f9652e3a 100644
---- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-@@ -34,6 +34,7 @@ properties:
-       - items:
-           - enum:
-               - mediatek,mt8183-auxadc
-+              - mediatek,mt8195-auxadc
-               - mediatek,mt8516-auxadc
-           - const: mediatek,mt8173-auxadc
+diff --git a/Documentation/devicetree/bindings/phy/mediatek,ufs-phy.yaml b/Documentation/devicetree/bindings/phy/mediatek,ufs-phy.yaml
+index 5235b1a0d188..74cc32c1d2e8 100644
+--- a/Documentation/devicetree/bindings/phy/mediatek,ufs-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/mediatek,ufs-phy.yaml
+@@ -22,8 +22,12 @@ properties:
+     pattern: "^ufs-phy@[0-9a-f]+$"
  
+   compatible:
+-    enum: mediatek,mt8195-ufsphy
+-    const: mediatek,mt8183-ufsphy
++    oneOf:
++      - items:
++          - enum:
++              - mediatek,mt8195-ufsphy
++          - const: mediatek,mt8183-ufsphy
++      - const: mediatek,mt8183-ufsphy
+ 
+   reg:
+     maxItems: 1
 -- 
 2.14.1
 
