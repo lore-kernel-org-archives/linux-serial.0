@@ -2,606 +2,603 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC628C433E9
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 02:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5700FC433DB
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 04:28:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 98C2864F68
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 02:37:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D13DF64F1C
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 04:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233488AbhCSCh0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Mar 2021 22:37:26 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:33008 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231297AbhCSChI (ORCPT
+        id S233569AbhCSE2D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 Mar 2021 00:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230459AbhCSE1l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Mar 2021 22:37:08 -0400
-X-UUID: 309a2a1f5d3245e687f1f1860cecebe8-20210319
-X-UUID: 309a2a1f5d3245e687f1f1860cecebe8-20210319
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <seiya.wang@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 614076810; Fri, 19 Mar 2021 10:37:04 +0800
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs08n2.mediatek.inc (172.21.101.56) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 19 Mar 2021 10:37:01 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 19 Mar 2021 10:37:02 +0800
-From:   Seiya Wang <seiya.wang@mediatek.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Seiya Wang <seiya.wang@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Wenbin Mei <wenbin.mei@mediatek.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
-        <srv_heupstream@mediatek.com>
-Subject: [PATCH v2 8/8] arm64: dts: Add Mediatek SoC MT8195 and evaluation board dts and Makefile
-Date:   Fri, 19 Mar 2021 10:34:27 +0800
-Message-ID: <20210319023427.16711-10-seiya.wang@mediatek.com>
-X-Mailer: git-send-email 2.14.1
-In-Reply-To: <20210319023427.16711-1-seiya.wang@mediatek.com>
-References: <20210319023427.16711-1-seiya.wang@mediatek.com>
+        Fri, 19 Mar 2021 00:27:41 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A70DC06174A;
+        Thu, 18 Mar 2021 21:27:41 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id j26so4731570iog.13;
+        Thu, 18 Mar 2021 21:27:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=UsoxMKgIQdHmffd/IPh562qeSladHISVZVfmi2yq0Sw=;
+        b=pZuyBRZxtHZOKiJcY5++SXQ6VSBKhH+J8ygUNmyPNGvSoc2BXdc9DPbs2Yv4SSUBZw
+         BhcnW9rwiUnZNMeABJ0PWcq5xJqtEpx7imgeIUfeTu2bgalnPCU/71XTM0JKPmf9RhWT
+         KZuJbiWlGpo9kkyrg+F2oXPTRvcSIeRwwgPv+ZMlGIyXyf+1ekvYvFF9hX8meFlW1NI0
+         D+c4bH/DWmEYZrtev4MhlUpvME2BWCmbEkvEz/0eaBaoFWVeYMte01PX41SCdxl5xsfW
+         r2qAmwHrWiLabnxqSavjuo4Im2yHYAw62cU2caT10t8qsQJpdfmy1mW+MyXjrMzb7+vo
+         vVoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=UsoxMKgIQdHmffd/IPh562qeSladHISVZVfmi2yq0Sw=;
+        b=DtLhS9GL3OmiGqT2igNc9prRkf3YnTCkmUIKI5Oj8G+KUqNQOW+tS+PDbLrEemXbpP
+         t5qJzKP9Ah0HooYFfk7DNNCPmeASooni8agYhFkcRIsIkjBzKXEzjiUBkKvIt51mn4tU
+         v9eejDCLUPPqC8YH6MBkPqNSexGe3O6NDX+gT9Pgi6Bl/+cWLfN0Y2jxbTJPJg3ooJi0
+         uDEGNM2FmCG1vMIqCqbXi0qeofPh6a8znHSZognH+XT6ccNv5j4LnCT6yj1yYXlPOTXI
+         VnX0eEL3cl8avfX2zG+77v9VrtyCfeM9yHvoeDUCMA9gNRXOSpPOwsRrIl3z9WA2+zm+
+         gMCg==
+X-Gm-Message-State: AOAM533zS/Laiez2mdthif7HHGoSYASEWwgaEh2KxpKl17yZ9/V8ZxfC
+        0wCwZPh5MIQTB9hSutm0LXM7cimju2WXzKpXEjA=
+X-Google-Smtp-Source: ABdhPJzoZGP0KU0nAE6cG65CRfcmv9+nGRCjfo8zD0aRjPFk6vX40fwcMMvhzBwTU0fRFrNWvkfZbt5Kb4GeMxY2gCU=
+X-Received: by 2002:a05:6638:dc3:: with SMTP id m3mr5071030jaj.130.1616128060505;
+ Thu, 18 Mar 2021 21:27:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-SNTS-SMTP: 040A019FC7C77B8079E45CDE7A23135F10EEE3FF9EA2BEB0565EF3195F5DD24E2000:8
-X-MTK:  N
+References: <1615801436-3016-1-git-send-email-dillon.minfei@gmail.com> <1615801436-3016-7-git-send-email-dillon.minfei@gmail.com>
+In-Reply-To: <1615801436-3016-7-git-send-email-dillon.minfei@gmail.com>
+From:   dillon min <dillon.minfei@gmail.com>
+Date:   Fri, 19 Mar 2021 12:27:04 +0800
+Message-ID: <CAL9mu0JsFDfGuWD8k6e5Sw8B5zOFVHSXhQ858u28Qg1M=ZVNWw@mail.gmail.com>
+Subject: Re: [PATCH v3 6/9] ARM: dts: stm32: add support for art-pi board
+ based on stm32h750xbh6
+To:     Rob Herring <robh+dt@kernel.org>,
+        Alexandre TORGUE <alexandre.torgue@foss.st.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux@armlinux.org.uk, Vladimir Murzin <vladimir.murzin@arm.com>,
+        afzal.mohd.ma@gmail.com, gregkh@linuxfoundation.org,
+        erwan.leray@st.com, erwan.leray@foss.st.com,
+        linux-serial@vger.kernel.org, lkp@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add basic chip support for Mediatek MT8195
+No changes, Just loop lkp in.
 
-Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/Makefile       |   1 +
- arch/arm64/boot/dts/mediatek/mt8195-evb.dts |  29 ++
- arch/arm64/boot/dts/mediatek/mt8195.dtsi    | 464 ++++++++++++++++++++++++++++
- 3 files changed, 494 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-evb.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8195.dtsi
 
-diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index deba27ab7657..aee4b9715d2f 100644
---- a/arch/arm64/boot/dts/mediatek/Makefile
-+++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -16,4 +16,5 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-evb.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku176.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-evb.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8516-pumpkin.dtb
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195-evb.dts b/arch/arm64/boot/dts/mediatek/mt8195-evb.dts
-new file mode 100644
-index 000000000000..82bb10e9a531
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8195-evb.dts
-@@ -0,0 +1,29 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (C) 2021 MediaTek Inc.
-+ * Author: Seiya Wang <seiya.wang@mediatek.com>
-+ */
-+/dts-v1/;
-+#include "mt8195.dtsi"
-+
-+/ {
-+	model = "MediaTek MT8195 evaluation board";
-+	compatible = "mediatek,mt8195-evb", "mediatek,mt8195";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:921600n8";
-+	};
-+
-+	memory@40000000 {
-+		device_type = "memory";
-+		reg = <0 0x40000000 0 0x80000000>;
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-new file mode 100644
-index 000000000000..629cd883facf
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -0,0 +1,464 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2021 MediaTek Inc.
-+ * Author: Seiya Wang <seiya.wang@mediatek.com>
-+ */
-+
-+/dts-v1/;
-+
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+
-+/ {
-+	compatible = "mediatek,mt8195";
-+	interrupt-parent = <&gic>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	clocks {
-+		clk26m: oscillator0 {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <26000000>;
-+			clock-output-names = "clk26m";
-+		};
-+
-+		clk32k: oscillator1 {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <32768>;
-+			clock-output-names = "clk32k";
-+		};
-+	};
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x000>;
-+			enable-method = "psci";
-+			clock-frequency = <1701000000>;
-+			capacity-dmips-mhz = <578>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu1: cpu@100 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x100>;
-+			enable-method = "psci";
-+			clock-frequency = <1701000000>;
-+			capacity-dmips-mhz = <578>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu2: cpu@200 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x200>;
-+			enable-method = "psci";
-+			clock-frequency = <1701000000>;
-+			capacity-dmips-mhz = <578>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu3: cpu@300 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x300>;
-+			enable-method = "psci";
-+			clock-frequency = <1701000000>;
-+			capacity-dmips-mhz = <578>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu4: cpu@400 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a78", "arm,armv8";
-+			reg = <0x400>;
-+			enable-method = "psci";
-+			clock-frequency = <2171000000>;
-+			capacity-dmips-mhz = <1024>;
-+			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			next-level-cache = <&l2_1>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu5: cpu@500 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a78", "arm,armv8";
-+			reg = <0x500>;
-+			enable-method = "psci";
-+			clock-frequency = <2171000000>;
-+			capacity-dmips-mhz = <1024>;
-+			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			next-level-cache = <&l2_1>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu6: cpu@600 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a78", "arm,armv8";
-+			reg = <0x600>;
-+			enable-method = "psci";
-+			clock-frequency = <2171000000>;
-+			capacity-dmips-mhz = <1024>;
-+			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			next-level-cache = <&l2_1>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu7: cpu@700 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a78", "arm,armv8";
-+			reg = <0x700>;
-+			enable-method = "psci";
-+			clock-frequency = <2171000000>;
-+			capacity-dmips-mhz = <1024>;
-+			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			next-level-cache = <&l2_1>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+			cluster1 {
-+				core0 {
-+					cpu = <&cpu4>;
-+				};
-+				core1 {
-+					cpu = <&cpu5>;
-+				};
-+				core2 {
-+					cpu = <&cpu6>;
-+				};
-+				core3 {
-+					cpu = <&cpu7>;
-+				};
-+			};
-+		};
-+
-+		idle-states {
-+			entry-method = "arm,psci";
-+			cpuoff_l: cpuoff_l {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x00010001>;
-+				local-timer-stop;
-+				entry-latency-us = <50>;
-+				exit-latency-us = <95>;
-+				min-residency-us = <580>;
-+			};
-+			cpuoff_b: cpuoff_b {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x00010001>;
-+				local-timer-stop;
-+				entry-latency-us = <45>;
-+				exit-latency-us = <140>;
-+				min-residency-us = <740>;
-+			};
-+			clusteroff_l: clusteroff_l {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x01010002>;
-+				local-timer-stop;
-+				entry-latency-us = <55>;
-+				exit-latency-us = <155>;
-+				min-residency-us = <840>;
-+			};
-+			clusteroff_b: clusteroff_b {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x01010002>;
-+				local-timer-stop;
-+				entry-latency-us = <50>;
-+				exit-latency-us = <200>;
-+				min-residency-us = <1000>;
-+			};
-+		};
-+
-+		l2_0: l2-cache0 {
-+			compatible = "cache";
-+			next-level-cache = <&l3_0>;
-+		};
-+
-+		l2_1: l2-cache1 {
-+			compatible = "cache";
-+			next-level-cache = <&l3_0>;
-+		};
-+
-+		l3_0: l3-cache {
-+			compatible = "cache";
-+		};
-+	};
-+
-+	dsu-pmu {
-+		compatible = "arm,dsu-pmu";
-+		interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH 0>;
-+		cpus = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>,
-+		       <&cpu4>, <&cpu5>, <&cpu6>, <&cpu7>;
-+	};
-+
-+	pmu-a55 {
-+		compatible = "arm,cortex-a55-pmu";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH &ppi_cluster0>;
-+	};
-+
-+	pmu-a78 {
-+		compatible = "arm,cortex-a78-pmu";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH &ppi_cluster1>;
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-1.0";
-+		method = "smc";
-+	};
-+
-+	timer: timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH 0>,
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH 0>,
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH 0>,
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clock-frequency = <13000000>;
-+	};
-+
-+	soc {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		ranges;
-+
-+		gic: interrupt-controller@c000000 {
-+			compatible = "arm,gic-v3";
-+			#interrupt-cells = <4>;
-+			#redistributor-regions = <1>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+			reg = <0 0x0c000000 0 0x40000>,
-+			      <0 0x0c040000 0 0x200000>;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH 0>;
-+
-+			ppi-partitions {
-+				ppi_cluster0: interrupt-partition-0 {
-+					affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
-+				};
-+				ppi_cluster1: interrupt-partition-1 {
-+					affinity = <&cpu4 &cpu5 &cpu6 &cpu7>;
-+				};
-+			};
-+		};
-+
-+		watchdog: watchdog@10007000 {
-+			compatible = "mediatek,mt8195-wdt", "mediatek,mt6589-wdt";
-+			reg = <0 0x10007000 0 0x100>;
-+		};
-+
-+		systimer: timer@10017000 {
-+			compatible = "mediatek,mt8195-timer", "mediatek,mt6765-timer";
-+			reg = <0 0x10017000 0 0x1000>;
-+			interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>;
-+		};
-+
-+		uart0: serial@11001100 {
-+			compatible = "mediatek,mt8195-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11001100 0 0x100>;
-+			interrupts = <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@11001200 {
-+			compatible = "mediatek,mt8195-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11001200 0 0x100>;
-+			interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+		};
-+
-+		uart2: serial@11001300 {
-+			compatible = "mediatek,mt8195-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11001300 0 0x100>;
-+			interrupts = <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@11001400 {
-+			compatible = "mediatek,mt8195-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11001400 0 0x100>;
-+			interrupts = <GIC_SPI 723 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart4: serial@11001500 {
-+			compatible = "mediatek,mt8195-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11001500 0 0x100>;
-+			interrupts = <GIC_SPI 724 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart5: serial@11001600 {
-+			compatible = "mediatek,mt8195-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11001600 0 0x100>;
-+			interrupts = <GIC_SPI 725 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		auxadc: auxadc@11002000 {
-+			compatible = "mediatek,mt8195-auxadc", "mediatek,mt8173-auxadc";
-+			reg = <0 0x11002000 0 0x1000>;
-+			clocks = <&clk26m>;
-+			clock-names = "main";
-+			#io-channel-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		mmc0: mmc@11230000 {
-+			compatible = "mediatek,mt8195-mmc", "mediatek,mt8192-mmc";
-+			reg = <0 0x11230000 0 0x10000>,
-+			      <0 0x11f50000 0 0x1000>;
-+			interrupts = <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>, <&clk26m>;
-+			clock-names = "source", "hclk", "source_cg";
-+			status = "disabled";
-+		};
-+
-+		mmc1: mmc@11240000 {
-+			compatible = "mediatek,mt8195-mmc", "mediatek,mt8192-mmc";
-+			reg = <0 0x11240000 0 0x1000>,
-+			      <0 0x11c70000 0 0x1000>;
-+			interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>, <&clk26m>;
-+			clock-names = "source", "hclk", "source_cg";
-+			status = "disabled";
-+		};
-+
-+		nor_flash: nor@1132c000 {
-+			compatible = "mediatek,mt8195-nor", "mediatek,mt8173-nor";
-+			reg = <0 0x1132c000 0 0x1000>;
-+			interrupts = <GIC_SPI 825 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "spi", "sf";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		u3phy2: t-phy@11c40000 {
-+			compatible = "mediatek,mt8195-tphy", "mediatek,generic-tphy-v2";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0 0 0x11c40000 0x700>;
-+			status = "disabled";
-+
-+			u2port2: usb-phy@0 {
-+				reg = <0x0 0x700>;
-+				clocks = <&clk26m>;
-+				clock-names = "ref";
-+				#phy-cells = <1>;
-+			};
-+		};
-+
-+		u3phy3: t-phy@11c50000 {
-+			compatible = "mediatek,mt8195-tphy", "mediatek,generic-tphy-v2";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0 0 0x11c50000 0x700>;
-+			status = "disabled";
-+
-+			u2port3: usb-phy@0 {
-+				reg = <0x0 0x700>;
-+				clocks = <&clk26m>;
-+				clock-names = "ref";
-+				#phy-cells = <1>;
-+			};
-+		};
-+
-+		u3phy1: t-phy@11e30000 {
-+			compatible = "mediatek,mt8195-tphy", "mediatek,generic-tphy-v2";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0 0 0x11e30000 0xe00>;
-+			status = "disabled";
-+
-+			u2port1: usb-phy@0 {
-+				reg = <0x0 0x700>;
-+				clocks = <&clk26m>;
-+				clock-names = "ref";
-+				#phy-cells = <1>;
-+			};
-+
-+			u3port1: usb-phy@700 {
-+				reg = <0x700 0x700>;
-+				clocks = <&clk26m>;
-+				clock-names = "ref";
-+				#phy-cells = <1>;
-+			};
-+		};
-+
-+		u3phy0: t-phy@11e40000 {
-+			compatible = "mediatek,mt8195-tphy", "mediatek,generic-tphy-v2";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0 0 0x11e40000 0xe00>;
-+			status = "disabled";
-+
-+			u2port0: usb-phy@0 {
-+				reg = <0x0 0x700>;
-+				clocks = <&clk26m>;
-+				clock-names = "ref";
-+				#phy-cells = <1>;
-+			};
-+
-+			u3port0: usb-phy@700 {
-+				reg = <0x700 0x700>;
-+				clocks = <&clk26m>;
-+				clock-names = "ref";
-+				#phy-cells = <1>;
-+			};
-+		};
-+
-+		ufsphy: phy@11fa0000 {
-+			compatible = "mediatek,mt8195-ufsphy", "mediatek,mt8183-ufsphy";
-+			reg = <0 0x11fa0000 0 0xc000>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "unipro", "mp";
-+			#phy-cells = <0>;
-+			status = "disabled";
-+		};
-+	};
-+};
--- 
-2.14.1
+Hi lkp,
 
+Sorry for the late reply, thanks for your report.
+This patch is to fix the build warning message.
+
+Thanks.
+
+On Mon, Mar 15, 2021 at 5:45 PM <dillon.minfei@gmail.com> wrote:
+>
+> From: dillon min <dillon.minfei@gmail.com>
+>
+> This patchset has following changes:
+>
+> - introduce stm32h750.dtsi to support stm32h750 value line
+> - add stm32h750i-art-pi.dtb (arch/arm/boot/dts/Makefile)
+> - add dts binding usart3 for bt, uart4 for console
+>   usart3/uart4 pinctrl in stm32h7-pinctrl.dtsi
+>   usart3/uart4 register in stm32h743.dtsi
+> - add dts binding sdmmc2 for wifi
+>   sdmmc2 pinctrl in stm32h7-pinctrl.dtsi
+>   sdmmc2 register in stm32h743.dtsi
+> - add spi1 pinctrl in stm32h7-pinctrl.dtsi for spi flash
+> - add stm32h750-art-pi.dts to support art-pi board
+> - move pinctrl: pin-controller{} from stm32h7-pinctrl.dtsi to stm32h743.dtsi
+>   to fix dtbs_check warrning
+> - change 'i2c4: i2c@58001C00' to 'i2c4: i2c@58001c00', else will get
+>   dtbs_check warrning:
+>   >> arch/arm/boot/dts/stm32h750i-art-pi.dt.yaml: soc: 'i2c@40005C00',
+>      'i2c@58001C00' do not match any of the regexes:
+>      '@(0|[1-9a-f][0-9a-f]*)$', '^[^@]+$', 'pinctrl-[0-9]+'
+>   ...
+>
+> art-pi board component:
+> - 8MiB qspi flash
+> - 16MiB spi flash
+> - 32MiB sdram
+> - ap6212 wifi&bt&fm
+>
+> the detail board information can be found at:
+> https://art-pi.gitee.io/website/
+>
+> Fixes: 500cdb23d608 ("ARM: dts: stm32: Add STM32H743 MCU and STM32H743i-EVAL board")
+> Signed-off-by: dillon min <dillon.minfei@gmail.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> ---
+> v3:
+> - move pinctrl: pin-controller{} from stm32h7-pinctrl.dtsi to stm32h743.dtsi
+>   to fix dtbs_check warrning
+>   >> arch/arm/boot/dts/stm32h743i-eval.dt.yaml: soc: pin-controller: {'type':
+>   'object'} is not allowed for {'#address-cells': [[1]], '#size-cells':
+>   [[1]], 'ranges': [[0,
+> - fix dtbs_check warrning:
+>   arch/arm/boot/dts/stm32h750i-art-pi.dt.yaml: soc: 'i2c@40005C00',
+>   'i2c@58001C00' do not match any of the regexes:
+>   '@(0|[1-9a-f][0-9a-f]*)$', '^[^@]+$', 'pinctrl-[0-9]+'
+>
+> v2:
+> - fix author name/copyright mistake
+> - make item in stm32h750i-art-pi.dts sort by letter
+>
+>  arch/arm/boot/dts/Makefile              |   1 +
+>  arch/arm/boot/dts/stm32h743.dtsi        | 153 ++++++++++++++++++++-
+>  arch/arm/boot/dts/stm32h750.dtsi        |   5 +
+>  arch/arm/boot/dts/stm32h750i-art-pi.dts | 228 ++++++++++++++++++++++++++++++++
+>  4 files changed, 385 insertions(+), 2 deletions(-)
+>  create mode 100644 arch/arm/boot/dts/stm32h750.dtsi
+>  create mode 100644 arch/arm/boot/dts/stm32h750i-art-pi.dts
+>
+> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> index 8e5d4ab4e75e..a19c5ab9df84 100644
+> --- a/arch/arm/boot/dts/Makefile
+> +++ b/arch/arm/boot/dts/Makefile
+> @@ -1071,6 +1071,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
+>         stm32746g-eval.dtb \
+>         stm32h743i-eval.dtb \
+>         stm32h743i-disco.dtb \
+> +       stm32h750i-art-pi.dtb \
+>         stm32mp153c-dhcom-drc02.dtb \
+>         stm32mp157a-avenger96.dtb \
+>         stm32mp157a-dhcor-avenger96.dtb \
+> diff --git a/arch/arm/boot/dts/stm32h743.dtsi b/arch/arm/boot/dts/stm32h743.dtsi
+> index 4ebffb0a45a3..4379063d36a2 100644
+> --- a/arch/arm/boot/dts/stm32h743.dtsi
+> +++ b/arch/arm/boot/dts/stm32h743.dtsi
+> @@ -135,6 +135,22 @@
+>                         clocks = <&rcc USART2_CK>;
+>                 };
+>
+> +               usart3: serial@40004800 {
+> +                       compatible = "st,stm32h7-uart";
+> +                       reg = <0x40004800 0x400>;
+> +                       interrupts = <39>;
+> +                       status = "disabled";
+> +                       clocks = <&rcc USART3_CK>;
+> +               };
+> +
+> +               uart4: serial@40004c00 {
+> +                       compatible = "st,stm32h7-uart";
+> +                       reg = <0x40004c00 0x400>;
+> +                       interrupts = <52>;
+> +                       status = "disabled";
+> +                       clocks = <&rcc UART4_CK>;
+> +               };
+> +
+>                 i2c1: i2c@40005400 {
+>                         compatible = "st,stm32f7-i2c";
+>                         #address-cells = <1>;
+> @@ -159,7 +175,7 @@
+>                         status = "disabled";
+>                 };
+>
+> -               i2c3: i2c@40005C00 {
+> +               i2c3: i2c@40005c00 {
+>                         compatible = "st,stm32f7-i2c";
+>                         #address-cells = <1>;
+>                         #size-cells = <0>;
+> @@ -368,6 +384,20 @@
+>                         max-frequency = <120000000>;
+>                 };
+>
+> +               sdmmc2: mmc@48022400 {
+> +                       compatible = "arm,pl18x", "arm,primecell";
+> +                       arm,primecell-periphid = <0x10153180>;
+> +                       reg = <0x48022400 0x400>;
+> +                       interrupts = <124>;
+> +                       interrupt-names = "cmd_irq";
+> +                       clocks = <&rcc SDMMC2_CK>;
+> +                       clock-names = "apb_pclk";
+> +                       resets = <&rcc STM32H7_AHB2_RESET(SDMMC2)>;
+> +                       cap-sd-highspeed;
+> +                       cap-mmc-highspeed;
+> +                       max-frequency = <120000000>;
+> +               };
+> +
+>                 exti: interrupt-controller@58000000 {
+>                         compatible = "st,stm32h7-exti";
+>                         interrupt-controller;
+> @@ -392,7 +422,7 @@
+>                         status = "disabled";
+>                 };
+>
+> -               i2c4: i2c@58001C00 {
+> +               i2c4: i2c@58001c00 {
+>                         compatible = "st,stm32f7-i2c";
+>                         #address-cells = <1>;
+>                         #size-cells = <0>;
+> @@ -555,6 +585,125 @@
+>                         snps,pbl = <8>;
+>                         status = "disabled";
+>                 };
+> +
+> +               pinctrl: pin-controller@58020000 {
+> +                       #address-cells = <1>;
+> +                       #size-cells = <1>;
+> +                       ranges = <0 0x58020000 0x3000>;
+> +                       interrupt-parent = <&exti>;
+> +                       st,syscfg = <&syscfg 0x8>;
+> +                       pins-are-numbered;
+> +
+> +                       gpioa: gpio@58020000 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x0 0x400>;
+> +                               clocks = <&rcc GPIOA_CK>;
+> +                               st,bank-name = "GPIOA";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpiob: gpio@58020400 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x400 0x400>;
+> +                               clocks = <&rcc GPIOB_CK>;
+> +                               st,bank-name = "GPIOB";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpioc: gpio@58020800 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x800 0x400>;
+> +                               clocks = <&rcc GPIOC_CK>;
+> +                               st,bank-name = "GPIOC";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpiod: gpio@58020c00 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0xc00 0x400>;
+> +                               clocks = <&rcc GPIOD_CK>;
+> +                               st,bank-name = "GPIOD";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpioe: gpio@58021000 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x1000 0x400>;
+> +                               clocks = <&rcc GPIOE_CK>;
+> +                               st,bank-name = "GPIOE";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpiof: gpio@58021400 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x1400 0x400>;
+> +                               clocks = <&rcc GPIOF_CK>;
+> +                               st,bank-name = "GPIOF";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpiog: gpio@58021800 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x1800 0x400>;
+> +                               clocks = <&rcc GPIOG_CK>;
+> +                               st,bank-name = "GPIOG";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpioh: gpio@58021c00 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x1c00 0x400>;
+> +                               clocks = <&rcc GPIOH_CK>;
+> +                               st,bank-name = "GPIOH";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpioi: gpio@58022000 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x2000 0x400>;
+> +                               clocks = <&rcc GPIOI_CK>;
+> +                               st,bank-name = "GPIOI";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpioj: gpio@58022400 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x2400 0x400>;
+> +                               clocks = <&rcc GPIOJ_CK>;
+> +                               st,bank-name = "GPIOJ";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +
+> +                       gpiok: gpio@58022800 {
+> +                               gpio-controller;
+> +                               #gpio-cells = <2>;
+> +                               reg = <0x2800 0x400>;
+> +                               clocks = <&rcc GPIOK_CK>;
+> +                               st,bank-name = "GPIOK";
+> +                               interrupt-controller;
+> +                               #interrupt-cells = <2>;
+> +                       };
+> +               };
+>         };
+>  };
+>
+> diff --git a/arch/arm/boot/dts/stm32h750.dtsi b/arch/arm/boot/dts/stm32h750.dtsi
+> new file mode 100644
+> index 000000000000..dd9166223c2f
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/stm32h750.dtsi
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
+> +/* Copyright (C) STMicroelectronics 2021 - All Rights Reserved */
+> +
+> +#include "stm32h743.dtsi"
+> +
+> diff --git a/arch/arm/boot/dts/stm32h750i-art-pi.dts b/arch/arm/boot/dts/stm32h750i-art-pi.dts
+> new file mode 100644
+> index 000000000000..87f1cbedfda5
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/stm32h750i-art-pi.dts
+> @@ -0,0 +1,228 @@
+> +/*
+> + * Copyright 2021 - Dillon Min <dillon.minfei@gmail.com>
+> + *
+> + * This file is dual-licensed: you can use it either under the terms
+> + * of the GPL or the X11 license, at your option. Note that this dual
+> + * licensing only applies to this file, and not this project as a
+> + * whole.
+> + *
+> + *  a) This file is free software; you can redistribute it and/or
+> + *     modify it under the terms of the GNU General Public License as
+> + *     published by the Free Software Foundation; either version 2 of the
+> + *     License, or (at your option) any later version.
+> + *
+> + *     This file is distributed in the hope that it will be useful,
+> + *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *     GNU General Public License for more details.
+> + *
+> + * Or, alternatively,
+> + *
+> + *  b) Permission is hereby granted, free of charge, to any person
+> + *     obtaining a copy of this software and associated documentation
+> + *     files (the "Software"), to deal in the Software without
+> + *     restriction, including without limitation the rights to use,
+> + *     copy, modify, merge, publish, distribute, sublicense, and/or
+> + *     sell copies of the Software, and to permit persons to whom the
+> + *     Software is furnished to do so, subject to the following
+> + *     conditions:
+> + *
+> + *     The above copyright notice and this permission notice shall be
+> + *     included in all copies or substantial portions of the Software.
+> + *
+> + *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+> + *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+> + *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+> + *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+> + *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+> + *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+> + *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+> + *     OTHER DEALINGS IN THE SOFTWARE.
+> + *
+> + * For art-pi board resources, you can refer to link:
+> + *     https://art-pi.gitee.io/website/
+> + */
+> +
+> +/dts-v1/;
+> +#include "stm32h750.dtsi"
+> +#include "stm32h750-pinctrl.dtsi"
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/gpio/gpio.h>
+> +
+> +/ {
+> +       model = "RT-Thread STM32H750i-ART-PI board";
+> +       compatible = "st,stm32h750i-art-pi", "st,stm32h750";
+> +
+> +       chosen {
+> +               bootargs = "root=/dev/ram";
+> +               stdout-path = "serial0:2000000n8";
+> +       };
+> +
+> +       memory@c0000000 {
+> +               device_type = "memory";
+> +               reg = <0xc0000000 0x2000000>;
+> +       };
+> +
+> +       reserved-memory {
+> +               #address-cells = <1>;
+> +               #size-cells = <1>;
+> +               ranges;
+> +
+> +               linux,cma {
+> +                       compatible = "shared-dma-pool";
+> +                       no-map;
+> +                       size = <0x100000>;
+> +                       linux,dma-default;
+> +               };
+> +       };
+> +
+> +       aliases {
+> +               serial0 = &uart4;
+> +               serial1 = &usart3;
+> +       };
+> +
+> +       leds {
+> +               compatible = "gpio-leds";
+> +               led-red {
+> +                       gpios = <&gpioi 8 0>;
+> +               };
+> +               led-green {
+> +                       gpios = <&gpioc 15 0>;
+> +                       linux,default-trigger = "heartbeat";
+> +               };
+> +       };
+> +
+> +       v3v3: regulator-v3v3 {
+> +               compatible = "regulator-fixed";
+> +               regulator-name = "v3v3";
+> +               regulator-min-microvolt = <3300000>;
+> +               regulator-max-microvolt = <3300000>;
+> +               regulator-always-on;
+> +       };
+> +
+> +       wlan_pwr: regulator-wlan {
+> +               compatible = "regulator-fixed";
+> +
+> +               regulator-name = "wl-reg";
+> +               regulator-min-microvolt = <3300000>;
+> +               regulator-max-microvolt = <3300000>;
+> +
+> +               gpios = <&gpioc 13 GPIO_ACTIVE_HIGH>;
+> +               enable-active-high;
+> +       };
+> +};
+> +
+> +&clk_hse {
+> +       clock-frequency = <25000000>;
+> +};
+> +
+> +&dma1 {
+> +       status = "okay";
+> +};
+> +
+> +&dma2 {
+> +       status = "okay";
+> +};
+> +
+> +&mac {
+> +       status = "disabled";
+> +       pinctrl-0       = <&ethernet_rmii>;
+> +       pinctrl-names   = "default";
+> +       phy-mode        = "rmii";
+> +       phy-handle      = <&phy0>;
+> +
+> +       mdio0 {
+> +               #address-cells = <1>;
+> +               #size-cells = <0>;
+> +               compatible = "snps,dwmac-mdio";
+> +               phy0: ethernet-phy@0 {
+> +                       reg = <0>;
+> +               };
+> +       };
+> +};
+> +
+> +&sdmmc1 {
+> +       pinctrl-names = "default", "opendrain", "sleep";
+> +       pinctrl-0 = <&sdmmc1_b4_pins_a>;
+> +       pinctrl-1 = <&sdmmc1_b4_od_pins_a>;
+> +       pinctrl-2 = <&sdmmc1_b4_sleep_pins_a>;
+> +       broken-cd;
+> +       st,neg-edge;
+> +       bus-width = <4>;
+> +       vmmc-supply = <&v3v3>;
+> +       status = "okay";
+> +};
+> +
+> +&sdmmc2 {
+> +       pinctrl-names = "default", "opendrain", "sleep";
+> +       pinctrl-0 = <&sdmmc2_b4_pins_a>;
+> +       pinctrl-1 = <&sdmmc2_b4_od_pins_a>;
+> +       pinctrl-2 = <&sdmmc2_b4_sleep_pins_a>;
+> +       broken-cd;
+> +       non-removable;
+> +       st,neg-edge;
+> +       bus-width = <4>;
+> +       vmmc-supply = <&wlan_pwr>;
+> +       status = "okay";
+> +
+> +       #address-cells = <1>;
+> +       #size-cells = <0>;
+> +       brcmf: bcrmf@1 {
+> +               reg = <1>;
+> +               compatible = "brcm,bcm4329-fmac";
+> +       };
+> +};
+> +
+> +&spi1 {
+> +       status = "okay";
+> +       pinctrl-0 = <&spi1_pins>;
+> +       pinctrl-names = "default";
+> +       cs-gpios = <&gpioa 4 GPIO_ACTIVE_LOW>;
+> +       dmas = <&dmamux1 37 0x400 0x05>,
+> +              <&dmamux1 38 0x400 0x05>;
+> +       dma-names = "rx", "tx";
+> +
+> +       flash@0 {
+> +               #address-cells = <1>;
+> +               #size-cells = <1>;
+> +               compatible = "winbond,w25q128", "jedec,spi-nor";
+> +               reg = <0>;
+> +               spi-max-frequency = <80000000>;
+> +
+> +               partition@0 {
+> +                       label = "root filesystem";
+> +                       reg = <0 0x1000000>;
+> +               };
+> +       };
+> +};
+> +
+> +&usart2 {
+> +       pinctrl-0 = <&usart2_pins>;
+> +       pinctrl-names = "default";
+> +       status = "disabled";
+> +};
+> +
+> +&usart3 {
+> +       pinctrl-names = "default";
+> +       pinctrl-0 = <&usart3_pins>;
+> +       dmas = <&dmamux1 45 0x400 0x05>,
+> +              <&dmamux1 46 0x400 0x05>;
+> +       dma-names = "rx", "tx";
+> +       st,hw-flow-ctrl;
+> +       status = "okay";
+> +
+> +       bluetooth {
+> +               compatible = "brcm,bcm43438-bt";
+> +               host-wakeup-gpios = <&gpioc 0 GPIO_ACTIVE_HIGH>;
+> +               device-wakeup-gpios = <&gpioi 10 GPIO_ACTIVE_HIGH>;
+> +               shutdown-gpios = <&gpioi 11 GPIO_ACTIVE_HIGH>;
+> +               max-speed = <115200>;
+> +       };
+> +};
+> +
+> +&uart4 {
+> +       pinctrl-0 = <&uart4_pins>;
+> +       pinctrl-names = "default";
+> +       status = "okay";
+> +};
+> +
+> --
+> 1.9.1
+>
