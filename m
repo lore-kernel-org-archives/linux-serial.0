@@ -2,129 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D52C433E0
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 04:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C14F5C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 06:37:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9302364F1C
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 04:29:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8EBC664F6D
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 06:37:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233728AbhCSE3K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 Mar 2021 00:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232586AbhCSE3C (ORCPT
+        id S234027AbhCSGhL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 Mar 2021 02:37:11 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3372 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233970AbhCSGgo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 Mar 2021 00:29:02 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A965C06174A;
-        Thu, 18 Mar 2021 21:29:02 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id j26so4733812iog.13;
-        Thu, 18 Mar 2021 21:29:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=77EAi3x6RSk+HaqpjBCCrupeL7eTqd2Gni0r4hhnRTY=;
-        b=Av0mvs/1QDNsl+ACn3AMio1ANWZxSy27ALnryooHEksD+19Qjf1YH873gIgKT99kIb
-         umXkWRr5r8O+xEzYgmuhITER3BJepmJlpA49kvYCaBQ0Gs3oUJ0Y0P+rtgD7zkoec2DS
-         hPo5IAu9a11vAAoLycxXhWTXB2Myk4UweaEO/kiQzrb9LBtWrNlmMNjJ2EPBA7SP96iX
-         6qqU41cvUsGy72fAtVyC7WHqCogQWkeBsvf2XGp/Bn0jwPJObqyaqS8jST8ZmaWYX5OW
-         N6UU5ESDSvkgWo9gtQAFuI9kSIGJmH5t7VDFz991crSSjgdCFfPX91OpQSeegc41+mvw
-         drGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=77EAi3x6RSk+HaqpjBCCrupeL7eTqd2Gni0r4hhnRTY=;
-        b=hjodJPgdkvH2A1CjLgDOdq+cHQmfCgmAamUS3RCLFu/CpZE3SOmMq+ed9zvvzbZrdS
-         Pkx9iqxsCVePpVcp5umxWbrqMXxQ/HmAY9eV6MmRBwM8vPjnBYMQMBhdHWGyjsmy0uB5
-         wEYINP/Vqtz1nHa8gWFMjMQDMB9Z88swK0g0nTZI7zO1+v6G8qW2auXa+kP03AnGmt9S
-         y+I0p/SYqTWN3dg0hL5eC2U7QhM2p4FYYfsZjOZ0tMv1XU7AYAbv9KCtf/kOR/+z1JrW
-         qbQ/awVwVkp8b3NKxQcyDfCQWpYQGtB2bRHmC3vLT+AQ09uaew+I4Nbg4RdUen4nfBT1
-         d3ww==
-X-Gm-Message-State: AOAM532FP3ERksoN4g/e9lplcq8g0RiwBMorDmOmPwDsBPLBelQKJ/tN
-        d8v004MmQ8p+IYWAzKNAROdhxB1zyu/PSwDCO5E=
-X-Google-Smtp-Source: ABdhPJymXjj1dWzAvDvLcfggYqYjavGJzkjtuYIsSBDQSfVLN0qs2L4pO18/cvZe8ong+1rygx+Dn1HaTmH7Mj00ipA=
-X-Received: by 2002:a05:6638:d47:: with SMTP id d7mr9834886jak.2.1616128142127;
- Thu, 18 Mar 2021 21:29:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <1615801436-3016-1-git-send-email-dillon.minfei@gmail.com> <1615801436-3016-10-git-send-email-dillon.minfei@gmail.com>
-In-Reply-To: <1615801436-3016-10-git-send-email-dillon.minfei@gmail.com>
-From:   dillon min <dillon.minfei@gmail.com>
-Date:   Fri, 19 Mar 2021 12:28:26 +0800
-Message-ID: <CAL9mu0Lfj+n4uk2rT8QnDtRveHn2gLx4ut6fLCByt0w9e08vwQ@mail.gmail.com>
-Subject: Re: [PATCH v3 9/9] dt-bindings: serial: stm32: add phandle
- 'bluetooth' to fix dtbs_check warrning
-To:     Rob Herring <robh+dt@kernel.org>,
-        Alexandre TORGUE <alexandre.torgue@foss.st.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Fri, 19 Mar 2021 02:36:44 -0400
+Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4F1vHp3mMXz5db6;
+        Fri, 19 Mar 2021 14:34:14 +0800 (CST)
+Received: from dggemi712-chm.china.huawei.com (10.3.20.111) by
+ DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Fri, 19 Mar 2021 14:36:39 +0800
+Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
+ dggemi712-chm.china.huawei.com (10.3.20.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2106.2; Fri, 19 Mar 2021 14:36:39 +0800
+Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
+ dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.2106.013;
+ Fri, 19 Mar 2021 14:36:39 +0800
+From:   "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Finn Thain <fthain@telegraphics.com.au>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux@armlinux.org.uk, Vladimir Murzin <vladimir.murzin@arm.com>,
-        afzal.mohd.ma@gmail.com, gregkh@linuxfoundation.org,
-        erwan.leray@st.com, erwan.leray@foss.st.com,
-        linux-serial@vger.kernel.org, lkp@intel.com
-Content-Type: text/plain; charset="UTF-8"
+        Hector Martin <marcan@marcan.st>,
+        "Arnd Bergmann" <arnd@kernel.org>
+Subject: RE: [PATCH] tty: serial: samsung_tty: remove spinlock flags in
+ interrupt handlers
+Thread-Topic: [PATCH] tty: serial: samsung_tty: remove spinlock flags in
+ interrupt handlers
+Thread-Index: AQHXGcbz+WrshjNySUOLBee938cMg6qFzJyAgAAKqICABQXQgA==
+Date:   Fri, 19 Mar 2021 06:36:39 +0000
+Message-ID: <4771468d968a44789518bc547acf5f93@hisilicon.com>
+References: <20210315181212.113217-1-krzysztof.kozlowski@canonical.com>
+ <YFB0OcBg3Vj555eA@hovoldconsulting.com>
+ <CAHp75VfcbC63t_eZeBOA0NY28BtGBD0YyLR6nSNuKAnKhXTSzA@mail.gmail.com>
+In-Reply-To: <CAHp75VfcbC63t_eZeBOA0NY28BtGBD0YyLR6nSNuKAnKhXTSzA@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.126.203.211]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-No changes, Just loop lkp in.
-
-
-Hi lkp,
-
-Sorry for the late reply, thanks for your report.
-This patch is to fix the build warning message.
-
-Thanks.
-Regards
-
-On Mon, Mar 15, 2021 at 5:45 PM <dillon.minfei@gmail.com> wrote:
->
-> From: dillon min <dillon.minfei@gmail.com>
->
-> when run make dtbs_check with 'bluetoothi brcm,bcm43438-bt'
-> dts enabled on stm32h7, there is a warrning popup:
->
-> >> arch/arm/boot/dts/stm32h750i-art-pi.dt.yaml: serial@40004800: 'bluetooth'
->    does not match any of the regexes: 'pinctrl-[0-9]+'
->
-> to make dtbs_check happy, so add a phandle bluetooth
->
-> Fixes: 500cdb23d608 ("ARM: dts: stm32: Add STM32H743 MCU and STM32H743i-EVAL board")
-> Signed-off-by: dillon min <dillon.minfei@gmail.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> ---
->  Documentation/devicetree/bindings/serial/st,stm32-uart.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> index 8631678283f9..5e674840e62d 100644
-> --- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-> @@ -50,6 +50,11 @@ properties:
->      minItems: 1
->      maxItems: 2
->
-> +  bluetooth:
-> +    type: object
-> +    description: |
-> +      phandles to the usart controller and bluetooth
-> +
->  # cts-gpios and rts-gpios properties can be used instead of 'uart-has-rtscts'
->  # or 'st,hw-flow-ctrl' (deprecated) for making use of any gpio pins for flow
->  # control instead of dedicated pins.
-> --
-> 1.9.1
->
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQW5keSBTaGV2Y2hlbmtv
+IFttYWlsdG86YW5keS5zaGV2Y2hlbmtvQGdtYWlsLmNvbV0NCj4gU2VudDogVHVlc2RheSwgTWFy
+Y2ggMTYsIDIwMjEgMTA6NDEgUE0NCj4gVG86IEpvaGFuIEhvdm9sZCA8am9oYW5Aa2VybmVsLm9y
+Zz47IEZpbm4gVGhhaW4gPGZ0aGFpbkB0ZWxlZ3JhcGhpY3MuY29tLmF1PjsNCj4gU29uZyBCYW8g
+SHVhIChCYXJyeSBTb25nKSA8c29uZy5iYW8uaHVhQGhpc2lsaWNvbi5jb20+DQo+IENjOiBLcnp5
+c3p0b2YgS296bG93c2tpIDxrcnp5c3p0b2Yua296bG93c2tpQGNhbm9uaWNhbC5jb20+OyBHcmVn
+DQo+IEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPjsgSmlyaSBTbGFi
+eSA8amlyaXNsYWJ5QGtlcm5lbC5vcmc+Ow0KPiBsaW51eC1hcm0gTWFpbGluZyBMaXN0IDxsaW51
+eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc+OyBMaW51eCBTYW1zdW5nDQo+IFNPQyA8
+bGludXgtc2Ftc3VuZy1zb2NAdmdlci5rZXJuZWwub3JnPjsgb3BlbiBsaXN0OlNFUklBTCBEUklW
+RVJTDQo+IDxsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnPjsgTGludXggS2VybmVsIE1haWxp
+bmcgTGlzdA0KPiA8bGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZz47IEhlY3RvciBNYXJ0aW4g
+PG1hcmNhbkBtYXJjYW4uc3Q+OyBBcm5kDQo+IEJlcmdtYW5uIDxhcm5kQGtlcm5lbC5vcmc+DQo+
+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHR0eTogc2VyaWFsOiBzYW1zdW5nX3R0eTogcmVtb3ZlIHNw
+aW5sb2NrIGZsYWdzIGluDQo+IGludGVycnVwdCBoYW5kbGVycw0KPiANCj4gT24gVHVlLCBNYXIg
+MTYsIDIwMjEgYXQgMTE6MDIgQU0gSm9oYW4gSG92b2xkIDxqb2hhbkBrZXJuZWwub3JnPiB3cm90
+ZToNCj4gPg0KPiA+IE9uIE1vbiwgTWFyIDE1LCAyMDIxIGF0IDA3OjEyOjEyUE0gKzAxMDAsIEty
+enlzenRvZiBLb3psb3dza2kgd3JvdGU6DQo+ID4gPiBTaW5jZSBpbnRlcnJ1cHQgaGFuZGxlciBp
+cyBjYWxsZWQgd2l0aCBkaXNhYmxlZCBsb2NhbCBpbnRlcnJ1cHRzLCB0aGVyZQ0KPiA+ID4gaXMg
+bm8gbmVlZCB0byB1c2UgdGhlIHNwaW5sb2NrIHByaW1pdGl2ZXMgZGlzYWJsaW5nIGludGVycnVw
+dHMgYXMgd2VsbC4NCj4gPg0KPiA+IFRoaXMgaXNuJ3QgZ2VuZXJhbGx5IHRydWUgZHVlIHRvICJ0
+aHJlYWRpcnFzIiBhbmQgdGhhdCBjYW4gbGVhZCB0bw0KPiA+IGRlYWRsb2NrcyBpZiB0aGUgY29u
+c29sZSBjb2RlIGlzIGNhbGxlZCBmcm9tIGhhcmQgaXJxIGNvbnRleHQuDQo+ID4NCj4gPiBOb3cs
+IHRoaXMgaXMgKm5vdCogdGhlIGNhc2UgZm9yIHRoaXMgcGFydGljdWxhciBkcml2ZXIgc2luY2Ug
+aXQgZG9lc24ndA0KPiA+IGV2ZW4gYm90aGVyIHRvIHRha2UgdGhlIHBvcnQgbG9jayBpbiBjb25z
+b2xlX3dyaXRlKCkuIFRoYXQgc2hvdWxkDQo+ID4gcHJvYmFibHkgYmUgZml4ZWQgaW5zdGVhZC4N
+Cj4gPg0KPiA+IFNlZSBodHRwczovL2xvcmUua2VybmVsLm9yZy9yL1g3a3ZpaVJ3dXh2UHhDOE9A
+bG9jYWxob3N0Lg0KPiANCj4gRmlubiwgQmFycnksIHNvbWV0aGluZyB0byBjaGVjayBJIHRoaW5r
+Pw0KDQpNeSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQgc3Bpbl9sb2NrX2lycXNhdmUgY2FuJ3QgcHJv
+dGVjdCB0aGUgY29udGV4dA0KdGhlIGNvbnNvbGVfd3JpdGUoKSBpcyBjYWxsZWQgaW4gaGFyZGly
+cSBmb3IgdGhyZWFkZWRfaXJxIGNhc2UgbWFpbmx5DQpmb3IgcHJlZW1wdC1ydCBzY2VuYXJpb3Mg
+YXMgc3Bpbl9sb2NrX2lycXNhdmUgZG9lc24ndCBkaXNhYmxlIGlycSBpbg0KdGhhdCBjYXNlIGF0
+IGFsbC4NClNlZToNCmh0dHBzOi8vd3d3Lmtlcm5lbC5vcmcvZG9jL2h0bWwvbGF0ZXN0L2xvY2tp
+bmcvbG9ja3R5cGVzLmh0bWwNCnNwaW5sb2NrX3QgYW5kIFBSRUVNUFRfUlQNCk9uIGEgUFJFRU1Q
+VF9SVCBrZXJuZWwgc3BpbmxvY2tfdCBpcyBtYXBwZWQgdG8gYSBzZXBhcmF0ZSBpbXBsZW1lbnRh
+dGlvbg0KYmFzZWQgb24gcnRfbXV0ZXggd2hpY2ggY2hhbmdlcyB0aGUgc2VtYW50aWNzOg0KUHJl
+ZW1wdGlvbiBpcyBub3QgZGlzYWJsZWQuDQpUaGUgaGFyZCBpbnRlcnJ1cHQgcmVsYXRlZCBzdWZm
+aXhlcyBmb3Igc3Bpbl9sb2NrIC8gc3Bpbl91bmxvY2sgb3BlcmF0aW9ucw0KKF9pcnEsIF9pcnFz
+YXZlIC8gX2lycXJlc3RvcmUpIGRvIG5vdCBhZmZlY3QgdGhlIENQVeKAmXMgaW50ZXJydXB0IGRp
+c2FibGVkDQpzdGF0ZS4NCg0KU28gaWYgY29uc29sZV93cml0ZSgpIGNhbiBpbnRlcnJ1cHQgb3Vy
+IGNvZGUgaW4gaGFyZGlycSwgd2Ugc2hvdWxkDQptb3ZlIHRvIHJhd19zcGluX2xvY2tfaXJxc2F2
+ZSBmb3IgdGhpcyBkcml2ZXIuDQoNCkkgdGhpbmsgaXQgaXMgYWxtb3N0IGFsd2F5cyB3cm9uZyB0
+byBjYWxsIHNwaW5fbG9ja19pcnFzYXZlIGluIGhhcmRpcnEuDQoNCj4gDQo+IC0tDQo+IFdpdGgg
+QmVzdCBSZWdhcmRzLA0KPiBBbmR5IFNoZXZjaGVua28NCg0KVGhhbmtzDQpCYXJyeQ0K
