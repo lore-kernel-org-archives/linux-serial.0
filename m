@@ -2,132 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4C5C433E6
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 08:10:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37946C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 08:40:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C6F7964F6A
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 08:10:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E14C464F40
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Mar 2021 08:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234296AbhCSIKT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 Mar 2021 04:10:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50964 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234084AbhCSIJt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 Mar 2021 04:09:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 390DC64F68;
-        Fri, 19 Mar 2021 08:09:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616141389;
-        bh=8yyL1lc9w1zEvs02giHe/AkhySpLaZuLjBUihev2WZ4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Og2XGq/C9jDWrFpkn7jIMmJ42fTa76imA6COYLkGsphWC8N7QNr0CGZXcBkNn5hec
-         FsxHbz4caYtDKM9wsahMmOLDIGuNhvPqIYWUvn7rj5TCM4+MpAWWMS+31omZS6tZHn
-         7Mu77FSS7n1U/61aoUqnS9/1Wfaqh2F7DaKCm9CY40cD+92yxaX7iZjp1J8wuQHCK+
-         XqRk4V0Qa+TomLDA9SXtKcTPKXMjZJrZhDO86Zia5TTv1vk9G+stk7fogSpQpISehZ
-         uKgm+vhAevfpaX+HtrEfpCx9jzkB7yLVl+6NTkYm3Ciaz7Cl0vFlcAMV2IbtJePVXQ
-         nNOnd9DXYhk3Q==
-Received: from johan by xi.lan with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1lNACu-0001jF-Ft; Fri, 19 Mar 2021 09:10:09 +0100
-Date:   Fri, 19 Mar 2021 09:10:08 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Finn Thain <fthain@telegraphics.com.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        id S234315AbhCSIje (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 Mar 2021 04:39:34 -0400
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:9208 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234399AbhCSIjH (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 19 Mar 2021 04:39:07 -0400
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12J8cEHT002008;
+        Fri, 19 Mar 2021 09:38:44 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=66Y1jOy+i4E+OEpba8S19bATG0w9+cq/uIbqX4l/N6M=;
+ b=aeI/wqqazvGmB+C7mNgMlMcVOgnyeDhb+lxlbyEuhoWnV1hHYRT2VwnsJgdPpxARATMZ
+ Ip+qHXdUFtFr+HUF7Kw4s+x67amNctvHcmiDJEFqqRm/QLPsETRvxamUv93FlR9IbrLO
+ Z8L3bpjYWeNSw6wyvfQ6N3SyWfr/urmB5Q9K9CaM7AJnBSECssJH6WudiKHamSm7nGKb
+ ZvKbJFmkTUzm9ICbMk802yEzInHIlQe8qd8dQnbKDOd8HX+swe1BacmWHLr3CGOwJuTX
+ li9OKTz9WlT/SNXrCBFOmTJTHv6XhMlyKm5Sg6hLzyT4icc/LgrkfPhbVC7DRTip4mt/ 2g== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 378pr6a6u9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Mar 2021 09:38:44 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8BD7310002A;
+        Fri, 19 Mar 2021 09:38:40 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 645452257E6;
+        Fri, 19 Mar 2021 09:38:40 +0100 (CET)
+Received: from lmecxl0912.lme.st.com (10.75.127.49) by SFHDAG2NODE3.st.com
+ (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 19 Mar
+ 2021 09:38:39 +0100
+Subject: Re: [PATCH v3 9/9] dt-bindings: serial: stm32: add phandle
+ 'bluetooth' to fix dtbs_check warrning
+To:     dillon min <dillon.minfei@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hector Martin <marcan@marcan.st>,
-        Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [PATCH] tty: serial: samsung_tty: remove spinlock flags in
- interrupt handlers
-Message-ID: <YFRcYCMQrPXUG6ZU@hovoldconsulting.com>
-References: <20210315181212.113217-1-krzysztof.kozlowski@canonical.com>
- <YFB0OcBg3Vj555eA@hovoldconsulting.com>
- <CAHp75VfcbC63t_eZeBOA0NY28BtGBD0YyLR6nSNuKAnKhXTSzA@mail.gmail.com>
- <4771468d968a44789518bc547acf5f93@hisilicon.com>
+        <linux@armlinux.org.uk>, Vladimir Murzin <vladimir.murzin@arm.com>,
+        <afzal.mohd.ma@gmail.com>, <gregkh@linuxfoundation.org>,
+        <erwan.leray@st.com>, <erwan.leray@foss.st.com>,
+        <linux-serial@vger.kernel.org>, <lkp@intel.com>
+References: <1615801436-3016-1-git-send-email-dillon.minfei@gmail.com>
+ <1615801436-3016-10-git-send-email-dillon.minfei@gmail.com>
+ <CAL9mu0Lfj+n4uk2rT8QnDtRveHn2gLx4ut6fLCByt0w9e08vwQ@mail.gmail.com>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+Message-ID: <01c9f635-7b2b-fc9c-3cf9-6d7f425d683e@foss.st.com>
+Date:   Fri, 19 Mar 2021 09:38:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4771468d968a44789518bc547acf5f93@hisilicon.com>
+In-Reply-To: <CAL9mu0Lfj+n4uk2rT8QnDtRveHn2gLx4ut6fLCByt0w9e08vwQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG3NODE2.st.com (10.75.127.8) To SFHDAG2NODE3.st.com
+ (10.75.127.6)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-19_02:2021-03-17,2021-03-19 signatures=0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 06:36:39AM +0000, Song Bao Hua (Barry Song) wrote:
+Hi Dillon
+
+On 3/19/21 5:28 AM, dillon min wrote:
+> No changes, Just loop lkp in.
 > 
 > 
-> > -----Original Message-----
-> > From: Andy Shevchenko [mailto:andy.shevchenko@gmail.com]
-> > Sent: Tuesday, March 16, 2021 10:41 PM
-> > To: Johan Hovold <johan@kernel.org>; Finn Thain <fthain@telegraphics.com.au>;
-> > Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>
-> > Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>; Greg
-> > Kroah-Hartman <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>;
-> > linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>; Linux Samsung
-> > SOC <linux-samsung-soc@vger.kernel.org>; open list:SERIAL DRIVERS
-> > <linux-serial@vger.kernel.org>; Linux Kernel Mailing List
-> > <linux-kernel@vger.kernel.org>; Hector Martin <marcan@marcan.st>; Arnd
-> > Bergmann <arnd@kernel.org>
-> > Subject: Re: [PATCH] tty: serial: samsung_tty: remove spinlock flags in
-> > interrupt handlers
-> > 
-> > On Tue, Mar 16, 2021 at 11:02 AM Johan Hovold <johan@kernel.org> wrote:
-> > >
-> > > On Mon, Mar 15, 2021 at 07:12:12PM +0100, Krzysztof Kozlowski wrote:
-> > > > Since interrupt handler is called with disabled local interrupts, there
-> > > > is no need to use the spinlock primitives disabling interrupts as well.
-> > >
-> > > This isn't generally true due to "threadirqs" and that can lead to
-> > > deadlocks if the console code is called from hard irq context.
-> > >
-> > > Now, this is *not* the case for this particular driver since it doesn't
-> > > even bother to take the port lock in console_write(). That should
-> > > probably be fixed instead.
-> > >
-> > > See https://lore.kernel.org/r/X7kviiRwuxvPxC8O@localhost.
-> > 
-> > Finn, Barry, something to check I think?
+> Hi lkp,
 > 
-> My understanding is that spin_lock_irqsave can't protect the context
-> the console_write() is called in hardirq for threaded_irq case mainly
-> for preempt-rt scenarios as spin_lock_irqsave doesn't disable irq in
-> that case at all.
-
-Forced threaded interrupts have so far run with interrupts enabled and
-spin_lock_irqsave() would suffice on non-RT. This is about to change
-though so that drivers don't need to worry about "threadirqs":
-
-	https://lore.kernel.org/r/20210317143859.513307808@linutronix.de
-
-> See:
-> https://www.kernel.org/doc/html/latest/locking/locktypes.html
-> spinlock_t and PREEMPT_RT
-> On a PREEMPT_RT kernel spinlock_t is mapped to a separate implementation
-> based on rt_mutex which changes the semantics:
-> Preemption is not disabled.
-> The hard interrupt related suffixes for spin_lock / spin_unlock operations
-> (_irq, _irqsave / _irqrestore) do not affect the CPU’s interrupt disabled
-> state.
+> Sorry for the late reply, thanks for your report.
+> This patch is to fix the build warning message.
 > 
-> So if console_write() can interrupt our code in hardirq, we should
-> move to raw_spin_lock_irqsave for this driver.
+> Thanks.
+> Regards
+> 
+> On Mon, Mar 15, 2021 at 5:45 PM <dillon.minfei@gmail.com> wrote:
+>>
+>> From: dillon min <dillon.minfei@gmail.com>
+>>
+>> when run make dtbs_check with 'bluetoothi brcm,bcm43438-bt'
+>> dts enabled on stm32h7, there is a warrning popup:
+>>
+>>>> arch/arm/boot/dts/stm32h750i-art-pi.dt.yaml: serial@40004800: 'bluetooth'
+>>     does not match any of the regexes: 'pinctrl-[0-9]+'
+>>
+>> to make dtbs_check happy, so add a phandle bluetooth
+>>
+>> Fixes: 500cdb23d608 ("ARM: dts: stm32: Add STM32H743 MCU and STM32H743i-EVAL board")
+>> Signed-off-by: dillon min <dillon.minfei@gmail.com>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> ---
+>>   Documentation/devicetree/bindings/serial/st,stm32-uart.yaml | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+>> index 8631678283f9..5e674840e62d 100644
+>> --- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+>> +++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+>> @@ -50,6 +50,11 @@ properties:
+>>       minItems: 1
+>>       maxItems: 2
+>>
+>> +  bluetooth:
+>> +    type: object
+>> +    description: |
+>> +      phandles to the usart controller and bluetooth
+>> +
 
-No, no. RT handles this by deferring console writes apparently.
+Do we really need to add this "generic" property here ? You could test 
+without the "AditionalProperties:False".
 
-> I think it is almost always wrong to call spin_lock_irqsave in hardirq.
+Regards
+Alex
 
-Again, no. It's even been a requirement due to "threadirqs" in some
-cases (e.g. hrtimers) up until now (or rather until the above patch is
-in mainline).
 
-Johan
+>>   # cts-gpios and rts-gpios properties can be used instead of 'uart-has-rtscts'
+>>   # or 'st,hw-flow-ctrl' (deprecated) for making use of any gpio pins for flow
+>>   # control instead of dedicated pins.
+>> --
+>> 1.9.1
+>>
