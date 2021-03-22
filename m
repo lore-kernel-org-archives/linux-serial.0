@@ -2,121 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB100C433DB
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Mar 2021 11:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0322C433C1
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Mar 2021 12:17:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6F97C6199F
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Mar 2021 11:56:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CCAB861994
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Mar 2021 12:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbhCVLz4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Mar 2021 07:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbhCVLzk (ORCPT
+        id S230350AbhCVMQ3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Mar 2021 08:16:29 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:14424 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230292AbhCVMQN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Mar 2021 07:55:40 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0504C061574
-        for <linux-serial@vger.kernel.org>; Mon, 22 Mar 2021 04:55:39 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lOJ9l-0001wO-R7; Mon, 22 Mar 2021 12:55:37 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lOJ9k-0002yG-AV; Mon, 22 Mar 2021 12:55:36 +0100
-Date:   Mon, 22 Mar 2021 12:55:36 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Johan Hovold <johan@kernel.org>,
+        Mon, 22 Mar 2021 08:16:13 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4F3tj73tjSzkcrG;
+        Mon, 22 Mar 2021 20:14:35 +0800 (CST)
+Received: from localhost.localdomain (10.175.102.38) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.498.0; Mon, 22 Mar 2021 20:16:04 +0800
+From:   'w00385741 <weiyongjun1@huawei.com>
+To:     <weiyongjun1@huawei.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sam Nobs <samuel.nobs@taitradio.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH] serial: imx: drop workaround for forced irq threading
-Message-ID: <20210322115536.knkea7i6vrfpotol@pengutronix.de>
-References: <20210322111036.31966-1-johan@kernel.org>
- <20210322113402.naqzgkoe2xesnw4b@pengutronix.de>
- <20210322113918.ze52gq54cpsspgej@linutronix.de>
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     <linux-serial@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        "Hulk Robot" <hulkci@huawei.com>
+Subject: [PATCH -next] serial: pch_uart: fix build error with !CONFIG_DEBUG_FS
+Date:   Mon, 22 Mar 2021 12:26:01 +0000
+Message-ID: <20210322122601.2980258-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7izeeft7juynhm6v"
-Content-Disposition: inline
-In-Reply-To: <20210322113918.ze52gq54cpsspgej@linutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.102.38]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
---7izeeft7juynhm6v
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fix the build error with CONFIG_DEBUG_FS is not set:
 
-Hallo Sebastian,
+drivers/tty/serial/pch_uart.c: In function 'pch_uart_init_port':
+drivers/tty/serial/pch_uart.c:1815:9: error: 'port_regs_ops' undeclared (first use in this function)
+ 1815 |        &port_regs_ops);
+      |         ^~~~~~~~~~~~~
 
-On Mon, Mar 22, 2021 at 12:39:18PM +0100, Sebastian Andrzej Siewior wrote:
-> On 2021-03-22 12:34:02 [+0100], Uwe Kleine-K=F6nig wrote:
-> > On Mon, Mar 22, 2021 at 12:10:36PM +0100, Johan Hovold wrote:
-> > > Force-threaded interrupt handlers used to run with interrupts enabled,
-> > > something which could lead to deadlocks in case a threaded handler
-> > > shared a lock with code running in hard interrupt context (e.g. timer
-> > > callbacks) and did not explicitly disable interrupts.
-> > >=20
-> > > This was specifically the case for serial drivers that take the port
-> > > lock in their console write path as printk can be called from hard
-> > > interrupt context also with forced threading ("threadirqs").
-> > >=20
-> > > Since commit 81e2073c175b ("genirq: Disable interrupts for force
-> > > threaded handlers") interrupt handlers always run with interrupts
-> > > disabled on non-RT so that drivers no longer need to do handle this.
-> >=20
-> > So we're breaking RT knowingly here? If this is the case I'm not happy
-> > with your change. (And if RT is not affected a different wording would
-> > be good.)
->=20
-> Which wording, could you be more specific? It looks good from here and
-> no, RT is not affected.
+This commit get rid of the CONFIG_PM_SLEEP ifdefery to
+fix the build error.
 
-The commit log says essentially: "The change is fine on non-RT" which
-suggests there is a problem on RT. So something like:
+Fixes: 1f8a51ee3242 ("tty: serial: pch_uart.c: remove debugfs dentry pointer")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/tty/serial/pch_uart.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-	On non-RT interrupts are disabled also for force threaded handlers
-	(since commit 81e2073c175b ...). On RT there is no problem either
-	because ... So we don't need to handle this case in the driver any more.
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index e9e79d181f0e..f0351e6f0ef6 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -291,8 +291,6 @@ static const int trigger_level_64[4] = { 1, 16, 32, 56 };
+ static const int trigger_level_16[4] = { 1, 4, 8, 14 };
+ static const int trigger_level_1[4] = { 1, 1, 1, 1 };
+ 
+-#ifdef CONFIG_DEBUG_FS
+-
+ #define PCH_REGS_BUFSIZE	1024
+ 
+ 
+@@ -352,7 +350,6 @@ static const struct file_operations port_regs_ops = {
+ 	.read		= port_show_regs,
+ 	.llseek		= default_llseek,
+ };
+-#endif	/* CONFIG_DEBUG_FS */
+ 
+ static const struct dmi_system_id pch_uart_dmi_table[] = {
+ 	{
 
-would be preferable.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---7izeeft7juynhm6v
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmBYhbUACgkQwfwUeK3K
-7AkgqAgAgTgdaglMq9hbZzRXzVYb3dpQz/Wevwb7A3UCS5godfj5mzrFMKzUWz16
-MkcP7qv5pbyj5xvK4HgZWhE06mPXkR3k/H3B8yeCNG00TUe5SDM1sPbKPZLc2SzI
-uRzU0ImeVHodghGBuYKRUqEiSliwCGJzUBZFZc5Ij5tfNgXvk0kXNdxnWX7d3NzQ
-i23EdTPCDBAxSl1CmkjocnP8o9lEbBIOSVtXE8PBWKmiqqOM03xn8NsJcuTTuTji
-CkNlkvpU/QgA+/Un0fSq/gflti8zkVFz0GJFqcR5OFysAcfsIu8uc2zpcoP8aXvZ
-mERj0gQCekf6AzoeYALL2uOWeDbyRA==
-=ZyzD
------END PGP SIGNATURE-----
-
---7izeeft7juynhm6v--
