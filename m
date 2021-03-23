@@ -2,79 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D246CC433DB
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Mar 2021 09:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D855CC433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Mar 2021 09:31:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A11F26146D
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Mar 2021 09:30:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A79F2619C5
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Mar 2021 09:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229472AbhCWJaK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Mar 2021 05:30:10 -0400
-Received: from m12-15.163.com ([220.181.12.15]:60754 "EHLO m12-15.163.com"
+        id S229574AbhCWJbP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Mar 2021 05:31:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229798AbhCWJaH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Mar 2021 05:30:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=bipQG
-        YVg/aKbJfujEx4JlQC2HuVAoinKOBHzXNgUhQU=; b=Y2Stt8aDoK3pbbJDUJ0ck
-        qYfE/+hDen9WV6ndxdUak0h+RuEZapgOx7DRLeYxtZrTqBSfnqFyLYr6ZCkvB0pD
-        QRMRTJ4j5qMndtuT4geI0A4ZY9Raned6sor6mDrI+M5PubzTVUIULeQId7hHlhbH
-        GPYD/6j+bI5LEaX7c3ZNZU=
-Received: from caizhichao.ccdomain.com (unknown [218.94.48.178])
-        by smtp11 (Coremail) with SMTP id D8CowAAnp_zDtFlgrhxcGA--.56S2;
-        Tue, 23 Mar 2021 17:29:04 +0800 (CST)
-From:   caizhichao <tomstomsczc@163.com>
-To:     gregkh@linuxfoundation.org, matthias.bgg@gmail.com
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        caizhichao <caizhichao@yulong.com>
-Subject: [PATCH] tty:serial: fix spelling typo of values
-Date:   Tue, 23 Mar 2021 17:28:46 +0800
-Message-Id: <20210323092846.819-1-tomstomsczc@163.com>
-X-Mailer: git-send-email 2.30.0.windows.1
+        id S229576AbhCWJao (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Mar 2021 05:30:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 18D4A6146D;
+        Tue, 23 Mar 2021 09:30:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1616491844;
+        bh=tatBD0/rOuHfE/VB2VQjxxpbUS79yZbSYR7+r2/V5J8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SFVwCQW+NwUN+jcsQ9cV+6YjU4X2mPLomftpSnDK6j2of9RnX+5e5P9tSYuDrLsxK
+         gzjQYZleCN2scJKUUFGQbwQPLdn0aaYzdC18MGsYEM+bD99fcAUAXycFhy+DM5OOeF
+         wI/OM+76xqz8TaKJtZdS382q2h0mXP6gCdx/LXmw=
+Date:   Tue, 23 Mar 2021 10:30:42 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Roja Rani Yarubandi <rojay@codeaurora.org>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, mka@chromium.org,
+        robh+dt@kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        akashast@codeaurora.org, msavaliy@qti.qualcomm.com
+Subject: Re: [PATCH V3 1/2] soc: qcom-geni-se: Cleanup the code to remove
+ proxy votes
+Message-ID: <YFm1Qvo3SuwJOino@kroah.com>
+References: <20210322110429.14950-1-rojay@codeaurora.org>
+ <20210322110429.14950-2-rojay@codeaurora.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: D8CowAAnp_zDtFlgrhxcGA--.56S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Gr1DZw4fCF13tw45ArWrKrg_yoWfWFcE9r
-        WkXwsxZ3sYyF4vkw15Arn8urWSka1UuFn7Aa40qr9rA398Zw4kAFy0vrZ8tw1vqFs3Zr9r
-        Ar1UKr1xKw1UWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUnjZX7UUUUU==
-X-Originating-IP: [218.94.48.178]
-X-CM-SenderInfo: pwrp23prpvu6rf6rljoofrz/xtbBdQBeilaD+k53QQAAs2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210322110429.14950-2-rojay@codeaurora.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: caizhichao <caizhichao@yulong.com>
+On Mon, Mar 22, 2021 at 04:34:28PM +0530, Roja Rani Yarubandi wrote:
+> This reverts commit 048eb908a1f2 ("soc: qcom-geni-se: Add interconnect
+> support to fix earlycon crash")
+> 
+> ICC core and platforms drivers supports sync_state feature with
+> commit 7d3b0b0d8184 ("interconnect: qcom: Use icc_sync_state") which
+> ensures that the default ICC BW votes from the bootloader is not
+> removed until all it's consumers are probes.
+> 
+> The proxy votes were needed in case other QUP child drivers
+> I2C, SPI probes before UART, they can turn off the QUP-CORE clock
+> which is shared resources for all QUP driver, this causes unclocked
+> access to HW from earlycon.
+> 
+> Given above support from ICC there is no longer need to maintain
+> proxy votes on QUP-CORE ICC node from QUP wrapper driver for early
+> console usecase, the default votes won't be removed until real
+> console is probed.
+> 
+> Signed-off-by: Roja Rani Yarubandi <rojay@codeaurora.org>
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 
-vaules -> values
+Should this have a "Fixes:" tag, and also be cc: stable@vger.kernel.org
+so that it will be properly backported?
 
-Signed-off-by: caizhichao <caizhichao@yulong.com>
----
- drivers/tty/serial/8250/8250_mtk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If so, please add and resend.
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index f7d3023..c6633dc 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -325,7 +325,7 @@ static void mtk8250_set_flow_ctrl(struct uart_8250_port *up, int mode)
- 	 * Mediatek UARTs use an extra highspeed register (MTK_UART_HIGHS)
- 	 *
- 	 * We need to recalcualte the quot register, as the claculation depends
--	 * on the vaule in the highspeed register.
-+	 * on the value in the highspeed register.
- 	 *
- 	 * Some baudrates are not supported by the chip, so we use the next
- 	 * lower rate supported and update termios c_flag.
--- 
-1.9.1
+thanks,
 
-
+greg k-h
