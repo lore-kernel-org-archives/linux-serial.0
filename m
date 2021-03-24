@@ -2,245 +2,163 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC730C433E5
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 10:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6E8C433DB
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 11:27:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C407619C0
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 10:20:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D07ED619D5
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 11:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbhCXKTn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Mar 2021 06:19:43 -0400
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:46590 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232792AbhCXKTR (ORCPT
+        id S229719AbhCXL1L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Mar 2021 07:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235923AbhCXL0h (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Mar 2021 06:19:17 -0400
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 24 Mar 2021 03:19:17 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 24 Mar 2021 03:19:14 -0700
-X-QCInternal: smtphost
-Received: from c-rojay-linux.qualcomm.com ([10.206.21.80])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 24 Mar 2021 15:48:40 +0530
-Received: by c-rojay-linux.qualcomm.com (Postfix, from userid 88981)
-        id 210BF3166; Wed, 24 Mar 2021 15:48:39 +0530 (IST)
-From:   Roja Rani Yarubandi <rojay@codeaurora.org>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        gregkh@linuxfoundation.org, mka@chromium.org, robh+dt@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rajendra Nayak <rnayak@codeaurora.org>,
-        akashast@codeaurora.org, msavaliy@qti.qualcomm.com,
-        Roja Rani Yarubandi <rojay@codeaurora.org>,
-        stable@vger.kernel.org
-Subject: [RESEND PATCH V3 1/2] soc: qcom-geni-se: Cleanup the code to remove proxy votes
-Date:   Wed, 24 Mar 2021 15:48:35 +0530
-Message-Id: <20210324101836.25272-2-rojay@codeaurora.org>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20210324101836.25272-1-rojay@codeaurora.org>
-References: <20210324101836.25272-1-rojay@codeaurora.org>
+        Wed, 24 Mar 2021 07:26:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B5FC0613E0
+        for <linux-serial@vger.kernel.org>; Wed, 24 Mar 2021 04:26:31 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lP1ef-0000BZ-4o; Wed, 24 Mar 2021 12:26:29 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lP1ee-0001xW-Ih; Wed, 24 Mar 2021 12:26:28 +0100
+Date:   Wed, 24 Mar 2021 12:26:26 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sam Nobs <samuel.nobs@taitradio.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] serial: imx: drop workaround for forced irq threading
+Message-ID: <20210324112626.iqteqgfbkci3xmvh@pengutronix.de>
+References: <20210322111036.31966-1-johan@kernel.org>
+ <20210322113402.naqzgkoe2xesnw4b@pengutronix.de>
+ <20210322113918.ze52gq54cpsspgej@linutronix.de>
+ <20210322115536.knkea7i6vrfpotol@pengutronix.de>
+ <YFiZuXWYmxPIaQH9@hovoldconsulting.com>
+ <20210322134032.kmirudtnkd4akkgu@pengutronix.de>
+ <YFn9KenzUQl4KPRt@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zi5o6fqsy3kf62o4"
+Content-Disposition: inline
+In-Reply-To: <YFn9KenzUQl4KPRt@hovoldconsulting.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This reverts commit 048eb908a1f2 ("soc: qcom-geni-se: Add interconnect
-support to fix earlycon crash")
 
-ICC core and platforms drivers supports sync_state feature, which
-ensures that the default ICC BW votes from the bootloader is not
-removed until all it's consumers are probes.
+--zi5o6fqsy3kf62o4
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The proxy votes were needed in case other QUP child drivers
-I2C, SPI probes before UART, they can turn off the QUP-CORE clock
-which is shared resources for all QUP driver, this causes unclocked
-access to HW from earlycon.
+Hello Johan,
 
-Given above support from ICC there is no longer need to maintain
-proxy votes on QUP-CORE ICC node from QUP wrapper driver for early
-console usecase, the default votes won't be removed until real
-console is probed.
+On Tue, Mar 23, 2021 at 03:37:29PM +0100, Johan Hovold wrote:
+> On Mon, Mar 22, 2021 at 02:40:32PM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Mon, Mar 22, 2021 at 02:20:57PM +0100, Johan Hovold wrote:
+> > > On Mon, Mar 22, 2021 at 12:55:36PM +0100, Uwe Kleine-K=F6nig wrote:
+> > > > On Mon, Mar 22, 2021 at 12:39:18PM +0100, Sebastian Andrzej Siewior=
+ wrote:
+> > > > > On 2021-03-22 12:34:02 [+0100], Uwe Kleine-K=F6nig wrote:
+> > > > > > On Mon, Mar 22, 2021 at 12:10:36PM +0100, Johan Hovold wrote:
+> > > > > > > Force-threaded interrupt handlers used to run with interrupts=
+ enabled,
+> > > > > > > something which could lead to deadlocks in case a threaded ha=
+ndler
+> > > > > > > shared a lock with code running in hard interrupt context (e.=
+g. timer
+> > > > > > > callbacks) and did not explicitly disable interrupts.
+> > > > > > >=20
+> > > > > > > This was specifically the case for serial drivers that take t=
+he port
+> > > > > > > lock in their console write path as printk can be called from=
+ hard
+> > > > > > > interrupt context also with forced threading ("threadirqs").
+> > > > > > >=20
+> > > > > > > Since commit 81e2073c175b ("genirq: Disable interrupts for fo=
+rce
+> > > > > > > threaded handlers") interrupt handlers always run with interr=
+upts
+> > > > > > > disabled on non-RT so that drivers no longer need to do handl=
+e this.
+> > > > > >=20
+> > > > > > So we're breaking RT knowingly here? If this is the case I'm no=
+t happy
+> > > > > > with your change. (And if RT is not affected a different wordin=
+g would
+> > > > > > be good.)
+> > > > >=20
+> > > > > Which wording, could you be more specific? It looks good from her=
+e and
+> > > > > no, RT is not affected.
+> > > >=20
+> > > > The commit log says essentially: "The change is fine on non-RT" whi=
+ch
+> > > > suggests there is a problem on RT.
+> > >=20
+> > > I don't think you can read that into the commit message.
+> >=20
+> > From a strictly logically point of view you indeed cannot. But if you go
+> > to the street and say to people there that they can park their car in
+> > this street free of charge between Monday and Friday, I expect that most
+> > of them will assume that they have to pay for parking on weekends.
+>=20
+> That analogy would almost seem to suggest bad intent on my side.
 
-Cc: stable@vger.kernel.org
-Fixes: 266cd33b5913 ("interconnect: qcom: Ensure that the floor bandwidth value is enforced")
-Fixes: 7d3b0b0d8184 ("interconnect: qcom: Use icc_sync_state")
-Signed-off-by: Roja Rani Yarubandi <rojay@codeaurora.org>
-Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
----
-Changes in V3:
- - As per Matthias comments, updated commit text with adding
-   icc sync_state and geni icc earlycon commits info
+That analogy's purpose was to put over my point that writing
+(paraphrased) "Since non-RT changed, this workaround isn't necessary any
+more" suggests to me that the change might be bad for RT. So again,
+there was no harm intended, this is just a call for clearing up either
+the commit log to make it obvious the change is right or to fix the
+problem on RT if there is any.
 
-Changes in V2:
- - No change
+> To say that this workaround is no longer needed on !RT does not imply
+> that it is needed on RT. If anything it suggests I have considered RT,
+> I'd say.
 
- drivers/soc/qcom/qcom-geni-se.c       | 74 ---------------------------
- drivers/tty/serial/qcom_geni_serial.c |  7 ---
- include/linux/qcom-geni-se.h          |  2 -
- 3 files changed, 83 deletions(-)
+The code in question was used for both RT and non-RT. You drop it for
+both cases and only justify one of them. OK, fine, you considered both
+cases. Just from reading the commit log I considered you didn't. It's
+completely ok for me to be wrong here, but I still think the chosen
+words are not optimal and stumbling as I did is easy. So I still see a
+potential to improve the wording.
 
-diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-index c7c03ccfe888..5bdfb1565c14 100644
---- a/drivers/soc/qcom/qcom-geni-se.c
-+++ b/drivers/soc/qcom/qcom-geni-se.c
-@@ -3,7 +3,6 @@
- 
- #include <linux/acpi.h>
- #include <linux/clk.h>
--#include <linux/console.h>
- #include <linux/slab.h>
- #include <linux/dma-mapping.h>
- #include <linux/io.h>
-@@ -92,14 +91,11 @@ struct geni_wrapper {
- 	struct device *dev;
- 	void __iomem *base;
- 	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
--	struct geni_icc_path to_core;
- };
- 
- static const char * const icc_path_names[] = {"qup-core", "qup-config",
- 						"qup-memory"};
- 
--static struct geni_wrapper *earlycon_wrapper;
--
- #define QUP_HW_VER_REG			0x4
- 
- /* Common SE registers */
-@@ -846,44 +842,11 @@ int geni_icc_disable(struct geni_se *se)
- }
- EXPORT_SYMBOL(geni_icc_disable);
- 
--void geni_remove_earlycon_icc_vote(void)
--{
--	struct platform_device *pdev;
--	struct geni_wrapper *wrapper;
--	struct device_node *parent;
--	struct device_node *child;
--
--	if (!earlycon_wrapper)
--		return;
--
--	wrapper = earlycon_wrapper;
--	parent = of_get_next_parent(wrapper->dev->of_node);
--	for_each_child_of_node(parent, child) {
--		if (!of_device_is_compatible(child, "qcom,geni-se-qup"))
--			continue;
--
--		pdev = of_find_device_by_node(child);
--		if (!pdev)
--			continue;
--
--		wrapper = platform_get_drvdata(pdev);
--		icc_put(wrapper->to_core.path);
--		wrapper->to_core.path = NULL;
--
--	}
--	of_node_put(parent);
--
--	earlycon_wrapper = NULL;
--}
--EXPORT_SYMBOL(geni_remove_earlycon_icc_vote);
--
- static int geni_se_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct resource *res;
- 	struct geni_wrapper *wrapper;
--	struct console __maybe_unused *bcon;
--	bool __maybe_unused has_earlycon = false;
- 	int ret;
- 
- 	wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
-@@ -906,43 +869,6 @@ static int geni_se_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--#ifdef CONFIG_SERIAL_EARLYCON
--	for_each_console(bcon) {
--		if (!strcmp(bcon->name, "qcom_geni")) {
--			has_earlycon = true;
--			break;
--		}
--	}
--	if (!has_earlycon)
--		goto exit;
--
--	wrapper->to_core.path = devm_of_icc_get(dev, "qup-core");
--	if (IS_ERR(wrapper->to_core.path))
--		return PTR_ERR(wrapper->to_core.path);
--	/*
--	 * Put minmal BW request on core clocks on behalf of early console.
--	 * The vote will be removed earlycon exit function.
--	 *
--	 * Note: We are putting vote on each QUP wrapper instead only to which
--	 * earlycon is connected because QUP core clock of different wrapper
--	 * share same voltage domain. If core1 is put to 0, then core2 will
--	 * also run at 0, if not voted. Default ICC vote will be removed ASA
--	 * we touch any of the core clock.
--	 * core1 = core2 = max(core1, core2)
--	 */
--	ret = icc_set_bw(wrapper->to_core.path, GENI_DEFAULT_BW,
--				GENI_DEFAULT_BW);
--	if (ret) {
--		dev_err(&pdev->dev, "%s: ICC BW voting failed for core: %d\n",
--			__func__, ret);
--		return ret;
--	}
--
--	if (of_get_compatible_child(pdev->dev.of_node, "qcom,geni-debug-uart"))
--		earlycon_wrapper = wrapper;
--	of_node_put(pdev->dev.of_node);
--exit:
--#endif
- 	dev_set_drvdata(dev, wrapper);
- 	dev_dbg(dev, "GENI SE Driver probed\n");
- 	return devm_of_platform_populate(dev);
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 3872bbfac24b..99375d99f6fa 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1177,12 +1177,6 @@ static inline void qcom_geni_serial_enable_early_read(struct geni_se *se,
- 						      struct console *con) { }
- #endif
- 
--static int qcom_geni_serial_earlycon_exit(struct console *con)
--{
--	geni_remove_earlycon_icc_vote();
--	return 0;
--}
--
- static struct qcom_geni_private_data earlycon_private_data;
- 
- static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
-@@ -1233,7 +1227,6 @@ static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
- 	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
- 
- 	dev->con->write = qcom_geni_serial_earlycon_write;
--	dev->con->exit = qcom_geni_serial_earlycon_exit;
- 	dev->con->setup = NULL;
- 	qcom_geni_serial_enable_early_read(&se, dev->con);
- 
-diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
-index cddef864a760..7c811eebcaab 100644
---- a/include/linux/qcom-geni-se.h
-+++ b/include/linux/qcom-geni-se.h
-@@ -458,7 +458,5 @@ void geni_icc_set_tag(struct geni_se *se, u32 tag);
- int geni_icc_enable(struct geni_se *se);
- 
- int geni_icc_disable(struct geni_se *se);
--
--void geni_remove_earlycon_icc_vote(void);
- #endif
- #endif
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+Best regards
+Uwe
 
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--zi5o6fqsy3kf62o4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmBbId8ACgkQwfwUeK3K
+7AmrPQf/ddQwQ54O9l7xV1/XHw8vOIwucKKyjYQahAx40PXG3l82aSNYFbEm2naq
+Skuiv/ZUYkuFgJplG45b5lSQCplanZ29bpfJJA6umGqNLU26U77BbscwG6Rw6DC0
+uJ6764kmQcQXgp9gn8+IAZUlmVw4FReNdvJcLqKgsU2Q1XUyoUAbLW8cF5Ijqliq
+5KvWHZcVw6srh3zGo1YYDqIWEfnyB/y18tcSrD5ywaGS6heFxJXNOeucvm2IxDZQ
+0dNLzqJuruItdbPN1foj3zaZwSQozrqhXkn81z0XG4H02ub7lkYPNjG9PE3095EI
+hkuQ8I5b5VWjg5BwyMY5QjbhtjSeOA==
+=Tj6B
+-----END PGP SIGNATURE-----
+
+--zi5o6fqsy3kf62o4--
