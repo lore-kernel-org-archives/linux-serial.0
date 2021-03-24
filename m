@@ -2,96 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6FBC433E2
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 06:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 256DCC433E2
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 10:13:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2AA5D619C7
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 06:06:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DEA9F61A02
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 10:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235469AbhCXGFZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Mar 2021 02:05:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41836 "EHLO mail.kernel.org"
+        id S230226AbhCXKNQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Mar 2021 06:13:16 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:59806 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235450AbhCXGEz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Mar 2021 02:04:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BB269619C7;
-        Wed, 24 Mar 2021 06:04:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1616565895;
-        bh=XWHDoRNo/SbiDhxBhdCWg2aKWnxSmfL5zY03GlP5ZxQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aL26xrzyOX/byfnAUGEzC0khZ8pV2Pmhubr52R7D4iN5/riQNlIlmmO0EtB4b4D+Z
-         KtGBb7v6UsNqDWxFiIQ7jwMBpGdLKbj5E10kXlqAi0uIi0cr7kZg28cf90LgjpTgUF
-         CTMuWxzmO64LimiomsYTCU8sZA6CLyWMA4+FsfHA=
-Date:   Wed, 24 Mar 2021 07:04:14 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Alex Nemirovsky <Alex.Nemirovsky@cortina-access.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Jason Li <jason.li@cortina-access.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH 1/3] tty: serial: Add UART driver for Cortina-Access
- platform
-Message-ID: <YFrWXtYKnBCYMnYd@kroah.com>
-References: <1613702532-5096-1-git-send-email-alex.nemirovsky@cortina-access.com>
- <YFmzax3pWFNtFbn9@kroah.com>
- <04208957-55F9-47E8-A20A-4DEB2A35040E@cortina-access.com>
+        id S230248AbhCXKNJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 24 Mar 2021 06:13:09 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1616580789; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=RxPQ2SCXm0Yyf3sq158CfktDz0qwmc95Gr0XfsQbDJg=;
+ b=gy5El54oN/h7LeVOX5qxyblvsdheFHfwGRvLksjWm4bRXNozoM2b7eu+SFJgBGCfKqMrXC+B
+ gcxHiaP9u2trWMrAPhqIQofBvdtvejR7WdCyznWpNsgZmB7uBK7dLAdgF7zRVHKW2Wlz9f2P
+ 15FH6V9ETUD/KcpyjmK3fp0Zc8Q=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 605b10a05d70193f882f9a39 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 24 Mar 2021 10:12:48
+ GMT
+Sender: rojay=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B1997C43465; Wed, 24 Mar 2021 10:12:47 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: rojay)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D2D18C433ED;
+        Wed, 24 Mar 2021 10:12:46 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <04208957-55F9-47E8-A20A-4DEB2A35040E@cortina-access.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 24 Mar 2021 15:42:46 +0530
+From:   rojay@codeaurora.org
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, mka@chromium.org,
+        robh+dt@kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        akashast@codeaurora.org, msavaliy@qti.qualcomm.com
+Subject: Re: [PATCH V3 1/2] soc: qcom-geni-se: Cleanup the code to remove
+ proxy votes
+In-Reply-To: <YFm1Qvo3SuwJOino@kroah.com>
+References: <20210322110429.14950-1-rojay@codeaurora.org>
+ <20210322110429.14950-2-rojay@codeaurora.org> <YFm1Qvo3SuwJOino@kroah.com>
+Message-ID: <f61210c135fdaa742cc4abdfcdebd8ab@codeaurora.org>
+X-Sender: rojay@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 07:28:51PM +0000, Alex Nemirovsky wrote:
+On 2021-03-23 15:00, Greg KH wrote:
+> On Mon, Mar 22, 2021 at 04:34:28PM +0530, Roja Rani Yarubandi wrote:
+>> This reverts commit 048eb908a1f2 ("soc: qcom-geni-se: Add interconnect
+>> support to fix earlycon crash")
+>> 
+>> ICC core and platforms drivers supports sync_state feature with
+>> commit 7d3b0b0d8184 ("interconnect: qcom: Use icc_sync_state") which
+>> ensures that the default ICC BW votes from the bootloader is not
+>> removed until all it's consumers are probes.
+>> 
+>> The proxy votes were needed in case other QUP child drivers
+>> I2C, SPI probes before UART, they can turn off the QUP-CORE clock
+>> which is shared resources for all QUP driver, this causes unclocked
+>> access to HW from earlycon.
+>> 
+>> Given above support from ICC there is no longer need to maintain
+>> proxy votes on QUP-CORE ICC node from QUP wrapper driver for early
+>> console usecase, the default votes won't be removed until real
+>> console is probed.
+>> 
+>> Signed-off-by: Roja Rani Yarubandi <rojay@codeaurora.org>
+>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 > 
+> Should this have a "Fixes:" tag, and also be cc: stable@vger.kernel.org
+> so that it will be properly backported?
 > 
-> > On Mar 23, 2021, at 2:22 AM, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> > 
-> > On Thu, Feb 18, 2021 at 06:42:09PM -0800, Alex Nemirovsky wrote:
-> >> From: Jason Li <jason.li@cortina-access.com>
-> >> 
-> >> This driver supports Cortina Access UART IP integrated
-> >> in most all CAXXXX line of SoCs. Earlycom is also supported
-> >> 
-> >> Signed-off-by: Jason Li <jason.li@cortina-access.com>
-> >> Reviewed-by: Alex Nemirovsky <alex.nemirovsky@cortina-access.com>
-> >> ---
-> >> MAINTAINERS                                |   5 +
-> >> drivers/tty/serial/Kconfig                 |  19 +
-> >> drivers/tty/serial/Makefile                |   1 +
-> >> drivers/tty/serial/serial_cortina-access.c | 798 +++++++++++++++++++++++++++++
-> >> include/uapi/linux/serial_core.h           |   3 +
-> >> 5 files changed, 826 insertions(+)
-> >> create mode 100644 drivers/tty/serial/serial_cortina-access.c
-> >> 
-> >> Change log
-> >>  drivers/tty/serial/serial_cortina-access.c
-> >>   v3:
-> >>    - Remove usage of uintptr_t. Change to pointer to driver's private
-> >>      structure instead.
-> > 
-> > Is this really a "v3"?  The subject lines do not show that, so I'm
-> > totally confused as to what to review and what has been reviewed here.
-> > 
-> > Please fix this up and submit a "v4" so we know what is going on :)
+> If so, please add and resend.
 > 
-> Could you recommend a method or a tool to update the commit subject id with a version prefix?
-> Currently we are doing a git format-patch and the subject line is automatically created without a 
-> version number. Do you just go in manual and edit the resulting patch contents file or do you use a 
-> tool to assist in this?
 
-This is only 3 patches, they are easy to edit by hand...  :)
+Okay, will add and resend.
 
-Anyway 'git format-patch' can do this automatically for you if you want,
-see the -v or --reroll-count option.
-
-thanks,
-
-greg k-h
+> thanks,
+> 
+> greg k-h
