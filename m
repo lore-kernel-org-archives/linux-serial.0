@@ -2,82 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D936C433DB
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Mar 2021 22:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C10C433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 01:10:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 037FC619D7
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Mar 2021 22:37:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A6F13619E8
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 01:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233972AbhCWWgo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Mar 2021 18:36:44 -0400
-Received: from mail-io1-f41.google.com ([209.85.166.41]:33431 "EHLO
-        mail-io1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233872AbhCWWgW (ORCPT
+        id S230481AbhCXBJv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Mar 2021 21:09:51 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:51064 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230011AbhCXBJc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Mar 2021 18:36:22 -0400
-Received: by mail-io1-f41.google.com with SMTP id n198so19481262iod.0;
-        Tue, 23 Mar 2021 15:36:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=p0AQRDiXloaWL2PE0nIM1QihgCc/0cGpQ0uPyeGQCPo=;
-        b=AgjbaVm+TEN3FNvfwOrZGldZgn32kT1g/vnHahevLOziHsR9lUFfvs8z5ilBn+E8Zi
-         fZppKWL3DOubzQkcUM5Sx5zGWEMxn5qWXocEJLOXUEIhtroCbH623Hj0GML+TsCQeXTM
-         rToxnphEffK5y1sjeqSIg+pU3L1A2PpSFUVm8/Ad/msC1Piva4irXMkt62mtf07OyGe0
-         mCrIqGrr6g2KUDBcy+ly3ev24zW2+F0Hw4deCshDyoe2AaXovC1ERglaCp5DoSqxEJ6z
-         QGNEA31NpHGmSP0OjiB/tGUBrS0ZQp39MvSdvFfav0nc91Re/zQlPzFwS04wokthR1wc
-         BKcA==
-X-Gm-Message-State: AOAM530mEtCIUYvFyfLxDHiQunOfKXBMDFBWa2IqYQg9PlX+qXYahBpF
-        KZSYtaMxAt1yHM3QqP0BNw==
-X-Google-Smtp-Source: ABdhPJwsO6YFlFxo0TnTUC3c8fMtA5YZQ8QSiPKwPCESl/WBQSchQHb8uEp4YGks2fMqb6I09kfYvA==
-X-Received: by 2002:a05:6638:210d:: with SMTP id n13mr251740jaj.74.1616538980727;
-        Tue, 23 Mar 2021 15:36:20 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id r5sm100681ilb.75.2021.03.23.15.36.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 15:36:19 -0700 (PDT)
-Received: (nullmailer pid 1472420 invoked by uid 1000);
-        Tue, 23 Mar 2021 22:36:17 -0000
-Date:   Tue, 23 Mar 2021 16:36:17 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Al Cooper <alcooperx@gmail.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
+        Tue, 23 Mar 2021 21:09:32 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 3E6581C0B7D; Wed, 24 Mar 2021 02:09:29 +0100 (CET)
+Date:   Wed, 24 Mar 2021 02:09:27 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Rob Herring <robh@kernel.org>, Tony Lindgren <tony@atomide.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v6 1/2] dt-bindings: Add support for the Broadcom UART
- driver
-Message-ID: <20210323223617.GA1472356@robh.at.kernel.org>
-References: <20210318191131.35992-1-alcooperx@gmail.com>
- <20210318191131.35992-2-alcooperx@gmail.com>
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCH 3/6] dt-bindings: serdev: ngsm: Add binding for GNSS
+ child node
+Message-ID: <20210324010927.GA12937@amd>
+References: <20200512214713.40501-1-tony@atomide.com>
+ <20200512214713.40501-4-tony@atomide.com>
+ <20200527192817.GA2587830@bogus>
+ <20200528095151.GE10358@localhost>
+ <20210305104635.GA16695@duo.ucw.cz>
+ <YEINdpPgud99a7qm@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
 Content-Disposition: inline
-In-Reply-To: <20210318191131.35992-2-alcooperx@gmail.com>
+In-Reply-To: <YEINdpPgud99a7qm@hovoldconsulting.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 18 Mar 2021 15:11:30 -0400, Al Cooper wrote:
-> Add DT bindings for the Broadcom 8250 based UART driver. This
-> UART is based on an 8250 but adds additional functionality. The
-> additional features include the ability to use DMA for transfers and
-> a baud rate clock system that is more accurate at high baud rates.
-> This UART is backward compatible with the standard 8250 UART.
-> 
-> Signed-off-by: Al Cooper <alcooperx@gmail.com>
-> ---
->  .../bindings/serial/brcm,bcm7271-uart.yaml    | 95 +++++++++++++++++++
->  1 file changed, 95 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml
-> 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+--gBBFr7Ir9EOA20Yy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+
+On Fri 2021-03-05 11:52:38, Johan Hovold wrote:
+> On Fri, Mar 05, 2021 at 11:46:35AM +0100, Pavel Machek wrote:
+> > Hi!
+> >=20
+> > > > > For motorola modem case, we may have a GNSS device on channel 4.
+> > > > > Let's add that to the binding and example.
+> > > > >=20
+> > > > > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> > > > > ---
+> > > > >  .../devicetree/bindings/serdev/serdev-ngsm.yaml          | 9 +++=
+++++++
+> > > > >  1 file changed, 9 insertions(+)
+> >=20
+> > >=20
+> > > And since we're describing a mux, I think you need nodes for the virt=
+ual
+> > > ports rather than a reg property in what should be a serial client. T=
+hat
+> > > is something like
+> > >=20
+> > > 	serial@nnn {
+> > > 		modem {
+> > > 			compatible =3D "etsi,ts27001-mux";
+> > >=20
+> > > 			serial@4 {
+> > > 				compatible =3D "etsi,ts27001-serial";
+> > > 				reg =3D <4>;
+> > >=20
+> > > 				gnss {
+> > > 					compatible =3D "motorola,motmdm-gnss";
+> > > 				};
+> > > 			};
+> > > 		};
+> > > 	};
+> > >=20
+> > > This way you can actually use serdev for the client drivers (e.g. for
+> > > gnss), and those drivers also be used for non-muxed ports if needed
+> > > (e.g. over USB).
+> >=20
+> > I have done changes you requested, and then hit "serdev is busy
+> > because it can have at most one child" limit in the code. You have
+> > pretty clean driver in your inbox, and no reply. No help with serdev
+> > core limitations, either. Can you start to communicate?
+>=20
+> It's on my list, but time is limited.
+
+Everyone's time is limited. Do you have any time estimates?
+								Pavel
+
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--gBBFr7Ir9EOA20Yy
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAmBakUcACgkQMOfwapXb+vKILgCguk02XmGCGT45kaSLl4YMEI8t
+Pg8Anj3W57z1I+Jd1ss9/yNRWNRJKPwT
+=lAtf
+-----END PGP SIGNATURE-----
+
+--gBBFr7Ir9EOA20Yy--
