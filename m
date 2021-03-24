@@ -2,177 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 747EFC433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 11:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 189FDC433E2
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 15:33:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 51DF3619F3
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 11:30:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E3DD8619FF
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 15:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbhCXLaW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Mar 2021 07:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39152 "EHLO
+        id S236633AbhCXPch (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Mar 2021 11:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231159AbhCXLaO (ORCPT
+        with ESMTP id S236749AbhCXPcO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Mar 2021 07:30:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DD8C0613DE
-        for <linux-serial@vger.kernel.org>; Wed, 24 Mar 2021 04:30:14 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lP1iD-0000Qo-QT; Wed, 24 Mar 2021 12:30:09 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lP1iD-00024C-G0; Wed, 24 Mar 2021 12:30:09 +0100
-Date:   Wed, 24 Mar 2021 12:30:06 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     kernel@pengutronix.de, Peter Zijlstra <peterz@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sam Nobs <samuel.nobs@taitradio.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] serial: imx: drop workaround for forced irq threading
-Message-ID: <20210324113006.3zerxrp73fkzvakf@pengutronix.de>
-References: <20210322111036.31966-1-johan@kernel.org>
- <20210322113402.naqzgkoe2xesnw4b@pengutronix.de>
- <20210322113918.ze52gq54cpsspgej@linutronix.de>
- <20210322115536.knkea7i6vrfpotol@pengutronix.de>
- <YFiZuXWYmxPIaQH9@hovoldconsulting.com>
- <20210322134032.kmirudtnkd4akkgu@pengutronix.de>
- <20210322204836.i4ksobvp6hxl5owh@linutronix.de>
- <20210323073447.r3utxintt5c3blb4@pengutronix.de>
- <20210323090413.ogeweygw3iejtbsv@linutronix.de>
+        Wed, 24 Mar 2021 11:32:14 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2416DC0613E0
+        for <linux-serial@vger.kernel.org>; Wed, 24 Mar 2021 08:32:14 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id x126so17575901pfc.13
+        for <linux-serial@vger.kernel.org>; Wed, 24 Mar 2021 08:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YcW87acVyCevsLYCFMKgehtQqDm5U3c2xzC9Z00X15I=;
+        b=a2kyaJgLYGtbfIdh2qJGaNstsr6ycsHaTmr0CsuJvbR72Mm9wByfcK0CR+hbbtonVG
+         JxJl7hklsIg0XgUHiqTfIlAmr46jlofEDKswmoMOpzrKPaZtE8gTksTDEZE8EcuXYjT3
+         0ihKT8Cv565Hm7WIhOpI+QM2tuZOWrSzWyKaM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YcW87acVyCevsLYCFMKgehtQqDm5U3c2xzC9Z00X15I=;
+        b=crPr/b/FSnkBtL8TKOC/Usou3lVa9yBAfVWy4Gxu3drUIhHN1ZK99oWr77HV6FC1vy
+         CTHM62FDugLJzS9ZDndhtF2DeOiFSdPLnooa9kjRN2mXFgPKOuA167XNQrE3uaUMPxMx
+         3Far6F27e7Ey6DK7hdE1hTrTUlXRhAN/6fZqsqDsbxvuL+gABEQgw5diY965kSkNi4nM
+         Y5uVPNY8zsLiZcO35K/nnFfXBO7bhowVawzHPBCt4hnm+7KX5Psgxme33b/JwDhPV7Ca
+         Au4+sU7i/8iLy8srphDgt12yo2vLiYCkRc6ZCzuzgLv8F+dHWTBTYBgqyO2s034Z8A2r
+         ciDA==
+X-Gm-Message-State: AOAM530KVGQ+tw3SmG/KWbI41/94YhcGzObtXy4rLNUarf49+v1EzWGr
+        6TV/gs1xUnM43THqyf6MGnbmOOVc53TuZg==
+X-Google-Smtp-Source: ABdhPJw7ogBm7aBfyhcGbnc6qkVwN1kYQ6sWSFyzU3B4OZ9xwcf9DO1ZwNsFL288NPcUFZqvWwWxxQ==
+X-Received: by 2002:a63:4d0:: with SMTP id 199mr3615699pge.304.1616599933630;
+        Wed, 24 Mar 2021 08:32:13 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:40a3:9725:46c3:85f6])
+        by smtp.gmail.com with UTF8SMTPSA id g22sm2938593pju.30.2021.03.24.08.32.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Mar 2021 08:32:13 -0700 (PDT)
+Date:   Wed, 24 Mar 2021 08:32:10 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Roja Rani Yarubandi <rojay@codeaurora.org>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        akashast@codeaurora.org, msavaliy@qti.qualcomm.com,
+        stable@vger.kernel.org
+Subject: Re: [RESEND PATCH V3 1/2] soc: qcom-geni-se: Cleanup the code to
+ remove proxy votes
+Message-ID: <YFtbeqc1q2BKsf2e@google.com>
+References: <20210324101836.25272-1-rojay@codeaurora.org>
+ <20210324101836.25272-2-rojay@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gvqvn6hs6msar5bv"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210323090413.ogeweygw3iejtbsv@linutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20210324101836.25272-2-rojay@codeaurora.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Wed, Mar 24, 2021 at 03:48:35PM +0530, Roja Rani Yarubandi wrote:
+> This reverts commit 048eb908a1f2 ("soc: qcom-geni-se: Add interconnect
+> support to fix earlycon crash")
+> 
+> ICC core and platforms drivers supports sync_state feature, which
+> ensures that the default ICC BW votes from the bootloader is not
+> removed until all it's consumers are probes.
+> 
+> The proxy votes were needed in case other QUP child drivers
+> I2C, SPI probes before UART, they can turn off the QUP-CORE clock
+> which is shared resources for all QUP driver, this causes unclocked
+> access to HW from earlycon.
+> 
+> Given above support from ICC there is no longer need to maintain
+> proxy votes on QUP-CORE ICC node from QUP wrapper driver for early
+> console usecase, the default votes won't be removed until real
+> console is probed.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 266cd33b5913 ("interconnect: qcom: Ensure that the floor bandwidth value is enforced")
+> Fixes: 7d3b0b0d8184 ("interconnect: qcom: Use icc_sync_state")
 
---gvqvn6hs6msar5bv
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Neither of these commits introduced an issue that is fixed by this
+patch, rather this patch relies on these commits to not (re-)introduce
+an issue.
 
-Hello Sebastian,
-
-On Tue, Mar 23, 2021 at 10:04:13AM +0100, Sebastian Andrzej Siewior wrote:
-> On 2021-03-23 08:34:47 [+0100], Uwe Kleine-K=C3=B6nig wrote:
-> > On Mon, Mar 22, 2021 at 09:48:36PM +0100, Sebastian Andrzej Siewior wro=
-te:
-> > > On 2021-03-22 14:40:32 [+0100], Uwe Kleine-K=C3=B6nig wrote:
-> > > > From a strictly logically point of view you indeed cannot. But if y=
-ou go
-> > > > to the street and say to people there that they can park their car =
-in
-> > > > this street free of charge between Monday and Friday, I expect that=
- most
-> > > > of them will assume that they have to pay for parking on weekends.
-> > >=20
-> > > Uwe, the patch reverts a change which was needed for !RT + threadirqs.
-> >=20
-> > This would be a useful information for the commit log.
-> >=20
-> > > The commit message claims that since the referenced commit "=E2=80=A6=
- interrupt
-> > > handlers always run with interrupts disabled on non-RT=E2=80=A6 ". Th=
-is has
-> > > nothing to do with _this_ change. It argues why the workaround is not
-> > > needed.
-> >=20
-> > It argues why the work around is not needed on non-RT. It might be
-> > obvious for someone who is firm in the RT concepts, but IMHO commit logs
-> > should be understandable by and make sense for a wider audience than the
-> > deep experts. From what I know about RT "Force-threaded interrupt
-> > handlers used to run with interrupts enabled" still applies there.
->=20
-> Yes. The commit Johan referenced explains it in more detail.
-
-In my book the commit log should be understandable without reading the
-referenced commits.
-
-> > > If the referenced commit breaks RT then this is another story.
-> >=20
-> > I'm surprised to hear that from you. With the goal to get RT into
-> > mainline I would expect you to be happy if people consider the effects
-> > on RT in their reviews.
->=20
-> Correct, I do and I am glad if people consider other aspects of the
-> kernel in their review including RT.
->=20
-> > > > So when you said that on on-RT the reason why it used to need a
-> > > > workaround is gone made me wonder what that implies for RT.
-> > >=20
-> > > There was never reason (or a lockdep splat) for it on RT. If so you
-> > > should have seen it, right?
-> >=20
-> > No, I don't consider myself to be an RT expert who is aware of all the
-> > problems. So I admit that for me the effect on RT of the patch under
-> > discussion isn't obvious. I just wonder that the change is justified
-> > with being OK on non-RT. So it's either bad that it breaks RT *or*
-> > improving the commit log would be great.
-> >=20
-> > And even if I had reason to believe that there is no problem with the
-> > commit on RT, I'd still wish that the commit log wouldn't suggest to the
-> > casual reader that there might be a problem.
->=20
-> Okay. I added a sentence. What about this rewording:
->=20
->   Force-threaded interrupt handlers used to run with interrupts enabled,
->   something which could lead to deadlocks in case a threaded handler
->   shared a lock with code running in hard interrupt context (e.g. timer
->   callbacks) and did not explicitly disable interrupts. =20
->  =20
->   This was specifically the case for serial drivers that take the port
->   lock in their console write path as printk can be called from hard
->   interrupt context also with forced threading ("threadirqs").
->  =20
->   Since commit 81e2073c175b ("genirq: Disable interrupts for force
->   threaded handlers") interrupt handlers always run with interrupts
->   disabled on non-RT so that drivers no longer need to do handle this.
->   RT is not affected by the referenced commit and the workaround, that is
->   reverted, was not required because spinlock_t must not be acquired on
->   RT in hardirq context.
->  =20
->   Drop the now obsolete workaround added by commit 33f16855dcb9 ("tty:
->   serial: imx: fix potential deadlock").
-
-This resolves my concerns. Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
-   |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---gvqvn6hs6msar5bv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmBbIrsACgkQwfwUeK3K
-7AnmRwf/fhrKa9qA0/qKMWdyyCUDqoV8EraIoueqQCqWElB20L0rcTS7n3VHD5xr
-r19DzPNa9j1u8gJIaxsXhcKCYClAbmjT7nb03rnMkDT+jy4OHro7kiToCrWLKU9A
-/0qqNLHeWltpb0AA38tpnkx1MYVirb0ky5eM1w9Y+B3cXYcBgsZUTszfmRfrmd7L
-BehGLiJqUqk4adtshACMF0WLBXw04Q6uqTEq54Mz5o9t94YZhj3aYWbmroZbJbH/
-7BhHcEZeJ3j5cHk6hcdoFQc090elG+buZ/a/FdWTZX0U1hsbDMZ4zEHFc1w+neeY
-5BpDWK/JTZu7yOvMqRGTg9DQc7iWdg==
-=hJOT
------END PGP SIGNATURE-----
-
---gvqvn6hs6msar5bv--
+I don't think a 'Fixes' tag is needed for this patch. If anything it
+fixes the same issue as commit 048eb908a1f2 ("soc: qcom-geni-se:
+Add interconnect support to fix earlycon crash"), which doesn't
+have such a tag.
