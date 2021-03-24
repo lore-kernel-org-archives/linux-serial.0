@@ -6,53 +6,55 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6E8C433DB
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 11:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 747EFC433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 11:30:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D07ED619D5
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 11:27:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 51DF3619F3
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 11:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbhCXL1L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Mar 2021 07:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38358 "EHLO
+        id S230105AbhCXLaW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Mar 2021 07:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235923AbhCXL0h (ORCPT
+        with ESMTP id S231159AbhCXLaO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Mar 2021 07:26:37 -0400
+        Wed, 24 Mar 2021 07:30:14 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B5FC0613E0
-        for <linux-serial@vger.kernel.org>; Wed, 24 Mar 2021 04:26:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DD8C0613DE
+        for <linux-serial@vger.kernel.org>; Wed, 24 Mar 2021 04:30:14 -0700 (PDT)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lP1ef-0000BZ-4o; Wed, 24 Mar 2021 12:26:29 +0100
+        id 1lP1iD-0000Qo-QT; Wed, 24 Mar 2021 12:30:09 +0100
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lP1ee-0001xW-Ih; Wed, 24 Mar 2021 12:26:28 +0100
-Date:   Wed, 24 Mar 2021 12:26:26 +0100
+        id 1lP1iD-00024C-G0; Wed, 24 Mar 2021 12:30:09 +0100
+Date:   Wed, 24 Mar 2021 12:30:06 +0100
 From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     kernel@pengutronix.de, Peter Zijlstra <peterz@infradead.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>,
         Sam Nobs <samuel.nobs@taitradio.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [PATCH] serial: imx: drop workaround for forced irq threading
-Message-ID: <20210324112626.iqteqgfbkci3xmvh@pengutronix.de>
+Message-ID: <20210324113006.3zerxrp73fkzvakf@pengutronix.de>
 References: <20210322111036.31966-1-johan@kernel.org>
  <20210322113402.naqzgkoe2xesnw4b@pengutronix.de>
  <20210322113918.ze52gq54cpsspgej@linutronix.de>
  <20210322115536.knkea7i6vrfpotol@pengutronix.de>
  <YFiZuXWYmxPIaQH9@hovoldconsulting.com>
  <20210322134032.kmirudtnkd4akkgu@pengutronix.de>
- <YFn9KenzUQl4KPRt@hovoldconsulting.com>
+ <20210322204836.i4ksobvp6hxl5owh@linutronix.de>
+ <20210323073447.r3utxintt5c3blb4@pengutronix.de>
+ <20210323090413.ogeweygw3iejtbsv@linutronix.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zi5o6fqsy3kf62o4"
+        protocol="application/pgp-signature"; boundary="gvqvn6hs6msar5bv"
 Content-Disposition: inline
-In-Reply-To: <YFn9KenzUQl4KPRt@hovoldconsulting.com>
+In-Reply-To: <20210323090413.ogeweygw3iejtbsv@linutronix.de>
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -62,103 +64,115 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---zi5o6fqsy3kf62o4
-Content-Type: text/plain; charset=iso-8859-1
+--gvqvn6hs6msar5bv
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hello Johan,
+Hello Sebastian,
 
-On Tue, Mar 23, 2021 at 03:37:29PM +0100, Johan Hovold wrote:
-> On Mon, Mar 22, 2021 at 02:40:32PM +0100, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Mar 22, 2021 at 02:20:57PM +0100, Johan Hovold wrote:
-> > > On Mon, Mar 22, 2021 at 12:55:36PM +0100, Uwe Kleine-K=F6nig wrote:
-> > > > On Mon, Mar 22, 2021 at 12:39:18PM +0100, Sebastian Andrzej Siewior=
- wrote:
-> > > > > On 2021-03-22 12:34:02 [+0100], Uwe Kleine-K=F6nig wrote:
-> > > > > > On Mon, Mar 22, 2021 at 12:10:36PM +0100, Johan Hovold wrote:
-> > > > > > > Force-threaded interrupt handlers used to run with interrupts=
- enabled,
-> > > > > > > something which could lead to deadlocks in case a threaded ha=
-ndler
-> > > > > > > shared a lock with code running in hard interrupt context (e.=
-g. timer
-> > > > > > > callbacks) and did not explicitly disable interrupts.
-> > > > > > >=20
-> > > > > > > This was specifically the case for serial drivers that take t=
-he port
-> > > > > > > lock in their console write path as printk can be called from=
- hard
-> > > > > > > interrupt context also with forced threading ("threadirqs").
-> > > > > > >=20
-> > > > > > > Since commit 81e2073c175b ("genirq: Disable interrupts for fo=
-rce
-> > > > > > > threaded handlers") interrupt handlers always run with interr=
-upts
-> > > > > > > disabled on non-RT so that drivers no longer need to do handl=
-e this.
-> > > > > >=20
-> > > > > > So we're breaking RT knowingly here? If this is the case I'm no=
-t happy
-> > > > > > with your change. (And if RT is not affected a different wordin=
-g would
-> > > > > > be good.)
-> > > > >=20
-> > > > > Which wording, could you be more specific? It looks good from her=
-e and
-> > > > > no, RT is not affected.
-> > > >=20
-> > > > The commit log says essentially: "The change is fine on non-RT" whi=
-ch
-> > > > suggests there is a problem on RT.
+On Tue, Mar 23, 2021 at 10:04:13AM +0100, Sebastian Andrzej Siewior wrote:
+> On 2021-03-23 08:34:47 [+0100], Uwe Kleine-K=C3=B6nig wrote:
+> > On Mon, Mar 22, 2021 at 09:48:36PM +0100, Sebastian Andrzej Siewior wro=
+te:
+> > > On 2021-03-22 14:40:32 [+0100], Uwe Kleine-K=C3=B6nig wrote:
+> > > > From a strictly logically point of view you indeed cannot. But if y=
+ou go
+> > > > to the street and say to people there that they can park their car =
+in
+> > > > this street free of charge between Monday and Friday, I expect that=
+ most
+> > > > of them will assume that they have to pay for parking on weekends.
 > > >=20
-> > > I don't think you can read that into the commit message.
+> > > Uwe, the patch reverts a change which was needed for !RT + threadirqs.
 > >=20
-> > From a strictly logically point of view you indeed cannot. But if you go
-> > to the street and say to people there that they can park their car in
-> > this street free of charge between Monday and Friday, I expect that most
-> > of them will assume that they have to pay for parking on weekends.
+> > This would be a useful information for the commit log.
+> >=20
+> > > The commit message claims that since the referenced commit "=E2=80=A6=
+ interrupt
+> > > handlers always run with interrupts disabled on non-RT=E2=80=A6 ". Th=
+is has
+> > > nothing to do with _this_ change. It argues why the workaround is not
+> > > needed.
+> >=20
+> > It argues why the work around is not needed on non-RT. It might be
+> > obvious for someone who is firm in the RT concepts, but IMHO commit logs
+> > should be understandable by and make sense for a wider audience than the
+> > deep experts. From what I know about RT "Force-threaded interrupt
+> > handlers used to run with interrupts enabled" still applies there.
 >=20
-> That analogy would almost seem to suggest bad intent on my side.
+> Yes. The commit Johan referenced explains it in more detail.
 
-That analogy's purpose was to put over my point that writing
-(paraphrased) "Since non-RT changed, this workaround isn't necessary any
-more" suggests to me that the change might be bad for RT. So again,
-there was no harm intended, this is just a call for clearing up either
-the commit log to make it obvious the change is right or to fix the
-problem on RT if there is any.
+In my book the commit log should be understandable without reading the
+referenced commits.
 
-> To say that this workaround is no longer needed on !RT does not imply
-> that it is needed on RT. If anything it suggests I have considered RT,
-> I'd say.
+> > > If the referenced commit breaks RT then this is another story.
+> >=20
+> > I'm surprised to hear that from you. With the goal to get RT into
+> > mainline I would expect you to be happy if people consider the effects
+> > on RT in their reviews.
+>=20
+> Correct, I do and I am glad if people consider other aspects of the
+> kernel in their review including RT.
+>=20
+> > > > So when you said that on on-RT the reason why it used to need a
+> > > > workaround is gone made me wonder what that implies for RT.
+> > >=20
+> > > There was never reason (or a lockdep splat) for it on RT. If so you
+> > > should have seen it, right?
+> >=20
+> > No, I don't consider myself to be an RT expert who is aware of all the
+> > problems. So I admit that for me the effect on RT of the patch under
+> > discussion isn't obvious. I just wonder that the change is justified
+> > with being OK on non-RT. So it's either bad that it breaks RT *or*
+> > improving the commit log would be great.
+> >=20
+> > And even if I had reason to believe that there is no problem with the
+> > commit on RT, I'd still wish that the commit log wouldn't suggest to the
+> > casual reader that there might be a problem.
+>=20
+> Okay. I added a sentence. What about this rewording:
+>=20
+>   Force-threaded interrupt handlers used to run with interrupts enabled,
+>   something which could lead to deadlocks in case a threaded handler
+>   shared a lock with code running in hard interrupt context (e.g. timer
+>   callbacks) and did not explicitly disable interrupts. =20
+>  =20
+>   This was specifically the case for serial drivers that take the port
+>   lock in their console write path as printk can be called from hard
+>   interrupt context also with forced threading ("threadirqs").
+>  =20
+>   Since commit 81e2073c175b ("genirq: Disable interrupts for force
+>   threaded handlers") interrupt handlers always run with interrupts
+>   disabled on non-RT so that drivers no longer need to do handle this.
+>   RT is not affected by the referenced commit and the workaround, that is
+>   reverted, was not required because spinlock_t must not be acquired on
+>   RT in hardirq context.
+>  =20
+>   Drop the now obsolete workaround added by commit 33f16855dcb9 ("tty:
+>   serial: imx: fix potential deadlock").
 
-The code in question was used for both RT and non-RT. You drop it for
-both cases and only justify one of them. OK, fine, you considered both
-cases. Just from reading the commit log I considered you didn't. It's
-completely ok for me to be wrong here, but I still think the chosen
-words are not optimal and stumbling as I did is easy. So I still see a
-potential to improve the wording.
-
-Best regards
+This resolves my concerns. Thanks
 Uwe
 
 --=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
+   |
 Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---zi5o6fqsy3kf62o4
+--gvqvn6hs6msar5bv
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmBbId8ACgkQwfwUeK3K
-7AmrPQf/ddQwQ54O9l7xV1/XHw8vOIwucKKyjYQahAx40PXG3l82aSNYFbEm2naq
-Skuiv/ZUYkuFgJplG45b5lSQCplanZ29bpfJJA6umGqNLU26U77BbscwG6Rw6DC0
-uJ6764kmQcQXgp9gn8+IAZUlmVw4FReNdvJcLqKgsU2Q1XUyoUAbLW8cF5Ijqliq
-5KvWHZcVw6srh3zGo1YYDqIWEfnyB/y18tcSrD5ywaGS6heFxJXNOeucvm2IxDZQ
-0dNLzqJuruItdbPN1foj3zaZwSQozrqhXkn81z0XG4H02ub7lkYPNjG9PE3095EI
-hkuQ8I5b5VWjg5BwyMY5QjbhtjSeOA==
-=Tj6B
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmBbIrsACgkQwfwUeK3K
+7AnmRwf/fhrKa9qA0/qKMWdyyCUDqoV8EraIoueqQCqWElB20L0rcTS7n3VHD5xr
+r19DzPNa9j1u8gJIaxsXhcKCYClAbmjT7nb03rnMkDT+jy4OHro7kiToCrWLKU9A
+/0qqNLHeWltpb0AA38tpnkx1MYVirb0ky5eM1w9Y+B3cXYcBgsZUTszfmRfrmd7L
+BehGLiJqUqk4adtshACMF0WLBXw04Q6uqTEq54Mz5o9t94YZhj3aYWbmroZbJbH/
+7BhHcEZeJ3j5cHk6hcdoFQc090elG+buZ/a/FdWTZX0U1hsbDMZ4zEHFc1w+neeY
+5BpDWK/JTZu7yOvMqRGTg9DQc7iWdg==
+=hJOT
 -----END PGP SIGNATURE-----
 
---zi5o6fqsy3kf62o4--
+--gvqvn6hs6msar5bv--
