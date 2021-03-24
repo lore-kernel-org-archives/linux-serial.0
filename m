@@ -2,126 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C10C433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 01:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4314EC433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 06:06:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A6F13619E8
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 01:10:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0E5A6619E4
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Mar 2021 06:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230481AbhCXBJv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Mar 2021 21:09:51 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:51064 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbhCXBJc (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Mar 2021 21:09:32 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 3E6581C0B7D; Wed, 24 Mar 2021 02:09:29 +0100 (CET)
-Date:   Wed, 24 Mar 2021 02:09:27 +0100
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>, Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCH 3/6] dt-bindings: serdev: ngsm: Add binding for GNSS
- child node
-Message-ID: <20210324010927.GA12937@amd>
-References: <20200512214713.40501-1-tony@atomide.com>
- <20200512214713.40501-4-tony@atomide.com>
- <20200527192817.GA2587830@bogus>
- <20200528095151.GE10358@localhost>
- <20210305104635.GA16695@duo.ucw.cz>
- <YEINdpPgud99a7qm@hovoldconsulting.com>
+        id S235461AbhCXGFY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Mar 2021 02:05:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41766 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233315AbhCXGEx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 24 Mar 2021 02:04:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 27C766192B;
+        Wed, 24 Mar 2021 06:04:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1616565892;
+        bh=SOcYlJ+GJCugSLx/8qtddpu6enwjrjm3cFZt5Ul8FhI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZTxuybjbSx2NUQu4w05iqtSncmIBBBLc0ixcGvTUSfsPZRJPcbQ7vWQvUS7+qe8ZW
+         iwOae9e4dDfz3nNWUcGSyJx0BWeMXqpjmqhxGIkA5/aJrqdnx45EXLYYe9jkpa4dhr
+         0nm1RxQAPXt3HNaBJ5kFLmxq+8LUpFjMRLygGeNs=
+Date:   Wed, 24 Mar 2021 07:02:59 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Alex Nemirovsky <Alex.Nemirovsky@cortina-access.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Jason Li <jason.li@cortina-access.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH 1/3] tty: serial: Add UART driver for Cortina-Access
+ platform
+Message-ID: <YFrWE93aJ/XGparI@kroah.com>
+References: <1613702532-5096-1-git-send-email-alex.nemirovsky@cortina-access.com>
+ <YFmzuEfpN7zzKel3@kroah.com>
+ <E0630C1D-AC64-4DB5-9467-EA2F4590EB26@cortina-access.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YEINdpPgud99a7qm@hovoldconsulting.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <E0630C1D-AC64-4DB5-9467-EA2F4590EB26@cortina-access.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, Mar 23, 2021 at 07:25:58PM +0000, Alex Nemirovsky wrote:
+> Hi Greg,
+> 
+> > On Mar 23, 2021, at 2:24 AM, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> > 
+> > On Thu, Feb 18, 2021 at 06:42:09PM -0800, Alex Nemirovsky wrote:
+> >> +static struct cortina_uart_port *cortina_uart_ports;
+> > 
+> > Why is this not a per-device pointer?
+> > 
+> >> +static void __exit cortina_uart_exit(void)
+> >> +{
+> >> +	platform_driver_unregister(&serial_cortina_driver);
+> >> +	uart_unregister_driver(&cortina_uart_driver);
+> >> +	kfree(cortina_uart_ports);
+> > 
+> > Should not need to free this here, it should be tied to the device, not
+> > the driver.
+> 
+> Would it be possible to provide a reference to an example 
+> of a good way to do it.
 
---gBBFr7Ir9EOA20Yy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You have a device-specific data structure, put this information there.
 
+> >> +}
+> >> +
+> >> +module_init(cortina_uart_init);
+> >> +module_exit(cortina_uart_exit);
+> >> +
+> >> +MODULE_AUTHOR("Cortina-Access Inc.");
+> >> +MODULE_DESCRIPTION(" Cortina-Access UART driver");
+> >> +MODULE_LICENSE("GPL");
+> >> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+> >> index 62c2204..1931892 100644
+> >> --- a/include/uapi/linux/serial_core.h
+> >> +++ b/include/uapi/linux/serial_core.h
+> >> @@ -277,4 +277,7 @@
+> >> /* Freescale LINFlexD UART */
+> >> #define PORT_LINFLEXUART	122
+> >> 
+> >> +/* Cortina-Access UART */
+> >> +#define PORT_CORTINA_ACCESS	123
+> > 
+> > Also, no need for this, right?  I would prefer to not add new ids if at
+> > all possible.
+> 
+> Could you explain why these are no longer required and what has 
+> been done in the tty design to make this obsolete?
 
-On Fri 2021-03-05 11:52:38, Johan Hovold wrote:
-> On Fri, Mar 05, 2021 at 11:46:35AM +0100, Pavel Machek wrote:
-> > Hi!
-> >=20
-> > > > > For motorola modem case, we may have a GNSS device on channel 4.
-> > > > > Let's add that to the binding and example.
-> > > > >=20
-> > > > > Signed-off-by: Tony Lindgren <tony@atomide.com>
-> > > > > ---
-> > > > >  .../devicetree/bindings/serdev/serdev-ngsm.yaml          | 9 +++=
-++++++
-> > > > >  1 file changed, 9 insertions(+)
-> >=20
-> > >=20
-> > > And since we're describing a mux, I think you need nodes for the virt=
-ual
-> > > ports rather than a reg property in what should be a serial client. T=
-hat
-> > > is something like
-> > >=20
-> > > 	serial@nnn {
-> > > 		modem {
-> > > 			compatible =3D "etsi,ts27001-mux";
-> > >=20
-> > > 			serial@4 {
-> > > 				compatible =3D "etsi,ts27001-serial";
-> > > 				reg =3D <4>;
-> > >=20
-> > > 				gnss {
-> > > 					compatible =3D "motorola,motmdm-gnss";
-> > > 				};
-> > > 			};
-> > > 		};
-> > > 	};
-> > >=20
-> > > This way you can actually use serdev for the client drivers (e.g. for
-> > > gnss), and those drivers also be used for non-muxed ports if needed
-> > > (e.g. over USB).
-> >=20
-> > I have done changes you requested, and then hit "serdev is busy
-> > because it can have at most one child" limit in the code. You have
-> > pretty clean driver in your inbox, and no reply. No help with serdev
-> > core limitations, either. Can you start to communicate?
->=20
-> It's on my list, but time is limited.
+What do you use in userspace that requires this information to be sent
+from the kernel?
 
-Everyone's time is limited. Do you have any time estimates?
-								Pavel
+thanks,
 
---=20
-http://www.livejournal.com/~pavelmachek
-
---gBBFr7Ir9EOA20Yy
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAmBakUcACgkQMOfwapXb+vKILgCguk02XmGCGT45kaSLl4YMEI8t
-Pg8Anj3W57z1I+Jd1ss9/yNRWNRJKPwT
-=lAtf
------END PGP SIGNATURE-----
-
---gBBFr7Ir9EOA20Yy--
+greg k-h
