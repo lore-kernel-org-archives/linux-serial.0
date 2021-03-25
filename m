@@ -2,35 +2,39 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83ECC433C1
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 14:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE1EC433E2
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 14:50:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B53CA619AE
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 14:09:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 98C0061A2B
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 14:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231235AbhCYOIb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Mar 2021 10:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbhCYOIQ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Mar 2021 10:08:16 -0400
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65091C06174A;
-        Thu, 25 Mar 2021 07:08:08 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 354CF41A6E;
-        Thu, 25 Mar 2021 14:07:42 +0000 (UTC)
-To:     Arnd Bergmann <arnd@kernel.org>, Will Deacon <will@kernel.org>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        id S231162AbhCYOtb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Mar 2021 10:49:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53440 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230078AbhCYOtO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 25 Mar 2021 10:49:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 837F7619F9;
+        Thu, 25 Mar 2021 14:49:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616683753;
+        bh=g2ZlXDmeEeZxEkxEnqAn7onjv8xh5BForWiFk2ex04U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B7AXfE4jFRrobfpRw2FaAYKC6MvyXtU6obWFBYkN0lGwjbQiFaLragEzkHbZItBws
+         QBand/1dIuqMlS8nHo0I+YXxuG4FUSBqCuL4lSjtB1KNR8ZC5A0dHPTgjp6C4Oj477
+         YGYoQaHRwjTqkyAUy9nju41KQckd840sj7rAx2b0qbeWS73PVSRLi5XxftNFChRgBj
+         A74iOhWJ7Z2hED2cBG6LJSpp0VhA5RVDGFxCz/bh5Feg/yMuNLIKAvIJSpdBVn+DEc
+         g38Q/XF19LYytoglY1yJyqNca2iKkNPAL5ceWnMOmYHNen+O1Ivl6iLodMdhA7We0k
+         rrMK1jKks2Uxg==
+Date:   Thu, 25 Mar 2021 14:49:06 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
         Olof Johansson <olof@lixom.net>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -54,62 +58,61 @@ Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
         <linux-samsung-soc@vger.kernel.org>,
         linux-arch <linux-arch@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [RFT PATCH v3 08/27] asm-generic/io.h: Add a non-posted variant
+ of ioremap()
+Message-ID: <20210325144905.GA15109@willie-the-truck>
 References: <20210304213902.83903-1-marcan@marcan.st>
  <20210304213902.83903-9-marcan@marcan.st>
  <20210324181210.GB13181@willie-the-truck>
  <CAK8P3a0913Hs4VfHjdDY1WTAQvMzC83LJcP=9zeE0C-terfBhA@mail.gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-Subject: Re: [RFT PATCH v3 08/27] asm-generic/io.h: Add a non-posted variant
- of ioremap()
-Message-ID: <9e510158-551a-3feb-bdba-17e070f12a8e@marcan.st>
-Date:   Thu, 25 Mar 2021 23:07:40 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ <9e510158-551a-3feb-bdba-17e070f12a8e@marcan.st>
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a0913Hs4VfHjdDY1WTAQvMzC83LJcP=9zeE0C-terfBhA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: es-ES
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9e510158-551a-3feb-bdba-17e070f12a8e@marcan.st>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25/03/2021 04.09, Arnd Bergmann wrote:
-> On Wed, Mar 24, 2021 at 7:12 PM Will Deacon <will@kernel.org> wrote:
->>
->>> +/*
->>> + * ioremap_np needs an explicit architecture implementation, as it
->>> + * requests stronger semantics than regular ioremap(). Portable drivers
->>> + * should instead use one of the higher-level abstractions, like
->>> + * devm_ioremap_resource(), to choose the correct variant for any given
->>> + * device and bus. Portable drivers with a good reason to want non-posted
->>> + * write semantics should always provide an ioremap() fallback in case
->>> + * ioremap_np() is not available.
->>> + */
->>> +#ifndef ioremap_np
->>> +#define ioremap_np ioremap_np
->>> +static inline void __iomem *ioremap_np(phys_addr_t offset, size_t size)
->>> +{
->>> +     return NULL;
->>> +}
->>> +#endif
->>
->> Can we implement the generic pci_remap_cfgspace() in terms of ioremap_np()
->> if it is supported by the architecture? That way, we could avoid defining
->> both on arm64.
+On Thu, Mar 25, 2021 at 11:07:40PM +0900, Hector Martin wrote:
+> On 25/03/2021 04.09, Arnd Bergmann wrote:
+> > On Wed, Mar 24, 2021 at 7:12 PM Will Deacon <will@kernel.org> wrote:
+> > > 
+> > > > +/*
+> > > > + * ioremap_np needs an explicit architecture implementation, as it
+> > > > + * requests stronger semantics than regular ioremap(). Portable drivers
+> > > > + * should instead use one of the higher-level abstractions, like
+> > > > + * devm_ioremap_resource(), to choose the correct variant for any given
+> > > > + * device and bus. Portable drivers with a good reason to want non-posted
+> > > > + * write semantics should always provide an ioremap() fallback in case
+> > > > + * ioremap_np() is not available.
+> > > > + */
+> > > > +#ifndef ioremap_np
+> > > > +#define ioremap_np ioremap_np
+> > > > +static inline void __iomem *ioremap_np(phys_addr_t offset, size_t size)
+> > > > +{
+> > > > +     return NULL;
+> > > > +}
+> > > > +#endif
+> > > 
+> > > Can we implement the generic pci_remap_cfgspace() in terms of ioremap_np()
+> > > if it is supported by the architecture? That way, we could avoid defining
+> > > both on arm64.
+> > 
+> > Good idea. It needs a fallback in case the ioremap_np() fails on most
+> > architectures, but that sounds easy enough.
+> > 
+> > Since pci_remap_cfgspace() only has custom implementations, it sounds like
+> > we can actually make the generic implementation unconditional in the end,
+> > but that requires adding ioremap_np() on 32-bit as well, and I would keep
+> > that separate from this series.
 > 
-> Good idea. It needs a fallback in case the ioremap_np() fails on most
-> architectures, but that sounds easy enough.
-> 
-> Since pci_remap_cfgspace() only has custom implementations, it sounds like
-> we can actually make the generic implementation unconditional in the end,
-> but that requires adding ioremap_np() on 32-bit as well, and I would keep
-> that separate from this series.
+> Sounds good; I'm adding a patch to adjust the generic implementation and
+> remove the arm64 one in v4, and we can then complete the cleanup for other
+> arches later.
 
-Sounds good; I'm adding a patch to adjust the generic implementation and 
-remove the arm64 one in v4, and we can then complete the cleanup for 
-other arches later.
+Cheers. Don't forget to update the comment in the generic code which
+complains about the lack of an ioremap() API for non-posted writes ;)
 
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+Will
