@@ -2,117 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE1EC433E2
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 14:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DA4C433DB
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 15:25:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 98C0061A2B
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 14:50:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 53DA561A41
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 15:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbhCYOtb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Mar 2021 10:49:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53440 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230078AbhCYOtO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Mar 2021 10:49:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 837F7619F9;
-        Thu, 25 Mar 2021 14:49:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616683753;
-        bh=g2ZlXDmeEeZxEkxEnqAn7onjv8xh5BForWiFk2ex04U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B7AXfE4jFRrobfpRw2FaAYKC6MvyXtU6obWFBYkN0lGwjbQiFaLragEzkHbZItBws
-         QBand/1dIuqMlS8nHo0I+YXxuG4FUSBqCuL4lSjtB1KNR8ZC5A0dHPTgjp6C4Oj477
-         YGYoQaHRwjTqkyAUy9nju41KQckd840sj7rAx2b0qbeWS73PVSRLi5XxftNFChRgBj
-         A74iOhWJ7Z2hED2cBG6LJSpp0VhA5RVDGFxCz/bh5Feg/yMuNLIKAvIJSpdBVn+DEc
-         g38Q/XF19LYytoglY1yJyqNca2iKkNPAL5ceWnMOmYHNen+O1Ivl6iLodMdhA7We0k
-         rrMK1jKks2Uxg==
-Date:   Thu, 25 Mar 2021 14:49:06 +0000
-From:   Will Deacon <will@kernel.org>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Tony Lindgren <tony@atomide.com>,
-        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
-        Stan Skowronek <stan@corellium.com>,
-        Alexander Graf <graf@amazon.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFT PATCH v3 08/27] asm-generic/io.h: Add a non-posted variant
- of ioremap()
-Message-ID: <20210325144905.GA15109@willie-the-truck>
-References: <20210304213902.83903-1-marcan@marcan.st>
- <20210304213902.83903-9-marcan@marcan.st>
- <20210324181210.GB13181@willie-the-truck>
- <CAK8P3a0913Hs4VfHjdDY1WTAQvMzC83LJcP=9zeE0C-terfBhA@mail.gmail.com>
- <9e510158-551a-3feb-bdba-17e070f12a8e@marcan.st>
+        id S231296AbhCYPY2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Mar 2021 11:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35042 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230113AbhCYPYT (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 25 Mar 2021 11:24:19 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF07AC06175F
+        for <linux-serial@vger.kernel.org>; Thu, 25 Mar 2021 08:24:18 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id j20-20020a05600c1914b029010f31e15a7fso3334308wmq.1
+        for <linux-serial@vger.kernel.org>; Thu, 25 Mar 2021 08:24:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vjIiCTomysNBHigYUO2F29y2fu9n4K1mpORfU6aQthU=;
+        b=rehPFnP/AkKl027/tuMZ0dZjy9QnfxgtQtJSVXmCLlNHgBtiKGpuIydvjUqstxJ+f1
+         bpbA1vG8+/viUmDHV3RKst1+0+mDVIe/4jSWY4U4MYrK2Rfh5KO1q7ganxzw9cwv3KGz
+         /jEFmNs3PQ5tZnWZ4TwCAH6pjdYFfuFwzaOoMZ2g9A81gu5i+OxYNjp5K/830ylhR7dj
+         F+eGVi3tQ8yTCn1n4pSwJUb4j8lZz0KLWQWim6IEAi8g/gQe4oyA5OHVPOjQCV+vPZDL
+         oFn260UmkLUx1YNj8VIagF9/JVKRYW3a7wzL9tnWV5DwSBuMLdAomP9REXKschZg3V3L
+         nFgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vjIiCTomysNBHigYUO2F29y2fu9n4K1mpORfU6aQthU=;
+        b=ig+frQQgm+Z+QfUs2J0bp4pWakRiof/yxbFvMcrFmYtGUL+2Po7nBk/9uU0dLpi7A3
+         10dsWJfNqXKY4/EJWng1zLi++CrdHxYn3NYH/ZxhgzLFWkJszzeqJJghDZ8JQHKTY0r2
+         LTcKX7AVY5sgwlWgk5svQdz81CpXt9kV188ABUYHAelDk9hf+mrCEfTsdgnr3ReWXJdy
+         LjNVlthetes7b+obEzd+MmmWBJZ1KUdrCsnkPx6RTc9qZUl73X3H3kbJKBjOb04zY5nC
+         7d5IBlV5yGmMABh5l3GSpLH2k3Qdk3YJPcKfgJqVqldTB+Mknvet0kcFFR0kNauulGhQ
+         8GNQ==
+X-Gm-Message-State: AOAM532CQ5oR1O/PoMFKcznrOG6EBnPy3nxELj/gukpoMNhxXkB+nBiW
+        itpSc3iprIWnjqfhNCSnNMrMRQ==
+X-Google-Smtp-Source: ABdhPJx+pqAdNhSx9GFKMbPAXZItlskPfQ2YKeW1riDj8QxU69vfbwXWlnBOaVLScMfrAyLE694NVQ==
+X-Received: by 2002:a7b:c92d:: with SMTP id h13mr8624075wml.147.1616685857177;
+        Thu, 25 Mar 2021 08:24:17 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:e0a:90c:e290:b105:9672:b0a:5820])
+        by smtp.gmail.com with ESMTPSA id p18sm7395260wrs.68.2021.03.25.08.24.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Mar 2021 08:24:16 -0700 (PDT)
+From:   Neil Armstrong <narmstrong@baylibre.com>
+To:     gregkh@linuxfoundation.org
+Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH v2 0/3] tty: serial: meson: add amlogic,uart-fifosize property
+Date:   Thu, 25 Mar 2021 16:24:07 +0100
+Message-Id: <20210325152410.1795557-1-narmstrong@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9e510158-551a-3feb-bdba-17e070f12a8e@marcan.st>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 11:07:40PM +0900, Hector Martin wrote:
-> On 25/03/2021 04.09, Arnd Bergmann wrote:
-> > On Wed, Mar 24, 2021 at 7:12 PM Will Deacon <will@kernel.org> wrote:
-> > > 
-> > > > +/*
-> > > > + * ioremap_np needs an explicit architecture implementation, as it
-> > > > + * requests stronger semantics than regular ioremap(). Portable drivers
-> > > > + * should instead use one of the higher-level abstractions, like
-> > > > + * devm_ioremap_resource(), to choose the correct variant for any given
-> > > > + * device and bus. Portable drivers with a good reason to want non-posted
-> > > > + * write semantics should always provide an ioremap() fallback in case
-> > > > + * ioremap_np() is not available.
-> > > > + */
-> > > > +#ifndef ioremap_np
-> > > > +#define ioremap_np ioremap_np
-> > > > +static inline void __iomem *ioremap_np(phys_addr_t offset, size_t size)
-> > > > +{
-> > > > +     return NULL;
-> > > > +}
-> > > > +#endif
-> > > 
-> > > Can we implement the generic pci_remap_cfgspace() in terms of ioremap_np()
-> > > if it is supported by the architecture? That way, we could avoid defining
-> > > both on arm64.
-> > 
-> > Good idea. It needs a fallback in case the ioremap_np() fails on most
-> > architectures, but that sounds easy enough.
-> > 
-> > Since pci_remap_cfgspace() only has custom implementations, it sounds like
-> > we can actually make the generic implementation unconditional in the end,
-> > but that requires adding ioremap_np() on 32-bit as well, and I would keep
-> > that separate from this series.
-> 
-> Sounds good; I'm adding a patch to adjust the generic implementation and
-> remove the arm64 one in v4, and we can then complete the cleanup for other
-> arches later.
+On most of the Amlogic SoCs, the first UART controller in the "Everything-Else"
+power domain has 128bytes of RX & TX FIFO, so add an optional property to describe
+a different FIFO size from the other ports (64bytes).
 
-Cheers. Don't forget to update the comment in the generic code which
-complains about the lack of an ioremap() API for non-posted writes ;)
+This adds a property in the bindings, reads the property from the driver and updates
+the DT with the new property.
 
-Will
+Changes since v1:
+- switched to a more generic "fifo-size"
+
+Neil Armstrong (3):
+  dt-bindings: serial: amlogic,meson-uart: add fifo-size property
+  tty: serial: meson: retrieve port FIFO size from DT
+  arm64: dts: meson: set 128bytes FIFO size on uart A
+
+ .../devicetree/bindings/serial/amlogic,meson-uart.yaml      | 6 ++++++
+ arch/arm64/boot/dts/amlogic/meson-axg.dtsi                  | 1 +
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi           | 1 +
+ arch/arm64/boot/dts/amlogic/meson-gx.dtsi                   | 1 +
+ drivers/tty/serial/meson_uart.c                             | 5 ++++-
+ 5 files changed, 13 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
+
