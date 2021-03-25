@@ -5,57 +5,57 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E15C433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 538F5C433DB
 	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 06:21:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F021B61A1F
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 06:21:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 24F8661A27
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 06:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229836AbhCYGUf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Mar 2021 02:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
+        id S229592AbhCYGUh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Mar 2021 02:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbhCYGTu (ORCPT
+        with ESMTP id S229781AbhCYGTy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Mar 2021 02:19:50 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8A3C06174A;
-        Wed, 24 Mar 2021 23:19:50 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id g15so982098pfq.3;
-        Wed, 24 Mar 2021 23:19:50 -0700 (PDT)
+        Thu, 25 Mar 2021 02:19:54 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6470DC06174A;
+        Wed, 24 Mar 2021 23:19:54 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id c204so978145pfc.4;
+        Wed, 24 Mar 2021 23:19:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=X8oRWWuPlCAw0yNFLdz89qGD/soNoAofvNQ+OkW3A5s=;
-        b=SWPqxDvQ3eNKCCSXGcrmuHHK0VJUnRUCBt9MfO+97gkk/nmowld9MWuhIztHD8d88b
-         hsTWhkTddKAj6/OEgESo0qpwkrknR7nFZndH2/SVbkqDzPYEJaiCRoqUPEjx8BL5l2GC
-         wNp/eu5+KNrvfjHCKXnBG5yFlYad/CtR5Pdv1QmdnRD+c5PASswz/6Te+EvjsXcU+zSY
-         aKip2Leie1GV3LS5kraQN7b94ahqjQVVtefoJr6W03EV82KiwV7ptrMGOUw/69PALao1
-         5EfhbTzMX/wXF4LEJMff9nSif9J6U1Yq2XyZaPmDar8Ei3HxNGwLFBClOAKT+qT2YLbu
-         bEvQ==
+        bh=31z6xcgVpgNt2rqQ4i917PEU8w/kVuNEF1a++fiq5dw=;
+        b=nQ6TerCFDVxmOIgBYkQXfbaZtZgE4MkWwQ3DeGjNyiTbHdjhYHhK7j8av0reETN1yK
+         01VZiWl8qS5kxwekLzQAK2Dp2gQpoU+OYFYtwKv+mtQwKW7srdnVdLgKpUwxQBse4Dta
+         RKA2WPFUCvMGhriQjsKI3LK6w1GYY4alUwEP8OgcBMc8blPbb+kUNiByY8KQ3rNFan18
+         Btyw0aMcpHJ+8bZSk61ZPhS4kVLz5aj272T47rUrKKGA6XxUOBCSgUA9bIDm/aqFTsHd
+         ec3e/IpuZZ1XfWZLxVIOzjzq6lddK3j1nOzC2IiIX/BjSvZsJwUfp9DpUwaCcliUCDFU
+         P+9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=X8oRWWuPlCAw0yNFLdz89qGD/soNoAofvNQ+OkW3A5s=;
-        b=fIJ193QP4QzXJsb46LEyLi6XCFx/azH9Xsf6PuHzCL5wFFK7OUqXjjqcaUg5PJ6lv9
-         ANvwwpWeeWERWuL/Y+i7GY07un2cXXuTuByHKg7s+WtmIrm1i1QunJwZw/wB6aPi3IwQ
-         Fn0QgYWyQ8pjB2DM53EA6SZbbEyqiEWo/aePgdRrw4XKhQU6DTxDCN2euLz3NgrWKbq1
-         ZPKXuue+Er3BS35hp3jl8LDkZ3g9ea33vXG22QRDrqTpvkdRPQykNT7Gt+cncS3KUSJs
-         3w+sJsu3G6MIHvGEuiOk/aFsXM0sXQFZ/f4LflbBVoK1DHFG1gVuOf1DgfxOJYPnvHQh
-         qOjg==
-X-Gm-Message-State: AOAM531E9DU1JwBNNxe8WkXeH3WxficMYwYBdf6UwwQkg5BB/qb6Ajc4
-        j/9KilaFnj9rzgjzVPWwIU4=
-X-Google-Smtp-Source: ABdhPJzvIiGb+AchLmsneF41VvHj51SYIXzqCKG/aa1VPiwzvdJk4BB0Vx6Defk8BpoMpfkn0hhb2A==
-X-Received: by 2002:a17:902:b20c:b029:e6:cef9:6498 with SMTP id t12-20020a170902b20cb02900e6cef96498mr7771027plr.56.1616653189761;
-        Wed, 24 Mar 2021 23:19:49 -0700 (PDT)
+        bh=31z6xcgVpgNt2rqQ4i917PEU8w/kVuNEF1a++fiq5dw=;
+        b=gKy48PM1iNgE8QRPUIWdK0Yo2+R2UPxqQFCyqMxy+zkCi7j8h6OwGsv1+OIshHdu8U
+         BU5KOM23w7zTL8WC9/HRWruuFaT326a2BdQ9GlcDNE9O93Vg4wCUI3tdIIwTpR1CLg/K
+         hfSCYdAchdU5KcWvBeMZzy23c5NJk4usJpIt5U8wTLJnm57LxF5agsNO7MUw7QcHsVy/
+         Pv4nWZvlZL+rCA66RoZha+PKiVBdeuLjqu0tPhXaI+dpy+ivNVFIDMrMZUOebb9foTzu
+         Rqjht30SEgXY1SDaOD4wZ9XzVu2DHbNQME4S+HAbdO1DHn9RJmW+3weyrEpJq/gz21ik
+         ms/g==
+X-Gm-Message-State: AOAM530Dvgejuxuio6p33Y6+YHT2bMUWXwFeOnlWZk1Eg3nqO8TMxOwE
+        cuuDCuK58xMMe4A7gT1U3kE=
+X-Google-Smtp-Source: ABdhPJxtsQ03IwysDluyYZpJWgXX97sGPpF47gdNS8CmZlpk8MrPym7e4+FukgzZIFGl0r0dsLH8FQ==
+X-Received: by 2002:aa7:91d1:0:b029:1fe:2a02:73b9 with SMTP id z17-20020aa791d10000b02901fe2a0273b9mr6683276pfa.2.1616653194038;
+        Wed, 24 Mar 2021 23:19:54 -0700 (PDT)
 Received: from fmin-OptiPlex-7060.nreal.work ([137.59.103.165])
-        by smtp.gmail.com with ESMTPSA id b19sm4393086pfo.7.2021.03.24.23.19.45
+        by smtp.gmail.com with ESMTPSA id b19sm4393086pfo.7.2021.03.24.23.19.50
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Mar 2021 23:19:49 -0700 (PDT)
+        Wed, 24 Mar 2021 23:19:53 -0700 (PDT)
 From:   dillon.minfei@gmail.com
 To:     robh@kernel.org, valentin.caron@foss.st.com,
         Alexandre.torgue@foss.st.com, rong.a.chen@intel.com,
@@ -68,9 +68,9 @@ To:     robh@kernel.org, valentin.caron@foss.st.com,
         erwan.leray@foss.st.com, erwan.leray@st.com,
         linux-serial@vger.kernel.org, lkp@intel.com
 Cc:     dillon min <dillon.minfei@gmail.com>
-Subject: [PATCH v5 7/9] ARM: stm32: Add a new SOC - STM32H750
-Date:   Thu, 25 Mar 2021 14:19:20 +0800
-Message-Id: <1616653162-19954-6-git-send-email-dillon.minfei@gmail.com>
+Subject: [PATCH v5 8/9] pinctrl: stm32: Add STM32H750 MCU pinctrl support
+Date:   Thu, 25 Mar 2021 14:19:21 +0800
+Message-Id: <1616653162-19954-7-git-send-email-dillon.minfei@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1616653162-19954-1-git-send-email-dillon.minfei@gmail.com>
 References: <1616653162-19954-1-git-send-email-dillon.minfei@gmail.com>
@@ -80,29 +80,47 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: dillon min <dillon.minfei@gmail.com>
 
-The STM32H750 is a Cortex-M7 MCU running at 480MHz
-and containing 128KBytes internal flash, 1MiB SRAM.
+This patch adds STM32H750 pinctrl and GPIO support
+since stm32h750 has the same pin alternate functions
+with stm32h743, so just reuse the stm32h743's pinctrl
+driver
 
 Signed-off-by: dillon min <dillon.minfei@gmail.com>
 ---
 
 v5: no changes
 
- arch/arm/mach-stm32/board-dt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pinctrl/stm32/Kconfig             | 2 +-
+ drivers/pinctrl/stm32/pinctrl-stm32h743.c | 3 +++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-stm32/board-dt.c b/arch/arm/mach-stm32/board-dt.c
-index 011d57b488c2..a766310d8dca 100644
---- a/arch/arm/mach-stm32/board-dt.c
-+++ b/arch/arm/mach-stm32/board-dt.c
-@@ -17,6 +17,7 @@ static const char *const stm32_compat[] __initconst = {
- 	"st,stm32f746",
- 	"st,stm32f769",
- 	"st,stm32h743",
-+	"st,stm32h750",
- 	"st,stm32mp157",
- 	NULL
+diff --git a/drivers/pinctrl/stm32/Kconfig b/drivers/pinctrl/stm32/Kconfig
+index f36f29113370..fb1ffc94c57f 100644
+--- a/drivers/pinctrl/stm32/Kconfig
++++ b/drivers/pinctrl/stm32/Kconfig
+@@ -35,7 +35,7 @@ config PINCTRL_STM32F769
+ 	select PINCTRL_STM32
+ 
+ config PINCTRL_STM32H743
+-	bool "STMicroelectronics STM32H743 pin control" if COMPILE_TEST && !MACH_STM32H743
++	bool "STMicroelectronics STM32H743/STM32H750 pin control" if COMPILE_TEST && !MACH_STM32H743
+ 	depends on OF && HAS_IOMEM
+ 	default MACH_STM32H743
+ 	select PINCTRL_STM32
+diff --git a/drivers/pinctrl/stm32/pinctrl-stm32h743.c b/drivers/pinctrl/stm32/pinctrl-stm32h743.c
+index ffe7b5271506..700206c7bc11 100644
+--- a/drivers/pinctrl/stm32/pinctrl-stm32h743.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32h743.c
+@@ -1966,6 +1966,9 @@ static const struct of_device_id stm32h743_pctrl_match[] = {
+ 		.compatible = "st,stm32h743-pinctrl",
+ 		.data = &stm32h743_match_data,
+ 	},
++	{	.compatible = "st,stm32h750-pinctrl",
++		.data = &stm32h743_match_data,
++	},
+ 	{ }
  };
+ 
 -- 
 2.7.4
 
