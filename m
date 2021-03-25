@@ -2,125 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E81C433E1
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 09:10:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F012EC433DB
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 11:13:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5A92361A2C
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 09:10:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B91B160240
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Mar 2021 11:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbhCYJJk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Mar 2021 05:09:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbhCYJJM (ORCPT
+        id S230134AbhCYLM6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Mar 2021 07:12:58 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:34402 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230121AbhCYLMu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Mar 2021 05:09:12 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C079C061760
-        for <linux-serial@vger.kernel.org>; Thu, 25 Mar 2021 02:09:12 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id l3so1375282pfc.7
-        for <linux-serial@vger.kernel.org>; Thu, 25 Mar 2021 02:09:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VWsn6esj8imf1uae7i0PYfEIqahCeH1CMSkS7p/mVYk=;
-        b=HIBYhMJ3tP1aKPSwg0gUFOAmtXGabKSCvtt0vxq0cKr4wnvUWwGpH5l0/daMM0gb/q
-         eIwN1cktfuMgY07XYtnR4aTFv6SgzyJlgqyBDscikKf+wOHVSMQVAuIXcbyikkFclA/K
-         MuGM/06m6QL2fjldeVmJVaoJ/1ivyC1rsOIPx9oWGRx1XrxxHELz9ghFbUAAZcItYjAX
-         62xPTBRZVJzPGGYRrt1LTVxDKe/NVKOQ3EyxKwXzDRmp9/8Q35XveLxwWjLE3b4jWTiY
-         TguamkqvVDR4TQ+2YgOyTpHcp1WGhmTN0kndzst7ijFQqpPPyH+K2OR8r/0QkVhkChQD
-         PfFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VWsn6esj8imf1uae7i0PYfEIqahCeH1CMSkS7p/mVYk=;
-        b=AY//yQjVJJMWcP3qQHo2fveQu52vf+10JpvnJr4NQXlET7iCt5qtFPoA68uT8HBdV9
-         /2WpCXHvh7RdRVAidStud7Rqu96yn7YnDykeSXSdXW+mFdx1CoaHlmmVY5mfu1MS76UP
-         t4GwXEA+ca2wvU58hhcysCs4PjBlIjEH9ztZnzpN895a+yKJO/5Mt7+L1a6aSaOKaXG7
-         kZtqlrqm/C+nBv3zVAV/IB81MoY7G5YcbuJyl5NQpMojrBaUrgGB7+ouYzwDrYoHfKJJ
-         opnQuLuD7X8/YEuFvZV1fsmvozsBXhCsWvvXnQAba0qZI2KkiwewK+vR9DHJsGnmyrGv
-         k+Mg==
-X-Gm-Message-State: AOAM5316eqPZKl32L7nuwu8aqaN3Ag4cgkmJNb81M20HM319YbsionHf
-        64UBk3PZA1szmVBxxRE6Sm1VPg==
-X-Google-Smtp-Source: ABdhPJx75YaqoIXZKRzV6JNv+rXXkBOJ5fO88bVSyJdWvRiD9Mrig/3TUZdgxk+pZ1DK2jZHu6G8NA==
-X-Received: by 2002:a63:e44a:: with SMTP id i10mr6546829pgk.404.1616663351651;
-        Thu, 25 Mar 2021 02:09:11 -0700 (PDT)
-Received: from localhost ([122.172.6.13])
-        by smtp.gmail.com with ESMTPSA id s184sm5341831pgb.63.2021.03.25.02.09.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 25 Mar 2021 02:09:10 -0700 (PDT)
-Date:   Thu, 25 Mar 2021 14:39:09 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Cc:     Dmitry Osipenko <digetx@gmail.com>, Qiang Yu <yuq825@gmail.com>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-media@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v3 14/15] media: venus: Convert to use resource-managed
- OPP API
-Message-ID: <20210325090909.pyzyt3xds2ajvm7i@vireshk-i7>
-References: <20210314163408.22292-1-digetx@gmail.com>
- <20210314163408.22292-15-digetx@gmail.com>
- <b780c19f-7f5d-5453-dec1-062fa7c1dc07@linaro.org>
+        Thu, 25 Mar 2021 07:12:50 -0400
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12PB8KZQ029488;
+        Thu, 25 Mar 2021 12:12:23 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=selector1;
+ bh=sx81ySGR8bPSutf92/n2FFZ8Gn5Yxf3a1PbQ8ivsBJk=;
+ b=THaUiffSVEE09/leQ/NJbBiJbM4G1JPDHfCcK6+DhsFlXjCaGLbUaB+JK1i7rujBaId1
+ kHkC6iMyqIWdE9QxaRsmFW0+Unglqba0mCW1sYkecTtcwu3RfukLTZ50xGXSZy/9ookb
+ VLp5dRBvYgm8oeEyCaGwKiXz0ptn9JBiAP4R0pm9FTc93EhyV1HuRvmF6IQ+hHoQ6XlU
+ P1Z34fDFKPaZEy4Y3gt+IVEEq4AIC5JIw+JamI4Ptfo3IkuH7yMzZkgOddTChf1oNLad
+ KwjmowvdAf3V+6/Ni3hHS6c3Iu+L3o5loaR1H1pgbg5UIHh7uh2aZP8GkGdqWfs5qiOI zQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 37d8tpv3wk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 25 Mar 2021 12:12:23 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7509510002A;
+        Thu, 25 Mar 2021 12:12:22 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 36D142463E6;
+        Thu, 25 Mar 2021 12:12:22 +0100 (CET)
+Received: from SFHDAG2NODE3.st.com (10.75.127.6) by SFHDAG2NODE3.st.com
+ (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 25 Mar
+ 2021 12:12:21 +0100
+Received: from SFHDAG2NODE3.st.com ([fe80::31b3:13bf:2dbe:f64c]) by
+ SFHDAG2NODE3.st.com ([fe80::31b3:13bf:2dbe:f64c%20]) with mapi id
+ 15.00.1497.012; Thu, 25 Mar 2021 12:12:21 +0100
+From:   Valentin CARON - foss <valentin.caron@foss.st.com>
+To:     "dillon.minfei@gmail.com" <dillon.minfei@gmail.com>,
+        "robh@kernel.org" <robh@kernel.org>,
+        Alexandre TORGUE - foss <alexandre.torgue@foss.st.com>,
+        "rong.a.chen@intel.com" <rong.a.chen@intel.com>,
+        "a.fatoum@pengutronix.de" <a.fatoum@pengutronix.de>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "vladimir.murzin@arm.com" <vladimir.murzin@arm.com>,
+        "afzal.mohd.ma@gmail.com" <afzal.mohd.ma@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Erwan LE-RAY - foss" <erwan.leray@foss.st.com>,
+        Erwan LE RAY <erwan.leray@st.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "lkp@intel.com" <lkp@intel.com>
+Subject: Re: [PATCH v5 9/9] dt-bindings: serial: stm32: Use 'type: object'
+ instead of false for 'additionalProperties'
+Thread-Topic: [PATCH v5 9/9] dt-bindings: serial: stm32: Use 'type: object'
+ instead of false for 'additionalProperties'
+Thread-Index: AQHXIT7ih+t4cxLl+EWQ55a6uRUl+aqUfCqA
+Date:   Thu, 25 Mar 2021 11:12:21 +0000
+Message-ID: <068cb7ae-9afc-606d-2579-189e46516cd5@foss.st.com>
+References: <1616653162-19954-1-git-send-email-dillon.minfei@gmail.com>
+ <1616653162-19954-8-git-send-email-dillon.minfei@gmail.com>
+In-Reply-To: <1616653162-19954-8-git-send-email-dillon.minfei@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.75.127.47]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <82932ED2BBCA05459E35290288E3E327@st.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b780c19f-7f5d-5453-dec1-062fa7c1dc07@linaro.org>
-User-Agent: NeoMutt/20180716-391-311a52
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-25_02:2021-03-24,2021-03-25 signatures=0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25-03-21, 10:13, Stanimir Varbanov wrote:
-> Hi,
-> 
-> On 3/14/21 6:34 PM, Dmitry Osipenko wrote:
-> > From: Yangtao Li <tiny.windzz@gmail.com>
-> > 
-> > Use resource-managed OPP API to simplify code.
-> > 
-> > Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-> > Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-> > ---
-> >  drivers/media/platform/qcom/venus/core.h      |  1 -
-> >  .../media/platform/qcom/venus/pm_helpers.c    | 35 +++++--------------
-> >  2 files changed, 8 insertions(+), 28 deletions(-)
-> 
-> 
-> I'll take this through media-tree once OPP API changes are merged.
-
-Okay, dropped from my tree.
-
-Thanks.
-
--- 
-viresh
+SGkgRGlsbG9uLA0KDQpJdCdzIG9rYXkgZm9yIG1lLg0KDQpSZWdhcmRzLA0KDQpWYWxlbnRpbg0K
+DQpPbiAzLzI1LzIxIDc6MTkgQU0sIGRpbGxvbi5taW5mZWlAZ21haWwuY29tIHdyb3RlOg0KPiBG
+cm9tOiBkaWxsb24gbWluIDxkaWxsb24ubWluZmVpQGdtYWlsLmNvbT4NCj4NCj4gVG8gdXNlIGFk
+ZGl0aW9uYWwgcHJvcGVydGllcyAnYmx1ZXRvb3RoJyBvbiBzZXJpYWwsIG5lZWQgcmVwbGFjZSBm
+YWxzZSB3aXRoDQo+ICd0eXBlOiBvYmplY3QnIGZvciAnYWRkaXRpb25hbFByb3BlcnRpZXMnIHRv
+IG1ha2UgaXQgYXMgYSBub2RlLCBlbHNlIHdpbGwNCj4gcnVuIGludG8gZHRic19jaGVjayB3YXJu
+aW5ncy4NCj4NCj4gJ2FyY2gvYXJtL2Jvb3QvZHRzL3N0bTMyaDc1MGktYXJ0LXBpLmR0LnlhbWw6
+IHNlcmlhbEA0MDAwNDgwMDoNCj4gJ2JsdWV0b290aCcgZG9lcyBub3QgbWF0Y2ggYW55IG9mIHRo
+ZSByZWdleGVzOiAncGluY3RybC1bMC05XSsnDQo+DQo+IEZpeGVzOiBhZjFjMmQ4MTY5NWIgKCJk
+dC1iaW5kaW5nczogc2VyaWFsOiBDb252ZXJ0IFNUTTMyIFVBUlQgdG8ganNvbi1zY2hlbWEiKQ0K
+PiBSZXBvcnRlZC1ieToga2VybmVsIHRlc3Qgcm9ib3QgPGxrcEBpbnRlbC5jb20+DQo+IFRlc3Rl
+ZC1ieTogVmFsZW50aW4gQ2Fyb24gPHZhbGVudGluLmNhcm9uQGZvc3Muc3QuY29tPg0KPiBTaWdu
+ZWQtb2ZmLWJ5OiBkaWxsb24gbWluIDxkaWxsb24ubWluZmVpQGdtYWlsLmNvbT4NCj4gLS0tDQo+
+DQo+IHY1OiBhY2Nyb2RpbmcgdG8gcm9iJ3Mgc3VnZ2VzdGlvbiwgcmVwbGFjZSBmYWxzZSB3aXRo
+ICd0eXBlOiBvYmplY3QnDQo+ICAgICAgb2YgJ2FkZGl0aW9uYWxQcm9wZXJ0aWVzJy4NCj4NCj4g
+ICBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL3N0LHN0bTMyLXVhcnQu
+eWFtbCB8IDMgKystDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMSBkZWxl
+dGlvbigtKQ0KPg0KPiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
+bmdzL3NlcmlhbC9zdCxzdG0zMi11YXJ0LnlhbWwgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
+YmluZGluZ3Mvc2VyaWFsL3N0LHN0bTMyLXVhcnQueWFtbA0KPiBpbmRleCA4NjMxNjc4MjgzZjku
+Ljg2NWJlMDUwODNjMyAxMDA2NDQNCj4gLS0tIGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
+bmRpbmdzL3NlcmlhbC9zdCxzdG0zMi11YXJ0LnlhbWwNCj4gKysrIGIvRG9jdW1lbnRhdGlvbi9k
+ZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9zdCxzdG0zMi11YXJ0LnlhbWwNCj4gQEAgLTgwLDcg
+KzgwLDggQEAgcmVxdWlyZWQ6DQo+ICAgICAtIGludGVycnVwdHMNCj4gICAgIC0gY2xvY2tzDQo+
+ICAgDQo+IC1hZGRpdGlvbmFsUHJvcGVydGllczogZmFsc2UNCj4gK2FkZGl0aW9uYWxQcm9wZXJ0
+aWVzOg0KPiArICB0eXBlOiBvYmplY3QNCj4gICANCj4gICBleGFtcGxlczoNCj4gICAgIC0gfA==
