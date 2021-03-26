@@ -2,107 +2,172 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-14.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84798C433EB
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 11:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8163C433E1
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 12:41:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 59E7961A44
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 11:16:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 96204619AE
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 12:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230096AbhCZLPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Mar 2021 07:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
+        id S230135AbhCZMlH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Mar 2021 08:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbhCZLPd (ORCPT
+        with ESMTP id S229839AbhCZMlD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Mar 2021 07:15:33 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB834C0613AA;
-        Fri, 26 Mar 2021 04:15:32 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id bt4so2392645pjb.5;
-        Fri, 26 Mar 2021 04:15:32 -0700 (PDT)
+        Fri, 26 Mar 2021 08:41:03 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED80C0613AA;
+        Fri, 26 Mar 2021 05:41:02 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id h13so6141790eds.5;
+        Fri, 26 Mar 2021 05:41:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5k4LK0I779i125dqLNMdZVaDSPCul1nXlVCzLiWx3OY=;
-        b=mSql5w0CLSZnU5mD6lil6aD/NIEUDLGO2y24MmPkZo0MVPGHSVz5Q9+Ido++F74gqD
-         YnKrRpJsfL4WXR9nL5FCVIV7sRhHFskLJ/SfwtBkgDJcoA/lxPenybRp39i9EjmpVnm3
-         Wfl7RnKo2En+6/vUjUmGbtDvOpcg9vcJ5MDERQ+eIzJIcz6BihqtHRzcnqWuuRBnezTF
-         ceHCzv6ZDsLa0vqgxEzS5OwNCjazNyyOWeerq1plhmTK5IwEgU8rqG3hyUfgGL4t8JI1
-         ZhS7Qi+OeRKqXQ+juZT8TMaPZlcO0wX26tw54cg0FaMpVOiPYnIZxewMW88gf22x+bVA
-         LQoA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Ai/sBaJhqrRCWGFUEsUnLWF/QfwBQ52U7SGdirULJxA=;
+        b=uCjETYGYNoXkWFnAnxrREMGnWCf4CT3WkSUcUIwelIYp/DG4PNHW59MxV0ndLkmKgw
+         L2IWwNo6EyYyTYDtD8OnYmHTc3e6jv9884w6qBn83ztCcGKzBTfT9VZi4FrsY0fAmdgD
+         ur9rC0Au9YibHKnhDtRtnuR6TmiDKHMLiKkdFQBru/Rg3CNOG0AO1xf2t/BfGdTfqqmA
+         XwvFfXkcKbOAT7hy7hseEdn4+/SVJmzCmlcRTdfpBXzf34azVckBOAtF5T9AGODNsmHi
+         JB9fYSTh7FLf8XAc67eXw0GuTEJ4SVHnGJeGbaLRFM/fngNYTBDvYjVjkIiDqEkKOz/Z
+         NJ0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=5k4LK0I779i125dqLNMdZVaDSPCul1nXlVCzLiWx3OY=;
-        b=Cx5zNRpOmCgY0S9U+Z4oj0ontr3FRCDnSISMlwqgPX/FJpb5uSdzPrWRNXIAf6nVp/
-         u3oC0Rh3sfurKLz2WJLeYlWjCAICk7B93dBw/ceEKSDxTaEX08AV3TUeR42p8o4aSTY3
-         x3Qs2tXKBaMujJwv0QFnFr0klTSumKTiGeEFSwamX0d1+Jycf4C1c0cXZmf9pmcIHeRI
-         L1x2xe6WBYCZtu+Gv9fLvXYTgdIKZ+ZYfgNLZ/6lQsZOF9PcZbjyM1Ea30qqIupqElys
-         wiQp1UFcHOHjO2klj6Prrd8jbTY59bEXbaEh1AvpnjGcmWHrGMgjHYyH6zK594GKevGZ
-         w5nw==
-X-Gm-Message-State: AOAM531PprhFnn6HwgAM8S5SR44E9BLb4muJ5kXsqApn7ciyCHUYfQUH
-        CGxfO3RvrFtpYdWqmkKwMBmg7UbVjUQsyZYj
-X-Google-Smtp-Source: ABdhPJwhvZ3EnfuZurA9F+HEFqVEOtBWHOterQqdMDBaDF+RggY+HEjblwBMwUmgjopNGp7vt/ULnA==
-X-Received: by 2002:a17:90a:3ec3:: with SMTP id k61mr12950361pjc.125.1616757332479;
-        Fri, 26 Mar 2021 04:15:32 -0700 (PDT)
-Received: from fmin-OptiPlex-7060.nreal.work ([137.59.103.165])
-        by smtp.gmail.com with ESMTPSA id l3sm8108414pfc.81.2021.03.26.04.15.28
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Mar 2021 04:15:32 -0700 (PDT)
-From:   dillon.minfei@gmail.com
-To:     robh@kernel.org, valentin.caron@foss.st.com,
-        Alexandre.torgue@foss.st.com, rong.a.chen@intel.com,
-        a.fatoum@pengutronix.de, mcoquelin.stm32@gmail.com,
-        devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, vladimir.murzin@arm.com,
-        afzal.mohd.ma@gmail.com, gregkh@linuxfoundation.org,
-        erwan.leray@foss.st.com, erwan.leray@st.com,
-        linux-serial@vger.kernel.org, lkp@intel.com
-Cc:     dillon min <dillon.minfei@gmail.com>
-Subject: [PATCH v6 7/9] ARM: stm32: Add a new SOC - STM32H750
-Date:   Fri, 26 Mar 2021 19:15:00 +0800
-Message-Id: <1616757302-7889-6-git-send-email-dillon.minfei@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1616757302-7889-1-git-send-email-dillon.minfei@gmail.com>
-References: <1616757302-7889-1-git-send-email-dillon.minfei@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Ai/sBaJhqrRCWGFUEsUnLWF/QfwBQ52U7SGdirULJxA=;
+        b=PskyuHmVOQ7HEj1LDTVXQ1f6BBNHgfkTXhdCl8prHgTNxtonMOGlIHSwp2tZCSeXHB
+         bXdyGgXwkqzKkPvCDXO9FNpEA5M24TEazXVLarTHCnB7sOff0fCcXMO1YPB7rQEE0kcu
+         oi1ObVOy5AoV0S763IeokLDhDQF+SWDjRyQdaGN9YZehJNDADc8ch0fFirS/S8RG4xT9
+         mSHRFt/wSLQaXoQHNKnwD9Szs89YpTchjEd3clrg0Kr+59M2Fuh7f+rrHCTPP7L1scAk
+         dDvYzuNF/VKpc0ohE7+itMixgpjVSko4NtZhGm1kL5ZvgRTiuTo0lLpFrTxs5bQrM+fm
+         BHzA==
+X-Gm-Message-State: AOAM533MrmKCwoOhVpgX7K1zK5BOuc0VyOXlaQkLTpT8UwRc3c1KN2xT
+        KuD8J3nimkYrTTxxhky1UGI=
+X-Google-Smtp-Source: ABdhPJyBfhRplv3kSXtcQVbf9j3CtTsxKbJ2vdFf6xxPS0KZwTr0+U5i0X7OFEFWWah2Xup+2PjS6w==
+X-Received: by 2002:a05:6402:254f:: with SMTP id l15mr14885368edb.189.1616762461102;
+        Fri, 26 Mar 2021 05:41:01 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id x1sm3830371eji.8.2021.03.26.05.40.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Mar 2021 05:40:59 -0700 (PDT)
+Date:   Fri, 26 Mar 2021 13:41:22 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Boyd <sboyd@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-clk@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Clean-up undocumented compatible strings
+Message-ID: <YF3WctL0BJON130C@orome.fritz.box>
+References: <20210316194918.3528417-1-robh@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="anrc3HovXG4wMGPC"
+Content-Disposition: inline
+In-Reply-To: <20210316194918.3528417-1-robh@kernel.org>
+User-Agent: Mutt/2.0.6 (98f8cb83) (2021-03-06)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: dillon min <dillon.minfei@gmail.com>
 
-The STM32H750 is a Cortex-M7 MCU running at 480MHz
-and containing 128KBytes internal flash, 1MiB SRAM.
+--anrc3HovXG4wMGPC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: dillon min <dillon.minfei@gmail.com>
----
+On Tue, Mar 16, 2021 at 01:49:18PM -0600, Rob Herring wrote:
+> Adding checks for undocumented compatible strings reveals a bunch of
+> warnings in the DT binding examples. Fix the cases which are typos, just
+> a mismatch between the schema and the example, or aren't documented at al=
+l.
+> In a couple of cases, fixing the compatible revealed some schema errors
+> which are fixed.
+>=20
+> There's a bunch of others remaining after this which have bindings, but
+> those aren't converted to schema yet.
+>=20
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-clk@vger.kernel.org
+> Cc: dmaengine@vger.kernel.org
+> Cc: linux-i3c@lists.infradead.org
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-spi@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../clock/allwinner,sun4i-a10-pll1-clk.yaml   |  2 +-
+>  .../bindings/clock/milbeaut-clock.yaml        | 12 +++++----
+>  .../bindings/display/brcm,bcm2835-dsi0.yaml   |  6 -----
+>  .../bindings/display/panel/panel-dpi.yaml     |  2 +-
+>  .../devicetree/bindings/dma/qcom,gpi.yaml     |  2 +-
+>  .../devicetree/bindings/i3c/i3c.yaml          |  7 ++---
+>  .../iio/adc/brcm,iproc-static-adc.yaml        |  5 ----
+>  .../iio/gyroscope/nxp,fxas21002c.yaml         |  2 +-
+>  .../bindings/iio/light/upisemi,us5182.yaml    |  4 +--
+>  .../interrupt-controller/loongson,htpic.yaml  |  2 +-
+>  .../devicetree/bindings/leds/leds-lgm.yaml    | 26 ++++++++++++++++---
+>  .../bindings/phy/ti,phy-j721e-wiz.yaml        |  2 +-
+>  .../bindings/power/supply/cw2015_battery.yaml |  2 +-
+>  .../bindings/power/supply/power-supply.yaml   | 22 ----------------
+>  .../devicetree/bindings/serial/serial.yaml    |  2 +-
+>  .../bindings/spi/amlogic,meson-gx-spicc.yaml  |  4 +--
+>  .../bindings/spi/spi-controller.yaml          | 21 ++++++++-------
+>  .../devicetree/bindings/spi/spi-mux.yaml      |  8 ++----
+>  .../devicetree/bindings/spi/st,stm32-spi.yaml |  6 -----
+>  19 files changed, 58 insertions(+), 79 deletions(-)
 
-v6: no changes
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
- arch/arm/mach-stm32/board-dt.c | 1 +
- 1 file changed, 1 insertion(+)
+--anrc3HovXG4wMGPC
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/arch/arm/mach-stm32/board-dt.c b/arch/arm/mach-stm32/board-dt.c
-index 011d57b488c2..a766310d8dca 100644
---- a/arch/arm/mach-stm32/board-dt.c
-+++ b/arch/arm/mach-stm32/board-dt.c
-@@ -17,6 +17,7 @@ static const char *const stm32_compat[] __initconst = {
- 	"st,stm32f746",
- 	"st,stm32f769",
- 	"st,stm32h743",
-+	"st,stm32h750",
- 	"st,stm32mp157",
- 	NULL
- };
--- 
-2.7.4
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmBd1nIACgkQ3SOs138+
+s6EKNw/+PWZ5d3e0xEwvPK7F2Ar6aLwrAZTugsDRjLWV08E7tyOy+G9o7fONJcWa
+rYcXHvrQzc3Vr6/H0Aht9gv8h4N1ouQlIYbKkommVUDHWZlKKKKuf2UW9DeIzbLp
+jRdHkqZsdlRy/1UZGl7oXPsDf+OIYG04QbOA1+uBhqW+BdpfEC59ouN/KDCou9aq
+7JvFVhtOB5SZBDQhNNyY9VINpf7uHivV+onqfwg40fO/QTkYaHINb29gb73NBZWr
+fqP16h7YrpKw+JqePYucWisMfZ8hubG6mNypAlhnRBdaqhoPm+OwmRFfbb9hE0f4
+VtTBHT2HndgpshRyqJZegJUueeRQX5scz0IYfDdpHSvJ/+bvZ3HwmxOG3XHOIsEz
+o36PE9KKIX3b9PZqEtMrNfnC7a9KzlnGJzQ0N+ZKvNZufnlkpbGuKC2PN/gTnADi
+p6Shg4Nz6Jg67p2nWhIoFWMA1sYd1b18urfFn133K3B4R+6ox7NfDl7jDoLO//rO
+qxgp4aySmSZyGC0LnhX/rjThoVGggs/Ph99sxbDaObX1bed7K/3MVfuFHv9dgNxq
+BMerE+S1zd+XdeI1iSdQ459gqtFuWyTNTX4Atm3ddd+7P1Ay7iRMjyAjZ5MgwUvn
+NUVQ+ss5oAt4BguhMPXeKvkkJEDQWl8xSzXm5qd39jSxZ06FAL8=
+=w24T
+-----END PGP SIGNATURE-----
+
+--anrc3HovXG4wMGPC--
