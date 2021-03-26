@@ -2,260 +2,157 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0008C433E5
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 08:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72258C433DB
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 11:16:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8489561A57
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 08:59:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3F9EB60249
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 11:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbhCZI6q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Mar 2021 04:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
+        id S229871AbhCZLPo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Mar 2021 07:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbhCZI61 (ORCPT
+        with ESMTP id S229773AbhCZLPP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Mar 2021 04:58:27 -0400
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDEDC0613AA;
-        Fri, 26 Mar 2021 01:58:26 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id DF5F63FA6A;
-        Fri, 26 Mar 2021 08:58:17 +0000 (UTC)
-To:     Will Deacon <will@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Tony Lindgren <tony@atomide.com>,
-        Mohamed Mediouni <mohamed.mediouni@caramail.com>,
-        Stan Skowronek <stan@corellium.com>,
-        Alexander Graf <graf@amazon.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210304213902.83903-1-marcan@marcan.st>
- <20210304213902.83903-17-marcan@marcan.st>
- <20210324195742.GA13474@willie-the-truck>
-From:   Hector Martin <marcan@marcan.st>
-Subject: Re: [RFT PATCH v3 16/27] irqchip/apple-aic: Add support for the Apple
- Interrupt Controller
-Message-ID: <3564ed98-6ad6-7ddd-01d2-36d7f5af90e0@marcan.st>
-Date:   Fri, 26 Mar 2021 17:58:15 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-MIME-Version: 1.0
-In-Reply-To: <20210324195742.GA13474@willie-the-truck>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: es-ES
-Content-Transfer-Encoding: 8bit
+        Fri, 26 Mar 2021 07:15:15 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6271DC0613AA;
+        Fri, 26 Mar 2021 04:15:15 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id ay2so744970plb.3;
+        Fri, 26 Mar 2021 04:15:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=8LbC0yRdb6KnBRs4/oHMCPB8Wx+wfbQ7JrB27rdabEo=;
+        b=ODurMsRARbMLi1n2YX5YSv2Re+1Sl/BpZkwEqgNmkSZe0/9NTRivo0xUNzhrSFYGsI
+         Px5M3WxN65FyQHfJ7EW27bHJg76oKnCc/tIX0OoFPhmalG010qPebVHg9blNSXeDM9Xa
+         fGx5NTh34AKMAM8BfnCpDm+T+4vOFS8fLoFE+QHRZr5xhlCgtCBIvZ6TBtAjllqsaAGI
+         x0d+t1Sem/wtf1YUsMYvcuecD3OB339EQ7XfQqQOBmhHlcF9v3966VbZNg+HxfnPpTN9
+         +lsGV/JIUC1js1Q3e9C+pURR3kuTXKZ95EN41n/fwkxcainx5746FZscQBx1sYivXOCM
+         Lm4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=8LbC0yRdb6KnBRs4/oHMCPB8Wx+wfbQ7JrB27rdabEo=;
+        b=D+KL3z7su2pv0MwULz6VVUFpMoNsavVvZLMj7VWPqHXCMIUqcuFB9pvjXURviNgAt5
+         YTdcOGeA2musWeU7POIiFnNezm33vgBwhj7VCsMqseW68gEHF3UR4P6KvhYKUf7tQsVh
+         8LAaGDR3DeY4f2Grd7hROO5q2bquODGBZcw74kL07UoF2bf8oUIxRFYhqwKwk4eoBW5N
+         yLgoZy8nb3HKwbkd93CgHt9aVZlfPxogYUcbnXTv2LwIf/ICp2vT9lseZbENkyXPj9WW
+         uJ23BvDFbA6gDW7XHjRDXlEIBfVNmtN3miFKB+sNafOaKtMgLVloolodqGpEE/e7Ydb5
+         vN2Q==
+X-Gm-Message-State: AOAM530kxb5rw8QTb/9zaJcAVZGb8b9N/j9+lXFxcSnFsR8aXxBC949S
+        mE0akINAjIYdImYxQdT7/ZA=
+X-Google-Smtp-Source: ABdhPJw4f1Ee2Hz0/Mm15LtPxz6VsG6K/k51kVXf8OiJcmT1EppkEPqKWTPnMhHhnWHobI9yDqBs9A==
+X-Received: by 2002:a17:902:d341:b029:e6:9a9f:5614 with SMTP id l1-20020a170902d341b02900e69a9f5614mr14828314plk.48.1616757314991;
+        Fri, 26 Mar 2021 04:15:14 -0700 (PDT)
+Received: from fmin-OptiPlex-7060.nreal.work ([137.59.103.165])
+        by smtp.gmail.com with ESMTPSA id l3sm8108414pfc.81.2021.03.26.04.15.10
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 Mar 2021 04:15:14 -0700 (PDT)
+From:   dillon.minfei@gmail.com
+To:     robh@kernel.org, valentin.caron@foss.st.com,
+        Alexandre.torgue@foss.st.com, rong.a.chen@intel.com,
+        a.fatoum@pengutronix.de, mcoquelin.stm32@gmail.com,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, vladimir.murzin@arm.com,
+        afzal.mohd.ma@gmail.com, gregkh@linuxfoundation.org,
+        erwan.leray@foss.st.com, erwan.leray@st.com,
+        linux-serial@vger.kernel.org, lkp@intel.com
+Cc:     dillon min <dillon.minfei@gmail.com>
+Subject: [PATCH v6 1/9] Documentation: arm: stm32: Add stm32h750 value line doc
+Date:   Fri, 26 Mar 2021 19:14:56 +0800
+Message-Id: <1616757302-7889-2-git-send-email-dillon.minfei@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1616757302-7889-1-git-send-email-dillon.minfei@gmail.com>
+References: <1616757302-7889-1-git-send-email-dillon.minfei@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Will,
+From: dillon min <dillon.minfei@gmail.com>
 
-No worries, I was busy until a couple days ago anyway.
+This patchset add support for soc stm32h750, stm32h750 has mirror
+different from stm32h743
 
-On 25/03/2021 04.57, Will Deacon wrote:
->> +#define pr_fmt(fmt) "%s: " fmt, __func__
-> 
-> General nit: but I suspect many of the prints in here probably want to be
-> using the *_ratelimited variants.
+item            stm32h743     stm32h750
+flash size:     2MiB          128KiB
+adc:            none          3
+crypto-hash:    none          aes/hamc/des/tdes/md5/sha
 
-You're right, everything complaining about spurious/unsupported stuff is 
-probably safer rate-limited. I also made them all pr_err_ratelimited, 
-since nothing should be trying to use that hardware before we get around 
-to supporting it in this driver.
+detail information can be found at:
+https://www.st.com/en/microcontrollers-microprocessors/stm32h750-value-line.html
 
->> +static void __exception_irq_entry aic_handle_irq(struct pt_regs *regs)
->> +{
->> +	struct aic_irq_chip *ic = aic_irqc;
->> +	u32 event, type, irq;
->> +
->> +	do {
->> +		/*
->> +		 * We cannot use a relaxed read here, as DMA needs to be
->> +		 * ordered with respect to the IRQ firing.
->> +		 */
-> 
-> I think this could be a bit clearer: the readl() doesn't order any DMA
-> accesses, but instead means that subsequent reads by the CPU are ordered
-> (which may be from a buffer which was DMA'd to) are ordered after the
-> read of the MMIO register.
+Signed-off-by: dillon min <dillon.minfei@gmail.com>
+---
 
-Good point, reworded it for v4:
+v6: no changes
 
-/*
-  * We cannot use a relaxed read here, as reads from DMA buffers
-  * need to be ordered after the IRQ fires.
-  */
+ Documentation/arm/index.rst                    |  1 +
+ Documentation/arm/stm32/stm32h750-overview.rst | 34 ++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
+ create mode 100644 Documentation/arm/stm32/stm32h750-overview.rst
 
-> 
->> +		event = readl(ic->base + AIC_EVENT);
->> +		type = FIELD_GET(AIC_EVENT_TYPE, event);
->> +		irq = FIELD_GET(AIC_EVENT_NUM, event);
->> +
->> +		if (type == AIC_EVENT_TYPE_HW)
->> +			handle_domain_irq(aic_irqc->hw_domain, irq, regs);
->> +		else if (type == AIC_EVENT_TYPE_IPI && irq == 1)
->> +			aic_handle_ipi(regs);
->> +		else if (event != 0)
->> +			pr_err("Unknown IRQ event %d, %d\n", type, irq);
->> +	} while (event);
->> +
->> +	/*
->> +	 * vGIC maintenance interrupts end up here too, so we need to check
->> +	 * for them separately. Just report and disable vGIC for now, until
->> +	 * we implement this properly.
->> +	 */
->> +	if ((read_sysreg_s(SYS_ICH_HCR_EL2) & ICH_HCR_EN) &&
->> +		read_sysreg_s(SYS_ICH_MISR_EL2) != 0) {
->> +		pr_err("vGIC IRQ fired, disabling.\n");
->> +		sysreg_clear_set_s(SYS_ICH_HCR_EL2, ICH_HCR_EN, 0);
->> +	}
-> 
-> What prevents all these system register accesses being speculated up before
-> the handler?
-
-Nothing, but that's not a problem, is it? If the condition is met, it 
-means the vGIC IRQ *is* firing and needs clearing. We don't particularly 
-care if this happens before, after, or during the rest of the IRQ handling.
-
-I changed the message to this, because we actually should never hit this 
-path with correctly-working KVM code (it takes care of it before this 
-handler runs):
-
-pr_err_ratelimited("vGIC IRQ fired and not handled by KVM, disabling.\n");
-
->> +static struct irq_chip aic_chip = {
->> +	.name = "AIC",
->> +	.irq_mask = aic_irq_mask,
->> +	.irq_unmask = aic_irq_unmask,
-> 
-> I know these are driven by the higher-level irq chip code, but I'm a bit
-> confused as to what provides ordering if, e.g. something ends up calling:
-> 
-> 	aic_chip.irq_mask(d);
-> 	...
-> 	aic_chip.irq_unmask(d);
-> 
-> I can't see any ISBs in here and they're writing to two different registers,
-> so can we end up with the IRQ masked after this sequence?
-
-Wait, aren't MMIO writes to the same peripheral using device-nGnRnE 
-memory modes always ordered with respect to each other? I thought the 
-_relaxed versions were only trouble when mixed with memory/DMA buffers, 
-and MMIO for any given peripheral always takes effect in program order.
-
->> +static void aic_ipi_mask(struct irq_data *d)
->> +{
->> +	u32 irq_bit = BIT(irqd_to_hwirq(d));
->> +	int this_cpu = smp_processor_id();
->> +
->> +	/* No specific ordering requirements needed here. */
->> +	atomic_andnot(irq_bit, &aic_vipi_enable[this_cpu]);
->> +}
-> 
-> Why not use a per-cpu variable here instead of an array of atomics? The pcpu
-> API has things for atomic updates (e.g. or, and, xchg).
-
-One CPU still needs to be able to mutate the flags of another CPU to 
-fire an IPI; AIUI the per-cpu ops are *not* atomic for concurrent access 
-by multiple CPUs, and in fact there is no API for that, only for "this CPU".
-
->> +static void aic_ipi_unmask(struct irq_data *d)
->> +{
->> +	struct aic_irq_chip *ic = irq_data_get_irq_chip_data(d);
->> +	u32 irq_bit = BIT(irqd_to_hwirq(d));
->> +	int this_cpu = smp_processor_id();
->> +
->> +	/*
->> +	 * This must complete before the atomic_read_acquire() below to avoid
->> +	 * racing aic_ipi_send_mask(). Use a dummy fetch op with release
->> +	 * semantics for this. This is arch-specific: ARMv8 B2.3.3 specifies
->> +	 * that writes with Release semantics are Barrier-ordered-before reads
->> +	 * with Acquire semantics, even though the Linux arch-independent
->> +	 * definition of these atomic ops does not.
->> +	 */
-> 
-> I think a more idiomatic (and portable) way to do this would be to use
-> the relaxed accessors, but with smp_mb__after_atomic() between them. Do you
-> have a good reason for _not_ doing it like that?
-
-Not particularly, other than symmetry with the case below.
-
->> +		/*
->> +		 * This sequence is the mirror of the one in aic_ipi_unmask();
->> +		 * see the comment there. Additionally, release semantics
->> +		 * ensure that the vIPI flag set is ordered after any shared
->> +		 * memory accesses that precede it. This therefore also pairs
->> +		 * with the atomic_fetch_andnot in aic_handle_ipi().
->> +		 */
->> +		pending = atomic_fetch_or_release(irq_bit, &aic_vipi_flag[cpu]);
-
-We do need the return data here, and the release semantics (or another 
-barrier before it). But the read below can be made relaxed and a barrier 
-used instead, and then the same patern above except with a plain 
-atomic_or().
-
->> +		if (!(pending & irq_bit) && (atomic_read_acquire(&aic_vipi_enable[cpu]) & irq_bit))
->> +			send |= AIC_IPI_SEND_CPU(cpu);
->> +	}
-
-[...]
-
->> +	/*
->> +	 * Clear the IPIs we are about to handle. This pairs with the
->> +	 * atomic_fetch_or_release() in aic_ipi_send_mask(), and needs to be
->> +	 * ordered after the aic_ic_write() above (to avoid dropping vIPIs) and
->> +	 * before IPI handling code (to avoid races handling vIPIs before they
->> +	 * are signaled). The former is taken care of by the release semantics
->> +	 * of the write portion, while the latter is taken care of by the
->> +	 * acquire semantics of the read portion.
->> +	 */
->> +	firing = atomic_fetch_andnot(enabled, &aic_vipi_flag[this_cpu]) & enabled;
-> 
-> Does this also need to be ordered after the Ack? For example, if we have
-> something like:
-> 
-> CPU 0						CPU 1
-> 						<some other IPI>
-> aic_ipi_send_mask()
-> 						atomic_fetch_andnot(flag)
-> 	atomic_fetch_or_release(flag)
-> 	aic_ic_write(AIC_IPI_SEND)
-> 						aic_ic_write(AIC_IPI_ACK)
-> 
-> sorry if it's a stupid question, I'm just not sure about the cases in which
-> the hardware will pend things for you.
-
-It is ordered, right? As the comment says, it "needs to be ordered after 
-the aic_ic_write() above". atomic_fetch_andnot() is *supposed* to be 
-fully ordered and that should include against the writel_relaxed() on 
-AIC_IPI_FLAG. On ARM it turns out it's not quite fully ordered, but the 
-acquire semantics of the read half are sufficient for this case, as they 
-guarantee the flags are always read after the FIQ has been ACKed.
-
-Cheeers,
+diff --git a/Documentation/arm/index.rst b/Documentation/arm/index.rst
+index b4bea32472b6..d4f34ae9e6f4 100644
+--- a/Documentation/arm/index.rst
++++ b/Documentation/arm/index.rst
+@@ -52,6 +52,7 @@ SoC-specific documents
+    stm32/stm32f746-overview
+    stm32/overview
+    stm32/stm32h743-overview
++   stm32/stm32h750-overview
+    stm32/stm32f769-overview
+    stm32/stm32f429-overview
+    stm32/stm32mp157-overview
+diff --git a/Documentation/arm/stm32/stm32h750-overview.rst b/Documentation/arm/stm32/stm32h750-overview.rst
+new file mode 100644
+index 000000000000..0e51235c9547
+--- /dev/null
++++ b/Documentation/arm/stm32/stm32h750-overview.rst
+@@ -0,0 +1,34 @@
++==================
++STM32H750 Overview
++==================
++
++Introduction
++------------
++
++The STM32H750 is a Cortex-M7 MCU aimed at various applications.
++It features:
++
++- Cortex-M7 core running up to @480MHz
++- 128K internal flash, 1MBytes internal RAM
++- FMC controller to connect SDRAM, NOR and NAND memories
++- Dual mode QSPI
++- SD/MMC/SDIO support
++- Ethernet controller
++- USB OTFG FS & HS controllers
++- I2C, SPI, CAN busses support
++- Several 16 & 32 bits general purpose timers
++- Serial Audio interface
++- LCD controller
++- HDMI-CEC
++- SPDIFRX
++- DFSDM
++
++Resources
++---------
++
++Datasheet and reference manual are publicly available on ST website (STM32H750_).
++
++.. _STM32H750: https://www.st.com/en/microcontrollers-microprocessors/stm32h750-value-line.html
++
++:Authors: Dillon Min <dillon.minfei@gmail.com>
++
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+2.7.4
+
