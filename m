@@ -6,94 +6,93 @@ X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9D2C433C1
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 01:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D71C433E6
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 01:47:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 186EC61A3E
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 01:46:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 26D5861A55
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Mar 2021 01:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbhCZBpk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Mar 2021 21:45:40 -0400
-Received: from mail-il1-f177.google.com ([209.85.166.177]:42593 "EHLO
-        mail-il1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbhCZBpG (ORCPT
+        id S230292AbhCZBqo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Mar 2021 21:46:44 -0400
+Received: from mail-il1-f173.google.com ([209.85.166.173]:43931 "EHLO
+        mail-il1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230324AbhCZBqT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Mar 2021 21:45:06 -0400
-Received: by mail-il1-f177.google.com with SMTP id l5so3781550ilv.9;
-        Thu, 25 Mar 2021 18:45:05 -0700 (PDT)
+        Thu, 25 Mar 2021 21:46:19 -0400
+Received: by mail-il1-f173.google.com with SMTP id d2so3780209ilm.10;
+        Thu, 25 Mar 2021 18:46:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=PZsXaMzEzAOeuTtz20TFhfalE//5yBaTZxTM2icf+t8=;
-        b=pZNhvGRY8GQ46wD56YRWcEPkPBV0aoNGdNeeeVvD59vNnvGamo7J4duoTZ4cgMmfD0
-         KmOZtxMNsd5FokLRhRP/rJAMPYjwAx+zto5I6BDw8aW8iV59SQrMTbKklsZdPieq5G9d
-         zrn1DqT/zR7JtrNFuO5R4LATu3XETKBg6v5XbHqYtSr9XQvQHZlRetZuaV3j0N8aFqs/
-         uxxLfl0l3vfeW2oi2E5GOgmtaCBM8XtiJCM6hYUvr8EN2iIyKPbWUdOF7LEJcD+AtkD1
-         HfI12p2afrioOdtNFpr457lWqYD6DHBJkjjHPa6nTj/ZyOfpX+5Px70aiPNmiwdODFyI
-         eZOg==
-X-Gm-Message-State: AOAM532y+lf991Q8UghhoohURxd4k5RVok/7261ACSZWcMag+DtQoDDt
-        UB1eH9VSx+QBr/mzr1XA4g==
-X-Google-Smtp-Source: ABdhPJw2gR2TyVZd11y9iO8iab1634RMShjveSM1GjxFM4JuqXPhKrf2/Z0VPxLDBB7qy4BaghmQ0A==
-X-Received: by 2002:a92:ca4b:: with SMTP id q11mr8989243ilo.272.1616723104674;
-        Thu, 25 Mar 2021 18:45:04 -0700 (PDT)
+        bh=r8oIhicR0M0rWsVThiNvSmTLmYajZwzOVB1v/JAmNUo=;
+        b=GY9jqOj5MErUBryAp2O4rMi2sXihkFhRV5lbRhaYhVsef9jQ+VLa5yJjPpOBWywwq3
+         Xt8faZ5WwPpPxYugVV2fPY5QNW6ASO0CKtxohpZ3ZdtSFsKoBn6VCQHRgC9NEQB5DA13
+         DwQf3xXIYcVR8olqQIebe3HVBmaqPsqB2akzDZenxnjdMOeFIFtI1YMU/gZ4ZPNJUEI3
+         vJn8rSw+/jo7EQ6i+IMdddH5JvUimnwYXl0GR0BTh69kygwEsVcJXT+ohwXRf3N68mXG
+         mKfVgYNz34SAqsY76bvAl+kRyhAchKZHxnUDptTwHvHCO360Hsttdl6O8GXhojOfbdZ2
+         XY3g==
+X-Gm-Message-State: AOAM530qn+yn8bqLwSfwFZD5Yp81OwZj2uS/JzeXPws8QqMgZ3wr6z0c
+        JAIsB4StK3Jayc9IDWRyTQ==
+X-Google-Smtp-Source: ABdhPJwPChqbBJ77wIDn5W+k0ERwri8ICIG3Ysr443SmIFXqsQ/x1s7q28o5ZtNwCs7WuCdCIH0oGw==
+X-Received: by 2002:a05:6e02:1143:: with SMTP id o3mr8643517ill.104.1616723178197;
+        Thu, 25 Mar 2021 18:46:18 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id q8sm3443978ilv.55.2021.03.25.18.45.01
+        by smtp.gmail.com with ESMTPSA id f15sm3616031ilj.24.2021.03.25.18.46.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 18:45:03 -0700 (PDT)
-Received: (nullmailer pid 2151969 invoked by uid 1000);
-        Fri, 26 Mar 2021 01:44:59 -0000
-Date:   Thu, 25 Mar 2021 19:44:59 -0600
+        Thu, 25 Mar 2021 18:46:17 -0700 (PDT)
+Received: (nullmailer pid 2154103 invoked by uid 1000);
+        Fri, 26 Mar 2021 01:46:13 -0000
+Date:   Thu, 25 Mar 2021 19:46:13 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Seiya Wang <seiya.wang@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org,
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Sean Wang <sean.wang@mediatek.com>,
         Chaotian Jing <chaotian.jing@mediatek.com>,
-        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
-        linux-iio@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
         linux-watchdog@vger.kernel.org,
         Jonathan Cameron <jic23@kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
         Ulf Hansson <ulf.hansson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-arm-kernel@lists.infradead.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        linux-kernel@vger.kernel.org, Wenbin Mei <wenbin.mei@mediatek.com>,
-        devicetree@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>,
         Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v2 5/8] dt-bindings: iio: adc: Add compatible for
- Mediatek MT8195
-Message-ID: <20210326014459.GA2146095@robh.at.kernel.org>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        srv_heupstream@mediatek.com, linux-arm-kernel@lists.infradead.org,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-iio@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-mmc@vger.kernel.org, Wenbin Mei <wenbin.mei@mediatek.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Vinod Koul <vkoul@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-serial@vger.kernel.org,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 7/8] dt-bindings: phy: fix dt_binding_check warning in
+ mediatek, ufs-phy.yaml
+Message-ID: <20210326014613.GA2153687@robh.at.kernel.org>
 References: <20210319023427.16711-1-seiya.wang@mediatek.com>
- <20210319023427.16711-7-seiya.wang@mediatek.com>
+ <20210319023427.16711-9-seiya.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210319023427.16711-7-seiya.wang@mediatek.com>
+In-Reply-To: <20210319023427.16711-9-seiya.wang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 19 Mar 2021 10:34:24 +0800, Seiya Wang wrote:
-> This commit adds dt-binding documentation of auxadc for Mediatek MT8195 SoC
-> Platform.
+On Fri, 19 Mar 2021 10:34:26 +0800, Seiya Wang wrote:
+> This commit fixes the warning messages of make dt_binding_check from
+> newly added mediatek,mt8195-ufsphy in mediatek,ufs-phy.yaml
 > 
 > Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
 > ---
->  Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml | 1 +
->  1 file changed, 1 insertion(+)
+>  Documentation/devicetree/bindings/phy/mediatek,ufs-phy.yaml | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
