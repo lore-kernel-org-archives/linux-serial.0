@@ -8,63 +8,62 @@ X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D192C433DB
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Mar 2021 21:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F130C433C1
+	for <linux-serial@archiver.kernel.org>; Sun, 28 Mar 2021 21:25:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 38DB76195E
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Mar 2021 21:25:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 64D346195E
+	for <linux-serial@archiver.kernel.org>; Sun, 28 Mar 2021 21:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbhC1VYk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 28 Mar 2021 17:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48978 "EHLO
+        id S231509AbhC1VZP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 28 Mar 2021 17:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbhC1VYR (ORCPT
+        with ESMTP id S231446AbhC1VYk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 28 Mar 2021 17:24:17 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777FEC061756;
-        Sun, 28 Mar 2021 14:24:17 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ap14so3280895ejc.0;
-        Sun, 28 Mar 2021 14:24:17 -0700 (PDT)
+        Sun, 28 Mar 2021 17:24:40 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF9FC061756;
+        Sun, 28 Mar 2021 14:24:39 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id u21so16356688ejo.13;
+        Sun, 28 Mar 2021 14:24:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=h8X3xkCb2iKB1gBnb2OIJ1fkuZbHQANnRKaUSTzssmg=;
-        b=ESp1OIAIKANj6P4M6l2SRGboimfHCB6ez6cMjR5+bnW41ngioW7pLqCe4Nr5o8WPr+
-         nw1AX2EFcyldrHMQslSs7QQP+/XPZQPvNURDiR22UA8jPEfLwta7Icid6eSeWVPss9dH
-         IFBv21gGNGwQZ+Cr129IDO75lofg6HGgLPDy4y0NBhdVe0iW6AkOnjyS6OUFMRmBPA+C
-         Vkt7E20tE4bgZv4MOc5XA52IvweWuGCAkCyKHrgRtYQrs8tXfIaOfR2frcrFZVAUfQuB
-         eq1HBc8KwmgMak16il8V0p82DAjML0EajwgZrYN8+Z5pWzYAdICjxcp4gDNwH47k8T0U
-         3BBg==
+        bh=VOOl8ErxBPJ+MgHS2Kc6EjQi+pHkac3A/x3zjS/xmr4=;
+        b=J3+NAYWxzl9lECtWZwfBVuMBNSU1YAcpsSqHrUrMzB4Wb4nxPYcGQi5hZDUKfA1ZC5
+         KPWS2U7Os0GI29mtjO2+0AjGNbgUfe3xqd4bgA20hJZTsIjILLtElOFhQO07sxoWuhle
+         WN0PptMh2cDt6R8QbznycVbe18feuY4WtrGUYkrgdHvorNfw3dGHZume5D8Vihu49/W7
+         E8AmPbqDv5OdOJ5dXQYstPXT1+g+RVKKiI2lTKfyy2Ctw1aPt7wjcUuS8G2qrg7zR0tm
+         iXNcqr3pKMyeYnYRMEr8AKbgQ6vMlw8L3zxotSQZg15lvljlkFZCGd+qH8jxi4g2hfhP
+         YxbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=h8X3xkCb2iKB1gBnb2OIJ1fkuZbHQANnRKaUSTzssmg=;
-        b=PHNxsyVaT/W6suAxunbZXhaOLqXsMHF7WNBKR6c36XmGYJnS7qW4kj8HH0XpmoxD/O
-         VICH1eVauiiRoMXpW4krAqHCuNUzDFpkr+O97TVxy8UfedNal07J0/xgX4sQt1JaOQ+t
-         k5ZljEzcnadqFYUPAVycFBpEayfhQq3ctCr+xjVVLof9JPLpuQyD+W8EpWeYR5E5FYCF
-         feTBxWKJcnZ+IRszMUTVIH2+Qw1Kbk3RY4MDVLyeLn/9MuDIy09uzi6ZG4pNbsD3bPmU
-         74XzPoToktXvgzLtOMBdVHNnj75iPfbLuChcgUjDkJ7KQFHMbMhXQNE8jEiFWRBGLKDW
-         vTtw==
-X-Gm-Message-State: AOAM532GIr+BxggRrwlRV9oky41K9SMzVyUJE+t4SecjTK4jiMaNLiAV
-        ODe1aick7CnWzp1aOioJL8x6L9eXQgFfomhAX+zKhQ53+XM=
-X-Google-Smtp-Source: ABdhPJwO88tlg8QBHREqzsFMcEe9Jhi5Z9xZo47eaL0S4suKjsU2w2XhA5xvl8Lf4/MlD1zHmY0pKal0XDGBU0uXrLc=
-X-Received: by 2002:a17:906:52d0:: with SMTP id w16mr25472016ejn.172.1616966655864;
- Sun, 28 Mar 2021 14:24:15 -0700 (PDT)
+        bh=VOOl8ErxBPJ+MgHS2Kc6EjQi+pHkac3A/x3zjS/xmr4=;
+        b=F6Ef+mVKrDu8zt2hm4ek0rjCGQp74VnlJ5c5Z7Kw7ylaTKMmrJopV5iNAF/J5GLaY/
+         z8M1TZBSjJI/QGXtkCKNSxRHHibc1p8xCBzg8FmWIgVA2bxV/DAJqFLOyUzmqrYPa1pM
+         1nUAv2rH97abS9QFIzaWlQSJt94QQGsQHpQl52fx34Ab55LJm4+EdO2O1esXbwmCmHH5
+         Js+5NngxIsbLtjsFoxg0J1cidxBPdsIs2wwn4BI0l5VzeOSJInMnFtQC1WTYL87Kx5DX
+         sKRQyPfQw40I+R+xrAGuSPGhLQJACkyO71UUhXel1KebZA0U2l4n8RybvHfAEnisfWw7
+         fD4Q==
+X-Gm-Message-State: AOAM531kO60PkBhDu4YClp6bdFYSXzdXLuIye4rmpD3b+7uflwWH6Iqf
+        YqLGnhCv6kQLKl34wMMvsuBln7n8A3Ikfo5vwYM=
+X-Google-Smtp-Source: ABdhPJxlBNQj9N4H3RLgqryBwaxCFGh6FH+L/AHqGXOl8bxIbiyTs/KSqTOor0E2c1ryHt/opy9mPi/6q2NoT2clB1E=
+X-Received: by 2002:a17:907:2716:: with SMTP id w22mr25634218ejk.328.1616966678759;
+ Sun, 28 Mar 2021 14:24:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210325152410.1795557-1-narmstrong@baylibre.com> <20210325152410.1795557-3-narmstrong@baylibre.com>
-In-Reply-To: <20210325152410.1795557-3-narmstrong@baylibre.com>
+References: <20210325152410.1795557-1-narmstrong@baylibre.com> <20210325152410.1795557-4-narmstrong@baylibre.com>
+In-Reply-To: <20210325152410.1795557-4-narmstrong@baylibre.com>
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sun, 28 Mar 2021 23:24:05 +0200
-Message-ID: <CAFBinCB0_xonzPnZck3Ji6x9x12uLshDYo29nnEjqh8unn_YyA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] tty: serial: meson: retrieve port FIFO size from DT
+Date:   Sun, 28 Mar 2021 23:24:28 +0200
+Message-ID: <CAFBinCCGUSaFpsey=hux=EkZnKAG4YXUUEt08tBVwrd1NHPHxw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] arm64: dts: meson: set 128bytes FIFO size on uart A
 To:     Neil Armstrong <narmstrong@baylibre.com>
 Cc:     gregkh@linuxfoundation.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Kevin Hilman <khilman@baylibre.com>
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -72,9 +71,8 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Thu, Mar 25, 2021 at 4:25 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
 >
-> Now the DT bindings has a property to get the FIFO size for a particular port,
-> retrieve it and use to setup the FIFO interrupts threshold.
+> The first UART controller in "Everything-Else" power domain, usually used
+> for Bluetooth HCI has 128bytes FIFO depth.
 >
 > Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-> Reviewed-by: Kevin Hilman <khilman@baylibre.com>
 Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
