@@ -2,74 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-14.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B77C433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 13:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F095C433DB
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 15:41:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 76AE461938
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 13:58:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E2E5061970
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 15:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229468AbhC2N5t (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Mar 2021 09:57:49 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:14187 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230319AbhC2N5W (ORCPT
+        id S231465AbhC2PlH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Mar 2021 11:41:07 -0400
+Received: from a27-85.smtp-out.us-west-2.amazonses.com ([54.240.27.85]:50947
+        "EHLO a27-85.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230167AbhC2Pki (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Mar 2021 09:57:22 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F8DbR0bRRzmbfb;
-        Mon, 29 Mar 2021 21:54:43 +0800 (CST)
-Received: from localhost.localdomain (10.175.102.38) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 29 Mar 2021 21:57:10 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     <weiyongjun1@huawei.com>, Al Cooper <alcooperx@gmail.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-CC:     <linux-serial@vger.kernel.org>,
-        <bcm-kernel-feedback-list@broadcom.com>,
-        <kernel-janitors@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH -next] serial: 8250_bcm7271: Fix return value check in brcmuart_probe()
-Date:   Mon, 29 Mar 2021 14:06:59 +0000
-Message-ID: <20210329140659.1832950-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.102.38]
-X-CFilter-Loop: Reflected
+        Mon, 29 Mar 2021 11:40:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zzmz6pik4loqlrvo6grmnyszsx3fszus; d=nh6z.net; t=1617032436;
+        h=Subject:From:To:Cc:Date:Mime-Version:Content-Type:Content-Transfer-Encoding:References:Message-Id;
+        bh=cJTRSqc4BP2jIQ52BQB6Hzmg9RUU74TP2jKEZ10q4nk=;
+        b=A+NUQafxahAFEwz5mV+E6rS+JcfEEolzziP19MuiBQXe8jkNWyhztQ+EWCaP9zGe
+        C0mZWx0PgZJKzDqElZ21iFLIC4Wrs7jaYckEX0aHvb35SRGyCUXDdAWtZA6AStRtB3E
+        x0JP1XhVTlU+f22emS64u80AEC0xfQXxxAzZMN9o=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=7v7vs6w47njt4pimodk5mmttbegzsi6n; d=amazonses.com; t=1617032436;
+        h=Subject:From:To:Cc:Date:Mime-Version:Content-Type:Content-Transfer-Encoding:References:Message-Id:Feedback-ID;
+        bh=cJTRSqc4BP2jIQ52BQB6Hzmg9RUU74TP2jKEZ10q4nk=;
+        b=fmrix/obMD7642qeiRlM131vaKDaq9lmI59lUQi+jPwlEI8O1Sy66zeAFhKD5Tvn
+        XtpxZ6UvZxs7FDmTlhoQxoLGPmhqYEjEgE1KeSBFJsljnF7WguH/uIcmEyqWV4zTMGb
+        obD/rCj9Fm5w3FPWo4W9kE09NVnDNxlJiSDL9h8o=
+Subject: [PATCH] sc16is7xx: Defer probe if device read fails
+From:   =?UTF-8?Q?Annaliese_McDermond?= <nh6z@nh6z.net>
+To:     =?UTF-8?Q?linux-serial=40vger=2Ekernel=2Eorg?= 
+        <linux-serial@vger.kernel.org>
+Cc:     =?UTF-8?Q?Annaliese_McDermond?= <nh6z@nh6z.net>,
+        =?UTF-8?Q?team=40nwdigitalradio=2Ecom?= <team@nwdigitalradio.com>,
+        =?UTF-8?Q?stable=40vger=2Ekernel=2Eorg?= <stable@vger.kernel.org>
+Date:   Mon, 29 Mar 2021 15:40:35 +0000
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <20210329154013.408967-1-nh6z@nh6z.net>
+X-Mailer: Amazon WorkMail
+Thread-Index: AQHXJLHb+f11tj/5RVCWuJdkpEj6bA==
+Thread-Topic: [PATCH] sc16is7xx: Defer probe if device read fails
+X-Original-Mailer: git-send-email 2.27.0
+X-Wm-Sent-Timestamp: 1617032435
+Message-ID: <010101787ea4d8c4-08608e8d-9755-4a88-9908-af95233a4f8e-000000@us-west-2.amazonses.com>
+X-SES-Outgoing: 2021.03.29-54.240.27.85
+Feedback-ID: 1.us-west-2.An468LAV0jCjQDrDLvlZjeAthld7qrhZr+vow8irkvU=:AmazonSES
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In case of error, the function devm_ioremap() returns NULL
-pointer not ERR_PTR(). The IS_ERR() test in the return value
-check should be replaced with NULL test.
-
-Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 63883185fccd..a4f3f6301d4f 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -974,8 +974,8 @@ static int brcmuart_probe(struct platform_device *pdev)
- 			break;
- 		priv->regs[x] =	devm_ioremap(dev, regs->start,
- 					     resource_size(regs));
--		if (IS_ERR(priv->regs[x]))
--			return PTR_ERR(priv->regs[x]);
-+		if (!priv->regs[x])
-+			return -ENOMEM;
- 		if (x == REGS_8250) {
- 			mapbase = regs->start;
- 			membase = priv->regs[x];
-
+A test was added to the probe function to ensure the device was=0D=0Aactu=
+ally connected and working before successfully completing a=0D=0Aprobe.  =
+If the device was actually there, but the I2C bus was not=0D=0Aready yet =
+for whatever reason, the probe fails permanently.=0D=0A=0D=0AChange the p=
+robe so that we defer the probe on a regmap read=0D=0Afailure so that we =
+try the probe again when the dependent drivers=0D=0Aare potentially loade=
+d.  This should not affect the case where the=0D=0Adevice truly isn't pre=
+sent because the probe will never successfully=0D=0Acomplete.=0D=0A=0D=0A=
+Fixes: 2aa916e ("sc16is7xx: Read the LSR register for basic device presen=
+ce check")=0D=0ACc: stable@vger.kernel.org=0D=0ASigned-off-by: Annaliese =
+McDermond <nh6z@nh6z.net>=0D=0A---=0D=0A drivers/tty/serial/sc16is7xx.c |=
+ 2 +-=0D=0A 1 file changed, 1 insertion(+), 1 deletion(-)=0D=0A=0D=0Adiff=
+ --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c=0D=
+=0Aindex f86ec2d2635b..9adb8362578c 100644=0D=0A--- a/drivers/tty/serial/=
+sc16is7xx.c=0D=0A+++ b/drivers/tty/serial/sc16is7xx.c=0D=0A@@ -1196,7 +11=
+96,7 @@ static int sc16is7xx_probe(struct device *dev,=0D=0A =09ret =3D r=
+egmap_read(regmap,=0D=0A =09=09=09  SC16IS7XX_LSR_REG << SC16IS7XX_REG_SH=
+IFT, &val);=0D=0A =09if (ret < 0)=0D=0A-=09=09return ret;=0D=0A+=09=09ret=
+urn -EPROBE_DEFER;=0D=0A=20=0D=0A =09/* Alloc port structure */=0D=0A =09=
+s =3D devm_kzalloc(dev, struct_size(s, p, devtype->nr_uart), GFP_KERNEL);=
+=0D=0A--=20=0D=0A2.27.0=0D=0A=0D=0A
