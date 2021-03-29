@@ -2,77 +2,201 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F130C433C1
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Mar 2021 21:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5185FC433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 00:40:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 64D346195E
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Mar 2021 21:25:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F3E7261948
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 00:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231509AbhC1VZP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 28 Mar 2021 17:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231446AbhC1VYk (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 28 Mar 2021 17:24:40 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF9FC061756;
-        Sun, 28 Mar 2021 14:24:39 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id u21so16356688ejo.13;
-        Sun, 28 Mar 2021 14:24:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VOOl8ErxBPJ+MgHS2Kc6EjQi+pHkac3A/x3zjS/xmr4=;
-        b=J3+NAYWxzl9lECtWZwfBVuMBNSU1YAcpsSqHrUrMzB4Wb4nxPYcGQi5hZDUKfA1ZC5
-         KPWS2U7Os0GI29mtjO2+0AjGNbgUfe3xqd4bgA20hJZTsIjILLtElOFhQO07sxoWuhle
-         WN0PptMh2cDt6R8QbznycVbe18feuY4WtrGUYkrgdHvorNfw3dGHZume5D8Vihu49/W7
-         E8AmPbqDv5OdOJ5dXQYstPXT1+g+RVKKiI2lTKfyy2Ctw1aPt7wjcUuS8G2qrg7zR0tm
-         iXNcqr3pKMyeYnYRMEr8AKbgQ6vMlw8L3zxotSQZg15lvljlkFZCGd+qH8jxi4g2hfhP
-         YxbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VOOl8ErxBPJ+MgHS2Kc6EjQi+pHkac3A/x3zjS/xmr4=;
-        b=F6Ef+mVKrDu8zt2hm4ek0rjCGQp74VnlJ5c5Z7Kw7ylaTKMmrJopV5iNAF/J5GLaY/
-         z8M1TZBSjJI/QGXtkCKNSxRHHibc1p8xCBzg8FmWIgVA2bxV/DAJqFLOyUzmqrYPa1pM
-         1nUAv2rH97abS9QFIzaWlQSJt94QQGsQHpQl52fx34Ab55LJm4+EdO2O1esXbwmCmHH5
-         Js+5NngxIsbLtjsFoxg0J1cidxBPdsIs2wwn4BI0l5VzeOSJInMnFtQC1WTYL87Kx5DX
-         sKRQyPfQw40I+R+xrAGuSPGhLQJACkyO71UUhXel1KebZA0U2l4n8RybvHfAEnisfWw7
-         fD4Q==
-X-Gm-Message-State: AOAM531kO60PkBhDu4YClp6bdFYSXzdXLuIye4rmpD3b+7uflwWH6Iqf
-        YqLGnhCv6kQLKl34wMMvsuBln7n8A3Ikfo5vwYM=
-X-Google-Smtp-Source: ABdhPJxlBNQj9N4H3RLgqryBwaxCFGh6FH+L/AHqGXOl8bxIbiyTs/KSqTOor0E2c1ryHt/opy9mPi/6q2NoT2clB1E=
-X-Received: by 2002:a17:907:2716:: with SMTP id w22mr25634218ejk.328.1616966678759;
- Sun, 28 Mar 2021 14:24:38 -0700 (PDT)
+        id S231641AbhC2Ajx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 28 Mar 2021 20:39:53 -0400
+Received: from mga14.intel.com ([192.55.52.115]:54632 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231450AbhC2Ajs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 28 Mar 2021 20:39:48 -0400
+IronPort-SDR: tYkW3lVi9tsCnSa569MTz0q9Ct1Y0TFSKXzYhzyBZaiJ4Bn2V6qMT4XeluCZs49zdYOz56DJOS
+ ir5co3xRk0TQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9937"; a="190915476"
+X-IronPort-AV: E=Sophos;i="5.81,285,1610438400"; 
+   d="scan'208";a="190915476"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2021 17:39:48 -0700
+IronPort-SDR: eufSRCQKcLeY/MgVEKnr3R8bKyuqxtWtz+6K5KqUWUk8K6h3s0n6Vosym94gooTPyFsYyrsakC
+ sw0cPEzuFK3w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,285,1610438400"; 
+   d="scan'208";a="454333312"
+Received: from lkp-server01.sh.intel.com (HELO 69d8fcc516b7) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 28 Mar 2021 17:39:47 -0700
+Received: from kbuild by 69d8fcc516b7 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1lQfwY-0004Fq-Io; Mon, 29 Mar 2021 00:39:46 +0000
+Date:   Mon, 29 Mar 2021 08:39:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS WITH WARNING
+ 211b4d42b70f1c1660feaa968dac0efc2a96ac4d
+Message-ID: <606121b6.SQdAlypo3dfEhZOF%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20210325152410.1795557-1-narmstrong@baylibre.com> <20210325152410.1795557-4-narmstrong@baylibre.com>
-In-Reply-To: <20210325152410.1795557-4-narmstrong@baylibre.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sun, 28 Mar 2021 23:24:28 +0200
-Message-ID: <CAFBinCCGUSaFpsey=hux=EkZnKAG4YXUUEt08tBVwrd1NHPHxw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] arm64: dts: meson: set 128bytes FIFO size on uart A
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     gregkh@linuxfoundation.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 4:25 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
->
-> The first UART controller in "Everything-Else" power domain, usually used
-> for Bluetooth HCI has 128bytes FIFO depth.
->
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 211b4d42b70f1c1660feaa968dac0efc2a96ac4d  tty: fix memory leak in vc_deallocate
+
+possible Warning in current branch:
+
+arch/arm/boot/dts/exynos4210-i9100.dt.yaml: serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
+arch/arm/boot/dts/exynos4210-trats.dt.yaml: serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
+arch/arm/boot/dts/exynos4412-i9300.dt.yaml: serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
+arch/arm/boot/dts/exynos4412-i9305.dt.yaml: serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
+arch/arm/boot/dts/exynos4412-n710x.dt.yaml: serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
+arch/arm/boot/dts/exynos4412-p4note-n8010.dt.yaml: serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
+arch/arm/boot/dts/exynos4412-trats2.dt.yaml: serial@13800000: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
+
+Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+`-- arm-defconfig
+    |-- arch-arm-boot-dts-exynos4210-i9100.dt.yaml:serial:bluetooth-does-not-match-any-of-the-regexes:pinctrl
+    |-- arch-arm-boot-dts-exynos4210-trats.dt.yaml:serial:bluetooth-does-not-match-any-of-the-regexes:pinctrl
+    |-- arch-arm-boot-dts-exynos4412-i9300.dt.yaml:serial:bluetooth-does-not-match-any-of-the-regexes:pinctrl
+    |-- arch-arm-boot-dts-exynos4412-i9305.dt.yaml:serial:bluetooth-does-not-match-any-of-the-regexes:pinctrl
+    |-- arch-arm-boot-dts-exynos4412-n71.dt.yaml:serial:bluetooth-does-not-match-any-of-the-regexes:pinctrl
+    |-- arch-arm-boot-dts-exynos4412-p4note-n8010.dt.yaml:serial:bluetooth-does-not-match-any-of-the-regexes:pinctrl
+    `-- arch-arm-boot-dts-exynos4412-trats2.dt.yaml:serial:bluetooth-does-not-match-any-of-the-regexes:pinctrl
+
+elapsed time: 722m
+
+configs tested: 113
+configs skipped: 2
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+sh                            titan_defconfig
+powerpc                     sbc8548_defconfig
+powerpc                 mpc834x_mds_defconfig
+powerpc                        icon_defconfig
+mips                      maltaaprp_defconfig
+arm                       imx_v4_v5_defconfig
+powerpc                    amigaone_defconfig
+powerpc                        cell_defconfig
+powerpc                     kilauea_defconfig
+powerpc                      chrp32_defconfig
+arm                       omap2plus_defconfig
+sh                          rsk7264_defconfig
+riscv                    nommu_virt_defconfig
+um                            kunit_defconfig
+powerpc                    socrates_defconfig
+arm                         s3c6400_defconfig
+powerpc                     rainier_defconfig
+arc                           tb10x_defconfig
+powerpc                     tqm8540_defconfig
+s390                                defconfig
+powerpc                      tqm8xx_defconfig
+i386                             alldefconfig
+sh                           se7722_defconfig
+powerpc                       ppc64_defconfig
+alpha                               defconfig
+arm                         shannon_defconfig
+mips                     loongson1b_defconfig
+sh                         microdev_defconfig
+parisc                generic-64bit_defconfig
+powerpc                      ppc6xx_defconfig
+arm                          ixp4xx_defconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                               tinyconfig
+i386                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a004-20210328
+i386                 randconfig-a003-20210328
+i386                 randconfig-a001-20210328
+i386                 randconfig-a002-20210328
+i386                 randconfig-a006-20210328
+i386                 randconfig-a005-20210328
+x86_64               randconfig-a015-20210328
+x86_64               randconfig-a012-20210328
+x86_64               randconfig-a013-20210328
+x86_64               randconfig-a014-20210328
+x86_64               randconfig-a016-20210328
+x86_64               randconfig-a011-20210328
+i386                 randconfig-a014-20210328
+i386                 randconfig-a011-20210328
+i386                 randconfig-a015-20210328
+i386                 randconfig-a016-20210328
+i386                 randconfig-a013-20210328
+i386                 randconfig-a012-20210328
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+um                               allmodconfig
+um                                allnoconfig
+um                               allyesconfig
+um                                  defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                      rhel-8.3-kbuiltin
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-a015-20210329
+x86_64               randconfig-a012-20210329
+x86_64               randconfig-a013-20210329
+x86_64               randconfig-a014-20210329
+x86_64               randconfig-a011-20210329
+x86_64               randconfig-a016-20210329
+x86_64               randconfig-a002-20210328
+x86_64               randconfig-a003-20210328
+x86_64               randconfig-a001-20210328
+x86_64               randconfig-a006-20210328
+x86_64               randconfig-a005-20210328
+x86_64               randconfig-a004-20210328
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
