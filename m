@@ -2,80 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F095C433DB
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 15:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222E0C433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 18:18:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E2E5061970
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 15:41:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ED3C760C41
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 18:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231465AbhC2PlH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Mar 2021 11:41:07 -0400
-Received: from a27-85.smtp-out.us-west-2.amazonses.com ([54.240.27.85]:50947
-        "EHLO a27-85.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230167AbhC2Pki (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Mar 2021 11:40:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zzmz6pik4loqlrvo6grmnyszsx3fszus; d=nh6z.net; t=1617032436;
-        h=Subject:From:To:Cc:Date:Mime-Version:Content-Type:Content-Transfer-Encoding:References:Message-Id;
-        bh=cJTRSqc4BP2jIQ52BQB6Hzmg9RUU74TP2jKEZ10q4nk=;
-        b=A+NUQafxahAFEwz5mV+E6rS+JcfEEolzziP19MuiBQXe8jkNWyhztQ+EWCaP9zGe
-        C0mZWx0PgZJKzDqElZ21iFLIC4Wrs7jaYckEX0aHvb35SRGyCUXDdAWtZA6AStRtB3E
-        x0JP1XhVTlU+f22emS64u80AEC0xfQXxxAzZMN9o=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=7v7vs6w47njt4pimodk5mmttbegzsi6n; d=amazonses.com; t=1617032436;
-        h=Subject:From:To:Cc:Date:Mime-Version:Content-Type:Content-Transfer-Encoding:References:Message-Id:Feedback-ID;
-        bh=cJTRSqc4BP2jIQ52BQB6Hzmg9RUU74TP2jKEZ10q4nk=;
-        b=fmrix/obMD7642qeiRlM131vaKDaq9lmI59lUQi+jPwlEI8O1Sy66zeAFhKD5Tvn
-        XtpxZ6UvZxs7FDmTlhoQxoLGPmhqYEjEgE1KeSBFJsljnF7WguH/uIcmEyqWV4zTMGb
-        obD/rCj9Fm5w3FPWo4W9kE09NVnDNxlJiSDL9h8o=
-Subject: [PATCH] sc16is7xx: Defer probe if device read fails
-From:   =?UTF-8?Q?Annaliese_McDermond?= <nh6z@nh6z.net>
-To:     =?UTF-8?Q?linux-serial=40vger=2Ekernel=2Eorg?= 
-        <linux-serial@vger.kernel.org>
-Cc:     =?UTF-8?Q?Annaliese_McDermond?= <nh6z@nh6z.net>,
-        =?UTF-8?Q?team=40nwdigitalradio=2Ecom?= <team@nwdigitalradio.com>,
-        =?UTF-8?Q?stable=40vger=2Ekernel=2Eorg?= <stable@vger.kernel.org>
-Date:   Mon, 29 Mar 2021 15:40:35 +0000
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S231476AbhC2SSZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Mar 2021 14:18:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44562 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231389AbhC2SSM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 29 Mar 2021 14:18:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6BF7E6192B;
+        Mon, 29 Mar 2021 18:18:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1617041892;
+        bh=nRlv7oKiyPTUscVlNKur+n5RxWjp9uMyiKtRCJqtWNk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GhtaFj1Nrjtf5xwsmRRkQLDLVweInLjp1vpPBeoxrqXTbxbKdV04MEg5J6gua8oYl
+         0PFRZRoy4ejU4Zhsj0lkGGugBjvKoxbmf/7JEp43a6a/S9qZv5tz6VvrLCsQYw7/nn
+         wwZTphqhcC8kCSglNIWSBu8GSXz0bbG2tV2bFots=
+Date:   Mon, 29 Mar 2021 20:18:09 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Annaliese McDermond <nh6z@nh6z.net>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "team@nwdigitalradio.com" <team@nwdigitalradio.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH] sc16is7xx: Defer probe if device read fails
+Message-ID: <YGIZ4bOX/4DF0KQ4@kroah.com>
 References: <20210329154013.408967-1-nh6z@nh6z.net>
-X-Mailer: Amazon WorkMail
-Thread-Index: AQHXJLHb+f11tj/5RVCWuJdkpEj6bA==
-Thread-Topic: [PATCH] sc16is7xx: Defer probe if device read fails
-X-Original-Mailer: git-send-email 2.27.0
-X-Wm-Sent-Timestamp: 1617032435
-Message-ID: <010101787ea4d8c4-08608e8d-9755-4a88-9908-af95233a4f8e-000000@us-west-2.amazonses.com>
-X-SES-Outgoing: 2021.03.29-54.240.27.85
-Feedback-ID: 1.us-west-2.An468LAV0jCjQDrDLvlZjeAthld7qrhZr+vow8irkvU=:AmazonSES
+ <010101787ea4d8c4-08608e8d-9755-4a88-9908-af95233a4f8e-000000@us-west-2.amazonses.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <010101787ea4d8c4-08608e8d-9755-4a88-9908-af95233a4f8e-000000@us-west-2.amazonses.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A test was added to the probe function to ensure the device was=0D=0Aactu=
-ally connected and working before successfully completing a=0D=0Aprobe.  =
-If the device was actually there, but the I2C bus was not=0D=0Aready yet =
-for whatever reason, the probe fails permanently.=0D=0A=0D=0AChange the p=
-robe so that we defer the probe on a regmap read=0D=0Afailure so that we =
-try the probe again when the dependent drivers=0D=0Aare potentially loade=
-d.  This should not affect the case where the=0D=0Adevice truly isn't pre=
-sent because the probe will never successfully=0D=0Acomplete.=0D=0A=0D=0A=
-Fixes: 2aa916e ("sc16is7xx: Read the LSR register for basic device presen=
-ce check")=0D=0ACc: stable@vger.kernel.org=0D=0ASigned-off-by: Annaliese =
-McDermond <nh6z@nh6z.net>=0D=0A---=0D=0A drivers/tty/serial/sc16is7xx.c |=
- 2 +-=0D=0A 1 file changed, 1 insertion(+), 1 deletion(-)=0D=0A=0D=0Adiff=
- --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c=0D=
-=0Aindex f86ec2d2635b..9adb8362578c 100644=0D=0A--- a/drivers/tty/serial/=
-sc16is7xx.c=0D=0A+++ b/drivers/tty/serial/sc16is7xx.c=0D=0A@@ -1196,7 +11=
-96,7 @@ static int sc16is7xx_probe(struct device *dev,=0D=0A =09ret =3D r=
-egmap_read(regmap,=0D=0A =09=09=09  SC16IS7XX_LSR_REG << SC16IS7XX_REG_SH=
-IFT, &val);=0D=0A =09if (ret < 0)=0D=0A-=09=09return ret;=0D=0A+=09=09ret=
-urn -EPROBE_DEFER;=0D=0A=20=0D=0A =09/* Alloc port structure */=0D=0A =09=
-s =3D devm_kzalloc(dev, struct_size(s, p, devtype->nr_uart), GFP_KERNEL);=
-=0D=0A--=20=0D=0A2.27.0=0D=0A=0D=0A
+On Mon, Mar 29, 2021 at 03:40:35PM +0000, Annaliese McDermond wrote:
+> A test was added to the probe function to ensure the device was
+> actually connected and working before successfully completing a
+> probe.  If the device was actually there, but the I2C bus was not
+> ready yet for whatever reason, the probe fails permanently.
+> 
+> Change the probe so that we defer the probe on a regmap read
+> failure so that we try the probe again when the dependent drivers
+> are potentially loaded.  This should not affect the case where the
+> device truly isn't present because the probe will never successfully
+> complete.
+> 
+> Fixes: 2aa916e ("sc16is7xx: Read the LSR register for basic device presence check")
+
+Please use the full 12 characters of the git commit id, as the
+documentation asks for.  This should be:
+
+Fixes: 2aa916e67db3 ("sc16is7xx: Read the LSR register for basic device presence check")
+
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Annaliese McDermond <nh6z@nh6z.net>
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index f86ec2d2635b..9adb8362578c 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -1196,7 +1196,7 @@ static int sc16is7xx_probe(struct device *dev,
+>  	ret = regmap_read(regmap,
+>  			  SC16IS7XX_LSR_REG << SC16IS7XX_REG_SHIFT, &val);
+>  	if (ret < 0)
+> -		return ret;
+> +		return -EPROBE_DEFER;
+>  
+>  	/* Alloc port structure */
+>  	s = devm_kzalloc(dev, struct_size(s, p, devtype->nr_uart), GFP_KERNEL);
+> -- 
+> 2.27.0
+
+Any reason you did not cc: the tty maintainer with this change?
+
+thanks,
+
+greg k-h
