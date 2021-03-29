@@ -6,59 +6,59 @@ X-Spam-Status: No, score=-14.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E617C433E8
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 11:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B424C433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 11:55:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5B3916192C
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 11:53:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 40E1D61930
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 11:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231309AbhC2LxT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Mar 2021 07:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        id S231187AbhC2LzZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Mar 2021 07:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231388AbhC2Lw6 (ORCPT
+        with ESMTP id S229788AbhC2LzF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Mar 2021 07:52:58 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1D0C061574;
-        Mon, 29 Mar 2021 04:52:58 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id k8so12564515wrc.3;
-        Mon, 29 Mar 2021 04:52:58 -0700 (PDT)
+        Mon, 29 Mar 2021 07:55:05 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62DAC061574;
+        Mon, 29 Mar 2021 04:55:04 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id y124-20020a1c32820000b029010c93864955so8370780wmy.5;
+        Mon, 29 Mar 2021 04:55:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rLsjhcNIwCmODv/MBaqanwexjHXK2SK1mKLiMmip+x4=;
-        b=obVQCkr8uCkYLUv2yZfq8PuHxS3ElI8SIHyQRK2mmjbLl/TugiURrhBXWJw+5UFo4X
-         qI0nOMkSDuhXVZ7doMZd5LSiKTnqoA5gIcywuw9Ke6UjEuevL2XtT5DhpiGaMfO+9OxZ
-         HZSJXLF7qf2iv72kc0kxMyTMfam4e6n7dxSqNbzVJwaF4WzVuFHUFKz1k7uSQ9TuIdj7
-         dl63qYplwjTtkATlI4Nu0LquEeOrQALCMslTOalYH2hwG0yJyblAk27PDzr3R9m48px8
-         pQCfhmN3IJ56MM4ffdEfudrTzuZgmv7+jM9Vd1eJOxvnRk/asB1vc/w5IZunkmcftpRw
-         4yrw==
+        bh=DTGUJTFeIuqkHE7OgJ63VK0q/EGuYFQeHNPktt9KFqo=;
+        b=QN35vK/ypSg7ojWLSyNITTgbIp7lU5hj9ii1qUFNLXtobdt6MopjIdyHP28M9+Rffc
+         0QyV1rs6l7CwMir6EKdxwwiegfEr5OyxXCaBZjYkx5GuJjZliKYxynDp13LHfw6DDagS
+         UVD21vEON7j88LiUfCj8od7SxA+QySey74c9RbkXt7E8GTsIrOKSLgI/zZ1dO85Gz7Wq
+         LJtj9zPXDtBbnEGjHUJYXws5JFL5lrmn8Gk8DParf4M5AQKjTOQ5fGxDfoPv0LraDup6
+         gLklABKV5Y3HL0FsuHujXQv0D5BhUQyhP+ZaAwBeT++RpwmgiCJ0IeQSXp8ZGUkmyegF
+         RNCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=rLsjhcNIwCmODv/MBaqanwexjHXK2SK1mKLiMmip+x4=;
-        b=pymkqgen/5WcqfuTMG0UJu06GAkn9CaGkstP5WgkG1CjO1AADENEynBPwy6qYifSbN
-         IS3+5yY9B092zIf+QQrBrrqnPuFKpydtYtBum6Q+W2YhlzR79RlBMH9Nt17bnwz3UKPY
-         oc/XIRgIp+VWrPPQGzJ6xb4qsqksp9703VXeHsIfFy+aEgzRzSj8T6NrvWdOERZU5lx1
-         SfAi2YBv/N5iLFJKUIX1i/HnYFnFXU9ICbZxGEQnAxlrdNRFrzwhQZgNVnWXPlw1KKrD
-         KiX+CMdCc4OwaPwOsdM7uTbtTlLkqCertD/GiTdg/iQ2yGn06d2Ldsaqq61GUc4jbDgE
-         rtiw==
-X-Gm-Message-State: AOAM532EtkxnNMoN1Q2cm9sYAbxNd+NcSn/CPIpUG+VVgtExbATTKH5J
-        SzujGsebXIUXNwybM3eEoNw=
-X-Google-Smtp-Source: ABdhPJzbEfFbXJ9fbqn8X3nAKteEObCciLIv/SGMQ5u1ubGJRiRxl62orHY58t646W11wQ7rTr7+rw==
-X-Received: by 2002:adf:d1cd:: with SMTP id b13mr27974972wrd.47.1617018777293;
-        Mon, 29 Mar 2021 04:52:57 -0700 (PDT)
+        bh=DTGUJTFeIuqkHE7OgJ63VK0q/EGuYFQeHNPktt9KFqo=;
+        b=otePqtb4+Tw1ac1D6L3QWMRWhV9VvSHp1s2PuHsbP802eP7RCKZFWLnzfLlHvKoWSN
+         kk0L7x9FO80n+MoUlvGS1FbKo8+rib5JehHQiNhn9S5ulsIozrDpXSfw3EA7cYAZsiPB
+         ZShf6yCAhAUwd8IaTUa9qpWVz3ThC9jOVoKoSZ4jo8Q/sS7BCd5NlYa+MRr/pNTLYE5i
+         e7yix01vXAHqp7V9pAVOY9pc8nwYSDxRsSuuafDFhmL6RzrLzIyjmOhNIvUlhtUuUX0Z
+         M92HrVf6dnWxrKKk9C/OxXTyGsEdt1xMfhr3NSiQUo8YIT8kGmFAFsPbxM207mKfR97B
+         AtHA==
+X-Gm-Message-State: AOAM533uPhH0bRLPZYoafK1vVEiFTvPXaBJqVSniTSDIOoMO361A2KJF
+        XQy8HiqdItdPHeT8ITd/VlI=
+X-Google-Smtp-Source: ABdhPJwwik1eV8I3tyUxdsEEtBJZ250VJWBh3/7XjHJgtNWDne3LT3xC5YApnDCKW8FGW59G3wBZqg==
+X-Received: by 2002:a1c:e912:: with SMTP id q18mr24516003wmc.59.1617018903448;
+        Mon, 29 Mar 2021 04:55:03 -0700 (PDT)
 Received: from ziggy.stardust (80.174.240.175.dyn.user.ono.com. [80.174.240.175])
-        by smtp.gmail.com with ESMTPSA id u17sm29691663wrw.51.2021.03.29.04.52.55
+        by smtp.gmail.com with ESMTPSA id f2sm30409723wrq.34.2021.03.29.04.55.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Mar 2021 04:52:56 -0700 (PDT)
-Subject: Re: [PATCH v2 1/8] dt-bindings: timer: Add compatible for Mediatek
+        Mon, 29 Mar 2021 04:55:02 -0700 (PDT)
+Subject: Re: [PATCH v2 6/8] dt-bindings: arm: Add compatible for Mediatek
  MT8195
 To:     Seiya Wang <seiya.wang@mediatek.com>,
         Rob Herring <robh+dt@kernel.org>
@@ -88,14 +88,14 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
         linux-watchdog@vger.kernel.org, srv_heupstream@mediatek.com
 References: <20210319023427.16711-1-seiya.wang@mediatek.com>
- <20210319023427.16711-3-seiya.wang@mediatek.com>
+ <20210319023427.16711-8-seiya.wang@mediatek.com>
 From:   Matthias Brugger <matthias.bgg@gmail.com>
-Message-ID: <bf7ad31e-974a-3e0a-12bd-32973c7c3cbd@gmail.com>
-Date:   Mon, 29 Mar 2021 13:52:55 +0200
+Message-ID: <dd425954-cfeb-01d1-0027-17dedfd29dbc@gmail.com>
+Date:   Mon, 29 Mar 2021 13:55:01 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210319023427.16711-3-seiya.wang@mediatek.com>
+In-Reply-To: <20210319023427.16711-8-seiya.wang@mediatek.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -106,8 +106,8 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 On 19/03/2021 03:34, Seiya Wang wrote:
-> This commit adds dt-binding documentation of timer for Mediatek MT8195 SoC
-> Platform.
+> This commit adds dt-binding documentation for the Mediatek MT8195
+> reference board.
 > 
 > Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
 
@@ -115,20 +115,25 @@ Applied to v5.12-next/dts64
 
 Thanks!
 
+
+
 > ---
->  Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt | 1 +
->  1 file changed, 1 insertion(+)
+>  Documentation/devicetree/bindings/arm/mediatek.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-> index 690a9c0966ac..e5c57d6e0186 100644
-> --- a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-> +++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-> @@ -23,6 +23,7 @@ Required properties:
->  	For those SoCs that use SYST
->  	* "mediatek,mt8183-timer" for MT8183 compatible timers (SYST)
->  	* "mediatek,mt8192-timer" for MT8192 compatible timers (SYST)
-> +	* "mediatek,mt8195-timer" for MT8195 compatible timers (SYST)
->  	* "mediatek,mt7629-timer" for MT7629 compatible timers (SYST)
->  	* "mediatek,mt6765-timer" for MT6765 and all above compatible timers (SYST)
->  
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
+> index 93b3bdf6eaeb..a95224fcff9f 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek.yaml
+> +++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
+> @@ -118,6 +118,10 @@ properties:
+>            - enum:
+>                - mediatek,mt8183-evb
+>            - const: mediatek,mt8183
+> +      - items:
+> +          - enum:
+> +              - mediatek,mt8195-evb
+> +          - const: mediatek,mt8195
+>        - description: Google Krane (Lenovo IdeaPad Duet, 10e,...)
+>          items:
+>            - enum:
 > 
