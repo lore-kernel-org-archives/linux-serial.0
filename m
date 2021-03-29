@@ -2,74 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D26C433DB
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 06:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45391C433E1
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 11:53:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 27FAD61968
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 06:12:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2CD4B617ED
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Mar 2021 11:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229483AbhC2GLz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Mar 2021 02:11:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51674 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229971AbhC2GLX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Mar 2021 02:11:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3E0496191A;
-        Mon, 29 Mar 2021 06:11:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1616998282;
-        bh=Zegaaphv9aRCYkUmr3zg0QSU7np560duDWeNJWz0ws4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LEqLSog5voxrgXZPhn57yN+mzB4LCOumTFko2vzdDBjmJ5iTxEC/Izxfu/FvTrXIF
-         1sgCOlGAApUnqy1bur1CtXjZlSNN0no6rSkW4xtCs4uPWlKhVxU2KyjnaD2fjTYUwf
-         rc0JFBGSgcGk8iaNyf0HsHntomcyHxAbqbwjZkOE=
-Date:   Mon, 29 Mar 2021 08:11:19 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     LakshmiPraveen Kopparthi <LakshmiPraveen.Kopparthi@microchip.com>
-Cc:     linux-serial@vger.kernel.org,
-        Ganesh Kumar Gurumurthy <GaneshKumar.Gurumurthy@microchip.com>
-Subject: Re: git tree - branch to use for patch for UART(8250) drivers
-Message-ID: <YGFvh9jrTawRHysT@kroah.com>
-References: <e93aeae4a727b13b541973fe63240278217e2b45.camel@microchip.com>
+        id S231476AbhC2LxW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Mar 2021 07:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229788AbhC2LxL (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 29 Mar 2021 07:53:11 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878EAC061574;
+        Mon, 29 Mar 2021 04:53:11 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id 12so6453364wmf.5;
+        Mon, 29 Mar 2021 04:53:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wQLkbOswuI+BpoLUVhG6EjT/ZfQAs/+vgKlOUr1dkh8=;
+        b=kB8a7321/zav80c5lhd8wZGVmThE+nFkEER4zryYbkFuKOXBXQMvHs4iLXBJ6VXzXT
+         ij3ks0AmPIQGyWUzO91Xlq2I5ber8JoTGXEapHt3DqUNEaAZT/w9E9SKUT4sVuoP+Gif
+         nXhD51DjjmeMBwVPWmSStADEi596U66Xlu1FDbr9vY/PVowc53F/TkWM6r1/WQcDLDq6
+         uExvPnbjC/m+TXuBx47elnEOfTA8R8tMjnI2llRyO6GK+/M/ibpechVcd+EcQVXmQD6H
+         3O1L6YweNFGsRn1VUTMi/hfEwDYMaBDFFJ+iMFOPU4693G2c7YplKtHyMk2ddfG8akaq
+         BeSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wQLkbOswuI+BpoLUVhG6EjT/ZfQAs/+vgKlOUr1dkh8=;
+        b=cqerFq0uUW/iJ/JzRzxBvVmlkR7pGfZXVZ3hOEPvopNUmR5xFsP5Wd9JE3wYJm2J3y
+         jiX7Xd3w7F+N+bmbLul/wmWzDRrMBsuPrYUd6lnf1q2PFixQ9dv3odg7dGfB5wWifzZQ
+         dOQDNeuJ6SUFoJIXXDWVpE8an4nJNFbUPgGs3th6YCoyCrLF3Gjb8+etgDoLC647B9mX
+         ficYb1AYZLFpa0wAoC+rl1M2OP3Q3ByuX6fsDS52Owf3k+4pClytDJhUjSuHp3QyA7kj
+         kj7ijqYBBbAXhKpU/t8yDLbI4Jd/5osfIYZuu1x16UzAojM+WeBEZIxMbLySIjFRwr2p
+         9/Zg==
+X-Gm-Message-State: AOAM5320TQcckd+40cybFJ8RgWvNxZ8+OUXbpBhwMMNUp5vE5qCkl9Sj
+        UmPUDjmNk3JyZjjEPU7qf9o=
+X-Google-Smtp-Source: ABdhPJw0EXyW8g/N+HbtdIOdlmlhALM9J0chb1Wv/F56E/RlCvHktkk4fZbvbFKh72p7d6sbBzHefA==
+X-Received: by 2002:a1c:e383:: with SMTP id a125mr24553877wmh.125.1617018790275;
+        Mon, 29 Mar 2021 04:53:10 -0700 (PDT)
+Received: from ziggy.stardust (80.174.240.175.dyn.user.ono.com. [80.174.240.175])
+        by smtp.gmail.com with ESMTPSA id g15sm22721058wmq.31.2021.03.29.04.53.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Mar 2021 04:53:09 -0700 (PDT)
+Subject: Re: [PATCH v2 2/8] dt-bindings: serial: Add compatible for Mediatek
+ MT8195
+To:     Seiya Wang <seiya.wang@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Wenbin Mei <wenbin.mei@mediatek.com>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, srv_heupstream@mediatek.com
+References: <20210319023427.16711-1-seiya.wang@mediatek.com>
+ <20210319023427.16711-4-seiya.wang@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+Message-ID: <96b1e804-fc1c-d343-2308-f96c95d82e81@gmail.com>
+Date:   Mon, 29 Mar 2021 13:53:08 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e93aeae4a727b13b541973fe63240278217e2b45.camel@microchip.com>
+In-Reply-To: <20210319023427.16711-4-seiya.wang@mediatek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 11:34:02AM +0530, LakshmiPraveen Kopparthi wrote:
-> Dear Maintainers,
-> I am planning to submit a patch to add support for one of our PCIe to
-> UART(16550) modules.I have found the the following tree in the
-> MAINTAINERS file for 8250/16?50 serial drivers.
+
+
+On 19/03/2021 03:34, Seiya Wang wrote:
+> This commit adds dt-binding documentation of uart for Mediatek MT8195 SoC
+> Platform.
 > 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
+
+Applied to v5.12-next/dts64
+
+Thanks!
+
+
+> ---
+>  Documentation/devicetree/bindings/serial/mtk-uart.txt | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> The master branch in this tree doesn't have any check in from 2020-06-
-> 14.
-
-What check specifically are you looking for?  What commit id?
-
-> I would like to know which branch to be used as a base to generate
-> and submit the patch. 
-
-If this is a bugfix, you can make it against the tty-linus or main
-branch, as the main branch tracks Linus's current tree within a -rc or
-two, and the tty-linus branch has the fixes that I will be sending to
-him for this release.
-
-If it is for a new feature, the tty-next branch is what you should make
-it against.
-
-If you have any problems with this, please let me know.
-
-thanks,
-
-greg k-h
+> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> index 647b5aee86f3..64c4fb59acd1 100644
+> --- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> @@ -20,6 +20,7 @@ Required properties:
+>    * "mediatek,mt8173-uart" for MT8173 compatible UARTS
+>    * "mediatek,mt8183-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
+>    * "mediatek,mt8192-uart", "mediatek,mt6577-uart" for MT8192 compatible UARTS
+> +  * "mediatek,mt8195-uart", "mediatek,mt6577-uart" for MT8195 compatible UARTS
+>    * "mediatek,mt8516-uart" for MT8516 compatible UARTS
+>    * "mediatek,mt6577-uart" for MT6577 and all of the above
+>  
+> 
