@@ -2,377 +2,124 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B589C433E1
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Mar 2021 16:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83857C433DB
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Mar 2021 22:39:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 24210619CE
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Mar 2021 16:51:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5E94E619D3
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Mar 2021 22:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232183AbhC3QvE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Mar 2021 12:51:04 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:1514 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232048AbhC3Qu7 (ORCPT
+        id S232924AbhC3WjJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Mar 2021 18:39:09 -0400
+Received: from mail-ot1-f54.google.com ([209.85.210.54]:36397 "EHLO
+        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232883AbhC3WjF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Mar 2021 12:50:59 -0400
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12UGgA3F007121;
-        Tue, 30 Mar 2021 18:50:39 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=0WVbvFJFkxqNn+aAOgONdxTifrUYipM9G5zeE9saWvw=;
- b=WqCpsP2DQhkNVgTxiCiJPavawSN4NnwvpVWNmdUIq15kYWtK3z+Q2cwwIEsrZzXlRoeE
- QaAjeEBAw6x+s6FloHAuHW1e9kyrSeOxcNENolQqbpjbLt6ppL0prUA7KvYNcjCXHPPG
- T+KtU+cuqzCHqcv4MkeJ0atYl61fF0T3KCVtreIArNteRK1ar7JCA0U2elsSjfE0L5cB
- IW4It8jD3XS8y1HySuE2gHGLKWGIYEwAmQjevosIiMISIoZ1dntobzQWV/hkNwswBSVo
- W5TNauVhr6gNO+oYPdU3cH+pMUJv75jfcpp/INQYGiTxXyU1MyCwMVQt5nJigG503pMd 4A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 37ksfh55g8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 30 Mar 2021 18:50:39 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4C4BC10002A;
-        Tue, 30 Mar 2021 18:50:39 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2D19425F41E;
-        Tue, 30 Mar 2021 18:50:39 +0200 (CEST)
-Received: from lmecxl0912.lme.st.com (10.75.127.45) by SFHDAG2NODE3.st.com
- (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 30 Mar
- 2021 18:50:38 +0200
-Subject: Re: [PATCH v8 4/6] ARM: dts: stm32: add support for art-pi board
- based on stm32h750xbh6
-To:     <dillon.minfei@gmail.com>, <robh@kernel.org>,
-        <valentin.caron@foss.st.com>, <rong.a.chen@intel.com>,
-        <a.fatoum@pengutronix.de>, <mcoquelin.stm32@gmail.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <afzal.mohd.ma@gmail.com>, <gregkh@linuxfoundation.org>,
-        <erwan.leray@foss.st.com>, <erwan.leray@st.com>,
-        <linux-serial@vger.kernel.org>, <lkp@intel.com>,
-        <patrice.chotard@foss.st.com>
-References: <1617094704-10040-1-git-send-email-dillon.minfei@gmail.com>
- <1617094704-10040-5-git-send-email-dillon.minfei@gmail.com>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-Message-ID: <4df8e7b8-826c-b1d4-0431-4f777e26c383@foss.st.com>
-Date:   Tue, 30 Mar 2021 18:50:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 30 Mar 2021 18:39:05 -0400
+Received: by mail-ot1-f54.google.com with SMTP id g8-20020a9d6c480000b02901b65ca2432cso17117643otq.3;
+        Tue, 30 Mar 2021 15:39:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+kL3ZRB3j6i01duxPJ9vYcO9kwxP1k0mr9iO+0pJBac=;
+        b=sPk1q1o/9jK45SPwIb01HUbKm06q5Yx3WRvEtU1Z832dmkeWAYG7kpU9+2q/t9w89R
+         W9Tt2KL/Ia+qtgP/7mWZEcLrN4QB2St/IKCpSHhfdMbnBBlhL/DGg9VVFyBem1St9Ht2
+         6xpao5FaWjVkf4MGz9a1SffhSIceqUkqR18S7G0+JyUWJeOmqgZRRQv2fQEi7Y3waDZb
+         VRTnt08MIxws0iunR+/U7dccvOWzGhaiJcFWvOpRaPryCcIl64DB6Xvr7UI4GYsWCtLn
+         Wx5fCviKHQfPq/JLkgyyNYYQmkgbZwSQfPw6WFrKS7RkqtYx01N0DpBymCGO6L4VO8rv
+         g+0A==
+X-Gm-Message-State: AOAM531LRh0uGXVV3Jfo/OTRRmrph3ZxcP/auiVE9UxOvYpEe1svxdid
+        KfpHQk+gtF43JRvq5qQ8+jVhDWRKsQ==
+X-Google-Smtp-Source: ABdhPJz1lPUhXrNxrHWj4A+J8TggtXB6qqS9Os++Ci/kdeMEGSETxa/ogDjwDKvpjvbG+y2lHU8MwA==
+X-Received: by 2002:a05:6830:4110:: with SMTP id w16mr138691ott.348.1617143944665;
+        Tue, 30 Mar 2021 15:39:04 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id v1sm42689otk.67.2021.03.30.15.39.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Mar 2021 15:39:04 -0700 (PDT)
+Received: (nullmailer pid 841804 invoked by uid 1000);
+        Tue, 30 Mar 2021 22:39:02 -0000
+Date:   Tue, 30 Mar 2021 17:39:02 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Zev Weiss <zev@bewilderbeest.net>
+Cc:     Joel Stanley <joel@jms.id.au>, openbmc@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        - <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: serial: 8250: update for
+ aspeed,sirq-active-high
+Message-ID: <20210330223902.GA837825@robh.at.kernel.org>
+References: <20210330002338.335-1-zev@bewilderbeest.net>
+ <20210330002338.335-3-zev@bewilderbeest.net>
 MIME-Version: 1.0
-In-Reply-To: <1617094704-10040-5-git-send-email-dillon.minfei@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-30_08:2021-03-30,2021-03-30 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210330002338.335-3-zev@bewilderbeest.net>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Mon, Mar 29, 2021 at 07:23:37PM -0500, Zev Weiss wrote:
+> Update DT bindings documentation for the new incarnation of the
+> aspeed,sirq-polarity-sense property.
 
+Why?
 
-On 3/30/21 10:58 AM, dillon.minfei@gmail.com wrote:
-> From: dillon min <dillon.minfei@gmail.com>
+This isn't a compatible change.
+
 > 
-> This patchset has following changes:
-> 
-> - introduce stm32h750.dtsi to support stm32h750 value line
-> - add stm32h750i-art-pi.dtb (arch/arm/boot/dts/Makefile)
-> - add stm32h750-art-pi.dts to support art-pi board
-> 
-> art-pi board component:
-> - 8MiB qspi flash
-> - 16MiB spi flash
-> - 32MiB sdram
-> - ap6212 wifi&bt&fm
-> 
-> the detail board information can be found at:
-> https://art-pi.gitee.io/website/
-> 
-> Signed-off-by: dillon min <dillon.minfei@gmail.com>
+> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
 > ---
-> v8:
-> - move file stm32h743.dtsi submit position to [PATCH V8 3/6]
+>  Documentation/devicetree/bindings/serial/8250.yaml | 14 ++++++--------
+>  1 file changed, 6 insertions(+), 8 deletions(-)
 > 
->   arch/arm/boot/dts/Makefile              |   1 +
->   arch/arm/boot/dts/stm32h750.dtsi        |   6 +
->   arch/arm/boot/dts/stm32h750i-art-pi.dts | 229 ++++++++++++++++++++++++++++++++
->   3 files changed, 236 insertions(+)
->   create mode 100644 arch/arm/boot/dts/stm32h750.dtsi
->   create mode 100644 arch/arm/boot/dts/stm32h750i-art-pi.dts
-> 
-> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> index 8e5d4ab4e75e..a19c5ab9df84 100644
-> --- a/arch/arm/boot/dts/Makefile
-> +++ b/arch/arm/boot/dts/Makefile
-> @@ -1071,6 +1071,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
->   	stm32746g-eval.dtb \
->   	stm32h743i-eval.dtb \
->   	stm32h743i-disco.dtb \
-> +	stm32h750i-art-pi.dtb \
->   	stm32mp153c-dhcom-drc02.dtb \
->   	stm32mp157a-avenger96.dtb \
->   	stm32mp157a-dhcor-avenger96.dtb \
-> diff --git a/arch/arm/boot/dts/stm32h750.dtsi b/arch/arm/boot/dts/stm32h750.dtsi
-> new file mode 100644
-> index 000000000000..41e3b1e3a874
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/stm32h750.dtsi
-> @@ -0,0 +1,6 @@
-> +/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-> +/* Copyright (C) STMicroelectronics 2021 - All Rights Reserved */
-> +
-> +#include "stm32h743.dtsi"
-> +
-
-I know it's a bit odd, but you could directly include stm32h743.dtsi in 
-your board as there are no SoC differences.
-
-
-> diff --git a/arch/arm/boot/dts/stm32h750i-art-pi.dts b/arch/arm/boot/dts/stm32h750i-art-pi.dts
-> new file mode 100644
-> index 000000000000..9bb73bb61901
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/stm32h750i-art-pi.dts
-> @@ -0,0 +1,229 @@
-> +/*
-> + * Copyright 2021 - Dillon Min <dillon.minfei@gmail.com>
-> + *
-> + * This file is dual-licensed: you can use it either under the terms
-> + * of the GPL or the X11 license, at your option. Note that this dual
-> + * licensing only applies to this file, and not this project as a
-> + * whole.
-> + *
-> + *  a) This file is free software; you can redistribute it and/or
-> + *     modify it under the terms of the GNU General Public License as
-> + *     published by the Free Software Foundation; either version 2 of the
-> + *     License, or (at your option) any later version.
-> + *
-> + *     This file is distributed in the hope that it will be useful,
-> + *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *     GNU General Public License for more details.
-> + *
-> + * Or, alternatively,
-> + *
-> + *  b) Permission is hereby granted, free of charge, to any person
-> + *     obtaining a copy of this software and associated documentation
-> + *     files (the "Software"), to deal in the Software without
-> + *     restriction, including without limitation the rights to use,
-> + *     copy, modify, merge, publish, distribute, sublicense, and/or
-> + *     sell copies of the Software, and to permit persons to whom the
-> + *     Software is furnished to do so, subject to the following
-> + *     conditions:
-> + *
-> + *     The above copyright notice and this permission notice shall be
-> + *     included in all copies or substantial portions of the Software.
-> + *
-> + *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-> + *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-> + *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-> + *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-> + *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-> + *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-> + *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-> + *     OTHER DEALINGS IN THE SOFTWARE.
-> + *
-> + * For art-pi board resources, you can refer to link:
-> + * 	https://art-pi.gitee.io/website/
-> + */
-> +
-> +/dts-v1/;
-> +#include "stm32h750.dtsi"
-> +#include "stm32h7-pinctrl.dtsi"
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/gpio/gpio.h>
-> +
-> +/ {
-> +	model = "RT-Thread STM32H750i-ART-PI board";
-> +	compatible = "st,stm32h750i-art-pi", "st,stm32h750";
-> +
-> +	chosen {
-> +		bootargs = "root=/dev/ram";
-> +		stdout-path = "serial0:2000000n8";
-> +	};
-> +
-> +	memory@c0000000 {
-> +		device_type = "memory";
-> +		reg = <0xc0000000 0x2000000>;
-> +	};
-> +
-> +	reserved-memory {
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		ranges;
-> +
-> +		linux,cma {
-> +			compatible = "shared-dma-pool";
-> +			no-map;
-> +			size = <0x100000>;
-> +			linux,dma-default;
-> +		};
-> +	};
-> +
-> +	aliases {
-> +		serial0 = &uart4;
-> +		serial1 = &usart3;
-> +	};
-> +
-> +	leds {
-> +		compatible = "gpio-leds";
-> +		led-red {
-> +			gpios = <&gpioi 8 0>;
-> +		};
-> +		led-green {
-> +			gpios = <&gpioc 15 0>;
-> +			linux,default-trigger = "heartbeat";
-> +		};
-> +	};
-> +
-> +	v3v3: regulator-v3v3 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "v3v3";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	wlan_pwr: regulator-wlan {
-> +		compatible = "regulator-fixed";
-> +
-> +		regulator-name = "wl-reg";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +
-> +		gpios = <&gpioc 13 GPIO_ACTIVE_HIGH>;
-> +		enable-active-high;
-> +	};
-> +};
-> +
-> +&clk_hse {
-> +	clock-frequency = <25000000>;
-> +};
-> +
-> +&dma1 {
-> +	status = "okay";
-> +};
-> +
-> +&dma2 {
-> +	status = "okay";
-> +};
-> +
-> +&mac {
-> +	status = "disabled";
-> +	pinctrl-0	= <&ethernet_rmii>;
-> +	pinctrl-names	= "default";
-> +	phy-mode	= "rmii";
-> +	phy-handle	= <&phy0>;
-> +
-> +	mdio0 {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		compatible = "snps,dwmac-mdio";
-> +		phy0: ethernet-phy@0 {
-> +			reg = <0>;
-> +		};
-> +	};
-> +};
-> +
-> +&sdmmc1 {
-> +	pinctrl-names = "default", "opendrain", "sleep";
-> +	pinctrl-0 = <&sdmmc1_b4_pins_a>;
-> +	pinctrl-1 = <&sdmmc1_b4_od_pins_a>;
-> +	pinctrl-2 = <&sdmmc1_b4_sleep_pins_a>;
-> +	broken-cd;
-> +	st,neg-edge;
-> +	bus-width = <4>;
-> +	vmmc-supply = <&v3v3>;
-> +	status = "okay";
-> +};
-> +
-> +&sdmmc2 {
-> +	pinctrl-names = "default", "opendrain", "sleep";
-> +	pinctrl-0 = <&sdmmc2_b4_pins_a>;
-> +	pinctrl-1 = <&sdmmc2_b4_od_pins_a>;
-> +	pinctrl-2 = <&sdmmc2_b4_sleep_pins_a>;
-> +	broken-cd;
-> +	non-removable;
-> +	st,neg-edge;
-> +	bus-width = <4>;
-> +	vmmc-supply = <&wlan_pwr>;
-> +	status = "okay";
-> +
-> +	#address-cells = <1>;
-> +	#size-cells = <0>;
-> +	brcmf: bcrmf@1 {
-> +		reg = <1>;
-> +		compatible = "brcm,bcm4329-fmac";
-> +	};
-> +};
-> +
-> +&spi1 {
-> +	status = "okay";
-> +	pinctrl-0 = <&spi1_pins>;
-> +	pinctrl-names = "default";
-> +	cs-gpios = <&gpioa 4 GPIO_ACTIVE_LOW>;
-> +	dmas = <&dmamux1 37 0x400 0x05>,
-> +	       <&dmamux1 38 0x400 0x05>;
-> +	dma-names = "rx", "tx";
-> +
-> +	flash@0 {
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		compatible = "winbond,w25q128", "jedec,spi-nor";
-> +		reg = <0>;
-> +		spi-max-frequency = <80000000>;
-> +
-> +		partition@0 {
-> +			label = "root filesystem";
-> +			reg = <0 0x1000000>;
-> +		};
-> +	};
-> +};
-> +
-> +&usart2 {
-> +	pinctrl-0 = <&usart2_pins>;
-> +	pinctrl-names = "default";
-> +	status = "disabled";
-> +};
-> +
-> +&usart3 {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&usart3_pins>;
-> +	dmas = <&dmamux1 45 0x400 0x05>,
-> +	       <&dmamux1 46 0x400 0x05>;
-> +	dma-names = "rx", "tx";
-> +	st,hw-flow-ctrl;
-> +	status = "okay";
-> +
-> +	bluetooth {
-> +		compatible = "brcm,bcm43438-bt";
-> +		host-wakeup-gpios = <&gpioc 0 GPIO_ACTIVE_HIGH>;
-> +		device-wakeup-gpios = <&gpioi 10 GPIO_ACTIVE_HIGH>;
-> +		shutdown-gpios = <&gpioi 11 GPIO_ACTIVE_HIGH>;
-> +		max-speed = <115200>;
-> +	};
-> +};
-> +
-> +&uart4 {
-> +	pinctrl-0 = <&uart4_pins>;
-> +	pinctrl-names = "default";
-> +	status = "okay";
-> +};
-> +
-> +
+> diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+> index f54cae9ff7b2..0bbb7121f720 100644
+> --- a/Documentation/devicetree/bindings/serial/8250.yaml
+> +++ b/Documentation/devicetree/bindings/serial/8250.yaml
+> @@ -13,7 +13,7 @@ allOf:
+>    - $ref: /schemas/serial.yaml#
+>    - if:
+>        required:
+> -        - aspeed,sirq-polarity-sense
+> +        - aspeed,sirq-active-high
+>      then:
+>        properties:
+>          compatible:
+> @@ -181,13 +181,11 @@ properties:
+>    rng-gpios: true
+>    dcd-gpios: true
+>  
+> -  aspeed,sirq-polarity-sense:
+> -    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +  aspeed,sirq-active-high:
+> +    type: boolean
+>      description: |
+> -      Phandle to aspeed,ast2500-scu compatible syscon alongside register
+> -      offset and bit number to identify how the SIRQ polarity should be
+> -      configured. One possible data source is the LPC/eSPI mode bit. Only
+> -      applicable to aspeed,ast2500-vuart.
+> +      Set to indicate that the SIRQ polarity is active-high (default
+> +      is active-low).  Only applicable to aspeed,ast2500-vuart.
+>  
+>  required:
+>    - reg
+> @@ -227,7 +225,7 @@ examples:
+>          interrupts = <8>;
+>          clocks = <&syscon ASPEED_CLK_APB>;
+>          no-loopback-test;
+> -        aspeed,sirq-polarity-sense = <&syscon 0x70 25>;
+> +        aspeed,sirq-active-high;
+>      };
+>  
+>  ...
+> -- 
+> 2.31.1
 > 
