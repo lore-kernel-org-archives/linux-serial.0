@@ -2,81 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 240B7C433ED
-	for <linux-serial@archiver.kernel.org>; Wed, 31 Mar 2021 13:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9B0C433B4
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Apr 2021 00:58:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E986D61959
-	for <linux-serial@archiver.kernel.org>; Wed, 31 Mar 2021 13:01:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 72D37601FA
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Apr 2021 00:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235347AbhCaNBM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 31 Mar 2021 09:01:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45284 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235634AbhCaNBF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 31 Mar 2021 09:01:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E5C756196C;
-        Wed, 31 Mar 2021 13:01:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617195664;
-        bh=fpjbRjzuhhKjDVMy/Iwk4X2pjxw44PsDGZYpY5/o2yM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HfnOKjp8c8lRwPgGVAS8BSFnrABlFY4SHtoLLZTex7WdcxvhjIMbHMnMxpJH0MPpK
-         i0c8KFB7AXvwfitOwDE4RJSZLRgzaTBq0Xjqso7ZPaWJ8AxLEFdFlyd7FSm509xrMj
-         cUcRFTlZZorzERIBb0RhURjQi2NXFQGpbW3URTKv9lrxR7Kh/ZYr+a3S9iTPtXPl/L
-         T/o5T/r+H5a9/qxg+vB5rIzofyP+qMuJMHcfP8WHgGqG39yFKEn5yMN7s1vEGD+mQC
-         cbSb/ZnhxW+0Tpms5iDoIOLVfn7nqXM5E5Jo5IPcpekdIoTp72Cv7yJpx8ED4LKk5P
-         d5FG88bLfpGSQ==
-Date:   Wed, 31 Mar 2021 18:31:00 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Seiya Wang <seiya.wang@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
+        id S232367AbhDAA5q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 31 Mar 2021 20:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232757AbhDAA5p (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 31 Mar 2021 20:57:45 -0400
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C11C061574;
+        Wed, 31 Mar 2021 17:57:45 -0700 (PDT)
+Received: from hatter.bewilderbeest.net (unknown [IPv6:2600:6c44:7f:ba20::7c6])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 2F984705;
+        Wed, 31 Mar 2021 17:57:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1617238665;
+        bh=PTKpsiq59YVCzDvb+a0Y+GyuK4KgA1bmlXXrXsWSgms=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GVnld6BIBB3+yPy40DXDBGCzsu8mpRyugYH1GBA59wK8KRirWKUYc8HNcFuSGatch
+         pR2sREfK2VUa3x4nmTdnzdYgT8pz4IH56qvpOxcBlUmdY2jjpMzpzZesXJnwgdPQ8J
+         tWRj1NRlh5MOmZilmBzTFNJ0pWi5xQwcGHEDkQSY=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Zev Weiss <zev@bewilderbeest.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Wenbin Mei <wenbin.mei@mediatek.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, srv_heupstream@mediatek.com
-Subject: Re: [PATCH v2 7/8] dt-bindings: phy: fix dt_binding_check warning in
- mediatek,ufs-phy.yaml
-Message-ID: <YGRyjE+CjkJojqBM@vkoul-mobl.Dlink>
-References: <20210319023427.16711-1-seiya.wang@mediatek.com>
- <20210319023427.16711-9-seiya.wang@mediatek.com>
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH v2 2/3] drivers/tty/serial/8250: add DT property for aspeed vuart sirq polarity
+Date:   Wed, 31 Mar 2021 19:57:01 -0500
+Message-Id: <20210401005702.28271-3-zev@bewilderbeest.net>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210401005702.28271-1-zev@bewilderbeest.net>
+References: <YGOuhjD19SmjmQou@hatter.bewilderbeest.net>
+ <20210401005702.28271-1-zev@bewilderbeest.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210319023427.16711-9-seiya.wang@mediatek.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 19-03-21, 10:34, Seiya Wang wrote:
-> This commit fixes the warning messages of make dt_binding_check from
-> newly added mediatek,mt8195-ufsphy in mediatek,ufs-phy.yaml
+This provides a simple boolean to use instead of the deprecated
+aspeed,sirq-polarity-sense property.
 
-Applied, thanks
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+---
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index c33e02cbde93..e5ef9f957f9a 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -482,6 +482,9 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+ 		of_node_put(sirq_polarity_sense_args.np);
+ 	}
+ 
++	if (of_property_read_bool(np, "aspeed,sirq-active-high"))
++		aspeed_vuart_set_sirq_polarity(vuart, 1);
++
+ 	aspeed_vuart_set_enabled(vuart, true);
+ 	aspeed_vuart_set_host_tx_discard(vuart, true);
+ 	platform_set_drvdata(pdev, vuart);
 -- 
-~Vinod
+2.31.1
+
