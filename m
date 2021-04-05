@@ -2,124 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1D5C433B4
-	for <linux-serial@archiver.kernel.org>; Sun,  4 Apr 2021 20:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2050DC433B4
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Apr 2021 00:24:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4940F6121E
-	for <linux-serial@archiver.kernel.org>; Sun,  4 Apr 2021 20:33:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DAF9961391
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Apr 2021 00:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231508AbhDDUdj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 4 Apr 2021 16:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231453AbhDDUdi (ORCPT
+        id S230286AbhDEAYP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 4 Apr 2021 20:24:15 -0400
+Received: from elasmtp-curtail.atl.sa.earthlink.net ([209.86.89.64]:52026 "EHLO
+        elasmtp-curtail.atl.sa.earthlink.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231688AbhDEAYP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 4 Apr 2021 16:33:38 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73051C0613E6
-        for <linux-serial@vger.kernel.org>; Sun,  4 Apr 2021 13:33:31 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id q26so3582365wrz.9
-        for <linux-serial@vger.kernel.org>; Sun, 04 Apr 2021 13:33:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qLAy95bvS1zAnYuhC/w4xxxlm+O0tzNR1N2BJpqbw5w=;
-        b=Uj0Y5h5dAclSEpTTchKZoN6d6/X2/jxuIIdiY2TiTyk3Va6KgXWEIR7nXrbx2G6DmG
-         DEj8NTV0WHUfrymtdaelg8IdCSbFubY9BkAoUgH6qQf8EqAg7oNdPZikt1hBXz6v20zs
-         A8AaPWXWp0Z2jemWr2KvX3VEPPGU3IlyIZPwCyiC+SenicBH6/PCmHtanTK6GQ1U+Ifg
-         VY2SBWvWpq0G2yymbRGsBY5fsQ3VQ4aGS/FzsLk9krR6A4W7hb8uudpCoMiP1AUhW51x
-         KAc2oi6Fi2BSvj3YthT1WKevVUyAKnRg3u5L4ySofPzK4gqEB2ss/pH/Whz46Pfeo62Z
-         VcVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qLAy95bvS1zAnYuhC/w4xxxlm+O0tzNR1N2BJpqbw5w=;
-        b=GANtX1CdoFlS6zHyscaNeFTRpz7QvdhNh2dpyUEpBLQgn3VW6o19q/n+8MMixLojbu
-         Iveny8v6ig94JBiCIKuaC/rDBlrUEbezWztJ/Yk8N3fHNk65TRrofAzDt5HhgHL2gfDP
-         FZ9Z4qu9LytNdM7yyyDfau0TRoBN0VMIVD4YZVJtNuMLuBa1Qp0KzBDIGmbOctWlPg2s
-         ioXpDvlvKd1gff+lK0PslDS/iZTXONlA1eFq+xfVw661fAlkh5CxPiToV2tpnSYZ34Rl
-         HWzNVxovAjW/a/qgNSLPMMk/iL3UxnBSTKGf11bm6MgiYO4fwbzvmgtj+hqC5Whv806z
-         xdmw==
-X-Gm-Message-State: AOAM533EOhrrOIhasuDqutGhP7/wA6/nl9f5YJsjiPuLedmTLnAIFtmV
-        BTP3cC6rb89bWx+DF/vgQvv8rg==
-X-Google-Smtp-Source: ABdhPJyhT6Ya2IgUD2RMKPgOE6BwHgGaUQpbUoSsELec3O9UxvF/KjbQKc6zYs03mvxBXK/bekFFsg==
-X-Received: by 2002:a05:6000:10c4:: with SMTP id b4mr8456271wrx.386.1617568410016;
-        Sun, 04 Apr 2021 13:33:30 -0700 (PDT)
-Received: from ?IPv6:2a01:e34:ed2f:f020:6d68:6b9a:7a3c:4a9f? ([2a01:e34:ed2f:f020:6d68:6b9a:7a3c:4a9f])
-        by smtp.googlemail.com with ESMTPSA id u19sm8383785wml.28.2021.04.04.13.33.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 04 Apr 2021 13:33:29 -0700 (PDT)
-Subject: Re: [PATCH v2 1/8] dt-bindings: timer: Add compatible for Mediatek
- MT8195
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Seiya Wang <seiya.wang@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Wenbin Mei <wenbin.mei@mediatek.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, srv_heupstream@mediatek.com
-References: <20210319023427.16711-1-seiya.wang@mediatek.com>
- <20210319023427.16711-3-seiya.wang@mediatek.com>
- <bf7ad31e-974a-3e0a-12bd-32973c7c3cbd@gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <11bf6761-8902-bfa5-8577-d397846e7638@linaro.org>
-Date:   Sun, 4 Apr 2021 22:33:26 +0200
+        Sun, 4 Apr 2021 20:24:15 -0400
+X-Greylist: delayed 461 seconds by postgrey-1.27 at vger.kernel.org; Sun, 04 Apr 2021 20:24:15 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=earthlink.net;
+        s=dk12062016; t=1617582250; bh=huGBOiU6YkSgCISfXFKLa0MqdWIoqj9p8eiN
+        F3z1CFo=; h=Received:To:From:Subject:Message-ID:Date:User-Agent:
+         MIME-Version:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-ELNK-Trace:X-Originating-IP; b=MPydTWnX1n+/vzA7
+        Kn1Pk1zTb614sWgObdiUEY+WyAXdqdHphAqKajf6s0z85R36vO7aQ0bjDRV5LOjr2v4
+        TbI84PRu5+fkdimUivYO938H44v5xqM0duntCm9TqTO28VQ+UNHTcUO1mZFw+BzjpxX
+        o9aq7QnEmi01laZmtY5D6onYADgJTvP4snd9pMtGdkVtsCsjlqUe4cQ6yFIOSt8jFQf
+        N2juPXd5hRi5s4SrD7sj+OXwd3CsBFUrN98mKRUbYtFXzojw/xXuCGyb1iK3NrxmA/l
+        AJqjOVQhIt8zWGK7RlpBXe2KoBgEQNmS+3zf/+EVng5aSg2PIdUP1T4qvw==
+DomainKey-Signature: a=rsa-sha1; q=dns; c=nofws;
+  s=dk12062016; d=earthlink.net;
+  b=rfAX95x7ykoWV0UmrP4pHJc2XhQaK2+LlPRjKVQMchyjyaE4jp2q/rx3ZIn8K0896kHK9p/TIq8ZisvZEXBYReLOhbqwkEvVEsry6YUDDwhNBmLNbmyGOkShaz7gV6itZ0OAvsSBfHCWJTU/iyPBWHTGvr4hpjZAf0WAUZeYfXrsHB+0eERnPXv2GU/PCh6UzO/IIOE3GZ/GDw+wo6W0IUih2CQYMSEzuMNOH+KZcD9UgZpa60cbVMTbQjpD2DaU1kzhdhXRBFrFOpUP6UpESUvh6eXBQiEOtGiMHOYbgDROIn20mnkdsBK2sNM7zJyqOCfwPr4bMIRfmlQtSDDzog==;
+  h=Received:To:From:Subject:Message-ID:Date:User-Agent:MIME-Version:Content-Type:Content-Transfer-Encoding:Content-Language:X-ELNK-Trace:X-Originating-IP;
+Received: from [50.53.39.0] (helo=ssd1tb.sawyer.home)
+        by elasmtp-curtail.atl.sa.earthlink.net with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4)
+        (envelope-from <dansawyer@earthlink.net>)
+        id 1lTCuq-0004ya-1s
+        for linux-serial@vger.kernel.org; Sun, 04 Apr 2021 20:16:28 -0400
+To:     linux-serial@vger.kernel.org
+From:   Dan Sawyer <dansawyer@earthlink.net>
+Subject: requested message -
+Message-ID: <b85d1bb2-71e7-a2db-1e0b-11317cd8f16f@earthlink.net>
+Date:   Sun, 4 Apr 2021 17:16:27 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <bf7ad31e-974a-3e0a-12bd-32973c7c3cbd@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ELNK-Trace: 9b76c4488e3039a271639b933de7ae6f7e972de0d01da940804a1de282246a73b751fb7e7e3cf05d350badd9bab72f9c350badd9bab72f9c350badd9bab72f9c
+X-Originating-IP: 50.53.39.0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 29/03/2021 13:52, Matthias Brugger wrote:
-> 
-> 
-> On 19/03/2021 03:34, Seiya Wang wrote:
->> This commit adds dt-binding documentation of timer for Mediatek MT8195 SoC
->> Platform.
->>
->> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
-> 
-> Applied to v5.12-next/dts64
+Below are outputs for a pci dev. I am not sure if this device correctly 
+configured or not.
 
-Usually bindings go through the subsystem maintainer.
+Thank you,
 
+Dan
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+lspci -vv
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+01:00.0 Communication controller: MosChip Semiconductor Technology Ltd. 
+PCI 9835 Multi-I/O Controller (rev 01)
+     Subsystem: LSI Logic / Symbios Logic PCI 9835 Multi-I/O Controller
+     Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- 
+Stepping- SERR- FastB2B- DisINTx-
+     Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- 
+<TAbort- <MAbort- >SERR- <PERR- INTx-
+     Interrupt: pin A routed to IRQ 21
+     Region 0: I/O ports at d050 [size=8]
+     Region 1: I/O ports at d040 [size=8]
+     Region 2: I/O ports at d030 [size=8]
+     Region 3: I/O ports at d020 [size=8]
+     Region 4: I/O ports at d010 [size=8]
+     Region 5: I/O ports at d000 [size=16]
+     Kernel modules: parport_serial
+
+   9.855040] parport1: PC-style at 0xd030, irq 21 [PCSPP,TRISTATE,EPP]
+[    9.872857] intel_powerclamp: No package C-state available
+[    9.946228] intel_powerclamp: No package C-state available
+[    9.969597] parport_serial 0000:01:00.0: 0000:01:00.0: unknown 
+NetMos/Mostech device
+                Please send the output of lspci -vv, this
+                message (0x9710,0x9835,0x1000,0x0010), the
+                manufacturer and name of serial board or
+                modem board to <linux-serial@vger.kernel.org>.
+
