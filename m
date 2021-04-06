@@ -2,95 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E00B6C433ED
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 04:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2D6C433B4
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 07:13:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B8D4E613B7
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 04:53:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 691066124B
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 07:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242515AbhDFExZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Apr 2021 00:53:25 -0400
-Received: from mail-wm1-f54.google.com ([209.85.128.54]:51779 "EHLO
-        mail-wm1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242526AbhDFExY (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Apr 2021 00:53:24 -0400
-Received: by mail-wm1-f54.google.com with SMTP id p19so6663766wmq.1;
-        Mon, 05 Apr 2021 21:53:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pGjKyi8vekONRl3p6jIWrVsnQ3+iq1XbiLrvChgmELo=;
-        b=FtQ0ZpPWm6dD6LjBBSPhw5VDhDZcPbqqIwej8IzxHkM4OOlQTfcIeoEqWcDFPIo8Jc
-         NeQTkRJK/fbAz/FaaI8+xUiitJZCHc/NQeHTzNWC/JNtg3uWx9WNGirLFQpVAphEeqDT
-         dFUgnMj1z3CRI0uGLtRbiMVEKPrjbB8WgBm/VBppgZbtLVtROsc2s03j++UJp0US+Dc2
-         i/T7A7p3Bpa7BZEAZecGSYYnWc1vsu3mjGizFTjdU2j9F9fI6AqyrAheuzgWD5J7QegR
-         S+t68piKvmwpHAFIWsFSceix3o5YEEnkywZ1R3OmHYT6oGcmq9VwnA0e4j4Uq4Ua2aXu
-         pTyg==
-X-Gm-Message-State: AOAM5321ARY6efRtCgUXXrV9XchsY8Gluw4u5u06gTn1O+sQZ4lE9bla
-        4+wPQfTArrBKzurEkSBxdWw=
-X-Google-Smtp-Source: ABdhPJwJtKMxlCBqJRzJpqR1Sz+pTP/UUONlWasdNasQFDX7nOzYNIASQhewwvtJG9Isw/e53Ppofg==
-X-Received: by 2002:a1c:2683:: with SMTP id m125mr2187799wmm.178.1617684795821;
-        Mon, 05 Apr 2021 21:53:15 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id h14sm36214686wrq.45.2021.04.05.21.53.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Apr 2021 21:53:15 -0700 (PDT)
-Subject: Re: [PATCH -next] serial: 8250: Make symbol 'brcmuart_debugfs_root'
- static
-To:     Zucheng Zheng <zhengzucheng@huawei.com>, alcooperx@gmail.com,
-        gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, hucool.lihua@huawei.com
-References: <20210401074919.56573-1-zhengzucheng@huawei.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <7d91eb53-cde3-934c-a75f-833f98e6b156@kernel.org>
-Date:   Tue, 6 Apr 2021 06:53:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S239524AbhDFHNS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Apr 2021 03:13:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49078 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238014AbhDFHNQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 6 Apr 2021 03:13:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A9C20601FF;
+        Tue,  6 Apr 2021 07:13:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1617693188;
+        bh=+ROOemzsL6HXsZmP2A3hvzMlxx6Hg/qSe+z95RovJrE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dGIH4E+/yxdmOTsrr3g4opHziIW4u1+TkjbuGcE4E+xz7Pmoqa0E9G46vlIAIiY6Y
+         upsWtt12hPD4zpPsXJoJBoCGf9Pra6q0AFXksKI767Fzno5NiebBBL8agKY+SkufQU
+         KgWPDjZpBIcwvEQbUl2xSUdRnprmS5pyAdn+kRuQ=
+Date:   Tue, 6 Apr 2021 09:13:04 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>, Ian Ray <ian.ray@ge.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        kernel@collabora.com
+Subject: Re: [PATCHv4] serial: imx: Add DMA buffer configuration via sysfs
+Message-ID: <YGwKAOmlHRgEVh20@kroah.com>
+References: <20210305115058.92284-1-sebastian.reichel@collabora.com>
+ <YEIetFdcuYZU98s/@kroah.com>
+ <20210305124252.c3ffgca6wjqpkn45@earth.universe>
+ <20210405214446.zhidvtvahcfp4wxa@earth.universe>
 MIME-Version: 1.0
-In-Reply-To: <20210401074919.56573-1-zhengzucheng@huawei.com>
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210405214446.zhidvtvahcfp4wxa@earth.universe>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 01. 04. 21, 9:49, Zucheng Zheng wrote:
-> symbol 'brcmuart_debugfs_root' is not used outside of 8250_bcm7271.c,
-> so this commit marks it static.
+On Mon, Apr 05, 2021 at 11:44:46PM +0200, Sebastian Reichel wrote:
+> Hi,
 > 
-> Signed-off-by: Zucheng Zheng <zhengzucheng@huawei.com>
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-> ---
->   drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> On Fri, Mar 05, 2021 at 01:42:52PM +0100, Sebastian Reichel wrote:
+> > On Fri, Mar 05, 2021 at 01:06:12PM +0100, Greg Kroah-Hartman wrote:
+> > > On Fri, Mar 05, 2021 at 12:50:58PM +0100, Sebastian Reichel wrote:
+> > > > From: Fabien Lahoudere <fabien.lahoudere@collabora.com>
+> > > > 
+> > > > In order to optimize serial communication (performance/throughput VS
+> > > > latency), we may need to tweak DMA period number and size. This adds
+> > > > sysfs attributes to configure those values before initialising DMA.
+> > > > The defaults will stay the same as before (16 buffers with a size of
+> > > > 1024 bytes). Afterwards the values can be read/write with the
+> > > > following sysfs files:
+> > > > 
+> > > > /sys/class/tty/ttymxc*/dma_buffer_size
+> > > > /sys/class/tty/ttymxc*/dma_buffer_count
+> > > 
+> > > Ick no.  Custom sysfs attributes for things like serial ports are crazy.
+> > > 
+> > > > This is mainly needed for GEHC CS ONE (arch/arm/boot/dts/imx53-ppd.dts),
+> > > > which has multiple microcontrollers connected via UART controlling. One
+> > > > of the UARTs is connected to an on-board microcontroller at 19200 baud,
+> > > > which constantly pushes critical data (so aging character detect
+> > > > interrupt will never trigger). This data must be processed at 50-200 Hz,
+> > > > so UART should return data in less than 5-20ms. With 1024 byte DMA
+> > > > buffer (and a constant data stream) the read operation instead needs
+> > > > 1024 byte / 19200 baud = 53.333ms, which is way too long (note: Worst
+> > > > Case would be remote processor sending data with short pauses <= 7
+> > > > characters, which would further increase this number). The current
+> > > > downstream kernel instead configures 24 bytes resulting in 1.25ms,
+> > > > but that is obviously not sensible for normal UART use cases and cannot
+> > > > be used as new default.
+> > > 
+> > > Why can't this be a device tree attribute? Why does this have to be a
+> > > sysfs thing that no one will know how to tune and set over time.  This
+> > > hardware should not force a user to manually tune it to get it to work
+> > > properly, this isn't the 1990's anymore :(
+> > > 
+> > > Please never force a user to choose stuff like this, they never will
+> > > know what to do.
+> > 
+> > This used to be a DT attribute in PATCHv1. It has been moved over to
+> > sysfs since PATCHv2, since it does not describe the hardware, but
+> > configuration. Unfortunately lore.kernel.org does not have the full
+> > thread, but this is the discussion:
+> > 
+> > https://lore.kernel.org/linux-serial/20170629182618.jpahpmuq364ldcv2@pengutronix.de/
+> > 
+> > From downstream POV this can be done either by adding a DT property
+> > to the UART node, or by adding a udev rule.
+> > 
+> > From my POV there is not a huge difference. In both cases we will
+> > be bound by an ABI afterwards, in both cases people will usually
+> > stick to the default value and in both cases people that do deviate
+> > from the default probably ran into problems and started to look
+> > for a solution.
 > 
-> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-> index 63883185fccd..ebba7f2e960c 100644
-> --- a/drivers/tty/serial/8250/8250_bcm7271.c
-> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
-> @@ -239,7 +239,7 @@ struct brcmuart_priv {
->   	u32		rx_abort;
->   };
->   
-> -struct dentry *brcmuart_debugfs_root;
-> +static struct dentry *brcmuart_debugfs_root;
->   
->   /*
->    * Register access routines
-> 
+> ping? It's not very nice to get a rejected in cycles :(
 
+I recommend working with the DT people here, as custom sysfs attributes
+for things like this that are really just describing the hardware is
+crazy.
 
--- 
-js
+thanks,
+
+greg k-h
