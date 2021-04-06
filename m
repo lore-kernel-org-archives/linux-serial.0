@@ -2,129 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 331DDC433ED
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 10:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5668C433B4
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 21:52:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 096DF61154
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 10:56:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9F29B613CC
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 21:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245222AbhDFK4c (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Apr 2021 06:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231339AbhDFK4b (ORCPT
+        id S242121AbhDFVwi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Apr 2021 17:52:38 -0400
+Received: from mail-ot1-f48.google.com ([209.85.210.48]:42949 "EHLO
+        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238486AbhDFVwh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Apr 2021 06:56:31 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5674C06174A;
-        Tue,  6 Apr 2021 03:56:22 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id t140so10047804pgb.13;
-        Tue, 06 Apr 2021 03:56:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HQT74NVA73GGCdAvd6/1h7+SlTTe9RmIrgBWclsq6k8=;
-        b=oQu/WXmQyuX44ohLqifUNcGDI81yV2/0YSelnio0a819gMpS/5aJVrckQkKHXWooFX
-         ZgvnEp9I6qG9kvZ8AWTfgiPFA6PPdFkEaUkKrLHYuivbQs5w8k1O0Jqgyys+Hxtc4RKK
-         tcJE+Y2QH3n3dDZdlMH0LlxaWeE18lg8pLAOiKlVGvb8WGzx8UdWASp4T2dnVS9bgufv
-         xI14ejB0mrfBwySjM97Zvb6BOewCCRKA320H4oeIaUGCsklWbIOH9yYvCTedcRq0jw2i
-         Pkb6vbQ4ttfKk/Vm676oWazkf1KRR50sGV8vr201pn5wNLeoC9tX4NfcAswhAEVJLVdj
-         nUdQ==
+        Tue, 6 Apr 2021 17:52:37 -0400
+Received: by mail-ot1-f48.google.com with SMTP id c24-20020a9d6c980000b02902662e210895so15596947otr.9;
+        Tue, 06 Apr 2021 14:52:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HQT74NVA73GGCdAvd6/1h7+SlTTe9RmIrgBWclsq6k8=;
-        b=F8HOxCqjmsDN4XZmr1/goPATwh/nTuY6XptPQ8yTBtf79+QI7KHsYCXy6wAbdya700
-         Omh+OXBp5ZNV0zX9jMebeBeQB+64Zl172HqY43wGsk8ox7uogZjuOKtWRDvy2D6oPKsM
-         zKqbfkL/OfK2GcadqIa9AMw+RRlru5tmM1z4gAyr096Ah+218NfLHQLeqXxF84UBHdvd
-         JNHHEJsGHO4/12sGM14yKHCvxUH7rjUlZ9oDwZ9rP0vycO9gLR7ftSOobpweanZ/KS4f
-         juxGi33AQjBGJozpJK+Mxg2gBwb4wGtLQpxvR98JVwEWFHxf5Wy9A+LvsCpdcpYyOsmo
-         7mLQ==
-X-Gm-Message-State: AOAM533lhdXs8v/hs94SMl4Dw5h4nodrJMhfaZUbDsHPylhCa4+/03hx
-        CxCjZHT6h9q7YMDq7S/6+L9tKz9NTcx1tA==
-X-Google-Smtp-Source: ABdhPJysFojs7JX3hmvyUz5j1+7J5Z7YRyi0ZSnMOYLcJ2bsm0VfP6FBMz+dTpF3ob+Xk1uWQIx/pA==
-X-Received: by 2002:a62:ce4e:0:b029:225:bcc4:4ee with SMTP id y75-20020a62ce4e0000b0290225bcc404eemr26569506pfg.13.1617706582373;
-        Tue, 06 Apr 2021 03:56:22 -0700 (PDT)
-Received: from ziggy.stardust ([213.195.126.134])
-        by smtp.gmail.com with ESMTPSA id r1sm20326351pfh.153.2021.04.06.03.56.07
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SZYgSptA3ZzQ3t6TtpWVpGXzldK/l7dPJJEKGwpB+bk=;
+        b=SjxbpVi9DSvDd7++IPTHXEfzFN6cL7eag1erjhqqlwbU+JN/rU5AhHQKmT2ISyh+il
+         GYh2VjlAyEuHQVORaKV2iVUh8D+bJ70ukzOwXkqGkeNwDwlDpNGT8xJqX8WCcwloK43s
+         NjGMkYGbnQCzM9NDouJnP6xAc6lTa72h4n98FeYZz0TulhDw07ilBXCXWBF4LzGIXId/
+         KmY9MrWCrwvRU9BkCtRPRd+ySLszyz9eYBGPNkVvGmEVSIWOmmtr7k8ZaTgBOybL6KLi
+         GNjRJgx5wSiFPfSBIUYxIq3cMZiPVD+UJW0GsFBZeTv31u6Jy1ehDHXI18sV409wqcU8
+         kT8g==
+X-Gm-Message-State: AOAM532/HNUXsxKv71MpRuoNsiizfOum8JQSlTlqI9ajczdFP95C2+oa
+        61RvaKJAC8U/dyfmQg7gmxtpMZsYHWc=
+X-Google-Smtp-Source: ABdhPJwdooz2Y7uz3cXkCptffNZbmAgNq/gCfJ7Apu5L8QIclBqafGGgx+cZAbD3z/3dQVH1Jvd1rw==
+X-Received: by 2002:a9d:2f24:: with SMTP id h33mr177021otb.128.1617745947601;
+        Tue, 06 Apr 2021 14:52:27 -0700 (PDT)
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com. [209.85.167.172])
+        by smtp.gmail.com with ESMTPSA id m19sm4350392oop.6.2021.04.06.14.52.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Apr 2021 03:56:21 -0700 (PDT)
-Subject: Re: [PATCH v2 3/8] dt-bindings: watchdog: Add compatible for Mediatek
- MT8195
-To:     Rob Herring <robh@kernel.org>,
-        Seiya Wang <seiya.wang@mediatek.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        linux-watchdog@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wenbin Mei <wenbin.mei@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-kernel@vger.kernel.org,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        linux-serial@vger.kernel.org,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>
-References: <20210319023427.16711-1-seiya.wang@mediatek.com>
- <20210319023427.16711-5-seiya.wang@mediatek.com>
- <20210326014037.GA2144901@robh.at.kernel.org>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-Message-ID: <32dd4d40-2dd3-fc58-ae2b-642b877085b4@gmail.com>
-Date:   Tue, 6 Apr 2021 12:56:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 06 Apr 2021 14:52:26 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id w70so16748188oie.0;
+        Tue, 06 Apr 2021 14:52:26 -0700 (PDT)
+X-Received: by 2002:aca:53cb:: with SMTP id h194mr4992128oib.175.1617745946741;
+ Tue, 06 Apr 2021 14:52:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210326014037.GA2144901@robh.at.kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <cover.1615053848.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <cover.1615053848.git.christophe.leroy@csgroup.eu>
+From:   Li Yang <leoyang.li@nxp.com>
+Date:   Tue, 6 Apr 2021 16:52:14 -0500
+X-Gmail-Original-Message-ID: <CADRPPNSx=sbWu9FGujp7=EV7d=dTn+ukvKAgpEHQ5u0vNwR+QQ@mail.gmail.com>
+Message-ID: <CADRPPNSx=sbWu9FGujp7=EV7d=dTn+ukvKAgpEHQ5u0vNwR+QQ@mail.gmail.com>
+Subject: Re: [PATCH v1 0/3] Remove qe_io{read,write}* IO accessors
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Qiang Zhao <qiang.zhao@nxp.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Timur Tabi <timur@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Wim,
+On Sat, Mar 6, 2021 at 12:11 PM Christophe Leroy
+<christophe.leroy@csgroup.eu> wrote:
+>
+> Commit 6ac9b61786cc ("soc: fsl: qe: introduce qe_io{read,write}*
+> wrappers") added specific I/O accessors for qe because at that
+> time ioread/iowrite functions were sub-optimal on powerpc/32
+> compared to the architecture specific in_/out_ IO accessors.
+>
+> But as ioread/iowrite accessors are now equivalent since
+> commit 894fa235eb4c ("powerpc: inline iomap accessors"),
+> use them in order to allow removal of the qe specific ones.
+>
+> Christophe Leroy (3):
+>   soc: fsl: qe: replace qe_io{read,write}* wrappers by generic
+>     io{read,write}*
+>   tty: serial: ucc_uart: replace qe_io{read,write}* wrappers by generic
+>     io{read,write}*
+>   Revert "soc: fsl: qe: introduce qe_io{read,write}* wrappers"
 
-On 26/03/2021 02:40, Rob Herring wrote:
-> On Fri, 19 Mar 2021 10:34:22 +0800, Seiya Wang wrote:
->> This commit adds dt-binding documentation of watchdog for Mediatek MT8195 SoC
->> Platform.
->>
->> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
->> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
->> ---
->>  Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 1 +
->>  1 file changed, 1 insertion(+)
->>
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-> 
+Series applied.  Thanks.
 
-I suppose you will take this patch through your tree. If you want me to take it
-through the MediaTek SoC tree, please let me know.
-
-Regards,
-Matthias
+>
+>  drivers/soc/fsl/qe/gpio.c     |  20 +++---
+>  drivers/soc/fsl/qe/qe.c       |  24 +++----
+>  drivers/soc/fsl/qe/qe_ic.c    |   4 +-
+>  drivers/soc/fsl/qe/qe_io.c    |  36 +++++-----
+>  drivers/soc/fsl/qe/ucc_fast.c |  68 +++++++++----------
+>  drivers/soc/fsl/qe/ucc_slow.c |  42 ++++++------
+>  drivers/tty/serial/ucc_uart.c | 124 +++++++++++++++++-----------------
+>  include/soc/fsl/qe/qe.h       |  34 +++-------
+>  8 files changed, 168 insertions(+), 184 deletions(-)
+>
+> --
+> 2.25.0
+>
