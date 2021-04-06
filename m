@@ -2,216 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A2DC433ED
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 07:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE120C433B4
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 10:53:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3CF7F6101D
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 07:22:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8D81D61154
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Apr 2021 10:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239029AbhDFHW2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Apr 2021 03:22:28 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:24380 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S237823AbhDFHW1 (ORCPT
+        id S233325AbhDFKxX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Apr 2021 06:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231339AbhDFKxV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Apr 2021 03:22:27 -0400
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1367H9g8013057;
-        Tue, 6 Apr 2021 09:21:28 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=F5cY1wCX5QADaPc2+6E44j3IcFjspCBtThZI4DS/1F4=;
- b=CnNItbGFYxPMh33jxdzFSVtznxJm4F3ppsekjHAbIvnuUBgrtyuOsuVcpA4GnvmZYTx1
- eQ383BHzZMGRaFArKxomkbmPTlXA9BGFqwCR3I582yZejloExFTBcQgD1Amyld077h5S
- cv7CrXDnLxDtjoYrOs7JrrrwqGBswk/RprCZufHlICeuAif7XVb/OrpsTCFwVza1zOWj
- URvl8G8VxbhzlKq7VhAnXXBcZ1Ql1PYL4rzrz5WcxSrADytd8icxsO1p4uh7uv/EKp/y
- H0CVxb3Rj7LcQIMY9/t7VMZGwuvVUAig9l/kwl7MvkYffWQBAoZzefnUfnIP6NkNm8pS RA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 37ra7gacan-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 06 Apr 2021 09:21:28 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 18C12100039;
-        Tue,  6 Apr 2021 09:21:28 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0A02E21E666;
-        Tue,  6 Apr 2021 09:21:28 +0200 (CEST)
-Received: from localhost (10.75.127.48) by SFHDAG2NODE3.st.com (10.75.127.6)
- with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 6 Apr 2021 09:21:27
- +0200
-From:   Erwan Le Ray <erwan.leray@foss.st.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Erwan Le Ray" <erwan.leray@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH 2/2] serial: stm32: add fifo threshold configuration
-Date:   Tue, 6 Apr 2021 09:21:22 +0200
-Message-ID: <20210406072122.27384-3-erwan.leray@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210406072122.27384-1-erwan.leray@foss.st.com>
-References: <20210406072122.27384-1-erwan.leray@foss.st.com>
+        Tue, 6 Apr 2021 06:53:21 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB65C06174A;
+        Tue,  6 Apr 2021 03:53:13 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id i18so10254048wrm.5;
+        Tue, 06 Apr 2021 03:53:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UW4SBvk4siFv9zFuBrGL9HNGyyN/dS4WBxMX1QWTZM8=;
+        b=RqwwVIngnJInbW616xuEiRHUTETVRR42D4lHIX03HdrtnCcD1V8G5J302yq0IzkTAQ
+         aAsAeCOQ1XZNfbbtNsxHvfJ0QH1Lla/valtxl62ZjozBrnHRzC5NOyItOuyB4djHff4u
+         mfBcnWNpe97n1JBA5p1W0pSY+0To407VG5rUC5MPA3ZmLtzQ8T4+uGJWGD3nRsvxW9R2
+         vaj71h2BZZuAid7IhY00fiNk0xPhaGgC0lBHjQRFq9hG8eNU4+cPWRcQ0ThDzGIxaoeX
+         X7d1uJRz+t7Rl+L/pSamR4V7udhSn0Mgo1ZIuB/EFIvh/0qw39NRO8Qk0YujTCTvByrB
+         PMrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UW4SBvk4siFv9zFuBrGL9HNGyyN/dS4WBxMX1QWTZM8=;
+        b=JKmKpRFboQwCCtJ31o0ff3YyZ0pLrHOnVihc912w+2XkWkMHGuNnNx7oA9t2zPLaDk
+         SGZeXXw21JSglijiIBOG27+eD/nqZpwM+lvFUD44iyEEIsFE8+FpTk2mrCQiAp/urrNw
+         5ZXhJZ5SyMwh/cdPut/x2oVJtRnfRuZ8ZFh6xMzyQKgAAoFgAkKPC7XqtggoHHtYj89B
+         cQHkyLqY1bi25Ovlqsi746h4tFTEb8ktARcy3XqAIXRDqo0ceMlrwKhKCT2T9pkZ254W
+         siFDpNBLjW4zw7EbHEexJ4qDUCKPgWKnJS4BCH1xcn2zHELarQRBXa9ofD7YPY4O/lqD
+         R7Ig==
+X-Gm-Message-State: AOAM532P4QIugzTAAQ6TL/BBCLyvMaO/7AcL9bXkRByGknURi+OOS3fy
+        adCqhxUJeAhoqycbcISiSsk=
+X-Google-Smtp-Source: ABdhPJyEcWxQjakzL4UBY/hSPfKVA9z+I4/Fts1uNiYoCieQ/sPpv7fJrL0XRGTcNHoTn2bhWLT6MA==
+X-Received: by 2002:a5d:47c4:: with SMTP id o4mr33792030wrc.138.1617706392307;
+        Tue, 06 Apr 2021 03:53:12 -0700 (PDT)
+Received: from ziggy.stardust ([213.195.126.134])
+        by smtp.gmail.com with ESMTPSA id c131sm2416442wma.37.2021.04.06.03.53.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Apr 2021 03:53:11 -0700 (PDT)
+Subject: Re: [PATCH v2 1/8] dt-bindings: timer: Add compatible for Mediatek
+ MT8195
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Seiya Wang <seiya.wang@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Wenbin Mei <wenbin.mei@mediatek.com>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, srv_heupstream@mediatek.com
+References: <20210319023427.16711-1-seiya.wang@mediatek.com>
+ <20210319023427.16711-3-seiya.wang@mediatek.com>
+ <bf7ad31e-974a-3e0a-12bd-32973c7c3cbd@gmail.com>
+ <11bf6761-8902-bfa5-8577-d397846e7638@linaro.org>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+Message-ID: <251f6d99-a7f6-ddbe-096a-95998b86dbed@gmail.com>
+Date:   Tue, 6 Apr 2021 12:53:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG3NODE2.st.com (10.75.127.8) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-04-06_01:2021-04-01,2021-04-06 signatures=0
+In-Reply-To: <11bf6761-8902-bfa5-8577-d397846e7638@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Hi Daniel,
 
-Add the support for two optional DT properties, to configure RX and TX
-FIFO thresholds::
-- st,rx-fifo-threshold-bytes
-- st,tx-fifo-threshold-bytes
-This replaces hard-coded 8 bytes threshold. Keep 8 as the default value if
-not specified, for backward compatibility.
+On 04/04/2021 22:33, Daniel Lezcano wrote:
+> On 29/03/2021 13:52, Matthias Brugger wrote:
+>>
+>>
+>> On 19/03/2021 03:34, Seiya Wang wrote:
+>>> This commit adds dt-binding documentation of timer for Mediatek MT8195 SoC
+>>> Platform.
+>>>
+>>> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
+>>
+>> Applied to v5.12-next/dts64
+> 
+> Usually bindings go through the subsystem maintainer.
+> 
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+Yes I know, although not all maintainers are taking them. I'll coordinate with
+you the next time, sorry for any inconvenience caused by this.
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 4d277804c63e..1be5b69ee567 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -312,7 +312,7 @@ static void stm32_usart_tx_interrupt_enable(struct uart_port *port)
- 	 * Enables TX FIFO threashold irq when FIFO is enabled,
- 	 * or TX empty irq when FIFO is disabled
- 	 */
--	if (stm32_port->fifoen)
-+	if (stm32_port->fifoen && stm32_port->txftcfg >= 0)
- 		stm32_usart_set_bits(port, ofs->cr3, USART_CR3_TXFTIE);
- 	else
- 		stm32_usart_set_bits(port, ofs->cr1, USART_CR1_TXEIE);
-@@ -323,7 +323,7 @@ static void stm32_usart_tx_interrupt_disable(struct uart_port *port)
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
- 
--	if (stm32_port->fifoen)
-+	if (stm32_port->fifoen && stm32_port->txftcfg >= 0)
- 		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_TXFTIE);
- 	else
- 		stm32_usart_clr_bits(port, ofs->cr1, USART_CR1_TXEIE);
-@@ -801,9 +801,10 @@ static void stm32_usart_set_termios(struct uart_port *port,
- 	cr3 = readl_relaxed(port->membase + ofs->cr3);
- 	cr3 &= USART_CR3_TXFTIE | USART_CR3_RXFTIE;
- 	if (stm32_port->fifoen) {
--		cr3 &= ~(USART_CR3_TXFTCFG_MASK | USART_CR3_RXFTCFG_MASK);
--		cr3 |= USART_CR3_TXFTCFG_HALF << USART_CR3_TXFTCFG_SHIFT;
--		cr3 |= USART_CR3_RXFTCFG_HALF << USART_CR3_RXFTCFG_SHIFT;
-+		if (stm32_port->txftcfg >= 0)
-+			cr3 |= stm32_port->txftcfg << USART_CR3_TXFTCFG_SHIFT;
-+		if (stm32_port->rxftcfg >= 0)
-+			cr3 |= stm32_port->rxftcfg << USART_CR3_RXFTCFG_SHIFT;
- 	}
- 
- 	if (cflag & CSTOPB)
-@@ -833,7 +834,8 @@ static void stm32_usart_set_termios(struct uart_port *port,
- 			, bits);
- 
- 	if (ofs->rtor != UNDEF_REG && (stm32_port->rx_ch ||
--				       stm32_port->fifoen)) {
-+				       (stm32_port->fifoen &&
-+					stm32_port->rxftcfg >= 0))) {
- 		if (cflag & CSTOPB)
- 			bits = bits + 3; /* 1 start bit + 2 stop bits */
- 		else
-@@ -1021,6 +1023,39 @@ static const struct uart_ops stm32_uart_ops = {
- 	.verify_port	= stm32_usart_verify_port,
- };
- 
-+/*
-+ * STM32H7 RX & TX FIFO threshold configuration (CR3 RXFTCFG / TXFTCFG)
-+ * Note: 1 isn't a valid value in RXFTCFG / TXFTCFG. In this case,
-+ * RXNEIE / TXEIE can be used instead of threshold irqs: RXFTIE / TXFTIE.
-+ * So, RXFTCFG / TXFTCFG bitfields values are encoded as array index + 1.
-+ */
-+static const u32 stm32h7_usart_fifo_thresh_cfg[] = { 1, 2, 4, 8, 12, 14, 16 };
-+
-+static void stm32_usart_get_ftcfg(struct platform_device *pdev, const char *p,
-+				  int *ftcfg)
-+{
-+	u32 bytes, i;
-+
-+	/* DT option to get RX & TX FIFO threshold (default to 8 bytes) */
-+	if (of_property_read_u32(pdev->dev.of_node, p, &bytes))
-+		bytes = 8;
-+
-+	for (i = 0; i < ARRAY_SIZE(stm32h7_usart_fifo_thresh_cfg); i++)
-+		if (stm32h7_usart_fifo_thresh_cfg[i] >= bytes)
-+			break;
-+	if (i >= ARRAY_SIZE(stm32h7_usart_fifo_thresh_cfg))
-+		i = ARRAY_SIZE(stm32h7_usart_fifo_thresh_cfg) - 1;
-+
-+	dev_dbg(&pdev->dev, "%s set to %d bytes\n", p,
-+		stm32h7_usart_fifo_thresh_cfg[i]);
-+
-+	/* Provide FIFO threshold ftcfg (1 is invalid: threshold irq unused) */
-+	if (i)
-+		*ftcfg = i - 1;
-+	else
-+		*ftcfg = -EINVAL;
-+}
-+
- static void stm32_usart_deinit_port(struct stm32_port *stm32port)
- {
- 	clk_disable_unprepare(stm32port->clk);
-@@ -1057,6 +1092,12 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
- 		of_property_read_bool(pdev->dev.of_node, "rx-tx-swap");
- 
- 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
-+	if (stm32port->fifoen) {
-+		stm32_usart_get_ftcfg(pdev, "st,rx-fifo-threshold-bytes",
-+				      &stm32port->rxftcfg);
-+		stm32_usart_get_ftcfg(pdev, "st,tx-fifo-threshold-bytes",
-+				      &stm32port->txftcfg);
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	port->membase = devm_ioremap_resource(&pdev->dev, res);
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 77d1ac082e89..07ac291328cd 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -216,12 +216,6 @@ struct stm32_usart_info stm32h7_info = {
- #define USART_CR3_TXFTCFG_MASK	GENMASK(31, 29)	/* H7 */
- #define USART_CR3_TXFTCFG_SHIFT	29		/* H7 */
- 
--/* TX FIFO threashold set to half of its depth */
--#define USART_CR3_TXFTCFG_HALF	0x2
--
--/* RX FIFO threashold set to half of its depth */
--#define USART_CR3_RXFTCFG_HALF	0x2
--
- /* USART_GTPR */
- #define USART_GTPR_PSC_MASK	GENMASK(7, 0)
- #define USART_GTPR_GT_MASK	GENMASK(15, 8)
-@@ -273,6 +267,8 @@ struct stm32_port {
- 	bool hw_flow_control;
- 	bool swap;		 /* swap RX & TX pins */
- 	bool fifoen;
-+	int rxftcfg;		/* RX FIFO threshold CFG      */
-+	int txftcfg;		/* TX FIFO threshold CFG      */
- 	bool wakeup_src;
- 	int rdr_mask;		/* receive data register mask */
- 	struct mctrl_gpios *gpios; /* modem control gpios */
--- 
-2.17.1
-
+Regards,
+Matthias
