@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4EACC43460
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 09:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2207C433B4
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 09:52:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9F369613A0
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 09:52:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 74849613A0
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 09:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350339AbhDGJwm (ORCPT
+        id S1350344AbhDGJwo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Apr 2021 05:52:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36638 "EHLO mail.kernel.org"
+        Wed, 7 Apr 2021 05:52:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36634 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346429AbhDGJwh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1350322AbhDGJwh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 7 Apr 2021 05:52:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B06F7613B3;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AB967613A7;
         Wed,  7 Apr 2021 09:52:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617789147;
-        bh=SRqq7OMycU3LZbxN0RrIQTSnklPCUMfYAGk8ECSLr+o=;
+        bh=+1jxiKQ2Q4L9ndWwyEg8xyNIvSMH3iSiEPyYdtL1cwI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QpZy7OMgVTImipxg+rsvfVLVhbgKXUAiJswbua89A68cjIrScXqkFlo+gEgysOECy
-         NgtoN4rGadtWAvUBx0w3FUFdCAa4t7/6StxPne30PgNY9P+hddCSqNq/QXkQ7wTVpO
-         9ouR3L2/BRb1qLiiVRi9WKS6KAbKZa77++WzkSpw1R43ZNeBuzArF5ciBByzLUGCGH
-         RlBfsfXCp4gNgEQaSede3D1KZ8FuYJxORLQJy9/EXm9KrgfR8MWO1AVQBb3166RXOy
-         DJBOrCo+F5HUzM+7gzRD2898GPgtYtznVgiBZK6pT9Mxf4dReiCzkx8KaT9mdkww95
-         N7lmv5QcVN5kA==
+        b=pjX1ityVfqCk7lHz+FyOxEBtN4CWfTF448w8CTP5aK6Q2aLdu5/o1yujUfVlsLSM9
+         WVh9P0v1B4HCNdPy6TKxuxId7Sdh9ZDzQxPXdcyxUbzB4lsfYof1LmNrV1V9lDPztJ
+         8H4Fn/7HvOZG9pOSBl3r4vIYaQPJoeLBviOY5DcwSIJUQxkErz8yVIYeUbk3GsvPBk
+         Fa+OCEjZWUEnEC2HvCecFoDi6SVdWyKRwN7kpxAa2L/qYXAGu3eOTbziP9pefF2hJ4
+         I6GnpV2m/pqHdr27Kb6Bv5go7yem8QaEK9SR0S4CInXmsLlgp87KDwzGJCteYmL7vv
+         c7ASa/eeICZOA==
 Received: from johan by xi.lan with local (Exim 4.93.0.4)
         (envelope-from <johan@kernel.org>)
-        id 1lU4rE-0008Ik-D7; Wed, 07 Apr 2021 11:52:20 +0200
+        id 1lU4rE-0008Id-86; Wed, 07 Apr 2021 11:52:20 +0200
 From:   Johan Hovold <johan@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 8/8] serial: core: return early on unsupported ioctls
-Date:   Wed,  7 Apr 2021 11:52:08 +0200
-Message-Id: <20210407095208.31838-9-johan@kernel.org>
+Subject: [PATCH 6/8] tty: add ASYNC_SPLIT_TERMIOS to deprecation mask
+Date:   Wed,  7 Apr 2021 11:52:06 +0200
+Message-Id: <20210407095208.31838-7-johan@kernel.org>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <20210407095208.31838-1-johan@kernel.org>
 References: <20210407095208.31838-1-johan@kernel.org>
@@ -51,51 +51,32 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Drivers can return -ENOIOCTLCMD when an ioctl is not recognised to tell
-the upper layers to continue looking for a handler.
+Callout devices are long-gone, but the ASYNC_SPLIT_TERMIOS flag was
+never added to the deprecation mask.
 
-This is not the case for the RS485 and ISO7816 ioctls whose handlers
-should return -ENOTTY directly in case a serial driver does not
-implement the corresponding methods.
+Add it so that a warning is printed if it is ever used.
 
-Fixes: a5f276f10ff7 ("serial_core: Handle TIOC[GS]RS485 ioctls.")
-Fixes: ad8c0eaa0a41 ("tty/serial_core: add ISO7816 infrastructure")
+Fixes: 8a8ae62f8296 ("tty: warn on deprecated serial flags")
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/uapi/linux/tty_flags.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 59336943a86f..87f7127b57e6 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1303,7 +1303,7 @@ static int uart_set_rs485_config(struct uart_port *port,
- 	unsigned long flags;
+diff --git a/include/uapi/linux/tty_flags.h b/include/uapi/linux/tty_flags.h
+index 6a3ac496a56c..cf25056d4b27 100644
+--- a/include/uapi/linux/tty_flags.h
++++ b/include/uapi/linux/tty_flags.h
+@@ -73,8 +73,8 @@
+ #define ASYNC_MAGIC_MULTIPLIER	(1U << ASYNCB_MAGIC_MULTIPLIER)
  
- 	if (!port->rs485_config)
--		return -ENOIOCTLCMD;
-+		return -ENOTTY;
- 
- 	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
- 		return -EFAULT;
-@@ -1327,7 +1327,7 @@ static int uart_get_iso7816_config(struct uart_port *port,
- 	struct serial_iso7816 aux;
- 
- 	if (!port->iso7816_config)
--		return -ENOIOCTLCMD;
-+		return -ENOTTY;
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 	aux = port->iso7816;
-@@ -1347,7 +1347,7 @@ static int uart_set_iso7816_config(struct uart_port *port,
- 	unsigned long flags;
- 
- 	if (!port->iso7816_config)
--		return -ENOIOCTLCMD;
-+		return -ENOTTY;
- 
- 	if (copy_from_user(&iso7816, iso7816_user, sizeof(*iso7816_user)))
- 		return -EFAULT;
+ #define ASYNC_FLAGS		((1U << (ASYNCB_LAST_USER + 1)) - 1)
+-#define ASYNC_DEPRECATED	(ASYNC_SESSION_LOCKOUT | ASYNC_PGRP_LOCKOUT | \
+-		ASYNC_CALLOUT_NOHUP | ASYNC_AUTOPROBE)
++#define ASYNC_DEPRECATED	(ASYNC_SPLIT_TERMIOS | ASYNC_SESSION_LOCKOUT | \
++		ASYNC_PGRP_LOCKOUT | ASYNC_CALLOUT_NOHUP | ASYNC_AUTOPROBE)
+ #define ASYNC_USR_MASK		(ASYNC_SPD_MASK|ASYNC_CALLOUT_NOHUP| \
+ 		ASYNC_LOW_LATENCY)
+ #define ASYNC_SPD_CUST		(ASYNC_SPD_HI|ASYNC_SPD_VHI)
 -- 
 2.26.3
 
