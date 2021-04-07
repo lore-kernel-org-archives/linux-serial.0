@@ -7,41 +7,40 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA76AC433ED
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 09:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D001FC43461
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 09:52:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B900D613A0
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 09:52:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 982B8610F9
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 09:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350361AbhDGJwt (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Apr 2021 05:52:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36698 "EHLO mail.kernel.org"
+        id S238413AbhDGJwu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Apr 2021 05:52:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36700 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350327AbhDGJwi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1350328AbhDGJwi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 7 Apr 2021 05:52:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BA4FE613CC;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B52B3613C0;
         Wed,  7 Apr 2021 09:52:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617789147;
-        bh=CbEIx5LJAV/BiDF376r4zPA53xOufuRud1TK65RuSVw=;
+        bh=htsE9psDyAopAgk5SadKKKzdBmf+5z0IORwtCSmi050=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tkrw157maZ4TLwkx8wJaUjzhMBJzAv+dNBRor5TN6U7VjE5csCaVY/RkTHr1/bHaB
-         rcDwB6SpxCl+dZEcP6A9jLzzQTV8BDrRLcC60E+FxnFjAG0mshye+2Dr/NdhahqQy5
-         XEH3o3kDH4KTvNwXD0lUPFOOS8HP/xlvzPKFDP9WGqxvlTQfPV437Yvjq0jSeP/RY7
-         hxUtr9DVpfNi6rqhtHKoiQcIAibjVK+P5o2IyE3xG72Eo1LRD8yIVIJSAMXkQe6PnQ
-         r5Tif/wWKN7IzlMyNqM+VYj7aFr+KMDigIfGcpQ6z66oGZruD3FsjOTlpPVFc4dMIb
-         uPv54TXk7SyhA==
+        b=IgRr9j+7Bgmvl7RE1qnbySifGNasUNWN8Tmb8qO6US/t/mcaf1Eh4toiH39Phj/nz
+         +qJHt99g6+79o0XB9YFk5qhDZ4GqGWNZxSquCULbBf7SZuB74IjUA33BWJU+TXrz7O
+         ++lE54w9f58+rsHUTgGKfD0bdg6+5Nkb+oS+k7GvKj5IfBFikoE2ttnMDPdz+OUkut
+         VaJd/b75lDM3dfppgsCwGE0/fkWpOyoXqbpRZik/g1G94tBLQFTKRAHdjmhN40WoNe
+         XaR6AUZMM30ywWVf8WzKremzdyGhDQsBATTfFDRQXyNHxECzeG/BC13l+mkEgZT2xf
+         48bQRKgynwXVA==
 Received: from johan by xi.lan with local (Exim 4.93.0.4)
         (envelope-from <johan@kernel.org>)
-        id 1lU4rE-0008IX-2h; Wed, 07 Apr 2021 11:52:20 +0200
+        id 1lU4rD-0008IR-TC; Wed, 07 Apr 2021 11:52:19 +0200
 From:   Johan Hovold <johan@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4/8] tty: use pr_warn_ratelimited() for deprecated serial flags
-Date:   Wed,  7 Apr 2021 11:52:04 +0200
-Message-Id: <20210407095208.31838-5-johan@kernel.org>
+Subject: [PATCH 2/8] tty: fix return value for unsupported ioctls
+Date:   Wed,  7 Apr 2021 11:52:02 +0200
+Message-Id: <20210407095208.31838-3-johan@kernel.org>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <20210407095208.31838-1-johan@kernel.org>
 References: <20210407095208.31838-1-johan@kernel.org>
@@ -51,64 +50,85 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use pr_warn_ratelimited() when warning about deprecated serial flags
-instead of open coding.
+Drivers should return -ENOTTY ("Inappropriate I/O control operation")
+when an ioctl isn't supported, while -EINVAL is used for invalid
+arguments.
 
+Fix up the TIOCMGET, TIOCMSET and TIOCGICOUNT helpers which returned
+-EINVAL when a tty driver did not implement the corresponding
+operations.
+
+Note that the TIOCMGET and TIOCMSET helpers predate git and do not get a
+corresponding Fixes tag below.
+
+Fixes: d281da7ff6f7 ("tty: Make tiocgicount a handler")
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/tty/tty_io.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+ drivers/tty/tty_io.c       | 10 +++++-----
+ include/linux/tty_driver.h |  2 +-
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 7738514a15fe..e00efd299abd 100644
+index ebcde1f96adb..7738514a15fe 100644
 --- a/drivers/tty/tty_io.c
 +++ b/drivers/tty/tty_io.c
-@@ -2626,9 +2626,6 @@ static int tty_tiocgicount(struct tty_struct *tty, void __user *arg)
+@@ -2529,14 +2529,14 @@ static int send_break(struct tty_struct *tty, unsigned int duration)
+  *	@p: pointer to result
+  *
+  *	Obtain the modem status bits from the tty driver if the feature
+- *	is supported. Return -EINVAL if it is not available.
++ *	is supported. Return -ENOTTY if it is not available.
+  *
+  *	Locking: none (up to the driver)
+  */
  
- static int tty_tiocsserial(struct tty_struct *tty, struct serial_struct __user *ss)
+ static int tty_tiocmget(struct tty_struct *tty, int __user *p)
  {
--	static DEFINE_RATELIMIT_STATE(depr_flags,
--			DEFAULT_RATELIMIT_INTERVAL,
--			DEFAULT_RATELIMIT_BURST);
- 	char comm[TASK_COMM_LEN];
- 	struct serial_struct v;
- 	int flags;
-@@ -2638,9 +2635,9 @@ static int tty_tiocsserial(struct tty_struct *tty, struct serial_struct __user *
+-	int retval = -EINVAL;
++	int retval = -ENOTTY;
  
- 	flags = v.flags & ASYNC_DEPRECATED;
+ 	if (tty->ops->tiocmget) {
+ 		retval = tty->ops->tiocmget(tty);
+@@ -2554,7 +2554,7 @@ static int tty_tiocmget(struct tty_struct *tty, int __user *p)
+  *	@p: pointer to desired bits
+  *
+  *	Set the modem status bits from the tty driver if the feature
+- *	is supported. Return -EINVAL if it is not available.
++ *	is supported. Return -ENOTTY if it is not available.
+  *
+  *	Locking: none (up to the driver)
+  */
+@@ -2566,7 +2566,7 @@ static int tty_tiocmset(struct tty_struct *tty, unsigned int cmd,
+ 	unsigned int set, clear, val;
  
--	if (flags && __ratelimit(&depr_flags))
--		pr_warn("%s: '%s' is using deprecated serial flags (with no effect): %.8x\n",
--			__func__, get_task_comm(comm, current), flags);
-+	if (flags)
-+		pr_warn_ratelimited("%s: '%s' is using deprecated serial flags (with no effect): %.8x\n",
-+				__func__, get_task_comm(comm, current), flags);
- 	if (!tty->ops->set_serial)
- 		return -ENOTTY;
- 	return tty->ops->set_serial(tty, &v);
-@@ -2841,9 +2838,6 @@ struct serial_struct32 {
- static int compat_tty_tiocsserial(struct tty_struct *tty,
- 		struct serial_struct32 __user *ss)
- {
--	static DEFINE_RATELIMIT_STATE(depr_flags,
--			DEFAULT_RATELIMIT_INTERVAL,
--			DEFAULT_RATELIMIT_BURST);
- 	char comm[TASK_COMM_LEN];
- 	struct serial_struct32 v32;
- 	struct serial_struct v;
-@@ -2860,9 +2854,9 @@ static int compat_tty_tiocsserial(struct tty_struct *tty,
+ 	if (tty->ops->tiocmset == NULL)
+-		return -EINVAL;
++		return -ENOTTY;
  
- 	flags = v.flags & ASYNC_DEPRECATED;
+ 	retval = get_user(val, p);
+ 	if (retval)
+@@ -2606,7 +2606,7 @@ int tty_get_icount(struct tty_struct *tty,
+ 	if (tty->ops->get_icount)
+ 		return tty->ops->get_icount(tty, icount);
+ 	else
+-		return -EINVAL;
++		return -ENOTTY;
+ }
+ EXPORT_SYMBOL_GPL(tty_get_icount);
  
--	if (flags && __ratelimit(&depr_flags))
--		pr_warn("%s: '%s' is using deprecated serial flags (with no effect): %.8x\n",
--			__func__, get_task_comm(comm, current), flags);
-+	if (flags)
-+		pr_warn_ratelimited("%s: '%s' is using deprecated serial flags (with no effect): %.8x\n",
-+				__func__, get_task_comm(comm, current), flags);
- 	if (!tty->ops->set_serial)
- 		return -ENOTTY;
- 	return tty->ops->set_serial(tty, &v);
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index 61c3372d3f32..2f719b471d52 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -228,7 +228,7 @@
+  *
+  *	Called when the device receives a TIOCGICOUNT ioctl. Passed a kernel
+  *	structure to complete. This method is optional and will only be called
+- *	if provided (otherwise EINVAL will be returned).
++ *	if provided (otherwise ENOTTY will be returned).
+  */
+ 
+ #include <linux/export.h>
 -- 
 2.26.3
 
