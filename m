@@ -7,43 +7,45 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AADC433ED
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 10:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C78C433ED
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 10:13:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2DC886139C
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 10:07:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 504306139C
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Apr 2021 10:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbhDGKHV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Apr 2021 06:07:21 -0400
-Received: from mga04.intel.com ([192.55.52.120]:57902 "EHLO mga04.intel.com"
+        id S236082AbhDGKOE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Apr 2021 06:14:04 -0400
+Received: from mga11.intel.com ([192.55.52.93]:19565 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240556AbhDGKHR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Apr 2021 06:07:17 -0400
-IronPort-SDR: WlzQ6nO32B+9Et+SyexHwGppiTCSjJA1BecxmqyW2/M6h3VzQ/ncEX9K6Dae4UVZZdTbByhvaX
- fKXQnQ4o2lig==
-X-IronPort-AV: E=McAfee;i="6000,8403,9946"; a="191111930"
+        id S235231AbhDGKOE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 7 Apr 2021 06:14:04 -0400
+IronPort-SDR: AIoLtVxKvf1FuyzENS7hQ1wTLT/xWAL+Sa9yet+++OEfrpCI0hlXKSVVdKhPRfy2eRhrxiGxMZ
+ p0U2mk+S5O1g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9946"; a="190072126"
 X-IronPort-AV: E=Sophos;i="5.82,203,1613462400"; 
-   d="scan'208";a="191111930"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2021 03:05:45 -0700
-IronPort-SDR: 4kGujm+dPCk6sxHxyCreArxtLCAphdx66ybpi7rgQwv6DS9EK5B3Xa8VYDrbUhfSubrYY9oUvu
- n+NkvqdA/hvg==
+   d="scan'208";a="190072126"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2021 03:13:54 -0700
+IronPort-SDR: qleZDu8eJuLlaSWIaIU2R/RRiC1vGuzKR38sJRfwTstGF8B7y/O9hYQLgv6jK/LT1gQtyupuaz
+ wm1Bu6AyahAg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,203,1613462400"; 
-   d="scan'208";a="381261096"
+   d="scan'208";a="415203417"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 07 Apr 2021 03:05:43 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 07 Apr 2021 03:13:52 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5CA5D197; Wed,  7 Apr 2021 13:05:59 +0300 (EEST)
+        id 2AE3D197; Wed,  7 Apr 2021 13:14:07 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v1 1/1] serial: sh-sci: Respect deferred probe when getting IRQ
-Date:   Wed,  7 Apr 2021 13:05:56 +0300
-Message-Id: <20210407100556.12321-1-andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v2 1/1] defconfig: enable SERIAL_SH_SCI
+Date:   Wed,  7 Apr 2021 13:14:06 +0300
+Message-Id: <20210407101406.8562-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -51,59 +53,51 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-With platform_get_irq() and its optional variant it's possible to get
-a deferred probe error code. Since the commit ed7027fdf4ec ("driver core:
-platform: Make platform_get_irq_optional() optional") the error code
-can be distinguished from no IRQ case. With this, rewrite IRQ resource
-handling in sh-sci driver to follow above and allow to respect deferred
-probe.
-
-Fixes: ed7027fdf4ec ("driver core: platform: Make platform_get_irq_optional() optional")
-Reported-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/sh-sci.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+v2: fixed one typo
+ arch/x86/configs/i386_defconfig   | 1 +
+ arch/x86/configs/x86_64_defconfig | 1 +
+ drivers/tty/serial/Kconfig        | 2 +-
+ 3 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index ad2c189e8fc8..539c1c2d50b1 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2899,13 +2899,6 @@ static int sci_init_single(struct platform_device *dev,
- 	port->mapbase = res->start;
- 	sci_port->reg_size = resource_size(res);
+diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
+index 396b5d4781ed..d696336674b0 100644
+--- a/arch/x86/configs/i386_defconfig
++++ b/arch/x86/configs/i386_defconfig
+@@ -347,6 +347,7 @@ CONFIG_SERIAL_8250_DMA=y
+ CONFIG_SERIAL_8250_DW=y
+ CONFIG_SERIAL_PCH_UART=y
+ CONFIG_SERIAL_PCH_UART_CONSOLE=y
++CONFIG_SERIAL_SH_SCI=m
+ CONFIG_MMC=m
+ CONFIG_MMC_SDHCI=m
+ CONFIG_MMC_SDHCI_PCI=m
+diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
+index 49bd168a1f6a..20a955acf775 100644
+--- a/arch/x86/configs/x86_64_defconfig
++++ b/arch/x86/configs/x86_64_defconfig
+@@ -343,6 +343,7 @@ CONFIG_SERIAL_8250_DMA=y
+ CONFIG_SERIAL_8250_DW=y
+ CONFIG_SERIAL_PCH_UART=y
+ CONFIG_SERIAL_PCH_UART_CONSOLE=y
++CONFIG_SERIAL_SH_SCI=m
+ CONFIG_MMC=m
+ CONFIG_MMC_SDHCI=m
+ CONFIG_MMC_SDHCI_PCI=m
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index e6f55c28cc2e..584e0d166e31 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -651,7 +651,7 @@ config SERIAL_IP22_ZILOG_CONSOLE
  
--	for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i) {
--		if (i)
--			sci_port->irqs[i] = platform_get_irq_optional(dev, i);
--		else
--			sci_port->irqs[i] = platform_get_irq(dev, i);
--	}
--
- 	/* The SCI generates several interrupts. They can be muxed together or
- 	 * connected to different interrupt lines. In the muxed case only one
- 	 * interrupt resource is specified as there is only one interrupt ID.
-@@ -2913,12 +2906,17 @@ static int sci_init_single(struct platform_device *dev,
- 	 * from the SCI, however those signals might have their own individual
- 	 * interrupt ID numbers, or muxed together with another interrupt.
- 	 */
-+	sci_port->irqs[0] = platform_get_irq(dev, i);
- 	if (sci_port->irqs[0] < 0)
--		return -ENXIO;
-+		return sci_port->irqs[0];
+ config SERIAL_SH_SCI
+ 	tristate "SuperH SCI(F) serial port support"
+-	depends on SUPERH || ARCH_RENESAS || H8300 || COMPILE_TEST
++	depends on SUPERH || ARCH_RENESAS || H8300 || COMPILE_TEST || X86
+ 	select SERIAL_CORE
+ 	select SERIAL_MCTRL_GPIO if GPIOLIB
  
--	if (sci_port->irqs[1] < 0)
--		for (i = 1; i < ARRAY_SIZE(sci_port->irqs); i++)
-+	for (i = 1; i < ARRAY_SIZE(sci_port->irqs); ++i) {
-+		sci_port->irqs[i] = platform_get_irq_optional(dev, i);
-+		if (sci_port->irqs[i] < 0)
-+			return sci_port->irqs[i];
-+		if (sci_port->irqs[i] == 0)
- 			sci_port->irqs[i] = sci_port->irqs[0];
-+	}
- 
- 	sci_port->params = sci_probe_regmap(p);
- 	if (unlikely(sci_port->params == NULL))
 -- 
 2.30.2
 
