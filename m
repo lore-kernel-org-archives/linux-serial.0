@@ -7,210 +7,172 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 161C4C433B4
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Apr 2021 05:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3866EC433B4
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Apr 2021 05:15:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D021461177
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Apr 2021 05:06:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA99260FED
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Apr 2021 05:15:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233257AbhDIFHD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Apr 2021 01:07:03 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:59947 "EHLO
+        id S229846AbhDIFPj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Apr 2021 01:15:39 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:54233 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231402AbhDIFGy (ORCPT
+        by vger.kernel.org with ESMTP id S229498AbhDIFPi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Apr 2021 01:06:54 -0400
+        Fri, 9 Apr 2021 01:15:38 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3BCDF5C00DC;
-        Fri,  9 Apr 2021 01:06:38 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 05D075C00A0;
+        Fri,  9 Apr 2021 01:15:26 -0400 (EDT)
 Received: from imap2 ([10.202.2.52])
-  by compute3.internal (MEProxy); Fri, 09 Apr 2021 01:06:38 -0400
+  by compute3.internal (MEProxy); Fri, 09 Apr 2021 01:15:26 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=
         mime-version:message-id:in-reply-to:references:date:from:to:cc
-        :subject:content-type; s=fm2; bh=mxLFzNV3p0aWRPTd2D1rW2nB8WwCHV/
-        KmSpV66nSk/E=; b=Oc2By+aONtbTP4QV8cs/AySEkzS/sdmDYs0E7MWiuMr+AP6
-        +Jv6p84NFYA0tbiwdHkk15NfkgK8fK7u6ab1JUJmk9mc01kZ+l7rf2t9MLC/AwGz
-        HTYPE2DhRy9zNUSd/KZpUmKKpz3KA8VHpO4nALqB1emBXPB1AobR0fRG0SkHfwfW
-        FlkW4AZNfHM5rMdzpCmDNOx4B36xFQW1AXetPM3P/yNaB70eoGYHLOAwr5rnRqYf
-        Q91v1iGcdjOhIGQUEBNO5xLLR3DkPgwDDIoyP4/gT+c6noayOBEpGpxhhnrYrFIL
-        xThCR/FtC/iR3uy4ose0bVyz1KcT3zJwnvW3+tw==
+        :subject:content-type; s=fm2; bh=FOmFmqL40ZegqMlq/XzagzjasgzMbz3
+        EyAsKTAH4Em0=; b=fgY9QsQ8fhRt+1tMgfceEzzfRPZeQQgkj6SXcyts2cJr8cb
+        G+WoiBHcFt9gOcMOatIn/oG+o/6BRMEMRACSSNoZcUIakSHCDMr26T/mzor5gGWC
+        o4calS2LiZdaiZLHbhLkaJKU7rsb73SpBWRV1fTSXpTzBZV7XZX+jxEwGpjPUv+Y
+        7K8LzwW8OdQIjoEhlRao8w31Qni3VE/D0Mf1RiEvXj8pqmu7UVULqQVcYohi3axP
+        C5xdJkPAVltWPJiTFIGCUUxemBJJyGuhx2lWxx/jDO6xVcwrNBL8Y2sCRDVMJ8Bf
+        mE4OF8JEGYyaiImqJoe0pOgj7dwYPUPubXgTOAQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=mxLFzN
-        V3p0aWRPTd2D1rW2nB8WwCHV/KmSpV66nSk/E=; b=uvdRnJkpC/09mqEE+cJ/b1
-        XO7mUxofkzdKoYDEP46d46reRrmxu/1jAgaA1R626t31qftbZeAipP9z0D4tGSda
-        zc4TzpJ47aGImaAvb2fCK39XZVmEVLHjt2ttaXj8b6g+6GB2gh+Ef9zdNq99Fij2
-        hnpLxvjgK+YkP2GfVCk6dtzd3A+SdxS7PuZnFdxLiqnkUrnQY6B/1bGRC7Pc4bFv
-        Trm+AAkBrOJ+tk3knrMmCc5ByA7DpJkiR47mseJ99GsV818ZFjgVsUDdNFA2+069
-        zQT7tfcvGYrGXfz3peBdE4vmJvhwm21rtnUAPK9Amkuhux8lauIVL6I2AGc+4jew
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=FOmFmq
+        L40ZegqMlq/XzagzjasgzMbz3EyAsKTAH4Em0=; b=FMpYMLnActwMm4HhCpT1Hm
+        MGJThPRYskkKMmdYcwuwwgRhIu8mSkeebMZdGOcjprV2+PLTs3WhSVV39bKuMmuE
+        8iUAf9kqXdg5UA8R/DMfYvm3IxEVRx5arhxrDC0NCvpYMCesEFDk7ibqZdHUezD8
+        v8Fg2JOFgJ278Vlj+tvf2wdftMEWP1swB43lznHyKgBtA+aSNTUAbJKPRtXKb8Tz
+        FU1VftlKm7MRJllQmcCWgNCONzWkNuKxYbln94HCAjMyPFnaO5MOKToKezBO2eI2
+        97cF3mTZt3mNCUT42ejHoiRVwkh3Uuvfg37EE6EbSoImL9sMkb61zaDwEL7cveDA
         ==
-X-ME-Sender: <xms:3OBvYEAr_Wt3-BrZGmq_Jiiy-e9EFJg_Cs3sgHibIUifb437Fpadeg>
-    <xme:3OBvYGgGnRakapBSn55eiaLsKPZkvOTjOB0ykBGpJKtp6uI4k2hLr12eRNz5I4wxN
-    9NP6r974RM0eC9WRw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudektddgledtucetufdoteggodetrfdotf
+X-ME-Sender: <xms:7OJvYNeeYO5-SNB9nXxxrsdTVXStCSH4FXHHGTPGRM9GJ-7U2_oBeg>
+    <xme:7OJvYLPnAnbqQ_kZU0JmwwHRaGTOFgT9lWVaumes0HyegXqH0KCORf0WSG9X7OYSI
+    mKbEHONn3Kv4iDUww>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudektddgleduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepofgfggfkjghffffhvffutgesthdtredtreerjeenucfhrhhomhepfdetnhgu
     rhgvficulfgvfhhfvghrhidfuceorghnughrvgifsegrjhdrihgurdgruheqnecuggftrf
-    grthhtvghrnhepkeelgedtkeduudetveektdfhtedtveffvedutdfgfeejhfeuleelffeh
-    vefgffdtnecuffhomhgrihhnpehinhhfrhgruggvrggurdhorhhgnecuvehluhhsthgvrh
-    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghnughrvgifsegrjhdrihgu
-    rdgruh
-X-ME-Proxy: <xmx:3OBvYHmC3cMpY7sUfNG8oQMONtJM1YjQPKcyPhovaqPyXpDa90FJgQ>
-    <xmx:3OBvYKyv-OI1T1_cdIwC5BIGKE0raNoFKg1PpRXALexjxVe56PFaLw>
-    <xmx:3OBvYJQYi2gWGskNIfuWp__f2jriC4eMeJso4N9ewrQgTKXhWE4Fsw>
-    <xmx:3uBvYIHgC6pybE4Us5RIn7OZctovkJSRDlJ7vsyaOZq4rQhdY_GJrg>
+    grthhtvghrnhepuddttdekueeggedvtddtueekiedutdfguedutdefieeuteefieelteet
+    vddthfeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    eprghnughrvgifsegrjhdrihgurdgruh
+X-ME-Proxy: <xmx:7OJvYGjRy6WCWgh3CIizVUY66gl9Qd_t9Xfc1pJPhF2bddHASw2DFQ>
+    <xmx:7OJvYG8FrzYPy1Yyn71GVD6r4izLJe66Mxj4mRbvmjjR_oFrYSAbsw>
+    <xmx:7OJvYJvO_geyQh5hJuOnaQ-_a1MJhe1leZRhwBKnwopNG9FqmwtFzw>
+    <xmx:7uJvYNhnn4xfvSwi-0jHJDzCleAvmgrw_0lkvfZfbCnKa-QEH9RLog>
 Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 51608A0007C; Fri,  9 Apr 2021 01:06:36 -0400 (EDT)
+        id A55E2A0007C; Fri,  9 Apr 2021 01:15:24 -0400 (EDT)
 X-Mailer: MessagingEngine.com Webmail Interface
 User-Agent: Cyrus-JMAP/3.5.0-alpha0-273-g8500d2492d-fm-20210323.002-g8500d249
 Mime-Version: 1.0
-Message-Id: <db7271d8-8d13-4a8c-a7ba-564e4e769ea5@www.fastmail.com>
-In-Reply-To: <20210408011637.5361-3-zev@bewilderbeest.net>
+Message-Id: <3eef2478-c5b8-4f14-a937-16bbe0a3e05a@www.fastmail.com>
+In-Reply-To: <20210408011637.5361-4-zev@bewilderbeest.net>
 References: <20210408011637.5361-1-zev@bewilderbeest.net>
- <20210408011637.5361-3-zev@bewilderbeest.net>
-Date:   Fri, 09 Apr 2021 14:36:16 +0930
+ <20210408011637.5361-4-zev@bewilderbeest.net>
+Date:   Fri, 09 Apr 2021 14:44:54 +0930
 From:   "Andrew Jeffery" <andrew@aj.id.au>
 To:     "Zev Weiss" <zev@bewilderbeest.net>,
         "Joel Stanley" <joel@jms.id.au>
-Cc:     openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+Cc:     linux-aspeed@lists.ozlabs.org,
         "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: =?UTF-8?Q?Re:_[PATCH_v5_2/4]_drivers/tty/serial/8250:_refactor_sirq_and_?=
- =?UTF-8?Q?lpc_address_setting_code?=
+        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, "Jiri Slaby" <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: =?UTF-8?Q?Re:_[PATCH_v5_3/4]_drivers/tty/serial/8250:_add_aspeed,_lpc-io?=
+ =?UTF-8?Q?-reg_and_aspeed,_lpc-interrupts_DT_properties?=
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Zev,
 
+A couple of minor comments:
 
 On Thu, 8 Apr 2021, at 10:46, Zev Weiss wrote:
-> This splits dedicated aspeed_vuart_set_{sirq,lpc_address}() functions
-> out of the sysfs store functions in preparation for adding DT
-> properties that will be poking the same registers.  While we're at it,
-> these functions now provide some basic bounds-checking on their
-> arguments.
+> These allow describing all the Aspeed VUART attributes currently
+> available via sysfs.  aspeed,sirq
+
+aspeed,lpc-interrupts now
+
+> provides a replacement for the
+> deprecated aspeed,sirq-polarity-sense property.
 > 
 > Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
 > ---
->  drivers/tty/serial/8250/8250_aspeed_vuart.c | 51 ++++++++++++++-------
->  1 file changed, 35 insertions(+), 16 deletions(-)
+>  drivers/tty/serial/8250/8250_aspeed_vuart.c | 44 ++++++++++++++++++++-
+>  1 file changed, 43 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c 
 > b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> index c33e02cbde93..8433f8dbb186 100644
+> index 8433f8dbb186..75ef006fa24b 100644
 > --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
 > +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> @@ -72,22 +72,31 @@ static ssize_t lpc_address_show(struct device *dev,
->  	return snprintf(buf, PAGE_SIZE - 1, "0x%x\n", addr);
->  }
+> @@ -28,6 +28,10 @@
+>  #define ASPEED_VUART_ADDRL		0x28
+>  #define ASPEED_VUART_ADDRH		0x2c
 >  
-> +static int aspeed_vuart_set_lpc_address(struct aspeed_vuart *vuart, u32 addr)
-> +{
-> +	if (addr > U16_MAX)
-> +		return -EINVAL;
+> +#define ASPEED_VUART_DEFAULT_LPC_ADDR	0x3f8
+> +#define ASPEED_VUART_DEFAULT_SIRQ	4
+> +#define ASPEED_VUART_DEFAULT_SIRQ_POLARITY	IRQ_TYPE_LEVEL_LOW
 > +
-> +	writeb(addr >> 8, vuart->regs + ASPEED_VUART_ADDRH);
-> +	writeb(addr >> 0, vuart->regs + ASPEED_VUART_ADDRL);
-> +
-> +	return 0;
-> +}
-> +
->  static ssize_t lpc_address_store(struct device *dev,
->  				 struct device_attribute *attr,
->  				 const char *buf, size_t count)
->  {
->  	struct aspeed_vuart *vuart = dev_get_drvdata(dev);
-> -	unsigned long val;
-> +	u32 val;
->  	int err;
+>  struct aspeed_vuart {
+>  	struct device		*dev;
+>  	void __iomem		*regs;
+> @@ -393,7 +397,8 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+>  	struct aspeed_vuart *vuart;
+>  	struct device_node *np;
+>  	struct resource *res;
+> -	u32 clk, prop;
+> +	u32 clk, prop, sirq[2];
+> +	bool sirq_polarity;
+>  	int rc;
 >  
-> -	err = kstrtoul(buf, 0, &val);
-> +	err = kstrtou32(buf, 0, &val);
->  	if (err)
->  		return err;
+>  	np = pdev->dev.of_node;
+> @@ -501,6 +506,43 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+>  		of_node_put(sirq_polarity_sense_args.np);
+>  	}
 >  
-> -	writeb(val >> 8, vuart->regs + ASPEED_VUART_ADDRH);
-> -	writeb(val >> 0, vuart->regs + ASPEED_VUART_ADDRL);
-> -
-> -	return count;
-> +	err = aspeed_vuart_set_lpc_address(vuart, val);
-> +	return err ? : count;
->  }
->  
->  static DEVICE_ATTR_RW(lpc_address);
-> @@ -105,27 +114,37 @@ static ssize_t sirq_show(struct device *dev,
->  	return snprintf(buf, PAGE_SIZE - 1, "%u\n", reg);
->  }
->  
-> +static int aspeed_vuart_set_sirq(struct aspeed_vuart *vuart, u32 sirq)
-> +{
-> +	u8 reg;
+> +	rc = of_property_read_u32(np, "aspeed,lpc-io-reg", &prop);
+> +	if (rc < 0)
+> +		prop = ASPEED_VUART_DEFAULT_LPC_ADDR;
 > +
-> +	if (sirq > (ASPEED_VUART_GCRB_HOST_SIRQ_MASK >> ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT))
-> +		return -EINVAL;
+> +	rc = aspeed_vuart_set_lpc_address(vuart, prop);
+> +	if (rc < 0) {
+> +		dev_err(&pdev->dev, "invalid value in aspeed,lpc-io-reg property\n");
+> +		goto err_clk_disable;
+> +	}
 > +
-> +	sirq <<= ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT;
-> +	sirq &= ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
+> +	rc = of_property_read_u32_array(np, "aspeed,lpc-interrupts", sirq, 2);
+> +	if (rc < 0) {
+> +		sirq[0] = ASPEED_VUART_DEFAULT_SIRQ;
+> +		sirq[1] = ASPEED_VUART_DEFAULT_SIRQ_POLARITY;
+> +	}
+> +
+> +	rc = aspeed_vuart_set_sirq(vuart, sirq[0]);
+> +	if (rc < 0) {
+> +		dev_err(&pdev->dev, "invalid sirq number in aspeed,lpc-interrupts > property\n");
+> +		goto err_clk_disable;
+> +	}
+> +
+> +	switch (sirq[1]) {
+> +	case IRQ_TYPE_LEVEL_LOW:
+> +		sirq_polarity = false;
+> +		break;
+> +	case IRQ_TYPE_LEVEL_HIGH:
+> +		sirq_polarity = true;
+> +		break;
+> +	default:
+> +		dev_err(&pdev->dev, "invalid sirq polarity in aspeed,lpc-interrupts 
+> property\n");
+> +		rc = -EINVAL;
+> +		goto err_clk_disable;
+> +	}
 
-This might be less verbose if we reordered things a little:
+A bit ugly open-coding the mapping and error handling, maybe worth a helper?
 
-```
-sirq <<= ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT;
-if (sirq & ASPEED_VUART_GCRB_HOST_SIRQ_MASK)
-	return -EINVAL;
-sirq &= ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
-```
+Looks okay otherwise.
 
-But otherwise it looks okay, so
+Cheers,
 
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
-
-> +
-> +	reg = readb(vuart->regs + ASPEED_VUART_GCRB);
-> +	reg &= ~ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
-> +	reg |= sirq;
-> +	writeb(reg, vuart->regs + ASPEED_VUART_GCRB);
-> +
-> +	return 0;
-> +}
-> +
->  static ssize_t sirq_store(struct device *dev, struct device_attribute 
-> *attr,
->  			  const char *buf, size_t count)
->  {
->  	struct aspeed_vuart *vuart = dev_get_drvdata(dev);
->  	unsigned long val;
->  	int err;
-> -	u8 reg;
->  
->  	err = kstrtoul(buf, 0, &val);
->  	if (err)
->  		return err;
->  
-> -	val <<= ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT;
-> -	val &= ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
-> -
-> -	reg = readb(vuart->regs + ASPEED_VUART_GCRB);
-> -	reg &= ~ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
-> -	reg |= val;
-> -	writeb(reg, vuart->regs + ASPEED_VUART_GCRB);
-> -
-> -	return count;
-> +	err = aspeed_vuart_set_sirq(vuart, val);
-> +	return err ? : count;
->  }
->  
->  static DEVICE_ATTR_RW(sirq);
-> -- 
-> 2.31.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->
+Andrew
