@@ -8,107 +8,163 @@ X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99877C433B4
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9FCC433ED
+	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:30:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 613FB610E9
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:06:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 493B1611CE
+	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231356AbhDKJGR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 11 Apr 2021 05:06:17 -0400
-Received: from smtp-17.italiaonline.it ([213.209.10.17]:37552 "EHLO libero.it"
+        id S235267AbhDKJbF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 11 Apr 2021 05:31:05 -0400
+Received: from smtp-17.italiaonline.it ([213.209.10.17]:54888 "EHLO libero.it"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230103AbhDKJGQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 11 Apr 2021 05:06:16 -0400
-X-Greylist: delayed 488 seconds by postgrey-1.27 at vger.kernel.org; Sun, 11 Apr 2021 05:06:16 EDT
+        id S235232AbhDKJbF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 11 Apr 2021 05:31:05 -0400
 Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it
  ([87.20.116.197])
         by smtp-17.iol.local with ESMTPA
-        id VVucl8Pb0tpGHVVuglptFY; Sun, 11 Apr 2021 10:57:51 +0200
+        id VWQUl8Z9ptpGHVWQZlq0Q2; Sun, 11 Apr 2021 11:30:47 +0200
 x-libjamoibt: 1601
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1618131471; bh=RJGMGVLgxB4Slxzughjjm7TfB5RnGYXHJgoL7O/+O2s=;
+        t=1618133447; bh=lnTC5r1HNP48SU1+SuoBKaVTmVI6VQlC9Fb1r+iEXA0=;
         h=From;
-        b=V1DPSXqbGKfbejUXtTlOKNdg1l4yBU53SnBP5//8/Wo0Jhcguy+HXSmWyiMr0RNiJ
-         gpk8dWGtdI6qdbwv8gYQtieUMJL1HIb5OA6KfzE5QxlMaahR9TdFqbuanH1wKgpouK
-         Iddhm0m+cZC/5MHrz9FL0fw+PreCnYudMj7wGtys8rWatWOAl+hvTLoRCZtaczFlLb
-         VLCjPVhUA950cQ/QhIU0xk1zUnuhBDeDSfm96aYvjHaYi3IXlfmHwQ8bT2eqbzYuEd
-         dgI4i9xHxYrzekP0V3ZI6bx5NQ7pNdo+SGyQ1HYwu+mFFAalpc0OOsb4VjE+ISB7Az
-         yp4vwHMGbrmIw==
-X-CNFS-Analysis: v=2.4 cv=Q7IXX66a c=1 sm=1 tr=0 ts=6072ba0f cx=a_exe
+        b=TgRAWRyHfAs+tuMKwoSIedDM/DVQtZOADjnEuZhQp6xnD9Ro3AKtIfOPkEi0KRrEh
+         yFXVqi1kY6meyCU9JcSy0kbO3rzIYZgkpA7+HBMhgcDRqmQ6T8e3qLSDoUhBhH1OWS
+         flLM5A1Z9NEc2oXpWB+SUR8NT0w70qvP/MG1J2R47g94A2F+baXQR2ljsVqiIIikXK
+         ye85ltHUJAmsbuc/SLwTSrlo3KfTHlDtAEnWtSmoAbJij5lKAKY+XPFSszuJeUswh2
+         LfGQV/a9gGgEhIc37sRbhuXtyvN3EEUjql+5z4caIQopssmhNxPTTvwL0pnOifp6IP
+         NPx9GEsISrF+w==
+X-CNFS-Analysis: v=2.4 cv=Q7IXX66a c=1 sm=1 tr=0 ts=6072c1c7 cx=a_exe
  a=AVqmXbCQpuNSdJmApS5GbQ==:117 a=AVqmXbCQpuNSdJmApS5GbQ==:17
- a=49ILBaynaru_GK_EE9QA:9
+ a=RNOFN41U3FZ75c9ZyJUA:9
 From:   Dario Binacchi <dariobin@libero.it>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dario Binacchi <dariobin@libero.it>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH] serial: omap: don't disable rs485 if rts gpio is missing
-Date:   Sun, 11 Apr 2021 10:57:43 +0200
-Message-Id: <20210411085743.510-1-dariobin@libero.it>
+Subject: [PATCH] serial: omap: fix rs485 half-duplex filtering
+Date:   Sun, 11 Apr 2021 11:30:41 +0200
+Message-Id: <20210411093041.3951-1-dariobin@libero.it>
 X-Mailer: git-send-email 2.17.1
-X-CMAE-Envelope: MS4xfIoECLqNhuTXeLp+SAq2SoAQkQSPujoOyyjSuut6oyQggEgOWYrDzsX+sHHs/yNv/5LnT6OaQbVQXg8rKu3I+tZiDdmAOZAIqLcwse3nL5eZ8ZAR5juI
- m2dN4c71/KTWXkC7aqjNlmcX/7IPOMzqWSxz95Dui9ZMVzILIbxvgyR+lhk305nvPtHm+NedsP6ggNg8aORJq6WmY4hMKbQNn/ZBg2Y+P3HJ3aMYg31jmoKA
- 5oAYP+qCR7NdqfCkZ7R3mr8glqwpcFRv9uEoubl4ASnPH1kByEX9L6uDl2fC5CelWvOHRtzE63OEuiUCtjcJt2rSxnVezcZID+MDmV1K0j0fTqjYILcyqvTe
- ENOD7WlPP+TQeHxhiAEhl8quNT5GCnyu40/sPcBpixn9MyDx5Yc=
+X-CMAE-Envelope: MS4xfEa6BpK07ar+5PypdivtzLkcf9tCdCNVuhXAf6SmKkSYyFoFT4F9luJs5Y8bvw259OB/kt8BulLmT3cBOqDCTasrky4UU8HAwCQqmbM/BHlkoq+PgL7N
+ ez5g5T1GkQNIqp4FL71z3Q4MCiJFEgzQSLVmLglD6yG3S5f32pu+x3z579MpMmxdWaCIBBZJj355z1yfdjbY483Fm2QEcEcjQ1yGZM+f3I/pNCxCO+LtqIHd
+ E5yGuekGDa/L2cdI+DC8YhgamNxxRh+WO1l9Pe4v534DuTiOXuL0O5pgl5dMHAeb/ZsuoMMjAFAwh0LdAPKh2Qe2XFgd4pizLP6nPeg+LHlsQtVHuO3jXUYH
+ b0/VR2rNuaRfM4hqA0aoZ9WwpM99ku6sax/crLE3vGDoO5Mq23I=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There are rs485 transceivers (e.g. MAX13487E/MAX13488E) which
-automatically disable or enable the driver and receiver to keep the bus
-in the correct state.
-In these cases we don't need a GPIO for flow control.
+Data received during half-duplex transmission must be filtered.
+If the target device responds quickly, emptying the FIFO at the end of
+the transmission can erase not only the echo characters but also part of
+the response message.
+By keeping the receive interrupt enabled even during transmission, it
+allows you to filter each echo character and only in a number equal to
+those transmitted.
+The issue was generated by a target device that started responding
+240us later having received a request in communication at 115200bps.
+Sometimes, some messages received by the target were missing some of the
+first bytes.
 
 Signed-off-by: Dario Binacchi <dariobin@libero.it>
+
 ---
 
- drivers/tty/serial/omap-serial.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/tty/serial/omap-serial.c | 38 +++++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 76b94d0ff586..1583e93b2202 100644
+index 76b94d0ff586..9d17c52be2a6 100644
 --- a/drivers/tty/serial/omap-serial.c
 +++ b/drivers/tty/serial/omap-serial.c
-@@ -302,7 +302,8 @@ static void serial_omap_stop_tx(struct uart_port *port)
- 			serial_out(up, UART_OMAP_SCR, up->scr);
- 			res = (port->rs485.flags & SER_RS485_RTS_AFTER_SEND) ?
- 				1 : 0;
--			if (gpiod_get_value(up->rts_gpiod) != res) {
-+			if (up->rts_gpiod &&
-+			    gpiod_get_value(up->rts_gpiod) != res) {
- 				if (port->rs485.delay_rts_after_send > 0)
- 					mdelay(
- 					port->rs485.delay_rts_after_send);
-@@ -411,7 +412,7 @@ static void serial_omap_start_tx(struct uart_port *port)
+@@ -159,6 +159,8 @@ struct uart_omap_port {
+ 	u32			calc_latency;
+ 	struct work_struct	qos_work;
+ 	bool			is_suspending;
++
++	atomic_t		rs485_tx_filter_count;
+ };
  
- 		/* if rts not already enabled */
- 		res = (port->rs485.flags & SER_RS485_RTS_ON_SEND) ? 1 : 0;
--		if (gpiod_get_value(up->rts_gpiod) != res) {
-+		if (up->rts_gpiod && gpiod_get_value(up->rts_gpiod) != res) {
- 			gpiod_set_value(up->rts_gpiod, res);
- 			if (port->rs485.delay_rts_before_send > 0)
- 				mdelay(port->rs485.delay_rts_before_send);
-@@ -1407,18 +1408,13 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
- 	/* store new config */
- 	port->rs485 = *rs485;
+ #define to_uart_omap_port(p) ((container_of((p), struct uart_omap_port, port)))
+@@ -328,19 +330,6 @@ static void serial_omap_stop_tx(struct uart_port *port)
+ 		serial_out(up, UART_IER, up->ier);
+ 	}
  
--	/*
--	 * Just as a precaution, only allow rs485
--	 * to be enabled if the gpio pin is valid
--	 */
- 	if (up->rts_gpiod) {
- 		/* enable / disable rts */
- 		val = (port->rs485.flags & SER_RS485_ENABLED) ?
- 			SER_RS485_RTS_AFTER_SEND : SER_RS485_RTS_ON_SEND;
- 		val = (port->rs485.flags & val) ? 1 : 0;
- 		gpiod_set_value(up->rts_gpiod, val);
--	} else
--		port->rs485.flags &= ~SER_RS485_ENABLED;
+-	if ((port->rs485.flags & SER_RS485_ENABLED) &&
+-	    !(port->rs485.flags & SER_RS485_RX_DURING_TX)) {
+-		/*
+-		 * Empty the RX FIFO, we are not interested in anything
+-		 * received during the half-duplex transmission.
+-		 */
+-		serial_out(up, UART_FCR, up->fcr | UART_FCR_CLEAR_RCVR);
+-		/* Re-enable RX interrupts */
+-		up->ier |= UART_IER_RLSI | UART_IER_RDI;
+-		up->port.read_status_mask |= UART_LSR_DR;
+-		serial_out(up, UART_IER, up->ier);
+-	}
+-
+ 	pm_runtime_mark_last_busy(up->dev);
+ 	pm_runtime_put_autosuspend(up->dev);
+ }
+@@ -366,6 +355,10 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
+ 		serial_out(up, UART_TX, up->port.x_char);
+ 		up->port.icount.tx++;
+ 		up->port.x_char = 0;
++		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
++		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
++			atomic_inc(&up->rs485_tx_filter_count);
++
+ 		return;
+ 	}
+ 	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
+@@ -377,6 +370,10 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
+ 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		up->port.icount.tx++;
++		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
++		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
++			atomic_inc(&up->rs485_tx_filter_count);
++
+ 		if (uart_circ_empty(xmit))
+ 			break;
+ 	} while (--count > 0);
+@@ -420,7 +417,7 @@ static void serial_omap_start_tx(struct uart_port *port)
+ 
+ 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
+ 	    !(port->rs485.flags & SER_RS485_RX_DURING_TX))
+-		serial_omap_stop_rx(port);
++		atomic_set(&up->rs485_tx_filter_count, 0);
+ 
+ 	serial_omap_enable_ier_thri(up);
+ 	pm_runtime_mark_last_busy(up->dev);
+@@ -491,8 +488,12 @@ static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
+ 	 * Read one data character out to avoid stalling the receiver according
+ 	 * to the table 23-246 of the omap4 TRM.
+ 	 */
+-	if (likely(lsr & UART_LSR_DR))
++	if (likely(lsr & UART_LSR_DR)) {
+ 		serial_in(up, UART_RX);
++		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
++		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX) &&
++		    atomic_read(&up->rs485_tx_filter_count))
++			atomic_dec(&up->rs485_tx_filter_count);
+ 
+ 	up->port.icount.rx++;
+ 	flag = TTY_NORMAL;
+@@ -543,6 +544,13 @@ static void serial_omap_rdi(struct uart_omap_port *up, unsigned int lsr)
+ 		return;
+ 
+ 	ch = serial_in(up, UART_RX);
++	if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
++	    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX) &&
++	    atomic_read(&up->rs485_tx_filter_count)) {
++		atomic_dec(&up->rs485_tx_filter_count);
++		return;
 +	}
++
+ 	flag = TTY_NORMAL;
+ 	up->port.icount.rx++;
  
- 	/* Enable interrupts */
- 	up->ier = mode;
 -- 
 2.17.1
 
