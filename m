@@ -6,35 +6,35 @@ X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9FCC433ED
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A3DC433ED
+	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:39:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 493B1611CE
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:30:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5E740611F0
+	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235267AbhDKJbF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 11 Apr 2021 05:31:05 -0400
-Received: from smtp-17.italiaonline.it ([213.209.10.17]:54888 "EHLO libero.it"
+        id S235310AbhDKJjT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 11 Apr 2021 05:39:19 -0400
+Received: from smtp-17.italiaonline.it ([213.209.10.17]:52014 "EHLO libero.it"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235232AbhDKJbF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 11 Apr 2021 05:31:05 -0400
+        id S235184AbhDKJjS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 11 Apr 2021 05:39:18 -0400
 Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it
  ([87.20.116.197])
         by smtp-17.iol.local with ESMTPA
-        id VWQUl8Z9ptpGHVWQZlq0Q2; Sun, 11 Apr 2021 11:30:47 +0200
+        id VWYTl8bZQtpGHVWYXlq27L; Sun, 11 Apr 2021 11:39:01 +0200
 x-libjamoibt: 1601
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1618133447; bh=lnTC5r1HNP48SU1+SuoBKaVTmVI6VQlC9Fb1r+iEXA0=;
+        t=1618133941; bh=ID7z0ghRJGcMLBNI8gWtXJSotHesf24UhofLjYl2wx8=;
         h=From;
-        b=TgRAWRyHfAs+tuMKwoSIedDM/DVQtZOADjnEuZhQp6xnD9Ro3AKtIfOPkEi0KRrEh
-         yFXVqi1kY6meyCU9JcSy0kbO3rzIYZgkpA7+HBMhgcDRqmQ6T8e3qLSDoUhBhH1OWS
-         flLM5A1Z9NEc2oXpWB+SUR8NT0w70qvP/MG1J2R47g94A2F+baXQR2ljsVqiIIikXK
-         ye85ltHUJAmsbuc/SLwTSrlo3KfTHlDtAEnWtSmoAbJij5lKAKY+XPFSszuJeUswh2
-         LfGQV/a9gGgEhIc37sRbhuXtyvN3EEUjql+5z4caIQopssmhNxPTTvwL0pnOifp6IP
-         NPx9GEsISrF+w==
-X-CNFS-Analysis: v=2.4 cv=Q7IXX66a c=1 sm=1 tr=0 ts=6072c1c7 cx=a_exe
+        b=UZ+wvpPuWwpZkSC0JUFedTWSOtYFoYVsablxjA2A+YzuTSr4cqGY+TYVhPlR1cykm
+         8/79L4VjHtIZDS/BFNSngOHEJPRM5rt6pXaAV1Qs2wHjrNCfj7BdqoKIGwKGX9KQ1Q
+         xZE7Yw4lWjicUaV6WSCr5axEy5PTbWfbBGUyodcGXvzbMcqSe2j0A+riAWUHwLdQWv
+         yOO3PzI5cWp0N+M4bXxS+Anm0/M+WWCeYKcyDIfJsY6nZI8bmKZnkEducW5lgGnCLd
+         4fj2hkklBAW4Tzcj9A5rkShoK8SMoHD0XfYTYggmPUz6em8ci7evylavEkelJH+tiU
+         2zw2ZM4XpCsWA==
+X-CNFS-Analysis: v=2.4 cv=Q7IXX66a c=1 sm=1 tr=0 ts=6072c3b5 cx=a_exe
  a=AVqmXbCQpuNSdJmApS5GbQ==:117 a=AVqmXbCQpuNSdJmApS5GbQ==:17
  a=RNOFN41U3FZ75c9ZyJUA:9
 From:   Dario Binacchi <dariobin@libero.it>
@@ -42,14 +42,14 @@ To:     linux-kernel@vger.kernel.org
 Cc:     Dario Binacchi <dariobin@libero.it>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH] serial: omap: fix rs485 half-duplex filtering
-Date:   Sun, 11 Apr 2021 11:30:41 +0200
-Message-Id: <20210411093041.3951-1-dariobin@libero.it>
+Subject: [PATCH v2] serial: omap: fix rs485 half-duplex filtering
+Date:   Sun, 11 Apr 2021 11:38:55 +0200
+Message-Id: <20210411093855.1053-1-dariobin@libero.it>
 X-Mailer: git-send-email 2.17.1
-X-CMAE-Envelope: MS4xfEa6BpK07ar+5PypdivtzLkcf9tCdCNVuhXAf6SmKkSYyFoFT4F9luJs5Y8bvw259OB/kt8BulLmT3cBOqDCTasrky4UU8HAwCQqmbM/BHlkoq+PgL7N
- ez5g5T1GkQNIqp4FL71z3Q4MCiJFEgzQSLVmLglD6yG3S5f32pu+x3z579MpMmxdWaCIBBZJj355z1yfdjbY483Fm2QEcEcjQ1yGZM+f3I/pNCxCO+LtqIHd
- E5yGuekGDa/L2cdI+DC8YhgamNxxRh+WO1l9Pe4v534DuTiOXuL0O5pgl5dMHAeb/ZsuoMMjAFAwh0LdAPKh2Qe2XFgd4pizLP6nPeg+LHlsQtVHuO3jXUYH
- b0/VR2rNuaRfM4hqA0aoZ9WwpM99ku6sax/crLE3vGDoO5Mq23I=
+X-CMAE-Envelope: MS4xfK6aa9mZXnTp+boQAxFGXkxCvo5YQNqWCJGZ2IZNt4ryu072ADMDFiHmz2oxlejkrAvBwiRn7gydEVSJPYP7cWp8Yf3mcBTeARGwI7N2TiK+zgGjO2Km
+ xgNJOWZX2LrjWEpFcrDcNC36yiFghFkoLyxtimOtunNunBcjmcFyqEyqrlY+vZgA8BVoqMw617leFNh2Mh/Rg7mpLD9v7KqT9w5Z7/TpTO8Ojh+XF0hHboLV
+ tt4RVWyi/A9abZnjXiVEzTHTUtyd36B5lyssSOKC3qpm5XqilrMEN+5CTun+YOR0n4XliTpDa1tGf1ggIZqj/mLMJdQRMp/IlWwCaoKNrtTyFT2Ikhhq72AD
+ ia2LyvfxbLB55GR7k8+eZq2nS9tm9athriHA/k57ulVR9d/rpXU=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -68,13 +68,17 @@ first bytes.
 
 Signed-off-by: Dario Binacchi <dariobin@libero.it>
 
+
 ---
 
- drivers/tty/serial/omap-serial.c | 38 +++++++++++++++++++-------------
- 1 file changed, 23 insertions(+), 15 deletions(-)
+Changes in v2:
+- Fix compiling error
+
+ drivers/tty/serial/omap-serial.c | 39 ++++++++++++++++++++------------
+ 1 file changed, 24 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 76b94d0ff586..9d17c52be2a6 100644
+index 76b94d0ff586..c0df22b7ea5e 100644
 --- a/drivers/tty/serial/omap-serial.c
 +++ b/drivers/tty/serial/omap-serial.c
 @@ -159,6 +159,8 @@ struct uart_omap_port {
@@ -137,7 +141,7 @@ index 76b94d0ff586..9d17c52be2a6 100644
  
  	serial_omap_enable_ier_thri(up);
  	pm_runtime_mark_last_busy(up->dev);
-@@ -491,8 +488,12 @@ static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
+@@ -491,8 +488,13 @@ static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
  	 * Read one data character out to avoid stalling the receiver according
  	 * to the table 23-246 of the omap4 TRM.
  	 */
@@ -148,10 +152,11 @@ index 76b94d0ff586..9d17c52be2a6 100644
 +		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX) &&
 +		    atomic_read(&up->rs485_tx_filter_count))
 +			atomic_dec(&up->rs485_tx_filter_count);
++	}
  
  	up->port.icount.rx++;
  	flag = TTY_NORMAL;
-@@ -543,6 +544,13 @@ static void serial_omap_rdi(struct uart_omap_port *up, unsigned int lsr)
+@@ -543,6 +545,13 @@ static void serial_omap_rdi(struct uart_omap_port *up, unsigned int lsr)
  		return;
  
  	ch = serial_in(up, UART_RX);
