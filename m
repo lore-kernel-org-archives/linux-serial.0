@@ -5,49 +5,49 @@ X-Spam-Level:
 X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFABFC433B4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B971CC43460
 	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 03:47:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8429161209
+	by mail.kernel.org (Postfix) with ESMTP id 95795611F2
 	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 03:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236586AbhDLDrz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 11 Apr 2021 23:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236561AbhDLDrx (ORCPT
+        id S236608AbhDLDr4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 11 Apr 2021 23:47:56 -0400
+Received: from thorn.bewilderbeest.net ([71.19.156.171]:43249 "EHLO
+        thorn.bewilderbeest.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236546AbhDLDrx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Sun, 11 Apr 2021 23:47:53 -0400
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F85C061574;
-        Sun, 11 Apr 2021 20:47:32 -0700 (PDT)
 Received: from hatter.bewilderbeest.net (unknown [IPv6:2600:6c44:7f:ba20::7c6])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 84736690;
-        Sun, 11 Apr 2021 20:47:31 -0700 (PDT)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 148FB8DA;
+        Sun, 11 Apr 2021 20:47:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1618199252;
-        bh=fvG+KhGr56hUUimTU+sIx4n7YvDI7UPAddjCieqejpg=;
+        s=thorn; t=1618199255;
+        bh=/albO67Siapgg40SlotykH6502Gsgo5wrOXZM3rv/BI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=njJTMX/KmoKkVAeUPHntoS+o7bdvrqN+M/JrYaMRLZvG0M4hhEJAyuQbDTdEm4/0x
-         fkLEwDJYOgoGpO1PpR+BxaIyRV2k/GsbMpNl243A3KzZtngu2yRsgps9zT9gUF9tDP
-         yP9ZNZyv0UWmKLq0No2pazYEkPVafxa4/DYazbmc=
+        b=gGYLYauvWJb8VKYQAIiTwQH2olJqnETYCIN5+jJLib5xlsS140nCjB9dc1okysPIO
+         HVatk5X7pyqdDduIl+NTt4pXgqSVOIlXrhJl/sWcC7HdMwIfoocWHBz9oc/Cu5X9cd
+         DqiYorSCnlTit3G7NLGvOIiK3pTTCUgUZ6VdTNmI=
 From:   Zev Weiss <zev@bewilderbeest.net>
 To:     Joel Stanley <joel@jms.id.au>
 Cc:     openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
         Andrew Jeffery <andrew@aj.id.au>,
         Zev Weiss <zev@bewilderbeest.net>,
+        Rob Herring <robh@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
-Subject: [PATCH v6 2/4] serial: 8250_aspeed_vuart: refactor sirq and lpc address setting code
-Date:   Sun, 11 Apr 2021 22:47:10 -0500
-Message-Id: <20210412034712.16778-3-zev@bewilderbeest.net>
+        Rob Herring <robh+dt@kernel.org>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        - <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH v6 4/4] dt-bindings: serial: 8250: add aspeed,lpc-io-reg and aspeed,lpc-interrupts
+Date:   Sun, 11 Apr 2021 22:47:12 -0500
+Message-Id: <20210412034712.16778-5-zev@bewilderbeest.net>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210412034712.16778-1-zev@bewilderbeest.net>
 References: <20210412034712.16778-1-zev@bewilderbeest.net>
@@ -57,108 +57,75 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This splits dedicated aspeed_vuart_set_{sirq,lpc_address}() functions
-out of the sysfs store functions in preparation for adding DT
-properties that will be poking the same registers.  While we're at it,
-these functions now provide some basic bounds-checking on their
-arguments.
+These correspond to the existing lpc_address, sirq, and sirq_polarity
+sysfs attributes; the second element of aspeed,lpc-interrupts provides
+a replacement for the deprecated aspeed,sirq-polarity-sense property.
 
 Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/tty/serial/8250/8250_aspeed_vuart.c | 51 ++++++++++++++-------
- 1 file changed, 35 insertions(+), 16 deletions(-)
+ .../devicetree/bindings/serial/8250.yaml      | 27 ++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-index c33e02cbde93..8433f8dbb186 100644
---- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-+++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-@@ -72,22 +72,31 @@ static ssize_t lpc_address_show(struct device *dev,
- 	return snprintf(buf, PAGE_SIZE - 1, "0x%x\n", addr);
- }
+diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+index 491b9297432d..0e82b076e199 100644
+--- a/Documentation/devicetree/bindings/serial/8250.yaml
++++ b/Documentation/devicetree/bindings/serial/8250.yaml
+@@ -12,8 +12,13 @@ maintainers:
+ allOf:
+   - $ref: /schemas/serial.yaml#
+   - if:
+-      required:
+-        - aspeed,sirq-polarity-sense
++      anyOf:
++        - required:
++            - aspeed,lpc-io-reg
++        - required:
++            - aspeed,lpc-interrupts
++        - required:
++            - aspeed,sirq-polarity-sense
+     then:
+       properties:
+         compatible:
+@@ -190,6 +195,20 @@ properties:
+       applicable to aspeed,ast2500-vuart.
+     deprecated: true
  
-+static int aspeed_vuart_set_lpc_address(struct aspeed_vuart *vuart, u32 addr)
-+{
-+	if (addr > U16_MAX)
-+		return -EINVAL;
++  aspeed,lpc-io-reg:
++    $ref: '/schemas/types.yaml#/definitions/uint32'
++    description: |
++      The VUART LPC address.  Only applicable to aspeed,ast2500-vuart.
 +
-+	writeb(addr >> 8, vuart->regs + ASPEED_VUART_ADDRH);
-+	writeb(addr >> 0, vuart->regs + ASPEED_VUART_ADDRL);
++  aspeed,lpc-interrupts:
++    $ref: "/schemas/types.yaml#/definitions/uint32-array"
++    minItems: 2
++    maxItems: 2
++    description: |
++      A 2-cell property describing the VUART SIRQ number and SIRQ
++      polarity (IRQ_TYPE_LEVEL_LOW or IRQ_TYPE_LEVEL_HIGH).  Only
++      applicable to aspeed,ast2500-vuart.
 +
-+	return 0;
-+}
-+
- static ssize_t lpc_address_store(struct device *dev,
- 				 struct device_attribute *attr,
- 				 const char *buf, size_t count)
- {
- 	struct aspeed_vuart *vuart = dev_get_drvdata(dev);
--	unsigned long val;
-+	u32 val;
- 	int err;
+ required:
+   - reg
+   - interrupts
+@@ -221,6 +240,7 @@ examples:
+     };
+   - |
+     #include <dt-bindings/clock/aspeed-clock.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
+     serial@1e787000 {
+         compatible = "aspeed,ast2500-vuart";
+         reg = <0x1e787000 0x40>;
+@@ -228,7 +248,8 @@ examples:
+         interrupts = <8>;
+         clocks = <&syscon ASPEED_CLK_APB>;
+         no-loopback-test;
+-        aspeed,sirq-polarity-sense = <&syscon 0x70 25>;
++        aspeed,lpc-io-reg = <0x3f8>;
++        aspeed,lpc-interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
+     };
  
--	err = kstrtoul(buf, 0, &val);
-+	err = kstrtou32(buf, 0, &val);
- 	if (err)
- 		return err;
- 
--	writeb(val >> 8, vuart->regs + ASPEED_VUART_ADDRH);
--	writeb(val >> 0, vuart->regs + ASPEED_VUART_ADDRL);
--
--	return count;
-+	err = aspeed_vuart_set_lpc_address(vuart, val);
-+	return err ? : count;
- }
- 
- static DEVICE_ATTR_RW(lpc_address);
-@@ -105,27 +114,37 @@ static ssize_t sirq_show(struct device *dev,
- 	return snprintf(buf, PAGE_SIZE - 1, "%u\n", reg);
- }
- 
-+static int aspeed_vuart_set_sirq(struct aspeed_vuart *vuart, u32 sirq)
-+{
-+	u8 reg;
-+
-+	if (sirq > (ASPEED_VUART_GCRB_HOST_SIRQ_MASK >> ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT))
-+		return -EINVAL;
-+
-+	sirq <<= ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT;
-+	sirq &= ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
-+
-+	reg = readb(vuart->regs + ASPEED_VUART_GCRB);
-+	reg &= ~ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
-+	reg |= sirq;
-+	writeb(reg, vuart->regs + ASPEED_VUART_GCRB);
-+
-+	return 0;
-+}
-+
- static ssize_t sirq_store(struct device *dev, struct device_attribute *attr,
- 			  const char *buf, size_t count)
- {
- 	struct aspeed_vuart *vuart = dev_get_drvdata(dev);
- 	unsigned long val;
- 	int err;
--	u8 reg;
- 
- 	err = kstrtoul(buf, 0, &val);
- 	if (err)
- 		return err;
- 
--	val <<= ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT;
--	val &= ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
--
--	reg = readb(vuart->regs + ASPEED_VUART_GCRB);
--	reg &= ~ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
--	reg |= val;
--	writeb(reg, vuart->regs + ASPEED_VUART_GCRB);
--
--	return count;
-+	err = aspeed_vuart_set_sirq(vuart, val);
-+	return err ? : count;
- }
- 
- static DEVICE_ATTR_RW(sirq);
+ ...
 -- 
 2.31.1
 
