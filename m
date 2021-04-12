@@ -2,218 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B353EC433B4
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 07:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 721CEC43460
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 08:04:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A6ED6121E
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 07:31:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 44B186121E
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 08:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbhDLHbm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Apr 2021 03:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229810AbhDLHbH (ORCPT
+        id S236973AbhDLIEl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Apr 2021 04:04:41 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.25]:35906 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230034AbhDLIEk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Apr 2021 03:31:07 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57403C061574;
-        Mon, 12 Apr 2021 00:30:28 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id n4so10146225ili.8;
-        Mon, 12 Apr 2021 00:30:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=brKZsiOT6iIS0G8tmBOgDjnt2x9imG0kYyprBpVpTOg=;
-        b=rwwCdvqyl4Wz7vUHGh+mfhsanlEviCTu7nRg7RKgmFB/dbMALPvHXCYVQK6YNQQkqR
-         svrd9Lyvw7IYqfBiW6uwb8PyV7KMd09FkUyPjlw8Z/Y7wQ/L1Rc5qnlzop5O+/TkP6oI
-         aBxuqmXushzZPZKNsaic7KD2FNaltCDTYbo+/UWJRX5LAL+EZbNZJ/tB33SqJWrMh/0j
-         i/rxUSV0TojX96fChZZwevhrDlEPCHRamQt/q9Dk6CJO/eOGZD3kZ99DGOXKYHuMMDF5
-         3w/0ey2+FZTuZd8mfZXg53dp2yvJyddB3khN8ApR7oDaeRKnKn6am+HFS/pj8tW176XY
-         5hOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=brKZsiOT6iIS0G8tmBOgDjnt2x9imG0kYyprBpVpTOg=;
-        b=tu17FyWUvMW2HvY7nGey9vhUi3vWOjBKPnm/IT3+CRsGShIaHZJuXuN2Ns+jcgBfcG
-         TVoCcYkY9RmLX7RDf/mf5aa19TfIy+yHQTRR2ZqaHDkahwhVaYkVZ9y3ERb2h/K6kUzq
-         6HSexkHT0k0eZHcw1ZWcPYZTV+6PO73MJ1YEhEREGXW96gKtbNxr+S39K9uco9u3pm+7
-         JZBpTYe2FYhh8tvHPfii34E5cOJCMKS6Bdaoe/F1kHk7gb70wg6sz/OxdYltsfFmus8F
-         wsiDfb7qLXrjZzSQLL6rd47vjWqnD772SdmEMyOvMRIVv4mnLDwqscFQWCv0nrr4w8/2
-         /CUw==
-X-Gm-Message-State: AOAM533hvElIvZsHybI3+hSaLTASLWIcZVPxYRzB3ZCgRCtHSTTWLUMQ
-        yo+7bOGxVaY9VcShTvIeOlQLDk1S84zsbf1DshA=
-X-Google-Smtp-Source: ABdhPJwxS/0Ij0eJ2IB0VLfPau/min812MYl8pT0ZdhTDlXX0F6uUoluIQRbp0u+Ry0Qt6ZgUSYh5AjaWYpPvpXPdCU=
-X-Received: by 2002:a05:6e02:1809:: with SMTP id a9mr1366918ilv.184.1618212626339;
- Mon, 12 Apr 2021 00:30:26 -0700 (PDT)
+        Mon, 12 Apr 2021 04:04:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1618214659; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=TC5kjK8pTnJ+fbGLu+qV/5rpBRqFKvbm2Ls3mnaAQ0KqSz1lyU/u00jKQ7UcoQqVp8
+    Tx7bR9zyjwXYHzyCSi77kFlUXpr2guOedhCKif1iAoRteI6tCURCCqevqvkP8ahpUp/5
+    bT2lEszwgOlkq4op0LVrDWn1doD6lmxJDRw5OG6OB95AnPqyucSxQAbS0TVZFEQwC4EZ
+    1bS63xWQS8J1iyTi4zDO4nPAiekn8gTYfKiDXmByZU4SrfAN1vUbysedooHKWRZvy1eA
+    MHc9MprcRkyrCMvxX+A1AZEz2gOF9Fm+NmcfQC/G4NQ2yqJ9XS3CcCTNkdNu6i/OiVOI
+    hAsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1618214659;
+    s=strato-dkim-0002; d=strato.com;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=8bonpD1uBpLuS0DvmCtdSzAHKD3kFan7gzbk1uMEsJM=;
+    b=kW7m2bzl23Gc4mExNQgUL1JeupLiHqrNirNU4SfZnL9DVVpB6qUWhZLThlQkq6+kF9
+    CKjXvNcCtScP9T2JgC0k9Ygn2UtcVDZNh+JgtNClGgxH1MVBy94FiROZk/L90kJRKMIS
+    Uv7LbvjbpGOiCKOkhQzWsmYIk6gayoYKLjqaPZEamIdEWfRAaC+77fRn09qQiw/9QLAq
+    kbqQjn5bdT4v98i3wJ3+K7P9SIdEtY/xAH9RDX2UFuv4QFD+a8yYkHBBmExTLuhcfIHO
+    K+GqoBqoVGPOi5hKZEbTUej51lEjyzMsktwecNRxAoMopRYfKVL7HWkeApmNwgdJXhJ7
+    R3DQ==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1618214659;
+    s=strato-dkim-0002; d=fpond.eu;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=8bonpD1uBpLuS0DvmCtdSzAHKD3kFan7gzbk1uMEsJM=;
+    b=cFSXp11WS2kuNIRmsJT13e2i3rBkVpTzquJi0fE52h3S94pnVsP6x4pa2J99PV9csc
+    tpsijML0ACXPKTLEg8CtTxCQqty1A8TJOsIrVy2WpabJn3RGMnqPjw0gZkA5CGgApitm
+    t3SBa6h0SOBVmO+66MCHfmi3UxWa0z4/NYa8gL84LHzKouO1rCx2YOVclXxdJutW8YF2
+    B0z3BRtsidZMsV62t580WbO7Xgur73RIZZIDuvvkSI8oRgNUl7TxDNYeCrhOuKc6C7o4
+    FnnE93mm1rpiRHG2rTW/oViMg8oLWMluPKKHAujgPHoTC2Uq7NraovnoygquEa2XiT8q
+    4xMA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCv/x28jVM="
+X-RZG-CLASS-ID: mo00
+Received: from oxapp06-01.back.ox.d0m.de
+    by smtp-ox.front (RZmta 47.24.0 AUTH)
+    with ESMTPSA id m01edax3C84IIU8
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Mon, 12 Apr 2021 10:04:18 +0200 (CEST)
+Date:   Mon, 12 Apr 2021 10:04:18 +0200 (CEST)
+From:   Ulrich Hecht <uli@fpond.eu>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     "wsa@kernel.org" <wsa@kernel.org>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Message-ID: <1395082345.239625.1618214658794@webmail.strato.com>
+In-Reply-To: <OSAPR01MB3683AE83C298C792F4DA3344D8709@OSAPR01MB3683.jpnprd01.prod.outlook.com>
+References: <20210409082524.3480-1-uli+renesas@fpond.eu>
+ <OSAPR01MB3683F5855937833872F4FE23D8739@OSAPR01MB3683.jpnprd01.prod.outlook.com>
+ <785709679.143677.1617984277200@webmail.strato.com>
+ <OSAPR01MB3683AE83C298C792F4DA3344D8709@OSAPR01MB3683.jpnprd01.prod.outlook.com>
+Subject: RE: [PATCH] serial: sh-sci: correct units in comment about DMA
+ timeout
 MIME-Version: 1.0
-References: <1618202061-8243-1-git-send-email-dillon.minfei@gmail.com> <202104121526.gm7LWDAv-lkp@intel.com>
-In-Reply-To: <202104121526.gm7LWDAv-lkp@intel.com>
-From:   dillon min <dillon.minfei@gmail.com>
-Date:   Mon, 12 Apr 2021 15:29:50 +0800
-Message-ID: <CAL9mu0LDi2-aAU=cGDhBb6fkxWRKUNeRXcR-q1snJERm5ju=QQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: stm32: optimize spin lock usage
-To:     kernel test robot <lkp@intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@foss.st.com>,
-        kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
-        linux-serial@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.4-Rev21
+X-Originating-Client: open-xchange-appsuite
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi lkp,
 
-Thanks for the reminder.
-I just noticed this from greg's mail. still waiting for his response
-about the proper solution for this patch.
-After that i will update version 2 for it.
+> On 04/12/2021 8:23 AM Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com> wrote:
+> Hmm, when we use HSCIF with 10 bits, 3000000 baud and 128 bytes FIFO,
+> the rx_timeout value will be set to 1536 (us). So, if we set rx_timeout
+> to 20000 (us) as a minimum value, the sh-sci' behavior will be back to
+> non hrtimer support, IIUC.
+> 
+> Perhaps, describing uart_update_timeout() and the jiffies value of
+> uart_port->timeout with 115200 baud here may cause misreading??
+> I didn't understand the purpose of uart_port->timeout yet thought.
+> But, at least, the current driver uses hrtimer to improve latency
+> for HSCIF, the driver should not set 20000 (us) as a minimum value.
 
-Your test is really efficient, thanks.
+Not having looked at this stuff in a while, I was under the impression that the rx timeout is an error condition, when it is in fact part of normal (DMA) operation. I think it was indeed the reference to uart_update_timeout() that threw me off...
 
-Best regards,
+So if my understanding is correct now, we should scrap the minimum timeout code entirely because the condition it is supposed to prevent cannot occur any longer due to the switch to hrtimers. Did I get that right?
 
-Dillon.
-
-On Mon, Apr 12, 2021 at 3:25 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi,
->
-> Thank you for the patch! Perhaps something to improve:
->
-> [auto build test WARNING on stm32/stm32-next]
-> [also build test WARNING on usb/usb-testing v5.12-rc7]
-> [cannot apply to tty/tty-testing next-20210409]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
->
-> url:    https://github.com/0day-ci/linux/commits/dillon-minfei-gmail-com/serial-stm32-optimize-spin-lock-usage/20210412-123607
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/atorgue/stm32.git stm32-next
-> config: riscv-randconfig-r034-20210412 (attached as .config)
-> compiler: clang version 13.0.0 (https://github.com/llvm/llvm-project 9829f5e6b1bca9b61efc629770d28bb9014dec45)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install riscv cross compiling tool for clang build
->         # apt-get install binutils-riscv64-linux-gnu
->         # https://github.com/0day-ci/linux/commit/a0e81ae10c46f768437d61cd3a3dfd4d1250b375
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review dillon-minfei-gmail-com/serial-stm32-optimize-spin-lock-usage/20210412-123607
->         git checkout a0e81ae10c46f768437d61cd3a3dfd4d1250b375
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=riscv
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All warnings (new ones prefixed by >>):
->
-> >> drivers/tty/serial/stm32-usart.c:280:39: warning: variable 'flags' is uninitialized when used here [-Wuninitialized]
->                    spin_unlock_irqrestore(&port->lock, flags);
->                                                        ^~~~~
->    drivers/tty/serial/stm32-usart.c:217:24: note: initialize the variable 'flags' to silence this warning
->            unsigned long c, flags;
->                                  ^
->                                   = 0
->    1 warning generated.
->
->
-> vim +/flags +280 drivers/tty/serial/stm32-usart.c
->
->    211
->    212  static void stm32_usart_receive_chars(struct uart_port *port, bool threaded)
->    213  {
->    214          struct tty_port *tport = &port->state->port;
->    215          struct stm32_port *stm32_port = to_stm32_port(port);
->    216          const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
->    217          unsigned long c, flags;
->    218          u32 sr;
->    219          char flag;
->    220
->    221          if (irqd_is_wakeup_set(irq_get_irq_data(port->irq)))
->    222                  pm_wakeup_event(tport->tty->dev, 0);
->    223
->    224          while (stm32_usart_pending_rx(port, &sr, &stm32_port->last_res,
->    225                                        threaded)) {
->    226                  sr |= USART_SR_DUMMY_RX;
->    227                  flag = TTY_NORMAL;
->    228
->    229                  /*
->    230                   * Status bits has to be cleared before reading the RDR:
->    231                   * In FIFO mode, reading the RDR will pop the next data
->    232                   * (if any) along with its status bits into the SR.
->    233                   * Not doing so leads to misalignement between RDR and SR,
->    234                   * and clear status bits of the next rx data.
->    235                   *
->    236                   * Clear errors flags for stm32f7 and stm32h7 compatible
->    237                   * devices. On stm32f4 compatible devices, the error bit is
->    238                   * cleared by the sequence [read SR - read DR].
->    239                   */
->    240                  if ((sr & USART_SR_ERR_MASK) && ofs->icr != UNDEF_REG)
->    241                          writel_relaxed(sr & USART_SR_ERR_MASK,
->    242                                         port->membase + ofs->icr);
->    243
->    244                  c = stm32_usart_get_char(port, &sr, &stm32_port->last_res);
->    245                  port->icount.rx++;
->    246                  if (sr & USART_SR_ERR_MASK) {
->    247                          if (sr & USART_SR_ORE) {
->    248                                  port->icount.overrun++;
->    249                          } else if (sr & USART_SR_PE) {
->    250                                  port->icount.parity++;
->    251                          } else if (sr & USART_SR_FE) {
->    252                                  /* Break detection if character is null */
->    253                                  if (!c) {
->    254                                          port->icount.brk++;
->    255                                          if (uart_handle_break(port))
->    256                                                  continue;
->    257                                  } else {
->    258                                          port->icount.frame++;
->    259                                  }
->    260                          }
->    261
->    262                          sr &= port->read_status_mask;
->    263
->    264                          if (sr & USART_SR_PE) {
->    265                                  flag = TTY_PARITY;
->    266                          } else if (sr & USART_SR_FE) {
->    267                                  if (!c)
->    268                                          flag = TTY_BREAK;
->    269                                  else
->    270                                          flag = TTY_FRAME;
->    271                          }
->    272                  }
->    273
->    274                  if (uart_handle_sysrq_char(port, c))
->    275                          continue;
->    276                  uart_insert_char(port, sr, USART_SR_ORE, c, flag);
->    277          }
->    278
->    279          if (threaded)
->  > 280                  spin_unlock_irqrestore(&port->lock, flags);
->    281          else
->    282                  spin_unlock(&port->lock);
->    283
->    284          tty_flip_buffer_push(tport);
->    285
->    286          if (threaded)
->    287                  spin_lock_irqsave(&port->lock, flags);
->    288          else
->    289                  spin_lock(&port->lock);
->    290  }
->    291
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+CU
+Uli
