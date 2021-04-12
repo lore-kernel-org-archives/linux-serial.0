@@ -2,178 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05710C433ED
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 08:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E9DC43460
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 09:35:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D42D66128E
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 08:56:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C82A61209
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 09:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238706AbhDLI44 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Apr 2021 04:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
+        id S240884AbhDLJgP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Apr 2021 05:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238465AbhDLIzt (ORCPT
+        with ESMTP id S240537AbhDLJeO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Apr 2021 04:55:49 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82576C061574;
-        Mon, 12 Apr 2021 01:55:31 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id n4so10322801ili.8;
-        Mon, 12 Apr 2021 01:55:31 -0700 (PDT)
+        Mon, 12 Apr 2021 05:34:14 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEAC1C06136E;
+        Mon, 12 Apr 2021 02:31:44 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id h25so8919962pgm.3;
+        Mon, 12 Apr 2021 02:31:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LVJ7S4AbhmW2SReC6yCWbpFaYmnw9XX646YZrZZaOV4=;
-        b=XXv1K4Af5TNvlVNHsnj90rtwt0QnzPrSuI6dVY64A7rbxYfPyLgygUuiqCv8/6BwSm
-         QlUNslEIJilecqhOo/ND35gDq/xvLCwgeRRwiXlAYKBgujOnIi1FvUG4DgBt63U/XnAx
-         e8ae+YDHN0WOVTHusYIsilwc/pUPZTyb4usURljFnke7HMj3ntJ2MVgk3jVuj0uC/aql
-         DIFQNe7IeJLgLrnXhicnVFNZEyAN0iJ9cqsrLEcAulozFjDpdsykjA6yJqZedZpQ+wNV
-         q3RMyBO9WsUmowo8yaW51jk43/c3wBjDW3xjHHdcdlNEtbx1uGGRRoV9v4dluN+u6b70
-         L9jQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=hnbI4HTxy5h+9wDfXPCcQHa6zzBSTTZbMcq2PaN8c1I=;
+        b=HtwrWWFDbFwS9xUN3hU5q5cxt7V3HjRLojvzWMaJ/+Q7zxE0hWxz4n1PDmChYQ/EMq
+         Ak3U1MP/lV0CYn9AmEqHZz+ifgkH6I6+/QmhECchXang6IFWQAEHW9A6hD7hagYiMEz4
+         H/kK3/agJLcFRlFvNxuYtb9f/xIjVG1zuPoLQ4rMOmw4QWNCSu6I3BWtAO9Dlj8WKL6i
+         Co3WFHvM9aygZHnLFYSrk0+EqAdDReQa210+u9fTjB4qfHYT1hB6rb5M7LqBjuj7O1oH
+         ZYfP6CC3uCwx2zqZFM5zEWg3FfKqKfRehj1eQNcK8hf4ymWvRwSMr9xzt6ulIU9gqIuD
+         seSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LVJ7S4AbhmW2SReC6yCWbpFaYmnw9XX646YZrZZaOV4=;
-        b=ggSy6P/M0iUJRSqJdK5S02rH+304fiqm7HS7tzQnWolQYIOr7NKRMnfv6+0KqjD41b
-         bOquhLQMu0CzvmoaQ2+hEcpwZt9JjnFbLXpskCaHn/DDxDiXfn8m5OU1/lUMLrdkBy5P
-         LtkOYiAmmmS0e8X9LhazainiYHIYQU9ZNDlKK7ulS2fAcvVpaYbj6ctR1zTeLo6rHS7g
-         kSJnwG72Uguf2hNywNw+YmNKkxDlw8/8iZiAOILKy55N7ezpg5LxCup6Wg6VPE3S7HOq
-         Y0/8ZZrTRxaepg2MEStZb7f82T1OhZLhmTK9QUcMiKirg4DDFztRLVI/os9q0TPUsqEI
-         6hiQ==
-X-Gm-Message-State: AOAM532xDafMPAXrS6BxpoT0k7vVcm5lmunHxTVIopGfhgfyGEUSFpjP
-        Bey/s/mEv2n+k3p6tbGzUHkny04p/Q6sqh+nOE0=
-X-Google-Smtp-Source: ABdhPJzjvOSunZ3GFXhIDH+A2PRnZqLNajx99SY0l5RG/yhcKdxlkzSHA9lRYJ9e5NtH04cZ5o0zwI0TNaSspvdTwrc=
-X-Received: by 2002:a05:6e02:1526:: with SMTP id i6mr18857159ilu.270.1618217730575;
- Mon, 12 Apr 2021 01:55:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <1618202061-8243-1-git-send-email-dillon.minfei@gmail.com>
- <YHPgGI6EmTzmVH7g@kroah.com> <CAL9mu0Lt-3_O7V5HLxd5Hbt9afx9ryBUzWqmsc+2n3SP7JS6ig@mail.gmail.com>
- <YHQEA9jn5uXQCtrN@kroah.com>
-In-Reply-To: <YHQEA9jn5uXQCtrN@kroah.com>
-From:   dillon min <dillon.minfei@gmail.com>
-Date:   Mon, 12 Apr 2021 16:54:54 +0800
-Message-ID: <CAL9mu0+hi5eYEder1Mj2yjUN+eicJ9qG8Kr4GTC2mqfY405Jkg@mail.gmail.com>
-Subject: Re: [PATCH] serial: stm32: optimize spin lock usage
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     jirislaby@kernel.org, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@foss.st.com>,
-        linux-serial@vger.kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=hnbI4HTxy5h+9wDfXPCcQHa6zzBSTTZbMcq2PaN8c1I=;
+        b=HFyEMf116ARbD/I66f7ex4ah76o6YHjwkhCVMWEAntIzFTf78Nq/M65/eRqNXfeKKP
+         pgRvgyrs8JHAl9vfEFnibZXts3tilB3j1r+XelXJR1lJ+A/ff/4PtE9Rx6r6Wb+1u3ru
+         Jp2+AodNKvqfZvmGi2p9Ta+pXlFmmz5ND9ZC9Y5rIvx3+SsYTOL2IOTaOJAcf4ATKO8R
+         OT3NL5pSPufRH7Op/Me7oLNtGlkSYRhcXBmhUW/ae9rRUSvNfuPFHkbbKHUQHHXvv0on
+         GjH9qQAL18/xzmbq9Gtg1sDefG0pSCJavIQaOaK2faOiStmBpw0xgo61vdrlTKM59dU/
+         pmsw==
+X-Gm-Message-State: AOAM533crW5lZP5ZOAClVzLj+m+jROE1T2LI4Zw6yZUEVQl4kQsQnHCz
+        cOCK+eh3l9f5hSWvbCPyNGc=
+X-Google-Smtp-Source: ABdhPJwrTzAtgMMxUCRMcseHM+9n719hVrbqnEqDcTiqRlECpevvVYQUFcWEy8URy2tQJXlZxa0hxg==
+X-Received: by 2002:a65:68d9:: with SMTP id k25mr9891189pgt.236.1618219904290;
+        Mon, 12 Apr 2021 02:31:44 -0700 (PDT)
+Received: from fmin-OptiPlex-7060.nreal.work ([137.59.103.165])
+        by smtp.gmail.com with ESMTPSA id r6sm10511879pgp.64.2021.04.12.02.31.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Apr 2021 02:31:43 -0700 (PDT)
+From:   dillon.minfei@gmail.com
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        lkp@intel.com
+Cc:     linux-serial@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
+        dillon min <dillon.minfei@gmail.com>,
+        Gerald Baeza <gerald.baeza@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>
+Subject: [PATCH v2] serial: stm32: optimize spin lock usage
+Date:   Mon, 12 Apr 2021 17:31:38 +0800
+Message-Id: <1618219898-4600-1-git-send-email-dillon.minfei@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
+From: dillon min <dillon.minfei@gmail.com>
 
-On Mon, Apr 12, 2021 at 4:25 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Apr 12, 2021 at 02:50:20PM +0800, dillon min wrote:
-> > Hi Greg=EF=BC=8C
-> >
-> > Thanks for the quick response, please ignore the last private mail.
-> >
-> > On Mon, Apr 12, 2021 at 1:52 PM Greg KH <gregkh@linuxfoundation.org> wr=
-ote:
-> > >
-> > > On Mon, Apr 12, 2021 at 12:34:21PM +0800, dillon.minfei@gmail.com wro=
-te:
-> > > > From: dillon min <dillon.minfei@gmail.com>
-> > > >
-> > > > To avoid potential deadlock in spin_lock usage, change to use
-> > > > spin_lock_irqsave(), spin_unlock_irqrestore() in process(thread_fn)=
- context.
-> > > > spin_lock(), spin_unlock() under handler context.
-> > > >
-> > > > remove unused local_irq_save/restore call.
-> > > >
-> > > > Signed-off-by: dillon min <dillon.minfei@gmail.com>
-> > > > ---
-> > > > Was verified on stm32f469-disco board. need more test on stm32mp pl=
-atform.
-> > > >
-> > > >  drivers/tty/serial/stm32-usart.c | 27 +++++++++++++++++----------
-> > > >  1 file changed, 17 insertions(+), 10 deletions(-)
-> > > >
-> > > > diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/=
-stm32-usart.c
-> > > > index b3675cf25a69..c4c859b34367 100644
-> > > > --- a/drivers/tty/serial/stm32-usart.c
-> > > > +++ b/drivers/tty/serial/stm32-usart.c
-> > > > @@ -214,7 +214,7 @@ static void stm32_usart_receive_chars(struct ua=
-rt_port *port, bool threaded)
-> > > >       struct tty_port *tport =3D &port->state->port;
-> > > >       struct stm32_port *stm32_port =3D to_stm32_port(port);
-> > > >       const struct stm32_usart_offsets *ofs =3D &stm32_port->info->=
-ofs;
-> > > > -     unsigned long c;
-> > > > +     unsigned long c, flags;
-> > > >       u32 sr;
-> > > >       char flag;
-> > > >
-> > > > @@ -276,9 +276,17 @@ static void stm32_usart_receive_chars(struct u=
-art_port *port, bool threaded)
-> > > >               uart_insert_char(port, sr, USART_SR_ORE, c, flag);
-> > > >       }
-> > > >
-> > > > -     spin_unlock(&port->lock);
-> > > > +     if (threaded)
-> > > > +             spin_unlock_irqrestore(&port->lock, flags);
-> > > > +     else
-> > > > +             spin_unlock(&port->lock);
-> > >
-> > > You shouldn't have to check for this, see the other patches on the li=
-st
-> > > recently that fixed this up to not be an issue for irq handlers.
-> > Can you help to give more hints, or the commit id of the patch which
-> > fixed this. thanks.
-> >
-> > I'm still confused with this.
-> >
-> > The stm32_usart_threaded_interrupt() is a kthread context, once
-> > port->lock holds by this function, another serial interrupts raised,
-> > such as USART_SR_TXE,stm32_usart_interrupt() can't get the lock,
-> > there will be a deadlock. isn't it?
-> >
-> >  So, shouldn't I use spin_lock{_irqsave} according to the caller's cont=
-ext ?
->
-> Please see 81e2073c175b ("genirq: Disable interrupts for force threaded
-> handlers") for when threaded irq handlers have irqs disabled, isn't that
-> the case you are trying to "protect" from here?
->
-> Why is the "threaded" flag used at all?  The driver should not care.
->
-> Also see 9baedb7baeda ("serial: imx: drop workaround for forced irq
-> threading") in linux-next for an example of how this was fixed up in a
-> serial driver.
->
-> does that help?
->
-Yes, it's really helpful. and 81e2073c175b should be highlighted in a doc.
-In my past knowledge, we should care about hard irq & thread_fn lock confli=
-ct.
-This patch has totally avoided patching code in the separate driver side.
-thanks.
+To avoid potential deadlock in spin_lock usage, use spin_lock_irqsave,
+spin_trylock_irqsave(), spin_unlock_irqrestore() in process context.
 
-I will just keep the changes in stm32_usart_console_write(), remove
-these code in
-thread_fn. update version 2 for you.
+remove unused local_irq_save/restore call.
 
-thanks.
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Gerald Baeza <gerald.baeza@foss.st.com>
+Cc: Erwan Le Ray <erwan.leray@foss.st.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: dillon min <dillon.minfei@gmail.com>
+---
+v2: remove unused code from stm32_usart_threaded_interrupt() according from
+    Greg's review.
 
-Dillon,
-> thanks,
->
-> greg k-h
+ drivers/tty/serial/stm32-usart.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index b3675cf25a69..b1ba5e36e36e 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -1354,13 +1354,12 @@ static void stm32_usart_console_write(struct console *co, const char *s,
+ 	u32 old_cr1, new_cr1;
+ 	int locked = 1;
+ 
+-	local_irq_save(flags);
+ 	if (port->sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+-		locked = spin_trylock(&port->lock);
++		locked = spin_trylock_irqsave(&port->lock, flags);
+ 	else
+-		spin_lock(&port->lock);
++		spin_lock_irqsave(&port->lock, flags);
+ 
+ 	/* Save and disable interrupts, enable the transmitter */
+ 	old_cr1 = readl_relaxed(port->membase + ofs->cr1);
+@@ -1374,8 +1373,7 @@ static void stm32_usart_console_write(struct console *co, const char *s,
+ 	writel_relaxed(old_cr1, port->membase + ofs->cr1);
+ 
+ 	if (locked)
+-		spin_unlock(&port->lock);
+-	local_irq_restore(flags);
++		spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ static int stm32_usart_console_setup(struct console *co, char *options)
+-- 
+2.7.4
+
