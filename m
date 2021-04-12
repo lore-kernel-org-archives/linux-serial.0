@@ -2,174 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A3DC433ED
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E836C433B4
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 03:47:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5E740611F0
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Apr 2021 09:39:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5791A6109E
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 03:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235310AbhDKJjT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 11 Apr 2021 05:39:19 -0400
-Received: from smtp-17.italiaonline.it ([213.209.10.17]:52014 "EHLO libero.it"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235184AbhDKJjS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 11 Apr 2021 05:39:18 -0400
-Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it
- ([87.20.116.197])
-        by smtp-17.iol.local with ESMTPA
-        id VWYTl8bZQtpGHVWYXlq27L; Sun, 11 Apr 2021 11:39:01 +0200
-x-libjamoibt: 1601
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1618133941; bh=ID7z0ghRJGcMLBNI8gWtXJSotHesf24UhofLjYl2wx8=;
-        h=From;
-        b=UZ+wvpPuWwpZkSC0JUFedTWSOtYFoYVsablxjA2A+YzuTSr4cqGY+TYVhPlR1cykm
-         8/79L4VjHtIZDS/BFNSngOHEJPRM5rt6pXaAV1Qs2wHjrNCfj7BdqoKIGwKGX9KQ1Q
-         xZE7Yw4lWjicUaV6WSCr5axEy5PTbWfbBGUyodcGXvzbMcqSe2j0A+riAWUHwLdQWv
-         yOO3PzI5cWp0N+M4bXxS+Anm0/M+WWCeYKcyDIfJsY6nZI8bmKZnkEducW5lgGnCLd
-         4fj2hkklBAW4Tzcj9A5rkShoK8SMoHD0XfYTYggmPUz6em8ci7evylavEkelJH+tiU
-         2zw2ZM4XpCsWA==
-X-CNFS-Analysis: v=2.4 cv=Q7IXX66a c=1 sm=1 tr=0 ts=6072c3b5 cx=a_exe
- a=AVqmXbCQpuNSdJmApS5GbQ==:117 a=AVqmXbCQpuNSdJmApS5GbQ==:17
- a=RNOFN41U3FZ75c9ZyJUA:9
-From:   Dario Binacchi <dariobin@libero.it>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dario Binacchi <dariobin@libero.it>,
+        id S235386AbhDLDrp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 11 Apr 2021 23:47:45 -0400
+Received: from thorn.bewilderbeest.net ([71.19.156.171]:38967 "EHLO
+        thorn.bewilderbeest.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235261AbhDLDrp (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 11 Apr 2021 23:47:45 -0400
+Received: from hatter.bewilderbeest.net (unknown [IPv6:2600:6c44:7f:ba20::7c6])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 60AF24DC;
+        Sun, 11 Apr 2021 20:47:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1618199247;
+        bh=PchFdXcg+941tH+XkYeqz92HXenAc27JmxDyUQQKTdw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=S3GeX56EyvZ0kf4dfQG1TfthRJG2RhWY4/aC4WQMzC4QioL2l3CYDLUl2+SD5Uwbx
+         rPt/Gipv09iozsgYBpvOJjTBBOSq6bJrm+eCimGEZj0nxq8yccex/RJW5smHH1z8Qk
+         AOzdcLdSlymvODJ3uxxYcMYFQnQ/8p1ALVLpdVXk=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Zev Weiss <zev@bewilderbeest.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH v2] serial: omap: fix rs485 half-duplex filtering
-Date:   Sun, 11 Apr 2021 11:38:55 +0200
-Message-Id: <20210411093855.1053-1-dariobin@libero.it>
-X-Mailer: git-send-email 2.17.1
-X-CMAE-Envelope: MS4xfK6aa9mZXnTp+boQAxFGXkxCvo5YQNqWCJGZ2IZNt4ryu072ADMDFiHmz2oxlejkrAvBwiRn7gydEVSJPYP7cWp8Yf3mcBTeARGwI7N2TiK+zgGjO2Km
- xgNJOWZX2LrjWEpFcrDcNC36yiFghFkoLyxtimOtunNunBcjmcFyqEyqrlY+vZgA8BVoqMw617leFNh2Mh/Rg7mpLD9v7KqT9w5Z7/TpTO8Ojh+XF0hHboLV
- tt4RVWyi/A9abZnjXiVEzTHTUtyd36B5lyssSOKC3qpm5XqilrMEN+5CTun+YOR0n4XliTpDa1tGf1ggIZqj/mLMJdQRMp/IlWwCaoKNrtTyFT2Ikhhq72AD
- ia2LyvfxbLB55GR7k8+eZq2nS9tm9athriHA/k57ulVR9d/rpXU=
+        Jiri Slaby <jirislaby@kernel.org>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v6 0/4] serial: 8250_aspeed_vuart: generalized DT properties
+Date:   Sun, 11 Apr 2021 22:47:08 -0500
+Message-Id: <20210412034712.16778-1-zev@bewilderbeest.net>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Data received during half-duplex transmission must be filtered.
-If the target device responds quickly, emptying the FIFO at the end of
-the transmission can erase not only the echo characters but also part of
-the response message.
-By keeping the receive interrupt enabled even during transmission, it
-allows you to filter each echo character and only in a number equal to
-those transmitted.
-The issue was generated by a target device that started responding
-240us later having received a request in communication at 115200bps.
-Sometimes, some messages received by the target were missing some of the
-first bytes.
+This series generalizes the aspeed-vuart driver's device tree
+properties to cover all the attributes it currently exposes via sysfs.
 
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
+The aspeed,sirq-polarity-sense property was a bit of a design mistake
+in that it ties Aspeed VUART SIRQ polarity to SCU register bits that
+aren't really inherently related to it; the first patch in this series
+deprecates it (though we hope to eventually remove it).
+
+The rest of the series adds two new properties, aspeed,lpc-io-reg and
+aspeed,lpc-interrupts.  The latter allows describing the SIRQ polarity
+(along with the interrupt number) directly, providing a simpler
+replacement for aspeed,sirq-polarity-sense.
+
+Changes since v5 [4]:
+ - corrected stale DT property name in commit message
+ - factored aspeed_vuart_map_irq_polarity() out of
+   aspeed_vuart_probe()
+ - fixed commit message subject line prefixes
+
+Changes since v4 [3]:
+ - fixed commit reference formatting in commit message
+
+Changes since v3 [2]:
+ - renamed properties to match aspeed,ast2400-kcs-bmc
+
+Changes since v2 [0]:
+ - expanded to also handle sirq number and lpc address in addition to
+   sirq polarity
+ - added default settings if DT properties not specified
+ - refactored existing sysfs code slightly, adding range checks
+ - cleaned up 'make dt_binding_check' warnings
+
+Changes since v1 [1]:
+ - deprecate and retain aspeed,sirq-polarity-sense instead of removing it
+ - drop e3c246d4i dts addition from this series
 
 
----
+[0] https://lore.kernel.org/openbmc/20210401005702.28271-1-zev@bewilderbeest.net/
+[1] https://lore.kernel.org/openbmc/20210330002338.335-1-zev@bewilderbeest.net/
+[2] https://lore.kernel.org/openbmc/20210402004716.15961-1-zev@bewilderbeest.net/
+[3] https://lore.kernel.org/openbmc/20210402182724.20848-1-zev@bewilderbeest.net/
+[4] https://lore.kernel.org/openbmc/20210408011637.5361-1-zev@bewilderbeest.net/
 
-Changes in v2:
-- Fix compiling error
 
- drivers/tty/serial/omap-serial.c | 39 ++++++++++++++++++++------------
- 1 file changed, 24 insertions(+), 15 deletions(-)
+Zev Weiss (4):
+  dt-bindings: serial: 8250: deprecate aspeed,sirq-polarity-sense
+  serial: 8250_aspeed_vuart: refactor sirq and lpc address setting code
+  serial: 8250_aspeed_vuart: add aspeed,lpc-io-reg and
+    aspeed,lpc-interrupts DT properties
+  dt-bindings: serial: 8250: add aspeed,lpc-io-reg and
+    aspeed,lpc-interrupts
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 76b94d0ff586..c0df22b7ea5e 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -159,6 +159,8 @@ struct uart_omap_port {
- 	u32			calc_latency;
- 	struct work_struct	qos_work;
- 	bool			is_suspending;
-+
-+	atomic_t		rs485_tx_filter_count;
- };
- 
- #define to_uart_omap_port(p) ((container_of((p), struct uart_omap_port, port)))
-@@ -328,19 +330,6 @@ static void serial_omap_stop_tx(struct uart_port *port)
- 		serial_out(up, UART_IER, up->ier);
- 	}
- 
--	if ((port->rs485.flags & SER_RS485_ENABLED) &&
--	    !(port->rs485.flags & SER_RS485_RX_DURING_TX)) {
--		/*
--		 * Empty the RX FIFO, we are not interested in anything
--		 * received during the half-duplex transmission.
--		 */
--		serial_out(up, UART_FCR, up->fcr | UART_FCR_CLEAR_RCVR);
--		/* Re-enable RX interrupts */
--		up->ier |= UART_IER_RLSI | UART_IER_RDI;
--		up->port.read_status_mask |= UART_LSR_DR;
--		serial_out(up, UART_IER, up->ier);
--	}
--
- 	pm_runtime_mark_last_busy(up->dev);
- 	pm_runtime_put_autosuspend(up->dev);
- }
-@@ -366,6 +355,10 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
- 		serial_out(up, UART_TX, up->port.x_char);
- 		up->port.icount.tx++;
- 		up->port.x_char = 0;
-+		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
-+		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
-+			atomic_inc(&up->rs485_tx_filter_count);
-+
- 		return;
- 	}
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
-@@ -377,6 +370,10 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
- 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
- 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
- 		up->port.icount.tx++;
-+		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
-+		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
-+			atomic_inc(&up->rs485_tx_filter_count);
-+
- 		if (uart_circ_empty(xmit))
- 			break;
- 	} while (--count > 0);
-@@ -420,7 +417,7 @@ static void serial_omap_start_tx(struct uart_port *port)
- 
- 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
- 	    !(port->rs485.flags & SER_RS485_RX_DURING_TX))
--		serial_omap_stop_rx(port);
-+		atomic_set(&up->rs485_tx_filter_count, 0);
- 
- 	serial_omap_enable_ier_thri(up);
- 	pm_runtime_mark_last_busy(up->dev);
-@@ -491,8 +488,13 @@ static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
- 	 * Read one data character out to avoid stalling the receiver according
- 	 * to the table 23-246 of the omap4 TRM.
- 	 */
--	if (likely(lsr & UART_LSR_DR))
-+	if (likely(lsr & UART_LSR_DR)) {
- 		serial_in(up, UART_RX);
-+		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
-+		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX) &&
-+		    atomic_read(&up->rs485_tx_filter_count))
-+			atomic_dec(&up->rs485_tx_filter_count);
-+	}
- 
- 	up->port.icount.rx++;
- 	flag = TTY_NORMAL;
-@@ -543,6 +545,13 @@ static void serial_omap_rdi(struct uart_omap_port *up, unsigned int lsr)
- 		return;
- 
- 	ch = serial_in(up, UART_RX);
-+	if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
-+	    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX) &&
-+	    atomic_read(&up->rs485_tx_filter_count)) {
-+		atomic_dec(&up->rs485_tx_filter_count);
-+		return;
-+	}
-+
- 	flag = TTY_NORMAL;
- 	up->port.icount.rx++;
- 
+ .../devicetree/bindings/serial/8250.yaml      |  28 ++++-
+ drivers/tty/serial/8250/8250_aspeed_vuart.c   | 102 ++++++++++++++----
+ 2 files changed, 109 insertions(+), 21 deletions(-)
+
 -- 
-2.17.1
+2.31.1
 
