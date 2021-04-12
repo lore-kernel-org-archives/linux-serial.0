@@ -2,143 +2,113 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB422C433B4
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 10:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EFAC433B4
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 13:08:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 839E661288
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 10:12:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E0081610CA
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Apr 2021 13:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237922AbhDLKNA convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Apr 2021 06:13:00 -0400
-Received: from mail-ua1-f42.google.com ([209.85.222.42]:47043 "EHLO
-        mail-ua1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239159AbhDLKMZ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Apr 2021 06:12:25 -0400
-Received: by mail-ua1-f42.google.com with SMTP id v23so4027508uaq.13;
-        Mon, 12 Apr 2021 03:12:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TcrBhd9h32jAOg0+eioQtPRmXf1Id+px4TRLySLpr0Y=;
-        b=pojU7zt7914JZDCznhNuquyo1zXZGtAXEmm1SAqVBfndHFK3NveHs4nCNXL18P0xx1
-         +R5jB3Rv23iByFHYeI41ms2jQvuocNRLfNFAsRKxY8gkRsS/JmIaeymlebi0Qn3HmIMT
-         L1YFlB1c/wZEwCEDihye5A9TDbvq0rZlyHq1ikTHpSvGSSs/5fMO6Dt91XpMBV6hSmJ2
-         uHVb1/jGynAji/4KC5oo4MBA6fuGC1LFJgj+Db6UPNiwxNnOWyHHSailqItVYl6PHhbc
-         pmStVSnfw0hFRUKONJKpQWdSl8aaBhXxEUcvh/1USl2bONKeJroAxB8IyjXkhnE++bYK
-         k2tA==
-X-Gm-Message-State: AOAM532BXk9mYDP013AwCn+kK9/44yX9h2luVhVAjJbVS8Ox/Ef+wSr9
-        G5MXxMYcfDvRJ6OrUUDarxpgfNDjAc3Gs++6vKWLyTmu
-X-Google-Smtp-Source: ABdhPJzo4bMyzVFzOTYUA2kaSWmVgOZ+indu4zQzUNFSHbGo3OWNB5ifZpkI3aqeFzmWU2/xZdpemxACoc1DmfTZhdc=
-X-Received: by 2002:ab0:6306:: with SMTP id a6mr18164841uap.2.1618222326855;
- Mon, 12 Apr 2021 03:12:06 -0700 (PDT)
+        id S241680AbhDLNIi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Apr 2021 09:08:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35458 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241676AbhDLNIi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 12 Apr 2021 09:08:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3A16F6128A;
+        Mon, 12 Apr 2021 13:08:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618232900;
+        bh=+gF3uqIXavl3hMrOghe8B0SiT2ksN2Qd1LhyosV53go=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SbwiRoVspb29bqg8e/3ppeaDXykbxSHRBpjaDlHedmqky9OuVKYGfU3+c3qEwtQB/
+         gpUXRcx61QcRWRRWz6EQn60j5b8JdfYghszN3CX+xsEUD87zvoc1XuW4mdE94mZaZu
+         cqwjVI6U3iAtRxfTarN0XoPpYuCuqoBSOJF0qZMbjdatOwk3YvIjvbG2UsqzPdKN5a
+         kxAO92d66Rh2P7xnc3H6e/3RHYmjSODNglm9AvxdeWgmwEvbiFh0dBzqUq4t57O6JI
+         JLSvw906nSA5ARIIwKaXsM7XGBcp2so24ZzU+aT40aE+14K9lx/w3CD5ZjEzPZ6tYQ
+         u+9JefcIQGTyA==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1lVwIY-00028W-Bh; Mon, 12 Apr 2021 15:08:14 +0200
+Date:   Mon, 12 Apr 2021 15:08:14 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     dillon.minfei@gmail.com
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        lkp@intel.com, linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
+        Gerald Baeza <gerald.baeza@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>
+Subject: Re: [PATCH v2] serial: stm32: optimize spin lock usage
+Message-ID: <YHRGPpQ03XgBMkiy@hovoldconsulting.com>
+References: <1618219898-4600-1-git-send-email-dillon.minfei@gmail.com>
 MIME-Version: 1.0
-References: <20210407101713.8694-1-andriy.shevchenko@linux.intel.com> <33a5ee25-d4c9-b5c2-b5f9-05316b1139c0@roeck-us.net>
-In-Reply-To: <33a5ee25-d4c9-b5c2-b5f9-05316b1139c0@roeck-us.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 12 Apr 2021 12:11:55 +0200
-Message-ID: <CAMuHMdW4-DfkDg6txJNfLi2PYVzh-3aPLYE_7tUEZ6WzHEeG9Q@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] serial: sh-sci: Respect deferred probe when
- getting IRQ
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1618219898-4600-1-git-send-email-dillon.minfei@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Günter,
+On Mon, Apr 12, 2021 at 05:31:38PM +0800, dillon.minfei@gmail.com wrote:
+> From: dillon min <dillon.minfei@gmail.com>
+> 
+> To avoid potential deadlock in spin_lock usage, use spin_lock_irqsave,
+> spin_trylock_irqsave(), spin_unlock_irqrestore() in process context.
 
-On Wed, Apr 7, 2021 at 10:58 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> On 4/7/21 3:17 AM, Andy Shevchenko wrote:
-> > With platform_get_irq() and its optional variant it's possible to get
-> > a deferred probe error code. Since the commit ed7027fdf4ec ("driver core:
-> > platform: Make platform_get_irq_optional() optional") the error code
-> > can be distinguished from no IRQ case. With this, rewrite IRQ resource
-> > handling in sh-sci driver to follow above and allow to respect deferred
-> > probe.
-> >
-> > Fixes: ed7027fdf4ec ("driver core: platform: Make platform_get_irq_optional() optional")
-> > Reported-by: Guenter Roeck <linux@roeck-us.net>
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->
-> This patch alone causes a hard hang early during boot. It works if applied
-> together with ed7027fdf4ec. Ultimately that means that ed7027fdf4ec introduces
-> a functional change, and will need to be applied very carefully. A cursory
-> glance through callers of platform_get_irq_optional() shows that many
-> do not handle this correctly: various drivers handle a return value of 0
-> as valid interrupt, and others treat errors other than -ENXIO as fatal.
->
-> Also, each patch on its own causes failures on sh, which is problematic
-> when applying them even as series. See below for an idea how to
-> address that.
->
-> > ---
-> > v2: fixed a typo: i -> 0
-> >  drivers/tty/serial/sh-sci.c | 18 ++++++++----------
-> >  1 file changed, 8 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> > index ad2c189e8fc8..574f68ba50ff 100644
-> > --- a/drivers/tty/serial/sh-sci.c
-> > +++ b/drivers/tty/serial/sh-sci.c
-> > @@ -2899,13 +2899,6 @@ static int sci_init_single(struct platform_device *dev,
-> >       port->mapbase = res->start;
-> >       sci_port->reg_size = resource_size(res);
-> >
-> > -     for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i) {
-> > -             if (i)
-> > -                     sci_port->irqs[i] = platform_get_irq_optional(dev, i);
-> > -             else
-> > -                     sci_port->irqs[i] = platform_get_irq(dev, i);
-> > -     }
-> > -
-> >       /* The SCI generates several interrupts. They can be muxed together or
-> >        * connected to different interrupt lines. In the muxed case only one
-> >        * interrupt resource is specified as there is only one interrupt ID.
-> > @@ -2913,12 +2906,17 @@ static int sci_init_single(struct platform_device *dev,
-> >        * from the SCI, however those signals might have their own individual
-> >        * interrupt ID numbers, or muxed together with another interrupt.
-> >        */
-> > +     sci_port->irqs[0] = platform_get_irq(dev, 0);
-> >       if (sci_port->irqs[0] < 0)
-> > -             return -ENXIO;
-> > +             return sci_port->irqs[0];
-> >
-> > -     if (sci_port->irqs[1] < 0)
-> > -             for (i = 1; i < ARRAY_SIZE(sci_port->irqs); i++)
-> > +     for (i = 1; i < ARRAY_SIZE(sci_port->irqs); ++i) {
-> > +             sci_port->irqs[i] = platform_get_irq_optional(dev, i);
-> > +             if (sci_port->irqs[i] < 0)
-> > +                     return sci_port->irqs[i];
-> > +             if (sci_port->irqs[i] == 0)
-> >                       sci_port->irqs[i] = sci_port->irqs[0];
->
-> Since sh never gets -EPROBE_DEFER, the following code can be applied
-> on its own and does not depend on ed7027fdf4ec.
+This doesn't make much sense as console_write can be called in any
+context. And where's the deadlock you claim to be fixing here?
+ 
+> remove unused local_irq_save/restore call.
+> 
+> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Gerald Baeza <gerald.baeza@foss.st.com>
+> Cc: Erwan Le Ray <erwan.leray@foss.st.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: dillon min <dillon.minfei@gmail.com>
+> ---
+> v2: remove unused code from stm32_usart_threaded_interrupt() according from
+>     Greg's review.
+> 
+>  drivers/tty/serial/stm32-usart.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index b3675cf25a69..b1ba5e36e36e 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -1354,13 +1354,12 @@ static void stm32_usart_console_write(struct console *co, const char *s,
+>  	u32 old_cr1, new_cr1;
+>  	int locked = 1;
+>  
+> -	local_irq_save(flags);
+>  	if (port->sysrq)
+>  		locked = 0;
+>  	else if (oops_in_progress)
+> -		locked = spin_trylock(&port->lock);
+> +		locked = spin_trylock_irqsave(&port->lock, flags);
+>  	else
+> -		spin_lock(&port->lock);
+> +		spin_lock_irqsave(&port->lock, flags);
+>  
+>  	/* Save and disable interrupts, enable the transmitter */
+>  	old_cr1 = readl_relaxed(port->membase + ofs->cr1);
+> @@ -1374,8 +1373,7 @@ static void stm32_usart_console_write(struct console *co, const char *s,
+>  	writel_relaxed(old_cr1, port->membase + ofs->cr1);
+>  
+>  	if (locked)
+> -		spin_unlock(&port->lock);
+> -	local_irq_restore(flags);
+> +		spin_unlock_irqrestore(&port->lock, flags);
+>  }
+>  
+>  static int stm32_usart_console_setup(struct console *co, char *options)
 
-Note that the sh-sci driver is also used on ARM32/64 and H8/300.
-On ARM, I don't expect GIC interrupts causing -EPROBE_DEFER, though.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Johan
