@@ -2,48 +2,48 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A7E8C43460
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Apr 2021 17:40:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F18C43461
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Apr 2021 17:40:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 596FE613BF
+	by mail.kernel.org (Postfix) with ESMTP id E30E8613BA
 	for <linux-serial@archiver.kernel.org>; Tue, 13 Apr 2021 17:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232433AbhDMRk7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S232484AbhDMRk7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 13 Apr 2021 13:40:59 -0400
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:44686 "EHLO
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:44688 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230234AbhDMRk6 (ORCPT
+        by vger.kernel.org with ESMTP id S232210AbhDMRk6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 13 Apr 2021 13:40:58 -0400
 Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13DHWjhg029971;
-        Tue, 13 Apr 2021 19:40:23 +0200
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13DHWlJQ030006;
+        Tue, 13 Apr 2021 19:40:22 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=selector1;
- bh=WVmHBLOEqQLsN3slXuOeeS0dh0JFTB6Rgs+D02bF5a0=;
- b=78yK8p/Mq+2SWIjG3a45DBzgYXpaoXwOGO0dlwVM4lvfS96J/O95z1X3lgahYuk38e7i
- WtU0widxjs/W+i23RMEWCNn2WrWQ6FT7D9NG92hp8ht0WSovzez7qnqA1giWM81lV62X
- 5vliWJyfxLZM4uib8F38kjRpOHGKWUon50g7AHb6cf6v4waIV+FG5fvxsDp3xZowP6Eu
- 7MisbMjLvOBO4g9n7EnQi37JJ49kBKU7ueeCRvSKhwYwZ8mbnMlwWwIj6/B8tH/3RX45
- Pdy+tra8w2yCdhpNGZ/RR5cpifMdXcS+/pSnooCM3gihzmyAIutMLHofoZVBT3+P4KAZ Yw== 
+ bh=ucB3CVxc2CXLlVUhuCLgH9jvWKI0aTetNckwSiVPEHk=;
+ b=rC8bNEdoDjA7K1+DjJzIQbFY86/LAjahikChrqSFEiufmkPNjSK8OlG6mvTf/JnWWzlx
+ OFF8LaPWe5E9SqEBzppPkM49ictFRjLUPf6Te/PHR+bqm1FU4JQsNV8h5mD26C2BFMNw
+ knNzPE8Hs6nSXkTQZGS2GBJL1RTZNeo60uRJggPs7RTD1SW14KR++2DuBQi2t2b0H5dv
+ NHYEsPakat1TYO2nosF3YUan6CYZJ30+Yv705a4sTFZxPv7PXvdPxXl3WeXl4xAYstvb
+ mypdmXwE1vG6SPKCNLj7Nz5rluCkJP+W2PvspZX2hjfmP7Xh3STcUFqIwwX3uwEgwmsO cA== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 37vrp5f39k-1
+        by mx07-00178001.pphosted.com with ESMTP id 37vrp5f39c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 13 Apr 2021 19:40:23 +0200
+        Tue, 13 Apr 2021 19:40:22 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 68CD710002A;
-        Tue, 13 Apr 2021 19:40:23 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E8C1D100038;
+        Tue, 13 Apr 2021 19:40:21 +0200 (CEST)
 Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5B6E02159E9;
-        Tue, 13 Apr 2021 19:40:23 +0200 (CEST)
-Received: from localhost (10.75.127.44) by SFHDAG2NODE3.st.com (10.75.127.6)
- with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 13 Apr 2021 19:40:22
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id DA8342159E9;
+        Tue, 13 Apr 2021 19:40:21 +0200 (CEST)
+Received: from localhost (10.75.127.47) by SFHDAG2NODE3.st.com (10.75.127.6)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 13 Apr 2021 19:40:21
  +0200
 From:   Erwan Le Ray <erwan.leray@foss.st.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -57,16 +57,16 @@ CC:     <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Erwan Le Ray <erwan.leray@foss.st.com>,
         Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
         Valentin Caron <valentin.caron@foss.st.com>
-Subject: [PATCH v2 4/4] serial: stm32: add FIFO threshold configuration
-Date:   Tue, 13 Apr 2021 19:40:15 +0200
-Message-ID: <20210413174015.23011-5-erwan.leray@foss.st.com>
+Subject: [PATCH v2 2/4] dt-bindings: serial: stm32: override FIFO threshold properties
+Date:   Tue, 13 Apr 2021 19:40:13 +0200
+Message-ID: <20210413174015.23011-3-erwan.leray@foss.st.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210413174015.23011-1-erwan.leray@foss.st.com>
 References: <20210413174015.23011-1-erwan.leray@foss.st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG1NODE3.st.com (10.75.127.3) To SFHDAG2NODE3.st.com
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE3.st.com
  (10.75.127.6)
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-04-13_12:2021-04-13,2021-04-13 signatures=0
@@ -74,146 +74,75 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-
-Add the support for two optional DT properties, to configure RX and TX
-FIFO thresholds:
-- rx-threshold
-- tx-threshold
-This replaces hard-coded 8 bytes threshold. Keep 8 as the default value if
-not specified, for backward compatibility.
+Override rx-threshold and tx-threshold properties:
+- extend description
+- provide default and expected values
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
 
 Changes in v2:
-Change added properties naming as proposed by Rob Herring.
+Change added properties naming and factorize it in serial.yaml as proposed
+by Rob Herring.
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 4d277804c63e..409cfd15a933 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -312,7 +312,7 @@ static void stm32_usart_tx_interrupt_enable(struct uart_port *port)
- 	 * Enables TX FIFO threashold irq when FIFO is enabled,
- 	 * or TX empty irq when FIFO is disabled
- 	 */
--	if (stm32_port->fifoen)
-+	if (stm32_port->fifoen && stm32_port->txftcfg >= 0)
- 		stm32_usart_set_bits(port, ofs->cr3, USART_CR3_TXFTIE);
- 	else
- 		stm32_usart_set_bits(port, ofs->cr1, USART_CR1_TXEIE);
-@@ -323,7 +323,7 @@ static void stm32_usart_tx_interrupt_disable(struct uart_port *port)
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+index c69f8464cdf3..71a6426bc558 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+@@ -65,6 +65,18 @@ properties:
+   linux,rs485-enabled-at-boot-time: true
+   rs485-rx-during-tx: true
  
--	if (stm32_port->fifoen)
-+	if (stm32_port->fifoen && stm32_port->txftcfg >= 0)
- 		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_TXFTIE);
- 	else
- 		stm32_usart_clr_bits(port, ofs->cr1, USART_CR1_TXEIE);
-@@ -801,9 +801,10 @@ static void stm32_usart_set_termios(struct uart_port *port,
- 	cr3 = readl_relaxed(port->membase + ofs->cr3);
- 	cr3 &= USART_CR3_TXFTIE | USART_CR3_RXFTIE;
- 	if (stm32_port->fifoen) {
--		cr3 &= ~(USART_CR3_TXFTCFG_MASK | USART_CR3_RXFTCFG_MASK);
--		cr3 |= USART_CR3_TXFTCFG_HALF << USART_CR3_TXFTCFG_SHIFT;
--		cr3 |= USART_CR3_RXFTCFG_HALF << USART_CR3_RXFTCFG_SHIFT;
-+		if (stm32_port->txftcfg >= 0)
-+			cr3 |= stm32_port->txftcfg << USART_CR3_TXFTCFG_SHIFT;
-+		if (stm32_port->rxftcfg >= 0)
-+			cr3 |= stm32_port->rxftcfg << USART_CR3_RXFTCFG_SHIFT;
- 	}
- 
- 	if (cflag & CSTOPB)
-@@ -833,7 +834,8 @@ static void stm32_usart_set_termios(struct uart_port *port,
- 			, bits);
- 
- 	if (ofs->rtor != UNDEF_REG && (stm32_port->rx_ch ||
--				       stm32_port->fifoen)) {
-+				       (stm32_port->fifoen &&
-+					stm32_port->rxftcfg >= 0))) {
- 		if (cflag & CSTOPB)
- 			bits = bits + 3; /* 1 start bit + 2 stop bits */
- 		else
-@@ -1021,6 +1023,39 @@ static const struct uart_ops stm32_uart_ops = {
- 	.verify_port	= stm32_usart_verify_port,
- };
- 
-+/*
-+ * STM32H7 RX & TX FIFO threshold configuration (CR3 RXFTCFG / TXFTCFG)
-+ * Note: 1 isn't a valid value in RXFTCFG / TXFTCFG. In this case,
-+ * RXNEIE / TXEIE can be used instead of threshold irqs: RXFTIE / TXFTIE.
-+ * So, RXFTCFG / TXFTCFG bitfields values are encoded as array index + 1.
-+ */
-+static const u32 stm32h7_usart_fifo_thresh_cfg[] = { 1, 2, 4, 8, 12, 14, 16 };
++  rx-threshold:
++    description:
++      If value is set to 1, RX FIFO threshold is disabled.
++    enum: [1, 2, 4, 8, 12, 14, 16]
++    default: 8
 +
-+static void stm32_usart_get_ftcfg(struct platform_device *pdev, const char *p,
-+				  int *ftcfg)
-+{
-+	u32 bytes, i;
++  tx-threshold:
++    description:
++      If value is set to 1, TX FIFO threshold is disabled.
++    enum: [1, 2, 4, 8, 12, 14, 16]
++    default: 8
 +
-+	/* DT option to get RX & TX FIFO threshold (default to 8 bytes) */
-+	if (of_property_read_u32(pdev->dev.of_node, p, &bytes))
-+		bytes = 8;
-+
-+	for (i = 0; i < ARRAY_SIZE(stm32h7_usart_fifo_thresh_cfg); i++)
-+		if (stm32h7_usart_fifo_thresh_cfg[i] >= bytes)
-+			break;
-+	if (i >= ARRAY_SIZE(stm32h7_usart_fifo_thresh_cfg))
-+		i = ARRAY_SIZE(stm32h7_usart_fifo_thresh_cfg) - 1;
-+
-+	dev_dbg(&pdev->dev, "%s set to %d bytes\n", p,
-+		stm32h7_usart_fifo_thresh_cfg[i]);
-+
-+	/* Provide FIFO threshold ftcfg (1 is invalid: threshold irq unused) */
-+	if (i)
-+		*ftcfg = i - 1;
-+	else
-+		*ftcfg = -EINVAL;
-+}
-+
- static void stm32_usart_deinit_port(struct stm32_port *stm32port)
- {
- 	clk_disable_unprepare(stm32port->clk);
-@@ -1057,6 +1092,12 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
- 		of_property_read_bool(pdev->dev.of_node, "rx-tx-swap");
+ allOf:
+   - $ref: rs485.yaml#
+   - $ref: serial.yaml#
+@@ -82,6 +94,17 @@ allOf:
+     then:
+       properties:
+         rx-tx-swap: false
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - st,stm32-uart
++              - st,stm32f7-uart
++    then:
++      properties:
++        rx-threshold: false
++        tx-threshold: false
  
- 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
-+	if (stm32port->fifoen) {
-+		stm32_usart_get_ftcfg(pdev, "rx-threshold",
-+				      &stm32port->rxftcfg);
-+		stm32_usart_get_ftcfg(pdev, "tx-threshold",
-+				      &stm32port->txftcfg);
-+	}
+ required:
+   - compatible
+@@ -96,13 +119,15 @@ examples:
+   - |
+     #include <dt-bindings/clock/stm32mp1-clks.h>
+     usart1: serial@40011000 {
+-      compatible = "st,stm32-uart";
++      compatible = "st,stm32h7-uart";
+       reg = <0x40011000 0x400>;
+       interrupts = <37>;
+       clocks = <&rcc 0 164>;
+       dmas = <&dma2 2 4 0x414 0x0>,
+              <&dma2 7 4 0x414 0x0>;
+       dma-names = "rx", "tx";
++      rx-threshold = <4>;
++      tx-threshold = <4>;
+       rs485-rts-active-low;
+     };
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	port->membase = devm_ioremap_resource(&pdev->dev, res);
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 77d1ac082e89..07ac291328cd 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -216,12 +216,6 @@ struct stm32_usart_info stm32h7_info = {
- #define USART_CR3_TXFTCFG_MASK	GENMASK(31, 29)	/* H7 */
- #define USART_CR3_TXFTCFG_SHIFT	29		/* H7 */
- 
--/* TX FIFO threashold set to half of its depth */
--#define USART_CR3_TXFTCFG_HALF	0x2
--
--/* RX FIFO threashold set to half of its depth */
--#define USART_CR3_RXFTCFG_HALF	0x2
--
- /* USART_GTPR */
- #define USART_GTPR_PSC_MASK	GENMASK(7, 0)
- #define USART_GTPR_GT_MASK	GENMASK(15, 8)
-@@ -273,6 +267,8 @@ struct stm32_port {
- 	bool hw_flow_control;
- 	bool swap;		 /* swap RX & TX pins */
- 	bool fifoen;
-+	int rxftcfg;		/* RX FIFO threshold CFG      */
-+	int txftcfg;		/* TX FIFO threshold CFG      */
- 	bool wakeup_src;
- 	int rdr_mask;		/* receive data register mask */
- 	struct mctrl_gpios *gpios; /* modem control gpios */
 -- 
 2.17.1
 
