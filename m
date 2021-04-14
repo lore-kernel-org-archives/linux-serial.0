@@ -2,117 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3781CC433ED
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Apr 2021 06:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9732C433B4
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Apr 2021 13:46:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 01A8E61139
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Apr 2021 06:20:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 93F48611AD
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Apr 2021 13:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349104AbhDNGUd (ORCPT
+        id S1347993AbhDNNqd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Apr 2021 02:20:33 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:59995 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232405AbhDNGUc (ORCPT
+        Wed, 14 Apr 2021 09:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347508AbhDNNqb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Apr 2021 02:20:32 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 43F485C019A;
-        Wed, 14 Apr 2021 02:20:11 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 14 Apr 2021 02:20:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:content-transfer-encoding:in-reply-to; s=fm3; bh=H
-        0U03xK5NRaZr/bZBdPoyVzgRiytQYFFtvFpXb78Sj0=; b=EytgMTAkG0+RMusSR
-        /Hl7Kn/rC0MmCG5cJBMumZDZOAbnIELqSi3ABI/lru0XJAq+Y2cdpSpxPFsGm11X
-        IKVfKu6RIR5iyN5T0t7qj5jxnrVywEeX+ZUVMQlRNODhieMN7LhiG0hd9+igjrBZ
-        q9bDSnu+UxGxbQkQyRHPsQ4+e1vA888+xg6MTNKUEFLBYxKPoe6mjRGht0+ad4ha
-        4SBqvcw/CL3D7vTqZXSu8quOfszmAHP47h69yuwo82oZzmnGP1Z71UsbZXSVf9Qe
-        Ia82ch0qFawW5ncU/aeDhvpg95YbkVgQk4MQ+SF54wWnPgodt/u2emS+pQB+KLOt
-        F3GWA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=H0U03xK5NRaZr/bZBdPoyVzgRiytQYFFtvFpXb78S
-        j0=; b=GeQAh0Gk6o17yxB9koiUP9DPNZdQaQw5K8OLSWX2uMtgc0GLWZH348mXc
-        MDoD2auoZCjNrrjyhFDH0CilX7v447DO0VCLHDwKvDRx3JmCCf7W6YubhWow8/G/
-        VfyFewW3bcYqokm9ETVil5o5E6J/AwmaG8kalgfKrmbav4RVBFKKOQpn48xdAY93
-        qSTZjU4xMc8GWyJF03yuJJG2+Kn8GGNbAGAQ4IPJ2aPqwQI3i4Z+rrpkKjPYqFUO
-        ysBXAWkM2DPOsQYBvGv19NsXyfz1+l85JqQwH2gKmHK1UExQ40ZJg/+Zm7zaJnL6
-        QGKwZNt+D5Z3LwP22B0S3jWLOCuAA==
-X-ME-Sender: <xms:mYl2YJl6oS1W0WzLQEqYxRRvsGGFtrqNops_NPmgdozd5dzPPDOIsg>
-    <xme:mYl2YEwqaJ1s7xQw_wMTH7jKK6cr5xScv3OertwfgHWhGZr3m7uL-H-9nURlivRxy
-    YJaq7gDLiidbg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudeltddguddtjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpefirhgv
-    ghcumffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeeuhe
-    ekheelffefieduteefkeejffdvueehjeejffehledugfetkedvleekudduvdenucfkphep
-    keefrdekiedrjeegrdeigeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
-X-ME-Proxy: <xmx:mYl2YMg_jyLCrJRSeujLB1CwsnsCnVSIH4la6YePhGaRoiaQyHa6YA>
-    <xmx:mYl2YBXFVmgyiZbtutKdNFqOwzuut_RDW4rLxK5svHKKZx87RRxSrA>
-    <xmx:mYl2YG3RXVbEjFGk22hLac5SVngzmZz8IqRXGd3GJ3aJb-e3E7uOxw>
-    <xmx:m4l2YMCM_i650-VdpxTLG6BVdQZvRo66TtRynmsAhecprTnhZzLdKg>
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 82BF3240054;
-        Wed, 14 Apr 2021 02:20:09 -0400 (EDT)
-Date:   Wed, 14 Apr 2021 08:20:07 +0200
-From:   Greg KH <greg@kroah.com>
-To:     "Gong, Sishuai" <sishuai@purdue.edu>
-Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "a.darwish@linutronix.de" <a.darwish@linutronix.de>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "johan@kernel.org" <johan@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: A data race between tty_port_open() and uart_do_autoconfig()
-Message-ID: <YHaJl8vwvE1FsV2T@kroah.com>
-References: <1D917C80-937C-4065-81DB-3B64E89C4E7B@purdue.edu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1D917C80-937C-4065-81DB-3B64E89C4E7B@purdue.edu>
+        Wed, 14 Apr 2021 09:46:31 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C55C06138D;
+        Wed, 14 Apr 2021 06:46:09 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id u14-20020a17090a1f0eb029014e38011b09so6038956pja.5;
+        Wed, 14 Apr 2021 06:46:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=IClDkxkOgk97PqHf7aJuGK/4ZYtS9MWZcXOFYoonY40=;
+        b=bgVQ3X2y/AzGGCtLlINMT8L/dsQAZ2hIVLIVjBHiQZJTDXuW8AoSOotMOVkJEcAdQq
+         ONbjnOgHyWuDESxHvgmXrVy5AvcflxyPz39QIGlfcam3pxvJ4yqesRTbT9R4oPBR/HEO
+         l5yN7yHsVYrnKlo0XqZrFqGut1qLXqN2OwUMhaPXy6EVz9A03kVODXkzr+266kpGOmD7
+         1ETaoOc4Rw8ZSVoxK/p771eTHclowzIC7rJTmZfWhV8dZIwq3mxwtR05v4Pxbs0PLH9+
+         aUR1Kz/f2rxjpVaNLmVhhhj4YINPyfEf9aRadQNkvtiZdm2s9x8kK5YnOOHectj3aCJx
+         P7Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=IClDkxkOgk97PqHf7aJuGK/4ZYtS9MWZcXOFYoonY40=;
+        b=QDiwzyOaeXklErInTXPelxO6rdF7Wta/z7ylGmsXcnGmx5grDVUyd2OLA3/U6x/z1V
+         0WNViSSReN4kVWBNA8TPh89W0h223b7EvR3nnezV5/ik1fv02kjeXt6iGLoEzN0h6bQN
+         OLXbFR9hFynUwv1XXdcXxfJGbTbCgRG/LyYW4EIGHmqMeOgWkuwngOkvXmBL62Mmj+QI
+         yqsRS5k3eiU8RugaHCqIW0RD4ERBVYGdC/IWefG5aPFkkINEv2xwFzgkh+kUZuYzEPrl
+         SNTnvyh1NSriAfvgR/HmCgLS1imbzLWSTpqO8N7utX2IkjBR5/QL0eeaUmfz8mgaigBz
+         zv2Q==
+X-Gm-Message-State: AOAM531VcZqpgwJaHJUt+gi2VWhkPmiQxAym4++cXJiCo9ot/FsYPesj
+        feTpnXR2/nstcCkdIJ5hU6zkMgE9Hb8=
+X-Google-Smtp-Source: ABdhPJxDFyer9inN7N7LVCAEgIVcLMSkd7PrbgwMVPHkO5DLgwRuSEeHYH2EsQ/Wq6tRIcNR/qP4bg==
+X-Received: by 2002:a17:902:aa87:b029:e9:8d9e:6808 with SMTP id d7-20020a170902aa87b02900e98d9e6808mr32899107plr.34.1618407968552;
+        Wed, 14 Apr 2021 06:46:08 -0700 (PDT)
+Received: from stbsrv-and-01.and.broadcom.net ([192.19.231.250])
+        by smtp.gmail.com with ESMTPSA id p2sm16604698pgm.24.2021.04.14.06.46.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Apr 2021 06:46:08 -0700 (PDT)
+From:   Al Cooper <alcooperx@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: [-next] serial: 8250: Match legacy NS16550A UARTs
+Date:   Wed, 14 Apr 2021 09:45:39 -0400
+Message-Id: <20210414134539.42332-1-alcooperx@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 12:17:54AM +0000, Gong, Sishuai wrote:
-> Hi,
-> 
-> We found a data race between two tty functions tty_port_open() and uart_do_autoconfig() in linux-5.12-rc3 and we are able to reproduce it under x86. In general, when tty_port_open() and uart_do_autoconfig() are running in parallel, uart_do_autoconfig() may fetch an out-of-date value of port->count and enter into a different execution path, as shown below.
-> 
-> Currently, we haven’t found any explicit errors due to this data race but we noticed the developer has used lock to read port->count, so we want to point out this data race in case this is unexpected.
-> 
-> ------------------------------------------
-> Execution interleaving
-> 
-> Thread 1					Thread 2
-> tty_port_open()			uart_do_autoconfig()
-> 
-> spin_lock_irq(&port->lock);
-> 						if (mutex_lock_interruptible(&port->mutex))
-> 						…
-> 						if (tty_port_users(port) == 1) {
-> 							uart_shutdown(tty, state);
-> 
-> ++port->count;
-> spin_unlock_irq(&port->lock);
-> 
-> 
-> 
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-Can you send a proposed patch for this to fix the issue as you sem to
-have a reproducer for this that you can test if the change resolves the
-issue or not?
+Older 32-bit only Broadcom STB chips used a NS16550A compatible UART,
+the 8250_bcm7271.c driver can drive those UARTs just fine provided that
+we let it match the appropriate compatible string.
 
-thanks,
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Al Cooper <alcooperx@gmail.com>
+---
+ drivers/tty/serial/8250/8250_bcm7271.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 725a450058f8..023a2de8b2d6 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -204,6 +204,13 @@ static const u32 brcmstb_rate_table_7278[] = {
+ 	MHZ(48),
+ };
+ 
++static const u32 brcmstb_rate_table_16550a[] = {
++	MHZ(81),
++	0,
++	0,
++	0,
++};
++
+ struct brcmuart_priv {
+ 	int		line;
+ 	struct clk	*baud_mux_clk;
+@@ -865,6 +872,10 @@ static const struct of_device_id brcmuart_dt_ids[] = {
+ 		.compatible = "brcm,bcm7271-uart",
+ 		.data = brcmstb_rate_table,
+ 	},
++	{
++		.compatible = "ns16550a",
++		.data = brcmstb_rate_table_16550a,
++	},
+ 	{},
+ };
+ 
+-- 
+2.17.1
+
