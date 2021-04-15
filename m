@@ -2,92 +2,193 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5FCEC433B4
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Apr 2021 10:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77005C433ED
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Apr 2021 10:46:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9566A611F1
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Apr 2021 10:44:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 489BE61153
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Apr 2021 10:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231687AbhDOKpP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Apr 2021 06:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
+        id S231590AbhDOKrR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Apr 2021 06:47:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231534AbhDOKpP (ORCPT
+        with ESMTP id S229481AbhDOKrR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Apr 2021 06:45:15 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A04C061574;
-        Thu, 15 Apr 2021 03:44:52 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id u14-20020a17090a1f0eb029014e38011b09so7634175pja.5;
-        Thu, 15 Apr 2021 03:44:52 -0700 (PDT)
+        Thu, 15 Apr 2021 06:47:17 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A001C061574;
+        Thu, 15 Apr 2021 03:46:54 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id u15so3276260plf.10;
+        Thu, 15 Apr 2021 03:46:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Y1DUj+LpqFJx365XATeNPbb83Gb4aaYZHLTa7lCAIIY=;
-        b=rlZwX0nXNQejE35yBuX2SSKtFS/peJGaVHQ38eFLkt/FAa4K3wbA+9fgog0KaBwbDE
-         ZtwXV13LrMf/7PU4LoHzaz0YSEgZ6R7WuuXhTYw5oDckdTqga+sbIkvXKBkWu0DblxL7
-         tKJWP7BR8D7dx1z+2ZBTvnuGG34I+gf1dPwbbZ6Nu8iZyofFngFoCZ7VGxYr00CmcCPZ
-         IxBHPOnnz0/1Ur1E1K7UbPLIZEkraplfnZfheqDHJSC3tuKwPL2zn6SdsTElBuwn4OFb
-         LwTMfMYef8Kutj/1qPwTHmhhrwiGgvU5EQEQJcHx6eSeiS7JpUK0PZOT8gom7vZtIqNp
-         x0Bw==
+        bh=oV4yvPzBl+8JFQ4FMZmRE08ppy67MX2UmEYPl8EhO50=;
+        b=SyCpLMrBzeb3fwLhDpa8qxrbb//VUgy89Xbxe2C1+tWhCS9enUHbulLBHkcU6OX0y6
+         aHxwV87N38c/JoUPRfl6OhhKdhUVhou/52XznXoo8Bx5Tu22pxYcEqRVukZs1IfA2tDd
+         lNgirBp+nJPByNqRfO3W2SBS7jyrvI42Y0qbt8PZUL0CXTRAX+Fx3snanIKBTDexZDsV
+         JMY4U2CzQt/F7Xgchoi+hcCzI8t+w7vHQgYlQ3PdPAtg6af3Otr+yAA5x94ts4Y1VodI
+         7d73jN58s11sK0a6XN+8Ktwxv3EtNqBChHGjI1PBxgR5BmasC3dTi9SFfUzyAvZE1dIV
+         9Hgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Y1DUj+LpqFJx365XATeNPbb83Gb4aaYZHLTa7lCAIIY=;
-        b=ince/2tcLPgCqnlmZ3jYsvjQ90kHqGe74menbeSPaNtRKlUR/Kk/juFrztEorgKxJI
-         xb2i8+hHY/PandGyIIOdvg++MKcm4uK2s+HFz7gyhkPSRh6qx+UyRYy1BQVuhnd/j/Zt
-         WxsvAWTWvJe9oJMFASXUWdXJtbPa+T81zbK/qpwgtGQuG7yE9eeblZE33OabSXOQXsVl
-         03g4+hhOMfPxFoen6rliHDsfDkIDXQFrkvnRynz6MRwVW4nuN7+ytNxl6BpvCTvm0hwt
-         XBxETiEkcFIqPIp3WATRD0DBnoGqQi1hJGGwyiosNm3N1ULFF+5NVkAamGSoekQYea67
-         DTsA==
-X-Gm-Message-State: AOAM533iCCPKnicUJSoCCpFXzm1B/O3TPZv0OCme6RwkTzJmwpeqsN38
-        1PPNG1J8+z99DdZqrIO+4ugIPZTn8ZS/PC48tkY6fGNY0iY=
-X-Google-Smtp-Source: ABdhPJz+aRI3MO9vvoP2aoQlylH4jlAwUNLprod4UA53/zT5TX1gIwNI6iB7j8vxlcFXvVC+/8IVKykDDWIXYyXc4Is=
-X-Received: by 2002:a17:902:e803:b029:e9:1f79:2427 with SMTP id
- u3-20020a170902e803b02900e91f792427mr3093248plg.21.1618483491886; Thu, 15 Apr
- 2021 03:44:51 -0700 (PDT)
+        bh=oV4yvPzBl+8JFQ4FMZmRE08ppy67MX2UmEYPl8EhO50=;
+        b=Fq5o1UWfdxpF1762POLCJd1t/b/5zKhCwkWSvoxHUlDrht0BYQcF2wkL2yyd0aEZE+
+         hGk5HR5GniWqSCF7t7O4msRId6cah/zcI0M9Brxd9Yy5hle9624Jah5l+SektASHEjkG
+         rg0kebCaoYGpsf6eutA3BSWbSgNh+sOXVvjgWrpPwT3TsXT7xpvgTjshKgm0RT8DMNBA
+         FQB8Athrb3slCr9zZkPmWfSB3jBkiDPOfGUefmWFsvijr2S9Ww1QLJTJoylsxIaL4WXe
+         TPvVVDMgvJwuckCWo8PaRyTFuG9TrHvdsouKc1WTYJAbwjq026vybMysWjyoQOcBHTqr
+         shmQ==
+X-Gm-Message-State: AOAM532vTnG0H5GHpbZBIVMOr29sb5o3OZ4WNrbSBV/gL3fV7Tiumn12
+        NXSbNZ/Stkw3GWiJIwoliGr7sQEkstNstY1XUs0=
+X-Google-Smtp-Source: ABdhPJyJC4pTKN9cWqu158fTl9rbPrgh93CK4doD8LtZU92In9K69g4pbH9tiEeOcHlzTrh7Q8t7v8WNh6iO49fyHSo=
+X-Received: by 2002:a17:902:264:b029:eb:3d3a:a09c with SMTP id
+ 91-20020a1709020264b02900eb3d3aa09cmr3246929plc.0.1618483613936; Thu, 15 Apr
+ 2021 03:46:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210414134539.42332-1-alcooperx@gmail.com>
-In-Reply-To: <20210414134539.42332-1-alcooperx@gmail.com>
+References: <20210412034712.16778-1-zev@bewilderbeest.net> <20210412034712.16778-4-zev@bewilderbeest.net>
+In-Reply-To: <20210412034712.16778-4-zev@bewilderbeest.net>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 15 Apr 2021 13:44:34 +0300
-Message-ID: <CAHp75VfQetCJJZ_U70xEduVBQHEx_GkHeKBs2uzNtvcq9H0BqQ@mail.gmail.com>
-Subject: Re: [-next] serial: 8250: Match legacy NS16550A UARTs
-To:     Al Cooper <alcooperx@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+Date:   Thu, 15 Apr 2021 13:46:37 +0300
+Message-ID: <CAHp75VfCKRn+ER4bKf+PLhXHT0yZeN4JDufxfROa4UMf=Bc6bQ@mail.gmail.com>
+Subject: Re: [PATCH v6 3/4] serial: 8250_aspeed_vuart: add aspeed,lpc-io-reg
+ and aspeed,lpc-interrupts DT properties
+To:     Zev Weiss <zev@bewilderbeest.net>
+Cc:     Joel Stanley <joel@jms.id.au>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/ASPEED MACHINE SUPPORT" 
+        <linux-aspeed@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 7:13 PM Al Cooper <alcooperx@gmail.com> wrote:
+On Mon, Apr 12, 2021 at 7:05 AM Zev Weiss <zev@bewilderbeest.net> wrote:
 >
-> From: Florian Fainelli <f.fainelli@gmail.com>
+> These allow describing all the Aspeed VUART attributes currently
+> available via sysfs.  aspeed,lpc-interrupts provides a replacement for
+> the deprecated aspeed,sirq-polarity-sense property.
+
+One nit-pick below.
+
+In any case it's fine.
+
+> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+> ---
+>  drivers/tty/serial/8250/8250_aspeed_vuart.c | 51 ++++++++++++++++++++-
+>  1 file changed, 49 insertions(+), 2 deletions(-)
 >
-> Older 32-bit only Broadcom STB chips used a NS16550A compatible UART,
-> the 8250_bcm7271.c driver can drive those UARTs just fine provided that
-> we let it match the appropriate compatible string.
+> diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> index 8433f8dbb186..3c239d98747f 100644
+> --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> @@ -28,6 +28,10 @@
+>  #define ASPEED_VUART_ADDRL             0x28
+>  #define ASPEED_VUART_ADDRH             0x2c
+>
+> +#define ASPEED_VUART_DEFAULT_LPC_ADDR  0x3f8
+> +#define ASPEED_VUART_DEFAULT_SIRQ      4
+> +#define ASPEED_VUART_DEFAULT_SIRQ_POLARITY     IRQ_TYPE_LEVEL_LOW
+> +
+>  struct aspeed_vuart {
+>         struct device           *dev;
+>         void __iomem            *regs;
+> @@ -386,6 +390,18 @@ static void aspeed_vuart_auto_configure_sirq_polarity(
+>         aspeed_vuart_set_sirq_polarity(vuart, (value & reg_mask) == 0);
+>  }
+>
+> +static int aspeed_vuart_map_irq_polarity(u32 dt)
+> +{
+> +       switch (dt) {
+> +       case IRQ_TYPE_LEVEL_LOW:
+> +               return 0;
+> +       case IRQ_TYPE_LEVEL_HIGH:
+> +               return 1;
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +}
+> +
+>  static int aspeed_vuart_probe(struct platform_device *pdev)
+>  {
+>         struct of_phandle_args sirq_polarity_sense_args;
+> @@ -393,8 +409,8 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+>         struct aspeed_vuart *vuart;
+>         struct device_node *np;
+>         struct resource *res;
+> -       u32 clk, prop;
+> -       int rc;
+> +       u32 clk, prop, sirq[2];
+> +       int rc, sirq_polarity;
+>
+>         np = pdev->dev.of_node;
+>
+> @@ -501,6 +517,37 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+>                 of_node_put(sirq_polarity_sense_args.np);
+>         }
+>
+> +       rc = of_property_read_u32(np, "aspeed,lpc-io-reg", &prop);
+> +       if (rc < 0)
+> +               prop = ASPEED_VUART_DEFAULT_LPC_ADDR;
+> +
+> +       rc = aspeed_vuart_set_lpc_address(vuart, prop);
+> +       if (rc < 0) {
+> +               dev_err(&pdev->dev, "invalid value in aspeed,lpc-io-reg property\n");
+> +               goto err_clk_disable;
+> +       }
+> +
+> +       rc = of_property_read_u32_array(np, "aspeed,lpc-interrupts", sirq, 2);
+> +       if (rc < 0) {
+> +               sirq[0] = ASPEED_VUART_DEFAULT_SIRQ;
+> +               sirq[1] = ASPEED_VUART_DEFAULT_SIRQ_POLARITY;
+> +       }
+> +
+> +       rc = aspeed_vuart_set_sirq(vuart, sirq[0]);
+> +       if (rc < 0) {
+> +               dev_err(&pdev->dev, "invalid sirq number in aspeed,lpc-interrupts property\n");
+> +               goto err_clk_disable;
+> +       }
+> +
+> +       sirq_polarity = aspeed_vuart_map_irq_polarity(sirq[1]);
+> +       if (sirq_polarity < 0) {
+> +               dev_err(&pdev->dev, "invalid sirq polarity in aspeed,lpc-interrupts property\n");
 
-This sounds not correct to me, ns16550a is a national semiconductor product.
+> +               rc = sirq_polarity;
+> +               goto err_clk_disable;
+> +       }
 
-Why is it here and not in generic 8250_of?
+Why not to use the same pattern as above, i.e.
 
-> +       {
-> +               .compatible = "ns16550a",
-> +               .data = brcmstb_rate_table_16550a,
-> +       },
+       rc = aspeed_vuart_map_irq_polarity(sirq[1]);
+       if (rc < 0) {
+               dev_err(&pdev->dev, "invalid sirq polarity in
+aspeed,lpc-interrupts property\n");
+               goto err_clk_disable;
+       }
+       sirq_polarity = rc;
+
+?
+
+> +       aspeed_vuart_set_sirq_polarity(vuart, sirq_polarity);
+> +
+>         aspeed_vuart_set_enabled(vuart, true);
+>         aspeed_vuart_set_host_tx_discard(vuart, true);
+>         platform_set_drvdata(pdev, vuart);
 
 
 -- 
