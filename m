@@ -2,163 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C50BC433B4
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Apr 2021 06:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC50EC43461
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Apr 2021 08:35:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 086EE610FC
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Apr 2021 06:46:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 91D0261166
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Apr 2021 08:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbhDPGq1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 16 Apr 2021 02:46:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60122 "EHLO mail.kernel.org"
+        id S240498AbhDPIgL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 16 Apr 2021 04:36:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35008 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234935AbhDPGq1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 16 Apr 2021 02:46:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B27C61153;
-        Fri, 16 Apr 2021 06:46:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1618555562;
-        bh=pgBgltwpp2vXq8qcrbAjpGXaonOI75OVZN1vx3tCnoE=;
+        id S240487AbhDPIgK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 16 Apr 2021 04:36:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E63046117A;
+        Fri, 16 Apr 2021 08:35:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618562145;
+        bh=3fqUinZK9zKoBF4djR3n5P+LR2PK0OAFRag8ham6HF0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H5fdeINjaWpH1F57aSY2BSqaP0khWNnjBLYtKLylVSjah7RGOmLwniwBqe/Gn9phx
-         +fam+tFBZWw/O8IaXYOV+awQeUT9iM/gTkpMSTOkJmrKgc+WAARmvdu4FLiCYan0SR
-         NpDOHABcYT0ITYUHI9ASykajivmC9zciUwqGVesk=
-Date:   Fri, 16 Apr 2021 08:46:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Dario Binacchi <dariobin@libero.it>
-Cc:     linux-kernel@vger.kernel.org,
-        Dimitris Lampridis <dlampridis@logikonlabs.com>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3] serial: omap: fix rs485 half-duplex filtering
-Message-ID: <YHkyqGExO6Ri8UkJ@kroah.com>
-References: <20210415210252.25399-1-dariobin@libero.it>
+        b=ELQ7Hx/RT6vhndZPrvCgO3jKinPLP8Rc3MaaJz0gMxb97SVX8SCldaQygzA5WgR9Q
+         v8/E8WVkd4gpYLheYvc6RfUWI/wqrm+W3UF4SXBRAeqziZOv3lMrrR0jQSxq+Lz1pa
+         p4XnQyIBCxf7JEL9jGWysRBtqqESZKKd6LD4DMBKw7hjKiQ+lC5U4C6ob+SpoImel2
+         CARPpFP/IU1EiHc0APCQR2ivvGUD08Nnyb1xVa1L3rtFxeBXBEDHdOysA+JN7cwFfH
+         eHlPOHSYTphO6WJJsmJJ7dP4Bu8PU4P83JR4YNncfVEaOgg7NkVdFcW+7y/n8AAFb6
+         q2aIry6J8dyKg==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1lXJx3-0001HE-Hr; Fri, 16 Apr 2021 10:35:45 +0200
+Date:   Fri, 16 Apr 2021 10:35:45 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     dillon min <dillon.minfei@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre TORGUE <alexandre.torgue@foss.st.com>,
+        kernel test robot <lkp@intel.com>,
+        linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
+        Gerald Baeza <gerald.baeza@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>
+Subject: Re: [PATCH v2] serial: stm32: optimize spin lock usage
+Message-ID: <YHlMYZCCxL+SS9ye@hovoldconsulting.com>
+References: <1618219898-4600-1-git-send-email-dillon.minfei@gmail.com>
+ <YHRGPpQ03XgBMkiy@hovoldconsulting.com>
+ <CAL9mu0JF-9hy3Z_ytpEO+hzKh0D+f-0gYaUBEA0v28EOHpC80w@mail.gmail.com>
+ <CAL9mu0Ke97FUZ03jvdH8Lz2qRnVY82B7tAEtjbhW97sPOVkAxQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210415210252.25399-1-dariobin@libero.it>
+In-Reply-To: <CAL9mu0Ke97FUZ03jvdH8Lz2qRnVY82B7tAEtjbhW97sPOVkAxQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 15, 2021 at 11:02:52PM +0200, Dario Binacchi wrote:
-> Data received during half-duplex transmission must be filtered.
-> If the target device responds quickly, emptying the FIFO at the end of
-> the transmission can erase not only the echo characters but also part of
-> the response message.
-> By keeping the receive interrupt enabled even during transmission, it
-> allows you to filter each echo character and only in a number equal to
-> those transmitted.
-> The issue was generated by a target device that started responding
-> 240us later having received a request in communication at 115200bps.
-> Sometimes, some messages received by the target were missing some of the
-> first bytes.
+On Tue, Apr 13, 2021 at 07:44:39AM +0800, dillon min wrote:
+> Hi Johan, Erwan
 > 
-> Fixes: 3a13884abea0 ("tty/serial: omap: empty the RX FIFO at the end of half-duplex TX")
-> Signed-off-by: Dario Binacchi <dariobin@libero.it>
+> It seems still a bit of a problem in the current version, not deadlock
+> but access register at the same time.
 > 
+> For driver , we should consider it running under smp, let's think
+> about it for this case:
 > 
-> ---
+> static void stm32_usart_console_write(struct console *co, const char *s,
+>                                       unsigned int cnt)
+> {
+>          .....
+>          local_irq_save(flags);
+>          if (port->sysrq)
+>                     locked = 0;
+>          .....
+>          access register cr1, tdr, isr
+>          .....
 > 
-> Changes in v3:
-> - Add 'Fixes' tag
+>          local_irq_restore(flags);
+> }
 > 
-> Changes in v2:
-> - Fix compiling error
-> 
->  drivers/tty/serial/omap-serial.c | 39 ++++++++++++++++++++------------
->  1 file changed, 24 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 76b94d0ff586..c0df22b7ea5e 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -159,6 +159,8 @@ struct uart_omap_port {
->  	u32			calc_latency;
->  	struct work_struct	qos_work;
->  	bool			is_suspending;
-> +
-> +	atomic_t		rs485_tx_filter_count;
+> if port->sysrq is 1, stm32_usart_console_write() just disable local
+> irq response by local_irq_save(), at the time of access register cr1,
+> tdr, isr. an TXE interrupt raised, for other cores(I know stm32
+> mpu/mcu do not have multi cores, just assume it has), it still has a
+> chance to handle interrupt.  Then there is no lock to protect the uart
+> register.
 
-Why are you using an atomic variable?  What do you think this is
-"protected from"?
+Right, the sysrq handling is a bit of a hack.
 
->  };
->  
->  #define to_uart_omap_port(p) ((container_of((p), struct uart_omap_port, port)))
-> @@ -328,19 +330,6 @@ static void serial_omap_stop_tx(struct uart_port *port)
->  		serial_out(up, UART_IER, up->ier);
->  	}
->  
-> -	if ((port->rs485.flags & SER_RS485_ENABLED) &&
-> -	    !(port->rs485.flags & SER_RS485_RX_DURING_TX)) {
-> -		/*
-> -		 * Empty the RX FIFO, we are not interested in anything
-> -		 * received during the half-duplex transmission.
-> -		 */
-> -		serial_out(up, UART_FCR, up->fcr | UART_FCR_CLEAR_RCVR);
-> -		/* Re-enable RX interrupts */
-> -		up->ier |= UART_IER_RLSI | UART_IER_RDI;
-> -		up->port.read_status_mask |= UART_LSR_DR;
-> -		serial_out(up, UART_IER, up->ier);
-> -	}
-> -
->  	pm_runtime_mark_last_busy(up->dev);
->  	pm_runtime_put_autosuspend(up->dev);
->  }
-> @@ -366,6 +355,10 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
->  		serial_out(up, UART_TX, up->port.x_char);
->  		up->port.icount.tx++;
->  		up->port.x_char = 0;
-> +		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
-> +		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
-> +			atomic_inc(&up->rs485_tx_filter_count);
-> +
->  		return;
->  	}
->  	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
-> @@ -377,6 +370,10 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
->  		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
->  		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
->  		up->port.icount.tx++;
-> +		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
-> +		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
-> +			atomic_inc(&up->rs485_tx_filter_count);
-> +
->  		if (uart_circ_empty(xmit))
->  			break;
->  	} while (--count > 0);
-> @@ -420,7 +417,7 @@ static void serial_omap_start_tx(struct uart_port *port)
->  
->  	if ((port->rs485.flags & SER_RS485_ENABLED) &&
->  	    !(port->rs485.flags & SER_RS485_RX_DURING_TX))
-> -		serial_omap_stop_rx(port);
-> +		atomic_set(&up->rs485_tx_filter_count, 0);
->  
->  	serial_omap_enable_ier_thri(up);
->  	pm_runtime_mark_last_busy(up->dev);
-> @@ -491,8 +488,13 @@ static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
->  	 * Read one data character out to avoid stalling the receiver according
->  	 * to the table 23-246 of the omap4 TRM.
->  	 */
-> -	if (likely(lsr & UART_LSR_DR))
-> +	if (likely(lsr & UART_LSR_DR)) {
->  		serial_in(up, UART_RX);
-> +		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
-> +		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX) &&
-> +		    atomic_read(&up->rs485_tx_filter_count))
-> +			atomic_dec(&up->rs485_tx_filter_count);
+> changes to below, should be more safe:
+> 
+> .....
+> if (port->sysrq || oops_in_progress)
+>       locked = spin_trylock_irqsave(&port->lock, flags);
 
-You can not read and then decrement right afterward and expect this to
-actually do what you think it is doing.
+Except that the lock debugging code would detect the attempt at
+recursive locking here and complain loudly on UP.
 
-Just use a real lock if you need to protect access for this value, as it
-is, this patch is totally wrong.
+If you really want to fix this, we have uart_unlock_and_check_sysrq()
+which can be used to defer sysrq processing until the interrupt handler
+has released the lock.
 
-thanks,
+> else
+>       spin_lock_irqsave(&port->lock, flags);
+> 
+> ....
+> 
+> if (locked)
+>      spin_unlock_irqrestore(&port->lock, flags);
 
-greg k-h
+Johan
