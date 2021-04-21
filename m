@@ -2,130 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C08C43461
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Apr 2021 09:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 873BBC43600
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Apr 2021 09:55:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 23C5261456
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Apr 2021 09:55:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5664E61449
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Apr 2021 09:55:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238627AbhDUJ4K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Apr 2021 05:56:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52318 "EHLO mail.kernel.org"
+        id S238681AbhDUJ4L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Apr 2021 05:56:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52328 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238563AbhDUJ4J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S238572AbhDUJ4J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 21 Apr 2021 05:56:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 134C86144B;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 19EF861451;
         Wed, 21 Apr 2021 09:55:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618998936;
-        bh=D3CiZX5cVcDl+OdheHA4iQdvFSnetaDLj4pdQr4SlmI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ITKL0SF+lC1Kq/ARs1TaBsjht6azC17JSZBAkLXqYAjp2IyFZwhmvFyysvzxQr0hv
-         spgu8aCxi6opSChVFrKNI/mly72VrGVdAGeWwjeo5AV/PsQRUUkDEiELMOxa8/ExUp
-         OiBqcHcoC/CHlVI4vs4CUPMqYFRhAZihjBMjSFrYqsB5ewj8ol+OPlbu68LPVsT1oM
-         wqhLhJHGYwMHRa4eORehaOkNT7C75ogKLb2ecZcn2QSGwLRsgVRxmHcrWTGZgAvRsW
-         UcE2rqRNt5noA8Dp7/OrzdA63E+zP8QmuF9RF5fkrP2Mb98lOgavU+ZaVkzOlznB9m
-         6oV8MrvIjy8aA==
+        bh=cURs5qeivDO5gSpr3eXq9wzmT4dyWiefnPZY7i1667s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U+KYjIEvH9GgdfxZNZcO1DDWyZcnv8ddmk5RhHUdm6aSSIfNCEl9dSMUcPLgOageL
+         6IOlDbO0Qd3zBKHrDwQJYvUu5bULwmIazEH5oifM0WTISWEhcuS2gqAly+kY4yotZ7
+         L/j0ldBynmpxM7dLkvcnmk00bZdfonccanPiLEyEOgndL7/ZGNz0Sg7b0V3TtpxEZm
+         3JlcMmovw/f+I1Lk1rs0rIAtY1v7tRNZgwVp122u4n8vKuRfUoIsEjavj0ycmhXtFP
+         HxXrzm4W1+j25Lu+qkvIh+XEBCBgIFyCdpPJHrnnPp8LYl5wEtL842xx7jHKSiTNfg
+         MZi7rk96MtPlA==
 Received: from johan by xi.lan with local (Exim 4.93.0.4)
         (envelope-from <johan@kernel.org>)
-        id 1lZ9a6-0000oI-Lo; Wed, 21 Apr 2021 11:55:38 +0200
+        id 1lZ9a6-0000oR-Uu; Wed, 21 Apr 2021 11:55:38 +0200
 From:   Johan Hovold <johan@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 00/26] tty: drop low-latency workarounds
-Date:   Wed, 21 Apr 2021 11:54:43 +0200
-Message-Id: <20210421095509.3024-1-johan@kernel.org>
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH 03/26] serial: altera_uart: drop low-latency workaround
+Date:   Wed, 21 Apr 2021 11:54:46 +0200
+Message-Id: <20210421095509.3024-4-johan@kernel.org>
 X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20210421095509.3024-1-johan@kernel.org>
+References: <20210421095509.3024-1-johan@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The infamous low_latency behaviour of tty_flip_buffer_push(), which
-meant that data could be pushed to the line discipline immediately
-instead of being deferred to a work queue, was finally removed in 2014.
+Commit dd085ed8ef6c ("tty: serial: altera: drop uart_port->lock before
+calling tty_flip_buffer_push()") claimed to address a locking
+issue but only provided a dubious lockdep splat from an unrelated
+driver, which in the end turned out to be due a broken local change
+carried by the author.
 
-Since then there's no need for drivers to keep hacks to temporarily drop
-the port lock during receive processing but this pattern has been
-reproduced in later added drivers nonetheless.
+Unfortunately these patches were merged before the issue had been
+analysed properly so the commit messages makes no sense whatsoever.
 
-Note that several of these workarounds were added by a series posted in
-2013, which ended up being merged despite having completely nonsensical
-commit messages. As it turned out, it was just the RT patch set which
-effectively enabled the low_latency flag for serial drivers that did not
-handle it.
+The real issue was first seen on RT which at the time effectively always
+set the low_latency flag for all serial drivers by patching
+tty_flip_buffer_push(). This in turn revealed that many drivers did not
+handle the infamous low_latency behaviour which meant that data was
+pushed immediately to the line discipline instead of being deferred to a
+work queue.
 
-There's of course nothing wrong releasing the port lock before calling
-tty_flip_buffer_push(), and some drivers still do after this series, but
-let's get rid of the completely unnecessary unlock-and-reacquire
-pattern.
+Since commit a9c3f68f3cd8 ("tty: Fix low_latency BUG"),
+tty_flip_buffer_push() always schedules a work item to push data to the
+line discipline and there's no need to keep any low_latency hacks
+around.
 
-Johan
+Link: https://lore.kernel.org/linux-serial/cover.1376923198.git.viresh.kumar@linaro.org/
+Cc: Tobias Klauser <tklauser@distanz.ch>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/serial/altera_uart.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-
-Johan Hovold (26):
-  tty: mxser: drop low-latency workaround
-  serial: altera_jtaguart: drop low-latency workaround
-  serial: altera_uart: drop low-latency workaround
-  serial: amba-pl010: drop low-latency workaround
-  serial: amba-pl011: drop low-latency workaround
-  serial: apbuart: drop low-latency workaround
-  serial: ar933x: drop low-latency workaround
-  serial: arc_uart: drop low-latency workaround
-  serial: atmel_serial: drop low-latency workaround
-  serial: bcm63xx: drop low-latency workaround
-  serial: icom: drop low-latency workaround
-  serial: lpc32xx_hs: drop low-latency workaround
-  serial: mcf: drop low-latency workaround
-  serial: meson: drop low-latency workaround
-  serial: mpc52xx_uart: drop low-latency workaround
-  serial: msm_serial: drop low-latency workaround
-  serial: owl: drop low-latency workaround
-  serial: rda: drop low-latency workaround
-  serial: rp2: drop low-latency workaround
-  serial: sa1100: drop low-latency workaround
-  serial: txx9: drop low-latency workaround
-  serial: sifive: drop low-latency workaround
-  serial: sunsu: drop low-latency workaround
-  serial: timbuart: drop low-latency workaround
-  serial: vt8500: drop low-latency workaround
-  serial: xilinx_uartps: drop low-latency workaround
-
- drivers/tty/mxser.c                  |  7 -------
- drivers/tty/serial/altera_jtaguart.c |  2 --
- drivers/tty/serial/altera_uart.c     |  2 --
- drivers/tty/serial/amba-pl010.c      |  2 --
- drivers/tty/serial/amba-pl011.c      |  2 --
- drivers/tty/serial/apbuart.c         |  2 --
- drivers/tty/serial/ar933x_uart.c     |  2 --
- drivers/tty/serial/arc_uart.c        |  2 --
- drivers/tty/serial/atmel_serial.c    | 18 ------------------
- drivers/tty/serial/bcm63xx_uart.c    |  2 --
- drivers/tty/serial/icom.c            |  2 --
- drivers/tty/serial/lpc32xx_hs.c      |  2 --
- drivers/tty/serial/mcf.c             |  2 --
- drivers/tty/serial/meson_uart.c      |  2 --
- drivers/tty/serial/mpc52xx_uart.c    |  2 --
- drivers/tty/serial/msm_serial.c      |  4 ----
- drivers/tty/serial/owl-uart.c        |  2 --
- drivers/tty/serial/rda-uart.c        |  2 --
- drivers/tty/serial/rp2.c             |  2 --
- drivers/tty/serial/sa1100.c          |  2 --
- drivers/tty/serial/serial_txx9.c     |  4 ++--
- drivers/tty/serial/sifive.c          |  2 --
- drivers/tty/serial/sunsu.c           |  4 ----
- drivers/tty/serial/timbuart.c        |  2 --
- drivers/tty/serial/vt8500_serial.c   |  2 --
- drivers/tty/serial/xilinx_uartps.c   |  3 +--
- 26 files changed, 3 insertions(+), 77 deletions(-)
-
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index 0e487ce091ac..7c5f4e966b59 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -243,9 +243,7 @@ static void altera_uart_rx_chars(struct altera_uart *pp)
+ 				 flag);
+ 	}
+ 
+-	spin_unlock(&port->lock);
+ 	tty_flip_buffer_push(&port->state->port);
+-	spin_lock(&port->lock);
+ }
+ 
+ static void altera_uart_tx_chars(struct altera_uart *pp)
 -- 
 2.26.3
 
