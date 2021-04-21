@@ -2,201 +2,279 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19DDBC433B4
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Apr 2021 10:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16090C433B4
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Apr 2021 13:36:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CA58B6144E
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Apr 2021 10:47:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D5A006144B
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Apr 2021 13:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbhDUKrj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Apr 2021 06:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235178AbhDUKrh (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Apr 2021 06:47:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25626C06138A
-        for <linux-serial@vger.kernel.org>; Wed, 21 Apr 2021 03:47:04 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lZANo-0000YS-FS; Wed, 21 Apr 2021 12:47:00 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lZANl-0006gJ-F7; Wed, 21 Apr 2021 12:46:57 +0200
-Date:   Wed, 21 Apr 2021 12:46:57 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     "Hodaszi, Robert" <Robert.Hodaszi@digi.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v2] serial: imx: fix TX stop function not setting state
- to OFF
-Message-ID: <20210421104657.kqvsnmsyfvejzzay@pengutronix.de>
-References: <25c1a28dfb7f892a5c214ba7d8489879d7c0e4be.camel@digi.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hhaf72dmo7adsjbw"
-Content-Disposition: inline
-In-Reply-To: <25c1a28dfb7f892a5c214ba7d8489879d7c0e4be.camel@digi.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+        id S240745AbhDUNgr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Apr 2021 09:36:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234038AbhDUNgr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 21 Apr 2021 09:36:47 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F3AFA611F2;
+        Wed, 21 Apr 2021 13:36:13 +0000 (UTC)
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94)
+        (envelope-from <maz@kernel.org>)
+        id 1lZD1X-008hT6-Vv; Wed, 21 Apr 2021 14:36:12 +0100
+Date:   Wed, 21 Apr 2021 14:36:10 +0100
+Message-ID: <87zgxrpxo5.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     <cl@rock-chips.com>
+Cc:     heiko@sntech.de, robh+dt@kernel.org, jagan@amarulasolutions.com,
+        wens@csie.org, uwe@kleine-koenig.org, mail@david-bauer.net,
+        jbx6244@gmail.com, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
+        cnsztl@gmail.com, devicetree@vger.kernel.org,
+        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
+        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
+        zhangqing@rock-chips.com, huangtao@rock-chips.com
+Subject: Re: [PATCH v1 4/5] arm64: dts: rockchip: add core dtsi for RK3568 SoC
+In-Reply-To: <20210421065921.23917-5-cl@rock-chips.com>
+References: <20210421065921.23917-1-cl@rock-chips.com>
+        <20210421065921.23917-5-cl@rock-chips.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: cl@rock-chips.com, heiko@sntech.de, robh+dt@kernel.org, jagan@amarulasolutions.com, wens@csie.org, uwe@kleine-koenig.org, mail@david-bauer.net, jbx6244@gmail.com, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, jensenhuang@friendlyarm.com, michael@amarulasolutions.com, cnsztl@gmail.com, devicetree@vger.kernel.org, ulf.hansson@linaro.org, linux-mmc@vger.kernel.org, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org, jay.xu@rock-chips.com, shawn.lin@rock-chips.com, david.wu@rock-chips.com, zhangqing@rock-chips.com, huangtao@rock-chips.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
---hhaf72dmo7adsjbw
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Apr 20, 2021 at 07:02:33PM +0000, Hodaszi, Robert wrote:
-> If the mode had been changed to RS-485 after at least one character had
-> been sent in RS-232 mode, the RS-485 transmission was not working.
->=20
-> Commit cb1a609236096c278ecbfb7be678a693a70283f1 ("serial: imx: implement
-> rts delaying for rs485") added a TX state variable to keep track, when
-> it needs to enable / disable the RS-485 transmitter.
->=20
-> In RS-232 mode, the start TX function just sets the state to SEND, and
-> the stop function supposed to set it to OFF.
->=20
-> In RS-485 mode, the start TX function expects the state to be either
-> OFF, WAIT_AFTER_SEND, or WAIT_AFTER RTS. It cannot do anything if the
-> state is set to SEND, expects a stop first.
->=20
-> But stop TX function in RS-232 mode usually didn't set the state to OFF,
-> as it first checked if the shifter is empty, and if not, it just
-> returned, waiting for a TransmitComplete interrupt, which is only
-> enabled in RS-485 mode. So the stop function was never called again.
->=20
-> That check, and the subsequent code part is not needed for RS-232, it
-> just have to set the TX state to OFF.
->=20
-> Signed-off-by: Robert Hodaszi <robert.hodaszi@digi.com>
+On Wed, 21 Apr 2021 07:59:20 +0100,
+<cl@rock-chips.com> wrote:
+> 
+> From: Liang Chen <cl@rock-chips.com>
+> 
+> RK3568 is a high-performance and low power quad-core application processor
+> designed for personal mobile internet device and AIoT equipments.
+> 
+> This patch add basic core dtsi file for it.
+> 
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
 > ---
->=20
-> Changes in v2:
->  - Fixed incorrect tabs
->=20
->  drivers/tty/serial/imx.c | 46 +++++++++++++++++++++-------------------
->  1 file changed, 24 insertions(+), 22 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 8257597d034d..511badce3edd 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -443,6 +443,12 @@ static void imx_uart_stop_tx(struct uart_port *port)
->  	ucr1 =3D imx_uart_readl(sport, UCR1);
->  	imx_uart_writel(sport, ucr1 & ~UCR1_TRDYEN, UCR1);
-> =20
-> +	if (!(port->rs485.flags & SER_RS485_ENABLED)) {
-> +		/* Set the TX state in non-RS485 mode, nothing else to do */
-> +		sport->tx_state =3D OFF;
-> +		return;
-> +	}
+>  .../boot/dts/rockchip/rk3568-pinctrl.dtsi     | 2789 +++++++++++++++++
+>  arch/arm64/boot/dts/rockchip/rk3568.dtsi      |  795 +++++
+>  .../boot/dts/rockchip/rockchip-pinconf.dtsi   |  346 ++
+>  3 files changed, 3930 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3568-pinctrl.dtsi
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3568.dtsi
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rockchip-pinconf.dtsi
+>
+
+[...]
+
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+> new file mode 100644
+> index 000000000000..ac8db2f54f2b
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+> @@ -0,0 +1,795 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
+> + */
 > +
->  	usr2 =3D imx_uart_readl(sport, USR2);
->  	if (!(usr2 & USR2_TXDC)) {
->  		/* The shifter is still busy, so retry once TC triggers */
+> +#include <dt-bindings/clock/rk3568-cru.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/pinctrl/rockchip.h>
+> +#include <dt-bindings/soc/rockchip,boot-mode.h>
+> +#include <dt-bindings/phy/phy.h>
+> +#include <dt-bindings/thermal/thermal.h>
+> +
+> +/ {
+> +	compatible = "rockchip,rk3568";
+> +
+> +	interrupt-parent = <&gic>;
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +
+> +	aliases {
+> +		serial2 = &uart2;
+> +	};
+> +
+> +	cpus {
+> +		#address-cells = <2>;
+> +		#size-cells = <0>;
+> +
+> +		cpu0: cpu@0 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a55";
+> +			reg = <0x0 0x0>;
+> +			enable-method = "psci";
+> +			clocks = <&scmi_clk 0>;
+> +			operating-points-v2 = <&cpu0_opp_table>;
+> +			#cooling-cells = <2>;
+> +		};
+> +		cpu1: cpu@100 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a55";
+> +			reg = <0x0 0x100>;
+> +			enable-method = "psci";
+> +			operating-points-v2 = <&cpu0_opp_table>;
+> +		};
+> +		cpu2: cpu@200 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a55";
+> +			reg = <0x0 0x200>;
+> +			enable-method = "psci";
+> +			operating-points-v2 = <&cpu0_opp_table>;
+> +		};
+> +		cpu3: cpu@300 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a55";
+> +			reg = <0x0 0x300>;
+> +			enable-method = "psci";
+> +			operating-points-v2 = <&cpu0_opp_table>;
+> +		};
+> +	};
+> +
+> +	cpu0_opp_table: cpu0-opp-table {
+> +		compatible = "operating-points-v2";
+> +		opp-shared;
+> +
+> +		opp-408000000 {
+> +			opp-hz = /bits/ 64 <408000000>;
+> +			opp-microvolt = <825000 825000 1150000>;
+> +			clock-latency-ns = <40000>;
+> +		};
+> +		opp-600000000 {
+> +			opp-hz = /bits/ 64 <600000000>;
+> +			opp-microvolt = <825000 825000 1150000>;
+> +		};
+> +		opp-816000000 {
+> +			opp-hz = /bits/ 64 <816000000>;
+> +			opp-microvolt = <825000 825000 1150000>;
+> +			opp-suspend;
+> +		};
+> +		opp-1104000000 {
+> +			opp-hz = /bits/ 64 <1104000000>;
+> +			opp-microvolt = <825000 825000 1150000>;
+> +		};
+> +		opp-1416000000 {
+> +			opp-hz = /bits/ 64 <1416000000>;
+> +			opp-microvolt = <900000 900000 1150000>;
+> +		};
+> +		opp-1608000000 {
+> +			opp-hz = /bits/ 64 <1608000000>;
+> +			opp-microvolt = <975000 975000 1150000>;
+> +		};
+> +		opp-1800000000 {
+> +			opp-hz = /bits/ 64 <1800000000>;
+> +			opp-microvolt = <1050000 1050000 1150000>;
+> +		};
+> +		opp-1992000000 {
+> +			opp-hz = /bits/ 64 <1992000000>;
+> +			opp-microvolt = <1150000 1150000 1150000>;
+> +		};
+> +	};
+> +
+> +	arm-pmu {
+> +		compatible = "arm,cortex-a55-pmu", "arm,armv8-pmuv3";
+> +		interrupts = <GIC_SPI 228 IRQ_TYPE_LEVEL_HIGH>,
+> +			     <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>,
+> +			     <GIC_SPI 230 IRQ_TYPE_LEVEL_HIGH>,
+> +			     <GIC_SPI 231 IRQ_TYPE_LEVEL_HIGH>;
+> +		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
+> +	};
+> +
+> +	firmware {
+> +		scmi: scmi {
+> +			compatible = "arm,scmi-smc";
+> +			shmem = <&scmi_shmem>;
+> +			arm,smc-id = <0x82000010>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			scmi_clk: protocol@14 {
+> +				reg = <0x14>;
+> +				#clock-cells = <1>;
+> +			};
+> +		};
+> +
+> +	};
+> +
+> +	psci {
+> +		compatible = "arm,psci-1.0";
+> +		method = "smc";
+> +	};
+> +
+> +	timer {
+> +		compatible = "arm,armv8-timer";
+> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
+> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
+> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
+> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 
-What this hunk essentially does is to skip clearing UCR4_TCEN. Doesn't
-this result in an irq storm until there is new data to send or the
-device is closed? At least if DMA isn't used for the port this is the
-only place that disables the TC irq (apart from .shutdown).
+This doesn't match the GICv3 binding for PPIs.
 
-I wonder if a better fix would be to only switch between RS485 and RS232
-if the transmitter is empty.
+> +		arm,no-tick-in-suspend;
 
-> @@ -453,33 +459,29 @@ static void imx_uart_stop_tx(struct uart_port *port)
->  	ucr4 &=3D ~UCR4_TCEN;
->  	imx_uart_writel(sport, ucr4, UCR4);
-> =20
-> -	/* in rs485 mode disable transmitter */
-> -	if (port->rs485.flags & SER_RS485_ENABLED) {
-> -		if (sport->tx_state =3D=3D SEND) {
-> -			sport->tx_state =3D WAIT_AFTER_SEND;
-> -			start_hrtimer_ms(&sport->trigger_stop_tx,
-> -					 port->rs485.delay_rts_after_send);
-> -			return;
-> -		}
-> +	if (sport->tx_state =3D=3D SEND) {
-> +		sport->tx_state =3D WAIT_AFTER_SEND;
-> +		start_hrtimer_ms(&sport->trigger_stop_tx,
-> +					port->rs485.delay_rts_after_send);
-> +		return;
-> +	}
-> =20
-> -		if (sport->tx_state =3D=3D WAIT_AFTER_RTS ||
-> -		    sport->tx_state =3D=3D WAIT_AFTER_SEND) {
-> -			u32 ucr2;
-> +	if (sport->tx_state =3D=3D WAIT_AFTER_RTS ||
-> +		sport->tx_state =3D=3D WAIT_AFTER_SEND) {
-> +		/* in rs485 mode disable transmitter */
-> +		u32 ucr2;
-> =20
-> -			hrtimer_try_to_cancel(&sport->trigger_start_tx);
-> +		hrtimer_try_to_cancel(&sport->trigger_start_tx);
-> =20
-> -			ucr2 =3D imx_uart_readl(sport, UCR2);
-> -			if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-> -				imx_uart_rts_active(sport, &ucr2);
-> -			else
-> -				imx_uart_rts_inactive(sport, &ucr2);
-> -			imx_uart_writel(sport, ucr2, UCR2);
-> +		ucr2 =3D imx_uart_readl(sport, UCR2);
-> +		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-> +			imx_uart_rts_active(sport, &ucr2);
-> +		else
-> +			imx_uart_rts_inactive(sport, &ucr2);
-> +		imx_uart_writel(sport, ucr2, UCR2);
-> =20
-> -			imx_uart_start_rx(port);
-> +		imx_uart_start_rx(port);
-> =20
-> -			sport->tx_state =3D OFF;
-> -		}
-> -	} else {
->  		sport->tx_state =3D OFF;
->  	}
->  }
+Oh, really? :-(
 
-This hunk is only removing the if check and reindenting the body, right?
+> +	};
+> +
+> +	xin24m: xin24m {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <24000000>;
+> +		clock-output-names = "xin24m";
+> +	};
+> +
+> +	xin32k: xin32k {
+> +		compatible = "fixed-clock";
+> +		clock-frequency = <32768>;
+> +		clock-output-names = "xin32k";
+> +		#clock-cells = <0>;
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&clk32k_out0>;
+> +	};
+> +
+> +	scmi_shmem: scmi-shmem@10f000 {
+> +		compatible = "arm,scmi-shmem";
+> +		reg = <0x0 0x0010f000 0x0 0x100>;
+> +	};
+> +
+> +	gic: interrupt-controller@fd400000 {
+> +		compatible = "arm,gic-v3";
+> +		#interrupt-cells = <3>;
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
+> +		interrupt-controller;
+> +
+> +		reg = <0x0 0xfd400000 0 0x10000>, /* GICD */
+> +		      <0x0 0xfd460000 0 0xc0000>; /* GICR */
+> +		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
 
-Best regards
-Uwe
+Please add the 'mbi-alias' property, which should map onto the GICA
+range that GIC600 provides. At least this could be useful to have MSIs
+despite the lack of a working ITS. We can work out the usable ranges
+on a per-board basis.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Thanks,
 
---hhaf72dmo7adsjbw
-Content-Type: application/pgp-signature; name="signature.asc"
+	M.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmCAAp4ACgkQwfwUeK3K
-7Aml2Qf/TKv4UahdackfenHDGk7bdMm79/CM6pMsHGMuoGvEG8br93Ifopo4zlqS
-LY/jAAukAXIbkhcfhy+53pB5KCNatZbMjTGnfX76coBu6SA96NYIg8dqMEb4HYPw
-i/0LEe7XWZ+lAIwSH+k0iSlcLsbTvgr342N4/UzNcHPDe0Nz5fPB9jRNW51IYOeM
-sTR7sD9LXAI1i+7RzReAHdJ70vQR7BYOoDITH2fo/VDGGmL37t1N3t61F3lNDL5j
-afiL3QlPhd2CaUj1GD1npwYbsEhrVy/Wi4lAWnHtr0EhHAQUoB59EiSERY0nDFDS
-cbqc1tVGFybq5n6kvj90UIyXvVBVfw==
-=V/vA
------END PGP SIGNATURE-----
-
---hhaf72dmo7adsjbw--
+-- 
+Without deviation from the norm, progress is not possible.
