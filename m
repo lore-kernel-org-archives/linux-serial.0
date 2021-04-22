@@ -2,122 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2248DC433ED
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 13:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA487C433B4
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 17:23:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D021B61435
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 13:15:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 67B09613E6
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 17:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235957AbhDVNPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Apr 2021 09:15:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51862 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230005AbhDVNPs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Apr 2021 09:15:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 16E9261426;
-        Thu, 22 Apr 2021 13:15:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619097313;
-        bh=qYbinlozbiPMkWqTzsC8oiOShV5c2Xd4JeYWmDaKed4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PDsdJBagcHSbWpTjPwuiLei0YCvMarWaL7fAepN/1GASOs2Zj56wgx7Ogk8EfXlwo
-         TW94TS+Q9iO86l9hnZ5aPlFBa4/2XkrQtVhOCIex57/1xAXeA60IKo1FDqfktSk3HG
-         jJjH84uHWWe6iDEmMTMlgCuHgcxjORT0EMdOcUlel45yCUARSpCSwO1poNcENrK6Vp
-         78ixzp1+vPzxQ6DxGfauV/SIirULq8s9fbKCv//4+AGM0RdNzelP0m6qgnwppA4pxL
-         yGC8uZerTWRQ7nr5WIQFHlvF7/1DrngxzX/dqCS/YrpLo8TboyPVn1rc/4WtONSJyA
-         tGt5NmLyWAHnQ==
-Received: from johan by xi.lan with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1lZZAs-0008SM-8K; Thu, 22 Apr 2021 15:15:18 +0200
-Date:   Thu, 22 Apr 2021 15:15:18 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-serial@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] tty: serial: jsm: remove redundant assignments of
- several variables
-Message-ID: <YIF25kxW99LfysdQ@hovoldconsulting.com>
-References: <20210422121115.246625-1-colin.king@canonical.com>
- <YIFxfH4MXc1ekn4f@hovoldconsulting.com>
- <c9497e47-cdfb-7be0-ad35-648ea5d68268@canonical.com>
- <YIFydeoE/WRfPcvA@hovoldconsulting.com>
- <0b9086b4-8da8-c18e-ad22-1f52d6ed0686@canonical.com>
+        id S236681AbhDVRYE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Apr 2021 13:24:04 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:54176 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236287AbhDVRYD (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 22 Apr 2021 13:24:03 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: ezequiel)
+        with ESMTPSA id 3EF8B1F4361F
+Message-ID: <7d1f197d868ae84a8bc475f1f48178d2737518c1.camel@collabora.com>
+Subject: Re: [PATCH v1 4/5] arm64: dts: rockchip: add core dtsi for RK3568
+ SoC
+From:   Ezequiel Garcia <ezequiel@collabora.com>
+To:     Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
+        cl@rock-chips.com
+Cc:     robh+dt@kernel.org, jagan@amarulasolutions.com, wens@csie.org,
+        uwe@kleine-koenig.org, mail@david-bauer.net, jbx6244@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
+        cnsztl@gmail.com, devicetree@vger.kernel.org,
+        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
+        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
+        zhangqing@rock-chips.com, huangtao@rock-chips.com,
+        kever.yang@rock-chips.com
+Date:   Thu, 22 Apr 2021 14:23:15 -0300
+In-Reply-To: <11131098.F0gNSz5aLb@diego>
+References: <20210421065921.23917-1-cl@rock-chips.com>
+         <20210421065921.23917-5-cl@rock-chips.com> <11131098.F0gNSz5aLb@diego>
+Organization: Collabora
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.2-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0b9086b4-8da8-c18e-ad22-1f52d6ed0686@canonical.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 02:01:36PM +0100, Colin Ian King wrote:
-> On 22/04/2021 13:56, Johan Hovold wrote:
-> > On Thu, Apr 22, 2021 at 01:53:03PM +0100, Colin Ian King wrote:
-> >> On 22/04/2021 13:52, Johan Hovold wrote:
-> >>> On Thu, Apr 22, 2021 at 01:11:15PM +0100, Colin King wrote:
-> >>>> From: Colin Ian King <colin.king@canonical.com>
-> >>>>
-> >>>> Several variables are being assigned with values that are never
-> >>>> read and being updated later with a new value. The initializations
-> >>>> are redundant and can be removed.
-> >>>>
-> >>>> Addresses-Coverity: ("Unused value")
-> >>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> >>>> ---
-> >>>>  drivers/tty/serial/jsm/jsm_cls.c | 6 ++----
-> >>>>  1 file changed, 2 insertions(+), 4 deletions(-)
-> >>>>
-> >>>> diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
-> >>>> index b507a2cec926..b58ea4344aaf 100644
-> >>>> --- a/drivers/tty/serial/jsm/jsm_cls.c
-> >>>> +++ b/drivers/tty/serial/jsm/jsm_cls.c
-> >>>> @@ -349,8 +349,8 @@ static void cls_assert_modem_signals(struct jsm_channel *ch)
-> >>>>  
-> >>>>  static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
-> >>>>  {
-> >>>> -	int qleft = 0;
-> >>>> -	u8 linestatus = 0;
-> >>>> +	int qleft;
-> >>>> +	u8 linestatus;
-> >>>>  	u8 error_mask = 0;
-> >>>>  	u16 head;
-> >>>>  	u16 tail;
-> >>>> @@ -365,8 +365,6 @@ static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
-> >>>>  	head = ch->ch_r_head & RQUEUEMASK;
-> >>>>  	tail = ch->ch_r_tail & RQUEUEMASK;
-> >>>>  
-> >>>> -	/* Get our cached LSR */
-> >>>> -	linestatus = ch->ch_cached_lsr;
-> >>>>  	ch->ch_cached_lsr = 0;
-> >>>
-> >>> Why leave this assignment in? Looks like this was all copy-pasta, but
-> >>> this assignment makes even less sense now that you remove the comment
-> >>> and load.
-> >>
-> >> Which assignment are you referring to?
-> > 
-> > The one just above my comment: 
-> > 
-> > 	ch->ch_cached_lsr = 0;
+Hi Liang,
+
+I'm very impressed Rockchip is pushing patches so early, thanks a lot!
+
+See below.
+
+On Wed, 2021-04-21 at 11:13 +0200, Heiko Stübner wrote:
+> Hi Liang,
 > 
-> that cached value is being used in jsm_neo.c, so removing the zero'ing
-> may cause some issues.
+> Am Mittwoch, 21. April 2021, 08:59:20 CEST schrieb cl@rock-chips.com:
+> > From: Liang Chen <cl@rock-chips.com>
+> > 
+> > RK3568 is a high-performance and low power quad-core application processor
+> > designed for personal mobile internet device and AIoT equipments.
+> > 
+> > This patch add basic core dtsi file for it.
+> > 
+> > Signed-off-by: Liang Chen <cl@rock-chips.com>
+> 
+> this is a first round of basic stuff :-) .
+> 
+> First of all, I really like the move of moving the pretty standardized
+> pinconfig entries to the rockchip-pinconf.dtsi .
+> 
+> (1) But please move this into a separate patch to make that more visible
+> and maybe even convert _some_ or all arm64 Rockchip socs to use that
+> as well
+> 
+> "arm64: dts: rockchip: add generic pinconfig settings used by most Rockchip socs
+> 
+> The pinconfig settings for Rockchip SoCs are pretty similar on all socs,
+> so move them to a shared dtsi to be included, instead of redefining them
+> for each soc"
+> 
+> (2) I also like the external rk3568-pinctrl approach with the dtsi getting
+> auto-generated. This will probably help us in keeping pinctrl settings
+> synchronous between mainline and the vendor kernel.
+> 
+> (3) From my basic understanding the rk3568 is basically a rk3566 + more
+> peripherals, so ideally they would share the basic ones in a rk3566.dtsi
+> which the rk3568.dtsi then could include and extend with its additional
+> peripherals.
+> 
+> With at least the pine64 boards being based on the rk3566, there probably
+> will be quite a mainline use of it as well.
+> 
+> Or is there something that would prevent this?
+> 
 
-That's for you to determine, right? Only doing half of a clean may
-actually be worse than doing nothing at all. At least now it's somewhat
-clear why that statement is there.
+I agree with having a rk3566.dtsi, and rk3568.dtsi on top, instead of the
+other way around. We have some RK3566 boards here, so we can surely test
+the RK3566.dtsi patches very quickly.
 
-The jsm_neo.c implements support for a different class of devices and
-only those actually use ch_cached_lsr AFAICT.
+Also, it's fine if you want to send v2 with just these minimal peripherals.
+However, I think you could include GMAC and TS-ADC:
 
-It would be good if you include some context in the commit message such
-as which commit added this code and that it has never been used.
+https://lore.kernel.org/linux-rockchip/31c2e531-96d0-a1c1-644c-28c60eb40cf4@gmail.com/T/#t
+https://lore.kernel.org/linux-rockchip/20210421203409.40717-1-ezequiel@collabora.com/T/#t
 
-Johan
+These should work right out of the box!
+
+Thanks!
+Ezequiel
+
