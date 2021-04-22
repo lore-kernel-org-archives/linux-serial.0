@@ -2,96 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5507DC433B4
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 03:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F009C433ED
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 05:59:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2ECDA61428
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 03:10:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4740561450
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 05:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234007AbhDVDK5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Apr 2021 23:10:57 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:17022 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbhDVDK4 (ORCPT
+        id S229651AbhDVGAH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Apr 2021 02:00:07 -0400
+Received: from mail-ej1-f54.google.com ([209.85.218.54]:35669 "EHLO
+        mail-ej1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229533AbhDVGAH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Apr 2021 23:10:56 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FQj5L6t88zPtLX;
-        Thu, 22 Apr 2021 11:07:18 +0800 (CST)
-Received: from [127.0.0.1] (10.174.177.72) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.498.0; Thu, 22 Apr 2021
- 11:10:17 +0800
-Subject: Re: [PATCH 1/1] dt-bindings: serial: Add label property for pl011
-To:     Rob Herring <robh@kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20210415073105.3687-1-thunder.leizhen@huawei.com>
- <20210420200246.GA3717650@robh.at.kernel.org>
- <fa6c6079-8061-5774-8252-31956ac84ae2@huawei.com>
- <CAL_JsqKggh0XDCHg8E694Zjuz2yiJ6tkxHDBDsMM3Y_XiZxypA@mail.gmail.com>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <6491648e-aab1-72cb-c766-5c4eff331412@huawei.com>
-Date:   Thu, 22 Apr 2021 11:10:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Thu, 22 Apr 2021 02:00:07 -0400
+Received: by mail-ej1-f54.google.com with SMTP id u17so66984329ejk.2;
+        Wed, 21 Apr 2021 22:59:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1GbdFrUpiMirOPKIjtQ91RsG3NmT5KsJZdYVvR1dRcE=;
+        b=RcxsGUOLUkEJMKGebAMOFYn5HiMgZhqyaHLiA5XDAAOUAl6Z7RNVRFA7LnuAYw6r2F
+         tRKDZ8Gskq9Tkg2bptGFeJnmHldO6h1kFmOeYTOw0WjxgCa2TvspETwSudL9juPcXpjJ
+         B3GUFBnBi1bL0J6Yk9wkndKfSfYUEFrSGbZdyUHNcXfsigJibxK2n2W+JGNMA6n6yHTI
+         J2gO62i8CQGD8wWaSpxg7XG2jaW0HnGI/RupLZ4K+howWikvu/m//QF6SVzASiWZRNnn
+         uQdLXVblyR1fschYIQXfuAKdY1xBr4Ly9aizDvC8GxCsavA21ep6644oJLPqRKE5CraT
+         49lw==
+X-Gm-Message-State: AOAM531sbTW4HOZEmfQfxv/q99W2Yk3AT6DbcagWjUfIpx4+wBLkjXb+
+        6BNq7E4x95c56s4ihDUXvnlsiV2pg80=
+X-Google-Smtp-Source: ABdhPJwLGDTDDnNkEBbpW0jd1zeIC0qB/FPMnMqfYmGwZKHX8z/NX1CDdILB/kxc/VsT75H6QY6wpA==
+X-Received: by 2002:a17:906:3a94:: with SMTP id y20mr1515073ejd.35.1619071171811;
+        Wed, 21 Apr 2021 22:59:31 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id o8sm1111432ejm.18.2021.04.21.22.59.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Apr 2021 22:59:31 -0700 (PDT)
+Subject: Re: [PATCH 01/26] tty: mxser: drop low-latency workaround
+To:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210421095509.3024-1-johan@kernel.org>
+ <20210421095509.3024-2-johan@kernel.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <0b470bd2-742f-0588-83e0-8a6748b37f7a@kernel.org>
+Date:   Thu, 22 Apr 2021 07:59:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqKggh0XDCHg8E694Zjuz2yiJ6tkxHDBDsMM3Y_XiZxypA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210421095509.3024-2-johan@kernel.org>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.72]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 2021/4/21 21:53, Rob Herring wrote:
-> On Wed, Apr 21, 2021 at 4:38 AM Leizhen (ThunderTown)
-> <thunder.leizhen@huawei.com> wrote:
->>
->>
->>
->> On 2021/4/21 4:02, Rob Herring wrote:
->>> On Thu, Apr 15, 2021 at 03:31:05PM +0800, Zhen Lei wrote:
->>>> When there is more than one pl011 serial port present, the label property
->>>> allows a custom name to be used for briefly describe the usage or position
->>>> of each serial port.
->>>>
->>>> Without this "label" property, many dtbs_check warnings similar to the
->>>> following are reported:
->>>> arch/arm64/boot/dts/hisilicon/hi3660-hikey960.dt.yaml: \
->>>> serial@ffd74000: Additional properties are not allowed ('label' was unexpected)
->>>>         From schema: Documentation/devicetree/bindings/serial/pl011.yaml
->>>
->>> I think this should go into serial.yaml instead.
->>
->> Yes，But if I add "label: true" into serial.yaml, it doesn't work. I haven't figured out why.
+On 21. 04. 21, 11:54, Johan Hovold wrote:
+> Commit 67d2bc58afdd ("Char: mxser_new, fix recursive locking") worked
+> around the infamous low_latency behaviour of tty_flip_buffer_push() by
+> simply dropping and reacquiring the port lock in the interrupt handler.
 > 
-> Change the 'additionalProperties: false' to 'unevaluatedProperties: false'.
-
-Wow, it works. I admire you so much. You're a master.
-
+> Since commit a9c3f68f3cd8 ("tty: Fix low_latency BUG"),
+> tty_flip_buffer_push() always schedules a work item to push data to the
+> line discipline and there's no need to keep any low_latency hacks around.
 > 
->> By the way, should "$ref: /schemas/serial.yaml#" be replaced with "$ref: /schemas/serial/serial.yaml#"?
-> 
-> Oh, yes! Looks like it should be fixed for the other serial schemas
-> too. There is a /schemas/serial.yaml schema from dt-schema which
-> predates the kernel one, but it just has the $nodename. The kernel one
-> is much more complete.
+> Link: https://lore.kernel.org/lkml/3018694794025219@wsc.cz/T/#m06b04c640a7b6f41afb3d34a4cf29b1df4935d3a
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-All right, I'll fix them all.
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
+> ---
+>   drivers/tty/mxser.c | 7 -------
+>   1 file changed, 7 deletions(-)
 > 
-> Rob
-> 
-> .
+> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+> index 2d8e76263a25..16a852ecbe8a 100644
+> --- a/drivers/tty/mxser.c
+> +++ b/drivers/tty/mxser.c
+> @@ -2155,14 +2155,7 @@ static void mxser_receive_chars(struct tty_struct *tty,
+>   	port->mon_data.rxcnt += cnt;
+>   	port->mon_data.up_rxcnt += cnt;
+>   
+> -	/*
+> -	 * We are called from an interrupt context with &port->slock
+> -	 * being held. Drop it temporarily in order to prevent
+> -	 * recursive locking.
+> -	 */
+> -	spin_unlock(&port->slock);
+>   	tty_flip_buffer_push(&port->port);
+> -	spin_lock(&port->slock);
+>   }
+>   
+>   static void mxser_transmit_chars(struct tty_struct *tty, struct mxser_port *port)
 > 
 
+thanks,
+-- 
+js
