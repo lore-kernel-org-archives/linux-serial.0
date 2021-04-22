@@ -2,79 +2,150 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12757C43460
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 09:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D881BC433ED
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 09:35:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D3CAA6145A
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 09:09:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E28F61445
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Apr 2021 09:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235703AbhDVJKX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Apr 2021 05:10:23 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:16614 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235659AbhDVJKX (ORCPT
+        id S235611AbhDVJfh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Apr 2021 05:35:37 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:9532 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S235339AbhDVJfg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Apr 2021 05:10:23 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FQs4r1MY9z16Ljm;
-        Thu, 22 Apr 2021 17:07:24 +0800 (CST)
-Received: from thunder-town.china.huawei.com (10.174.177.72) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 22 Apr 2021 17:09:39 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 1/1] dt-bindings: serial: 8250: Remove duplicated compatible strings
-Date:   Thu, 22 Apr 2021 17:08:57 +0800
-Message-ID: <20210422090857.583-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+        Thu, 22 Apr 2021 05:35:36 -0400
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13M9VllN023388;
+        Thu, 22 Apr 2021 11:34:57 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=selector1;
+ bh=PAzGZymp8Tn7VEiuoukm8luQ4ogr9Bf/DPZZ5qZ6axE=;
+ b=gpQIdbVqq/TOpNVXl+xiUBeGU1gf64h84zEtNnWp3bsQ/J4ijna1glmJhC4yTml53NaT
+ mNSDr0C4lvNnAxn9c9t2YL07kZLB0cywT/qsc0bM1ak0ix4Otc0CtkBEBhFSrcPkKlLl
+ AjigITtIPEMv4dnn8SF4jTLledFel/XYsHemKmAi78AQnYB0sqYKj81tN5Delcg48frN
+ b5AManEhZEME/uDn0Q419rVFfuqCdDMJ1SnsTgQeDUgdQcRjG78oHTUJMmg3occ23C4c
+ UDXdtCP2hhE+Iwm09ugcV1gDWlzZMqyShrP5ZqA7qTw8O3hEUEhWnlStZRhjHO7OQRRz FQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 382fxqfsb7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 22 Apr 2021 11:34:57 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 2A20010002A;
+        Thu, 22 Apr 2021 11:34:56 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 17FD425F400;
+        Thu, 22 Apr 2021 11:34:56 +0200 (CEST)
+Received: from SFHDAG2NODE3.st.com (10.75.127.6) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 22 Apr
+ 2021 11:34:55 +0200
+Received: from SFHDAG2NODE3.st.com ([fe80::31b3:13bf:2dbe:f64c]) by
+ SFHDAG2NODE3.st.com ([fe80::31b3:13bf:2dbe:f64c%20]) with mapi id
+ 15.00.1497.012; Thu, 22 Apr 2021 11:34:55 +0200
+From:   Valentin CARON - foss <valentin.caron@foss.st.com>
+To:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre TORGUE - foss <alexandre.torgue@foss.st.com>,
+        "dillon.minfei@gmail.com" <dillon.minfei@gmail.com>,
+        Erwan LE-RAY - foss <erwan.leray@foss.st.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        Gerald BAEZA <gerald.baeza@st.com>
+Subject: Re: [PATCH 2/3] serial: stm32: fix threaded interrupt handling
+Thread-Topic: [PATCH 2/3] serial: stm32: fix threaded interrupt handling
+Thread-Index: AQHXMsptWrbsx4Er7UavsC4846LX06rALmWA
+Date:   Thu, 22 Apr 2021 09:34:55 +0000
+Message-ID: <b687c2f2-e6f3-818a-1bb7-bf632d589171@foss.st.com>
+References: <20210416140557.25177-1-johan@kernel.org>
+ <20210416140557.25177-3-johan@kernel.org>
+In-Reply-To: <20210416140557.25177-3-johan@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.75.127.49]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <ACAE7D4482F3474797035C4AEF2DBF8E@st.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.177.72]
-X-CFilter-Loop: Reflected
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-22_01:2021-04-21,2021-04-21 signatures=0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The compatible strings "mediatek,*" appears two times, remove one of them.
-
-Fixes: e69f5dc623f9 ("dt-bindings: serial: Convert 8250 to json-schema")
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- Documentation/devicetree/bindings/serial/8250.yaml | 5 -----
- 1 file changed, 5 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-index f54cae9ff7b2..d3f87f2bfdc2 100644
---- a/Documentation/devicetree/bindings/serial/8250.yaml
-+++ b/Documentation/devicetree/bindings/serial/8250.yaml
-@@ -93,11 +93,6 @@ properties:
-               - mediatek,mt7622-btif
-               - mediatek,mt7623-btif
-           - const: mediatek,mtk-btif
--      - items:
--          - enum:
--              - mediatek,mt7622-btif
--              - mediatek,mt7623-btif
--          - const: mediatek,mtk-btif
-       - items:
-           - const: mrvl,mmp-uart
-           - const: intel,xscale-uart
--- 
-2.21.1
-
-
+SGksIEpvaGFuDQoNCk9uIDQvMTYvMjEgNDowNSBQTSwgSm9oYW4gSG92b2xkIHdyb3RlOg0KPiBX
+aGVuIERNQSBpcyBlbmFibGVkIHRoZSByZWNlaXZlIGhhbmRsZXIgcnVucyBpbiBhIHRocmVhZGVk
+IGhhbmRsZXIsIGJ1dA0KPiB0aGUgcHJpbWFyeSBoYW5kbGVyIHVwIHVudGlsIHZlcnkgcmVjZW50
+bHkgbmVpdGhlciBkaXNhYmxlZCBpbnRlcnJ1cHRzDQo+IGluIHRoZSBkZXZpY2Ugb3IgdXNlZCBJ
+UlFGX09ORVNIT1QuIFRoaXMgd291bGQgbGVhZCB0byBhIGRlYWRsb2NrIGlmIGFuDQo+IGludGVy
+cnVwdCBjb21lcyBpbiB3aGlsZSB0aGUgdGhyZWFkZWQgcmVjZWl2ZSBoYW5kbGVyIGlzIHJ1bm5p
+bmcgdW5kZXINCj4gdGhlIHBvcnQgbG9jay4NCj4NCj4gQ29tbWl0IGFkNzY3NjgxMjQzNyAoInNl
+cmlhbDogc3RtMzI6IGZpeCBhIGRlYWRsb2NrIGNvbmRpdGlvbiB3aXRoDQo+IHdha2V1cCBldmVu
+dCIpIGNsYWltZWQgdG8gZml4IGFuIHVucmVsYXRlZCBkZWFkbG9jaywgYnV0IHVuZm9ydHVuYXRl
+bHkNCj4gYWxzbyBkaXNhYmxlZCBpbnRlcnJ1cHRzIGluIHRoZSB0aHJlYWRlZCBoYW5kbGVyLiBX
+aGlsZSB0aGlzIHByZXZlbnRzDQo+IHRoZSBkZWFkbG9jayBtZW50aW9uZWQgaW4gdGhlIHByZXZp
+b3VzIHBhcmFncmFwaCBpdCBhbHNvIGRlZmVhdHMgdGhlDQo+IHB1cnBvc2Ugb2YgdXNpbmcgYSB0
+aHJlYWRlZCBoYW5kbGVyIGluIHRoZSBmaXJzdCBwbGFjZS4NCj4NCj4gRml4IHRoaXMgYnkgbWFr
+aW5nIHRoZSBpbnRlcnJ1cHQgb25lLXNob3QgYW5kIG5vdCBkaXNhYmxpbmcgaW50ZXJydXB0cw0K
+PiBpbiB0aGUgdGhyZWFkZWQgaGFuZGxlci4NCj4NCj4gTm90ZSB0aGF0IChyZWNlaXZlKSBETUEg
+bXVzdCBub3QgYmUgdXNlZCBmb3IgYSBjb25zb2xlIHBvcnQgYXMgdGhlDQo+IHRocmVhZGVkIGhh
+bmRsZXIgY291bGQgYmUgaW50ZXJydXB0ZWQgd2hpbGUgaG9sZGluZyB0aGUgcG9ydCBsb2NrLA0K
+PiBzb21ldGhpbmcgd2hpY2ggY291bGQgbGVhZCB0byBhIGRlYWRsb2NrIGluIGNhc2UgYW4gaW50
+ZXJydXB0IGhhbmRsZXINCj4gZW5kcyB1cCBjYWxsaW5nIHByaW50ay4NCj4NCj4gRml4ZXM6IGFk
+NzY3NjgxMjQzNyAoInNlcmlhbDogc3RtMzI6IGZpeCBhIGRlYWRsb2NrIGNvbmRpdGlvbiB3aXRo
+IHdha2V1cCBldmVudCIpDQo+IEZpeGVzOiAzNDg5MTg3MjA0ZWIgKCJzZXJpYWw6IHN0bTMyOiBh
+ZGRpbmcgZG1hIHN1cHBvcnQiKQ0KPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZyAgICAgICMg
+NC45DQo+IENjOiBBbGV4YW5kcmUgVE9SR1VFIDxhbGV4YW5kcmUudG9yZ3VlQHN0LmNvbT4NCj4g
+Q2M6IEdlcmFsZCBCYWV6YSA8Z2VyYWxkLmJhZXphQHN0LmNvbT4NCj4gU2lnbmVkLW9mZi1ieTog
+Sm9oYW4gSG92b2xkIDxqb2hhbkBrZXJuZWwub3JnPg0KDQpSZXZpZXdlZC1ieTogVmFsZW50aW4g
+Q2Fyb248dmFsZW50aW4uY2Fyb25AZm9zcy5zdC5jb20+DQoNCj4gLS0tDQo+ICAgZHJpdmVycy90
+dHkvc2VyaWFsL3N0bTMyLXVzYXJ0LmMgfCAyMiArKysrKysrKysrKystLS0tLS0tLS0tDQo+ICAg
+MSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQ0KPg0KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3N0bTMyLXVzYXJ0LmMgYi9kcml2ZXJzL3R0
+eS9zZXJpYWwvc3RtMzItdXNhcnQuYw0KPiBpbmRleCA0ZDI3NzgwNGM2M2UuLjM1MjRlZDJjMGM3
+MyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3N0bTMyLXVzYXJ0LmMNCj4gKysr
+IGIvZHJpdmVycy90dHkvc2VyaWFsL3N0bTMyLXVzYXJ0LmMNCj4gQEAgLTIxNCwxNCArMjE0LDEx
+IEBAIHN0YXRpYyB2b2lkIHN0bTMyX3VzYXJ0X3JlY2VpdmVfY2hhcnMoc3RydWN0IHVhcnRfcG9y
+dCAqcG9ydCwgYm9vbCB0aHJlYWRlZCkNCj4gICAJc3RydWN0IHR0eV9wb3J0ICp0cG9ydCA9ICZw
+b3J0LT5zdGF0ZS0+cG9ydDsNCj4gICAJc3RydWN0IHN0bTMyX3BvcnQgKnN0bTMyX3BvcnQgPSB0
+b19zdG0zMl9wb3J0KHBvcnQpOw0KPiAgIAljb25zdCBzdHJ1Y3Qgc3RtMzJfdXNhcnRfb2Zmc2V0
+cyAqb2ZzID0gJnN0bTMyX3BvcnQtPmluZm8tPm9mczsNCj4gLQl1bnNpZ25lZCBsb25nIGMsIGZs
+YWdzOw0KPiArCXVuc2lnbmVkIGxvbmcgYzsNCj4gICAJdTMyIHNyOw0KPiAgIAljaGFyIGZsYWc7
+DQo+ICAgDQo+IC0JaWYgKHRocmVhZGVkKQ0KPiAtCQlzcGluX2xvY2tfaXJxc2F2ZSgmcG9ydC0+
+bG9jaywgZmxhZ3MpOw0KPiAtCWVsc2UNCj4gLQkJc3Bpbl9sb2NrKCZwb3J0LT5sb2NrKTsNCj4g
+KwlzcGluX2xvY2soJnBvcnQtPmxvY2spOw0KPiAgIA0KPiAgIAl3aGlsZSAoc3RtMzJfdXNhcnRf
+cGVuZGluZ19yeChwb3J0LCAmc3IsICZzdG0zMl9wb3J0LT5sYXN0X3JlcywNCj4gICAJCQkJICAg
+ICAgdGhyZWFkZWQpKSB7DQo+IEBAIC0yNzgsMTAgKzI3NSw3IEBAIHN0YXRpYyB2b2lkIHN0bTMy
+X3VzYXJ0X3JlY2VpdmVfY2hhcnMoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgYm9vbCB0aHJlYWRl
+ZCkNCj4gICAJCXVhcnRfaW5zZXJ0X2NoYXIocG9ydCwgc3IsIFVTQVJUX1NSX09SRSwgYywgZmxh
+Zyk7DQo+ICAgCX0NCj4gICANCj4gLQlpZiAodGhyZWFkZWQpDQo+IC0JCXNwaW5fdW5sb2NrX2ly
+cXJlc3RvcmUoJnBvcnQtPmxvY2ssIGZsYWdzKTsNCj4gLQllbHNlDQo+IC0JCXNwaW5fdW5sb2Nr
+KCZwb3J0LT5sb2NrKTsNCj4gKwlzcGluX3VubG9jaygmcG9ydC0+bG9jayk7DQo+ICAgDQo+ICAg
+CXR0eV9mbGlwX2J1ZmZlcl9wdXNoKHRwb3J0KTsNCj4gICB9DQo+IEBAIC02NjcsNyArNjYxLDgg
+QEAgc3RhdGljIGludCBzdG0zMl91c2FydF9zdGFydHVwKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQp
+DQo+ICAgDQo+ICAgCXJldCA9IHJlcXVlc3RfdGhyZWFkZWRfaXJxKHBvcnQtPmlycSwgc3RtMzJf
+dXNhcnRfaW50ZXJydXB0LA0KPiAgIAkJCQkgICBzdG0zMl91c2FydF90aHJlYWRlZF9pbnRlcnJ1
+cHQsDQo+IC0JCQkJICAgSVJRRl9OT19TVVNQRU5ELCBuYW1lLCBwb3J0KTsNCj4gKwkJCQkgICBJ
+UlFGX09ORVNIT1QgfCBJUlFGX05PX1NVU1BFTkQsDQo+ICsJCQkJICAgbmFtZSwgcG9ydCk7DQo+
+ICAgCWlmIChyZXQpDQo+ICAgCQlyZXR1cm4gcmV0Ow0KPiAgIA0KPiBAQCAtMTE1Niw2ICsxMTUx
+LDEzIEBAIHN0YXRpYyBpbnQgc3RtMzJfdXNhcnRfb2ZfZG1hX3J4X3Byb2JlKHN0cnVjdCBzdG0z
+Ml9wb3J0ICpzdG0zMnBvcnQsDQo+ICAgCXN0cnVjdCBkbWFfYXN5bmNfdHhfZGVzY3JpcHRvciAq
+ZGVzYyA9IE5VTEw7DQo+ICAgCWludCByZXQ7DQo+ICAgDQo+ICsJLyoNCj4gKwkgKiBVc2luZyBE
+TUEgYW5kIHRocmVhZGVkIGhhbmRsZXIgZm9yIHRoZSBjb25zb2xlIGNvdWxkIGxlYWQgdG8NCj4g
+KwkgKiBkZWFkbG9ja3MuDQo+ICsJICovDQo+ICsJaWYgKHVhcnRfY29uc29sZShwb3J0KSkNCj4g
+KwkJcmV0dXJuIC1FTk9ERVY7DQo+ICsNCj4gICAJLyogUmVxdWVzdCBETUEgUlggY2hhbm5lbCAq
+Lw0KPiAgIAlzdG0zMnBvcnQtPnJ4X2NoID0gZG1hX3JlcXVlc3Rfc2xhdmVfY2hhbm5lbChkZXYs
+ICJyeCIpOw0KPiAgIAlpZiAoIXN0bTMycG9ydC0+cnhfY2gpIHs=
