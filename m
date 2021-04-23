@@ -2,89 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7EDC433ED
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Apr 2021 19:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBF7C433B4
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Apr 2021 19:57:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0A03B613D7
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Apr 2021 19:48:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1BEAE61422
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Apr 2021 19:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243935AbhDWTtL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Apr 2021 15:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56750 "EHLO
+        id S243832AbhDWT54 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Apr 2021 15:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243874AbhDWTtJ (ORCPT
+        with ESMTP id S232645AbhDWT5t (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Apr 2021 15:49:09 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0CBC061574;
-        Fri, 23 Apr 2021 12:48:32 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id lr7so7501821pjb.2;
-        Fri, 23 Apr 2021 12:48:32 -0700 (PDT)
+        Fri, 23 Apr 2021 15:57:49 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0391C061574;
+        Fri, 23 Apr 2021 12:57:10 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id g9so33464718wrx.0;
+        Fri, 23 Apr 2021 12:57:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RblyejMO0ehdI3884/nZF+v9qcRYrKv3C89X2315cxc=;
-        b=qMCaatxx/bSEsCo0Gf7FUukHolKiLQl3+D3e8B95J36vEEhdGD3cwJh1rj3BZjPCOE
-         CfSuEeJuJ+jIHpQwcEbNVvVzo+PpJVyyCwzPZAzK4mlQQj/922MHGeUXxdLYpTyLJxxD
-         ZzXPbnKNIlWfZHg3ZIJhhBHN6D+0p37t1b2YTmrsT06ilkuedJzUVpqv7GL7cUDouCgA
-         ZO+w+4pfOz7o52H6FGrcAaY2+4bxjqhyno5tBE4ETe7kMd/bezDsbIfyR06U9k0d3Wtr
-         qcuZ3kc+tvcAuaU0L3UewiVtKEH5NFGV+iq2atwyv686bAxlFpW7xC3gasn7OP1Rg/O2
-         qouA==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=YUWtKeLe5I3ivX9OWOWDdvoRTK1oFcdFGPOroMjkEGU=;
+        b=pP43qJzRbMc7oBFX6BIx9wdJdjyZs3EicjlsAriHVvOYX5lKsMe9zhxDORKpVYQny+
+         cO2i6/su2kN/5c3BiUe0vnDlLKwNjuq5WGpYjLYPwxZR77n/6GtEp0ik6t0omkvNeV7X
+         obWAx5nNHri7Z5Nn6/4h35/yfmB6z+PbZMmyQ5LLP8Zof0ULH6QQ5yt5x3bEtR91a2X5
+         8dYiSv6k4iO8Mo7PNzspAOl56rOQXKuIHH4UEUo0Q3ypNU33Zw1ZTHWq9VVDNz81nNsC
+         Moj1blT+oUwqHAMEJdYZ1xVp5q2gAhULLIaxMWl0LzoGbgDu48kPzo4u+x5AD2cZcBsA
+         XP+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RblyejMO0ehdI3884/nZF+v9qcRYrKv3C89X2315cxc=;
-        b=beJqlNVFLtezCUmlshZtl/EFqtG6l1cefHBQ0PA5TcBhYl5tvopgBpTl8z/R8YnTWW
-         qNXPC+JoIn0MC7e3ptfL19Ci9IfApV9PNXff19kDeQwkEjtjdUXvTfM7oxEPgRBb3aqw
-         thQzcl5QiOG2Kzstb5c2TD1pxXgeyB69WfRgGWXz0IA7nXW+lNa1Rpj5h3/3ZG3bdqRZ
-         q4IdzY/C4MQ0UaYkqHlfY9rrytM1k6KkzXndXp5Kqg+9Z4vGvpZftZv2xYGf+Wq/OqgT
-         HQbTLuGXpUiiuThYN+5qZXRGGTN5F/IWX7RmgBm5KhIwVYnBuKC6r4w0aaefNvme8hbl
-         iybg==
-X-Gm-Message-State: AOAM531wQ3eBx5V4x2GwHn2Ah6Ft0MRw12LzWlFvEN9KCxFEhqRANhKh
-        FXBOeW0gBU7HqLRJ+4G68T+9xHizR4w=
-X-Google-Smtp-Source: ABdhPJy+8xqXrxU5UjY1FTpnTR1T+0SZzmmE95sBP5vfvc1R4Cvna4Hyx/wnSME5qMVv6wz/1KjmZg==
-X-Received: by 2002:a17:90a:8592:: with SMTP id m18mr7212464pjn.165.1619207311621;
-        Fri, 23 Apr 2021 12:48:31 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b20sm8163779pju.17.2021.04.23.12.48.30
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=YUWtKeLe5I3ivX9OWOWDdvoRTK1oFcdFGPOroMjkEGU=;
+        b=UPiQ46Z9Dq7QJCyQ2yLtBamX1320sG+MC0z8+ypp17vd5oyzN5tTQsVYknP1+VbayQ
+         tEf4K87M3MV++tnstwRP7PHq/wadkA2ei0FLsONqwo5BvUC09n07DTdFKoQsuxXZ5Ifj
+         ChsJLwy7s2ltOZwkmbqamm7GdFdeylmIRe8IJiNgPiDnbrF/xy/a2AWiz7IWvhVqaSaB
+         cwHMxbSP/2pKykOZdLVUCkd1uTlge7mCUfrTnjo4Hki/chaXVejQprxMQW1MYjo0xXGn
+         naVr3G27NqtJ0ygDTOYxhkB3WDx9WjXJnN1C7EHYxXIFxkLdoCRwbLzr/qRSyGtz/gnP
+         jleg==
+X-Gm-Message-State: AOAM530mCij3EBb1zP9BdxmOThgxXofbDqK2DsG2I2pvGxr0U/4viIYG
+        GzHokqbobSE0jlYTlbNNG0g=
+X-Google-Smtp-Source: ABdhPJwQQ3NVkauuahkUyYLy7f2M0TQNKHjhhwiQTHGeC2er70LNaQJ48W1s2+bxcRlhMsqxOYpokQ==
+X-Received: by 2002:a5d:468b:: with SMTP id u11mr6691554wrq.293.1619207829509;
+        Fri, 23 Apr 2021 12:57:09 -0700 (PDT)
+Received: from [192.168.2.202] (p5487b3cb.dip0.t-ipconnect.de. [84.135.179.203])
+        by smtp.gmail.com with ESMTPSA id a2sm10593342wrt.82.2021.04.23.12.57.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Apr 2021 12:48:31 -0700 (PDT)
-Subject: Re: [PATCH] serial: 8250: of: Check for CONFIG_SERIAL_8250_BCM7271
-To:     Alan Cooper <alcooperx@gmail.com>,
-        ": Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-Cc:     Jim Quinlan <jim2101024@gmail.com>,
+        Fri, 23 Apr 2021 12:57:08 -0700 (PDT)
+To:     linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-References: <20210423191920.42940-1-alcooperx@gmail.com>
- <CAOGqxeVokFqOQMpTrpyg1GPRk6YCw=GF0-ShBtiKz_3_0RU2XQ@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <d48a47cf-2dff-cc94-6b6b-f498ab94fe57@gmail.com>
-Date:   Fri, 23 Apr 2021 12:48:29 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.0
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wang Hongcheng <annie.wang@amd.com>, Ken Xue <Ken.Xue@amd.com>
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+Subject: Support for AMDI0022 UART
+Message-ID: <295686a0-240d-71d1-a6a0-f3752cf24477@gmail.com>
+Date:   Fri, 23 Apr 2021 21:57:07 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-In-Reply-To: <CAOGqxeVokFqOQMpTrpyg1GPRk6YCw=GF0-ShBtiKz_3_0RU2XQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi all,
 
+I received a report from a Surface Laptop 4 which has a UART that is
+identified as AMDI0022 in ACPI [1] and that does not seem to be
+supported by the kernel yet.
 
-On 4/23/2021 12:25 PM, Alan Cooper wrote:
-> Please ignore this patch, it was already submitted by Florian about an hour ago.
+ From what I can tell via ACPI, this is similar to the AMDI0020 [2] UART
+that's already supported by the kernel (well, both are devices with two
+MMIO regions and an interrupt as far as I can tell...). So it's possible
+that all that's needed is adding it to the respective device ID lists
+[3, 4]. Unfortunately, I a) don't have a device to test this myself, b)
+haven't found any more details on that online, and c) don't want to tell
+others to test this without knowing a bit more about that (potentially
+writing random stuff to some unknown MMIO region that I don't know
+anything about doesn't sound as safe to me as I'd like).
 
-Sorry for the lack of coordination, was about to ask you if you wanted
-to send it.
--- 
-Florian
+Does anyone here have some pointers on what it'd take to support this,
+or any contacts at AMD that could provide more insight?
+
+Regards
+Max
+
+[1]: AMDI0022 in ACPI (Surface Laptop 4)
+https://github.com/linux-surface/acpidumps/blob/2e24c80d4c7a99a9295aa0b1b2e5e92df93378b4/surface_laptop_4_amd/dsdt.dsl#L1432
+
+[2]: AMDI0020 in ACPI (Surface Laptop 3)
+https://github.com/linux-surface/acpidumps/blob/62972f0d806cef45ca01341e3cfbabc04c6dd583/surface_laptop_3_15/dsdt.dsl#L1806
+
+[3]: ID list for 8250_dw
+https://elixir.bootlin.com/linux/v5.12-rc8/source/drivers/tty/serial/8250/8250_dw.c#L715
+
+[4]: ID list for acpi_apd
+https://elixir.bootlin.com/linux/v5.12-rc8/source/drivers/acpi/acpi_apd.c#L228
