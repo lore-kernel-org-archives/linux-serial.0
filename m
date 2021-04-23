@@ -2,99 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC27C433ED
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Apr 2021 09:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D59BC433B4
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Apr 2021 10:14:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 457B5613CB
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Apr 2021 09:55:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4E6606145F
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Apr 2021 10:14:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231185AbhDWJzq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Apr 2021 05:55:46 -0400
-Received: from mail-wm1-f51.google.com ([209.85.128.51]:44709 "EHLO
-        mail-wm1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbhDWJzq (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Apr 2021 05:55:46 -0400
-Received: by mail-wm1-f51.google.com with SMTP id f195-20020a1c1fcc0000b029012eb88126d7so878669wmf.3;
-        Fri, 23 Apr 2021 02:55:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JxU1ZzxRokGVb1YELDuu4vCkimZAQe95BQeIGMh2iio=;
-        b=o1WF88X9UhdmS5BjDxIxb7fQ7diZ338Y0iRHyjRM8jQmyMuFNN0B4GLr6rODWjq9tJ
-         DcBfKPoOm99cDqPxZoS1hXXGPoYILLm8xK+WBtZvVasVD8IkUS5JKnGe0xSrbTWAMJBB
-         LQZ9WFf8vyI2+HJ3AeqLNTSghbJ4IM8b6rziPzuubYOdCkdxRGb/cvmSBOxmQBZSUwIv
-         RGH3FmyyxZkJ+jdLgCTMIbpmNqkl51QxnoG4fFY2V7/VRxdqSoavzH+xux/U2OEO/O+E
-         AXye8kxDFOgrG1ixTHS7gJGHA4YY7pdJE+lO4x6+8j0ST4IiCVZvd/wl2+I5UGx5C87Q
-         Wu4g==
-X-Gm-Message-State: AOAM531GfSsHuMo4s27l9UTypbmuAEYBtF2cpcIn1zIE0Rq5U2P8vQE1
-        DTr7Y83nV2aJzntUi2LSQ74=
-X-Google-Smtp-Source: ABdhPJwlQLqLgFtdKujrYNdTUf6A/yxTMbeJrybYimSjvjgT39D781oxlI+zCcKf97ePTj88RTxBrw==
-X-Received: by 2002:a7b:c10a:: with SMTP id w10mr841773wmi.176.1619171708976;
-        Fri, 23 Apr 2021 02:55:08 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id x2sm8970962wrg.31.2021.04.23.02.55.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Apr 2021 02:55:08 -0700 (PDT)
+        id S241889AbhDWKPE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Apr 2021 06:15:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56712 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230502AbhDWKPE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 23 Apr 2021 06:15:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0ECB761445;
+        Fri, 23 Apr 2021 10:14:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1619172867;
+        bh=lGPwUSMb5Bj8plk1+Wyt4jWP6VdYdw5HtTjMPfSlBEw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=reWGkWty+85gnfxO/Llz8nV1wqS2NNLqK9yfZ4OTfa3qkDQN3nwy7YxVqJZMvXnyW
+         ITPulOdvVo7ejcc4bsPamSiKXIKEl/BBbe0wzCm4bBgUADCgXoywqBEq0F7jNPIul5
+         WsBdLUtLR4Y6EXQVXRjjWUFxq0Bw4pleA6uRBi5I=
+Date:   Fri, 23 Apr 2021 12:14:24 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "tiantao (H)" <tiantao6@huawei.com>
+Cc:     Tian Tao <tiantao6@hisilicon.com>, jirislaby@kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH] tty: serial: samsung_tty: remove set but not used
  variables
-To:     Tian Tao <tiantao6@hisilicon.com>, gregkh@linuxfoundation.org
-Cc:     linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Hyunki Koo <hyunki00.koo@samsung.com>
+Message-ID: <YIKeAFbqyl00tHXH@kroah.com>
 References: <1619170740-63717-1-git-send-email-tiantao6@hisilicon.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <6f8d59ca-3d28-82a9-0105-a471ee90ac1f@kernel.org>
-Date:   Fri, 23 Apr 2021 11:55:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+ <YIKXs7WCF2zI3uvI@kroah.com>
+ <660e8905-6c5c-e076-5211-a87a62ea5c87@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <1619170740-63717-1-git-send-email-tiantao6@hisilicon.com>
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <660e8905-6c5c-e076-5211-a87a62ea5c87@huawei.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 23. 04. 21, 11:39, Tian Tao wrote:
-> The value of 'ret' is not used, so just delete it.
+On Fri, Apr 23, 2021 at 05:54:16PM +0800, tiantao (H) wrote:
 > 
-> Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
-> ---
->   drivers/tty/serial/samsung_tty.c | 1 -
->   1 file changed, 1 deletion(-)
+> 在 2021/4/23 17:47, Greg KH 写道:
+> > On Fri, Apr 23, 2021 at 05:39:00PM +0800, Tian Tao wrote:
+> > > The value of 'ret' is not used, so just delete it.
+> > > 
+> > > Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
+> > > ---
+> > >   drivers/tty/serial/samsung_tty.c | 1 -
+> > >   1 file changed, 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> > > index d9e4b67..d269d75 100644
+> > > --- a/drivers/tty/serial/samsung_tty.c
+> > > +++ b/drivers/tty/serial/samsung_tty.c
+> > > @@ -2220,7 +2220,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+> > >   			default:
+> > >   				dev_warn(&pdev->dev, "unsupported reg-io-width (%d)\n",
+> > >   						prop);
+> > > -				ret = -EINVAL;
+> > That looks odd, shouldn't you do something with this instead of ignoring
+> > it???
 > 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index d9e4b67..d269d75 100644
+> How about this ？
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c
+> b/drivers/tty/serial/samsung_tty.c
+> index d9e4b67..9fbc611 100644
 > --- a/drivers/tty/serial/samsung_tty.c
 > +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -2220,7 +2220,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
->   			default:
->   				dev_warn(&pdev->dev, "unsupported reg-io-width (%d)\n",
->   						prop);
-> -				ret = -EINVAL;
->   				break;
-
-Added by:
-commit 57253ccd5831e7e5720c433437775c3e6b7d0c72
-Author: Hyunki Koo <hyunki00.koo@samsung.com>
-Date:   Wed May 6 17:02:40 2020 +0900
-
-     serial: samsung: 32-bit access for TX/RX hold registers
-
-Hyunki, what was the intention with "ret" here?
-
->   			}
->   		}
+> @@ -2220,8 +2220,7 @@ static int s3c24xx_serial_probe(struct platform_device
+> *pdev)
+>                         default:
+>                                 dev_warn(&pdev->dev, "unsupported
+> reg-io-width (%d)\n",
+>                                                 prop);
+> -                               ret = -EINVAL;
+> -                               break;
+> +                               return -EINVAL;
 > 
 
+You tell me, does the patch work for you?
 
--- 
-js
-suse labs
+Is this really a "hard error" and did you now just break devices that
+used to work properly?  Are you correctly unwinding any previously
+allocated state when you return here?
+
+Please do some research on this, and ideally, lots of testing, before
+submitting it as a real solution.
+
+thanks,
+
+greg k-h
