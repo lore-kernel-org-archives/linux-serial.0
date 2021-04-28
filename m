@@ -2,102 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF532C433ED
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Apr 2021 09:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F79CC43470
+	for <linux-serial@archiver.kernel.org>; Wed, 28 Apr 2021 13:48:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6C65761107
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Apr 2021 09:06:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6521F61443
+	for <linux-serial@archiver.kernel.org>; Wed, 28 Apr 2021 13:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230307AbhD1JHY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 28 Apr 2021 05:07:24 -0400
-Received: from mga04.intel.com ([192.55.52.120]:11102 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230113AbhD1JHY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 28 Apr 2021 05:07:24 -0400
-IronPort-SDR: 19u9sQ86hIOPmi2kEqiARS3njuKpmpe/6FHNVt6lfeoc/c3K2WIT/RmCeb/Pt+xm4SHTjTkDh9
- aKchyNfIgMXw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9967"; a="194579810"
-X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
-   d="scan'208";a="194579810"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 02:06:40 -0700
-IronPort-SDR: oxydSdPDCRBsw6vd2p2BrdWc+V5eDRGhitUmmArfmGlX7dVE79M3toNcDmh1jKsk8EhCW2/07q
- Yq/wJuN0yNQw==
-X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
-   d="scan'208";a="425532650"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 02:06:37 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1lbg9T-007q1b-3m; Wed, 28 Apr 2021 12:06:35 +0300
-Date:   Wed, 28 Apr 2021 12:06:35 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org, lukas@wunner.de,
-        yangyingliang@huawei.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: 8250: Add an empty line and remove some
- useless {}
-Message-ID: <YIklm6h4xvQlw5Wf@smile.fi.intel.com>
-References: <14024ddeb2b3a8c5b0138b5ba5083f54d00164a9.1619594713.git.christophe.jaillet@wanadoo.fr>
- <257ffd691b4a062ad017333c9430d69da6dbd29a.1619594713.git.christophe.jaillet@wanadoo.fr>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <257ffd691b4a062ad017333c9430d69da6dbd29a.1619594713.git.christophe.jaillet@wanadoo.fr>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        id S239857AbhD1Nt3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 28 Apr 2021 09:49:29 -0400
+Received: from lucky1.263xmail.com ([211.157.147.131]:42566 "EHLO
+        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229928AbhD1Nt3 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 28 Apr 2021 09:49:29 -0400
+Received: from localhost (unknown [192.168.167.235])
+        by lucky1.263xmail.com (Postfix) with ESMTP id 7B39ABA115;
+        Wed, 28 Apr 2021 21:48:09 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-ABS-CHECKED: 0
+Received: from localhost.localdomain (unknown [58.22.7.114])
+        by smtp.263.net (postfix) whith ESMTP id P2750T140649007400704S1619617681633012_;
+        Wed, 28 Apr 2021 21:48:09 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <e985095ae2b11a15e9ea2b1ede2141c0>
+X-RL-SENDER: cl@rock-chips.com
+X-SENDER: cl@rock-chips.com
+X-LOGIN-NAME: cl@rock-chips.com
+X-FST-TO: heiko@sntech.de
+X-RCPT-COUNT: 30
+X-SENDER-IP: 58.22.7.114
+X-ATTACHMENT-NUM: 0
+X-System-Flag: 0
+From:   <cl@rock-chips.com>
+To:     heiko@sntech.de
+Cc:     robh+dt@kernel.org, jagan@amarulasolutions.com, wens@csie.org,
+        uwe@kleine-koenig.org, mail@david-bauer.net, jbx6244@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
+        cnsztl@gmail.com, devicetree@vger.kernel.org,
+        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
+        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
+        zhangqing@rock-chips.com, huangtao@rock-chips.com,
+        cl@rock-chips.com, wim@linux-watchdog.org, linux@roeck-us.net,
+        jamie@jamieiles.com, linux-watchdog@vger.kernel.org, maz@kernel.org
+Subject: [PATCH v3 03/10] dt-bindings: mmc: rockchip-dw-mshc: add description for rk3568
+Date:   Wed, 28 Apr 2021 21:47:52 +0800
+Message-Id: <20210428134759.22076-4-cl@rock-chips.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210428134759.22076-1-cl@rock-chips.com>
+References: <20210428134759.22076-1-cl@rock-chips.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 28, 2021 at 09:30:52AM +0200, Christophe JAILLET wrote:
-> This fixes the following checkpatch.pl warnings:
->    WARNING: Missing a blank line after declarations
->    WARNING: braces {} are not necessary for any arm of this statement
+From: Liang Chen <cl@rock-chips.com>
 
-If it makes somebody happier...
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+add "rockchip,rk3568-dw-mshc", "rockchip,rk3288-dw-mshc" for mmc nodes on
+a rk3568 platform to rockchip-dw-mshc.yaml.
 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  drivers/tty/serial/8250/8250_core.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 081b773a54c9..1082e76c4d37 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -321,9 +321,9 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
->  	 * hardware interrupt, we use a timer-based system.  The original
->  	 * driver used to do this with IRQ0.
->  	 */
-> -	if (!port->irq) {
-> +	if (!port->irq)
->  		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
-> -	} else
-> +	else
->  		retval = serial_link_irq_chain(up);
->  
->  	return retval;
-> @@ -752,6 +752,7 @@ void serial8250_suspend_port(int line)
->  	if (!console_suspend_enabled && uart_console(port) &&
->  	    port->type != PORT_8250) {
->  		unsigned char canary = 0xa5;
-> +
->  		serial_out(up, UART_SCR, canary);
->  		if (serial_in(up, UART_SCR) == canary)
->  			up->canary = canary;
-> -- 
-> 2.30.2
-> 
+Signed-off-by: Liang Chen <cl@rock-chips.com>
+---
+ .../devicetree/bindings/mmc/rockchip-dw-mshc.yaml        | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml b/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
+index 3762f1c8de96..eaa3b0ef24f6 100644
+--- a/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
++++ b/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
+@@ -29,21 +29,14 @@ properties:
+       - const: rockchip,rk3288-dw-mshc
+       - items:
+           - enum:
+-            # for Rockchip PX30
+               - rockchip,px30-dw-mshc
+-            # for Rockchip RK3036
+               - rockchip,rk3036-dw-mshc
+-            # for Rockchip RK322x
+               - rockchip,rk3228-dw-mshc
+-            # for Rockchip RK3308
+               - rockchip,rk3308-dw-mshc
+-            # for Rockchip RK3328
+               - rockchip,rk3328-dw-mshc
+-            # for Rockchip RK3368
+               - rockchip,rk3368-dw-mshc
+-            # for Rockchip RK3399
+               - rockchip,rk3399-dw-mshc
+-            # for Rockchip RV1108
++              - rockchip,rk3568-dw-mshc
+               - rockchip,rv1108-dw-mshc
+           - const: rockchip,rk3288-dw-mshc
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.17.1
+
 
 
