@@ -2,114 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5732CC43462
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Apr 2021 22:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C2F3C433B4
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Apr 2021 07:21:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 304EF61412
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Apr 2021 22:15:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D101C61431
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Apr 2021 07:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232057AbhD1WQD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 28 Apr 2021 18:16:03 -0400
-Received: from mail-oo1-f52.google.com ([209.85.161.52]:33780 "EHLO
-        mail-oo1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231881AbhD1WQC (ORCPT
+        id S239280AbhD2HVI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Apr 2021 03:21:08 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:41862 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239259AbhD2HVH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 28 Apr 2021 18:16:02 -0400
-Received: by mail-oo1-f52.google.com with SMTP id e9-20020a4ada090000b02901f91091e5acso2162618oou.0;
-        Wed, 28 Apr 2021 15:15:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=gYgk6AJrAYzNx39r/XzjJt1ApfnhLWc9A/uBhzNpze4=;
-        b=H6ZLOvmWBwqKmzA/ixZNzWc2BLcpYJg7abevlAGzxXqk0OdCdOT4x4BD7G/ma8MgN2
-         AnGEhS91OV/33bJ07WFU0ZCr9Eo6T1fibilt6eMQlwPcscQ04pWDpL7TWma1nFl3fnp3
-         RN/nX/AqxtyzJXOGV5nRoiXcV8H2YCXrRKz4i93N+KGuK3coHORarQva+DOOr9JTeS3I
-         1qex8m8VAt+i7DFASSXXQ1oOv3GT5RT2+pGBs5PXTnsa227N27CmoZmq1iOxGqihYJ/S
-         ksGfNJMj7DA/F1XTFwsjTQ8CJu1mvMjeWSbATZ6cDgbrtpI3jUJwy0+DJAfrDyA9XDiy
-         /hdQ==
-X-Gm-Message-State: AOAM530gJeLwg0+tLMGodeqHothMBCxFRHO2YGwckVLj00pvdRsnSMZf
-        DLiWvOAMK2FOxybebZdtjkAyjShLZw==
-X-Google-Smtp-Source: ABdhPJxZArFwbVeIF8l00TfdHEC2VcZYpSALlJgxSt21DhqXruJlYIhnGLdMAytU4YnTNvOcFrdcCw==
-X-Received: by 2002:a05:6820:381:: with SMTP id r1mr24594188ooj.79.1619648115937;
-        Wed, 28 Apr 2021 15:15:15 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id w2sm284666oov.23.2021.04.28.15.15.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Apr 2021 15:15:15 -0700 (PDT)
-Received: (nullmailer pid 4061033 invoked by uid 1000);
-        Wed, 28 Apr 2021 22:15:09 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     cl@rock-chips.com
-Cc:     david.wu@rock-chips.com, jagan@amarulasolutions.com,
-        linux-kernel@vger.kernel.org, jay.xu@rock-chips.com,
-        jamie@jamieiles.com, ulf.hansson@linaro.org,
-        jensenhuang@friendlyarm.com, linux-serial@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        gregkh@linuxfoundation.org, huangtao@rock-chips.com,
-        mail@david-bauer.net, linux@roeck-us.net,
-        devicetree@vger.kernel.org, heiko@sntech.de, cnsztl@gmail.com,
-        wim@linux-watchdog.org, michael@amarulasolutions.com,
-        zhangqing@rock-chips.com, maz@kernel.org, robh+dt@kernel.org,
-        uwe@kleine-koenig.org, shawn.lin@rock-chips.com,
-        linux-mmc@vger.kernel.org, jbx6244@gmail.com,
-        linux-arm-kernel@lists.infradead.org, wens@csie.org,
-        linux-rockchip@lists.infradead.org
-In-Reply-To: <20210428134938.22383-1-cl@rock-chips.com>
-References: <20210428134759.22076-1-cl@rock-chips.com> <20210428134938.22383-1-cl@rock-chips.com>
-Subject: Re: [PATCH v3 07/10] dt-bindings: soc: rockchip: Convert grf.txt to YAML
-Date:   Wed, 28 Apr 2021 17:15:09 -0500
-Message-Id: <1619648109.786418.4061032.nullmailer@robh.at.kernel.org>
+        Thu, 29 Apr 2021 03:21:07 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13T79B0X057234;
+        Thu, 29 Apr 2021 07:19:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=jsdn4YxHgm56M3A35OuWefg0AHZp+MPWhQ4rZ6Il2VA=;
+ b=iWkQenwG3/viiiDGAbizIcboIyUDMZseD9BDr6CmT5ZUS+GtREm9R/z621iNvtUl7GPp
+ 4RZWaCkGR0nObiIeFnCIkhYfSBvLz/rvJxPMdR0px2CyG1wnk9JWRdQgp8W0N1t2UHmT
+ ErKAkD1EASHjpzxrNSkNQ8Ljre8BSHeWFQz9Ld889bWeG88vW+pGnbWBlWTDqQrgEs63
+ UoW8Q2z3p0Oa2rl6bUBD/UyF5aWDbUMxSxZi3SIA4KcRblUXRF6Csrcf7TMGTBAlULSS
+ A6QJLy+KypqOUlIoLfzJB6BAhUcP+qyN71C2+6S9rT0zzAyMsxYFwu30APIMjxuQKqCs Ig== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 385afq3as3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 29 Apr 2021 07:19:34 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13T7Eo5i105983;
+        Thu, 29 Apr 2021 07:19:33 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 3874d34xxt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 29 Apr 2021 07:19:33 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 13T7JXcx123631;
+        Thu, 29 Apr 2021 07:19:33 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 3874d34xxb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 29 Apr 2021 07:19:33 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 13T7JW1p010053;
+        Thu, 29 Apr 2021 07:19:32 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 29 Apr 2021 07:19:31 +0000
+Date:   Thu, 29 Apr 2021 10:19:22 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH] serial: 8250_omap: fix a timeout loop condition
+Message-ID: <YIpd+kOpXKMpEXPf@mwanda>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-ORIG-GUID: DuMRfTpx1w-bLUMeQFEqUvhKOVz6spGf
+X-Proofpoint-GUID: DuMRfTpx1w-bLUMeQFEqUvhKOVz6spGf
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9968 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 phishscore=0
+ clxscore=1011 suspectscore=0 lowpriorityscore=0 mlxlogscore=999 mlxscore=0
+ adultscore=0 malwarescore=0 impostorscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
+ definitions=main-2104290052
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 28 Apr 2021 21:49:38 +0800, cl@rock-chips.com wrote:
-> From: Liang Chen <cl@rock-chips.com>
-> 
-> Current dts files with 'grf' nodes are manually verified. In order to
-> automate this process grf.txt has to be converted to YAML.
-> 
-> Signed-off-by: Liang Chen <cl@rock-chips.com>
-> ---
->  .../devicetree/bindings/soc/rockchip/grf.txt  | 61 -------------------
->  .../devicetree/bindings/soc/rockchip/grf.yaml | 61 +++++++++++++++++++
->  2 files changed, 61 insertions(+), 61 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/soc/rockchip/grf.txt
->  create mode 100644 Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-> 
+This loop ends on -1 so the error message will never be printed.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Fixes: 4bcf59a5dea0 ("serial: 8250: 8250_omap: Account for data in flight during DMA teardown")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/tty/serial/8250/8250_omap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/rockchip/grf.example.dt.yaml: example-0: syscon@ff320000:reg:0: [0, 4281466880, 0, 4096] is too long
-	From schema: /usr/local/lib/python3.8/dist-packages/dtschema/schemas/reg.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/rockchip/grf.example.dt.yaml: example-0: syscon@ff770000:reg:0: [0, 4285988864, 0, 65536] is too long
-	From schema: /usr/local/lib/python3.8/dist-packages/dtschema/schemas/reg.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/rockchip/grf.example.dt.yaml: syscon@ff320000: compatible: 'oneOf' conditional failed, one must be fixed:
-	['rockchip,rk3399-pmugrf', 'syscon'] is too short
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/rockchip/grf.example.dt.yaml: syscon@ff770000: compatible: 'oneOf' conditional failed, one must be fixed:
-	['rockchip,rk3399-grf', 'syscon'] is too short
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-
-See https://patchwork.ozlabs.org/patch/1471171
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 8ac11eaeca51..c06631ced414 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -813,7 +813,7 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
+ 			       poll_count--)
+ 				cpu_relax();
+ 
+-			if (!poll_count)
++			if (poll_count == -1)
+ 				dev_err(p->port.dev, "teardown incomplete\n");
+ 		}
+ 	}
+-- 
+2.30.2
 
