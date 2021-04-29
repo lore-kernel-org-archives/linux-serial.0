@@ -2,114 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A66CC433B4
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Apr 2021 13:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21367C43470
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Apr 2021 15:25:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D7D1561412
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Apr 2021 13:02:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ED6C961453
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Apr 2021 15:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237084AbhD2NDW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Apr 2021 09:03:22 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:32812 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235908AbhD2NDV (ORCPT
+        id S240730AbhD2P0J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Apr 2021 11:26:09 -0400
+Received: from mail-ot1-f43.google.com ([209.85.210.43]:45970 "EHLO
+        mail-ot1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240701AbhD2P0I (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Apr 2021 09:03:21 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13TCrsPb035744;
-        Thu, 29 Apr 2021 13:02:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=PUbBZFANnYgrmsWuJ7c5DcJF0vbBKduw7Jos4IZXzNo=;
- b=m3zZlOynBIWN0xAPpNRKhZjpWbbX3rC0DUJGa0pIVd3//sxGUFK57i8g9bOaJ8ZlQ94N
- 0vImIg+8IRlBM8303aLm4irJx7z6XwJP3YwkVo/eVrV8TdD5p2SP6/9VD8BA8g1mXP5Y
- 2JqwEYXFaWh6fpdBMBZmvOHWiCSapc0aVK5zGLftSfAPqAvMm3aKYDkXmn8nrCV6S3GA
- 4INhYptuIVew9kDD8EFa/NLasv6rhIOzzMPe2oD31yFOUY7h9VQb6Nz/q92oBBlxeGd2
- cX3WqyJbkZuBtHHCbKlOOX+5mq4mQWLLIaOEYp4AIOdv8hfErO/tJTdqYdKr/AWNuEru XQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 385aeq49xx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 29 Apr 2021 13:02:27 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13TD0gAb075552;
-        Thu, 29 Apr 2021 13:02:27 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 384w3w7qbf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 29 Apr 2021 13:02:27 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 13TD1agY083310;
-        Thu, 29 Apr 2021 13:02:26 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 384w3w7qaq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 29 Apr 2021 13:02:26 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 13TD2OcK026096;
-        Thu, 29 Apr 2021 13:02:24 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 29 Apr 2021 06:02:23 -0700
-Date:   Thu, 29 Apr 2021 16:02:15 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_omap: fix a timeout loop condition
-Message-ID: <20210429130215.GE21598@kadam>
-References: <YIpd+kOpXKMpEXPf@mwanda>
- <YIqTvcZ6ZrAEL7WE@smile.fi.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YIqTvcZ6ZrAEL7WE@smile.fi.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-ORIG-GUID: DEp-argMsqBGSET_3R9q8vaAqWFTFDD7
-X-Proofpoint-GUID: DEp-argMsqBGSET_3R9q8vaAqWFTFDD7
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9969 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 impostorscore=0
- phishscore=0 spamscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0
- clxscore=1015 suspectscore=0 malwarescore=0 mlxlogscore=999
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104290088
+        Thu, 29 Apr 2021 11:26:08 -0400
+Received: by mail-ot1-f43.google.com with SMTP id f75-20020a9d03d10000b0290280def9ab76so56582774otf.12;
+        Thu, 29 Apr 2021 08:25:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=i0xoMhXwtne9LnlYePyFNsxRYqWjGV7vCqvSAINSLGU=;
+        b=RfEp4CUW0pqNhQDpLk/Aq1jI/lMXjcOSpVw2PNUm/v6ssViZcYx3H2OTWqnAo1iPVx
+         OdvpVeobtSgynEGy/Alr9BKJ9HW28RtR+hOfQf/kWp9I4ga8VqV4G4BoXHU9EIJg0muA
+         vl7fi314upJtnjUtf2CO6DDjdTa9THhJHwoivVL48j2psGIf6MXZyaOpXUa1ZJbp99px
+         g6ufrymb8/b3Ck4DSfibNsk4J9UVsMI3Rs2dvixvhVu788UZevMwVlhJnpINmt9ovP9Y
+         1t4TUcgveT5YFB1pW0vEYEV9kEU31kqOvWdnV4Z/50efMDbhGSWXJScROVwTAWVM4tgk
+         q2fA==
+X-Gm-Message-State: AOAM533JTZt9RffmYM3oNuX4OMo9BxV5DOPUR9qpZl255bB4CfqIFj53
+        /9L5zewyNS5ucZBCgqIO0w==
+X-Google-Smtp-Source: ABdhPJxEU28Uo1HsSxBn20WvETdomdWerhn4crR+liE7z6I2O6zQ+ZVGdv7UMW7On1mtAFTke7piXQ==
+X-Received: by 2002:a05:6830:2456:: with SMTP id x22mr28339399otr.262.1619709920279;
+        Thu, 29 Apr 2021 08:25:20 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id m5sm25975ots.13.2021.04.29.08.25.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Apr 2021 08:25:19 -0700 (PDT)
+Received: (nullmailer pid 1303438 invoked by uid 1000);
+        Thu, 29 Apr 2021 15:25:15 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     cl@rock-chips.com
+Cc:     zhangqing@rock-chips.com, uwe@kleine-koenig.org, heiko@sntech.de,
+        jensenhuang@friendlyarm.com, devicetree@vger.kernel.org,
+        linux@roeck-us.net, michael@amarulasolutions.com,
+        linux-watchdog@vger.kernel.org, jay.xu@rock-chips.com,
+        mail@david-bauer.net, linux-rockchip@lists.infradead.org,
+        wens@csie.org, linux-serial@vger.kernel.org,
+        ulf.hansson@linaro.org, jamie@jamieiles.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        robh+dt@kernel.org, jbx6244@gmail.com, linux-i2c@vger.kernel.org,
+        wim@linux-watchdog.org, shawn.lin@rock-chips.com,
+        jagan@amarulasolutions.com, david.wu@rock-chips.com,
+        cnsztl@gmail.com, gregkh@linuxfoundation.org,
+        huangtao@rock-chips.com, maz@kernel.org, linux-mmc@vger.kernel.org
+In-Reply-To: <20210429081321.17855-1-cl@rock-chips.com>
+References: <20210429081151.17558-1-cl@rock-chips.com> <20210429081321.17855-1-cl@rock-chips.com>
+Subject: Re: [PATCH v4 07/10] dt-bindings: soc: rockchip: Convert grf.txt to YAML
+Date:   Thu, 29 Apr 2021 10:25:15 -0500
+Message-Id: <1619709915.260424.1303436.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 29, 2021 at 02:08:45PM +0300, Andy Shevchenko wrote:
-> On Thu, Apr 29, 2021 at 10:19:22AM +0300, Dan Carpenter wrote:
-> > This loop ends on -1 so the error message will never be printed.
-> > 
-> > Fixes: 4bcf59a5dea0 ("serial: 8250: 8250_omap: Account for data in flight during DMA teardown")
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+On Thu, 29 Apr 2021 16:13:21 +0800, cl@rock-chips.com wrote:
+> From: Liang Chen <cl@rock-chips.com>
 > 
-> ...
+> Current dts files with 'grf' nodes are manually verified. In order to
+> automate this process grf.txt has to be converted to YAML.
 > 
-> >  			       poll_count--)
-> >  				cpu_relax();
-> >  
-> > -			if (!poll_count)
-> > +			if (poll_count == -1)
+> Add new descriptions for:
+> "rockchip,rk3568-grf", "syscon", "simple-mfd"
+> "rockchip,rk3568-pmugrf", "syscon", "simple-mfd"
 > 
-> Why not to change poll_count-- to --poll_count?
->
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
+> ---
+>  .../devicetree/bindings/soc/rockchip/grf.txt  | 61 -------------------
+>  .../devicetree/bindings/soc/rockchip/grf.yaml | 60 ++++++++++++++++++
+>  2 files changed, 60 insertions(+), 61 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/soc/rockchip/grf.txt
+>  create mode 100644 Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+> 
 
-Either one is fine.  I considered several different ways and wrote the
-patch twice.  The downside of --poll_count is that it's an off by one
-in that the author clearly intended to loop 25 times.  It doesn't really
-matter if we only loop 24 but off by ones are aesthetically unpleasant.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-regards,
-dan carpenter
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/rockchip/grf.yaml: properties:compatible: [{'items': [{'enum': ['rockchip,px30-grf', 'rockchip,px30-pmugrf', 'rockchip,px30-usb2phy-grf', 'rockchip,rk3036-grf', 'rockchip,rk3066-grf', 'rockchip,rk3188-grf', 'rockchip,rk3228-grf', 'rockchip,rk3288-grf', 'rockchip,rk3288-sgrf', 'rockchip,rk3308-core-grf', 'rockchip,rk3308-detect-grf', 'rockchip,rk3308-grf', 'rockchip,rk3328-grf', 'rockchip,rk3328-usb2phy-grf', 'rockchip,rk3368-grf', 'rockchip,rk3368-pmugrf', 'rockchip,rk3399-grf', 'rockchip,rk3399-pmugrf', 'rockchip,rk3568-grf', 'rockchip,rk3568-pmugrf', 'rockchip,rv1108-grf', 'rockchip,rv1108-usbgrf']}, {'const': 'syscon'}, {'const': 'simple-mfd'}]}] is not of type 'object', 'boolean'
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/rockchip/grf.yaml: ignoring, error in schema: properties: compatible
+warning: no schema found in file: ./Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+Documentation/devicetree/bindings/soc/rockchip/grf.example.dt.yaml:0:0: /example-0/syscon@ff320000: failed to match any schema with compatible: ['rockchip,rk3399-pmugrf', 'syscon', 'simple-mfd']
+Documentation/devicetree/bindings/soc/rockchip/grf.example.dt.yaml:0:0: /example-0/syscon@ff770000: failed to match any schema with compatible: ['rockchip,rk3399-grf', 'syscon', 'simple-mfd']
+
+See https://patchwork.ozlabs.org/patch/1471595
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
