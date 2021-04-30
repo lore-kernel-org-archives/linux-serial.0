@@ -2,148 +2,131 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F06FC433ED
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 11:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A855C433ED
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 12:37:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 53909613E7
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 11:41:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1CCB061468
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 12:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbhD3LmO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Apr 2021 07:42:14 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:52748 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbhD3LmN (ORCPT
+        id S231856AbhD3Mhy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Apr 2021 08:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231476AbhD3Mhx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Apr 2021 07:42:13 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13UBf04p157245;
-        Fri, 30 Apr 2021 11:41:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=vX7MB4vHpiHW2VmKV1bmxIW4ZneYW0EzTAYlwl34xH8=;
- b=qOy0CLeIPMiCQTKGyW4k85unLvV8QZ0k7JAVGfBSkQ4uOdgMvPZJONdf8Wx5KGEo2fWJ
- HWW+Je5nCAuGYSOQU3ox9/5kVLtp9z5iSoh+DJ4G6iA+7XhnrRPKoe0Hw1AlxNgsnnMr
- H7qdBxp/6C909ga3J1D4DHNASDlEAOXTVJ/4QpS5LcncknxRWTrvtCMDRFZ78mK7mlme
- e6ZQ4ZUt2Iqv7KLJlHTp8dkydt9Q4JRHAEGHXFMq4kS3bAf7NnXbkZm8GdLGB8f4CP3s
- 4oYTWF5+TINolcnmi5iy8ARq3dzv+GQXas2ub3VhGXFty8NIJuWGXPbZUkekcexn/mi7 Ug== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 385aeq7e88-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Apr 2021 11:41:17 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13UBf1kJ101159;
-        Fri, 30 Apr 2021 11:41:16 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 3848f2dut0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Apr 2021 11:41:16 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 13UBfGoD101705;
-        Fri, 30 Apr 2021 11:41:16 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 3848f2dusf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Apr 2021 11:41:16 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 13UBfEtN028047;
-        Fri, 30 Apr 2021 11:41:14 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 30 Apr 2021 04:41:13 -0700
-Date:   Fri, 30 Apr 2021 14:41:06 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 30 Apr 2021 08:37:53 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A849AC06174A;
+        Fri, 30 Apr 2021 05:37:04 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id g65so8619124wmg.2;
+        Fri, 30 Apr 2021 05:37:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=w64guxGS9FMEWcZon3B2qnFpVFodmAXPvDD4UORab6k=;
+        b=R67HR52vRDHFU9oQxAY+dvLc8wXKDQYHj3rYvvz3NlYx3rbcSCoMjFuEd8wKhMooRz
+         wZGbE3QSIFGCjeIy9zlB04qnIVdiwnaqEwPlGKP/7dKv/4DgAnbNlLNbyzOKyU1BZnFb
+         0c/OEdlGTweClDPtTxpw7HlDVrWcWXx/kO1gKGzgOokQhbi3nPxs+nctyzEJdmqe5fzm
+         8HdQEkC0fntaHHzIaO2hQw4QvUGNv2hmwU5C9ysMAjfpNAMpEir1AomtOffu3/WR8QJz
+         y2qXXC+ThRvRU2U/rCJeB7egcj68JpRJ64cy+0iaIRoSHnP+Cdm8IynvG4rCpumgV2bn
+         vAQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=w64guxGS9FMEWcZon3B2qnFpVFodmAXPvDD4UORab6k=;
+        b=FtFIukoCfHpaFiDu2rgrDj9ZPs8Ke0+imC6snugiXGURIasmPbckTou5xpuJb64tQe
+         9LGWHFmhF51PzC3hvr0YWA3p7PEbW1GrESvCLj0UZshDA4LI2jBPqAbrVl4Bg0VyrGDA
+         ap2aVVPzNEggzSceaN2EyKEaml+y1BhqTFcdXepciV3oKvExrnUzK1/HoseKh3rIclJV
+         YJt5NZw6Eery72ngx8at443jpBw5qtA1Wcogytj1K/IAYaqz2Oc1S9VOml7xzku4Pjnm
+         4QAYByNpOSB5pe9Ad4pXR3O6X3jgBI/YOy6X7QbdChj1SolTsSU1rZHHbDyp27Cj5HLm
+         Nc3A==
+X-Gm-Message-State: AOAM533gFrhOCivUpabWEZ6zONDtcizJRCmoAW6sTXILNo07NUVF72qX
+        6qy1HIoNAFxYmZ3njtqexnc=
+X-Google-Smtp-Source: ABdhPJwUrHApqG/2GAxHmuBEFvD+H6a+tok+3Mx8mmgRU3UCynwUKegz2hQbuiA1GSKWK51jcCtm+w==
+X-Received: by 2002:a1c:7fcd:: with SMTP id a196mr16646869wmd.180.1619786223227;
+        Fri, 30 Apr 2021 05:37:03 -0700 (PDT)
+Received: from [192.168.2.202] (p5487bc52.dip0.t-ipconnect.de. [84.135.188.82])
+        by smtp.gmail.com with ESMTPSA id h8sm2953616wmq.19.2021.04.30.05.37.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Apr 2021 05:37:02 -0700 (PDT)
+Subject: Re: Support for AMDI0022 UART
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_omap: fix a timeout loop condition
-Message-ID: <20210430114106.GF1981@kadam>
-References: <YIpd+kOpXKMpEXPf@mwanda>
- <YIqTvcZ6ZrAEL7WE@smile.fi.intel.com>
- <20210429130215.GE21598@kadam>
- <YIvDz7hEhwm66R8G@smile.fi.intel.com>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wang Hongcheng <annie.wang@amd.com>, Ken Xue <Ken.Xue@amd.com>
+References: <295686a0-240d-71d1-a6a0-f3752cf24477@gmail.com>
+ <CAHp75VcLoTsjyQyVAo6cd+HMd+z_irM8ofcenRm0P6CzYGOQNw@mail.gmail.com>
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+Message-ID: <85ec3e9a-e69b-ecd6-3d77-4364064c57a3@gmail.com>
+Date:   Fri, 30 Apr 2021 14:37:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YIvDz7hEhwm66R8G@smile.fi.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-ORIG-GUID: APEHEUW3MzMICozZKzitGgljfX3OoiN_
-X-Proofpoint-GUID: APEHEUW3MzMICozZKzitGgljfX3OoiN_
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9969 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 impostorscore=0
- phishscore=0 spamscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0
- clxscore=1015 suspectscore=0 malwarescore=0 mlxlogscore=999
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104300085
+In-Reply-To: <CAHp75VcLoTsjyQyVAo6cd+HMd+z_irM8ofcenRm0P6CzYGOQNw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 30, 2021 at 11:46:07AM +0300, Andy Shevchenko wrote:
-> On Thu, Apr 29, 2021 at 04:02:15PM +0300, Dan Carpenter wrote:
-> > On Thu, Apr 29, 2021 at 02:08:45PM +0300, Andy Shevchenko wrote:
-> > > On Thu, Apr 29, 2021 at 10:19:22AM +0300, Dan Carpenter wrote:
-> > > > This loop ends on -1 so the error message will never be printed.
-> > > > 
-> > > > Fixes: 4bcf59a5dea0 ("serial: 8250: 8250_omap: Account for data in flight during DMA teardown")
-> > > > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > > 
-> > > ...
-> > > 
-> > > >  			       poll_count--)
-> > > >  				cpu_relax();
-> > > >  
-> > > > -			if (!poll_count)
-> > > > +			if (poll_count == -1)
-> > > 
-> > > Why not to change poll_count-- to --poll_count?
-> > >
-> > 
-> > Either one is fine.  I considered several different ways and wrote the
-> > patch twice.  The downside of --poll_count is that it's an off by one
-> > in that the author clearly intended to loop 25 times.  It doesn't really
-> > matter if we only loop 24 but off by ones are aesthetically unpleasant.
+
+
+On 4/24/21 12:25 PM, Andy Shevchenko wrote:
+> On Fri, Apr 23, 2021 at 10:58 PM Maximilian Luz <luzmaximilian@gmail.com> wrote:
+>>
+>> Hi all,
+>>
+>> I received a report from a Surface Laptop 4 which has a UART that is
+>> identified as AMDI0022 in ACPI [1] and that does not seem to be
+>> supported by the kernel yet.
+>>
+>>   From what I can tell via ACPI, this is similar to the AMDI0020 [2] UART
+>> that's already supported by the kernel (well, both are devices with two
+>> MMIO regions and an interrupt as far as I can tell...). So it's possible
+>> that all that's needed is adding it to the respective device ID lists
+>> [3, 4]. Unfortunately, I a) don't have a device to test this myself, b)
+>> haven't found any more details on that online, and c) don't want to tell
+>> others to test this without knowing a bit more about that (potentially
+>> writing random stuff to some unknown MMIO region that I don't know
+>> anything about doesn't sound as safe to me as I'd like).
 > 
-> I didn't get. If you use --poll_count you get exactly 25 times and moreover,
-> you may convert variable to unsigned type.
-> 
+> To me they look completely the same. Depending on the device which is
+> connected to the UART, I would suggest just to add an ID and see if it
+> makes it work.
 
-Here is a small test to show that it loops 24 times.
+Thanks! We've tried that now and we do have some progress, meaning that
+the serial device seems to work as expected (we have some basic
+communication working).
 
-#include <stdio.h>
+The driver that we want to load (drivers/platform/surface/aggregator/)
+still doesn't quite load yet, but that now seems to be due to a missing
+GPIO driver for an AMDI0031 device. There's again an AMDI0030 in
+drivers/pinctrl/pinctrl-amd.c, but this time the definitions do seem a
+bit different (compare [5, 6]), specifically there are now two memory
+regions (altough the combined size is still the same).
 
-int main(void)
-{
-        int i = 25;
+I'll try to have a look around and maybe ping the linux-gpio list if I
+don't find anything else. I'll post some patches once we've got the
+driver loading properly and can run some more tests.
 
-        while (--i)
-                printf("%d\n", i);
+Regards,
+Max
 
-        return 0;
-}
+[5]: AMDI0030 on Surface Laptop 3
+https://github.com/linux-surface/acpidumps/blob/4da0148744164cea0c924dab92f45842fde03177/surface_laptop_3_amd/dsdt.dsl#L1767-L1802
 
-gcc test.c
-./a.out | tac
-
-Why would I make it unsigned?  As a static analysis developer,
-pointlessly unsigned variables are one of the leading causes for the
-bugs I see.
-
-There are times where a iterator counter needs to be unsigned long, or
-u64 but I have never seen a case where changing an iterator from
-"int i;" to "unsigned int i;" solves a real life kernel bug.  It only
-introduces bugs.
-
-regards,
-dan carpenter
-
+[6]: AMDI0031 on Surface Laptop 4
+https://github.com/linux-surface/acpidumps/blob/4da0148744164cea0c924dab92f45842fde03177/surface_laptop_4_amd/dsdt.dsl#L1404-L1428
