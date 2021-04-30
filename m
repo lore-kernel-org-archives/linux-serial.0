@@ -2,222 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8EBC43461
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 00:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7671C433ED
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 08:46:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 65D3B613EA
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 00:57:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9CA5E611F1
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 08:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229753AbhD3A6L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Apr 2021 20:58:11 -0400
-Received: from lucky1.263xmail.com ([211.157.147.134]:34590 "EHLO
-        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbhD3A6K (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Apr 2021 20:58:10 -0400
-Received: from localhost (unknown [192.168.167.235])
-        by lucky1.263xmail.com (Postfix) with ESMTP id AB885C8384;
-        Fri, 30 Apr 2021 08:57:13 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-ANTISPAM-LEVEL: 2
-X-ABS-CHECKED: 0
-Received: from localhost.localdomain (unknown [58.22.7.114])
-        by smtp.263.net (postfix) whith ESMTP id P2750T140649254856448S1619744230489242_;
-        Fri, 30 Apr 2021 08:57:12 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <c119bfe221fbe0f0567aca69b659593d>
-X-RL-SENDER: cl@rock-chips.com
-X-SENDER: cl@rock-chips.com
-X-LOGIN-NAME: cl@rock-chips.com
-X-FST-TO: heiko@sntech.de
-X-RCPT-COUNT: 30
-X-SENDER-IP: 58.22.7.114
-X-ATTACHMENT-NUM: 0
-X-System-Flag: 0
-From:   <cl@rock-chips.com>
-To:     heiko@sntech.de
-Cc:     robh+dt@kernel.org, jagan@amarulasolutions.com, wens@csie.org,
-        uwe@kleine-koenig.org, mail@david-bauer.net, jbx6244@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
-        cnsztl@gmail.com, devicetree@vger.kernel.org,
-        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
-        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
-        zhangqing@rock-chips.com, huangtao@rock-chips.com,
-        cl@rock-chips.com, wim@linux-watchdog.org, linux@roeck-us.net,
-        jamie@jamieiles.com, linux-watchdog@vger.kernel.org, maz@kernel.org
-Subject: [RESEND PATCH v4 07/10] dt-bindings: soc: rockchip: Convert grf.txt to YAML
-Date:   Fri, 30 Apr 2021 08:57:08 +0800
-Message-Id: <20210430005708.1821-1-cl@rock-chips.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210429081151.17558-1-cl@rock-chips.com>
-References: <20210429081151.17558-1-cl@rock-chips.com>
+        id S229818AbhD3IrA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Apr 2021 04:47:00 -0400
+Received: from mga02.intel.com ([134.134.136.20]:25450 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229553AbhD3IrA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 30 Apr 2021 04:47:00 -0400
+IronPort-SDR: rl9EuctNWa1a+uF7b1dsCVuTLDiW5SRjn+SFln4gabczfWHZ3lJSjEv3wvhVZAPgxfLvVonyZ4
+ IIwJJ4Z+ggOg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9969"; a="184362707"
+X-IronPort-AV: E=Sophos;i="5.82,262,1613462400"; 
+   d="scan'208";a="184362707"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2021 01:46:11 -0700
+IronPort-SDR: 1OOT8sk2riVu0vSAISkTQ+grCeHvE75bHlliQ9XCSiMxQ/93myYNMuPvxpS1zXeo39B/UhB/GB
+ gdvjpoVTnewQ==
+X-IronPort-AV: E=Sophos;i="5.82,262,1613462400"; 
+   d="scan'208";a="459269872"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2021 01:46:09 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1lcOml-008NBg-5T; Fri, 30 Apr 2021 11:46:07 +0300
+Date:   Fri, 30 Apr 2021 11:46:07 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_omap: fix a timeout loop condition
+Message-ID: <YIvDz7hEhwm66R8G@smile.fi.intel.com>
+References: <YIpd+kOpXKMpEXPf@mwanda>
+ <YIqTvcZ6ZrAEL7WE@smile.fi.intel.com>
+ <20210429130215.GE21598@kadam>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210429130215.GE21598@kadam>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Liang Chen <cl@rock-chips.com>
+On Thu, Apr 29, 2021 at 04:02:15PM +0300, Dan Carpenter wrote:
+> On Thu, Apr 29, 2021 at 02:08:45PM +0300, Andy Shevchenko wrote:
+> > On Thu, Apr 29, 2021 at 10:19:22AM +0300, Dan Carpenter wrote:
+> > > This loop ends on -1 so the error message will never be printed.
+> > > 
+> > > Fixes: 4bcf59a5dea0 ("serial: 8250: 8250_omap: Account for data in flight during DMA teardown")
+> > > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > 
+> > ...
+> > 
+> > >  			       poll_count--)
+> > >  				cpu_relax();
+> > >  
+> > > -			if (!poll_count)
+> > > +			if (poll_count == -1)
+> > 
+> > Why not to change poll_count-- to --poll_count?
+> >
+> 
+> Either one is fine.  I considered several different ways and wrote the
+> patch twice.  The downside of --poll_count is that it's an off by one
+> in that the author clearly intended to loop 25 times.  It doesn't really
+> matter if we only loop 24 but off by ones are aesthetically unpleasant.
 
-Current dts files with 'grf' nodes are manually verified. In order to
-automate this process grf.txt has to be converted to YAML.
+I didn't get. If you use --poll_count you get exactly 25 times and moreover,
+you may convert variable to unsigned type.
 
-Add new descriptions for:
-"rockchip,rk3568-grf", "syscon", "simple-mfd"
-"rockchip,rk3568-pmugrf", "syscon", "simple-mfd"
 
-Signed-off-by: Liang Chen <cl@rock-chips.com>
----
- .../devicetree/bindings/soc/rockchip/grf.txt  | 61 -------------------
- .../devicetree/bindings/soc/rockchip/grf.yaml | 60 ++++++++++++++++++
- 2 files changed, 60 insertions(+), 61 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/soc/rockchip/grf.txt
- create mode 100644 Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-
-diff --git a/Documentation/devicetree/bindings/soc/rockchip/grf.txt b/Documentation/devicetree/bindings/soc/rockchip/grf.txt
-deleted file mode 100644
-index f96511aa3897..000000000000
---- a/Documentation/devicetree/bindings/soc/rockchip/grf.txt
-+++ /dev/null
-@@ -1,61 +0,0 @@
--* Rockchip General Register Files (GRF)
--
--The general register file will be used to do static set by software, which
--is composed of many registers for system control.
--
--From RK3368 SoCs, the GRF is divided into two sections,
--- GRF, used for general non-secure system,
--- SGRF, used for general secure system,
--- PMUGRF, used for always on system
--
--On RK3328 SoCs, the GRF adds a section for USB2PHYGRF,
--
--ON RK3308 SoC, the GRF is divided into four sections:
--- GRF, used for general non-secure system,
--- SGRF, used for general secure system,
--- DETECTGRF, used for audio codec system,
--- COREGRF, used for pvtm,
--
--Required Properties:
--
--- compatible: GRF should be one of the following:
--   - "rockchip,px30-grf", "syscon": for px30
--   - "rockchip,rk3036-grf", "syscon": for rk3036
--   - "rockchip,rk3066-grf", "syscon": for rk3066
--   - "rockchip,rk3188-grf", "syscon": for rk3188
--   - "rockchip,rk3228-grf", "syscon": for rk3228
--   - "rockchip,rk3288-grf", "syscon": for rk3288
--   - "rockchip,rk3308-grf", "syscon": for rk3308
--   - "rockchip,rk3328-grf", "syscon": for rk3328
--   - "rockchip,rk3368-grf", "syscon": for rk3368
--   - "rockchip,rk3399-grf", "syscon": for rk3399
--   - "rockchip,rv1108-grf", "syscon": for rv1108
--- compatible: DETECTGRF should be one of the following:
--   - "rockchip,rk3308-detect-grf", "syscon": for rk3308
--- compatilbe: COREGRF should be one of the following:
--   - "rockchip,rk3308-core-grf", "syscon": for rk3308
--- compatible: PMUGRF should be one of the following:
--   - "rockchip,px30-pmugrf", "syscon": for px30
--   - "rockchip,rk3368-pmugrf", "syscon": for rk3368
--   - "rockchip,rk3399-pmugrf", "syscon": for rk3399
--- compatible: SGRF should be one of the following:
--   - "rockchip,rk3288-sgrf", "syscon": for rk3288
--- compatible: USB2PHYGRF should be one of the following:
--   - "rockchip,px30-usb2phy-grf", "syscon": for px30
--   - "rockchip,rk3328-usb2phy-grf", "syscon": for rk3328
--- compatible: USBGRF should be one of the following:
--   - "rockchip,rv1108-usbgrf", "syscon": for rv1108
--- reg: physical base address of the controller and length of memory mapped
--  region.
--
--Example: GRF and PMUGRF of RK3399 SoCs
--
--	pmugrf: syscon@ff320000 {
--		compatible = "rockchip,rk3399-pmugrf", "syscon";
--		reg = <0x0 0xff320000 0x0 0x1000>;
--	};
--
--	grf: syscon@ff770000 {
--		compatible = "rockchip,rk3399-grf", "syscon";
--		reg = <0x0 0xff770000 0x0 0x10000>;
--	};
-diff --git a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-new file mode 100644
-index 000000000000..21a67b9ae59c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-@@ -0,0 +1,60 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/soc/rockchip/grf.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Rockchip General Register Files
-+
-+maintainers:
-+  - Heiko Stuebner <heiko@sntech.de>
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - rockchip,px30-grf
-+          - rockchip,px30-pmugrf
-+          - rockchip,px30-usb2phy-grf
-+          - rockchip,rk3036-grf
-+          - rockchip,rk3066-grf
-+          - rockchip,rk3188-grf
-+          - rockchip,rk3228-grf
-+          - rockchip,rk3288-grf
-+          - rockchip,rk3288-sgrf
-+          - rockchip,rk3308-core-grf
-+          - rockchip,rk3308-detect-grf
-+          - rockchip,rk3308-grf
-+          - rockchip,rk3328-grf
-+          - rockchip,rk3328-usb2phy-grf
-+          - rockchip,rk3368-grf
-+          - rockchip,rk3368-pmugrf
-+          - rockchip,rk3399-grf
-+          - rockchip,rk3399-pmugrf
-+          - rockchip,rk3568-grf
-+          - rockchip,rk3568-pmugrf
-+          - rockchip,rv1108-grf
-+          - rockchip,rv1108-usbgrf
-+      - const: syscon
-+      - const: simple-mfd
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pmugrf: syscon@ff320000 {
-+       compatible = "rockchip,rk3399-pmugrf", "syscon", "simple-mfd";
-+       reg = <0xff320000 0x1000>;
-+    };
-+
-+    grf: syscon@ff770000 {
-+       compatible = "rockchip,rk3399-grf", "syscon", "simple-mfd";
-+       reg = <0xff770000 0x10000>;
-+    };
 -- 
-2.17.1
-
+With Best Regards,
+Andy Shevchenko
 
 
