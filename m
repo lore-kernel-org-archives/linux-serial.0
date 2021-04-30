@@ -2,103 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0AFC433ED
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 14:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC535C433B4
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 15:18:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2CDC4613B1
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 14:22:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A56186144B
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 15:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232618AbhD3OWz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Apr 2021 10:22:55 -0400
-Received: from mga11.intel.com ([192.55.52.93]:32458 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233643AbhD3OWm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Apr 2021 10:22:42 -0400
-IronPort-SDR: MzVU4T/8RWyoNW85L4hsniUSbFeV8zTrJ5HeRTnpnd92VdhE2P+ZQtl0wmkJRJNelFv5vR/aRn
- fRPVX5PuwREQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9970"; a="194100812"
-X-IronPort-AV: E=Sophos;i="5.82,262,1613462400"; 
-   d="scan'208";a="194100812"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2021 07:21:29 -0700
-IronPort-SDR: FNVo5blX8sd1q0Ytx0H2GN/SyMLUegL2xLEixJMX11Tl++cHnQu9pce4pwNLbIrdbbM2W2lMli
- ku+0YGOtl9mg==
-X-IronPort-AV: E=Sophos;i="5.82,262,1613462400"; 
-   d="scan'208";a="459453558"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2021 07:21:27 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1lcU1E-008R4w-Or; Fri, 30 Apr 2021 17:21:24 +0300
-Date:   Fri, 30 Apr 2021 17:21:24 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
+        id S230106AbhD3PTQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Apr 2021 11:19:16 -0400
+Received: from mail-oi1-f173.google.com ([209.85.167.173]:40753 "EHLO
+        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229934AbhD3PTQ (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 30 Apr 2021 11:19:16 -0400
+Received: by mail-oi1-f173.google.com with SMTP id u16so53015140oiu.7;
+        Fri, 30 Apr 2021 08:18:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5384NKLEMU9HGIIjdN+H7n8KjDIELf2F9qcnO+c7HQk=;
+        b=kZI94bYTL6B0xEsuUo4MzDG+KZhV3nANmNAKO3p6BK9BYc+WmUfhEbKYM9PZzlZncS
+         jQ/8DOTIvjqa2j0HeOn8xz499+a3wUt08tJGKLP8BQBTucB2PrEmus0aDxDZ5cpqCXD0
+         1Kc9X9HJ20IYDy9KrualXs5OSW8iIhXsk18o3i3DjSOWQXzOUJIF0LMbfFjUGHz8/2pk
+         61IJaQVRgPrRwni3PWLt2vGHLeXlP849B9u0JET/3w747UbOQJIawxryiB+nTKomW1ea
+         6xCkqMpeKOJQf4wjoq2DKk3ILXijqfwLOD2+4Td0TkYMWil1NDD9ocV2QarEVLnVZgw8
+         aYig==
+X-Gm-Message-State: AOAM531ZMIL32hgtDT8OvkYnmVHPNdrUNztPIXNZNGTuuKyq9KPi1e7/
+        gbZ3OyeuimY/uGEZm/Zxkg==
+X-Google-Smtp-Source: ABdhPJwf/WD6axTKKyPNM4Yg1tES5AKc0U4Su/y1wYHek1a1jZozdjSNj0RN7KnSbGcODI1u/dhz7Q==
+X-Received: by 2002:a05:6808:13cf:: with SMTP id d15mr1747186oiw.11.1619795907672;
+        Fri, 30 Apr 2021 08:18:27 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id p22sm824449otf.25.2021.04.30.08.18.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Apr 2021 08:18:26 -0700 (PDT)
+Received: (nullmailer pid 3343637 invoked by uid 1000);
+        Fri, 30 Apr 2021 15:18:25 -0000
+Date:   Fri, 30 Apr 2021 10:18:25 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_omap: fix a timeout loop condition
-Message-ID: <YIwSZGE76f2ZJyyf@smile.fi.intel.com>
-References: <YIpd+kOpXKMpEXPf@mwanda>
- <YIqTvcZ6ZrAEL7WE@smile.fi.intel.com>
- <20210429130215.GE21598@kadam>
- <YIvDz7hEhwm66R8G@smile.fi.intel.com>
- <20210430114106.GF1981@kadam>
- <YIv92DBnaVotWd9Y@smile.fi.intel.com>
- <20210430133329.GH1981@kadam>
+        linux-serial <linux-serial@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/3] dt-bindings: serial: Normalize the node name of
+ the serial port
+Message-ID: <20210430151825.GA3339934@robh.at.kernel.org>
+References: <20210422085837.513-1-thunder.leizhen@huawei.com>
+ <20210422085837.513-2-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210430133329.GH1981@kadam>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20210422085837.513-2-thunder.leizhen@huawei.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 30, 2021 at 04:33:29PM +0300, Dan Carpenter wrote:
-> On Fri, Apr 30, 2021 at 03:53:44PM +0300, Andy Shevchenko wrote:
-> > On Fri, Apr 30, 2021 at 02:41:06PM +0300, Dan Carpenter wrote:
-> > > On Fri, Apr 30, 2021 at 11:46:07AM +0300, Andy Shevchenko wrote:
-
-...
-
-> > > Why would I make it unsigned?  As a static analysis developer,
-> > > pointlessly unsigned variables are one of the leading causes for the
-> > > bugs I see.
-> > > 
-> > > There are times where a iterator counter needs to be unsigned long, or
-> > > u64 but I have never seen a case where changing an iterator from
-> > > "int i;" to "unsigned int i;" solves a real life kernel bug.  It only
-> > > introduces bugs.
-> > 
-> > See my followup to that, I meant
-> > 
-> > unsigned int count;
-> > 
-> > do {
-> > 	...
-> > } while (--count);
-> > 
-> > It doesn't solve bug, but prevents the code be read incorrectly like what you
-> > are fixing can be avoided with do {} while (); along with unsigned type.
+On Thu, Apr 22, 2021 at 04:58:35PM +0800, Zhen Lei wrote:
+> Only letters, digits, and commas that describe the base address of the
+> serial port in hexadecimal format are allowed.
 > 
-> Why would you use an unsigned int for this???
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  Documentation/devicetree/bindings/serial/serial.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
+> index 65e75d040521..71aec7fda07d 100644
+> --- a/Documentation/devicetree/bindings/serial/serial.yaml
+> +++ b/Documentation/devicetree/bindings/serial/serial.yaml
+> @@ -21,7 +21,7 @@ description:
+>  
+>  properties:
+>    $nodename:
+> -    pattern: "^serial(@.*)?$"
+> +    pattern: "^serial(@[0-9a-f,]+)?$"
 
-Why it should be signed? You clearly show the amount of iterations. Check for
-null I guess even compact in the assembly in comparison to -1.
+The format of unit-addresses is dictated by the bus (parent), so this is 
+the wrong place to enforce this. 
 
-I do not see any point why it should be signed. For what purpose?
-
-It's a *down* counter.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Rob
