@@ -2,171 +2,218 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A422C43460
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 17:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A2BC433ED
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 20:29:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BF2CF61458
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 17:50:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B8E926145D
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 20:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231314AbhD3Rvi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Apr 2021 13:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
+        id S235890AbhD3U37 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Apr 2021 16:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231211AbhD3Rvh (ORCPT
+        with ESMTP id S234471AbhD3U37 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Apr 2021 13:51:37 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BAFC06138B;
-        Fri, 30 Apr 2021 10:50:48 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: sre)
-        with ESMTPSA id 21C1E1F43C65
-Received: by jupiter.universe (Postfix, from userid 1000)
-        id F35124800C3; Fri, 30 Apr 2021 19:50:44 +0200 (CEST)
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Ian Ray <ian.ray@ge.com>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, kernel@collabora.com
-Subject: [PATCHv5 1/2] serial: imx: Add DMA buffer configuration via DT
-Date:   Fri, 30 Apr 2021 19:50:37 +0200
-Message-Id: <20210430175038.103226-2-sebastian.reichel@collabora.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210430175038.103226-1-sebastian.reichel@collabora.com>
-References: <20210430175038.103226-1-sebastian.reichel@collabora.com>
+        Fri, 30 Apr 2021 16:29:59 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C31EC06174A;
+        Fri, 30 Apr 2021 13:29:10 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id n2so107086455ejy.7;
+        Fri, 30 Apr 2021 13:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Wrp/1A4Vx3OcbB2pr/PEDNHt/zuDZ0QGymHwI8CKIHg=;
+        b=EY+IEzBUu9oW5ND5WvGXq8irviGV51BVZB/O3Zuztl09Q1rCW+7Ytf+kbvQ8J/IONX
+         sa5FRjyjdK7CfM7edv5v87pTGvSmtSQhm/I9n/IFA6ydKhNL6Pdy4S7zNIWx3F5XKMh4
+         QqQYDMQ4KB08czfy3KaNmEagCc92tSObszTsL7tWA9k1Rm/bt/u17BnmBG3fF2J1dwok
+         rDWwmQvPFWagsI4tIfva00Jqe4fYsPb56e+ZqYE/EDGbUVI0Pd0mayzLN8H4j3z7lFKg
+         H3PpdOHA4dygCIzqWgRCYQBdIVQTC1H7N0gtUv0BcKjlu+mONsymqkgR3tItKiXoHXVg
+         tKKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Wrp/1A4Vx3OcbB2pr/PEDNHt/zuDZ0QGymHwI8CKIHg=;
+        b=S5e4j6QPspDYeebRDfUVCXhIZrafdnzM1W0f6G0F74ZQNc/icg2uP6+IMUEoBhj0gR
+         HQBvvP9HA92BSM3sfBvYlAv6gyJ01EcBZJOT1QAhXyFVZy5ReZY+piwsigz06Iq+iWwF
+         /jxPkBW+ly0zuqVD0SInTn9FZduuAEJR+PBAYDU3zVMljPt+rSJscgWvNWX/R4PlDv0S
+         T8ywuSIFgLsZB++qDe/daIDs/Lc7GEOSdvdO23vnL4wercWjvSya3/JelyAZSQym+Thr
+         uGoiIY+5C0JTVbGTRi5YHzMB2OuOBlNPEco4p6b3wylAhyah5509jcE7+q5NyG9vO2Dq
+         LbCg==
+X-Gm-Message-State: AOAM5315eIWAar515tg8lUgM3NUM4lxpwuCZXKwcX1fJub2Oyezc+EKW
+        bHsPZ2tw8KBPa5Lj2rgMXk8=
+X-Google-Smtp-Source: ABdhPJzx0kI7Y5mCHmBcgoMkoXDcdMXPnCoSKVhqyWYiLS59obUrogmNsVukVf6Nz96RySLz4B/BRQ==
+X-Received: by 2002:a17:907:1b1e:: with SMTP id mp30mr6448680ejc.532.1619814548930;
+        Fri, 30 Apr 2021 13:29:08 -0700 (PDT)
+Received: from [192.168.2.2] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id da25sm2568034edb.38.2021.04.30.13.29.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Apr 2021 13:29:08 -0700 (PDT)
+Subject: Re: [PATCH v4 07/10] dt-bindings: soc: rockchip: Convert grf.txt to
+ YAML
+To:     Rob Herring <robh@kernel.org>, cl@rock-chips.com
+Cc:     heiko@sntech.de, jagan@amarulasolutions.com, wens@csie.org,
+        uwe@kleine-koenig.org, mail@david-bauer.net,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
+        cnsztl@gmail.com, devicetree@vger.kernel.org,
+        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
+        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
+        zhangqing@rock-chips.com, huangtao@rock-chips.com,
+        wim@linux-watchdog.org, linux@roeck-us.net, jamie@jamieiles.com,
+        linux-watchdog@vger.kernel.org, maz@kernel.org
+References: <20210429081151.17558-1-cl@rock-chips.com>
+ <20210429081321.17855-1-cl@rock-chips.com>
+ <20210429212413.GA1794356@robh.at.kernel.org>
+From:   Johan Jonker <jbx6244@gmail.com>
+Message-ID: <c4130ba7-5f28-57e9-f391-89b6539fb29c@gmail.com>
+Date:   Fri, 30 Apr 2021 22:29:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux i686; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210429212413.GA1794356@robh.at.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Fabien Lahoudere <fabien.lahoudere@collabora.com>
+On 4/29/21 11:24 PM, Rob Herring wrote:
+> On Thu, Apr 29, 2021 at 04:13:21PM +0800, cl@rock-chips.com wrote:
+>> From: Liang Chen <cl@rock-chips.com>
+>>
+>> Current dts files with 'grf' nodes are manually verified. In order to
+>> automate this process grf.txt has to be converted to YAML.
+>>
+>> Add new descriptions for:
+>> "rockchip,rk3568-grf", "syscon", "simple-mfd"
+>> "rockchip,rk3568-pmugrf", "syscon", "simple-mfd"
+>>
+>> Signed-off-by: Liang Chen <cl@rock-chips.com>
+>> ---
 
-In order to optimize serial communication (performance/throughput VS
-latency), we may need to tweak DMA period number and size. This adds
-DT properties to configure those values before initialising DMA.
-The defaults will stay the same as before.
+[..]
 
-Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.com>
-[update documentation and commit message, rebase to current master,
-switch back to DT instead of sysfs]
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
----
- .../bindings/serial/fsl-imx-uart.yaml         | 12 +++++++++
- drivers/tty/serial/imx.c                      | 25 +++++++++++++------
- 2 files changed, 30 insertions(+), 7 deletions(-)
+>> +properties:
+>> +  compatible:
+>> +    - items:
+> 
+> The '-' is the source of your error.
+> 
+>> +        - enum:
+>> +            - rockchip,px30-grf
+>> +            - rockchip,px30-pmugrf
+>> +            - rockchip,px30-usb2phy-grf
+>> +            - rockchip,rk3036-grf
+>> +            - rockchip,rk3066-grf
+>> +            - rockchip,rk3188-grf
+>> +            - rockchip,rk3228-grf
+>> +            - rockchip,rk3288-grf
+>> +            - rockchip,rk3288-sgrf
+>> +            - rockchip,rk3308-core-grf
+>> +            - rockchip,rk3308-detect-grf
+>> +            - rockchip,rk3308-grf
+>> +            - rockchip,rk3328-grf
+>> +            - rockchip,rk3328-usb2phy-grf
+>> +            - rockchip,rk3368-grf
+>> +            - rockchip,rk3368-pmugrf
+>> +            - rockchip,rk3399-grf
+>> +            - rockchip,rk3399-pmugrf
+>> +            - rockchip,rk3568-grf
+>> +            - rockchip,rk3568-pmugrf
+>> +            - rockchip,rv1108-grf
+>> +            - rockchip,rv1108-usbgrf
+>> +        - const: syscon
+>> +        - const: simple-mfd
+> 
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-index 2b06c6ce4a75..9d949296a142 100644
---- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-@@ -71,6 +71,18 @@ properties:
-       received, and that the peripheral should invert its input using the
-       INVR registers.
- 
-+  fsl,dma-info:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 2
-+    maxItems: 2
-+    description: |
-+      First cell contains the size of DMA buffer chunks, second cell contains
-+      the amount of chunks used for the device. Multiplying both numbers is
-+      the total size of memory used for receiving data.
-+      When not being configured the system will use default settings, which
-+      are sensible for most use cases. If you need low latency processing on
-+      slow connections this needs to be configured appropriately.
-+
-   uart-has-rtscts: true
- 
-   rs485-rts-delay: true
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 7d5a8dfa3e91..9e72e382a867 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -225,6 +225,8 @@ struct imx_port {
- 	struct scatterlist	rx_sgl, tx_sgl[2];
- 	void			*rx_buf;
- 	struct circ_buf		rx_ring;
-+	unsigned int		rx_buf_size;
-+	unsigned int		rx_period_length;
- 	unsigned int		rx_periods;
- 	dma_cookie_t		rx_cookie;
- 	unsigned int		tx_bytes;
-@@ -1183,10 +1185,6 @@ static void imx_uart_dma_rx_callback(void *data)
- 	}
- }
- 
--/* RX DMA buffer periods */
--#define RX_DMA_PERIODS	16
--#define RX_BUF_SIZE	(RX_DMA_PERIODS * PAGE_SIZE / 4)
--
- static int imx_uart_start_rx_dma(struct imx_port *sport)
- {
- 	struct scatterlist *sgl = &sport->rx_sgl;
-@@ -1197,9 +1195,8 @@ static int imx_uart_start_rx_dma(struct imx_port *sport)
- 
- 	sport->rx_ring.head = 0;
- 	sport->rx_ring.tail = 0;
--	sport->rx_periods = RX_DMA_PERIODS;
- 
--	sg_init_one(sgl, sport->rx_buf, RX_BUF_SIZE);
-+	sg_init_one(sgl, sport->rx_buf, sport->rx_buf_size);
- 	ret = dma_map_sg(dev, sgl, 1, DMA_FROM_DEVICE);
- 	if (ret == 0) {
- 		dev_err(dev, "DMA mapping error for RX.\n");
-@@ -1316,7 +1313,8 @@ static int imx_uart_dma_init(struct imx_port *sport)
- 		goto err;
- 	}
- 
--	sport->rx_buf = kzalloc(RX_BUF_SIZE, GFP_KERNEL);
-+	sport->rx_buf_size = sport->rx_period_length * sport->rx_periods;
-+	sport->rx_buf = kzalloc(sport->rx_buf_size, GFP_KERNEL);
- 	if (!sport->rx_buf) {
- 		ret = -ENOMEM;
- 		goto err;
-@@ -2179,11 +2177,16 @@ static enum hrtimer_restart imx_trigger_stop_tx(struct hrtimer *t)
- 	return HRTIMER_NORESTART;
- }
- 
-+/* Default RX DMA buffer configuration */
-+#define RX_DMA_PERIODS		16
-+#define RX_DMA_PERIOD_LEN	(PAGE_SIZE / 4)
-+
- static int imx_uart_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct imx_port *sport;
- 	void __iomem *base;
-+	u32 dma_buf_conf[2];
- 	int ret = 0;
- 	u32 ucr1;
- 	struct resource *res;
-@@ -2218,6 +2221,14 @@ static int imx_uart_probe(struct platform_device *pdev)
- 	if (of_get_property(np, "fsl,inverted-rx", NULL))
- 		sport->inverted_rx = 1;
- 
-+	if (!of_property_read_u32_array(np, "fsl,dma-info", dma_buf_conf, 2)) {
-+		sport->rx_period_length = dma_buf_conf[0];
-+		sport->rx_periods = dma_buf_conf[1];
-+	} else {
-+		sport->rx_period_length = RX_DMA_PERIOD_LEN;
-+		sport->rx_periods = RX_DMA_PERIODS;
-+	}
-+
- 	if (sport->port.line >= ARRAY_SIZE(imx_uart_ports)) {
- 		dev_err(&pdev->dev, "serial%d out of range\n",
- 			sport->port.line);
--- 
-2.30.2
+> 'simple-mfd' was not in the old binding. That implies you have child 
+> nodes, and if so, they need to be documented. I imagine that will mean 
+> splitting this into multiple schemas if that's the case.
+> 
 
+Hi,
+
+Question for rob+dt:
+
+Given that a number of txt documents still are in need for YAML
+conversion. Which is a bit beyond the author of this serie.
+The core rk3568.dtsi is needed for other series to base on.
+
+To speed things up a bit and reduce the work load:
+Is it possible to add the grf compatibles in use first and do the rest
+of the subnodes for various SoCs later?
+
+Is it possible to add for now to reduce notification output:
+
+additionalProperties: true
+
+and then later:
+
+additionalProperties: false
+
+
+===
+
+From build log:
+
+#address-cells
+#size-cells
+reboot-mode
+io-domains
+usb2-phy@100
+mipi-dphy-rx0
+pcie-phy
+phy@f780
+edp-phy
+usbphy
+lvds
+power-controller
+grf-gpio
+
+===
+
+Example for rk3399:
+
+	grf: syscon@ff770000 {
+		compatible = "rockchip,rk3399-grf", "syscon", "simple-mfd";
+
+		io_domains: io-domains {
+			compatible = "rockchip,rk3399-io-voltage-domain"; //
+rockchip-io-domain.txt
+		};
+
+		mipi_dphy_rx0: mipi-dphy-rx0 {
+			compatible = "rockchip,rk3399-mipi-dphy-rx0"; //
+rockchip-mipi-dphy-rx0.yaml
+		};
+
+		u2phy0: usb2-phy@e450 {
+			compatible = "rockchip,rk3399-usb2phy"; // phy-rockchip-inno-usb2.yaml
+		};
+
+		u2phy1: usb2-phy@e460 {
+			compatible = "rockchip,rk3399-usb2phy"; // phy-rockchip-inno-usb2.yaml
+		};
+
+		emmc_phy: phy@f780 {
+			compatible = "rockchip,rk3399-emmc-phy"; // rockchip-emmc-phy.txt
+		};
+
+		pcie_phy: pcie-phy {
+			compatible = "rockchip,rk3399-pcie-phy"; // rockchip-pcie-phy.txt
+		};
+	};
