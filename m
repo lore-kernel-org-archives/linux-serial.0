@@ -7,24 +7,27 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B6CC433ED
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 17:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A422C43460
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 17:50:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7A5F461458
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 17:50:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BF2CF61458
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 17:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbhD3Rvg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Apr 2021 13:51:36 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:52192 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbhD3Rvg (ORCPT
+        id S231314AbhD3Rvi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Apr 2021 13:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231211AbhD3Rvh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Apr 2021 13:51:36 -0400
+        Fri, 30 Apr 2021 13:51:37 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BAFC06138B;
+        Fri, 30 Apr 2021 10:50:48 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: sre)
-        with ESMTPSA id 1BF6F1F40897
+        with ESMTPSA id 21C1E1F43C65
 Received: by jupiter.universe (Postfix, from userid 1000)
-        id 028F84800C6; Fri, 30 Apr 2021 19:50:45 +0200 (CEST)
+        id F35124800C3; Fri, 30 Apr 2021 19:50:44 +0200 (CEST)
 From:   Sebastian Reichel <sebastian.reichel@collabora.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh@kernel.org>
@@ -36,9 +39,9 @@ Cc:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
         Sebastian Reichel <sebastian.reichel@collabora.com>,
         Ian Ray <ian.ray@ge.com>, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org, kernel@collabora.com
-Subject: [PATCHv5 2/2] ARM: dts: imx53-ppd: add dma-info nodes
-Date:   Fri, 30 Apr 2021 19:50:38 +0200
-Message-Id: <20210430175038.103226-3-sebastian.reichel@collabora.com>
+Subject: [PATCHv5 1/2] serial: imx: Add DMA buffer configuration via DT
+Date:   Fri, 30 Apr 2021 19:50:37 +0200
+Message-Id: <20210430175038.103226-2-sebastian.reichel@collabora.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210430175038.103226-1-sebastian.reichel@collabora.com>
 References: <20210430175038.103226-1-sebastian.reichel@collabora.com>
@@ -50,54 +53,120 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Fabien Lahoudere <fabien.lahoudere@collabora.com>
 
-GEHC CS ONE (codename is PPD), has multiple microcontrollers connected
-via UART controlling. UART2 is connected to an on-board microcontroller
-at 19200 baud, which constantly pushes critical data (so aging character
-detect interrupt will never trigger). This data must be processed at
-50-200 Hz, so UART should return data in less than 5-20ms. With 1024
-byte DMA buffer (and a constant data stream) the read operation instead
-needs 1024 byte / 19200 baud = 53.333ms, which is way too long (note:
-Worst case would be remote processor sending data with short pauses <=
-7 characters, which would further increase this number). The current
-downstream kernel instead configures 24 bytes resulting in 1.25ms, but
-that is obviously not sensible for normal UART use cases and cannot be
-used as new default.
-
-The same device also has another microcontroller with a 4M baud connected
-to UART5 exchanging lots of data. For this the same mechanism can be used
-to increase the buffer size (downstream uses 4K instead of the default 1K)
-with potentially slightly reduced buffer count. At this baud rate latency
-is not an issue (4096 byte / 4M baud = 0.977 ms). Before increasing the
-default buffer count from 4 to 16 in 76c38d30fee7, this was required to
-avoid data loss. With the changed default it's a performance optimization.
+In order to optimize serial communication (performance/throughput VS
+latency), we may need to tweak DMA period number and size. This adds
+DT properties to configure those values before initialising DMA.
+The defaults will stay the same as before.
 
 Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.com>
-[replace commit message]
+[update documentation and commit message, rebase to current master,
+switch back to DT instead of sysfs]
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- arch/arm/boot/dts/imx53-ppd.dts | 2 ++
- 1 file changed, 2 insertions(+)
+ .../bindings/serial/fsl-imx-uart.yaml         | 12 +++++++++
+ drivers/tty/serial/imx.c                      | 25 +++++++++++++------
+ 2 files changed, 30 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx53-ppd.dts b/arch/arm/boot/dts/imx53-ppd.dts
-index be040b6a02fa..5a5fa6190a52 100644
---- a/arch/arm/boot/dts/imx53-ppd.dts
-+++ b/arch/arm/boot/dts/imx53-ppd.dts
-@@ -651,6 +651,7 @@ &uart1 {
- &uart2 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_uart2>;
-+	fsl,dma-info = <24 20>;
- 	status = "okay";
- };
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+index 2b06c6ce4a75..9d949296a142 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+@@ -71,6 +71,18 @@ properties:
+       received, and that the peripheral should invert its input using the
+       INVR registers.
  
-@@ -670,6 +671,7 @@ &uart4 {
- &uart5 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_uart5>;
-+	fsl,dma-info = <4096 4>;
- 	status = "okay";
- };
++  fsl,dma-info:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    minItems: 2
++    maxItems: 2
++    description: |
++      First cell contains the size of DMA buffer chunks, second cell contains
++      the amount of chunks used for the device. Multiplying both numbers is
++      the total size of memory used for receiving data.
++      When not being configured the system will use default settings, which
++      are sensible for most use cases. If you need low latency processing on
++      slow connections this needs to be configured appropriately.
++
+   uart-has-rtscts: true
  
+   rs485-rts-delay: true
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 7d5a8dfa3e91..9e72e382a867 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -225,6 +225,8 @@ struct imx_port {
+ 	struct scatterlist	rx_sgl, tx_sgl[2];
+ 	void			*rx_buf;
+ 	struct circ_buf		rx_ring;
++	unsigned int		rx_buf_size;
++	unsigned int		rx_period_length;
+ 	unsigned int		rx_periods;
+ 	dma_cookie_t		rx_cookie;
+ 	unsigned int		tx_bytes;
+@@ -1183,10 +1185,6 @@ static void imx_uart_dma_rx_callback(void *data)
+ 	}
+ }
+ 
+-/* RX DMA buffer periods */
+-#define RX_DMA_PERIODS	16
+-#define RX_BUF_SIZE	(RX_DMA_PERIODS * PAGE_SIZE / 4)
+-
+ static int imx_uart_start_rx_dma(struct imx_port *sport)
+ {
+ 	struct scatterlist *sgl = &sport->rx_sgl;
+@@ -1197,9 +1195,8 @@ static int imx_uart_start_rx_dma(struct imx_port *sport)
+ 
+ 	sport->rx_ring.head = 0;
+ 	sport->rx_ring.tail = 0;
+-	sport->rx_periods = RX_DMA_PERIODS;
+ 
+-	sg_init_one(sgl, sport->rx_buf, RX_BUF_SIZE);
++	sg_init_one(sgl, sport->rx_buf, sport->rx_buf_size);
+ 	ret = dma_map_sg(dev, sgl, 1, DMA_FROM_DEVICE);
+ 	if (ret == 0) {
+ 		dev_err(dev, "DMA mapping error for RX.\n");
+@@ -1316,7 +1313,8 @@ static int imx_uart_dma_init(struct imx_port *sport)
+ 		goto err;
+ 	}
+ 
+-	sport->rx_buf = kzalloc(RX_BUF_SIZE, GFP_KERNEL);
++	sport->rx_buf_size = sport->rx_period_length * sport->rx_periods;
++	sport->rx_buf = kzalloc(sport->rx_buf_size, GFP_KERNEL);
+ 	if (!sport->rx_buf) {
+ 		ret = -ENOMEM;
+ 		goto err;
+@@ -2179,11 +2177,16 @@ static enum hrtimer_restart imx_trigger_stop_tx(struct hrtimer *t)
+ 	return HRTIMER_NORESTART;
+ }
+ 
++/* Default RX DMA buffer configuration */
++#define RX_DMA_PERIODS		16
++#define RX_DMA_PERIOD_LEN	(PAGE_SIZE / 4)
++
+ static int imx_uart_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct imx_port *sport;
+ 	void __iomem *base;
++	u32 dma_buf_conf[2];
+ 	int ret = 0;
+ 	u32 ucr1;
+ 	struct resource *res;
+@@ -2218,6 +2221,14 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	if (of_get_property(np, "fsl,inverted-rx", NULL))
+ 		sport->inverted_rx = 1;
+ 
++	if (!of_property_read_u32_array(np, "fsl,dma-info", dma_buf_conf, 2)) {
++		sport->rx_period_length = dma_buf_conf[0];
++		sport->rx_periods = dma_buf_conf[1];
++	} else {
++		sport->rx_period_length = RX_DMA_PERIOD_LEN;
++		sport->rx_periods = RX_DMA_PERIODS;
++	}
++
+ 	if (sport->port.line >= ARRAY_SIZE(imx_uart_ports)) {
+ 		dev_err(&pdev->dev, "serial%d out of range\n",
+ 			sport->port.line);
 -- 
 2.30.2
 
