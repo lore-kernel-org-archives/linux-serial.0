@@ -2,334 +2,148 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B97C433B4
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 10:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F06FC433ED
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 11:41:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A6E8B6145D
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 10:58:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 53909613E7
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Apr 2021 11:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229981AbhD3K70 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Apr 2021 06:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbhD3K7Z (ORCPT
+        id S229958AbhD3LmO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Apr 2021 07:42:14 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:52748 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229875AbhD3LmN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Apr 2021 06:59:25 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB70AC06174A;
-        Fri, 30 Apr 2021 03:58:35 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id i24so22531560edy.8;
-        Fri, 30 Apr 2021 03:58:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8xWBaV10Gk5zTcf0lrE/jDunsZwOFiT6TlpRJiJ0iIY=;
-        b=aQFnixQurTO584qp0DZsR5R/Wc5Z5fm7hR/X9+wixuIhA95Wmy8ZO3VszL+nU52Um3
-         k+4Wwry05NUwbcBYvNWxfTfwUoLSnLyHxUP+JlMTJmDJ1SRsIqlhGQiL1ZMD/knFFeal
-         8V9PqpbAaVGwSB3dTSeMWooBGFGpujnkjOtwZ0oVkscjSMheVFewo6JDphhpWVJR9/Fu
-         16/0MH2Y9cKnJTGrLRMK/+yxg9ST5mQMWiUtMFazg8syjjnpAeg3IjEgBPIuxjWGDLJd
-         QUMUSUG2EwU7iO6UNSnMT2H03vXyDCbKGw+Bth0FaviumTUDEOwNGydzkQiQtP7gMj3j
-         F+ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8xWBaV10Gk5zTcf0lrE/jDunsZwOFiT6TlpRJiJ0iIY=;
-        b=bucUEJUixXj/MDdSlDscUMoUi9TE94YHq7wXPoUf0DFQ2t/PetpIgFqjlVKrc2dYhy
-         CCUkYZohIToPBaoM34jFmN51NvQ0HQCt2AKxFooGcm7vA4VGtNcnozi+cfXdvkiINjxW
-         ycIy3GUqoWVgutWq9L9Swr08GvseaSZxtgzBrM7PnX+dCfefWYlWGU5IpfgQn8F0sdfY
-         cbXoivpZizXNIib9CFCY8hqu9S6RM9qNyzGBIWZSGNN04F6iHTL23UeTu+uJaZymT0Lt
-         xF3oLGIf80brfjSQplXXEvo7aBPZMoIKVBHw34gONn0Tf+ZaMw79JgntMALUIPZD/lvr
-         P7Gg==
-X-Gm-Message-State: AOAM531BuyQIRYa6W14OsWreOJyoR92/TVmlGpvjGhpC2cPg5Pd+bY6q
-        XwTNtIxVWYWmC2cVQCK7pGI=
-X-Google-Smtp-Source: ABdhPJzEZgBgxrLbBy1c75XIgzs3f76jZHE+f6Wo2RFq5MUv8/4LZSZg2o9jG/a8kIGmh/jVYiWidA==
-X-Received: by 2002:a05:6402:3109:: with SMTP id dc9mr5137491edb.13.1619780314537;
-        Fri, 30 Apr 2021 03:58:34 -0700 (PDT)
-Received: from [192.168.2.2] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id x20sm958240edd.58.2021.04.30.03.58.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Apr 2021 03:58:34 -0700 (PDT)
-Subject: Re: [RESEND PATCH v4 07/10] dt-bindings: soc: rockchip: Convert
- grf.txt to YAML
-To:     cl@rock-chips.com, heiko@sntech.de
-Cc:     robh+dt@kernel.org, jagan@amarulasolutions.com, wens@csie.org,
-        uwe@kleine-koenig.org, mail@david-bauer.net,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
-        cnsztl@gmail.com, devicetree@vger.kernel.org,
-        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
-        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
-        zhangqing@rock-chips.com, huangtao@rock-chips.com,
-        wim@linux-watchdog.org, linux@roeck-us.net, jamie@jamieiles.com,
-        linux-watchdog@vger.kernel.org, maz@kernel.org
-References: <20210429081151.17558-1-cl@rock-chips.com>
- <20210430005708.1821-1-cl@rock-chips.com>
-From:   Johan Jonker <jbx6244@gmail.com>
-Message-ID: <953e4240-77ea-ce1c-00a5-0625111ab2cd@gmail.com>
-Date:   Fri, 30 Apr 2021 12:58:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux i686; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        Fri, 30 Apr 2021 07:42:13 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13UBf04p157245;
+        Fri, 30 Apr 2021 11:41:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=vX7MB4vHpiHW2VmKV1bmxIW4ZneYW0EzTAYlwl34xH8=;
+ b=qOy0CLeIPMiCQTKGyW4k85unLvV8QZ0k7JAVGfBSkQ4uOdgMvPZJONdf8Wx5KGEo2fWJ
+ HWW+Je5nCAuGYSOQU3ox9/5kVLtp9z5iSoh+DJ4G6iA+7XhnrRPKoe0Hw1AlxNgsnnMr
+ H7qdBxp/6C909ga3J1D4DHNASDlEAOXTVJ/4QpS5LcncknxRWTrvtCMDRFZ78mK7mlme
+ e6ZQ4ZUt2Iqv7KLJlHTp8dkydt9Q4JRHAEGHXFMq4kS3bAf7NnXbkZm8GdLGB8f4CP3s
+ 4oYTWF5+TINolcnmi5iy8ARq3dzv+GQXas2ub3VhGXFty8NIJuWGXPbZUkekcexn/mi7 Ug== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 385aeq7e88-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 30 Apr 2021 11:41:17 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13UBf1kJ101159;
+        Fri, 30 Apr 2021 11:41:16 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 3848f2dut0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 30 Apr 2021 11:41:16 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 13UBfGoD101705;
+        Fri, 30 Apr 2021 11:41:16 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 3848f2dusf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 30 Apr 2021 11:41:16 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 13UBfEtN028047;
+        Fri, 30 Apr 2021 11:41:14 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 30 Apr 2021 04:41:13 -0700
+Date:   Fri, 30 Apr 2021 14:41:06 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_omap: fix a timeout loop condition
+Message-ID: <20210430114106.GF1981@kadam>
+References: <YIpd+kOpXKMpEXPf@mwanda>
+ <YIqTvcZ6ZrAEL7WE@smile.fi.intel.com>
+ <20210429130215.GE21598@kadam>
+ <YIvDz7hEhwm66R8G@smile.fi.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20210430005708.1821-1-cl@rock-chips.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YIvDz7hEhwm66R8G@smile.fi.intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-ORIG-GUID: APEHEUW3MzMICozZKzitGgljfX3OoiN_
+X-Proofpoint-GUID: APEHEUW3MzMICozZKzitGgljfX3OoiN_
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9969 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 impostorscore=0
+ phishscore=0 spamscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0
+ clxscore=1015 suspectscore=0 malwarescore=0 mlxlogscore=999
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104300085
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Liang,
-
-On 4/30/21 2:57 AM, cl@rock-chips.com wrote:
-> From: Liang Chen <cl@rock-chips.com>
+On Fri, Apr 30, 2021 at 11:46:07AM +0300, Andy Shevchenko wrote:
+> On Thu, Apr 29, 2021 at 04:02:15PM +0300, Dan Carpenter wrote:
+> > On Thu, Apr 29, 2021 at 02:08:45PM +0300, Andy Shevchenko wrote:
+> > > On Thu, Apr 29, 2021 at 10:19:22AM +0300, Dan Carpenter wrote:
+> > > > This loop ends on -1 so the error message will never be printed.
+> > > > 
+> > > > Fixes: 4bcf59a5dea0 ("serial: 8250: 8250_omap: Account for data in flight during DMA teardown")
+> > > > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > > 
+> > > ...
+> > > 
+> > > >  			       poll_count--)
+> > > >  				cpu_relax();
+> > > >  
+> > > > -			if (!poll_count)
+> > > > +			if (poll_count == -1)
+> > > 
+> > > Why not to change poll_count-- to --poll_count?
+> > >
+> > 
+> > Either one is fine.  I considered several different ways and wrote the
+> > patch twice.  The downside of --poll_count is that it's an off by one
+> > in that the author clearly intended to loop 25 times.  It doesn't really
+> > matter if we only loop 24 but off by ones are aesthetically unpleasant.
 > 
-> Current dts files with 'grf' nodes are manually verified. In order to
-> automate this process grf.txt has to be converted to YAML.
+> I didn't get. If you use --poll_count you get exactly 25 times and moreover,
+> you may convert variable to unsigned type.
 > 
-> Add new descriptions for:
-> "rockchip,rk3568-grf", "syscon", "simple-mfd"
-> "rockchip,rk3568-pmugrf", "syscon", "simple-mfd"
 
-"rockchip,rv1108-pmugrf", "syscon"
+Here is a small test to show that it loops 24 times.
 
-> 
-> Signed-off-by: Liang Chen <cl@rock-chips.com>
-> ---
->  .../devicetree/bindings/soc/rockchip/grf.txt  | 61 -------------------
->  .../devicetree/bindings/soc/rockchip/grf.yaml | 60 ++++++++++++++++++
->  2 files changed, 60 insertions(+), 61 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/soc/rockchip/grf.txt
->  create mode 100644 Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/soc/rockchip/grf.txt b/Documentation/devicetree/bindings/soc/rockchip/grf.txt
-> deleted file mode 100644
-> index f96511aa3897..000000000000
-> --- a/Documentation/devicetree/bindings/soc/rockchip/grf.txt
-> +++ /dev/null
-> @@ -1,61 +0,0 @@
-> -* Rockchip General Register Files (GRF)
-> -
-> -The general register file will be used to do static set by software, which
-> -is composed of many registers for system control.
-> -
-> -From RK3368 SoCs, the GRF is divided into two sections,
-> -- GRF, used for general non-secure system,
-> -- SGRF, used for general secure system,
-> -- PMUGRF, used for always on system
-> -
-> -On RK3328 SoCs, the GRF adds a section for USB2PHYGRF,
-> -
-> -ON RK3308 SoC, the GRF is divided into four sections:
-> -- GRF, used for general non-secure system,
-> -- SGRF, used for general secure system,
-> -- DETECTGRF, used for audio codec system,
-> -- COREGRF, used for pvtm,
-> -
-> -Required Properties:
-> -
-> -- compatible: GRF should be one of the following:
-> -   - "rockchip,px30-grf", "syscon": for px30
-> -   - "rockchip,rk3036-grf", "syscon": for rk3036
-> -   - "rockchip,rk3066-grf", "syscon": for rk3066
-> -   - "rockchip,rk3188-grf", "syscon": for rk3188
-> -   - "rockchip,rk3228-grf", "syscon": for rk3228
-> -   - "rockchip,rk3288-grf", "syscon": for rk3288
-> -   - "rockchip,rk3308-grf", "syscon": for rk3308
-> -   - "rockchip,rk3328-grf", "syscon": for rk3328
-> -   - "rockchip,rk3368-grf", "syscon": for rk3368
-> -   - "rockchip,rk3399-grf", "syscon": for rk3399
-> -   - "rockchip,rv1108-grf", "syscon": for rv1108
-> -- compatible: DETECTGRF should be one of the following:
-> -   - "rockchip,rk3308-detect-grf", "syscon": for rk3308
-> -- compatilbe: COREGRF should be one of the following:
-> -   - "rockchip,rk3308-core-grf", "syscon": for rk3308
-> -- compatible: PMUGRF should be one of the following:
-> -   - "rockchip,px30-pmugrf", "syscon": for px30
-> -   - "rockchip,rk3368-pmugrf", "syscon": for rk3368
-> -   - "rockchip,rk3399-pmugrf", "syscon": for rk3399
-> -- compatible: SGRF should be one of the following:
-> -   - "rockchip,rk3288-sgrf", "syscon": for rk3288
-> -- compatible: USB2PHYGRF should be one of the following:
-> -   - "rockchip,px30-usb2phy-grf", "syscon": for px30
-> -   - "rockchip,rk3328-usb2phy-grf", "syscon": for rk3328
-> -- compatible: USBGRF should be one of the following:
-> -   - "rockchip,rv1108-usbgrf", "syscon": for rv1108
-> -- reg: physical base address of the controller and length of memory mapped
-> -  region.
-> -
-> -Example: GRF and PMUGRF of RK3399 SoCs
-> -
-> -	pmugrf: syscon@ff320000 {
-> -		compatible = "rockchip,rk3399-pmugrf", "syscon";
-> -		reg = <0x0 0xff320000 0x0 0x1000>;
-> -	};
-> -
-> -	grf: syscon@ff770000 {
-> -		compatible = "rockchip,rk3399-grf", "syscon";
-> -		reg = <0x0 0xff770000 0x0 0x10000>;
-> -	};
-> diff --git a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-> new file mode 100644
-> index 000000000000..21a67b9ae59c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-> @@ -0,0 +1,60 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/soc/rockchip/grf.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Rockchip General Register Files
-> +
-> +maintainers:
-> +  - Heiko Stuebner <heiko@sntech.de>
-> +
+#include <stdio.h>
 
-syscon.yaml uses select if compatible contains "syscon", so use select
-here too ??
+int main(void)
+{
+        int i = 25;
 
-> +properties:
+        while (--i)
+                printf("%d\n", i);
 
-> +  compatible:
-> +    items:
+        return 0;
+}
 
-When there are no other combinations then with syscon and simple-mfd
-then there's no need for "oneOf", but a look in the build log shows
-there are 2 (3) exceptions:
+gcc test.c
+./a.out | tac
 
-#cat build-dtbs-1471909.log | grep short
-rv1108-elgin-r1.dt.yaml: syscon@202a0000: compatible:
-['rockchip,rv1108-usbgrf', 'syscon'] is too short
-rk3288-evb-act8846.dt.yaml: syscon@ff740000: compatible:
-['rockchip,rk3288-sgrf', 'syscon'] is too short
+Why would I make it unsigned?  As a static analysis developer,
+pointlessly unsigned variables are one of the leading causes for the
+bugs I see.
 
-https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20210430005708.1821-1-cl@rock-chips.com/
+There are times where a iterator counter needs to be unsigned long, or
+u64 but I have never seen a case where changing an iterator from
+"int i;" to "unsigned int i;" solves a real life kernel bug.  It only
+introduces bugs.
 
-===
+regards,
+dan carpenter
 
-
-	pmugrf: syscon@20060000 {
-
-		compatible = "rockchip,rv1108-pmugrf", "syscon";
-
-rockchip,rv1108-pmugrf was never added to a document.
-
-		reg = <0x20060000 0x1000>;
-	};
-
-	usbgrf: syscon@202a0000 {
-		compatible = "rockchip,rv1108-usbgrf", "syscon";
-		reg = <0x202a0000 0x1000>;
-	};
-===
-
-  compatible:
-    oneOf:
-      - items:
-          - enum:
-              - rockchip,rk3288-sgrf
-===
-              - rockchip,rv1108-pmugrf
-===
-              - rockchip,rv1108-usbgrf
-          - const: syscon
-      - items:
-          - enum:
-              - rockchip,px30-grf
-              - rockchip,px30-pmugrf
-              - rockchip,px30-usb2phy-grf
-              - rockchip,rk3036-grf
-              - rockchip,rk3066-grf
-              - rockchip,rk3188-grf
-              - rockchip,rk3228-grf
-              - rockchip,rk3288-grf
-              - rockchip,rk3308-core-grf
-              - rockchip,rk3308-detect-grf
-              - rockchip,rk3308-grf
-              - rockchip,rk3328-grf
-              - rockchip,rk3328-usb2phy-grf
-              - rockchip,rk3368-grf
-              - rockchip,rk3368-pmugrf
-              - rockchip,rk3399-grf
-              - rockchip,rk3399-pmugrf
-              - rockchip,rk3568-grf
-              - rockchip,rk3568-pmugrf
-              - rockchip,rv1108-grf
-          - const: syscon
-          - const: simple-mfd
-
-> +      - enum:
-> +          - rockchip,px30-grf
-> +          - rockchip,px30-pmugrf
-> +          - rockchip,px30-usb2phy-grf
-> +          - rockchip,rk3036-grf
-> +          - rockchip,rk3066-grf
-> +          - rockchip,rk3188-grf
-> +          - rockchip,rk3228-grf
-> +          - rockchip,rk3288-grf
-> +          - rockchip,rk3288-sgrf
-> +          - rockchip,rk3308-core-grf
-> +          - rockchip,rk3308-detect-grf
-> +          - rockchip,rk3308-grf
-> +          - rockchip,rk3328-grf
-> +          - rockchip,rk3328-usb2phy-grf
-> +          - rockchip,rk3368-grf
-> +          - rockchip,rk3368-pmugrf
-> +          - rockchip,rk3399-grf
-> +          - rockchip,rk3399-pmugrf
-> +          - rockchip,rk3568-grf
-> +          - rockchip,rk3568-pmugrf
-> +          - rockchip,rv1108-grf
-> +          - rockchip,rv1108-usbgrf
-> +      - const: syscon
-> +      - const: simple-mfd
-
-> +
-> +  reg:> +    maxItems: 1
-
-"#address-cells":
-  const: 1
-
-"#size-cells":
-  const: 1
-
-rk3228-evb.dt.yaml: syscon@11000000: '#address-cells', '#size-cells',
-'io-domains', 'usb2-phy@760', 'usb2-phy@800' do not match any of the
-regexes: 'pinctrl-[0-9]+'
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-
-> +additionalProperties: false
-
-additionalProperties: true
-
-> +
-> +examples:
-> +  - |
-> +    pmugrf: syscon@ff320000 {
-> +       compatible = "rockchip,rk3399-pmugrf", "syscon", "simple-mfd";
-> +       reg = <0xff320000 0x1000>;
-> +    };
-> +
-> +    grf: syscon@ff770000 {
-> +       compatible = "rockchip,rk3399-grf", "syscon", "simple-mfd";
-> +       reg = <0xff770000 0x10000>;
-> +    };
-> 
