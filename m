@@ -2,186 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4C2C433ED
-	for <linux-serial@archiver.kernel.org>; Mon,  3 May 2021 09:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A163AC433B4
+	for <linux-serial@archiver.kernel.org>; Mon,  3 May 2021 14:55:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EEBFA61176
-	for <linux-serial@archiver.kernel.org>; Mon,  3 May 2021 09:51:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 72DCC611BF
+	for <linux-serial@archiver.kernel.org>; Mon,  3 May 2021 14:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233151AbhECJwg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 May 2021 05:52:36 -0400
-Received: from mga01.intel.com ([192.55.52.88]:10595 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231523AbhECJwg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 May 2021 05:52:36 -0400
-IronPort-SDR: 7Fo9L2F9CVZUWkEFknWmklGsocFhFIi92HlxLSmmxCq5m/T3XkBfoU8FDJqXgo353gttlhIxMk
- eK/LHLULC8Nw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9972"; a="218494911"
-X-IronPort-AV: E=Sophos;i="5.82,268,1613462400"; 
-   d="scan'208";a="218494911"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2021 02:51:43 -0700
-IronPort-SDR: rnnC37PlQP7b07uU/5diHiDYx/F+E9bHBhRAjHoEPelVhmRsAqoL9hm6vk8JNoNpNCCZOHcNcB
- OnmVfrgstMUA==
-X-IronPort-AV: E=Sophos;i="5.82,268,1613462400"; 
-   d="scan'208";a="405544989"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2021 02:51:41 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ldVEo-009Ed1-90; Mon, 03 May 2021 12:51:38 +0300
-Date:   Mon, 3 May 2021 12:51:38 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_omap: fix a timeout loop condition
-Message-ID: <YI/HqpJN+OvYduMn@smile.fi.intel.com>
-References: <YIpd+kOpXKMpEXPf@mwanda>
- <YIqTvcZ6ZrAEL7WE@smile.fi.intel.com>
- <20210429130215.GE21598@kadam>
- <YIvDz7hEhwm66R8G@smile.fi.intel.com>
- <20210430114106.GF1981@kadam>
- <YIv92DBnaVotWd9Y@smile.fi.intel.com>
- <20210430133329.GH1981@kadam>
- <YIwSZGE76f2ZJyyf@smile.fi.intel.com>
- <20210503065439.GI1981@kadam>
+        id S229650AbhECOz5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 3 May 2021 10:55:57 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:34574 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229595AbhECOz4 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 3 May 2021 10:55:56 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 143EnUY5078997;
+        Mon, 3 May 2021 14:55:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=TXA8sOKaTOPue529/45nwBbsE1uKyU93EWPEE7BrQsU=;
+ b=MUdNHoNGVWnOfxw6yKiAO9mu3cgbiGJQQ8M3pojaUJ4eU1d4w4LB6xjupKzLkOzlYbLF
+ 9xlSllxJaGifBuNqTZuQekmy6xr9Y2PaOjUOBEMzJ5K/cF6TH9YsnP1VwgqcOCq/2IPX
+ F5EyKXZRKYhbUTocBOt+ThXQlGTWvLE9BY67ARFZSpqDphQ9oKy6q+VNc0YsE2oAXig2
+ lG8rRMLIzwzKW+/YYs7RzircM6vPbSG0au+6bkHLFEp8Rfe7qLM22MX0sp6SodNR70p0
+ tLqESODdNICYy3GDsFnNBl4DePF32tvXS5+2X3c0f48H90b7nRrCb/NLt+FGgS/dxNLy 5Q== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2130.oracle.com with ESMTP id 388vgbkymd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 May 2021 14:55:02 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 143EoBTE125490;
+        Mon, 3 May 2021 14:55:01 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 388xt2guck-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 May 2021 14:55:01 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 143Eqwkj193098;
+        Mon, 3 May 2021 14:55:01 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 388xt2gubj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 May 2021 14:55:01 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 143Esx8a018062;
+        Mon, 3 May 2021 14:55:00 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 03 May 2021 07:54:59 -0700
+Date:   Mon, 3 May 2021 17:54:53 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     peter@hurleysoftware.com
+Cc:     linux-serial@vger.kernel.org
+Subject: [bug report] serial: 8250: Extract IIR logic steering from rx dma
+Message-ID: <YJAOvZpFi9nTSkAX@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210503065439.GI1981@kadam>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Proofpoint-GUID: gl6suyupiHMVaLhSaCDnuKHp2MIWqFig
+X-Proofpoint-ORIG-GUID: gl6suyupiHMVaLhSaCDnuKHp2MIWqFig
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9973 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 mlxlogscore=999
+ suspectscore=0 priorityscore=1501 phishscore=0 malwarescore=0
+ impostorscore=0 clxscore=1011 bulkscore=0 spamscore=0 adultscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2105030103
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 03, 2021 at 09:54:39AM +0300, Dan Carpenter wrote:
-> On Fri, Apr 30, 2021 at 05:21:24PM +0300, Andy Shevchenko wrote:
-> > On Fri, Apr 30, 2021 at 04:33:29PM +0300, Dan Carpenter wrote:
-> > > On Fri, Apr 30, 2021 at 03:53:44PM +0300, Andy Shevchenko wrote:
-> > > > On Fri, Apr 30, 2021 at 02:41:06PM +0300, Dan Carpenter wrote:
-> > > > > On Fri, Apr 30, 2021 at 11:46:07AM +0300, Andy Shevchenko wrote:
-> > 
-> > ...
-> > 
-> > > > > Why would I make it unsigned?  As a static analysis developer,
-> > > > > pointlessly unsigned variables are one of the leading causes for the
-> > > > > bugs I see.
-> > > > > 
-> > > > > There are times where a iterator counter needs to be unsigned long, or
-> > > > > u64 but I have never seen a case where changing an iterator from
-> > > > > "int i;" to "unsigned int i;" solves a real life kernel bug.  It only
-> > > > > introduces bugs.
-> > > > 
-> > > > See my followup to that, I meant
-> > > > 
-> > > > unsigned int count;
-> > > > 
-> > > > do {
-> > > > 	...
-> > > > } while (--count);
-> > > > 
-> > > > It doesn't solve bug, but prevents the code be read incorrectly like what you
-> > > > are fixing can be avoided with do {} while (); along with unsigned type.
-> > > 
-> > > Why would you use an unsigned int for this???
-> > 
-> > Why it should be signed? You clearly show the amount of iterations. Check for
-> > null I guess even compact in the assembly in comparison to -1.
-> > 
-> > I do not see any point why it should be signed. For what purpose?
-> > 
-> > It's a *down* counter.
-> 
-> Yeah.  And people regularly test down counters for >= 0.
+Hello Peter Hurley,
 
-I don't know that. What I see the test is as simple as
-while (--count) which is basically > 0.
+The patch 33d9b8b23a73: "serial: 8250: Extract IIR logic steering
+from rx dma" from Apr 9, 2016, leads to the following static checker
+warning:
 
-> Signed ints
-> are safer.
+	drivers/tty/serial/8250/8250_omap.c:1093 handle_rx_dma()
+	warn: signedness bug returning '(-22)'
 
-Any research article about it? What about wrong integral promotions which
-I consider is a root cause of many bugs? People should learn that, or the
-C (standard) should be fixed to make it easier to get.
+drivers/tty/serial/8250/8250_omap.c
+  1084  static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
+               ^^^^
+This returns bool
 
-> Unsigned ints are a *leading* cause of bugs in the kernel.
-
-Again, where this statistics comes from? Maybe it's a simple answer to the
-question that review in kernel is not good enough?
-
-> I don't know if they're in the top five but they're definitely in the
-> top ten.
-
-Again, I don't see any proofs.
-
-> Also if you need a larger type you should switch to a 64 bit type.  The
-> 2-4 million range is very narrow.
-> 
-> I have never seen a single kernel bug where the for loop counter was
-> "int i;" and making it "unsigned int i;" fixed a real life kernel bug.
-
-Your very patch suggests one of the solution to switch to unsigned to fix a
-kernel bug (though with lowest severity).
-
-> Of course, there are times when unsigned int is appropriate, like for
-> sizes or because it's in the spec.
-> 
-> It's frustrating to me because GCC encourages people to make loop
-> counters unsigned and it introduces bugs.
-
-Any code which was written in unthought manner is a buggy code. So, how
-unsigned vs. signed loop counter any different here to any other buggy code?
-
-> I'm looking at the git log right now and I see that someone changed:
-> 
->  void dt_to_asm(FILE *f, struct dt_info *dti, int version)
->  {
->         struct version_info *vi = NULL;
-> -       int i;
-> +       unsigned int i;
->         struct data strbuf = empty_data;
->         struct reserve_info *re;
->         const char *symprefix = "dt";
-> 
-> There are two loops in that function:
-> 
-> 	for (i = 0; i < ARRAY_SIZE(version_table); i++) {
-> 
-> This the one that generates the warning.  GCC knows at compile time that
-> ARRAY_SIZE() is 5.  ARGH!!!  GCC is so lazy and horrible.  If I did this
-> in Smatch people would never accept it.  Even if ARRAY_SIZE() were
-> higher than INT_MAX the loop would behave the same regardless of whether
-> it was signed or not because of type promotion.
-> 
-> The other loop is:
-> 
-> 	for (i = 0; i < reservenum; i++) {
-> 
-> In this case "reservenum" comes from the command line.  In the original
-> code if it were negative that would be a harmless no-op but now because
-> i is unsigned it's a crashing bug.  Why did GCC not generate a warning
-> for this?  The code was obviously bad before, that's true, but now in a
-> very measurable way it has become worse.
-
-See above. I think the root cause that people do not understand C and how to
-program in C in bug-less manner.
-
-> This example is not really important.  I only brought it up because it
-> is most recent example of people changing "int i;" to "unsigned int i;".
-> But there have been other cases like this which have had a security
-> impact.
-
--- 
-With Best Regards,
-Andy Shevchenko
+  1085  {
+  1086          switch (iir & 0x3f) {
+  1087          case UART_IIR_RLSI:
+  1088          case UART_IIR_RX_TIMEOUT:
+  1089          case UART_IIR_RDI:
+  1090                  omap_8250_rx_dma_flush(up);
+  1091                  return true;
+  1092          }
+  1093          return omap_8250_rx_dma(up);
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This returns error codes
 
 
+  1094  }
+  1095  
+  1096  static unsigned char omap_8250_handle_rx_dma(struct uart_8250_port *up,
+  1097                                               u8 iir, unsigned char status)
+  1098  {
+  1099          if ((status & (UART_LSR_DR | UART_LSR_BI)) &&
+  1100              (iir & UART_IIR_RDI)) {
+  1101                  if (handle_rx_dma(up, iir)) {
+                            ^^^^^^^^^^^^^^^^^^^^^^
+So I guess this is reversed for the omap_8250_rx_dma() case.
+
+  1102                          status = serial8250_rx_chars(up, status);
+  1103                          omap_8250_rx_dma(up);
+  1104                  }
+  1105          }
+  1106  
+  1107          return status;
+  1108  }
+
+regards,
+dan carpenter
