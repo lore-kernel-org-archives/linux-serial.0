@@ -7,103 +7,106 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65DCC43618
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F29C433B4
 	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:20:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AE58A613C7
+	by mail.kernel.org (Postfix) with ESMTP id 3C2F6613C7
 	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbhEEJVE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 May 2021 05:21:04 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41552 "EHLO mx2.suse.de"
+        id S232802AbhEEJVC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 May 2021 05:21:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42070 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232515AbhEEJUk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S232505AbhEEJUk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 5 May 2021 05:20:40 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 9975AB2AF;
-        Wed,  5 May 2021 09:19:42 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id CB801B281;
+        Wed,  5 May 2021 09:19:41 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>,
-        Karsten Keil <isdn@linux-pingi.de>, netdev@vger.kernel.org
-Subject: [PATCH 33/35] isdn: capi, drop useless pr_debugs
-Date:   Wed,  5 May 2021 11:19:26 +0200
-Message-Id: <20210505091928.22010-34-jslaby@suse.cz>
+        Karsten Keil <isdn@linux-pingi.de>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>
+Subject: [PATCH 30/35] tty: remove empty tty_operations::flush_buffer
+Date:   Wed,  5 May 2021 11:19:23 +0200
+Message-Id: <20210505091928.22010-31-jslaby@suse.cz>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210505091928.22010-1-jslaby@suse.cz>
 References: <20210505091928.22010-1-jslaby@suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-capi have many pr_debugs in tty_operations hooks to print only a
-functions name. We have better debugging aids in the kernel many years
-now. So remove these useless pr_debugs.
+tty_operations::flush_buffer is optional. If it doesn't exist, nothing
+is called. So remove almost¹ empty flush_buffer implementations.
+
+¹ capi had an useless pr_debug in it.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 Cc: Karsten Keil <isdn@linux-pingi.de>
-Cc: netdev@vger.kernel.org
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@de.ibm.com>
 ---
- drivers/isdn/capi/capi.c | 7 -------
- 1 file changed, 7 deletions(-)
+ drivers/isdn/capi/capi.c    | 6 ------
+ drivers/s390/char/tty3270.c | 6 ------
+ 2 files changed, 12 deletions(-)
 
 diff --git a/drivers/isdn/capi/capi.c b/drivers/isdn/capi/capi.c
-index bf8a8809eff1..d5f9261fa879 100644
+index dae80197ad9c..6d99b93bb09e 100644
 --- a/drivers/isdn/capi/capi.c
 +++ b/drivers/isdn/capi/capi.c
-@@ -1158,8 +1158,6 @@ static void capinc_tty_flush_chars(struct tty_struct *tty)
- 	struct capiminor *mp = tty->driver_data;
- 	struct sk_buff *skb;
+@@ -1249,11 +1249,6 @@ static int capinc_tty_break_ctl(struct tty_struct *tty, int state)
+ 	return 0;
+ }
  
--	pr_debug("capinc_tty_flush_chars\n");
+-static void capinc_tty_flush_buffer(struct tty_struct *tty)
+-{
+-	pr_debug("capinc_tty_flush_buffer\n");
+-}
 -
- 	spin_lock_bh(&mp->outlock);
- 	skb = mp->outskb;
- 	if (skb) {
-@@ -1200,7 +1198,6 @@ static unsigned int capinc_tty_chars_in_buffer(struct tty_struct *tty)
- static void capinc_tty_throttle(struct tty_struct *tty)
+ static void capinc_tty_set_ldisc(struct tty_struct *tty)
  {
- 	struct capiminor *mp = tty->driver_data;
--	pr_debug("capinc_tty_throttle\n");
- 	mp->ttyinstop = 1;
+ 	pr_debug("capinc_tty_set_ldisc\n");
+@@ -1279,7 +1274,6 @@ static const struct tty_operations capinc_ops = {
+ 	.start = capinc_tty_start,
+ 	.hangup = capinc_tty_hangup,
+ 	.break_ctl = capinc_tty_break_ctl,
+-	.flush_buffer = capinc_tty_flush_buffer,
+ 	.set_ldisc = capinc_tty_set_ldisc,
+ 	.send_xchar = capinc_tty_send_xchar,
+ 	.install = capinc_tty_install,
+diff --git a/drivers/s390/char/tty3270.c b/drivers/s390/char/tty3270.c
+index ba1fbce63fee..adc33846bf8e 100644
+--- a/drivers/s390/char/tty3270.c
++++ b/drivers/s390/char/tty3270.c
+@@ -1756,11 +1756,6 @@ tty3270_flush_chars(struct tty_struct *tty)
+ 	}
  }
  
-@@ -1208,7 +1205,6 @@ static void capinc_tty_unthrottle(struct tty_struct *tty)
- {
- 	struct capiminor *mp = tty->driver_data;
- 
--	pr_debug("capinc_tty_unthrottle\n");
- 	mp->ttyinstop = 0;
- 	handle_minor_recv(mp);
- }
-@@ -1217,7 +1213,6 @@ static void capinc_tty_stop(struct tty_struct *tty)
- {
- 	struct capiminor *mp = tty->driver_data;
- 
--	pr_debug("capinc_tty_stop\n");
- 	mp->ttyoutstop = 1;
- }
- 
-@@ -1225,7 +1220,6 @@ static void capinc_tty_start(struct tty_struct *tty)
- {
- 	struct capiminor *mp = tty->driver_data;
- 
--	pr_debug("capinc_tty_start\n");
- 	mp->ttyoutstop = 0;
- 	handle_minor_send(mp);
- }
-@@ -1234,7 +1228,6 @@ static void capinc_tty_hangup(struct tty_struct *tty)
- {
- 	struct capiminor *mp = tty->driver_data;
- 
--	pr_debug("capinc_tty_hangup\n");
- 	tty_port_hangup(&mp->port);
- }
- 
+-static void
+-tty3270_flush_buffer(struct tty_struct *tty)
+-{
+-}
+-
+ /*
+  * Check for visible/invisible input switches
+  */
+@@ -1881,7 +1876,6 @@ static const struct tty_operations tty3270_ops = {
+ 	.put_char = tty3270_put_char,
+ 	.flush_chars = tty3270_flush_chars,
+ 	.write_room = tty3270_write_room,
+-	.flush_buffer = tty3270_flush_buffer,
+ 	.throttle = tty3270_throttle,
+ 	.unthrottle = tty3270_unthrottle,
+ 	.hangup = tty3270_hangup,
 -- 
 2.31.1
 
