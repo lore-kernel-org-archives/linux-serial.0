@@ -7,29 +7,29 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D8AC433B4
-	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A06C43461
+	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:19:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A556613E9
-	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:19:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ACDF1613F9
+	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232350AbhEEJU2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 May 2021 05:20:28 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41268 "EHLO mx2.suse.de"
+        id S232383AbhEEJUb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 May 2021 05:20:31 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41292 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232184AbhEEJU1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S232297AbhEEJU1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 5 May 2021 05:20:27 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id EDD9CB231;
-        Wed,  5 May 2021 09:19:29 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 54548B25F;
+        Wed,  5 May 2021 09:19:30 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 02/35] n_tty: remove n_tty_receive_char wrapper
-Date:   Wed,  5 May 2021 11:18:55 +0200
-Message-Id: <20210505091928.22010-3-jslaby@suse.cz>
+Subject: [PATCH 04/35] n_tty: drop n_tty_receive_buf_fast
+Date:   Wed,  5 May 2021 11:18:57 +0200
+Message-Id: <20210505091928.22010-5-jslaby@suse.cz>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210505091928.22010-1-jslaby@suse.cz>
 References: <20210505091928.22010-1-jslaby@suse.cz>
@@ -39,57 +39,83 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The wrapper was meant as an optimization in commits eb3e4668bd9e (n_tty:
-Un-inline slow-path n_tty_receive_char()) and e60d27c4d8b3 (n_tty:
-Factor LNEXT processing from per-char i/o path). But the current
-compiler (gcc 10) inlines it anyway (as expected). Actually, I'm not
-sure it ever didn't. It would need to be marked with the noinline
-attribute.
+After the previous patches, n_tty_receive_buf_standard and
+n_tty_receive_buf_fast differ only in handling of tty line and input
+controls. Unlike n_tty_receive_buf_fast, n_tty_receive_buf_standard
+handles them all (I_ISTRIP, I_IUCLC, L_IEXTEN, L_EXTPROC, and I_PARMRK).
 
-So remove this useless wrapper.
+So remove n_tty_receive_buf_fast and let n_tty_receive_buf_standard do
+the handling. Actually most of the tests are only moved from
+__receive_buf to n_tty_receive_buf_standard.
 
-And if we ever introduce something similar, we need confirming numbers
-first.
+Again, the code duplication is not worth the theoretical speedup.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/n_tty.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/tty/n_tty.c | 36 +++---------------------------------
+ 1 file changed, 3 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 9686c5d10571..0a8c9440f5d2 100644
+index 0adc79bae839..5d83fb5412fd 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -1401,7 +1401,7 @@ n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
+@@ -1530,9 +1530,8 @@ n_tty_receive_buf_closing(struct tty_struct *tty, const unsigned char *cp,
+ 	}
  }
  
- static inline void
--n_tty_receive_char_inline(struct tty_struct *tty, unsigned char c)
-+n_tty_receive_char(struct tty_struct *tty, unsigned char c)
+-static void
+-n_tty_receive_buf_standard(struct tty_struct *tty, const unsigned char *cp,
+-			  char *fp, int count)
++static void n_tty_receive_buf_standard(struct tty_struct *tty,
++		const unsigned char *cp, char *fp, int count)
  {
  	struct n_tty_data *ldata = tty->disc_data;
- 
-@@ -1423,11 +1423,6 @@ n_tty_receive_char_inline(struct tty_struct *tty, unsigned char c)
- 	put_tty_queue(c, ldata);
+ 	char flag = TTY_NORMAL;
+@@ -1564,32 +1563,6 @@ n_tty_receive_buf_standard(struct tty_struct *tty, const unsigned char *cp,
+ 	}
  }
  
--static void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
+-static void
+-n_tty_receive_buf_fast(struct tty_struct *tty, const unsigned char *cp,
+-		       char *fp, int count)
 -{
--	n_tty_receive_char_inline(tty, c);
+-	struct n_tty_data *ldata = tty->disc_data;
+-	char flag = TTY_NORMAL;
+-
+-	while (count--) {
+-		if (fp)
+-			flag = *fp++;
+-		if (likely(flag == TTY_NORMAL)) {
+-			unsigned char c = *cp++;
+-
+-			if (!test_bit(c, ldata->char_map))
+-				n_tty_receive_char(tty, c, false);
+-			else if (n_tty_receive_char_special(tty, c) && count) {
+-				if (fp)
+-					flag = *fp++;
+-				n_tty_receive_char_lnext(tty, *cp++, flag);
+-				count--;
+-			}
+-		} else
+-			n_tty_receive_char_flagged(tty, *cp++, flag);
+-	}
 -}
 -
- static inline void
- n_tty_receive_char_fast(struct tty_struct *tty, unsigned char c)
+ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 			  char *fp, int count)
  {
-@@ -1577,7 +1572,7 @@ n_tty_receive_buf_standard(struct tty_struct *tty, const unsigned char *cp,
- 				continue;
- 			}
- 			if (!test_bit(c, ldata->char_map))
--				n_tty_receive_char_inline(tty, c);
-+				n_tty_receive_char(tty, c);
- 			else if (n_tty_receive_char_special(tty, c) && count) {
- 				if (fp)
- 					flag = *fp++;
+@@ -1612,10 +1585,7 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 			count--;
+ 		}
+ 
+-		if (!preops && !I_PARMRK(tty))
+-			n_tty_receive_buf_fast(tty, cp, fp, count);
+-		else
+-			n_tty_receive_buf_standard(tty, cp, fp, count);
++		n_tty_receive_buf_standard(tty, cp, fp, count);
+ 
+ 		flush_echoes(tty);
+ 		if (tty->ops->flush_chars)
 -- 
 2.31.1
 
