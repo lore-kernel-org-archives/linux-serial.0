@@ -7,29 +7,29 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93797C4361A
-	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:19:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01BAC43616
+	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:19:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6A97A613E9
-	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:19:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B763B613F0
+	for <linux-serial@archiver.kernel.org>; Wed,  5 May 2021 09:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232431AbhEEJUn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 May 2021 05:20:43 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41684 "EHLO mx2.suse.de"
+        id S232540AbhEEJUl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 May 2021 05:20:41 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41552 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232426AbhEEJUd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 May 2021 05:20:33 -0400
+        id S232385AbhEEJUb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 5 May 2021 05:20:31 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 5EE0CB26E;
-        Wed,  5 May 2021 09:19:36 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 8C672B271;
+        Wed,  5 May 2021 09:19:34 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 20/35] ti-st: use goto-failpath in st_core_init
-Date:   Wed,  5 May 2021 11:19:13 +0200
-Message-Id: <20210505091928.22010-21-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 15/35] n_gsm: use goto-failpaths in gsm_init
+Date:   Wed,  5 May 2021 11:19:08 +0200
+Message-Id: <20210505091928.22010-16-jslaby@suse.cz>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210505091928.22010-1-jslaby@suse.cz>
 References: <20210505091928.22010-1-jslaby@suse.cz>
@@ -39,52 +39,52 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use the classic failpath handling using gotos in st_core_init. That way,
+Use the classic failpath handling using gotos in gsm_init. That way,
 tty_unregister_ldisc needs not be repeated on two places.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/misc/ti-st/st_core.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/tty/n_gsm.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/misc/ti-st/st_core.c b/drivers/misc/ti-st/st_core.c
-index 85315e726644..05c015140cad 100644
---- a/drivers/misc/ti-st/st_core.c
-+++ b/drivers/misc/ti-st/st_core.c
-@@ -872,9 +872,8 @@ int st_core_init(struct st_data_s **core_data)
- 	st_gdata = kzalloc(sizeof(struct st_data_s), GFP_KERNEL);
- 	if (!st_gdata) {
- 		pr_err("memory allocation failed");
--		tty_unregister_ldisc(&st_ldisc_ops);
- 		err = -ENOMEM;
--		return err;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 654e439ff6c8..cce2ef04caeb 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -3252,9 +3252,9 @@ static int __init gsm_init(void)
+ 
+ 	gsm_tty_driver = alloc_tty_driver(256);
+ 	if (!gsm_tty_driver) {
+-		tty_unregister_ldisc(N_GSM0710);
+ 		pr_err("gsm_init: tty allocation failed.\n");
+-		return -EINVAL;
++		status = -ENOMEM;
 +		goto err_unreg_ldisc;
  	}
+ 	gsm_tty_driver->driver_name	= "gsmtty";
+ 	gsm_tty_driver->name		= "gsmtty";
+@@ -3270,14 +3270,18 @@ static int __init gsm_init(void)
+ 	tty_set_operations(gsm_tty_driver, &gsmtty_ops);
  
- 	/* Initialize ST TxQ and Tx waitQ queue head. All BT/FM/GPS module skb's
-@@ -889,15 +888,18 @@ int st_core_init(struct st_data_s **core_data)
- 	err = st_ll_init(st_gdata);
- 	if (err) {
- 		pr_err("error during st_ll initialization(%ld)", err);
--		kfree(st_gdata);
--		tty_unregister_ldisc(&st_ldisc_ops);
--		return err;
-+		goto err_free_gdata;
+ 	if (tty_register_driver(gsm_tty_driver)) {
+-		put_tty_driver(gsm_tty_driver);
+-		tty_unregister_ldisc(N_GSM0710);
+ 		pr_err("gsm_init: tty registration failed.\n");
+-		return -EBUSY;
++		status = -EBUSY;
++		goto err_put_driver;
  	}
- 
- 	INIT_WORK(&st_gdata->work_write_wakeup, work_fn_write_wakeup);
- 
- 	*core_data = st_gdata;
+ 	pr_debug("gsm_init: loaded as %d,%d.\n",
+ 			gsm_tty_driver->major, gsm_tty_driver->minor_start);
  	return 0;
-+err_free_gdata:
-+	kfree(st_gdata);
++err_put_driver:
++	put_tty_driver(gsm_tty_driver);
 +err_unreg_ldisc:
-+	tty_unregister_ldisc(&st_ldisc_ops);
-+	return err;
++	tty_unregister_ldisc(N_GSM0710);
++	return status;
  }
  
- void st_core_exit(struct st_data_s *st_gdata)
+ static void __exit gsm_exit(void)
 -- 
 2.31.1
 
