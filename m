@@ -2,138 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FFAC43460
-	for <linux-serial@archiver.kernel.org>; Thu,  6 May 2021 07:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE124C43460
+	for <linux-serial@archiver.kernel.org>; Thu,  6 May 2021 08:31:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 68FB961176
-	for <linux-serial@archiver.kernel.org>; Thu,  6 May 2021 07:24:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 93F2360E09
+	for <linux-serial@archiver.kernel.org>; Thu,  6 May 2021 08:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233163AbhEFHZL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 6 May 2021 03:25:11 -0400
-Received: from smtprelay0123.hostedemail.com ([216.40.44.123]:56858 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233383AbhEFHZK (ORCPT
+        id S231228AbhEFIcx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 May 2021 04:32:53 -0400
+Received: from mail-wm1-f47.google.com ([209.85.128.47]:45908 "EHLO
+        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233479AbhEFIco (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 6 May 2021 03:25:10 -0400
-X-Greylist: delayed 481 seconds by postgrey-1.27 at vger.kernel.org; Thu, 06 May 2021 03:25:10 EDT
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave03.hostedemail.com (Postfix) with ESMTP id 9140D1801C42B
-        for <linux-serial@vger.kernel.org>; Thu,  6 May 2021 07:16:12 +0000 (UTC)
-Received: from omf18.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 1151D100E7B44;
-        Thu,  6 May 2021 07:16:11 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 3E2642EBF98;
-        Thu,  6 May 2021 07:16:10 +0000 (UTC)
-Message-ID: <ef1bd57095e941560530be43806791966a6735ad.camel@perches.com>
+        Thu, 6 May 2021 04:32:44 -0400
+Received: by mail-wm1-f47.google.com with SMTP id s5-20020a7bc0c50000b0290147d0c21c51so2555467wmh.4;
+        Thu, 06 May 2021 01:31:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jdCwYwppTlBb66RQGVcaxMJxswPj0yVdGz+T2ee7UvU=;
+        b=i2eHiRRvzlTL+6+4hSJnIfvQKv9h4CpOe+4lo8XUPqy65RpwF11of7nnpOWEZNzY+i
+         qobPYi79FPH48Xkl2F5C97tFMaFAD8/OSdYIDZL8+urN3n8vDa0B9hCZgv6Wyjazpt+S
+         JDr70Td4qT4ye2hzejp3TNZJ6pLRSuKKJueId3NGqhfp4cgbKSlxPHLsxFL0z5xFbn3g
+         gkIp8pTonbFApDbzdvN7qodb8rsChhYtGBh0bZgIje1etZRsBYOk3wtd1i2W0SN10Of+
+         KvGEXrcMqVRdVtDl4FTY9mt6mjJNGXQha1vqvy86y5rOQ2PnbOYRQVKcV2mbDcs5EmNF
+         2tZQ==
+X-Gm-Message-State: AOAM532g+QVCjND0BK2cX5LrAxfNxrZZ5YsU38lVWcpU5Sw85RJGpX8g
+        7NUG9BpXT4UBtk4/ohh4Oi90QNBlbUjyWw==
+X-Google-Smtp-Source: ABdhPJyteP3dy+j3FLa84WwMPk1u2FJXXKvIr5hwaOJRXcEmLu3SLt583QIZYlTF1065M2uhsd7Iug==
+X-Received: by 2002:a1c:b60b:: with SMTP id g11mr14092208wmf.68.1620289898367;
+        Thu, 06 May 2021 01:31:38 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id q20sm15785912wmq.2.2021.05.06.01.31.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 May 2021 01:31:37 -0700 (PDT)
 Subject: Re: [PATCH 34/35] tty: make tty_get_byte_size available
-From:   Joe Perches <joe@perches.com>
-To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 06 May 2021 00:16:08 -0700
-In-Reply-To: <20210505091928.22010-35-jslaby@suse.cz>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Joe Perches <joe@perches.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 References: <20210505091928.22010-1-jslaby@suse.cz>
-         <20210505091928.22010-35-jslaby@suse.cz>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+ <20210505091928.22010-35-jslaby@suse.cz>
+ <ef1bd57095e941560530be43806791966a6735ad.camel@perches.com>
+ <CAHp75Vfq6ABW7ukwaKmZOF2DszmuHD28S=wcLcFowvRdXTnWmg@mail.gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <7830c076-0d42-662c-5baa-2baecf1ad3b0@kernel.org>
+Date:   Thu, 6 May 2021 10:31:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: 3E2642EBF98
-X-Stat-Signature: rqyqs418axej39nobtsrt4bmzzgx3tkt
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/EnO04s/8BpC4nMWNfXmojDlsCpHdghz0=
-X-HE-Tag: 1620285370-977581
+In-Reply-To: <CAHp75Vfq6ABW7ukwaKmZOF2DszmuHD28S=wcLcFowvRdXTnWmg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 2021-05-05 at 11:19 +0200, Jiri Slaby wrote:
-> Many tty drivers contain code to compute bits count depending on termios
-> cflags. So extract this code from serial core to a separate tty helper
-> function called tty_get_byte_size.
-[]
-> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-[]
-> +/**
-> + *	tty_get_byte_size	-	get size of a byte
-> + *	@cflag: termios cflag value
-> + *	@account_flags: account for start and stop bits, second stop bit (if
-> + *			set), and parity (if set)
-> + *
-> + *	Get the size of a byte in bits depending on @cflag. Depending on
-> + *	@account_flags parameter, the result also accounts start and stop bits,
-> + *	the second stop bit, and parity bit.
-> + */
-> +unsigned char tty_get_byte_size(unsigned int cflag, bool account_flags)
-> +{
-> +	unsigned char bits = account_flags ? 2 : 0;
-> +
-> +	/* byte size and parity */
-> +	switch (cflag & CSIZE) {
-> +	case CS5:
-> +		bits += 5;
-> +		break;
-> +	case CS6:
-> +		bits += 6;
-> +		break;
-> +	case CS7:
-> +		bits += 7;
-> +		break;
-> +	case CS8:
-> +	default:
-> +		bits += 8;
-> +		break;
-> +	}
-> +
-> +	if (account_flags && (cflag & CSTOPB))
-> +		bits++;
-> +
-> +	if (account_flags && (cflag & PARENB))
-> +		bits++;
-> +
-> +	return bits;
-> +}
-> +EXPORT_SYMBOL_GPL(tty_get_byte_size);
+On 06. 05. 21, 10:24, Andy Shevchenko wrote:
+> if (!account_flags)
+>    return bits;
+> 
+> ?
 
-Perhaps clearer not testing account_flags multiple times.
+So I have:
 
 unsigned char tty_get_byte_size(unsigned int cflag, bool account_flags)
 {
-	unsigned char bits;
+         unsigned char bits;
 
-	/* byte size and parity */
-	switch (cflag & CSIZE) {
-	case CS5:
-		bits = 5;
-		break;
-	case CS6:
-		bits = 6;
-		break;
-	case CS7:
-		bits = 7;
-		break;
-	case CS8:
-	default:
-		bits = 8;
-		break;
-	}
+         switch (cflag & CSIZE) {
+         case CS5:
+                 bits = 5;
+                 break;
+         case CS6:
+                 bits = 6;
+                 break;
+         case CS7:
+                 bits = 7;
+                 break;
+         case CS8:
+         default:
+                 bits = 8;
+                 break;
+         }
 
-	if (account_flags) {
-		bits += 2;	/* start/stop bits */
+         if (!account_flags)
+                 return bits;
 
-		if (cflag & CSTOPB)
-			bits++;
+         if (cflag & CSTOPB)
+                 bits++;
+         if (cflag & PARENB)
+                 bits++;
 
-		if (cflag & PARENB)
-			bits++;
-	}
-
-	return bits;
+         return bits + 2;
 }
 
-
+thanks,
+-- 
+js
+suse labs
