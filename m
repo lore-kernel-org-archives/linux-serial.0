@@ -2,101 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FCCC433B4
-	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 01:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C44A9C433ED
+	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 10:18:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CCB4F610CE
-	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 01:14:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 97E126143F
+	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 10:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232151AbhEGBPv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 6 May 2021 21:15:51 -0400
-Received: from mail-ot1-f52.google.com ([209.85.210.52]:45845 "EHLO
-        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230387AbhEGBPv (ORCPT
+        id S236051AbhEGKTv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 7 May 2021 06:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236163AbhEGKTL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 6 May 2021 21:15:51 -0400
-Received: by mail-ot1-f52.google.com with SMTP id f75-20020a9d03d10000b0290280def9ab76so6592653otf.12;
-        Thu, 06 May 2021 18:14:51 -0700 (PDT)
+        Fri, 7 May 2021 06:19:11 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D390EC061342;
+        Fri,  7 May 2021 03:18:09 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id l4so12774477ejc.10;
+        Fri, 07 May 2021 03:18:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KpibJZWzZsvmRnCK+Fvt1jWGtKjdsl/Xtu/T/v3Jhfg=;
+        b=E+t3AXYNBKsA3Vmr7ECD7f6lV0+aiaXMwBJHXSZ8kfXgN7O5lbg39McQG+CBji+9UY
+         b2wVHJT+kAEYUuO3c/iQazz23GeVIo6lSy4zWINw02klaod2xul7TNDk+VqrSac8hGLT
+         55AFZbuwaW29eMxN/4jJ256tP0C8sLKnYFBAkqp54VtnNGgc5H9Ke0y28T7nQoaZUr77
+         9dNgNXXASC/MhabBow848UpTJzcjrQ44KTToTwxdt0cF/laG5FJRvHttuQQz9acYwC/D
+         IHNZelopU1TIqyymDCAKuO7VVnUwk3bjp+hVOv19dxxiw9Tx88ZmHvrViTCzzM5gC8li
+         FNVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=oEfCN0pfoA/qDroFhgTH+ere0rMR3Q9MSvHYsosWDl8=;
-        b=SYbdMGQlWXB9JVLfx+09kg2z6CmWN/VmrzAfWH6SQwi2LUgq+iaMweh0rKpZX+LYs8
-         NyMOuCM175oWGO7XfLIhiayR4Nf8W3WvL29WUAuOHBffEnBdWq5vxdMqnIqbdkEXwqUW
-         dxZlfhaujmJY7q/znQ+YbJjU0G90pVJQ1a4FFzjLuDhegXQzjKu04NObMqr/+w6mfVP0
-         VQTuIEb9fuZgW9FwQMYUGO+sWSFr3eazkHa7eXHSat9esYgWzHly7qbNE/3Y5eNcsFry
-         1gG9A9ykI/VohGKQnjLjURxriwvaXrY2ye503lRntwuD9U+Rvu8bvCRAeFz0lFPPFm7U
-         TkDw==
-X-Gm-Message-State: AOAM532YCRuWu9vv/TjGmaIB+/oBiP91ULGJNFk+HJ+KbkcNrrJNQGrs
-        awDaSnzXfMRAo0WDWPjWDw==
-X-Google-Smtp-Source: ABdhPJwH6pLpfJTNIPyBF2g8fBrl9A07O+m3Rx4UXrIsglOnYIjflryN7rQAEjYLNNSULq8cGge4wQ==
-X-Received: by 2002:a9d:7997:: with SMTP id h23mr6097466otm.366.1620350091104;
-        Thu, 06 May 2021 18:14:51 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id f13sm948681ote.46.2021.05.06.18.14.49
+        bh=KpibJZWzZsvmRnCK+Fvt1jWGtKjdsl/Xtu/T/v3Jhfg=;
+        b=tpOSE7YtHt3G8jtEcd0VYXhsJ2CvnmEB8eKZg1lEN0B6EP1pjDTzbkqCLePY25/32K
+         tTygNpUZQPBznL5aLLtWFoGyvuc8O3be2YxgUuZRW0Q8AmfekIRJUcdmLqO4EersJRX0
+         wnvUgNT4LGYN079Tu5RgoARy9ASBjdLxnUi/eUFDQElsM89oqI4Fo3ti04Q4o8eWMRzx
+         F2rauSG5l8CARq7SXdiqHLK9Ccj4T5AQUUWNnzN63wvtA1X8qK83PIBNcGxQyOboN9vc
+         ac82SbZ2eW6RMo8LHTpyMp12NRNWqYINtC+sZ+pFmJf4rKcn5XayjJKrhFfT2GmSz5Xw
+         Ll7Q==
+X-Gm-Message-State: AOAM532MoBQRj1gvD/vsv1HDtclWbjtvqfIHjUbX2+VxvK4cQck+7ON0
+        fXXU5GuXuqEHz05PU5gY2OI=
+X-Google-Smtp-Source: ABdhPJz8twDMgGhVFzYKuFafUo914Wz0DyvH71Zyz6dKhQCRDtwvymCrde+g4bCHRLqPHaGTS7jfIw==
+X-Received: by 2002:a17:907:7216:: with SMTP id dr22mr9217108ejc.185.1620382688654;
+        Fri, 07 May 2021 03:18:08 -0700 (PDT)
+Received: from r00t ([212.15.177.85])
+        by smtp.gmail.com with ESMTPSA id n15sm3342209eje.118.2021.05.07.03.18.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 May 2021 18:14:50 -0700 (PDT)
-Received: (nullmailer pid 1127217 invoked by uid 1000);
-        Fri, 07 May 2021 01:14:49 -0000
-Date:   Thu, 6 May 2021 20:14:49 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-stm32 <linux-stm32@st-md-mailman.stormreply.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Al Cooper <alcooperx@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: Change to reference the
- kernel-defined serial.yaml
-Message-ID: <20210507011449.GA1126886@robh.at.kernel.org>
-References: <20210506132049.1513-1-thunder.leizhen@huawei.com>
- <20210506132049.1513-2-thunder.leizhen@huawei.com>
+        Fri, 07 May 2021 03:18:08 -0700 (PDT)
+Date:   Fri, 7 May 2021 13:16:38 +0200
+From:   Ivan Bakula <wamreu@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh@kernel.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] TTY: serdev: Replace depricated macros
+Message-ID: <YJUhZP1FwMlUfWrw@r00t>
+References: <20210506183228.33981-1-wamreu@gmail.com>
+ <YJQp4W2X/tuvLfVA@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210506132049.1513-2-thunder.leizhen@huawei.com>
+In-Reply-To: <YJQp4W2X/tuvLfVA@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 06 May 2021 21:20:48 +0800, Zhen Lei wrote:
-> The /schemas/serial.yaml from dt-schema only has the property $nodename,
-> whereas the kernel-defined /schemas/serial/serial.yaml contains more
-> useful properties, support for more complex application scenarios.
-> 
-> For example:
-> 1) The property "current-speed" in fsl-lx2160a.dtsi
-> 2) The subnode "bluetooth" in hi3660-hikey960.dts
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  Documentation/devicetree/bindings/serial/8250.yaml            | 2 +-
->  .../devicetree/bindings/serial/brcm,bcm7271-uart.yaml         | 2 +-
->  Documentation/devicetree/bindings/serial/ingenic,uart.yaml    | 2 +-
->  Documentation/devicetree/bindings/serial/pl011.yaml           | 4 ++--
->  Documentation/devicetree/bindings/serial/qca,ar9330-uart.yaml | 4 ++--
->  Documentation/devicetree/bindings/serial/renesas,em-uart.yaml | 2 +-
->  Documentation/devicetree/bindings/serial/samsung_uart.yaml    | 2 +-
->  Documentation/devicetree/bindings/serial/sifive-serial.yaml   | 4 ++--
->  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml          | 2 +-
->  Documentation/devicetree/bindings/serial/st,stm32-uart.yaml   | 3 +--
->  10 files changed, 13 insertions(+), 14 deletions(-)
-> 
+Thank you for your reply.
 
-Thanks for doing this!
+> If these really are "deprecated", 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+According to the comment in file "include/linux/idr.h" (line 318) these
+macros are depricated.
+
+> why not just do a search/replace across the whole tree and change them?
+
+I've stumbled across these macros while trying to figure out how to write 
+device driver using serial device bus. So, I've decided to change them with
+appropriate function calls.
+
+I didn't do search/replace across the whole tree because it's my first 
+patch and I wanted it to be short. But now, when you mentioned it, 
+I will do it.
+
+Thank you for your time,
+
+Ivan Bakula
