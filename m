@@ -2,75 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEFAC433ED
-	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 13:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B9DC433ED
+	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 19:19:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C71636143F
-	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 13:21:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A63D4610D2
+	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 19:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237234AbhEGNV7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 7 May 2021 09:21:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47836 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230499AbhEGNV7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 7 May 2021 09:21:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0065F6143F;
-        Fri,  7 May 2021 13:20:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1620393659;
-        bh=sobQ8pQQF202nP8+bQmgCwGEkUv/nvmLT0VVBtITVhw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hkHh6Q7P/Ojek+wyXL2YSye3vNMX7L/8Ls+tnsAGHNVGwlYzT1xDUxdR4cY4EbwkY
-         MD9C54t5ee8gqUVDyROeFbSlpI3geNEocCjfIQZKzcvfLjpiJcD8t7tAtSyBCj44IV
-         ruEjjjUKxiTBmPbxmiNVmaakoELTddImqSNBGodA=
-Date:   Fri, 7 May 2021 15:20:56 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Wei Ming Chen <jj251510319013@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_pci: Use fallthrough pseudo-keyword
-Message-ID: <YJU+uJcJ6Y+2PEUc@kroah.com>
-References: <20210507130403.11144-1-jj251510319013@gmail.com>
+        id S229775AbhEGTUl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 7 May 2021 15:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229675AbhEGTUl (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 7 May 2021 15:20:41 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670E9C061574;
+        Fri,  7 May 2021 12:19:40 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id f24so15178759ejc.6;
+        Fri, 07 May 2021 12:19:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9m7MMdVqLKAy3chOmd9o8x3GgGbbXRzbchSC4T+XsRI=;
+        b=KY0d3e3IEUTZBH5JzSrg6Mj1XkZNF99NKMXm5l9scfi0MdX99qxpoH73iqkKF17s1y
+         Wo3k5EBCgudNoNYx1dv0hs2+laRhHFBEr2Zw7hw9LoweZ5BfPZh1+apa1PgY5ZOUpUn/
+         EXKgQYM1kEN5ahCcpXWwn773uEaGBlACE91XZQJKou8wkylt5n6EypjyH9MBUf9dVZUH
+         7AD5n+pEDM7i7rUclwSZ4U2rVTZmHi18lTTXehB/ycLkceSu5RUg5KsMJGVk2thku4pf
+         vbpoOYMu8TQLC+rPuv1eDyk1n5tAMrNJzuZFwWHcAAWaTkmZaWFU17GIwVm8UiUNLtHl
+         tQzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9m7MMdVqLKAy3chOmd9o8x3GgGbbXRzbchSC4T+XsRI=;
+        b=dWhe+W6sNkJ7l+WAhDswWycqjaQqy1X24JklobiITtdrkoKq/5DRueo4+agONiNOQt
+         DaqO7SU5CMi6KuehMSCNNdV0fHugAPM8EBYTTW1Fi4RNmYgPSfa84+rwdTN99/FOt8a+
+         B5TQ9xaSjym3EHbKq4z+FsYYl+nkqHcdDIuYZxZo3y8EsbPnU/mVaqu2fXiKRXjwePqY
+         PNwHJGhs5JWdGUxamY05GQKBRBwSHOUlNoGncOPdJ8sNcpl7z6PWTcjGpfOQmwzigZIP
+         UWYoUoxQEO984dMZrSOkDZDicf1uldJ0hDtTm5L9T0NlKCs62X8j3r1BTLRf2+x50jsQ
+         O1RQ==
+X-Gm-Message-State: AOAM532dxaVvlPdX+fLb57U7Tbr0uPHkK5Y+Kx9bulKUGlvoO5bF9qRJ
+        K6lbiQQAkcLfUa0KHiLtlNSgnwP3vQTgkwFq
+X-Google-Smtp-Source: ABdhPJwkTnOB6rNhcQ5WxYos6n/lFZIFyXKgvJlPwbIBrWwIb4iPbrKJdgX+hWtz+LAfaJ4++1FbEg==
+X-Received: by 2002:a17:906:f6d0:: with SMTP id jo16mr11645678ejb.461.1620415178115;
+        Fri, 07 May 2021 12:19:38 -0700 (PDT)
+Received: from r00t ([212.15.178.107])
+        by smtp.gmail.com with ESMTPSA id rs28sm3965783ejb.35.2021.05.07.12.19.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 May 2021 12:19:37 -0700 (PDT)
+Date:   Fri, 7 May 2021 22:18:13 +0200
+From:   Ivan Bakula <wamreu@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh@kernel.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] TTY: serdev: Replace depricated macros
+Message-ID: <YJWghQC8hJ3UO6lG@r00t>
+References: <20210506183228.33981-1-wamreu@gmail.com>
+ <YJQp4W2X/tuvLfVA@kroah.com>
+ <YJUhZP1FwMlUfWrw@r00t>
+ <YJUbv3t05ai+g2k0@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210507130403.11144-1-jj251510319013@gmail.com>
+In-Reply-To: <YJUbv3t05ai+g2k0@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 07, 2021 at 09:04:03PM +0800, Wei Ming Chen wrote:
-> Add pseudo-keyword macro fallthrough[1]
-> 
-> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
-> 
-> Signed-off-by: Wei Ming Chen <jj251510319013@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 689d8227f95f..4158f06de4d5 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -847,8 +847,11 @@ static int pci_netmos_init(struct pci_dev *dev)
->  
->  	switch (dev->device) { /* FALLTHROUGH on all */
->  	case PCI_DEVICE_ID_NETMOS_9904:
-> +		fallthrough;
->  	case PCI_DEVICE_ID_NETMOS_9912:
-> +		fallthrough;
->  	case PCI_DEVICE_ID_NETMOS_9922:
-> +		fallthrough;
->  	case PCI_DEVICE_ID_NETMOS_9900:
+Ok, got it.
 
-I really doubt this is needed here.  If so, something is really wrong
-with the static checkers.
+Thank you for your time,
 
-thanks,
-
-greg k-h
+I.B.
