@@ -2,81 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B9DC433ED
-	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 19:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0495BC433ED
+	for <linux-serial@archiver.kernel.org>; Sun,  9 May 2021 08:28:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A63D4610D2
-	for <linux-serial@archiver.kernel.org>; Fri,  7 May 2021 19:19:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D3F1C613B6
+	for <linux-serial@archiver.kernel.org>; Sun,  9 May 2021 08:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbhEGTUl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 7 May 2021 15:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbhEGTUl (ORCPT
+        id S229640AbhEII3X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 9 May 2021 04:29:23 -0400
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:52869 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229631AbhEII3X (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 7 May 2021 15:20:41 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670E9C061574;
-        Fri,  7 May 2021 12:19:40 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id f24so15178759ejc.6;
-        Fri, 07 May 2021 12:19:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9m7MMdVqLKAy3chOmd9o8x3GgGbbXRzbchSC4T+XsRI=;
-        b=KY0d3e3IEUTZBH5JzSrg6Mj1XkZNF99NKMXm5l9scfi0MdX99qxpoH73iqkKF17s1y
-         Wo3k5EBCgudNoNYx1dv0hs2+laRhHFBEr2Zw7hw9LoweZ5BfPZh1+apa1PgY5ZOUpUn/
-         EXKgQYM1kEN5ahCcpXWwn773uEaGBlACE91XZQJKou8wkylt5n6EypjyH9MBUf9dVZUH
-         7AD5n+pEDM7i7rUclwSZ4U2rVTZmHi18lTTXehB/ycLkceSu5RUg5KsMJGVk2thku4pf
-         vbpoOYMu8TQLC+rPuv1eDyk1n5tAMrNJzuZFwWHcAAWaTkmZaWFU17GIwVm8UiUNLtHl
-         tQzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9m7MMdVqLKAy3chOmd9o8x3GgGbbXRzbchSC4T+XsRI=;
-        b=dWhe+W6sNkJ7l+WAhDswWycqjaQqy1X24JklobiITtdrkoKq/5DRueo4+agONiNOQt
-         DaqO7SU5CMi6KuehMSCNNdV0fHugAPM8EBYTTW1Fi4RNmYgPSfa84+rwdTN99/FOt8a+
-         B5TQ9xaSjym3EHbKq4z+FsYYl+nkqHcdDIuYZxZo3y8EsbPnU/mVaqu2fXiKRXjwePqY
-         PNwHJGhs5JWdGUxamY05GQKBRBwSHOUlNoGncOPdJ8sNcpl7z6PWTcjGpfOQmwzigZIP
-         UWYoUoxQEO984dMZrSOkDZDicf1uldJ0hDtTm5L9T0NlKCs62X8j3r1BTLRf2+x50jsQ
-         O1RQ==
-X-Gm-Message-State: AOAM532dxaVvlPdX+fLb57U7Tbr0uPHkK5Y+Kx9bulKUGlvoO5bF9qRJ
-        K6lbiQQAkcLfUa0KHiLtlNSgnwP3vQTgkwFq
-X-Google-Smtp-Source: ABdhPJwkTnOB6rNhcQ5WxYos6n/lFZIFyXKgvJlPwbIBrWwIb4iPbrKJdgX+hWtz+LAfaJ4++1FbEg==
-X-Received: by 2002:a17:906:f6d0:: with SMTP id jo16mr11645678ejb.461.1620415178115;
-        Fri, 07 May 2021 12:19:38 -0700 (PDT)
-Received: from r00t ([212.15.178.107])
-        by smtp.gmail.com with ESMTPSA id rs28sm3965783ejb.35.2021.05.07.12.19.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 12:19:37 -0700 (PDT)
-Date:   Fri, 7 May 2021 22:18:13 +0200
-From:   Ivan Bakula <wamreu@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     robh@kernel.org, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] TTY: serdev: Replace depricated macros
-Message-ID: <YJWghQC8hJ3UO6lG@r00t>
-References: <20210506183228.33981-1-wamreu@gmail.com>
- <YJQp4W2X/tuvLfVA@kroah.com>
- <YJUhZP1FwMlUfWrw@r00t>
- <YJUbv3t05ai+g2k0@kroah.com>
+        Sun, 9 May 2021 04:29:23 -0400
+Received: from localhost.localdomain ([86.243.172.93])
+        by mwinf5d86 with ME
+        id 2YUJ2500S21Fzsu03YUKfS; Sun, 09 May 2021 10:28:19 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 09 May 2021 10:28:19 +0200
+X-ME-IP: 86.243.172.93
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     gregkh@linuxfoundation.org, hjk@linutronix.de,
+        jirislaby@kernel.org, lee.jones@linaro.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] tty: serial: 8250: serial_cs: Fix a memory leak in error handling path
+Date:   Sun,  9 May 2021 10:28:18 +0200
+Message-Id: <562910a450cb86db7c2c4a4328a60e53ef95f504.1620548790.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YJUbv3t05ai+g2k0@kroah.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Ok, got it.
+In the probe function, if the final 'serial_config()' fails, 'info' is
+leaking.
 
-Thank you for your time,
+Use 'devm_kzalloc' instead to fix the leak and simplify the .remove
+function.
 
-I.B.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+I've not been able to find a Fixes tag. All I know is that it is old!
+---
+ drivers/tty/serial/8250/serial_cs.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
+index 63ea9c4da3d5..d18c98e0d0b0 100644
+--- a/drivers/tty/serial/8250/serial_cs.c
++++ b/drivers/tty/serial/8250/serial_cs.c
+@@ -310,7 +310,7 @@ static int serial_probe(struct pcmcia_device *link)
+ 	dev_dbg(&link->dev, "serial_attach()\n");
+ 
+ 	/* Create new serial device */
+-	info = kzalloc(sizeof(*info), GFP_KERNEL);
++	info = devm_kzalloc(&link->dev, sizeof(*info), GFP_KERNEL);
+ 	if (!info)
+ 		return -ENOMEM;
+ 	info->p_dev = link;
+@@ -325,17 +325,12 @@ static int serial_probe(struct pcmcia_device *link)
+ 
+ static void serial_detach(struct pcmcia_device *link)
+ {
+-	struct serial_info *info = link->priv;
+-
+ 	dev_dbg(&link->dev, "serial_detach\n");
+ 
+ 	/*
+ 	 * Ensure that the ports have been released.
+ 	 */
+ 	serial_remove(link);
+-
+-	/* free bits */
+-	kfree(info);
+ }
+ 
+ /*====================================================================*/
+-- 
+2.30.2
+
