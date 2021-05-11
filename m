@@ -2,144 +2,141 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-20.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 102F4C43461
-	for <linux-serial@archiver.kernel.org>; Tue, 11 May 2021 10:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA91C433B4
+	for <linux-serial@archiver.kernel.org>; Tue, 11 May 2021 10:57:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C7C4D61925
-	for <linux-serial@archiver.kernel.org>; Tue, 11 May 2021 10:07:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 358F361480
+	for <linux-serial@archiver.kernel.org>; Tue, 11 May 2021 10:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbhEKKI7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 May 2021 06:08:59 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:29960 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231416AbhEKKI6 (ORCPT
+        id S231432AbhEKK6T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 11 May 2021 06:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231462AbhEKK6P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 May 2021 06:08:58 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1620727671; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=X3Xjne8RvmLRXs6P8qSQY1+JkwLUsku2pdjMA/S+5+BHMxKgASX6lws0u2Xd0rKv3x
-    XWLQNjMxWzSENyzF8ANt9+jkDMGmRoqdIYhKcE/g36plPb3gc0EyhEd2PUqIVbwAoM3g
-    KijZfaYNG97gJPesGAENKU5ACQ8rgyqp5RzUSoy1yTp0So9ei0j5WQds9owx6w/Em2Hb
-    wZFyPf5Qs3Bd2nJGkO3NCyLgwuDy7hfKDVRG9Ttj+lrCASYHPiBpQ5ahsNR7TAkDEibS
-    vS+HYy4Aoz4mnKzMgZpiN0D1tPPKfs1Qx4EkRu590Rzs9xn3oILwrJD97fRirwfMnpUe
-    m6pA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1620727671;
-    s=strato-dkim-0002; d=strato.com;
-    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=4pslrDftx0Hdb3brI/L/wdGy5h+2gdgtEccq8OHzqTw=;
-    b=lYWpUTBIV0984hBwvWKn61wzQJ0HgnSgfS9RVFntpc0TJ50IwUg72yBBJPYS5DcZkq
-    q9ZjHBhNySz3BHvQJfcTzugcGo2iABzHwwPTzUXeNO+qlLdiHpu/cs/x/bqIIlTqW55O
-    sOLd+yU8/fGYHrLE442kM4kGWAFswu/rVEd29Z1DsWii6fErYRWTcnWh16kKVWZrGgUK
-    6Ixa+5LtfP9NiKnLnboy2E6WPHfBJrcE/IJAbicrODb4RRZEqLw3H/iF83aF7tnxNpWn
-    DyP6SheSBn1Fvy+x3TNi4pctF9o/62P+1kfHdfoIKvQ68+Aah0PACI7yCVbUQ1IYwqsi
-    nqoQ==
-ARC-Authentication-Results: i=1; strato.com;
-    dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1620727671;
-    s=strato-dkim-0002; d=fpond.eu;
-    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=4pslrDftx0Hdb3brI/L/wdGy5h+2gdgtEccq8OHzqTw=;
-    b=Ns4RjhqLAZsvvC1po9XW+TPYiV83wkGyFalWg5Uwv05jMFmp0BK4HDjGO2CJ7A7wTD
-    RVwfwzXpunGBcQd5X+0mqqSQ+Wr5fgYGmu2NuWGQo4AZ0G/LfNooiyZDhpOLYLDZTFb7
-    nDMgy56uHJyVZbOcHkE0LLl9pr0VdMOH2dVs4KHrZ3LeUovG0hQAwJxmUHPkIvZ7x5SW
-    GtOU7Vx4vDkWVQ/skM7aaGwQNgn8S2a4maZ990hVniy2VAG1g9rU+SVAgpWkttC/TPE/
-    sDyfKizRpJh/DO19mbOGFK9zKPWk5gj3C1UsZb8T93BaXhwfYJQV4tA/z3NWekn5GxEV
-    2GyA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCv/x28jVM="
-X-RZG-CLASS-ID: mo00
-Received: from oxapp06-01.back.ox.d0m.de
-    by smtp-ox.front (RZmta 47.25.6 AUTH)
-    with ESMTPSA id v052c3x4BA7p0IZ
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Tue, 11 May 2021 12:07:51 +0200 (CEST)
-Date:   Tue, 11 May 2021 12:07:51 +0200 (CEST)
-From:   Ulrich Hecht <uli@fpond.eu>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulrich Hecht <ulrich.hecht+renesas@gmail.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Linh Phung <linh.phung.jy@renesas.com>
-Cc:     linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Message-ID: <1158014321.1245232.1620727671192@webmail.strato.com>
-In-Reply-To: <5eff320aef92ffb33d00e57979fd3603bbb4a70f.1620648218.git.geert+renesas@glider.be>
-References: <5eff320aef92ffb33d00e57979fd3603bbb4a70f.1620648218.git.geert+renesas@glider.be>
-Subject: Re: [PATCH] serial: sh-sci: Fix off-by-one error in FIFO threshold
- register setting
+        Tue, 11 May 2021 06:58:15 -0400
+Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC77BC061760
+        for <linux-serial@vger.kernel.org>; Tue, 11 May 2021 03:57:08 -0700 (PDT)
+Received: by mail-ua1-x92a.google.com with SMTP id z7so6199456uav.4
+        for <linux-serial@vger.kernel.org>; Tue, 11 May 2021 03:57:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H3TFuIrc3Mj7EWsSB5KHDQrg/psdazR0cVvA5Agy22s=;
+        b=BI5betzphHV53YRAHo1kbf3qtN5EZ+oJQvqpn4XXUNTvjtju9UI5Wxwcu/qn0vpzMa
+         l8lD+g5mD22XYfa4O8a/DkbtdqMxftpPoCgk3EzFxlgMa9475q6tweCGnyLgcCpSu8ue
+         poRgY190B4IYUbsx23WRK7dsxuPfKqFzfOElVB1Ti0fK7UgpND6B/TIlH7Ez2Ztt/UZw
+         X9ChYwX5o5XMrZarBxHM9k9fuDXw7GeXfg0wQeftAJktbg8FdqoErJmdZxTz9ySB9ljp
+         5kzgCqLZ8a1IL5VP4fZ8V/3eoLv/D//8lDoYt4CeIJg/ADMwinFvoAgj3MdlTZUA2vJ8
+         V+KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H3TFuIrc3Mj7EWsSB5KHDQrg/psdazR0cVvA5Agy22s=;
+        b=NmVME1/DpqjZ+rIA4xL7YESor9/tIe9RhZiRSS3RidsvkgXVDglNzHvSWvlRZZvezN
+         tBBjs2FsddMjRsJUFN+2dSEPs1gjF/Z1L62154HAmA2RWuUZjpARKMmBJfPRu45DnakE
+         kIQNLZsLjSu5CTLLDNkzca+Bu1MPO9I5szLhGAkflFBhwO9J55LfhHdap/91Fq7tLydy
+         DvtkzIDpGuBlUGI3sJOrj/LP870xfO+v8GSEblrNrs5Pe89r1OHVGN3t+E3rd/6SAF7K
+         i2xooDMr4u6c2SPdg7ZWWuDH9ZFnIbU9IViSGm+CYou6in2RpoFdyXlc4Bi136mP08P/
+         WeZw==
+X-Gm-Message-State: AOAM5306sfnQIwRSYgNCPqT6nm9s+dbY9Ttdc5PriM1mbkLSeOxQ1y0l
+        w45PaVGb0OgUJy8RC/sxPIaY75M3pqPtXUOcgUq2em/2yt2ecw==
+X-Google-Smtp-Source: ABdhPJwynumHCSzbxs9fEYhSTsTQNyquQmA9nby0MfgarYqJoMGRF7eJ8B5GdcKLxBd8RzpG4b/jdGZAXltAK2YZE4E=
+X-Received: by 2002:ab0:7002:: with SMTP id k2mr25127013ual.104.1620730627962;
+ Tue, 11 May 2021 03:57:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v7.10.4-Rev22
-X-Originating-Client: open-xchange-appsuite
+References: <20210429081151.17558-1-cl@rock-chips.com> <20210429081151.17558-4-cl@rock-chips.com>
+In-Reply-To: <20210429081151.17558-4-cl@rock-chips.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 11 May 2021 12:56:29 +0200
+Message-ID: <CAPDyKFr3cpARwxZPUfnFfJT-=UMynUNK-Jb0NLNJG=k9O-=R9g@mail.gmail.com>
+Subject: Re: [PATCH v4 03/10] dt-bindings: mmc: rockchip-dw-mshc: add
+ description for rk3568
+To:     cl@rock-chips.com
+Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Chen-Yu Tsai <wens@csie.org>, uwe@kleine-koenig.org,
+        mail@david-bauer.net, Johan Jonker <jbx6244@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        jensenhuang@friendlyarm.com,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        cnsztl@gmail.com, DTML <devicetree@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org,
+        Jianqun Xu <jay.xu@rock-chips.com>,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        David Wu <david.wu@rock-chips.com>,
+        zhangqing <zhangqing@rock-chips.com>,
+        Tao Huang <huangtao@rock-chips.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jamie Iles <jamie@jamieiles.com>,
+        linux-watchdog@vger.kernel.org, Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, 29 Apr 2021 at 10:12, <cl@rock-chips.com> wrote:
+>
+> From: Liang Chen <cl@rock-chips.com>
+>
+> add "rockchip,rk3568-dw-mshc", "rockchip,rk3288-dw-mshc" for mmc nodes on
+> a rk3568 platform to rockchip-dw-mshc.yaml.
+>
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
 
-> On 05/10/2021 2:07 PM Geert Uytterhoeven <geert+renesas@glider.be> wrote:
-> 
->  
-> The Receive FIFO Data Count Trigger field (RTRG[6:0]) in the Receive
-> FIFO Data Count Trigger Register (HSRTRGR) of HSCIF can only hold values
-> ranging from 0-127.  As the FIFO size is equal to 128 on HSCIF, the user
-> can write an out-of-range value, touching reserved bits.
-> 
-> Fix this by limiting the trigger value to the FIFO size minus one.
-> Reverse the order of the checks, to avoid rx_trig becoming zero if the
-> FIFO size is one.
-> 
-> Note that this change has no impact on other SCIF variants, as their
-> maximum supported trigger value is lower than the FIFO size anyway, and
-> the code below takes care of enforcing these limits.
-> 
-> Reported-by: Linh Phung <linh.phung.jy@renesas.com>
-> Fixes: a380ed461f66d1b8 ("serial: sh-sci: implement FIFO threshold register setting")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Applied for next (and by amending the commit message according to
+Rob's suggestion), thanks!
+
+Kind regards
+Uffe
+
+
 > ---
-> Compile-tested only.
-> 
-> The BSP contains a different patch[1], which masks the value to write by
-> 0x7f.  This is IMHO incorrect, as it would set the trigger value to zero
-> when 128 is requested.
-> 
-> [1] "serial: sh-sci: Using mask when writing to HSRTRGR"
->     https://github.com/renesas-rcar/linux-bsp/commit/9915223f41c7d680aaaed12971601dc038ce76a3
-> ---
->  drivers/tty/serial/sh-sci.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index ef37fdf37612f82f..4baf1316ea729931 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1023,10 +1023,10 @@ static int scif_set_rtrg(struct uart_port *port, int rx_trig)
->  {
->  	unsigned int bits;
->  
-> +	if (rx_trig >= port->fifosize)
-> +		rx_trig = port->fifosize - 1;
->  	if (rx_trig < 1)
->  		rx_trig = 1;
-> -	if (rx_trig >= port->fifosize)
-> -		rx_trig = port->fifosize;
->  
->  	/* HSCIF can be set to an arbitrary level. */
->  	if (sci_getreg(port, HSRTRGR)->size) {
-> -- 
-> 2.25.1
-
-Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
-
-CU
-Uli
+>  .../devicetree/bindings/mmc/rockchip-dw-mshc.yaml        | 9 +--------
+>  1 file changed, 1 insertion(+), 8 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml b/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
+> index 3762f1c8de96..eaa3b0ef24f6 100644
+> --- a/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
+> @@ -29,21 +29,14 @@ properties:
+>        - const: rockchip,rk3288-dw-mshc
+>        - items:
+>            - enum:
+> -            # for Rockchip PX30
+>                - rockchip,px30-dw-mshc
+> -            # for Rockchip RK3036
+>                - rockchip,rk3036-dw-mshc
+> -            # for Rockchip RK322x
+>                - rockchip,rk3228-dw-mshc
+> -            # for Rockchip RK3308
+>                - rockchip,rk3308-dw-mshc
+> -            # for Rockchip RK3328
+>                - rockchip,rk3328-dw-mshc
+> -            # for Rockchip RK3368
+>                - rockchip,rk3368-dw-mshc
+> -            # for Rockchip RK3399
+>                - rockchip,rk3399-dw-mshc
+> -            # for Rockchip RV1108
+> +              - rockchip,rk3568-dw-mshc
+>                - rockchip,rv1108-dw-mshc
+>            - const: rockchip,rk3288-dw-mshc
+>
+> --
+> 2.17.1
+>
+>
+>
