@@ -4,30 +4,30 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_NONE,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F119C2B9FF
-	for <linux-serial@archiver.kernel.org>; Wed, 12 May 2021 15:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E73BEC4360C
+	for <linux-serial@archiver.kernel.org>; Wed, 12 May 2021 16:20:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D98F761CA3
-	for <linux-serial@archiver.kernel.org>; Wed, 12 May 2021 15:20:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AA7FF61C94
+	for <linux-serial@archiver.kernel.org>; Wed, 12 May 2021 16:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbhELPWF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 May 2021 11:22:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58726 "EHLO mail.kernel.org"
+        id S235998AbhELQVY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 May 2021 12:21:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233699AbhELPSx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 May 2021 11:18:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4542961998;
-        Wed, 12 May 2021 15:07:54 +0000 (UTC)
+        id S234758AbhELP6v (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 12 May 2021 11:58:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B393761956;
+        Wed, 12 May 2021 15:31:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1620832075;
+        s=korg; t=1620833516;
         bh=EI4hj7BMe7Ny1aWDKXOrI4rWPyzcscGJ2qGH6U8F6Qs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j6hW0x2YAVvDjAJIDIMx8XqDehCOnLUGd7soOm92WPF9MLn7Uw+ahDS7iUbdhFPv1
-         cBgFsvMv/VFes1mrrl4EdbR4gKtv55fK/+Rrd4OXQa02Wjo9UMsLtaq8WXmY5D890P
-         0jDyB6C2sZOfuPxCiZTeIyMCPHoaab1TRrztQLtA=
+        b=eAlkomUgIPY2bllK6z/yFUnvq2m5pGSmEL85xg5+xqaE6LpbGqh5gESBbH4ujVTuF
+         u7s9TmGMXQlNDVNMDiFuwA2G0jIWQS/xdg5rNfLXzZkyQtQ0ZF/xFUhei0aTpNxiuO
+         /+iW5/87d72gmRVNKDkvtR2omL2Z7WWxjI666lvg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -41,12 +41,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Frank Rowand <frowand.list@gmail.com>,
         linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 131/530] serial: stm32: Use of_device_get_match_data()
-Date:   Wed, 12 May 2021 16:44:01 +0200
-Message-Id: <20210512144824.118304275@linuxfoundation.org>
+Subject: [PATCH 5.11 146/601] serial: stm32: Use of_device_get_match_data()
+Date:   Wed, 12 May 2021 16:43:43 +0200
+Message-Id: <20210512144832.627798600@linuxfoundation.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210512144819.664462530@linuxfoundation.org>
-References: <20210512144819.664462530@linuxfoundation.org>
+In-Reply-To: <20210512144827.811958675@linuxfoundation.org>
+References: <20210512144827.811958675@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
