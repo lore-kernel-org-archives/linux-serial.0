@@ -2,97 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D67AC433ED
-	for <linux-serial@archiver.kernel.org>; Thu, 13 May 2021 06:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A838FC43460
+	for <linux-serial@archiver.kernel.org>; Thu, 13 May 2021 07:08:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2466461439
-	for <linux-serial@archiver.kernel.org>; Thu, 13 May 2021 06:46:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7CD2D61434
+	for <linux-serial@archiver.kernel.org>; Thu, 13 May 2021 07:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbhEMGrg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 May 2021 02:47:36 -0400
-Received: from lucky1.263xmail.com ([211.157.147.134]:51266 "EHLO
-        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbhEMGrf (ORCPT
+        id S231496AbhEMHKB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 May 2021 03:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230316AbhEMHKA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 May 2021 02:47:35 -0400
-Received: from localhost (unknown [192.168.167.223])
-        by lucky1.263xmail.com (Postfix) with ESMTP id 87E12C8699;
-        Thu, 13 May 2021 14:46:11 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-ANTISPAM-LEVEL: 2
-X-ABS-CHECKED: 0
-Received: from localhost.localdomain (unknown [58.22.7.114])
-        by smtp.263.net (postfix) whith ESMTP id P22004T139994226214656S1620888367858788_;
-        Thu, 13 May 2021 14:46:10 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <33e9ab100598d444a69fb444c920c885>
-X-RL-SENDER: cl@rock-chips.com
-X-SENDER: cl@rock-chips.com
-X-LOGIN-NAME: cl@rock-chips.com
-X-FST-TO: heiko@sntech.de
-X-RCPT-COUNT: 30
-X-SENDER-IP: 58.22.7.114
-X-ATTACHMENT-NUM: 0
-X-System-Flag: 0
-From:   <cl@rock-chips.com>
-To:     heiko@sntech.de
-Cc:     robh+dt@kernel.org, jagan@amarulasolutions.com, wens@csie.org,
-        uwe@kleine-koenig.org, mail@david-bauer.net, jbx6244@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
-        cnsztl@gmail.com, devicetree@vger.kernel.org,
-        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
-        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
-        zhangqing@rock-chips.com, huangtao@rock-chips.com,
-        cl@rock-chips.com, wim@linux-watchdog.org, linux@roeck-us.net,
-        jamie@jamieiles.com, linux-watchdog@vger.kernel.org, maz@kernel.org
-Subject: [RESEND PATCH v4 06/10] dt-bindings: gpio: change items restriction of clock for rockchip,gpio-bank
-Date:   Thu, 13 May 2021 14:46:06 +0800
-Message-Id: <20210513064606.18397-1-cl@rock-chips.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210429081151.17558-1-cl@rock-chips.com>
-References: <20210429081151.17558-1-cl@rock-chips.com>
+        Thu, 13 May 2021 03:10:00 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEABC061574;
+        Thu, 13 May 2021 00:08:49 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id m124so20444318pgm.13;
+        Thu, 13 May 2021 00:08:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hJ3oi7BPr8I9au64jvD9eucKXrMf5nsxv7LhNFTYzRw=;
+        b=o/5pStFlSTEpqU4QxBwJY7EQPGmGNTqtlPfuxTf2XSFhJZWYjbFoYXxKz1uZuaw+4g
+         8EViSwrQ7W0+vU6NFDeFsme4eYzbTqV973LevU6RHLvVlV0DGQHHtXcr8uMDyAQG4810
+         oB3N/mkWwQuAf8oB5nW7xqwlPiY4zmDqFcfRhL/Mrj8L8Qgu07Sp4fde3zKNtvoxv9oi
+         SSAku0kQUT6Cj1w0I2zL8ArjDsd9zGPvIovHb+RrrPqwb44TXl3ActaaY2A50ZHmjGZT
+         u91JKQnK1c9LFsh0U/Sxe69GhAuLIIHXHO6ZTgocZ/cSPIPPqWxZKm7X9HsWYJVqxT/L
+         HSqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hJ3oi7BPr8I9au64jvD9eucKXrMf5nsxv7LhNFTYzRw=;
+        b=QDW0hv5J4GfdOmgDZB0SpKOvAIFndx+MUS3qqKDzRR02MJr9u85aBmS+Ymd7jFewPa
+         wACI2sb9CQnSncH7IasqhZFu7p0ZK08nqmE3y8r0dGM0xE9fGKUCzGGJK4CvXT3Ww98w
+         PazpbJic61SCsG7vkNlRg3980AGW01JyqKsYYPjMZg+CxRodjJltp0VQtGy146kFUjAz
+         mBXcestw29flx4EyaRZ+CmqyJSIbMmqPOay8U8AD87BiRaO0r1zWokJj/UhpWa7VPm72
+         lI1jxTVNbsp9NRNXYM7vWlOnv8Eo8SHnuGCkdZ6dGds3Gw+srnakam3cHlwjvh8wwZkq
+         CjHA==
+X-Gm-Message-State: AOAM532cJSIDTx2gNiSHnavJgTivYcxdVDUAg5hA9otiICB9jGQ3d0AW
+        YI1BXcLP9/Vxj08O1deMPcA9XHhi8A8eyIkViEE=
+X-Google-Smtp-Source: ABdhPJxbjjdNWoaWhrFZ17IYKr8uzwbg3haQSlAmm9anUhYKzzov7tvNp7bPzxzoc7B6WS7DCg59XBGoB2eeHlBmdmE=
+X-Received: by 2002:aa7:8e85:0:b029:28f:2620:957e with SMTP id
+ a5-20020aa78e850000b029028f2620957emr39936678pfr.40.1620889729317; Thu, 13
+ May 2021 00:08:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210512210413.1982933-1-luzmaximilian@gmail.com>
+In-Reply-To: <20210512210413.1982933-1-luzmaximilian@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 13 May 2021 10:08:33 +0300
+Message-ID: <CAHp75VczB-+Qs9-7Ye3qXZBag8_Ho4E3oTywGu2eNY67s3K00w@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_dw: Add device HID for new AMD UART controller
+To:     Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, stable@vger.kernel.org,
+        Sachi King <nakato@nakato.io>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Liang Chen <cl@rock-chips.com>
+On Thu, May 13, 2021 at 1:20 AM Maximilian Luz <luzmaximilian@gmail.com> wrote:
+>
+> Add device HID AMDI0022 to the AMD UART controller driver match table
+> and create a platform device for it. This controller can be found on
+> Microsoft Surface Laptop 4 devices and seems similar enough that we can
+> just copy the existing AMDI0020 entries.
 
-The clock property need 2 items on some rockchip chips.
+Acked-by: Andy Shevchenko <andy.shevchenko@gmail.com> # for 8250_dw part
 
-Signed-off-by: Liang Chen <cl@rock-chips.com>
----
- Documentation/devicetree/bindings/gpio/rockchip,gpio-bank.yaml | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> Cc: <stable@vger.kernel.org> # 5.10+
+> Tested-by: Sachi King <nakato@nakato.io>
+> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+> ---
+>  drivers/acpi/acpi_apd.c           | 1 +
+>  drivers/tty/serial/8250/8250_dw.c | 1 +
+>  2 files changed, 2 insertions(+)
+>
+> diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
+> index 0ec5b3f69112..6e02448d15d9 100644
+> --- a/drivers/acpi/acpi_apd.c
+> +++ b/drivers/acpi/acpi_apd.c
+> @@ -226,6 +226,7 @@ static const struct acpi_device_id acpi_apd_device_ids[] = {
+>         { "AMDI0010", APD_ADDR(wt_i2c_desc) },
+>         { "AMD0020", APD_ADDR(cz_uart_desc) },
+>         { "AMDI0020", APD_ADDR(cz_uart_desc) },
+> +       { "AMDI0022", APD_ADDR(cz_uart_desc) },
+>         { "AMD0030", },
+>         { "AMD0040", APD_ADDR(fch_misc_desc)},
+>         { "HYGO0010", APD_ADDR(wt_i2c_desc) },
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index 9e204f9b799a..a3a0154da567 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -714,6 +714,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
+>         { "APMC0D08", 0},
+>         { "AMD0020", 0 },
+>         { "AMDI0020", 0 },
+> +       { "AMDI0022", 0 },
+>         { "BRCM2032", 0 },
+>         { "HISI0031", 0 },
+>         { },
+> --
+> 2.31.1
+>
 
-diff --git a/Documentation/devicetree/bindings/gpio/rockchip,gpio-bank.yaml b/Documentation/devicetree/bindings/gpio/rockchip,gpio-bank.yaml
-index d993e00..0d62c28 100644
---- a/Documentation/devicetree/bindings/gpio/rockchip,gpio-bank.yaml
-+++ b/Documentation/devicetree/bindings/gpio/rockchip,gpio-bank.yaml
-@@ -22,7 +22,10 @@ properties:
-     maxItems: 1
- 
-   clocks:
--    maxItems: 1
-+    minItems: 1
-+    items:
-+      - description: APB interface clock source
-+      - description: GPIO debounce reference clock source
- 
-   gpio-controller: true
- 
+
 -- 
-2.7.4
-
-
-
+With Best Regards,
+Andy Shevchenko
