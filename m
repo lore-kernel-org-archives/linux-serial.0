@@ -2,119 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2938C433B4
-	for <linux-serial@archiver.kernel.org>; Wed, 12 May 2021 22:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6BCC433ED
+	for <linux-serial@archiver.kernel.org>; Thu, 13 May 2021 01:21:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C5EF61406
-	for <linux-serial@archiver.kernel.org>; Wed, 12 May 2021 22:04:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 11AE761404
+	for <linux-serial@archiver.kernel.org>; Thu, 13 May 2021 01:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348329AbhELWFb (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 May 2021 18:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37612 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390310AbhELVFw (ORCPT
+        id S230153AbhEMBWx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 May 2021 21:22:53 -0400
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:42721 "EHLO
+        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230096AbhEMBWw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 May 2021 17:05:52 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72C8C061574;
-        Wed, 12 May 2021 14:04:42 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id p20so7373781ljj.8;
-        Wed, 12 May 2021 14:04:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xvsZIkVWsK5u6BrUMxfQ72wY7XR0DrZQLiaTA4JvD7g=;
-        b=XHhvInoouIKbOo2bJOSXvuUedIlnJfLZlRWxJ9dD1qlsVtYSPTKFghcMprKwkHb/83
-         RBbcM8rIOShgwC7Ya+8qEMsJNfjbacZZt1X5/O+o6nakLGEP55UhFgbX+7z+gMFreBJf
-         GMdTdh/itOlJw1JY2VOdpS1s16Ykl3XBHdzp2ZM9s6EUPGJtuhIDQ4c766pIK7ZtKG0y
-         zGc5DiaoDCw03iYF37ImONEebTfiL5LA7IlrYXktWK+1cE8NUOdPXxbNvzuZCE4OBjQH
-         t7eGmtGDP0vueSTP4pfltb56+wvvmyn5UJDaaPX8oG/IbGuAZM7ivzPitAy+ZlWT9JA6
-         PrCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xvsZIkVWsK5u6BrUMxfQ72wY7XR0DrZQLiaTA4JvD7g=;
-        b=WjVxDLMVqcy0N6Vyfif4k598Ou5R2JVA8bDtenqBReLLiau4ZMlUSIPkKa5sDAMZxX
-         my8kty61RJhNNL37Z/vLXOl4k4UZ9Xdbz6zH/KuiJ2E0g6bme96Kg2AA3rELKqmckj2m
-         WCVKSW6btbNn5F2GO5bQ1/a+u72R9a43VOFmyc8yobKffDEJlRNygy/FtZf0pwh/cPDi
-         wl7UFVE8nhqtr4llwtMo07RrmEG57GnKeUp4hbOLLQg/IrVkobHzsyg/pSAPXx3JDUwR
-         9vZXV94OKOG5siybIar3zpA+urag6qdvZ7uwvaaY8TkHlLve6882E4GptGBqyMfFpn5U
-         roVQ==
-X-Gm-Message-State: AOAM530BTvleDFdtjfML5tbI3jliPejkTGiX9/YpHthu8MLn4pLvrXUh
-        aKauksAZSxKI4AgsLTEeHDM=
-X-Google-Smtp-Source: ABdhPJzRZnR8Ei6cnCgoy9dRd7O62EfPYJkfJK6rRlFqhhcFWHai6oGeIxpnmmPZ786vMFzr+qUtFw==
-X-Received: by 2002:a2e:8646:: with SMTP id i6mr30471091ljj.391.1620853481256;
-        Wed, 12 May 2021 14:04:41 -0700 (PDT)
-Received: from xws.localdomain ([37.58.58.229])
-        by smtp.gmail.com with ESMTPSA id q65sm141755ljb.34.2021.05.12.14.04.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 May 2021 14:04:40 -0700 (PDT)
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, stable@vger.kernel.org,
-        Sachi King <nakato@nakato.io>
-Subject: [PATCH] serial: 8250_dw: Add device HID for new AMD UART controller
-Date:   Wed, 12 May 2021 23:04:13 +0200
-Message-Id: <20210512210413.1982933-1-luzmaximilian@gmail.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 12 May 2021 21:22:52 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 09D7D33E;
+        Wed, 12 May 2021 21:21:42 -0400 (EDT)
+Received: from imap2 ([10.202.2.52])
+  by compute3.internal (MEProxy); Wed, 12 May 2021 21:21:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=
+        mime-version:message-id:in-reply-to:references:date:from:to:cc
+        :subject:content-type; s=fm2; bh=LJMBBhe/zWnSoQmdd8FrIcwa5mli+J+
+        /2kpGJdDlKyM=; b=YlpKlfQ8Z7b/EAlOKqNPnRyUpYDOaRjvdNu6e/Z1SO1+DE7
+        kv2Zsj7Lk+XK6Bn9zaUto3AxXx17FUmv19YxYeNgGuuysQUwFgZpHD1n+te1K8kD
+        KBIw1yMVpBtneVwmK7bVb3q3NRi+QPg+Uo7BswTZzVL2neg6JiQOfl1hf/ChJFGX
+        DRy8GENqT98fLaeKtbiX4ASQGmx1ggaYcAuf+S8UfVz6LwQTUqRvQi9SV3cq5w5s
+        WHTSGwTleikD+l4j6YBXbpRkXuFcz8e//0T7fV1SZ+HdE+VoL8x6vX9KKhJ0MT1f
+        xm4+r//F7sPZcSyO7dasGT22GRkDIFYuEn2wyNg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=LJMBBh
+        e/zWnSoQmdd8FrIcwa5mli+J+/2kpGJdDlKyM=; b=X4TahsqJdPc1vgMqeEavXh
+        Kr4ZwWNGnb80ReXiGlX5HuVvKu0XXB65abj9azzpHWxPlVbpM+alyOpzYYc/x/V8
+        TQTrMNRIS37U2XD8jiHuJZS/hdu+cS1hRSZCi6PwvszmxHeWD/LJ20gfVbQjFztG
+        Dzob5ZEXOjtkhHZQJ9ICS5hDfZ9ur4+EB3VOit1ILLkQECVLIoHR7D4ObP0u8GZJ
+        dixM3gJSCKfom3gxI9IkY/l4eBowSkKT660COyI/rgWWsrBGMLifPSEsjRvUTLnb
+        4jU+bTJtFuCsApofhELlVrm5Fpm3OTOt0R8osffmBoTLron5MG26o5c1PNYCxETA
+        ==
+X-ME-Sender: <xms:JX-cYPa92C0dVyIBnN9b7Immm2wwzXMFL9CE24byqOFjeOaP-uuY4Q>
+    <xme:JX-cYOYBsvoGXFC4X-9oNg3y6MLZEcK3-wvWglJ7C83b9m99sIgQ65vIKiXzr1y4Q
+    8vCIp_3W3eqBZuWTA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdehfedggeduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreerjeenucfhrhhomhepfdetnhgu
+    rhgvficulfgvfhhfvghrhidfuceorghnughrvgifsegrjhdrihgurdgruheqnecuggftrf
+    grthhtvghrnhepuddttdekueeggedvtddtueekiedutdfguedutdefieeuteefieelteet
+    vddthfeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    eprghnughrvgifsegrjhdrihgurdgruh
+X-ME-Proxy: <xmx:JX-cYB_L59YOZXJZsC5ffHczu50thD6OTOSOZWZ2k2JGArbcSf4qjQ>
+    <xmx:JX-cYFrCpigqJKtUj2ygAT-lzoXp0xQZrx1VzOA2hFQwwGxBOASUmA>
+    <xmx:JX-cYKpg2ZRp0BkbmcQwAInKpmyALkIGMN5B1TAalvOIlqFMV-759Q>
+    <xmx:Jn-cYKLR1xkgOdcZjHJ4Uvm_abGQ5kcATKVbw-a_RD6ko5kzEYYDhw>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 5D47EA00079; Wed, 12 May 2021 21:21:41 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-448-gae190416c7-fm-20210505.004-gae190416
+Mime-Version: 1.0
+Message-Id: <a8ebfb09-e2d8-4c23-b479-860a116cdb49@www.fastmail.com>
+In-Reply-To: <20210510014231.647-2-zev@bewilderbeest.net>
+References: <20210510014231.647-1-zev@bewilderbeest.net>
+ <20210510014231.647-2-zev@bewilderbeest.net>
+Date:   Thu, 13 May 2021 10:51:20 +0930
+From:   "Andrew Jeffery" <andrew@aj.id.au>
+To:     "Zev Weiss" <zev@bewilderbeest.net>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     openbmc@lists.ozlabs.org, "Jiri Slaby" <jirislaby@kernel.org>,
+        "Joel Stanley" <joel@jms.id.au>, "Johan Hovold" <johan@kernel.org>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: =?UTF-8?Q?Re:_[PATCH_1/3]_serial:_8250=5Faspeed=5Fvuart:_factor_out_aspe?=
+ =?UTF-8?Q?ed=5Fvuart=5F{read,_write}b()_helper_functions?=
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add device HID AMDI0022 to the AMD UART controller driver match table
-and create a platform device for it. This controller can be found on
-Microsoft Surface Laptop 4 devices and seems similar enough that we can
-just copy the existing AMDI0020 entries.
 
-Cc: <stable@vger.kernel.org> # 5.10+
-Tested-by: Sachi King <nakato@nakato.io>
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
----
- drivers/acpi/acpi_apd.c           | 1 +
- drivers/tty/serial/8250/8250_dw.c | 1 +
- 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
-index 0ec5b3f69112..6e02448d15d9 100644
---- a/drivers/acpi/acpi_apd.c
-+++ b/drivers/acpi/acpi_apd.c
-@@ -226,6 +226,7 @@ static const struct acpi_device_id acpi_apd_device_ids[] = {
- 	{ "AMDI0010", APD_ADDR(wt_i2c_desc) },
- 	{ "AMD0020", APD_ADDR(cz_uart_desc) },
- 	{ "AMDI0020", APD_ADDR(cz_uart_desc) },
-+	{ "AMDI0022", APD_ADDR(cz_uart_desc) },
- 	{ "AMD0030", },
- 	{ "AMD0040", APD_ADDR(fch_misc_desc)},
- 	{ "HYGO0010", APD_ADDR(wt_i2c_desc) },
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 9e204f9b799a..a3a0154da567 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -714,6 +714,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
- 	{ "APMC0D08", 0},
- 	{ "AMD0020", 0 },
- 	{ "AMDI0020", 0 },
-+	{ "AMDI0022", 0 },
- 	{ "BRCM2032", 0 },
- 	{ "HISI0031", 0 },
- 	{ },
--- 
-2.31.1
+On Mon, 10 May 2021, at 11:12, Zev Weiss wrote:
+> This is a small prepatory step for changing the way this driver does
+> its I/O accesses.
+> 
+> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
 
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
