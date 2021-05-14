@@ -3,31 +3,30 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AAE2C43462
-	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A36AC43461
+	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:28:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4CD4F61469
-	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:28:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1C66E61454
+	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230384AbhENT3Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 May 2021 15:29:25 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:15521 "EHLO
+        id S231597AbhENT3i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 May 2021 15:29:38 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:37322 "EHLO
         relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229524AbhENT3Z (ORCPT
+        by vger.kernel.org with ESMTP id S229524AbhENT3h (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 May 2021 15:29:25 -0400
-X-Greylist: delayed 303 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 May 2021 15:29:24 EDT
+        Fri, 14 May 2021 15:29:37 -0400
 X-IronPort-AV: E=Sophos;i="5.82,300,1613401200"; 
-   d="scan'208";a="81147945"
+   d="scan'208";a="81147952"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 15 May 2021 04:23:07 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 15 May 2021 04:23:19 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id D8EC34010906;
-        Sat, 15 May 2021 04:23:03 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 24DB04010906;
+        Sat, 15 May 2021 04:23:15 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Rob Herring <robh+dt@kernel.org>,
@@ -45,110 +44,41 @@ To:     Geert Uytterhoeven <geert+renesas@glider.be>,
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Prabhakar <prabhakar.csengg@gmail.com>
-Subject: [PATCH 00/16] Add new Renesas RZ/G2L SoC and Renesas RZ/G2L SMARC EVK support
-Date:   Fri, 14 May 2021 20:22:02 +0100
-Message-Id: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 03/16] dt-bindings: arm: renesas: Document SMARC EVK
+Date:   Fri, 14 May 2021 20:22:05 +0100
+Message-Id: <20210514192218.13022-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi All,
+Document Renesas SMARC EVK boards which are based on RZ/G2L (R9A07G044L)
+SoC. The SMARC EVK consists of RZ/G2L SoM module and SMARC carrier board,
+the SoM module sits on top of carrier board.
 
-This patch series adds initial support for Renesas RZ/G2L SoC and
-Renesas RZ/G2L SMARC EVK.
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
+---
+ Documentation/devicetree/bindings/arm/renesas.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-The RZ/G2L SoC includes a single/dual Cortex-A55 CPU including
-below list of IP's:
-* Cortex-M33
-* 3D Graphics engine (Arm Mali-G31)
-* Video Codec (H.264)
-* Camera interface (MIPI-CSI or Parallel-IF)
-* Display interface (MIPI-DSI or Parallel-IF)
-* USB2.0 interface 2ch, SD interface 2ch
-* CAN interface (CAN-FD)
-* Giga bit Ethernet 2ch
-
-Initial patches enables minimal peripherals on Renesas RZ/G2L
-SMARC EVK and booted via initramfs.
-* Documentation for RZ/G2{L,LC,UL} SoC variants
-* SoC identification support
-* CPG core support
-* Minimal SoC DTSi
-* Minimal DTS for SMARC EVK
-
-Patches are based on top of [1] master branch.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git/
-
-Links for SoC and EVK:
-[*] https://www.renesas.com/us/en/products/microcontrollers-microprocessors/
-rz-arm-based-high-end-32-64-bit-mpus/rzg2l-general-purpose-microprocessors-
-dual-core-arm-cortex-a55-12-ghz-cpus-3d-graphics-and-video-codec
-[*] https://www.renesas.com/us/en/products/microcontrollers-microprocessors/
-rz-arm-based-high-end-32-64-bit-mpus/rzg2lc-general-purpose-microprocessors-
-dual-core-arm-cortex-a55-12-ghz-cpus-3d-graphics
-[*] https://renesas.info/wiki/RZ-G/RZ-G2L_SMARC
-
-Cheers,
-Prabhakar
-
-Biju Das (1):
-  serial: sh-sci: Add support for RZ/G2L SoC
-
-Lad Prabhakar (15):
-  dt-bindings: arm: renesas: Document Renesas RZ/G2UL SoC
-  dt-bindings: arm: renesas: Document Renesas RZ/G2{L,LC} SoC variants
-  dt-bindings: arm: renesas: Document SMARC EVK
-  soc: renesas: Add ARCH_R9A07G044{L,LC} for the new RZ/G2{L,LC} SoC's
-  arm64: defconfig: Enable ARCH_R9A07G044{L,LC}
-  dt-bindings: arm: renesas,prr: Add new compatible string for
-    RZ/G{L,LC,UL}
-  soc: renesas: Add support to read LSI DEVID register
-  soc: renesas: Add support to identify RZ/G2{L,LC} SoC's
-  dt-bindings: serial: renesas,scif: Document r9a07g044 bindings
-  dt-bindings: clock: renesas: Document RZ/G2L SoC CPG driver
-  clk: renesas: Define RZ/G2L CPG Clock Definitions
-  clk: renesas: Add CPG core wrapper for RZ/G2L SoC
-  clk: renesas: Add support for R9A07G044L SoC
-  arm64: dts: renesas: Add initial DTSI for RZ/G2{L,LC} SoC's
-  arm64: dts: renesas: Add initial device tree for RZ/G2L SMARC EVK
-
- .../devicetree/bindings/arm/renesas,prr.yaml  |   6 +-
- .../devicetree/bindings/arm/renesas.yaml      |  18 +
- .../bindings/clock/renesas,rzg2l-cpg.yaml     |  80 ++
- .../bindings/serial/renesas,scif.yaml         |   4 +
- arch/arm64/boot/dts/renesas/Makefile          |   2 +
- arch/arm64/boot/dts/renesas/g2l-smarc.dtsi    |  27 +
- arch/arm64/boot/dts/renesas/r9a07g044.dtsi    |  70 ++
- arch/arm64/boot/dts/renesas/r9a07g044l.dtsi   |  21 +
- arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi  |  43 +
- .../boot/dts/renesas/r9a07g044l2-smarc.dts    |  21 +
- arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi  |  62 ++
- arch/arm64/configs/defconfig                  |   2 +
- drivers/clk/renesas/Kconfig                   |  12 +
- drivers/clk/renesas/Makefile                  |   2 +
- drivers/clk/renesas/r9a07g044l-cpg.c          | 372 +++++++
- drivers/clk/renesas/renesas-rzg2l-cpg.c       | 964 ++++++++++++++++++
- drivers/clk/renesas/renesas-rzg2l-cpg.h       | 223 ++++
- drivers/soc/renesas/Kconfig                   |  10 +
- drivers/soc/renesas/renesas-soc.c             |  33 +-
- drivers/tty/serial/sh-sci.c                   |  11 +
- drivers/tty/serial/sh-sci.h                   |   1 +
- include/dt-bindings/clock/r9a07g044l-cpg.h    |  89 ++
- 22 files changed, 2070 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/renesas,rzg2l-cpg.yaml
- create mode 100644 arch/arm64/boot/dts/renesas/g2l-smarc.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l2-smarc.dts
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi
- create mode 100644 drivers/clk/renesas/r9a07g044l-cpg.c
- create mode 100644 drivers/clk/renesas/renesas-rzg2l-cpg.c
- create mode 100644 drivers/clk/renesas/renesas-rzg2l-cpg.h
- create mode 100644 include/dt-bindings/clock/r9a07g044l-cpg.h
-
+diff --git a/Documentation/devicetree/bindings/arm/renesas.yaml b/Documentation/devicetree/bindings/arm/renesas.yaml
+index 626757d6617e..74dee6a0d2af 100644
+--- a/Documentation/devicetree/bindings/arm/renesas.yaml
++++ b/Documentation/devicetree/bindings/arm/renesas.yaml
+@@ -310,6 +310,9 @@ properties:
+ 
+       - description: RZ/G2{L,LC} (R9A07G044)
+         items:
++          - enum:
++              - renesas,smarc-r9a07g044l1 # SMARC EVK with single Cortex-A55
++              - renesas,smarc-r9a07g044l2 # SMARC EVK with dual Cortex-A55
+           - enum:
+               - renesas,r9a07g044c1 # Single Cortex-A55 RZ/G2LC
+               - renesas,r9a07g044c2 # Dual Cortex-A55 RZ/G2LC
 -- 
 2.17.1
 
