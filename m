@@ -4,29 +4,29 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5129BC43600
-	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:23:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B5BC4360C
+	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:23:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3689961454
-	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:23:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4411B61628
+	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233990AbhENTYt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 May 2021 15:24:49 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:26471 "EHLO
+        id S233979AbhENTZC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 May 2021 15:25:02 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:53998 "EHLO
         relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234003AbhENTYk (ORCPT
+        by vger.kernel.org with ESMTP id S233970AbhENTZA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 May 2021 15:24:40 -0400
+        Fri, 14 May 2021 15:25:00 -0400
 X-IronPort-AV: E=Sophos;i="5.82,300,1613401200"; 
-   d="scan'208";a="81343862"
+   d="scan'208";a="81343881"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 15 May 2021 04:23:27 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 15 May 2021 04:23:48 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 468FD4010906;
-        Sat, 15 May 2021 04:23:24 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 8C0CC4010906;
+        Sat, 15 May 2021 04:23:44 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Rob Herring <robh+dt@kernel.org>,
@@ -44,9 +44,9 @@ To:     Geert Uytterhoeven <geert+renesas@glider.be>,
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Prabhakar <prabhakar.csengg@gmail.com>
-Subject: [PATCH 05/16] arm64: defconfig: Enable ARCH_R9A07G044{L,LC}
-Date:   Fri, 14 May 2021 20:22:07 +0100
-Message-Id: <20210514192218.13022-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 10/16] serial: sh-sci: Add support for RZ/G2L SoC
+Date:   Fri, 14 May 2021 20:22:12 +0100
+Message-Id: <20210514192218.13022-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -54,27 +54,87 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Enable the Renesas RZ/G2{L,LC} SoC variants in the ARM64 defconfig.
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Add serial support for RZ/G2L SoC with earlycon and
+extended mode register support.
+
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/sh-sci.c | 11 +++++++++++
+ drivers/tty/serial/sh-sci.h |  1 +
+ 2 files changed, 12 insertions(+)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 08c6f769df9a..16cfdfd033f4 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -1043,6 +1043,8 @@ CONFIG_ARCH_R8A77980=y
- CONFIG_ARCH_R8A77990=y
- CONFIG_ARCH_R8A77995=y
- CONFIG_ARCH_R8A779A0=y
-+CONFIG_ARCH_R9A07G044L=y
-+CONFIG_ARCH_R9A07G044LC=y
- CONFIG_ROCKCHIP_PM_DOMAINS=y
- CONFIG_ARCH_TEGRA_132_SOC=y
- CONFIG_ARCH_TEGRA_210_SOC=y
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index ef37fdf37612..872a2c3b11c4 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -306,6 +306,7 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCFDR]		= { 0x0E, 16 },
+ 			[SCSPTR]	= { 0x10, 16 },
+ 			[SCLSR]		= { 0x12, 16 },
++			[SEMR]		= { 0x14, 8 },
+ 		},
+ 		.fifosize = 16,
+ 		.overrun_reg = SCLSR,
+@@ -2527,6 +2528,8 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			case 27: smr_val |= SCSMR_SRC_27; break;
+ 			}
+ 		smr_val |= cks;
++		if (sci_getreg(port, SEMR)->size)
++			serial_port_out(port, SEMR, 0);
+ 		serial_port_out(port, SCSCR, scr_val | s->hscif_tot);
+ 		serial_port_out(port, SCSMR, smr_val);
+ 		serial_port_out(port, SCBRR, brr);
+@@ -2561,6 +2564,8 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		scr_val = s->cfg->scscr & (SCSCR_CKE1 | SCSCR_CKE0);
+ 		smr_val |= serial_port_in(port, SCSMR) &
+ 			   (SCSMR_CKEDG | SCSMR_SRC_MASK | SCSMR_CKS);
++		if (sci_getreg(port, SEMR)->size)
++			serial_port_out(port, SEMR, 0);
+ 		serial_port_out(port, SCSCR, scr_val | s->hscif_tot);
+ 		serial_port_out(port, SCSMR, smr_val);
+ 	}
+@@ -3170,6 +3175,10 @@ static const struct of_device_id of_sci_match[] = {
+ 		.compatible = "renesas,scif-r7s9210",
+ 		.data = SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE),
+ 	},
++	{
++		.compatible = "renesas,scif-r9a07g044",
++		.data = SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE),
++	},
+ 	/* Family-specific types */
+ 	{
+ 		.compatible = "renesas,rcar-gen1-scif",
+@@ -3452,6 +3461,7 @@ static int __init rzscifa_early_console_setup(struct earlycon_device *device,
+ 	port_cfg.regtype = SCIx_RZ_SCIFA_REGTYPE;
+ 	return early_console_setup(device, PORT_SCIF);
+ }
++
+ static int __init scifa_early_console_setup(struct earlycon_device *device,
+ 					  const char *opt)
+ {
+@@ -3471,6 +3481,7 @@ static int __init hscif_early_console_setup(struct earlycon_device *device,
+ OF_EARLYCON_DECLARE(sci, "renesas,sci", sci_early_console_setup);
+ OF_EARLYCON_DECLARE(scif, "renesas,scif", scif_early_console_setup);
+ OF_EARLYCON_DECLARE(scif, "renesas,scif-r7s9210", rzscifa_early_console_setup);
++OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a07g044", rzscifa_early_console_setup);
+ OF_EARLYCON_DECLARE(scifa, "renesas,scifa", scifa_early_console_setup);
+ OF_EARLYCON_DECLARE(scifb, "renesas,scifb", scifb_early_console_setup);
+ OF_EARLYCON_DECLARE(hscif, "renesas,hscif", hscif_early_console_setup);
+diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
+index c0dfe4382898..c0ae78632dda 100644
+--- a/drivers/tty/serial/sh-sci.h
++++ b/drivers/tty/serial/sh-sci.h
+@@ -31,6 +31,7 @@ enum {
+ 	SCCKS,				/* BRG Clock Select Register */
+ 	HSRTRGR,			/* Rx FIFO Data Count Trigger Register */
+ 	HSTTRGR,			/* Tx FIFO Data Count Trigger Register */
++	SEMR,				/* Serial extended mode register */
+ 
+ 	SCIx_NR_REGS,
+ };
 -- 
 2.17.1
 
