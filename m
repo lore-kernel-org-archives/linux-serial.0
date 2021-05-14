@@ -4,29 +4,29 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D9EC433ED
-	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F3EC433B4
+	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:29:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 49A2061465
-	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:28:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2211E6145B
+	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232746AbhENT37 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 May 2021 15:29:59 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:59886 "EHLO
+        id S231735AbhENTa0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 May 2021 15:30:26 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:62816 "EHLO
         relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232851AbhENT37 (ORCPT
+        by vger.kernel.org with ESMTP id S231684AbhENTaZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 May 2021 15:29:59 -0400
+        Fri, 14 May 2021 15:30:25 -0400
 X-IronPort-AV: E=Sophos;i="5.82,300,1613401200"; 
-   d="scan'208";a="81147973"
+   d="scan'208";a="81148007"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 15 May 2021 04:23:40 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 15 May 2021 04:24:08 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 70ABC4010906;
-        Sat, 15 May 2021 04:23:36 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id E40E64010914;
+        Sat, 15 May 2021 04:24:04 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Rob Herring <robh+dt@kernel.org>,
@@ -44,9 +44,9 @@ To:     Geert Uytterhoeven <geert+renesas@glider.be>,
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Prabhakar <prabhakar.csengg@gmail.com>
-Subject: [PATCH 08/16] soc: renesas: Add support to identify RZ/G2{L,LC} SoC's
-Date:   Fri, 14 May 2021 20:22:10 +0100
-Message-Id: <20210514192218.13022-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 15/16] arm64: dts: renesas: Add initial DTSI for RZ/G2{L,LC} SoC's
+Date:   Fri, 14 May 2021 20:22:17 +0100
+Message-Id: <20210514192218.13022-16-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -54,51 +54,247 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add support for identifying the RZ/G2{L,LC} (R9A07G044{L,LC}) SoC's.
+Add initial DTSI for RZ/G2{L,LC} SoC's.
+
+File structure:
+r9a07g044.dtsi  => RZ/G2L family SoC common parts
+r9a07g044l.dtsi => Specific to RZ/G2L (R9A07G044L) SoC
+r9a07g044l1.dtsi => Specific to RZ/G2L (R9A07G044L single cortex A55) SoC
+r9a07g044l2.dtsi => Specific to RZ/G2L (R9A07G044L dual cortex A55) SoC
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
- drivers/soc/renesas/renesas-soc.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ arch/arm64/boot/dts/renesas/r9a07g044.dtsi   | 70 ++++++++++++++++++++
+ arch/arm64/boot/dts/renesas/r9a07g044l.dtsi  | 21 ++++++
+ arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi | 43 ++++++++++++
+ arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi | 62 +++++++++++++++++
+ 4 files changed, 196 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi
 
-diff --git a/drivers/soc/renesas/renesas-soc.c b/drivers/soc/renesas/renesas-soc.c
-index d73389670eef..23be0ddfd786 100644
---- a/drivers/soc/renesas/renesas-soc.c
-+++ b/drivers/soc/renesas/renesas-soc.c
-@@ -56,6 +56,10 @@ static const struct renesas_family fam_rzg2 __initconst __maybe_unused = {
- 	.reg	= 0xfff00044,		/* PRR (Product Register) */
- };
- 
-+static const struct renesas_family fam_rzg2l __initconst __maybe_unused = {
-+	.name   = "RZ/G2L",
-+};
+diff --git a/arch/arm64/boot/dts/renesas/r9a07g044.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
+new file mode 100644
+index 000000000000..c625d302f889
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
+@@ -0,0 +1,70 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for the RZ/G2L and RZ/G2LC common SoC parts
++ *
++ * Copyright (C) 2021 Renesas Electronics Corp.
++ */
 +
- static const struct renesas_family fam_shmobile __initconst __maybe_unused = {
- 	.name	= "SH-Mobile",
- 	.reg	= 0xe600101c,		/* CCCR (Common Chip Code Register) */
-@@ -131,6 +135,11 @@ static const struct renesas_soc soc_rz_g2h __initconst __maybe_unused = {
- 	.id	= 0x4f,
- };
- 
-+static const struct renesas_soc soc_rz_g2l __initconst __maybe_unused = {
-+	.family = &fam_rzg2l,
-+	.id     = 0x841c447,
-+};
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/clock/r9a07g044l-cpg.h>
 +
- static const struct renesas_soc soc_rcar_m1a __initconst __maybe_unused = {
- 	.family	= &fam_rcar_gen1,
- };
-@@ -299,6 +308,9 @@ static const struct of_device_id renesas_socs[] __initconst = {
- #ifdef CONFIG_ARCH_R8A779A0
- 	{ .compatible = "renesas,r8a779a0",	.data = &soc_rcar_v3u },
- #endif
-+#if defined(CONFIG_ARCH_R9A07G044L) || defined(CONFIG_ARCH_R9A07G044LC)
-+	{ .compatible = "renesas,r9a07g044",	.data = &soc_rz_g2l },
-+#endif
- #ifdef CONFIG_ARCH_SH73A0
- 	{ .compatible = "renesas,sh73a0",	.data = &soc_shmobile_ag5 },
- #endif
++/ {
++	compatible = "renesas,r9a07g044";
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	extal_clk: extal {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		/* This value must be overridden by the board */
++		clock-frequency = <0>;
++	};
++
++	psci {
++		compatible = "arm,psci-1.0", "arm,psci-0.2";
++		method = "smc";
++	};
++
++	soc: soc {
++		compatible = "simple-bus";
++		interrupt-parent = <&gic>;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		scif0: serial@1004b800 {
++			compatible = "renesas,scif-r9a07g044";
++			reg = <0 0x1004b800 0 0x400>;
++			interrupts =
++				<GIC_SPI 380 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 382 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 383 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 381 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 384 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cpg CPG_MOD R9A07G044_CLK_SCIF0>;
++			clock-names = "fck";
++			power-domains = <&cpg>;
++			resets = <&cpg R9A07G044_CLK_SCIF0>;
++			status = "disabled";
++		};
++
++		devid: chipid@11020a04 {
++			compatible = "renesas,devid";
++			reg = <0 0x11020a04 0 4>;
++		};
++
++		gic: interrupt-controller@11900000 {
++			compatible = "arm,gic-v3";
++			#interrupt-cells = <3>;
++			#address-cells = <0>;
++			interrupt-controller;
++			reg = <0x0 0x11900000 0 0x40000>,
++			      <0x0 0x11940000 0 0x60000>;
++			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&cpg CPG_MOD R9A07G044_CLK_GIC600>;
++			clock-names = "gic6000";
++			power-domains = <&cpg>;
++			resets = <&cpg R9A07G044_CLK_GIC600>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/r9a07g044l.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044l.dtsi
+new file mode 100644
+index 000000000000..8d396b9100c1
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/r9a07g044l.dtsi
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for the RZ/G2L common SoC parts
++ *
++ * Copyright (C) 2021 Renesas Electronics Corp.
++ */
++
++/dts-v1/;
++#include "r9a07g044.dtsi"
++
++&soc {
++	cpg: clock-controller@11010000 {
++		compatible = "renesas,r9a07g044l-cpg";
++		reg = <0 0x11010000 0 0x10000>;
++		clocks = <&extal_clk>;
++		clock-names = "extal";
++		#clock-cells = <2>;
++		#reset-cells = <1>;
++		#power-domain-cells = <0>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
+new file mode 100644
+index 000000000000..44d4504e44c3
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
+@@ -0,0 +1,43 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for the RZ/G2L R9A07G044L1 common parts
++ *
++ * Copyright (C) 2021 Renesas Electronics Corp.
++ */
++
++/dts-v1/;
++#include "r9a07g044l.dtsi"
++
++/ {
++	compatible = "renesas,r9a07g044l1";
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		a55_0: cpu@0 {
++			compatible = "arm,cortex-a55";
++			reg = <0>;
++			device_type = "cpu";
++			next-level-cache = <&L3_CA55>;
++			enable-method = "psci";
++		};
++
++		L3_CA55: cache-controller-0 {
++			compatible = "cache";
++			cache-unified;
++			cache-size = <0x40000>;
++		};
++	};
++
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts-extended =
++			<&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
++			<&gic GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
++			<&gic GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
++			<&gic GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi
+new file mode 100644
+index 000000000000..33bb35e1c369
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi
+@@ -0,0 +1,62 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for the RZ/G2L R9A07G044L2 common parts
++ *
++ * Copyright (C) 2021 Renesas Electronics Corp.
++ */
++
++/dts-v1/;
++#include "r9a07g044l.dtsi"
++
++/ {
++	compatible = "renesas,r9a07g044l2";
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu-map {
++			cluster0 {
++				core0 {
++					cpu = <&a55_0>;
++				};
++				core1 {
++					cpu = <&a55_1>;
++				};
++			};
++		};
++
++		a55_0: cpu@0 {
++			compatible = "arm,cortex-a55";
++			reg = <0>;
++			device_type = "cpu";
++			next-level-cache = <&L3_CA55>;
++			enable-method = "psci";
++		};
++
++		a55_1: cpu@1 {
++			compatible = "arm,cortex-a55";
++			reg = <0x100>;
++			device_type = "cpu";
++			next-level-cache = <&L3_CA55>;
++			enable-method = "psci";
++		};
++
++		L3_CA55: cache-controller-0 {
++			compatible = "cache";
++			cache-unified;
++			cache-size = <0x40000>;
++		};
++	};
++
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts-extended =
++			<&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			<&gic GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			<&gic GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			<&gic GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
++	};
++};
 -- 
 2.17.1
 
