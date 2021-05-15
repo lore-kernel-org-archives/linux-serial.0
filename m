@@ -2,299 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F3EC433B4
-	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53309C433B4
+	for <linux-serial@archiver.kernel.org>; Sat, 15 May 2021 08:46:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2211E6145B
-	for <linux-serial@archiver.kernel.org>; Fri, 14 May 2021 19:29:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1858A613FC
+	for <linux-serial@archiver.kernel.org>; Sat, 15 May 2021 08:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbhENTa0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 May 2021 15:30:26 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:62816 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231684AbhENTaZ (ORCPT
+        id S233837AbhEOIrN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 15 May 2021 04:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232182AbhEOIrL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 May 2021 15:30:25 -0400
-X-IronPort-AV: E=Sophos;i="5.82,300,1613401200"; 
-   d="scan'208";a="81148007"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 15 May 2021 04:24:08 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id E40E64010914;
-        Sat, 15 May 2021 04:24:04 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Sat, 15 May 2021 04:47:11 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D54C06174A;
+        Sat, 15 May 2021 01:45:40 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id pi6-20020a17090b1e46b029015cec51d7cdso966551pjb.5;
+        Sat, 15 May 2021 01:45:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/aSzYmi9eBplfwSyp+NOkErXHwBc1HDaHzhChk6wmcA=;
+        b=TBrM/n3id8SsgZR/0/FCWcfrf/FIgxUfwGWcNi8zP4a8zKrEct9decs2RECylMWrj7
+         0nkNI8zl/5PCqtHISQ5XlzA1hB03OKOJuZ9BADrlOIQfwvU4I1YxoABpdhs6Md3LRcTk
+         9rkdDM78nmVcba0khi4ibj4M9CYxown4bixeJDemTMS0dEVZQLJ/j28LA4gG9CmNdCF7
+         3OD8tuMQcf7iNgnTPcoFBbSjJCuWwp0rqtM/cL4z3/h21honjm4PPaUrOb7FHeB+j34j
+         1LpMx0zdpnW3z/Mu5iDCSM5l4XysFqj8M4DmZ6i/md3st/gXGxvdmgUVmSCV3pAa90Q7
+         CfWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/aSzYmi9eBplfwSyp+NOkErXHwBc1HDaHzhChk6wmcA=;
+        b=Zdgr5aU+juzdPlcP0LlRfVIE7TKoNDlibbS5ngFnKCUiJ//NhxQqMB2zMXBmcQsUq4
+         xDgOqrsLLOKenVuaaCHd/3VqSBXdJjK47F1X7xVMkmr+/N7EYBdpShWgGyypuCZIl+cq
+         nnQynBSEQxEIoRQaMZzf7RW/e5Npq71hEE8OFNlrVm6qF5t7vfAO7Hzw/UmQQoj+fsTl
+         yqK4AbQjDcmgKKlCowZFaTxZwqImhpVforg2vbM0oz0YcYdwbzMq+N15CRJ/rlQygXeJ
+         i4jxsmW4yOIkrog+YD5RTXQH19AoA0h82HuSd/tKU4ejp13LQmfQEwnNU4H9flabfm+X
+         BL+w==
+X-Gm-Message-State: AOAM5335l4R6sKgQtL3klVDuBBVMJrMJx3fZnMv8tkCSvHzrn9+F7xhq
+        3FTVc1m7evyr/QGAVGl8VbRdEfsC9JsaEA==
+X-Google-Smtp-Source: ABdhPJww03+7cSzkFTvaXoxlBEf8dNYZPUEoHsutLOQM12Lpng1F9S48bYdAA/wFfmZIF/bcmuaUTA==
+X-Received: by 2002:a17:902:904a:b029:ef:9058:7314 with SMTP id w10-20020a170902904ab02900ef90587314mr15437126plz.12.1621068339809;
+        Sat, 15 May 2021 01:45:39 -0700 (PDT)
+Received: from localhost (g1.222-224-229.ppp.wakwak.ne.jp. [222.224.229.1])
+        by smtp.gmail.com with ESMTPSA id z16sm10746737pjq.42.2021.05.15.01.45.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 May 2021 01:45:39 -0700 (PDT)
+From:   Stafford Horne <shorne@gmail.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Florent Kermarrec <florent@enjoy-digital.fr>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        "Gabriel L . Somlo" <gsomlo@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Subject: [PATCH 15/16] arm64: dts: renesas: Add initial DTSI for RZ/G2{L,LC} SoC's
-Date:   Fri, 14 May 2021 20:22:17 +0100
-Message-Id: <20210514192218.13022-16-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Karol Gugala <kgugala@antmicro.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-doc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH] serial/liteuart; Add support for earlycon
+Date:   Sat, 15 May 2021 17:45:18 +0900
+Message-Id: <20210515084519.167343-1-shorne@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add initial DTSI for RZ/G2{L,LC} SoC's.
+Most litex boards using RISC-V soft cores us the sbi earlycon, however
+this is not available for non RISC-V litex SoC.  This patch enables
+earlycon for liteuart which is available on all Litex SoC's making
+support for earycon debugging more widely available.
 
-File structure:
-r9a07g044.dtsi  => RZ/G2L family SoC common parts
-r9a07g044l.dtsi => Specific to RZ/G2L (R9A07G044L) SoC
-r9a07g044l1.dtsi => Specific to RZ/G2L (R9A07G044L single cortex A55) SoC
-r9a07g044l2.dtsi => Specific to RZ/G2L (R9A07G044L dual cortex A55) SoC
-
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Signed-off-by: Stafford Horne <shorne@gmail.com>
+Cc: Florent Kermarrec <florent@enjoy-digital.fr>
+Cc: Mateusz Holenko <mholenko@antmicro.com>
+Cc: Joel Stanley <joel@jms.id.au>
+Cc: Gabriel L. Somlo <gsomlo@gmail.com>
 ---
- arch/arm64/boot/dts/renesas/r9a07g044.dtsi   | 70 ++++++++++++++++++++
- arch/arm64/boot/dts/renesas/r9a07g044l.dtsi  | 21 ++++++
- arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi | 43 ++++++++++++
- arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi | 62 +++++++++++++++++
- 4 files changed, 196 insertions(+)
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi
+ .../admin-guide/kernel-parameters.txt         |  5 +++
+ drivers/tty/serial/Kconfig                    |  1 +
+ drivers/tty/serial/liteuart.c                 | 31 +++++++++++++++++++
+ 3 files changed, 37 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r9a07g044.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
-new file mode 100644
-index 000000000000..c625d302f889
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
-@@ -0,0 +1,70 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for the RZ/G2L and RZ/G2LC common SoC parts
-+ *
-+ * Copyright (C) 2021 Renesas Electronics Corp.
-+ */
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 04545725f187..2d4a43af8de2 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1084,6 +1084,11 @@
+ 			the driver will use only 32-bit accessors to read/write
+ 			the device registers.
+ 
++		liteuart,<addr>
++			Start an early console on a litex serial port at the
++			specified address. The serial port must already be
++			setup and configured. Options are not yet supported.
 +
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/clock/r9a07g044l-cpg.h>
+ 		meson,<addr>
+ 			Start an early, polled-mode console on a meson serial
+ 			port at the specified address. The serial port must
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 0c4cd4a348f4..9ceffe6ab6fd 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1531,6 +1531,7 @@ config SERIAL_LITEUART
+ 	depends on OF || COMPILE_TEST
+ 	depends on LITEX
+ 	select SERIAL_CORE
++	select SERIAL_EARLYCON
+ 	help
+ 	  This driver is for the FPGA-based LiteUART serial controller from LiteX
+ 	  SoC builder.
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index 64842f3539e1..38c472487e68 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -372,6 +372,37 @@ static int __init liteuart_console_init(void)
+ console_initcall(liteuart_console_init);
+ #endif /* CONFIG_SERIAL_LITEUART_CONSOLE */
+ 
++#ifdef CONFIG_SERIAL_EARLYCON
++static void early_liteuart_putc(struct uart_port *port, int c)
++{
++	while (litex_read8(port->membase + OFF_TXFULL))
++		cpu_relax();
 +
-+/ {
-+	compatible = "renesas,r9a07g044";
-+	#address-cells = <2>;
-+	#size-cells = <2>;
++	litex_write8(port->membase + OFF_RXTX, c);
++}
 +
-+	extal_clk: extal {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		/* This value must be overridden by the board */
-+		clock-frequency = <0>;
-+	};
++static void early_liteuart_write(struct console *console, const char *s,
++				    unsigned int count)
++{
++	struct earlycon_device *device = console->data;
++	struct uart_port *port = &device->port;
 +
-+	psci {
-+		compatible = "arm,psci-1.0", "arm,psci-0.2";
-+		method = "smc";
-+	};
++	uart_console_write(port, s, count, early_liteuart_putc);
++}
 +
-+	soc: soc {
-+		compatible = "simple-bus";
-+		interrupt-parent = <&gic>;
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
++static int __init early_liteuart_setup(struct earlycon_device *device,
++				       const char *options)
++{
++	if (!device->port.membase)
++		return -ENODEV;
 +
-+		scif0: serial@1004b800 {
-+			compatible = "renesas,scif-r9a07g044";
-+			reg = <0 0x1004b800 0 0x400>;
-+			interrupts =
-+				<GIC_SPI 380 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 382 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 383 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 381 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 384 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD R9A07G044_CLK_SCIF0>;
-+			clock-names = "fck";
-+			power-domains = <&cpg>;
-+			resets = <&cpg R9A07G044_CLK_SCIF0>;
-+			status = "disabled";
-+		};
++	device->con->write = early_liteuart_write;
++	return 0;
++}
 +
-+		devid: chipid@11020a04 {
-+			compatible = "renesas,devid";
-+			reg = <0 0x11020a04 0 4>;
-+		};
++OF_EARLYCON_DECLARE(liteuart, "litex,liteuart", early_liteuart_setup);
++#endif /* CONFIG_SERIAL_EARLYCON */
 +
-+		gic: interrupt-controller@11900000 {
-+			compatible = "arm,gic-v3";
-+			#interrupt-cells = <3>;
-+			#address-cells = <0>;
-+			interrupt-controller;
-+			reg = <0x0 0x11900000 0 0x40000>,
-+			      <0x0 0x11940000 0 0x60000>;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&cpg CPG_MOD R9A07G044_CLK_GIC600>;
-+			clock-names = "gic6000";
-+			power-domains = <&cpg>;
-+			resets = <&cpg R9A07G044_CLK_GIC600>;
-+		};
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/renesas/r9a07g044l.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044l.dtsi
-new file mode 100644
-index 000000000000..8d396b9100c1
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/r9a07g044l.dtsi
-@@ -0,0 +1,21 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for the RZ/G2L common SoC parts
-+ *
-+ * Copyright (C) 2021 Renesas Electronics Corp.
-+ */
-+
-+/dts-v1/;
-+#include "r9a07g044.dtsi"
-+
-+&soc {
-+	cpg: clock-controller@11010000 {
-+		compatible = "renesas,r9a07g044l-cpg";
-+		reg = <0 0x11010000 0 0x10000>;
-+		clocks = <&extal_clk>;
-+		clock-names = "extal";
-+		#clock-cells = <2>;
-+		#reset-cells = <1>;
-+		#power-domain-cells = <0>;
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
-new file mode 100644
-index 000000000000..44d4504e44c3
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
-@@ -0,0 +1,43 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for the RZ/G2L R9A07G044L1 common parts
-+ *
-+ * Copyright (C) 2021 Renesas Electronics Corp.
-+ */
-+
-+/dts-v1/;
-+#include "r9a07g044l.dtsi"
-+
-+/ {
-+	compatible = "renesas,r9a07g044l1";
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		a55_0: cpu@0 {
-+			compatible = "arm,cortex-a55";
-+			reg = <0>;
-+			device_type = "cpu";
-+			next-level-cache = <&L3_CA55>;
-+			enable-method = "psci";
-+		};
-+
-+		L3_CA55: cache-controller-0 {
-+			compatible = "cache";
-+			cache-unified;
-+			cache-size = <0x40000>;
-+		};
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupts-extended =
-+			<&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
-+			<&gic GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
-+			<&gic GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
-+			<&gic GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>;
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi
-new file mode 100644
-index 000000000000..33bb35e1c369
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/r9a07g044l2.dtsi
-@@ -0,0 +1,62 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for the RZ/G2L R9A07G044L2 common parts
-+ *
-+ * Copyright (C) 2021 Renesas Electronics Corp.
-+ */
-+
-+/dts-v1/;
-+#include "r9a07g044l.dtsi"
-+
-+/ {
-+	compatible = "renesas,r9a07g044l2";
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&a55_0>;
-+				};
-+				core1 {
-+					cpu = <&a55_1>;
-+				};
-+			};
-+		};
-+
-+		a55_0: cpu@0 {
-+			compatible = "arm,cortex-a55";
-+			reg = <0>;
-+			device_type = "cpu";
-+			next-level-cache = <&L3_CA55>;
-+			enable-method = "psci";
-+		};
-+
-+		a55_1: cpu@1 {
-+			compatible = "arm,cortex-a55";
-+			reg = <0x100>;
-+			device_type = "cpu";
-+			next-level-cache = <&L3_CA55>;
-+			enable-method = "psci";
-+		};
-+
-+		L3_CA55: cache-controller-0 {
-+			compatible = "cache";
-+			cache-unified;
-+			cache-size = <0x40000>;
-+		};
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupts-extended =
-+			<&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-+			<&gic GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-+			<&gic GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-+			<&gic GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
-+	};
-+};
+ static int __init liteuart_init(void)
+ {
+ 	int res;
 -- 
-2.17.1
+2.31.1
 
