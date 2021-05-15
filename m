@@ -8,62 +8,62 @@ X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C12C43460
-	for <linux-serial@archiver.kernel.org>; Sat, 15 May 2021 08:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B93E7C433ED
+	for <linux-serial@archiver.kernel.org>; Sat, 15 May 2021 12:17:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4BE71613FC
-	for <linux-serial@archiver.kernel.org>; Sat, 15 May 2021 08:49:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8F6F2613CD
+	for <linux-serial@archiver.kernel.org>; Sat, 15 May 2021 12:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbhEOIuf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 15 May 2021 04:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
+        id S231591AbhEOMSj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 15 May 2021 08:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbhEOIue (ORCPT
+        with ESMTP id S230144AbhEOMSj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 15 May 2021 04:50:34 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B8EC06174A;
-        Sat, 15 May 2021 01:49:19 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id h16so1463604pfk.0;
-        Sat, 15 May 2021 01:49:19 -0700 (PDT)
+        Sat, 15 May 2021 08:18:39 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A793CC061573;
+        Sat, 15 May 2021 05:17:25 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id 1so1613288qtb.0;
+        Sat, 15 May 2021 05:17:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=d7JME7PsV+guxE+FlqoT+L1SZsDBd+kLRGnzG/zfbdY=;
-        b=bjXZOZZkEqNhyjGLeIwwqgzRbB4ycr2YCBPKeLNvqlMYYeo7299W1bj9Kur7Pwvz8d
-         4KRrfmjlzd/i3pyiLoypa/XHuzKeiwaoJwIgq3u3XB8fhVA9xKhTI8QZtXfEEH6uIScN
-         fm3j6Ov/m6mseeOyQ2bnoF9C31+3RGAn6/mUz0I9Cl+ORYkkmnubFStqjiMR5lHR8Z6x
-         a7/unbpq7m3N7RBxoABxAgYFQ1hjlqGEylP5eDWTSUZ5qrn9a4u2Yx+xE6se54cvFpso
-         97NYkQY9G+sbzfBTCcXea5bwdmYE205d1XDu0eyDzsMldl7RgXtar7/aKkRvPOf4gF0q
-         wljQ==
+        bh=DPoGlMS/oCbgWHNPbUx7scOgPtN4DdBoyWnSloUqTQw=;
+        b=Vo8sGSPnG2sneOjS72HFiXr0WgvO+KnNFs8J1kFYeCimMYwaIg9sP4LSLRBogdeEBJ
+         /2bfN7emebEMroR3MGjZl+5okEEnASuaMmWbo25dYwprM3BfddVBEPbP0B0LHaoutj/i
+         xsp6Ap8A1mwB+5FXzav5/5IAcRsq4WosFmZ79DJyrcjayO2a5Eg2BC8CHxD4rcR/Qxpm
+         m9cDPDxYjKxN2wBT0rAiIPOnYmYMPAOqqeMfbq1WLqY5wBIoWKMaN8711LcOqo8CZ+Ju
+         0y+yrQwrRwB+C+j7BNJd4EZnVsHhbypMPdzNkBea2944IddEhue3BgeohHzMBFbXmA4v
+         k12g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=d7JME7PsV+guxE+FlqoT+L1SZsDBd+kLRGnzG/zfbdY=;
-        b=qDIDgsr/bNdGxTTbn9eMGur6vrXeKeKPA2Pf0Jw35EPKMt9ljtRqSrd4wxTnTQg8Ph
-         2lNU4mqB05iqR+ucOnIpXD6lF7uYBh8M27xB9N/u+jngOWgboipx70TmQze5uPLvY8vM
-         8xYAAILjehrAItLczVMRFg5CUGCtZuKvx2TzRdDpYIX3s1DJWefOF0sZ6MrrBYSrqMeX
-         xH5EKbRH8p/rarOiZFyavg/dqNdzFJX5T0g5MaT2X3Hiow5W6QB/y14L2FZx/NfrxEKp
-         d7bS/wkrIH0nianqKBGtZBBWzCYCdvz+uoP44iqZTjbYqBMPh2BgDVvUg/G9aYxkCAj5
-         6KpQ==
-X-Gm-Message-State: AOAM5339IPtQLFojsxIwMYoSk5WSrkWja8luQPBPav1WZODLOEcG8Kmh
-        kB1Ncvd2kBng09GN8v3Nc8p1tRCXWcWWAg==
-X-Google-Smtp-Source: ABdhPJwVtLEKFoOtRsiYR3H70dhU7NmUU9oqNAsaJtFyjkkRA/krJfBVqlnTqiKH4xK4R5fVjY/WFA==
-X-Received: by 2002:a05:6a00:230b:b029:2ca:4c19:ea87 with SMTP id h11-20020a056a00230bb02902ca4c19ea87mr22209110pfh.43.1621068558201;
-        Sat, 15 May 2021 01:49:18 -0700 (PDT)
-Received: from localhost (g1.222-224-229.ppp.wakwak.ne.jp. [222.224.229.1])
-        by smtp.gmail.com with ESMTPSA id g4sm5923708pgu.46.2021.05.15.01.49.17
+        bh=DPoGlMS/oCbgWHNPbUx7scOgPtN4DdBoyWnSloUqTQw=;
+        b=JJQB/F93DS3vHsaLH4nPOPfCkVP5lGpPHFxeM5EIwsAI/Kdu/pUe+zqkpAoO2voB4O
+         0igEA8PJBCdgoOdFQwE32qOJBBr141PvPr1hwSHhEFn2h95GS24pl46sFa1y7tr97APR
+         amLVA1oZNVfqJT8AStfpR11Bb4E2S02fKWASAWyU73KZivA+RO5wbyd16D3UoLXb845+
+         HyxDWg9O3Rs/rftAvxgS3Nxyxz35jmAsy6jvK1K8huoS5UA+iuCJ4vvUnZKTq12C0DKH
+         VCqxSdHccFkWTe88vPRlDQ28MqMDQ4qeOQgxyRYRLmv5I49RXAxa9o+fthnvxpWe8wrG
+         rhTQ==
+X-Gm-Message-State: AOAM531IzYAIomW/sGTY00KhdJLoOEstoNpoHC5yrvZa+lBT3aIqd1L/
+        3xE+mERJlbb5fm/7PmeEoTU=
+X-Google-Smtp-Source: ABdhPJwCy7Hg0PI8WYcO8+4B7gcsS26JbgGagbutHc/rU9q5/hKRp9x0eGrzmlAbISIBe3ODazf2rg==
+X-Received: by 2002:ac8:5d16:: with SMTP id f22mr24989947qtx.84.1621081044752;
+        Sat, 15 May 2021 05:17:24 -0700 (PDT)
+Received: from errol.ini.cmu.edu (pool-108-39-255-32.pitbpa.fios.verizon.net. [108.39.255.32])
+        by smtp.gmail.com with ESMTPSA id d16sm6570349qtw.23.2021.05.15.05.17.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 May 2021 01:49:17 -0700 (PDT)
-Date:   Sat, 15 May 2021 17:49:15 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Florent Kermarrec <florent@enjoy-digital.fr>,
+        Sat, 15 May 2021 05:17:24 -0700 (PDT)
+Date:   Sat, 15 May 2021 08:17:17 -0400
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Florent Kermarrec <florent@enjoy-digital.fr>,
         Mateusz Holenko <mholenko@antmicro.com>,
         Joel Stanley <joel@jms.id.au>,
-        "Gabriel L . Somlo" <gsomlo@gmail.com>,
         Jonathan Corbet <corbet@lwn.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -77,20 +77,16 @@ Cc:     Florent Kermarrec <florent@enjoy-digital.fr>,
         Peter Zijlstra <peterz@infradead.org>,
         linux-doc@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH] serial/liteuart; Add support for earlycon
-Message-ID: <YJ+LCygukQsQNIuj@antec>
+Message-ID: <YJ+7zTmMOxlCbaRf@errol.ini.cmu.edu>
 References: <20210515084519.167343-1-shorne@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20210515084519.167343-1-shorne@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-
-I pulled the trigger a bit early, the subject needs a bit better/consistent
-formatting.  It should be:
-
-  serial: liteuart: Add support for earlycon
 
 On Sat, May 15, 2021 at 05:45:18PM +0900, Stafford Horne wrote:
 > Most litex boards using RISC-V soft cores us the sbi earlycon, however
@@ -181,4 +177,9 @@ On Sat, May 15, 2021 at 05:45:18PM +0900, Stafford Horne wrote:
 >  	int res;
 > -- 
 > 2.31.1
-> 
+ 
+FWIW:
+Reviewed-and-tested-by: Gabriel Somlo <gsomlo@gmail.com>
+
+Thanks,
+--Gabriel
