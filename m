@@ -7,24 +7,24 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07693C433ED
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E896BC43603
 	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 01:57:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DC332613B9
-	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 01:57:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CC0DA613BE
+	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 01:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237226AbhERB6p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 May 2021 21:58:45 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4652 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237884AbhERB6o (ORCPT
+        id S237984AbhERB6q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 May 2021 21:58:46 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:2956 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245659AbhERB6o (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 17 May 2021 21:58:44 -0400
-Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FkfFX4f10z16Q6w;
+Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.60])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FkfFX1dC6zCtHX;
         Tue, 18 May 2021 09:54:40 +0800 (CST)
 Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Tue, 18 May 2021 09:57:25 +0800
 Received: from localhost.localdomain (10.69.192.56) by
@@ -35,9 +35,9 @@ From:   Jay Fang <f.fangjian@huawei.com>
 To:     <gregkh@linuxfoundation.org>
 CC:     <linux-serial@vger.kernel.org>, <linuxarm@huawei.com>,
         <huangdaode@huawei.com>, <tangzihao1@hisilicon.com>
-Subject: [PATCH 02/11] tty: serial: amba-pl010: Fix 2 coding style issues
-Date:   Tue, 18 May 2021 09:57:09 +0800
-Message-ID: <1621303038-12062-3-git-send-email-f.fangjian@huawei.com>
+Subject: [PATCH 03/11] tty: serial: amba-pl011: Replace the unsuitable spaces with tabs
+Date:   Tue, 18 May 2021 09:57:10 +0800
+Message-ID: <1621303038-12062-4-git-send-email-f.fangjian@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1621303038-12062-1-git-send-email-f.fangjian@huawei.com>
 References: <1621303038-12062-1-git-send-email-f.fangjian@huawei.com>
@@ -53,42 +53,51 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Zihao Tang <tangzihao1@hisilicon.com>
 
-Fix the following 2 coding style issues reported by checkpatch.pl:
+Replace the unsuitable spaces at the start of a line reported by
+checkpatch.pl with tabs:
 
-  ERROR: trailing whitespace
-  #387: FILE: ./drivers/tty/serial/amba-pl010.c:387
+  WARNING: please, no spaces at the start of a line
+  #1813: FILE: ./drivers/tty/serial/amba-pl011.c:1813:
+  +      unsigned long val;$
 
-  ERROR: Macros with complex values should be enclosed in parentheses
-  #676: FILE: ./drivers/tty/serial/amba-pl010.c:676
+  WARNING: please, no spaces at the start of a line
+  #1815: FILE: ./drivers/tty/serial/amba-pl011.c:1815:
+  +      val = pl011_read(uap, lcrh);$
+
+  WARNING: please, no spaces at the start of a line
+  #1816: FILE: ./drivers/tty/serial/amba-pl011.c:1816:
+  +      val &= ~(UART01x_LCRH_BRK | UART01x_LCRH_FEN);$
+
+  WARNING: please, no spaces at the start of a line
+  #1817: FILE: ./drivers/tty/serial/amba-pl011.c:1817:
+  +      pl011_write(val, uap, lcrh);$
 
 Signed-off-by: Zihao Tang <tangzihao1@hisilicon.com>
 Signed-off-by: Jay Fang <f.fangjian@huawei.com>
 ---
- drivers/tty/serial/amba-pl010.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index e744b95..b12ad58 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -384,7 +384,7 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/*
- 	 * Ask the core to calculate the divisor for us.
- 	 */
--	baud = uart_get_baud_rate(port, termios, old, 0, uap->port.uartclk/16); 
-+	baud = uart_get_baud_rate(port, termios, old, 0, uap->port.uartclk/16);
- 	quot = uart_get_divisor(port, baud);
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 78682c1..2a63e70 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1810,11 +1810,11 @@ static int sbsa_uart_startup(struct uart_port *port)
+ static void pl011_shutdown_channel(struct uart_amba_port *uap,
+ 					unsigned int lcrh)
+ {
+-      unsigned long val;
++	unsigned long val;
  
- 	switch (termios->c_cflag & CSIZE) {
-@@ -673,7 +673,7 @@ static struct console amba_console = {
- 	.data		= &amba_reg,
- };
+-      val = pl011_read(uap, lcrh);
+-      val &= ~(UART01x_LCRH_BRK | UART01x_LCRH_FEN);
+-      pl011_write(val, uap, lcrh);
++	val = pl011_read(uap, lcrh);
++	val &= ~(UART01x_LCRH_BRK | UART01x_LCRH_FEN);
++	pl011_write(val, uap, lcrh);
+ }
  
--#define AMBA_CONSOLE	&amba_console
-+#define AMBA_CONSOLE	(&amba_console)
- #else
- #define AMBA_CONSOLE	NULL
- #endif
+ /*
 -- 
 2.7.4
 
