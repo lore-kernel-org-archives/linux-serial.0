@@ -2,169 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC1FC433ED
-	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 04:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1161C433ED
+	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 05:40:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D77076135C
-	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 04:57:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9AC4E61166
+	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 05:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240482AbhERE64 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 May 2021 00:58:56 -0400
-Received: from mail-wm1-f54.google.com ([209.85.128.54]:37589 "EHLO
-        mail-wm1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237133AbhERE6z (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 May 2021 00:58:55 -0400
-Received: by mail-wm1-f54.google.com with SMTP id f19-20020a05600c1553b02901794fafcfefso57005wmg.2;
-        Mon, 17 May 2021 21:57:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8YPdF903pID1kt0ZCEYpZxpjPh8BR3iWLNlHhdqJx4Y=;
-        b=W3y0CyO0hTJ9kFu7SfmIHSLhu9g3mrYtUacYmiKk9aS86WQwv3U94tEg8TYsvzr3NB
-         3iUMUUy4lGetnU17y/AhlXgjP/htupMx4egtFlqLdzaSyt84SQMlHBy5v43+cOBOpjBt
-         1oEYHWkvZLlBFLU+jY2GdO96Fb/VHLZvMYhJOqs+KeKkSmejFavm2ZuPILxCxlF6Zcgt
-         gaGjdyzKfMuzFVUEgrRSauedwqiaVe6ToNmHflUpG0OUnp+3z4hXHuYPkeBMl4H4rjUY
-         8O3RSM22/eWZxG/yAeS0eXTZevq1Miv0KsxVtzPdZQBQaMYJQ5mu3glojyOLB88u4wNa
-         J1IA==
-X-Gm-Message-State: AOAM530tCFUr3mF9nyDloo/slFflivzirzVl4SD31bnZyJGDnYDEZv2S
-        NLwx6SiWVXKpsJ2TeUZyAaRYudXgwuEPaQ==
-X-Google-Smtp-Source: ABdhPJwLFO9Lpex8Hfqil95zpacCNSO+pQ02g82d0FluUzUrrBVDhvtP8qP0Xk5FStjUQ/gl+/cKrw==
-X-Received: by 2002:a1c:e90d:: with SMTP id q13mr3214017wmc.163.1621313855807;
-        Mon, 17 May 2021 21:57:35 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id c14sm19727784wrt.77.2021.05.17.21.57.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 May 2021 21:57:35 -0700 (PDT)
-Subject: Re: [PATCH v2] serial: liteuart: Add support for earlycon
-To:     Stafford Horne <shorne@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Florent Kermarrec <florent@enjoy-digital.fr>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Joel Stanley <joel@jms.id.au>,
-        "Gabriel L . Somlo" <gsomlo@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-doc@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20210517115453.24365-1-shorne@gmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <3810b979-e94e-24dc-9a6f-e9989800f7e7@kernel.org>
-Date:   Tue, 18 May 2021 06:57:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S238862AbhERFlU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 May 2021 01:41:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37640 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234640AbhERFlT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 18 May 2021 01:41:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7856561019;
+        Tue, 18 May 2021 05:40:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1621316401;
+        bh=2QjwTVqJlsfh4K6e7qEwUCi8M2rLkjF2RVXKpYdvzm4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uRXDakjMM1BwEt2K481FEht6aq/8j3ilocoTeZrdTo27nAiVoIKI0MYW5yhg8wBpH
+         x5xmaVJlECmlW/b+u859LfTKlQTtuPPnumCrRMFKt3Kl8Z6uDvdc3hN53Zbr3hIx9O
+         i5O8v4x8kx0KrqHYoZBFXE5mlGVvwDKrvljhBWs4=
+Date:   Tue, 18 May 2021 07:39:55 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jay Fang <f.fangjian@huawei.com>
+Cc:     linux-serial@vger.kernel.org, linuxarm@huawei.com,
+        huangdaode@huawei.com, tangzihao1@hisilicon.com
+Subject: Re: [PATCH 00/11] tty: serial: Fix some coding style issues
+Message-ID: <YKNTK/pkKK5kB6zu@kroah.com>
+References: <1621303038-12062-1-git-send-email-f.fangjian@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20210517115453.24365-1-shorne@gmail.com>
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1621303038-12062-1-git-send-email-f.fangjian@huawei.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 17. 05. 21, 13:54, Stafford Horne wrote:
-> Most litex boards using RISC-V soft cores us the sbi earlycon, however
-> this is not available for non RISC-V litex SoC's.  This patch enables
-> earlycon for liteuart which is available on all Litex SoC's making
-> support for earycon debugging more widely available.
+On Tue, May 18, 2021 at 09:57:07AM +0800, Jay Fang wrote:
+> From: Zihao Tang <tangzihao1@hisilicon.com>
 > 
-> Signed-off-by: Stafford Horne <shorne@gmail.com>
-> Cc: Florent Kermarrec <florent@enjoy-digital.fr>
-> Cc: Mateusz Holenko <mholenko@antmicro.com>
-> Cc: Joel Stanley <joel@jms.id.au>
-> Cc: Gabriel L. Somlo <gsomlo@gmail.com>
-> Reviewed-and-tested-by: Gabriel Somlo <gsomlo@gmail.com>
+> This patchset fixes some coding style issues reported by checkpatch.pl.
+> 
+> Zihao Tang (11):
+>   tty: serial: 21285: Fix some coding sytle issues
+>   tty: serial: amba-pl010: Fix 2 coding style issues
+>   tty: serial: amba-pl011: Replace the unsuitable spaces with tabs
+>   tty: serial: amba-pl011: Remove initialization of static variable
+>   tty: serial: apbuart: Fix some coding sytle issues
+>   tty: serial: atmel: Fix some coding style issues
+>   tty: serial: bcm63xx_uart: Fix some coding style issues
+>   tty: serial: clps711x: Fix some coding style issuses
+>   tty: serial: digicolor: Use 'unsigned int' instead of 'unsigned'
+>   tty: serial: dz: Use 'unsigned int' instead of 'unsigned'
+>   tty: serial: earlycon-arm-semihost : Fix some coding style issuses
+> 
+>  drivers/tty/serial/21285.c                 |  7 +++----
+>  drivers/tty/serial/amba-pl010.c            |  4 ++--
+>  drivers/tty/serial/amba-pl011.c            | 12 ++++++------
+>  drivers/tty/serial/apbuart.c               |  5 ++++-
+>  drivers/tty/serial/atmel_serial.c          | 13 +++++++++----
+>  drivers/tty/serial/bcm63xx_uart.c          | 14 +++++++++-----
+>  drivers/tty/serial/clps711x.c              |  4 ++--
+>  drivers/tty/serial/digicolor-usart.c       |  2 +-
+>  drivers/tty/serial/dz.c                    |  4 ++--
+>  drivers/tty/serial/earlycon-arm-semihost.c |  3 ++-
+>  10 files changed, 40 insertions(+), 28 deletions(-)
+> 
+> -- 
+> 2.7.4
+> 
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-> ---
-> Changes since v1:
->   - Fixed subject
->   - Fixed ifdef and config issues pointed out by Jiri
->   - Use liteuart_putchar instead of early_liteuart_putc
-> 
->   .../admin-guide/kernel-parameters.txt         |  5 +++++
->   drivers/tty/serial/Kconfig                    |  1 +
->   drivers/tty/serial/liteuart.c                 | 21 +++++++++++++++++++
->   3 files changed, 27 insertions(+)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 04545725f187..2d4a43af8de2 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1084,6 +1084,11 @@
->   			the driver will use only 32-bit accessors to read/write
->   			the device registers.
->   
-> +		liteuart,<addr>
-> +			Start an early console on a litex serial port at the
-> +			specified address. The serial port must already be
-> +			setup and configured. Options are not yet supported.
-> +
->   		meson,<addr>
->   			Start an early, polled-mode console on a meson serial
->   			port at the specified address. The serial port must
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 0c4cd4a348f4..af41e534483c 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1550,6 +1550,7 @@ config SERIAL_LITEUART_CONSOLE
->   	bool "LiteUART serial port console support"
->   	depends on SERIAL_LITEUART=y
->   	select SERIAL_CORE_CONSOLE
-> +	select SERIAL_EARLYCON
->   	help
->   	  Say 'Y' or 'M' here if you wish to use the FPGA-based LiteUART serial
->   	  controller from LiteX SoC builder as the system console
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 64842f3539e1..1b75a4bf7c56 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -370,6 +370,27 @@ static int __init liteuart_console_init(void)
->   	return 0;
->   }
->   console_initcall(liteuart_console_init);
-> +
-> +static void early_liteuart_write(struct console *console, const char *s,
-> +				    unsigned int count)
-> +{
-> +	struct earlycon_device *device = console->data;
-> +	struct uart_port *port = &device->port;
-> +
-> +	uart_console_write(port, s, count, liteuart_putchar);
-> +}
-> +
-> +static int __init early_liteuart_setup(struct earlycon_device *device,
-> +				       const char *options)
-> +{
-> +	if (!device->port.membase)
-> +		return -ENODEV;
-> +
-> +	device->con->write = early_liteuart_write;
-> +	return 0;
-> +}
-> +
-> +OF_EARLYCON_DECLARE(liteuart, "litex,liteuart", early_liteuart_setup);
->   #endif /* CONFIG_SERIAL_LITEUART_CONSOLE */
->   
->   static int __init liteuart_init(void)
-> 
+Hi,
+
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- Your patch did many different things all at once, making it difficult
+  to review.  All Linux kernel patches need to only do one thing at a
+  time.  If you need to do multiple things (such as clean up all coding
+  style issues in a file/driver), do it in a sequence of patches, each
+  one doing only one thing.  This will make it easier to review the
+  patches to ensure that they are correct, and to help alleviate any
+  merge issues that larger patches can cause.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
 thanks,
--- 
-js
-suse labs
+
+greg k-h's patch email bot
