@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E896BC43603
-	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 01:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7A5C43611
+	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 01:57:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CC0DA613BE
-	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 01:57:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0CB4B613BA
+	for <linux-serial@archiver.kernel.org>; Tue, 18 May 2021 01:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237984AbhERB6q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S245659AbhERB6q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 17 May 2021 21:58:46 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:2956 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245659AbhERB6o (ORCPT
+Received: from szxga06-in.huawei.com ([45.249.212.32]:3012 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346153AbhERB6o (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 17 May 2021 21:58:44 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FkfFX1dC6zCtHX;
-        Tue, 18 May 2021 09:54:40 +0800 (CST)
+Received: from dggems703-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FkfG72mLlzlfdF;
+        Tue, 18 May 2021 09:55:11 +0800 (CST)
 Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
+ dggems703-chm.china.huawei.com (10.3.19.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 18 May 2021 09:57:25 +0800
+ 15.1.2176.2; Tue, 18 May 2021 09:57:26 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 18 May 2021 09:57:25 +0800
+ 15.1.2176.2; Tue, 18 May 2021 09:57:26 +0800
 From:   Jay Fang <f.fangjian@huawei.com>
 To:     <gregkh@linuxfoundation.org>
 CC:     <linux-serial@vger.kernel.org>, <linuxarm@huawei.com>,
         <huangdaode@huawei.com>, <tangzihao1@hisilicon.com>
-Subject: [PATCH 03/11] tty: serial: amba-pl011: Replace the unsuitable spaces with tabs
-Date:   Tue, 18 May 2021 09:57:10 +0800
-Message-ID: <1621303038-12062-4-git-send-email-f.fangjian@huawei.com>
+Subject: [PATCH 08/11] tty: serial: clps711x: Fix some coding style issuses
+Date:   Tue, 18 May 2021 09:57:15 +0800
+Message-ID: <1621303038-12062-9-git-send-email-f.fangjian@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1621303038-12062-1-git-send-email-f.fangjian@huawei.com>
 References: <1621303038-12062-1-git-send-email-f.fangjian@huawei.com>
@@ -53,51 +53,49 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Zihao Tang <tangzihao1@hisilicon.com>
 
-Replace the unsuitable spaces at the start of a line reported by
-checkpatch.pl with tabs:
+Fix the following checkpatch warnings:
 
-  WARNING: please, no spaces at the start of a line
-  #1813: FILE: ./drivers/tty/serial/amba-pl011.c:1813:
-  +      unsigned long val;$
+  WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+  #365: FILE: ./drivers/tty/serial/clps711x.c:365:
+  +					unsigned n)
 
-  WARNING: please, no spaces at the start of a line
-  #1815: FILE: ./drivers/tty/serial/amba-pl011.c:1815:
-  +      val = pl011_read(uap, lcrh);$
+  WARNING: suspect code indent for conditional statements (8, 12)
+  #486: FILE: ./drivers/tty/serial/clps711x.c:486:
+  +	if (IS_ERR(s->gpios))
+  +	    return PTR_ERR(s->gpios);
 
-  WARNING: please, no spaces at the start of a line
-  #1816: FILE: ./drivers/tty/serial/amba-pl011.c:1816:
-  +      val &= ~(UART01x_LCRH_BRK | UART01x_LCRH_FEN);$
-
-  WARNING: please, no spaces at the start of a line
-  #1817: FILE: ./drivers/tty/serial/amba-pl011.c:1817:
-  +      pl011_write(val, uap, lcrh);$
+  WARNING: Statements should start on a tabstop
+  #487: FILE: ./drivers/tty/serial/clps711x.c:487:
+  +	    return PTR_ERR(s->gpios);
 
 Signed-off-by: Zihao Tang <tangzihao1@hisilicon.com>
 Signed-off-by: Jay Fang <f.fangjian@huawei.com>
 ---
- drivers/tty/serial/amba-pl011.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/clps711x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 78682c1..2a63e70 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1810,11 +1810,11 @@ static int sbsa_uart_startup(struct uart_port *port)
- static void pl011_shutdown_channel(struct uart_amba_port *uap,
- 					unsigned int lcrh)
- {
--      unsigned long val;
-+	unsigned long val;
- 
--      val = pl011_read(uap, lcrh);
--      val &= ~(UART01x_LCRH_BRK | UART01x_LCRH_FEN);
--      pl011_write(val, uap, lcrh);
-+	val = pl011_read(uap, lcrh);
-+	val &= ~(UART01x_LCRH_BRK | UART01x_LCRH_FEN);
-+	pl011_write(val, uap, lcrh);
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index 95abc6f..3a7a76c 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -362,7 +362,7 @@ static void uart_clps711x_console_putchar(struct uart_port *port, int ch)
  }
  
- /*
+ static void uart_clps711x_console_write(struct console *co, const char *c,
+-					unsigned n)
++					unsigned int n)
+ {
+ 	struct uart_port *port = clps711x_uart.state[co->index].uart_port;
+ 	struct clps711x_port *s = dev_get_drvdata(port->dev);
+@@ -484,7 +484,7 @@ static int uart_clps711x_probe(struct platform_device *pdev)
+ 
+ 	s->gpios = mctrl_gpio_init_noauto(&pdev->dev, 0);
+ 	if (IS_ERR(s->gpios))
+-	    return PTR_ERR(s->gpios);
++		return PTR_ERR(s->gpios);
+ 
+ 	ret = uart_add_one_port(&clps711x_uart, &s->port);
+ 	if (ret)
 -- 
 2.7.4
 
