@@ -2,88 +2,146 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B80C43460
-	for <linux-serial@archiver.kernel.org>; Wed, 19 May 2021 07:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A8F3C433ED
+	for <linux-serial@archiver.kernel.org>; Wed, 19 May 2021 09:07:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 917B16139A
-	for <linux-serial@archiver.kernel.org>; Wed, 19 May 2021 07:21:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 11120611AE
+	for <linux-serial@archiver.kernel.org>; Wed, 19 May 2021 09:07:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233202AbhESHXP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 May 2021 03:23:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39348 "EHLO mx2.suse.de"
+        id S1344296AbhESJJP (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 May 2021 05:09:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42100 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237490AbhESHXP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 May 2021 03:23:15 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id B7B22AFEF;
-        Wed, 19 May 2021 07:21:54 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 2/4] tty/serial: make port of serial8250_register_8250_port const
-Date:   Wed, 19 May 2021 09:21:51 +0200
-Message-Id: <20210519072153.3859-2-jslaby@suse.cz>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210519072153.3859-1-jslaby@suse.cz>
-References: <20210519072153.3859-1-jslaby@suse.cz>
+        id S237196AbhESJJP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 May 2021 05:09:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C42E0610CB;
+        Wed, 19 May 2021 09:07:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621415275;
+        bh=bZK3hm/bg/CBnl2ZxqH/c+W9ibTH1S+LBnaaWX6kEsI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J87icpHOkDItxssUPenGLlbITZAAeLkUklDl6Iqyc78G1VKIPjDuvADJS8B+D7rii
+         PIlvv5cc1cs0lnu0YoAlMitEZUL0Ox4Od4nIJTrFKGgqnkgMu6GXhvdOeAGv1N41TW
+         1OE9dUXyDE5NcpoilmJzrhbSo9N3F39PnU4tO1kgrSnev/40keMSQY6fkJyRdsPUP3
+         a5Yctc+TE1XToPBAMYYO935oK42i4MtCZJ3IgWEs6cgbKtIVHRtsIRPxEbuACq0TtD
+         huf1ADFWJA9BxTeXVr4KVNKmcvpOylvQtoffVD6eygFqjmNlF6BlFOiv6SeSMPeFH3
+         raFpTG1g4tTqg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1ljIBG-0002R5-Ux; Wed, 19 May 2021 11:07:55 +0200
+Date:   Wed, 19 May 2021 11:07:54 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 23/35] USB: serial: make usb_serial_driver::write_room
+ return uint
+Message-ID: <YKTVaiinpCOy9xX8@hovoldconsulting.com>
+References: <20210505091928.22010-1-jslaby@suse.cz>
+ <20210505091928.22010-24-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210505091928.22010-24-jslaby@suse.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-After the previous patch, we can make port passed to
-serial8250_find_match_or_unused const. And then we can make const also
-port of serial8250_register_8250_port.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/8250/8250_core.c | 4 ++--
- include/linux/serial_8250.h         | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 1082e76c4d37..1ce193daea7f 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -906,7 +906,7 @@ static struct platform_device *serial8250_isa_devs;
-  */
- static DEFINE_MUTEX(serial_mutex);
+On Wed, May 05, 2021 at 11:19:16AM +0200, Jiri Slaby wrote:
+> Line disciplines expect a positive value or zero returned from
+> tty->ops->write_room (invoked by tty_write_room). Both of them were
+> switched in the previous patch. So now, switch also
+> usb_serial_driver::write_room and all its users.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Johan Hovold <johan@kernel.org>
+> Cc: linux-usb@vger.kernel.org
+> ---
+>  drivers/usb/serial/cyberjack.c        | 4 ++--
+>  drivers/usb/serial/cypress_m8.c       | 8 ++++----
+>  drivers/usb/serial/digi_acceleport.c  | 8 ++++----
+>  drivers/usb/serial/garmin_gps.c       | 2 +-
+>  drivers/usb/serial/generic.c          | 6 +++---
+>  drivers/usb/serial/io_edgeport.c      | 6 +++---
+>  drivers/usb/serial/io_ti.c            | 6 +++---
+>  drivers/usb/serial/ir-usb.c           | 6 +++---
+>  drivers/usb/serial/keyspan.c          | 4 ++--
+>  drivers/usb/serial/kobil_sct.c        | 4 ++--
+>  drivers/usb/serial/mos7720.c          | 6 +++---
+>  drivers/usb/serial/mos7840.c          | 7 +++----
+>  drivers/usb/serial/opticon.c          | 2 +-
+>  drivers/usb/serial/oti6858.c          | 6 +++---
+>  drivers/usb/serial/quatech2.c         | 4 ++--
+>  drivers/usb/serial/sierra.c           | 2 +-
+>  drivers/usb/serial/ti_usb_3410_5052.c | 8 ++++----
+>  drivers/usb/serial/usb-wwan.h         | 2 +-
+>  drivers/usb/serial/usb_wwan.c         | 6 +++---
+>  include/linux/usb/serial.h            | 4 ++--
+>  20 files changed, 50 insertions(+), 51 deletions(-)
  
--static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *port)
-+static struct uart_8250_port *serial8250_find_match_or_unused(const struct uart_port *port)
- {
- 	int i;
- 
-@@ -971,7 +971,7 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
-  *
-  *	On success the port is ready to use and the line number is returned.
-  */
--int serial8250_register_8250_port(struct uart_8250_port *up)
-+int serial8250_register_8250_port(const struct uart_8250_port *up)
- {
- 	struct uart_8250_port *uart;
- 	int ret = -ENOSPC;
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 9e655055112d..5db211f43b29 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -146,7 +146,7 @@ static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
- 	return container_of(up, struct uart_8250_port, port);
- }
- 
--int serial8250_register_8250_port(struct uart_8250_port *);
-+int serial8250_register_8250_port(const struct uart_8250_port *);
- void serial8250_unregister_port(int line);
- void serial8250_suspend_port(int line);
- void serial8250_resume_port(int line);
--- 
-2.31.1
+> diff --git a/drivers/usb/serial/mos7720.c b/drivers/usb/serial/mos7720.c
+> index 6ee83886e2c9..d9cc7f840d48 100644
+> --- a/drivers/usb/serial/mos7720.c
+> +++ b/drivers/usb/serial/mos7720.c
+> @@ -1033,11 +1033,11 @@ static void mos7720_break(struct tty_struct *tty, int break_state)
+>   *	If successful, we return the amount of room that we have for this port
+>   *	Otherwise we return a negative error number.
+>   */
+> -static int mos7720_write_room(struct tty_struct *tty)
+> +static unsigned int mos7720_write_room(struct tty_struct *tty)
+>  {
+>  	struct usb_serial_port *port = tty->driver_data;
+>  	struct moschip_port *mos7720_port;
+> -	int room = 0;
+> +	unsigned int room = 0;
+>  	int i;
+>  
+>  	mos7720_port = usb_get_serial_port_data(port);
+> @@ -1051,7 +1051,7 @@ static int mos7720_write_room(struct tty_struct *tty)
+>  			room += URB_TRANSFER_BUFFER_SIZE;
+>  	}
+>  
+> -	dev_dbg(&port->dev, "%s - returns %d\n", __func__, room);
+> +	dev_dbg(&port->dev, "%s - returns %u\n", __func__, room);
+>  	return room;
+>  }
+>  
+> diff --git a/drivers/usb/serial/mos7840.c b/drivers/usb/serial/mos7840.c
+> index 28e4093794e0..f25d4ba43b9a 100644
+> --- a/drivers/usb/serial/mos7840.c
+> +++ b/drivers/usb/serial/mos7840.c
+> @@ -815,15 +815,14 @@ static void mos7840_break(struct tty_struct *tty, int break_state)
+>   *	this function is called by the tty driver when it wants to know how many
+>   *	bytes of data we can accept for a specific port.
+>   *	If successful, we return the amount of room that we have for this port
+> - *	Otherwise we return a negative error number.
 
+This is arguably an unrelated change, and you're not removing these
+outdated comments consistently (e.g. mos7720 above) so I've dropped this
+bit for now.
+
+Will send a follow up patch to clean it up all these instances instead.
+
+>   *****************************************************************************/
+>  
+> -static int mos7840_write_room(struct tty_struct *tty)
+> +static unsigned int mos7840_write_room(struct tty_struct *tty)
+>  {
+>  	struct usb_serial_port *port = tty->driver_data;
+>  	struct moschip_port *mos7840_port = usb_get_serial_port_data(port);
+>  	int i;
+> -	int room = 0;
+> +	unsigned int room = 0;
+>  	unsigned long flags;
+>  
+>  	spin_lock_irqsave(&mos7840_port->pool_lock, flags);
+
+Now applied with an amended commit message.
+
+Johan
