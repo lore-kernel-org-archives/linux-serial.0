@@ -7,100 +7,123 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2606DC433ED
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC38C433B4
 	for <linux-serial@archiver.kernel.org>; Wed, 19 May 2021 07:21:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ED76561244
-	for <linux-serial@archiver.kernel.org>; Wed, 19 May 2021 07:21:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 75B8B6135C
+	for <linux-serial@archiver.kernel.org>; Wed, 19 May 2021 07:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238781AbhESHXP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S239624AbhESHXP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 19 May 2021 03:23:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39318 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:39364 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237293AbhESHXP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S237886AbhESHXP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 19 May 2021 03:23:15 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 822D9AD4B;
-        Wed, 19 May 2021 07:21:54 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 010FFAF06;
+        Wed, 19 May 2021 07:21:55 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 1/4] tty/serial: clean up uart_match_port
-Date:   Wed, 19 May 2021 09:21:50 +0200
-Message-Id: <20210519072153.3859-1-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 3/4] tty: fix kernel-doc for tty_{read,write}
+Date:   Wed, 19 May 2021 09:21:52 +0200
+Message-Id: <20210519072153.3859-3-jslaby@suse.cz>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210519072153.3859-1-jslaby@suse.cz>
+References: <20210519072153.3859-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* make parameters const (as they are only read)
-* return bool (as comparison results are returned)
-* add \n before final return
+After commits a9cbbb80e3e7 (tty: avoid using vfs_iocb_iter_write() for
+redirected console writes) and dd78b0c483e3 (tty: implement read_iter),
+the tty_read and tty_write kernel-doc comments don't match the code:
+ tty_io.c:931: warning: Function parameter or member 'iocb' not described in 'tty_read'
+ tty_io.c:931: warning: Function parameter or member 'to' not described in 'tty_read'
+ tty_io.c:931: warning: Excess function parameter 'file' description in 'tty_read'
+ tty_io.c:931: warning: Excess function parameter 'buf' description in 'tty_read'
+ tty_io.c:931: warning: Excess function parameter 'count' description in 'tty_read'
+ tty_io.c:931: warning: Excess function parameter 'ppos' description in 'tty_read'
+ tty_io.c:1115: warning: Function parameter or member 'iocb' not described in 'file_tty_write'
+ tty_io.c:1115: warning: Function parameter or member 'from' not described in 'file_tty_write'
+ tty_io.c:1115: warning: expecting prototype for tty_write(). Prototype was for file_tty_write() instead
+
+Fix them to correspond the reality, i.e. the switch from read/write to
+read_iter/write_iter.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
 ---
- drivers/tty/serial/serial_core.c | 16 +++++++++-------
- include/linux/serial_core.h      |  3 ++-
- 2 files changed, 11 insertions(+), 8 deletions(-)
+ drivers/tty/tty_io.c | 37 ++++++++++++++++---------------------
+ 1 file changed, 16 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 33a817c57494..e379fa2e32af 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3005,26 +3005,28 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- /*
-  *	Are the two ports equivalent?
-  */
--int uart_match_port(struct uart_port *port1, struct uart_port *port2)
-+bool uart_match_port(const struct uart_port *port1,
-+		const struct uart_port *port2)
- {
- 	if (port1->iotype != port2->iotype)
--		return 0;
-+		return false;
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 8f9e89715a68..ad64232cecae 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -911,10 +911,8 @@ static int iterate_tty_read(struct tty_ldisc *ld, struct tty_struct *tty,
  
- 	switch (port1->iotype) {
- 	case UPIO_PORT:
--		return (port1->iobase == port2->iobase);
-+		return port1->iobase == port2->iobase;
- 	case UPIO_HUB6:
--		return (port1->iobase == port2->iobase) &&
--		       (port1->hub6   == port2->hub6);
-+		return port1->iobase == port2->iobase &&
-+		       port1->hub6   == port2->hub6;
- 	case UPIO_MEM:
- 	case UPIO_MEM16:
- 	case UPIO_MEM32:
- 	case UPIO_MEM32BE:
- 	case UPIO_AU:
- 	case UPIO_TSI:
--		return (port1->mapbase == port2->mapbase);
-+		return port1->mapbase == port2->mapbase;
+ /**
+  *	tty_read	-	read method for tty device files
+- *	@file: pointer to tty file
+- *	@buf: user buffer
+- *	@count: size of user buffer
+- *	@ppos: unused
++ *	@iocb: kernel I/O control block
++ *	@to: destination for the data read
+  *
+  *	Perform the read system call function on this terminal device. Checks
+  *	for hung up devices before calling the line discipline method.
+@@ -1092,23 +1090,6 @@ void tty_write_message(struct tty_struct *tty, char *msg)
  	}
--	return 0;
-+
-+	return false;
  }
- EXPORT_SYMBOL(uart_match_port);
  
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 7445c8fd88c0..52d7fb92a69d 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -408,7 +408,8 @@ int uart_register_driver(struct uart_driver *uart);
- void uart_unregister_driver(struct uart_driver *uart);
- int uart_add_one_port(struct uart_driver *reg, struct uart_port *port);
- int uart_remove_one_port(struct uart_driver *reg, struct uart_port *port);
--int uart_match_port(struct uart_port *port1, struct uart_port *port2);
-+bool uart_match_port(const struct uart_port *port1,
-+		const struct uart_port *port2);
+-
+-/**
+- *	tty_write		-	write method for tty device file
+- *	@file: tty file pointer
+- *	@buf: user data to write
+- *	@count: bytes to write
+- *	@ppos: unused
+- *
+- *	Write data to a tty device via the line discipline.
+- *
+- *	Locking:
+- *		Locks the line discipline as required
+- *		Writes to the tty driver are serialized by the atomic_write_lock
+- *	and are then processed in chunks to the device. The line discipline
+- *	write method will not be invoked in parallel for each device.
+- */
+-
+ static ssize_t file_tty_write(struct file *file, struct kiocb *iocb, struct iov_iter *from)
+ {
+ 	struct tty_struct *tty = file_tty(file);
+@@ -1133,6 +1114,20 @@ static ssize_t file_tty_write(struct file *file, struct kiocb *iocb, struct iov_
+ 	return ret;
+ }
  
- /*
-  * Power Management
++/**
++ *	tty_write		-	write method for tty device file
++ *	@iocb: kernel I/O control block
++ *	@from: iov_iter with data to write
++ *
++ *	Write data to a tty device via the line discipline.
++ *
++ *	Locking:
++ *		Locks the line discipline as required
++ *		Writes to the tty driver are serialized by the atomic_write_lock
++ *		and are then processed in chunks to the device. The line
++ *		discipline write method will not be invoked in parallel for
++ *		each device.
++ */
+ static ssize_t tty_write(struct kiocb *iocb, struct iov_iter *from)
+ {
+ 	return file_tty_write(iocb->ki_filp, iocb, from);
 -- 
 2.31.1
 
