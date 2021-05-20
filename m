@@ -7,60 +7,67 @@ X-Spam-Status: No, score=-6.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C7ADC433ED
-	for <linux-serial@archiver.kernel.org>; Thu, 20 May 2021 14:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 936F0C433ED
+	for <linux-serial@archiver.kernel.org>; Thu, 20 May 2021 15:07:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 77E0C61002
-	for <linux-serial@archiver.kernel.org>; Thu, 20 May 2021 14:30:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6DE6F61246
+	for <linux-serial@archiver.kernel.org>; Thu, 20 May 2021 15:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237327AbhETObb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 May 2021 10:31:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47372 "EHLO mail.kernel.org"
+        id S232419AbhETPJL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 May 2021 11:09:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236853AbhETOb3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 May 2021 10:31:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EFD4861002;
-        Thu, 20 May 2021 14:30:06 +0000 (UTC)
+        id S238578AbhETPJH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 20 May 2021 11:09:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D9CA061184;
+        Thu, 20 May 2021 15:07:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1621521007;
-        bh=DwkT+nQymoBm5mEDw50KxpS1sTtx5DPSq6uiROs6fx0=;
+        s=korg; t=1621523266;
+        bh=Wn1M4+UsbaVhUZR2giqAc9Ih5SyelQc6s8D+t56AuSU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=v0kK+vQb6CCfEXNMqvKXTPIWzmEKVvm8T1pZjg4R7x1j0Z2heovIq0Pm5JLpbLpaR
-         Vk5ofpXLNVXNbK7kgOedujHBJKLyV0HFUr6QzUWlVquXpGUUGSQ6jvmN8PRRkvm74b
-         GaeTeak/FyZrcrAmGuAjRmwwzGJmoZDzQTisVuiM=
-Date:   Thu, 20 May 2021 16:30:05 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     cernekee@gmail.com, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: rp2: disable interrupt in rp2_probe():
-Message-ID: <YKZybdcwoI1eMbzj@kroah.com>
-References: <1620991027-25856-1-git-send-email-zheyuma97@gmail.com>
+        b=v7Z5kjCtxIONvEvNnF2J0ZxyrNspcPO2Rvb75EwFudWvtmnlcD/Oh72ZqVrj9efwp
+         tQRhbHidgk8uCAUD6cfGGihsDPehhpf/uXpEl9qod5y5qW7zl2bwwAy8lgHz9ut7/0
+         gj05z4Ja1Wpyofoq2eLa1+B3NoARY4FBdzwY1fIQ=
+Date:   Thu, 20 May 2021 17:07:44 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Al Longyear <longyear@netcom.com>,
+        "Andrew J. Kroll" <ag784@freenet.buffalo.edu>,
+        Andrew Morton <andrewm@uow.edu.eu>,
+        Bill Hawes <whawes@star.net>,
+        "C. Scott Ananian" <cananian@alumni.princeton.edu>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        -- <julian@uhunix.uhcc.hawaii.edu>,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        Marko Kohtala <Marko.Kohtala@hut.fi>,
+        Michael Callahan <callahan@maths.ox.ac.uk>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Nick Holloway <alfie@dcs.warwick.ac.uk>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Paul Fulghum <paulkf@microgate.com>,
+        Paul Mackerras <Paul.Mackerras@cs.anu.edu.au>,
+        processes-Sapan Bhatia <sapan@corewars.org>,
+        Rob Herring <robh@kernel.org>,
+        Russell King <rmk@arm.linux.org.uk>
+Subject: Re: [PATCH 00/11] Rid W=1 warnings from TTY
+Message-ID: <YKZ7QA4fFegLbUHH@kroah.com>
+References: <20210520121906.3468725-1-lee.jones@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1620991027-25856-1-git-send-email-zheyuma97@gmail.com>
+In-Reply-To: <20210520121906.3468725-1-lee.jones@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 14, 2021 at 11:17:07AM +0000, Zheyu Ma wrote:
-> In 'rp2_probe', the driver registers 'rp2_uart_interrupt' then calls
-> 'rp2_fw_cb' through 'request_firmware_nowait'. In 'rp2_fw_cb', if the
-> firmware don't exists, function just return without initializing ports
-> of 'rp2_card'. But now the interrupt handler function has been registered,
-> and when an interrupt comes('rp2' may shares an interrupt line with other
-> devices), 'rp2_uart_interrupt' may access those ports then causing NULL
-> pointer dereference or other bugs.
-> 
-> Fix this by disabling interrupt after registering 'rp2_uart_interrupt',
-> and enable it in 'rp2_uart_startup'.
+On Thu, May 20, 2021 at 01:18:55PM +0100, Lee Jones wrote:
+> This set is part of a larger effort attempting to clean-up W=1
+> kernel builds, which are currently overwhelmingly riddled with
+> niggly little warnings.
 
-What prevents an interrupt from coming in right after callin
-rp2_uart_interrupt()?  The driver has to be able to handle that.  Why is
-the interrupt being registered before the firmware is loaded?  That
-should be the proper fix as once you register an interrupt, the driver
-HAS to be able to properly handle it.
+All but 3 applied to my tree, you should rebase and resend those
+remaining ones as they conflicted with things that others recently
+changed.
 
 thanks,
 
