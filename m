@@ -2,66 +2,67 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B90DC433ED
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1C4C43460
 	for <linux-serial@archiver.kernel.org>; Thu, 20 May 2021 02:14:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0B134611BF
+	by mail.kernel.org (Postfix) with ESMTP id B4913611BD
 	for <linux-serial@archiver.kernel.org>; Thu, 20 May 2021 02:14:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230315AbhETCQK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 May 2021 22:16:10 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:34237 "EHLO
+        id S230345AbhETCQL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 May 2021 22:16:11 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:42221 "EHLO
         new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230308AbhETCPu (ORCPT
+        by vger.kernel.org with ESMTP id S230306AbhETCPu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 19 May 2021 22:15:50 -0400
 Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailnew.nyi.internal (Postfix) with ESMTP id ACA925808EB;
-        Wed, 19 May 2021 22:13:49 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 1E6525808F3;
+        Wed, 19 May 2021 22:13:58 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 19 May 2021 22:13:49 -0400
+  by compute2.internal (MEProxy); Wed, 19 May 2021 22:13:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=from
-        :to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=fm2; bh=odecAKUaHKQG4X3qJBH558YiNF
-        7tYkLnTOKSXP3atJM=; b=TBAjCkk+uY2vL+OPwD/lYfZ9Qd6hy31ihSr8xd0dER
-        PAhQvk5iYF7YH9Yvo8H2rOcZGIc+JjioT2xksAA+5QM6/HRC2xe94VBjExBy/FhF
-        MGqjFe0RWKq60dai30WXXqO4IsJXrc34UIvxcctz9BqHbDSLzX2pzkgILvtmvjDQ
-        b2k8t2xr6ZQTQ+wb23M2rYocYszl5wjFwXC9feT0j9PDvdwFoYJE0ARQGoHitZNL
-        idcfpvX5BO1Ai500+DqKTMofPg+IPjidnX6VcyeHc6T+Xt2wvZNnQ/tNzo4yHFkK
-        RM8vQUUax0XWYWW4VVQYN9JDDZCmJg85nJW5ag3eHIqw==
+        :to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=fm2; bh=xaOffRI6alJL3
+        rQhNQY1BObEReB1pRx0cFG8v7tgrSo=; b=seEJKdzPx3BjwzX0SXx8TYL4jg0Ph
+        +rHEdowVgjI85qIGwzLo1UQUfH2bRp31kd0jiMVh0wgPMk3qPEub2MoZ/mlFH5uY
+        d9VyCQg86Rt5SbVnco0RTOkvnhNiXvZth8h+eH01RrxAfjbyoEkGiD8N77DVcwxk
+        iJH4owW8y45z7dusmgfmpNscFN66D1dVdb1Cice+Gfl/hp6ZPv2PMxgXV/x9dnFn
+        Gl2oAzezRGrdQ6Z7kDOGFCYLtE174z9kB1X4PTUm/keE9RvRHuYRg73GZQ9P9Zvq
+        tP6nGUz89tF2aT6leSWWL6bekLUP01xn0voU1z/Yl+j0GD0orYIScKR9w==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=odecAKUaHKQG4X3qJ
-        BH558YiNF7tYkLnTOKSXP3atJM=; b=ajPVZwIRN8x1f044hZZ78SjOdzZ2dcid7
-        4O6D8HV1KWmQxN+3WPnvpC0HCqGiV4QRKIsofQhNldfU/IZJFNQ0HroscZdCsjtI
-        21SuRslEESk2tql30Hb2Ryu8Y54iI0JaOEW9y0mu9VC7oL68I/4++1XEifSKRTyi
-        tAVkRR2lEJh7O5Ldk+q46JxM8DF/+yPv/k53jlg7rJflyJN8ckBrI49tZAo+AjnQ
-        KH5jL39tibMDPP5TANRlf1IFKXi2HOqnuGQW/K8PCioBUD797wBgVF9ttEy0CFI3
-        FW3RdwTvQNBqrP7N758PDBV/moyULfKMQ0yQRv2QDuj8tmJxuCSUw==
-X-ME-Sender: <xms:28WlYGlXskmb1XwY4GSsxAC9mvToJbTFdD70sq56mJm1_iX5Udrvlg>
-    <xme:28WlYN2pOYZmMq2P-RRQGPhPnoqb3Tg46zgAtz6jwqc1G5f7wpF8J7yEFlAZwXOl8
-    NKXqVI_SmSHW7u9lQ>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=xaOffRI6alJL3rQhNQY1BObEReB1pRx0cFG8v7tgrSo=; b=n5RY+O6i
+        NzDq/Z/wVHnQ5/iEGNsp/hqlsWSbU6cgrhix21FmNdx5BbiNLNON8D/pFrxyBGMd
+        e7gwciI2LdnTxdE5mioiQRuswovhCUznBg5S8Op7Z3YHiNhWAYcUEQ+xTP2y2k94
+        FzwTskJhFFPDGUGtNF1uvap2Y+bIbK7eEoYfaY4kXux1x6yE/UK3XkJEAXF/P6WD
+        M+/e4NtBrKJVCxDIYn+JbJNbyqvaDXdFHk3UnMbH7q8FZc6Hgcb2Mse+BUsWXWAp
+        Ww4yF0V2jPu8+0leYwZ5U4Ur/1X6igIA78PU3HuE+C4Q+/4OvvY+Hwb/T1DApvGE
+        5zZvIR7i0RCy0Q==
+X-ME-Sender: <xms:5sWlYIT_t5sZ7iR7dEo5wEp1vjkhGDFHPOX4hDkNiQlD73aRYTJbpA>
+    <xme:5sWlYFx_juqk00ghLOC6Hz4xLUjsdZkpYWBoBxR3lJLx7gQpTVRx6zDhEgei82JYW
+    _qoOS9-wAz5Y4aKxw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdejtddgheeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomheptehnughrvgifucflvghffhgvrhihuceorghnughrvgifsegrjhdr
-    ihgurdgruheqnecuggftrfgrthhtvghrnhepieetheduveelhfdvvdejleeuhfelteevhe
-    ffgfeitdefgeekjeefieevgfehhefgnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghen
-    ucfkphepvddtfedrheejrddvudehrdeknecuvehluhhsthgvrhfuihiivgeptdenucfrrg
-    hrrghmpehmrghilhhfrhhomheprghnughrvgifsegrjhdrihgurdgruh
-X-ME-Proxy: <xmx:28WlYEo5Rio_SEtewHw5ZoTy2Ou0_uUJu5VAoj60hxWk-9-QXLcEWg>
-    <xmx:28WlYKlMelg0fgen-9DB4jqEXMFfdYJONK8y4Z0Rbo8uu4BmGb4tXg>
-    <xmx:28WlYE0-AgMrl9NNVVgJK64_JsAuy6pFlTfMd5xht_AomF0uh0eS4Q>
-    <xmx:3cWlYFIIfjWE1XJLFk1Uatd3BEamHkRzhE9tFYuTqURUSbFhXtLTxA>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomheptehnughrvgifucflvghffhgvrhihuceorghnughrvgifsegr
+    jhdrihgurdgruheqnecuggftrfgrthhtvghrnhepjefgvdevheetkeevgeegleelgfelte
+    etjeffleffvdduudevieffgeetleevhfetnecukfhppedvtdefrdehjedrvdduhedrkeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrnhgurh
+    gvfiesrghjrdhiugdrrghu
+X-ME-Proxy: <xmx:5sWlYF06SQ2uPh8bUyTIQOICtLtxRs-SEMRZLuCJn1lfroAW9FNL1g>
+    <xmx:5sWlYMDTPCtd6khe_S0bg8nng-ltMXTCw1qLt1FMFcQXzRJ_HpS3ig>
+    <xmx:5sWlYBhtaAD6RAEvi_EmF_Ojuk3t3RopimUU5lmqRBdX6MQSQnRZWg>
+    <xmx:5sWlYCV033tKzJ8B-K8DA9PcsM6tQknu06ApnuRwFgAxt6YIUeG7Xg>
 Received: from mistburn.lan (203-57-215-8.dyn.iinet.net.au [203.57.215.8])
         by mail.messagingengine.com (Postfix) with ESMTPA;
-        Wed, 19 May 2021 22:13:43 -0400 (EDT)
+        Wed, 19 May 2021 22:13:54 -0400 (EDT)
 From:   Andrew Jeffery <andrew@aj.id.au>
 To:     linux-serial@vger.kernel.org
 Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org, joel@jms.id.au,
@@ -69,45 +70,79 @@ Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org, joel@jms.id.au,
         linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
         jenmin_yuan@aspeedtech.com, ryan_chen@aspeedtech.com,
         miltonm@us.ibm.com
-Subject: [PATCH v3 0/2] serial: 8250: Mitigate Tx stall risk for Aspeed VUARTs
-Date:   Thu, 20 May 2021 11:43:32 +0930
-Message-Id: <20210520021334.497341-1-andrew@aj.id.au>
+Subject: [PATCH v3 2/2] serial: 8250: Use BIT(x) for UART_{CAP,BUG}_*
+Date:   Thu, 20 May 2021 11:43:34 +0930
+Message-Id: <20210520021334.497341-3-andrew@aj.id.au>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210520021334.497341-1-andrew@aj.id.au>
+References: <20210520021334.497341-1-andrew@aj.id.au>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+BIT(x) improves readability and safety with respect to shifts.
 
-Briefly, the series works around a hardware race condition in the Tx path for
-Aspeed virtual UARTs. A write burst to THR on the APB interface may provoke a
-transfer stall where LSR[DR] on the LPC interface remains clear despite the
-presence of data in the Rx FIFO.
+Signed-off-by: Andrew Jeffery <andrew@aj.id.au>
+---
+ drivers/tty/serial/8250/8250.h | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
 
-v3 addresses comments from Jiri on v2. v2 can be found here:
-
-https://lore.kernel.org/lkml/20210519000704.3661773-1-andrew@aj.id.au/
-
-The documentation patch that fell out of the discussion of patch 2 of v2 can be
-found here:
-
-https://lore.kernel.org/lkml/20210520015704.489737-1-andrew@aj.id.au/T/#u
-
-Please review!
-
-Andrew
-
-Andrew Jeffery (2):
-  serial: 8250: Add UART_BUG_TXRACE workaround for Aspeed VUART
-  serial: 8250: Use BIT(x) for UART_{CAP,BUG}_*
-
- drivers/tty/serial/8250/8250.h              | 32 +++++++++++----------
- drivers/tty/serial/8250/8250_aspeed_vuart.c |  1 +
- drivers/tty/serial/8250/8250_port.c         | 12 ++++++++
- 3 files changed, 30 insertions(+), 15 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 34aa2714f3c9..6473361525d1 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -7,6 +7,7 @@
+  *  Copyright (C) 2001 Russell King.
+  */
+ 
++#include <linux/bits.h>
+ #include <linux/serial_8250.h>
+ #include <linux/serial_reg.h>
+ #include <linux/dmaengine.h>
+@@ -70,25 +71,25 @@ struct serial8250_config {
+ 	unsigned int	flags;
+ };
+ 
+-#define UART_CAP_FIFO	(1 << 8)	/* UART has FIFO */
+-#define UART_CAP_EFR	(1 << 9)	/* UART has EFR */
+-#define UART_CAP_SLEEP	(1 << 10)	/* UART has IER sleep */
+-#define UART_CAP_AFE	(1 << 11)	/* MCR-based hw flow control */
+-#define UART_CAP_UUE	(1 << 12)	/* UART needs IER bit 6 set (Xscale) */
+-#define UART_CAP_RTOIE	(1 << 13)	/* UART needs IER bit 4 set (Xscale, Tegra) */
+-#define UART_CAP_HFIFO	(1 << 14)	/* UART has a "hidden" FIFO */
+-#define UART_CAP_RPM	(1 << 15)	/* Runtime PM is active while idle */
+-#define UART_CAP_IRDA	(1 << 16)	/* UART supports IrDA line discipline */
+-#define UART_CAP_MINI	(1 << 17)	/* Mini UART on BCM283X family lacks:
++#define UART_CAP_FIFO	BIT(8)	/* UART has FIFO */
++#define UART_CAP_EFR	BIT(9)	/* UART has EFR */
++#define UART_CAP_SLEEP	BIT(10)	/* UART has IER sleep */
++#define UART_CAP_AFE	BIT(11)	/* MCR-based hw flow control */
++#define UART_CAP_UUE	BIT(12)	/* UART needs IER bit 6 set (Xscale) */
++#define UART_CAP_RTOIE	BIT(13)	/* UART needs IER bit 4 set (Xscale, Tegra) */
++#define UART_CAP_HFIFO	BIT(14)	/* UART has a "hidden" FIFO */
++#define UART_CAP_RPM	BIT(15)	/* Runtime PM is active while idle */
++#define UART_CAP_IRDA	BIT(16)	/* UART supports IrDA line discipline */
++#define UART_CAP_MINI	BIT(17)	/* Mini UART on BCM283X family lacks:
+ 					 * STOP PARITY EPAR SPAR WLEN5 WLEN6
+ 					 */
+ 
+-#define UART_BUG_QUOT	(1 << 0)	/* UART has buggy quot LSB */
+-#define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
+-#define UART_BUG_NOMSR	(1 << 2)	/* UART has buggy MSR status bits (Au1x00) */
+-#define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
+-#define UART_BUG_PARITY	(1 << 4)	/* UART mishandles parity if FIFO enabled */
+-#define UART_BUG_TXRACE	(1 << 5)	/* UART Tx fails to set remote DR */
++#define UART_BUG_QUOT	BIT(0)	/* UART has buggy quot LSB */
++#define UART_BUG_TXEN	BIT(1)	/* UART has buggy TX IIR status */
++#define UART_BUG_NOMSR	BIT(2)	/* UART has buggy MSR status bits (Au1x00) */
++#define UART_BUG_THRE	BIT(3)	/* UART has buggy THRE reassertion */
++#define UART_BUG_PARITY	BIT(4)	/* UART mishandles parity if FIFO enabled */
++#define UART_BUG_TXRACE	BIT(5)	/* UART Tx fails to set remote DR */
+ 
+ 
+ #ifdef CONFIG_SERIAL_8250_SHARE_IRQ
 -- 
 2.30.2
 
