@@ -2,88 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E10C433ED
-	for <linux-serial@archiver.kernel.org>; Fri, 21 May 2021 11:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9428C43460
+	for <linux-serial@archiver.kernel.org>; Fri, 21 May 2021 13:23:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AEF7A613DA
-	for <linux-serial@archiver.kernel.org>; Fri, 21 May 2021 11:31:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 97A6D613EB
+	for <linux-serial@archiver.kernel.org>; Fri, 21 May 2021 13:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbhEULca (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 May 2021 07:32:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56172 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229991AbhEULca (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 May 2021 07:32:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C4DAF613DA;
-        Fri, 21 May 2021 11:31:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1621596667;
-        bh=XCW+h8GxyRMMPHetbkEqtfnjz33mh3sQXexOSdqhuy4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ONWDyYeVs/0J4Vkz+ueCYV0mSFQu9dZ6ray+woDOk8ypSUcoMX6Tw4aQZ3M2eq1da
-         wouGyDIgIDRtX3zrdMpVRBUZS2hL6f0PSp9DUlX7FDqpAviYiNx/nER4LuMFzqxqgX
-         +wEmCOIz4t+QuO9vJE1Tz0RiQbNwgTCxxyNwgV4A=
-Date:   Fri, 21 May 2021 13:31:04 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     cernekee@gmail.com, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] serial: rp2: use 'request_firmware' instead of
- 'request_firmware_nowait'
-Message-ID: <YKeZ+JMvlQ8YvDuw@kroah.com>
-References: <1621577323-1541-1-git-send-email-zheyuma97@gmail.com>
- <YKdYZF8zDGl0hxeX@kroah.com>
- <CAMhUBjkeXn=Yf+dsdKo5_H1Tko3Qhfr+y=9b47XtHA04k2smXg@mail.gmail.com>
+        id S234911AbhEUNZB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 May 2021 09:25:01 -0400
+Received: from mail-ua1-f53.google.com ([209.85.222.53]:43940 "EHLO
+        mail-ua1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235102AbhEUNYe (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 21 May 2021 09:24:34 -0400
+Received: by mail-ua1-f53.google.com with SMTP id f1so6639566uaj.10;
+        Fri, 21 May 2021 06:23:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ADq2Zx/7nfEnjWKiWzAvzDTBOKD2nd8BVp+9Als5Ufs=;
+        b=WBJHd8zxY7z3+0ArscwMVYbkK8dVEFWyLKuY6/DwacAhmSrtbEABDFBDnHkw52ZwHO
+         74/ZhhJi6GWQI8kQa/2C4O+t/g9Hcg/3JL/AvK4XKC6nSM8LS1SWjCdNA5lSXIUIIw0x
+         uMouAYrWp3BjYW0o67+3Wc7sTnrrapBq663+TM0vlPfgo/pUDH1Ao7YiMLZ45U2AYl+w
+         56/4puOKe5mNyQZVOtjKMkt8u1bu4dGeW7PNWuCwAq2V7CbMtCSjgHKI8SN7KMXk+prM
+         9SoBFp9Frj1aBoHjMFHSgunbJwXLaK/hTBdOWJC2ogkod4h0pZOzyDQvT/Ns1OXbGlbF
+         Ro+Q==
+X-Gm-Message-State: AOAM533dw1lwSya/M8eOzvlbwZ1bOFUaWEy7VVHtMv7Xjt5/7bhFlOpZ
+        cwPAPiU0aS9urPByTIp9AUYR4ddaOrDXhdkj6I8=
+X-Google-Smtp-Source: ABdhPJxS2muEq7IWZB2b6v5k3aSCWvcaT6ZzHMy3fI7WKXk7eOTxKsfaGq/y9VR8gzzkbPfYWbJUfXafu1vtP5J294w=
+X-Received: by 2002:a9f:24b4:: with SMTP id 49mr878737uar.100.1621603390988;
+ Fri, 21 May 2021 06:23:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMhUBjkeXn=Yf+dsdKo5_H1Tko3Qhfr+y=9b47XtHA04k2smXg@mail.gmail.com>
+References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20210514192218.13022-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20210514192218.13022-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 21 May 2021 15:22:59 +0200
+Message-ID: <CAMuHMdU40pLb3LvEghkT0pryLtHdXj+U1R7Y7L6-_6euVohyUw@mail.gmail.com>
+Subject: Re: [PATCH 01/16] dt-bindings: arm: renesas: Document Renesas RZ/G2UL SoC
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 21, 2021 at 07:15:21PM +0800, Zheyu Ma wrote:
-> On Fri, May 21, 2021 at 2:51 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Fri, May 21, 2021 at 06:08:43AM +0000, Zheyu Ma wrote:
-> > > In 'rp2_probe', the driver registers 'rp2_uart_interrupt' then calls
-> > > 'rp2_fw_cb' through 'request_firmware_nowait'. In 'rp2_fw_cb', if the
-> > > firmware don't exists, function just return without initializing ports
-> > > of 'rp2_card'. But now the interrupt handler function has been
-> > > registered, and when an interrupt comes, 'rp2_uart_interrupt' may access
-> > > those ports then causing NULL pointer dereference or other bugs.
-> > >
-> > > Because the driver does some initialization work in 'rp2_fw_cb', in
-> > > order to make the driver ready to handle interrupts, 'request_firmware'
-> > > should be used instead of asynchronous 'request_firmware_nowait'.
-> >
-> > You just now slowed down the probe function.  Are you _sure_ this is ok?
-> 
-> Sorry, I'm not an expert in the field, but from my point of view, the
-> previous function 'rp2_fw_cb' does some initialization work that is
-> not suitable for asynchronous execution. Because after these initial
-> work, the driver can work normally (including preparing to handle
-> interrupts).
-> 
-> > Do you have this hardware to test this?  If so, what is the init time
-> > before and after this change?
-> 
-> To be honest, I don't have real hardware, I tested it with QEMU. I
-> made a total of 5 attempts. Before this change, the average boot time
-> required by kernel is 6.382s, the time required for insmoding this
-> module is 0.139s; After this change, the average boot time required by
-> kernel is 6.426s, the time required for insmoding this module is
-> 0.160s. This change really slowed down the probe function.
+Hi Prabhakar,
 
-Ok, at least you've tested it :)
+On Fri, May 14, 2021 at 9:23 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Add device tree bindings documentation for Renesas RZ/G2UL SoC.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
 
-I'll take a slower init over a broken init any day.  I'll go queue this
-up, thanks.
+Thanks for your patch!
 
-greg k-h
+> --- a/Documentation/devicetree/bindings/arm/renesas.yaml
+> +++ b/Documentation/devicetree/bindings/arm/renesas.yaml
+> @@ -302,6 +302,12 @@ properties:
+>                - renesas,rzn1d400-db # RZN1D-DB (RZ/N1D Demo Board for the RZ/N1D 400 pins package)
+>            - const: renesas,r9a06g032
+>
+> +      - description: RZ/G2UL (R9A07G043)
+> +        items:
+> +          - enum:
+> +              - renesas,r9a07g043u11 # Single Cortex-A55 RZ/G2UL
+
+Is there any specific reason you're including the final "1", unlike the
+RZ/G2{L,LC} binding?
+As RZ/G2UL is always single-core, perhaps this compatible value can be
+dropped?
+
+> +          - const: renesas,r9a07g043
+> +
+>  additionalProperties: true
+
+For now, there are no users of this binding?
+I assume you're posting it already, as RZ/G2UL is pin-compatible with RZ/G2LC,
+and thus can be used interchangeably on the G2L SOM?
+However, the DTS board part in this series is for RZ/G2L, not RZ/GLC?
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.14, after the above have been
+resolved.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
