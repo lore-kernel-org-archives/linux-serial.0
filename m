@@ -2,242 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD4EDC2B9FB
-	for <linux-serial@archiver.kernel.org>; Sun, 23 May 2021 00:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACB2C47082
+	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 02:12:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A3E7B61151
-	for <linux-serial@archiver.kernel.org>; Sun, 23 May 2021 00:10:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6457561104
+	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 02:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbhEWALv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 22 May 2021 20:11:51 -0400
-Received: from mga14.intel.com ([192.55.52.115]:28068 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231508AbhEWALu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 22 May 2021 20:11:50 -0400
-IronPort-SDR: 3+ZU47Jvkg3hlkyIHILPrWDW290w7ggCSLVByCCaGzPKMl0XZJKL/RQPqGERhpc2HyaHX0uSxw
- yUC5zf0V3wpg==
-X-IronPort-AV: E=McAfee;i="6200,9189,9992"; a="201435483"
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
-   d="scan'208";a="201435483"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2021 17:10:24 -0700
-IronPort-SDR: jMaDmrnrd4l86r1ZPJp6UZpoR0myiA+9CU/g62ohBvMLI7qU79Bkgv2zzkrS6bvpKfBp42Ey6k
- EZar0j/IzxUQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
-   d="scan'208";a="477492029"
-Received: from lkp-server02.sh.intel.com (HELO 1ec8406c5392) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 22 May 2021 17:10:22 -0700
-Received: from kbuild by 1ec8406c5392 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lkbhG-0000aN-By; Sun, 23 May 2021 00:10:22 +0000
-Date:   Sun, 23 May 2021 08:09:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-next] BUILD SUCCESS
- f421ed33ee2bddac5857862da3a37f0ea3f197d8
-Message-ID: <60a99d35.8DiHAKcpRrYA5i1W%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S231867AbhEXCNg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 23 May 2021 22:13:36 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:5526 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231765AbhEXCNg (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 23 May 2021 22:13:36 -0400
+Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FpLHd6kfhzkY69;
+        Mon, 24 May 2021 10:09:17 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 24 May 2021 10:12:07 +0800
+Received: from [127.0.0.1] (10.174.177.72) by dggpemm500006.china.huawei.com
+ (7.185.36.236) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 24 May
+ 2021 10:12:07 +0800
+Subject: Re: [PATCH 2/2] dt-bindings: serial: pl011: Avoid matching device
+ tree nodes of variant pl011 drivers
+To:     Rob Herring <robh+dt@kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+References: <20210520115440.8259-1-thunder.leizhen@huawei.com>
+ <20210520115440.8259-3-thunder.leizhen@huawei.com>
+ <CAL_Jsq+XYATKC=y+=wFHtfVB634Mb_Y5xC969UMyDc4Z9W8x4A@mail.gmail.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <63a68e34-6778-c543-bb37-1cce94d8e4a0@huawei.com>
+Date:   Mon, 24 May 2021 10:12:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAL_Jsq+XYATKC=y+=wFHtfVB634Mb_Y5xC969UMyDc4Z9W8x4A@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.72]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-branch HEAD: f421ed33ee2bddac5857862da3a37f0ea3f197d8  Revert "serial: sh-sci: Add support for RZ/G2L SoC"
 
-elapsed time: 757m
 
-configs tested: 172
-configs skipped: 2
+On 2021/5/22 2:54, Rob Herring wrote:
+> On Thu, May 20, 2021 at 6:54 AM Zhen Lei <thunder.leizhen@huawei.com> wrote:
+>>
+>> There is a variant driver of pl011, which may have a compatible string
+>> written as: "arm,sbsa-uart", "arm,pl011". Because it contains "arm,pl011",
+>> so the corresponding device tree nodes are also checked by this YAML file.
+>> As a result, many flase warnings similar to the following are reported:
+>>
+>> arch/arm64/boot/dts/freescale/fsl-lx2160a-clearfog-cx.dt.yaml:
+>>  serial@21c0000: compatible:0: 'arm,pl011' was expected
+>>  serial@21c0000: compatible:1: 'arm,primecell' was expected
+> 
+> The DT is wrong. The h/w is either a PL011 or it isn't. If it is, then
+> the compatible should be '"arm,pl011", "arm,primecell"'. There is no
+> point in making it 'arm,sbsa-uart' as the PL011 (and OS support for
+> it) predate SBSA (by a lot). If it is not a PL011 and only the SBSA
+> subset, then it should be "arm,sbsa-uart".
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Yes, I agree. I'll send a patch to fix the freescale's dts.
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-openrisc                         alldefconfig
-powerpc                 xes_mpc85xx_defconfig
-i386                                defconfig
-mips                          ath79_defconfig
-sh                        sh7785lcr_defconfig
-mips                     cu1830-neo_defconfig
-mips                       bmips_be_defconfig
-powerpc                     tqm8560_defconfig
-arm                  colibri_pxa300_defconfig
-mips                         tb0287_defconfig
-openrisc                  or1klitex_defconfig
-openrisc                            defconfig
-arm                     am200epdkit_defconfig
-arm                          pxa3xx_defconfig
-powerpc                 mpc8272_ads_defconfig
-powerpc                          g5_defconfig
-arc                    vdk_hs38_smp_defconfig
-powerpc                      ppc6xx_defconfig
-arm                           h5000_defconfig
-powerpc                 mpc837x_mds_defconfig
-powerpc                     skiroot_defconfig
-um                           x86_64_defconfig
-arc                 nsimosci_hs_smp_defconfig
-ia64                         bigsur_defconfig
-mips                          ath25_defconfig
-arm                              alldefconfig
-powerpc                       ebony_defconfig
-sh                        edosk7760_defconfig
-powerpc                      cm5200_defconfig
-s390                             allmodconfig
-powerpc                        cell_defconfig
-xtensa                generic_kc705_defconfig
-ia64                          tiger_defconfig
-arm                             ezx_defconfig
-arm                         lpc32xx_defconfig
-powerpc                 mpc85xx_cds_defconfig
-arc                          axs101_defconfig
-sh                          urquell_defconfig
-sparc64                             defconfig
-mips                        qi_lb60_defconfig
-powerpc                     pseries_defconfig
-arm                          pxa910_defconfig
-sh                        sh7757lcr_defconfig
-powerpc                      obs600_defconfig
-arm                      pxa255-idp_defconfig
-m68k                            mac_defconfig
-powerpc                          allmodconfig
-m68k                        m5272c3_defconfig
-sh                           se7705_defconfig
-powerpc                       holly_defconfig
-powerpc                     taishan_defconfig
-powerpc                         wii_defconfig
-sh                              ul2_defconfig
-ia64                             allmodconfig
-arm                           u8500_defconfig
-riscv                    nommu_virt_defconfig
-arm                         s5pv210_defconfig
-xtensa                              defconfig
-mips                malta_qemu_32r6_defconfig
-m68k                          sun3x_defconfig
-m68k                           sun3_defconfig
-arm                        neponset_defconfig
-powerpc                      pasemi_defconfig
-um                             i386_defconfig
-powerpc                mpc7448_hpc2_defconfig
-mips                 decstation_r4k_defconfig
-sh                      rts7751r2d1_defconfig
-mips                         tb0219_defconfig
-arm                          gemini_defconfig
-sh                ecovec24-romimage_defconfig
-mips                            gpr_defconfig
-arc                          axs103_defconfig
-x86_64                            allnoconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a001-20210522
-x86_64               randconfig-a006-20210522
-x86_64               randconfig-a005-20210522
-x86_64               randconfig-a003-20210522
-x86_64               randconfig-a004-20210522
-x86_64               randconfig-a002-20210522
-i386                 randconfig-a001-20210523
-i386                 randconfig-a005-20210523
-i386                 randconfig-a002-20210523
-i386                 randconfig-a003-20210523
-i386                 randconfig-a004-20210523
-i386                 randconfig-a006-20210523
-i386                 randconfig-a001-20210522
-i386                 randconfig-a005-20210522
-i386                 randconfig-a002-20210522
-i386                 randconfig-a004-20210522
-i386                 randconfig-a003-20210522
-i386                 randconfig-a006-20210522
-x86_64               randconfig-a013-20210523
-x86_64               randconfig-a014-20210523
-x86_64               randconfig-a012-20210523
-x86_64               randconfig-a016-20210523
-x86_64               randconfig-a015-20210523
-x86_64               randconfig-a011-20210523
-i386                 randconfig-a016-20210523
-i386                 randconfig-a011-20210523
-i386                 randconfig-a015-20210523
-i386                 randconfig-a012-20210523
-i386                 randconfig-a014-20210523
-i386                 randconfig-a013-20210523
-i386                 randconfig-a016-20210522
-i386                 randconfig-a011-20210522
-i386                 randconfig-a015-20210522
-i386                 randconfig-a012-20210522
-i386                 randconfig-a014-20210522
-i386                 randconfig-a013-20210522
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-um                               allmodconfig
-um                                allnoconfig
-um                               allyesconfig
-um                                  defconfig
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                      rhel-8.3-kbuiltin
-x86_64                                  kexec
+arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi:923:                 compatible = "arm,sbsa-uart","arm,pl011";
+arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi:931:                 compatible = "arm,sbsa-uart","arm,pl011";
+arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi:939:                 compatible = "arm,sbsa-uart","arm,pl011";
+arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi:947:                 compatible = "arm,sbsa-uart","arm,pl011";
+arch/arm64/boot/dts/hisilicon/hip07.dtsi:1242:                      compatible = "arm,sbsa-uart";
 
-clang tested configs:
-x86_64               randconfig-b001-20210522
-x86_64               randconfig-b001-20210523
-x86_64               randconfig-a013-20210522
-x86_64               randconfig-a014-20210522
-x86_64               randconfig-a012-20210522
-x86_64               randconfig-a016-20210522
-x86_64               randconfig-a015-20210522
-x86_64               randconfig-a011-20210522
-x86_64               randconfig-a006-20210523
-x86_64               randconfig-a001-20210523
-x86_64               randconfig-a005-20210523
-x86_64               randconfig-a003-20210523
-x86_64               randconfig-a004-20210523
-x86_64               randconfig-a002-20210523
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
+> Rob
+> 
+> .
+> 
+
