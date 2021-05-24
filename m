@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B3FC47084
-	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 15:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0B8C2B9F8
+	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 15:14:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 342D361376
-	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 15:07:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B73C66100C
+	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 15:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233707AbhEXPIq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 May 2021 11:08:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37280 "EHLO mail.kernel.org"
+        id S234489AbhEXPPz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 May 2021 11:15:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233594AbhEXPD7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 May 2021 11:03:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B7EE861400;
-        Mon, 24 May 2021 14:50:42 +0000 (UTC)
+        id S235159AbhEXPGI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 May 2021 11:06:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D38C6191A;
+        Mon, 24 May 2021 14:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867843;
-        bh=LSLv/cJ9GS5P3FoW2ST1fAGpkDOzWEU4nAYcEnOYDJw=;
+        s=k20201202; t=1621867869;
+        bh=bQTwDNRg4wlvy4CnpmCNGOGOfxE8v07s9eUsZv6x00g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AFg7ME8uNVmQxKPhPyr59qeGCgVVRljuLNCCGKE1qrhEhF4UsXiVNK6UqU15ZMREF
-         920IqTHPc/wLEtAchCSOSy+FnQH1D/Oc2Kmq25vACWWXrb/7Sf3hiG/EDffkbo955/
-         jainmOHFQSGJvSKketa295k7YwEmbz7kGKGDcyUzPeohWwVQR5tyTFm6XwD66D40uA
-         WG6wtuUsmdmUciJo9lCVZelXo67x5zVJEvS5WFqY30GaOZv0BIaSaz6bC3D4f0v5le
-         0GLpw1WraPkGkCcbOa0YXSA9y15elN+J/lY9rNDebKE40K8BvvQwiGbNoAW9fSanQY
-         s86BT92k4W2Ow==
+        b=tnmKtcsC1dLNNoC1CZl+u289GOBUPPaSEUgPiceYJ2PXvE5MI4WJcOzBYM7HMe0yM
+         bhtfZImQ55xJ6JSieYj4zD0uBISB1ECzVZpDGzCsnPUiOKrVyj56x1EvlE8qgqsCZa
+         kYRNMa/WTfen3cSPiUBGggny8SG6r5qdW/lNp0t7sjHoMFKYhkezRRwSfva8o3mWuQ
+         qEh8FDS6kWuA8F/ORl8HamoBARCeJ8XQsgEcmnz9mHviTwYkf5UvdONuc/ywYf5AFS
+         9rjsbE6UnF5O2p5eTV7yT++dUh8O5lXuLhDSIzXEqLAk7Mtv3z8LT+oCyzYlRQx7n2
+         rJrS/43JUIjyg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Atul Gopinathan <atulgopinathan@gmail.com>,
         Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 02/21] serial: max310x: unregister uart driver in case of failure and abort
-Date:   Mon, 24 May 2021 10:50:21 -0400
-Message-Id: <20210524145040.2499322-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 02/19] serial: max310x: unregister uart driver in case of failure and abort
+Date:   Mon, 24 May 2021 10:50:49 -0400
+Message-Id: <20210524145106.2499571-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210524145040.2499322-1-sashal@kernel.org>
-References: <20210524145040.2499322-1-sashal@kernel.org>
+In-Reply-To: <20210524145106.2499571-1-sashal@kernel.org>
+References: <20210524145106.2499571-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -74,7 +74,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index cec995ec11ea..454659544d35 100644
+index 80ab672d61cc..febbacecb3ba 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
 @@ -1385,10 +1385,12 @@ static int __init max310x_uart_init(void)
