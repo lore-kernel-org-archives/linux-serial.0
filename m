@@ -7,42 +7,41 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B334BC47086
-	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 14:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F85C2B9F8
+	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 14:57:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9554B6188B
-	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 14:51:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 453E461209
+	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 14:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233613AbhEXOw4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 May 2021 10:52:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54986 "EHLO mail.kernel.org"
+        id S233118AbhEXO6o (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 May 2021 10:58:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34158 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233191AbhEXOux (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 May 2021 10:50:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 685C06140A;
-        Mon, 24 May 2021 14:47:52 +0000 (UTC)
+        id S234014AbhEXO4m (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 May 2021 10:56:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 042AD61448;
+        Mon, 24 May 2021 14:49:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867673;
-        bh=b2hoTEC5uqobuuzMRsBFsNEWCV8ogZnhjo5R2n1ILIw=;
+        s=k20201202; t=1621867749;
+        bh=1NEL+GcIiRtjPVEvr2hIegNN3AwAHmDg7Vo8080uR6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y+aNFyX5Gjr29kGgiHHxgyNud/TebfNwAACYe9pyXVDYGwj0H5DFkxtrNPSkzbSCF
-         0tjmIaGJEpLQCTAkwnBiRmb+zDwGdoLa8pL25h8esWBkPBWD4jwEdzYSrep0B+PF3r
-         ijzvwj/Er2KELZ3FFez251wSTED0urHj8RwSc3saTuFCJi43d5DE+HD2rzm8I+/mR9
-         YtS3JZ+cPcmfU+Yyy7mAl+BKwJ7X5dIoFd+Jjvda/h4p+SxLm6lJn5ppFJDa9QYRkr
-         lRSIoxboE/4BR0epluouy/eYnB9S9dMe/t3egGSvlFzEE/m4asa7UWd0x4P1Ghyk1O
-         CriarqDA6/MwQ==
+        b=CDuhArBuX0zCMa33Ph2EcFqoxzygOL2l8oDnE1oJqnbasSG/mjKUYFGMz7rpKT7ra
+         N4xltFCe3OWSliLfKUdFS34CnY7YeUQO4/oEJADFoPqSsYNlRU/2H1xnjjbGNvqNHF
+         eQQuPy+xOBE35WZFNo8UbTXKYZSkuqmUmpgNLoh7s4jV6+Iy7VyTWR0BuLA4++RHxg
+         qQKyu5w9LpB7bZ9aGzC1D0aHIRqJIB11/FPxUkgNSJtc4snXzm3fkhHXX+l3I2BfZm
+         2fz6USm8jBV6MzAo7nK167qVj/GTd0Y75C0+sRXd68hUTCxHSx3po3lGusT6ibiTAw
+         GSRaYOybv8YdA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Atul Gopinathan <atulgopinathan@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kangjie Lu <kjlu@umn.edu>, Jiri Slaby <jirislaby@kernel.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/62] serial: max310x: unregister uart driver in case of failure and abort
-Date:   Mon, 24 May 2021 10:46:48 -0400
-Message-Id: <20210524144744.2497894-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 05/52] Revert "serial: max310x: pass return value of spi_register_driver"
+Date:   Mon, 24 May 2021 10:48:15 -0400
+Message-Id: <20210524144903.2498518-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210524144744.2497894-1-sashal@kernel.org>
-References: <20210524144744.2497894-1-sashal@kernel.org>
+In-Reply-To: <20210524144903.2498518-1-sashal@kernel.org>
+References: <20210524144903.2498518-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,44 +50,46 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Atul Gopinathan <atulgopinathan@gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 3890e3dea315f1a257d1b940a2a4e2fa16a7b095 ]
+[ Upstream commit b0a85abbe92e1a6f3e8580a4590fa7245de7090b ]
 
-The macro "spi_register_driver" invokes the function
-"__spi_register_driver()" which has a return type of int and can fail,
-returning a negative value in such a case. This is currently ignored and
-the init() function yields success even if the spi driver failed to
-register.
+This reverts commit 51f689cc11333944c7a457f25ec75fcb41e99410.
 
-Fix this by collecting the return value of "__spi_register_driver()" and
-also unregister the uart driver in case of failure.
+Because of recent interactions with developers from @umn.edu, all
+commits from them have been recently re-reviewed to ensure if they were
+correct or not.
 
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Atul Gopinathan <atulgopinathan@gmail.com>
-Link: https://lore.kernel.org/r/20210503115736.2104747-12-gregkh@linuxfoundation.org
+Upon review, this commit was found to be incorrect for the reasons
+below, so it must be reverted.  It will be fixed up "correctly" in a
+later kernel change.
+
+This change did not properly unwind from the error condition, so it was
+not correct.
+
+Cc: Kangjie Lu <kjlu@umn.edu>
+Acked-by: Jiri Slaby <jirislaby@kernel.org>
+Link: https://lore.kernel.org/r/20210503115736.2104747-11-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/max310x.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/max310x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index f60b7b86d099..5bf8dd6198bb 100644
+index 8434bd5a8ec7..f60b7b86d099 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -1527,10 +1527,12 @@ static int __init max310x_uart_init(void)
+@@ -1527,10 +1527,10 @@ static int __init max310x_uart_init(void)
  		return ret;
  
  #ifdef CONFIG_SPI_MASTER
--	spi_register_driver(&max310x_spi_driver);
-+	ret = spi_register_driver(&max310x_spi_driver);
-+	if (ret)
-+		uart_unregister_driver(&max310x_uart);
+-	ret = spi_register_driver(&max310x_spi_driver);
++	spi_register_driver(&max310x_spi_driver);
  #endif
  
--	return 0;
-+	return ret;
+-	return ret;
++	return 0;
  }
  module_init(max310x_uart_init);
  
