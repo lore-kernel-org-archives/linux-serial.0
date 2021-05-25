@@ -2,96 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0B8C2B9F8
-	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 15:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C938C2B9F8
+	for <linux-serial@archiver.kernel.org>; Tue, 25 May 2021 08:13:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B73C66100C
-	for <linux-serial@archiver.kernel.org>; Mon, 24 May 2021 15:14:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 80CA461400
+	for <linux-serial@archiver.kernel.org>; Tue, 25 May 2021 08:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234489AbhEXPPz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 May 2021 11:15:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40042 "EHLO mail.kernel.org"
+        id S231190AbhEYIPZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 May 2021 04:15:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235159AbhEXPGI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 May 2021 11:06:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D38C6191A;
-        Mon, 24 May 2021 14:51:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867869;
-        bh=bQTwDNRg4wlvy4CnpmCNGOGOfxE8v07s9eUsZv6x00g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tnmKtcsC1dLNNoC1CZl+u289GOBUPPaSEUgPiceYJ2PXvE5MI4WJcOzBYM7HMe0yM
-         bhtfZImQ55xJ6JSieYj4zD0uBISB1ECzVZpDGzCsnPUiOKrVyj56x1EvlE8qgqsCZa
-         kYRNMa/WTfen3cSPiUBGggny8SG6r5qdW/lNp0t7sjHoMFKYhkezRRwSfva8o3mWuQ
-         qEh8FDS6kWuA8F/ORl8HamoBARCeJ8XQsgEcmnz9mHviTwYkf5UvdONuc/ywYf5AFS
-         9rjsbE6UnF5O2p5eTV7yT++dUh8O5lXuLhDSIzXEqLAk7Mtv3z8LT+oCyzYlRQx7n2
-         rJrS/43JUIjyg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Atul Gopinathan <atulgopinathan@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 02/19] serial: max310x: unregister uart driver in case of failure and abort
-Date:   Mon, 24 May 2021 10:50:49 -0400
-Message-Id: <20210524145106.2499571-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210524145106.2499571-1-sashal@kernel.org>
-References: <20210524145106.2499571-1-sashal@kernel.org>
+        id S231389AbhEYIPW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 25 May 2021 04:15:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DFDC61400;
+        Tue, 25 May 2021 08:13:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1621930432;
+        bh=RF4PC/HxG1yjkdGQ9/OAUEh6Ea/yHdbQroJUlBlW9pY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sm07AWbhKMzadIi0AlQDzQcdCEmpwMJ6R3myifNMhLh6rnVe20y17E50wefNOWM/S
+         D2hpbNinWSrLgeuskZi0R8BlVrDvmK+AS2UfKuTKm1f1oRl1nFkItkznVM+YAx7KDC
+         b59x1iq6S8J1Anmjpf5HDct/LS2jDyBuy06iMIbs=
+Date:   Tue, 25 May 2021 10:13:50 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Cc:     linux-serial@vger.kernel.org, jacmet@sunsite.dk, git@xilinx.com
+Subject: Re: [PATCH 2/2] tty: serial: uartlite: Add runtime pm support
+Message-ID: <YKyxvlL0CMkVSvlq@kroah.com>
+References: <1621929844-19727-1-git-send-email-shubhrajyoti.datta@xilinx.com>
+ <1621929844-19727-3-git-send-email-shubhrajyoti.datta@xilinx.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1621929844-19727-3-git-send-email-shubhrajyoti.datta@xilinx.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Atul Gopinathan <atulgopinathan@gmail.com>
+On Tue, May 25, 2021 at 01:34:04PM +0530, Shubhrajyoti Datta wrote:
+> Add runtime pm support.
 
-[ Upstream commit 3890e3dea315f1a257d1b940a2a4e2fa16a7b095 ]
+We need more than a 4 word changelog text.
 
-The macro "spi_register_driver" invokes the function
-"__spi_register_driver()" which has a return type of int and can fail,
-returning a negative value in such a case. This is currently ignored and
-the init() function yields success even if the spi driver failed to
-register.
+Please be more descriptive as to why you need this and what it is doing.
 
-Fix this by collecting the return value of "__spi_register_driver()" and
-also unregister the uart driver in case of failure.
+> +#define UART_AUTOSUSPEND_TIMEOUT	3000
 
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Atul Gopinathan <atulgopinathan@gmail.com>
-Link: https://lore.kernel.org/r/20210503115736.2104747-12-gregkh@linuxfoundation.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/max310x.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Units?
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 80ab672d61cc..febbacecb3ba 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -1385,10 +1385,12 @@ static int __init max310x_uart_init(void)
- 		return ret;
- 
- #ifdef CONFIG_SPI_MASTER
--	spi_register_driver(&max310x_spi_driver);
-+	ret = spi_register_driver(&max310x_spi_driver);
-+	if (ret)
-+		uart_unregister_driver(&max310x_uart);
- #endif
- 
--	return 0;
-+	return ret;
- }
- module_init(max310x_uart_init);
- 
--- 
-2.30.2
 
+
+>  
+>  /* Static pointer to console port */
+>  #ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
+> @@ -390,12 +392,16 @@ static int ulite_verify_port(struct uart_port *port, struct serial_struct *ser)
+>  static void ulite_pm(struct uart_port *port, unsigned int state,
+>  		     unsigned int oldstate)
+>  {
+> -	struct uartlite_data *pdata = port->private_data;
+> +	int ret;
+>  
+> -	if (!state)
+> -		clk_enable(pdata->clk);
+> -	else
+> -		clk_disable(pdata->clk);
+> +	if (!state) {
+> +		ret = pm_runtime_get_sync(port->dev);
+> +		if (ret < 0)
+> +			dev_err(port->dev, "Failed to enable clocks\n");
+> +	} else {
+> +		pm_runtime_mark_last_busy(port->dev);
+> +		pm_runtime_put_autosuspend(port->dev);
+> +	}
+>  }
+>  
+>  #ifdef CONFIG_CONSOLE_POLL
+> @@ -734,11 +740,37 @@ static int __maybe_unused ulite_resume(struct device *dev)
+>  	return 0;
+>  }
+>  
+> +static int __maybe_unused ulite_runtime_suspend(struct device *dev)
+> +{
+> +	struct uart_port *port = dev_get_drvdata(dev);
+> +	struct uartlite_data *pdata = port->private_data;
+> +
+> +	clk_disable(pdata->clk);
+> +	return 0;
+> +};
+> +
+> +static int __maybe_unused ulite_runtime_resume(struct device *dev)
+> +{
+> +	struct uart_port *port = dev_get_drvdata(dev);
+> +	struct uartlite_data *pdata = port->private_data;
+> +	int ret;
+> +
+> +	ret = clk_enable(pdata->clk);
+> +	if (ret) {
+> +		dev_err(dev, "Cannot enable clock.\n");
+> +		return ret;
+> +	}
+> +	return 0;
+> +}
+>  /* ---------------------------------------------------------------------
+
+Blank line missing.
+
+thanks,
+
+greg k-h
