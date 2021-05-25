@@ -2,115 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C938C2B9F8
-	for <linux-serial@archiver.kernel.org>; Tue, 25 May 2021 08:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4807C4707F
+	for <linux-serial@archiver.kernel.org>; Tue, 25 May 2021 08:16:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 80CA461400
-	for <linux-serial@archiver.kernel.org>; Tue, 25 May 2021 08:13:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CB4CF61400
+	for <linux-serial@archiver.kernel.org>; Tue, 25 May 2021 08:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbhEYIPZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 May 2021 04:15:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51600 "EHLO mail.kernel.org"
+        id S232111AbhEYIR3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 May 2021 04:17:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52706 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231389AbhEYIPW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 May 2021 04:15:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DFDC61400;
-        Tue, 25 May 2021 08:13:52 +0000 (UTC)
+        id S231951AbhEYIR2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 25 May 2021 04:17:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 460B6613F9;
+        Tue, 25 May 2021 08:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1621930432;
-        bh=RF4PC/HxG1yjkdGQ9/OAUEh6Ea/yHdbQroJUlBlW9pY=;
+        s=korg; t=1621930558;
+        bh=OI2gXiU9RTu0knVsus/2FhWQayb9rozz7U4IUjC7ymw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sm07AWbhKMzadIi0AlQDzQcdCEmpwMJ6R3myifNMhLh6rnVe20y17E50wefNOWM/S
-         D2hpbNinWSrLgeuskZi0R8BlVrDvmK+AS2UfKuTKm1f1oRl1nFkItkznVM+YAx7KDC
-         b59x1iq6S8J1Anmjpf5HDct/LS2jDyBuy06iMIbs=
-Date:   Tue, 25 May 2021 10:13:50 +0200
+        b=gs6E9wxsK2STh99Y40NKU1Zc7XoXXSStI4OyrUhaHpT3FEaHa2MIpCUZUcg/XbIpd
+         PHkvfVY6QRGof5UPb1iaGwLMqXGCrZkakrEJJF06DvnrXO5tXYLZExbe9I9mVNpih6
+         aY4RkghhfuqrCxfP9cn6hK8xLYDx9riogWYbwgUo=
+Date:   Tue, 25 May 2021 10:15:56 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 Cc:     linux-serial@vger.kernel.org, jacmet@sunsite.dk, git@xilinx.com
-Subject: Re: [PATCH 2/2] tty: serial: uartlite: Add runtime pm support
-Message-ID: <YKyxvlL0CMkVSvlq@kroah.com>
+Subject: Re: [PATCH 1/2] tty: serial: uartlite: Disable clocks in case of
+ errors
+Message-ID: <YKyyPB7JjPd25uiL@kroah.com>
 References: <1621929844-19727-1-git-send-email-shubhrajyoti.datta@xilinx.com>
- <1621929844-19727-3-git-send-email-shubhrajyoti.datta@xilinx.com>
+ <1621929844-19727-2-git-send-email-shubhrajyoti.datta@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1621929844-19727-3-git-send-email-shubhrajyoti.datta@xilinx.com>
+In-Reply-To: <1621929844-19727-2-git-send-email-shubhrajyoti.datta@xilinx.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 25, 2021 at 01:34:04PM +0530, Shubhrajyoti Datta wrote:
-> Add runtime pm support.
-
-We need more than a 4 word changelog text.
-
-Please be more descriptive as to why you need this and what it is doing.
-
-> +#define UART_AUTOSUSPEND_TIMEOUT	3000
-
-Units?
-
-
-
+On Tue, May 25, 2021 at 01:34:03PM +0530, Shubhrajyoti Datta wrote:
+> In case the uart registration fails the clocks are left enabled.
+> Disable the clock in case of errors.
+> 
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> ---
+>  drivers/tty/serial/uartlite.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> index f42ccc4..39ea495 100644
+> --- a/drivers/tty/serial/uartlite.c
+> +++ b/drivers/tty/serial/uartlite.c
+> @@ -799,7 +799,7 @@ static int ulite_probe(struct platform_device *pdev)
+>  		ret = uart_register_driver(&ulite_uart_driver);
+>  		if (ret < 0) {
+>  			dev_err(&pdev->dev, "Failed to register driver\n");
+> -			return ret;
+> +			goto err_out_clk_disable;
+>  		}
+>  	}
 >  
->  /* Static pointer to console port */
->  #ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
-> @@ -390,12 +392,16 @@ static int ulite_verify_port(struct uart_port *port, struct serial_struct *ser)
->  static void ulite_pm(struct uart_port *port, unsigned int state,
->  		     unsigned int oldstate)
->  {
-> -	struct uartlite_data *pdata = port->private_data;
-> +	int ret;
+> @@ -808,6 +808,10 @@ static int ulite_probe(struct platform_device *pdev)
+>  	clk_disable(pdata->clk);
 >  
-> -	if (!state)
-> -		clk_enable(pdata->clk);
-> -	else
-> -		clk_disable(pdata->clk);
-> +	if (!state) {
-> +		ret = pm_runtime_get_sync(port->dev);
-> +		if (ret < 0)
-> +			dev_err(port->dev, "Failed to enable clocks\n");
-> +	} else {
-> +		pm_runtime_mark_last_busy(port->dev);
-> +		pm_runtime_put_autosuspend(port->dev);
-> +	}
->  }
->  
->  #ifdef CONFIG_CONSOLE_POLL
-> @@ -734,11 +740,37 @@ static int __maybe_unused ulite_resume(struct device *dev)
->  	return 0;
->  }
->  
-> +static int __maybe_unused ulite_runtime_suspend(struct device *dev)
-> +{
-> +	struct uart_port *port = dev_get_drvdata(dev);
-> +	struct uartlite_data *pdata = port->private_data;
+>  	return ret;
 > +
-> +	clk_disable(pdata->clk);
-> +	return 0;
-> +};
-> +
-> +static int __maybe_unused ulite_runtime_resume(struct device *dev)
-> +{
-> +	struct uart_port *port = dev_get_drvdata(dev);
-> +	struct uartlite_data *pdata = port->private_data;
-> +	int ret;
-> +
-> +	ret = clk_enable(pdata->clk);
-> +	if (ret) {
-> +		dev_err(dev, "Cannot enable clock.\n");
-> +		return ret;
-> +	}
-> +	return 0;
-> +}
->  /* ---------------------------------------------------------------------
+> +err_out_clk_disable:
+> +	clk_disable_unprepare(pdata->clk);
 
-Blank line missing.
+Why not put this above in your error code?
+
+Also, are you sure that you are calling uart_register_driver() in the
+correct place?  Shouldn't everything be set up before it is called?  You
+have more logic after it is called, what happens if your device is
+opened before the uart_register_driver() call returns?
 
 thanks,
 
