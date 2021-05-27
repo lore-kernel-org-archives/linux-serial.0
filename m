@@ -2,137 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4464BC4707F
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 09:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C21C4708C
+	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 11:17:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1B57C61417
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 09:55:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 71203613DA
+	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 11:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235780AbhE0J5I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 May 2021 05:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235768AbhE0J5I (ORCPT
+        id S229829AbhE0LSt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 May 2021 07:18:49 -0400
+Received: from mail-vs1-f42.google.com ([209.85.217.42]:34769 "EHLO
+        mail-vs1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229591AbhE0LSs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 May 2021 05:57:08 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88657C061574;
-        Thu, 27 May 2021 02:55:34 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id s6so119314edu.10;
-        Thu, 27 May 2021 02:55:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C58IMTIWG3aGpI31cvyq0/QCn2aAGcF3IZlr8Z32K/Y=;
-        b=AucBLzD1N+8LtmRlcHZj0bnRH597i8Rv5zSBdhDLzjoBgCqC8pa0xXJzg8WoHd4EiA
-         hzlkKVKxj6si3zT9ui9jP7tJQco7DXEN3fgi5H9k307nc0pGu26YUL6MGbF2jRuQfr/c
-         C5RZf2e0A554MP0GdifknkmBmgwZvO7IPXfVvZudjBpQSJ6cBl3D+EQtS515fvgSJ7ZC
-         HcTljKeD0z/mBtvPBrl1yODTAsFCsnt+Pt5zBxEt0yES4tMbuKHfPJ+KIBVyJsXZi08f
-         JUXVj6V7mSZEBszlWV1qKkghI0FuvdD3p0zBoJ04J6hiKZPYMwynaPDT9Rglc3de/pEC
-         pQsA==
+        Thu, 27 May 2021 07:18:48 -0400
+Received: by mail-vs1-f42.google.com with SMTP id x13so177796vsh.1;
+        Thu, 27 May 2021 04:17:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C58IMTIWG3aGpI31cvyq0/QCn2aAGcF3IZlr8Z32K/Y=;
-        b=VjCxbIna+o7XJqwp189lmfVT9tIsrh7V+bKWlVZsNGtqdUgSvDlomc1nNN0zQa3CUk
-         ON/Ecz9NfiL5pDUkQq6LcJD8aVMaB5hwl13MvDJAkR7pUZ2Bc4EzZhQZc0AsdNH0qbL/
-         ONDysMQGu0Th43AiURyQtFqto87J+McIVCYG9P7ycDHjpvt6963tfWUoCwYA2wK3FX+p
-         3A9NfRWB0y4p5dwfU2D8S15XWPVPQKZuOPtVHDcLeRulNOeOhOoUawUW0DrHc8HGzmsE
-         OXeuNsRHVd1KU91k+FH1p6DjNfJtAFEXwh01PDp2HrAK7OiQD0Wiq1ZTcv2nX1p7bKpp
-         FvFg==
-X-Gm-Message-State: AOAM532+EmfLSvhqN1sDQ68RnwYEr83E6SnPFj+MVjjmuf0rnIs8cCUu
-        h0kUdVD5GohoDfkY27VpdqWjqGjTJoEyfQ==
-X-Google-Smtp-Source: ABdhPJxLJFoLPIpTk320Qan+reXcWHDotN+ksDZCmebp6yt3LtUtr0B6dIkx+wMTpySH/TodtK4L3w==
-X-Received: by 2002:a05:6402:74f:: with SMTP id p15mr3166309edy.333.1622109332779;
-        Thu, 27 May 2021 02:55:32 -0700 (PDT)
-Received: from localhost.localdomain.at (62-178-82-229.cable.dynamic.surfer.at. [62.178.82.229])
-        by smtp.gmail.com with ESMTPSA id l19sm70623edw.58.2021.05.27.02.55.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 May 2021 02:55:32 -0700 (PDT)
-From:   Christian Gmeiner <christian.gmeiner@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Christian Gmeiner <christian.gmeiner@gmail.com>,
-        stable@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Tobias Diedrich <tobiasdiedrich@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Du Huanpeng <u74147@gmail.com>,
-        Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH] serial: 8250_pci: handle FL_NOIRQ board flag
-Date:   Thu, 27 May 2021 11:54:40 +0200
-Message-Id: <20210527095529.26281-1-christian.gmeiner@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hN1/8UMtMXWBr9/Apat6KXcCH2jMM7TnJ6pU4YI+Zco=;
+        b=cJIBu4m7kmw0I7qNe1JMLX1kguAO7cUH/JkDGSPsJbJLUsNC3N3K1jIqHkLFpwtuAj
+         MzF6+Wo2iV40FnLVMN7f6l4z18ZFrbEZR7hDjBXbR9fLFTgTxkP0tjdsL447n0Qgl3Id
+         ZJoUOeRWPmRd9qzfTlzeYv6rEwrcKAfCSW0J+mU87bfPm2QVaNdLApYGRE6FdW3PLUVi
+         NGp0cttFIm02OOA6veve3LYKWR/TyPWzUHakTUdofJ97h7FLM0492gM1eDUMrtqnTadH
+         B9os6zQJPHUR3qyb+msQxWeWgjgXTSgEllyNlM8Cxm/Z6xkTtyz8WeLeIPFbryzeyHOJ
+         zJig==
+X-Gm-Message-State: AOAM531HYD+TfxuTYcGIyjt6jTur1/YndFZCXU5ruE79ASxGRM8HYG3P
+        nCKNfnQamZxnCq13FGzHeS4Oy7e9gfXR7AdfshvutxqRhQE=
+X-Google-Smtp-Source: ABdhPJyTxN3vfxK8w0+8Ed879hEUH6Ox8bLKVQrcvJxd3fyFc3G0uk9H3VlenKR5+88csy9ssh/X0w6m4xMO00cQl44=
+X-Received: by 2002:a67:fb52:: with SMTP id e18mr1533054vsr.18.1622114234015;
+ Thu, 27 May 2021 04:17:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20210514192218.13022-16-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20210514192218.13022-16-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 27 May 2021 13:17:02 +0200
+Message-ID: <CAMuHMdUNdZvPfU1Zu_F2CyneX-m3hGwwsp+TrYR3+ZjGfHxP-g@mail.gmail.com>
+Subject: Re: [PATCH 15/16] arm64: dts: renesas: Add initial DTSI for
+ RZ/G2{L,LC} SoC's
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In commit 8428413b1d14 ("serial: 8250_pci: Implement MSI(-X) support")
-the way the irq gets allocated was changed. With that change the
-handling FL_NOIRQ got lost. Restore the old behaviour.
+Hi Prabhakar,
 
-Fixes: 8428413b1d14 ("serial: 8250_pci: Implement MSI(-X) support")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Christian Gmeiner <christian.gmeiner@gmail.com>
----
- drivers/tty/serial/8250/8250_pci.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+On Fri, May 14, 2021 at 9:24 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Add initial DTSI for RZ/G2{L,LC} SoC's.
+>
+> File structure:
+> r9a07g044.dtsi  => RZ/G2L family SoC common parts
+> r9a07g044l.dtsi => Specific to RZ/G2L (R9A07G044L) SoC
+> r9a07g044l1.dtsi => Specific to RZ/G2L (R9A07G044L single cortex A55) SoC
+> r9a07g044l2.dtsi => Specific to RZ/G2L (R9A07G044L dual cortex A55) SoC
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 689d8227f95f..3b8217844c0b 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -3944,21 +3944,26 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
- 	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
- 	uart.port.uartclk = board->base_baud * 16;
- 
--	if (pci_match_id(pci_use_msi, dev)) {
--		dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
--		pci_set_master(dev);
--		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
-+	if (board->flags & FL_NOIRQ) {
-+		uart.port.irq = 0;
- 	} else {
--		dev_dbg(&dev->dev, "Using legacy interrupts\n");
--		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
--	}
--	if (rc < 0) {
--		kfree(priv);
--		priv = ERR_PTR(rc);
--		goto err_deinit;
-+		if (pci_match_id(pci_use_msi, dev)) {
-+			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
-+			pci_set_master(dev);
-+			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
-+		} else {
-+			dev_dbg(&dev->dev, "Using legacy interrupts\n");
-+			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
-+		}
-+		if (rc < 0) {
-+			kfree(priv);
-+			priv = ERR_PTR(rc);
-+			goto err_deinit;
-+		}
-+
-+		uart.port.irq = pci_irq_vector(dev, 0);
- 	}
- 
--	uart.port.irq = pci_irq_vector(dev, 0);
- 	uart.port.dev = &dev->dev;
- 
- 	for (i = 0; i < nr_ports; i++) {
--- 
-2.31.1
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
+> @@ -0,0 +1,70 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Device Tree Source for the RZ/G2L and RZ/G2LC common SoC parts
+> + *
+> + * Copyright (C) 2021 Renesas Electronics Corp.
+> + */
+> +
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/clock/r9a07g044l-cpg.h>
+> +
+> +/ {
+> +       compatible = "renesas,r9a07g044";
 
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
+> @@ -0,0 +1,43 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Device Tree Source for the RZ/G2L R9A07G044L1 common parts
+> + *
+> + * Copyright (C) 2021 Renesas Electronics Corp.
+> + */
+> +
+> +/dts-v1/;
+> +#include "r9a07g044l.dtsi"
+> +
+> +/ {
+> +       compatible = "renesas,r9a07g044l1";
+
+This overwrites the main compatible value set by r9a07g044.dtsi before.
+As per your bindings, you want both:
+
+    compatible = "renesas,r9a07g044l1", "renesas,r9a07g044".
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
