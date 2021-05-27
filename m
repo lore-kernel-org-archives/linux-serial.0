@@ -7,46 +7,47 @@ X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFA2C4708B
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 11:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E15EFC4708A
+	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 11:47:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C93DC613DC
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 11:30:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C2A5061355
+	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 11:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233375AbhE0Lbd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 May 2021 07:31:33 -0400
-Received: from mail-ua1-f44.google.com ([209.85.222.44]:33465 "EHLO
-        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233044AbhE0Lbb (ORCPT
+        id S234041AbhE0LtB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 May 2021 07:49:01 -0400
+Received: from mail-ua1-f45.google.com ([209.85.222.45]:36433 "EHLO
+        mail-ua1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233633AbhE0LtB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 May 2021 07:31:31 -0400
-Received: by mail-ua1-f44.google.com with SMTP id c6so29901uat.0;
-        Thu, 27 May 2021 04:29:57 -0700 (PDT)
+        Thu, 27 May 2021 07:49:01 -0400
+Received: by mail-ua1-f45.google.com with SMTP id b1so32493uap.3;
+        Thu, 27 May 2021 04:47:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4s2CSTG9vi+vLVdGlcoUOiNvjm5f1IzjvzNeN2//YSA=;
-        b=H1ttFigXxTWmDaI9yFUjaq1FWIVw7dULutA7pPIRrM8J8KhqOnbj0B+5krQz5N/3iR
-         el2z/nE+14ytH4DqiwtAna7pYRrdgaFzGnfCqHdL99Mse0QJ1A0EeZD6kOx4u45jnAVN
-         4ad3YTIBjc4Qq4KJibUoMwOgfSFk8o/gvh9j0+4f2NlyPncXCWcUG4ud6T4NGdT0TkYF
-         5VHJC8h2sY2uBbaiZFSl911YPLqFPfRiZdPuP4RLKjL67FQAbFzSysmTRTQ6hUoaAlcD
-         8NeaNPQ//IMxrtWpcaM4MMbCXW13syiVZ29UBHr1ysyyngShUWLtyDuSsx15xbYozDkH
-         JNIA==
-X-Gm-Message-State: AOAM532u14ONtXEZcrjhFifqDRDCtPn9wPXzDrSX1oBXfXE9u/FjdmVH
-        SrP50bAwF/h1rjf9CdQO5jqQ42XJl2DNXRfxSok=
-X-Google-Smtp-Source: ABdhPJwwvgVZz7RlABNPzgpJPYcMGcUihUCr/TwHmo7U2MFE5g+i4/PgG8aawKP1goeRBrVGSoRiKaoZSZ3rGkjEQyE=
-X-Received: by 2002:a1f:9505:: with SMTP id x5mr1443751vkd.6.1622114997309;
- Thu, 27 May 2021 04:29:57 -0700 (PDT)
+        bh=MsBQ4Q5uVxLNj8Ul/iePVuRBGV+cnzR1jbtuFYV4EZ0=;
+        b=c0xvo/JwuuRRb2SXO15WqxPEdsAs5UT3RMNLcEvjd4ANfpvCYlIMqg9gYsTnCW5cv1
+         B/hupkCskdlceEdUTfnUfdj5hjUanrgH5S4+8gzd18yNrE+aP1okhkYj6SqPLNw4x/gj
+         ughhwUePLbr9/4F45vnytGCsn7x7UQmNLnyz0jaLZIZ2NUE5vw1pzjM+2z0RF4fBdAOc
+         Um6juaAnnCmYi5gB3ilBCkI7eJ5Dn6BdSIg/iGgWKMLG9Su/OKFg3+6ZNGLl5ItDjGxh
+         N3kHaqpRMRHLkW7MGGqwjznn1mB3XJTKBN6qPSu+M55O0iyiL/ZV7WtBB090iAwmq/+x
+         2sug==
+X-Gm-Message-State: AOAM5334IE3kxh0ucnirhq51BqIOcXkpe4rZpDpNPl5uO+9juDjlkuHh
+        GKIkvLgpTVL04XK4dGfdWfbBlq3TyDjP1nzLb7K3CY40
+X-Google-Smtp-Source: ABdhPJxtpCZMaXr7F6D5isqhbntEmor5OBA8Rb5CQorqKhpEyu5WxZJa8xiG/V/zm1UfZsM+AFHfaWPqHA8At/PLQmI=
+X-Received: by 2002:ab0:2a8b:: with SMTP id h11mr1643377uar.4.1622116047643;
+ Thu, 27 May 2021 04:47:27 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210514192218.13022-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdU40pLb3LvEghkT0pryLtHdXj+U1R7Y7L6-_6euVohyUw@mail.gmail.com> <CA+V-a8tFsAO2yYqURT1gYS14_Eax1VqJ1YbgcnfZADtOMLXFMA@mail.gmail.com>
-In-Reply-To: <CA+V-a8tFsAO2yYqURT1gYS14_Eax1VqJ1YbgcnfZADtOMLXFMA@mail.gmail.com>
+ <20210514192218.13022-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdVOTfV9XBo0t0CxGU1=Zo3VjFioDaDU1rdX8Hb6Pvz-Zw@mail.gmail.com> <CA+V-a8to86aG-1eB38OfaydJ7U0g4p1x8biRfBSnOa1S2g3bvA@mail.gmail.com>
+In-Reply-To: <CA+V-a8to86aG-1eB38OfaydJ7U0g4p1x8biRfBSnOa1S2g3bvA@mail.gmail.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 27 May 2021 13:29:45 +0200
-Message-ID: <CAMuHMdWc-ZdrpsOu_QhUvh7D3ap7ZC4LM_vKwnLnGCAEmAoryA@mail.gmail.com>
-Subject: Re: [PATCH 01/16] dt-bindings: arm: renesas: Document Renesas RZ/G2UL SoC
+Date:   Thu, 27 May 2021 13:47:15 +0200
+Message-ID: <CAMuHMdXGVshtJ_YzGHtzhvXk5DZwcWbbM18E5Yo5rTMCrbO3Fw@mail.gmail.com>
+Subject: Re: [PATCH 04/16] soc: renesas: Add ARCH_R9A07G044{L,LC} for the new
+ RZ/G2{L,LC} SoC's
 To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
 Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -73,55 +74,56 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Prabhakar,
 
-On Fri, May 21, 2021 at 6:54 PM Lad, Prabhakar
+On Fri, May 21, 2021 at 7:21 PM Lad, Prabhakar
 <prabhakar.csengg@gmail.com> wrote:
-> On Fri, May 21, 2021 at 2:23 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Fri, May 21, 2021 at 2:25 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 > > On Fri, May 14, 2021 at 9:23 PM Lad Prabhakar
 > > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > > Add device tree bindings documentation for Renesas RZ/G2UL SoC.
+> > > Add ARCH_R9A07G044{L,LC} as a configuration symbol for the new Renesas
+> > > RZ/G2{L,LC} SoC's.
 > > >
 > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > > > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
 > >
 > > Thanks for your patch!
 > >
-> > > --- a/Documentation/devicetree/bindings/arm/renesas.yaml
-> > > +++ b/Documentation/devicetree/bindings/arm/renesas.yaml
-> > > @@ -302,6 +302,12 @@ properties:
-> > >                - renesas,rzn1d400-db # RZN1D-DB (RZ/N1D Demo Board for the RZ/N1D 400 pins package)
-> > >            - const: renesas,r9a06g032
+> > > --- a/drivers/soc/renesas/Kconfig
+> > > +++ b/drivers/soc/renesas/Kconfig
+> > > @@ -279,6 +279,16 @@ config ARCH_R8A774B1
+> > >         help
+> > >           This enables support for the Renesas RZ/G2N SoC.
 > > >
-> > > +      - description: RZ/G2UL (R9A07G043)
-> > > +        items:
-> > > +          - enum:
-> > > +              - renesas,r9a07g043u11 # Single Cortex-A55 RZ/G2UL
+> > > +config ARCH_R9A07G044L
+> > > +       bool "ARM64 Platform support for RZ/G2L SoC"
 > >
-> > Is there any specific reason you're including the final "1", unlike the
-> > RZ/G2{L,LC} binding?
+> > Please drop the "SoC", for consistency with other entries.
 > >
-> To be consistent with the RZ/G2L family of SoC's "1" is appended to
-> the compatible string.
-
-No, for RZ/G2L you have:
-
-    renesas,r9a07g044c1 for r9a07g044c12
-    renesas,r9a07g044c2 for r9a07g044c22
-    renesas,r9a07g044l1 for r9a07g044l13 and r9a07g044l14
-    renesas,r9a07g044l2 for r9a07g044l23 and r9a07g044l24
-
-i.e. the compatible value lacks the final digit.
-
-For RZ/G2UL, I do not know if we have to distinguish between
-r9a07g043u11 and r9a07g043u12.
-
-> > As RZ/G2UL is always single-core, perhaps this compatible value can be
-> > dropped?
+> Oops will do that.
+>
+> > > +       help
+> > > +         This enables support for the Renesas RZ/G2L SoC.
+> > > +
+> > > +config ARCH_R9A07G044LC
+> > > +       bool "ARM64 Platform support for RZ/G2LC SoC"
 > >
-> Do agree with you.
+> > Likewise.
+> >
+> will do.
+>
+> > > +       help
+> > > +         This enables support for the Renesas RZ/G2LC SoC.
+> > > +
+> > >  endif # ARM64
+> >
+> > Given LSI DEVID is the same, do we need both, or can we do with a
+> > single ARCH_R9A07G044?
+> >
+> The reason behind adding separate configs was in case if we wanted to
+> just build an image for RZ/G2L and not RZ/G2LC this would increase
+> image size and also build unneeded dtb's.
 
-In light of the continued discussion for [PATCH 02/16], perhaps it's
-good to keep it anyway?
+How would it increase image size? I understand clock and pin control
+are the same blocks.
 
 Gr{oetje,eeting}s,
 
