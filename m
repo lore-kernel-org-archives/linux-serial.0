@@ -2,82 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D49C47089
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 09:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4464BC4707F
+	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 09:55:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1D0A6613E2
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 09:49:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1B57C61417
+	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 09:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235809AbhE0Juh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 May 2021 05:50:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42146 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235768AbhE0Jug (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 May 2021 05:50:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 05FFA613E9;
-        Thu, 27 May 2021 09:49:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1622108943;
-        bh=ibMj4HGw4tq6iAwRPumkn3GwQyGhzBrwJyRHr8w0cdI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n2YJFcksYr9IFlyIdMQi6VNbc2iEPtpwbDaf2uvNqqTtx3dkHCy7N1tWlTV6ChFAp
-         rFPK4Yop2icGeJl4ljBi7pWu2ZuAUc372umU4Mtz/R8fCgQWPwOqnwVGk0/BwEsGNP
-         67xynQ5g6KppvjYW3PZySQWOlwjCxDprjE0+XpJU=
-Date:   Thu, 27 May 2021 11:49:01 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Erwan Le Ray <erwan.leray@foss.st.com>
-Cc:     Jiri Slaby <jslaby@suse.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-serial@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>
-Subject: Re: [PATCH 1/2] serial: stm32: reset dma buffers during probe
-Message-ID: <YK9rDVeg0W9WE+9a@kroah.com>
-References: <20210527091537.8997-1-erwan.leray@foss.st.com>
- <20210527091537.8997-2-erwan.leray@foss.st.com>
+        id S235780AbhE0J5I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 May 2021 05:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235768AbhE0J5I (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 27 May 2021 05:57:08 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88657C061574;
+        Thu, 27 May 2021 02:55:34 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id s6so119314edu.10;
+        Thu, 27 May 2021 02:55:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C58IMTIWG3aGpI31cvyq0/QCn2aAGcF3IZlr8Z32K/Y=;
+        b=AucBLzD1N+8LtmRlcHZj0bnRH597i8Rv5zSBdhDLzjoBgCqC8pa0xXJzg8WoHd4EiA
+         hzlkKVKxj6si3zT9ui9jP7tJQco7DXEN3fgi5H9k307nc0pGu26YUL6MGbF2jRuQfr/c
+         C5RZf2e0A554MP0GdifknkmBmgwZvO7IPXfVvZudjBpQSJ6cBl3D+EQtS515fvgSJ7ZC
+         HcTljKeD0z/mBtvPBrl1yODTAsFCsnt+Pt5zBxEt0yES4tMbuKHfPJ+KIBVyJsXZi08f
+         JUXVj6V7mSZEBszlWV1qKkghI0FuvdD3p0zBoJ04J6hiKZPYMwynaPDT9Rglc3de/pEC
+         pQsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C58IMTIWG3aGpI31cvyq0/QCn2aAGcF3IZlr8Z32K/Y=;
+        b=VjCxbIna+o7XJqwp189lmfVT9tIsrh7V+bKWlVZsNGtqdUgSvDlomc1nNN0zQa3CUk
+         ON/Ecz9NfiL5pDUkQq6LcJD8aVMaB5hwl13MvDJAkR7pUZ2Bc4EzZhQZc0AsdNH0qbL/
+         ONDysMQGu0Th43AiURyQtFqto87J+McIVCYG9P7ycDHjpvt6963tfWUoCwYA2wK3FX+p
+         3A9NfRWB0y4p5dwfU2D8S15XWPVPQKZuOPtVHDcLeRulNOeOhOoUawUW0DrHc8HGzmsE
+         OXeuNsRHVd1KU91k+FH1p6DjNfJtAFEXwh01PDp2HrAK7OiQD0Wiq1ZTcv2nX1p7bKpp
+         FvFg==
+X-Gm-Message-State: AOAM532+EmfLSvhqN1sDQ68RnwYEr83E6SnPFj+MVjjmuf0rnIs8cCUu
+        h0kUdVD5GohoDfkY27VpdqWjqGjTJoEyfQ==
+X-Google-Smtp-Source: ABdhPJxLJFoLPIpTk320Qan+reXcWHDotN+ksDZCmebp6yt3LtUtr0B6dIkx+wMTpySH/TodtK4L3w==
+X-Received: by 2002:a05:6402:74f:: with SMTP id p15mr3166309edy.333.1622109332779;
+        Thu, 27 May 2021 02:55:32 -0700 (PDT)
+Received: from localhost.localdomain.at (62-178-82-229.cable.dynamic.surfer.at. [62.178.82.229])
+        by smtp.gmail.com with ESMTPSA id l19sm70623edw.58.2021.05.27.02.55.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 May 2021 02:55:32 -0700 (PDT)
+From:   Christian Gmeiner <christian.gmeiner@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Christian Gmeiner <christian.gmeiner@gmail.com>,
+        stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Tobias Diedrich <tobiasdiedrich@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Du Huanpeng <u74147@gmail.com>,
+        Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>,
+        linux-serial@vger.kernel.org
+Subject: [PATCH] serial: 8250_pci: handle FL_NOIRQ board flag
+Date:   Thu, 27 May 2021 11:54:40 +0200
+Message-Id: <20210527095529.26281-1-christian.gmeiner@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210527091537.8997-2-erwan.leray@foss.st.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 27, 2021 at 11:15:36AM +0200, Erwan Le Ray wrote:
-> Reset Rx and Tx dma buffers during probe to avoid freeing
-> invalid buffer in no dma mode.
-> 
-> Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
-> 
-> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-> index c2ae7b392b86..2ac3b30477a7 100644
-> --- a/drivers/tty/serial/stm32-usart.c
-> +++ b/drivers/tty/serial/stm32-usart.c
-> @@ -1168,6 +1168,8 @@ static struct stm32_port *stm32_usart_of_get_port(struct platform_device *pdev)
->  	stm32_ports[id].cr1_irq = USART_CR1_RXNEIE;
->  	stm32_ports[id].cr3_irq = 0;
->  	stm32_ports[id].last_res = RX_BUF_L;
-> +	stm32_ports[id].rx_dma_buf = 0;
-> +	stm32_ports[id].tx_dma_buf = 0;
->  	return &stm32_ports[id];
->  }
->  
-> -- 
-> 2.17.1
-> 
+In commit 8428413b1d14 ("serial: 8250_pci: Implement MSI(-X) support")
+the way the irq gets allocated was changed. With that change the
+handling FL_NOIRQ got lost. Restore the old behaviour.
 
-Is this a bugfix?  if so, what commit does this fix and does it need to
-be backported anywhere?
+Fixes: 8428413b1d14 ("serial: 8250_pci: Implement MSI(-X) support")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-thanks,
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 689d8227f95f..3b8217844c0b 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -3944,21 +3944,26 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
+ 	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
+ 	uart.port.uartclk = board->base_baud * 16;
+ 
+-	if (pci_match_id(pci_use_msi, dev)) {
+-		dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
+-		pci_set_master(dev);
+-		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
++	if (board->flags & FL_NOIRQ) {
++		uart.port.irq = 0;
+ 	} else {
+-		dev_dbg(&dev->dev, "Using legacy interrupts\n");
+-		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
+-	}
+-	if (rc < 0) {
+-		kfree(priv);
+-		priv = ERR_PTR(rc);
+-		goto err_deinit;
++		if (pci_match_id(pci_use_msi, dev)) {
++			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
++			pci_set_master(dev);
++			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
++		} else {
++			dev_dbg(&dev->dev, "Using legacy interrupts\n");
++			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
++		}
++		if (rc < 0) {
++			kfree(priv);
++			priv = ERR_PTR(rc);
++			goto err_deinit;
++		}
++
++		uart.port.irq = pci_irq_vector(dev, 0);
+ 	}
+ 
+-	uart.port.irq = pci_irq_vector(dev, 0);
+ 	uart.port.dev = &dev->dev;
+ 
+ 	for (i = 0; i < nr_ports; i++) {
+-- 
+2.31.1
 
-greg k-h
