@@ -2,131 +2,246 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-19.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 269C1C4708A
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 12:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D6BC4707F
+	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 16:56:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0A820613F6
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 12:04:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D586460FF2
+	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 16:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234669AbhE0MG0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 May 2021 08:06:26 -0400
-Received: from mail-vs1-f48.google.com ([209.85.217.48]:35737 "EHLO
-        mail-vs1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234540AbhE0MG0 (ORCPT
+        id S236591AbhE0Q63 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 May 2021 12:58:29 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:48182 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235252AbhE0Q62 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 May 2021 08:06:26 -0400
-Received: by mail-vs1-f48.google.com with SMTP id x22so236297vsn.2;
-        Thu, 27 May 2021 05:04:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Uh4zzMKY6luxk0/SSNclejeRcmWG2GmwP9Z21NWThdc=;
-        b=asW3k569xrt+g9/xBoM3MSOxqw+0cWd14K6oi1Wl3YNxZqS2q569Pga0JdbTa25w21
-         YcodyfhNLPuUtzEsspO1dbMv9TQ/kSEiQsa6qxVvV6goaponRUkXg02xR52X/kVxsiyU
-         K5Li9uInR0M/PFGYPWdS97hK7SiVmx+juwkLizPeV/wjMBXbE1NqKngzY+spnqldSMCm
-         gs7qmUv72ybHsCFZrLFGcls1TBgCerkPb0bBf0kd0efe8ZwwoYuan5AbBmFacKIgHXoj
-         jYwWiS7230iEH2sJBTRFjbgbBtz5KXtrli8LOsxIl0+GJDxcXFZ6/Ugbbw8PuLSnaTBn
-         Vqbg==
-X-Gm-Message-State: AOAM530c6j/Y4vJLigg2kcF7oxi9XuwzzLtQRQdYcZQtr0SoSdfDf8c6
-        OyHzPaaa1lXWbOQKtQp4TPC6uRa/3Bvz0XDOtBU=
-X-Google-Smtp-Source: ABdhPJzBFvcXREuBIQYuRn70o9fXD4fkLjhIMPBlK3HLIgpWiKiyIy29QjGBrmD2cFoYRf6BqEL19Uz/PEFSKm9Yabc=
-X-Received: by 2002:a05:6102:392:: with SMTP id m18mr1556875vsq.40.1622117091488;
- Thu, 27 May 2021 05:04:51 -0700 (PDT)
+        Thu, 27 May 2021 12:58:28 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14RGunnm039819;
+        Thu, 27 May 2021 11:56:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1622134609;
+        bh=lcTg9deYB/xQWjoJPZRw96kkkinGFibiZo91LJI62bk=;
+        h=From:To:CC:Subject:Date;
+        b=tzUz1WT/NODfAUaO7N+fVjBbRP+t6iyPG9QsKFuoOGpsKkrVyIAg4KrPc6+k7B4Hd
+         DJfXuOP2cIh1/gpb1V7Ej1j+g7UWMMaunJvoHazleSuK94a3GqjK9En+C9NNIYQwqY
+         CPITYP8PDZUzlVMA+f00+riSAb8tSNIFcf8oSYM8=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14RGun9D041573
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 27 May 2021 11:56:49 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 27
+ May 2021 11:56:49 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Thu, 27 May 2021 11:56:49 -0500
+Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14RGujix038568;
+        Thu, 27 May 2021 11:56:46 -0500
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH] dt-bindings: serial: Move omap-serial.txt to YAML schema
+Date:   Thu, 27 May 2021 22:26:36 +0530
+Message-ID: <20210527165636.939-1-vigneshr@ti.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20210514192218.13022-14-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20210514192218.13022-14-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 27 May 2021 14:04:39 +0200
-Message-ID: <CAMuHMdXd==dM2QJN5gg0ka_7-HDQbeKZK66nmyASFJAnsVsSQA@mail.gmail.com>
-Subject: Re: [PATCH 13/16] clk: renesas: Add CPG core wrapper for RZ/G2L SoC
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Prabhakar,
+Convert serial-omap.txt to YAML schema for better checks and documentation.
 
-On Fri, May 14, 2021 at 9:24 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add CPG core wrapper for RZ/G2L family.
->
-> Based on a patch in the BSP by Binh Nguyen
-> <binh.nguyen.jz@renesas.com>.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+---
+ .../bindings/serial/omap_serial.txt           |  40 ------
+ .../bindings/serial/ti,omap4-uart.yaml        | 116 ++++++++++++++++++
+ 2 files changed, 116 insertions(+), 40 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/omap_serial.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
 
-> --- /dev/null
-> +++ b/drivers/clk/renesas/renesas-rzg2l-cpg.c
+diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
+deleted file mode 100644
+index c2db8cabf2ab..000000000000
+--- a/Documentation/devicetree/bindings/serial/omap_serial.txt
++++ /dev/null
+@@ -1,40 +0,0 @@
+-OMAP UART controller
+-
+-Required properties:
+-- compatible : should be "ti,am64-uart", "ti,am654-uart" for AM64 controllers
+-- compatible : should be "ti,j721e-uart", "ti,am654-uart" for J721E controllers
+-- compatible : should be "ti,am654-uart" for AM654 controllers
+-- compatible : should be "ti,omap2-uart" for OMAP2 controllers
+-- compatible : should be "ti,omap3-uart" for OMAP3 controllers
+-- compatible : should be "ti,omap4-uart" for OMAP4 controllers
+-- compatible : should be "ti,am4372-uart" for AM437x controllers
+-- compatible : should be "ti,am3352-uart" for AM335x controllers
+-- compatible : should be "ti,dra742-uart" for DRA7x controllers
+-- reg : address and length of the register space
+-- interrupts or interrupts-extended : Should contain the uart interrupt
+-                                      specifier or both the interrupt
+-                                      controller phandle and interrupt
+-                                      specifier.
+-- ti,hwmods : Must be "uart<n>", n being the instance number (1-based)
+-
+-Optional properties:
+-- clock-frequency : frequency of the clock input to the UART
+-- dmas : DMA specifier, consisting of a phandle to the DMA controller
+-         node and a DMA channel number.
+-- dma-names : "rx" for receive channel, "tx" for transmit channel.
+-- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
+-- rs485-rts-active-high: drive RTS high when sending (default is low).
+-- clocks: phandle to the functional clock as per
+-  Documentation/devicetree/bindings/clock/clock-bindings.txt
+-
+-Example:
+-
+-                uart4: serial@49042000 {
+-                        compatible = "ti,omap3-uart";
+-                        reg = <0x49042000 0x400>;
+-                        interrupts = <80>;
+-                        dmas = <&sdma 81 &sdma 82>;
+-                        dma-names = "tx", "rx";
+-                        ti,hwmods = "uart4";
+-                        clock-frequency = <48000000>;
+-                };
+diff --git a/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml b/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
+new file mode 100644
+index 000000000000..b3e426c24a9e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
+@@ -0,0 +1,116 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/ti,omap4-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Bindings for 8250 compliant UARTs on TI's OMAP and K3 SoCs
++
++maintainers:
++  - Vignesh Raghavendra <vigneshr@ti.com>
++
++allOf:
++  - $ref: /schemas/serial/serial.yaml#
++  - $ref: /schemas/serial/rs485.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - ti,am3352-uart
++          - ti,am4372-uart
++          - ti,am654-uart
++          - ti,dra742-uart
++          - ti,omap2-uart
++          - ti,omap3-uart
++          - ti,omap4-uart
++      - items:
++          - enum:
++              - ti,am64-uart
++              - ti,j721e-uart
++          - const: ti,am654-uart
++
++  ti,hwmods:
++    description:
++      Must be "uart<n>", n being the instance number (1-based)
++      This property is applicable only on legacy platforms mainly omap2/3
++      and ti81xx and should not be used on other platforms.
++    $ref: /schemas/types.yaml#/definitions/string
++    deprecated: true
++
++  dmas:
++    minItems: 1
++    maxItems: 2
++
++  dma-names:
++    items:
++      - const: tx
++      - const: rx
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: fclk
++
++  reg-shift:
++    const: 2
++  reg-io-width:
++    const: 4
++
++  rts-gpios: true
++  cts-gpios: true
++  dtr-gpios: true
++  dsr-gpios: true
++  rng-gpios: true
++  dcd-gpios: true
++  rs485-rts-delay: true
++  rs485-rts-active-low: true
++  rs485-rx-during-tx: true
++  rs485-rts-active-high: true
++  linux,rs485-enabled-at-boot-time: true
++  rts-gpio: true
++  power-domains: true
++  clock-frequency: true
++  current-speed: true
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++if:
++  properties:
++    compatible:
++      oneOf:
++        - const: ti,omap2-uart
++        - const: ti,omap3-uart
++        - const: ti,omap4-uart
++
++then:
++  properties:
++    ti,hwmods:
++      items:
++        - pattern: "^uart([1-9])$"
++
++else:
++  properties:
++    ti,hwmods: false
++
++examples:
++  - |
++          uart4: serial@49042000 {
++                  compatible = "ti,omap3-uart";
++                  reg = <0x49042000 0x400>;
++                  interrupts = <80>;
++                  clock-frequency = <48000000>;
++          };
+-- 
+2.31.1
 
-> +static int rzg2l_mod_clock_endisable(struct clk_hw *hw, bool enable)
-> +{
-> +       struct mstp_clock *clock = to_mod_clock(hw);
-> +       struct cpg_mssr_priv *priv = clock->priv;
-> +       unsigned int reg = MSSR_OFF(clock->bit) * 4;
-
-The "* 4" here makes it difficult to review the module clock tables.
-
-E.g.
-
-       DEF_MOD("gic",          R9A07G044_CLK_GIC600,
-                               R9A07G044_CLK_P1,
-                               MSSR(5, BIT(0), (BIT(0) | BIT(1)))),
-
-The "5" means the CLK_ON_GIC600 register is at offset CLK_ON_R(5 * 4)
- = 0x514.  Removing the "* 4" means you could use
-"MSSR(0x14, BIT(0), (BIT(0) | BIT(1))" instead.
-
-Unless it has unpleasant side effects, I'd even consider putting
-the full CLK_ON offset there, i.e.
-"MSSR(0x514, BIT(0), (BIT(0) | BIT(1))" and change the macros like:
-
-    #define CLK_ON_R(reg)          (reg)
-    #define CLK_MON_R(reg)         (0x680 - 0x500 + (reg))
-
-> --- /dev/null
-> +++ b/drivers/clk/renesas/renesas-rzg2l-cpg.h
-
-> +#define CLK_ON_R(reg)          (0x500 + reg)
-> +#define CLK_MON_R(reg)         (0x680 + reg)
-> +#define CLK_RST_R(reg)         (0x800 + reg)
-> +#define CLK_MRST_R(reg)                (0x980 + reg)
-
-The last three don't seem to be documented?
-
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
