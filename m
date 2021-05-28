@@ -2,145 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 059B3C4708D
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 07:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C052EC4708C
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:00:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D78246108D
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 07:51:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E74261222
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233565AbhE1HxY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 May 2021 03:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbhE1HxX (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 May 2021 03:53:23 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0823FC061574;
-        Fri, 28 May 2021 00:51:48 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id z38so4335149ybh.5;
-        Fri, 28 May 2021 00:51:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QjtThE/GvdTTwDHRzO7RqKpnpwomxf3ZkcySrQwdFO8=;
-        b=n96WUpjFckScqSNEnzFn0eCPHUzD52Jb779iKMf6j4qX7rctUuS2QMGfQEka+3Aaao
-         gsVWRAKAqq30ZATI9czY8QsgfLhzH56Vv44Rv9nwBY4fQ+zsM5na1I6P9uOlMjmX8pWy
-         AARR1E7AtcEVgxIKPqvby0Yy4FjOX7dc4HrmyLooeiLESkSX9Klv2Evt/AWUI3PILGCR
-         pRz8FplnRR0nt9A4/+vPlQRg3ApKzzmC7ZwUxysTCwZr65xWYXgQAdYrfEGs9IeRukCB
-         qRYZ8gQBEyrxMAvmyW/vQtP3+KipaH6yWHfTIa8n2wFAmSxss13C0G/HNplcR+ji1j2Q
-         EZMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QjtThE/GvdTTwDHRzO7RqKpnpwomxf3ZkcySrQwdFO8=;
-        b=PBTiciQyk3kuxOh7AsZg1lnRircMQDWGyuknajiYNuvM3nz/iI4wLqWCNy0fUuF1Z7
-         fylo8kfZpysU2oA900gS04FMe0i0EyIezMUoi9YnE8eltU1p/s+6BA8hzsy002rsGFUA
-         5GIZMb47038/cJajWULmMFQz8bV3XXjed9gP0BkGHGbbu7fhEkCBcyflAscbZaTEVzdh
-         d02C0IVgT3qwi/FOJGE/dzcin1hm2YLcD0/xAKZDZKpZaE2XlMyM+Po0qfQylCu4BirX
-         N0kUUyJbAfqJaAlvowfUCTXXXtn+guw/htWHdMEET25uBKfR4FUQ8kqsfV7EWr3XUICp
-         gKEQ==
-X-Gm-Message-State: AOAM531Qs3/9eg0NHJ6uLkRkLYMgBqVgQSgLw4bo8RwMNYqOlDrGUfXG
-        EBWCZpLBFfGgWWHYeoT+Xstpev8b7nqRWqAOCWc=
-X-Google-Smtp-Source: ABdhPJwWq5KIWkIdAqgVVIgQeSChmW1pD4dENRG4Yvitazs2XGQp+jjE4SAk+lUsFx4YIMAmVUhb3uFSCgiX1n1lv5U=
-X-Received: by 2002:a25:26c3:: with SMTP id m186mr9924697ybm.47.1622188307294;
- Fri, 28 May 2021 00:51:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210514192218.13022-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210514192218.13022-14-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdXd==dM2QJN5gg0ka_7-HDQbeKZK66nmyASFJAnsVsSQA@mail.gmail.com>
-In-Reply-To: <CAMuHMdXd==dM2QJN5gg0ka_7-HDQbeKZK66nmyASFJAnsVsSQA@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Fri, 28 May 2021 08:51:21 +0100
-Message-ID: <CA+V-a8vHQLCL+V0f7bKZOKhtgo9_Rsqy_YjBOa_gCvgZMmBLnA@mail.gmail.com>
-Subject: Re: [PATCH 13/16] clk: renesas: Add CPG core wrapper for RZ/G2L SoC
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+        id S234394AbhE1JCI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 May 2021 05:02:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229911AbhE1JCH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 28 May 2021 05:02:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 972266124B;
+        Fri, 28 May 2021 09:00:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1622192433;
+        bh=5utpBUWZl30sjRPFYC2tWtUU3o2Hk1kNkbbqmvyXDQ4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wV1V6JJkzHScqdoKBqatYtK/jnXG1G2X9vDHC9UwSazaAvae9ZPt2bqKdM6oZjcRD
+         R/iI74zyIxz503oY/Ba8BFO/cR5N5M5zSbF+Lb8rqH2PisIiiGaod80jfThD30XHe+
+         pRSeoXrBKAOnM4M3zwrw3YkxLXztBwjeVl4iXIAQ=
+Date:   Fri, 28 May 2021 11:00:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vignesh Raghavendra <vigneshr@ti.com>
+Cc:     Tony Lindgren <tony@atomide.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250: 8250_omap: Fix possible interrupt storm
+Message-ID: <YLCxLvcm/yG9+GE3@kroah.com>
+References: <20210511151955.28071-1-vigneshr@ti.com>
+ <YJ008MjjewRUTn9Z@kroah.com>
+ <YLCCJzkkB4N7LTQS@atomide.com>
+ <e5b35370-bf2d-7295-e2fd-9aee5bbc3296@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e5b35370-bf2d-7295-e2fd-9aee5bbc3296@ti.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
+On Fri, May 28, 2021 at 11:41:36AM +0530, Vignesh Raghavendra wrote:
+> Hi,
+> 
+> On 5/28/21 11:09 AM, Tony Lindgren wrote:
+> > Hi Greg, Vignesh & Jan,
+> > 
+> > * Greg Kroah-Hartman <gregkh@linuxfoundation.org> [210513 14:17]:
+> >> On Tue, May 11, 2021 at 08:49:55PM +0530, Vignesh Raghavendra wrote:
+> >>> It is possible that RX TIMEOUT is signalled after RX FIFO has been
+> >>> drained, in which case a dummy read of RX FIFO is required to clear RX
+> >>> TIMEOUT condition. Otherwise, RX TIMEOUT condition is not cleared
+> >>> leading to an interrupt storm
+> >>>
+> >>> Cc: stable@vger.kernel.org
+> >>
+> >> How far back does this need to go?  What commit id does this fix?  What
+> >> caused this to just show up now vs. previously?
+> 
+> Sorry, I missed this reply. Issue was reported on AM65x SoC with custom
+> test case from Jan Kiszka that stressed UART with rapid baudrate changes
+> from 9600 to 4M along with data transfer.
+> 
+> Based on the condition that led to interrupt storm, I inferred it to
+> affect all SoCs with 8250 OMAP UARTs. But that seems thats not the best
+> idea as seen from OMAP3 regression.
+> 
+> Greg,
+> 
+> Could you please drop the patch? Very sorry for the inconvenience..
 
-On Thu, May 27, 2021 at 1:04 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Fri, May 14, 2021 at 9:24 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > Add CPG core wrapper for RZ/G2L family.
-> >
-> > Based on a patch in the BSP by Binh Nguyen
-> > <binh.nguyen.jz@renesas.com>.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
->
-> > --- /dev/null
-> > +++ b/drivers/clk/renesas/renesas-rzg2l-cpg.c
->
-> > +static int rzg2l_mod_clock_endisable(struct clk_hw *hw, bool enable)
-> > +{
-> > +       struct mstp_clock *clock = to_mod_clock(hw);
-> > +       struct cpg_mssr_priv *priv = clock->priv;
-> > +       unsigned int reg = MSSR_OFF(clock->bit) * 4;
->
-> The "* 4" here makes it difficult to review the module clock tables.
->
-> E.g.
->
->        DEF_MOD("gic",          R9A07G044_CLK_GIC600,
->                                R9A07G044_CLK_P1,
->                                MSSR(5, BIT(0), (BIT(0) | BIT(1)))),
->
-> The "5" means the CLK_ON_GIC600 register is at offset CLK_ON_R(5 * 4)
->  = 0x514.  Removing the "* 4" means you could use
-> "MSSR(0x14, BIT(0), (BIT(0) | BIT(1))" instead.
->
-> Unless it has unpleasant side effects, I'd even consider putting
-> the full CLK_ON offset there, i.e.
-> "MSSR(0x514, BIT(0), (BIT(0) | BIT(1))" and change the macros like:
->
->     #define CLK_ON_R(reg)          (reg)
->     #define CLK_MON_R(reg)         (0x680 - 0x500 + (reg))
->
-OK will do that.
+Now reverted, thanks.
 
-> > --- /dev/null
-> > +++ b/drivers/clk/renesas/renesas-rzg2l-cpg.h
->
-> > +#define CLK_ON_R(reg)          (0x500 + reg)
-> > +#define CLK_MON_R(reg)         (0x680 + reg)
-> > +#define CLK_RST_R(reg)         (0x800 + reg)
-> > +#define CLK_MRST_R(reg)                (0x980 + reg)
->
-> The last three don't seem to be documented?
->
-I have asked Chris to send the document across.
-
-Cheers,
-Prabhakar
+greg k-h
