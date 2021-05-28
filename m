@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77352C47087
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 089FEC47087
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:27:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5244D613DD
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:27:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DD0196128B
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235845AbhE1J3C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 May 2021 05:29:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53308 "EHLO mail.kernel.org"
+        id S230205AbhE1J3N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 May 2021 05:29:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53466 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235991AbhE1J3A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 May 2021 05:29:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9585661183;
-        Fri, 28 May 2021 09:27:25 +0000 (UTC)
+        id S235378AbhE1J3M (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 28 May 2021 05:29:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3777A61183;
+        Fri, 28 May 2021 09:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1622194046;
-        bh=ZmBIcREgp2uM7s3flXyB5yh2WUlsZQ4tBLWQceOOo38=;
+        s=korg; t=1622194057;
+        bh=wEKgUhy1noH/DWf/UECfwPZ27i7cewO59uvqN5vyxcQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gEcTxfo5GZPVNH9fHcwa0tAtBbDyMWFsVjeVnuLgWKwhreuS4OuSJt5sz4J9xWQI2
-         C8WhKuRl6hcwZS96+glVlsLT7jG1almiYVyrdfMhdOYr4jG5lP/bbkwuuUlcZd3yv+
-         enUoVvUfxTf3XNUNgKzLUiumyH6MySu3EmaVIGbM=
-Date:   Fri, 28 May 2021 11:27:23 +0200
+        b=i14Jvr0HSOTGnrFLN+kqX2IrlN6fNluJlDPMuevjYrVJopSQ1vJ4Bv9SsjmnNO6ZB
+         nxHZuGfXFqEJP9fHWFHE4yzbzsBjB9rSVOqS9U2uxsM/oLt12/LP7TbBmXl6AQO5mw
+         4R6LqLWS9Hd7HS65umMCNHr1AX7eIXhNiyoFVO/c=
+Date:   Fri, 28 May 2021 11:27:35 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Moriis Ku <saumah@gmail.com>
 Cc:     linux-serial@vger.kernel.org, jason_lee@sunix.com,
         taian.chen@sunix.com
-Subject: Re: [PATCH] Add supprt for SUNIX SDC serial port driver
-Message-ID: <YLC3e+K9vDctfRxL@kroah.com>
-References: <20210528092240.5896-1-saumah@gmail.com>
+Subject: Re: [PATCH] serial:Add SUNIX SDC serial port driver
+Message-ID: <YLC3hzsgOJ1lWhlm@kroah.com>
+References: <20210528092307.5950-1-saumah@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210528092240.5896-1-saumah@gmail.com>
+In-Reply-To: <20210528092307.5950-1-saumah@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 28, 2021 at 05:22:40PM +0800, Moriis Ku wrote:
+On Fri, May 28, 2021 at 05:23:07PM +0800, Moriis Ku wrote:
 > From: Morris Ku <saumah@gmail.com>
 > 
 > SUNIX SDC serial port driver.
@@ -53,10 +53,9 @@ On Fri, May 28, 2021 at 05:22:40PM +0800, Moriis Ku wrote:
 > Cc: Taian Chen <taian.chen@sunix.com>
 > Signed-off-by: Morris Ku <saumah@gmail.com>
 > ---
->  Kconfig  | 6 ++++++
->  Makefile | 1 +
->  2 files changed, 7 insertions(+)
-> 
+>  8250_sdc.c | 519 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 519 insertions(+)
+>  create mode 100644 8250_sdc.c
 
 Hi,
 
