@@ -2,227 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03905C4707F
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 17:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F203AC4707F
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 00:49:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D36D26135C
-	for <linux-serial@archiver.kernel.org>; Thu, 27 May 2021 17:49:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D439D61358
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 00:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234467AbhE0RvW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 May 2021 13:51:22 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:59928 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbhE0RvT (ORCPT
+        id S235564AbhE1Avc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 May 2021 20:51:32 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:56654 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234854AbhE1Av3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 May 2021 13:51:19 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14RHnf5v060411;
-        Thu, 27 May 2021 12:49:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1622137781;
-        bh=sy+bdMzmRE6ELJAGc0+jRguaGKhobAm0nHlog7cKFhY=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=Cm/qmHfRoB9xyrzs/vEAk/pV4L1bDRwkB1X6etgxtG8GgxEL24UFAeHLgja+UYcO3
-         ajCApWId2+l6HlPq3XtYz4bGVXvY313dIfiUYaZyalJxN5tb0+0IedKf32be8r+8Jv
-         EYe/AETFbif+8TykzpKljpz1XRJhX8i9YvEfmrYk=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14RHnfE1094266
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 27 May 2021 12:49:41 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 27
- May 2021 12:49:40 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 27 May 2021 12:49:40 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14RHnbUu058802;
-        Thu, 27 May 2021 12:49:38 -0500
-Subject: Re: [PATCH] dt-bindings: serial: Move omap-serial.txt to YAML schema
-To:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
-References: <20210527165636.939-1-vigneshr@ti.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <3760d1e6-2121-323b-d962-60e8291d0bb7@ti.com>
-Date:   Thu, 27 May 2021 20:49:38 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Thu, 27 May 2021 20:51:29 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id B96E91F43E94
+Received: by earth.universe (Postfix, from userid 1000)
+        id DD81D3C0C95; Fri, 28 May 2021 02:49:52 +0200 (CEST)
+Date:   Fri, 28 May 2021 02:49:52 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        kernel@collabora.com
+Subject: Re: [PATCHv5 0/2] Fix imx53-ppd UART configuration
+Message-ID: <20210528004952.r2dnoxetqdi655d6@earth.universe>
+References: <20210430175038.103226-1-sebastian.reichel@collabora.com>
+ <YIzxKNV4x6/8GVrB@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20210527165636.939-1-vigneshr@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="m3bl6ymbqbqf4442"
+Content-Disposition: inline
+In-Reply-To: <YIzxKNV4x6/8GVrB@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
+--m3bl6ymbqbqf4442
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 27/05/2021 19:56, Vignesh Raghavendra wrote:
-> Convert serial-omap.txt to YAML schema for better checks and documentation.
-> 
-> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-> ---
->   .../bindings/serial/omap_serial.txt           |  40 ------
->   .../bindings/serial/ti,omap4-uart.yaml        | 116 ++++++++++++++++++
->   2 files changed, 116 insertions(+), 40 deletions(-)
->   delete mode 100644 Documentation/devicetree/bindings/serial/omap_serial.txt
->   create mode 100644 Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
+Hi Greg,
 
-Why omap4? Seems ti,omap-uart.yaml is more suitable.
+On Sat, May 01, 2021 at 08:11:52AM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Apr 30, 2021 at 07:50:36PM +0200, Sebastian Reichel wrote:
+> > IMHO PATCHv4 was better, but in the end I don't have strong feelings
+> > about this. Btw. I think this patchset is a good demonstration of
+> > frustrating upstream kernel development can be considering PATCHv5
+> > is basically the same as PATCHv1. Thanks for making us go in
+> > circles :(
+> >=20
+> > Changes since PATCHv4:
+> >  * https://lore.kernel.org/lkml/20210305115058.92284-1-sebastian.reiche=
+l@collabora.com/
+> >  * use DT property instead of sysfs config option, like the initial pat=
+ch
+> >    version did as requested by Greg.
+> >=20
+> > Changes since PATCHv3:
+> >  * https://lore.kernel.org/lkml/1539249903-6316-1-git-send-email-fabien=
+=2Elahoudere@collabora.com/
+> >  * rewrote commit message to provide a lot more details why this is nee=
+ded
+> >  * rebased to torvalds/master (5.12-rc1-dontuse), also applies on top o=
+f linux-next
+> >  * use sysfs_emit() instead of sprintf
+> >=20
+> > -- Sebastian
+> >=20
+> > Fabien Lahoudere (2):
+> >   serial: imx: Add DMA buffer configuration via DT
+> >   ARM: dts: imx53-ppd: add dma-info nodes
+> >=20
+> >  .../bindings/serial/fsl-imx-uart.yaml         | 12 +++++++++
+> >  arch/arm/boot/dts/imx53-ppd.dts               |  2 ++
+> >  drivers/tty/serial/imx.c                      | 25 +++++++++++++------
+> >  3 files changed, 32 insertions(+), 7 deletions(-)
+>
+> This is the friendly semi-automated patch-bot of Greg Kroah-Hartman.
+> You have sent him a patch that has triggered this response.
+>=20
+> Right now, the development tree you have sent a patch for is "closed"
+> due to the timing of the merge window.  Don't worry, the patch(es) you
+> have sent are not lost, and will be looked at after the merge window is
+> over (after the -rc1 kernel is released by Linus).
+>=20
+> So thank you for your patience and your patches will be reviewed at this
+> later time, you do not have to do anything further, this is just a short
+> note to let you know the patch status and so you don't worry they didn't
+> make it through.
+>=20
+> thanks,
+>=20
+> greg k-h's patch email bot
 
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
-> deleted file mode 100644
-> index c2db8cabf2ab..000000000000
-> --- a/Documentation/devicetree/bindings/serial/omap_serial.txt
-> +++ /dev/null
-> @@ -1,40 +0,0 @@
-> -OMAP UART controller
-> -
+Any update on this? :)
 
-[...]
+-- Sebastian
 
-> diff --git a/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml b/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
-> new file mode 100644
-> index 000000000000..b3e426c24a9e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
-> @@ -0,0 +1,116 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/ti,omap4-uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Bindings for 8250 compliant UARTs on TI's OMAP and K3 SoCs
-> +
-> +maintainers:
-> +  - Vignesh Raghavendra <vigneshr@ti.com>
-> +
-> +allOf:
-> +  - $ref: /schemas/serial/serial.yaml#
-> +  - $ref: /schemas/serial/rs485.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +          - ti,am3352-uart
-> +          - ti,am4372-uart
-> +          - ti,am654-uart
-> +          - ti,dra742-uart
-> +          - ti,omap2-uart
-> +          - ti,omap3-uart
-> +          - ti,omap4-uart
-> +      - items:
-> +          - enum:
-> +              - ti,am64-uart
-> +              - ti,j721e-uart
-> +          - const: ti,am654-uart
-> +
-> +  ti,hwmods:
-> +    description:
-> +      Must be "uart<n>", n being the instance number (1-based)
-> +      This property is applicable only on legacy platforms mainly omap2/3
-> +      and ti81xx and should not be used on other platforms.
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    deprecated: true
-> +
-> +  dmas:
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  dma-names:
-> +    items:
-> +      - const: tx
-> +      - const: rx
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    maxItems: 2
+--m3bl6ymbqbqf4442
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Could you add description for interrupts, pls?
+-----BEGIN PGP SIGNATURE-----
 
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    const: fclk
-> +
-> +  reg-shift:
-> +    const: 2
-> +  reg-io-width:
-> +    const: 4
-> +
-> +  rts-gpios: true
-> +  cts-gpios: true
-> +  dtr-gpios: true
-> +  dsr-gpios: true
-> +  rng-gpios: true
-> +  dcd-gpios: true
-> +  rs485-rts-delay: true
-> +  rs485-rts-active-low: true
-> +  rs485-rx-during-tx: true
-> +  rs485-rts-active-high: true
-> +  linux,rs485-enabled-at-boot-time: true
-> +  rts-gpio: true
-> +  power-domains: true
-> +  clock-frequency: true
-> +  current-speed: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +if:
-> +  properties:
-> +    compatible:
-> +      oneOf:
-> +        - const: ti,omap2-uart
-> +        - const: ti,omap3-uart
-> +        - const: ti,omap4-uart
-> +
-> +then:
-> +  properties:
-> +    ti,hwmods:
-> +      items:
-> +        - pattern: "^uart([1-9])$"
-> +
-> +else:
-> +  properties:
-> +    ti,hwmods: false
-> +
-> +examples:
-> +  - |
-> +          uart4: serial@49042000 {
-> +                  compatible = "ti,omap3-uart";
-> +                  reg = <0x49042000 0x400>;
-> +                  interrupts = <80>;
-> +                  clock-frequency = <48000000>;
-> +          };
-> 
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmCwPjAACgkQ2O7X88g7
++pqdqA//d35uQsHy3QDn1m2ueR83DR8U9ym2Nf0nmfqlaLzVRethCqPc0mb9catT
+YGQaQCd2CedvFm+zytcYtq5u5LeFgPQA67wYHQPAIaS7Qdyq/rOys5YYicvJHxjd
+ixRI8gE2G1cIAtbfaHJrJkMrcFYHrvF9I+uzq8MaXKJdhu+1i3UijeSPIpFfklFN
+EIuQY3LxhaC+lRF5tKWtm9DvwOP7qRDNmS3NeedKCUmthDJDT4f2paBv417v53hw
+oiQ4EDyClLb5GWGKdQLYWTRdi5vxQmmmyXIgBqRyEbiHi82umHw3M0bIVsJgt2Bx
+6rfZaMnkDLd42+PUU3M/CIwqEiRugr9/UXi6n+d0g51YJZ0Chf3bcvP+rY+QufIh
+c9fzcnTV2ossSy1Hdk/wxutpOTtrc2EnuwwGA0iiYozU5sEtIshLYRnUYM/wxiDn
+QjdXOog4jX4mWZlruOF5VJg/clJw41PVdX+d5uyuOnUjj2/1SVM/5zqOlqS5All5
+1pJJ1j0MYhzGV4O5TfwCNMopPeg4OjLht5wiJj8BxrhSzSH20wDLEuGrrbMMR7xa
+yCYAcg4WdGamcuJCta2YPRo3cJ8OV7ceZQmE/+ODxpuRs907LKEgt3/ghlr4dn7E
+7YPQd+17AtR8vT7+INGAAqcmOkLGnYAWD4gMpjjYqqg7apGQeoI=
+=Gp10
+-----END PGP SIGNATURE-----
 
--- 
-Best regards,
-grygorii
+--m3bl6ymbqbqf4442--
