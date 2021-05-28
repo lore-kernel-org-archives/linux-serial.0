@@ -2,128 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F203AC4707F
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 00:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A223C47087
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 05:40:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D439D61358
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 00:49:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F089D6128B
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 05:39:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235564AbhE1Avc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 May 2021 20:51:32 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:56654 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234854AbhE1Av3 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 May 2021 20:51:29 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: sre)
-        with ESMTPSA id B96E91F43E94
-Received: by earth.universe (Postfix, from userid 1000)
-        id DD81D3C0C95; Fri, 28 May 2021 02:49:52 +0200 (CEST)
-Date:   Fri, 28 May 2021 02:49:52 +0200
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+        id S233646AbhE1Flb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 May 2021 01:41:31 -0400
+Received: from muru.com ([72.249.23.125]:33102 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229749AbhE1Fla (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 28 May 2021 01:41:30 -0400
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 4F1B380A8;
+        Fri, 28 May 2021 05:40:00 +0000 (UTC)
+Date:   Fri, 28 May 2021 08:39:51 +0300
+From:   Tony Lindgren <tony@atomide.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        kernel@collabora.com
-Subject: Re: [PATCHv5 0/2] Fix imx53-ppd UART configuration
-Message-ID: <20210528004952.r2dnoxetqdi655d6@earth.universe>
-References: <20210430175038.103226-1-sebastian.reichel@collabora.com>
- <YIzxKNV4x6/8GVrB@kroah.com>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250: 8250_omap: Fix possible interrupt storm
+Message-ID: <YLCCJzkkB4N7LTQS@atomide.com>
+References: <20210511151955.28071-1-vigneshr@ti.com>
+ <YJ008MjjewRUTn9Z@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="m3bl6ymbqbqf4442"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YIzxKNV4x6/8GVrB@kroah.com>
+In-Reply-To: <YJ008MjjewRUTn9Z@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Greg, Vignesh & Jan,
 
---m3bl6ymbqbqf4442
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [210513 14:17]:
+> On Tue, May 11, 2021 at 08:49:55PM +0530, Vignesh Raghavendra wrote:
+> > It is possible that RX TIMEOUT is signalled after RX FIFO has been
+> > drained, in which case a dummy read of RX FIFO is required to clear RX
+> > TIMEOUT condition. Otherwise, RX TIMEOUT condition is not cleared
+> > leading to an interrupt storm
+> > 
+> > Cc: stable@vger.kernel.org
+> 
+> How far back does this need to go?  What commit id does this fix?  What
+> caused this to just show up now vs. previously?
 
-Hi Greg,
+I just noticed this causes the following regression in Linux next when
+pressing a key on uart console after boot at least on omap3. This seems
+to happen on serial_port_in(port, UART_RX) in the quirk handling.
 
-On Sat, May 01, 2021 at 08:11:52AM +0200, Greg Kroah-Hartman wrote:
-> On Fri, Apr 30, 2021 at 07:50:36PM +0200, Sebastian Reichel wrote:
-> > IMHO PATCHv4 was better, but in the end I don't have strong feelings
-> > about this. Btw. I think this patchset is a good demonstration of
-> > frustrating upstream kernel development can be considering PATCHv5
-> > is basically the same as PATCHv1. Thanks for making us go in
-> > circles :(
-> >=20
-> > Changes since PATCHv4:
-> >  * https://lore.kernel.org/lkml/20210305115058.92284-1-sebastian.reiche=
-l@collabora.com/
-> >  * use DT property instead of sysfs config option, like the initial pat=
-ch
-> >    version did as requested by Greg.
-> >=20
-> > Changes since PATCHv3:
-> >  * https://lore.kernel.org/lkml/1539249903-6316-1-git-send-email-fabien=
-=2Elahoudere@collabora.com/
-> >  * rewrote commit message to provide a lot more details why this is nee=
-ded
-> >  * rebased to torvalds/master (5.12-rc1-dontuse), also applies on top o=
-f linux-next
-> >  * use sysfs_emit() instead of sprintf
-> >=20
-> > -- Sebastian
-> >=20
-> > Fabien Lahoudere (2):
-> >   serial: imx: Add DMA buffer configuration via DT
-> >   ARM: dts: imx53-ppd: add dma-info nodes
-> >=20
-> >  .../bindings/serial/fsl-imx-uart.yaml         | 12 +++++++++
-> >  arch/arm/boot/dts/imx53-ppd.dts               |  2 ++
-> >  drivers/tty/serial/imx.c                      | 25 +++++++++++++------
-> >  3 files changed, 32 insertions(+), 7 deletions(-)
->
-> This is the friendly semi-automated patch-bot of Greg Kroah-Hartman.
-> You have sent him a patch that has triggered this response.
->=20
-> Right now, the development tree you have sent a patch for is "closed"
-> due to the timing of the merge window.  Don't worry, the patch(es) you
-> have sent are not lost, and will be looked at after the merge window is
-> over (after the -rc1 kernel is released by Linus).
->=20
-> So thank you for your patience and your patches will be reviewed at this
-> later time, you do not have to do anything further, this is just a short
-> note to let you know the patch status and so you don't worry they didn't
-> make it through.
->=20
-> thanks,
->=20
-> greg k-h's patch email bot
+Vignesh, it seems this quirk needs some soc specific flag added to
+it maybe? Or maybe UART_OMAP_RX_LVL register is not available for
+all the SoCs?
 
-Any update on this? :)
+I think it's best to drop this patch until the issues are resolved,
+also there are some open comments above that might be answered by
+limiting this quirk to a specific range of SoCs :)
 
--- Sebastian
+Regards,
 
---m3bl6ymbqbqf4442
-Content-Type: application/pgp-signature; name="signature.asc"
+Tony
 
------BEGIN PGP SIGNATURE-----
+8< ------------------------
+#regzb introduced: 31fae7c8b18c ("serial: 8250: 8250_omap: Fix possible interrupt storm")
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmCwPjAACgkQ2O7X88g7
-+pqdqA//d35uQsHy3QDn1m2ueR83DR8U9ym2Nf0nmfqlaLzVRethCqPc0mb9catT
-YGQaQCd2CedvFm+zytcYtq5u5LeFgPQA67wYHQPAIaS7Qdyq/rOys5YYicvJHxjd
-ixRI8gE2G1cIAtbfaHJrJkMrcFYHrvF9I+uzq8MaXKJdhu+1i3UijeSPIpFfklFN
-EIuQY3LxhaC+lRF5tKWtm9DvwOP7qRDNmS3NeedKCUmthDJDT4f2paBv417v53hw
-oiQ4EDyClLb5GWGKdQLYWTRdi5vxQmmmyXIgBqRyEbiHi82umHw3M0bIVsJgt2Bx
-6rfZaMnkDLd42+PUU3M/CIwqEiRugr9/UXi6n+d0g51YJZ0Chf3bcvP+rY+QufIh
-c9fzcnTV2ossSy1Hdk/wxutpOTtrc2EnuwwGA0iiYozU5sEtIshLYRnUYM/wxiDn
-QjdXOog4jX4mWZlruOF5VJg/clJw41PVdX+d5uyuOnUjj2/1SVM/5zqOlqS5All5
-1pJJ1j0MYhzGV4O5TfwCNMopPeg4OjLht5wiJj8BxrhSzSH20wDLEuGrrbMMR7xa
-yCYAcg4WdGamcuJCta2YPRo3cJ8OV7ceZQmE/+ODxpuRs907LKEgt3/ghlr4dn7E
-7YPQd+17AtR8vT7+INGAAqcmOkLGnYAWD4gMpjjYqqg7apGQeoI=
-=Gp10
------END PGP SIGNATURE-----
-
---m3bl6ymbqbqf4442--
+Internal error: : 1028 [#1] SMP ARM
+Modules linked in:
+CPU: 0 PID: 870 Comm: syslog Not tainted 5.13.0-rc3-next-20210527-00001-g9b545469a50f #34
+Hardware name: Generic OMAP36xx (Flattened Device Tree)
+PC is at mem_serial_in+0xc/0x20
+LR is at omap8250_irq+0x258/0x2d4
+pc : [<c06762f0>]    lr : [<c0681720>]    psr: 60000193
+sp : c2975c90  ip : 00000000  fp : c1836000
+r10: c0ff7f20  r9 : c0ff7f40  r8 : 00000058
+r7 : c2975ce0  r6 : 00000000  r5 : 00000001  r4 : c1031a24
+r3 : fa06a000  r2 : 00000002  r1 : 00000000  r0 : c1031a24
+Flags: nZCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
+Control: 10c5387d  Table: 829cc019  DAC: 00000051
+Register r0 information: non-slab/vmalloc memory
+Register r1 information: NULL pointer
+Register r2 information: non-paged memory
+Register r3 information: 0-page vmalloc region starting at 0xfa000000 allocated at iotable_init+0x0/0xf4
+Register r4 information: non-slab/vmalloc memory
+Register r5 information: non-paged memory
+Register r6 information: NULL pointer
+Register r7 information: non-slab/vmalloc memory
+Register r8 information: non-paged memory
+Register r9 information: non-slab/vmalloc memory
+Register r10 information: non-slab/vmalloc memory
+Register r11 information: slab kmalloc-256 start c1836000 pointer offset 0 size 256
+Register r12 information: NULL pointer
+Process syslog (pid: 870, stack limit = 0x64988e4e)
+...
+[<c06762f0>] (mem_serial_in) from [<c0681720>] (omap8250_irq+0x258/0x2d4)
+[<c0681720>] (omap8250_irq) from [<c01a00b8>] (__handle_irq_event_percpu+0x58/0x1f0)
+[<c01a00b8>] (__handle_irq_event_percpu) from [<c01a0334>] (handle_irq_event+0x68/0xcc)
+[<c01a0334>] (handle_irq_event) from [<c01a4b6c>] (handle_level_irq+0xc4/0x1c8)
+[<c01a4b6c>] (handle_level_irq) from [<c019f968>] (__handle_domain_irq+0x84/0xfc)
+[<c019f968>] (__handle_domain_irq) from [<c0100b6c>] (__irq_svc+0x6c/0x90)
+Exception stack(0xc2975d28 to 0xc2975d70)
+5d20:                   c2532990 c25328a8 00000006 c289a015 c2532888 c2532990
+5d40: 00000002 00000000 00000006 64407df7 c2532880 64407df7 00000006 c2975d78
+5d60: c02ef31c c030097c 60000013 ffffffff
+[<c0100b6c>] (__irq_svc) from [<c030097c>] (__d_lookup_rcu+0xbc/0x1b8)
+[<c030097c>] (__d_lookup_rcu) from [<c02ef31c>] (lookup_fast+0x48/0x180)
+[<c02ef31c>] (lookup_fast) from [<c02f23b8>] (walk_component+0x3c/0x1c8)
+[<c02f23b8>] (walk_component) from [<c02f2780>] (link_path_walk.part.0+0x23c/0x364)
+[<c02f2780>] (link_path_walk.part.0) from [<c02f28dc>] (path_parentat+0x34/0x74)
+[<c02f28dc>] (path_parentat) from [<c02f48c8>] (filename_parentat+0x88/0x19c)
+[<c02f48c8>] (filename_parentat) from [<c02f4a20>] (filename_create+0x44/0x150)
+[<c02f4a20>] (filename_create) from [<c02f4c2c>] (do_mkdirat+0x58/0x11c)
+[<c02f4c2c>] (do_mkdirat) from [<c0100080>] (ret_fast_syscall+0x0/0x58)
