@@ -2,105 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A930C4708C
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A6CC4708C
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:22:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 536FF613DA
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:03:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 81C756127A
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 09:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234770AbhE1JFb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 May 2021 05:05:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58098 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234769AbhE1JFb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 May 2021 05:05:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2CE4D61222;
-        Fri, 28 May 2021 09:03:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1622192636;
-        bh=WDJo2X/13nKa4nbTGm3lVorzD0sNu2kPcS/rS1lAivU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gWSRtwbteWsYBbIL6OeZ4ipidV4E3qtOaduG6WAEgS7CDrd0/nuUl8Oa74F3+Zqu5
-         z9CrL2nlrZTodGH35HXyKY2ZnwbhfHc/0yl5jHGkY/6rMqASVxhTO0u/FeWPGdMxlZ
-         ngwze2ExPDAPxGen4+m5zCnhwquhzVxiVW8UGFJs=
-Date:   Fri, 28 May 2021 11:03:54 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        kernel@collabora.com
-Subject: Re: [PATCHv5 0/2] Fix imx53-ppd UART configuration
-Message-ID: <YLCx+jhg/j+JmBox@kroah.com>
-References: <20210430175038.103226-1-sebastian.reichel@collabora.com>
- <YIzxKNV4x6/8GVrB@kroah.com>
- <20210528004952.r2dnoxetqdi655d6@earth.universe>
+        id S234233AbhE1JYc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 May 2021 05:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230205AbhE1JYb (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 28 May 2021 05:24:31 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70618C061574
+        for <linux-serial@vger.kernel.org>; Fri, 28 May 2021 02:22:56 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id k5so2188917pjj.1
+        for <linux-serial@vger.kernel.org>; Fri, 28 May 2021 02:22:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MRhTbD9Q+W+KS5yVzyePik9ei2bFxXn1OtpOI9huKwI=;
+        b=qGjOB/RJW0EH53uAs05vP5eWVLq00F/K8PHgGdAIC5kLbJJsTZzap5RilCnCeBXzP8
+         6F43uv1oqacBoM9yyc/ctYa1QfGtC8+50O4EKbD4agJGAj8W0CwDESwJMt8TvYiDPIfj
+         HoLAJ2YSwSafMzmNsBFr3cJKiWRa7lfsmM6oGQhEbNWp2YwN7BeFsuv101Ez3wKx9L24
+         vTJSCI+BvsFQJZPVgRy8qERwbDZWK1pd1wH+NcDlLb/IZmPYbmJg044GRkh2nvaSQgDi
+         xGU6IXgA4nx9wgdfCmvOVJkICud2kJlAp9m5sgqgJobN6UNRdwrpe4dYk2b3DgCruOdl
+         5vow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MRhTbD9Q+W+KS5yVzyePik9ei2bFxXn1OtpOI9huKwI=;
+        b=smiP3D8FO2qVQr6P0BKDKgEGVq1NQuZmhFJT232/KCogVcKnegxnepg/eM4tdCGB1S
+         x7TPtLk9nwLvV7MR4s6fiBlCNE8z7X67Xhw7t02ODgd/9esEmY5yC/R7oaepM0aYSX5f
+         iOuLMsw8OrlsjRsgZqGvLd6qTU0uEXVjITYJBcw6+I9gyFtSM/BYjKIn2Ss8zS7Lyy/H
+         sYrJ6id3Tc9XB4wYLaldnZ0p+d4cfJRX21VYKesj6SJ9R+SJPvaNxDd/LocLZPRmqrAk
+         XyeLHK2/TR/0EyRXZgnZGM1sD/qqPMy6hPKXNL6IzMZwC19gN8t25Ue7eC+WhiPyrvQ8
+         Fl5w==
+X-Gm-Message-State: AOAM532Km4wySDwQ0bymZCFhadDLNyHTS1CcKHRgKILQGEylaNSLpcWm
+        knEDhn7eKOO/zGHI39pJRW8=
+X-Google-Smtp-Source: ABdhPJyb9S5CCUYHTmrk38AAmSO7eg3e61uZN+B9A27ijzJK9f8GkUfDH5MDfKrYhkZLHuliy0fp6A==
+X-Received: by 2002:a17:90a:7345:: with SMTP id j5mr3427953pjs.64.1622193775945;
+        Fri, 28 May 2021 02:22:55 -0700 (PDT)
+Received: from test-System-Product-Name.sunix.com.tw (61-220-142-250.HINET-IP.hinet.net. [61.220.142.250])
+        by smtp.gmail.com with ESMTPSA id f17sm3887293pgm.37.2021.05.28.02.22.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 May 2021 02:22:55 -0700 (PDT)
+From:   Moriis Ku <saumah@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, jason_lee@sunix.com,
+        taian.chen@sunix.com, Morris Ku <saumah@gmail.com>
+Subject: [PATCH] Add supprt for SUNIX SDC serial port driver
+Date:   Fri, 28 May 2021 17:22:40 +0800
+Message-Id: <20210528092240.5896-1-saumah@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210528004952.r2dnoxetqdi655d6@earth.universe>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 28, 2021 at 02:49:52AM +0200, Sebastian Reichel wrote:
-> Hi Greg,
-> 
-> On Sat, May 01, 2021 at 08:11:52AM +0200, Greg Kroah-Hartman wrote:
-> > On Fri, Apr 30, 2021 at 07:50:36PM +0200, Sebastian Reichel wrote:
-> > > IMHO PATCHv4 was better, but in the end I don't have strong feelings
-> > > about this. Btw. I think this patchset is a good demonstration of
-> > > frustrating upstream kernel development can be considering PATCHv5
-> > > is basically the same as PATCHv1. Thanks for making us go in
-> > > circles :(
-> > > 
-> > > Changes since PATCHv4:
-> > >  * https://lore.kernel.org/lkml/20210305115058.92284-1-sebastian.reichel@collabora.com/
-> > >  * use DT property instead of sysfs config option, like the initial patch
-> > >    version did as requested by Greg.
-> > > 
-> > > Changes since PATCHv3:
-> > >  * https://lore.kernel.org/lkml/1539249903-6316-1-git-send-email-fabien.lahoudere@collabora.com/
-> > >  * rewrote commit message to provide a lot more details why this is needed
-> > >  * rebased to torvalds/master (5.12-rc1-dontuse), also applies on top of linux-next
-> > >  * use sysfs_emit() instead of sprintf
-> > > 
-> > > -- Sebastian
-> > > 
-> > > Fabien Lahoudere (2):
-> > >   serial: imx: Add DMA buffer configuration via DT
-> > >   ARM: dts: imx53-ppd: add dma-info nodes
-> > > 
-> > >  .../bindings/serial/fsl-imx-uart.yaml         | 12 +++++++++
-> > >  arch/arm/boot/dts/imx53-ppd.dts               |  2 ++
-> > >  drivers/tty/serial/imx.c                      | 25 +++++++++++++------
-> > >  3 files changed, 32 insertions(+), 7 deletions(-)
-> >
-> > This is the friendly semi-automated patch-bot of Greg Kroah-Hartman.
-> > You have sent him a patch that has triggered this response.
-> > 
-> > Right now, the development tree you have sent a patch for is "closed"
-> > due to the timing of the merge window.  Don't worry, the patch(es) you
-> > have sent are not lost, and will be looked at after the merge window is
-> > over (after the -rc1 kernel is released by Linus).
-> > 
-> > So thank you for your patience and your patches will be reviewed at this
-> > later time, you do not have to do anything further, this is just a short
-> > note to let you know the patch status and so you don't worry they didn't
-> > make it through.
-> > 
-> > thanks,
-> > 
-> > greg k-h's patch email bot
-> 
-> Any update on this? :)
+From: Morris Ku <saumah@gmail.com>
 
-I'm waiting for the DT maintainers to review the new changes before I
-can take the driver changes.
+SUNIX SDC serial port driver.
 
-thanks,
+Cc: Jason Lee <jason_lee@sunix.com>
+Cc: Taian Chen <taian.chen@sunix.com>
+Signed-off-by: Morris Ku <saumah@gmail.com>
+---
+ Kconfig  | 6 ++++++
+ Makefile | 1 +
+ 2 files changed, 7 insertions(+)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250/Kconfig b//drivers/tty/serial/8250/Kconfig
+index d6d408c..3fcd4d3 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -479,6 +479,12 @@ config SERIAL_8250_PXA
+ 	  applicable to both devicetree and legacy boards, and early console is
+ 	  part of its support.
+ 
++config SERIAL_8250_SDC
++	tristate "SUNIX SDC serial port support"
++	depends on SERIAL_8250 && MFD_SUNIX_SDC
++	help
++	  Support for SUNIX SDC serial port
++
+ config SERIAL_OF_PLATFORM
+ 	tristate "Devicetree based probing for 8250 ports"
+ 	depends on SERIAL_8250 && OF
+diff --git a/Makefile b/Makefile
+index 53d483d..df5cbb5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -37,6 +37,7 @@ obj-$(CONFIG_SERIAL_8250_LPSS)		+= 8250_lpss.o
+ obj-$(CONFIG_SERIAL_8250_MID)		+= 8250_mid.o
+ obj-$(CONFIG_SERIAL_8250_PXA)		+= 8250_pxa.o
+ obj-$(CONFIG_SERIAL_OF_PLATFORM)	+= 8250_of.o
++obj-$(CONFIG_SERIAL_8250_SDC)		+= 8250_sdc.o
+ 
+ 
+ CFLAGS_8250_ingenic.o += -I$(srctree)/scripts/dtc/libfdt
+-- 
+2.20.1
+
