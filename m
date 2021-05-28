@@ -2,123 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7E2C47087
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 06:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFAFC47087
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 07:05:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 91E97611CD
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 06:11:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D19DC613DA
+	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 07:05:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234421AbhE1GN0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 May 2021 02:13:26 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:40334 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235714AbhE1GNX (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 May 2021 02:13:23 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14S6BfaD098715;
-        Fri, 28 May 2021 01:11:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1622182301;
-        bh=ZPNt70vGnHpxcw1dROUYgn0d1ja4wBQquthubECy0dY=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=G/LfpDB3ltUyIYYInJyNPNIWH/HgiM/sp/vKaOkGq4ObByVu7g9ZTDPoudru29jXG
-         FVzQqZihcG2d8sFGfkZ9mXoSJ36McCw+vB00hB1wajUp22xhH4TODAEmrofwUac1NR
-         UW1e9Zw/2Ert/AbsnKFIFA9qHyNkUslu/mduAvm4=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14S6BfET037027
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 28 May 2021 01:11:41 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 28
- May 2021 01:11:40 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Fri, 28 May 2021 01:11:40 -0500
-Received: from [10.250.234.148] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14S6Bb8E120489;
-        Fri, 28 May 2021 01:11:38 -0500
-Subject: Re: [PATCH] serial: 8250: 8250_omap: Fix possible interrupt storm
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        <linux-serial@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        id S234699AbhE1HH0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 May 2021 03:07:26 -0400
+Received: from muru.com ([72.249.23.125]:33154 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229574AbhE1HH0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 28 May 2021 03:07:26 -0400
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 6A6D4809F;
+        Fri, 28 May 2021 07:05:56 +0000 (UTC)
+Date:   Fri, 28 May 2021 10:05:47 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org,
         Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20210511151955.28071-1-vigneshr@ti.com>
- <YJ008MjjewRUTn9Z@kroah.com> <YLCCJzkkB4N7LTQS@atomide.com>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-Message-ID: <e5b35370-bf2d-7295-e2fd-9aee5bbc3296@ti.com>
-Date:   Fri, 28 May 2021 11:41:36 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Dario Binacchi <dariobin@libero.it>
+Subject: Re: [PATCH] dt-bindings: serial: Move omap-serial.txt to YAML schema
+Message-ID: <YLCWS/+TwSs8HhRG@atomide.com>
+References: <20210527165636.939-1-vigneshr@ti.com>
+ <3760d1e6-2121-323b-d962-60e8291d0bb7@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <YLCCJzkkB4N7LTQS@atomide.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3760d1e6-2121-323b-d962-60e8291d0bb7@ti.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On 5/28/21 11:09 AM, Tony Lindgren wrote:
-> Hi Greg, Vignesh & Jan,
+* Grygorii Strashko <grygorii.strashko@ti.com> [210527 17:49]:
 > 
-> * Greg Kroah-Hartman <gregkh@linuxfoundation.org> [210513 14:17]:
->> On Tue, May 11, 2021 at 08:49:55PM +0530, Vignesh Raghavendra wrote:
->>> It is possible that RX TIMEOUT is signalled after RX FIFO has been
->>> drained, in which case a dummy read of RX FIFO is required to clear RX
->>> TIMEOUT condition. Otherwise, RX TIMEOUT condition is not cleared
->>> leading to an interrupt storm
->>>
->>> Cc: stable@vger.kernel.org
->>
->> How far back does this need to go?  What commit id does this fix?  What
->> caused this to just show up now vs. previously?
-
-Sorry, I missed this reply. Issue was reported on AM65x SoC with custom
-test case from Jan Kiszka that stressed UART with rapid baudrate changes
-from 9600 to 4M along with data transfer.
-
-Based on the condition that led to interrupt storm, I inferred it to
-affect all SoCs with 8250 OMAP UARTs. But that seems thats not the best
-idea as seen from OMAP3 regression.
-
-Greg,
-
-Could you please drop the patch? Very sorry for the inconvenience..
-
 > 
-> I just noticed this causes the following regression in Linux next when
-> pressing a key on uart console after boot at least on omap3. This seems
-> to happen on serial_port_in(port, UART_RX) in the quirk handling.
+> On 27/05/2021 19:56, Vignesh Raghavendra wrote:
+> > Convert serial-omap.txt to YAML schema for better checks and documentation.
+> > 
+> > Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+> > ---
+> >   .../bindings/serial/omap_serial.txt           |  40 ------
+> >   .../bindings/serial/ti,omap4-uart.yaml        | 116 ++++++++++++++++++
+> >   2 files changed, 116 insertions(+), 40 deletions(-)
+> >   delete mode 100644 Documentation/devicetree/bindings/serial/omap_serial.txt
+> >   create mode 100644 Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
 > 
-> Vignesh, it seems this quirk needs some soc specific flag added to
-> it maybe? Or maybe UART_OMAP_RX_LVL register is not available for
-> all the SoCs?
-> 
+> Why omap4? Seems ti,omap-uart.yaml is more suitable.
 
-Yes indeed :(
+Additionally omap-serial should be deprecated in favor of 8250_omap and
+omap-serial not used at all in general.
 
-> I think it's best to drop this patch until the issues are resolved,
-> also there are some open comments above that might be answered by
-> limiting this quirk to a specific range of SoCs :)
-> 
+It seems some folks still stick to omap-serial for legacy reasons when
+using an old .config. That's easy to fix by just changing inittab to
+use ttyS instead of ttyO, the kernel cmdline is already fixed up on
+init to use ttyS, but might as well update the bootloader cmdline too.
 
-Oops, I did test patch AM33xx assuming its equivalent to OMAP3, but UART
-IP is quite different. I will respin the patch making sure, workaround
-applies only to AM65x and K3 SoCs.
+But why do we even allow using this driver on newer SoCs when we have
+already planned to deprecate omap-serial.c years before the new SoCs?
 
-Regards
-Vignesh
+I suggest we make omap-serial deprecated for all SoCs, and not even
+allow it for am6, omap-serial.c only lists these:
+
+        { .compatible = "ti,omap2-uart" },
+        { .compatible = "ti,omap3-uart" },
+        { .compatible = "ti,omap4-uart" },
+
+And folks are also using it for some rs485 cases that should just be
+really fixed for 8250_omap instead.. Adding Dario to Cc because of
+these omap-serial patches:
+
+e2a5e8448e73 ("serial: omap: fix rs485 half-duplex filtering")
+45f6b6db53c8 ("serial: omap: don't disable rs485 if rts gpio is missing")
+
+Dario, why not use 8250_omap instead?
+
+Regards,
+
+Tony
