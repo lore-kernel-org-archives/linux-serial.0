@@ -2,122 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-26.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81212C2B9F7
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 13:39:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 727C3C4708E
+	for <linux-serial@archiver.kernel.org>; Sat, 29 May 2021 14:26:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4CE29613ED
-	for <linux-serial@archiver.kernel.org>; Fri, 28 May 2021 13:39:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4778A6105A
+	for <linux-serial@archiver.kernel.org>; Sat, 29 May 2021 14:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233081AbhE1Nl1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 May 2021 09:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbhE1Nl0 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 May 2021 09:41:26 -0400
-X-Greylist: delayed 382 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 28 May 2021 06:39:52 PDT
-Received: from mail.bugwerft.de (mail.bugwerft.de [IPv6:2a03:6000:1011::59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 511C9C061574
-        for <linux-serial@vger.kernel.org>; Fri, 28 May 2021 06:39:51 -0700 (PDT)
-Received: from hq-00021.fritz.box (p57bc9957.dip0.t-ipconnect.de [87.188.153.87])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 692194CD195;
-        Fri, 28 May 2021 13:33:27 +0000 (UTC)
-From:   Daniel Mack <daniel@zonque.org>
-To:     jacmet@sunsite.dk, gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        Daniel Mack <daniel@zonque.org>
-Subject: [PATCH] serial: tty: uartlite: fix console setup
-Date:   Fri, 28 May 2021 15:33:20 +0200
-Message-Id: <20210528133321.1859346-1-daniel@zonque.org>
-X-Mailer: git-send-email 2.31.1
+        id S229812AbhE2O23 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 29 May 2021 10:28:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48712 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229686AbhE2O23 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 29 May 2021 10:28:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8BC3F610CB;
+        Sat, 29 May 2021 14:26:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1622298413;
+        bh=LSmQ2LDJn8ITh7Jv+KxyGNejWDI4h0ZJP+HULqoon2Y=;
+        h=Date:From:To:Cc:Subject:From;
+        b=avz1N1Cr94dBzNn0b4gaFlStzU5TWL2aySVbQTAPJaWa+7bHjV695KRJ2KDvwL3wt
+         ALqVULs//+OHYPl9rmRJ58uVtuqesS8ugiu9HevOM/Y0v4/cmOUxLjPnm8Sjf6BNXL
+         uk8rVMLFChN4tLZeTSf93vz0aHxC+go9IoWmLhAY=
+Date:   Sat, 29 May 2021 16:26:50 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.13-rc4
+Message-ID: <YLJPKme41JEplEPQ@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Remove the hack to assign the global console_port variable at probe time.
-This assumption that cons->index is -1 is wrong for systems that specify
-'console=' in the cmdline (or 'stdout-path' in dts). Hence, on such system
-the actual console assignment is ignored, and the first UART that happens
-to be probed is used as console instead.
+The following changes since commit 6efb943b8616ec53a5e444193dccf1af9ad627b5:
 
-Move the logic to console_setup() and map the console to the correct port
-through the array of available ports instead.
+  Linux 5.13-rc1 (2021-05-09 14:17:44 -0700)
 
-Signed-off-by: Daniel Mack <daniel@zonque.org>
----
- drivers/tty/serial/uartlite.c | 27 ++++++---------------------
- 1 file changed, 6 insertions(+), 21 deletions(-)
+are available in the Git repository at:
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index f42ccc40ffa6..a5f15f22d9ef 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -505,21 +505,23 @@ static void ulite_console_write(struct console *co, const char *s,
- 
- static int ulite_console_setup(struct console *co, char *options)
- {
--	struct uart_port *port;
-+	struct uart_port *port = NULL;
- 	int baud = 9600;
- 	int bits = 8;
- 	int parity = 'n';
- 	int flow = 'n';
- 
--
--	port = console_port;
-+	if (co->index >= 0 && co->index < ULITE_NR_UARTS)
-+		port = ulite_ports + co->index;
- 
- 	/* Has the device been initialized yet? */
--	if (!port->mapbase) {
-+	if (!port || !port->mapbase) {
- 		pr_debug("console on ttyUL%i not present\n", co->index);
- 		return -ENODEV;
- 	}
- 
-+	console_port = port;
-+
- 	/* not initialized yet? */
- 	if (!port->membase) {
- 		if (ulite_request_port(port))
-@@ -655,17 +657,6 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
- 
- 	dev_set_drvdata(dev, port);
- 
--#ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
--	/*
--	 * If console hasn't been found yet try to assign this port
--	 * because it is required to be assigned for console setup function.
--	 * If register_console() don't assign value, then console_port pointer
--	 * is cleanup.
--	 */
--	if (ulite_uart_driver.cons->index == -1)
--		console_port = port;
--#endif
--
- 	/* Register the port */
- 	rc = uart_add_one_port(&ulite_uart_driver, port);
- 	if (rc) {
-@@ -675,12 +666,6 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
- 		return rc;
- 	}
- 
--#ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
--	/* This is not port which is used for console that's why clean it up */
--	if (ulite_uart_driver.cons->index == -1)
--		console_port = NULL;
--#endif
--
- 	return 0;
- }
- 
--- 
-2.31.1
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.13-rc4
 
+for you to fetch changes up to 56dde68f85be0a20935bb4ed996db7a7f68b3202:
+
+  Revert "serial: 8250: 8250_omap: Fix possible interrupt storm" (2021-05-28 10:58:49 +0200)
+
+----------------------------------------------------------------
+TTY / Serial driver fixes for 5.13-rc4
+
+Here are some small fixes for reported problems for tty and serial
+drivers for 5.13-rc4.
+
+They consist of:
+	- 8250 bugfixes and new device support
+	- lockdown security mode fixup
+	- syzbot found problems fixed
+	- 8250_omap fix for interrupt storm
+	- revert of 8250_omap driver fix as it caused worse problem than
+	  the original issue
+
+All but the last patch have been in linux-next for a while, the last one
+is a revert of a problem found in linux-next with the 8250_omap driver
+change.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andrew Jeffery (2):
+      serial: 8250: Add UART_BUG_TXRACE workaround for Aspeed VUART
+      serial: 8250: Use BIT(x) for UART_{CAP,BUG}_*
+
+Christian Gmeiner (1):
+      serial: 8250_pci: handle FL_NOIRQ board flag
+
+Colin Ian King (1):
+      serial: tegra: Fix a mask operation that is always true
+
+Geert Uytterhoeven (1):
+      serial: sh-sci: Fix off-by-one error in FIFO threshold register setting
+
+Greg Kroah-Hartman (1):
+      Revert "serial: 8250: 8250_omap: Fix possible interrupt storm"
+
+Maximilian Luz (1):
+      serial: 8250_dw: Add device HID for new AMD UART controller
+
+Ondrej Mosnacek (1):
+      serial: core: fix suspicious security_locked_down() call
+
+Randy Wright (1):
+      serial: 8250_pci: Add support for new HPE serial device
+
+Vignesh Raghavendra (1):
+      serial: 8250: 8250_omap: Fix possible interrupt storm
+
+Zheyu Ma (1):
+      serial: rp2: use 'request_firmware' instead of 'request_firmware_nowait'
+
+ drivers/acpi/acpi_apd.c                     |  1 +
+ drivers/tty/serial/8250/8250.h              | 32 +++++++++---------
+ drivers/tty/serial/8250/8250_aspeed_vuart.c |  1 +
+ drivers/tty/serial/8250/8250_dw.c           |  1 +
+ drivers/tty/serial/8250/8250_pci.c          | 47 +++++++++++++++++++-------
+ drivers/tty/serial/8250/8250_port.c         | 12 +++++++
+ drivers/tty/serial/rp2.c                    | 52 ++++++++++-------------------
+ drivers/tty/serial/serial-tegra.c           |  2 +-
+ drivers/tty/serial/serial_core.c            |  8 +++--
+ drivers/tty/serial/sh-sci.c                 |  4 +--
+ 10 files changed, 92 insertions(+), 68 deletions(-)
