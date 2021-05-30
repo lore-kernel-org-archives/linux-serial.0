@@ -2,66 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14836C4708E
-	for <linux-serial@archiver.kernel.org>; Sat, 29 May 2021 16:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2370BC47091
+	for <linux-serial@archiver.kernel.org>; Sun, 30 May 2021 16:35:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DCA8361104
-	for <linux-serial@archiver.kernel.org>; Sat, 29 May 2021 16:49:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D9D5A60BD3
+	for <linux-serial@archiver.kernel.org>; Sun, 30 May 2021 16:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbhE2Quk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 May 2021 12:50:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44328 "EHLO mail.kernel.org"
+        id S229712AbhE3QhS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 30 May 2021 12:37:18 -0400
+Received: from foss.arm.com ([217.140.110.172]:40524 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229716AbhE2Quj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 29 May 2021 12:50:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A0AD0610CC;
-        Sat, 29 May 2021 16:49:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622306942;
-        bh=w6aelTtD9hoNXtjEieLpm0Lezw9O9VOpyI44rlBpTvg=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=RXwndY8GXajVLiMXL3fu0kQrue0Ya0+8nshlwD99BldZxvJH2LzvDhzpvQ2IKDc/z
-         LuvTgWcz+pLUeOXYwHxj2GZU2PxlysgKP2+KA4UPQQ/tl2TeihwgHh5DmqvhvZQ0c5
-         MJF1nmq3NGPHT/BvJM6w9/iw7xkBR8OIE+itoJBY+HkTVP+sOWoXkNUmR/fWiUmK/l
-         HnITump7XfC6P2HTQ2Rzyfy/aq1qpOMDG8bDW6beKxOf3SQ0NRy6I24d0EdJbMJeeY
-         0n70UYUGgSLD/Z7jsaYdi+foGoRq8KexvJF9YoJnw7ImqE/m4gkb+ds+Zadfj+h0J0
-         zBUL47iiXyAig==
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.13-rc4
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YLJPKme41JEplEPQ@kroah.com>
-References: <YLJPKme41JEplEPQ@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YLJPKme41JEplEPQ@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.13-rc4
-X-PR-Tracked-Commit-Id: 56dde68f85be0a20935bb4ed996db7a7f68b3202
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 3837f9a08bdab2c9fabe6e52dcfb6cfbfa8be7d6
-Message-Id: <162230694262.3322.17750446640994561353.pr-tracker-bot@kernel.org>
-Date:   Sat, 29 May 2021 16:49:02 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        id S229599AbhE3QhR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 30 May 2021 12:37:17 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09A966D;
+        Sun, 30 May 2021 09:35:39 -0700 (PDT)
+Received: from slackpad.fritz.box (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B93253F73D;
+        Sun, 30 May 2021 09:35:36 -0700 (PDT)
+Date:   Sun, 30 May 2021 17:34:54 +0100
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Ondrej Jirman <megous@megous.com>, Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org, linux-sunxi@lists.linux.dev
+Cc:     Josh Triplett <josh@joshtriplett.org>, tuxd3v@sapo.pt
+Subject: sunxi: Bluetooth broken since 5.6-rc1
+Message-ID: <20210530173454.5ab1dcf5@slackpad.fritz.box>
+Organization: Arm Ltd.
+X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.31; x86_64-slackware-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Sat, 29 May 2021 16:26:50 +0200:
+Hi,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.13-rc4
+as recently discovered via IRC discussions, Bluetooth (via UART)
+seems to be broken on many (if not all) Allwinner devices using recent
+mainline kernels. On *some* occasions it might work, but more often
+than not the hci_bcm driver just times out:
+....
+[    5.046126] Bluetooth: HIDP socket layer initialized
+...
+[    7.809425] Bluetooth: hci0: command 0x0c03 tx timeout
+[   15.969286] Bluetooth: hci0: BCM: Reset failed (-110)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/3837f9a08bdab2c9fabe6e52dcfb6cfbfa8be7d6
+After some guessing, trying, and bisecting I pinned the problem down to:
+commit dc56ecb81a0aa46a7e127e916df5c8fdb8364f0b
+Author: Josh Triplett <josh@joshtriplett.org>
+Date:   Fri Jan 10 18:25:13 2020 -0800
 
-Thank you!
+    serial: 8250: Support disabling mdelay-filled probes of 16550A variants
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+This seemingly innocent commit shaved off some milliseconds during the
+8250 probe, which apparently lets the Bluetooth device trip.
+
+An obvious easy hack-fix is to just define
+CONFIG_SERIAL_8250_16550A_VARIANTS, which brings the delays back and
+seems to avoid the problem for me.
+Another hack which seems to mitigate the problem is to avoid switching
+the baudrate to something faster than 115200.
+
+I observed this on a BananaPi-M64 (Allwinner A64 SoC with AP6212 WiFi/BT
+chip), but others reported the same issue on a NanoPi Air (Allwinner H3
+with 6212), but also other SoCs and devices (at least one AP6210).
+
+Obviously those workarounds are not real solutions, and I was
+wondering if anybody has an idea how to properly fix this?
+What puzzles me is that the delay is happening during the *UART*
+probe, so before we even start dealing with the Bluetooth device.
+
+I see that hci_bcm.c has some history with adding delays, also with
+RTS/CTS lines, so does anyone have an idea what's going on here,
+exactly, and how to properly fix this problem?
+
+Many thanks,
+Andre
