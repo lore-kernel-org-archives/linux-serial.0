@@ -2,170 +2,169 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1B0C4708F
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Jun 2021 01:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E306FC47082
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Jun 2021 06:43:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D6F56613BF
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Jun 2021 01:47:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BF88461246
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Jun 2021 06:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbhFCBtP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Jun 2021 21:49:15 -0400
-Received: from mail-eopbgr1400094.outbound.protection.outlook.com ([40.107.140.94]:26016
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229758AbhFCBtP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Jun 2021 21:49:15 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tt/PXTopRRYIDJb+NMj2+DZ7NDFU8rE817TM980cceTQNNKOj2fJ2GhF3FHyrtoC2k3UBaxbIx6VmFlb/dE8pjqs4VoMARm0Gb1MAk+FW6EIVGJgybntxfvxoYrb8o+6Uy8iphmNa1paxXKpGMMrAXk4BuXdG9vTJMfirBNRaRHQFmRy+n8a790a601cll1yFtNxjheRR0PiqaMS0pz4hZCVoXAOazcGnfSLMol4BvrmT1HTDmoe1C4VwSblCXf2BnmSzPWrcwrhuX5dN0am61++aHtHbPUFJXYkmCZU0rnzru+C4WAocu+NKBzM9ax0XuNtFeNHAcogsBANC3vEtQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c8O0NxIqLn9pMJghuO6dHA+xgcpS0fJzDSnuwYIoikg=;
- b=G4TpyF3bEkxws6/nEhEyljjyoAPTangVuiM83gO2i2mcxhCUs6ft+htULRuIERpJGHWMZVUoohzUA/9l7UKT9j3tA6zMw2YQshYeL3bjTRbGsr+gNQkM+t+v4XCuXOflYSAx2THeCpB03mtGch19E5d03S/vmfBP0qyA8sojXEnxkuUlgrMcv2XhOslpNEgu/F2R0UKtIuJ/NK3u+N13teTsnGs+XyMWYA2o2gamFI+Nt85+AC4dp3Hdf0S4toazpcZkwReeyRNpvYCXfVathdY9wcqQfGnBWx6NEmAAMr7MuZ/+UthugIdgCHyX4q0taRPDeejmQ6kfM1rCrJc4Ww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
+        id S229685AbhFCGpH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Jun 2021 02:45:07 -0400
+Received: from mail-pg1-f169.google.com ([209.85.215.169]:45841 "EHLO
+        mail-pg1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229635AbhFCGpH (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 3 Jun 2021 02:45:07 -0400
+Received: by mail-pg1-f169.google.com with SMTP id q15so4357047pgg.12;
+        Wed, 02 Jun 2021 23:43:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c8O0NxIqLn9pMJghuO6dHA+xgcpS0fJzDSnuwYIoikg=;
- b=k53ERFp55VMfcPyrO9W4w1BS62uAe+bTnSRlR7DzsFPklyFEYRR92ugZSVAzyUmR8nHE3vBN6z2RtjuVWAwHw9i746hORmApOzG80E36vUBIzTTDDfEaXUur9PcvY+jTluDjOaWqkyicp4J0FkHMKWy15txvvF/UqrHUVvdYDXU=
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
- by TYCPR01MB6685.jpnprd01.prod.outlook.com (2603:1096:400:af::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22; Thu, 3 Jun
- 2021 01:47:29 +0000
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::e413:c5f8:a40a:a349]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::e413:c5f8:a40a:a349%4]) with mapi id 15.20.4173.030; Thu, 3 Jun 2021
- 01:47:29 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH] serial: sh-sci: Stop dmaengine transfer in sci_stop_tx()
-Thread-Topic: [PATCH] serial: sh-sci: Stop dmaengine transfer in sci_stop_tx()
-Thread-Index: AQHXV6Q0IxbMhdAOJkuds3yrcx5w8asAnYmAgADljgA=
-Date:   Thu, 3 Jun 2021 01:47:29 +0000
-Message-ID: <TY2PR01MB3692C545672195370487FA60D83C9@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-References: <20210602114108.510527-1-yoshihiro.shimoda.uh@renesas.com>
- <YLdyE/Jf/YcSz7AE@kroah.com>
-In-Reply-To: <YLdyE/Jf/YcSz7AE@kroah.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linuxfoundation.org; dkim=none (message not signed)
- header.d=none;linuxfoundation.org; dmarc=none action=none
- header.from=renesas.com;
-x-originating-ip: [124.210.22.195]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 232d97ed-4b67-4ba0-4250-08d926318bdf
-x-ms-traffictypediagnostic: TYCPR01MB6685:
-x-microsoft-antispam-prvs: <TYCPR01MB6685AD51FF308CA0100F8D6FD83C9@TYCPR01MB6685.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1443;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KlpfMQdXrPJHfEqAt5ZiJ7wIE1iLKCXFLDyeYENOsjN/CjJLUVYeHw2zkZdiky837wNoHKkJfZwtwJv3hbFmet8oPGScqvXKZ8I3nLh7pHdU0IcViy616wa587s8T3zCuwRUaos+K56UEerFPA2upGA9bfuJvK1VTJKlvGPd4WIX2QC4l2pHm4KBpdXa9OPXu64Ov7teJba6eMmBymcdbcCgOYB5YhB+DbHiUFcbC7+MfluQikp1A76ROw76uOcSNT6EKqiDQKZ7c6HKNBV6ZhwphhTuebbMgJavO7Kt+eNHj9q4xZ1DGETXmsTQt0eNAU5oNFZ/ehAO8ovdxYpdNGKCO8zInBZgNSIq4nUmBjt8E8rlSrzWhcACOt4uFbn9sdKsbjptwJbgv2QbtGpMEeuZE7Ix8QdkLec+2XDWfg5AA3eKauGJ2vg16oMmjmYDfsn1eYym19Oajt3apsClRW9+8rN7n6EueJbVflzoFk2w7PnmlFWjwdCc1P3b6Vp4UeFPUvCvdWGCiOoVmXm6vRldjqwc8EzlbqaITur3RbOaMT70YZPAx127y0Xe5XmHCwB3JyHL6lUba0SJOmuAsqnkrnZFHBHhgDOZ+KEJX4U=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(39860400002)(366004)(136003)(396003)(186003)(6916009)(7696005)(26005)(55236004)(6506007)(4326008)(86362001)(316002)(33656002)(8676002)(54906003)(83380400001)(478600001)(52536014)(9686003)(55016002)(8936002)(5660300002)(122000001)(38100700002)(71200400001)(66556008)(66446008)(76116006)(2906002)(66946007)(66476007)(64756008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?8R8XjQoF4OlZeXJojuGNOuo+Et26xmpmMO88xFSy9gtEh0C+EHWFbyFLSvbJ?=
- =?us-ascii?Q?3+YnMEOPrJ0sWtobpcMyuwnYk1Fg7MGXMQ/ZTmH1n/1aBwOrHEmJT7kqM9Cq?=
- =?us-ascii?Q?aJMjjP9KfWzAJkzoa4Lc6CrZvn/aUNKmx2kbt5MlnkGhvt7qgozNkLFLidq6?=
- =?us-ascii?Q?kIB2LP34ZkB7RCL5xxcL14Rk6F1FYVhGzsK20qqhJ/1m9NMOLcAjEgDi1TqQ?=
- =?us-ascii?Q?YKsCId+8IhRa2h7kc0LZcrRDjnpayvW/uLkWmc4mpfqakOVATZhIN4bqS+ry?=
- =?us-ascii?Q?DxF1WtN9itWsf4oe8d/oawNE5cnZma+nloh4oVcrwLvRZ556Q4vYA0l5Hmcc?=
- =?us-ascii?Q?K8qdOBhwSkIUtW2SNVz3AH6eZlcEJ954SEJDRXd9S/Hj6PqtKnaOLzOJx50n?=
- =?us-ascii?Q?kb1WIj4m9Yulpdwlietk0Pn6CXPjFCi3EbkGquh/6Krw7BChKHkHUBBc1G4o?=
- =?us-ascii?Q?UisU3LCQW6p2ZPjrDoFUWbv5xND3JqhbLNAUYEHWKE0s8AH4n26TYdJ/DYme?=
- =?us-ascii?Q?t7jaXliw/PvB3W51aK97F+gdBJS4N/5m9CGsVkd22dz7SgFQWc2qrlwgI0j4?=
- =?us-ascii?Q?rlevfzY386cAVGDoMFOueER19TCVqPxdLVh94r3eK0AX+raBbvuSN9WMHWjN?=
- =?us-ascii?Q?KO3BtWHU+YsHwz3VYatlarM7KL7YxjBqvfrwI8V6lDnTqKNsXlvfIxQxni0C?=
- =?us-ascii?Q?n+tF6jXV7CRT+KfTiCyiIiPpMth07x5eG6+Btll+us1ZZQxDkCubfUNsLDwM?=
- =?us-ascii?Q?e+Bvw4TLLPFMkcZyX2JNsdLHCi7JE+S1PdGgvn+NnltTb7m8wJgKIV0R3ppz?=
- =?us-ascii?Q?YoFVQTVol3/tgeklBZukuSxCTMmPEX+gbjUHeZF0acdd2HOBB43iOXwmCfbJ?=
- =?us-ascii?Q?oMmb0Ysg//R5QqGI4VCVlpIe3W8sbFyymXDqcsH5TC6H8NAX3z6xV/+7LDgo?=
- =?us-ascii?Q?sU5gFYHA1dEbd87geVHvGQ/fuxeJidSt6H0dG5j1sn4k2eYwzJRSfSDiz+lS?=
- =?us-ascii?Q?y/eAPaRduOJlgqDqxLM5UADgVzB7wfWPVJJufiRooPMyi0RTmpYTyVdKUIMS?=
- =?us-ascii?Q?wLHOk9E9x96bt12rGM05HZ88Xb4UaT9QTMYQw0N9ssoJu8aqhj719X3czuIm?=
- =?us-ascii?Q?LpTFq6xvVQ/fJkx7ikYhTQoJ5/CgeGwEOIbGobeTLsQO/Q8Sppji37gsm9LZ?=
- =?us-ascii?Q?WZ2Otn69cN8nWnEN8gZlxSA4R5HEExxZxPMDzghPxYLe7P+5Ljtga/fXzfK8?=
- =?us-ascii?Q?0k/8mG3+0GY/NowOA7g92E0NvmOvviOyz82a6KFybwd6tMgFu4cpkmBq5u03?=
- =?us-ascii?Q?TbwWTHhq5ZJJb6HJdGXCsyZ0?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 232d97ed-4b67-4ba0-4250-08d926318bdf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2021 01:47:29.0673
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ap3L244S2l50gVyBQbw8VT4ieOkiVcBQKReaZTly9VJrn3FpVyoy9UFa/HGP6HRS5F1ZnzXlO5ZrblogEYZn0OOIfY/7i/C7WRjnDxPV4ew+i3QM2IiYxzPm1k3VPpRH
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB6685
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=c2rilUK8tmRGpu8KOGzVrGpxkQd4MROcVu5LTI+Vh/U=;
+        b=Oheh5kkZ5mPz4OvNPgqLXhSwNtbpiOZxE+qj4DAluUr6VQGk9rooyLVQq2IdTWTp/M
+         hYL374HbpvnqAZ2g3DpUvEPNXg7YMJmpDv63l+vyHc6WyRsluTyYF4Tu5736tIa+3VW8
+         ud+fm4HLX1QhmoDTa8P5C7YYdvqauxCsYkvf7jdJ//QmocfqF3nNZNC4oZB/Fvo2HpbB
+         c3eXf9tw/vNMbiojkPfDqfMhKGv+faTMtHi0JpCwPAM4hGuwxMkp3qLbLGZNKyeWeBxy
+         /bJZiQLHRMEvQA4wndv2pWKZZatyCVCMRttnQ+jVAOED+Gz3ZTw60xYFZCykO68Lk5Ol
+         ydPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=c2rilUK8tmRGpu8KOGzVrGpxkQd4MROcVu5LTI+Vh/U=;
+        b=YXz0EIgJNqQezp+6KtwdfVImozWLn2xs6ZMWI4WT7wjIicwvP5Pe6bF8j2R1ICmKo1
+         xeqGABqM2zVI4aj8auHg27qkOe0tPspMK7tKpq3kXK393GjGcFKHG5m1QQjPlYMYhRq+
+         rb84cj6VlX/ic5QAuhNttYHoyqKKbZKxBjhh0oeKt6RVhEMWOnudjzSKdheuSBGUM8gr
+         o1H6eiMPjh4kK36JnmWf/MXv+WnDI1TzHbYOrZHcLVK8Py9mAy8cAlqZnQRd8yXytc42
+         rm+6qjRB+o6WgUwLO9yiQLN6Qny/iccM/l1Z4UhEUq8OCZogHEVaIHh4VOVb5kPNVXkZ
+         KKYg==
+X-Gm-Message-State: AOAM531TkmkMoc8Wn8Sp65cYnRPUUlpgsmn6ZDAhrP0VAuyh/TMvTli2
+        hYYnHw+Ldx7hdYu3LHF6VI7A7/z+gsKR
+X-Google-Smtp-Source: ABdhPJzBk6y0EyNBBqBLoGVD1S3gYdmnA5BMshklLixlGcX1pp9FUGnu45Xlfm5EC0YI+07AcIGrsA==
+X-Received: by 2002:a05:6a00:158d:b029:2e0:6ae2:17b1 with SMTP id u13-20020a056a00158db02902e06ae217b1mr29833117pfk.76.1622702542787;
+        Wed, 02 Jun 2021 23:42:22 -0700 (PDT)
+Received: from vultr.guest ([107.191.53.97])
+        by smtp.gmail.com with ESMTPSA id n72sm1412458pfd.8.2021.06.02.23.42.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 02 Jun 2021 23:42:22 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     zheyuma97@gmail.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: serial: jsm: add checks against NULL pointer dereference
+Date:   Thu,  3 Jun 2021 06:41:20 +0000
+Message-Id: <1622702480-32140-1-git-send-email-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
+In function 'neo_intr', the driver uses 'ch->ch_equeue' and
+'ch->ch_reuque'. These two pointers are initialized in 'jsm_tty_open',
+but the interrupt handler 'neo_intr' has been registered in the probe
+progress. If 'jsm_tty_open' has not been called at this time, it will
+cause null pointer dereference.
 
-> From: Greg KH, Sent: Wednesday, June 2, 2021 8:57 PM
->=20
-> On Wed, Jun 02, 2021 at 08:41:08PM +0900, Yoshihiro Shimoda wrote:
-> > Stop dmaengine transfer in sci_stop_tx(). Otherwise, the following
-> > message is possible output when system enters suspend and while
-> > transferring data, because clearing TIE bit in SCSCR is not able to
-> > stop any dmaengine transfer.
-> >
-> >     sh-sci e6550000.serial: ttySC1: Unable to drain transmitter
-> >
-> > Notes that this patch uses dmaengine_terminate_async() so that
-> > we can apply this patch into longterm kernel v4.9.x or later.
-> >
-> > Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
-> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > ---
-> >  drivers/tty/serial/sh-sci.c | 10 ++++++++++
-> >  1 file changed, 10 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> > index 4baf1316ea72..e7130be48946 100644
-> > --- a/drivers/tty/serial/sh-sci.c
-> > +++ b/drivers/tty/serial/sh-sci.c
-> > @@ -600,6 +600,9 @@ static void sci_start_tx(struct uart_port *port)
-> >  static void sci_stop_tx(struct uart_port *port)
-> >  {
-> >  	unsigned short ctrl;
-> > +#ifdef CONFIG_SERIAL_SH_SCI_DMA
-> > +	struct sci_port *s =3D to_sci_port(port);
-> > +#endif
->=20
-> Please do not put #ifdef in .c files, this should be possible without
-> that.
+Once the driver registers the interrupt handler, the driver should be
+ready to handle it.
 
-This #ifdef could avoid a compile warning if CONFIG_SERIAL_SH_SCI_DMA was n=
-ot defined:
+Fix this by checking whether it is a null pointer.
 
-drivers/tty/serial/sh-sci.c: In function 'sci_stop_tx':
-drivers/tty/serial/sh-sci.c:603:19: warning: unused variable 's' [-Wunused-=
-variable]
-  struct sci_port *s =3D to_sci_port(port);
+This log reveals it:
 
-Anyway, I'll avoid to use #ifdef in .c file. Thank you for your review!
+[   50.934983] BUG: kernel NULL pointer dereference, address:
+0000000000000000
+[   50.938297] #PF: supervisor write access in kernel mode
+[   50.940075] #PF: error_code(0x0002) - not-present page
+[   50.940460] PGD 0 P4D 0
+[   50.940654] Oops: 0002 [#1] PREEMPT SMP PTI
+[   50.940967] CPU: 2 PID: 0 Comm: swapper/2 Not tainted
+5.12.4-g70e7f0549188-dirty #97
+[   50.941554] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[   50.942419] RIP: 0010:memcpy_fromio+0x75/0xa0
+[   50.942759] Code: e9 02 f3 a5 41 f6 c5 02 74 02 66 a5 41 f6 c5 01 74
+01 a4 e8 5d 93 6b ff 5b 41 5c 41 5d 5d c3 e8 51 93 6b ff 4c 89 e7 48 89
+de <a4> 49 89 fc 48 89 f3 49 83 ed 01 eb a4 e8 39 93 6b ff 4c 89 e7 48
+[   50.944158] RSP: 0018:ffffc90000118df8 EFLAGS: 00010046
+[   50.944559] RAX: ffff888100258000 RBX: ffffc90007f0030f
+RCX: 0000000000000000
+[   50.945114] RDX: 0000000000000000 RSI: ffffc90007f0030f
+RDI: 0000000000000000
+[   50.945652] RBP: ffffc90000118e10 R08: 0000000000000000
+R09: 0000000000000000
+[   50.946192] R10: 0000000000000000 R11: 0000000000000001
+R12: 0000000000000000
+[   50.946729] R13: 0000000000000001 R14: 0000000007f0021e
+R15: 0000000000000000
+[   50.947279] FS:  0000000000000000(0000) GS:ffff88817bc80000(0000)
+knlGS:0000000000000000
+[   50.947912] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   50.948346] CR2: 0000000000000000 CR3: 0000000107950000
+CR4: 00000000000006e0
+[   50.948892] DR0: 0000000000000000 DR1: 0000000000000000
+DR2: 0000000000000000
+[   50.949429] DR3: 0000000000000000 DR6: 00000000fffe0ff0
+DR7: 0000000000000400
+[   50.949950] Call Trace:
+[   50.950138]  <IRQ>
+[   50.950292]  neo_copy_data_from_uart_to_queue+0x2f7/0x4e0
+[   50.950694]  neo_intr+0x253/0x7a0
+[   50.950975]  __handle_irq_event_percpu+0x53/0x3e0
+[   50.951352]  handle_irq_event_percpu+0x35/0x90
+[   50.951706]  handle_irq_event+0x39/0x60
+[   50.951999]  handle_fasteoi_irq+0xc2/0x1d0
+[   50.952319]  __common_interrupt+0x7f/0x150
+[   50.952638]  common_interrupt+0xb4/0xd0
+[   50.952954]  </IRQ>
+[   50.953136]  asm_common_interrupt+0x1e/0x40
+[   50.969513] Kernel panic - not syncing: Fatal exception in interrupt
+[   50.970151] Dumping ftrace buffer:
+[   50.970420]    (ftrace buffer empty)
+[   50.970693] Kernel Offset: disabled
+[   50.970968] Rebooting in 1 seconds..
 
-Best regards,
-Yoshihiro Shimoda
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+ drivers/tty/serial/jsm/jsm_neo.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> thanks,
->=20
-> greg k-h
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index bf0e2a4cb0ce..46be0b53ab42 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -716,7 +716,7 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
+ 		return;
+ 
+ 	ch = brd->channels[port];
+-	if (!ch)
++	if (!ch || !ch->ch_equeue || !ch->ch_rqueue)
+ 		return;
+ 
+ 	/* Here we try to figure out what caused the interrupt to happen */
+@@ -832,7 +832,7 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
+ 		return;
+ 
+ 	ch = brd->channels[port];
+-	if (!ch)
++	if (!ch || !ch->ch_equeue || !ch->ch_rqueue)
+ 		return;
+ 
+ 	linestatus = readb(&ch->ch_neo_uart->lsr);
+@@ -1172,7 +1172,7 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
+ 				continue;
+ 
+ 			ch = brd->channels[port];
+-			if (!ch)
++			if (!ch || !ch->ch_equeue || !ch->ch_rqueue)
+ 				continue;
+ 
+ 			neo_copy_data_from_uart_to_queue(ch);
+-- 
+2.17.6
+
