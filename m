@@ -2,169 +2,141 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E306FC47082
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Jun 2021 06:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2B8C47096
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Jun 2021 07:03:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BF88461246
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Jun 2021 06:43:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9AC3460E09
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Jun 2021 07:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbhFCGpH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Jun 2021 02:45:07 -0400
-Received: from mail-pg1-f169.google.com ([209.85.215.169]:45841 "EHLO
-        mail-pg1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbhFCGpH (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Jun 2021 02:45:07 -0400
-Received: by mail-pg1-f169.google.com with SMTP id q15so4357047pgg.12;
-        Wed, 02 Jun 2021 23:43:23 -0700 (PDT)
+        id S229635AbhFCHFQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Jun 2021 03:05:16 -0400
+Received: from mail-mw2nam10on2053.outbound.protection.outlook.com ([40.107.94.53]:57778
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229567AbhFCHFP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 3 Jun 2021 03:05:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EEZNzVOcZh1Z9vH0UlejBSGkVoroPSMYXYcGrgCgOFABXVEk5G6MDIvQ94T2eYcLq1ynhwFAugDdmA6SiqwkV+X/XkZi6Vx1R4kCSpG3Y9xzVClX1FNPF8DhRCYY+GO6GjtFYFM0y/schweRI7oguCZlE4+CMwVKCFk7mbBgPyqJbDAmelv9Q/hVOMrGAMRwFAk36OOJiAFOokfBAVL9PtjD6MKJ+0cKaAj2IfHKlBFS/LxUsjQjT6+VreEvsu7+z4SucLLbd6wvw69NGn52GS4946EHvHrjujcUp1wdZGUCGGIZPI/yxNWJHfClNRBbPX5J1kOUso0bijgHY9ymXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UNOW8ZqUvjSxrofCyt5TucevLePlj6NZ+ZuWyaR6GAg=;
+ b=PA3nUQYqTnFDD0xLVg3BGJ5lBCzH3I9mq5JRV9OeY0IjwHLgguPYn/yY3RKboiG/YakNYd66aD2atjQ2xF3QT/gGiK6ESNpa4AeRoviZuvhtpEd6reOJbbizQsbLOs/S1aQwrGVjpv5F0EQ6w2h93F0Gih8qi8qYXF2i0X5rXmoLdBX5EVHhenjOMxHWJ3LmZcegIvCmFXn/tWRtOkso1w3DU+VTBR+wWic/wk6X+FLWqeaN0etJ1f1MRSDw9rbCMKGo8qk7a38U6HPNNeijh1MtlrVcDhVJzVKJG8uzX2vmCd/S6FXMeQIX/WTp//36zRHl1dYLNPGoph2iY4GbXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=c2rilUK8tmRGpu8KOGzVrGpxkQd4MROcVu5LTI+Vh/U=;
-        b=Oheh5kkZ5mPz4OvNPgqLXhSwNtbpiOZxE+qj4DAluUr6VQGk9rooyLVQq2IdTWTp/M
-         hYL374HbpvnqAZ2g3DpUvEPNXg7YMJmpDv63l+vyHc6WyRsluTyYF4Tu5736tIa+3VW8
-         ud+fm4HLX1QhmoDTa8P5C7YYdvqauxCsYkvf7jdJ//QmocfqF3nNZNC4oZB/Fvo2HpbB
-         c3eXf9tw/vNMbiojkPfDqfMhKGv+faTMtHi0JpCwPAM4hGuwxMkp3qLbLGZNKyeWeBxy
-         /bJZiQLHRMEvQA4wndv2pWKZZatyCVCMRttnQ+jVAOED+Gz3ZTw60xYFZCykO68Lk5Ol
-         ydPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=c2rilUK8tmRGpu8KOGzVrGpxkQd4MROcVu5LTI+Vh/U=;
-        b=YXz0EIgJNqQezp+6KtwdfVImozWLn2xs6ZMWI4WT7wjIicwvP5Pe6bF8j2R1ICmKo1
-         xeqGABqM2zVI4aj8auHg27qkOe0tPspMK7tKpq3kXK393GjGcFKHG5m1QQjPlYMYhRq+
-         rb84cj6VlX/ic5QAuhNttYHoyqKKbZKxBjhh0oeKt6RVhEMWOnudjzSKdheuSBGUM8gr
-         o1H6eiMPjh4kK36JnmWf/MXv+WnDI1TzHbYOrZHcLVK8Py9mAy8cAlqZnQRd8yXytc42
-         rm+6qjRB+o6WgUwLO9yiQLN6Qny/iccM/l1Z4UhEUq8OCZogHEVaIHh4VOVb5kPNVXkZ
-         KKYg==
-X-Gm-Message-State: AOAM531TkmkMoc8Wn8Sp65cYnRPUUlpgsmn6ZDAhrP0VAuyh/TMvTli2
-        hYYnHw+Ldx7hdYu3LHF6VI7A7/z+gsKR
-X-Google-Smtp-Source: ABdhPJzBk6y0EyNBBqBLoGVD1S3gYdmnA5BMshklLixlGcX1pp9FUGnu45Xlfm5EC0YI+07AcIGrsA==
-X-Received: by 2002:a05:6a00:158d:b029:2e0:6ae2:17b1 with SMTP id u13-20020a056a00158db02902e06ae217b1mr29833117pfk.76.1622702542787;
-        Wed, 02 Jun 2021 23:42:22 -0700 (PDT)
-Received: from vultr.guest ([107.191.53.97])
-        by smtp.gmail.com with ESMTPSA id n72sm1412458pfd.8.2021.06.02.23.42.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 02 Jun 2021 23:42:22 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     zheyuma97@gmail.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: serial: jsm: add checks against NULL pointer dereference
-Date:   Thu,  3 Jun 2021 06:41:20 +0000
-Message-Id: <1622702480-32140-1-git-send-email-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.7.4
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UNOW8ZqUvjSxrofCyt5TucevLePlj6NZ+ZuWyaR6GAg=;
+ b=ZYuh3Df3DuH74HAvnRnPwoojFFLmgHmhn3UILdSnsI9tX1bwxdZk/oYLZNB2ynnEvh6Vkf4l4LKJSBLqUIbt8+YlTTaDw6EA+4XN7MngkGYfOoEZUmMZgjYqyO2EA1jlsiGQ/6wPT05vFppNYTLBMnDo7npZAICDWdmAznbuI2Y=
+Received: from SN6PR02MB4093.namprd02.prod.outlook.com (2603:10b6:805:31::31)
+ by SN4PR0201MB3439.namprd02.prod.outlook.com (2603:10b6:803:43::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Thu, 3 Jun
+ 2021 07:03:26 +0000
+Received: from SN6PR02MB4093.namprd02.prod.outlook.com
+ ([fe80::e020:cfc6:6016:386e]) by SN6PR02MB4093.namprd02.prod.outlook.com
+ ([fe80::e020:cfc6:6016:386e%6]) with mapi id 15.20.4173.030; Thu, 3 Jun 2021
+ 07:03:25 +0000
+From:   Raviteja Narayanam <rna@xilinx.com>
+To:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "jslaby@suse.com" <jslaby@suse.com>,
+        Michal Simek <michals@xilinx.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        git <git@xilinx.com>
+Subject: Need suggestion for 'access_type' of AMBA pl011 serial driver
+Thread-Topic: Need suggestion for 'access_type' of AMBA pl011 serial driver
+Thread-Index: AddYOoJ1+f35KOMhSAyKzX3LNtybFg==
+Date:   Thu, 3 Jun 2021 07:03:25 +0000
+Message-ID: <SN6PR02MB40936F8F2879AD5CFDFC80D2CA3C9@SN6PR02MB4093.namprd02.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=xilinx.com;
+x-originating-ip: [103.106.181.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5a8f5509-0f9e-4b3b-8e6e-08d9265daf03
+x-ms-traffictypediagnostic: SN4PR0201MB3439:
+x-ld-processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN4PR0201MB3439937F825B8517D89DF44ACA3C9@SN4PR0201MB3439.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: k194QuhTsYElJcd/UWVOZh5VQxQlQt9XZvfXwVTbkl40HQHdG9vGn/7lTcjcWOAUlivNvKFs+rAIr1haTp+3s4BBtya6ozEvBT9egrZSh8VVf2pC5g1GUA6K/TQCuY5SNKwpjO8CGHMrI1puAhya1sIuKpH55u9/v8YvkR1zl9ZZwFi+evUn1CliJ62DZbrYDgwojV8AgWMrnpUy2GPL+6JMJc57O4yAFgT+42B3ufB/0v1jsjNHKDg7WKdNCR6VACsfwwp36+GyHUbLYncvwY5h+YpGN2/OZ9YIR/bfjEFski4Wnj/F4JcraDHR3zrM535HqQluq2iO+DBEGvTlVjfrHwnbju0IgHwskKuGPPQ2lkcIPkfkpvmuy5OyWhG6bGILkz4k3EVHW6SoYdxVLzB40gCXjtKx4Qz2FHnY/UkZlsn2BS/2rflCY3zQzC/H7OxmcpngG4iQn6XZuqYqWfRVDuzqAjpe/gNggZOkLmeAoQEU0cndEWJtYe8OJuJjbutC+v6hNsvew+7T5MW0CCXlTzsFsFqzv+WKvJmYWYbB/nGB+ybEfSj64Dw8pxSRGhqyx4gG655ldQJ7tZns6f7+SOWHmNilQWWDLv1A6OJVLnZdRf4lbG34XBT/obIDfjcojSL2JM0lgtRq8uztGoV2zjSnSJNZq4XskydVozKMyfzmCzKpcw5RQLWTV/Ba55OZUorJLmSW5OiQ8dpN+Iwf+byQkm/yQE0tM6WyKII=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR02MB4093.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(346002)(136003)(39850400004)(396003)(52536014)(83380400001)(8676002)(71200400001)(54906003)(7696005)(86362001)(4326008)(26005)(66476007)(33656002)(107886003)(2906002)(55016002)(8936002)(478600001)(38100700002)(64756008)(316002)(5660300002)(66946007)(9686003)(66446008)(76116006)(66556008)(186003)(122000001)(6506007)(110136005)(4744005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JwJao9ETlHczU0etZXObFL0aeyFcBottlD22nAJhSU25wOKIxZjREodIh4yB?=
+ =?us-ascii?Q?7MNN+kcg1Min/GR5okOvSwEaMp9ZWinDEHmJJ/bt1WFkFyDzhb5fhcHVDbw0?=
+ =?us-ascii?Q?DYAxYl2BuDweSxj85Xhc7iaVF8ZYieWeN4/C8h+6NTL8RuAwOGKoRf1o5hgC?=
+ =?us-ascii?Q?pVwnSvNIjzjd29JWM3R2aaurV9S195jCvv7gmwxz3smvj+fCMmdLtP1qhld9?=
+ =?us-ascii?Q?ZmWjaaGRrHZzapug1JAsarQmo6/pnS//7WPP85ywrsc9XTLQ8LIXQnkTkKU1?=
+ =?us-ascii?Q?yjolA2Y9msXUt8mHY4bzO6XXDGUl9HqNPOE3gGf0aTHvaq8MTZMfXWJY9JJi?=
+ =?us-ascii?Q?6j+czM3E3Qsdoo5TmtfkmJ08dVA37PL2YEw8KPWa/oYTUmAqy4HbvWLKQrZ1?=
+ =?us-ascii?Q?6s/0WMSILell5hzvl82WqO2bMTRUB2BtQaBebyxX4IZhhaQoFYdI0q8YSZop?=
+ =?us-ascii?Q?vtW3qIISUmlSjdXNZ/LT9JTo5qc0jFaMf1TiQ5NZl9/+Fh4XqOvqNATib19y?=
+ =?us-ascii?Q?TcCjotfzpmqifPEH6AZlidiW2dOXTMMPVl4McgM4+skssYCLfuhRtmUyHmv5?=
+ =?us-ascii?Q?OrTXxB1niBktkGWRqvn19bHJrEE6caFgnXFUFMh4Jso+zxRkSRF5YCvYZ9n2?=
+ =?us-ascii?Q?8zizYPYoOoUJzqGLCm5NUhTzypmFHQxQvQisxj6Uo68fRl/f3MBfYWKxZdwq?=
+ =?us-ascii?Q?bkxkkoxBgTTFdMWYE0t0Kx0UQNXgpI+naos0Wc686NvO9vHy7QOQJNdI7uyo?=
+ =?us-ascii?Q?qKEVk3aefF8r2xpTzHvKWhzUkasZ7mO4tv14dtqUYUmfDKawl4VgelhVs3kj?=
+ =?us-ascii?Q?Bz/jk3wX0wXkD1wxCMMhv32Pp9iA2EhKSrzTuUn+mGM53PsFwQuuG5iRl8ii?=
+ =?us-ascii?Q?2C/0K/gYjsNJOkiPUN7WRCks8OjxUPn9tvncMl2ugoek0d0x2OJd7bRrfDdi?=
+ =?us-ascii?Q?QnaaextjdasU8TKKx1qtPpwMVQJjNYro0oDYArL1BY/W6uLiUT5pdsCYKUnz?=
+ =?us-ascii?Q?mFmiVnF3hkgb0+dhLv1QljZC5SEYNsIW9ZRrIEVZrjr4WrEpQ61t4X5HidkO?=
+ =?us-ascii?Q?DFxbZyk1wozXHpzBDGH6cEYUh3kIVlheTTbWi7RGq0nDYxvSiNT4YbApG7fU?=
+ =?us-ascii?Q?DTR86RrgBUEYr9V6+6kwjzSlamnP4T9vU276COxaC86X/51hvmir7+emKEUl?=
+ =?us-ascii?Q?TL9J9jRDmowYcjYa3+ULKJSYIO2mRqKDqO0lAuqhG8k+VBqaao8UoCaZKEzs?=
+ =?us-ascii?Q?Z4BITYOgO7q24iJJH7ATOSUM+1n4/s/V/rHjSdJ/sOQiv6tOahzTTSCmSdsH?=
+ =?us-ascii?Q?6szOeHHTY8lqlkL7BD8mBJYp?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4093.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a8f5509-0f9e-4b3b-8e6e-08d9265daf03
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2021 07:03:25.7307
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lgSC61khf3opKUT0f+prabYU0IBkGx66LhYx4eHklEnqyNa+blVnMWp4Fac4Fyjs
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR0201MB3439
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In function 'neo_intr', the driver uses 'ch->ch_equeue' and
-'ch->ch_reuque'. These two pointers are initialized in 'jsm_tty_open',
-but the interrupt handler 'neo_intr' has been registered in the probe
-progress. If 'jsm_tty_open' has not been called at this time, it will
-cause null pointer dereference.
+Hi,
 
-Once the driver registers the interrupt handler, the driver should be
-ready to handle it.
+The uart peripheral on Xilinx Versal platform is ARM primecell.
+Our environment is 32-bit access type but the ARM primecell uart in pl011 d=
+river has default 16 bit access type.=20
+(https://github.com/torvalds/linux/blob/master/drivers/tty/serial/amba-pl01=
+1.c#L2665 access_32b is false for 'vendor_arm')
+This is causing asynchronous abort on our platform when any UART register i=
+s written from the pl011 driver.
 
-Fix this by checking whether it is a null pointer.
+Need suggestion on how we can address this issue and if the below approach =
+is fine.
 
-This log reveals it:
+As this is platform specific issue, we can have a new device tree property =
+(memory_access_type), specifying the 32 bit type.
+In the probe function, override the behavior (uap->port.iotype) if this pro=
+perty is present in DT.
+In this way, we can have support for our SOC, without breaking any legacy o=
+nes.
 
-[   50.934983] BUG: kernel NULL pointer dereference, address:
-0000000000000000
-[   50.938297] #PF: supervisor write access in kernel mode
-[   50.940075] #PF: error_code(0x0002) - not-present page
-[   50.940460] PGD 0 P4D 0
-[   50.940654] Oops: 0002 [#1] PREEMPT SMP PTI
-[   50.940967] CPU: 2 PID: 0 Comm: swapper/2 Not tainted
-5.12.4-g70e7f0549188-dirty #97
-[   50.941554] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
-BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[   50.942419] RIP: 0010:memcpy_fromio+0x75/0xa0
-[   50.942759] Code: e9 02 f3 a5 41 f6 c5 02 74 02 66 a5 41 f6 c5 01 74
-01 a4 e8 5d 93 6b ff 5b 41 5c 41 5d 5d c3 e8 51 93 6b ff 4c 89 e7 48 89
-de <a4> 49 89 fc 48 89 f3 49 83 ed 01 eb a4 e8 39 93 6b ff 4c 89 e7 48
-[   50.944158] RSP: 0018:ffffc90000118df8 EFLAGS: 00010046
-[   50.944559] RAX: ffff888100258000 RBX: ffffc90007f0030f
-RCX: 0000000000000000
-[   50.945114] RDX: 0000000000000000 RSI: ffffc90007f0030f
-RDI: 0000000000000000
-[   50.945652] RBP: ffffc90000118e10 R08: 0000000000000000
-R09: 0000000000000000
-[   50.946192] R10: 0000000000000000 R11: 0000000000000001
-R12: 0000000000000000
-[   50.946729] R13: 0000000000000001 R14: 0000000007f0021e
-R15: 0000000000000000
-[   50.947279] FS:  0000000000000000(0000) GS:ffff88817bc80000(0000)
-knlGS:0000000000000000
-[   50.947912] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   50.948346] CR2: 0000000000000000 CR3: 0000000107950000
-CR4: 00000000000006e0
-[   50.948892] DR0: 0000000000000000 DR1: 0000000000000000
-DR2: 0000000000000000
-[   50.949429] DR3: 0000000000000000 DR6: 00000000fffe0ff0
-DR7: 0000000000000400
-[   50.949950] Call Trace:
-[   50.950138]  <IRQ>
-[   50.950292]  neo_copy_data_from_uart_to_queue+0x2f7/0x4e0
-[   50.950694]  neo_intr+0x253/0x7a0
-[   50.950975]  __handle_irq_event_percpu+0x53/0x3e0
-[   50.951352]  handle_irq_event_percpu+0x35/0x90
-[   50.951706]  handle_irq_event+0x39/0x60
-[   50.951999]  handle_fasteoi_irq+0xc2/0x1d0
-[   50.952319]  __common_interrupt+0x7f/0x150
-[   50.952638]  common_interrupt+0xb4/0xd0
-[   50.952954]  </IRQ>
-[   50.953136]  asm_common_interrupt+0x1e/0x40
-[   50.969513] Kernel panic - not syncing: Fatal exception in interrupt
-[   50.970151] Dumping ftrace buffer:
-[   50.970420]    (ftrace buffer empty)
-[   50.970693] Kernel Offset: disabled
-[   50.970968] Rebooting in 1 seconds..
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
- drivers/tty/serial/jsm/jsm_neo.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
-index bf0e2a4cb0ce..46be0b53ab42 100644
---- a/drivers/tty/serial/jsm/jsm_neo.c
-+++ b/drivers/tty/serial/jsm/jsm_neo.c
-@@ -716,7 +716,7 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
- 		return;
- 
- 	ch = brd->channels[port];
--	if (!ch)
-+	if (!ch || !ch->ch_equeue || !ch->ch_rqueue)
- 		return;
- 
- 	/* Here we try to figure out what caused the interrupt to happen */
-@@ -832,7 +832,7 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
- 		return;
- 
- 	ch = brd->channels[port];
--	if (!ch)
-+	if (!ch || !ch->ch_equeue || !ch->ch_rqueue)
- 		return;
- 
- 	linestatus = readb(&ch->ch_neo_uart->lsr);
-@@ -1172,7 +1172,7 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
- 				continue;
- 
- 			ch = brd->channels[port];
--			if (!ch)
-+			if (!ch || !ch->ch_equeue || !ch->ch_rqueue)
- 				continue;
- 
- 			neo_copy_data_from_uart_to_queue(ch);
--- 
-2.17.6
-
+Regards,
+Raviteja N
