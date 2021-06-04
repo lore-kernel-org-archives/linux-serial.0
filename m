@@ -2,142 +2,339 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429E4C07E94
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Jun 2021 13:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2758DC47098
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Jun 2021 13:54:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2C67B613DE
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Jun 2021 13:17:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0A3F5613FF
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Jun 2021 13:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbhFDNTX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Jun 2021 09:19:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51298 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230122AbhFDNTX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Jun 2021 09:19:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6CD10613D8;
-        Fri,  4 Jun 2021 13:17:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1622812649;
-        bh=nO0biBArWPz/zdxJjuOiAwSrfWYa6r9v29MKbJjAsms=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mFUOkPUTIi5RhDmAhIzlwL3Js6X1PfLXTuoCsMwkkiA2V/4s4rclv927O/nPZtW2G
-         9M4o22sucbJd/aIXJ675YA8Jg/CUU766M6meFN9M+zOqVjKHXyDxs0CTpSyzjUjH4B
-         4HbckMYSrW0WLrjNVKpf9AWZfzqX3uM9iivtABbI=
-Date:   Fri, 4 Jun 2021 15:17:26 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: jsm: add checks against NULL pointer
- dereference
-Message-ID: <YLon5kSwPkOh7p/z@kroah.com>
-References: <1622702480-32140-1-git-send-email-zheyuma97@gmail.com>
+        id S230343AbhFDN4l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Jun 2021 09:56:41 -0400
+Received: from mail-eopbgr1410110.outbound.protection.outlook.com ([40.107.141.110]:34598
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230209AbhFDN4k (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Jun 2021 09:56:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bT3sUOkX5Keq0GjSIs3Xwk9HzhqAntfknQVTU1oiMgEUV+lCH3UE6NFGanrag7AL4uureKXTomh4sp7MO9fIt2JuFJioqfOaSgvLs60pbYiL27vThhL7M0AhgpsX4GD1ck79XNWTQFvnLaTuoE7XdP8Z5iLfGFoPHwkeppYqmhCDOss4UU4c7bz7t4COIA+Lezu0t8KB7Ta9i8bQS8RmJqrLPido1THf/sA30DW5W4/Cqp6GcGOlWwm/et7Vi0DFU3IpFwFpw8KPjasAb6vG3fq6Zzp8seQhS5YG4/Drt3KjgKT+xLT3UenHONLl4KafQOM3kmJ3cMX/MLQsfEYXWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5rwruLE+aDRc9oCCwi1bApJVAB2V24Uk2Toa6ku7ogw=;
+ b=QajsRUdkberiW77ny4Kp/HJLAthkB3hMHBXsV5/fvmPiKsaLNnptRV0LAhW1hUiYsnjI2G6OTwf3h4S7yM3MzbM9l7EgLF60ohUCfWl7Vs/7+Y+33y9f3FVoOy5tgX/vN7bz+dR/e0Lw5CkrQ77MHtEptBA6AC9t9StWHnK1gwAzLOx7TYXkTJiNr0BvH2OCdh2hWUYafeXj5kEhqgZf93HUeDd/nFQDi2a/TuCBfPFIe5378SUnV/pBMl2n+FgEp9o4+sVbpt+E3sUsQcQK557lL872q6I3gJqPoVpN29V/07N7/Z9AktYP+G47/TBbpwqjFCYJk5uxzpAiZLRuag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5rwruLE+aDRc9oCCwi1bApJVAB2V24Uk2Toa6ku7ogw=;
+ b=OIGCCeCVINGVvGEsHhfB1uKpdbxPw3w/sx66DZrOKmkMEZajR5KQj4Q34+AkPohZniHQLzCdJFQwdQCs56n+m17laPrwvkFluZ0oWyQ+nCOGaOMNktsXMXWeVdJ620EKeAGjnKnBMCSR3lPybIPkPddMuwMfsSUw1Bcuu/htyrE=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by OSZPR01MB7068.jpnprd01.prod.outlook.com (2603:1096:604:11a::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22; Fri, 4 Jun
+ 2021 13:54:51 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::3c5d:90e5:6811:6913]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::3c5d:90e5:6811:6913%3]) with mapi id 15.20.4195.025; Fri, 4 Jun 2021
+ 13:54:51 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+CC:     Prabhakar <prabhakar.csengg@gmail.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: RE: [PATCH v2 11/12] arm64: dts: renesas: Add initial DTSI for
+ RZ/G2{L,LC} SoC's
+Thread-Topic: [PATCH v2 11/12] arm64: dts: renesas: Add initial DTSI for
+ RZ/G2{L,LC} SoC's
+Thread-Index: AQHXWMZyYuQzkjFuh0OkiBvnoZpocasD3lhA
+Date:   Fri, 4 Jun 2021 13:54:51 +0000
+Message-ID: <OS0PR01MB592232BFAF59D5C81CCBE6C7863B9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20210603221758.10305-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20210603221758.10305-12-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20210603221758.10305-12-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: bp.renesas.com; dkim=none (message not signed)
+ header.d=none;bp.renesas.com; dmarc=none action=none
+ header.from=bp.renesas.com;
+x-originating-ip: [81.152.191.149]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b8145371-3dfb-4225-d422-08d927605336
+x-ms-traffictypediagnostic: OSZPR01MB7068:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <OSZPR01MB7068E7198058EF7C1D3EE8E4863B9@OSZPR01MB7068.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iBBhnxoBMTp0BvvPhHlA9bTonjyoVQqh20eLqBMhk1fDUzSHB5RlNoVb5IUnE3l8jClg2CGkv53zV+F2XHN7/JSzM4KnpOnkC55GV+TUJ1pACNqTF8adiVN17J4cBvB/xkU8OnHGHaztBNQoRVZEFH4X1F9GSKeRD9YbpqzXUUzJqo6t5AdIIXIKjLfb/mBFgeDH8S2OoAjWqMk2WtNy/9F1IE+0ZrOEyRc3eOz4rfyW4FiQekN8mtu+lPLyUQcvW+2ZIvpmnhwo/0/Xur+s0/+EoayfR6sRm60NnsPId4qBwsLxRLESKP8NA+xa3kZo7Yfx5G7ffbkRBwgH0JZYLfN+MdhU74974HiuEDug1rUhcTSuqf+TaTY7gufbgyxYmab0/yPVf/Xy3McUfX8KwE6mnWYE42XuKAmjfe7eDIY8TAonE3D8gNR2eyx5o+UpryNgF3g0LZzQoxJSob2DOp5ZaEftXpRgoVihHNYN7Kg1ZwjJErSXQ2l9i5ON2Ghcl1wP+UPiTtjATSLryqrlpJvkh/fGeYOM1tr5bjnZJRm5VPPaLqtao3cYrR7S/xoRn3tXH3SGE7PmnMKu4oipIpS+R5x26U4yl+xiT12qUt8nTPA8mk0LLuxv/NU0ISewsUfv+T9FWHZsG6mlBsVjbQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(366004)(346002)(39850400004)(136003)(26005)(38100700002)(76116006)(33656002)(66556008)(186003)(66946007)(55016002)(66446008)(64756008)(110136005)(66476007)(8676002)(71200400001)(83380400001)(7696005)(54906003)(86362001)(8936002)(5660300002)(52536014)(2906002)(7416002)(4326008)(478600001)(6506007)(921005)(9686003)(122000001)(107886003)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?9oDWrewN+dL/G00JZEuWv9fjknskaF1VuiPnrYqZjB6zpkgzFYFsxJHbp7jE?=
+ =?us-ascii?Q?SPJ81Eyp0bAP6jDKzBv4RIculTN9ZDzfZLz5zsV3wg5pq01YVcYMn7Wjw7iu?=
+ =?us-ascii?Q?ETjKNhEovGvTK0kR92cYsFbz6bLIEkX9NlOquZu/WAoWFVGorE3mFQB/TTza?=
+ =?us-ascii?Q?K5zimsViM2H87U0aRKwfZ2CQJv+tj8YsKcoe1EBpkk4q80TJTVgxU92iM4Aj?=
+ =?us-ascii?Q?9YYdWgkdf+YIwtJVEMouYrDfo6+kygPH5qs2ifBz18pSMsypQxTwUOs/T+T0?=
+ =?us-ascii?Q?y8N+6vuecgZURCtRSnUmWk6Jv5KpIf/R/R5N9U/pGjybYrxN2i7VcTKUvUMf?=
+ =?us-ascii?Q?0fnO49BnXb1LpmvNC2C3y9GNGUuBsV4FIZtSb4n8vSaQxPDChEOfuv2Nmlq3?=
+ =?us-ascii?Q?xQrrnRMgnuIBqSJh7uV4OMactfTIV4C61z6Lp6oVDiU+A/1y5T1sTc7MEgOQ?=
+ =?us-ascii?Q?mJYgjB8Yiuy9Byzx8ch0y3mgiOkp4voxQXRwvZhsE4GJzCuAnx9qqN8g1/F8?=
+ =?us-ascii?Q?elLqAyDGc55ax0efnZXxC6/GDIZaRBFsGzCQX1+DeYp9yNc96ih1I08nyTBh?=
+ =?us-ascii?Q?pHeQ8pKEijX6BG5pWjcv76/1bQCzQeU6JTRcZvsZhwuA0WrXe8JQ4TcUVc3Q?=
+ =?us-ascii?Q?TzBpCj4Szqw3+buY2epzVOif8o/+iFvjkqL0r0ISY5lP7f6AWFfk9NQrFuny?=
+ =?us-ascii?Q?ermbFTEEuIflSUHGnTl7wY45Ko/QLKh9V050f4Ckkt20/LVX95+vtvpe8uAE?=
+ =?us-ascii?Q?NdKbPiF8ZeeKPBC5Q116k/8sC86Dy01gIGFnaSGijQ2cBDFDWTIjR5HSzThJ?=
+ =?us-ascii?Q?hshYr9b94t5ldW2LXvht1WOFtK1zeMbbFKmpq1d9Yt9cEHQ9Un4MdNwk/zgX?=
+ =?us-ascii?Q?NBW/5Em4OKfcHPaDrOS/oEfZRcfhYqVixkPU5DVwk3cTCmcOCOX1Y/7ASnj3?=
+ =?us-ascii?Q?UAnElQ6Nr4Y3ClzSjh2BEuXuAqBa8CYo9+nafUTxMGHdRQglzIXmrVKeBHP1?=
+ =?us-ascii?Q?BRp9oN3K8ur+mt7OseGKgKLGRPB+Gx/0KSFSbxa15gN3mK0dOjjisgeMNvNe?=
+ =?us-ascii?Q?ja27wzL4Q9+81dAiWpRS0u86Tq3xzODURWxKxwi0vLHWwtWjf63w8CbhnPlO?=
+ =?us-ascii?Q?urxvdyN9PnFQEJPItyqiH6E95Raiv9wD9pGypXJxCXVd7cQX3FbYo6tJYXs7?=
+ =?us-ascii?Q?oNpkwZyH6Nr53dYSlQZjjLdB0IuJgxfN3e6xKPtbMFGWhKxecelJfSd912aM?=
+ =?us-ascii?Q?4Op2TsO/9TX/gzOlWIVQG+O8+p4Bj1vRid+QZhkQI84Su0JKQrBzsyhrFjyD?=
+ =?us-ascii?Q?NQecFHgRyZp753xU2uTnTCpw?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1622702480-32140-1-git-send-email-zheyuma97@gmail.com>
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8145371-3dfb-4225-d422-08d927605336
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2021 13:54:51.2109
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0RQ31kKYQ6497o4C0mncDGyH0Bia9/bgjmNKFM3+LlaPFcBYqL5kkbWZDwOeAQ4aKbW0c5KkvVBA96wB0tXxqH68WF1y1jsxXkysokOEoVs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSZPR01MB7068
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 06:41:20AM +0000, Zheyu Ma wrote:
-> In function 'neo_intr', the driver uses 'ch->ch_equeue' and
-> 'ch->ch_reuque'. These two pointers are initialized in 'jsm_tty_open',
-> but the interrupt handler 'neo_intr' has been registered in the probe
-> progress. If 'jsm_tty_open' has not been called at this time, it will
-> cause null pointer dereference.
-> 
-> Once the driver registers the interrupt handler, the driver should be
-> ready to handle it.
-> 
-> Fix this by checking whether it is a null pointer.
-> 
-> This log reveals it:
-> 
-> [   50.934983] BUG: kernel NULL pointer dereference, address:
-> 0000000000000000
-> [   50.938297] #PF: supervisor write access in kernel mode
-> [   50.940075] #PF: error_code(0x0002) - not-present page
-> [   50.940460] PGD 0 P4D 0
-> [   50.940654] Oops: 0002 [#1] PREEMPT SMP PTI
-> [   50.940967] CPU: 2 PID: 0 Comm: swapper/2 Not tainted
-> 5.12.4-g70e7f0549188-dirty #97
-> [   50.941554] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
-> BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-> [   50.942419] RIP: 0010:memcpy_fromio+0x75/0xa0
-> [   50.942759] Code: e9 02 f3 a5 41 f6 c5 02 74 02 66 a5 41 f6 c5 01 74
-> 01 a4 e8 5d 93 6b ff 5b 41 5c 41 5d 5d c3 e8 51 93 6b ff 4c 89 e7 48 89
-> de <a4> 49 89 fc 48 89 f3 49 83 ed 01 eb a4 e8 39 93 6b ff 4c 89 e7 48
-> [   50.944158] RSP: 0018:ffffc90000118df8 EFLAGS: 00010046
-> [   50.944559] RAX: ffff888100258000 RBX: ffffc90007f0030f
-> RCX: 0000000000000000
-> [   50.945114] RDX: 0000000000000000 RSI: ffffc90007f0030f
-> RDI: 0000000000000000
-> [   50.945652] RBP: ffffc90000118e10 R08: 0000000000000000
-> R09: 0000000000000000
-> [   50.946192] R10: 0000000000000000 R11: 0000000000000001
-> R12: 0000000000000000
-> [   50.946729] R13: 0000000000000001 R14: 0000000007f0021e
-> R15: 0000000000000000
-> [   50.947279] FS:  0000000000000000(0000) GS:ffff88817bc80000(0000)
-> knlGS:0000000000000000
-> [   50.947912] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   50.948346] CR2: 0000000000000000 CR3: 0000000107950000
-> CR4: 00000000000006e0
-> [   50.948892] DR0: 0000000000000000 DR1: 0000000000000000
-> DR2: 0000000000000000
-> [   50.949429] DR3: 0000000000000000 DR6: 00000000fffe0ff0
-> DR7: 0000000000000400
-> [   50.949950] Call Trace:
-> [   50.950138]  <IRQ>
-> [   50.950292]  neo_copy_data_from_uart_to_queue+0x2f7/0x4e0
-> [   50.950694]  neo_intr+0x253/0x7a0
-> [   50.950975]  __handle_irq_event_percpu+0x53/0x3e0
-> [   50.951352]  handle_irq_event_percpu+0x35/0x90
-> [   50.951706]  handle_irq_event+0x39/0x60
-> [   50.951999]  handle_fasteoi_irq+0xc2/0x1d0
-> [   50.952319]  __common_interrupt+0x7f/0x150
-> [   50.952638]  common_interrupt+0xb4/0xd0
-> [   50.952954]  </IRQ>
-> [   50.953136]  asm_common_interrupt+0x1e/0x40
-> [   50.969513] Kernel panic - not syncing: Fatal exception in interrupt
-> [   50.970151] Dumping ftrace buffer:
-> [   50.970420]    (ftrace buffer empty)
-> [   50.970693] Kernel Offset: disabled
-> [   50.970968] Rebooting in 1 seconds..
-> 
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Hi Prabhakar,
+
+Thanks for the patch.
+
+> Subject: [PATCH v2 11/12] arm64: dts: renesas: Add initial DTSI for
+> RZ/G2{L,LC} SoC's
+>=20
+> Add initial DTSI for RZ/G2{L,LC} SoC's.
+>=20
+> File structure:
+> r9a07g044.dtsi  =3D> RZ/G2L family SoC common parts r9a07g044l1.dtsi =3D>
+> Specific to RZ/G2L (R9A07G044L single cortex A55) SoC
+>=20
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 > ---
->  drivers/tty/serial/jsm/jsm_neo.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
-> index bf0e2a4cb0ce..46be0b53ab42 100644
-> --- a/drivers/tty/serial/jsm/jsm_neo.c
-> +++ b/drivers/tty/serial/jsm/jsm_neo.c
-> @@ -716,7 +716,7 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
->  		return;
->  
->  	ch = brd->channels[port];
-> -	if (!ch)
-> +	if (!ch || !ch->ch_equeue || !ch->ch_rqueue)
->  		return;
+>  arch/arm64/boot/dts/renesas/r9a07g044.dtsi   | 119 +++++++++++++++++++
+>  arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi |  25 ++++
+>  2 files changed, 144 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044.dtsi
+>  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
+>=20
+> diff --git a/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
+> b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
+> new file mode 100644
+> index 000000000000..b2dbf6543d98
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
+> @@ -0,0 +1,119 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +/*
+> + * Device Tree Source for the RZ/G2L and RZ/G2LC common SoC parts
+> + *
+> + * Copyright (C) 2021 Renesas Electronics Corp.
+> + */
+> +
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/clock/r9a07g044-cpg.h>
+> +
+> +/ {
+> +	compatible =3D "renesas,r9a07g044";
+> +	#address-cells =3D <2>;
+> +	#size-cells =3D <2>;
+> +
+> +	extal_clk: extal {
+> +		compatible =3D "fixed-clock";
+> +		#clock-cells =3D <0>;
+> +		/* This value must be overridden by the board */
+> +		clock-frequency =3D <0>;
+> +	};
+> +
+> +	psci {
+> +		compatible =3D "arm,psci-1.0", "arm,psci-0.2";
+> +		method =3D "smc";
+> +	};
+> +
+> +	cpus {
+> +		#address-cells =3D <1>;
+> +		#size-cells =3D <0>;
+> +
+> +		cpu-map {
+> +			cluster0 {
+> +				core0 {
+> +					cpu =3D <&cpu0>;
+> +				};
+> +				core1 {
+> +					cpu =3D <&cpu1>;
+> +				};
+> +			};
+> +		};
+> +
+> +		cpu0: cpu@0 {
+> +			compatible =3D "arm,cortex-a55";
+> +			reg =3D <0>;
+> +			device_type =3D "cpu";
+> +			next-level-cache =3D <&L3_CA55>;
+> +			enable-method =3D "psci";
+> +		};
+> +
+> +		cpu1: cpu@100 {
+> +			compatible =3D "arm,cortex-a55";
+> +			reg =3D <0x100>;
+> +			device_type =3D "cpu";
+> +			next-level-cache =3D <&L3_CA55>;
+> +			enable-method =3D "psci";
+> +		};
+> +
+> +		L3_CA55: cache-controller-0 {
+> +			compatible =3D "cache";
+> +			cache-unified;
+> +			cache-size =3D <0x40000>;
+> +		};
+> +	};
+> +
+> +	soc: soc {
+> +		compatible =3D "simple-bus";
+> +		interrupt-parent =3D <&gic>;
+> +		#address-cells =3D <2>;
+> +		#size-cells =3D <2>;
+> +		ranges;
+> +
+> +		scif0: serial@1004b800 {
+> +			compatible =3D "renesas,scif-r9a07g044";
+> +			reg =3D <0 0x1004b800 0 0x400>;
+> +			interrupts =3D <GIC_SPI 380 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 382 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 383 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 381 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 384 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 384 IRQ_TYPE_LEVEL_HIGH>;
+> +			interrupt-names =3D "eri", "rxi", "txi",
+> +					  "bri", "dri", "tei";
+> +			clocks =3D <&cpg CPG_MOD R9A07G044_CLK_SCIF0>;
+> +			clock-names =3D "fck";
+> +			power-domains =3D <&cpg>;
+> +			resets =3D <&cpg R9A07G044_CLK_SCIF0>;
+> +			status =3D "disabled";
+> +		};
+> +
+> +		cpg: clock-controller@11010000 {
+> +			compatible =3D "renesas,r9a07g044-cpg";
+> +			reg =3D <0 0x11010000 0 0x10000>;
 
-Why not just allocate the memory at probe time and not at open time?
-That would resolve this issue, and probably any other problems that are
-only caused by initializing things at open time.
+What about WDTOVF_RST(0xB10) and WDTRST_SEL(0xB14) registers, this register=
+s to be handled by WDT driver.
+Unfortunately it is in CPG block.
 
-Once the interrupt is registered, it HAS to be able to be called,
-otherwise it is a driver bug.  This change keeps that broken logic still
-happening and just papers over the obvious crash.
+So do we need to map the entire CPG registers or up to 0xB00?
 
-Can you fix this the correct way instead please?
+Geert, Prabhakar: Any thoughts?
 
-thanks,
+Cheers,
+Biju
 
-greg k-h
+> +			clocks =3D <&extal_clk>;
+> +			clock-names =3D "extal";
+> +			#clock-cells =3D <2>;
+> +			#reset-cells =3D <1>;
+> +			#power-domain-cells =3D <0>;
+> +		};
+> +
+> +		gic: interrupt-controller@11900000 {
+> +			compatible =3D "arm,gic-v3";
+> +			#interrupt-cells =3D <3>;
+> +			#address-cells =3D <0>;
+> +			interrupt-controller;
+> +			reg =3D <0x0 0x11900000 0 0x40000>,
+> +			      <0x0 0x11940000 0 0x60000>;
+> +			interrupts =3D <GIC_PPI 9 IRQ_TYPE_LEVEL_LOW>;
+> +		};
+> +	};
+> +
+> +	timer {
+> +		compatible =3D "arm,armv8-timer";
+> +		interrupts-extended =3D <&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2)
+> | IRQ_TYPE_LEVEL_LOW)>,
+> +				      <&gic GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) |
+> IRQ_TYPE_LEVEL_LOW)>,
+> +				      <&gic GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) |
+> IRQ_TYPE_LEVEL_LOW)>,
+> +				      <&gic GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) |
+> IRQ_TYPE_LEVEL_LOW)>;
+> +	};
+> +};
+> diff --git a/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
+> b/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
+> new file mode 100644
+> index 000000000000..02f6da806696
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
+> @@ -0,0 +1,25 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +/*
+> + * Device Tree Source for the RZ/G2L R9A07G044L1 common parts
+> + *
+> + * Copyright (C) 2021 Renesas Electronics Corp.
+> + */
+> +
+> +/dts-v1/;
+> +#include "r9a07g044.dtsi"
+> +
+> +/ {
+> +	compatible =3D "renesas,r9a07g044l1", "renesas,r9a07g044";
+> +
+> +	cpus {
+> +		/delete-node/ cpu-map;
+> +		/delete-node/ cpu@100;
+> +	};
+> +
+> +	timer {
+> +		interrupts-extended =3D <&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(1)
+> | IRQ_TYPE_LEVEL_LOW)>,
+> +				      <&gic GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(1) |
+> IRQ_TYPE_LEVEL_LOW)>,
+> +				      <&gic GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(1) |
+> IRQ_TYPE_LEVEL_LOW)>,
+> +				      <&gic GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(1) |
+> IRQ_TYPE_LEVEL_LOW)>;
+> +	};
+> +};
+> --
+> 2.17.1
+
