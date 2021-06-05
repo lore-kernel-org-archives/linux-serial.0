@@ -2,252 +2,263 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14357C4743F
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Jun 2021 20:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B785DC4743D
+	for <linux-serial@archiver.kernel.org>; Sat,  5 Jun 2021 02:35:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F2C186140B
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Jun 2021 20:52:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C810613F9
+	for <linux-serial@archiver.kernel.org>; Sat,  5 Jun 2021 02:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231534AbhFDUyM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Jun 2021 16:54:12 -0400
-Received: from mail-oi1-f170.google.com ([209.85.167.170]:43571 "EHLO
-        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbhFDUyM (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Jun 2021 16:54:12 -0400
-Received: by mail-oi1-f170.google.com with SMTP id x196so10613766oif.10;
-        Fri, 04 Jun 2021 13:52:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dCbBPCnkqh8Drs+wvzuQjooL3M/Ka+1PXP7SXhSYbME=;
-        b=g3W7J9Z7lyQl2J7nHGxzvwDa+TJgthHE+xhXfpKR5sx6cDtK8NK/gaE50YlOgovJc4
-         qrhwjFRdQITgvuWHYm97it5Qyyet3g/OmWqjnDYDNNRMy+VaaqABk8K+mutVB0Bj+wac
-         nNl2mHWeL6F/8eTMnbn0ckkEjXXeD2oHMh3OHWo7RKGK2FB2VDmBuXfs32oOHNL4X4SJ
-         9267peaLcpQ6EL9JmwPmsTtz3hrieMOYlnzz5PtW2hAgl7HbPqGYO1zsoq8bl5TLVHx4
-         mJeIoEmpY3eQri0Yelo6z1FKDTylxTEoQ7EXqPfHJ/dOXwn3qE4r20A0k9Gtr16l8rnE
-         DoNQ==
-X-Gm-Message-State: AOAM531SoTRxSigKWBuvY6BQZXR733afie3MvzGfhAQisJ0OrBxwbLqV
-        ZHuO4S3kXN4drbqxsS4Wmw==
-X-Google-Smtp-Source: ABdhPJyJwckPBpX8reCPy0nYAhTu9MAYthQi8nlQw+pMLWQNCXQ9h3Khxkk0+OAbNHw0w4RG8oeoEg==
-X-Received: by 2002:aca:4a82:: with SMTP id x124mr3659326oia.43.1622839928655;
-        Fri, 04 Jun 2021 13:52:08 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id m189sm683532oif.45.2021.06.04.13.52.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Jun 2021 13:52:07 -0700 (PDT)
-Received: (nullmailer pid 3894844 invoked by uid 1000);
-        Fri, 04 Jun 2021 20:52:06 -0000
-Date:   Fri, 4 Jun 2021 15:52:06 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH] dt-bindings: serial: Move omap-serial.txt to YAML schema
-Message-ID: <20210604205206.GB3885095@robh.at.kernel.org>
-References: <20210527165636.939-1-vigneshr@ti.com>
+        id S231225AbhFEChU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Jun 2021 22:37:20 -0400
+Received: from mga01.intel.com ([192.55.52.88]:30903 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230169AbhFEChU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Jun 2021 22:37:20 -0400
+IronPort-SDR: V9qk8lFyvKRG6g6aGxIuYUaQTrb6pU512WNizegiynZLT879Ptvc93ZHcsu8Njx12bjdifE8gl
+ iYJhhWDuL4qw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10005"; a="225725934"
+X-IronPort-AV: E=Sophos;i="5.83,249,1616482800"; 
+   d="scan'208";a="225725934"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2021 19:35:33 -0700
+IronPort-SDR: bHvj5StbM04Bzc7+6RIKhYsjQDfPb1xQLkoLqS1CR3zjkQAXAQGgWgTPp5x56Pi0IjnJX+uOtl
+ ohRtBQRbR+BQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,249,1616482800"; 
+   d="scan'208";a="401140619"
+Received: from lkp-server02.sh.intel.com (HELO 1ec8406c5392) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 04 Jun 2021 19:35:31 -0700
+Received: from kbuild by 1ec8406c5392 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1lpM9r-0007Dt-5D; Sat, 05 Jun 2021 02:35:31 +0000
+Date:   Sat, 05 Jun 2021 10:34:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 2877389f59dc455e4283ae23ad494b410c15b3a3
+Message-ID: <60bae2bb.uvTCiI/R/IJIplM2%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210527165636.939-1-vigneshr@ti.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 27, 2021 at 10:26:36PM +0530, Vignesh Raghavendra wrote:
-> Convert serial-omap.txt to YAML schema for better checks and documentation.
-> 
-> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-> ---
->  .../bindings/serial/omap_serial.txt           |  40 ------
->  .../bindings/serial/ti,omap4-uart.yaml        | 116 ++++++++++++++++++
->  2 files changed, 116 insertions(+), 40 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/omap_serial.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
-> deleted file mode 100644
-> index c2db8cabf2ab..000000000000
-> --- a/Documentation/devicetree/bindings/serial/omap_serial.txt
-> +++ /dev/null
-> @@ -1,40 +0,0 @@
-> -OMAP UART controller
-> -
-> -Required properties:
-> -- compatible : should be "ti,am64-uart", "ti,am654-uart" for AM64 controllers
-> -- compatible : should be "ti,j721e-uart", "ti,am654-uart" for J721E controllers
-> -- compatible : should be "ti,am654-uart" for AM654 controllers
-> -- compatible : should be "ti,omap2-uart" for OMAP2 controllers
-> -- compatible : should be "ti,omap3-uart" for OMAP3 controllers
-> -- compatible : should be "ti,omap4-uart" for OMAP4 controllers
-> -- compatible : should be "ti,am4372-uart" for AM437x controllers
-> -- compatible : should be "ti,am3352-uart" for AM335x controllers
-> -- compatible : should be "ti,dra742-uart" for DRA7x controllers
-> -- reg : address and length of the register space
-> -- interrupts or interrupts-extended : Should contain the uart interrupt
-> -                                      specifier or both the interrupt
-> -                                      controller phandle and interrupt
-> -                                      specifier.
-> -- ti,hwmods : Must be "uart<n>", n being the instance number (1-based)
-> -
-> -Optional properties:
-> -- clock-frequency : frequency of the clock input to the UART
-> -- dmas : DMA specifier, consisting of a phandle to the DMA controller
-> -         node and a DMA channel number.
-> -- dma-names : "rx" for receive channel, "tx" for transmit channel.
-> -- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
-> -- rs485-rts-active-high: drive RTS high when sending (default is low).
-> -- clocks: phandle to the functional clock as per
-> -  Documentation/devicetree/bindings/clock/clock-bindings.txt
-> -
-> -Example:
-> -
-> -                uart4: serial@49042000 {
-> -                        compatible = "ti,omap3-uart";
-> -                        reg = <0x49042000 0x400>;
-> -                        interrupts = <80>;
-> -                        dmas = <&sdma 81 &sdma 82>;
-> -                        dma-names = "tx", "rx";
-> -                        ti,hwmods = "uart4";
-> -                        clock-frequency = <48000000>;
-> -                };
-> diff --git a/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml b/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
-> new file mode 100644
-> index 000000000000..b3e426c24a9e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/ti,omap4-uart.yaml
-> @@ -0,0 +1,116 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/ti,omap4-uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Bindings for 8250 compliant UARTs on TI's OMAP and K3 SoCs
-> +
-> +maintainers:
-> +  - Vignesh Raghavendra <vigneshr@ti.com>
-> +
-> +allOf:
-> +  - $ref: /schemas/serial/serial.yaml#
-> +  - $ref: /schemas/serial/rs485.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +          - ti,am3352-uart
-> +          - ti,am4372-uart
-> +          - ti,am654-uart
-> +          - ti,dra742-uart
-> +          - ti,omap2-uart
-> +          - ti,omap3-uart
-> +          - ti,omap4-uart
-> +      - items:
-> +          - enum:
-> +              - ti,am64-uart
-> +              - ti,j721e-uart
-> +          - const: ti,am654-uart
-> +
-> +  ti,hwmods:
-> +    description:
-> +      Must be "uart<n>", n being the instance number (1-based)
-> +      This property is applicable only on legacy platforms mainly omap2/3
-> +      and ti81xx and should not be used on other platforms.
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    deprecated: true
-> +
-> +  dmas:
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  dma-names:
-> +    items:
-> +      - const: tx
-> +      - const: rx
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    const: fclk
-> +
-> +  reg-shift:
-> +    const: 2
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 2877389f59dc455e4283ae23ad494b410c15b3a3  tty: vcc: use DEVICE_ATTR_*() macro
 
-blank line
+elapsed time: 731m
 
-> +  reg-io-width:
-> +    const: 4
+configs tested: 194
+configs skipped: 2
 
-How are these 2 optional?
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-> +
-> +  rts-gpios: true
-> +  cts-gpios: true
-> +  dtr-gpios: true
-> +  dsr-gpios: true
-> +  rng-gpios: true
-> +  dcd-gpios: true
-> +  rs485-rts-delay: true
-> +  rs485-rts-active-low: true
-> +  rs485-rx-during-tx: true
-> +  rs485-rts-active-high: true
-> +  linux,rs485-enabled-at-boot-time: true
-> +  rts-gpio: true
-> +  power-domains: true
-> +  clock-frequency: true
-> +  current-speed: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +if:
-> +  properties:
-> +    compatible:
-> +      oneOf:
-> +        - const: ti,omap2-uart
-> +        - const: ti,omap3-uart
-> +        - const: ti,omap4-uart
-> +
-> +then:
-> +  properties:
-> +    ti,hwmods:
-> +      items:
-> +        - pattern: "^uart([1-9])$"
-> +
-> +else:
-> +  properties:
-> +    ti,hwmods: false
-> +
-> +examples:
-> +  - |
-> +          uart4: serial@49042000 {
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+arm                         hackkit_defconfig
+h8300                               defconfig
+ia64                      gensparse_defconfig
+mips                           ci20_defconfig
+s390                                defconfig
+powerpc                 mpc837x_rdb_defconfig
+mips                     cu1830-neo_defconfig
+arm                        clps711x_defconfig
+arc                         haps_hs_defconfig
+mips                          rb532_defconfig
+arm                          collie_defconfig
+xtensa                generic_kc705_defconfig
+powerpc                      mgcoge_defconfig
+mips                          rm200_defconfig
+powerpc                        fsp2_defconfig
+arm                           stm32_defconfig
+powerpc                 mpc8540_ads_defconfig
+arc                            hsdk_defconfig
+riscv             nommu_k210_sdcard_defconfig
+arm                  colibri_pxa270_defconfig
+powerpc                    adder875_defconfig
+powerpc                       ebony_defconfig
+sh                        apsh4ad0a_defconfig
+arm                        keystone_defconfig
+powerpc                    gamecube_defconfig
+mips                      maltasmvp_defconfig
+powerpc                 mpc836x_rdk_defconfig
+mips                           gcw0_defconfig
+powerpc                      obs600_defconfig
+arm                           sama5_defconfig
+mips                    maltaup_xpa_defconfig
+powerpc                       eiger_defconfig
+nios2                               defconfig
+mips                           xway_defconfig
+powerpc                          allmodconfig
+arm                             pxa_defconfig
+arm                         s3c6400_defconfig
+arm                     am200epdkit_defconfig
+arc                              alldefconfig
+riscv                    nommu_virt_defconfig
+arm                           tegra_defconfig
+um                               alldefconfig
+sh                           sh2007_defconfig
+mips                         tb0287_defconfig
+arm                            mmp2_defconfig
+sparc                            alldefconfig
+mips                           rs90_defconfig
+i386                                defconfig
+sh                        edosk7705_defconfig
+arm                         shannon_defconfig
+arm                       omap2plus_defconfig
+mips                        qi_lb60_defconfig
+powerpc                        warp_defconfig
+mips                 decstation_r4k_defconfig
+openrisc                            defconfig
+arc                        nsim_700_defconfig
+mips                        bcm47xx_defconfig
+mips                            gpr_defconfig
+ia64                                defconfig
+powerpc                     taishan_defconfig
+powerpc                 xes_mpc85xx_defconfig
+sh                         apsh4a3a_defconfig
+powerpc                      ppc40x_defconfig
+h8300                    h8300h-sim_defconfig
+powerpc                 canyonlands_defconfig
+arm                          pxa168_defconfig
+arm                         at91_dt_defconfig
+mips                           jazz_defconfig
+sh                           se7619_defconfig
+powerpc                       maple_defconfig
+nds32                             allnoconfig
+sh                          r7780mp_defconfig
+m68k                         apollo_defconfig
+mips                           mtx1_defconfig
+arm                            xcep_defconfig
+sh                         ap325rxa_defconfig
+sh                            titan_defconfig
+powerpc                     stx_gp3_defconfig
+sh                          rsk7201_defconfig
+powerpc                    klondike_defconfig
+arm                       imx_v6_v7_defconfig
+powerpc                     sbc8548_defconfig
+arm                   milbeaut_m10v_defconfig
+sh                               allmodconfig
+powerpc                      tqm8xx_defconfig
+mips                           ip28_defconfig
+powerpc                       holly_defconfig
+xtensa                              defconfig
+powerpc                     kmeter1_defconfig
+mips                         cobalt_defconfig
+powerpc                   motionpro_defconfig
+m68k                            q40_defconfig
+arm                      integrator_defconfig
+powerpc                     ppa8548_defconfig
+powerpc                     kilauea_defconfig
+mips                           ip22_defconfig
+alpha                            alldefconfig
+arm                         mv78xx0_defconfig
+xtensa                          iss_defconfig
+mips                       lemote2f_defconfig
+mips                      maltaaprp_defconfig
+nios2                         3c120_defconfig
+sparc                       sparc32_defconfig
+sh                        sh7785lcr_defconfig
+arm                        multi_v7_defconfig
+m68k                                defconfig
+x86_64                            allnoconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                             allyesconfig
+arc                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a002-20210604
+x86_64               randconfig-a004-20210604
+x86_64               randconfig-a003-20210604
+x86_64               randconfig-a006-20210604
+x86_64               randconfig-a005-20210604
+x86_64               randconfig-a001-20210604
+i386                 randconfig-a003-20210604
+i386                 randconfig-a006-20210604
+i386                 randconfig-a004-20210604
+i386                 randconfig-a001-20210604
+i386                 randconfig-a005-20210604
+i386                 randconfig-a002-20210604
+i386                 randconfig-a003-20210603
+i386                 randconfig-a006-20210603
+i386                 randconfig-a004-20210603
+i386                 randconfig-a001-20210603
+i386                 randconfig-a002-20210603
+i386                 randconfig-a005-20210603
+x86_64               randconfig-a015-20210603
+x86_64               randconfig-a011-20210603
+x86_64               randconfig-a012-20210603
+x86_64               randconfig-a014-20210603
+x86_64               randconfig-a016-20210603
+x86_64               randconfig-a013-20210603
+i386                 randconfig-a015-20210604
+i386                 randconfig-a013-20210604
+i386                 randconfig-a016-20210604
+i386                 randconfig-a011-20210604
+i386                 randconfig-a014-20210604
+i386                 randconfig-a012-20210604
+i386                 randconfig-a015-20210603
+i386                 randconfig-a013-20210603
+i386                 randconfig-a011-20210603
+i386                 randconfig-a016-20210603
+i386                 randconfig-a014-20210603
+i386                 randconfig-a012-20210603
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+um                            kunit_defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                      rhel-8.3-kbuiltin
+x86_64                                  kexec
 
-Drop unused label.
+clang tested configs:
+x86_64               randconfig-b001-20210604
+x86_64               randconfig-a015-20210604
+x86_64               randconfig-a011-20210604
+x86_64               randconfig-a014-20210604
+x86_64               randconfig-a012-20210604
+x86_64               randconfig-a016-20210604
+x86_64               randconfig-a013-20210604
 
-> +                  compatible = "ti,omap3-uart";
-> +                  reg = <0x49042000 0x400>;
-> +                  interrupts = <80>;
-> +                  clock-frequency = <48000000>;
-> +          };
-> -- 
-> 2.31.1
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
