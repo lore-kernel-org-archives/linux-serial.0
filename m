@@ -2,183 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF83C4743F
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Jun 2021 11:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1144CC47095
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Jun 2021 14:43:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C45960FE4
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Jun 2021 11:01:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 01164610C7
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Jun 2021 14:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbhFGLD3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Jun 2021 07:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35048 "EHLO
+        id S230237AbhFGOpo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Jun 2021 10:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbhFGLD2 (ORCPT
+        with ESMTP id S230323AbhFGOpm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Jun 2021 07:03:28 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C51C061766;
-        Mon,  7 Jun 2021 04:01:24 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id y2so24224355ybq.13;
-        Mon, 07 Jun 2021 04:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eOk28QuplFXUqfx4Omxl+hHoy7+LeKbRcCFQxR2HiDg=;
-        b=kcacTHFqZjpKgAGn83h6ZcGEfrTYMF4xHxvDO5D+aKf7yGAl7SNutkJU/dns5/0Toi
-         L1W8p4oMYhasUQYqMU3QnzwgkEIv+DbUoxv9IC7jrGZbbZV+fePV+frtSgJ9Qw+iPqrS
-         XycjgZ8aFN+QD8jSPmFNukQqU8gDo5BI04Qwfprk7lkMu67Lb3z8v4maNZfxpaffu/I6
-         UfEzizAUmMdxjMkqnALnuKmQfjeh0nhAAEuYXSeDuTLT+m6fv8R8Bn/EwtbDTAUwVhAQ
-         d1Y9eV8XiMghf2xI3ujnzpwSIbNOUJWpiQPSg3qaAU6nW+GvWgs5KQyazogzhF4M1H3l
-         xFfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eOk28QuplFXUqfx4Omxl+hHoy7+LeKbRcCFQxR2HiDg=;
-        b=QFSApm/SQRZHC6hN2PD5ykOOHY24BrPXulTPHnW6Nf7Pd5yIGDwvw/ThpMMlNHbf+U
-         2JSTk1AghR9DnDvNwdAdDKOAOaRfdbQPSlOCq+oEBCVO7sr+Qhtb6vqhKdEXw0VruEyC
-         Fn/QGIxYxJJu78hIktFXXiRr1dUl6vSMpTKcd4xq3N8pI0XUrQXjSABF9ZDxupaD2PH+
-         lSCbAjEMq/6QtR5jvZknKztiUuQdG2e2q2ryfHbK6qJPg5hPNTCXGZGJZg51v08DtaW+
-         chcEJlIntsi4iBe7XFin74L0Ot9sVlxmPKR8E5Hmt+ctxDq2BImOB+Xi3GyV4f4kLxXe
-         8juA==
-X-Gm-Message-State: AOAM533jKo1lGgj5odiLR9+iFcyYsVnLiYeYaqE1nUbmVPcjainfra5G
-        L2j4ndSOcRSg/AW20+lPgGNCXAOrBjUbUp66iV0=
-X-Google-Smtp-Source: ABdhPJxsAO4O7+1PJKJdXSJWiRnllFxvdUp/lmPmeLed0v6u2MYw19nOBSus4DzafHPuZRqHHk1Z52A1NP3Si7Ogius=
-X-Received: by 2002:a25:a26a:: with SMTP id b97mr23644097ybi.62.1623063683489;
- Mon, 07 Jun 2021 04:01:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210603221758.10305-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20210603221758.10305-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Mon, 7 Jun 2021 12:00:57 +0100
-Message-ID: <CA+V-a8syJ=ea9Bhu1gBr=LgEc9ie0j9WmtvmbW285XxjJqE5XA@mail.gmail.com>
-Subject: Re: [PATCH v2 00/12] Add new Renesas RZ/G2L SoC and Renesas RZ/G2L
- SMARC EVK support
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mon, 7 Jun 2021 10:45:42 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D7FC061766
+        for <linux-serial@vger.kernel.org>; Mon,  7 Jun 2021 07:43:50 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:2826:1cc7:8a57:d8e9])
+        by laurent.telenet-ops.be with bizsmtp
+        id EEjo250042r2Z3l01Ejo9i; Mon, 07 Jun 2021 16:43:48 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1lqGTj-00E2sI-JA; Mon, 07 Jun 2021 16:43:47 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1lqGTj-006xDj-52; Mon, 07 Jun 2021 16:43:47 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc:     linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Remove unused STEPFN() macro
+Date:   Mon,  7 Jun 2021 16:43:45 +0200
+Message-Id: <970387d104dea5bb7ea674bb89229641467e629b.1623076891.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
+The last user of the STEPFN() macro was removed in commit
+d5cb1319a91d4f13 ("serial: sh-sci: Remove manual break debouncing").
 
-On Thu, Jun 3, 2021 at 11:18 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> Hi All,
->
-> This patch series adds initial support for Renesas RZ/G2L SoC and
-> Renesas RZ/G2L SMARC EVK.
->
-> Initial patches enables minimal peripherals on Renesas RZ/G2L
-> SMARC EVK and booted via initramfs.
-> * Documentation for RZ/G2{L,LC,UL} SoC variants
-> * SoC identification support
-> * CPG core support
-> * Minimal SoC DTSi
-> * Minimal DTS for SMARC EVK
->
-> Changes for v2:
-> * Included type-2 RZ/G2Ul SoC in binding doc
-> * Added single entry for SMARC EVK "renesas,smarc-evk"
-> * Renamed ARCH_R9A07G044L to ARCH_R9A07G044 and
->   dropped ARCH_R9A07G044LC config
-> * Dropped SoC identification changes will post them as
->   separate patch.
-> * Updated comment in sh-sci.c
-> * Binding documentation patch for serial driver has been
->   accepted so dropped the patch from this series
-> * Incorporated changes requested by Geert for CPG core
-> * Fixed dtbs_check errors
-> * Dropped 'clock-names'/'clocks'/'power-domains'/'resets'
->   properties from GIC node and will include them in a separate
->   patch along with arm,gic-v3.yaml binding updates
-> * Included ACK's from Rob
->
-> Patches are based on top of [1] master branch.
->
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git/
->
-> Cheers,
-> Prabhakar
->
-> Biju Das (1):
->   serial: sh-sci: Add support for RZ/G2L SoC
->
-> Lad Prabhakar (11):
->   dt-bindings: arm: renesas: Document Renesas RZ/G2UL SoC
->   dt-bindings: arm: renesas: Document Renesas RZ/G2{L,LC} SoC variants
->   dt-bindings: arm: renesas: Document SMARC EVK
->   soc: renesas: Add ARCH_R9A07G044 for the new RZ/G2L SoC's
->   arm64: defconfig: Enable ARCH_R9A07G044
->   clk: renesas: Define RZ/G2L CPG Clock Definitions
->   dt-bindings: clock: renesas: Document RZ/G2L SoC CPG driver
->   clk: renesas: Add CPG core wrapper for RZ/G2L SoC
->   clk: renesas: Add support for R9A07G044 SoC
->   arm64: dts: renesas: Add initial DTSI for RZ/G2{L,LC} SoC's
->   arm64: dts: renesas: Add initial device tree for RZ/G2L SMARC EVK
->
-Biju pointed out USB/ADC isn't working with the current implementation
-on upstream kernel, I'll have to re-structure to accommodate this
-use-case. I'll send a v3 fixing the issue.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/sh-sci.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Sorry for the inconvenience.
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 4baf1316ea729931..946c4bd920f48960 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -840,9 +840,6 @@ static void sci_transmit_chars(struct uart_port *port)
+ 
+ }
+ 
+-/* On SH3, SCIF may read end-of-break as a space->mark char */
+-#define STEPFN(c)  ({int __c = (c); (((__c-1)|(__c)) == -1); })
+-
+ static void sci_receive_chars(struct uart_port *port)
+ {
+ 	struct tty_port *tport = &port->state->port;
+-- 
+2.25.1
 
-Cheers,
-Prabhakar
-
->  .../devicetree/bindings/arm/renesas.yaml      |  18 +
->  .../bindings/clock/renesas,rzg2l-cpg.yaml     |  80 ++
->  arch/arm64/boot/dts/renesas/Makefile          |   2 +
->  arch/arm64/boot/dts/renesas/r9a07g044.dtsi    | 119 +++
->  arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi  |  25 +
->  .../boot/dts/renesas/r9a07g044l2-smarc.dts    |  21 +
->  arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi  |  27 +
->  arch/arm64/configs/defconfig                  |   1 +
->  drivers/clk/renesas/Kconfig                   |   9 +
->  drivers/clk/renesas/Makefile                  |   2 +
->  drivers/clk/renesas/r9a07g044-cpg.c           | 372 +++++++
->  drivers/clk/renesas/renesas-rzg2l-cpg.c       | 979 ++++++++++++++++++
->  drivers/clk/renesas/renesas-rzg2l-cpg.h       | 217 ++++
->  drivers/soc/renesas/Kconfig                   |   5 +
->  drivers/tty/serial/sh-sci.c                   |  12 +-
->  drivers/tty/serial/sh-sci.h                   |   1 +
->  include/dt-bindings/clock/r9a07g044-cpg.h     |  89 ++
->  17 files changed, 1978 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/clock/renesas,rzg2l-cpg.yaml
->  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044.dtsi
->  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l1.dtsi
->  create mode 100644 arch/arm64/boot/dts/renesas/r9a07g044l2-smarc.dts
->  create mode 100644 arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi
->  create mode 100644 drivers/clk/renesas/r9a07g044-cpg.c
->  create mode 100644 drivers/clk/renesas/renesas-rzg2l-cpg.c
->  create mode 100644 drivers/clk/renesas/renesas-rzg2l-cpg.h
->  create mode 100644 include/dt-bindings/clock/r9a07g044-cpg.h
->
-> --
-> 2.17.1
->
