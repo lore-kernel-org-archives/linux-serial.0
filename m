@@ -2,105 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54695C47082
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Jun 2021 14:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FABC4743E
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Jun 2021 15:03:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2BF576100B
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Jun 2021 14:42:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9B7796124C
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Jun 2021 15:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233403AbhFHOoX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Jun 2021 10:44:23 -0400
-Received: from mga07.intel.com ([134.134.136.100]:25794 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233522AbhFHOoX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Jun 2021 10:44:23 -0400
-IronPort-SDR: wiDVHVWxZBYVIrzHALL9R9t044snO4oy0bT6/O0K1ODGCD2ijdDfr9nB+0skGvOhOFx1tMzuty
- hmU5X0qH/X2A==
-X-IronPort-AV: E=McAfee;i="6200,9189,10008"; a="268711247"
-X-IronPort-AV: E=Sophos;i="5.83,258,1616482800"; 
-   d="scan'208";a="268711247"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2021 07:42:29 -0700
-IronPort-SDR: VCnNFP8BBODtfPtm78jniAJaKDUPJRgW77UHB+uAtM3W5LH/LgTlpSgcEQ6fJC1HDu+LVB09ym
- e83vEWeEI9eQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,258,1616482800"; 
-   d="scan'208";a="413400427"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 08 Jun 2021 07:42:17 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id DB327142; Tue,  8 Jun 2021 17:42:40 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: [PATCH v1 2/3] serial: 8250_exar: Extract exar_get_platform() helper
-Date:   Tue,  8 Jun 2021 17:42:38 +0300
-Message-Id: <20210608144239.12697-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210608144239.12697-1-andriy.shevchenko@linux.intel.com>
-References: <20210608144239.12697-1-andriy.shevchenko@linux.intel.com>
+        id S233755AbhFHPF1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Jun 2021 11:05:27 -0400
+Received: from mail-vs1-f47.google.com ([209.85.217.47]:38802 "EHLO
+        mail-vs1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233754AbhFHPF1 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 8 Jun 2021 11:05:27 -0400
+Received: by mail-vs1-f47.google.com with SMTP id x8so11035418vso.5;
+        Tue, 08 Jun 2021 08:03:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1tcavaqmFgqNru+gTTtU+o+V3Wc54CY1nbaCwXIhlxU=;
+        b=uIRTr4NTIrCrzyP8SpNuCQCiRF7hwTFyAUvth+zNPswaeRmLx6/XiaphAtAhbUog9L
+         j8t8l2E/RPGfzVZsJiz1/8wJscJ7eKCfv1STbsgyArkDPfi1xuxIOqPJWwacodinNKTo
+         s43JIQiiTCYU+qscWZAN7LBP6HUI0nBNBDpYYE249pr+nzCLSvW48nOx9DV/bPFbfjef
+         4RvfEt01SzXnCUfcXV2I0WWsEaJRfmgO35cYy4OFBUqg9m6qBhysEBcyLZaQtTEfbsP2
+         NkermI6r+JnN0GhJYntowmK5LNn43wTHS2eGxgb5b1TIkvyTdQxxG7/MdctclT3xnv/I
+         ZNgQ==
+X-Gm-Message-State: AOAM532JZoBDbkZ8yfxd8nxQJWiS3z36LpuShUvaKieH1sp3w/k/Acfe
+        MfLNHlWMzl0JWdBNodry0XkL+fTDmRWkbqH8AxE=
+X-Google-Smtp-Source: ABdhPJxLbvwTDX+9ZW5dPiJNBelOmingVkZ8kJ37buiWKcOpa7RYgnef9tMvJgQGeEA/J35nVuqllVSOzmn6Mcy2thE=
+X-Received: by 2002:a05:6102:c4c:: with SMTP id y12mr620420vss.18.1623164609788;
+ Tue, 08 Jun 2021 08:03:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210603221758.10305-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20210603221758.10305-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20210603221758.10305-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 8 Jun 2021 17:03:18 +0200
+Message-ID: <CAMuHMdVyEEA7q9eKRmVRSFMs8Jcfx-V9QjZJqqnf7mBeaKi8QQ@mail.gmail.com>
+Subject: Re: [PATCH v2 10/12] serial: sh-sci: Add support for RZ/G2L SoC
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We would like to use DMI matching in other functions as well.
-Hence, extract it as exar_get_platform() helper function.
+On Fri, Jun 4, 2021 at 12:18 AM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> From: Biju Das <biju.das.jz@bp.renesas.com>
+>
+> Add serial support for RZ/G2L SoC with earlycon and
+> extended mode register support.
+>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_exar.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+FTR,
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index bd4e9f6ac29c..3ffeedc29c83 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -501,23 +501,27 @@ static const struct dmi_system_id exar_platforms[] = {
- 	{}
- };
- 
-+static const struct exar8250_platform *exar_get_platform(void)
-+{
-+	const struct dmi_system_id *dmi_match;
-+
-+	dmi_match = dmi_first_match(exar_platforms);
-+	if (dmi_match)
-+		return dmi_match->driver_data;
-+
-+	return &exar8250_default_platform;
-+}
-+
- static int
- pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 		   struct uart_8250_port *port, int idx)
- {
--	const struct exar8250_platform *platform;
--	const struct dmi_system_id *dmi_match;
-+	const struct exar8250_platform *platform = exar_get_platform();
- 	unsigned int offset = idx * 0x400;
- 	unsigned int baud = 7812500;
- 	u8 __iomem *p;
- 	int ret;
- 
--	dmi_match = dmi_first_match(exar_platforms);
--	if (dmi_match)
--		platform = dmi_match->driver_data;
--	else
--		platform = &exar8250_default_platform;
--
- 	port->port.uartclk = baud * 16;
- 	port->port.rs485_config = platform->rs485_config;
- 
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.30.2
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
