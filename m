@@ -2,163 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC414C48BD1
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 12:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA79CC48BCD
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 15:30:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C680F61183
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 12:42:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ADC6D61359
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 15:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233376AbhFIMof (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Jun 2021 08:44:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52132 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234686AbhFIMob (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Jun 2021 08:44:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AD2C46139A;
-        Wed,  9 Jun 2021 12:42:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1623242557;
-        bh=8U3g3XJCMqY+IVlfpoB4fbqdxoomDSJLZ81ZiFhomKI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YJAZVZS2yq0C9N+72aMnEcvWMxjokfENBM0AwzF7BGxerhXbqRTRxjk5hDIOdsITD
-         ZUSXdxm7ynJOA4N/BEG2YJsVz26Rr/DAnBVpfH4JUeXXjlKe/3k03DnkRJytOwkMiQ
-         sXspSLFlUjflHbOPDBprxS9eO0LBDhTnEVgggUPY=
-Date:   Wed, 9 Jun 2021 14:42:34 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH v1 3/3] serial: 8250_exar: Add ->unregister_gpio()
- callback
-Message-ID: <YMC3OknGE+Kzs6u2@kroah.com>
-References: <20210608144239.12697-1-andriy.shevchenko@linux.intel.com>
- <20210608144239.12697-3-andriy.shevchenko@linux.intel.com>
+        id S236432AbhFIPci (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Jun 2021 11:32:38 -0400
+Received: from mail-vs1-f51.google.com ([209.85.217.51]:38629 "EHLO
+        mail-vs1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232656AbhFIPch (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Jun 2021 11:32:37 -0400
+Received: by mail-vs1-f51.google.com with SMTP id x8so144332vso.5;
+        Wed, 09 Jun 2021 08:30:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5VIIkzelMv7/CVp57eQ28eIePtVGukMPb/+T/jS9W/o=;
+        b=TMB4eVHvBJgo1R3Lqjb+tYkqUAOxdirBt53RwELF4QPeHYDJF2ut9U00Kx6CQ8MeQr
+         3lPGBs6ysLaaorbHfpavanbVbulC42CuAPc/nwLQW8xt/Qj8ueR1wzsX7BF1ihjLZ9Qs
+         nr/Hn6yNcmwBpI+paFzR3nUlx/fykZ83JgHasPYymlCQtr9Qx9URiSBwHLmncRIWDpq0
+         QeYCjwbCIhIPrlG4Tjrxch5r/EjzdjlhQ6wNRC4dKif+/SkWkuFV1+fhReK2hDfFDwbA
+         PSlz0D/ujcZcy5p9Uk2pmxsFIPNcRAPVPP3VyOzChPtfHrO4DVBXhqG9jycRVHfN9/uQ
+         jaew==
+X-Gm-Message-State: AOAM533EuKzQ9TLQgq1NMzeP0a1+T9vnKX9Zw2aqGZoOOQ/lMnCjNFxy
+        Ryg0j655BT5gX2O312xdpbqC4+7W6xYCbgJccO8=
+X-Google-Smtp-Source: ABdhPJzLvtMpkpYCQsS5rtqBsZHNCQ1AwyEOm4fpK+Q1sAWXkOVxaVe/oFCRLQe0boUJaNRrPxXofC8QcNUFBf7zW1M=
+X-Received: by 2002:a67:efd6:: with SMTP id s22mr728988vsp.3.1623252636626;
+ Wed, 09 Jun 2021 08:30:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210608144239.12697-3-andriy.shevchenko@linux.intel.com>
+References: <20210609014902.271237-1-yoshihiro.shimoda.uh@renesas.com> <ac930164-6150-4358-8fe9-ab87654f68ce@gmail.com>
+In-Reply-To: <ac930164-6150-4358-8fe9-ab87654f68ce@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 9 Jun 2021 17:30:25 +0200
+Message-ID: <CAMuHMdW9oV80QdZmgwJBF99jnw56XuTSkanjHCdBY+h4jAVGew@mail.gmail.com>
+Subject: Re: [PATCH v3] serial: sh-sci: Stop dmaengine transfer in sci_stop_tx()
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 05:42:39PM +0300, Andy Shevchenko wrote:
-> For the sake of reducing layering violation add ->unregister_gpio()
-> callback and use it in the ->exit() one.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_exar.c | 36 ++++++++++++++++++-----------
->  1 file changed, 23 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> index 3ffeedc29c83..d502240bbcf2 100644
-> --- a/drivers/tty/serial/8250/8250_exar.c
-> +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -114,6 +114,7 @@ struct exar8250;
->  struct exar8250_platform {
->  	int (*rs485_config)(struct uart_port *, struct serial_rs485 *);
->  	int (*register_gpio)(struct pci_dev *, struct uart_8250_port *);
-> +	void (*unregister_gpio)(struct uart_8250_port *);
->  };
->  
->  /**
-> @@ -352,9 +353,8 @@ static void setup_gpio(struct pci_dev *pcidev, u8 __iomem *p)
->  	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
->  }
->  
-> -static void *
-> -__xr17v35x_register_gpio(struct pci_dev *pcidev,
-> -			 const struct software_node *node)
-> +static struct platform_device *__xr17v35x_register_gpio(struct pci_dev *pcidev,
-> +							const struct software_node *node)
->  {
->  	struct platform_device *pdev;
->  
-> @@ -374,6 +374,12 @@ __xr17v35x_register_gpio(struct pci_dev *pcidev,
->  	return pdev;
->  }
->  
-> +static void __xr17v35x_unregister_gpio(struct platform_device *pdev)
-> +{
-> +	device_remove_software_node(&pdev->dev);
-> +	platform_device_unregister(pdev);
-> +}
-> +
->  static const struct property_entry exar_gpio_properties[] = {
->  	PROPERTY_ENTRY_U32("exar,first-pin", 0),
->  	PROPERTY_ENTRY_U32("ngpios", 16),
-> @@ -384,8 +390,7 @@ static const struct software_node exar_gpio_node = {
->  	.properties = exar_gpio_properties,
->  };
->  
-> -static int xr17v35x_register_gpio(struct pci_dev *pcidev,
-> -				  struct uart_8250_port *port)
-> +static int xr17v35x_register_gpio(struct pci_dev *pcidev, struct uart_8250_port *port)
->  {
->  	if (pcidev->vendor == PCI_VENDOR_ID_EXAR)
->  		port->port.private_data =
-> @@ -394,6 +399,15 @@ static int xr17v35x_register_gpio(struct pci_dev *pcidev,
->  	return 0;
->  }
->  
-> +static void xr17v35x_unregister_gpio(struct uart_8250_port *port)
-> +{
-> +	if (!port->port.private_data)
-> +		return;
-> +
-> +	__xr17v35x_unregister_gpio(port->port.private_data);
-> +	port->port.private_data = NULL;
-> +}
-> +
->  static int generic_rs485_config(struct uart_port *port,
->  				struct serial_rs485 *rs485)
->  {
-> @@ -419,6 +433,7 @@ static int generic_rs485_config(struct uart_port *port,
->  
->  static const struct exar8250_platform exar8250_default_platform = {
->  	.register_gpio = xr17v35x_register_gpio,
-> +	.unregister_gpio = xr17v35x_unregister_gpio,
->  	.rs485_config = generic_rs485_config,
->  };
->  
-> @@ -484,6 +499,7 @@ static int iot2040_register_gpio(struct pci_dev *pcidev,
->  static const struct exar8250_platform iot2040_platform = {
->  	.rs485_config = iot2040_rs485_config,
->  	.register_gpio = iot2040_register_gpio,
-> +	.unregister_gpio = xr17v35x_unregister_gpio,
->  };
->  
->  /*
-> @@ -555,17 +571,11 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
->  
->  static void pci_xr17v35x_exit(struct pci_dev *pcidev)
->  {
-> +	const struct exar8250_platform *platform = exar_get_platform();
->  	struct exar8250 *priv = pci_get_drvdata(pcidev);
->  	struct uart_8250_port *port = serial8250_get_port(priv->line[0]);
-> -	struct platform_device *pdev;
->  
-> -	pdev = port->port.private_data;
-> -	if (!pdev)
-> -		return;
-> -
-> -	device_remove_software_node(&pdev->dev);
-> -	platform_device_unregister(pdev);
-> -	port->port.private_data = NULL;
-> +	platform->unregister_gpio(port);
->  }
->  
->  static inline void exar_misc_clear(struct exar8250 *priv)
-> -- 
-> 2.30.2
-> 
+Hi Sergei,
 
-This patch doesn't apply to my tty-next branch, so I've dropped it :(
+On Wed, Jun 9, 2021 at 5:09 PM Sergei Shtylyov
+<sergei.shtylyov@gmail.com> wrote:
+> On 6/9/21 4:49 AM, Yoshihiro Shimoda wrote:
+> > Stop dmaengine transfer in sci_stop_tx(). Otherwise, the following
+> > message is possible output when system enters suspend and while
+> > transferring data, because clearing TIE bit in SCSCR is not able to
+> > stop any dmaengine transfer.
+> >
+> >     sh-sci e6550000.serial: ttySC1: Unable to drain transmitter
+> >
+> > Note that this patch uses dmaengine_terminate_async() so that
+> > we can apply this patch into longterm kernel v4.9.x or later.
+> >
+> > Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
+> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > ---
+> >  Changes from v2:
+> >  - Don't use a macro.
+> >  - Revise the commit descrption.
+> >  https://lore.kernel.org/linux-renesas-soc/20210604095704.756190-1-yoshihiro.shimoda.uh@renesas.com/
+> >
+> >  Changes from v1:
+> >  - Don't put #ifdef in the .c file.
+> >  - Update the commit description.
+> >  https://lore.kernel.org/linux-renesas-soc/20210602114108.510527-1-yoshihiro.shimoda.uh@renesas.com/
+> >
+> >  drivers/tty/serial/sh-sci.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> >
+> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> > index 4baf1316ea72..2d5487bf6855 100644
+> > --- a/drivers/tty/serial/sh-sci.c
+> > +++ b/drivers/tty/serial/sh-sci.c
+> > @@ -610,6 +610,14 @@ static void sci_stop_tx(struct uart_port *port)
+> >       ctrl &= ~SCSCR_TIE;
+> >
+> >       serial_port_out(port, SCSCR, ctrl);
+> > +
+> > +#ifdef CONFIG_SERIAL_SH_SCI_DMA
+>
+>    Why not use IS_ENABLED() instead? Gets rid of #ifdef. :-)
+>
+> > +     if (to_sci_port(port)->chan_tx &&
+> > +         !dma_submit_error(to_sci_port(port)->cookie_tx)) {
+> > +             dmaengine_terminate_async(to_sci_port(port)->chan_tx);
+> > +             to_sci_port(port)->cookie_tx = -EINVAL;
 
-greg k-h
+Because chan_tx and cookie_tx do not exist if CONFIG_SERIAL_SH_SCI_DMA
+is disabled.
+
+Yes, that's why all the DMA code in this driver (.c file) is protected by
+#ifdef CONFIG_SERIAL_SH_SCI_DMA.
+
+> > +     }
+> > +#endif
+> >  }
+> >
+> >  static void sci_start_rx(struct uart_port *port)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
