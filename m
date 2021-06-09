@@ -2,90 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70452C48BCD
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Jun 2021 15:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B14CFC48BCF
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 01:49:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 58FD96128E
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Jun 2021 15:25:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9505361285
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 01:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231987AbhFHP1h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Jun 2021 11:27:37 -0400
-Received: from mail-vk1-f180.google.com ([209.85.221.180]:43539 "EHLO
-        mail-vk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232956AbhFHP1C (ORCPT
+        id S233036AbhFIBvD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Jun 2021 21:51:03 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:11578 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231438AbhFIBvD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Jun 2021 11:27:02 -0400
-Received: by mail-vk1-f180.google.com with SMTP id d13so240842vkl.10;
-        Tue, 08 Jun 2021 08:24:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ad+EBgofQNw1MfBBcdhLWexkoajVnv5JnIhLXQOx13o=;
-        b=YJW+iaoLs9yoJlGZqtEHZx7VHsyIN94S4n91m4BeScx519XZJkEy3sVT/FtSwoHVoe
-         457eIheSXiL4Ylwn7TdQh7+GO0UQINg4rr5L+SlmtTKL2+odSyqghVtbAI3KlerZ/BTq
-         S8UBKXoqsVqUHff5J/EIiU24XxMm85fNxdY7WQ73r1QgH8/XQNqLXBOZj1ag+kdyTO5l
-         vG/6q/ezNXIhMITBpZ19QxrFTP6Zo4pgYM5Uaoj/DUfgzrGvlJ4oS81URCiRuxO8zVBz
-         4SQpE1bvWdpvHQHsBFMFkW1eBjokb+XSHVQ3Q4jZZaEh5HPcxub2UbtZw2LMeznEOFyo
-         jTXg==
-X-Gm-Message-State: AOAM531KiRZFU4VyZSIw1bJXTYVymhOIaWZKX5NBYI52R0lf6hrImDDt
-        gi3mRCmS54VtG6u9jgJmXPsYI+x6NyeYMb/04jE=
-X-Google-Smtp-Source: ABdhPJxFvJflEZlUr55+YSzTOMgbS4a7skjPqZXcucnn5AZVvlKzPy0Ni14TW7ujM4pgHc4clcRKAeENUXDtTdCvKRQ=
-X-Received: by 2002:a1f:b4c5:: with SMTP id d188mr396167vkf.5.1623165894383;
- Tue, 08 Jun 2021 08:24:54 -0700 (PDT)
+        Tue, 8 Jun 2021 21:51:03 -0400
+X-IronPort-AV: E=Sophos;i="5.83,259,1616425200"; 
+   d="scan'208";a="83658098"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 09 Jun 2021 10:49:08 +0900
+Received: from localhost.localdomain (unknown [10.166.14.185])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 585A94148452;
+        Wed,  9 Jun 2021 10:49:08 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v3] serial: sh-sci: Stop dmaengine transfer in sci_stop_tx()
+Date:   Wed,  9 Jun 2021 10:49:02 +0900
+Message-Id: <20210609014902.271237-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210603221758.10305-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20210603221758.10305-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20210603221758.10305-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 8 Jun 2021 17:24:42 +0200
-Message-ID: <CAMuHMdUqJFnkK=0tX10ud-3vZFyaQ7p8oKxxuWnrY8Z6cbM2qA@mail.gmail.com>
-Subject: Re: [PATCH v2 05/12] arm64: defconfig: Enable ARCH_R9A07G044
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jun 4, 2021 at 12:18 AM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Enable the Renesas RZ/G2L SoC variants in the ARM64 defconfig.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Stop dmaengine transfer in sci_stop_tx(). Otherwise, the following
+message is possible output when system enters suspend and while
+transferring data, because clearing TIE bit in SCSCR is not able to
+stop any dmaengine transfer.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+    sh-sci e6550000.serial: ttySC1: Unable to drain transmitter
 
-Gr{oetje,eeting}s,
+Note that this patch uses dmaengine_terminate_async() so that
+we can apply this patch into longterm kernel v4.9.x or later.
 
-                        Geert
+Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ Changes from v2:
+ - Don't use a macro.
+ - Revise the commit descrption.
+ https://lore.kernel.org/linux-renesas-soc/20210604095704.756190-1-yoshihiro.shimoda.uh@renesas.com/
 
+ Changes from v1:
+ - Don't put #ifdef in the .c file.
+ - Update the commit description.
+ https://lore.kernel.org/linux-renesas-soc/20210602114108.510527-1-yoshihiro.shimoda.uh@renesas.com/
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+ drivers/tty/serial/sh-sci.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 4baf1316ea72..2d5487bf6855 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -610,6 +610,14 @@ static void sci_stop_tx(struct uart_port *port)
+ 	ctrl &= ~SCSCR_TIE;
+ 
+ 	serial_port_out(port, SCSCR, ctrl);
++
++#ifdef CONFIG_SERIAL_SH_SCI_DMA
++	if (to_sci_port(port)->chan_tx &&
++	    !dma_submit_error(to_sci_port(port)->cookie_tx)) {
++		dmaengine_terminate_async(to_sci_port(port)->chan_tx);
++		to_sci_port(port)->cookie_tx = -EINVAL;
++	}
++#endif
+ }
+ 
+ static void sci_start_rx(struct uart_port *port)
+-- 
+2.25.1
+
