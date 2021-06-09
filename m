@@ -2,80 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C747AC48BCF
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 12:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91CEC48BCF
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 12:37:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AF2E061364
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 12:31:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AB097613AD
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Jun 2021 12:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbhFIMc4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Jun 2021 08:32:56 -0400
-Received: from mail-lj1-f172.google.com ([209.85.208.172]:46809 "EHLO
-        mail-lj1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232381AbhFIMc4 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Jun 2021 08:32:56 -0400
-Received: by mail-lj1-f172.google.com with SMTP id e11so31401764ljn.13;
-        Wed, 09 Jun 2021 05:30:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0ouZ2IrElWSPapbXOTCSJ51EhmhFQFFSG0D3L9FAdKg=;
-        b=iLn48fTW/uE5Tl0qkJ8aWHDZgLQ+lS9Aqhc0XO6kLcZS6WzavR1tD5FZ6u4Rj9F47a
-         oALc+vcyhcM9bqeD8xcqhJCbkpa48ODa9jWad0/5zUtTY7lfZ+kMsK1DNWkuQ1luZcxh
-         2TmxqLCs99lZ0uNNv7iGUZ2Orm/vkQd35N4Oa5vN/EQXs7RMC4Ry3pfV47FvMyZel6qo
-         G9l+ti8l4YqWLx1P1BeEznZDU/E7rIqEDhNlWKhtPhyvi/JP26WYCxexOSyP7kVySe0E
-         muddddNJhLDT2wzl0fUBcXNCPlNMtMFrKRJSlGBILD6xmKROCAdvML/we6pxV4H29voX
-         OMPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0ouZ2IrElWSPapbXOTCSJ51EhmhFQFFSG0D3L9FAdKg=;
-        b=AAqyetVHwQQhywx9U/kQRDyc9r19NEZk6Uq7SclvfJ+cWpPUlQ6zSBETCgmhpPpWUZ
-         j5FCADTnEeupMylAGrMrT6r+pIMKXOmDWxjPX0X9A+IIR9EqWWr4xJJmfLDb0tt5zIqk
-         ook4zaeLB00jiOXtgCWybJuNL2TCsUJ7snxq4YqNb8Lx6wtod7xeh3BQNEYITC4okFaZ
-         WFg19vDCNoCg3ujR8qXHKi8tvHGmHcoOiUe+W45a9KVTS9Bd1y6M4D05GQt4TxI2G9sv
-         E6EAMwfr0axNoNPM+7Nv7Hvp83Rq/Rm3pWSd19ltKep+zESdVfNYmzYVbE79uMy5zHoL
-         C2qA==
-X-Gm-Message-State: AOAM532+6ZLLjbh/lSGeU1fI+DFXY5V7tSTMnMYv6TopYV0OB5uKJrVt
-        HvGnsU3Opu3tsbQvXXuwOXS5exPXy/Q=
-X-Google-Smtp-Source: ABdhPJyGeXGlAAJXWhE97PKbLYE89nonPkTBJr1T3EBK6HcbazmhZ23x25y66tmKar8XzTcoDA6kvw==
-X-Received: by 2002:a2e:7008:: with SMTP id l8mr1968994ljc.462.1623241786226;
-        Wed, 09 Jun 2021 05:29:46 -0700 (PDT)
-Received: from [192.168.1.102] ([178.176.77.194])
-        by smtp.gmail.com with ESMTPSA id y20sm345852lfj.236.2021.06.09.05.29.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Jun 2021 05:29:46 -0700 (PDT)
+        id S232105AbhFIMjo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Jun 2021 08:39:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50082 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232090AbhFIMjo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Jun 2021 08:39:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1000961354;
+        Wed,  9 Jun 2021 12:37:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1623242269;
+        bh=4azbVFSgWEE//TQvLyn0cj8m8IsgnXUBpDf6bcvHw/E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H4mFP5szxnQr07TZFzbxSWHxVNBQFOUzBfAL+vb4VC4FKbYDwUQkJxC3S/wb548JN
+         FwNOhrxiEPjN1IxyxCIW1D1Ly2iU9trZxrtOXuHNEhZkml3PcN7EqF1rMfGOcJUx9N
+         Z8jH/Zjwe7x+KsKssmxPCDXPhOT5O63v4ZLikgcw=
+Date:   Wed, 9 Jun 2021 14:37:31 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
 Subject: Re: [PATCH v3] serial: sh-sci: Stop dmaengine transfer in
  sci_stop_tx()
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Message-ID: <YMC2C0AXxhAxH/Mf@kroah.com>
 References: <20210609014902.271237-1-yoshihiro.shimoda.uh@renesas.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <ac930164-6150-4358-8fe9-ab87654f68ce@gmail.com>
-Date:   Wed, 9 Jun 2021 15:29:44 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20210609014902.271237-1-yoshihiro.shimoda.uh@renesas.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 6/9/21 4:49 AM, Yoshihiro Shimoda wrote:
+On Wed, Jun 09, 2021 at 10:49:02AM +0900, Yoshihiro Shimoda wrote:
 > Stop dmaengine transfer in sci_stop_tx(). Otherwise, the following
 > message is possible output when system enters suspend and while
 > transferring data, because clearing TIE bit in SCSCR is not able to
@@ -113,16 +83,8 @@ On 6/9/21 4:49 AM, Yoshihiro Shimoda wrote:
 > +
 > +#ifdef CONFIG_SERIAL_SH_SCI_DMA
 
-   Why not use IS_ENABLED() instead? Gets rid of #ifdef. :-)
+Please no #ifdef in .c files.
 
-> +	if (to_sci_port(port)->chan_tx &&
-> +	    !dma_submit_error(to_sci_port(port)->cookie_tx)) {
-> +		dmaengine_terminate_async(to_sci_port(port)->chan_tx);
-> +		to_sci_port(port)->cookie_tx = -EINVAL;
-> +	}
-> +#endif
->  }
->  
->  static void sci_start_rx(struct uart_port *port)
+thanks,
 
-MBR, Sergei
+greg k-h
