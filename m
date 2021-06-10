@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C28D0C48BD1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0747C48BCF
 	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 01:13:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9469A61403
+	by mail.kernel.org (Postfix) with ESMTP id A2D4061406
 	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 01:13:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbhFJBPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S229507AbhFJBPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 9 Jun 2021 21:15:48 -0400
-Received: from mga04.intel.com ([192.55.52.120]:48222 "EHLO mga04.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:20088 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229507AbhFJBPs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S229655AbhFJBPs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 9 Jun 2021 21:15:48 -0400
-IronPort-SDR: 4iUi3GzOlUT3K6GAl7z/OB3dr03q1Xd5LMf5sUOWPoD1MKZ0AasTfBzix7q65maExsq7Bnz6IT
- EzP2VdeZbWFg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="203353010"
+IronPort-SDR: AgMG47TMd49YKUPNrqa/xLW8/3U4g7tUxfRtgkWjhEr7Mi/M/5JuOHxJfXH/J2wrL2I5alpbjj
+ +eDLvGZw0bkw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="226588427"
 X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; 
-   d="scan'208";a="203353010"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 18:13:52 -0700
-IronPort-SDR: 9JyPOlsbqz6ZIdZyHtIO9mYuo6LDUi36DRej9TQpGYzDvTbLinXdCk+ZBVf6vmouQCkPP6ZyjJ
- /9iRA9t6Lq0w==
+   d="scan'208";a="226588427"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 18:13:52 -0700
+IronPort-SDR: V9IxylDLw8+twy5PJkuR9+07+UZgCSHDOCgnwB+yK9Uj9iq/Ug7dofJD8vuU5myLJTs4IZF7kQ
+ b5DMMFWydqiw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; 
-   d="scan'208";a="402491089"
+   d="scan'208";a="635597162"
 Received: from lkp-server02.sh.intel.com (HELO 1ec8406c5392) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 18:13:51 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 09 Jun 2021 18:13:51 -0700
 Received: from kbuild by 1ec8406c5392 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1lr9GY-0009nJ-Is; Thu, 10 Jun 2021 01:13:50 +0000
-Date:   Thu, 10 Jun 2021 09:13:04 +0800
+        id 1lr9GY-0009nM-Sy; Thu, 10 Jun 2021 01:13:50 +0000
+Date:   Thu, 10 Jun 2021 09:13:02 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- 7c3e8d9df265bd0bdf6e328174cdfba26eb22f1c
-Message-ID: <60c16720.LlYpYQWIJYfgkVBf%lkp@intel.com>
+Subject: [tty:tty-testing] BUILD SUCCESS
+ a69008475fc565cec5a760f1997f326773c84aac
+Message-ID: <60c1671e.jC3DUOg0qtY2PwP+%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -51,12 +51,12 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: 7c3e8d9df265bd0bdf6e328174cdfba26eb22f1c  serial: 8250_exar: Avoid NULL pointer dereference at ->exit()
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: a69008475fc565cec5a760f1997f326773c84aac  vt: vt_kern.h, remove the repeated declaration
 
 elapsed time: 721m
 
-configs tested: 202
+configs tested: 195
 configs skipped: 2
 
 The following configs have been built successfully.
@@ -68,30 +68,12 @@ arm64                            allyesconfig
 arm64                               defconfig
 arm                              allyesconfig
 arm                              allmodconfig
-powerpc                          allyesconfig
-s390                             allyesconfig
-m68k                             allmodconfig
-s390                             allmodconfig
-powerpc                          allmodconfig
-m68k                             allyesconfig
-sparc                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-sh                               allmodconfig
-parisc                           allyesconfig
-arc                              allyesconfig
-nios2                            allyesconfig
-alpha                            allyesconfig
-mips                         rt305x_defconfig
-mips                      malta_kvm_defconfig
-powerpc                     asp8347_defconfig
-arm                           spitz_defconfig
-sparc                       sparc32_defconfig
 sh                   sh7724_generic_defconfig
 sh                          kfr2r09_defconfig
 sparc                            alldefconfig
 arm                             rpc_defconfig
 arm                             ezx_defconfig
+xtensa                           allyesconfig
 sh                           se7722_defconfig
 sh                           se7724_defconfig
 sh                          sdk7786_defconfig
@@ -102,19 +84,26 @@ xtensa                          iss_defconfig
 h8300                    h8300h-sim_defconfig
 mips                      loongson3_defconfig
 ia64                      gensparse_defconfig
-m68k                            q40_defconfig
-openrisc                            defconfig
-mips                     cu1000-neo_defconfig
-arc                        nsim_700_defconfig
-arm                       versatile_defconfig
+arm                          pxa3xx_defconfig
+sh                          r7780mp_defconfig
+arm                       cns3420vb_defconfig
+arm                          ep93xx_defconfig
 powerpc                  mpc885_ads_defconfig
 powerpc                      pasemi_defconfig
 sh                          r7785rp_defconfig
 s390                                defconfig
 arm                              alldefconfig
+h8300                            allyesconfig
+mips                         rt305x_defconfig
 sh                         microdev_defconfig
 sh                             espt_defconfig
 powerpc                 mpc837x_rdb_defconfig
+powerpc                      ep88xc_defconfig
+m68k                          atari_defconfig
+powerpc                      cm5200_defconfig
+arc                    vdk_hs38_smp_defconfig
+powerpc                       eiger_defconfig
+powerpc                     tqm8560_defconfig
 arc                          axs101_defconfig
 mips                      pic32mzda_defconfig
 sparc                       sparc64_defconfig
@@ -136,16 +125,9 @@ arm                  colibri_pxa270_defconfig
 xtensa                       common_defconfig
 sh                             sh03_defconfig
 sh                        sh7763rdp_defconfig
+mips                     cu1000-neo_defconfig
 sh                        dreamcast_defconfig
-mips                  cavium_octeon_defconfig
-sh                          sdk7780_defconfig
-arm                             mxs_defconfig
-mips                             allmodconfig
-mips                       rbtx49xx_defconfig
-arc                    vdk_hs38_smp_defconfig
-mips                           rs90_defconfig
-powerpc                     stx_gp3_defconfig
-powerpc                 mpc834x_mds_defconfig
+m68k                             allyesconfig
 mips                        workpad_defconfig
 powerpc                      mgcoge_defconfig
 m68k                       m5249evb_defconfig
@@ -153,13 +135,14 @@ arm                           h5000_defconfig
 microblaze                          defconfig
 mips                         tb0287_defconfig
 powerpc                 mpc8560_ads_defconfig
-arm                       cns3420vb_defconfig
 sh                           se7721_defconfig
 mips                      fuloong2e_defconfig
 um                           x86_64_defconfig
 arc                         haps_hs_defconfig
 ia64                         bigsur_defconfig
 sh                     sh7710voipgw_defconfig
+sh                           se7206_defconfig
+powerpc                    gamecube_defconfig
 powerpc                 mpc8540_ads_defconfig
 arm                         s3c6400_defconfig
 mips                      bmips_stb_defconfig
@@ -181,6 +164,7 @@ m68k                          multi_defconfig
 sh                 kfr2r09-romimage_defconfig
 sparc64                             defconfig
 arc                                 defconfig
+powerpc                          allyesconfig
 riscv                               defconfig
 openrisc                         alldefconfig
 sh                            titan_defconfig
@@ -195,26 +179,35 @@ arm                       aspeed_g4_defconfig
 m68k                             alldefconfig
 powerpc                     mpc83xx_defconfig
 sh                               alldefconfig
-sh                          r7780mp_defconfig
 powerpc                     tqm8555_defconfig
-arm                          ep93xx_defconfig
 mips                      maltasmvp_defconfig
 arm                           sunxi_defconfig
 x86_64                            allnoconfig
 ia64                             allmodconfig
 ia64                                defconfig
 ia64                             allyesconfig
+m68k                             allmodconfig
 m68k                                defconfig
 nios2                               defconfig
+arc                              allyesconfig
 nds32                             allnoconfig
 nds32                               defconfig
+nios2                            allyesconfig
 csky                                defconfig
 alpha                               defconfig
+alpha                            allyesconfig
+sh                               allmodconfig
 parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
 i386                             allyesconfig
+sparc                            allyesconfig
 sparc                               defconfig
 i386                                defconfig
 mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allmodconfig
 powerpc                           allnoconfig
 x86_64               randconfig-a004-20210608
 x86_64               randconfig-a002-20210608
@@ -246,8 +239,8 @@ riscv                    nommu_virt_defconfig
 riscv                             allnoconfig
 riscv                          rv32_defconfig
 riscv                            allmodconfig
-x86_64                           allyesconfig
 um                            kunit_defconfig
+x86_64                           allyesconfig
 x86_64                    rhel-8.3-kselftests
 x86_64                              defconfig
 x86_64                               rhel-8.3
