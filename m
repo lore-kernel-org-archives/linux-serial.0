@@ -2,265 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0747C48BCF
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 01:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEE3C48BD1
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 06:58:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A2D4061406
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 01:13:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7C7FE613E3
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 06:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229507AbhFJBPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Jun 2021 21:15:48 -0400
-Received: from mga01.intel.com ([192.55.52.88]:20088 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229655AbhFJBPs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Jun 2021 21:15:48 -0400
-IronPort-SDR: AgMG47TMd49YKUPNrqa/xLW8/3U4g7tUxfRtgkWjhEr7Mi/M/5JuOHxJfXH/J2wrL2I5alpbjj
- +eDLvGZw0bkw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="226588427"
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; 
-   d="scan'208";a="226588427"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 18:13:52 -0700
-IronPort-SDR: V9IxylDLw8+twy5PJkuR9+07+UZgCSHDOCgnwB+yK9Uj9iq/Ug7dofJD8vuU5myLJTs4IZF7kQ
- b5DMMFWydqiw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; 
-   d="scan'208";a="635597162"
-Received: from lkp-server02.sh.intel.com (HELO 1ec8406c5392) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 09 Jun 2021 18:13:51 -0700
-Received: from kbuild by 1ec8406c5392 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lr9GY-0009nM-Sy; Thu, 10 Jun 2021 01:13:50 +0000
-Date:   Thu, 10 Jun 2021 09:13:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- a69008475fc565cec5a760f1997f326773c84aac
-Message-ID: <60c1671e.jC3DUOg0qtY2PwP+%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S229823AbhFJHA0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Jun 2021 03:00:26 -0400
+Received: from mail-vs1-f50.google.com ([209.85.217.50]:38744 "EHLO
+        mail-vs1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229808AbhFJHA0 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Jun 2021 03:00:26 -0400
+Received: by mail-vs1-f50.google.com with SMTP id x8so1311500vso.5;
+        Wed, 09 Jun 2021 23:58:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UUK5A8y0i3CSxDWdiohVrmH14HslBm7Mhl1BivLex1Q=;
+        b=K5ClchpojM55/Kw/GNdK5djKJ+muHaM5dygauUqFjxduCp4v5sV0chPI9G6CRnCsCq
+         1s0eUf5UyT+XFBJDAPanOAOVRCUlKczwnZELxfY3xDERwtk4Qxmx97JuN1chJt6W2qJx
+         LTmkfvtvFAL+2KD0U9dOql7P2iIOOBe0FBnmfXdUbNteJy2e2NJpqV2S8O8WM52NzX4H
+         s3XasdgwK0/n6YgpwFz0jxAy1WFbfbPXyE/ndhELV6o30EdiQwL/52GCoNGI/M8blkXz
+         fJWwA9F6UFG5Yo4qHAbDFxLPlFvQOM6Gn5w8lSNxTsLf3hvt2/JejeDI0GWGJKBrejCv
+         DWHg==
+X-Gm-Message-State: AOAM531SbsnIgAonyB5zy2NepoG6cGgSmqxBNtay+OUpKbXb0iHUIKq1
+        7h07c3mG7a3kVlF1UA/w/qJrvJsgw/2LXf+7gns=
+X-Google-Smtp-Source: ABdhPJzhuPg2ru7G+1D9nNr+e+pWGdEkTyNoRRpoPTOom7myuEb3Hq8mzyQWPXruFXyQdouC2lvZBSHMT6ppEfvo4V0=
+X-Received: by 2002:a05:6102:2011:: with SMTP id p17mr2899706vsr.40.1623308295528;
+ Wed, 09 Jun 2021 23:58:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20210609014902.271237-1-yoshihiro.shimoda.uh@renesas.com>
+ <ac930164-6150-4358-8fe9-ab87654f68ce@gmail.com> <CAMuHMdW9oV80QdZmgwJBF99jnw56XuTSkanjHCdBY+h4jAVGew@mail.gmail.com>
+ <TY2PR01MB369260DF38C0FC6E58D65362D8359@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+In-Reply-To: <TY2PR01MB369260DF38C0FC6E58D65362D8359@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 10 Jun 2021 08:58:04 +0200
+Message-ID: <CAMuHMdU23gB8Bap3qoypXkJhu=jwS-MQ=mu-CdzqijoWzc4rOg@mail.gmail.com>
+Subject: Re: [PATCH v3] serial: sh-sci: Stop dmaengine transfer in sci_stop_tx()
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: a69008475fc565cec5a760f1997f326773c84aac  vt: vt_kern.h, remove the repeated declaration
+Hi Shimoda-san,
 
-elapsed time: 721m
+On Thu, Jun 10, 2021 at 2:50 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> > From: Geert Uytterhoeven, Sent: Thursday, June 10, 2021 12:30 AM
+> > On Wed, Jun 9, 2021 at 5:09 PM Sergei Shtylyov
+> > <sergei.shtylyov@gmail.com> wrote:
+> > > On 6/9/21 4:49 AM, Yoshihiro Shimoda wrote:
+> > > > Stop dmaengine transfer in sci_stop_tx(). Otherwise, the following
+> > > > message is possible output when system enters suspend and while
+> > > > transferring data, because clearing TIE bit in SCSCR is not able to
+> > > > stop any dmaengine transfer.
+> > > >
+> > > >     sh-sci e6550000.serial: ttySC1: Unable to drain transmitter
+> > > >
+> > > > Note that this patch uses dmaengine_terminate_async() so that
+> > > > we can apply this patch into longterm kernel v4.9.x or later.
+> > > >
+> > > > Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
+> > > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > > > ---
+> > > >
+> > > >  drivers/tty/serial/sh-sci.c | 8 ++++++++
+> > > >  1 file changed, 8 insertions(+)
+> > > >
+> > > > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> > > > index 4baf1316ea72..2d5487bf6855 100644
+> > > > --- a/drivers/tty/serial/sh-sci.c
+> > > > +++ b/drivers/tty/serial/sh-sci.c
+> > > > @@ -610,6 +610,14 @@ static void sci_stop_tx(struct uart_port *port)
+> > > >       ctrl &= ~SCSCR_TIE;
+> > > >
+> > > >       serial_port_out(port, SCSCR, ctrl);
+> > > > +
+> > > > +#ifdef CONFIG_SERIAL_SH_SCI_DMA
+> > >
+> > >    Why not use IS_ENABLED() instead? Gets rid of #ifdef. :-)
+> > >
+> > > > +     if (to_sci_port(port)->chan_tx &&
+> > > > +         !dma_submit_error(to_sci_port(port)->cookie_tx)) {
+> > > > +             dmaengine_terminate_async(to_sci_port(port)->chan_tx);
+> > > > +             to_sci_port(port)->cookie_tx = -EINVAL;
+> >
+> > Because chan_tx and cookie_tx do not exist if CONFIG_SERIAL_SH_SCI_DMA
+> > is disabled.
+>
+> This is a nit though, chan_tx always exists.
 
-configs tested: 195
-configs skipped: 2
+I stand corrected, only cookie_tx depends on CONFIG_SERIAL_SH_SCI_DMA.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> > Yes, that's why all the DMA code in this driver (.c file) is protected by
+> > #ifdef CONFIG_SERIAL_SH_SCI_DMA.
+>
+> I'm thinking we have to remove #ifdef from sh-sci.c file at first...
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-sh                   sh7724_generic_defconfig
-sh                          kfr2r09_defconfig
-sparc                            alldefconfig
-arm                             rpc_defconfig
-arm                             ezx_defconfig
-xtensa                           allyesconfig
-sh                           se7722_defconfig
-sh                           se7724_defconfig
-sh                          sdk7786_defconfig
-arc                          axs103_defconfig
-powerpc                     pseries_defconfig
-parisc                generic-32bit_defconfig
-xtensa                          iss_defconfig
-h8300                    h8300h-sim_defconfig
-mips                      loongson3_defconfig
-ia64                      gensparse_defconfig
-arm                          pxa3xx_defconfig
-sh                          r7780mp_defconfig
-arm                       cns3420vb_defconfig
-arm                          ep93xx_defconfig
-powerpc                  mpc885_ads_defconfig
-powerpc                      pasemi_defconfig
-sh                          r7785rp_defconfig
-s390                                defconfig
-arm                              alldefconfig
-h8300                            allyesconfig
-mips                         rt305x_defconfig
-sh                         microdev_defconfig
-sh                             espt_defconfig
-powerpc                 mpc837x_rdb_defconfig
-powerpc                      ep88xc_defconfig
-m68k                          atari_defconfig
-powerpc                      cm5200_defconfig
-arc                    vdk_hs38_smp_defconfig
-powerpc                       eiger_defconfig
-powerpc                     tqm8560_defconfig
-arc                          axs101_defconfig
-mips                      pic32mzda_defconfig
-sparc                       sparc64_defconfig
-powerpc                    mvme5100_defconfig
-sh                           se7619_defconfig
-mips                 decstation_r4k_defconfig
-openrisc                    or1ksim_defconfig
-xtensa                  cadence_csp_defconfig
-arm                         cm_x300_defconfig
-arm                         bcm2835_defconfig
-mips                            ar7_defconfig
-arm64                            alldefconfig
-arm                           tegra_defconfig
-s390                       zfcpdump_defconfig
-powerpc                    socrates_defconfig
-ia64                        generic_defconfig
-arm                          badge4_defconfig
-arm                  colibri_pxa270_defconfig
-xtensa                       common_defconfig
-sh                             sh03_defconfig
-sh                        sh7763rdp_defconfig
-mips                     cu1000-neo_defconfig
-sh                        dreamcast_defconfig
-m68k                             allyesconfig
-mips                        workpad_defconfig
-powerpc                      mgcoge_defconfig
-m68k                       m5249evb_defconfig
-arm                           h5000_defconfig
-microblaze                          defconfig
-mips                         tb0287_defconfig
-powerpc                 mpc8560_ads_defconfig
-sh                           se7721_defconfig
-mips                      fuloong2e_defconfig
-um                           x86_64_defconfig
-arc                         haps_hs_defconfig
-ia64                         bigsur_defconfig
-sh                     sh7710voipgw_defconfig
-sh                           se7206_defconfig
-powerpc                    gamecube_defconfig
-powerpc                 mpc8540_ads_defconfig
-arm                         s3c6400_defconfig
-mips                      bmips_stb_defconfig
-mips                      pistachio_defconfig
-xtensa                         virt_defconfig
-powerpc                 mpc832x_rdb_defconfig
-arm                       imx_v6_v7_defconfig
-um                             i386_defconfig
-arm                       netwinder_defconfig
-sh                           se7343_defconfig
-powerpc                     mpc5200_defconfig
-parisc                           alldefconfig
-arm                         assabet_defconfig
-mips                           ip32_defconfig
-sh                   rts7751r2dplus_defconfig
-mips                           ci20_defconfig
-mips                     loongson1c_defconfig
-m68k                          multi_defconfig
-sh                 kfr2r09-romimage_defconfig
-sparc64                             defconfig
-arc                                 defconfig
-powerpc                          allyesconfig
-riscv                               defconfig
-openrisc                         alldefconfig
-sh                            titan_defconfig
-m68k                       bvme6000_defconfig
-m68k                        m5307c3_defconfig
-nios2                         10m50_defconfig
-powerpc                     sbc8548_defconfig
-arm                          pxa168_defconfig
-arm                         orion5x_defconfig
-um                               alldefconfig
-arm                       aspeed_g4_defconfig
-m68k                             alldefconfig
-powerpc                     mpc83xx_defconfig
-sh                               alldefconfig
-powerpc                     tqm8555_defconfig
-mips                      maltasmvp_defconfig
-arm                           sunxi_defconfig
-x86_64                            allnoconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a004-20210608
-x86_64               randconfig-a002-20210608
-x86_64               randconfig-a003-20210608
-x86_64               randconfig-a006-20210608
-x86_64               randconfig-a005-20210608
-x86_64               randconfig-a001-20210608
-i386                 randconfig-a003-20210608
-i386                 randconfig-a006-20210608
-i386                 randconfig-a004-20210608
-i386                 randconfig-a001-20210608
-i386                 randconfig-a005-20210608
-i386                 randconfig-a002-20210608
-i386                 randconfig-a002-20210610
-i386                 randconfig-a006-20210610
-i386                 randconfig-a004-20210610
-i386                 randconfig-a001-20210610
-i386                 randconfig-a005-20210610
-i386                 randconfig-a003-20210610
-i386                 randconfig-a015-20210608
-i386                 randconfig-a013-20210608
-i386                 randconfig-a016-20210608
-i386                 randconfig-a011-20210608
-i386                 randconfig-a012-20210608
-i386                 randconfig-a014-20210608
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-um                            kunit_defconfig
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                      rhel-8.3-kbuiltin
-x86_64                                  kexec
+While I don't disagree that would be worthwhile, do we really need
+to refactor a driver first, before a fix that follows the existing
+driver style can be applied (and backported)?
 
-clang tested configs:
-x86_64               randconfig-a002-20210607
-x86_64               randconfig-a004-20210607
-x86_64               randconfig-a003-20210607
-x86_64               randconfig-a006-20210607
-x86_64               randconfig-a005-20210607
-x86_64               randconfig-a001-20210607
-x86_64               randconfig-a015-20210608
-x86_64               randconfig-a012-20210608
-x86_64               randconfig-a014-20210608
-x86_64               randconfig-a011-20210608
-x86_64               randconfig-a016-20210608
-x86_64               randconfig-a013-20210608
+Thanks!
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
