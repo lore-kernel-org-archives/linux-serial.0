@@ -2,209 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5A9C48BD1
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 07:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD26DC47094
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 08:54:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 62255613F1
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 07:29:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A95E5613FE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 08:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbhFJHa6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Jun 2021 03:30:58 -0400
-Received: from mail-eopbgr1400092.outbound.protection.outlook.com ([40.107.140.92]:64114
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229715AbhFJHa5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Jun 2021 03:30:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vp0norxfPmoRs+n+CtjY+URDNUvcI6DY3otoImGnRF4ne6U4l35dtgCjwjAz5EP4HEvE7/X4ru48ZGpyvhPw4sBtpPEFqnJ8EIacgP98NOC2k3gaxRlPs2qRL22aGRr1X6hSdOTjlOAanEWaWtuzzomWLAjr6n59St+JTP+zzhl6w4KQdm9rEn5bSpxG1WbZf+PZ17P1VralbWh4KHBwqstn2wNBc9WsEiLpicu3a0V8AmBA7pfyqUWWLIHX1/1/Bt1xC9DbICllNmRavNPmP4iYeG1PJK+TvlQGs5cV/Urz538vSfJhUgA77XKgf1tIJqVLX+aK9f4M6nQCAQbp7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N9adbuC/1Iw7kkK1nKa8FzginVIQ2p1Hod4W9QgxVzs=;
- b=JDTgFZtGqFZ13D92MqtYMAFXW3O1rOY9BfmvVZFcwjW5rxBvJso4fkf+q+eyWkw/fE3oJOJ/+T6j3VksMwSHr87XRBgeYDaV3Fc1f23QKNSGH6EvWUNK1hpeYoe8kHkTBPlOKDaoeM6IibEBQRIUNkbMwyohEBjHKWPyr2iZwblvaelPOE97Otzdcx0r7QUjE8F+3ouF1AymDp+cdXgZAyeZnlGAeciNgYiD+uTOGfArxWlHJy65pM/8kmx9cg+cIa+kvoMy6ktLi2dsvj+P3QkaN8LFaj1YwaV/KazvAqWw6+fpzE/+W1tLK9yoz0a0/4SH9dYyYcm3T0TRfHlzaw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N9adbuC/1Iw7kkK1nKa8FzginVIQ2p1Hod4W9QgxVzs=;
- b=otNH72AFJP9E6Dbc64xDuu8uBWs8jQHZEQXNeo07HxaCfWKLFcJTzlUjGwSBGCSaUn4oYo83bdH33GY5N6LaRTB8BuSmO3RCpkwkVAipdbDATTXd1tyA0z3T6AQkXGEIkpfq5GTyaNg8gyd2GPgCGAwEZ3V5/09L0zw9lsjHkaY=
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
- by TYAPR01MB1901.jpnprd01.prod.outlook.com (2603:1096:404:5::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.25; Thu, 10 Jun
- 2021 07:28:59 +0000
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::4c5d:66ee:883a:72a5]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::4c5d:66ee:883a:72a5%6]) with mapi id 15.20.4219.022; Thu, 10 Jun 2021
- 07:28:59 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v3] serial: sh-sci: Stop dmaengine transfer in
- sci_stop_tx()
-Thread-Topic: [PATCH v3] serial: sh-sci: Stop dmaengine transfer in
- sci_stop_tx()
-Thread-Index: AQHXXNGkj5DIm2K88kqd+niZLV/ShasLnJ0AgAAyfICAAJtEUIAAZ+oAgAABEACAAAW4sA==
-Date:   Thu, 10 Jun 2021 07:28:59 +0000
-Message-ID: <TY2PR01MB3692C3C92800493C5434E752D8359@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-References: <20210609014902.271237-1-yoshihiro.shimoda.uh@renesas.com>
- <ac930164-6150-4358-8fe9-ab87654f68ce@gmail.com>
- <CAMuHMdW9oV80QdZmgwJBF99jnw56XuTSkanjHCdBY+h4jAVGew@mail.gmail.com>
- <TY2PR01MB369260DF38C0FC6E58D65362D8359@TY2PR01MB3692.jpnprd01.prod.outlook.com>
- <CAMuHMdU23gB8Bap3qoypXkJhu=jwS-MQ=mu-CdzqijoWzc4rOg@mail.gmail.com>
- <YMG44NgJVTB5tbfI@kroah.com>
-In-Reply-To: <YMG44NgJVTB5tbfI@kroah.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linuxfoundation.org; dkim=none (message not signed)
- header.d=none;linuxfoundation.org; dmarc=none action=none
- header.from=renesas.com;
-x-originating-ip: [240f:60:5f3e:1:788d:25a8:6b90:faf3]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b7ac1208-bcc9-4de3-6582-08d92be16a2b
-x-ms-traffictypediagnostic: TYAPR01MB1901:
-x-microsoft-antispam-prvs: <TYAPR01MB19010B9FE66D1E54B88FDF53D8359@TYAPR01MB1901.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XE2Mn4/X82VNmER+nrgI2PS0dbkG54/KCNolg+ic6Hfgr+SC/SqeLLKzrFMMtG3C8YXKeSRwyAVDzHrVjs9OV0tYHermiEEGO5bzw9lb7RtwTl5/Oe2OlEv2J6IHKHsK18lTCqEQk8YS+WtD8sIdzxAPJgoIdS006PHixMVDkVb59/LLP9CeRHE3fE+1X+I0BqmE4A3K8ojvG0ACxTMh1A0FtGfkEfulvDpQuYBEhIOuyb1flsKpCHCxOt3yvVL1Maa8ZQ/oqKJCXCEXqGMEP5a/r8iMGiMAvFfwLyq5PxJwcq6k+C0PWCkjX0+lcH8coCw/0s2nbZUJp4uBaOEYFtROl88jfG5MrZM0mtGjWV9CJpm0sRDZN9aw/F+ftb1xbZADeZMNqJoq9+KwVH+YEOiZkpsZN6WbMtQkqJqIIuG5XZSSbDrYHu7/hcgmdQe14CHu1Dmx4gEmGV9dhj/vKLKd8k/HRmZvrsvIhg/H0Tip/82Nhqq4PofCGcCxwhNbcm5vzj5baAOvfHrcaAEVUi4OekKhKpAXU5+TESdYxyP8GobAifMeI214cxBcG5VkR7irUE0zzzYXtDe4MJ+QxvZl0QKy8vgv4385LoOb0mE=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(39860400002)(376002)(396003)(366004)(7696005)(5660300002)(86362001)(66476007)(66946007)(71200400001)(8936002)(76116006)(2906002)(186003)(83380400001)(478600001)(52536014)(6506007)(54906003)(55016002)(316002)(8676002)(110136005)(66446008)(64756008)(66556008)(9686003)(53546011)(4326008)(38100700002)(122000001)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?6CyvDLTFJjSEx130bxBx78WCkbALf3Ex5jBMuUKUdYtS5Wo6j6DZgV7KbYzm?=
- =?us-ascii?Q?a6eZFkixtI96p4/G4AfrbKOFssORpLOnYnVB3t7AXFxmTYy3e5xG4VaqTX0y?=
- =?us-ascii?Q?TJ5zKfCfWctkt9hUxXoEimW2k66yID7cK3qRmkhXH5OkTAOZjJazsxc3OzFr?=
- =?us-ascii?Q?2M5PtHTwdz4sfxa/nTTHWETgfWqtDZmcL3EwA7rZrZ2d370HRnxNhtC3Or/0?=
- =?us-ascii?Q?PrVb3265IB2Wwgzav3TmETuVPoF5ww4Fks3n77xTgaHdYYPF9a+tCW8anUbn?=
- =?us-ascii?Q?6TSnRHBGcDNGJjaClcS4J1WdroibsjcrFSPsYW1Izv/gJpMOdc3AaP1u/fjD?=
- =?us-ascii?Q?kYikuSlyZOFkJ0hfDmB3X3kvHkca8IVrTQlL3Ab1guKNcJmp4OrCT4bIkmmD?=
- =?us-ascii?Q?cQyyHM3UMK/iNHdwp2n7XTLcWhU/mNmFAqawWSeKgn5Y8IwelQyf9DIX55r7?=
- =?us-ascii?Q?Es2ElFB7fG0DaRq+9gq8zfDZSUA0Fje7ITgRBFTRtD8x/MmhNnLthoOlBcei?=
- =?us-ascii?Q?A5wxaRTBeXLiMOY/6x9vGDKVQ1r3hjR3rBuCi214P6aoI5cgySNYG5u/ykJn?=
- =?us-ascii?Q?/BUuk7g7AmsNPnl8q8jPx0n8Wp3HYXqiwvdnEmtlmfJ5ZpVCG6dGMFvZzb9a?=
- =?us-ascii?Q?32XKCbb/ht/zFr1udGBRZSUyccg8LmtS7mm2Ogeu4ja+68NdOAerQQucivGE?=
- =?us-ascii?Q?Y3oRTONip1UiHSgzyVedRCZSTqeqPrbsUJY7jDmGvz1A90qjdcKOFNWx6Om5?=
- =?us-ascii?Q?e/sr7/L6vE++vllXa+7enDPLSfKwGdaFk0rXitWaoN77RAvdQODvLibYcJAp?=
- =?us-ascii?Q?TsTFSET7gIUyYZ0gZkDslXPOurboHUjsdEkDc6Da8QVokmUXqq+LdJmN9cbM?=
- =?us-ascii?Q?80qsY5aPfH5tVwXUfq78je4Q8QyYLT0xAsuzehudIKmIHJCKzWpTuxC2Q+bU?=
- =?us-ascii?Q?eTTJqKeQNcigGMDj8OKJ+pkcCRZ7LG36JPYtFCUMJBCKBVYyWPER0ybNn97W?=
- =?us-ascii?Q?d0T8+yeMAJ27RSikoPNsTA0q9itEcJY9D5J0hEIEaH5scfYQi7C0/86elQPi?=
- =?us-ascii?Q?1N9tLz7//c9TEkWC7jG49QaQPSFKKZg4YRbfZ/mIxr4tu4xLeu8LN3jnZ2V5?=
- =?us-ascii?Q?XRQLORCkIAejYgRX/aNNZQsSX0dAx2p1R88SOEKun4FkONqhYvVx3bHRxkuS?=
- =?us-ascii?Q?OqEEvLewiGUI5P9KxFb+7/P82U9HrcKkruGRFtu3lqS6VyJs4ZuNWdCspsyS?=
- =?us-ascii?Q?k9jqGK0pXLGRQh/ilrQL2aC5y6dFmuLe7cnGIrELOklHAB8YXASlfs9p0yD5?=
- =?us-ascii?Q?APAlx0dkR2oe5dI57dXQsXvJLeyrBZMvFMTymHtgFNxFv9y1/7XjQZoOgIuh?=
- =?us-ascii?Q?EC5CjGM=3D?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S230027AbhFJI4f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Jun 2021 04:56:35 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:37164 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230029AbhFJI4f (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Jun 2021 04:56:35 -0400
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15A8praJ018129;
+        Thu, 10 Jun 2021 10:54:23 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=US13dRyJ4ae/LubuDFGUyWZmKyQMuMTjP+dI9w7XKGg=;
+ b=Ixm+qHel0qawwtKyV2HGqzY68LEnPZtupg9TiPFFR4YGeyQK6ZF4QvMm53ctI7qvOYfV
+ Uyinf0wlYgrlPcbfd1RmnijdVXG1eapGxbQbmpk420cW3ZzU+4PmNxIo0zES8hEJuPIW
+ EJWbgHKxwdlZGKDXr5mcyNzlGJJucNkVXzwk9p8iif5nh4aUgQwLpT2uU0gzhBksJT4R
+ 3tO1Zr+HfZ596OQSvzswlE+/QYWJxVNSpgkZ9UQPVz1/HfAMX4KIKfWxhtSvK/uVgUhi
+ Y7bFXxrRkvnjowt6smzAMtSX7z3m6iTsV+Dtc3E3EeTTe1QtRwocbdAB78Z45i/gKyU2 kg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 39350hb8u5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Jun 2021 10:54:23 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AEA8A10002A;
+        Thu, 10 Jun 2021 10:54:21 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 91302219DA9;
+        Thu, 10 Jun 2021 10:54:21 +0200 (CEST)
+Received: from lmecxl0566.lme.st.com (10.75.127.44) by SFHDAG2NODE3.st.com
+ (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Jun
+ 2021 10:54:20 +0200
+Subject: Re: [PATCH 1/2] serial: stm32: reset dma buffers during probe
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jslaby@suse.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>
+References: <20210527091537.8997-1-erwan.leray@foss.st.com>
+ <20210527091537.8997-2-erwan.leray@foss.st.com> <YK9rDVeg0W9WE+9a@kroah.com>
+From:   Erwan LE RAY <erwan.leray@foss.st.com>
+Message-ID: <fc153364-b78a-3199-129f-5c6fb7353d49@foss.st.com>
+Date:   Thu, 10 Jun 2021 10:54:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7ac1208-bcc9-4de3-6582-08d92be16a2b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jun 2021 07:28:59.6761
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: voUOTu8zYnL0ybA0Ep78zkNVegVcxc8QalYdk/bBuo4U3zUTQVgCtPDYyJnriwdRJd/yg6yDw73Rxjm0k0F7Lha/n2b8ST68kKOLRKfdVVIHkKFlMTB7RcrISrVG+dCN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB1901
+In-Reply-To: <YK9rDVeg0W9WE+9a@kroah.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG1NODE3.st.com (10.75.127.3) To SFHDAG2NODE3.st.com
+ (10.75.127.6)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-10_03:2021-06-10,2021-06-10 signatures=0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg, Geert,
+Hi Greg,
 
-> From: Greg KH, Sent: Thursday, June 10, 2021 4:02 PM
->=20
-> On Thu, Jun 10, 2021 at 08:58:04AM +0200, Geert Uytterhoeven wrote:
-> > Hi Shimoda-san,
-> >
-> > On Thu, Jun 10, 2021 at 2:50 AM Yoshihiro Shimoda
-> > <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > > > From: Geert Uytterhoeven, Sent: Thursday, June 10, 2021 12:30 AM
-> > > > On Wed, Jun 9, 2021 at 5:09 PM Sergei Shtylyov
-> > > > <sergei.shtylyov@gmail.com> wrote:
-> > > > > On 6/9/21 4:49 AM, Yoshihiro Shimoda wrote:
-> > > > > > Stop dmaengine transfer in sci_stop_tx(). Otherwise, the follow=
-ing
-> > > > > > message is possible output when system enters suspend and while
-> > > > > > transferring data, because clearing TIE bit in SCSCR is not abl=
-e to
-> > > > > > stop any dmaengine transfer.
-> > > > > >
-> > > > > >     sh-sci e6550000.serial: ttySC1: Unable to drain transmitter
-> > > > > >
-> > > > > > Note that this patch uses dmaengine_terminate_async() so that
-> > > > > > we can apply this patch into longterm kernel v4.9.x or later.
-> > > > > >
-> > > > > > Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
-> > > > > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.=
-com>
-> > > > > > ---
-> > > > > >
-> > > > > >  drivers/tty/serial/sh-sci.c | 8 ++++++++
-> > > > > >  1 file changed, 8 insertions(+)
-> > > > > >
-> > > > > > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/s=
-h-sci.c
-> > > > > > index 4baf1316ea72..2d5487bf6855 100644
-> > > > > > --- a/drivers/tty/serial/sh-sci.c
-> > > > > > +++ b/drivers/tty/serial/sh-sci.c
-> > > > > > @@ -610,6 +610,14 @@ static void sci_stop_tx(struct uart_port *=
-port)
-> > > > > >       ctrl &=3D ~SCSCR_TIE;
-> > > > > >
-> > > > > >       serial_port_out(port, SCSCR, ctrl);
-> > > > > > +
-> > > > > > +#ifdef CONFIG_SERIAL_SH_SCI_DMA
-> > > > >
-> > > > >    Why not use IS_ENABLED() instead? Gets rid of #ifdef. :-)
-> > > > >
-> > > > > > +     if (to_sci_port(port)->chan_tx &&
-> > > > > > +         !dma_submit_error(to_sci_port(port)->cookie_tx)) {
-> > > > > > +             dmaengine_terminate_async(to_sci_port(port)->chan=
-_tx);
-> > > > > > +             to_sci_port(port)->cookie_tx =3D -EINVAL;
-> > > >
-> > > > Because chan_tx and cookie_tx do not exist if CONFIG_SERIAL_SH_SCI_=
-DMA
-> > > > is disabled.
-> > >
-> > > This is a nit though, chan_tx always exists.
-> >
-> > I stand corrected, only cookie_tx depends on CONFIG_SERIAL_SH_SCI_DMA.
-> >
-> > > > Yes, that's why all the DMA code in this driver (.c file) is protec=
-ted by
-> > > > #ifdef CONFIG_SERIAL_SH_SCI_DMA.
-> > >
-> > > I'm thinking we have to remove #ifdef from sh-sci.c file at first...
-> >
-> > While I don't disagree that would be worthwhile, do we really need
-> > to refactor a driver first, before a fix that follows the existing
-> > driver style can be applied (and backported)?
->=20
-> No we do not.  Sorry if this usage is already in the driver, might as
-> well keep it there, I thought this was an exception and was being added
-> for the first time here.
+Thanks for your question. This old patch is finally not necessary any more.
+You can cancel this series, I will resend the second patch.
 
-Thank you for your comments. I understood we should keep this driver
-and fix it at first. So, I'll add a description why we need #ifdef in
-.c file on v4 patch.
+Best regards, Erwan.
 
-Best regards,
-Yoshihiro Shimoda
 
+On 5/27/21 11:49 AM, Greg Kroah-Hartman wrote:
+> On Thu, May 27, 2021 at 11:15:36AM +0200, Erwan Le Ray wrote:
+>> Reset Rx and Tx dma buffers during probe to avoid freeing
+>> invalid buffer in no dma mode.
+>>
+>> Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+>>
+>> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+>> index c2ae7b392b86..2ac3b30477a7 100644
+>> --- a/drivers/tty/serial/stm32-usart.c
+>> +++ b/drivers/tty/serial/stm32-usart.c
+>> @@ -1168,6 +1168,8 @@ static struct stm32_port *stm32_usart_of_get_port(struct platform_device *pdev)
+>>   	stm32_ports[id].cr1_irq = USART_CR1_RXNEIE;
+>>   	stm32_ports[id].cr3_irq = 0;
+>>   	stm32_ports[id].last_res = RX_BUF_L;
+>> +	stm32_ports[id].rx_dma_buf = 0;
+>> +	stm32_ports[id].tx_dma_buf = 0;
+>>   	return &stm32_ports[id];
+>>   }
+>>   
+>> -- 
+>> 2.17.1
+>>
+> 
+> Is this a bugfix?  if so, what commit does this fix and does it need to
+> be backported anywhere?
+> 
+> thanks,
+> 
+> greg k-h
+> 
