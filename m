@@ -2,105 +2,259 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-18.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1C8C48BDF
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 15:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFE7C48BD1
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 18:22:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 35E4E613F1
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 15:17:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F4078613F5
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 18:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231636AbhFJPTM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Jun 2021 11:19:12 -0400
-Received: from mail-io1-f42.google.com ([209.85.166.42]:45724 "EHLO
-        mail-io1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231620AbhFJPTL (ORCPT
+        id S230245AbhFJSYx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Jun 2021 14:24:53 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:52510 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229823AbhFJSYw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Jun 2021 11:19:11 -0400
-Received: by mail-io1-f42.google.com with SMTP id k5so17621634iow.12
-        for <linux-serial@vger.kernel.org>; Thu, 10 Jun 2021 08:16:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CoLn4qViOeYGj00Cr57KHBOqwdLExPB58jgkoo3+kw4=;
-        b=Om2bUvQgE2Xgs9cDoQxX/2kBFI2K66NFIlU9JDmEIPGlMCHD0ieH6TlNQnXGQz3B07
-         M2bCCqT3HjMFO1o8A7QhWEK3x00FJzwQZAIWMPYfx29Kgnl791SPIi9sUkPq/4TDbIix
-         MsvhgDVntFLr8RjuuittAj8mZltWU2WKZ9hV0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CoLn4qViOeYGj00Cr57KHBOqwdLExPB58jgkoo3+kw4=;
-        b=lt3qnbJAt9pNWkTAa4EPyHFldtGzyLCcMdHXLs/5U/yNF1skcN+6k/TdgmBN53k6qn
-         4G4cR8foAy9fzfUQL/IiT1Geg3TWOgJzcy/42j37vDwfaq0+6rKsHSqwPVQ6u8FwaVYW
-         OoZCO7wc8f7IPsguhW+VOy2Z/xF1xep7Vz4UJSb9PUn65tCBxDmDq6qas0+fezLX5tHO
-         lcYlcauk/wO8kShboG2TD+eWpcZzCxMFQRsSQ9QS7EtID3EPLNqsK4UvRdJ6PshaBxc9
-         oQ2N+THm5B0tVQgpkWJTBS7lMHausd0u7h23QB+D4B1iLD6TFkrWTPf6atKamgVZnusL
-         TRtA==
-X-Gm-Message-State: AOAM532vfHymjbIIizIRF9wjjv7ippLc3uaBuGGPrYk32YZYFL7MXpyi
-        LvQpKbXmJ4iIZTg/buf4KGca3A==
-X-Google-Smtp-Source: ABdhPJzrK+ymUDdzzgUR5JsVtJu/hPBNk+7tFS5Ro4H8pl6LapGKsn8k4Sq+vVh6f6Sbxu1L7cxBtQ==
-X-Received: by 2002:a05:6638:1202:: with SMTP id n2mr5200296jas.57.1623338159216;
-        Thu, 10 Jun 2021 08:15:59 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id g14sm1671700ioo.19.2021.06.10.08.15.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 08:15:57 -0700 (PDT)
-Subject: Re: [PATCH v3 4/4] tty: make use of tty_get_{char,frame}_size
-To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, David Lin <dtwlin@gmail.com>,
-        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Oliver Neukum <oneukum@suse.com>
-References: <20210505091928.22010-1-jslaby@suse.cz>
- <20210610090247.2593-1-jslaby@suse.cz> <20210610090247.2593-4-jslaby@suse.cz>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <0f61ae31-cfad-cd78-b976-c05f56c89d4c@ieee.org>
-Date:   Thu, 10 Jun 2021 10:15:55 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Thu, 10 Jun 2021 14:24:52 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 15AIMmwL049584;
+        Thu, 10 Jun 2021 13:22:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1623349368;
+        bh=j4y1roC4Z+WBp/KricZBidNy0UOzWVsHnaR9EbgN0IQ=;
+        h=From:To:CC:Subject:Date;
+        b=CdO5+W2ht48r8SsE9FeVpJlGOAMbsquiWC9KIB8KVrZ/FXO3zxPHaA6Q+G04H7w9z
+         Szr6ES8MuyzRg42hRfakLXJXFxEGa9qnjWxWo005KXfA8ViU0fbJNKB15nujmam/hc
+         q0ObwFjQ8fyuolaMRgUyauCcYO3usnbcCmvLsidg=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 15AIMmD0092764
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 10 Jun 2021 13:22:48 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 10
+ Jun 2021 13:22:47 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Thu, 10 Jun 2021 13:22:47 -0500
+Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 15AIMhs9041519;
+        Thu, 10 Jun 2021 13:22:44 -0500
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Tony Lindgren <tony@atomide.com>, <linux-omap@vger.kernel.org>,
+        Nishanth Menon <nm@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH v2] dt-bindings: serial: Move omap-serial.txt to YAML schema
+Date:   Thu, 10 Jun 2021 23:52:27 +0530
+Message-ID: <20210610182227.2480-1-vigneshr@ti.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <20210610090247.2593-4-jslaby@suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 6/10/21 4:02 AM, Jiri Slaby wrote:
-> In the previous patch, we introduced tty_get_char_size() and
-> tty_get_frame_size() for computing character and frame sizes,
-> respectively. Here, we make use of them in various tty drivers where
-> applicable.
-> 
-> The stats look nice: 12 insertions, 169 deletions.
+Convert serial-omap.txt to YAML schema for better checks and documentation.
 
-Agreed.  Looks good to me (for drivers/staging/greybus/uart.c).
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+---
 
-Acked-by: Alex Elder <elder@kernel.org>
+v2:
+*Drop reg-io-width and reg-shift as they are constant and documented in
+ txt bindings (also not used by driver).
+*Drop unused label in example.
+*Rename file to 8250_omap.yaml to be more generic as IP is present in
+varies families of TI SoCs.
+*Add description for interrupt entries
 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: David Lin <dtwlin@gmail.com>
-> Cc: Johan Hovold <johan@kernel.org>
-> Cc: Alex Elder <elder@kernel.org>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: Oliver Neukum <oneukum@suse.com>
+ .../devicetree/bindings/serial/8250_omap.yaml | 118 ++++++++++++++++++
+ .../bindings/serial/omap_serial.txt           |  40 ------
+ 2 files changed, 118 insertions(+), 40 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/8250_omap.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/omap_serial.txt
+
+diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+new file mode 100644
+index 000000000000..1c826fcf5828
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+@@ -0,0 +1,118 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/8250_omap.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Bindings for 8250 compliant UARTs on TI's OMAP2+ and K3 SoCs
++
++maintainers:
++  - Vignesh Raghavendra <vigneshr@ti.com>
++
++allOf:
++  - $ref: /schemas/serial/serial.yaml#
++  - $ref: /schemas/serial/rs485.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - ti,am3352-uart
++          - ti,am4372-uart
++          - ti,am654-uart
++          - ti,dra742-uart
++          - ti,omap2-uart
++          - ti,omap3-uart
++          - ti,omap4-uart
++      - items:
++          - enum:
++              - ti,am64-uart
++              - ti,j721e-uart
++          - const: ti,am654-uart
++
++  ti,hwmods:
++    description:
++      Must be "uart<n>", n being the instance number (1-based)
++      This property is applicable only on legacy platforms mainly omap2/3
++      and ti81xx and should not be used on other platforms.
++    $ref: /schemas/types.yaml#/definitions/string
++    deprecated: true
++
++  dmas:
++    minItems: 1
++    maxItems: 2
++
++  dma-names:
++    items:
++      - const: tx
++      - const: rx
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++    description:
++      First entry is module IRQ required for normal IO operation.
++      Second entry is optional and corresponds to system wakeup IRQ
++      where supported.
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: fclk
++
++  rts-gpios: true
++  cts-gpios: true
++  dtr-gpios: true
++  dsr-gpios: true
++  rng-gpios: true
++  dcd-gpios: true
++  rs485-rts-delay: true
++  rs485-rts-active-low: true
++  rs485-rx-during-tx: true
++  rs485-rts-active-high: true
++  linux,rs485-enabled-at-boot-time: true
++  rts-gpio: true
++  power-domains: true
++  clock-frequency: true
++  current-speed: true
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++if:
++  properties:
++    compatible:
++      oneOf:
++        - const: ti,omap2-uart
++        - const: ti,omap3-uart
++        - const: ti,omap4-uart
++
++then:
++  properties:
++    ti,hwmods:
++      items:
++        - pattern: "^uart([1-9])$"
++
++else:
++  properties:
++    ti,hwmods: false
++
++examples:
++  - |
++          serial@49042000 {
++            compatible = "ti,omap3-uart";
++            reg = <0x49042000 0x400>;
++            interrupts = <80>;
++            dmas = <&sdma 81 &sdma 82>;
++            dma-names = "tx", "rx";
++            ti,hwmods = "uart4";
++            clock-frequency = <48000000>;
++          };
+diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
+deleted file mode 100644
+index c2db8cabf2ab..000000000000
+--- a/Documentation/devicetree/bindings/serial/omap_serial.txt
++++ /dev/null
+@@ -1,40 +0,0 @@
+-OMAP UART controller
+-
+-Required properties:
+-- compatible : should be "ti,am64-uart", "ti,am654-uart" for AM64 controllers
+-- compatible : should be "ti,j721e-uart", "ti,am654-uart" for J721E controllers
+-- compatible : should be "ti,am654-uart" for AM654 controllers
+-- compatible : should be "ti,omap2-uart" for OMAP2 controllers
+-- compatible : should be "ti,omap3-uart" for OMAP3 controllers
+-- compatible : should be "ti,omap4-uart" for OMAP4 controllers
+-- compatible : should be "ti,am4372-uart" for AM437x controllers
+-- compatible : should be "ti,am3352-uart" for AM335x controllers
+-- compatible : should be "ti,dra742-uart" for DRA7x controllers
+-- reg : address and length of the register space
+-- interrupts or interrupts-extended : Should contain the uart interrupt
+-                                      specifier or both the interrupt
+-                                      controller phandle and interrupt
+-                                      specifier.
+-- ti,hwmods : Must be "uart<n>", n being the instance number (1-based)
+-
+-Optional properties:
+-- clock-frequency : frequency of the clock input to the UART
+-- dmas : DMA specifier, consisting of a phandle to the DMA controller
+-         node and a DMA channel number.
+-- dma-names : "rx" for receive channel, "tx" for transmit channel.
+-- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
+-- rs485-rts-active-high: drive RTS high when sending (default is low).
+-- clocks: phandle to the functional clock as per
+-  Documentation/devicetree/bindings/clock/clock-bindings.txt
+-
+-Example:
+-
+-                uart4: serial@49042000 {
+-                        compatible = "ti,omap3-uart";
+-                        reg = <0x49042000 0x400>;
+-                        interrupts = <80>;
+-                        dmas = <&sdma 81 &sdma 82>;
+-                        dma-names = "tx", "rx";
+-                        ti,hwmods = "uart4";
+-                        clock-frequency = <48000000>;
+-                };
+-- 
+2.32.0
+
