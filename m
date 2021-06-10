@@ -7,118 +7,206 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC18C48BCD
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC152C47094
 	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 09:02:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B45CB61407
+	by mail.kernel.org (Postfix) with ESMTP id 9DEFE61040
 	for <linux-serial@archiver.kernel.org>; Thu, 10 Jun 2021 09:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbhFJJEp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S230151AbhFJJEp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 10 Jun 2021 05:04:45 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:54604 "EHLO
+Received: from smtp-out1.suse.de ([195.135.220.28]:54592 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbhFJJEp (ORCPT
+        with ESMTP id S230152AbhFJJEp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 10 Jun 2021 05:04:45 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id BBF1D21A57;
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8369821A32;
         Thu, 10 Jun 2021 09:02:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1623315768; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/AzY5aKAyUxEh8Iy+wlacgGEXj9oXE6OjdWt5CY8gls=;
-        b=r2tMQ8POvO1nORramHc2h27E1Loa/6gbtoDIoOcNkiR202pXY4aHmja6dl7OEUN19Q849E
-        kvCwO2SeimHzmxLQ5czP63oEIYcrKWRzRtfz5a3oOYXyHPc17j/NB1pXv1x/hF9AvNHBJz
-        elWrBoI0bm8Xcjy0d24QIvEy6sGHjTo=
+        bh=JIlSlhKtbzlXvZQYQcOTkErs4DA45C8U5DktVPXAF6M=;
+        b=qAJbJqaMcYSNa3HmvciIDvxGFjpyJQWmzcTSxQzsSQHUNarXkuDQ6xQ2YAOHGDpiI03+fr
+        1gEOfOfbXxWcpggJmelBx3yBwx+aDusKj2PAbM7Nlshz+SHpck6IHKa8BxSCvN1AE/262B
+        2EI6jZYaRSY2UVWvgUKph8ToAULdzfU=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1623315768;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/AzY5aKAyUxEh8Iy+wlacgGEXj9oXE6OjdWt5CY8gls=;
-        b=50tZfTcgM7ReM7v8LKe+UCNrrQpowzigHC3SKEQOlqq+4a9Q/QYl2YO/Z1XUae0uNyHoW9
-        Yeux4UO1mKSqyHBw==
+        bh=JIlSlhKtbzlXvZQYQcOTkErs4DA45C8U5DktVPXAF6M=;
+        b=E2TP+1uoQKcoZldetoP91Q2XKCTlq3KxYzFjuhA3no6DDz273hj4WDgoZH1cqaWiyOLm0F
+        JgTKMds+3LwVxJDQ==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9284FA3B8B;
+        by relay2.suse.de (Postfix) with ESMTPS id 393BAA3B8B;
         Thu, 10 Jun 2021 09:02:48 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH v3 2/4] mxs-auart: redefine AUART_LINECTRL_WLEN to accept bits count
-Date:   Thu, 10 Jun 2021 11:02:45 +0200
-Message-Id: <20210610090247.2593-2-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Joe Perches <joe@perches.com>, Johan Hovold <johan@kernel.org>
+Subject: [PATCH v3 1/4] tty: make tty_get_{char,frame}_size available
+Date:   Thu, 10 Jun 2021 11:02:44 +0200
+Message-Id: <20210610090247.2593-1-jslaby@suse.cz>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210610090247.2593-1-jslaby@suse.cz>
+In-Reply-To: <20210505091928.22010-1-jslaby@suse.cz>
 References: <20210505091928.22010-1-jslaby@suse.cz>
- <20210610090247.2593-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It's a bit illogical to take magic constants in AUART_LINECTRL_WLEN.
-Like in auart_console_get_options(), 2 means 7 bits. Switch
-AUART_LINECTRL_WLEN to accept bit length, i.e. let it subtract 5 from
-the parameter before doing the logic.
+Many tty drivers contain code to compute bits count depending on termios
+cflags. So extract this code from serial core to two separate tty helper
+functions:
+* tty_get_char_size -- only size of a character, without flags,
+* tty_get_frame_size -- complete size of a frame including flags.
 
-This will ease conversion from CSIZE to bits in mxs_auart_settermios()
-in the next patch.
+In the next patch, calls to these new functions replace many copies of
+this code.
+
+Note that we accept only cflag as a parameter. That's because some
+callers like pch_uart_startup or sunsab_console_setup don't have at hand
+termios which we could pass around.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Joe Perches <joe@perches.com>
+Cc: Johan Hovold <johan@kernel.org>
 ---
- drivers/tty/serial/mxs-auart.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+[v2] simplified the code flow as suggested by Joe and Andy
+[v3] redesign to have 2 functions as suggested by Johan.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index f414d6acad69..7b4b6bb75424 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -87,7 +87,7 @@
- #define AUART_LINECTRL_BAUD_DIVFRAC(v)		(((v) & 0x3f) << 8)
- #define AUART_LINECTRL_SPS			(1 << 7)
- #define AUART_LINECTRL_WLEN_MASK		0x00000060
--#define AUART_LINECTRL_WLEN(v)			(((v) & 0x3) << 5)
-+#define AUART_LINECTRL_WLEN(v)			((((v) - 5) & 0x3) << 5)
- #define AUART_LINECTRL_FEN			(1 << 4)
- #define AUART_LINECTRL_STP2			(1 << 3)
- #define AUART_LINECTRL_EPS			(1 << 2)
-@@ -973,16 +973,16 @@ static void mxs_auart_settermios(struct uart_port *u,
- 	/* byte size */
- 	switch (cflag & CSIZE) {
- 	case CS5:
--		bm = 0;
-+		bm = 5;
- 		break;
- 	case CS6:
--		bm = 1;
-+		bm = 6;
- 		break;
- 	case CS7:
--		bm = 2;
-+		bm = 7;
- 		break;
- 	case CS8:
--		bm = 3;
-+		bm = 8;
- 		break;
- 	default:
- 		return;
-@@ -1403,7 +1403,7 @@ auart_console_get_options(struct mxs_auart_port *s, int *baud,
- 			*parity = 'o';
- 	}
+ drivers/tty/serial/serial_core.c | 30 +++------------------
+ drivers/tty/tty_ioctl.c          | 45 ++++++++++++++++++++++++++++++++
+ include/linux/tty.h              |  3 +++
+ 3 files changed, 51 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 642e24d6c475..69092deba11f 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -334,39 +334,15 @@ void
+ uart_update_timeout(struct uart_port *port, unsigned int cflag,
+ 		    unsigned int baud)
+ {
+-	unsigned int bits;
++	unsigned int size;
  
--	if ((lcr_h & AUART_LINECTRL_WLEN_MASK) == AUART_LINECTRL_WLEN(2))
-+	if ((lcr_h & AUART_LINECTRL_WLEN_MASK) == AUART_LINECTRL_WLEN(7))
- 		*bits = 7;
- 	else
- 		*bits = 8;
+-	/* byte size and parity */
+-	switch (cflag & CSIZE) {
+-	case CS5:
+-		bits = 7;
+-		break;
+-	case CS6:
+-		bits = 8;
+-		break;
+-	case CS7:
+-		bits = 9;
+-		break;
+-	default:
+-		bits = 10;
+-		break; /* CS8 */
+-	}
+-
+-	if (cflag & CSTOPB)
+-		bits++;
+-	if (cflag & PARENB)
+-		bits++;
+-
+-	/*
+-	 * The total number of bits to be transmitted in the fifo.
+-	 */
+-	bits = bits * port->fifosize;
++	size = tty_get_frame_size(cflag) * port->fifosize;
+ 
+ 	/*
+ 	 * Figure the timeout to send the above number of bits.
+ 	 * Add .02 seconds of slop
+ 	 */
+-	port->timeout = (HZ * bits) / baud + HZ/50;
++	port->timeout = (HZ * size) / baud + HZ/50;
+ }
+ 
+ EXPORT_SYMBOL(uart_update_timeout);
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 75885d502749..507a25d692bb 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -279,6 +279,51 @@ int tty_termios_hw_change(const struct ktermios *a, const struct ktermios *b)
+ }
+ EXPORT_SYMBOL(tty_termios_hw_change);
+ 
++/**
++ *	tty_get_char_size	-	get size of a character
++ *	@cflag: termios cflag value
++ *
++ *	Get the size (in bits) of a character depending on @cflag's %CSIZE
++ *	setting.
++ */
++unsigned char tty_get_char_size(unsigned int cflag)
++{
++	switch (cflag & CSIZE) {
++	case CS5:
++		return 5;
++	case CS6:
++		return 6;
++	case CS7:
++		return 7;
++	case CS8:
++	default:
++		return 8;
++	}
++}
++EXPORT_SYMBOL_GPL(tty_get_char_size);
++
++/**
++ *	tty_get_frame_size	-	get size of a frame
++ *	@cflag: termios cflag value
++ *
++ *	Get the size (in bits) of a frame depending on @cflag's %CSIZE, %CSTOPB,
++ *	and %PARENB setting. The result is a sum of character size, start and
++ *	stop bits -- one bit each -- second stop bit (if set), and parity bit
++ *	(if set).
++ */
++unsigned char tty_get_frame_size(unsigned int cflag)
++{
++	unsigned char bits = 2 + tty_get_char_size(cflag);
++
++	if (cflag & CSTOPB)
++		bits++;
++	if (cflag & PARENB)
++		bits++;
++
++	return bits;
++}
++EXPORT_SYMBOL_GPL(tty_get_frame_size);
++
+ /**
+  *	tty_set_termios		-	update termios values
+  *	@tty: tty to update
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 4c0c7ca1d9a4..19dc1097e09c 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -495,6 +495,9 @@ static inline speed_t tty_get_baud_rate(struct tty_struct *tty)
+ 	return tty_termios_baud_rate(&tty->termios);
+ }
+ 
++unsigned char tty_get_char_size(unsigned int cflag);
++unsigned char tty_get_frame_size(unsigned int cflag);
++
+ extern void tty_termios_copy_hw(struct ktermios *new, struct ktermios *old);
+ extern int tty_termios_hw_change(const struct ktermios *a, const struct ktermios *b);
+ extern int tty_set_termios(struct tty_struct *tty, struct ktermios *kt);
 -- 
 2.32.0
 
