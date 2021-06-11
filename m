@@ -2,66 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B59CFC48BD1
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Jun 2021 06:55:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E166CC48BE0
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Jun 2021 09:35:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9ECDE613AD
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Jun 2021 06:55:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CB76A613D3
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Jun 2021 09:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbhFKG5j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Jun 2021 02:57:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35258 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229480AbhFKG5j (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Jun 2021 02:57:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C88861364;
-        Fri, 11 Jun 2021 06:55:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1623394541;
-        bh=nV7qhZxOMEfwQw+aPrIeJJ1lJqNt38ET7V3fCL6+jJE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L8QGtg7aKsKhYsb1x7turV895A0qPbBa4TKKWrkvA/G4SBhePyGaiBBHFDC03kK4S
-         26Bxhnpo7qVhvjYqob7RWnD0h1C50sOy9YgFgMAcEPIkRVv71JgXfInYyURypvwb2C
-         uWp1UPUbjZerHWEHuPYf3AIic+2A2Th6vVF9ldRA=
-Date:   Fri, 11 Jun 2021 08:55:37 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] serial: 8250: Mask out floating 16/32-bit bus bits
-Message-ID: <YMMI6TtSm91JeZNJ@kroah.com>
-References: <alpine.DEB.2.21.2105161721220.3032@angie.orcam.me.uk>
- <alpine.DEB.2.21.2105181508460.3032@angie.orcam.me.uk>
- <CAHp75VeGn_wCLevAvD3iyykA73y+mh8k7pjQ2TY-9mt5cqEFWg@mail.gmail.com>
+        id S231308AbhFKJhC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Jun 2021 05:37:02 -0400
+Received: from mail-pl1-f181.google.com ([209.85.214.181]:40529 "EHLO
+        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230377AbhFKJhB (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 11 Jun 2021 05:37:01 -0400
+Received: by mail-pl1-f181.google.com with SMTP id e7so2551133plj.7
+        for <linux-serial@vger.kernel.org>; Fri, 11 Jun 2021 02:34:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=IcKwowicRBY+WFRXCMNgjtubHQbbf/h7juQp42wAOAU=;
+        b=tOHp9HPozjX63ndz8ziYqtp/beuKAx/oZXSWk29V29v9IslVXaTyfEubSwyCt/Rpb6
+         toM0yIxWJhYxsJsNo5pnqlZsX+6Y3ph9IevcogMxRAIwCI8sd/xMFf+m4MOgXKU5l3Ny
+         67pmmk26sILUXkOAg7cQuwbsVMmvz4cJGeoGsIbLj0OCD3RwEGasZIRwSm3TJWlcOlSz
+         J4M8mKzpB9DM6PVQGDLNAS2clqS0/k2ZI8Vi815E9qDS0m5LZZgd8VOZD/j3eug2KuNt
+         CP2zQ+hnXXCRhf/5m2MQqmogE60sx8M+4/JrokzRlNFYEMk0rMM2KwhBpdKWoUUXx+AU
+         jqcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=IcKwowicRBY+WFRXCMNgjtubHQbbf/h7juQp42wAOAU=;
+        b=oCYhixOwtHvuTXmcoi/Diir/BwjFx2sfh6a6aUNyaHsEqLpstBiArbr40JJbeurB2h
+         JCBgfJGe1LD7etL/ejqh+fJJwsrF/Wcm5L6LGPB8Ozt+fpHiYNYqeUvjOPXxwxMoVjbE
+         OKZOFQitPSkFnCdmnqVVhVXpjFIMhH6bg4xM7QK90sDeJ9k1AIgl4o81mfmz8TC2N1E3
+         /DY8AYJSqKTGf4zXEGW/KR5SyAAyTzArlupkwna/PQ9wu2bbYkXEdZU9Cxw2PyY7aDOk
+         dvZ8Lt48NMEpv4KHIIf1QKfIS5RvV7wmUoBDkpCoMYp1KuAnpm9e0Po4vgwixRLa8MxA
+         sFnA==
+X-Gm-Message-State: AOAM532zZK6cWQXucjUXbAbTH3RbiLNZucvrp/VnNvoXGy0wumP3dIP0
+        4QD0nPaB8EnrXjd2tLYpjKmwxiczHpyVdTf7
+X-Google-Smtp-Source: ABdhPJwsRuRcqRLmZUIn7QPGgi/wASxNY23hk0WSh9XXVDl+1W8Ksg+ttTXOTT/5CcufxseXLT3eTg==
+X-Received: by 2002:a17:90a:f094:: with SMTP id cn20mr3647125pjb.157.1623404027189;
+        Fri, 11 Jun 2021 02:33:47 -0700 (PDT)
+Received: from [192.168.0.118] ([103.242.196.232])
+        by smtp.gmail.com with ESMTPSA id m12sm4699304pjq.53.2021.06.11.02.33.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Jun 2021 02:33:46 -0700 (PDT)
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, ldv-project@linuxtesting.org,
+        andrianov@ispras.ru
+From:   Saubhik Mukherjee <saubhik.mukherjee@gmail.com>
+Subject: [question] Is it possible to remove an active port (without
+ shutdown)?
+Message-ID: <07b2ccfa-cf98-54a2-d03c-50507de06d52@gmail.com>
+Date:   Fri, 11 Jun 2021 15:03:42 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VeGn_wCLevAvD3iyykA73y+mh8k7pjQ2TY-9mt5cqEFWg@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 09:40:31AM +0300, Andy Shevchenko wrote:
-> On Thursday, June 10, 2021, Maciej W. Rozycki <macro@orcam.me.uk> wrote:
-> > Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-
-> 
-> 
-> Please, find the history group repository (Git.kernel.org) and use proper
-> hash of the real commit.
+Consider the following events involving drivers/tty/serial/owl-uart.c:
 
-There is no real need to do that, I'll just put a "cc: stable" in here
-and it will go back as far as we currently maintain.
+Suppose the driver is registered, and the owl_uart_probe() was called.
+Then uart_startup() can be called in serial core. This calls
+owl_uart_startup() which registers the interrupt handler owl_uart_irq.
 
-thanks,
+Now suppose uart_remove_one_port() in serial core is called. This
+detaches port from the core. This calls owl_uart_release_port(port).
+This writes NULL to port->membase after iounmap of port->membase from
+port->dev.
 
-greg k-h
+During this point, an interrupt is triggered and the interrupt callback
+owl_uart_irq() is called (parallel with uart_remove_one_port()). This
+tries to read port->membase to send or receive chars (with spinlock on
+port->lock). This introduces a race condition on port->membase.
+
+QUESTION: Is it possible to remove an active port (without shutdown)?
