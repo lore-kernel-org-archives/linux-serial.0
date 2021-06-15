@@ -2,200 +2,198 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A74C49EA2
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Jun 2021 15:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DB2C48BE5
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Jun 2021 09:30:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AD1746128C
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Jun 2021 15:03:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C90A061447
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Jun 2021 09:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbhFNPFr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Jun 2021 11:05:47 -0400
-Received: from mail-il1-f180.google.com ([209.85.166.180]:44916 "EHLO
-        mail-il1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232869AbhFNPFr (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Jun 2021 11:05:47 -0400
-Received: by mail-il1-f180.google.com with SMTP id i17so12450373ilj.11;
-        Mon, 14 Jun 2021 08:03:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ORcJk31TiVnuEogk3RJcUiauMJCVCh/REeNy+uWJyuI=;
-        b=Q30pWdmsyox1BEsn8LU2WQR4fhKxEL5SZFm96nZM/hXxLPhBPLKzs31+ZD4e17Druv
-         3AfPTyY9LflPD0Ux3ID8wyzan9wRioikfdlMO263W/KgMzANMkDj4hCILT86v46BLd7Q
-         PFmSixOx8Yu5iID9nM1LqS20cbC0d+aIbKpkvl5wX5Nz3ab0CKXhgF603EYJBhNAMBIW
-         S68PYwT9qA59oaW/xgdvvse6DCzliRIaDfD+mxmtXReXBgPyD9DaLXf9lCguiQPFPsGs
-         7lKWxzwLNC8MDlMnaBwJo+FD4bXzkEUrolV12VFGEjwKbgjz630hAB6FUZZBEalB5emT
-         Pyaw==
-X-Gm-Message-State: AOAM5319XGqf/GWu7QFPZoQN32WlX1i/W56aXzNoTvO9ghR2EFgahK96
-        Km9qvob7m8xCoHf1H0L7F51wBjTMjg==
-X-Google-Smtp-Source: ABdhPJxevxIhIoghxuFi1Czoup2tc4Tf11I/KvnTMIECwiSsVK/e/doraZRmwywMjpT9+SnmMWGoQw==
-X-Received: by 2002:a92:190f:: with SMTP id 15mr13571076ilz.45.1623683023926;
-        Mon, 14 Jun 2021 08:03:43 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id i13sm7633657ilr.16.2021.06.14.08.03.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 08:03:42 -0700 (PDT)
-Received: (nullmailer pid 758861 invoked by uid 1000);
-        Mon, 14 Jun 2021 15:03:41 -0000
-Date:   Mon, 14 Jun 2021 09:03:41 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-Cc:     gregkh@linuxfoundation.org, michal.simek@xilinx.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, shubhrajyoti.datta@xilinx.com,
-        navam@xilinx.com, peter.crosthwaite@xilinx.com,
-        soren.brinkmann@xilinx.com
-Subject: Re: [PATCH] dt-bindings: serial: convert Cadence UART bindings to
- YAML
-Message-ID: <20210614150341.GA747048@robh.at.kernel.org>
-References: <20210613213359.296400-1-iwamatsu@nigauri.org>
+        id S231174AbhFOJct (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Jun 2021 05:32:49 -0400
+Received: from mga11.intel.com ([192.55.52.93]:21765 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231220AbhFOJcs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 15 Jun 2021 05:32:48 -0400
+IronPort-SDR: affTLNdC5mVi5MIn3CXMP4+MqnDkK6q2A8K0gzSx2HcwpIaWqnGwzdNZAPzNjX0Z3PjAOo4Axz
+ PuoJ9Hs5EO0w==
+X-IronPort-AV: E=McAfee;i="6200,9189,10015"; a="202930748"
+X-IronPort-AV: E=Sophos;i="5.83,275,1616482800"; 
+   d="scan'208";a="202930748"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2021 02:30:44 -0700
+IronPort-SDR: zs60HxpSHW3iuN7HlTZYBu2x9DVfJCU2Uv12OV5sny3NGAVQwp3494CPfT461i7I/DBFPdvik8
+ eDaXeSLk2afg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,275,1616482800"; 
+   d="scan'208";a="404169441"
+Received: from lkp-server01.sh.intel.com (HELO 4aae0cb4f5b5) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 15 Jun 2021 02:30:41 -0700
+Received: from kbuild by 4aae0cb4f5b5 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1lt5P6-0000Jl-6s; Tue, 15 Jun 2021 09:30:40 +0000
+Date:   Tue, 15 Jun 2021 17:29:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 99289bf1a76c0aea6ac0f77335b8c9bdca16aac7
+Message-ID: <60c87311.tJ/XdXiqwx/Udt41%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210613213359.296400-1-iwamatsu@nigauri.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 06:33:59AM +0900, Nobuhiro Iwamatsu wrote:
-> Convert serial for Cadence UART bindings documentation to YAML.
-> 
-> Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-> ---
->  .../devicetree/bindings/serial/cdns,uart.txt  | 27 --------
->  .../devicetree/bindings/serial/cdns,uart.yaml | 68 +++++++++++++++++++
->  2 files changed, 68 insertions(+), 27 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/cdns,uart.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-> deleted file mode 100644
-> index 4efc560f90abbd..00000000000000
-> --- a/Documentation/devicetree/bindings/serial/cdns,uart.txt
-> +++ /dev/null
-> @@ -1,27 +0,0 @@
-> -Binding for Cadence UART Controller
-> -
-> -Required properties:
-> -- compatible :
-> -  Use "xlnx,xuartps","cdns,uart-r1p8" for Zynq-7xxx SoC.
-> -  Use "xlnx,zynqmp-uart","cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC.
-> -- reg: Should contain UART controller registers location and length.
-> -- interrupts: Should contain UART controller interrupts.
-> -- clocks: Must contain phandles to the UART clocks
-> -  See ../clocks/clock-bindings.txt for details.
-> -- clock-names: Tuple to identify input clocks, must contain "uart_clk" and "pclk"
-> -  See ../clocks/clock-bindings.txt for details.
-> -
-> -
-> -Optional properties:
-> -- cts-override : Override the CTS modem status signal. This signal will
-> -  always be reported as active instead of being obtained from the modem status
-> -  register. Define this if your serial port does not use this pin
-> -
-> -Example:
-> -	uart@e0000000 {
-> -		compatible = "cdns,uart-r1p8";
-> -		clocks = <&clkc 23>, <&clkc 40>;
-> -		clock-names = "uart_clk", "pclk";
-> -		reg = <0xE0000000 0x1000>;
-> -		interrupts = <0 27 4>;
-> -	};
-> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> new file mode 100644
-> index 00000000000000..ce467fa464bfd0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> @@ -0,0 +1,68 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/cdns,uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Cadence UART Controller Device Tree Bindings
-> +
-> +maintainers:
-> +  - Michal Simek <michal.simek@xilinx.com>
-> +
-> +allOf:
-> +  - $ref: /schemas/serial.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - description: UART controller for Zynq-7xxx SoC
-> +        items:
-> +          - enum:
-> +            - xlnx,xuartps
-> +            - cdns,uart-r1p8
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 99289bf1a76c0aea6ac0f77335b8c9bdca16aac7  Merge tag 'v5.13-rc6' into tty-next
 
-What you want is:
+elapsed time: 1563m
 
-items:
-  - const: xlnx,xuartps
-  - const: cdns,uart-r1p8
+configs tested: 129
+configs skipped: 2
 
-> +      - description: UART controller for Zynq Ultrascale+ MPSoC
-> +        items:
-> +          - enum:
-> +            - xlnx,zynqmp-uart
-> +            - cdns,uart-r1p12
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 2
-> +
-> +  clock-names:
-> +    items:
-> +      - const: uart_clk
-> +      - const: pclk
-> +
-> +  cts-override:
-> +    description: |
-> +      Override the CTS modem status signal. This signal will
-> +      always be reported as active instead of being obtained
-> +      from the modem status register. Define this if your serial
-> +      port does not use this pin.
-> +    type: boolean
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +
-> +additionalProperties: false
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-unevaluatedProperties: false
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+powerpc                    amigaone_defconfig
+mips                      malta_kvm_defconfig
+powerpc                        fsp2_defconfig
+powerpc                      ppc64e_defconfig
+powerpc                      katmai_defconfig
+arc                              allyesconfig
+sh                          kfr2r09_defconfig
+powerpc                 mpc85xx_cds_defconfig
+arm                        spear3xx_defconfig
+powerpc                    klondike_defconfig
+csky                             alldefconfig
+powerpc                 mpc837x_mds_defconfig
+arm                       spear13xx_defconfig
+arm                          pxa910_defconfig
+powerpc                 mpc8315_rdb_defconfig
+powerpc                      chrp32_defconfig
+nios2                         10m50_defconfig
+arm                           omap1_defconfig
+csky                                defconfig
+sh                     magicpanelr2_defconfig
+x86_64                           alldefconfig
+powerpc                       ppc64_defconfig
+mips                        bcm47xx_defconfig
+sh                           se7619_defconfig
+powerpc                     ppa8548_defconfig
+mips                         bigsur_defconfig
+sh                             sh03_defconfig
+powerpc                     taishan_defconfig
+arm                          ixp4xx_defconfig
+mips                        nlm_xlp_defconfig
+arm                          pcm027_defconfig
+powerpc                      ppc40x_defconfig
+arm                          simpad_defconfig
+sh                          rsk7201_defconfig
+powerpc                 mpc8272_ads_defconfig
+powerpc                      walnut_defconfig
+m68k                        mvme16x_defconfig
+arm                         mv78xx0_defconfig
+arm                            dove_defconfig
+mips                      maltasmvp_defconfig
+x86_64                            allnoconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a002-20210613
+i386                 randconfig-a006-20210613
+i386                 randconfig-a001-20210613
+i386                 randconfig-a004-20210613
+i386                 randconfig-a005-20210613
+i386                 randconfig-a003-20210613
+i386                 randconfig-a002-20210614
+i386                 randconfig-a006-20210614
+i386                 randconfig-a004-20210614
+i386                 randconfig-a001-20210614
+i386                 randconfig-a005-20210614
+i386                 randconfig-a003-20210614
+i386                 randconfig-a015-20210613
+i386                 randconfig-a013-20210613
+i386                 randconfig-a016-20210613
+i386                 randconfig-a014-20210613
+i386                 randconfig-a012-20210613
+i386                 randconfig-a011-20210613
+i386                 randconfig-a015-20210614
+i386                 randconfig-a013-20210614
+i386                 randconfig-a016-20210614
+i386                 randconfig-a012-20210614
+i386                 randconfig-a014-20210614
+i386                 randconfig-a011-20210614
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+um                            kunit_defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                      rhel-8.3-kbuiltin
+x86_64                                  kexec
 
-because you could have child nodes with attached devices.
+clang tested configs:
+x86_64               randconfig-b001-20210614
+x86_64               randconfig-a001-20210614
+x86_64               randconfig-a004-20210614
+x86_64               randconfig-a002-20210614
+x86_64               randconfig-a003-20210614
+x86_64               randconfig-a006-20210614
+x86_64               randconfig-a005-20210614
+x86_64               randconfig-a015-20210613
+x86_64               randconfig-a011-20210613
+x86_64               randconfig-a014-20210613
+x86_64               randconfig-a012-20210613
+x86_64               randconfig-a013-20210613
+x86_64               randconfig-a016-20210613
 
-> +
-> +examples:
-> +  - |
-> +    serial@e0000000 {
-> +      compatible = "cdns,uart-r1p8";
-
-This is wrong based on what the binding said.
-
-> +      clocks = <&clkc 23>, <&clkc 40>;
-> +      clock-names = "uart_clk", "pclk";
-> +      reg = <0xE0000000 0x1000>;
-> +      interrupts = <0 27 4>;
-> +    };
-> -- 
-> 2.32.0
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
