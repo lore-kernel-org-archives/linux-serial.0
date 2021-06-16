@@ -2,154 +2,170 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-20.7 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F52C49EBE
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Jun 2021 06:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E75FC48BE5
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Jun 2021 06:18:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 76A2A613BF
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Jun 2021 06:06:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 03255613BF
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Jun 2021 06:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231298AbhFPGIG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Jun 2021 02:08:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59250 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229543AbhFPGIE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Jun 2021 02:08:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6BD9161350;
-        Wed, 16 Jun 2021 06:05:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1623823558;
-        bh=wj+fnX135Oi/RuBZlfcRXEj82T4M+/zm2RKoeLfcdHI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gHZLhaFOGuJEdFzGD8ad6/WT9r+ZqPlWGvOwJoE3JRn+pqz1O74eBVMbWjjeG87Dj
-         TPvrvUCNWbz/7lixm1DsLz03lLNe9Um44ZNofR+Fgv+slwMtNQEfvKCMrcTThWdf6e
-         F+7I/PxIo72YidQoQbZHHngOc0S41uEQR6nyNaRA=
-Date:   Wed, 16 Jun 2021 08:05:52 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
-        alsa-devel@alsa-project.org, iommu@lists.linux-foundation.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>, Stephen Boyd <sboyd@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] dt-bindings: Drop redundant minItems/maxItems
-Message-ID: <YMmUwCsdy4OaQCiU@kroah.com>
-References: <20210615191543.1043414-1-robh@kernel.org>
+        id S230508AbhFPGUJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Jun 2021 02:20:09 -0400
+Received: from mail-ej1-f47.google.com ([209.85.218.47]:43556 "EHLO
+        mail-ej1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229543AbhFPGUJ (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 16 Jun 2021 02:20:09 -0400
+Received: by mail-ej1-f47.google.com with SMTP id nb6so1819423ejc.10;
+        Tue, 15 Jun 2021 23:18:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9a9qyUphW3s0CGsYm8ttvYCQCKXWvSpf1HL+27z8QW8=;
+        b=uj7uj6nI2sbtu50QXp9uEjTBQNWC3nYoZhWc7DmUGSt9zrqnwyVcXwSpGvUkYZAKoH
+         4GUvIagJDXnwC9OeN9fYVPl+dh9xWi1SSqPiSJ2eNYmUfswtFzaf/jJNWXEv0JM7Chn6
+         7XOPe61tV7WaN+2cGFl2nXDek41SmA8z1TkTHryv3H+//abwtmVTlWYA0T7V7F9usScp
+         4sqaFyq6r2jPqSy35DkcOMqtxRMngspN90yP/VjzFdoLHSes8KSFWtZEqafTDEQ65DaQ
+         1KpS6XD/sNpbHNjpemu1Iq87gVmRdbPKZ1eqmcxCIbcuLCbGDbMSBYXPa+2qRhjoysJ1
+         AdrA==
+X-Gm-Message-State: AOAM533SLfKgOtqDF5PWggS6aJc2R6KMlFfx+P86Rje8YWBJIFgDnpuv
+        gKkbkcBIM6tVh4T7i9B18zZEvQkGZfE=
+X-Google-Smtp-Source: ABdhPJwzHVZX4Ev+IXHg2PqEMD3Z6TJAkvcxUGu8B+NUNesinhBoStuxVviQJgnTwZyugiHlJqe2vQ==
+X-Received: by 2002:a17:906:b24a:: with SMTP id ce10mr3511669ejb.83.1623824282553;
+        Tue, 15 Jun 2021 23:18:02 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id v7sm916032edx.38.2021.06.15.23.18.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Jun 2021 23:18:01 -0700 (PDT)
+Subject: Re: [PATCH] serial: amba-pl011: add RS485 support
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, gregkh@linuxfoundation.org
+Cc:     linux@armlinux.org.uk, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210610135004.7585-1-LinoSanfilippo@gmx.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <5f00ff43-9287-4027-7d80-474da957703c@kernel.org>
+Date:   Wed, 16 Jun 2021 08:18:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210615191543.1043414-1-robh@kernel.org>
+In-Reply-To: <20210610135004.7585-1-LinoSanfilippo@gmx.de>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 01:15:43PM -0600, Rob Herring wrote:
-> If a property has an 'items' list, then a 'minItems' or 'maxItems' with the
-> same size as the list is redundant and can be dropped. Note that is DT
-> schema specific behavior and not standard json-schema behavior. The tooling
-> will fixup the final schema adding any unspecified minItems/maxItems.
+On 10. 06. 21, 15:50, Lino Sanfilippo wrote:
+> Add basic support for RS485: Provide a callback to configure rs485
+> settings. Handle the RS485 specific part in the functions
+> pl011_rs485_tx_start() and pl011_rs485_tx_stop() which extend the generic
+> start/stop callbacks.
+> Beside via IOCTL from userspace RS485 can be enabled by means of the
+> device tree property "rs485-enabled-at-boot-time".
 > 
-> This condition is partially checked with the meta-schema already, but
-> only if both 'minItems' and 'maxItems' are equal to the 'items' length.
-> An improved meta-schema is pending.
-> 
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Cc: Kamal Dasu <kdasu.kdev@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Jassi Brar <jassisinghbrar@gmail.com>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Vivien Didelot <vivien.didelot@gmail.com>
-> Cc: Vladimir Oltean <olteanv@gmail.com>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Albert Ou <aou@eecs.berkeley.edu>
-> Cc: Alessandro Zummo <a.zummo@towertech.it>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
 > ---
+> This patch has been tested with a Raspberry Pi CM3.
+> 
+>   drivers/tty/serial/amba-pl011.c | 143 +++++++++++++++++++++++++++++++-
+>   1 file changed, 140 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 78682c12156a..36e8b938cdba 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+...
+> @@ -1380,6 +1415,31 @@ static bool pl011_tx_char(struct uart_amba_port *uap, unsigned char c,
+>   	return true;
+>   }
+>   
+> +static void pl011_rs485_tx_start(struct uart_amba_port *uap)
+> +{
+> +	struct uart_port *port = &uap->port;
+> +	u32 cr;
+> +
+> +	/* Enable transmitter */
+> +	cr = pl011_read(uap, REG_CR);
+> +	cr |= UART011_CR_TXE;
+> +	/* Disable receiver if half-duplex */
+> +	if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
+> +		cr &= ~UART011_CR_RXE;
+> +
+> +	if (port->rs485.flags & SER_RS485_RTS_ON_SEND)
+> +		cr &= ~UART011_CR_RTS;
+> +	else
+> +		cr |= UART011_CR_RTS;
+> +
+> +	pl011_write(cr, uap, REG_CR);
+> +
+> +	if (port->rs485.delay_rts_before_send)
+> +		mdelay(port->rs485.delay_rts_before_send);
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This is up to 1 second delay with interrupts disabled. Definitely not 
+nice. 8250 clamps this to 100 ms at least, why did you choose 1000 ms?
+
+> +
+> +	uap->rs485_tx_started = true;
+> +}
+> +
+>   /* Returns true if tx interrupts have to be (kept) enabled  */
+>   static bool pl011_tx_chars(struct uart_amba_port *uap, bool from_irq)
+>   {
+...
+> @@ -1941,6 +2021,7 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+>   	unsigned int lcr_h, old_cr;
+>   	unsigned long flags;
+>   	unsigned int baud, quot, clkdiv;
+> +	unsigned int bits;
+>   
+>   	if (uap->vendor->oversampling)
+>   		clkdiv = 8;
+> @@ -1968,25 +2049,32 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+>   	switch (termios->c_cflag & CSIZE) {
+>   	case CS5:
+>   		lcr_h = UART01x_LCRH_WLEN_5;
+> +		bits = 7;
+>   		break;
+>   	case CS6:
+>   		lcr_h = UART01x_LCRH_WLEN_6;
+> +		bits = 8;
+>   		break;
+>   	case CS7:
+>   		lcr_h = UART01x_LCRH_WLEN_7;
+> +		bits = 9;
+>   		break;
+>   	default: // CS8
+>   		lcr_h = UART01x_LCRH_WLEN_8;
+> +		bits = 10;
+>   		break;
+>   	}
+> -	if (termios->c_cflag & CSTOPB)
+> +	if (termios->c_cflag & CSTOPB) {
+>   		lcr_h |= UART01x_LCRH_STP2;
+> +		bits++;
+> +	}
+>   	if (termios->c_cflag & PARENB) {
+>   		lcr_h |= UART01x_LCRH_PEN;
+>   		if (!(termios->c_cflag & PARODD))
+>   			lcr_h |= UART01x_LCRH_EPS;
+>   		if (termios->c_cflag & CMSPAR)
+>   			lcr_h |= UART011_LCRH_SPS;
+> +		bits++;
+>   	}
+
+You can do simply:
+   bits = tty_get_frame_size(termios->c_cflag);
+now:
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?h=tty-testing&id=3ec2ff37230e1c961d4b0d0118dd23c46b5bcdbb
+
+
+thanks,
+-- 
+js
