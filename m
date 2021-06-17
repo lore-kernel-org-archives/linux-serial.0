@@ -2,192 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 854E6C2B9F4
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Jun 2021 09:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 769C1C2B9F4
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Jun 2021 11:06:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6F5576128C
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Jun 2021 09:15:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 508C76113C
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Jun 2021 11:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231589AbhFQJRP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Jun 2021 05:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
+        id S232071AbhFQLIg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Jun 2021 07:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbhFQJRM (ORCPT
+        with ESMTP id S232301AbhFQLIK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Jun 2021 05:17:12 -0400
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4E7C061226
-        for <linux-serial@vger.kernel.org>; Thu, 17 Jun 2021 02:15:02 -0700 (PDT)
-Received: by mail-vs1-xe2d.google.com with SMTP id x8so2609974vso.5
-        for <linux-serial@vger.kernel.org>; Thu, 17 Jun 2021 02:15:02 -0700 (PDT)
+        Thu, 17 Jun 2021 07:08:10 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A57C0617A6;
+        Thu, 17 Jun 2021 04:06:01 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id a127so4706485pfa.10;
+        Thu, 17 Jun 2021 04:06:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NiiU6fiVLbE4syulfvGQUEnbQNZvmtFPXY1KRGZ4VKs=;
-        b=tspUddDmWP1nXGb8dYzDapkXukDhtaQZ8yVoZQOykE4MszNmnQ2Jc7pAu3v7qBcemT
-         UyLs98rU9nEy8e3wRIJkxsl8g3L8Eb/AvQODxlfCIA8Y+SqSVtbG2msAYvDIZFEizfbY
-         20UD8As6h7+oRqO/LBfp1JKzos5qS4bIZn22juJCAEEZOMhbhqM1f/S6KCbcFkkK35Tr
-         P7laFgsJQmqhNYip+ALRHKPPvbOtIHBYtRpZR/hgm9hpO06Ne5Y1MzvmGVRytTLSpocX
-         +CLKqhQk6OUYMP0R+b/JJQ4/QkH+6e5JGgp8Hm8OfSHuZ6CIo4hVwTpj+jWWd51a3cq+
-         7N8A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HtAONl3gdZy0MSt9rHJt7WYPa//OF0XRpVJvSnGcmgU=;
+        b=giJZ0vdAd+XM6JT6MohRbQc9SzObMOe70tLHMVdqRfspZummlknNhdlgpDSZrMm6AL
+         WjrlN8IRbrXCjI5IIIoa9tE1DlUlAeLfzvJAXM9GAi3aiKpMb6ijQFrLkCFHaQzzUnsQ
+         HJrAFKHCH8BuslHscKMHqKlZIjMS81fKJWgLhg5JEvvd4MFVbyKeVNt/l7aHQ4QX53QL
+         Kj/R13QA5525o5I3U1go/ctlHB0TALNXOJjNk4tjaNEhzS7PUD163I3jFNffLqf3eAXr
+         gDZfpA+KPaRVH8juCeerT1YifOwI/0KFe7BDvGvhVCJa7D+r1F8L2TC8CXSPRkPhY+u+
+         Qt9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NiiU6fiVLbE4syulfvGQUEnbQNZvmtFPXY1KRGZ4VKs=;
-        b=UkHtAH2B8nUqcYspOMwrjeKhfFBubsAlwBOz58848XVjwW8O6Zoc4LTMs5+GriNExM
-         M/VYb387IkS1rFEXEb9yPvnkzwRu4BF6Bnf3GurOStEFrbuGIaxABQOSBNUzlLqTmjuP
-         7uMe5WHwVU+FdobQomZePygsHpYs5kW23spJo2C5X2kpWgaSj47eoVbbfrgtoYjbukMI
-         LRxGKn3L9iq2oRnh2xuXZA8+ZWbmdkRSnR6E8yyA1Ru8UPSZ+8rlO2h9yHcpgJc22R3j
-         OMaI9v/qmjrgATNi6zPU6RAlw3yzUrozMnJbVH2LrLASuFU199MipPp9/E1kGfuqCjMU
-         s4bA==
-X-Gm-Message-State: AOAM5308Xhg8C3rJ7xKcdx3mB/QAFYN6Vy2vsgTaVwApdRhttpu4VNHX
-        q3RkU+1NUrlE3OQTS6t7KmHnoR/VGrLAYmJTpVRkIg==
-X-Google-Smtp-Source: ABdhPJyDDRUn2syWiuy8XigFtL3iDYKz59Ub/6ekAvgFfmAY9tRuxX/nulbHrrDC8J99+RHvCUQeMQ9XnjKDaURJSR4=
-X-Received: by 2002:a05:6102:2159:: with SMTP id h25mr3349328vsg.19.1623921301368;
- Thu, 17 Jun 2021 02:15:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HtAONl3gdZy0MSt9rHJt7WYPa//OF0XRpVJvSnGcmgU=;
+        b=LSvLS3OYMyI7L7Fisthoz6KSR5mE9hos+3ynpZJk5kjby5zkrFxJ3gbZNtT/tg7oRz
+         ny/r2+aLevadjEjrW6vGQWf9pc2KuSYObbMPxxkrSgkVFB+ikAVrZ6IuPtyIpkFUwfyc
+         AKUucgvzPHS2oQeIs95K0UePwnlNTBgEgtt1PkdjOly7BeaSvVML1x8Zq/gV/lDLwzWT
+         ZAUnAkDiR4Qi7fMVIyKtPc83zCOrjCfveQeOYo2msn0PL49waRSJrwF/rRK2m28zIFTE
+         gTkjwcjpqN7IiGCGn3pBfa4fSWNH2z/eAD/Bt5OT/WrJWYLOYrpAKlhxDK0lFQMKaFDG
+         dRvQ==
+X-Gm-Message-State: AOAM532RhZavCCtT6TgCtP7WIAs6PcadfFnkkmtPpWGvk0Pb5iRux4AE
+        8hgJY9RxgXfIq/ZVmvDQ7vg=
+X-Google-Smtp-Source: ABdhPJyiHYgAHO3enfuF5YVS/MyGlZn8jXvb6w+MrVkXXVRtlTLuuJ2qJ6BMOgLyxnRlaiQhgt+UtA==
+X-Received: by 2002:a63:e44e:: with SMTP id i14mr4530000pgk.80.1623927961206;
+        Thu, 17 Jun 2021 04:06:01 -0700 (PDT)
+Received: from vessel.. ([103.242.196.232])
+        by smtp.gmail.com with ESMTPSA id mg22sm4762073pjb.26.2021.06.17.04.05.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Jun 2021 04:06:00 -0700 (PDT)
+From:   Saubhik Mukherjee <saubhik.mukherjee@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     Saubhik Mukherjee <saubhik.mukherjee@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org, andrianov@ispras.ru
+Subject: [PATCH] tty: serial: owl: Fix data race in owl_uart_remove
+Date:   Thu, 17 Jun 2021 16:34:43 +0530
+Message-Id: <20210617110443.6526-1-saubhik.mukherjee@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20210615191543.1043414-1-robh@kernel.org>
-In-Reply-To: <20210615191543.1043414-1-robh@kernel.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 17 Jun 2021 11:14:25 +0200
-Message-ID: <CAPDyKFrY4UOO5CbZ8Bj7AH2+3Wo1PRpUv+Zs96tub=MzGuGrrQ@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Drop redundant minItems/maxItems
-To:     Rob Herring <robh@kernel.org>
-Cc:     DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-ide@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-crypto@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-        "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-can@vger.kernel.org,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        linux-phy@lists.infradead.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        linux-watchdog@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 15 Jun 2021 at 21:15, Rob Herring <robh@kernel.org> wrote:
->
-> If a property has an 'items' list, then a 'minItems' or 'maxItems' with t=
-he
-> same size as the list is redundant and can be dropped. Note that is DT
-> schema specific behavior and not standard json-schema behavior. The tooli=
-ng
-> will fixup the final schema adding any unspecified minItems/maxItems.
->
-> This condition is partially checked with the meta-schema already, but
-> only if both 'minItems' and 'maxItems' are equal to the 'items' length.
-> An improved meta-schema is pending.
->
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Cc: Kamal Dasu <kdasu.kdev@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Jassi Brar <jassisinghbrar@gmail.com>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Vivien Didelot <vivien.didelot@gmail.com>
-> Cc: Vladimir Oltean <olteanv@gmail.com>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: "Uwe Kleine-K=C3=B6nig" <u.kleine-koenig@pengutronix.de>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Albert Ou <aou@eecs.berkeley.edu>
-> Cc: Alessandro Zummo <a.zummo@towertech.it>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Rob Herring <robh@kernel.org>
+Suppose the driver is registered and a UART port is added. Once an
+application opens the port, owl_uart_startup is called which registers
+the interrupt handler owl_uart_irq.
 
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org> # for MMC
+We could have the following race condition:
 
-[...]
+When device is removed, owl_uart_remove is called, which calls
+uart_remove_one_port, which calls owl_uart_release_port, which writes
+NULL to port->membase. At this point parallely, an interrupt could be
+handled by owl_uart_irq which reads port->membase.
 
-Kind regards
-Uffe
+This is because it is possible to remove device without closing a port.
+Thus, we need to check it and call owl_uart_shutdown in owl_uart_remove.
+
+Found by Linux Driver Verification project (linuxtesting.org).
+
+Signed-off-by: Saubhik Mukherjee <saubhik.mukherjee@gmail.com>
+---
+ drivers/tty/serial/owl-uart.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+index 91f1eb0058d7..ac4e3aae2719 100644
+--- a/drivers/tty/serial/owl-uart.c
++++ b/drivers/tty/serial/owl-uart.c
+@@ -751,8 +751,15 @@ static int owl_uart_probe(struct platform_device *pdev)
+ static int owl_uart_remove(struct platform_device *pdev)
+ {
+ 	struct owl_uart_port *owl_port = platform_get_drvdata(pdev);
++	struct uart_port *port = &owl_port->port;
+ 
+-	uart_remove_one_port(&owl_uart_driver, &owl_port->port);
++	/* It is possible to release device without closing a port.
++	 * Thus, need to check it and call shutdown.
++	 */
++	if (owl_uart_read(port, OWL_UART_CTL) & OWL_UART_CTL_EN)
++		owl_uart_shutdown(port);
++
++	uart_remove_one_port(&owl_uart_driver, port);
+ 	owl_uart_ports[pdev->id] = NULL;
+ 	clk_disable_unprepare(owl_port->clk);
+ 
+-- 
+2.30.2
+
