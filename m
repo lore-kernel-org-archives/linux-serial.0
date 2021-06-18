@@ -7,52 +7,52 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96818C48BE8
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C90C49EA4
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:15:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 81A986120A
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:15:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 54909611CE
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:15:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233076AbhFRGRs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Jun 2021 02:17:48 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:59036 "EHLO
+        id S233084AbhFRGRt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Jun 2021 02:17:49 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:59054 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232883AbhFRGRa (ORCPT
+        with ESMTP id S232885AbhFRGRa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 18 Jun 2021 02:17:30 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 216AA21B51;
+        by smtp-out1.suse.de (Postfix) with ESMTP id 4B17321B58;
         Fri, 18 Jun 2021 06:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1623996920; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1slZ3qSkLzaics74bWzedOlvybCAvig1qgHYjIlKIGo=;
-        b=aUxqVovw+TrQNa4tDWZpC4KUwyaR8x15tBVt5o7LP7NvyuaJLvD8Irg8PWmFfYhebEeZKS
-        WmDOiPkVqVZ1tOQfWedeB1KKKayteSKlJZzxI5S2a4tpHNAH5j3+rVWkwvgHQ8k8Svl98P
-        ifaQenKaHGODPC6vTZ81IrOI1ZbjdL8=
+        bh=NGhI4h+9UkpEWdcFqpCM9ilg01EZuzFHbZ8KsYHILQ0=;
+        b=GOGw5O+Sb1wOT27GYD+gGvcFZa0/j9tLNiFHsRRNym7sz+DuJgAbfWAujDZsYe8TsAvOBY
+        4jorbwcXGvvxZKPg8RNI99Uh51OxYPGCGPC4WBRJPwn3GEF+9oO2f7iH5pK8MiWbSoRHcD
+        gyY+5Ok7Jc+mnWRAWRXaEd1OknEBDQo=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1623996920;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1slZ3qSkLzaics74bWzedOlvybCAvig1qgHYjIlKIGo=;
-        b=isrEqdEyx9AiExP6wC070BB1GdQkfNe+f0VlsT9sJAQs2g/Ez1SJ0nDLYbb+rP0ZsO9T7O
-        6Yxi5XdL9pVLesBg==
+        bh=NGhI4h+9UkpEWdcFqpCM9ilg01EZuzFHbZ8KsYHILQ0=;
+        b=gw66omFvBB85BJBIhFCb9vPx7TNCZ89BheJ6zNfyRF06IW4GfeFtxHVZlm/hgBti0s11kJ
+        wlZF0ydpz7Q1mnCQ==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EE4E1A3BBA;
-        Fri, 18 Jun 2021 06:15:19 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 2AA8BA3BCB;
+        Fri, 18 Jun 2021 06:15:20 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 14/70] mxser: simplify mxser_interrupt and drop mxser_board::vector_mask
-Date:   Fri, 18 Jun 2021 08:14:20 +0200
-Message-Id: <20210618061516.662-15-jslaby@suse.cz>
+Subject: [PATCH 15/70] mxser: extract mxser_receive_chars_new
+Date:   Fri, 18 Jun 2021 08:14:21 +0200
+Message-Id: <20210618061516.662-16-jslaby@suse.cz>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210618061516.662-1-jslaby@suse.cz>
 References: <20210618061516.662-1-jslaby@suse.cz>
@@ -62,68 +62,98 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-mxser_board::vector_mask is just a bitfield with bits set for all
-available ports.  We can obtain this value simply by
-"BIT(brd->info->nports) - 1" directly in the ISR. So remove vector_mask
-and simplify the code a bit.
+Extract the new handling of receive chars (using the MUST chip
+enhancements) into a separate function. This eliminates the need for the
+intr_old label and makes the code of mxser_receive_chars more compact.
+In the next step, we will extract the old handling too.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/mxser.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/tty/mxser.c | 60 +++++++++++++++++++++++++--------------------
+ 1 file changed, 34 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 555b9b37b52f..df59ca88acab 100644
+index df59ca88acab..a321aba24d58 100644
 --- a/drivers/tty/mxser.c
 +++ b/drivers/tty/mxser.c
-@@ -368,7 +368,6 @@ struct mxser_board {
- 	int irq;
- 	const struct mxser_cardinfo *info;
- 	unsigned long vector;
--	unsigned long vector_mask;
+@@ -2055,10 +2055,41 @@ static int mxser_rs_break(struct tty_struct *tty, int break_state)
+ 	return 0;
+ }
  
- 	enum mxser_must_hwid must_hwid;
- 	speed_t max_baud;
-@@ -2273,18 +2272,18 @@ static irqreturn_t mxser_interrupt(int irq, void *dev_id)
- 	struct mxser_board *brd = dev_id;
- 	struct mxser_port *port;
- 	unsigned int int_cnt, pass_counter = 0;
--	int max, irqbits, bits, i;
-+	unsigned int i, max = brd->info->nports;
- 	int handled = IRQ_NONE;
-+	u8 irqbits, bits, mask = BIT(max) - 1;
++static bool mxser_receive_chars_new(struct tty_struct *tty,
++		struct mxser_port *port, u8 status, int *cnt)
++{
++	enum mxser_must_hwid hwid = port->board->must_hwid;
++	u8 gdl;
++
++	if (hwid == MOXA_OTHER_UART)
++		return false;
++	if (status & UART_LSR_SPECIAL)
++		return false;
++	if (hwid == MOXA_MUST_MU860_HWID && (status & MOXA_MUST_LSR_RERR))
++		return false;
++	if (status & MOXA_MUST_LSR_RERR)
++		return false;
++
++	gdl = inb(port->ioaddr + MOXA_MUST_GDL_REGISTER);
++	if (hwid == MOXA_MUST_MU150_HWID)
++		gdl &= MOXA_MUST_GDL_MASK;
++
++	if (gdl >= tty->receive_room && !port->ldisc_stop_rx)
++		mxser_stoprx(tty);
++
++	while (gdl--) {
++		u8 ch = inb(port->ioaddr + UART_RX);
++		tty_insert_flip_char(&port->port, ch, 0);
++		(*cnt)++;
++	}
++
++	return true;
++}
++
+ static u8 mxser_receive_chars(struct tty_struct *tty,
+ 		struct mxser_port *port, u8 status)
+ {
+-	unsigned char ch, gdl;
++	unsigned char ch;
+ 	int ignored = 0;
+ 	int cnt = 0;
+ 	int recv_room;
+@@ -2067,32 +2098,9 @@ static u8 mxser_receive_chars(struct tty_struct *tty,
+ 	recv_room = tty->receive_room;
+ 	if (recv_room == 0 && !port->ldisc_stop_rx)
+ 		mxser_stoprx(tty);
+-	if (port->board->must_hwid != MOXA_OTHER_UART) {
+-
+-		if (status & UART_LSR_SPECIAL)
+-			goto intr_old;
+-		if (port->board->must_hwid == MOXA_MUST_MU860_HWID &&
+-				(status & MOXA_MUST_LSR_RERR))
+-			goto intr_old;
+-		if (status & MOXA_MUST_LSR_RERR)
+-			goto intr_old;
+-
+-		gdl = inb(port->ioaddr + MOXA_MUST_GDL_REGISTER);
+-
+-		if (port->board->must_hwid == MOXA_MUST_MU150_HWID)
+-			gdl &= MOXA_MUST_GDL_MASK;
+-		if (gdl >= recv_room) {
+-			if (!port->ldisc_stop_rx)
+-				mxser_stoprx(tty);
+-		}
+-		while (gdl--) {
+-			ch = inb(port->ioaddr + UART_RX);
+-			tty_insert_flip_char(&port->port, ch, 0);
+-			cnt++;
+-		}
++
++	if (mxser_receive_chars_new(tty, port, status, &cnt))
+ 		goto end_intr;
+-	}
+-intr_old:
  
--	max = brd->info->nports;
- 	while (pass_counter++ < MXSER_ISR_PASS_LIMIT) {
--		irqbits = inb(brd->vector) & brd->vector_mask;
--		if (irqbits == brd->vector_mask)
-+		irqbits = inb(brd->vector) & mask;
-+		if (irqbits == mask)
- 			break;
- 
- 		handled = IRQ_HANDLED;
- 		for (i = 0, bits = 1; i < max; i++, irqbits |= bits, bits <<= 1) {
--			if (irqbits == brd->vector_mask)
-+			if (irqbits == mask)
- 				break;
- 			if (bits & irqbits)
- 				continue;
-@@ -2450,7 +2449,6 @@ static int mxser_probe(struct pci_dev *pdev,
- 	brd->irq = pdev->irq;
- 
- 	brd->must_hwid = mxser_must_get_hwid(brd->ports[0].ioaddr);
--	brd->vector_mask = 0;
- 
- 	for (j = 0; j < UART_INFO_NUM; j++) {
- 		if (Gpci_uart_info[j].type == brd->must_hwid) {
-@@ -2475,7 +2473,6 @@ static int mxser_probe(struct pci_dev *pdev,
- 	}
- 
- 	for (i = 0; i < brd->info->nports; i++) {
--		brd->vector_mask |= (1 << i);
- 		brd->ports[i].baud_base = 921600;
- 	}
- 
+ 	do {
+ 		if (max-- < 0)
 -- 
 2.32.0
 
