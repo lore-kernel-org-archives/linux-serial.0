@@ -7,52 +7,52 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CBEC49EA2
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31431C48BDF
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:16:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BDE6D6120A
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:16:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 180E260FDC
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233089AbhFRGSh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Jun 2021 02:18:37 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:59074 "EHLO
+        id S233469AbhFRGSi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Jun 2021 02:18:38 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:60014 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232846AbhFRGRs (ORCPT
+        with ESMTP id S233069AbhFRGRt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Jun 2021 02:17:48 -0400
+        Fri, 18 Jun 2021 02:17:49 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 935B321B6A;
+        by smtp-out1.suse.de (Postfix) with ESMTP id 02A2E21B67;
         Fri, 18 Jun 2021 06:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1623996927; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6+EellicTsqi+obK/4cr/ZZtT3Qc7mWagnt2gFZfGkg=;
-        b=y/XpAbF5eS34fnY2R3wGtmn3D+WZ1w1qnzUK3tH5rMyW7znjkeYmSbcD/K4T74OGWBiTB2
-        BQCdMHE0f/hlyFrDOJpjmNCR3JOWKhp76f3Xe/GDUFHwy36HwQpNvNuj2Z3IKlRrqpRoNN
-        /Wvcit1Uh4L/6CYtN9ErCd3UiW0UQXE=
+        bh=mGMD3H2lAY5hTmQAamXpl3LCnLNkoyWme0TfBd7R0J8=;
+        b=FXnIuhCMO9YC1uFqGae2hetjH0P1x8WFAbj9OgrYUw/9w4Sk1eXBx09EwxrmvQs9/6lLEL
+        vnsZ1FapK/Vc4j2c23IAIK7Iyqus+n0W1vCeue/k+xOt/I2mELxAKKbU95PehxRbCtJPWE
+        wU6hvtw2tyjCkdh/ZvTF5XtuJWZoyzo=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1623996927;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6+EellicTsqi+obK/4cr/ZZtT3Qc7mWagnt2gFZfGkg=;
-        b=Z8qkJrGQisnRe4HvL05ZE14smd8QPMt4B6sXqZyHPfU/axV/FPyABu0WH7/I0A8wnTEPwZ
-        J9cwpYOE5ho0NEBA==
+        bh=mGMD3H2lAY5hTmQAamXpl3LCnLNkoyWme0TfBd7R0J8=;
+        b=FgfLzAnPMFLkx70Uu3gGPCPmjmSb4klQGyrbea6apUQerXKwHk1dkAVMeH7/ZQ0l7p9hJ0
+        YbpI9Ig2RXJAGAAw==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6E54CA3B9D;
-        Fri, 18 Jun 2021 06:15:27 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id CFB3EA3B9D;
+        Fri, 18 Jun 2021 06:15:26 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 49/70] mxser: cleanup mxser_process_txrx_fifo
-Date:   Fri, 18 Jun 2021 08:14:55 +0200
-Message-Id: <20210618061516.662-50-jslaby@suse.cz>
+Subject: [PATCH 46/70] mxser: move request irq to probe and switch to managed
+Date:   Fri, 18 Jun 2021 08:14:52 +0200
+Message-Id: <20210618061516.662-47-jslaby@suse.cz>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210618061516.662-1-jslaby@suse.cz>
 References: <20210618061516.662-1-jslaby@suse.cz>
@@ -62,76 +62,86 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Rename process_txrx_fifo to mxser_process_txrx_fifo and:
-* remove useless parentheses
-* return from the 'if's true branch and process the rest in normal code
-  flow (shift the code one level left)
-
-All this to make the code more readable.
+Move request_irq from mxser_initbrd to mxser_probe so that we can switch
+it to managed request. It simplifies the cleanup code.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/mxser.c | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ drivers/tty/mxser.c | 30 +++++++++---------------------
+ 1 file changed, 9 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index bb4110d466cb..1e54e94a7ca6 100644
+index be58ee025180..83c795acdb19 100644
 --- a/drivers/tty/mxser.c
 +++ b/drivers/tty/mxser.c
-@@ -398,22 +398,24 @@ static enum mxser_must_hwid mxser_must_get_hwid(unsigned long io)
- 	return MOXA_OTHER_UART;
- }
+@@ -1883,11 +1883,10 @@ static const struct tty_port_operations mxser_port_ops = {
+  * The MOXA Smartio/Industio serial driver boot-time initialization code!
+  */
  
--static void process_txrx_fifo(struct mxser_port *info)
-+static void mxser_process_txrx_fifo(struct mxser_port *info)
+-static int mxser_initbrd(struct mxser_board *brd)
++static void mxser_initbrd(struct mxser_board *brd)
  {
--	int i;
-+	unsigned int i;
+ 	struct mxser_port *info;
+ 	unsigned int i;
+-	int retval;
+ 	bool is_mu860;
  
--	if ((info->type == PORT_16450) || (info->type == PORT_8250)) {
-+	if (info->type == PORT_16450 || info->type == PORT_8250) {
- 		info->rx_high_water = 1;
- 		info->rx_low_water = 1;
- 		info->xmit_fifo_size = 1;
--	} else
--		for (i = 0; i < UART_INFO_NUM; i++)
--			if (info->board->must_hwid == Gpci_uart_info[i].type) {
--				info->rx_low_water = Gpci_uart_info[i].rx_low_water;
--				info->rx_high_water = Gpci_uart_info[i].rx_high_water;
--				info->xmit_fifo_size = Gpci_uart_info[i].fifo_size;
--				break;
--			}
-+		return;
-+	}
-+
-+	for (i = 0; i < UART_INFO_NUM; i++)
-+		if (info->board->must_hwid == Gpci_uart_info[i].type) {
-+			info->rx_low_water = Gpci_uart_info[i].rx_low_water;
-+			info->rx_high_water = Gpci_uart_info[i].rx_high_water;
-+			info->xmit_fifo_size = Gpci_uart_info[i].fifo_size;
-+			break;
-+		}
+ 	brd->must_hwid = mxser_must_get_hwid(brd->ports[0].ioaddr);
+@@ -1939,18 +1938,6 @@ static int mxser_initbrd(struct mxser_board *brd)
+ 		outb(inb(info->ioaddr + UART_IER) & 0xf0,
+ 			info->ioaddr + UART_IER);
+ 	}
+-
+-	retval = request_irq(brd->irq, mxser_interrupt, IRQF_SHARED, "mxser",
+-			brd);
+-	if (retval) {
+-		for (i = 0; i < brd->info->nports; i++)
+-			tty_port_destroy(&brd->ports[i].port);
+-		printk(KERN_ERR "Board %s: Request irq failed, IRQ (%d) may "
+-			"conflict with another device.\n",
+-			brd->info->name, brd->irq);
+-	}
+-
+-	return retval;
  }
  
- static int mxser_carrier_raised(struct tty_port *port)
-@@ -1149,7 +1151,7 @@ static int mxser_set_serial_info(struct tty_struct *tty,
+ static int mxser_probe(struct pci_dev *pdev,
+@@ -2004,10 +1991,14 @@ static int mxser_probe(struct pci_dev *pdev,
+ 	/* irq */
+ 	brd->irq = pdev->irq;
  
- 		info->type = ss->type;
+-	/* mxser_initbrd will hook ISR. */
+-	retval = mxser_initbrd(brd);
+-	if (retval)
+-		goto err_zero;
++	mxser_initbrd(brd);
++
++	retval = devm_request_irq(&pdev->dev, brd->irq, mxser_interrupt,
++			IRQF_SHARED, "mxser", brd);
++	if (retval) {
++		dev_err(&pdev->dev, "request irq failed");
++		goto err_relbrd;
++	}
  
--		process_txrx_fifo(info);
-+		mxser_process_txrx_fifo(info);
+ 	for (i = 0; i < brd->info->nports; i++) {
+ 		tty_dev = tty_port_register_device(&brd->ports[i].port,
+@@ -2027,7 +2018,6 @@ static int mxser_probe(struct pci_dev *pdev,
+ err_relbrd:
+ 	for (i = 0; i < brd->info->nports; i++)
+ 		tty_port_destroy(&brd->ports[i].port);
+-	free_irq(brd->irq, brd);
+ err_zero:
+ 	brd->info = NULL;
+ err:
+@@ -2044,8 +2034,6 @@ static void mxser_remove(struct pci_dev *pdev)
+ 		tty_port_destroy(&brd->ports[i].port);
  	}
  
- 	if (tty_port_initialized(port)) {
-@@ -1895,7 +1897,7 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
+-	free_irq(brd->irq, brd);
+-
+ 	brd->info = NULL;
+ }
  
- 		info->type = PORT_16550A;
- 
--		process_txrx_fifo(info);
-+		mxser_process_txrx_fifo(info);
- 
- 		info->port.close_delay = 5 * HZ / 10;
- 		info->port.closing_wait = 30 * HZ;
 -- 
 2.32.0
 
