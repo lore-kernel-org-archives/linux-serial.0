@@ -3,216 +3,144 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E588CC49EA4
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 03:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBA5C48BDF
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:15:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D7E056109D
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 03:40:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3725861154
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232210AbhFRDmq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Jun 2021 23:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232148AbhFRDmq (ORCPT
+        id S232847AbhFRGR1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Jun 2021 02:17:27 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:58836 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232270AbhFRGR0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Jun 2021 23:42:46 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3849C0617A8
-        for <linux-serial@vger.kernel.org>; Thu, 17 Jun 2021 20:40:36 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id t7so6615803edd.5
-        for <linux-serial@vger.kernel.org>; Thu, 17 Jun 2021 20:40:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v3U6tSssyiyTmySewt2Ln0yQu0gc7Qdpf16AvD+Xaxk=;
-        b=2IcUlThUD9BpN0YyQAHGmGcQr5S6gOJpFAuAjkTFZTnpzRn9tzKgvjENS7ySkBTDUb
-         WVu8rDNnk4oMaPDWaYfJqGQq5hspjx3UAm8iGpqhN5Tm3s/4JNu9ecnP/aWmJefz9KgA
-         jyaF4PQvWKhcAMY06wY9zLmJ3F3grfHwVu/lTteAZll8NquJe5RM3crl0S/T9nJz4lga
-         qE6I+1oXf+z4XpHgtSakyooDjOifTHlFJYDjvZrRG53E21pvvJVkEQhe7yTOwfRW+SR3
-         lPE0DbuCzB2/MU+0Ln8LRSJFFCt8crMBcGon76/h7fb0x+sFtOdRmHlxhubL8TVLcdkW
-         w8MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v3U6tSssyiyTmySewt2Ln0yQu0gc7Qdpf16AvD+Xaxk=;
-        b=VqkwHdtx5DWHZ2dKDTsZ3mTqc7eWZgRryDxD01hdbUL5dPkXCsHuj6TPiPumzFs2Qq
-         FCVF3dBIESZlNBL+jwxXCrS8m7o++Lrti9SyYDA8AIFtkfk0lGWNVPtKrYb5M0WhAZfi
-         wOcmm8keJX1746YWoVY8UsfzquZVqWCg6U7+i+6PvCTliXEglZ9kgXdGXWgIViNqmwyk
-         G2AmdYKzBRivflUkGKWvLpexnlBWC9omM1hXgrLG8OADepNiZVp/RnEV00bLhUD7xzV+
-         HfwKrFdVy/VCjIm79laSiCZs2GS5JJeDoim3ohtmTZmdVQDp1/jKZ26S+twTYjzu4JTr
-         M+jA==
-X-Gm-Message-State: AOAM532ohRN35Xk+71JhS2zaITDFj6mQ7HFYuJyFSEgPNocvN5EFx11p
-        So3QRs0bEiRGcXSVeiBc4vVs0NDU7Rp424+tMkh9
-X-Google-Smtp-Source: ABdhPJw5b/xZ/eb8rl7JdfhOxmPvL4XDmYW6VYxutA0Sjq6NM72bhKaQUg+rtX3S00r5obIGVrm+f+Zrvy0193ShGoE=
-X-Received: by 2002:a05:6402:1771:: with SMTP id da17mr2074259edb.31.1623987634898;
- Thu, 17 Jun 2021 20:40:34 -0700 (PDT)
+        Fri, 18 Jun 2021 02:17:26 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 27A7221B4D;
+        Fri, 18 Jun 2021 06:15:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1623996917; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=iTlXNLY1hVeCTSB8MQPOYJ/EWyrK25cvEopPUb2EKbc=;
+        b=Tc17wV5rDas2tTR+8UYJyMZ6kBdLgZMyNrcYIVughNTSIaEx2/HrEdjVxHfDq3UMq/5bVd
+        +QjecrinpFtsO0BfzbkKT/W0T8Ds9283uD3RLtCk2osacEOOkhMB33NyeTAjndq44W8fH4
+        f6PA7n1CmPjbr+HJ2OIRN0e1J+u8g20=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1623996917;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=iTlXNLY1hVeCTSB8MQPOYJ/EWyrK25cvEopPUb2EKbc=;
+        b=gBEaaBOT5/CZ4F2MmMM5ebYfZBxIQjkeEj0X+Bab6xfL3Mi880pzelLSjnwQUQED2tDTem
+        9HNidL+mpHpHvzBw==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id EE06AA3BBC;
+        Fri, 18 Jun 2021 06:15:16 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 00/69] mxser: cleanup
+Date:   Fri, 18 Jun 2021 08:14:06 +0200
+Message-Id: <20210618061516.662-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20210616085118.1141101-1-omosnace@redhat.com>
-In-Reply-To: <20210616085118.1141101-1-omosnace@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 17 Jun 2021 23:40:24 -0400
-Message-ID: <CAHC9VhSr2KpeBXuyoHR3_hs+qczFUaBx0oCSMfBBA5UNYU+0KA@mail.gmail.com>
-Subject: Re: [PATCH v3] lockdown,selinux: fix wrong subject in some SELinux
- lockdown checks
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     linux-security-module@vger.kernel.org,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        x86@kernel.org, linux-acpi@vger.kernel.org,
-        linux-cxl@vger.kernel.org, linux-efi@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 4:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
->
-> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
-> lockdown") added an implementation of the locked_down LSM hook to
-> SELinux, with the aim to restrict which domains are allowed to perform
-> operations that would breach lockdown.
->
-> However, in several places the security_locked_down() hook is called in
-> situations where the current task isn't doing any action that would
-> directly breach lockdown, leading to SELinux checks that are basically
-> bogus.
->
-> To fix this, add an explicit struct cred pointer argument to
-> security_lockdown() and define NULL as a special value to pass instead
-> of current_cred() in such situations. LSMs that take the subject
-> credentials into account can then fall back to some default or ignore
-> such calls altogether. In the SELinux lockdown hook implementation, use
-> SECINITSID_KERNEL in case the cred argument is NULL.
->
-> Most of the callers are updated to pass current_cred() as the cred
-> pointer, thus maintaining the same behavior. The following callers are
-> modified to pass NULL as the cred pointer instead:
-> 1. arch/powerpc/xmon/xmon.c
->      Seems to be some interactive debugging facility. It appears that
->      the lockdown hook is called from interrupt context here, so it
->      should be more appropriate to request a global lockdown decision.
-> 2. fs/tracefs/inode.c:tracefs_create_file()
->      Here the call is used to prevent creating new tracefs entries when
->      the kernel is locked down. Assumes that locking down is one-way -
->      i.e. if the hook returns non-zero once, it will never return zero
->      again, thus no point in creating these files. Also, the hook is
->      often called by a module's init function when it is loaded by
->      userspace, where it doesn't make much sense to do a check against
->      the current task's creds, since the task itself doesn't actually
->      use the tracing functionality (i.e. doesn't breach lockdown), just
->      indirectly makes some new tracepoints available to whoever is
->      authorized to use them.
-> 3. net/xfrm/xfrm_user.c:copy_to_user_*()
->      Here a cryptographic secret is redacted based on the value returned
->      from the hook. There are two possible actions that may lead here:
->      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
->         task context is relevant, since the dumped data is sent back to
->         the current task.
->      b) When adding/deleting/updating an SA via XFRM_MSG_xxxSA, the
->         dumped SA is broadcasted to tasks subscribed to XFRM events -
->         here the current task context is not relevant as it doesn't
->         represent the tasks that could potentially see the secret.
->      It doesn't seem worth it to try to keep using the current task's
->      context in the a) case, since the eventual data leak can be
->      circumvented anyway via b), plus there is no way for the task to
->      indicate that it doesn't care about the actual key value, so the
->      check could generate a lot of "false alert" denials with SELinux.
->      Thus, let's pass NULL instead of current_cred() here faute de
->      mieux.
->
-> Improvements-suggested-by: Casey Schaufler <casey@schaufler-ca.com>
-> Improvements-suggested-by: Paul Moore <paul@paul-moore.com>
-> Fixes: 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
-> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+I was given a few cards from MOXA (thanks a lot). So I cleaned up the
+driver and can continue maintaining it.
 
-This seems reasonable to me, but before I merge it into the SELinux
-tree I think it would be good to get some ACKs from the relevant
-subsystem folks.  I don't believe we ever saw a response to the last
-question for the PPC folks, did we?
+A long term goal is to convert the driver to serial_core.
 
-> ---
->
-> v3:
-> - add the cred argument to security_locked_down() and adapt all callers
-> - keep using current_cred() in BPF, as the hook calls have been shifted
->   to program load time (commit ff40e51043af ("bpf, lockdown, audit: Fix
->   buggy SELinux lockdown permission checks"))
-> - in SELinux, don't ignore hook calls where cred == NULL, but use
->   SECINITSID_KERNEL as the subject instead
-> - update explanations in the commit message
->
-> v2: https://lore.kernel.org/lkml/20210517092006.803332-1-omosnace@redhat.com/
-> - change to a single hook based on suggestions by Casey Schaufler
->
-> v1: https://lore.kernel.org/lkml/20210507114048.138933-1-omosnace@redhat.com/
->
->  arch/powerpc/xmon/xmon.c             |  4 ++--
->  arch/x86/kernel/ioport.c             |  4 ++--
->  arch/x86/kernel/msr.c                |  4 ++--
->  arch/x86/mm/testmmiotrace.c          |  2 +-
->  drivers/acpi/acpi_configfs.c         |  2 +-
->  drivers/acpi/custom_method.c         |  2 +-
->  drivers/acpi/osl.c                   |  3 ++-
->  drivers/acpi/tables.c                |  2 +-
->  drivers/char/mem.c                   |  2 +-
->  drivers/cxl/mem.c                    |  2 +-
->  drivers/firmware/efi/efi.c           |  2 +-
->  drivers/firmware/efi/test/efi_test.c |  2 +-
->  drivers/pci/pci-sysfs.c              |  6 +++---
->  drivers/pci/proc.c                   |  6 +++---
->  drivers/pci/syscall.c                |  2 +-
->  drivers/pcmcia/cistpl.c              |  2 +-
->  drivers/tty/serial/serial_core.c     |  2 +-
->  fs/debugfs/file.c                    |  2 +-
->  fs/debugfs/inode.c                   |  2 +-
->  fs/proc/kcore.c                      |  2 +-
->  fs/tracefs/inode.c                   |  2 +-
->  include/linux/lsm_hook_defs.h        |  2 +-
->  include/linux/lsm_hooks.h            |  1 +
->  include/linux/security.h             |  4 ++--
->  kernel/bpf/helpers.c                 | 10 ++++++----
->  kernel/events/core.c                 |  2 +-
->  kernel/kexec.c                       |  2 +-
->  kernel/kexec_file.c                  |  2 +-
->  kernel/module.c                      |  2 +-
->  kernel/params.c                      |  2 +-
->  kernel/power/hibernate.c             |  3 ++-
->  kernel/trace/bpf_trace.c             | 20 ++++++++++++--------
->  kernel/trace/ftrace.c                |  4 ++--
->  kernel/trace/ring_buffer.c           |  2 +-
->  kernel/trace/trace.c                 | 10 +++++-----
->  kernel/trace/trace_events.c          |  2 +-
->  kernel/trace/trace_events_hist.c     |  4 ++--
->  kernel/trace/trace_events_synth.c    |  2 +-
->  kernel/trace/trace_events_trigger.c  |  2 +-
->  kernel/trace/trace_kprobe.c          |  6 +++---
->  kernel/trace/trace_printk.c          |  2 +-
->  kernel/trace/trace_stack.c           |  2 +-
->  kernel/trace/trace_stat.c            |  2 +-
->  kernel/trace/trace_uprobe.c          |  4 ++--
->  net/xfrm/xfrm_user.c                 | 11 +++++++++--
->  security/lockdown/lockdown.c         |  3 ++-
->  security/security.c                  |  4 ++--
->  security/selinux/hooks.c             |  7 +++++--
->  48 files changed, 97 insertions(+), 77 deletions(-)
+Jiri Slaby (70):
+  mxser: drop ISA support
+  mxser: renumber mxser_cards
+  mxser: remove info printout from init
+  mxser: integrate mxser.h into .c
+  mxser: cleanup Gpci_uart_info struct
+  mxser: rename CheckIsMoxaMust to mxser_get_must_hwid
+  mxser: rename mxser_board::chip_flag to must_hwid
+  mxser: introduce enum mxser_must_hwid
+  mxser: drop constant board::uart_type
+  mxser: move max_baud from port to board
+  mxser: remove nonsense from ISR
+  mxser: cleanup LSR handling in mxser_receive_chars
+  mxser: extract port ISR
+  mxser: simplify mxser_interrupt and drop mxser_board::vector_mask
+  mxser: extract mxser_receive_chars_new
+  mxser: extract mxser_receive_chars_old
+  mxser: remove else from LSR bits checks
+  mxser: correct types for uart variables
+  mxser: make xmit ring buffer variables unsigned
+  mxser: drop UART_MCR_AFE and UART_LSR_SPECIAL defines
+  mxser: drop unused MOXA_DIAGNOSE macro
+  mxser: remove MOXA_GET_MAJOR deprecated ioctl
+  mxser: remove MOXA_SET_BAUD_METHOD ioctl
+  mxser: remove MOXA_ASPP_MON and friends
+  mxser: remove MOXA_ASPP_LSTATUS ioctl
+  mxser: remove MOXA_CHKPORTENABLE ioctl
+  mxser: remove MOXA_GETDATACOUNT ioctl
+  mxser: remove MOXA_GETMSTATUS ioctl
+  mxser: remove MOXA_ASPP_OQUEUE ioctl
+  mxser: remove MOXA_HighSpeedOn ioctl
+  mxser: remove cnt from mxser_receive_chars
+  mxser: don't allocate MXSER_PORTS + 1
+  mxser: drop unused mxser_port::normal_termios
+  mxser: remove unused mxser_port::stop_rx
+  mxser: drop mxser_port::baud_base
+  mxser: drop mxser_port::custom_divisor
+  mxser: cleanup mxser_change_speed
+  mxser: extract mxser_ioctl_op_mode
+  mxser: simplify mxser_ioctl_op_mode
+  mxser: dedup mxser_must_set_enhance_mode
+  mxser: introduce mxser_must_select_bank and use it
+  mxser: clean up the rest of MUST helpers
+  mxser: move board init into mxser_initbrd
+  mxser: inline mxser_board_remove into mxser_remove
+  mxser: pci, switch to managed resources
+  mxser: move request irq to probe and switch to managed
+  mxser: remove info message from probe
+  mxser: remove mxser_cardinfo
+  mxser: cleanup mxser_process_txrx_fifo
+  mxser: rework and simplify mxser_open
+  mxser: make mxser_board::idx really an index
+  mxser: alloc struct mxser_board dynamically
+  mxser: alloc only needed # of ports
+  mxser: remove pointless ioaddr checks
+  mxser: cleanup mxser_rs_break
+  mxser: cleanup mxser_dtr_rts
+  mxser: don't start TX from tty_operations::put_char
+  mxser: extract and dedup CTS handling
+  mxser: introduce and use start/stop_tx helpers
+  mxser: remove xmit_cnt < 0 tests
+  mxser: decrypt FCR values
+  mxser: fix typos around enhanced mode
+  mxser: access info->MCR under info->slock
+  mxser: use port variable in mxser_set_serial_info
+  mxser: rename flags to old_speed in mxser_set_serial_info
+  mxser: introduce mxser_16550A_or_MUST helper
+  mxser: Documentation, remove traces of callout device
+  mxser: Documentation, make the docs up-to-date
+  mxser: Documentation, fix typos
+  MAINTAINERS: add me back as mxser maintainer
+
+ .../driver-api/serial/moxa-smartio.rst        |  496 +----
+ MAINTAINERS                                   |    3 +-
+ drivers/tty/Kconfig                           |    2 +-
+ drivers/tty/mxser.c                           | 1950 +++++------------
+ drivers/tty/mxser.h                           |  151 --
+ 5 files changed, 622 insertions(+), 1980 deletions(-)
+ delete mode 100644 drivers/tty/mxser.h
 
 -- 
-paul moore
-www.paul-moore.com
+2.32.0
+
