@@ -2,207 +2,166 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E39C49361
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 18:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F76C49EA7
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 22:18:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 49E11613E2
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 18:56:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DA67F613B4
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 22:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233242AbhFRS6L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Jun 2021 14:58:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57414 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231689AbhFRS6K (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Jun 2021 14:58:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ECD70613EB;
-        Fri, 18 Jun 2021 18:56:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624042561;
-        bh=st9b12JBENqiX+a8te7tLLnIXjIRfZAzKGsk5TdJ8rY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=OK2sUuTpphRQmphw5VkJtDhXJi3NHwx6K81SyieMCDDBr29W/pPkwJHZjVRP3aqYI
-         qQ5XQxOCh8iooJSOTfsXStpAJ7GhstR/V7/D70JKxsy+CmSLn2uhX8BJsqwShKbHmd
-         oxIzriIzHA5858ljqfaBuwxdTDAwbMi17gyn1f53NzkiaI5UZ8+KL6lvafCwzT2jQc
-         IKdr7VFzhuL8F+Scvik900p2W2b/XtEkjnMJsA2FpbmWYhjqILkR52xwk/ncb6Nk7h
-         jJQvjs7OY6D0rERRbqxyxfRMKxgAgV79+n3oxXXF1POMVmXZh/38QBbYwdchNBAkBl
-         oP551iDe5tw9w==
-Received: by mail-ed1-f50.google.com with SMTP id n20so9940971edv.8;
-        Fri, 18 Jun 2021 11:56:00 -0700 (PDT)
-X-Gm-Message-State: AOAM531Rj+LtVjErwQJdtkHp54IIwKksaYB4ema8BzrSeFW/m2a7/tr/
-        00t6rtWG5WYHgOt8Sgerm26JxqdX52bK9K2jyg==
-X-Google-Smtp-Source: ABdhPJzJhJxPv0paE3gyxs+QdMRMKXMVSjp8AvuY/6uOx5ZySev/db+4nTeO8uz6kRV3cMj6klMM+lpdfE7UBFVe520=
-X-Received: by 2002:a05:6402:cb0:: with SMTP id cn16mr6944016edb.165.1624042559515;
- Fri, 18 Jun 2021 11:55:59 -0700 (PDT)
+        id S234904AbhFRWU2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Jun 2021 18:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38656 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234906AbhFRWU0 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 18 Jun 2021 18:20:26 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9EFC0617AE
+        for <linux-serial@vger.kernel.org>; Fri, 18 Jun 2021 15:18:15 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id i4so1713883plt.12
+        for <linux-serial@vger.kernel.org>; Fri, 18 Jun 2021 15:18:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FE3ige4IUrzO4rZznPTG12clkaJsue7K7FUGlSBMAfs=;
+        b=Yf/hd/nvGltzFs93oV+O815gndRr0N0A4GD+hlEjUljs8fR/r42/5waH+foBbKS7WR
+         4ieWebjxoeI31qMYukpCCF4suivtuw0KIX1kY4xCHCyeA8Pd+qdR2kMIky/pA2j/9n1z
+         T5UtTANEkuiNSh3GT2iBd2oGjOT4PXXJ8YxOU/uBtqj1IiaNYwuRoT9AQFd4bB3iGSod
+         26qHtN9qmDpGolnh/MwXPQ8M2sR3UfA7xZml5iJWrbGghC/MI1rSVb3r8vzpAHp9WgHN
+         rQlO7Wfj93/2gQ031V5AE3UWSmVQEAXyZXRDPtXzUcgRjadraLTfDfG3fXk5uJ+V0D/n
+         TtDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FE3ige4IUrzO4rZznPTG12clkaJsue7K7FUGlSBMAfs=;
+        b=si0sLPiOfK9546jShBjhW1kDtFcXCZPHkh7fFaOLD0tLD0v3mKaydX6yTVF+TRHkrg
+         YVlB1eXq1JiOnMRVGOADJP1R5JiEb9nJj5ySWsDW9gLMrZiZ28PsbKSkLf1B4xSOyM3S
+         rj09o3FXbYodJUoHJ6Mwr4tpHxPd2k5Iu5TiyObH7RwM3j/GL04Y8z21SFYzx6lVxEZw
+         YVtinJxAcqI15oeJNbB+FAlVJz4tEnbv6JZxEiOq5iCYGE3Fp8VKtfp06F4usPxjKGnE
+         AB49LZ8YHJTfS5LUlMctfiBDtymUtTYgNm9SCc9hbs0bagDeA5ufRGj/uRJrIT3+V/7p
+         JQCg==
+X-Gm-Message-State: AOAM531qeW8M853/WqSNZYhhh9P81R0moAHuOJ9IfvSqaHBz8pWdawLj
+        WaMXJ/n3YlRmZ1l3Waema5tf32rPRWzFxOFA1tJmTA==
+X-Google-Smtp-Source: ABdhPJw3BE/jkA8KN4GViEwVomKCDOYCAzb4JhqF7GBtQ+4ny9zul9rQENwJ5XFkX0U2csBd6emTDpwOakbDlUjAcRc=
+X-Received: by 2002:a17:90a:fc88:: with SMTP id ci8mr24404565pjb.13.1624054695229;
+ Fri, 18 Jun 2021 15:18:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210610182227.2480-1-vigneshr@ti.com> <CAL_JsqLjqtUapkr6ARyaeTduhSghJL-q7hBWGFPm7ubbvqCmJw@mail.gmail.com>
- <5ef04ae5-e07e-5162-7dad-ace3e2fdeb0d@ti.com>
-In-Reply-To: <5ef04ae5-e07e-5162-7dad-ace3e2fdeb0d@ti.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 18 Jun 2021 12:55:47 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKiKCZn_bHceuH7o8=4_Yj-hhNGQs876_x7ETKvCjbALQ@mail.gmail.com>
-Message-ID: <CAL_JsqKiKCZn_bHceuH7o8=4_Yj-hhNGQs876_x7ETKvCjbALQ@mail.gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: serial: Move omap-serial.txt to YAML schema
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Tony Lindgren <tony@atomide.com>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        Nishanth Menon <nm@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
+References: <20210616085118.1141101-1-omosnace@redhat.com>
+In-Reply-To: <20210616085118.1141101-1-omosnace@redhat.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Fri, 18 Jun 2021 15:18:04 -0700
+Message-ID: <CAPcyv4jvR8CT4rYODR5KUHNdiqMwQSwJZ+OkVf61kLT3JfjC_Q@mail.gmail.com>
+Subject: Re: [PATCH v3] lockdown,selinux: fix wrong subject in some SELinux
+ lockdown checks
+To:     Ondrej Mosnacek <omosnace@redhat.com>
+Cc:     linux-security-module@vger.kernel.org,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        selinux@vger.kernel.org,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        X86 ML <x86@kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        linux-cxl@vger.kernel.org, linux-efi <linux-efi@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux-pm mailing list <linux-pm@vger.kernel.org>,
+        linux-serial@vger.kernel.org, bpf@vger.kernel.org,
+        Netdev <netdev@vger.kernel.org>,
+        Kexec Mailing List <kexec@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jun 18, 2021 at 9:22 AM Vignesh Raghavendra <vigneshr@ti.com> wrote:
+On Wed, Jun 16, 2021 at 1:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
 >
+> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
+> lockdown") added an implementation of the locked_down LSM hook to
+> SELinux, with the aim to restrict which domains are allowed to perform
+> operations that would breach lockdown.
 >
+> However, in several places the security_locked_down() hook is called in
+> situations where the current task isn't doing any action that would
+> directly breach lockdown, leading to SELinux checks that are basically
+> bogus.
 >
-> On 6/18/21 8:28 PM, Rob Herring wrote:
-> > On Thu, Jun 10, 2021 at 12:22 PM Vignesh Raghavendra <vigneshr@ti.com> wrote:
-> >>
-> >> Convert serial-omap.txt to YAML schema for better checks and documentation.
-> >>
-> >> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-> >> ---
-> >>
-> >> v2:
-> >> *Drop reg-io-width and reg-shift as they are constant and documented in
-> >>  txt bindings (also not used by driver).
-> >> *Drop unused label in example.
-> >> *Rename file to 8250_omap.yaml to be more generic as IP is present in
-> >> varies families of TI SoCs.
-> >> *Add description for interrupt entries
-> >>
-> >>  .../devicetree/bindings/serial/8250_omap.yaml | 118 ++++++++++++++++++
-> >>  .../bindings/serial/omap_serial.txt           |  40 ------
-> >>  2 files changed, 118 insertions(+), 40 deletions(-)
-> >>  create mode 100644 Documentation/devicetree/bindings/serial/8250_omap.yaml
-> >>  delete mode 100644 Documentation/devicetree/bindings/serial/omap_serial.txt
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
-> >> new file mode 100644
-> >> index 000000000000..1c826fcf5828
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
-> >> @@ -0,0 +1,118 @@
-> >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> >> +%YAML 1.2
-> >> +---
-> >> +$id: http://devicetree.org/schemas/serial/8250_omap.yaml#
-> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> >> +
-> >> +title: Bindings for 8250 compliant UARTs on TI's OMAP2+ and K3 SoCs
-> >> +
-> >> +maintainers:
-> >> +  - Vignesh Raghavendra <vigneshr@ti.com>
-> >> +
-> >> +allOf:
-> >> +  - $ref: /schemas/serial/serial.yaml#
-> >> +  - $ref: /schemas/serial/rs485.yaml#
-> >> +
-> >> +properties:
-> >> +  compatible:
-> >> +    oneOf:
-> >> +      - enum:
-> >> +          - ti,am3352-uart
-> >> +          - ti,am4372-uart
-> >> +          - ti,am654-uart
-> >> +          - ti,dra742-uart
-> >> +          - ti,omap2-uart
-> >> +          - ti,omap3-uart
-> >> +          - ti,omap4-uart
-> >> +      - items:
-> >> +          - enum:
-> >> +              - ti,am64-uart
-> >> +              - ti,j721e-uart
-> >> +          - const: ti,am654-uart
-> >> +
-> >> +  ti,hwmods:
-> >> +    description:
-> >> +      Must be "uart<n>", n being the instance number (1-based)
-> >> +      This property is applicable only on legacy platforms mainly omap2/3
-> >> +      and ti81xx and should not be used on other platforms.
-> >> +    $ref: /schemas/types.yaml#/definitions/string
-> >> +    deprecated: true
-> >> +
-> >> +  dmas:
-> >> +    minItems: 1
-> >> +    maxItems: 2
-> >> +
-> >> +  dma-names:
-> >> +    items:
-> >> +      - const: tx
-> >> +      - const: rx
-> >> +
-> >> +  reg:
-> >> +    maxItems: 1
-> >> +
-> >> +  interrupts:
-> >> +    minItems: 1
-> >> +    maxItems: 2
-> >> +    description:
-> >> +      First entry is module IRQ required for normal IO operation.
-> >> +      Second entry is optional and corresponds to system wakeup IRQ
-> >> +      where supported.
-> >
-> > interrupts:
-> >   minItems: 1
-> >   items:
-> >     - description: module IRQ required for normal IO operation
-> >     - description: system wakeup IRQ
-> >
+> To fix this, add an explicit struct cred pointer argument to
+> security_lockdown() and define NULL as a special value to pass instead
+> of current_cred() in such situations. LSMs that take the subject
+> credentials into account can then fall back to some default or ignore
+> such calls altogether. In the SELinux lockdown hook implementation, use
+> SECINITSID_KERNEL in case the cred argument is NULL.
 >
-> OK, will send a follow up fix as the patch is already queued.
+> Most of the callers are updated to pass current_cred() as the cred
+> pointer, thus maintaining the same behavior. The following callers are
+> modified to pass NULL as the cred pointer instead:
+> 1. arch/powerpc/xmon/xmon.c
+>      Seems to be some interactive debugging facility. It appears that
+>      the lockdown hook is called from interrupt context here, so it
+>      should be more appropriate to request a global lockdown decision.
+> 2. fs/tracefs/inode.c:tracefs_create_file()
+>      Here the call is used to prevent creating new tracefs entries when
+>      the kernel is locked down. Assumes that locking down is one-way -
+>      i.e. if the hook returns non-zero once, it will never return zero
+>      again, thus no point in creating these files. Also, the hook is
+>      often called by a module's init function when it is loaded by
+>      userspace, where it doesn't make much sense to do a check against
+>      the current task's creds, since the task itself doesn't actually
+>      use the tracing functionality (i.e. doesn't breach lockdown), just
+>      indirectly makes some new tracepoints available to whoever is
+>      authorized to use them.
+> 3. net/xfrm/xfrm_user.c:copy_to_user_*()
+>      Here a cryptographic secret is redacted based on the value returned
+>      from the hook. There are two possible actions that may lead here:
+>      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
+>         task context is relevant, since the dumped data is sent back to
+>         the current task.
+>      b) When adding/deleting/updating an SA via XFRM_MSG_xxxSA, the
+>         dumped SA is broadcasted to tasks subscribed to XFRM events -
+>         here the current task context is not relevant as it doesn't
+>         represent the tasks that could potentially see the secret.
+>      It doesn't seem worth it to try to keep using the current task's
+>      context in the a) case, since the eventual data leak can be
+>      circumvented anyway via b), plus there is no way for the task to
+>      indicate that it doesn't care about the actual key value, so the
+>      check could generate a lot of "false alert" denials with SELinux.
+>      Thus, let's pass NULL instead of current_cred() here faute de
+>      mieux.
 >
-> >> +
-> >> +  clocks:
-> >> +    maxItems: 1
-> >> +
-> >> +  clock-names:
-> >> +    const: fclk
-> >> +
-> >> +  rts-gpios: true
-> >> +  cts-gpios: true
-> >> +  dtr-gpios: true
-> >> +  dsr-gpios: true
-> >> +  rng-gpios: true
-> >> +  dcd-gpios: true
-> >> +  rs485-rts-delay: true
-> >> +  rs485-rts-active-low: true
-> >> +  rs485-rx-during-tx: true
-> >> +  rs485-rts-active-high: true
-> >> +  linux,rs485-enabled-at-boot-time: true
-> >> +  rts-gpio: true
-> >> +  power-domains: true
-> >> +  clock-frequency: true
-> >> +  current-speed: true
-> >> +
-> >> +required:
-> >> +  - compatible
-> >> +  - reg
-> >> +  - interrupts
-> >> +
-> >> +additionalProperties: false
-> >
-> > Do you want to support serial attached devices? If so, you need:
-> >
-> > unevaluatedProperties: false
-> >
+> Improvements-suggested-by: Casey Schaufler <casey@schaufler-ca.com>
+> Improvements-suggested-by: Paul Moore <paul@paul-moore.com>
+> Fixes: 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
+> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+[..]
+> diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
+> index 2acc6173da36..c1747b6555c7 100644
+> --- a/drivers/cxl/mem.c
+> +++ b/drivers/cxl/mem.c
+> @@ -568,7 +568,7 @@ static bool cxl_mem_raw_command_allowed(u16 opcode)
+>         if (!IS_ENABLED(CONFIG_CXL_MEM_RAW_COMMANDS))
+>                 return false;
 >
-> Yes, support for serial client devices is desired, but I see that with
-> "unevaluatedProperties: false" there are no warnings if DT has a
-> property not documented in the schema? Did I miss something?
+> -       if (security_locked_down(LOCKDOWN_NONE))
+> +       if (security_locked_down(current_cred(), LOCKDOWN_NONE))
 
-Support for unevaluatedProperties is not yet implemented in the
-underlying jsonschema package. So we get the default behavior for
-unknown keywords which is a nop.
+Acked-by: Dan Williams <dan.j.williams@intel.com>
 
-Rob
+...however that usage looks wrong. The expectation is that if kernel
+integrity protections are enabled then raw command access should be
+disabled. So I think that should be equivalent to LOCKDOWN_PCI_ACCESS
+in terms of the command capabilities to filter.
