@@ -7,52 +7,52 @@ X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A71C48BDF
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1852C48BDF
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:17:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 859646112D
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:17:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 985C361209
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Jun 2021 06:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233730AbhFRGT3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Jun 2021 02:19:29 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:59930 "EHLO
+        id S230390AbhFRGTk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Jun 2021 02:19:40 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:59036 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233309AbhFRGSZ (ORCPT
+        with ESMTP id S233357AbhFRGSa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Jun 2021 02:18:25 -0400
+        Fri, 18 Jun 2021 02:18:30 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 3D2FC21B78;
+        by smtp-out1.suse.de (Postfix) with ESMTP id D5C9621B7B;
         Fri, 18 Jun 2021 06:15:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1623996931; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GFSZYeDrwRYRWTUYjDH02bF7eRx8Ylf2/6cryqmW8hI=;
-        b=vf/6BUaDWoGsbBwpGCqNoZRebAnlqtAxZaRNxl6X8GC263QWW0TEEX9VfUgi2r/sbpmRzb
-        1qcSXCIxRbYvYzDgu8OvZCIpxzbpfg6CxERmb+/YREluGt2U+O0KAVuauPqMyjuxGaeT45
-        QHtkgE2mv75/3HJWHveAxTCg69/Qajo=
+        bh=S8GxyXPxzMGx7zlg6fd+xLgPxH3RcZPHEn9DJ8iIKxw=;
+        b=b12GCBR3N1j2jj+Qq8hiqTTtFyHrUlygEjmlsDkkSDN4tke0IIr5QfIUFZ1bw5XIntjQc0
+        5IqZedYEaawzc1IixreTSQWn1TAUQOTTFV5zNwfjlJ6/QKHVINzuCX5QwdSPgEoJHvdJyK
+        k8ne9ByxY1XAjEX231o1ksSzrGhiDUc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1623996931;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GFSZYeDrwRYRWTUYjDH02bF7eRx8Ylf2/6cryqmW8hI=;
-        b=39CBZUQmhzGrX0jEbKtQglOvrMgpwyl7WSMa9F8xLBcs4vc844JjYQ6EOkSDb67M9ThdPO
-        7Jaicelc4UoPyeAA==
+        bh=S8GxyXPxzMGx7zlg6fd+xLgPxH3RcZPHEn9DJ8iIKxw=;
+        b=/3In8MpJbJp0pDddJ9mkImnNBBAtTZBdjGuoH4y7fLSJmW5DnYHZsSKkNNjnfRWd5qH1Uj
+        RDJDpYKqaUIjmABg==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1D869A3BA7;
+        by relay2.suse.de (Postfix) with ESMTPS id B5F49A3BCD;
         Fri, 18 Jun 2021 06:15:31 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 66/70] mxser: introduce mxser_16550A_or_MUST helper
-Date:   Fri, 18 Jun 2021 08:15:12 +0200
-Message-Id: <20210618061516.662-67-jslaby@suse.cz>
+Subject: [PATCH 69/70] mxser: Documentation, fix typos
+Date:   Fri, 18 Jun 2021 08:15:15 +0200
+Message-Id: <20210618061516.662-70-jslaby@suse.cz>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210618061516.662-1-jslaby@suse.cz>
 References: <20210618061516.662-1-jslaby@suse.cz>
@@ -62,97 +62,99 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This check is used in the code on many places. Either in positive or
-negative form. So introduce a helper called mxser_16550A_or_MUST for
-this purpose. And replace all the occurrences.
-
-This simplifies many ifs in there.
+Fix some typos in the mxser's documentation.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/mxser.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ .../driver-api/serial/moxa-smartio.rst        | 42 +++++++++----------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index f238d17d6fdf..900ccb2ca166 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -398,6 +398,11 @@ static enum mxser_must_hwid mxser_must_get_hwid(unsigned long io)
- 	return MOXA_OTHER_UART;
- }
+diff --git a/Documentation/driver-api/serial/moxa-smartio.rst b/Documentation/driver-api/serial/moxa-smartio.rst
+index 838888f81b6d..af25bc5cc3e6 100644
+--- a/Documentation/driver-api/serial/moxa-smartio.rst
++++ b/Documentation/driver-api/serial/moxa-smartio.rst
+@@ -20,7 +20,7 @@ Copyright (C) 2021, Jiri Slaby
+ ^^^^^^^^^^^^^^^
  
-+static bool mxser_16550A_or_MUST(struct mxser_port *info)
-+{
-+	return info->type == PORT_16550A || info->board->must_hwid;
-+}
-+
- static void mxser_process_txrx_fifo(struct mxser_port *info)
- {
- 	unsigned int i;
-@@ -537,8 +542,7 @@ static void mxser_handle_cts(struct tty_struct *tty, struct mxser_port *info,
- 		if (cts) {
- 			tty->hw_stopped = 0;
+    The Smartio/Industio/UPCI family Linux driver supports following multiport
+-   boards.
++   boards:
  
--			if (info->type != PORT_16550A &&
--					!info->board->must_hwid)
-+			if (!mxser_16550A_or_MUST(info))
- 				__mxser_start_tx(info);
- 			tty_wakeup(tty);
- 		}
-@@ -547,7 +551,7 @@ static void mxser_handle_cts(struct tty_struct *tty, struct mxser_port *info,
- 		return;
+     - 2 ports multiport board
+ 	CP-102U, CP-102UL, CP-102UF
+@@ -63,10 +63,10 @@ Copyright (C) 2021, Jiri Slaby
+    GNU General Public License in this version. Please refer to GNU General
+    Public License announcement in each source code file for more detail.
  
- 	tty->hw_stopped = 1;
--	if (info->type != PORT_16550A && !info->board->must_hwid)
-+	if (!mxser_16550A_or_MUST(info))
- 		__mxser_stop_tx(info);
- }
+-   In Moxa's Web sites, you may always find latest driver at
++   In Moxa's Web sites, you may always find the latest driver at
+    https://www.moxa.com/.
  
-@@ -626,7 +630,7 @@ static void mxser_change_speed(struct tty_struct *tty)
- 	tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
- 	if (cflag & CRTSCTS) {
- 		info->IER |= UART_IER_MSI;
--		if ((info->type == PORT_16550A) || (info->board->must_hwid)) {
-+		if (mxser_16550A_or_MUST(info)) {
- 			info->MCR |= UART_MCR_AFE;
- 		} else {
- 			mxser_handle_cts(tty, info,
-@@ -962,11 +966,10 @@ static int mxser_write(struct tty_struct *tty, const unsigned char *buf, int cou
- 		total += c;
- 	}
+-   This version of driver can be installed as Loadable Module (Module driver)
++   This version of driver can be installed as a Loadable Module (Module driver)
+    or built-in into kernel (Static driver). Before you install the driver,
+    please refer to hardware installation procedure in the User's Manual.
  
--	if (info->xmit_cnt && !tty->flow.stopped) {
--		if (!tty->hw_stopped || info->type == PORT_16550A ||
--				info->board->must_hwid)
-+	if (info->xmit_cnt && !tty->flow.stopped)
-+		if (!tty->hw_stopped || mxser_16550A_or_MUST(info))
- 			mxser_start_tx(info);
--	}
-+
- 	return total;
- }
+@@ -89,9 +89,9 @@ Copyright (C) 2021, Jiri Slaby
+ PCI/UPCI board
+ --------------
  
-@@ -996,8 +999,7 @@ static void mxser_flush_chars(struct tty_struct *tty)
- 	struct mxser_port *info = tty->driver_data;
+-   You may need to adjust IRQ usage in BIOS to avoid from IRQ conflict
+-   with other ISA devices. Please refer to hardware installation
+-   procedure in User's Manual in advance.
++   You may need to adjust IRQ usage in BIOS to avoid IRQ conflict with other
++   ISA devices. Please refer to hardware installation procedure in User's
++   Manual in advance.
  
- 	if (!info->xmit_cnt || tty->flow.stopped || !info->port.xmit_buf ||
--			(tty->hw_stopped && info->type != PORT_16550A &&
--			 !info->board->must_hwid))
-+			(tty->hw_stopped && !mxser_16550A_or_MUST(info)))
- 		return;
+ PCI IRQ Sharing
+ ---------------
+@@ -132,7 +132,7 @@ msdiag - Diagnostic
+ ===================
  
- 	mxser_start_tx(info);
-@@ -1655,9 +1657,7 @@ static void mxser_transmit_chars(struct tty_struct *tty, struct mxser_port *port
- 		return;
+    This utility provides the function to display what Moxa Smartio/Industio
+-   board found by driver in the system.
++   board was found by the driver in the system.
  
- 	if (!port->xmit_cnt || tty->flow.stopped ||
--			(tty->hw_stopped &&
--			(port->type != PORT_16550A) &&
--			(!port->board->must_hwid))) {
-+			(tty->hw_stopped && !mxser_16550A_or_MUST(port))) {
- 		__mxser_stop_tx(port);
- 		return;
- 	}
+ msmon - Port Monitoring
+ =======================
+@@ -162,23 +162,23 @@ msterm - Terminal Emulation
+ 
+    Supported Setserial parameters are listed as below.
+ 
+-   ============== =========================================================
+-   uart		  set UART type(16450-->disable FIFO, 16550A-->enable FIFO)
+-   close_delay	  set the amount of time(in 1/100 of a second) that DTR
++   ============== =============================================================
++   uart		  set UART type(16450 --> disable FIFO, 16550A --> enable FIFO)
++   close_delay	  set the amount of time (in 1/100 of a second) that DTR
+ 		  should be kept low while being closed.
+-   closing_wait   set the amount of time(in 1/100 of a second) that the
++   closing_wait   set the amount of time (in 1/100 of a second) that the
+ 		  serial port should wait for data to be drained while
+-		  being closed, before the receiver is disable.
+-   spd_hi	  Use  57.6kb  when  the application requests 38.4kb.
+-   spd_vhi	  Use  115.2kb	when  the application requests 38.4kb.
+-   spd_shi	  Use  230.4kb	when  the application requests 38.4kb.
+-   spd_warp	  Use  460.8kb	when  the application requests 38.4kb.
+-   spd_normal	  Use  38.4kb  when  the application requests 38.4kb.
+-   spd_cust	  Use  the custom divisor to set the speed when  the
++		  being closed, before the receiver is disabled.
++   spd_hi	  Use 57.6kb when the application requests 38.4kb.
++   spd_vhi	  Use 115.2kb when the application requests 38.4kb.
++   spd_shi	  Use 230.4kb when the application requests 38.4kb.
++   spd_warp	  Use 460.8kb when the application requests 38.4kb.
++   spd_normal	  Use 38.4kb when the application requests 38.4kb.
++   spd_cust	  Use the custom divisor to set the speed when the
+ 		  application requests 38.4kb.
+-   divisor	  This option set the custom division.
+-   baud_base	  This option set the base baud rate.
+-   ============== =========================================================
++   divisor	  This option sets the custom division.
++   baud_base	  This option sets the base baud rate.
++   ============== =============================================================
+ 
+ 6. Troubleshooting
+ ^^^^^^^^^^^^^^^^^^
 -- 
 2.32.0
 
