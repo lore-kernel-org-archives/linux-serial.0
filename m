@@ -2,149 +2,149 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC2BC48BDF
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Jun 2021 14:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45369C48BDF
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Jun 2021 15:20:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7054360FEA
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Jun 2021 14:57:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C9CC61027
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Jun 2021 15:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbhFVO77 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Jun 2021 10:59:59 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:34164 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230433AbhFVO77 (ORCPT
+        id S232203AbhFVPXJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Jun 2021 11:23:09 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:36913 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232087AbhFVPXI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Jun 2021 10:59:59 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 15MEvYkH122897;
-        Tue, 22 Jun 2021 09:57:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1624373854;
-        bh=3RpZBa2MozVuA4vNzmdoop9q6l8luMuPvhHJNcpIVOY=;
-        h=From:To:CC:Subject:Date;
-        b=M2niN1GF2zQIWTBZxXyjNUUb6ARGuV0yritwGhbX9sr+JuDBUYQiUOdmr5DGjFkIC
-         HAmn+Ew/3yG630nZZrl6/W8qgQDQ3TInLeshjpYt8iDK238y5YXXI7azKeevVT7Efs
-         NL1pn9KjXu7wW+bOMMRf/n88uBBnkHLKFRM4i3f8=
-Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 15MEvYDH022236
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 22 Jun 2021 09:57:34 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 22
- Jun 2021 09:57:34 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Tue, 22 Jun 2021 09:57:34 -0500
-Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 15MEvVAd036396;
-        Tue, 22 Jun 2021 09:57:31 -0500
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Tony Lindgren <tony@atomide.com>,
-        <linux-serial@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2] serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs
-Date:   Tue, 22 Jun 2021 20:27:04 +0530
-Message-ID: <20210622145704.11168-1-vigneshr@ti.com>
-X-Mailer: git-send-email 2.32.0
+        Tue, 22 Jun 2021 11:23:08 -0400
+Received: from mail-wm1-f49.google.com ([209.85.128.49]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Mdvyo-1lO1HY1hzS-00azLe; Tue, 22 Jun 2021 17:20:50 +0200
+Received: by mail-wm1-f49.google.com with SMTP id m3so13074721wms.4;
+        Tue, 22 Jun 2021 08:20:50 -0700 (PDT)
+X-Gm-Message-State: AOAM532muqXB2+FeUvqK7kiC6sypaar83CR9sGO3csSxZ0TMzQF+Hzai
+        CIEWo95FA2Id+JyxtDKfgXXChKOP6rr5wOOXX7Y=
+X-Google-Smtp-Source: ABdhPJxnVRrZWU3JVswJ2QZq2pjCpSgY1JUazfWhbU6JSQfwjFgSvYmHDdjApi4t3KGHf+NqzVz/wr3QCt1/VR7iGng=
+X-Received: by 2002:a1c:98d5:: with SMTP id a204mr4879216wme.43.1624375249974;
+ Tue, 22 Jun 2021 08:20:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20210509184519.15816-1-alex.nemirovsky@cortina-access.com>
+ <20210509184519.15816-2-alex.nemirovsky@cortina-access.com>
+ <YMiUpK/+PjsoCU1W@kroah.com> <CFD14D63-4537-4A91-861C-71B74E2CFAE6@cortina-access.com>
+ <YMi1jOL6y+eUK3Df@kroah.com> <B71C5D02-EDBE-4AAD-AF1B-2FD467BE075A@cortina-access.com>
+ <CAL_JsqKDf9W-1KHUoFFCoLareLKf0CAVMU6CXR22xW3hWM_8yg@mail.gmail.com>
+ <9937DB34-7757-4A54-BCC6-AF5514FD7F1D@cortina-access.com> <CAL_JsqLHdi29Du1F=e1N471tnsziWpH7TPO_caDF3SrjvHS-iw@mail.gmail.com>
+ <CAMuHMdXA9-ajoAza2JAW5879ECieMm1dbBbKHgJhDa7=3kWu3w@mail.gmail.com>
+In-Reply-To: <CAMuHMdXA9-ajoAza2JAW5879ECieMm1dbBbKHgJhDa7=3kWu3w@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 22 Jun 2021 17:18:30 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3Zh37WwM5rRugJgm_b8f-fBcTm_pHZz439HMe8w-odPw@mail.gmail.com>
+Message-ID: <CAK8P3a3Zh37WwM5rRugJgm_b8f-fBcTm_pHZz439HMe8w-odPw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] dt-bindings: serial: Convert Cortina-Access UART
+ to json-schema
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Alex Nemirovsky <Alex.Nemirovsky@cortina-access.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jason Li <jason.li@cortina-access.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Olof Johansson <olof@lixom.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:tOie7vWrEnexv0CRNGItMAUz9wQ0Ofa0PTa6xbTtiUTZQ3T8or4
+ SiynUPlqei6d/gdefigWSaHhJxZhhKNBGUH/O5Cehp0HQiiWXon7s3qKygV8FNW0iMTm4pV
+ xeG1ZXmMkDEInmQ0ZkpXKTeZRfWjLN+Yb8n5TnNYq9xtso0bByh/zm2+cw6fe2eWbwFu+Jh
+ fjyw4mOBAuhq7b7SqG7Gg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+CN8r0Y3zoI=:Cu1IqOczSpgr0i3z2CFCMA
+ sD8hgr9pyIh7wPJ/dLI+HmHpmzD/6xf/e//OMoR2MnZVhwHWWMUcHJmywHtQa0+AZBpRGzah2
+ 4Ih6kz/7vuqFLVLqBl8a8IcZmgH2by9RSWX/p8QO5/UaKhtjrTbL/vDpS8McvPLzObKNTJQVp
+ P4EGMUWGqbjcGROqtk44XXaAMo1sG7CqRUafDDm9HgOP9HDTxgQ0ToeqCcGzCzTyXPyFkhiUL
+ IVUZBGhVJdF9qvp4dS5HGB8g29JszrwoEwHJ0n1Ba6VJefjbTpmPCvFQOEzaFvX+3LXLkXNSv
+ 4KYLLZDjc2+lfX5I8/ZFbSLCvFURqDtkBAO+kaHGOjrsPjl+1fPdvRNp3VR92JjdGMVizFWC1
+ z2v2gr0Bx+rOZhywJD+mXFBQo9VkDvac/npmYsVKNaIyppVPERqd4x7O6TTJ5OlfHMv6HDeBd
+ bf19sVYofBmVwAna2BJKcVGIAw7JHa+zSOgjC94PneKtmK6GcTYlD30a37+RDM30xHjQw+ljA
+ vPPzim+kdnLxg0WKigZWb0=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On K3 family of SoCs (which includes AM654 SoC), it is observed that RX
-TIMEOUT is signalled after RX FIFO has been drained, in which case a
-dummy read of RX FIFO is required to clear RX TIMEOUT condition.
-Otherwise, this would lead to an interrupt storm.
+On Tue, Jun 22, 2021 at 1:29 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Tue, Jun 15, 2021 at 6:21 PM Rob Herring <robh+dt@kernel.org> wrote:
+> > On Tue, Jun 15, 2021 at 10:06 AM Alex Nemirovsky <Alex.Nemirovsky@cortina-access.com> wrote:
+> > > It sounds like you are find with patch 2/3 from a DT point of view.  Could we review the rest from the DT point of view
+> > > to get either feedback for changes or ACK these, so we can unblock this series?
+> >
+> > Can't say I've seen it as I only see replies in my mail. Did this
+> > originally go to the DT list? If not, it's never in my queue[1].
+>
+> None of the patches in this series ended up on a mailing list or on
+> lore, so no one could comment on them, except for people CCed directly.
 
-Fix this by introducing UART_RX_TIMEOUT_QUIRK flag and doing a dummy
-read in IRQ handler when RX TIMEOUT is reported with no data in RX FIFO.
+Right, in fact every email I see from @cortina-access.com at
+https://lore.kernel.org/lkml/?q=cortina-access.com is a reply, but the
+original mails are all missing, not just this series.
 
-Fixes: be70874498f3 ("serial: 8250_omap: Add support for AM654 UART controller")
-Reported-by: Jan Kiszka <jan.kiszka@siemens.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
----
-v2:
-Restrict workaround to K3 family of devices only (ti,am654-uart) where
-issue was reported.
+It appears that there is a problem between the mail servers of cortina-access
+and kernel.org. Alex and Jason, please double-check if you find
+anything in
 
-v1: https://lore.kernel.org/r/20210511151955.28071-1-vigneshr@ti.com
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+https://www.kernel.org/doc/html/latest/process/email-clients.html
 
- drivers/tty/serial/8250/8250_omap.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+that may have caused this on your end, or otherwise contact
+postmaster@vger.kernel.org for help.
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index c06631ced414..79418d4beb48 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -43,6 +43,7 @@
- #define UART_ERRATA_CLOCK_DISABLE	(1 << 3)
- #define	UART_HAS_EFR2			BIT(4)
- #define UART_HAS_RHR_IT_DIS		BIT(5)
-+#define UART_RX_TIMEOUT_QUIRK		BIT(6)
- 
- #define OMAP_UART_FCR_RX_TRIG		6
- #define OMAP_UART_FCR_TX_TRIG		4
-@@ -104,6 +105,9 @@
- #define UART_OMAP_EFR2			0x23
- #define UART_OMAP_EFR2_TIMEOUT_BEHAVE	BIT(6)
- 
-+/* RX FIFO occupancy indicator */
-+#define UART_OMAP_RX_LVL		0x64
-+
- struct omap8250_priv {
- 	int line;
- 	u8 habit;
-@@ -611,6 +615,7 @@ static int omap_8250_dma_handle_irq(struct uart_port *port);
- static irqreturn_t omap8250_irq(int irq, void *dev_id)
- {
- 	struct uart_port *port = dev_id;
-+	struct omap8250_priv *priv = port->private_data;
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned int iir;
- 	int ret;
-@@ -625,6 +630,18 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 	serial8250_rpm_get(up);
- 	iir = serial_port_in(port, UART_IIR);
- 	ret = serial8250_handle_irq(port, iir);
-+
-+	/*
-+	 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
-+	 * FIFO has been drained, in which case a dummy read of RX FIFO
-+	 * is required to clear RX TIMEOUT condition.
-+	 */
-+	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
-+	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
-+	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
-+		serial_port_in(port, UART_RX);
-+	}
-+
- 	serial8250_rpm_put(up);
- 
- 	return IRQ_RETVAL(ret);
-@@ -1218,7 +1235,8 @@ static struct omap8250_dma_params am33xx_dma = {
- 
- static struct omap8250_platdata am654_platdata = {
- 	.dma_params	= &am654_dma,
--	.habit		= UART_HAS_EFR2 | UART_HAS_RHR_IT_DIS,
-+	.habit		= UART_HAS_EFR2 | UART_HAS_RHR_IT_DIS |
-+			  UART_RX_TIMEOUT_QUIRK,
- };
- 
- static struct omap8250_platdata am33xx_platdata = {
--- 
-2.32.0
+> The driver has been accepted in tty-next, commit b61c8bf4694b5115
+> ("tty: serial: Add UART driver for Cortina-Access platform").  From a
+> quick glance, it could have used some review.
+>
+> The driver is using the compatible value "cortina-access,serial", so I
+> guess the binding patch added "cortina-access" to vendor-prefixes.yaml.
 
+Ah right. That patch has not made it in because of the issue, but right
+away I can tell that the binding is not great because the compatible
+string is way too generic: it implies that cortina-access only uses a single
+serial port type in every past, present or future SoC, which is clearly
+not the case.
+
+It's obviously up to Greg to decide whether to revert the patch, but
+I'd suggest we don't treat the driver as conforming to the binding until
+it has been reviewed, and assume that changes will be made.
+
+> The SERIAL_CORTINA_ACCESS symbol doesn't depend on anything, so
+> it will show up on everyone's oldconfig radar soon, regardless of
+> building a kernel for a Cortina Access system or not.
+> I wanted to change it to something like:
+>
+>      config SERIAL_CORTINA_ACCESS
+>             tristate "Cortina-Access serial port support"
+>     +       depends on FIXME || COMPILE_TEST
+>             select SERIAL_CORE
+>             help
+>               This driver is for Cortina-Access SoC's UART. If you
+> have a machine
+>               based on the Cortina-Access SoC and wish to use the serial port,
+>               say 'Y' here. Otherwise, say 'N'.
+>
+> but given there is no evidence of patches to add support for the
+> CAXXXX line of SoCs, there's no symbol to depend on...
+
+Assuming this is a SoC based on an Arm CPU core, it's clear that
+nothing from cortina-access.com ever made it through the
+linux-arm-kernel@lists.infradead.org mailing list either, if anything
+was sent at all.
+
+Alex, please try to contact me off-list about merging the full SoC
+support, I should be able to help you come up with a plan for
+submitting the rest as soon as the email troubles are resolved.
+
+For new Arm based SoC platforms, arch/{arm,arm64} patches
+should go through the soc tree and be picked up by Olof (on Cc)
+or me. The exact process is not well documented, but please
+contact us by email, or on irc://irc.libera.chat/#armlinux if you
+have questions.
+
+       Arnd
