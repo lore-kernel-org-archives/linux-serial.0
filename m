@@ -2,142 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D69CC2B9F4
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Jun 2021 23:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF46C49EA7
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Jun 2021 02:13:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 17EEF60BD3
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Jun 2021 23:29:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7FBEC6137D
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Jun 2021 02:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbhFVXbz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Jun 2021 19:31:55 -0400
-Received: from thoth.sbs.de ([192.35.17.2]:42196 "EHLO thoth.sbs.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229501AbhFVXbz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Jun 2021 19:31:55 -0400
-X-Greylist: delayed 1951 seconds by postgrey-1.27 at vger.kernel.org; Tue, 22 Jun 2021 19:31:54 EDT
-Received: from mail2.sbs.de (mail2.sbs.de [192.129.41.66])
-        by thoth.sbs.de (8.15.2/8.15.2) with ESMTPS id 15MMuVSg027778
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Jun 2021 00:56:31 +0200
-Received: from [167.87.93.200] ([167.87.93.200])
-        by mail2.sbs.de (8.15.2/8.15.2) with ESMTP id 15MMuQ3p002566;
-        Wed, 23 Jun 2021 00:56:27 +0200
-Subject: Re: [PATCH v2] serial: 8250: 8250_omap: Fix possible interrupt storm
- on K3 SoCs
-To:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org,
-        linux-omap@vger.kernel.org,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
-References: <20210622145704.11168-1-vigneshr@ti.com>
-From:   Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d55fc5bb-b56d-bed6-0753-574b12e2ee92@siemens.com>
-Date:   Wed, 23 Jun 2021 00:56:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
-MIME-Version: 1.0
-In-Reply-To: <20210622145704.11168-1-vigneshr@ti.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S230267AbhFWCPe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Jun 2021 22:15:34 -0400
+Received: from lucky1.263xmail.com ([211.157.147.134]:54220 "EHLO
+        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229955AbhFWCPd (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 22 Jun 2021 22:15:33 -0400
+Received: from localhost (unknown [192.168.167.130])
+        by lucky1.263xmail.com (Postfix) with ESMTP id 82696CEFFD;
+        Wed, 23 Jun 2021 10:13:08 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-SKE-CHECKED: 1
+X-ANTISPAM-LEVEL: 2
+Received: from localhost.localdomain (unknown [58.22.7.114])
+        by smtp.263.net (postfix) whith ESMTP id P12974T140333956974336S1624414385256154_;
+        Wed, 23 Jun 2021 10:13:07 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <3edf8aa85aeee3a88cab6900d58ac85a>
+X-RL-SENDER: cl@rock-chips.com
+X-SENDER: cl@rock-chips.com
+X-LOGIN-NAME: cl@rock-chips.com
+X-FST-TO: heiko@sntech.de
+X-RCPT-COUNT: 34
+X-SENDER-IP: 58.22.7.114
+X-ATTACHMENT-NUM: 0
+X-System-Flag: 0
+From:   <cl@rock-chips.com>
+To:     heiko@sntech.de
+Cc:     robh+dt@kernel.org, jagan@amarulasolutions.com, wens@csie.org,
+        uwe@kleine-koenig.org, mail@david-bauer.net, jbx6244@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
+        cnsztl@gmail.com, devicetree@vger.kernel.org,
+        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
+        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
+        zhangqing@rock-chips.com, huangtao@rock-chips.com,
+        cl@rock-chips.com, wim@linux-watchdog.org, linux@roeck-us.net,
+        jamie@jamieiles.com, linux-watchdog@vger.kernel.org,
+        maz@kernel.org, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
+        linux-pwm@vger.kernel.org
+Subject: [RESEND PATCH v5 1/4] dt-bindings: pwm: rockchip: add description for rk3568
+Date:   Wed, 23 Jun 2021 10:13:03 +0800
+Message-Id: <20210623021303.28015-1-cl@rock-chips.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210622020517.13100-1-cl@rock-chips.com>
+References: <20210622020517.13100-1-cl@rock-chips.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22.06.21 16:57, Vignesh Raghavendra wrote:
-> On K3 family of SoCs (which includes AM654 SoC), it is observed that RX
-> TIMEOUT is signalled after RX FIFO has been drained, in which case a
-> dummy read of RX FIFO is required to clear RX TIMEOUT condition.
-> Otherwise, this would lead to an interrupt storm.
-> 
-> Fix this by introducing UART_RX_TIMEOUT_QUIRK flag and doing a dummy
-> read in IRQ handler when RX TIMEOUT is reported with no data in RX FIFO.
-> 
-> Fixes: be70874498f3 ("serial: 8250_omap: Add support for AM654 UART controller")
-> Reported-by: Jan Kiszka <jan.kiszka@siemens.com>
-> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-> ---
-> v2:
-> Restrict workaround to K3 family of devices only (ti,am654-uart) where
-> issue was reported.
-> 
-> v1: https://lore.kernel.org/r/20210511151955.28071-1-vigneshr@ti.com
-> 
->  drivers/tty/serial/8250/8250_omap.c | 20 +++++++++++++++++++-
->  1 file changed, 19 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index c06631ced414..79418d4beb48 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -43,6 +43,7 @@
->  #define UART_ERRATA_CLOCK_DISABLE	(1 << 3)
->  #define	UART_HAS_EFR2			BIT(4)
->  #define UART_HAS_RHR_IT_DIS		BIT(5)
-> +#define UART_RX_TIMEOUT_QUIRK		BIT(6)
->  
->  #define OMAP_UART_FCR_RX_TRIG		6
->  #define OMAP_UART_FCR_TX_TRIG		4
-> @@ -104,6 +105,9 @@
->  #define UART_OMAP_EFR2			0x23
->  #define UART_OMAP_EFR2_TIMEOUT_BEHAVE	BIT(6)
->  
-> +/* RX FIFO occupancy indicator */
-> +#define UART_OMAP_RX_LVL		0x64
-> +
->  struct omap8250_priv {
->  	int line;
->  	u8 habit;
-> @@ -611,6 +615,7 @@ static int omap_8250_dma_handle_irq(struct uart_port *port);
->  static irqreturn_t omap8250_irq(int irq, void *dev_id)
->  {
->  	struct uart_port *port = dev_id;
-> +	struct omap8250_priv *priv = port->private_data;
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  	unsigned int iir;
->  	int ret;
-> @@ -625,6 +630,18 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
->  	serial8250_rpm_get(up);
->  	iir = serial_port_in(port, UART_IIR);
->  	ret = serial8250_handle_irq(port, iir);
-> +
-> +	/*
-> +	 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
-> +	 * FIFO has been drained, in which case a dummy read of RX FIFO
-> +	 * is required to clear RX TIMEOUT condition.
-> +	 */
-> +	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
-> +	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
-> +	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
-> +		serial_port_in(port, UART_RX);
-> +	}
-> +
->  	serial8250_rpm_put(up);
->  
->  	return IRQ_RETVAL(ret);
-> @@ -1218,7 +1235,8 @@ static struct omap8250_dma_params am33xx_dma = {
->  
->  static struct omap8250_platdata am654_platdata = {
->  	.dma_params	= &am654_dma,
-> -	.habit		= UART_HAS_EFR2 | UART_HAS_RHR_IT_DIS,
-> +	.habit		= UART_HAS_EFR2 | UART_HAS_RHR_IT_DIS |
-> +			  UART_RX_TIMEOUT_QUIRK,
->  };
->  
->  static struct omap8250_platdata am33xx_platdata = {
-> 
+From: Liang Chen <cl@rock-chips.com>
 
-Tested-by: Jan Kiszka <jan.kiszka@siemens.com>
+add "rockchip,rk3568-pwm", "rockchip,rk3328-pwm" for pwm nodes on
+a rk3568 platform to pwm-rockchip.yaml.
 
-Thanks,
-Jan
+Signed-off-by: Liang Chen <cl@rock-chips.com>
+---
+ Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+index 5596bee70509..81a54a4e8e3e 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
++++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+@@ -29,6 +29,7 @@ properties:
+           - enum:
+               - rockchip,px30-pwm
+               - rockchip,rk3308-pwm
++              - rockchip,rk3568-pwm
+           - const: rockchip,rk3328-pwm
+ 
+   reg:
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+2.17.1
+
+
+
