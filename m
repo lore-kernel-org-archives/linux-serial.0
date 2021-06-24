@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8371C49EA5
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 22:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B111AC49EAF
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 22:49:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 92B80613C9
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 22:49:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9631B613BD
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 22:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229971AbhFXWwP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S232654AbhFXWwP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 24 Jun 2021 18:52:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54444 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:54486 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229521AbhFXWwM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Jun 2021 18:52:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EFD9360FEA;
-        Thu, 24 Jun 2021 22:49:52 +0000 (UTC)
+        id S232582AbhFXWwN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 24 Jun 2021 18:52:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 64A646138C;
+        Thu, 24 Jun 2021 22:49:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1624574993;
-        bh=XHzIArEs04I4ZPQ2dDXvTjAfIIUr3VwtEY21rEvVH9M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=g4UPq7fOSifptYk2UAyWcYaNegosp3zV76mkC3dPHSDT5AYwYw3ARzX3xVTuGouKT
-         1onTajtDLP5TF1YNCLdjTG77fUJdkFzelbPkos7Qpthzu0W+q8FlqThOMSHDBXsbek
-         NiIA6624pvlrSGLCRKkJRBCNea8Je9J7LTIRP7NjrtW3Y6TvLL6xsNGF+ZThE7f3uO
-         hbJZfBd+hSlwOvabRDH06gTMLPY0H6ZZ+7yNBZSGNPcP/f25KpB7lvh8npGJZN5JRW
-         ZIwGBMyzI2MLSzJog7o7lCowEhBqVzvhX6Gy7TKIuXOna2ZR0OyFflmJP7UFqnfut8
-         Pe8DLzwsMhcDQ==
+        bh=P00gi1Wtx+KpLLM7s98I0ogOiO2aXZ3GHASm7R/VtvA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=g9bBPTgFeD0qqieH/lPBvJiObWbeFCEHUcEWkYen5KPGeK7QBzRy1NGruRfHbAyUM
+         lX+bQ05uQYIT0QRZ4zMyZqjYItXQEeYUR3+rtYnpT9NnVRVx+Byl3tcZy/O5leYFPo
+         RE8E72bwDLEz7/Z0tMyKk2TFo1t8ShjvnmES49GtNHlZEZg6hL8Ri4R6rv9G4TmOnx
+         /yKi4PsdpAG8iuAr4LDnAK9ozaEN1pfuaMGe5eYdHSxz7vtR2N4zqUEeXsi3J5V0HV
+         M1v+ns5GIsH6Zs+ZxQO0pwdXBkuv4paXjAixfKjXe0O/5JUZ9fya34MfkJa6EWVX1U
+         wQv8Ai7t+Ahwg==
 Received: by pali.im (Postfix)
-        id 697FB8A3; Fri, 25 Jun 2021 00:49:50 +0200 (CEST)
+        id 87A7896D; Fri, 25 Jun 2021 00:49:51 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -45,10 +45,12 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
         linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 00/10] serial: mvebu-uart: Fixes and new support for higher baudrates
-Date:   Fri, 25 Jun 2021 00:48:59 +0200
-Message-Id: <20210624224909.6350-1-pali@kernel.org>
+Subject: [PATCH 01/10] serial: mvebu-uart: fix calculation of clock divisor
+Date:   Fri, 25 Jun 2021 00:49:00 +0200
+Message-Id: <20210624224909.6350-2-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210624224909.6350-1-pali@kernel.org>
+References: <20210624224909.6350-1-pali@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -56,36 +58,28 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch series fixes mvebu-uart driver used on Marvell Armada 37xx
-boards and add support for baudrates higher than 230400.
+The clock divisor should be rounded to the closest value.
 
-Pali Rohár (10):
-  serial: mvebu-uart: fix calculation of clock divisor
-  serial: mvebu-uart: do not allow changing baudrate when uartclk is not
-    available
-  serial: mvebu-uart: correctly calculate minimal possible baudrate
-  dt-bindings: mvebu-uart: fix documentation
-  arm64: dts: marvell: armada-37xx: Fix reg for standard variant of UART
-  serial: mvebu-uart: remove unused member nb from struct mvebu_uart
-  serial: mvebu-uart: implement UART clock driver for configuring UART
-    base clock
-  dt-bindings: mvebu-uart: document DT bindings for
-    marvell,armada-3700-uart-clock
-  arm64: dts: marvell: armada-37xx: add device node for UART clock and
-    use it
-  serial: mvebu-uart: implement support for baudrates higher than 230400
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+Cc: stable@vger.kernel.org # 0e4cf69ede87 ("serial: mvebu-uart: clarify the baud rate derivation")
+---
+ drivers/tty/serial/mvebu-uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- .../bindings/clock/armada3700-uart-clock.txt  |  24 +
- .../devicetree/bindings/serial/mvebu-uart.txt |  15 +-
- .../arm64/boot/dts/marvell/armada-3720-db.dts |   4 +
- .../dts/marvell/armada-3720-espressobin.dtsi  |   4 +
- .../dts/marvell/armada-3720-turris-mox.dts    |   4 +
- .../boot/dts/marvell/armada-3720-uDPU.dts     |   4 +
- arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  17 +-
- drivers/tty/serial/mvebu-uart.c               | 603 +++++++++++++++++-
- 8 files changed, 645 insertions(+), 30 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/armada3700-uart-clock.txt
-
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index e0c00a1b0763..f81bfdaa608c 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -463,7 +463,7 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+ 	 * makes use of D to configure the desired baudrate.
+ 	 */
+ 	m_divisor = OSAMP_DEFAULT_DIVISOR;
+-	d_divisor = DIV_ROUND_UP(port->uartclk, baud * m_divisor);
++	d_divisor = DIV_ROUND_CLOSEST(port->uartclk, baud * m_divisor);
+ 
+ 	brdv = readl(port->membase + UART_BRDV);
+ 	brdv &= ~BRDV_BAUD_MASK;
 -- 
 2.20.1
 
