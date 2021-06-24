@@ -2,67 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CDEC48BDF
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 13:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD650C49EA5
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 20:28:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 77C9C613F7
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 13:07:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A419A613BA
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 20:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbhFXNJw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Jun 2021 09:09:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47904 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229881AbhFXNJv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Jun 2021 09:09:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B4D03613F6;
-        Thu, 24 Jun 2021 13:07:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1624540051;
-        bh=nik1xFcO54CLXrylWhRVNwQOg1iEtMgXWsXyd08Z8ts=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=q2Po7VQ2CLXrr8Hz0Eai4V6b2W0orVBH2NO2vkx9Cyl31ci67koMJ9ItY9Z5a9rzY
-         34w/MJJUV+b6RrnrGJeoZSI9n0lJ9gErwqr7JO5vNAhRyjUb23WaI2lDfwaal7N35I
-         t9vx3saYgtN0rlvVN8wnBgJZ2tMyIxtE/1y/6/N4=
-Date:   Thu, 24 Jun 2021 15:07:28 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Saubhik Mukherjee <saubhik.mukherjee@gmail.com>
-Cc:     vgupta@synopsys.com, Jiri Slaby <jirislaby@kernel.org>,
-        linux-snps-arc@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org,
-        Pavel Andrianov <andrianov@ispras.ru>
-Subject: Re: [question] De-registration does not remove port
-Message-ID: <YNSDkDnrI38/+VAZ@kroah.com>
-References: <3e131267-e1b3-1b83-f8be-0577da479223@gmail.com>
- <YNLfcKFL1LkJgXAR@kroah.com>
- <7af6c0a5-c990-5a40-104e-13f44b1cb4c5@gmail.com>
+        id S232300AbhFXUaX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Jun 2021 16:30:23 -0400
+Received: from mail-io1-f42.google.com ([209.85.166.42]:38768 "EHLO
+        mail-io1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229464AbhFXUaW (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 24 Jun 2021 16:30:22 -0400
+Received: by mail-io1-f42.google.com with SMTP id k11so9886799ioa.5;
+        Thu, 24 Jun 2021 13:28:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yT5uzxIGnFP5VZf20UNWQIt+98NYYNNQY54nzUDWUYw=;
+        b=NYRDS8qfWOTlEh5N7mOugBA8mQHHWTPXqChiJC4/uK1zSDTLW+QUN4MokHdEkxgnRg
+         oZ4elRJT6ft2/sDFfQjua+hxTI2yjt0SYUpXv1k2bhhpP/pzLcRAilhR+KzYfDC3MDOr
+         qXTN80JN5cni60uU4B5rCl2xw2bmWfLoVLpqVPZ5rEPOLmUbiAOMnCfcoPFCK7wXw8kt
+         wmSspm7aW6rk3Y097H7GtH+oVfvTpgxfrqthI/jeh4djpxhlNkjDo01Sx0Z5E35JByX+
+         CbM18YD3zKtiEWLRLF0xMS8JhgOanwjVrNTdWuwJxizA7l3K935w0kKu9IOwhcVhw+jB
+         ctlw==
+X-Gm-Message-State: AOAM531mO+IQXcjG4wn4TRoZnK8l6jIGpXeGZ4pQXSoyqOuVySkoscxR
+        cYKg2EHYApzA/xZQ7KR0ZA==
+X-Google-Smtp-Source: ABdhPJx4UX0nDQ6JgXzaRAmpINTOK+KHNgOmbLY28VavvrlWiZnbdnHHhgJs8HXeXZh/T98Bl7OhuQ==
+X-Received: by 2002:a05:6638:3594:: with SMTP id v20mr6186139jal.25.1624566483218;
+        Thu, 24 Jun 2021 13:28:03 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id w7sm2499383ilu.74.2021.06.24.13.28.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Jun 2021 13:28:02 -0700 (PDT)
+Received: (nullmailer pid 1934646 invoked by uid 1000);
+        Thu, 24 Jun 2021 20:27:59 -0000
+Date:   Thu, 24 Jun 2021 14:27:59 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-spi@vger.kernel.org, robh+dt@kernel.org, broonie@kernel.org,
+        michal.simek@xilinx.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: spi: convert Xilinx Zynq UltraScale+ MPSoC
+ GQSPI bindings to YAML
+Message-ID: <20210624202759.GA1934589@robh.at.kernel.org>
+References: <20210613214317.296667-1-iwamatsu@nigauri.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7af6c0a5-c990-5a40-104e-13f44b1cb4c5@gmail.com>
+In-Reply-To: <20210613214317.296667-1-iwamatsu@nigauri.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 06:33:01PM +0530, Saubhik Mukherjee wrote:
-> On 6/23/21 12:44 PM, Greg KH wrote:
-> > On Wed, Jun 23, 2021 at 11:42:36AM +0530, Saubhik Mukherjee wrote:
-> > > In drivers/tty/serial/arc_uart.c, arc_serial_remove always returns 0,
-> > > instead of calling uart_remove_one_port to remove uart port from serial
-> > > core. The comment says "This will be never be called". In my understanding,
-> > > a port added using uart_add_one_port should be removed during
-> > > de-registration.
-> > > 
-> > > Is there a reason for this behavior?
-> > 
-> > Did you test the code to see if that function will ever be called?
+On Mon, 14 Jun 2021 06:43:17 +0900, Nobuhiro Iwamatsu wrote:
+> Convert spi for Xilinx Zynq UltraScale+ MPSoC GQSPI bindings
+> documentation to YAML.
 > 
-> I would like to reformulate the question: Suppose arc_serial_remove is never
-> called. Then I would like to know how the driver de-registration is
-> organized since the UART port is never removed?
+> Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+> ---
+>  .../bindings/spi/spi-zynqmp-qspi.txt          | 25 ---------
+>  .../bindings/spi/spi-zynqmp-qspi.yaml         | 51 +++++++++++++++++++
+>  2 files changed, 51 insertions(+), 25 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.txt
+>  create mode 100644 Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
+> 
 
-I would like to reiterate my original question, have you tested this?
+Reviewed-by: Rob Herring <robh@kernel.org>
