@@ -7,32 +7,32 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B111AC49EAF
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 22:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C842BC49EA5
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 22:49:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9631B613BD
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 22:49:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B258C613B7
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Jun 2021 22:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232654AbhFXWwP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Jun 2021 18:52:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54486 "EHLO mail.kernel.org"
+        id S232876AbhFXWwQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Jun 2021 18:52:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54528 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232582AbhFXWwN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S232695AbhFXWwN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Thu, 24 Jun 2021 18:52:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 64A646138C;
-        Thu, 24 Jun 2021 22:49:53 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 286386135C;
+        Thu, 24 Jun 2021 22:49:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624574993;
-        bh=P00gi1Wtx+KpLLM7s98I0ogOiO2aXZ3GHASm7R/VtvA=;
+        s=k20201202; t=1624574994;
+        bh=Do7JpeaMbcTZFmYRsJ6KflWqZQ5cEUS3jxE0VeBISec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g9bBPTgFeD0qqieH/lPBvJiObWbeFCEHUcEWkYen5KPGeK7QBzRy1NGruRfHbAyUM
-         lX+bQ05uQYIT0QRZ4zMyZqjYItXQEeYUR3+rtYnpT9NnVRVx+Byl3tcZy/O5leYFPo
-         RE8E72bwDLEz7/Z0tMyKk2TFo1t8ShjvnmES49GtNHlZEZg6hL8Ri4R6rv9G4TmOnx
-         /yKi4PsdpAG8iuAr4LDnAK9ozaEN1pfuaMGe5eYdHSxz7vtR2N4zqUEeXsi3J5V0HV
-         M1v+ns5GIsH6Zs+ZxQO0pwdXBkuv4paXjAixfKjXe0O/5JUZ9fya34MfkJa6EWVX1U
-         wQv8Ai7t+Ahwg==
+        b=KftG9LTMBq4EBxfDAXYFRYxvIic6GLpckd4GFs34LxG3LaieSh9UxRngbGqtcXXdI
+         vDM+/kNx0FmKddqDDZYBmlWS1dxDQMpqasyV2BC3MOGzfjJ7HvIQpKxttYbiXMh2ew
+         vQ5gpGK5kOJNIUXHTqipaHbBaJancGP3D6QxVO1lUOry391v7443wcAyUsRcqc0B7p
+         WY9YitbrfNtAuF0uGe4CeYP0uy+4pMNMBKGDtFW96bPCaktQ/HJVUXjdWMyNzQ8vh4
+         +ptCcBOMMyScAhiy4YdeQEaAE7HfPfE94IWsQ2S7iV9pXvgxBx3/jd4A+A5tIwps5/
+         y8w8X9ODdp9Mg==
 Received: by pali.im (Postfix)
-        id 87A7896D; Fri, 25 Jun 2021 00:49:51 +0200 (CEST)
+        id DC8858A3; Fri, 25 Jun 2021 00:49:53 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -45,9 +45,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
         linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 01/10] serial: mvebu-uart: fix calculation of clock divisor
-Date:   Fri, 25 Jun 2021 00:49:00 +0200
-Message-Id: <20210624224909.6350-2-pali@kernel.org>
+Subject: [PATCH 03/10] serial: mvebu-uart: correctly calculate minimal possible baudrate
+Date:   Fri, 25 Jun 2021 00:49:02 +0200
+Message-Id: <20210624224909.6350-4-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210624224909.6350-1-pali@kernel.org>
 References: <20210624224909.6350-1-pali@kernel.org>
@@ -58,28 +58,54 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The clock divisor should be rounded to the closest value.
+For default (x16) scheme which is currently used by mvebu-uart.c driver,
+maximal divisor of UART base clock is 1023*16. Therefore there is limit for
+minimal supported baudrate. This change calculate it correctly and prevents
+setting invalid divisor 0 into hardware registers.
 
 Signed-off-by: Pali Rohár <pali@kernel.org>
 Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
-Cc: stable@vger.kernel.org # 0e4cf69ede87 ("serial: mvebu-uart: clarify the baud rate derivation")
 ---
- drivers/tty/serial/mvebu-uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/mvebu-uart.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index e0c00a1b0763..f81bfdaa608c 100644
+index dc0c26824ddb..f8b0016db847 100644
 --- a/drivers/tty/serial/mvebu-uart.c
 +++ b/drivers/tty/serial/mvebu-uart.c
-@@ -463,7 +463,7 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- 	 * makes use of D to configure the desired baudrate.
- 	 */
- 	m_divisor = OSAMP_DEFAULT_DIVISOR;
--	d_divisor = DIV_ROUND_UP(port->uartclk, baud * m_divisor);
-+	d_divisor = DIV_ROUND_CLOSEST(port->uartclk, baud * m_divisor);
+@@ -481,7 +481,7 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+ 				   struct ktermios *old)
+ {
+ 	unsigned long flags;
+-	unsigned int baud;
++	unsigned int baud, min_baud, max_baud;
  
- 	brdv = readl(port->membase + UART_BRDV);
- 	brdv &= ~BRDV_BAUD_MASK;
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+@@ -500,16 +500,21 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+ 		port->ignore_status_mask |= STAT_RX_RDY(port) | STAT_BRK_ERR;
+ 
+ 	/*
++	 * Maximal divisor is 1023 * 16 when using default (x16) scheme.
+ 	 * Maximum achievable frequency with simple baudrate divisor is 230400.
+ 	 * Since the error per bit frame would be of more than 15%, achieving
+ 	 * higher frequencies would require to implement the fractional divisor
+ 	 * feature.
+ 	 */
+-	baud = uart_get_baud_rate(port, termios, old, 0, 230400);
++	min_baud = DIV_ROUND_UP(port->uartclk, 1023 * 16);
++	max_baud = 230400;
++
++	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+ 	if (mvebu_uart_baud_rate_set(port, baud)) {
+ 		/* No clock available, baudrate cannot be changed */
+ 		if (old)
+-			baud = uart_get_baud_rate(port, old, NULL, 0, 230400);
++			baud = uart_get_baud_rate(port, old, NULL,
++						  min_baud, max_baud);
+ 	} else {
+ 		tty_termios_encode_baud_rate(termios, baud, baud);
+ 		uart_update_timeout(port, termios->c_cflag, baud);
 -- 
 2.20.1
 
