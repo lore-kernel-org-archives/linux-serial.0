@@ -2,115 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49922C2B9F4
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 09:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7B2C2B9F4
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 11:22:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2DD0661425
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 09:37:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4324C6147E
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 11:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbhFYJkH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Jun 2021 05:40:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36796 "EHLO mail.kernel.org"
+        id S229470AbhFYLYW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Jun 2021 07:24:22 -0400
+Received: from mout.gmx.net ([212.227.15.19]:37499 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229902AbhFYJkH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Jun 2021 05:40:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C67F61409;
-        Fri, 25 Jun 2021 09:37:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1624613866;
-        bh=4siVANfNk7+ayUce+FYOgvRV+e2gNQ33FZLXMhtPrmQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IbaeOVmfbkoBid6qM3xM6D3k0iW1yI81BMqrTTvQ9IbGzbt9bYQPwpvkd1cGS4f1k
-         uNol+mTz/PjpgXPmpMTPU3TomQZ+pdxBef1KuRBHHWGqEdG3LHQSdz0Hc3vxb8x/Gr
-         Qe6/qcvsQM+8VezncU32iV9SRMHteRqb280AuIgY=
-Date:   Fri, 25 Jun 2021 11:37:43 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Moriis Ku <saumah@gmail.com>
-Cc:     linux-serial@vger.kernel.org, jason_lee@sunix.com,
-        taian.chen@sunix.com, morris_ku@sunix.com, edward.lee@sunix.com
-Subject: Re: [PATCH] SUNIX SDC serial port driver
-Message-ID: <YNWj50ypdQLOvgZ2@kroah.com>
-References: <20210625093011.12659-1-saumah@gmail.com>
+        id S229458AbhFYLYW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 25 Jun 2021 07:24:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1624620116;
+        bh=xiBdkAQS5W6nSZvOpWi4b/JamF6NrcqN871sbG/YZiM=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=D3XljyM1hSXtdBaLRMRpv7qjpkvCtGeQd73NqbK6J3qNWepvlnVmku/hMVQWIdcs7
+         7LB9EPHwPqMX6ajc8WjNBUqcznS8cffVJ5JfoiZwfZ53Xre+vUeVo5FR8aBFtAmY0g
+         GPI/x1/zdsOx8CDyWaNtvOKR350NrDFaD3zI207o=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [87.130.101.138] ([87.130.101.138]) by web-mail.gmx.net
+ (3c-app-gmx-bs05.server.lan [172.19.170.54]) (via HTTP); Fri, 25 Jun 2021
+ 13:21:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210625093011.12659-1-saumah@gmail.com>
+Message-ID: <trinity-163a08b4-6e39-4d15-bde2-815342f13fc4-1624620116191@3c-app-gmx-bs05>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, linux@armlinux.org.uk,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] serial: amba-pl011: add RS485 support
+Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 25 Jun 2021 13:21:56 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <db436292-4115-0755-57d8-d63986f84453@kernel.org>
+References: <20210618145153.1906-1-LinoSanfilippo@gmx.de>
+ <YNSA1H0cFKiPUn6N@kroah.com> <5d7a4351-2adc-ea31-3290-91d91bd5a5d4@gmx.de>
+ <db436292-4115-0755-57d8-d63986f84453@kernel.org>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:t13vIl16khdstcPYHAPyke7bWV2T38BoLGJQ6MO3Y+sD5YMDA7zNe208y+GBCGh6Iqdih
+ fdcpgn4J9jOxq3nQnVqn9KcQSx9WzAYpy0iP2IRLskCffzz4zfKMtHXRxG1/zvOG5Qcmz7BLumod
+ nxawCM2cIzR/TLbrzR551Af+0EEnvq2e+913J+hRLn78aU0I/I+FHP/89OaXIjSZlMPqTYqZsDth
+ 5Mr3nIoQvQSyTWPRgQUopXTosMjlrBZinfl+groqjgL/HUWdwSllziFaBAGaM7hJV3ETolqRw2Mc
+ 8U=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:11NdH7Sil5g=:7LuhUINLhb5nAk8/8jwzyP
+ W1JHaz1PGfm9rmQ8UETxxVYdDWgLmi7OSVpn2OiHw9/nGYUJn7B1eiZEN/i9U7e9sbFigb3HZ
+ Ykw+EqbIsFF+cCKSVhfWgdBSIbCbiDp3N2cTOUj7nUHVcDntszinFKbnlF2gQu6QV1mtXDabI
+ GaTWqV05gLf4x6V4LeeS1W7PvSRJ02GuVI8x8D/Ca9aZzc5CLzCfaKzfk7p35CFD19G2Y2fgb
+ VTzim7A1vzq3XniDlWhkprgrB3LfFZ8WDEfCFaskEEa6XMuTMa4nSgWxQ68k/0pdJiOx7bDVp
+ rtzaEvtZA81n8wepE46mw3U/aoPPPWu46BfLsFSYux7r98DAKBE3BlIZc8GFnUe5Sp9oKz/+r
+ Oq59ZnpiCq2+lwAuYBRqCoA5laK1SzoQdWGDtllao8Dt75s9gSULCKC3c2RQ6dk8cbmUuzs4J
+ ibVEFyGHj63VAG6B4HGix1SkaIg+3vyv/HMr1NpT34XcWmk33qZMimTt66fi0vXfUgsiPIrq9
+ jaBvKIiYxUrmJ4NY6/K0DRX0N/vHIAN4RmhrB1ph8FTm5xfEzmCcd5MX2hfEQNDwtHmf5UDfG
+ 0P0xJ42S8tVA7h3PLmKokQw0XlQd67TlVlFtTA0RGnJauw8BWQIbrd2hdQrofhtmCjVTN/Z4G
+ LrAUIBCHiw9G0syVo8o29K0rbhtY2y/pXGkwgCiicnC32slBhhnTzZj+QmmjAjBw4BkViVChu
+ Lyf+HzSd20ko2AOANvcERK3YYHSWXZIkAz08kO3YhGbSfHoL7JTzI9oNexMHzzsY6oziDNBtC
+ +KcL7Eh+s6hw/YkFU75aSknL2Zm/PEk4Y3e7eF3GECSK2SKXsg=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jun 25, 2021 at 05:30:11PM +0800, Moriis Ku wrote:
-> From: Morris Ku <saumah@gmail.com>
-> 
-> Add support for SUNIX SDC serial port
-> 
-> Cc: Taian Chen <taian.chen@sunix.com>
-> Cc: Morris Ku <morris_ku@sunix.com>
-> Cc: Edward Lee <Edward.lee@sunix.com>
-> Signed-off-by: Morris Ku <saumah@gmail.com>
-> ---
->  8250_sdc.c | 410 +++++++++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 410 insertions(+)
->  create mode 100644 8250_sdc.c
-> 
-> diff --git a/8250_sdc.c b/8250_sdc.c
-> new file mode 100644
-> index 0000000..3ec9ce7
-> --- /dev/null
-> +++ b/8250_sdc.c
 
 Hi,
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+> On 25. 06. 21, 2:15, Lino Sanfilippo wrote:
+> >>> +static int pl011_rs485_config(struct uart_port *port,
+> >>> +			      struct serial_rs485 *rs485)
+> >>> +{
+> >>> +	struct uart_amba_port *uap =3D
+> >>> +		container_of(port, struct uart_amba_port, port);
+> >>> +
+> >>> +	/* pick sane settings if the user hasn't */
+> >>> +	if (!!(rs485->flags & SER_RS485_RTS_ON_SEND) =3D=3D
+> >>
+> >> Why the !! in an if statement?
+> >>
+> >>> +	    !!(rs485->flags & SER_RS485_RTS_AFTER_SEND)) {
+> >>
+> >> Same here, why?
+> >>
+> >
+> > This was copied from serial8250_em485_config(). But I think we can sim=
+ply use
+> >
+> > 	if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
+> > 		rs485->flags &=3D ~SER_RS485_RTS_ON_SEND;
+> > 	else
+> > 		rs485->flags |=3D SER_RS485_RTS_ON_SEND;
+> >
+> > instead. I will adjust the code accordingly.
+>
+> This is different. You want to set ON_SEND when none is set. And unset
+> AFTER_SEND when both are set. In your code, when both are set, you leave
+> AFTER_SEND.
+>
+> regards,
+> --
+> js
+> suse labs
+>
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+Thats right, the logic has slightly changed. I thought this does not matte=
+r as long as
+we make sure that exactly one of both ON_SEND or AFTER_SEND is set. We can=
+ stick with the logic
+in serial8250_em485_config() (i.e. always set ON_SEND and delete AFTER_SEN=
+D in case
+of an invalid setting), but I think this will require more than the four l=
+ines that we
+have now (especially if we want to avoid the !!).
 
-- Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
-  and can not be applied.  Please read the file,
-  Documentation/email-clients.txt in order to fix this.
+Thanks,
+Lino
 
-- You sent multiple patches, yet no indication of which ones should be
-  applied in which order.  Greg could just guess, but if you are
-  receiving this email, he guessed wrong and the patches didn't apply.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for a description of how
-  to do this so that Greg has a chance to apply these correctly.
 
-- You did not specify a description of why the patch is needed, or
-  possibly, any description at all, in the email body.  Please read the
-  section entitled "The canonical patch format" in the kernel file,
-  Documentation/SubmittingPatches for what is needed in order to
-  properly describe the change.
 
-- You did not write a descriptive Subject: for the patch, allowing Greg,
-  and everyone else, to know what this patch is all about.  Please read
-  the section entitled "The canonical patch format" in the kernel file,
-  Documentation/SubmittingPatches for what a proper Subject: line should
-  look like.
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
 
-thanks,
-
-greg k-h's patch email bot
