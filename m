@@ -7,32 +7,32 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7051C49EB9
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 14:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFB0C2B9F4
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 14:37:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B1B4F61988
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 14:37:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0A01161984
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 14:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231818AbhFYOjX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Jun 2021 10:39:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60468 "EHLO mail.kernel.org"
+        id S231864AbhFYOjY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Jun 2021 10:39:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60806 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229782AbhFYOjT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Jun 2021 10:39:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CE6E06197C;
-        Fri, 25 Jun 2021 14:36:58 +0000 (UTC)
+        id S231792AbhFYOjV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 25 Jun 2021 10:39:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D1C4361963;
+        Fri, 25 Jun 2021 14:37:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624631819;
-        bh=LqSbUvnklLbaikHJmUbHetSoNII9E7rRJugAzbxIQ/A=;
+        s=k20201202; t=1624631821;
+        bh=USEKYSV3MF6RLrnklNByiy9FC4QXCrBJGILk/V/whW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cWU/4oELH9tsxff/HEMb1IqzZmZFATSHkcMJQU6kZ+SFG1jSi7k7he+esBz3d8ytb
-         Qg9fiEQhHA5j4E311DepE2O1xrvtCuKXzCGul4fS/5kM0Nc9/7erIi3LmzRRaPepdJ
-         xKQzmOhYYQ2wnebIlSsX+i24uVsJkZlZcy7bLqk7ExDfRdnVdh/NHkxtW/yXmBxJTi
-         RI8caxbkBharu/C1dfAMA2bgb4BUaEeDAsF1vYN6ErMVmZN9IWVRMEY8lkGSdq3Mer
-         zKr/+1v6avGQJF4GbuzK/yg6BYZsUn2ucm4EtkuYQet8KW7jAfX6nrFbklGgVT1ky8
-         D0M3nigezkm9Q==
+        b=dZ9SxczMeMxo3LnNMVk3zFGWezNK0KVoo2dVRteE4nTQ9UwIogSiiOxp3BvlaOJIo
+         obAuIS/KwI2t1mmG7QB45GbaG97Jc43kELdhLw+X+wPLHDVcYwg2ZiIkfZqy+tIbEm
+         TlUZgzW4V/MYYT8gPBE43Bdiz2e+l0tMN/+EsqKV3XrBFgPSZMOGWHfK7CZ2CI/jpB
+         1ezA50IQuToW/X5jbiQ53wdlo2T5DSwSS1yRoceMyI84Bvm6NmpAsZwi1ZcWRzVdnU
+         fgQgLut5BrUSaqBDYZSg584TriSUzKsrqozKhXeNhma8DIyLVEygAWBkyL8OccEOaZ
+         o8ZK3mFR9yMKQ==
 Received: by pali.im (Postfix)
-        id 8EBBB60E; Fri, 25 Jun 2021 16:36:58 +0200 (CEST)
+        id 910DD60E; Fri, 25 Jun 2021 16:37:00 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -46,9 +46,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
         linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 04/11] dt-bindings: mvebu-uart: fix documentation
-Date:   Fri, 25 Jun 2021 16:36:10 +0200
-Message-Id: <20210625143617.12826-5-pali@kernel.org>
+Subject: [PATCH v2 06/11] serial: mvebu-uart: remove unused member nb from struct mvebu_uart
+Date:   Fri, 25 Jun 2021 16:36:12 +0200
+Message-Id: <20210625143617.12826-7-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210625143617.12826-1-pali@kernel.org>
 References: <20210624224909.6350-1-pali@kernel.org>
@@ -60,46 +60,25 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Both UARTs support higher baudrates and are not limited to baudrate 230400.
-Only current kernel driver implementation has limitation for both UARTs in
-maximal baudrate 230400. This limitation will be removed in next patches.
-So remove incorrect information about (hardware) limitation from bindings.
-
-UART1 (standard variant with DT node name 'uart0') has register space
-0x12000-0x12018 and not whole size 0x200. So fix also this in example.
+Member nb in struct mvebu_uart is not set nor read. So remove it completely.
 
 Signed-off-by: Pali Rohár <pali@kernel.org>
-Fixes: d160c3413478 ("dt-bindings: mvebu-uart: update documentation with extended UART")
 ---
- Documentation/devicetree/bindings/serial/mvebu-uart.txt | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/mvebu-uart.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/mvebu-uart.txt b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
-index b7e0e32b9ac6..2d0dbdf32d1d 100644
---- a/Documentation/devicetree/bindings/serial/mvebu-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
-@@ -5,10 +5,10 @@ Required properties:
- - compatible:
-     - "marvell,armada-3700-uart" for the standard variant of the UART
-       (32 bytes FIFO, no DMA, level interrupts, 8-bit access to the
--      FIFO, baudrate limited to 230400).
-+      FIFO), called also UART1.
-     - "marvell,armada-3700-uart-ext" for the extended variant of the
-       UART (128 bytes FIFO, DMA, front interrupts, 8-bit or 32-bit
--      accesses to the FIFO, baudrate unlimited by the dividers).
-+      accesses to the FIFO), called also UART2.
- - reg: offset and length of the register set for the device.
- - clocks: UART reference clock used to derive the baudrate. If no clock
-       is provided (possible only with the "marvell,armada-3700-uart"
-@@ -33,7 +33,7 @@ Required properties:
- Example:
- 	uart0: serial@12000 {
- 		compatible = "marvell,armada-3700-uart";
--		reg = <0x12000 0x200>;
-+		reg = <0x12000 0x18>;
- 		clocks = <&xtalclk>;
- 		interrupts =
- 		<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index f8b0016db847..414e92064ac6 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -128,7 +128,6 @@ struct mvebu_uart {
+ 	struct uart_port *port;
+ 	struct clk *clk;
+ 	int irq[UART_IRQ_COUNT];
+-	unsigned char __iomem *nb;
+ 	struct mvebu_uart_driver_data *data;
+ #if defined(CONFIG_PM)
+ 	struct mvebu_uart_pm_regs pm_regs;
 -- 
 2.20.1
 
