@@ -2,129 +2,141 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.4 required=3.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7B2C2B9F4
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 11:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36997C2B9F4
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 12:12:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4324C6147E
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 11:22:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 14A8B6162C
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 12:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229470AbhFYLYW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Jun 2021 07:24:22 -0400
-Received: from mout.gmx.net ([212.227.15.19]:37499 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229458AbhFYLYW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Jun 2021 07:24:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1624620116;
-        bh=xiBdkAQS5W6nSZvOpWi4b/JamF6NrcqN871sbG/YZiM=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=D3XljyM1hSXtdBaLRMRpv7qjpkvCtGeQd73NqbK6J3qNWepvlnVmku/hMVQWIdcs7
-         7LB9EPHwPqMX6ajc8WjNBUqcznS8cffVJ5JfoiZwfZ53Xre+vUeVo5FR8aBFtAmY0g
-         GPI/x1/zdsOx8CDyWaNtvOKR350NrDFaD3zI207o=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [87.130.101.138] ([87.130.101.138]) by web-mail.gmx.net
- (3c-app-gmx-bs05.server.lan [172.19.170.54]) (via HTTP); Fri, 25 Jun 2021
- 13:21:56 +0200
+        id S229934AbhFYMOY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Jun 2021 08:14:24 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:9592 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229712AbhFYMOY (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 25 Jun 2021 08:14:24 -0400
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15PC0nlW028687;
+        Fri, 25 Jun 2021 12:11:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=uysn2tlq/rt/c+x0LkCBpI8ImCFpWQ+NZ17v8b2HBsA=;
+ b=Wc8yyMvQA2cNovY+UvrudRUdKzlIBbHC80nHWbodpoW4tncOtAhkTg1xfpm6Qb/YAv3x
+ JBZTpCAVXYQtcHTm0gBEiqvO1TXhoD/PfPoqCln7xBUX1kAMDgydVdQ07cRqN35UVtCY
+ DSZ03f7v7oeW6IFfZXzofbMq47WS0P4oBGITRBKvCSV6qKc/oaVfwCZ957/wvOO/3eJ1
+ fic+X6BcTUEcMeUZLcSxY2+hdHc+gnGzZgoTmlLwWrvpntUpHoi4dbEFwPpoMGSfyqCg
+ QUWG+PBz7gL3fVqC8NFyaR9N5vKZU7jmEjNVVYXDw/VS3c/WQjBWBLzpxYGeEGMsGkEg fA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 39d2ahs66m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Jun 2021 12:11:57 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15PCBOWG108579;
+        Fri, 25 Jun 2021 12:11:56 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 39d23y07av-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Jun 2021 12:11:56 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15PCBt4M109980;
+        Fri, 25 Jun 2021 12:11:55 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 39d23y07a5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Jun 2021 12:11:55 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 15PCBrSF029193;
+        Fri, 25 Jun 2021 12:11:53 GMT
+Received: from kadam (/102.222.70.252)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 25 Jun 2021 05:11:52 -0700
+Date:   Fri, 25 Jun 2021 15:11:35 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [tty:tty-testing 96/222] drivers/tty/serial/max310x.c:1430
+ max310x_probe() warn: 's->clk' not released on lines: 1296.
+Message-ID: <202106250724.d9BNqnQl-lkp@intel.com>
 MIME-Version: 1.0
-Message-ID: <trinity-163a08b4-6e39-4d15-bde2-815342f13fc4-1624620116191@3c-app-gmx-bs05>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, linux@armlinux.org.uk,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] serial: amba-pl011: add RS485 support
-Content-Type: text/plain; charset=UTF-8
-Date:   Fri, 25 Jun 2021 13:21:56 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <db436292-4115-0755-57d8-d63986f84453@kernel.org>
-References: <20210618145153.1906-1-LinoSanfilippo@gmx.de>
- <YNSA1H0cFKiPUn6N@kroah.com> <5d7a4351-2adc-ea31-3290-91d91bd5a5d4@gmx.de>
- <db436292-4115-0755-57d8-d63986f84453@kernel.org>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:t13vIl16khdstcPYHAPyke7bWV2T38BoLGJQ6MO3Y+sD5YMDA7zNe208y+GBCGh6Iqdih
- fdcpgn4J9jOxq3nQnVqn9KcQSx9WzAYpy0iP2IRLskCffzz4zfKMtHXRxG1/zvOG5Qcmz7BLumod
- nxawCM2cIzR/TLbrzR551Af+0EEnvq2e+913J+hRLn78aU0I/I+FHP/89OaXIjSZlMPqTYqZsDth
- 5Mr3nIoQvQSyTWPRgQUopXTosMjlrBZinfl+groqjgL/HUWdwSllziFaBAGaM7hJV3ETolqRw2Mc
- 8U=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:11NdH7Sil5g=:7LuhUINLhb5nAk8/8jwzyP
- W1JHaz1PGfm9rmQ8UETxxVYdDWgLmi7OSVpn2OiHw9/nGYUJn7B1eiZEN/i9U7e9sbFigb3HZ
- Ykw+EqbIsFF+cCKSVhfWgdBSIbCbiDp3N2cTOUj7nUHVcDntszinFKbnlF2gQu6QV1mtXDabI
- GaTWqV05gLf4x6V4LeeS1W7PvSRJ02GuVI8x8D/Ca9aZzc5CLzCfaKzfk7p35CFD19G2Y2fgb
- VTzim7A1vzq3XniDlWhkprgrB3LfFZ8WDEfCFaskEEa6XMuTMa4nSgWxQ68k/0pdJiOx7bDVp
- rtzaEvtZA81n8wepE46mw3U/aoPPPWu46BfLsFSYux7r98DAKBE3BlIZc8GFnUe5Sp9oKz/+r
- Oq59ZnpiCq2+lwAuYBRqCoA5laK1SzoQdWGDtllao8Dt75s9gSULCKC3c2RQ6dk8cbmUuzs4J
- ibVEFyGHj63VAG6B4HGix1SkaIg+3vyv/HMr1NpT34XcWmk33qZMimTt66fi0vXfUgsiPIrq9
- jaBvKIiYxUrmJ4NY6/K0DRX0N/vHIAN4RmhrB1ph8FTm5xfEzmCcd5MX2hfEQNDwtHmf5UDfG
- 0P0xJ42S8tVA7h3PLmKokQw0XlQd67TlVlFtTA0RGnJauw8BWQIbrd2hdQrofhtmCjVTN/Z4G
- LrAUIBCHiw9G0syVo8o29K0rbhtY2y/pXGkwgCiicnC32slBhhnTzZj+QmmjAjBw4BkViVChu
- Lyf+HzSd20ko2AOANvcERK3YYHSWXZIkAz08kO3YhGbSfHoL7JTzI9oNexMHzzsY6oziDNBtC
- +KcL7Eh+s6hw/YkFU75aSknL2Zm/PEk4Y3e7eF3GECSK2SKXsg=
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-ORIG-GUID: 5PJ9o4HmMGdZvPSYrQzallLml3HE27ZV
+X-Proofpoint-GUID: 5PJ9o4HmMGdZvPSYrQzallLml3HE27ZV
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+head:   5607fa6c3da3189de1bac356c73bc4fcaf4c0234
+commit: d4d6f03c4fb3a91dadfe147b47edd40e4d7e4d36 [96/222] serial: max310x: Try to get crystal clock rate from property
+config: x86_64-randconfig-m001-20210622 (attached as .config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
 
-Hi,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-> On 25. 06. 21, 2:15, Lino Sanfilippo wrote:
-> >>> +static int pl011_rs485_config(struct uart_port *port,
-> >>> +			      struct serial_rs485 *rs485)
-> >>> +{
-> >>> +	struct uart_amba_port *uap =3D
-> >>> +		container_of(port, struct uart_amba_port, port);
-> >>> +
-> >>> +	/* pick sane settings if the user hasn't */
-> >>> +	if (!!(rs485->flags & SER_RS485_RTS_ON_SEND) =3D=3D
-> >>
-> >> Why the !! in an if statement?
-> >>
-> >>> +	    !!(rs485->flags & SER_RS485_RTS_AFTER_SEND)) {
-> >>
-> >> Same here, why?
-> >>
-> >
-> > This was copied from serial8250_em485_config(). But I think we can sim=
-ply use
-> >
-> > 	if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
-> > 		rs485->flags &=3D ~SER_RS485_RTS_ON_SEND;
-> > 	else
-> > 		rs485->flags |=3D SER_RS485_RTS_ON_SEND;
-> >
-> > instead. I will adjust the code accordingly.
->
-> This is different. You want to set ON_SEND when none is set. And unset
-> AFTER_SEND when both are set. In your code, when both are set, you leave
-> AFTER_SEND.
->
-> regards,
-> --
-> js
-> suse labs
->
+smatch warnings:
+drivers/tty/serial/max310x.c:1430 max310x_probe() warn: 's->clk' not released on lines: 1296.
 
-Thats right, the logic has slightly changed. I thought this does not matte=
-r as long as
-we make sure that exactly one of both ON_SEND or AFTER_SEND is set. We can=
- stick with the logic
-in serial8250_em485_config() (i.e. always set ON_SEND and delete AFTER_SEN=
-D in case
-of an invalid setting), but I think this will require more than the four l=
-ines that we
-have now (especially if we want to avoid the !!).
+vim +1430 drivers/tty/serial/max310x.c
+  1285          }
+  1286  
+  1287          ret = clk_prepare_enable(s->clk);
+  1288          if (ret)
+  1289                  return ret;
+  1290  
+  1291          freq = clk_get_rate(s->clk);
+  1292          if (freq == 0)
+  1293                  freq = uartclk;
+  1294          if (freq == 0) {
+  1295                  dev_err(dev, "Cannot get clock rate\n");
+  1296                  return -EINVAL;
 
-Thanks,
-Lino
+goto out_clk?
 
+  1297          }
+  1298  
+  1299          if (xtal) {
+  1300                  fmin = 1000000;
+  1301                  fmax = 4000000;
+  1302          } else {
+  1303                  fmin = 500000;
+  1304                  fmax = 35000000;
+  1305          }
+  1306  
+  1307          /* Check frequency limits */
+  1308          if (freq < fmin || freq > fmax) {
+  1309                  ret = -ERANGE;
+  1310                  goto out_clk;
+  1311          }
+  1312  
+  1313          s->regmap = regmap;
+  1314          s->devtype = devtype;
+  1315          dev_set_drvdata(dev, s);
+  1316  
+  1317          /* Check device to ensure we are talking to what we expect */
+  1318          ret = devtype->detect(dev);
+  1319          if (ret)
+  1320                  goto out_clk;
+  1321  
+  1322          for (i = 0; i < devtype->nr; i++) {
+  1323                  unsigned int offs = i << 5;
+  1324  
+  1325                  /* Reset port */
+  1326                  regmap_write(s->regmap, MAX310X_MODE2_REG + offs,
 
-
-
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
