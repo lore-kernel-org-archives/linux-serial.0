@@ -2,98 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CC0C2B9F4
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 06:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D77DC2B9F4
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 07:35:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 25ACA6008E
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 06:01:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 36DAC613FA
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Jun 2021 07:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230228AbhFYGEA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Jun 2021 02:04:00 -0400
-Received: from mail-wr1-f47.google.com ([209.85.221.47]:41751 "EHLO
-        mail-wr1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbhFYGEA (ORCPT
+        id S229764AbhFYHhd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Jun 2021 03:37:33 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:34446 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229721AbhFYHhd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Jun 2021 02:04:00 -0400
-Received: by mail-wr1-f47.google.com with SMTP id f15so9245463wro.8;
-        Thu, 24 Jun 2021 23:01:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=a2BnCJpAPmMnW016bHj05vszYD4Yd+B9qTL6NPUz9K0=;
-        b=KU2rYbWUY7WKqPEZxG+rzyKN7/JAye/vW7WVNPzmcw2JvhGUhJLxtlIR1EjoCcFcvk
-         4BpoiJXuGfoCy750xKuIwOTk/Zg6ZWaVpdsInCIyrwIpsLmxgloLmoHO4iqoz/NoiCO7
-         u/sx4+f3s8zqnWlAcOulpqBLmFbWMWrTvdlDc13QAWaLqkAEHo5EkTZEzXDj3u1OM+Sd
-         CpQy8ejIxTViA+06D10TE20CLBNVxR/Y959Y/QR1YKRY8WRV08qn80WX4PvvA4BWTrLl
-         zj66KVK3Q8aS1/U7KTlclPhBFqq3vFCVTvT4MqUnIL1+t5/b7FYyj3fVSIu0updnXFI8
-         QBzg==
-X-Gm-Message-State: AOAM531X8WFth3gnTsaoG8cgix0h1us9zgakMd8CA+uZIVJS5RRkwH+q
-        r2zpq/wxX3IzK8bsOck/OE57sTjugfM=
-X-Google-Smtp-Source: ABdhPJxPprFP0lePHqc4Vof6Wrz9FcgQ6LcthBQdObjZxkFIaHDu8z6whoxkBi3Y/3O3VnUsXodfeQ==
-X-Received: by 2002:adf:ef0d:: with SMTP id e13mr8723147wro.155.1624600897617;
-        Thu, 24 Jun 2021 23:01:37 -0700 (PDT)
-Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id o2sm5130226wrp.53.2021.06.24.23.01.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Jun 2021 23:01:37 -0700 (PDT)
-Subject: Re: [PATCH v2] serial: amba-pl011: add RS485 support
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux@armlinux.org.uk, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210618145153.1906-1-LinoSanfilippo@gmx.de>
- <YNSA1H0cFKiPUn6N@kroah.com> <5d7a4351-2adc-ea31-3290-91d91bd5a5d4@gmx.de>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <db436292-4115-0755-57d8-d63986f84453@kernel.org>
-Date:   Fri, 25 Jun 2021 08:01:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Fri, 25 Jun 2021 03:37:33 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 25A3921C02;
+        Fri, 25 Jun 2021 07:35:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1624606512; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=yDrA5zvJ6UovGXrbLsbTuqRRrTIzDDZQuMZ99lD3lx8=;
+        b=gi0YP5A1Vfafbk6zmkxW8cE1E/gSyadXcfcD6DxK5nFS7xRYnnfINzS7ZyHHVnDnV5wmN5
+        TFUK2RIulATeblfQxlgM6vKTe4BlpJsw/GLmA5V8UooMiWaDKlrGl9xGJ90z52A337czjp
+        dX3WL4op3aqxtbI9NU/P+kiDSleEDQM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1624606512;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=yDrA5zvJ6UovGXrbLsbTuqRRrTIzDDZQuMZ99lD3lx8=;
+        b=Ma29hMkudziuBxULJqz65E441UrR/8rwvfc/W9sUphJ3ehft405MPGeuTfC73af7mbYpmm
+        1zgQ93FiX9RBpIAA==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 020B2A3BE9;
+        Fri, 25 Jun 2021 07:35:11 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH] tty: make linux/tty_flip.h self-contained
+Date:   Fri, 25 Jun 2021 09:35:11 +0200
+Message-Id: <20210625073511.4514-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <5d7a4351-2adc-ea31-3290-91d91bd5a5d4@gmx.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25. 06. 21, 2:15, Lino Sanfilippo wrote:
->>> +static int pl011_rs485_config(struct uart_port *port,
->>> +			      struct serial_rs485 *rs485)
->>> +{
->>> +	struct uart_amba_port *uap =
->>> +		container_of(port, struct uart_amba_port, port);
->>> +
->>> +	/* pick sane settings if the user hasn't */
->>> +	if (!!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
->>
->> Why the !! in an if statement?
->>
->>> +	    !!(rs485->flags & SER_RS485_RTS_AFTER_SEND)) {
->>
->> Same here, why?
->>
-> 
-> This was copied from serial8250_em485_config(). But I think we can simply use
-> 
-> 	if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
-> 		rs485->flags &= ~SER_RS485_RTS_ON_SEND;
-> 	else
-> 		rs485->flags |= SER_RS485_RTS_ON_SEND;
-> 
-> instead. I will adjust the code accordingly.
+If someone includes linux/tty_flip.h before linux/tty.h, they see
+many compiler errors like:
+ include/linux/tty_flip.h:23:30: error: invalid use of undefined type 'struct tty_port'
+ include/linux/tty_flip.h:26:14: error: invalid use of undefined type 'struct tty_buffer'
 
-This is different. You want to set ON_SEND when none is set. And unset 
-AFTER_SEND when both are set. In your code, when both are set, you leave 
-AFTER_SEND.
+tty_flip.h actually lexicographically sorts before tty.h. So if people
+sort includes (as I tried in amiserial), the compilation suddenly
+breaks.
 
-regards,
+Solve this by including linux/tty.h from linux/tty_flip.h, so that
+everything is defined as needed.
+
+Another alternative would be to uninline tty_insert_flip_char and just
+insert forward declarations of tty_port and tty_buffer structs into
+tty_flip.h as that inline is the only real user. But that would mean
+slowing down the fast path without any good reason. (Provided the fix
+is that easy and there were no real problems with this until now.)
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ include/linux/tty_flip.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index d6729281ec50..67d78dc553e1 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -2,6 +2,8 @@
+ #ifndef _LINUX_TTY_FLIP_H
+ #define _LINUX_TTY_FLIP_H
+ 
++#include <linux/tty.h>
++
+ extern int tty_buffer_set_limit(struct tty_port *port, int limit);
+ extern unsigned int tty_buffer_space_avail(struct tty_port *port);
+ extern int tty_buffer_request_room(struct tty_port *port, size_t size);
 -- 
-js
-suse labs
+2.32.0
+
