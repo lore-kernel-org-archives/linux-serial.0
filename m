@@ -2,231 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F85EC2B9F4
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Jun 2021 00:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25536C2B9F4
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Jun 2021 03:41:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EE8FD61963
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Jun 2021 00:09:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 08CBE6195B
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Jun 2021 03:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbhFZALm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Jun 2021 20:11:42 -0400
-Received: from mga07.intel.com ([134.134.136.100]:35554 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229826AbhFZALm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Jun 2021 20:11:42 -0400
-IronPort-SDR: m9kXRcWjhD9Q6KG8bLq4BhJgs1cC++3B0lpXyjMr1u0059etYGtpZ71lm1EA7PH96QfC2EOPoL
- G9o6fGETjjLA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="271614868"
-X-IronPort-AV: E=Sophos;i="5.83,300,1616482800"; 
-   d="scan'208";a="271614868"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:09:18 -0700
-IronPort-SDR: xdFbM+xBxp6DpRlWuDw2Kpzddlh88DF4+9URHzhmSkHtpYT9NEUEtpk3N2zCyZD/rQoYBnqFen
- OaCxykJ97sNA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,300,1616482800"; 
-   d="scan'208";a="491739720"
-Received: from lkp-server01.sh.intel.com (HELO 4aae0cb4f5b5) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Jun 2021 17:09:17 -0700
-Received: from kbuild by 4aae0cb4f5b5 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lwvsq-0007Sb-G8; Sat, 26 Jun 2021 00:09:16 +0000
-Date:   Sat, 26 Jun 2021 08:08:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-next] BUILD SUCCESS
- 15279ebe99d7c6142d9f1a6ae4ded66c0f168678
-Message-ID: <60d67001.5qXI5WiuTALjdj9L%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S229873AbhFZDoL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Jun 2021 23:44:11 -0400
+Received: from mail-ed1-f47.google.com ([209.85.208.47]:35660 "EHLO
+        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229906AbhFZDoK (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 25 Jun 2021 23:44:10 -0400
+Received: by mail-ed1-f47.google.com with SMTP id df12so16223575edb.2;
+        Fri, 25 Jun 2021 20:41:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kb4tD9QFzLlnC9axfCwl7b++Nsd4PGLa4yuvLPb9qjs=;
+        b=ao5aTtmjma7bYgPvBvcekOtJHkp9LI0XHIID+aMA2S5DprLH+PBQBzODJ9ESextEdw
+         bfp54WEQqD29OGatiPipHzMisF3bt3kd25wiQ+5PIPIoFO4Py9Xv7yJxYqJ5or2IO04P
+         oVxAcHYljXW3kCe/b51Z2MRd6FE8WhISnuh6PdMjE1kCDDqvqxFakNvNtg7tKQIhWc6r
+         sKuFtcVES5lDKRWdehqITuxSogiUReY+SztXCbNsvw4jDgRXdgw0dOX5figLJi4n+XvC
+         CtlBYWIHSWaGastzRFF2LYCoVIAJ5VGDPAl7OLrv/x2GrcsT20shBA7OANH/sjSCW3be
+         ocDg==
+X-Gm-Message-State: AOAM532WLfZHo5InzB4x6mXBOoWxhEpAh00GJQvYLAhLvSf95SVKPx5n
+        K50LT9JGIh+6LUFr4naHgd07n1xboQs=
+X-Google-Smtp-Source: ABdhPJyNFnJznUGR7p/hbof71VsAm7mCex525DNY+/yNfWza1N6fLesQUW178AnukhFCrRth1+tgVw==
+X-Received: by 2002:a50:a447:: with SMTP id v7mr19323859edb.183.1624678906979;
+        Fri, 25 Jun 2021 20:41:46 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id d13sm2470177edt.31.2021.06.25.20.41.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Jun 2021 20:41:46 -0700 (PDT)
+Subject: Re: [PATCH v2] serial: amba-pl011: add RS485 support
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, linux@armlinux.org.uk,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210618145153.1906-1-LinoSanfilippo@gmx.de>
+ <YNSA1H0cFKiPUn6N@kroah.com> <5d7a4351-2adc-ea31-3290-91d91bd5a5d4@gmx.de>
+ <db436292-4115-0755-57d8-d63986f84453@kernel.org>
+ <trinity-163a08b4-6e39-4d15-bde2-815342f13fc4-1624620116191@3c-app-gmx-bs05>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <a89dec92-e764-c833-bbeb-ba3d84381e78@kernel.org>
+Date:   Sat, 26 Jun 2021 05:41:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <trinity-163a08b4-6e39-4d15-bde2-815342f13fc4-1624620116191@3c-app-gmx-bs05>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-branch HEAD: 15279ebe99d7c6142d9f1a6ae4ded66c0f168678  serial: mvebu-uart: remove unused member nb from struct mvebu_uart
+Hi,
 
-elapsed time: 720m
+On 25. 06. 21, 13:21, Lino Sanfilippo wrote:
+> Thats right, the logic has slightly changed. I thought this does not matter as long as
+> we make sure that exactly one of both ON_SEND or AFTER_SEND is set.
 
-configs tested: 161
-configs skipped: 3
+I actually don't know. But I would remain consistent with other drivers.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> We can stick with the logic
+> in serial8250_em485_config() (i.e. always set ON_SEND and delete AFTER_SEND in case
+> of an invalid setting), but I think this will require more than the four lines that we
+> have now (especially if we want to avoid the !!).
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-arm                         hackkit_defconfig
-csky                             alldefconfig
-arc                           tb10x_defconfig
-sh                          rsk7201_defconfig
-powerpc                 mpc837x_rdb_defconfig
-powerpc                     akebono_defconfig
-mips                        workpad_defconfig
-xtensa                generic_kc705_defconfig
-sh                          urquell_defconfig
-mips                        omega2p_defconfig
-sh                         ecovec24_defconfig
-powerpc                         ps3_defconfig
-powerpc                      mgcoge_defconfig
-sh                        sh7785lcr_defconfig
-sh                           se7721_defconfig
-sh                        edosk7705_defconfig
-mips                         rt305x_defconfig
-sh                           se7206_defconfig
-nios2                            alldefconfig
-powerpc                 mpc8540_ads_defconfig
-mips                malta_qemu_32r6_defconfig
-powerpc                 xes_mpc85xx_defconfig
-m68k                       m5249evb_defconfig
-arm                        keystone_defconfig
-arm                       multi_v4t_defconfig
-h8300                            alldefconfig
-arm                         axm55xx_defconfig
-powerpc                 mpc834x_itx_defconfig
-sh                             espt_defconfig
-microblaze                      mmu_defconfig
-arm                          pxa3xx_defconfig
-arm                          moxart_defconfig
-arm                           u8500_defconfig
-arm                         palmz72_defconfig
-powerpc                 mpc834x_mds_defconfig
-xtensa                    xip_kc705_defconfig
-sh                           se7751_defconfig
-mips                       capcella_defconfig
-arm                      footbridge_defconfig
-mips                             allmodconfig
-powerpc                 mpc8315_rdb_defconfig
-arm                            zeus_defconfig
-arc                          axs101_defconfig
-sh                          landisk_defconfig
-ia64                          tiger_defconfig
-sh                        dreamcast_defconfig
-mips                          malta_defconfig
-arc                            hsdk_defconfig
-powerpc                      ppc40x_defconfig
-arm                            dove_defconfig
-arm                        mini2440_defconfig
-arm                       versatile_defconfig
-powerpc                 canyonlands_defconfig
-arc                          axs103_defconfig
-arm                        cerfcube_defconfig
-sh                             shx3_defconfig
-riscv                          rv32_defconfig
-powerpc                    socrates_defconfig
-powerpc                          g5_defconfig
-powerpc                        fsp2_defconfig
-sparc64                             defconfig
-sparc                       sparc32_defconfig
-s390                          debug_defconfig
-powerpc                       ebony_defconfig
-powerpc                       holly_defconfig
-x86_64                            allnoconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-mips                             allyesconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a002-20210625
-x86_64               randconfig-a001-20210625
-x86_64               randconfig-a005-20210625
-x86_64               randconfig-a003-20210625
-x86_64               randconfig-a004-20210625
-x86_64               randconfig-a006-20210625
-i386                 randconfig-a002-20210625
-i386                 randconfig-a001-20210625
-i386                 randconfig-a003-20210625
-i386                 randconfig-a006-20210625
-i386                 randconfig-a005-20210625
-i386                 randconfig-a004-20210625
-x86_64               randconfig-a012-20210622
-x86_64               randconfig-a016-20210622
-x86_64               randconfig-a015-20210622
-x86_64               randconfig-a014-20210622
-x86_64               randconfig-a013-20210622
-x86_64               randconfig-a011-20210622
-i386                 randconfig-a011-20210625
-i386                 randconfig-a014-20210625
-i386                 randconfig-a013-20210625
-i386                 randconfig-a015-20210625
-i386                 randconfig-a012-20210625
-i386                 randconfig-a016-20210625
-i386                 randconfig-a011-20210622
-i386                 randconfig-a014-20210622
-i386                 randconfig-a013-20210622
-i386                 randconfig-a015-20210622
-i386                 randconfig-a012-20210622
-i386                 randconfig-a016-20210622
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-um                            kunit_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                      rhel-8.3-kbuiltin
-x86_64                                  kexec
+What if you used only a single !?
 
-clang tested configs:
-x86_64               randconfig-b001-20210622
-x86_64               randconfig-b001-20210625
-x86_64               randconfig-a012-20210625
-x86_64               randconfig-a016-20210625
-x86_64               randconfig-a015-20210625
-x86_64               randconfig-a014-20210625
-x86_64               randconfig-a013-20210625
-x86_64               randconfig-a011-20210625
-x86_64               randconfig-a002-20210622
-x86_64               randconfig-a001-20210622
-x86_64               randconfig-a005-20210622
-x86_64               randconfig-a003-20210622
-x86_64               randconfig-a004-20210622
-x86_64               randconfig-a006-20210622
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+thanks,
+-- 
+js
+suse labs
