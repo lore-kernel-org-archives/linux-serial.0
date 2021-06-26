@@ -6,36 +6,37 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B90C49EA6
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Jun 2021 04:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F2BC49EA5
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Jun 2021 04:13:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AAF3161920
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Jun 2021 04:12:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3C99461920
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Jun 2021 04:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbhFZEPC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 26 Jun 2021 00:15:02 -0400
-Received: from angie.orcam.me.uk ([78.133.224.34]:60086 "EHLO
+        id S229462AbhFZEPt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 26 Jun 2021 00:15:49 -0400
+Received: from angie.orcam.me.uk ([78.133.224.34]:60094 "EHLO
         angie.orcam.me.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229906AbhFZEPB (ORCPT
+        with ESMTP id S229455AbhFZEPs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 26 Jun 2021 00:15:01 -0400
+        Sat, 26 Jun 2021 00:15:48 -0400
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id A415992009D; Sat, 26 Jun 2021 06:12:38 +0200 (CEST)
+        id 4C46892009C; Sat, 26 Jun 2021 06:13:26 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 9D40F92009B;
-        Sat, 26 Jun 2021 06:12:38 +0200 (CEST)
-Date:   Sat, 26 Jun 2021 06:12:38 +0200 (CEST)
+        by angie.orcam.me.uk (Postfix) with ESMTP id 4546392009B;
+        Sat, 26 Jun 2021 06:13:26 +0200 (CEST)
+Date:   Sat, 26 Jun 2021 06:13:26 +0200 (CEST)
 From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] serial: core, 8250: Add a hook for extra port property
- reporting
-In-Reply-To: <YMio51m/EaS0vIsb@kroah.com>
-Message-ID: <alpine.DEB.2.21.2106260037210.37803@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2105181800170.3032@angie.orcam.me.uk> <alpine.DEB.2.21.2105190414160.29169@angie.orcam.me.uk> <YMio51m/EaS0vIsb@kroah.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 0/4] serial: 8250: Fixes for Oxford Semiconductor 950
+ UARTs
+In-Reply-To: <aff02581e694421eba04afc2fc3644df@AcuMS.aculab.com>
+Message-ID: <alpine.DEB.2.21.2106260055211.37803@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2106071700090.1601@angie.orcam.me.uk> <YMiX7LAEtL0uQuVl@kroah.com> <alpine.DEB.2.21.2106151602120.61948@angie.orcam.me.uk> <YMjMpQtLeP3xceYR@kroah.com> <alpine.DEB.2.21.2106151805460.61948@angie.orcam.me.uk>
+ <aff02581e694421eba04afc2fc3644df@AcuMS.aculab.com>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -43,57 +44,31 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 15 Jun 2021, Greg Kroah-Hartman wrote:
+On Tue, 15 Jun 2021, David Laight wrote:
 
-> > Add a hook for `uart_report_port' to let serial ports report extra 
-> > properties beyond `irq' and `base_baud'.  Use it with the 8250 backend 
-> > to report extra baud rates supported above the base rate for ports with 
-> > the UPF_MAGIC_MULTIPLIER property, so that people have a way to find out 
-> > that they are supported with their system, e.g.:
-[...]
-> Ick, really?  What relies on this print message?  Why do we need a whole
-> new uart port hook for this?
+> >  As I have noted above there is a data type signedness difference between
+> > `mcr_mask' and UART_MCR_CLKSEL.  So we have the value of 0x80 (128).
+> > Once bitwise-complemented it becomes 0xffffff7f (-129).  Once assigned to
+> > `mcr_mask' however it becomes 0x7f (127), which is considered an unsafe
+> > conversion between signed and unsigned integers by GCC, which is why the
+> > compiler complains about it.
+> 
+> Blame the iso C standards committee for making integer promotions
+> 'value preserving' instead of 'sign preserving' as they were in K&R C.
+> 
+> Try using ^ 0xffu instead of ~.
 
- As I noted, perhaps too briefly, in the commit description (see the last 
-sentence above) people need to be made aware of the extra baud rates above 
-`base_baud' supported, or otherwise they'll have no way to figure out they 
-can use them.
+ Hmm, this is probably the least horrible way to paper it over, thanks.  
+Even using a temporary variable (let alone a cast) does not help as GCC 
+sees through it, and I've given up on converting <linux/serial_reg.h> to 
+have e.g.:
 
- Reporting tweaked `base_baud' would I think cause confusion from the 
-inconsistency with the TIOCGSERIAL/TIOCSSERIAL ioctls (e.g. `setserial'), 
-and the sysfs flags:
+#define UART_MCR_CLKSEL		_UL(0x80) /* Divide clock by 4 (TI16C752, EFR[4]=1) */
 
-$ cat /sys/class/tty/ttyS[0-2]/flags
-0x10010040
-0x10010040
-0x90000040
-$ 
+as I find that too messy with many of the comments wrapping up.  And using 
+a GCC pragma would require a messy compiler version check.
 
-(here from a Malta board) are IMO too obscure for anyone to figure this 
-out (bit 16 means the two extra baud rates are supported).
-
- As explained with 1/5 we could set `base_baud' to 460800 instead and 
-hardcode bit 15 of the divisor to 1, relying on undocumented Super I/O IC 
-behaviour, but that would require more exhaustive verification than I am 
-able to do with just a single board and IC type and revision.
-
-> Isn't there some other way for your specific variant to print out
-> another message if you really want to do something "odd" like this?
-
- There's always another way. :)  How about?
-
-serial8250.0: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-serial8250.0: ttyS0 extra baud rates supported: 230400, 460800
-
-> And you did not document what your new change did anywhere in the tree,
-> so people are going to be confused.
-
- We've been somewhat terse about things, but you're probably right here.  
-Sorry about that.
-
-> I've taken the other patches here, but not this one.
-
- Thanks.  I've posted an alternative printing a message like above, with 
-some commentary.  Let me know if that makes you feel more convinced.
+ I have posted an update with a path-of-least-resistance fix then along 
+with the 4/4 as v2 of this series.
 
   Maciej
