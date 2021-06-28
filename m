@@ -2,138 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FCF3C49EA7
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Jun 2021 08:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC57C2B9F4
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Jun 2021 08:48:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6530961C43
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Jun 2021 08:44:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5ED5261C2E
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Jun 2021 08:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232414AbhF1IrW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Jun 2021 04:47:22 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:56711 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232405AbhF1IrV (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Jun 2021 04:47:21 -0400
-Received: from mail-ej1-f72.google.com ([209.85.218.72])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lxmsv-0001hV-KX
-        for linux-serial@vger.kernel.org; Mon, 28 Jun 2021 08:44:53 +0000
-Received: by mail-ej1-f72.google.com with SMTP id ci22-20020a170906c356b0290492ca430d87so4059386ejb.14
-        for <linux-serial@vger.kernel.org>; Mon, 28 Jun 2021 01:44:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KmtJfV8NItnsIFSWg4xXgNASx94tom0VLkFkXbFAOfI=;
-        b=hriLNcH1sy5ZtF2nbGyQPk1zW7/di83QtKfI4pR4CawcX4z8Z+TFao2CT4EPrKtEqv
-         bv0H2vft8id5ygZRWnBuJJIY9OqH/NfaKuFUt1ax/jrwkhI6s4ny7SNQXiqE1Eo8ESMy
-         jRdFGBal6l/kycPKRSbVZrdv1DLb+XbiG9n164qoVMm3lBPcORX9huDxkwX4UdDRXv77
-         hwlt9aAONjGh2cI7C+UISmDeNf27I+jnTQhXHHuQKuy8hG6xiN3C4MJjvaxS3zYMVslp
-         lm49kHQzsfbAVCQ8VS8FB638DEudzRApHTy5n3sG3sj6za4l6jHuSfw/COHjduLdf1qM
-         4bZA==
-X-Gm-Message-State: AOAM532L9Y0wCI5DadyTpEb5EJEw1nFckSVW69nmffUzW9Z3Cy9U6GDb
-        QHhwQcG1y4Qv4g0tFaUiPGg0rb92z5hmyVcpwsUWVgtIh4xE8edMCFYc9rV72lSAhNrkJhjXx0S
-        5C4mMXKF8/Glkp9P/HJFypRW2fFY8qORPX8PfiXQbuw==
-X-Received: by 2002:a05:6402:214:: with SMTP id t20mr32006494edv.20.1624869893174;
-        Mon, 28 Jun 2021 01:44:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzgeLioIsaaCeLGrQTkc0wZAz537qLD1J7tTEDktZUt/kPkCQJJfbSv7dTimZbtgaouriCEhA==
-X-Received: by 2002:a05:6402:214:: with SMTP id t20mr32006482edv.20.1624869893042;
-        Mon, 28 Jun 2021 01:44:53 -0700 (PDT)
-Received: from [192.168.1.115] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
-        by smtp.gmail.com with ESMTPSA id h14sm3068530ejl.118.2021.06.28.01.44.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Jun 2021 01:44:52 -0700 (PDT)
-Subject: Re: [PATCH v4] serial: samsung: use dma_ops of DMA if attached
-To:     Tamseel Shams <m.shams@samsung.com>, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
-        ajaykumar.rs@samsung.com, robin.murphy@arm.com
-References: <CGME20210625074751epcas5p125067e47c4ff1ad24a1e595d85f82540@epcas5p1.samsung.com>
- <20210625075114.71155-1-m.shams@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <3aa88ee4-c662-8069-fb04-90df82038dbe@canonical.com>
-Date:   Mon, 28 Jun 2021 10:44:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232214AbhF1IvH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Jun 2021 04:51:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35388 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231683AbhF1IvH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 28 Jun 2021 04:51:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DD026108B;
+        Mon, 28 Jun 2021 08:48:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1624870121;
+        bh=8A0dJggrHgLUXVOsaEGaAZv0/ji2VPqrS/XWZsuMxXI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BrJzt5xIBjMEQUtgjX81Gef4fBD3HxfzeB/7PQ8Vyb+0e+b5REpD68bspiYDau2Bk
+         lvzn3L8aQnn9iVhICcZ9391LNkwkzzVriwM5UwNs/1zka9aEQ6HpR4o4yQr3Sx/2Tj
+         fXKcD02qYr7NcM9/hBh6buLVpmll4J7lM7VE/UV8=
+Date:   Mon, 28 Jun 2021 10:48:39 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     bing fan <hptsfb@gmail.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm pl011 serial: support multi-irq request
+Message-ID: <YNmM518c49k9V3Hv@kroah.com>
+References: <CADVmyHWOVRNfVaJMm9D9KsFsi+t5cDwYtHcA9wn=v_Jh1QK-Rw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210625075114.71155-1-m.shams@samsung.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADVmyHWOVRNfVaJMm9D9KsFsi+t5cDwYtHcA9wn=v_Jh1QK-Rw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25/06/2021 09:51, Tamseel Shams wrote:
-> When DMA is used for TX and RX by serial driver, it should
-> pass the DMA device pointer to DMA API instead of UART device
-> pointer. DMA device should be used for DMA API because only
-> the DMA device is aware of how the device connects to the memory.
-> There might be an extra level of address translation due to a
-> SMMU attached to the DMA device. When serial device is used for
-> DMA API, the DMA API will have no clue of the SMMU attached to
-> the DMA device.
+On Mon, Jun 28, 2021 at 03:19:13PM +0800, bing fan wrote:
+> From: Bing Fan <tombinfan@tencent.com>
 > 
-> This patch is necessary to fix the SMMU page faults
-> which is observed when a DMA(with SMMU enabled) is attached
-> to UART for transfer.
+> In order to make pl011 work better, multiple interrupts are
+> required, such as TXIM, RXIM, RTIM, error interrupt(FE/PE/BE/OE);
+> at the same time, pl011 to GIC does not merge the interrupt
+> lines(each serial-interrupt corresponding to different GIC hardware
+> interrupt), so need to enable and request multiple gic interrupt
+> numbers in the driver.
 > 
-> Signed-off-by: Tamseel Shams <m.shams@samsung.com>
-> Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
+> Signed-off-by: Bing Fan <hptsfb@gmail.com>
 > ---
-> Changes since v1:
-> 1. Rebased the patch on "tty-next" branch of TTY driver tree
+>  drivers/tty/serial/amba-pl011.c | 23 ++++++++++++++++++++++-
+>  1 file changed, 22 insertions(+), 1 deletion(-)
 > 
-> Changes since v2:
-> 1. Updated the commit message.
-> 2. Changed the comment description
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 78682c12156a..2b6f43c27dea 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -1703,9 +1703,30 @@ static void pl011_write_lcr_h(struct
+> uart_amba_port *uap, unsigned int lcr_h)
 > 
-> Changes since v3:
-> 1. Removed the null pointer check for "dma", "dma->tx_chan" and
-> "dma->rx_chan" and instead sending DMA device pointer while calling
-> DMA API.
+>  static int pl011_allocate_irq(struct uart_amba_port *uap)
+>  {
+> +       int ret = -1;
+> +       int i = 0;
+> +       unsigned int virq = 0;
+> +       struct amba_device *amba_dev = (struct amba_device *)uap->port.dev;
+> +
+> +       if (!amba_dev)
+> +               return -1;
+> +
+>         pl011_write(uap->im, uap, REG_IMSC);
 > 
->  drivers/tty/serial/samsung_tty.c | 32 ++++++++++++++++----------------
->  1 file changed, 16 insertions(+), 16 deletions(-)
+> -       return request_irq(uap->port.irq, pl011_int, IRQF_SHARED,
+> "uart-pl011", uap);
+> +       for (i = 0; i < AMBA_NR_IRQS; i++) {
+> +               virq = amba_dev->irq[i];
+> +               if (virq == 0)          // request irq until virq is 0
+> +                       break;
+> +
+> +               ret = request_irq(virq, pl011_int, IRQF_SHARED,
+> "uart-pl011-*", uap);
+> +               if (ret < 0) {
+> +                       dev_info(uap->port.dev, "%s %d request %u
+> interrupt failed\n",
+> +                                       __func__, __LINE__, virq);
+> +                       break;
+> +               }
+> +       }
+> +
+> +       return ret;
+>  }
 > 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 9fbc61151c2e..fa30aa20a13f 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -305,7 +305,7 @@ static void s3c24xx_serial_stop_tx(struct uart_port *port)
->  		dmaengine_pause(dma->tx_chan);
->  		dmaengine_tx_status(dma->tx_chan, dma->tx_cookie, &state);
->  		dmaengine_terminate_all(dma->tx_chan);
-> -		dma_sync_single_for_cpu(ourport->port.dev,
-> +		dma_sync_single_for_cpu(dma->tx_chan->device->dev,
->  			dma->tx_transfer_addr, dma->tx_size, DMA_TO_DEVICE);
->  		async_tx_ack(dma->tx_desc);
->  		count = dma->tx_bytes_requested - state.residue;
-> @@ -338,8 +338,8 @@ static void s3c24xx_serial_tx_dma_complete(void *args)
->  	count = dma->tx_bytes_requested - state.residue;
->  	async_tx_ack(dma->tx_desc);
->  
-> -	dma_sync_single_for_cpu(ourport->port.dev, dma->tx_transfer_addr,
-> -				dma->tx_size, DMA_TO_DEVICE);
-> +	dma_sync_single_for_cpu(dma->tx_chan->device->dev,
-> +			dma->tx_transfer_addr, dma->tx_size, DMA_TO_DEVICE);
+>  /*
+> -- 
+> 2.17.1
 
-Looks like alignment is broken here. However even if the line was not
-aligned before, please fix it up now - align the arguments like
-checkpatch suggests.
 
-This applies to other places as well. Thanks.
+Hi,
 
-Best regards,
-Krzysztof
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
+  and can not be applied.  Please read the file,
+  Documentation/email-clients.txt in order to fix this.
+
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
