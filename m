@@ -2,148 +2,154 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-14.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B24C11F65
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Jun 2021 11:25:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0189DC11F69
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Jun 2021 12:09:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CC58861919
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Jun 2021 11:25:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DF7396198D
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Jun 2021 12:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234213AbhF3L1k (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Jun 2021 07:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
+        id S234309AbhF3MLh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 30 Jun 2021 08:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233706AbhF3L1j (ORCPT
+        with ESMTP id S234301AbhF3MLh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Jun 2021 07:27:39 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C31C061756;
-        Wed, 30 Jun 2021 04:25:10 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id a127so2117403pfa.10;
-        Wed, 30 Jun 2021 04:25:10 -0700 (PDT)
+        Wed, 30 Jun 2021 08:11:37 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419F5C061756;
+        Wed, 30 Jun 2021 05:09:07 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id t3so2854422edt.12;
+        Wed, 30 Jun 2021 05:09:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=29+GEYVJGSurUohvXnAFypVRG5Ebr54t54b9IharxTo=;
-        b=SLc8Cb4XM02o0nZB60JoBKIn92x1wm8XdOd1OoT3JN9UrnixuH8YiWUwTd9ydPVMCa
-         OAIAQuHRzIlUpY3L1bf8WojccTnObmNL3Y3lmxN9Lkw7No2adS95fGLrt3khONgHMY2A
-         Avx9/KSRQ9wlKnVlJhMPNkyFRu2oVygCKyyISx8EwkluamaVck9I2t+f4SSqVoeURMwJ
-         y3QEeFBiZ4yHVEeXieYL/FRm+wkfcVJAO+RUT9A0FIDEaGhX0waLAlN2ZarbyO7IJR0m
-         xA4TeXCIm1VdlXqvIIHra9kWn4TVV0nR6IZwZXKYt9/ZcsDQLXXd/sOVzgYuM56vjJTb
-         ZfgA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=yv6G0XlLyx0cNOQs1yjuDHkPDLgd8do+KRNU+Bsw+0s=;
+        b=CkRrjJ/lY+3bATyA92auA3pghlGCQ2eFNmp4H3pXt+NRbRWGhBB4hltIOTFH3pRix6
+         p0lCxBkhh9zbj9bbTsdBrexjgi3fjYO0t3k1bc811RNUyuEIbrvnbZop/lWDNPU3gtOd
+         dgmjQ8BwQd/EN2igFwT5J0ZOZeCYv7ckefvh+PkOyiWxmqDjK9tUl5jTA27c0cmGJtQx
+         h+cKtoeGlA/nhGnwRSyCRwALTae6coD4kx0eJ1uHqfb2uhhDiOB5N05/h/s0g3uIQrPW
+         qLjx94Sl46KLPnvsJ3RSr0HnslRIQErnDgH3Xy8OBo46oGd6IgFjGNzkjy5XIvu8KYgz
+         tXhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=29+GEYVJGSurUohvXnAFypVRG5Ebr54t54b9IharxTo=;
-        b=NXMez1V9kvP7ZYc8UAvhRP8//F71AnfVKjE+VrCPowDzJRuUYwtgfnc/vkZibOJpgg
-         tou/O8WQrj0LII4frQelT9PMRGbgZIihEbqUoAUGvoica4x0/A8zPb4KiMYrvPZTQh0S
-         PJHYQTUPo9MJ8CLxKRc7YK7llibFLSrzudztJPtLhypyVPv0QbKZW6h3QtMJNGnv28H3
-         k8OO8Zhs0gTmkQNIwUwoLjQKlc5ooOo2yzpnMmYyJgnvF5hGnMSwaUC9Pl8SidEV2TUl
-         Yca2heRvgaJOulOUHE30K1yGTi4mr9BtunIoEkcF99yowUIkrk6dIxzdifmM+HggR2yk
-         +bnA==
-X-Gm-Message-State: AOAM531r+jonwUpHeHz5VpJLZAyHxV80ZmG2AwpzYd5m7uFZD2+CL02B
-        3+nJ1Ort3e/q7jkvBrU5tL3iqfswlniTQ8hE
-X-Google-Smtp-Source: ABdhPJx5XUCk8OKv7e1Iq4Xs9i2AhQa1PBaqoDpe7ibAXnmXNwU5Lz4Qka5erRlTLDZLWTSHCY0sdg==
-X-Received: by 2002:a63:6642:: with SMTP id a63mr33480670pgc.241.1625052309591;
-        Wed, 30 Jun 2021 04:25:09 -0700 (PDT)
-Received: from localhost.localdomain ([150.109.127.35])
-        by smtp.gmail.com with ESMTPSA id c20sm21764985pfp.203.2021.06.30.04.25.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 30 Jun 2021 04:25:08 -0700 (PDT)
-From:   Bing Fan <hptsfb@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4] arm pl011 serial: support multi-irq request
-Date:   Wed, 30 Jun 2021 19:25:05 +0800
-Message-Id: <1625052305-18929-1-git-send-email-hptsfb@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yv6G0XlLyx0cNOQs1yjuDHkPDLgd8do+KRNU+Bsw+0s=;
+        b=fs7NEe8RcrQ/9pozkKz3AiZyiLbElaxVoIz5SLNVCvTUyPIr/AjpPGw6PEFIYaROZ1
+         y5yhklwJl1lXXTO9tNTEy/GOB6xCjkIRZU+bkqELatKgjX1NKU8It12pE2he1v1S9u7v
+         UL4Y6TCNpJW7Wyp3nqy5Oo2I/NSGhlUhMi4cPsEQ2kySSrzey48ICs3fwTJU4vxJ4aMI
+         42m8N/1vkuOaWIXeZu6kFEqPkP5ruOtC2lIEkbdNP4ClLrg/MBdR5ttGdX8ZqTwaBFC+
+         V8taWDYUWesMxXhDpMfstBxt8DXL5IEHbMxVLiXK4QER61punHyhqdSPkVnZKDIshW5s
+         qvYg==
+X-Gm-Message-State: AOAM5301vY+vI4zJS0NuMBdo1VXzfLdXD0sMDsxlSMLOT2vNw3CIAqvo
+        GZDHtKGqk6AYRdtl8By7jtY=
+X-Google-Smtp-Source: ABdhPJzWMorsWU9d5ILFTqwqY3jORo1NxDTXRBq7dmVffuaKlaYjuobtomju7gLCQyQbhqEAhKm+CA==
+X-Received: by 2002:aa7:d592:: with SMTP id r18mr12085582edq.269.1625054945856;
+        Wed, 30 Jun 2021 05:09:05 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id p5sm9388990ejm.115.2021.06.30.05.09.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Jun 2021 05:09:04 -0700 (PDT)
+Date:   Wed, 30 Jun 2021 14:11:20 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Jon Hunter <jonathanh@nvidia.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Krishna Yarlagadda <kyarlagadda@nvidia.com>,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] serial: tegra: Only print FIFO error message when an
+ error occurs
+Message-ID: <YNxfaEDFIW7d7rYi@orome.fritz.box>
+References: <20210630094601.136280-1-jonathanh@nvidia.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="RV9/iY+PrzN4D53L"
+Content-Disposition: inline
+In-Reply-To: <20210630094601.136280-1-jonathanh@nvidia.com>
+User-Agent: Mutt/2.1 (4b100969) (2021-06-12)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Bing Fan <tombinfan@tencent.com>
 
-In order to make pl011 work better, multiple interrupts are
-required, such as TXIM, RXIM, RTIM, error interrupt(FE/PE/BE/OE);
-at the same time, pl011 to GIC does not merge the interrupt
-lines(each serial-interrupt corresponding to different GIC hardware
-interrupt), so need to enable and request multiple gic interrupt
-numbers in the driver.
+--RV9/iY+PrzN4D53L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Bing Fan <tombinfan@tencent.com>
----
- drivers/tty/serial/amba-pl011.c | 35 ++++++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+On Wed, Jun 30, 2021 at 10:46:01AM +0100, Jon Hunter wrote:
+> The Tegra serial driver always prints an error message when enabling the
+> FIFO for devices that have support for checking the FIFO enable status.
+> Fix this by only display the error message, when an error occurs.
+>=20
+> Fixes: 222dcdff3405 ("serial: tegra: check for FIFO mode enabled status")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+> ---
+>  drivers/tty/serial/serial-tegra.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/seria=
+l-tegra.c
+> index 222032792d6c..cd481f7ba8eb 100644
+> --- a/drivers/tty/serial/serial-tegra.c
+> +++ b/drivers/tty/serial/serial-tegra.c
+> @@ -1045,9 +1045,10 @@ static int tegra_uart_hw_init(struct tegra_uart_po=
+rt *tup)
+> =20
+>  	if (tup->cdata->fifo_mode_enable_status) {
+>  		ret =3D tegra_uart_wait_fifo_mode_enabled(tup);
+> -		dev_err(tup->uport.dev, "FIFO mode not enabled\n");
+> -		if (ret < 0)
+> +		if (ret < 0) {
+> +			dev_err(tup->uport.dev, "FIFO mode not enabled\n");
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 78682c12156a..e84f4b9dff87 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1701,11 +1701,40 @@ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
- 	}
- }
- 
-+static void pl011_release_irq(struct uart_amba_port *uap, unsigned int max_cnt)
-+{
-+	struct amba_device *amba_dev = container_of(uap->port.dev, struct amba_device, dev);
-+	int i;
-+
-+	for (i = 0; i < max_cnt; i++) {
-+		if (amba_dev->irq[i])
-+			free_irq(amba_dev->irq[i], uap);
-+	}
-+}
-+
- static int pl011_allocate_irq(struct uart_amba_port *uap)
- {
-+	int ret = 0;
-+	int i;
-+	unsigned int virq;
-+	struct amba_device *amba_dev = container_of(uap->port.dev, struct amba_device, dev);
-+
- 	pl011_write(uap->im, uap, REG_IMSC);
- 
--	return request_irq(uap->port.irq, pl011_int, IRQF_SHARED, "uart-pl011", uap);
-+	for (i = 0; i < AMBA_NR_IRQS; i++) {
-+		virq = amba_dev->irq[i];
-+		if (virq == 0)
-+			break;
-+
-+		ret = request_irq(virq, pl011_int, IRQF_SHARED, dev_name(&amba_dev->dev), uap);
-+		if (ret) {
-+			dev_err(uap->port.dev, "request %u interrupt failed\n", virq);
-+			pl011_release_irq(uap, i - 1);
-+			break;
-+		}
-+	}
-+
-+	return ret;
- }
- 
- /*
-@@ -1864,7 +1893,7 @@ static void pl011_shutdown(struct uart_port *port)
- 
- 	pl011_dma_shutdown(uap);
- 
--	free_irq(uap->port.irq, uap);
-+	pl011_release_irq(uap, AMBA_NR_IRQS);
- 
- 	pl011_disable_uart(uap);
- 
-@@ -1894,7 +1923,7 @@ static void sbsa_uart_shutdown(struct uart_port *port)
- 
- 	pl011_disable_interrupts(uap);
- 
--	free_irq(uap->port.irq, uap);
-+	pl011_release_irq(uap, AMBA_NR_IRQS);
- 
- 	if (uap->port.ops->flush_buffer)
- 		uap->port.ops->flush_buffer(port);
--- 
-2.17.1
+The error message seems a bit confusing. I read this as meaning "FIFO
+mode was expected to be enabled but wasn't" whereas this really seems to
+mean that for some reason the FIFO enable timed out.
 
+In the former case it sounds like a some configuration mismatch, while
+it's really something that went wrong during the process of enabling the
+FIFO mode.
+
+So I wonder if this should perhaps be something like:
+
+	dev_err(tup->uport.dev, "FIFO mode enable timed out\n");
+
+or something along those lines.
+
+That said, this is a pre-existing problem and it's a bit pedantic, so in
+either case:
+
+Acked-by: Thierry Reding <treding@nvidia.com>
+
+--RV9/iY+PrzN4D53L
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmDcX2UACgkQ3SOs138+
+s6HGfBAAhJ56RUVkZakA6i0f8fZvbqOVfkvQ4AKu9idObDl5ZBDSvQIHKaJ5xM0q
+sEB+kFXswZ1tH3Sy8/oAMASrT0uTH/uS+MGNdEYBM3XDN/oxU2Ep8IWHSh0Zbn8x
+P9Vfx/NAqvzRLZ6bDl1v6CRMHgzr+caTbTsuWEDiHL97F1jDsURaA1LGEEg78FF3
+8q6Aw6msOrSNHlSt6q5Jz72gI40inCz1EVlS1o+LkaTFLuQs4g4paIUDQg+lnO7N
+JyEpiavuX6ypPCyKLm1pI0J09fFSL/AzUaDpA1ELkVhiXdn3cWexLaCrvlhy0cGM
+N8WAcgGLCKEw5Ft0LbeeAZzS278Kv+uVdx9X6MWrHNEGnULCyVf5dte16hkpufYR
+80haGhJYGmh2f729yO696MVVYeqqhND/qm2e0uweAifjUWB7OP5JGil+p/JxjLgk
+v0C6tmD7N3x6Z0snBCULe/l4+k87IS9tVnApB4UbVV4W4KGf17dqeI12jyNRqC0N
+H8FBGoIpNId/LWe++Zwz8gb6ewftNoa3tY5lI3k2azp/FE8UMYP0w+ppEE117DBO
+eYZ9rSuBppleHvz0Z1m7cfWniegSum/bGr63tRil/Mh13y86HUtJ0x93PPshcqvw
+wU5szYWJgPsySIqECQrOzf71f4OgDcgv9BTgB4xspCdsm0FH8hQ=
+=liif
+-----END PGP SIGNATURE-----
+
+--RV9/iY+PrzN4D53L--
