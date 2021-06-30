@@ -8,136 +8,156 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7848CC11F68
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Jun 2021 12:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD82C11F69
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Jun 2021 13:31:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5F39361435
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Jun 2021 12:57:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BFF05613E2
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Jun 2021 13:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234776AbhF3M7x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Jun 2021 08:59:53 -0400
-Received: from mail-co1nam11on2075.outbound.protection.outlook.com ([40.107.220.75]:6625
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234606AbhF3M7x (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Jun 2021 08:59:53 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R6HpxpEABPHe+v/hxt6Z2casdOkScJFMXz4No02k6WzUoaMcmsry2J3W24HUujWNX/x2YiJ09d19T9mGjEW2yBDv89k1qjq/MqF9Gjz9I0fVuYbnpoZ9tQiNe6kQvXePVVl94oDKOiI8Xxl4PK23+VHRm9h5VkD7pC1hMe5kVN/kIDvx49hVEMjCy6KVKlCPuVK8tLEiHEFjuyah7SpZp5AJ6RGsMvBGhaf6Ra6tBLAt63peOK359pW/QLGOAlI1jKrsmfocHdvbM38e1A/oXz6Co1wrehAvkBnNAGZH7tz17mbilt6GbiUIpCRU1Z4Ep4v3r3zX6crOX6/Xwi1XKA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fSPbnZiRSfg/7Ef8gCrQ9mwViog8bAmh5GHnm4vhM8k=;
- b=fWyeaT3SfHTYYzQOWqjnadpzlhwVzczLG0PtUbNxLqWtCA6l/hTuPdl/kpL8FMuBsbEsjdW684Whr3hWcJmsN3TTQUD7sTEEiAm/wJsugUMqd+fyWqDTgpaDFicQYKvafkXpVgzznVYcXMHz0Mm5/oaAmipoQRv9f7Kocda9tkx7Uee16Wt2v1zlvxoyTMam8y5c8kLFecqmjplwop57fyhm6N8nm2TV0TG96mKyCSjNk2ubhCnPOos8vEAG3VHkHw1RFZLAYJzVQVV//enzethi9ohvS63Jmu8UgV+O3RMCBvR6dTQsSxHCR3OxRxQdQXXzwey/rGqXlHuQfsJPwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fSPbnZiRSfg/7Ef8gCrQ9mwViog8bAmh5GHnm4vhM8k=;
- b=q0ysyFzHRq2B90rY9lJItpmm6lJLa3UVMBPVGtzQjvTadVbAgargPFryJ7woF5bOBiy98/jLCL96rqYeGudY3na2ka7qvw9FulaVBhk4VFm70xn/zQg8pDNPotEdUW7rvukD9bNTjNUUhDgf0RyGTHQnegqRo8YGQG3hCCfjTC1EtXt7R+zpyVnSZ4DMjB8HY1+1NQFS6uEBnd+btoVBrzkK9EF8ixmJ6zBq4mbx5MEsdSvEPAIX5F4GpQAbCcbPWQaje1FDgHQTeJeKQ3KKiebuAbXG7w9zs4uJYllLvAY/YUPkMAm0UFiY6Rc2q8GGNla8eFIFu0tgmiZrH6gjiw==
-Received: from BN0PR04CA0001.namprd04.prod.outlook.com (2603:10b6:408:ee::6)
- by DM6PR12MB2683.namprd12.prod.outlook.com (2603:10b6:5:52::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.19; Wed, 30 Jun
- 2021 12:57:23 +0000
-Received: from BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ee:cafe::cf) by BN0PR04CA0001.outlook.office365.com
- (2603:10b6:408:ee::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend
- Transport; Wed, 30 Jun 2021 12:57:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- BN8NAM11FT057.mail.protection.outlook.com (10.13.177.49) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4287.22 via Frontend Transport; Wed, 30 Jun 2021 12:57:22 +0000
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 30 Jun
- 2021 12:57:21 +0000
-Received: from moonraker.nvidia.com (172.20.187.5) by mail.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 30 Jun 2021 12:57:19 +0000
-From:   Jon Hunter <jonathanh@nvidia.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>
-CC:     Laxman Dewangan <ldewangan@nvidia.com>,
-        Krishna Yarlagadda <kyarlagadda@nvidia.com>,
-        <linux-serial@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        Jon Hunter <jonathanh@nvidia.com>, <stable@vger.kernel.org>
-Subject: [PATCH V2] serial: tegra: Only print FIFO error message when an error occurs
-Date:   Wed, 30 Jun 2021 13:56:43 +0100
-Message-ID: <20210630125643.264264-1-jonathanh@nvidia.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f2c04f71-a9fd-407b-ccbe-08d93bc69a69
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2683:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB2683813732B8CA0A5B09E6F2D9019@DM6PR12MB2683.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hfkNhXA2xv2LjWYYXbf6wtvI/EHswdJSUvJMCXUSXwW/tbyY87hRRRvTKliQYnC3j0gRynTVcPv4xdfvs7Zo1Zg/p2UGDRUF3eA6FNG6pPbm1yAPZ6x+5eIpHp4vR1CHzNtvje4OU3NfOzpxeDzS76oBvVXtzjgABGwB1bsc+XCtsXta1CVkVtrUSOPD8UdCsffFZQyAEeX+SjRl+5mHhd2J+UWS9IZv2rCLtK3lKkBvKioiSPTAFbH6MgfOvc7zXLtdngDV5QMCbCUiTdTkfkJZsyhMSJ/P+iVUrM84ZcfV7ofQ3oXGXRJoS8a8ZGksTKbXw105b0/xYdG9x/kseS4xCp3wwDDz8qsIjUX9QMV4K1xZWRK+7UBcx8nOxemtJM6315jBxRe/O7bKjwBp/huc0FJIk9eE3lZCs2aqVkjElfXw9K9lGn1dt7MIynvOrgivT4hsXRZAGCZMAsHOUPVY1D8QiPXS39iBGAcu+Z0t3MpNhbwYzf872o8Tytmjl9qbtFJI/kASnTax6v+sBIAC6fWrqh2Cf/8WsrSJU373FDPrwQKwu41x9Z6jTFwz1hNxMXi6tmGOP7gvsubcyGP/Y3HgwhvlxYES2imdIcg3xtOnzqv0Fw87Sh9p42aSbZF0so6YwNr0V2YgOhUcmTk4hRpHzh5BxAoLBX1MQ10Ige8RYGIattDS2PT0/SROCt7CvRQB9JQ39qZ56SCTMA==
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(39860400002)(396003)(36840700001)(46966006)(82310400003)(8676002)(1076003)(5660300002)(6666004)(70206006)(15650500001)(70586007)(8936002)(336012)(4326008)(478600001)(7636003)(82740400003)(356005)(2616005)(316002)(426003)(86362001)(47076005)(36860700001)(186003)(7696005)(26005)(36756003)(110136005)(54906003)(83380400001)(2906002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2021 12:57:22.7715
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2c04f71-a9fd-407b-ccbe-08d93bc69a69
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2683
+        id S234784AbhF3NeU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 30 Jun 2021 09:34:20 -0400
+Received: from mailout4.samsung.com ([203.254.224.34]:30117 "EHLO
+        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234847AbhF3NeU (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 30 Jun 2021 09:34:20 -0400
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20210630133149epoutp0448e5f6ce93c9d16b9e39de3bbca8a300~NX2DBlfN50629906299epoutp04e
+        for <linux-serial@vger.kernel.org>; Wed, 30 Jun 2021 13:31:49 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20210630133149epoutp0448e5f6ce93c9d16b9e39de3bbca8a300~NX2DBlfN50629906299epoutp04e
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1625059909;
+        bh=XZj4VZ9bMK8npifggp7D7VbO/3jl2+YM1mLt4yS7gYk=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=aruUsLnt6vjRFLMJggoCY5U9WGLsRCRt6q5zd7R0jlos8z/XW8Bf1ubklD3NGznjC
+         5iFMQl/G2jAY7Bb1a1NLcyUYXhGW1EsbJDiSMIhoniNUnD/CTQaAiD4DDS8v4wI02+
+         YPoywuCtm9dCjuiXYb/m8ZJFFeWvEGhr/X5zuD0Y=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20210630133148epcas5p4fd2856b661b964e06e3bfd4a2daa5b33~NX2CSVAkT3174731747epcas5p40;
+        Wed, 30 Jun 2021 13:31:48 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.40.195]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4GFMh232DVz4x9Pq; Wed, 30 Jun
+        2021 13:31:46 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        EC.DC.09476.2427CD06; Wed, 30 Jun 2021 22:31:46 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+        20210630133115epcas5p1706041f122819d47b18b83853b49694e~NX1i7MgEA2648326483epcas5p1R;
+        Wed, 30 Jun 2021 13:31:15 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20210630133115epsmtrp2d0338fcc96e6680a392a0812820f7b3f~NX1i6SEGq3084230842epsmtrp2d;
+        Wed, 30 Jun 2021 13:31:15 +0000 (GMT)
+X-AuditID: b6c32a49-6a1ff70000002504-46-60dc7242c384
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E9.06.08394.3227CD06; Wed, 30 Jun 2021 22:31:15 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20210630133113epsmtip2faf3eab6fe18b2913070e14bf2cbf8b9~NX1him6DO2209722097epsmtip2M;
+        Wed, 30 Jun 2021 13:31:13 +0000 (GMT)
+From:   Tamseel Shams <m.shams@samsung.com>
+To:     krzysztof.kozlowski@canonical.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
+        Tamseel Shams <m.shams@samsung.com>
+Subject: [PATCH v2] serial: samsung: Checks the return value of function
+Date:   Wed, 30 Jun 2021 19:03:59 +0530
+Message-Id: <20210630133359.59275-1-m.shams@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrAKsWRmVeSWpSXmKPExsWy7bCmpq5T0Z0Eg9n/hCwezNvGZtG8eD2b
+        xbu5MhYb3/5gstj0+BqrxeVdc9gsZpzfx2RxZnEvu8Xd1sXsDpwesxp62Tw2repk89g/dw27
+        x+Yl9R59W1YxenzeJBfAFpVjk5GamJJapJCal5yfkpmXbqvkHRzvHG9qZmCoa2hpYa6kkJeY
+        m2qr5OIToOuWmQN0k5JCWWJOKVAoILG4WEnfzqYov7QkVSEjv7jEVim1ICWnwNCoQK84Mbe4
+        NC9dLzk/18rQwMDIFKgyISfjxotHLAXvuSsWfJnF2sD4h7OLkZNDQsBE4ufE24xdjFwcQgK7
+        GSW63l9mgXA+MUr83/mQFcL5xiix9koXE0zL+wdvoBJ7GSXOT2lihnBamCROz+kCcjg42AQ0
+        JY6f5wZpEBGIlPiwZxNYDbPASUaJvZsbWEASwgIeEnPuN7CB2CwCqhItH9rANvAKWEi0H9jB
+        DLFNXmL1hgNQ9jF2iYvLSyFsF4m7Jx6xQNjCEq+Ob2GHsKUkPr/bywZh50vMn7cKqrdCYuWF
+        N1C2vcSBK3NYQO5kBrpz/S59iLCsxNRT68BOYBbgk+j9/QTqYV6JHfNgbEWJ/7v7oVaJS7xb
+        MYUVwvaQOH7vI9jrQgKxEnvXWExglJ2FsGABI+MqRsnUguLc9NRi0wLDvNRy5HjaxAhOalqe
+        OxjvPvigd4iRiYPxEKMEB7OSCG/UztsJQrwpiZVVqUX58UWlOanFhxhNgSE2kVlKNDkfmFbz
+        SuINTY3MzAwsDUyNLcwMlcR5l7IfShASSE8sSc1OTS1ILYLpY+LglGpgmr5phr2hNPu6lesn
+        OopuVt2+fvKMk5IVF/Ju7o/9+a+m95Xbt/af145NOuiz0URafobZ6dJXf0vnVquYHNPuuvXq
+        lM/G6YypScvK1SvtKniXCt7LEWg9r6D18HJv8E/e1cqOZkciakMnMyx/EZZcGxjDzCCb6f5x
+        7k7t509+K29WYfgWwXO/7mGBWFBDpcilbKO/H+rPxeVI94RHJLL4bOnyDDyW4GP0vcgj8+0p
+        46lT/XTkX2w7vI17wYo/Ym8fuEm5rSydq/sj4OqL9WdYvngc2uBvt1O4ZFaG+fYfTtk7w037
+        U633SbDq7w6+oKFxN/9fgUJ7we7WrX3elceTLblPRS9orV9l9zTfgtVdiaU4I9FQi7moOBEA
+        /O+Lp/MDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuphluLIzCtJLcpLzFFi42LZdlhJXle56E6CwZ/5bBYP5m1js2hevJ7N
+        4t1cGYuNb38wWWx6fI3V4vKuOWwWM87vY7I4s7iX3eJu62J2B06PWQ29bB6bVnWyeeyfu4bd
+        Y/OSeo++LasYPT5vkgtgi+KySUnNySxLLdK3S+DKuPHiEUvBe+6KBV9msTYw/uHsYuTkkBAw
+        kXj/4A1rFyMXh5DAbkaJC9u62CAS4hLTfu1nhLCFJVb+e84OUdTEJHH47FzmLkYODjYBTYnj
+        57lBakQEoiUWbz7ECFLDLHCeUWLn8dVMIAlhAQ+JOfcbwIayCKhKtHxoA4vzClhItB/YwQyx
+        QF5i9YYDzBMYeRYwMqxilEwtKM5Nzy02LDDMSy3XK07MLS7NS9dLzs/dxAgOMC3NHYzbV33Q
+        O8TIxMF4iFGCg1lJhDdq5+0EId6UxMqq1KL8+KLSnNTiQ4zSHCxK4rwXuk7GCwmkJ5akZqem
+        FqQWwWSZODilGphC9LYUMZvU7+1wqbxybkH6wYntdw9u7jjrNotrluhU0wMCJxaHPa2JjBb6
+        r+/1benl/Mibefe7a59PZ/cR7b29Y8tktiPFv08/yZEqUNnovluc28FlaTkrc/U75ysORcwX
+        k3/M+LLYYLlRBXdpuU7E/D7uxdbGrm3W/67eCI17KSThJ/NSQy7NbVPSk3mvEuS8eG5NjPus
+        r93jaj3z2bWLbCpnNHZr3Z/1kK9x59HfKkFzjug8/jS3wvJoDPf9oEXbvhjuPRZW9LfBrFAv
+        j/OkoGQ9x9pZSQ/sX/Vn2GatmPB4dQXDauXaMAWZt9EqfXuPsBf+E304p9TSMmlFrsItxiKR
+        8LAUg7+yGzdnzlZiKc5INNRiLipOBAClAij1nwIAAA==
+X-CMS-MailID: 20210630133115epcas5p1706041f122819d47b18b83853b49694e
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20210630133115epcas5p1706041f122819d47b18b83853b49694e
+References: <CGME20210630133115epcas5p1706041f122819d47b18b83853b49694e@epcas5p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The Tegra serial driver always prints an error message when enabling the
-FIFO for devices that have support for checking the FIFO enable status.
-Fix this by displaying the error message, only when an error occurs.
+"uart_add_one_port" function call may fail and return
+some error code, so adding a check for return value.
+If it is returning some error code, then displaying the
+result, unregistering the driver and then returning from
+probe function with error code.
 
-Finally, update the error message to make it clear that enabling the
-FIFO failed and display the error code.
-
-Fixes: 222dcdff3405 ("serial: tegra: check for FIFO mode enabled status")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Tamseel Shams <m.shams@samsung.com>
 ---
-Changes since V1:
-- Updated the error message to make it more meaningful.
+Changes since v1:
+1. Added support to unregister driver on failure of "uart_add_onr_port"
+function call.
+2. Commit message updated.
 
-drivers/tty/serial/serial-tegra.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 222032792d6c..eba5b9ecba34 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -1045,9 +1045,11 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 9fbc61151c2e..188e2d2da201 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2253,7 +2253,11 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	}
  
- 	if (tup->cdata->fifo_mode_enable_status) {
- 		ret = tegra_uart_wait_fifo_mode_enabled(tup);
--		dev_err(tup->uport.dev, "FIFO mode not enabled\n");
--		if (ret < 0)
-+		if (ret < 0) {
-+			dev_err(tup->uport.dev,
-+				"Failed to enable FIFO mode: %d\n", ret);
- 			return ret;
-+		}
- 	} else {
- 		/*
- 		 * For all tegra devices (up to t210), there is a hardware
+ 	dev_dbg(&pdev->dev, "%s: adding port\n", __func__);
+-	uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
++	ret = uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to add uart port, err %d\n", ret);
++		goto add_port_error;
++	}
+ 	platform_set_drvdata(pdev, &ourport->port);
+ 
+ 	/*
+@@ -2272,6 +2276,11 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	probe_index++;
+ 
+ 	return 0;
++
++add_port_error:
++	ourport->port.mapbase = 0;
++	uart_unregister_driver(&s3c24xx_uart_drv);
++	return ret;
+ }
+ 
+ static int s3c24xx_serial_remove(struct platform_device *dev)
 -- 
-2.25.1
+2.17.1
 
