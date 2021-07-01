@@ -2,147 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A928C11F68
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Jul 2021 01:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 637FBC11F67
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Jul 2021 06:36:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 00EF36146B
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Jul 2021 01:38:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 49AD36148E
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Jul 2021 06:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237228AbhGABlH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Jun 2021 21:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237174AbhGABlF (ORCPT
+        id S234209AbhGAGiy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Jul 2021 02:38:54 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:53459 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232220AbhGAGiy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Jun 2021 21:41:05 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0590DC0617A8;
-        Wed, 30 Jun 2021 18:38:36 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id i6so4495570pfq.1;
-        Wed, 30 Jun 2021 18:38:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=AhIcCAsU0JMuAgIY80aubo73YLuVRNjzuPIRJkjz91M=;
-        b=IYHpeVN0i0Jm/bwU3HHeloREaBl4e4LKoMR5Xlvgz+FYeCIgpuKaDI0UbnxFwrXWKI
-         j4SMMdS+mREd6NdhWXN4DMfYATZM6gXfXWDCSZ15NUrNq+rIGWLA9f4vOIi9Rtcoooe5
-         8vl3GRuI87J0OPIQS9Jyk6EE9jEifIQvTgOPkx7XrxzkxXM7VKlmcuhOek9S5/9z/DH6
-         4gzM8swCRghNJi3MdJlN3fpE2uV5G0piyiZBjouU7Tw6JFQ9tblKL+GDb8yeK3CirjSP
-         Eu2r0hiIH1pkS8V3R6FQjPlAW2isV+6LTyWW0fQtwa1IVxvAqYyx975iO5DaKPkBq+jI
-         mBNA==
+        Thu, 1 Jul 2021 02:38:54 -0400
+Received: from mail-ej1-f71.google.com ([209.85.218.71])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lyqJD-0006Pa-KX
+        for linux-serial@vger.kernel.org; Thu, 01 Jul 2021 06:36:23 +0000
+Received: by mail-ej1-f71.google.com with SMTP id l6-20020a1709062a86b029046ec0ceaf5cso1734140eje.8
+        for <linux-serial@vger.kernel.org>; Wed, 30 Jun 2021 23:36:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=AhIcCAsU0JMuAgIY80aubo73YLuVRNjzuPIRJkjz91M=;
-        b=A1AaVAiybPaSqdQK7XZkpum4e2JlLRrIW9al9KySopIiCPewkfO+OhVEJRsn6BPjF2
-         6HQMXnS9R4F5/LUw6N1Jse47cMVWLz+1ZA/fd8Oa0boPfwDLnVarEIiSJvovIDqVOr1o
-         rD6Q0BBY4Ip1AYKYWm1GhUilM6lprRl3QP1MCfm584RFgdQViaLhAAbXTqWI1iKLo6oY
-         IMH/Co7TCQZHpr2zzoIh/AFSjv0fIhWrbRuAKppaKVvX2wWX22AG3vOdQEwshyvrdPYb
-         cnTmBzyNW8vVfCzc32aTP4/DsyLap55Al84WoVdZ2bQfZBhCnGWTuAO8wk9w9UyFbDbs
-         5kUA==
-X-Gm-Message-State: AOAM533iF8beOH+U2MiAggvXLoqaV3WxTiAw9Ba2ae4O8UEXPgFVUkVa
-        bRFTC7rnTfXC0Q/w9oRKKaE=
-X-Google-Smtp-Source: ABdhPJxb22qiES2bjC3lmrAzp8vd/ZbGrtgz3sMO4d0wi7AFKNinogUy5VXKvI5QBzM5lqVKGdtdbA==
-X-Received: by 2002:a05:6a00:6:b029:305:4ab6:90ba with SMTP id h6-20020a056a000006b02903054ab690bamr26296699pfk.1.1625103515221;
-        Wed, 30 Jun 2021 18:38:35 -0700 (PDT)
-Received: from localhost.localdomain ([150.109.127.35])
-        by smtp.gmail.com with ESMTPSA id 194sm837936pfy.51.2021.06.30.18.38.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 30 Jun 2021 18:38:34 -0700 (PDT)
-From:   Bing Fan <hptsfb@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5] arm pl011 serial: support multi-irq request
-Date:   Thu,  1 Jul 2021 09:38:32 +0800
-Message-Id: <1625103512-30182-1-git-send-email-hptsfb@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1nK6FKv+wQ5vJJz+UrddvTERhXbD+8+95gnEDeqxL9w=;
+        b=kKiad4YTXc3+ql3vdY7yhX7tNyh9rf5eRTyFp3sSjbzTt+1YRFMIEy4xYqdRKajxuZ
+         0EezPzvpu5/hUEEeOpXDGLCTltozJYHzYfjQQ7nAbCQiawYVsMF3gilooz1IDNT3R+OR
+         erWkMZxDFATHqiIzelk9b9npex/6rcnA97TsKj88l0/3CsGsEnbGW6wj+IkZJYn+aD6S
+         RVEgYapLclvGjXZ8zeWQi22URwBDfqGaX4Fsdg1mPn8jNSuvO9EW+eDI8NAl1I1FhIJX
+         tz5rB0AONAX+k5f+92BdBwC5Qf/J0EbaTyt5zSzMywf28rfSW2eysvvu2TVzxnjR36Z3
+         Y33A==
+X-Gm-Message-State: AOAM532COir04CXJVHX42rKdQ4gfXGkpm2jyF901LGEKM5fYO13Pswjr
+        y8NIzIGIfjIyWsgYcwUKUtjad58X1l0XXz59wRP37iBsJrOQ4Aw9WM/hN5UAAhL6IOL1nl2LpJf
+        piV5OqIVVMepmW77qiiAOQosJnIJBUIXRAEmoVE93Yw==
+X-Received: by 2002:a17:906:6bcd:: with SMTP id t13mr13473690ejs.551.1625121383394;
+        Wed, 30 Jun 2021 23:36:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyvZFAOe6lKIu9s5SojYCz91sAwTldnQ6yrZh+sr2ymKgcStvH6BCYTmAH55a1wFZX24Lha4g==
+X-Received: by 2002:a17:906:6bcd:: with SMTP id t13mr13473665ejs.551.1625121383124;
+        Wed, 30 Jun 2021 23:36:23 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
+        by smtp.gmail.com with ESMTPSA id n2sm13594880edi.32.2021.06.30.23.36.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Jun 2021 23:36:22 -0700 (PDT)
+Subject: Re: [PATCH v2] serial: samsung: Checks the return value of function
+To:     Tamseel Shams <m.shams@samsung.com>, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com
+References: <CGME20210630133115epcas5p1706041f122819d47b18b83853b49694e@epcas5p1.samsung.com>
+ <20210630133359.59275-1-m.shams@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <0c608d5e-f59b-3f05-a461-2205cece4b7e@canonical.com>
+Date:   Thu, 1 Jul 2021 08:36:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20210630133359.59275-1-m.shams@samsung.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Bing Fan <tombinfan@tencent.com>
+On 30/06/2021 15:33, Tamseel Shams wrote:
+> "uart_add_one_port" function call may fail and return
+> some error code, so adding a check for return value.
+> If it is returning some error code, then displaying the
+> result, unregistering the driver and then returning from
+> probe function with error code.
+> 
+> Signed-off-by: Tamseel Shams <m.shams@samsung.com>
+> ---
+> Changes since v1:
+> 1. Added support to unregister driver on failure of "uart_add_onr_port"
+> function call.
+> 2. Commit message updated.
+> 
+>  drivers/tty/serial/samsung_tty.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 9fbc61151c2e..188e2d2da201 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -2253,7 +2253,11 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	dev_dbg(&pdev->dev, "%s: adding port\n", __func__);
+> -	uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
+> +	ret = uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "Failed to add uart port, err %d\n", ret);
+> +		goto add_port_error;
+> +	}
+>  	platform_set_drvdata(pdev, &ourport->port);
+>  
+>  	/*
+> @@ -2272,6 +2276,11 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  	probe_index++;
+>  
+>  	return 0;
+> +
+> +add_port_error:
 
-In order to make pl011 work better, multiple interrupts are
-required, such as TXIM, RXIM, RTIM, error interrupt(FE/PE/BE/OE);
-at the same time, pl011 to GIC does not merge the interrupt
-lines(each serial-interrupt corresponding to different GIC hardware
-interrupt), so need to enable and request multiple gic interrupt
-numbers in the driver.
+You did not unwind fully s3c24xx_serial_init_port() - clocks.
 
-Signed-off-by: Bing Fan <tombinfan@tencent.com>
----
- drivers/tty/serial/amba-pl011.c | 34 ++++++++++++++++++++++++++++++---
- 1 file changed, 31 insertions(+), 3 deletions(-)
+> +	ourport->port.mapbase = 0;
+> +	uart_unregister_driver(&s3c24xx_uart_drv);
+> +	return ret;
+>  }
+>  
+>  static int s3c24xx_serial_remove(struct platform_device *dev)
+> 
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 78682c12156a..7bfe8efcc787 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1701,11 +1701,39 @@ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
- 	}
- }
- 
-+static void pl011_release_irq(struct uart_amba_port *uap, unsigned int max_cnt)
-+{
-+	struct amba_device *amba_dev = container_of(uap->port.dev, struct amba_device, dev);
-+	int i;
-+
-+	for (i = 0; i < max_cnt; i++)
-+		if (amba_dev->irq[i])
-+			free_irq(amba_dev->irq[i], uap);
-+}
-+
- static int pl011_allocate_irq(struct uart_amba_port *uap)
- {
-+	int ret = 0;
-+	int i;
-+	unsigned int virq;
-+	struct amba_device *amba_dev = container_of(uap->port.dev, struct amba_device, dev);
-+
- 	pl011_write(uap->im, uap, REG_IMSC);
- 
--	return request_irq(uap->port.irq, pl011_int, IRQF_SHARED, "uart-pl011", uap);
-+	for (i = 0; i < AMBA_NR_IRQS; i++) {
-+		virq = amba_dev->irq[i];
-+		if (virq == 0)
-+			break;
-+
-+		ret = request_irq(virq, pl011_int, IRQF_SHARED, dev_name(&amba_dev->dev), uap);
-+		if (ret) {
-+			dev_err(uap->port.dev, "request %u interrupt failed\n", virq);
-+			pl011_release_irq(uap, i - 1);
-+			break;
-+		}
-+	}
-+
-+	return ret;
- }
- 
- /*
-@@ -1864,7 +1892,7 @@ static void pl011_shutdown(struct uart_port *port)
- 
- 	pl011_dma_shutdown(uap);
- 
--	free_irq(uap->port.irq, uap);
-+	pl011_release_irq(uap, AMBA_NR_IRQS);
- 
- 	pl011_disable_uart(uap);
- 
-@@ -1894,7 +1922,7 @@ static void sbsa_uart_shutdown(struct uart_port *port)
- 
- 	pl011_disable_interrupts(uap);
- 
--	free_irq(uap->port.irq, uap);
-+	pl011_release_irq(uap, AMBA_NR_IRQS);
- 
- 	if (uap->port.ops->flush_buffer)
- 		uap->port.ops->flush_buffer(port);
--- 
-2.17.1
 
+Best regards,
+Krzysztof
