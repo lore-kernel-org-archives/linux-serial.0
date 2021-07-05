@@ -2,117 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D8CBC07E98
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Jul 2021 07:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69236C07E99
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Jul 2021 12:11:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7739761289
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Jul 2021 07:44:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 498B5613E1
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Jul 2021 12:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbhGEHrU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Jul 2021 03:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbhGEHrU (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Jul 2021 03:47:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8870C061762
-        for <linux-serial@vger.kernel.org>; Mon,  5 Jul 2021 00:44:43 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m0JGy-0006Vy-Ah; Mon, 05 Jul 2021 09:44:08 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m0JGv-0007oU-K0; Mon, 05 Jul 2021 09:44:05 +0200
-Date:   Mon, 5 Jul 2021 09:44:05 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     cl@rock-chips.com, thierry.reding@gmail.com, robh+dt@kernel.org,
-        heiko@sntech.de, jagan@amarulasolutions.com, wens@csie.org,
-        uwe@kleine-koenig.org, mail@david-bauer.net, jbx6244@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
-        cnsztl@gmail.com, devicetree@vger.kernel.org,
-        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
-        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
-        zhangqing@rock-chips.com, huangtao@rock-chips.com,
-        wim@linux-watchdog.org, linux@roeck-us.net, jamie@jamieiles.com,
-        linux-watchdog@vger.kernel.org, maz@kernel.org,
-        linux-pwm@vger.kernel.org
-Subject: Re: [RESEND PATCH v5 1/4] dt-bindings: pwm: rockchip: add
- description for rk3568
-Message-ID: <20210705074405.uj62h4evd6htftf3@pengutronix.de>
-References: <20210622020517.13100-1-cl@rock-chips.com>
- <20210623021303.28015-1-cl@rock-chips.com>
- <20210705064914.o2neaiwqndjfdyqd@pengutronix.de>
- <YOK1+pMy+N64eR75@dell>
+        id S231286AbhGEMOe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Jul 2021 08:14:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45014 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231183AbhGEMOe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 5 Jul 2021 08:14:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8C757611AE;
+        Mon,  5 Jul 2021 12:11:55 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Jianmin Lv <lvjianmin@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH] serial: 8250_pnp: Support configurable clock frequency
+Date:   Mon,  5 Jul 2021 20:12:38 +0800
+Message-Id: <20210705121238.1223921-1-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="e56be3gekkps4fdv"
-Content-Disposition: inline
-In-Reply-To: <YOK1+pMy+N64eR75@dell>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Jianmin Lv <lvjianmin@loongson.cn>
 
---e56be3gekkps4fdv
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ACPI-based Loongson boards need configurable rather than fixed clock
+frequency for serial ports.
 
-Hello Lee,
+Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ drivers/tty/serial/8250/8250_pnp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-On Mon, Jul 05, 2021 at 08:34:18AM +0100, Lee Jones wrote:
-> On Mon, 05 Jul 2021, Uwe Kleine-K=F6nig wrote:
-> > On Wed, Jun 23, 2021 at 10:13:03AM +0800, cl@rock-chips.com wrote:
-> > > From: Liang Chen <cl@rock-chips.com>
-> > >=20
-> > > add "rockchip,rk3568-pwm", "rockchip,rk3328-pwm" for pwm nodes on
-> > > a rk3568 platform to pwm-rockchip.yaml.
-> >=20
-> > [...]
-> >=20
-> > Who is supposed to apply this patch? Does this need blessing by Rob?
->=20
-> There is no standard. [...]
+diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
+index de90d681b64c..5f8fc724ba46 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -15,6 +15,7 @@
+ #include <linux/kernel.h>
+ #include <linux/serial_core.h>
+ #include <linux/bitops.h>
++#include <linux/property.h>
+ 
+ #include <asm/byteorder.h>
+ 
+@@ -474,7 +475,9 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+ 	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
+ 	if (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
+ 		uart.port.flags |= UPF_SHARE_IRQ;
+-	uart.port.uartclk = 1843200;
++	if (device_property_read_u32(&dev->dev, "clock-frequency", &uart.port.uartclk)) {
++		uart.port.uartclk = 1843200;
++	}
+ 	uart.port.dev = &dev->dev;
+ 
+ 	line = serial8250_register_8250_port(&uart);
+-- 
+2.27.0
 
-I'm aware of that. That's why I asked to prevent that everybody thinks
-some other maintainer will care for it.
-
-Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---e56be3gekkps4fdv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmDiuEIACgkQwfwUeK3K
-7AkNrQf9FZHop8yLEFhUvrK0kVFAxxxvzzeTxbeluI3vqxKf7NEpfSi9f/GWjAn+
-oWZMKeL5yq8VOLUpyRVPhG0qMniFktzjagpfSajAYWhAZOhlQA8QGshrDoJ0wzkk
-62P3GDHORCli54O+jMDmrQHpv5ZuoOflAnQlJJdrIw3K26fLDw/jtp4wY8Q9S0Mg
-7A+8SsowcLPLcm/Z/LU4SrH7qAE27vUizpDwKDCWSf38dm5/yMIJZKXWJE8SxylA
-VyUTM7rASnKb8FbPFCpXd4dLrJKZftRnXZY1ObxaZjlSxI3KsiGAJqgWZYlBKg03
-kMCxLi0Hr3xVdIHSffZ6uSRGT7vCLg==
-=6Q0n
------END PGP SIGNATURE-----
-
---e56be3gekkps4fdv--
