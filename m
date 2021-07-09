@@ -4,29 +4,29 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9C7AC07E9C
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Jul 2021 08:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 109B3C07E9C
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Jul 2021 11:38:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C9FBB613CC
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Jul 2021 08:34:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E6415613BF
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Jul 2021 11:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231494AbhGIIgv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Jul 2021 04:36:51 -0400
-Received: from mail-mw2nam12on2067.outbound.protection.outlook.com ([40.107.244.67]:22113
+        id S230180AbhGILk5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Jul 2021 07:40:57 -0400
+Received: from mail-mw2nam12on2058.outbound.protection.outlook.com ([40.107.244.58]:22304
         "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231382AbhGIIgu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Jul 2021 04:36:50 -0400
+        id S230024AbhGILk5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 9 Jul 2021 07:40:57 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FZyYrtRWhMK/YkEnY9eVZGeQoYdu/SJ+ZdtMIqokStEIru/aiblXYQLcqeLZ1XE6v+eNo5ovM0+1Fa3vwZod/uhOPhpDHvYp78cZEa6Gifl/A09HSdr3BlyFWRTYf/mgnchKyij5gv86t+VrPQTtFMPZ0yWwHvWFb9Jnp0+aI/I7NE/qSBec9RoNzY9UwXVwrCPK+A1k6jkXdF5OGg5tRoa33O4Msd/W9+77G+TiGS8sW1/HRvEHqZ78Zmv6Y5zK19d3qG3xoeUurBLtrMbHEL5apRPJyoxjJpQHEV5MILVZB2RLMzEU1n5SkZQI8irloGelakpB8JpyXQYxEZv4lA==
+ b=ZpmUd1D/xXvNBLS5XrRI5G3NY42QhT8/VbuMgpDEqttdTYLn3sNEBY0IesdUtzjhNAgwihu5JTU35wvu6AeZBCE9LafPKZHsqHbExf+UbI/fP7O3sOB1DBCYUgINQ2WCg7nrUTphDkzDw5VgN+PZpSGtWpsrO4x3EeL5wr4UxvJXuf1Pkr69pOa2ml6ny3nvtPgJpk0nJtOxlfJCr8rOE9Ry8U1TzVnVTtAv3+suaHD9VxC5ptpBZOmEoh6s19GCYIuhAWmzm34lE26ljlj9vbJ16GFMX3k+T5Jo+VciOjY381L5dZSZxD0DxvX5f1gNaXdpFo1mVGDJtZrGk+4wcg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QkjvjaBHugt2zg3+w/dZfGO1RyA1pc5GcXl255bR5pY=;
- b=EXyMtS3C+PVxFjbcL/CGebF2iwpVzH78Nzb8QrTQt24XVYDBDr66G6bKuI3fO91gwGZ8lUJCDP840B9B27/0KWKEmbDqh5V32uGqYyGtoocRmHDCiQBGNPVhJlbkCPDxiCFg/Sk5P0f76Y9FXyO3gTUg1xql0m3QInbojDnYrnyRsGuIJ4D5faTPkANgBfYjauND4P4pAqShdPuaoxdI+so/uRaovmiPFN84NyFGgXqIOPg2sVvCBZ0LolW2uHxdRlUPCPqBuA+AnI2XcqAXfgfK2WUR4pkkKbL4JUwhV7jj1mjSQGOd0LeB0HTot+z0NwYJ9YiPkW2Di3tBccXz9g==
+ bh=7mz4QUJNWYJYVAeaK8HiF3+qno/BpzPeapxhxrzE6MA=;
+ b=KJwFDdGiyGmxoRFikYypqos2n8kRJcxtDnK5G6tLy7BjDNeNXNlSvk/epDtK8iZWBITBjRZ2HVnc0KqbawSoRKcChpYB58VAMgM5810Z8WXANUR4ufV9kuhOr15Wrzjvm3OGulBVj795fsTPT5nNlLTsRdMto6jpmpwVk+GcgrmQFFGOEGml+8CcmB9y08wzVQtJeERwiQo3J/AOBTRc4yY9n3uAE4prMBQIndx/+NgUNPIRYUFMttyuEBYqRWlEak26k3bXnoJUvvDvwhvE4qzbBo6HHO1CBoWUeJJqNgdWBs6Q1OLBaJI3HuySPeIgmbxf5YEAUozvSFAZLGNNPQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -34,17 +34,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QkjvjaBHugt2zg3+w/dZfGO1RyA1pc5GcXl255bR5pY=;
- b=cEfMHr6DtZzOSEvUFz8uswfCYkTZ8ZkmxgyOTIG9pS9NsPgj/nzip87j7SG1kHbiKBUvu9c8VqEWNwaIeiSlIDwf0iHkg9/C7AuPLmxqDbNToTy3cPSK5EvI63E8NIYpTcQ7+lwsJxhfhYDZ3GhMFZb9DLXG/zpQ4yVuswXqG+fE497jr42TY8dMTcJnscTwBf1Dj25qp07roVgoDziD1ZFc4JwK2bLp+HQ+lfrViMlborqz1C1NiyqHEpFLJz3mWf5rkyg+OjWrzoM1b2HCWAjabn/QuaXRHrjjMViNv3ynpsopDoSl+MgV/CyMcctMtth8EyBqBtqiV+TD/Pt76A==
-Received: from DM5PR07CA0104.namprd07.prod.outlook.com (2603:10b6:4:ae::33) by
- SA0PR12MB4574.namprd12.prod.outlook.com (2603:10b6:806:94::22) with Microsoft
+ bh=7mz4QUJNWYJYVAeaK8HiF3+qno/BpzPeapxhxrzE6MA=;
+ b=JWUzpS11T8eAdFBmWICULagf25maWlOvr4mhQHWFxRqFI6LMhXklXbr5yJT1WHKqmEitsqpMzz+h+zDxE0aaEPaAk0chWVaOpwPXwBLz17giEpLWweJ4VG8BSwkzG62U17rOWCuc4MoRpTtJvdPaGErDTYYMGbl2BoBUDimRhTg1Tecq53cV61dZIkaqiD1SVzc6UcdTL7rlB7jCZL5/QTi2TMQFSZmpTr8D5QkeFY4n1c/Uw72WQU5GnbmDqFMum4qrA/C1YLfG/JgUC1qEVGzxSOr/QJKs+U7T4g6IJGi1lwZDGRx8hozhe6H8y/+y8I5RkwMHsVOBphvW4cTAiA==
+Received: from DS7PR05CA0002.namprd05.prod.outlook.com (2603:10b6:5:3b9::7) by
+ MN2PR12MB3615.namprd12.prod.outlook.com (2603:10b6:208:c9::18) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4308.21; Fri, 9 Jul 2021 08:34:06 +0000
-Received: from DM6NAM11FT054.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:ae:cafe::eb) by DM5PR07CA0104.outlook.office365.com
- (2603:10b6:4:ae::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.23 via Frontend
- Transport; Fri, 9 Jul 2021 08:34:06 +0000
+ 15.20.4308.23; Fri, 9 Jul 2021 11:38:12 +0000
+Received: from DM6NAM11FT050.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b9:cafe::9c) by DS7PR05CA0002.outlook.office365.com
+ (2603:10b6:5:3b9::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.12 via Frontend
+ Transport; Fri, 9 Jul 2021 11:38:12 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
@@ -52,14 +52,15 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT054.mail.protection.outlook.com (10.13.173.95) with Microsoft SMTP
+ DM6NAM11FT050.mail.protection.outlook.com (10.13.173.111) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4308.20 via Frontend Transport; Fri, 9 Jul 2021 08:34:05 +0000
-Received: from [10.26.49.10] (172.20.187.5) by HQMAIL107.nvidia.com
+ 15.20.4308.20 via Frontend Transport; Fri, 9 Jul 2021 11:38:12 +0000
+Received: from [10.26.49.10] (172.20.187.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Jul
- 2021 08:34:03 +0000
+ 2021 11:38:09 +0000
 Subject: Re: [PATCH V2] serial: tegra: Only print FIFO error message when an
  error occurs
+From:   Jon Hunter <jonathanh@nvidia.com>
 To:     =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
 CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -70,67 +71,74 @@ CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         <stable@vger.kernel.org>
 References: <20210630125643.264264-1-jonathanh@nvidia.com>
  <YOd7ZTJf0WoQ8oKo@qmqm.qmqm.pl>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <aad402e7-a2b7-1faf-bc22-eb90bee39d3b@nvidia.com>
-Date:   Fri, 9 Jul 2021 09:34:01 +0100
+ <aad402e7-a2b7-1faf-bc22-eb90bee39d3b@nvidia.com>
+Message-ID: <30057ea5-5699-9335-f4dd-a9e8ed847ee4@nvidia.com>
+Date:   Fri, 9 Jul 2021 12:38:07 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <YOd7ZTJf0WoQ8oKo@qmqm.qmqm.pl>
+In-Reply-To: <aad402e7-a2b7-1faf-bc22-eb90bee39d3b@nvidia.com>
 Content-Type: text/plain; charset="iso-8859-2"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 806dc0ae-22fd-45ff-661f-08d942b4506a
-X-MS-TrafficTypeDiagnostic: SA0PR12MB4574:
-X-Microsoft-Antispam-PRVS: <SA0PR12MB4574DC0C590899B0EA5FD793D9189@SA0PR12MB4574.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Office365-Filtering-Correlation-Id: 738774ff-3a19-4ff3-36a8-08d942ce0868
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3615:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3615571DC2BA155AF7586240D9189@MN2PR12MB3615.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7hEf8U0LmpA/+BfUlfnRVagExV4/J9gKTCaHVSWVHpF61Hs6gN7Toatm2M9pbBt+sWoGWmGmlbZ6kbOXbugfFySYGVxOJR+WVDRTzuYmfXiuGpKVziMStCRF84dVIMBZEv7jaqhjd6zDZ5KOTdct74oDe51YcSd83kTdCvzhdgYiUOwbb61Y38VodxMiq46PQk+z9WwYGsvUsvd++MTK4g2fylMLwIfezUQzymSctuUI6e/gKlLU14wSsahqhUhKkUpW/k6RX4NId/ZEhsxcsey3/ReR+C7e+RC73tBWANsCt8VR25s/VKbUH/DIWB066jfsJ4U1JXVKuqdDdLKQx5o7uU1U9usgdOUWOCGaB71FtNZG7qIq3E8VqcKQtXmaKPqqgl5KpzHF9SOUTyw7bdD3YRZ0BAAjsuipRxDVj0fnwlwN+YRWTWr1samJE2cbe3PTs0gKQNedCUHNb52GOIJ4/RrdL0vBjZzbNNtSkakW5f4c5mmUtWbau+WYdsi+wAcEPQZJY0T96Zax7OLCF28HdGb4Eb7kqbZ6XEq3gEceKL7oY5lbSkv8Zk+WjZyTV+zSgcaGDKvzBuVzLGRQnTa7NwPVUzwE6gGcGc14BvhSA+z7y8jCmXtOo682GX9by6APkIBr4blapD3ObHtcWqQnM2LpIkn8bMkWZbqi4ul4awjsvqRpeAHeqSFGSO7TgpP7O4T7t2JQMiZdAUqsty/TiPfZzn6NgzhQSDhUIO460WyrPTuuCIiPFS227vSsMDdE0KUDCgDA09sEKp7Vmw==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(39850400004)(136003)(36840700001)(46966006)(86362001)(54906003)(83380400001)(16576012)(4326008)(82310400003)(2616005)(15650500001)(36860700001)(82740400003)(7636003)(31696002)(336012)(316002)(426003)(36906005)(6916009)(66574015)(31686004)(47076005)(356005)(4744005)(2906002)(5660300002)(70586007)(8936002)(53546011)(186003)(36756003)(70206006)(34070700002)(16526019)(26005)(8676002)(478600001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: khNE8m2v2aRjlez8ulankrvbZRXvdM0UTTvMWd26OOmPn5zOdIzqq5eS+1t+4qk8hc/9Cn0FZVutTZQ31ZBKBZr5K/03EbmgpqZ0OURf6+kHY02d2tBytngVewN5efAOmY96PS0S2BEF5ME4Tjfy0vA+DYblRdBnT6a8B7MQkBY4+xbrVifKohy9SxUxLgCnoaQybRslxJl/QYDgD1dO1WplAdsb8i/SFDDHnO8smo+uyTdIKvP3sBsMEg5Fkcni+n16ij4DTJgoVHWNfcEVk4YwH5ro+qNHeP/Scs9xNROCQvVVlycFSDUTHMxhuSaxaYUVPCiT4AZA4RDvgn0mDQMwaH9ACuIcAm5oNK99UOuvicJZv+1gqT0pJQnFL3FTmeNFBCJFJDKm1oKTvgfzHfMhQ2xM3UJje/PUwUjw6f+1n2zBH+gL32NKw6l9KM9zN1Hmsqh1jQSkPE1mYsTHv6FLI48APH/Xk3Rwv28Rfgvd7DNwq3e4MKLe1azh29HC9n2OUAPlHtbz8lD2AkhFdXdR5+8fxpYQn1ThsPZrlu4Tq6cwYNgtYQaLiAMHd0SmZK2jw0WfPE/tNZMYgHaEOFXtnlQj8gMKikRVU+TCBT9OQADWBFoxEGs1spDBIVe8Mz1qX4vOrpvAyAHZzMINjtWCgZu1EPEIeDtcxi6kf5nkZ7/WnorhJ5ZNditfCuK30rKobpXxHbE1xIFGbBAzGnK42KCR6+hSbV6B+iQMX9FEdMJwNMOMmK0WuaLqMDFEWdvJHTcWRbCWwntNp0ghQg==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(136003)(376002)(46966006)(36840700001)(6916009)(5660300002)(36906005)(82740400003)(8676002)(47076005)(8936002)(15650500001)(36756003)(4326008)(54906003)(34070700002)(16576012)(316002)(31696002)(7636003)(356005)(82310400003)(26005)(2906002)(70586007)(70206006)(16526019)(186003)(66574015)(31686004)(426003)(83380400001)(53546011)(86362001)(36860700001)(478600001)(2616005)(336012)(43740500002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2021 08:34:05.9283
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2021 11:38:12.0370
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 806dc0ae-22fd-45ff-661f-08d942b4506a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 738774ff-3a19-4ff3-36a8-08d942ce0868
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT050.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4574
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3615
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-
-On 08/07/2021 23:25, Micha³ Miros³aw wrote:
-> On Wed, Jun 30, 2021 at 01:56:43PM +0100, Jon Hunter wrote:
->> The Tegra serial driver always prints an error message when enabling the
->> FIFO for devices that have support for checking the FIFO enable status.
->> Fix this by displaying the error message, only when an error occurs.
->>
->> Finally, update the error message to make it clear that enabling the
->> FIFO failed and display the error code.
-> [...]
->> @@ -1045,9 +1045,11 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
->>  
->>  	if (tup->cdata->fifo_mode_enable_status) {
->>  		ret = tegra_uart_wait_fifo_mode_enabled(tup);
->> -		dev_err(tup->uport.dev, "FIFO mode not enabled\n");
->> -		if (ret < 0)
->> +		if (ret < 0) {
->> +			dev_err(tup->uport.dev,
->> +				"Failed to enable FIFO mode: %d\n", ret);
+On 09/07/2021 09:34, Jon Hunter wrote:
 > 
-> Could you change this to use %pe and ERR_PTR(ret)?
+> 
+> On 08/07/2021 23:25, Micha³ Miros³aw wrote:
+>> On Wed, Jun 30, 2021 at 01:56:43PM +0100, Jon Hunter wrote:
+>>> The Tegra serial driver always prints an error message when enabling the
+>>> FIFO for devices that have support for checking the FIFO enable status.
+>>> Fix this by displaying the error message, only when an error occurs.
+>>>
+>>> Finally, update the error message to make it clear that enabling the
+>>> FIFO failed and display the error code.
+>> [...]
+>>> @@ -1045,9 +1045,11 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
+>>>  
+>>>  	if (tup->cdata->fifo_mode_enable_status) {
+>>>  		ret = tegra_uart_wait_fifo_mode_enabled(tup);
+>>> -		dev_err(tup->uport.dev, "FIFO mode not enabled\n");
+>>> -		if (ret < 0)
+>>> +		if (ret < 0) {
+>>> +			dev_err(tup->uport.dev,
+>>> +				"Failed to enable FIFO mode: %d\n", ret);
+>>
+>> Could you change this to use %pe and ERR_PTR(ret)?
+> 
+> Sorry, but it is not clear to me why this would be necessary in this case.
 
-Sorry, but it is not clear to me why this would be necessary in this case.
+I see so '%pe' prints the symbolic name of the error code. While that is
+nice, it also looks a bit odd. Given that we simply print the error code
+values in this driver, from looking at other prints, I prefer to keep it
+as is for consistency.
 
 Jon
 
