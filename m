@@ -4,41 +4,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C69FFC07E99
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40325C07E9E
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:30:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B2B6860BD3
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:29:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 29D3F613B7
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232947AbhGJCcD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Jul 2021 22:32:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48946 "EHLO mail.kernel.org"
+        id S234508AbhGJCdd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Jul 2021 22:33:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48724 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232897AbhGJCaP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Jul 2021 22:30:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3589761417;
-        Sat, 10 Jul 2021 02:27:30 +0000 (UTC)
+        id S232496AbhGJCbt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 9 Jul 2021 22:31:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D7E7E613DF;
+        Sat, 10 Jul 2021 02:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625884050;
-        bh=xZ6YVHXSIOKtRCgjGj41LBEve8g6KiGyPeuZocFI7rs=;
+        s=k20201202; t=1625884068;
+        bh=5M9tpNwTPwogTjQ1oUkxOk+hKX3PShmn3FpkKt+Fn7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DOrgEy+60x3AVOEOLQXaGaj6Bq9qN8b4yP0Pczn/GcPT60gHOmpmCmQp8iYnxsD+A
-         YUZI0IpVFp6F+C0llF4gZAeK55d6t5/tfTjGqv1fsv3hrR137Vj7Weppvya22QrmH3
-         7+Qzz9JcCodhW1NRz4CwaceMNJpgCHhJyEjaAX2TGkOI8MZ0Kf+LUUdTqW1nS34CLb
-         7tWimSUCWojVoIGWdKmnsucqyk/o6USnhlVBMHP4LFTotEgXj9G0h/qt1lWaXNeqCU
-         Rd0Ii522ytEp1/n4w/U42SbmFs4CdYDjDII/6ExZjzM6zj7a6u9ZMGcPLeWSeN8koe
-         aiaISxrLNqIVw==
+        b=bZmfxTvJSoHu4RLUr7LV1wwkP9nJ6nURmS+ygJTC0pgnByoQO8t9fOheg2hBvTPcK
+         lsh6QbtEHXCVhlwdpz65lZDE62TemL6HrKFdN97Fhfq9hIJLz0Lm8EcqyfwKozPoU6
+         ATzDGZEuDe+ywfNQEGOHzpTWm0Sr9Gf7P11LDMyEnv8RYDoxc5L9Hx8Fla1esGIXYg
+         XLDWngWqbjG5PefT5hqaUxj1qdYv1bw606mu3pG2xpIBAq9j2/uZ7GK9SygSKpTjrt
+         B4kASIP8LiMrGMZTYj0IJe9BQQ9St9ATyvnhzVjAxyaP1OZNnawk0CiBz0TyZ+sFX5
+         2b4SXU78dDqRw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+Cc:     Daniel Mack <daniel@zonque.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 17/63] tty: serial: 8250: serial_cs: Fix a memory leak in error handling path
-Date:   Fri,  9 Jul 2021 22:26:23 -0400
-Message-Id: <20210710022709.3170675-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 30/63] serial: tty: uartlite: fix console setup
+Date:   Fri,  9 Jul 2021 22:26:36 -0400
+Message-Id: <20210710022709.3170675-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210710022709.3170675-1-sashal@kernel.org>
 References: <20210710022709.3170675-1-sashal@kernel.org>
@@ -50,52 +50,90 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Daniel Mack <daniel@zonque.org>
 
-[ Upstream commit fad92b11047a748c996ebd6cfb164a63814eeb2e ]
+[ Upstream commit d157fca711ad42e75efef3444c83d2e1a17be27a ]
 
-In the probe function, if the final 'serial_config()' fails, 'info' is
-leaking.
+Remove the hack to assign the global console_port variable at probe time.
+This assumption that cons->index is -1 is wrong for systems that specify
+'console=' in the cmdline (or 'stdout-path' in dts). Hence, on such system
+the actual console assignment is ignored, and the first UART that happens
+to be probed is used as console instead.
 
-Add a resource handling path to free this memory.
+Move the logic to console_setup() and map the console to the correct port
+through the array of available ports instead.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/dc25f96b7faebf42e60fe8d02963c941cf4d8124.1621971720.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Daniel Mack <daniel@zonque.org>
+Link: https://lore.kernel.org/r/20210528133321.1859346-1-daniel@zonque.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/serial_cs.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/tty/serial/uartlite.c | 27 ++++++---------------------
+ 1 file changed, 6 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
-index c8186a05a453..271c0388e00d 100644
---- a/drivers/tty/serial/8250/serial_cs.c
-+++ b/drivers/tty/serial/8250/serial_cs.c
-@@ -306,6 +306,7 @@ static int serial_resume(struct pcmcia_device *link)
- static int serial_probe(struct pcmcia_device *link)
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 06e79c11141d..56066d93a65b 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -508,21 +508,23 @@ static void ulite_console_write(struct console *co, const char *s,
+ 
+ static int ulite_console_setup(struct console *co, char *options)
  {
- 	struct serial_info *info;
-+	int ret;
+-	struct uart_port *port;
++	struct uart_port *port = NULL;
+ 	int baud = 9600;
+ 	int bits = 8;
+ 	int parity = 'n';
+ 	int flow = 'n';
  
- 	dev_dbg(&link->dev, "serial_attach()\n");
+-
+-	port = console_port;
++	if (co->index >= 0 && co->index < ULITE_NR_UARTS)
++		port = ulite_ports + co->index;
  
-@@ -320,7 +321,15 @@ static int serial_probe(struct pcmcia_device *link)
- 	if (do_sound)
- 		link->config_flags |= CONF_ENABLE_SPKR;
+ 	/* Has the device been initialized yet? */
+-	if (!port->mapbase) {
++	if (!port || !port->mapbase) {
+ 		pr_debug("console on ttyUL%i not present\n", co->index);
+ 		return -ENODEV;
+ 	}
  
--	return serial_config(link);
-+	ret = serial_config(link);
-+	if (ret)
-+		goto free_info;
++	console_port = port;
 +
-+	return 0;
-+
-+free_info:
-+	kfree(info);
-+	return ret;
+ 	/* not initialized yet? */
+ 	if (!port->membase) {
+ 		if (ulite_request_port(port))
+@@ -658,17 +660,6 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
+ 
+ 	dev_set_drvdata(dev, port);
+ 
+-#ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
+-	/*
+-	 * If console hasn't been found yet try to assign this port
+-	 * because it is required to be assigned for console setup function.
+-	 * If register_console() don't assign value, then console_port pointer
+-	 * is cleanup.
+-	 */
+-	if (ulite_uart_driver.cons->index == -1)
+-		console_port = port;
+-#endif
+-
+ 	/* Register the port */
+ 	rc = uart_add_one_port(&ulite_uart_driver, port);
+ 	if (rc) {
+@@ -678,12 +669,6 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
+ 		return rc;
+ 	}
+ 
+-#ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
+-	/* This is not port which is used for console that's why clean it up */
+-	if (ulite_uart_driver.cons->index == -1)
+-		console_port = NULL;
+-#endif
+-
+ 	return 0;
  }
  
- static void serial_detach(struct pcmcia_device *link)
 -- 
 2.30.2
 
