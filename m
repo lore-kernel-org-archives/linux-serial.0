@@ -2,114 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6EE4C07E95
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 09:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 427ABC07E95
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 14:06:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CBF51613B7
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 09:01:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 222DA613AB
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 14:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232299AbhGJJED (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 10 Jul 2021 05:04:03 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:38400 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231877AbhGJJED (ORCPT
+        id S229917AbhGJOJl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 10 Jul 2021 10:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229835AbhGJOJl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 10 Jul 2021 05:04:03 -0400
-X-UUID: 0e341645ef3541739d1f20280fc97dad-20210710
-X-UUID: 0e341645ef3541739d1f20280fc97dad-20210710
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
-        (envelope-from <zhiyong.tao@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1306515868; Sat, 10 Jul 2021 17:01:15 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 10 Jul 2021 17:01:06 +0800
-Received: from localhost.localdomain (10.17.3.153) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 10 Jul 2021 17:01:05 +0800
-From:   Zhiyong Tao <zhiyong.tao@mediatek.com>
-To:     <timur@kernel.org>, <linux@armlinux.org.uk>, <alcooperx@gmail.com>,
-        <tklauser@distanz.ch>, <sean.wang@kernel.org>
-CC:     <srv_heupstream@mediatek.com>, <zhiyong.tao@mediatek.com>,
-        <hui.liu@mediatek.com>, <yuchen.huang@mediatek.com>,
-        <huihui.wang@mediatek.com>, <eddie.huang@mediatek.com>,
-        <sean.wang@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>
-Subject: [PATCH] uart: mediatek: fix memory corruption issue
-Date:   Sat, 10 Jul 2021 17:01:03 +0800
-Message-ID: <20210710090103.2643-2-zhiyong.tao@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20210710090103.2643-1-zhiyong.tao@mediatek.com>
-References: <20210710090103.2643-1-zhiyong.tao@mediatek.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+        Sat, 10 Jul 2021 10:09:41 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4C6C0613DD;
+        Sat, 10 Jul 2021 07:06:56 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id h4so13000278pgp.5;
+        Sat, 10 Jul 2021 07:06:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=URDqb9zjYQ7mZTdIlVsIzvmo/ii4zncZrJ90YneZcyY=;
+        b=gqqMCxij/XjH4AyVVdem0KOcqKv0gqzjpC2t8bb0/eaPaw3t51jkERWQT+uCPrXf7p
+         pVmgTVQHCaWoEg5FuQ4EH3ydf682GFo2ZTvzM3S4pbNI8+K1KeU14ZnBiokcnB+xU7Fo
+         cm001Py37h6vG8zeroxIj7mlpg+rnqrlvLfPTISPWPWS0hCtwhsWRdmzAw8rwWXV6FfC
+         qUfr1IDYKBC2xv/oFJSLPqB2vmXaBqNpibJ8A48o4SNZ16qPxriXdqkymYCSL9ufkZwG
+         gx8Htt0FRzK4/u3iMeGRzs4jPWBCj9ZwafXe9BFhFAx+7FWSsjMYpIMgptIDYPjS6LAv
+         Efgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=URDqb9zjYQ7mZTdIlVsIzvmo/ii4zncZrJ90YneZcyY=;
+        b=PtFcHI0cDBJX8du9AwsqM0zAPSYYGFHyXzRRcB0F9j7ZcfvDFTPPp3Y1vndL04OKYD
+         Du4DQRbN4Q2FGYYazKCV4iRX80K3SMTekSNKYHs7Jn34xYZDYYvBApJ52yfW7hNms0O/
+         kCDUanXX3FqavLa4qyx5/nUOEQC/0Gc22llO+sMVXSej9+AL9FsbZBzk6ml1xeEBh8QA
+         Fs9cs0rjLVFfncm3IDr2pldc2ZIenifvMh48CeVULE85n2CweYRKZc0IlXUCXTlVqwg5
+         Em2yu3ZOz3ahCA9olshPRdPpMXWi1E5Y1NoLGIKwlnKoo0IQj6/AuPRBjleGMcRJ0FXi
+         5xmg==
+X-Gm-Message-State: AOAM530+uEvov+Frc8L4IHyHt9X1EZPqtrWi4IY99sLKi4w2rCiEXelm
+        oPOY5HSlNKqh93K6qLRQUw==
+X-Google-Smtp-Source: ABdhPJyLW1CP6LcdW3Chz1lwiQWjy8RLz86QjeEOnRG+SGlLWTfw64NhqIDEPSBqHHRstWoIafFOzA==
+X-Received: by 2002:a62:86c5:0:b029:328:e1fb:8332 with SMTP id x188-20020a6286c50000b0290328e1fb8332mr8205621pfd.35.1625926015353;
+        Sat, 10 Jul 2021 07:06:55 -0700 (PDT)
+Received: from vultr.guest ([107.191.53.97])
+        by smtp.gmail.com with ESMTPSA id l12sm9734123pff.105.2021.07.10.07.06.53
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 10 Jul 2021 07:06:54 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        rclemsmith@gmail.com
+Cc:     zheyuma97@gmail.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: serial: jsm: hold port lock when reporting modem line changes
+Date:   Sat, 10 Jul 2021 14:05:59 +0000
+Message-Id: <1625925959-11086-1-git-send-email-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch is used to fix memory corruption issue when rx power off.
-1. add spin lock in mtk8250_dma_rx_complete function in APDMA mode.
-2. add processing mechanism which count value is 0
+uart_handle_dcd_change() requires a port lock to be held and will emit a
+warning when lockdep is enabled.
 
-Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Held corresponding lock to fix warnings.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 ---
- drivers/tty/serial/8250/8250_mtk.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/tty/serial/jsm/jsm_neo.c | 2 ++
+ drivers/tty/serial/jsm/jsm_tty.c | 3 +++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index f7d3023f860f..09f7d2166315 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -91,12 +91,15 @@ static void mtk8250_dma_rx_complete(void *param)
- 	struct mtk8250_data *data = up->port.private_data;
- 	struct tty_port *tty_port = &up->port.state->port;
- 	struct dma_tx_state state;
--	int copied, total, cnt;
-+	unsigned int copied, total, cnt;
- 	unsigned char *ptr;
-+	unsigned long flags;
- 
- 	if (data->rx_status == DMA_RX_SHUTDOWN)
- 		return;
- 
-+	spin_lock_irqsave(&up->port.lock, flags);
-+
- 	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
- 	total = dma->rx_size - state.residue;
- 	cnt = total;
-@@ -104,9 +107,11 @@ static void mtk8250_dma_rx_complete(void *param)
- 	if ((data->rx_pos + cnt) > dma->rx_size)
- 		cnt = dma->rx_size - data->rx_pos;
- 
--	ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
--	copied = tty_insert_flip_string(tty_port, ptr, cnt);
--	data->rx_pos += cnt;
-+	if (cnt != 0) {
-+		ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
-+		copied = tty_insert_flip_string(tty_port, ptr, cnt);
-+		data->rx_pos += cnt;
-+	}
- 
- 	if (total > cnt) {
- 		ptr = (unsigned char *)(dma->rx_buf);
-@@ -120,6 +125,8 @@ static void mtk8250_dma_rx_complete(void *param)
- 	tty_flip_buffer_push(tty_port);
- 
- 	mtk8250_rx_dma(up);
-+
-+	spin_unlock_irqrestore(&up->port.lock, flags);
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index bf0e2a4cb0ce..c6f927a76c3b 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -815,7 +815,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
+ 		/* Parse any modem signal changes */
+ 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
+ 			"MOD_STAT: sending to parse_modem_sigs\n");
++		spin_lock_irqsave(&ch->uart_port.lock, lock_flags);
+ 		neo_parse_modem(ch, readb(&ch->ch_neo_uart->msr));
++		spin_unlock_irqrestore(&ch->uart_port.lock, lock_flags);
+ 	}
  }
  
- static void mtk8250_rx_dma(struct uart_8250_port *up)
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+index 8e42a7682c63..d74cbbbf33c6 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -187,6 +187,7 @@ static void jsm_tty_break(struct uart_port *port, int break_state)
+ 
+ static int jsm_tty_open(struct uart_port *port)
+ {
++	unsigned long lock_flags;
+ 	struct jsm_board *brd;
+ 	struct jsm_channel *channel =
+ 		container_of(port, struct jsm_channel, uart_port);
+@@ -240,6 +241,7 @@ static int jsm_tty_open(struct uart_port *port)
+ 	channel->ch_cached_lsr = 0;
+ 	channel->ch_stops_sent = 0;
+ 
++	spin_lock_irqsave(&port->lock, lock_flags);
+ 	termios = &port->state->port.tty->termios;
+ 	channel->ch_c_cflag	= termios->c_cflag;
+ 	channel->ch_c_iflag	= termios->c_iflag;
+@@ -259,6 +261,7 @@ static int jsm_tty_open(struct uart_port *port)
+ 	jsm_carrier(channel);
+ 
+ 	channel->ch_open_count++;
++	spin_unlock_irqrestore(&port->lock, lock_flags);
+ 
+ 	jsm_dbg(OPEN, &channel->ch_bd->pci_dev, "finish\n");
+ 	return 0;
 -- 
-2.18.0
+2.17.6
 
