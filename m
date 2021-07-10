@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C06C07E99
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36651C07E9B
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:38:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 22DBA613C5
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:38:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 20C26613CA
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234411AbhGJClO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S234834AbhGJClO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Fri, 9 Jul 2021 22:41:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58368 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:58382 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235599AbhGJCji (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Jul 2021 22:39:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 59730613F5;
-        Sat, 10 Jul 2021 02:35:17 +0000 (UTC)
+        id S235806AbhGJCjr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 9 Jul 2021 22:39:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A2C8961419;
+        Sat, 10 Jul 2021 02:36:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625884517;
-        bh=RziDAp4BQsITzVInvhjMeZNe1otkpJ26f5BdXuv1mXc=;
+        s=k20201202; t=1625884566;
+        bh=6IIqv45VZhMDWIeJ4VV/kuRvyK4QUeRR9GmrKQlpsBA=;
         h=From:To:Cc:Subject:Date:From;
-        b=CVxyO3JofkZrCZ3+yyDKX1z2itvaBp4K8nw8YpCP8kv3wTMNDhUn+TB3nXrsPyDxm
-         F5syaJLMp8sUhHg8Fswtn/YXw08ZOW9BwhR7bFviwKoLlDyZ7d4v2+kVoGNH9CxuCi
-         4ZrC+i3al/UMyjKt2+sN3mq0izJqv+HmeMy7ues24CrLIQ3AC6CUDyZX84Nblvo2hH
-         kcdeRlXBGtzm9IzcOO5E3r/WrZ/wamaxSRjK5r5kALE/m56nADIsDCgmJUbIL5KbxI
-         JZV0SjyHjdppsrnzubchv6bakEZ8gBwstPYGvoeF/+q7J4Y4LF33N04A4G+GitGNLf
-         pM1Szk13eIb7Q==
+        b=LFMhW7wZ9NCOuhd2sQ9HEsZaB2GXPuTo76Y4/2IRJAZtHLJILSU0Mh45ltYyP5GsA
+         n4Ci7nQpVvwG0BDih4UNAQFczNrDefG7ncRla4cGYzbXf2Osz2mW2Osf5WDp267G0F
+         +5fxq7c83rgOgZcJq+I2HKHWixMOTCAkxU8NCdxeSFWnnHMfRWZ1ySnFR87HCRuye2
+         K1AKlf4bsA0lIdgSG43YraxJySnjEfE1kgIvz05gt7H1wvxhBqzotPmBnLbhDtZwEr
+         H0OfgVxQeR+QAKgR0SIUZWKVn77PGow1hEjWWm8Ewe0RY32EIlNYG1qFbTR0ukC7Jo
+         ASd8IiZyUkaaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sherry Sun <sherry.sun@nxp.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 01/33] tty: serial: fsl_lpuart: fix the potential risk of division or modulo by zero
-Date:   Fri,  9 Jul 2021 22:34:43 -0400
-Message-Id: <20210710023516.3172075-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 01/26] tty: serial: fsl_lpuart: fix the potential risk of division or modulo by zero
+Date:   Fri,  9 Jul 2021 22:35:39 -0400
+Message-Id: <20210710023604.3172486-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 X-stable: review
@@ -67,12 +67,12 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index cebebdcd091c..3d5fe53988e5 100644
+index 5b6093dc3ff2..a4c1797e30d7 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1998,6 +1998,9 @@ lpuart32_console_get_options(struct lpuart_port *sport, int *baud,
+@@ -1766,6 +1766,9 @@ lpuart32_console_get_options(struct lpuart_port *sport, int *baud,
  
- 	bd = lpuart32_read(&sport->port, UARTBAUD);
+ 	bd = lpuart32_read(sport->port.membase + UARTBAUD);
  	bd &= UARTBAUD_SBR_MASK;
 +	if (!bd)
 +		return;
