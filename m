@@ -5,43 +5,41 @@ X-Spam-Level:
 X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 688A3C11F76
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C06C07E99
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:38:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C77F613DC
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:37:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 22DBA613C5
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbhGJCkM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Jul 2021 22:40:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58442 "EHLO mail.kernel.org"
+        id S234411AbhGJClO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Jul 2021 22:41:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235608AbhGJCji (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S235599AbhGJCji (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Fri, 9 Jul 2021 22:39:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B21FA6124C;
-        Sat, 10 Jul 2021 02:35:26 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 59730613F5;
+        Sat, 10 Jul 2021 02:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625884527;
-        bh=YBbsfupXMjTT6ifevQa5TsXdZ6/h/HIV/MLtHSlXhUo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rtR8czNAg2ruxX7meBTjc13MKKB7PAiX4OoTFLvfrcvk2Pq3XZXoslh4M2FpoKc7Z
-         ki7K8bq4+OnFcRliy7Y8ddP/D0UbAsLMg0BKblS/yCKAd5ty4FFvn4hksXStw9nu5x
-         mlJY4OzUKRWr+zmGdY0cr6NuGu2daVEEDCcEvIJjkMfynsCvIiAcUbVzsKxhf1IGLp
-         AorCVFlU8ufDAzU8F1Scx9ErjIyBTrSf944rh/I/lecD+1dsfX+wG4irLvoOoS2Ht1
-         TF/kLAK7uHlrJet5kedn6KFtlefWHqk+aBmsHDHDpXv/H5ksOJ/GWWuZAJSPnp9ewY
-         8o9FhnXW4KUZw==
+        s=k20201202; t=1625884517;
+        bh=RziDAp4BQsITzVInvhjMeZNe1otkpJ26f5BdXuv1mXc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CVxyO3JofkZrCZ3+yyDKX1z2itvaBp4K8nw8YpCP8kv3wTMNDhUn+TB3nXrsPyDxm
+         F5syaJLMp8sUhHg8Fswtn/YXw08ZOW9BwhR7bFviwKoLlDyZ7d4v2+kVoGNH9CxuCi
+         4ZrC+i3al/UMyjKt2+sN3mq0izJqv+HmeMy7ues24CrLIQ3AC6CUDyZX84Nblvo2hH
+         kcdeRlXBGtzm9IzcOO5E3r/WrZ/wamaxSRjK5r5kALE/m56nADIsDCgmJUbIL5KbxI
+         JZV0SjyHjdppsrnzubchv6bakEZ8gBwstPYGvoeF/+q7J4Y4LF33N04A4G+GitGNLf
+         pM1Szk13eIb7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+Cc:     Sherry Sun <sherry.sun@nxp.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 09/33] tty: serial: 8250: serial_cs: Fix a memory leak in error handling path
-Date:   Fri,  9 Jul 2021 22:34:51 -0400
-Message-Id: <20210710023516.3172075-9-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 01/33] tty: serial: fsl_lpuart: fix the potential risk of division or modulo by zero
+Date:   Fri,  9 Jul 2021 22:34:43 -0400
+Message-Id: <20210710023516.3172075-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210710023516.3172075-1-sashal@kernel.org>
-References: <20210710023516.3172075-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,52 +48,38 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Sherry Sun <sherry.sun@nxp.com>
 
-[ Upstream commit fad92b11047a748c996ebd6cfb164a63814eeb2e ]
+[ Upstream commit fcb10ee27fb91b25b68d7745db9817ecea9f1038 ]
 
-In the probe function, if the final 'serial_config()' fails, 'info' is
-leaking.
+We should be very careful about the register values that will be used
+for division or modulo operations, althrough the possibility that the
+UARTBAUD register value is zero is very low, but we had better to deal
+with the "bad data" of hardware in advance to avoid division or modulo
+by zero leading to undefined kernel behavior.
 
-Add a resource handling path to free this memory.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/dc25f96b7faebf42e60fe8d02963c941cf4d8124.1621971720.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Link: https://lore.kernel.org/r/20210427021226.27468-1-sherry.sun@nxp.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/serial_cs.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/tty/serial/fsl_lpuart.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
-index 8106353ce7aa..38e8045a36cc 100644
---- a/drivers/tty/serial/8250/serial_cs.c
-+++ b/drivers/tty/serial/8250/serial_cs.c
-@@ -305,6 +305,7 @@ static int serial_resume(struct pcmcia_device *link)
- static int serial_probe(struct pcmcia_device *link)
- {
- 	struct serial_info *info;
-+	int ret;
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index cebebdcd091c..3d5fe53988e5 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1998,6 +1998,9 @@ lpuart32_console_get_options(struct lpuart_port *sport, int *baud,
  
- 	dev_dbg(&link->dev, "serial_attach()\n");
- 
-@@ -319,7 +320,15 @@ static int serial_probe(struct pcmcia_device *link)
- 	if (do_sound)
- 		link->config_flags |= CONF_ENABLE_SPKR;
- 
--	return serial_config(link);
-+	ret = serial_config(link);
-+	if (ret)
-+		goto free_info;
+ 	bd = lpuart32_read(&sport->port, UARTBAUD);
+ 	bd &= UARTBAUD_SBR_MASK;
++	if (!bd)
++		return;
 +
-+	return 0;
-+
-+free_info:
-+	kfree(info);
-+	return ret;
- }
- 
- static void serial_detach(struct pcmcia_device *link)
+ 	sbr = bd;
+ 	uartclk = clk_get_rate(sport->clk);
+ 	/*
 -- 
 2.30.2
 
