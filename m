@@ -5,43 +5,40 @@ X-Spam-Level:
 X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0EAC11F69
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B85C11F6A
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:27:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 01BEC6140A
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:25:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EFDF61430
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234034AbhGJC2Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Jul 2021 22:28:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43262 "EHLO mail.kernel.org"
+        id S233389AbhGJCaP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Jul 2021 22:30:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42542 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233686AbhGJC1m (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Jul 2021 22:27:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 59C19613EB;
-        Sat, 10 Jul 2021 02:24:41 +0000 (UTC)
+        id S234145AbhGJC3N (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 9 Jul 2021 22:29:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 025D2613AF;
+        Sat, 10 Jul 2021 02:25:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625883882;
-        bh=pIwBGZLcAwHPab1BmjIP3lOqixEZ9GBTnCHdnSwJV9U=;
+        s=k20201202; t=1625883933;
+        bh=JFkwNMHTZ4m4Ln+1XXyUzVtFsElLALZFZle6sg80EAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hDVS/FGgTlEo9Zj5EvjWe/0v1O4dPHbQ1xN1FuHE1/M585beN3+k5u+4YoW3Ilfk0
-         7pJpXtbyX7SiGer8gA8bmb76fUdxmkXSUB6HP7FyMYOfelZLU5lurz8FEhkj+0B10g
-         +D6PuBT4tRsbey+dEt3AlGJ2zLNZytUV7pBXoTQfetDSHkjq3Scn40ka6ATUG31ozx
-         CtnEI2ABpkXCEH4zEgAFt6y3GRjTM4ItDUwQ4ADwHIPMKdPqZA+J8MulJW66VmIeNp
-         3opxxMPdGBCcq7/HA3XJCKlMtVtz2wSqXIodZOHREDhkpzTPmGjYUMK3ppLjPluV5B
-         Og54+5gxUq0pA==
+        b=f6SpavSdT7kQ997ONCnWPz0vpxi2gBovWcEcsphuJlAy3FLTGcNql5yfRRaMr2qWk
+         FBqaqKQezzMh14lUV5vZ3XErYbFWJUj1X7GOMs3RfC5+DlGElax2fupufZ1l6Z+0VU
+         Cc4PtyJ4ZHTtt4KY92rICfKGF9Zz0n5QOlwsDX6Ux45EWsMbiiKAjlmn+p1kuClFEu
+         +BB5I31wndP8UQEREXMN6TbbyYi+5GTjq+4bCCCEvTE58hn2JC9aZY9N4ILtOxYMSZ
+         4KXJrFIK8iX3QRQOuaf57H3ZPt+rFHnb7LIqF05OmWYOtcmD5IE4SckFFaj0M71WCT
+         ye3iieBzKJ7og==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jim Quinlan <jim2101024@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Daniel Mack <daniel@zonque.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 10/93] serial: 8250: of: Check for CONFIG_SERIAL_8250_BCM7271
-Date:   Fri,  9 Jul 2021 22:23:04 -0400
-Message-Id: <20210710022428.3169839-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 49/93] serial: tty: uartlite: fix console setup
+Date:   Fri,  9 Jul 2021 22:23:43 -0400
+Message-Id: <20210710022428.3169839-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210710022428.3169839-1-sashal@kernel.org>
 References: <20210710022428.3169839-1-sashal@kernel.org>
@@ -53,66 +50,90 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jim Quinlan <jim2101024@gmail.com>
+From: Daniel Mack <daniel@zonque.org>
 
-[ Upstream commit f5b08386dee439c7a9e60ce0a4a4a705f3a60dff ]
+[ Upstream commit d157fca711ad42e75efef3444c83d2e1a17be27a ]
 
-Our SoC's have always had a NS16650A UART core and older SoC's would
-have a compatible string of: 'compatible = ""ns16550a"' and use the
-8250_of driver. Our newer SoC's have added enhancements to the base
-core to add support for DMA and accurate high speed baud rates and use
-this newer 8250_bcm7271 driver. The Device Tree node for our enhanced
-UARTs has a compatible string of: 'compatible = "brcm,bcm7271-uart",
-"ns16550a"''. With both drivers running and the link order setup so
-that the 8250_bcm7217 driver is initialized before the 8250_of driver,
-we should bind the 8250_bcm7271 driver to the enhanced UART, or for
-upstream kernels that don't have the 8250_bcm7271 driver, we bind to
-the 8250_of driver.
+Remove the hack to assign the global console_port variable at probe time.
+This assumption that cons->index is -1 is wrong for systems that specify
+'console=' in the cmdline (or 'stdout-path' in dts). Hence, on such system
+the actual console assignment is ignored, and the first UART that happens
+to be probed is used as console instead.
 
-The problem is that when both the 8250_of and 8250_bcm7271 drivers
-were running, occasionally the 8250_of driver would be bound to the
-enhanced UART instead of the 8250_bcm7271 driver. This was happening
-because we use SCMI based clocks which come up late in initialization
-and cause probe DEFER's when the two drivers get their clocks.
+Move the logic to console_setup() and map the console to the correct port
+through the array of available ports instead.
 
-Occasionally the SCMI clock would become ready between the 8250_bcm7271
-probe and the 8250_of probe and the 8250_of driver would be bound. To
-fix this we decided to config only our 8250_bcm7271 driver and added
-"ns16665a0" to the compatible string so the driver would work on our
-older system.
-
-This commit has of_platform_serial_probe() check specifically for the
-"brcm,bcm7271-uart" and whether its companion driver is enabled. If it
-is the case, and the clock provider is not ready, we want to make sure
-that when the 8250_bcm7271.c driver returns EPROBE_DEFER, we are not
-getting the UART registered via 8250_of.c.
-
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Jim Quinlan <jim2101024@gmail.com>
-Signed-off-by: Al Cooper <alcooperx@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20210423183206.3917725-1-f.fainelli@gmail.com
+Signed-off-by: Daniel Mack <daniel@zonque.org>
+Link: https://lore.kernel.org/r/20210528133321.1859346-1-daniel@zonque.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_of.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/uartlite.c | 27 ++++++---------------------
+ 1 file changed, 6 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 65e9045dafe6..aa458f3c6644 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -192,6 +192,10 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	u32 tx_threshold;
- 	int ret;
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 09379db613d8..7081ab322b40 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -505,21 +505,23 @@ static void ulite_console_write(struct console *co, const char *s,
  
-+	if (IS_ENABLED(CONFIG_SERIAL_8250_BCM7271) &&
-+	    of_device_is_compatible(ofdev->dev.of_node, "brcm,bcm7271-uart"))
-+		return -ENODEV;
+ static int ulite_console_setup(struct console *co, char *options)
+ {
+-	struct uart_port *port;
++	struct uart_port *port = NULL;
+ 	int baud = 9600;
+ 	int bits = 8;
+ 	int parity = 'n';
+ 	int flow = 'n';
+ 
+-
+-	port = console_port;
++	if (co->index >= 0 && co->index < ULITE_NR_UARTS)
++		port = ulite_ports + co->index;
+ 
+ 	/* Has the device been initialized yet? */
+-	if (!port->mapbase) {
++	if (!port || !port->mapbase) {
+ 		pr_debug("console on ttyUL%i not present\n", co->index);
+ 		return -ENODEV;
+ 	}
+ 
++	console_port = port;
 +
- 	port_type = (unsigned long)of_device_get_match_data(&ofdev->dev);
- 	if (port_type == PORT_UNKNOWN)
- 		return -EINVAL;
+ 	/* not initialized yet? */
+ 	if (!port->membase) {
+ 		if (ulite_request_port(port))
+@@ -655,17 +657,6 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
+ 
+ 	dev_set_drvdata(dev, port);
+ 
+-#ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
+-	/*
+-	 * If console hasn't been found yet try to assign this port
+-	 * because it is required to be assigned for console setup function.
+-	 * If register_console() don't assign value, then console_port pointer
+-	 * is cleanup.
+-	 */
+-	if (ulite_uart_driver.cons->index == -1)
+-		console_port = port;
+-#endif
+-
+ 	/* Register the port */
+ 	rc = uart_add_one_port(&ulite_uart_driver, port);
+ 	if (rc) {
+@@ -675,12 +666,6 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
+ 		return rc;
+ 	}
+ 
+-#ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
+-	/* This is not port which is used for console that's why clean it up */
+-	if (ulite_uart_driver.cons->index == -1)
+-		console_port = NULL;
+-#endif
+-
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
