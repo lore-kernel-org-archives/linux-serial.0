@@ -5,43 +5,43 @@ X-Spam-Level:
 X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD4BC11F6A
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 688A3C11F76
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:37:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 577006124C
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:33:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C77F613DC
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 02:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235001AbhGJCf4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Jul 2021 22:35:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53572 "EHLO mail.kernel.org"
+        id S234405AbhGJCkM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Jul 2021 22:40:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58442 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235732AbhGJCfB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Jul 2021 22:35:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5F69D613D4;
-        Sat, 10 Jul 2021 02:32:16 +0000 (UTC)
+        id S235608AbhGJCji (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 9 Jul 2021 22:39:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B21FA6124C;
+        Sat, 10 Jul 2021 02:35:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625884337;
-        bh=xZ6YVHXSIOKtRCgjGj41LBEve8g6KiGyPeuZocFI7rs=;
+        s=k20201202; t=1625884527;
+        bh=YBbsfupXMjTT6ifevQa5TsXdZ6/h/HIV/MLtHSlXhUo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fzpEHVw8u/f3bGlRJ06eMlfew4y2DB2dzSoHE64WgvUDjmZEDUCCAl3+lh2lol7sR
-         Y/WdvkzukFHC8Fe/eZMwORhAuUSnYfklJ1RKAEYsvHUwDCZlydPfsu6+zmyE7A8YKT
-         xmzfaIA/PATGnyUePb0GU3COnPv5EMU83SlxkVXHAsfpZK7o0dbXuXYl4r+z2U9/N0
-         7JkfH3a3G9uh94x04ZXCstSE5h12PpGu71MJbiUIAGI+K0J0PZ/vxTcyRqaXhpmdae
-         toLhQH66yGawAMNYwqMrNkT7ObjAQjcCsD/0SeqzSE0Dnce7Ej7u2JqHemIF6j7kE0
-         nz1daNTPW0mdQ==
+        b=rtR8czNAg2ruxX7meBTjc13MKKB7PAiX4OoTFLvfrcvk2Pq3XZXoslh4M2FpoKc7Z
+         ki7K8bq4+OnFcRliy7Y8ddP/D0UbAsLMg0BKblS/yCKAd5ty4FFvn4hksXStw9nu5x
+         mlJY4OzUKRWr+zmGdY0cr6NuGu2daVEEDCcEvIJjkMfynsCvIiAcUbVzsKxhf1IGLp
+         AorCVFlU8ufDAzU8F1Scx9ErjIyBTrSf944rh/I/lecD+1dsfX+wG4irLvoOoS2Ht1
+         TF/kLAK7uHlrJet5kedn6KFtlefWHqk+aBmsHDHDpXv/H5ksOJ/GWWuZAJSPnp9ewY
+         8o9FhnXW4KUZw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 10/39] tty: serial: 8250: serial_cs: Fix a memory leak in error handling path
-Date:   Fri,  9 Jul 2021 22:31:35 -0400
-Message-Id: <20210710023204.3171428-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 09/33] tty: serial: 8250: serial_cs: Fix a memory leak in error handling path
+Date:   Fri,  9 Jul 2021 22:34:51 -0400
+Message-Id: <20210710023516.3172075-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210710023204.3171428-1-sashal@kernel.org>
-References: <20210710023204.3171428-1-sashal@kernel.org>
+In-Reply-To: <20210710023516.3172075-1-sashal@kernel.org>
+References: <20210710023516.3172075-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -68,10 +68,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
-index c8186a05a453..271c0388e00d 100644
+index 8106353ce7aa..38e8045a36cc 100644
 --- a/drivers/tty/serial/8250/serial_cs.c
 +++ b/drivers/tty/serial/8250/serial_cs.c
-@@ -306,6 +306,7 @@ static int serial_resume(struct pcmcia_device *link)
+@@ -305,6 +305,7 @@ static int serial_resume(struct pcmcia_device *link)
  static int serial_probe(struct pcmcia_device *link)
  {
  	struct serial_info *info;
@@ -79,7 +79,7 @@ index c8186a05a453..271c0388e00d 100644
  
  	dev_dbg(&link->dev, "serial_attach()\n");
  
-@@ -320,7 +321,15 @@ static int serial_probe(struct pcmcia_device *link)
+@@ -319,7 +320,15 @@ static int serial_probe(struct pcmcia_device *link)
  	if (do_sound)
  		link->config_flags |= CONF_ENABLE_SPKR;
  
