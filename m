@@ -2,125 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427ABC07E95
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 14:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2FFC07E9E
+	for <linux-serial@archiver.kernel.org>; Sun, 11 Jul 2021 17:44:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 222DA613AB
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jul 2021 14:06:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9FF1D6113E
+	for <linux-serial@archiver.kernel.org>; Sun, 11 Jul 2021 17:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbhGJOJl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 10 Jul 2021 10:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbhGJOJl (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 10 Jul 2021 10:09:41 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4C6C0613DD;
-        Sat, 10 Jul 2021 07:06:56 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id h4so13000278pgp.5;
-        Sat, 10 Jul 2021 07:06:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=URDqb9zjYQ7mZTdIlVsIzvmo/ii4zncZrJ90YneZcyY=;
-        b=gqqMCxij/XjH4AyVVdem0KOcqKv0gqzjpC2t8bb0/eaPaw3t51jkERWQT+uCPrXf7p
-         pVmgTVQHCaWoEg5FuQ4EH3ydf682GFo2ZTvzM3S4pbNI8+K1KeU14ZnBiokcnB+xU7Fo
-         cm001Py37h6vG8zeroxIj7mlpg+rnqrlvLfPTISPWPWS0hCtwhsWRdmzAw8rwWXV6FfC
-         qUfr1IDYKBC2xv/oFJSLPqB2vmXaBqNpibJ8A48o4SNZ16qPxriXdqkymYCSL9ufkZwG
-         gx8Htt0FRzK4/u3iMeGRzs4jPWBCj9ZwafXe9BFhFAx+7FWSsjMYpIMgptIDYPjS6LAv
-         Efgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=URDqb9zjYQ7mZTdIlVsIzvmo/ii4zncZrJ90YneZcyY=;
-        b=PtFcHI0cDBJX8du9AwsqM0zAPSYYGFHyXzRRcB0F9j7ZcfvDFTPPp3Y1vndL04OKYD
-         Du4DQRbN4Q2FGYYazKCV4iRX80K3SMTekSNKYHs7Jn34xYZDYYvBApJ52yfW7hNms0O/
-         kCDUanXX3FqavLa4qyx5/nUOEQC/0Gc22llO+sMVXSej9+AL9FsbZBzk6ml1xeEBh8QA
-         Fs9cs0rjLVFfncm3IDr2pldc2ZIenifvMh48CeVULE85n2CweYRKZc0IlXUCXTlVqwg5
-         Em2yu3ZOz3ahCA9olshPRdPpMXWi1E5Y1NoLGIKwlnKoo0IQj6/AuPRBjleGMcRJ0FXi
-         5xmg==
-X-Gm-Message-State: AOAM530+uEvov+Frc8L4IHyHt9X1EZPqtrWi4IY99sLKi4w2rCiEXelm
-        oPOY5HSlNKqh93K6qLRQUw==
-X-Google-Smtp-Source: ABdhPJyLW1CP6LcdW3Chz1lwiQWjy8RLz86QjeEOnRG+SGlLWTfw64NhqIDEPSBqHHRstWoIafFOzA==
-X-Received: by 2002:a62:86c5:0:b029:328:e1fb:8332 with SMTP id x188-20020a6286c50000b0290328e1fb8332mr8205621pfd.35.1625926015353;
-        Sat, 10 Jul 2021 07:06:55 -0700 (PDT)
-Received: from vultr.guest ([107.191.53.97])
-        by smtp.gmail.com with ESMTPSA id l12sm9734123pff.105.2021.07.10.07.06.53
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 10 Jul 2021 07:06:54 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        rclemsmith@gmail.com
-Cc:     zheyuma97@gmail.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: serial: jsm: hold port lock when reporting modem line changes
-Date:   Sat, 10 Jul 2021 14:05:59 +0000
-Message-Id: <1625925959-11086-1-git-send-email-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S232917AbhGKRra convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 11 Jul 2021 13:47:30 -0400
+Received: from gloria.sntech.de ([185.11.138.130]:53612 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230353AbhGKRra (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 11 Jul 2021 13:47:30 -0400
+Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1m2dV2-0008H7-WF; Sun, 11 Jul 2021 19:44:17 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     cl@rock-chips.com, thierry.reding@gmail.com, robh+dt@kernel.org,
+        jagan@amarulasolutions.com, wens@csie.org, uwe@kleine-koenig.org,
+        mail@david-bauer.net, jbx6244@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
+        cnsztl@gmail.com, devicetree@vger.kernel.org,
+        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
+        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
+        zhangqing@rock-chips.com, huangtao@rock-chips.com,
+        wim@linux-watchdog.org, linux@roeck-us.net, jamie@jamieiles.com,
+        linux-watchdog@vger.kernel.org, maz@kernel.org,
+        linux-pwm@vger.kernel.org
+Subject: Re: [RESEND PATCH v5 1/4] dt-bindings: pwm: rockchip: add description for rk3568
+Date:   Sun, 11 Jul 2021 19:44:12 +0200
+Message-ID: <5069193.2yuIWEeYC1@diego>
+In-Reply-To: <20210705074405.uj62h4evd6htftf3@pengutronix.de>
+References: <20210622020517.13100-1-cl@rock-chips.com> <YOK1+pMy+N64eR75@dell> <20210705074405.uj62h4evd6htftf3@pengutronix.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-uart_handle_dcd_change() requires a port lock to be held and will emit a
-warning when lockdep is enabled.
+Am Montag, 5. Juli 2021, 09:44:05 CEST schrieb Uwe Kleine-König:
+> Hello Lee,
+> 
+> On Mon, Jul 05, 2021 at 08:34:18AM +0100, Lee Jones wrote:
+> > On Mon, 05 Jul 2021, Uwe Kleine-König wrote:
+> > > On Wed, Jun 23, 2021 at 10:13:03AM +0800, cl@rock-chips.com wrote:
+> > > > From: Liang Chen <cl@rock-chips.com>
+> > > > 
+> > > > add "rockchip,rk3568-pwm", "rockchip,rk3328-pwm" for pwm nodes on
+> > > > a rk3568 platform to pwm-rockchip.yaml.
+> > > 
+> > > [...]
+> > > 
+> > > Who is supposed to apply this patch? Does this need blessing by Rob?
+> > 
+> > There is no standard. [...]
+> 
+> I'm aware of that. That's why I asked to prevent that everybody thinks
+> some other maintainer will care for it.
 
-Held corresponding lock to fix warnings.
+I suppose Thierry would be the one responsible?
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
- drivers/tty/serial/jsm/jsm_neo.c | 2 ++
- drivers/tty/serial/jsm/jsm_tty.c | 3 +++
- 2 files changed, 5 insertions(+)
+I.e. bindings normally go through the subsystem tree and
+	$ scripts/get_maintainer.pl drivers/pwm
+returns:
 
-diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
-index bf0e2a4cb0ce..c6f927a76c3b 100644
---- a/drivers/tty/serial/jsm/jsm_neo.c
-+++ b/drivers/tty/serial/jsm/jsm_neo.c
-@@ -815,7 +815,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
- 		/* Parse any modem signal changes */
- 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
- 			"MOD_STAT: sending to parse_modem_sigs\n");
-+		spin_lock_irqsave(&ch->uart_port.lock, lock_flags);
- 		neo_parse_modem(ch, readb(&ch->ch_neo_uart->msr));
-+		spin_unlock_irqrestore(&ch->uart_port.lock, lock_flags);
- 	}
- }
- 
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index 8e42a7682c63..d74cbbbf33c6 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -187,6 +187,7 @@ static void jsm_tty_break(struct uart_port *port, int break_state)
- 
- static int jsm_tty_open(struct uart_port *port)
- {
-+	unsigned long lock_flags;
- 	struct jsm_board *brd;
- 	struct jsm_channel *channel =
- 		container_of(port, struct jsm_channel, uart_port);
-@@ -240,6 +241,7 @@ static int jsm_tty_open(struct uart_port *port)
- 	channel->ch_cached_lsr = 0;
- 	channel->ch_stops_sent = 0;
- 
-+	spin_lock_irqsave(&port->lock, lock_flags);
- 	termios = &port->state->port.tty->termios;
- 	channel->ch_c_cflag	= termios->c_cflag;
- 	channel->ch_c_iflag	= termios->c_iflag;
-@@ -259,6 +261,7 @@ static int jsm_tty_open(struct uart_port *port)
- 	jsm_carrier(channel);
- 
- 	channel->ch_open_count++;
-+	spin_unlock_irqrestore(&port->lock, lock_flags);
- 
- 	jsm_dbg(OPEN, &channel->ch_bd->pci_dev, "finish\n");
- 	return 0;
--- 
-2.17.6
+Thierry Reding <thierry.reding@gmail.com> (maintainer:PWM SUBSYSTEM)
+"Uwe Kleine-König" <u.kleine-koenig@pengutronix.de> (reviewer:PWM SUBSYSTEM)
+Lee Jones <lee.jones@linaro.org> (maintainer:PWM SUBSYSTEM)
+linux-pwm@vger.kernel.org (open list:PWM SUBSYSTEM)
+linux-kernel@vger.kernel.org (open list)
+
+
+See my reply to the original pwm binding patch from 2021-06-21.
+
+Heiko
+
 
