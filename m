@@ -2,94 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2FFC07E9E
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Jul 2021 17:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9A3C07E9E
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Jul 2021 06:17:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9FF1D6113E
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Jul 2021 17:44:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A9939610F7
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Jul 2021 06:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232917AbhGKRra convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 11 Jul 2021 13:47:30 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:53612 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230353AbhGKRra (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 11 Jul 2021 13:47:30 -0400
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1m2dV2-0008H7-WF; Sun, 11 Jul 2021 19:44:17 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     cl@rock-chips.com, thierry.reding@gmail.com, robh+dt@kernel.org,
-        jagan@amarulasolutions.com, wens@csie.org, uwe@kleine-koenig.org,
-        mail@david-bauer.net, jbx6244@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
-        cnsztl@gmail.com, devicetree@vger.kernel.org,
-        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
-        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
-        zhangqing@rock-chips.com, huangtao@rock-chips.com,
-        wim@linux-watchdog.org, linux@roeck-us.net, jamie@jamieiles.com,
-        linux-watchdog@vger.kernel.org, maz@kernel.org,
-        linux-pwm@vger.kernel.org
-Subject: Re: [RESEND PATCH v5 1/4] dt-bindings: pwm: rockchip: add description for rk3568
-Date:   Sun, 11 Jul 2021 19:44:12 +0200
-Message-ID: <5069193.2yuIWEeYC1@diego>
-In-Reply-To: <20210705074405.uj62h4evd6htftf3@pengutronix.de>
-References: <20210622020517.13100-1-cl@rock-chips.com> <YOK1+pMy+N64eR75@dell> <20210705074405.uj62h4evd6htftf3@pengutronix.de>
+        id S233894AbhGLGUQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Jul 2021 02:20:16 -0400
+Received: from mail-ej1-f44.google.com ([209.85.218.44]:35651 "EHLO
+        mail-ej1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233815AbhGLGTs (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 12 Jul 2021 02:19:48 -0400
+Received: by mail-ej1-f44.google.com with SMTP id gn32so32412879ejc.2;
+        Sun, 11 Jul 2021 23:17:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7N3COHVanOoq2NqDALRISOxelpiFVKDsdjBIXAkabCI=;
+        b=OAo/3RVfUAnbWkPURwCcEjs2YF8/+SxGNKULxzad0FpD2fd3DjTPfoF+Xn361aCB2w
+         5W060tDF0l9nNZVojpnI4kGq5kuzxngLpNEXBM5DIrsCtKOzEbwqSNVd4oRPUR3owJ3V
+         mwIJ0mX+kLX9oDfVXblBSiu7X6jdlDNLiyhHv5sSZoBbMrkR8lfa4a9i2BFjd59bf/tF
+         6e313DhlQbXqhHzGMemvVSsRGKQeIZ2ZH+LpKVMAVBcxybDbQISbppJDzUWBKwjCOzeX
+         1GLJlTRT+eoLGPtjHGLmVIuVh//F9XvwN7/kzidjROwCrJW7sqbLCRzidQnE+FvxnwpA
+         PUWw==
+X-Gm-Message-State: AOAM530A/ewRxHshkchKxtAnesnVHFDj9XA+qjo3zqwlitr7nH1ZdjBG
+        Eyj6Ii9a01Tvtl6b7Bzkl6czGb+gQ+jIPQ==
+X-Google-Smtp-Source: ABdhPJwogpbLDNWeijXHKxO8znPZm1ZbJ2A0BBQN27+YhZ6AhhuTnmzbJzL03GX4M02ygocQ7E4pjw==
+X-Received: by 2002:a17:907:70c6:: with SMTP id yk6mr22255241ejb.42.1626070619226;
+        Sun, 11 Jul 2021 23:16:59 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id y17sm5759163ejd.16.2021.07.11.23.16.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Jul 2021 23:16:58 -0700 (PDT)
+Subject: Re: [PATCH] tty: serial: jsm: hold port lock when reporting modem
+ line changes
+To:     Zheyu Ma <zheyuma97@gmail.com>, gregkh@linuxfoundation.org,
+        rclemsmith@gmail.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1625925959-11086-1-git-send-email-zheyuma97@gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <014b511a-0542-d85d-e1dc-943e5463da17@kernel.org>
+Date:   Mon, 12 Jul 2021 08:16:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+In-Reply-To: <1625925959-11086-1-git-send-email-zheyuma97@gmail.com>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am Montag, 5. Juli 2021, 09:44:05 CEST schrieb Uwe Kleine-König:
-> Hello Lee,
+On 10. 07. 21, 16:05, Zheyu Ma wrote:
+> uart_handle_dcd_change() requires a port lock to be held and will emit a
+> warning when lockdep is enabled.
+
+Please attach an excerpt from the warning to the commit log.
+
+> Held corresponding lock to fix warnings.
 > 
-> On Mon, Jul 05, 2021 at 08:34:18AM +0100, Lee Jones wrote:
-> > On Mon, 05 Jul 2021, Uwe Kleine-König wrote:
-> > > On Wed, Jun 23, 2021 at 10:13:03AM +0800, cl@rock-chips.com wrote:
-> > > > From: Liang Chen <cl@rock-chips.com>
-> > > > 
-> > > > add "rockchip,rk3568-pwm", "rockchip,rk3328-pwm" for pwm nodes on
-> > > > a rk3568 platform to pwm-rockchip.yaml.
-> > > 
-> > > [...]
-> > > 
-> > > Who is supposed to apply this patch? Does this need blessing by Rob?
-> > 
-> > There is no standard. [...]
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> ---
+>   drivers/tty/serial/jsm/jsm_neo.c | 2 ++
+>   drivers/tty/serial/jsm/jsm_tty.c | 3 +++
+>   2 files changed, 5 insertions(+)
 > 
-> I'm aware of that. That's why I asked to prevent that everybody thinks
-> some other maintainer will care for it.
+> diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+> index bf0e2a4cb0ce..c6f927a76c3b 100644
+> --- a/drivers/tty/serial/jsm/jsm_neo.c
+> +++ b/drivers/tty/serial/jsm/jsm_neo.c
+> @@ -815,7 +815,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
+>   		/* Parse any modem signal changes */
+>   		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
+>   			"MOD_STAT: sending to parse_modem_sigs\n");
+> +		spin_lock_irqsave(&ch->uart_port.lock, lock_flags);
+>   		neo_parse_modem(ch, readb(&ch->ch_neo_uart->msr));
+> +		spin_unlock_irqrestore(&ch->uart_port.lock, lock_flags);
+>   	}
+>   }
+>   
+> diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+> index 8e42a7682c63..d74cbbbf33c6 100644
+> --- a/drivers/tty/serial/jsm/jsm_tty.c
+> +++ b/drivers/tty/serial/jsm/jsm_tty.c
+> @@ -187,6 +187,7 @@ static void jsm_tty_break(struct uart_port *port, int break_state)
+>   
+>   static int jsm_tty_open(struct uart_port *port)
+>   {
+> +	unsigned long lock_flags;
+>   	struct jsm_board *brd;
+>   	struct jsm_channel *channel =
+>   		container_of(port, struct jsm_channel, uart_port);
+> @@ -240,6 +241,7 @@ static int jsm_tty_open(struct uart_port *port)
+>   	channel->ch_cached_lsr = 0;
+>   	channel->ch_stops_sent = 0;
+>   
+> +	spin_lock_irqsave(&port->lock, lock_flags);
+>   	termios = &port->state->port.tty->termios;
+>   	channel->ch_c_cflag	= termios->c_cflag;
+>   	channel->ch_c_iflag	= termios->c_iflag;
+> @@ -259,6 +261,7 @@ static int jsm_tty_open(struct uart_port *port)
+>   	jsm_carrier(channel);
+>   
+>   	channel->ch_open_count++;
+> +	spin_unlock_irqrestore(&port->lock, lock_flags);
+>   
+>   	jsm_dbg(OPEN, &channel->ch_bd->pci_dev, "finish\n");
+>   	return 0;
+> 
 
-I suppose Thierry would be the one responsible?
 
-I.e. bindings normally go through the subsystem tree and
-	$ scripts/get_maintainer.pl drivers/pwm
-returns:
-
-Thierry Reding <thierry.reding@gmail.com> (maintainer:PWM SUBSYSTEM)
-"Uwe Kleine-König" <u.kleine-koenig@pengutronix.de> (reviewer:PWM SUBSYSTEM)
-Lee Jones <lee.jones@linaro.org> (maintainer:PWM SUBSYSTEM)
-linux-pwm@vger.kernel.org (open list:PWM SUBSYSTEM)
-linux-kernel@vger.kernel.org (open list)
-
-
-See my reply to the original pwm binding patch from 2021-06-21.
-
-Heiko
-
-
+-- 
+js
+suse labs
