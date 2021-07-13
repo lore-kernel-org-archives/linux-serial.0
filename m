@@ -2,353 +2,317 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E4CC07E95
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 07:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23354C11F6A
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 07:41:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B769C61283
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 07:20:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0E32B6127C
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 07:41:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234167AbhGMHWv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Jul 2021 03:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S234572AbhGMHof (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Jul 2021 03:44:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234163AbhGMHWu (ORCPT
+        with ESMTP id S234548AbhGMHob (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Jul 2021 03:22:50 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49062C0613DD;
-        Tue, 13 Jul 2021 00:20:01 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id b12so18705628pfv.6;
-        Tue, 13 Jul 2021 00:20:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=k87ShhA7JYr3dDTpNdrndNWm72BoFK448tq+9qFOE+Q=;
-        b=TvzSYuC2It9dB+C7aPwqlN5GqQ0x5DopQ8nVpXXSS48A6OZP1alOMA+zyG5IueQu6D
-         0QcbsvwyG2LO5zReSQVHpHTqWcVYapchgm0ftbL2YleFSXZHwg3ucCzqD3U8l6YaQUZE
-         58luLKi4ChFj/t4PJ/rxIFDTAfzf1uFXtNdiRgIpMyq7ZJ4+ZoPaq6GWMsBC7sKc7Z3W
-         vYQNss9dacQ0puoQs0xSn8CKyKO47w9vmqOOG119LK2PVc/4pEMKBPuQDUyYffupG3PE
-         xYeHAFsVZH4KJUu516JTiYjPzfCpYYq4u9gSfgjsNp5SPijEC+azrnrDC1Dg9yX7KdIU
-         bZbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=k87ShhA7JYr3dDTpNdrndNWm72BoFK448tq+9qFOE+Q=;
-        b=b2TIEm2UWSH94sD7vZmcsBFnlyTeedKMFrfFEVKXFsrJ+l/RtEii6F5mf92AGm6Qja
-         yK0STpbKK69FY9uSbgb0qCMaAG0NViW5lsYRGd/QmYEfbDXkjjqEAQOQOmvYbugfa/os
-         qrM8+RUDhRCbLHQK3Sl3To9vRa1s7fld45XvefngLTDO0YCRf+brmjgbeipudZ2IgzzN
-         N4hVtkbhy8tl+ThibV+hGshYmegjJ8ManhXuHWt8qmaNMDABIl6NMC2id1XhXnFIL1xd
-         WJ5IlaTmf0Vfu8TA/xDU/If9v9sQCUd1jfmQmi7+ZDmcBdcVOdWGTM4uOZGCXEylu+Nf
-         njGQ==
-X-Gm-Message-State: AOAM5331/RmLa65kWfu3J6UjYqza+SSRjFx92+0XMgHOgXyCWGaYhGDQ
-        O+f6+UOibGOhCIKsvSiIv+SuNxbaxYcoCdSzdERAJQ0ON1yu8D/fXVE=
-X-Google-Smtp-Source: ABdhPJwATcOwyw4C63A7maDbOoHQTY3NYjqzLaZ+EEUA3+JAKClQMLHxQuPsxsiNOWQ0+Tl1Gflpv4NsDetOwJHt/qY=
-X-Received: by 2002:a05:6a00:a1e:b029:2e2:89d8:5c87 with SMTP id
- p30-20020a056a000a1eb02902e289d85c87mr3285711pfh.73.1626160800594; Tue, 13
- Jul 2021 00:20:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <alpine.DEB.2.21.2106260539240.37803@angie.orcam.me.uk>
- <alpine.DEB.2.21.2106260604540.37803@angie.orcam.me.uk> <YOyi0cPdIVSCcpmw@surfacebook.localdomain>
- <alpine.DEB.2.21.2107130150420.9461@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2107130150420.9461@angie.orcam.me.uk>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 13 Jul 2021 10:19:24 +0300
-Message-ID: <CAHp75VfnCG-C6bUzhhC9jQGOSgMXVLZ=QtH0mdhAD85yeqBC7A@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] serial: 8250: Add proper clock handling for OxSemi
- PCIe devices
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 13 Jul 2021 03:44:31 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E75C061793
+        for <linux-serial@vger.kernel.org>; Tue, 13 Jul 2021 00:41:42 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1m3D1n-0003wU-UB; Tue, 13 Jul 2021 09:40:28 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1m3D1h-0006Pq-8S; Tue, 13 Jul 2021 09:40:21 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1m3D1h-0000sY-4N; Tue, 13 Jul 2021 09:40:21 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kernel@pengutronix.de,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>, Alex Elder <elder@kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        Dexuan Cui <decui@microsoft.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Farman <farman@linux.ibm.com>,
+        Frank Li <lznuaa@gmail.com>,
+        Geoff Levand <geoff@infradead.org>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>, Ira Weiny <ira.weiny@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Wang <jasowang@redhat.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Joey Pabalan <jpabalanb@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Johannes Thumshirn <morbidrsa@gmail.com>,
+        Jon Mason <jdmason@kudzu.us>, Juergen Gross <jgross@suse.com>,
+        Julien Grall <jgrall@amazon.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>, Len Brown <lenb@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Mark Gross <mgross@linux.intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Michael Buesch <m@bues.ch>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Jamet <michael.jamet@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Samuel Holland <samuel@sholland.org>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        SeongJae Park <sjpark@amazon.de>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thorsten Scherer <t.scherer@eckelmann.de>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Tom Rix <trix@redhat.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        YueHaibing <yuehaibing@huawei.com>, alsa-devel@alsa-project.org,
+        dmaengine@vger.kernel.org, greybus-dev@lists.linaro.org,
+        industrypack-devel@lists.sourceforge.net, kvm@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-fpga@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-ntb@googlegroups.com,
+        linux-parisc@vger.kernel.org, linux-pci@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-sunxi@lists.linux.dev,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, nvdimm@lists.linux.dev,
+        platform-driver-x86@vger.kernel.org, target-devel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org
+Subject: [PATCH v3 0/5] bus: Make remove callback return void
+Date:   Tue, 13 Jul 2021 09:40:09 +0200
+Message-Id: <20210713074014.684791-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 13, 2021 at 4:52 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote=
-:
->  Something wrong with your "From:" header; I've fixed it up based on a
-> best guess basis.
+Hello,
 
-Ah, yes, I have to fix it locally. Thanks!
+this is the final patch set for my effort to make struct
+bus_type::remove return void.
 
-> On Mon, 12 Jul 2021, andy@surfacebook.localdomain wrote:
->
-> > >   Also handle the historic spd_cust feature so as to allow one to set
-> > >   all the three parameters manually to arbitrary values, by keeping t=
-he
-> > >   low 16 bits for the divisor and then putting TCR in bits 19:16 and
-> > >   CPR/CPR2 in bits 28:20, sanitising the bit pattern supplied such as
-> > >   to clamp CPR/CPR2 values between 0.000 and 0.875 inclusive to 1.000=
-.
-> > >   This preserves compatibility with any existing setups, that is wher=
-e
-> > >   requesting a custom divisor that only has any bits set among the lo=
-w
-> > >   16 the oversampling rate of 16 and the clock prescaler of 1 will be
-> > >   used.
-> >
-> > Please no. We really would like to get rid of that ugly hack. The BOTHE=
-R exists
-> > for ages.
->
->  I have actually carefully considered it before submission and:
->
-> 1. it remains a supported user API with a tool included with contemporary
->    distributions, and
+The first four patches contain cleanups that make some of these
+callbacks (more obviously) always return 0. They are acked by the
+respective maintainers. Bjorn Helgaas explicitly asked to include the
+pci patch (#1) into this series, so Greg taking this is fine. I assume
+the s390 people are fine with Greg taking patches #2 to #4, too, they
+didn't explicitly said so though.
 
-What supported API?
+The last patch actually changes the prototype and so touches quite some
+drivers and has the potential to conflict with future developments, so I
+consider it beneficial to put these patches into next soon. I expect
+that it will be Greg who takes the complete series, he already confirmed
+via irc (for v2) to look into this series.
 
-> 2. with this device you can't set all the possible whole-number baud
->    rates let alone UART clock frequencies with the BOTHER API, and
+In the last round I failed to send the cover letter to all affected
+people, sorry for that, this should be fixed now.
 
-How does SPD_CUST make it different?
+Best regards
+Uwe
 
-> 3. it doesn't hurt.
+Changes since v2:
+ - Add several acks/review tags
+ - Include patch #1 explicitly
+ - rebase to v5.14-rc1, build test on amd64, arm64 and s390 using
+   allmodconfig
 
-It hurts development a lot.
+Uwe Kleine-König (5):
+  PCI: endpoint: Make struct pci_epf_driver::remove return void
+  s390/cio: Make struct css_driver::remove return void
+  s390/ccwgroup: Drop if with an always false condition
+  s390/scm: Make struct scm_driver::remove return void
+  bus: Make remove callback return void
 
-> If you'd like to get rid of SPD_CUST, then just do so, but until then I
-> fail to see a point to have it supported with some devices but not other
-> ones.
+ arch/arm/common/locomo.c                  | 3 +--
+ arch/arm/common/sa1111.c                  | 4 +---
+ arch/arm/mach-rpc/ecard.c                 | 4 +---
+ arch/mips/sgi-ip22/ip22-gio.c             | 3 +--
+ arch/parisc/kernel/drivers.c              | 5 ++---
+ arch/powerpc/platforms/ps3/system-bus.c   | 3 +--
+ arch/powerpc/platforms/pseries/ibmebus.c  | 3 +--
+ arch/powerpc/platforms/pseries/vio.c      | 3 +--
+ arch/s390/include/asm/eadm.h              | 2 +-
+ drivers/acpi/bus.c                        | 3 +--
+ drivers/amba/bus.c                        | 4 +---
+ drivers/base/auxiliary.c                  | 4 +---
+ drivers/base/isa.c                        | 4 +---
+ drivers/base/platform.c                   | 4 +---
+ drivers/bcma/main.c                       | 6 ++----
+ drivers/bus/sunxi-rsb.c                   | 4 +---
+ drivers/cxl/core.c                        | 3 +--
+ drivers/dax/bus.c                         | 4 +---
+ drivers/dma/idxd/sysfs.c                  | 4 +---
+ drivers/firewire/core-device.c            | 4 +---
+ drivers/firmware/arm_scmi/bus.c           | 4 +---
+ drivers/firmware/google/coreboot_table.c  | 4 +---
+ drivers/fpga/dfl.c                        | 4 +---
+ drivers/hid/hid-core.c                    | 4 +---
+ drivers/hid/intel-ish-hid/ishtp/bus.c     | 4 +---
+ drivers/hv/vmbus_drv.c                    | 5 +----
+ drivers/hwtracing/intel_th/core.c         | 4 +---
+ drivers/i2c/i2c-core-base.c               | 5 +----
+ drivers/i3c/master.c                      | 4 +---
+ drivers/input/gameport/gameport.c         | 3 +--
+ drivers/input/serio/serio.c               | 3 +--
+ drivers/ipack/ipack.c                     | 4 +---
+ drivers/macintosh/macio_asic.c            | 4 +---
+ drivers/mcb/mcb-core.c                    | 4 +---
+ drivers/media/pci/bt8xx/bttv-gpio.c       | 3 +--
+ drivers/memstick/core/memstick.c          | 3 +--
+ drivers/mfd/mcp-core.c                    | 3 +--
+ drivers/misc/mei/bus.c                    | 4 +---
+ drivers/misc/tifm_core.c                  | 3 +--
+ drivers/mmc/core/bus.c                    | 4 +---
+ drivers/mmc/core/sdio_bus.c               | 4 +---
+ drivers/net/netdevsim/bus.c               | 3 +--
+ drivers/ntb/core.c                        | 4 +---
+ drivers/ntb/ntb_transport.c               | 4 +---
+ drivers/nvdimm/bus.c                      | 3 +--
+ drivers/pci/endpoint/pci-epf-core.c       | 7 ++-----
+ drivers/pci/pci-driver.c                  | 3 +--
+ drivers/pcmcia/ds.c                       | 4 +---
+ drivers/platform/surface/aggregator/bus.c | 4 +---
+ drivers/platform/x86/wmi.c                | 4 +---
+ drivers/pnp/driver.c                      | 3 +--
+ drivers/rapidio/rio-driver.c              | 4 +---
+ drivers/rpmsg/rpmsg_core.c                | 7 ++-----
+ drivers/s390/block/scm_drv.c              | 4 +---
+ drivers/s390/cio/ccwgroup.c               | 6 +-----
+ drivers/s390/cio/chsc_sch.c               | 3 +--
+ drivers/s390/cio/css.c                    | 7 +++----
+ drivers/s390/cio/css.h                    | 2 +-
+ drivers/s390/cio/device.c                 | 9 +++------
+ drivers/s390/cio/eadm_sch.c               | 4 +---
+ drivers/s390/cio/scm.c                    | 5 +++--
+ drivers/s390/cio/vfio_ccw_drv.c           | 3 +--
+ drivers/s390/crypto/ap_bus.c              | 4 +---
+ drivers/scsi/scsi_debug.c                 | 3 +--
+ drivers/siox/siox-core.c                  | 4 +---
+ drivers/slimbus/core.c                    | 4 +---
+ drivers/soc/qcom/apr.c                    | 4 +---
+ drivers/spi/spi.c                         | 4 +---
+ drivers/spmi/spmi.c                       | 3 +--
+ drivers/ssb/main.c                        | 4 +---
+ drivers/staging/fieldbus/anybuss/host.c   | 4 +---
+ drivers/staging/greybus/gbphy.c           | 4 +---
+ drivers/target/loopback/tcm_loop.c        | 5 ++---
+ drivers/thunderbolt/domain.c              | 4 +---
+ drivers/tty/serdev/core.c                 | 4 +---
+ drivers/usb/common/ulpi.c                 | 4 +---
+ drivers/usb/serial/bus.c                  | 4 +---
+ drivers/usb/typec/bus.c                   | 4 +---
+ drivers/vdpa/vdpa.c                       | 4 +---
+ drivers/vfio/mdev/mdev_driver.c           | 4 +---
+ drivers/virtio/virtio.c                   | 3 +--
+ drivers/vme/vme.c                         | 4 +---
+ drivers/xen/xenbus/xenbus.h               | 2 +-
+ drivers/xen/xenbus/xenbus_probe.c         | 4 +---
+ include/linux/device/bus.h                | 2 +-
+ include/linux/pci-epf.h                   | 2 +-
+ sound/aoa/soundbus/core.c                 | 4 +---
+ 87 files changed, 98 insertions(+), 241 deletions(-)
 
-It _is_ the current state of affairs. Most of the contemporary drivers
-do not support this "feature" at all.
+base-commit: e73f0f0ee7541171d89f2e2491130c7771ba58d3
+-- 
+2.30.2
 
->  NB if you do get to it, then please consider adding an equally flexible
-> API too, e.g. for fractional baud rates (134.5bps haha); I won't mind if
-> it's less hackish though.
-
-Why do you need fractional baud rates for the small speeds? I do not
-believe we have any good use case for that. And 1/2 from 134 is less
-than 0.5% which is tolerable by UART by definition.
-
-So, please no, drop it.
-
-> > > References:
-> > >
-> > > [1] "OXPCIe200 PCI Express Multi-Port Bridge", Oxford Semiconductor,
-> > >     Inc., DS-0045, 10 Nov 2008, Section "950 Mode", pp. 64-65
-> > >
-> > > [2] "OXPCIe952 PCI Express Bridge to Dual Serial & Parallel Port",
-> > >     Oxford Semiconductor, Inc., DS-0046, Mar 06 08, Section "950 Mode=
-",
-> > >     p. 20
-> > >
-> > > [3] "OXPCIe954 PCI Express Bridge to Quad Serial Port", Oxford
-> > >     Semiconductor, Inc., DS-0047, Feb 08, Section "950 Mode", p. 20
-> > >
-> > > [4] "OXPCIe958 PCI Express Bridge to Octal Serial Port", Oxford
-> > >     Semiconductor, Inc., DS-0048, Feb 08, Section "950 Mode", p. 20
-> >
-> > Is it possible to reduce a commit message by shifting some stuff to the
-> > dedicated documentation?
->
->  The relevant stuff has been included as comments along with actual code
-> already, and the rest is the usual submission-time rationale.  This will
-> be the initial source of information when someone studies the history of
-> this code (`git log').
-
-I do not object to this, but perhaps in the form of documentation it
-would serve a better job (no-one will need to go deep into the Git
-history for this, especially non-developer people who just got a
-tarball, for example).
-
->  I don't consider it cast in stone however, so if there's any particular
-> piece you'd like to see elsewhere, then please point out to me what to
-> move and where.  Or give any guidance other than just: "Rewrite it!"
-
-At least that table with divisors and deviation with accompanying
-text. But I dare to say 90-95% of the commit message and leave
-something like "Here is a new driver. documentation is there." To
-where? Documentation/admin-guide seems most suitable right now
-(looking at the presence of auxdisplay folder), however I think that
-maybe dedicated folder like Documentation/hardware-notes maybe better.
-
-+Cc: Mauro. What do you think about this? We need a folder where we
-rather describe hardware features and maybe some driver implementation
-details.
-
->  (Yes I often have troubles figuring out the real intent of some changes
-> made say 15 years ago that have turned out broken after all those years
-> and whose change description is simply too terse now that the lore has
-> been lost.)
->
-> > >  drivers/tty/serial/8250/8250_pci.c  |  331 +++++++++++++++++++++++++=
-+++--------
-> >
-> > Can we, please, split the quirk driver first as it's done in a lot of e=
-xamples
-> > (_exar, _mid, _lpss, _...) and then modify it?
->
->  I have found it unclear where the line is drawn between having support
-> code included with 8250_pci.c proper and having it split off to a separat=
-e
-> file.  All the device-specific files seem to provide complex handling,
-> well beyond just calculating the clock.
-
-Lines of code in the current 8250_pci in conjunction with expansion.
-To me 331 (okay, it's something like 280?) LOC + sounds like a very
-good justification to split.
-
->  I'll be happy to split it off however (with a suitable preparatory
-> change) if there is a consensus in favour to doing so.
-
-If you have a consensus with yourself :-) Maintaining 8250_pci is a burden.
-You may look into the history of 8250_pci (and you will often see my
-name there) how it was shrinking in time.
-
-> > > +/*
-> > > + * Determine the oversampling rate, the clock prescaler, and the clo=
-ck
-> > > + * divisor for the requested baud rate.  The clock rate is 62.5 MHz,
-> > > + * which is four times the baud base, and the prescaler increments i=
-n
-> > > + * steps of 1/8.  Therefore to make calculations on integers we need
-> > > + * to use a scaled clock rate, which is the baud base multiplied by =
-32
-> > > + * (or our assumed UART clock rate multiplied by 2).
-> > > + *
-> > > + * The allowed oversampling rates are from 4 up to 16 inclusive (val=
-ues
-> > > + * from 0 to 3 inclusive map to 16).  Likewise the clock prescaler a=
-llows
-> > > + * values between 1.000 and 63.875 inclusive (operation for values f=
-rom
-> > > + * 0.000 to 0.875 has not been specified).  The clock divisor is the=
- usual
-> > > + * unsigned 16-bit integer.
-> > > + *
-> > > + * For the most accurate baud rate we use a table of predetermined
-> > > + * oversampling rates and clock prescalers that records all possible
-> > > + * products of the two parameters in the range from 4 up to 255 incl=
-usive,
-> > > + * and additionally 335 for the 1500000bps rate, with the prescaler =
-scaled
-> > > + * by 8.  The table is sorted by the decreasing value of the oversam=
-pling
-> > > + * rate and ties are resolved by sorting by the decreasing value of =
-the
-> > > + * product.  This way preference is given to higher oversampling rat=
-es.
-> > > + *
-> > > + * We iterate over the table and choose the product of an oversampli=
-ng
-> > > + * rate and a clock prescaler that gives the lowest integer division
-> > > + * result deviation, or if an exact integer divider is found we stop
-> > > + * looking for right away.  We do some fixup if the resulting clock
-
-for it right
-
-> > > + * divisor required would be out of its unsigned 16-bit integer rang=
-e.
-> > > + *
-> > > + * Finally we abuse the supposed fractional part returned to encode =
-the
-> > > + * 4-bit value of the oversampling rate and the 9-bit value of the c=
-lock
-> > > + * prescaler which will end up in the TCR and CPR/CPR2 registers.
-> > > + */
-> > > +static unsigned int pci_oxsemi_tornado_get_divisor(struct uart_port =
-*port,
-> > > +                                              unsigned int baud,
-> > > +                                              unsigned int *frac)
-> > > +{
-> > > +   static u8 p[][2] =3D {
-> > > +           { 16, 14, }, { 16, 13, }, { 16, 12, }, { 16, 11, },
-> > > +           { 16, 10, }, { 16,  9, }, { 16,  8, }, { 15, 17, },
-> > > +           { 15, 16, }, { 15, 15, }, { 15, 14, }, { 15, 13, },
-> > > +           { 15, 12, }, { 15, 11, }, { 15, 10, }, { 15,  9, },
-> > > +           { 15,  8, }, { 14, 18, }, { 14, 17, }, { 14, 14, },
-> > > +           { 14, 13, }, { 14, 12, }, { 14, 11, }, { 14, 10, },
-> > > +           { 14,  9, }, { 14,  8, }, { 13, 19, }, { 13, 18, },
-> > > +           { 13, 17, }, { 13, 13, }, { 13, 12, }, { 13, 11, },
-> > > +           { 13, 10, }, { 13,  9, }, { 13,  8, }, { 12, 19, },
-> > > +           { 12, 18, }, { 12, 17, }, { 12, 11, }, { 12,  9, },
-> > > +           { 12,  8, }, { 11, 23, }, { 11, 22, }, { 11, 21, },
-> > > +           { 11, 20, }, { 11, 19, }, { 11, 18, }, { 11, 17, },
-> > > +           { 11, 11, }, { 11, 10, }, { 11,  9, }, { 11,  8, },
-> > > +           { 10, 25, }, { 10, 23, }, { 10, 20, }, { 10, 19, },
-> > > +           { 10, 17, }, { 10, 10, }, { 10,  9, }, { 10,  8, },
-> > > +           {  9, 27, }, {  9, 23, }, {  9, 21, }, {  9, 19, },
-> > > +           {  9, 18, }, {  9, 17, }, {  9,  9, }, {  9,  8, },
-> > > +           {  8, 31, }, {  8, 29, }, {  8, 23, }, {  8, 19, },
-> > > +           {  8, 17, }, {  8,  8, }, {  7, 35, }, {  7, 31, },
-> > > +           {  7, 29, }, {  7, 25, }, {  7, 23, }, {  7, 21, },
-> > > +           {  7, 19, }, {  7, 17, }, {  7, 15, }, {  7, 14, },
-> > > +           {  7, 13, }, {  7, 12, }, {  7, 11, }, {  7, 10, },
-> > > +           {  7,  9, }, {  7,  8, }, {  6, 41, }, {  6, 37, },
-> > > +           {  6, 31, }, {  6, 29, }, {  6, 23, }, {  6, 19, },
-> > > +           {  6, 17, }, {  6, 13, }, {  6, 11, }, {  6, 10, },
-> > > +           {  6,  9, }, {  6,  8, }, {  5, 67, }, {  5, 47, },
-> > > +           {  5, 43, }, {  5, 41, }, {  5, 37, }, {  5, 31, },
-> > > +           {  5, 29, }, {  5, 25, }, {  5, 23, }, {  5, 19, },
-> > > +           {  5, 17, }, {  5, 15, }, {  5, 13, }, {  5, 11, },
-> > > +           {  5, 10, }, {  5,  9, }, {  5,  8, }, {  4, 61, },
-> > > +           {  4, 59, }, {  4, 53, }, {  4, 47, }, {  4, 43, },
-> > > +           {  4, 41, }, {  4, 37, }, {  4, 31, }, {  4, 29, },
-> > > +           {  4, 23, }, {  4, 19, }, {  4, 17, }, {  4, 13, },
-> > > +           {  4,  9, }, {  4,  8, },
-> > > +   };
-> >
-> > Oh l=C3=A0 l=C3=A0! Please, use rational best approximation algorithm i=
-nstead
-> > (check CONFIG_RATIONAL).
->
->  Thanks for the pointer, I didn't know we had this piece.
->
->  However how is it supposed to apply here?  The denominator is always 8,
-> so we can rule it out (by multiplying the dividend by 8, which this piece
-> does, so that the divisor is a whole number), but the numerator has to be
-> a product of three integers, from a different range each ([4,16], [8,511]=
-,
-> [1, 65535]) as noted above.
->
->  Essentially we need to find such three integers (with extra constraints)
-> the product of which is closest to (500000000 / baud_rate) -- which IMHO
-> amounts to factorisation, an NP-complete problem as you have been surely
-> aware (and the whole world relies on), and I have decided that this simpl=
-e
-> table-driven approximation is good enough to handle the usual baud rates,
-> especially the higher ones.  For several baud rates it gives more accurat=
-e
-> results (lower deviation) than the factors proposed in the manufacturer's
-> datasheets.
-
-And my point is to calculate is always based on the asked baud rate.
-Yes. I understand what you wrote above and sometimes only brute force
-can be used, but in the kernel we have integer arithmetics which helps
-a lot besides the fact of bits twiddlings.
-
->  I just fail to see how your proposed algorithm could be factored in here=
-,
-> but I'll be happy to be proved wrong, so I'll appreciate guidance.
-
-It's possible that it doesn't fit in the current form or for all three
-integers. Just give some time and think about it. Maybe you can come
-up with a better idea. I usually point to one case I have solved [1]
-to show that ugly tables can be dropped (in some cases it makes sense
-to leave them, though).
-
-[1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/com=
-mit/drivers/spi/spi-pxa2xx.c?id=3D9df461eca18f5395ee84670cdba6755dddec1898
-
->  In any case thank you for your review, always appreciated!
-
-You/re welcome!
-
---=20
-With Best Regards,
-Andy Shevchenko
