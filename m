@@ -7,100 +7,110 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB7CC07E95
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 10:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6003C07E96
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 10:40:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 534066127C
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 10:40:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C82761249
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 10:40:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235572AbhGMKm7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Jul 2021 06:42:59 -0400
-Received: from mga14.intel.com ([192.55.52.115]:59772 "EHLO mga14.intel.com"
+        id S235681AbhGMKnB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Jul 2021 06:43:01 -0400
+Received: from mga12.intel.com ([192.55.52.136]:15385 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235304AbhGMKm7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S235632AbhGMKm7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Tue, 13 Jul 2021 06:42:59 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10043"; a="209954684"
+X-IronPort-AV: E=McAfee;i="6200,9189,10043"; a="189823012"
 X-IronPort-AV: E=Sophos;i="5.84,236,1620716400"; 
-   d="scan'208";a="209954684"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2021 03:40:07 -0700
+   d="scan'208";a="189823012"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2021 03:40:07 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,236,1620716400"; 
-   d="scan'208";a="465066136"
+   d="scan'208";a="649355774"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 13 Jul 2021 03:40:05 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 13 Jul 2021 03:40:05 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7C5E8FF; Tue, 13 Jul 2021 13:40:32 +0300 (EEST)
+        id 99CC62B6; Tue, 13 Jul 2021 13:40:32 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/4] serial: 8250_pci: Refactor the loop in pci_ite887x_init()
-Date:   Tue, 13 Jul 2021 13:40:23 +0300
-Message-Id: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/4] serial: 8250_pci: Always try MSI/MSI-X
+Date:   Tue, 13 Jul 2021 13:40:25 +0300
+Message-Id: <20210713104026.58560-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
+References: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The loop can be refactored by using ARRAY_SIZE() instead of NULL terminator.
-This reduces code base and makes it easier to read and understand.
+There is no need to try MSI/MSI-X only on selected devices.
+If MSI is not supported while neing advertised it means device
+is broken and we rather introduce a list of such devices which
+hopefully will be small or never appear.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+ drivers/tty/serial/8250/8250_pci.c | 28 ++++++++--------------------
+ 1 file changed, 8 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 02985cf90ef2..b9138bd08b7f 100644
+index 937861327aca..02825c8c5f84 100644
 --- a/drivers/tty/serial/8250/8250_pci.c
 +++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -897,37 +897,31 @@ static int pci_netmos_init(struct pci_dev *dev)
- /* enable IO_Space bit */
- #define ITE_887x_POSIO_ENABLE		(1 << 31)
+@@ -58,18 +58,6 @@ struct serial_private {
  
-+/* inta_addr are the configuration addresses of the ITE */
-+static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0, 0x200, 0x280, };
- static int pci_ite887x_init(struct pci_dev *dev)
- {
--	/* inta_addr are the configuration addresses of the ITE */
--	static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0,
--							0x200, 0x280, 0 };
- 	int ret, i, type;
- 	struct resource *iobase = NULL;
- 	u32 miscr, uartbar, ioport;
+ #define PCI_DEVICE_ID_HPE_PCI_SERIAL	0x37e
  
- 	/* search for the base-ioport */
--	i = 0;
--	while (inta_addr[i] && iobase == NULL) {
--		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE,
--								"ite887x");
-+	for (i = 0; i < ARRAY_SIZE(inta_addr); i++) {
-+		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE, "ite887x");
- 		if (iobase != NULL) {
- 			/* write POSIO0R - speed | size | ioport */
- 			pci_write_config_dword(dev, ITE_887x_POSIO0,
- 				ITE_887x_POSIO_ENABLE | ITE_887x_POSIO_SPEED |
- 				ITE_887x_POSIO_IOSIZE_32 | inta_addr[i]);
- 			/* write INTCBAR - ioport */
--			pci_write_config_dword(dev, ITE_887x_INTCBAR,
--								inta_addr[i]);
-+			pci_write_config_dword(dev, ITE_887x_INTCBAR, inta_addr[i]);
- 			ret = inb(inta_addr[i]);
- 			if (ret != 0xff) {
- 				/* ioport connected */
- 				break;
- 			}
- 			release_region(iobase->start, ITE_887x_IOSIZE);
--			iobase = NULL;
+-static const struct pci_device_id pci_use_msi[] = {
+-	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9900,
+-			 0xA000, 0x1000) },
+-	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9912,
+-			 0xA000, 0x1000) },
+-	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9922,
+-			 0xA000, 0x1000) },
+-	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_HP_3PAR, PCI_DEVICE_ID_HPE_PCI_SERIAL,
+-			 PCI_ANY_ID, PCI_ANY_ID) },
+-	{ }
+-};
+-
+ static int pci_default_setup(struct serial_private*,
+ 	  const struct pciserial_board*, struct uart_8250_port *, int);
+ 
+@@ -3994,14 +3982,9 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
+ 	if (board->flags & FL_NOIRQ) {
+ 		uart.port.irq = 0;
+ 	} else {
+-		if (pci_match_id(pci_use_msi, dev)) {
+-			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
+-			pci_set_master(dev);
+-			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
+-		} else {
+-			dev_dbg(&dev->dev, "Using legacy interrupts\n");
+-			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
+-		}
++		pci_set_master(dev);
++
++		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
+ 		if (rc < 0) {
+ 			kfree(priv);
+ 			priv = ERR_PTR(rc);
+@@ -4009,6 +3992,11 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
  		}
--		i++;
+ 
+ 		uart.port.irq = pci_irq_vector(dev, 0);
++
++		if (pci_dev_msi_enabled(dev))
++			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
++		else
++			dev_dbg(&dev->dev, "Using legacy interrupts\n");
  	}
  
- 	if (!inta_addr[i]) {
+ 	uart.port.dev = &dev->dev;
 -- 
 2.30.2
 
