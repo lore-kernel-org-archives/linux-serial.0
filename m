@@ -2,242 +2,353 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BD3C07E95
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 06:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E4CC07E95
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 07:20:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 78C54611C1
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 06:48:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B769C61283
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 07:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233645AbhGMGvk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Jul 2021 02:51:40 -0400
-Received: from mail-dm6nam08on2074.outbound.protection.outlook.com ([40.107.102.74]:44449
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232908AbhGMGvj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Jul 2021 02:51:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UJr3ocVnCRFIUL9DiwE2MiTouY8i7qskFXRUxZD0VZzM6AMYgiULxQX97oWJLJ3WiX0TBGg3kGm48A7y8u6lmyXQfp0nwbNWNDXG0WMjAHOkgcfX92YmDOPSFbjkvaq8pQTv+4wysDlypE4uH7Q9pm0OeuH3jDmqk3IO0Gs55x5LxFHzGAWPvPn8iN86FEA6721JZH2DGe0FVQM22ESUhp/H+OGIdTwkhfStiQHhTOjRtbeFUIXDN2E5kTc8laTBHSJ0Eipc4UVS92o7H3BjK2rxdL3lCdg6KIYt9E3yFiLg9FKnm7ZFwyS/ocAUGIngQpT7NuE1pLhwgIQ5EdxsFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Dp1E3HjXzT8kPozfoJqB47Hij/vx9Zct8B2ESTgJ5zQ=;
- b=QcNSfWx9gtesCO4HydtNc5amFygLjFTEDgDTcC/ZfjBLZi/0o7B0b+SeHl2Eozs3rI802fi1PFaGXAp+cy0RFdyJrnFfJ/zn69BrN0NEgShNHvw/sokJaGUOmm1eCUhIcb5196Sf51+dIqzgshJEO+WnfwIE5dMEXGFplObUpACMHaft20fqiTJyMqsa0H5TYmbQhzDZMTmfvNwyduyBRe4nJDiQMgCdhhlr12DEgpCbF62Bwj4IdiUjaozTZ8/90OEBsXVxZxI1YayRKCvh0xBkigGTud06FdJD/eZXu9L1Wnks1+jDwMTBeJFa0nIAjiesWbq8019+bdHzVcHwbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        id S234167AbhGMHWv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Jul 2021 03:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234163AbhGMHWu (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 13 Jul 2021 03:22:50 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49062C0613DD;
+        Tue, 13 Jul 2021 00:20:01 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id b12so18705628pfv.6;
+        Tue, 13 Jul 2021 00:20:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Dp1E3HjXzT8kPozfoJqB47Hij/vx9Zct8B2ESTgJ5zQ=;
- b=h/TiwrFOxw1zyWSNJKpUSl+jP52NR51VW6IFWV5sTEvSa8Rklc4hIYloVv/1hijAL3LywhEPJZRyqRNJtSv9TRwITNCSEo4BkDnuH5zXL8VDJ04H64Yfh9KAdylpo48/QCbk9yJlgGIho9f8aPMIigTNwHKmuxvEF0s05Kg0A8E=
-Received: from DM5PR16CA0015.namprd16.prod.outlook.com (2603:10b6:3:c0::25) by
- DM6PR02MB5001.namprd02.prod.outlook.com (2603:10b6:5:52::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4308.20; Tue, 13 Jul 2021 06:48:47 +0000
-Received: from DM3NAM02FT062.eop-nam02.prod.protection.outlook.com
- (2603:10b6:3:c0:cafe::12) by DM5PR16CA0015.outlook.office365.com
- (2603:10b6:3:c0::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20 via Frontend
- Transport; Tue, 13 Jul 2021 06:48:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT062.mail.protection.outlook.com (10.13.5.10) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4308.20 via Frontend Transport; Tue, 13 Jul 2021 06:48:47 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 12 Jul 2021 23:48:44 -0700
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Mon, 12 Jul 2021 23:48:44 -0700
-Envelope-to: git@xilinx.com,
- linux-serial@vger.kernel.org,
- gregkh@linuxfoundation.org
-Received: from [10.140.6.59] (port=58696 helo=xhdshubhraj40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <shubhrajyoti.datta@xilinx.com>)
-        id 1m3CDi-000Gjm-Sy; Mon, 12 Jul 2021 23:48:43 -0700
-From:   Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-To:     <git@xilinx.com>, <linux-serial@vger.kernel.org>
-CC:     <gregkh@linuxfoundation.org>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Subject: [PATCH v2 2/2] tty: serial: uartlite: Add runtime pm support
-Date:   Tue, 13 Jul 2021 12:18:35 +0530
-Message-ID: <20210713064835.27978-3-shubhrajyoti.datta@xilinx.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210713064835.27978-1-shubhrajyoti.datta@xilinx.com>
-References: <20210713064835.27978-1-shubhrajyoti.datta@xilinx.com>
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=k87ShhA7JYr3dDTpNdrndNWm72BoFK448tq+9qFOE+Q=;
+        b=TvzSYuC2It9dB+C7aPwqlN5GqQ0x5DopQ8nVpXXSS48A6OZP1alOMA+zyG5IueQu6D
+         0QcbsvwyG2LO5zReSQVHpHTqWcVYapchgm0ftbL2YleFSXZHwg3ucCzqD3U8l6YaQUZE
+         58luLKi4ChFj/t4PJ/rxIFDTAfzf1uFXtNdiRgIpMyq7ZJ4+ZoPaq6GWMsBC7sKc7Z3W
+         vYQNss9dacQ0puoQs0xSn8CKyKO47w9vmqOOG119LK2PVc/4pEMKBPuQDUyYffupG3PE
+         xYeHAFsVZH4KJUu516JTiYjPzfCpYYq4u9gSfgjsNp5SPijEC+azrnrDC1Dg9yX7KdIU
+         bZbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=k87ShhA7JYr3dDTpNdrndNWm72BoFK448tq+9qFOE+Q=;
+        b=b2TIEm2UWSH94sD7vZmcsBFnlyTeedKMFrfFEVKXFsrJ+l/RtEii6F5mf92AGm6Qja
+         yK0STpbKK69FY9uSbgb0qCMaAG0NViW5lsYRGd/QmYEfbDXkjjqEAQOQOmvYbugfa/os
+         qrM8+RUDhRCbLHQK3Sl3To9vRa1s7fld45XvefngLTDO0YCRf+brmjgbeipudZ2IgzzN
+         N4hVtkbhy8tl+ThibV+hGshYmegjJ8ManhXuHWt8qmaNMDABIl6NMC2id1XhXnFIL1xd
+         WJ5IlaTmf0Vfu8TA/xDU/If9v9sQCUd1jfmQmi7+ZDmcBdcVOdWGTM4uOZGCXEylu+Nf
+         njGQ==
+X-Gm-Message-State: AOAM5331/RmLa65kWfu3J6UjYqza+SSRjFx92+0XMgHOgXyCWGaYhGDQ
+        O+f6+UOibGOhCIKsvSiIv+SuNxbaxYcoCdSzdERAJQ0ON1yu8D/fXVE=
+X-Google-Smtp-Source: ABdhPJwATcOwyw4C63A7maDbOoHQTY3NYjqzLaZ+EEUA3+JAKClQMLHxQuPsxsiNOWQ0+Tl1Gflpv4NsDetOwJHt/qY=
+X-Received: by 2002:a05:6a00:a1e:b029:2e2:89d8:5c87 with SMTP id
+ p30-20020a056a000a1eb02902e289d85c87mr3285711pfh.73.1626160800594; Tue, 13
+ Jul 2021 00:20:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ee9bee8e-aef8-460f-cef1-08d945ca4418
-X-MS-TrafficTypeDiagnostic: DM6PR02MB5001:
-X-Microsoft-Antispam-PRVS: <DM6PR02MB500118F4DD5F11D36FA260A3AA149@DM6PR02MB5001.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:279;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CTNltlQAoSH4doxxDzzeQffePu3WWzd63iZA5lRnpTQkU1twKD8cCY57CLdGH2UR1qkC64iN//afpGo+GVoN1LPyytC16RFSbukWGl3wc89l9Y93ebHHUanWMtAyf+PAQPn3OEDPSXa+wVcFFY2PWK9rv3wKusaNGbr+J8jan8r7ko3C6uS6R1Q8h2nPuU2UBYFGcLvXi9Xr+inWDkACglhe8xW1QqkWGeenb3ndVmEzZtU0cztHyUmpgjLYUtsZ20FGdYTbKFcQM/pC0sCTN6NRGx+G67g5ffJQynlItgN4OoObmoaa2ySLjhLyWLzRl3BU9Eo46BpNkOtOR3s+yP6LuJyE7CC0YexBdOjs+7bwTWNnTy/rkJEphVjPTxTeSPir1wF9GW7Lih62ySUh/V9czNljTm0MoZnBxSM58LUQtXxRPZO+Mvv6+m5Qcf7PspZWLvgaXzk+zpxv+bbKItk+NTH7azNxtm/WAR+IepAd+9zAVDO7/ARQzP5wHhezQSMU3YRhI86X1fy+rWCi/McyeI+PbdzYahDufvLhEix4ge9IDlxJeJZTmTDl17onXEo0FnKNPK3hcFeRA41LChGp3pK75UFDVIwB9gZWkFQ9QuHztDoJfp2Iqz4dvnmpASWGuSyzyKnAHKtvEb4YjP/Ay9/I0svssa9joADBaQeEIU3MwSePCPp2TzmrpP5XhFP9QwQ31dGeKajKsG5fByqPflCY3B118NZSAPjHIiQ=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(39830400003)(396003)(346002)(136003)(376002)(36840700001)(46966006)(356005)(8676002)(7636003)(107886003)(9786002)(83380400001)(36756003)(82310400003)(26005)(2906002)(8936002)(44832011)(70206006)(316002)(36906005)(70586007)(6666004)(336012)(426003)(54906003)(186003)(2616005)(4326008)(110136005)(1076003)(47076005)(7696005)(36860700001)(478600001)(5660300002)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2021 06:48:47.6913
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee9bee8e-aef8-460f-cef1-08d945ca4418
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT062.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB5001
+References: <alpine.DEB.2.21.2106260539240.37803@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2106260604540.37803@angie.orcam.me.uk> <YOyi0cPdIVSCcpmw@surfacebook.localdomain>
+ <alpine.DEB.2.21.2107130150420.9461@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2107130150420.9461@angie.orcam.me.uk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 13 Jul 2021 10:19:24 +0300
+Message-ID: <CAHp75VfnCG-C6bUzhhC9jQGOSgMXVLZ=QtH0mdhAD85yeqBC7A@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] serial: 8250: Add proper clock handling for OxSemi
+ PCIe devices
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Andy Shevchenko <andy@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In the commit 07e5d4ff125a ("Revert serial-uartlite: Add runtime
-support") the runtime pm support was reverted to aid reverting of
-the other patches.
+On Tue, Jul 13, 2021 at 4:52 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote=
+:
+>  Something wrong with your "From:" header; I've fixed it up based on a
+> best guess basis.
 
-This patch adds the runtime PM support back.
-The runtime pm calls are used to gate and enable the clocks.
+Ah, yes, I have to fix it locally. Thanks!
 
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
----
- drivers/tty/serial/uartlite.c | 60 ++++++++++++++++++++++++++++++-----
- 1 file changed, 52 insertions(+), 8 deletions(-)
+> On Mon, 12 Jul 2021, andy@surfacebook.localdomain wrote:
+>
+> > >   Also handle the historic spd_cust feature so as to allow one to set
+> > >   all the three parameters manually to arbitrary values, by keeping t=
+he
+> > >   low 16 bits for the divisor and then putting TCR in bits 19:16 and
+> > >   CPR/CPR2 in bits 28:20, sanitising the bit pattern supplied such as
+> > >   to clamp CPR/CPR2 values between 0.000 and 0.875 inclusive to 1.000=
+.
+> > >   This preserves compatibility with any existing setups, that is wher=
+e
+> > >   requesting a custom divisor that only has any bits set among the lo=
+w
+> > >   16 the oversampling rate of 16 and the clock prescaler of 1 will be
+> > >   used.
+> >
+> > Please no. We really would like to get rid of that ugly hack. The BOTHE=
+R exists
+> > for ages.
+>
+>  I have actually carefully considered it before submission and:
+>
+> 1. it remains a supported user API with a tool included with contemporary
+>    distributions, and
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index fd7a2f82c885..51d4a485f4a1 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -22,6 +22,7 @@
- #include <linux/of_device.h>
- #include <linux/of_platform.h>
- #include <linux/clk.h>
-+#include <linux/pm_runtime.h>
- 
- #define ULITE_NAME		"ttyUL"
- #define ULITE_MAJOR		204
-@@ -54,6 +55,7 @@
- #define ULITE_CONTROL_RST_TX	0x01
- #define ULITE_CONTROL_RST_RX	0x02
- #define ULITE_CONTROL_IE	0x10
-+#define UART_AUTOSUSPEND_TIMEOUT	3000	/* ms */
- 
- /* Static pointer to console port */
- #ifdef CONFIG_SERIAL_UARTLITE_CONSOLE
-@@ -390,12 +392,16 @@ static int ulite_verify_port(struct uart_port *port, struct serial_struct *ser)
- static void ulite_pm(struct uart_port *port, unsigned int state,
- 		     unsigned int oldstate)
- {
--	struct uartlite_data *pdata = port->private_data;
-+	int ret;
- 
--	if (!state)
--		clk_enable(pdata->clk);
--	else
--		clk_disable(pdata->clk);
-+	if (!state) {
-+		ret = pm_runtime_get_sync(port->dev);
-+		if (ret < 0)
-+			dev_err(port->dev, "Failed to enable clocks\n");
-+	} else {
-+		pm_runtime_mark_last_busy(port->dev);
-+		pm_runtime_put_autosuspend(port->dev);
-+	}
- }
- 
- #ifdef CONFIG_CONSOLE_POLL
-@@ -734,11 +740,38 @@ static int __maybe_unused ulite_resume(struct device *dev)
- 	return 0;
- }
- 
-+static int __maybe_unused ulite_runtime_suspend(struct device *dev)
-+{
-+	struct uart_port *port = dev_get_drvdata(dev);
-+	struct uartlite_data *pdata = port->private_data;
-+
-+	clk_disable(pdata->clk);
-+	return 0;
-+};
-+
-+static int __maybe_unused ulite_runtime_resume(struct device *dev)
-+{
-+	struct uart_port *port = dev_get_drvdata(dev);
-+	struct uartlite_data *pdata = port->private_data;
-+	int ret;
-+
-+	ret = clk_enable(pdata->clk);
-+	if (ret) {
-+		dev_err(dev, "Cannot enable clock.\n");
-+		return ret;
-+	}
-+	return 0;
-+}
-+
- /* ---------------------------------------------------------------------
-  * Platform bus binding
-  */
- 
--static SIMPLE_DEV_PM_OPS(ulite_pm_ops, ulite_suspend, ulite_resume);
-+static const struct dev_pm_ops ulite_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(ulite_suspend, ulite_resume)
-+	SET_RUNTIME_PM_OPS(ulite_runtime_suspend,
-+			   ulite_runtime_resume, NULL)
-+};
- 
- #if defined(CONFIG_OF)
- /* Match table for of_platform binding */
-@@ -794,6 +827,11 @@ static int ulite_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	pm_runtime_use_autosuspend(&pdev->dev);
-+	pm_runtime_set_autosuspend_delay(&pdev->dev, UART_AUTOSUSPEND_TIMEOUT);
-+	pm_runtime_set_active(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
-+
- 	if (!ulite_uart_driver.state) {
- 		dev_dbg(&pdev->dev, "uartlite: calling uart_register_driver()\n");
- 		ret = uart_register_driver(&ulite_uart_driver);
-@@ -806,7 +844,8 @@ static int ulite_probe(struct platform_device *pdev)
- 
- 	ret = ulite_assign(&pdev->dev, id, res->start, irq, pdata);
- 
--	clk_disable(pdata->clk);
-+	pm_runtime_mark_last_busy(&pdev->dev);
-+	pm_runtime_put_autosuspend(&pdev->dev);
- 
- 	return ret;
- }
-@@ -815,9 +854,14 @@ static int ulite_remove(struct platform_device *pdev)
- {
- 	struct uart_port *port = dev_get_drvdata(&pdev->dev);
- 	struct uartlite_data *pdata = port->private_data;
-+	int rc;
- 
- 	clk_disable_unprepare(pdata->clk);
--	return ulite_release(&pdev->dev);
-+	rc = ulite_release(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+	pm_runtime_set_suspended(&pdev->dev);
-+	pm_runtime_dont_use_autosuspend(&pdev->dev);
-+	return rc;
- }
- 
- /* work with hotplug and coldplug */
--- 
-2.17.1
+What supported API?
 
+> 2. with this device you can't set all the possible whole-number baud
+>    rates let alone UART clock frequencies with the BOTHER API, and
+
+How does SPD_CUST make it different?
+
+> 3. it doesn't hurt.
+
+It hurts development a lot.
+
+> If you'd like to get rid of SPD_CUST, then just do so, but until then I
+> fail to see a point to have it supported with some devices but not other
+> ones.
+
+It _is_ the current state of affairs. Most of the contemporary drivers
+do not support this "feature" at all.
+
+>  NB if you do get to it, then please consider adding an equally flexible
+> API too, e.g. for fractional baud rates (134.5bps haha); I won't mind if
+> it's less hackish though.
+
+Why do you need fractional baud rates for the small speeds? I do not
+believe we have any good use case for that. And 1/2 from 134 is less
+than 0.5% which is tolerable by UART by definition.
+
+So, please no, drop it.
+
+> > > References:
+> > >
+> > > [1] "OXPCIe200 PCI Express Multi-Port Bridge", Oxford Semiconductor,
+> > >     Inc., DS-0045, 10 Nov 2008, Section "950 Mode", pp. 64-65
+> > >
+> > > [2] "OXPCIe952 PCI Express Bridge to Dual Serial & Parallel Port",
+> > >     Oxford Semiconductor, Inc., DS-0046, Mar 06 08, Section "950 Mode=
+",
+> > >     p. 20
+> > >
+> > > [3] "OXPCIe954 PCI Express Bridge to Quad Serial Port", Oxford
+> > >     Semiconductor, Inc., DS-0047, Feb 08, Section "950 Mode", p. 20
+> > >
+> > > [4] "OXPCIe958 PCI Express Bridge to Octal Serial Port", Oxford
+> > >     Semiconductor, Inc., DS-0048, Feb 08, Section "950 Mode", p. 20
+> >
+> > Is it possible to reduce a commit message by shifting some stuff to the
+> > dedicated documentation?
+>
+>  The relevant stuff has been included as comments along with actual code
+> already, and the rest is the usual submission-time rationale.  This will
+> be the initial source of information when someone studies the history of
+> this code (`git log').
+
+I do not object to this, but perhaps in the form of documentation it
+would serve a better job (no-one will need to go deep into the Git
+history for this, especially non-developer people who just got a
+tarball, for example).
+
+>  I don't consider it cast in stone however, so if there's any particular
+> piece you'd like to see elsewhere, then please point out to me what to
+> move and where.  Or give any guidance other than just: "Rewrite it!"
+
+At least that table with divisors and deviation with accompanying
+text. But I dare to say 90-95% of the commit message and leave
+something like "Here is a new driver. documentation is there." To
+where? Documentation/admin-guide seems most suitable right now
+(looking at the presence of auxdisplay folder), however I think that
+maybe dedicated folder like Documentation/hardware-notes maybe better.
+
++Cc: Mauro. What do you think about this? We need a folder where we
+rather describe hardware features and maybe some driver implementation
+details.
+
+>  (Yes I often have troubles figuring out the real intent of some changes
+> made say 15 years ago that have turned out broken after all those years
+> and whose change description is simply too terse now that the lore has
+> been lost.)
+>
+> > >  drivers/tty/serial/8250/8250_pci.c  |  331 +++++++++++++++++++++++++=
++++--------
+> >
+> > Can we, please, split the quirk driver first as it's done in a lot of e=
+xamples
+> > (_exar, _mid, _lpss, _...) and then modify it?
+>
+>  I have found it unclear where the line is drawn between having support
+> code included with 8250_pci.c proper and having it split off to a separat=
+e
+> file.  All the device-specific files seem to provide complex handling,
+> well beyond just calculating the clock.
+
+Lines of code in the current 8250_pci in conjunction with expansion.
+To me 331 (okay, it's something like 280?) LOC + sounds like a very
+good justification to split.
+
+>  I'll be happy to split it off however (with a suitable preparatory
+> change) if there is a consensus in favour to doing so.
+
+If you have a consensus with yourself :-) Maintaining 8250_pci is a burden.
+You may look into the history of 8250_pci (and you will often see my
+name there) how it was shrinking in time.
+
+> > > +/*
+> > > + * Determine the oversampling rate, the clock prescaler, and the clo=
+ck
+> > > + * divisor for the requested baud rate.  The clock rate is 62.5 MHz,
+> > > + * which is four times the baud base, and the prescaler increments i=
+n
+> > > + * steps of 1/8.  Therefore to make calculations on integers we need
+> > > + * to use a scaled clock rate, which is the baud base multiplied by =
+32
+> > > + * (or our assumed UART clock rate multiplied by 2).
+> > > + *
+> > > + * The allowed oversampling rates are from 4 up to 16 inclusive (val=
+ues
+> > > + * from 0 to 3 inclusive map to 16).  Likewise the clock prescaler a=
+llows
+> > > + * values between 1.000 and 63.875 inclusive (operation for values f=
+rom
+> > > + * 0.000 to 0.875 has not been specified).  The clock divisor is the=
+ usual
+> > > + * unsigned 16-bit integer.
+> > > + *
+> > > + * For the most accurate baud rate we use a table of predetermined
+> > > + * oversampling rates and clock prescalers that records all possible
+> > > + * products of the two parameters in the range from 4 up to 255 incl=
+usive,
+> > > + * and additionally 335 for the 1500000bps rate, with the prescaler =
+scaled
+> > > + * by 8.  The table is sorted by the decreasing value of the oversam=
+pling
+> > > + * rate and ties are resolved by sorting by the decreasing value of =
+the
+> > > + * product.  This way preference is given to higher oversampling rat=
+es.
+> > > + *
+> > > + * We iterate over the table and choose the product of an oversampli=
+ng
+> > > + * rate and a clock prescaler that gives the lowest integer division
+> > > + * result deviation, or if an exact integer divider is found we stop
+> > > + * looking for right away.  We do some fixup if the resulting clock
+
+for it right
+
+> > > + * divisor required would be out of its unsigned 16-bit integer rang=
+e.
+> > > + *
+> > > + * Finally we abuse the supposed fractional part returned to encode =
+the
+> > > + * 4-bit value of the oversampling rate and the 9-bit value of the c=
+lock
+> > > + * prescaler which will end up in the TCR and CPR/CPR2 registers.
+> > > + */
+> > > +static unsigned int pci_oxsemi_tornado_get_divisor(struct uart_port =
+*port,
+> > > +                                              unsigned int baud,
+> > > +                                              unsigned int *frac)
+> > > +{
+> > > +   static u8 p[][2] =3D {
+> > > +           { 16, 14, }, { 16, 13, }, { 16, 12, }, { 16, 11, },
+> > > +           { 16, 10, }, { 16,  9, }, { 16,  8, }, { 15, 17, },
+> > > +           { 15, 16, }, { 15, 15, }, { 15, 14, }, { 15, 13, },
+> > > +           { 15, 12, }, { 15, 11, }, { 15, 10, }, { 15,  9, },
+> > > +           { 15,  8, }, { 14, 18, }, { 14, 17, }, { 14, 14, },
+> > > +           { 14, 13, }, { 14, 12, }, { 14, 11, }, { 14, 10, },
+> > > +           { 14,  9, }, { 14,  8, }, { 13, 19, }, { 13, 18, },
+> > > +           { 13, 17, }, { 13, 13, }, { 13, 12, }, { 13, 11, },
+> > > +           { 13, 10, }, { 13,  9, }, { 13,  8, }, { 12, 19, },
+> > > +           { 12, 18, }, { 12, 17, }, { 12, 11, }, { 12,  9, },
+> > > +           { 12,  8, }, { 11, 23, }, { 11, 22, }, { 11, 21, },
+> > > +           { 11, 20, }, { 11, 19, }, { 11, 18, }, { 11, 17, },
+> > > +           { 11, 11, }, { 11, 10, }, { 11,  9, }, { 11,  8, },
+> > > +           { 10, 25, }, { 10, 23, }, { 10, 20, }, { 10, 19, },
+> > > +           { 10, 17, }, { 10, 10, }, { 10,  9, }, { 10,  8, },
+> > > +           {  9, 27, }, {  9, 23, }, {  9, 21, }, {  9, 19, },
+> > > +           {  9, 18, }, {  9, 17, }, {  9,  9, }, {  9,  8, },
+> > > +           {  8, 31, }, {  8, 29, }, {  8, 23, }, {  8, 19, },
+> > > +           {  8, 17, }, {  8,  8, }, {  7, 35, }, {  7, 31, },
+> > > +           {  7, 29, }, {  7, 25, }, {  7, 23, }, {  7, 21, },
+> > > +           {  7, 19, }, {  7, 17, }, {  7, 15, }, {  7, 14, },
+> > > +           {  7, 13, }, {  7, 12, }, {  7, 11, }, {  7, 10, },
+> > > +           {  7,  9, }, {  7,  8, }, {  6, 41, }, {  6, 37, },
+> > > +           {  6, 31, }, {  6, 29, }, {  6, 23, }, {  6, 19, },
+> > > +           {  6, 17, }, {  6, 13, }, {  6, 11, }, {  6, 10, },
+> > > +           {  6,  9, }, {  6,  8, }, {  5, 67, }, {  5, 47, },
+> > > +           {  5, 43, }, {  5, 41, }, {  5, 37, }, {  5, 31, },
+> > > +           {  5, 29, }, {  5, 25, }, {  5, 23, }, {  5, 19, },
+> > > +           {  5, 17, }, {  5, 15, }, {  5, 13, }, {  5, 11, },
+> > > +           {  5, 10, }, {  5,  9, }, {  5,  8, }, {  4, 61, },
+> > > +           {  4, 59, }, {  4, 53, }, {  4, 47, }, {  4, 43, },
+> > > +           {  4, 41, }, {  4, 37, }, {  4, 31, }, {  4, 29, },
+> > > +           {  4, 23, }, {  4, 19, }, {  4, 17, }, {  4, 13, },
+> > > +           {  4,  9, }, {  4,  8, },
+> > > +   };
+> >
+> > Oh l=C3=A0 l=C3=A0! Please, use rational best approximation algorithm i=
+nstead
+> > (check CONFIG_RATIONAL).
+>
+>  Thanks for the pointer, I didn't know we had this piece.
+>
+>  However how is it supposed to apply here?  The denominator is always 8,
+> so we can rule it out (by multiplying the dividend by 8, which this piece
+> does, so that the divisor is a whole number), but the numerator has to be
+> a product of three integers, from a different range each ([4,16], [8,511]=
+,
+> [1, 65535]) as noted above.
+>
+>  Essentially we need to find such three integers (with extra constraints)
+> the product of which is closest to (500000000 / baud_rate) -- which IMHO
+> amounts to factorisation, an NP-complete problem as you have been surely
+> aware (and the whole world relies on), and I have decided that this simpl=
+e
+> table-driven approximation is good enough to handle the usual baud rates,
+> especially the higher ones.  For several baud rates it gives more accurat=
+e
+> results (lower deviation) than the factors proposed in the manufacturer's
+> datasheets.
+
+And my point is to calculate is always based on the asked baud rate.
+Yes. I understand what you wrote above and sometimes only brute force
+can be used, but in the kernel we have integer arithmetics which helps
+a lot besides the fact of bits twiddlings.
+
+>  I just fail to see how your proposed algorithm could be factored in here=
+,
+> but I'll be happy to be proved wrong, so I'll appreciate guidance.
+
+It's possible that it doesn't fit in the current form or for all three
+integers. Just give some time and think about it. Maybe you can come
+up with a better idea. I usually point to one case I have solved [1]
+to show that ugly tables can be dropped (in some cases it makes sense
+to leave them, though).
+
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/com=
+mit/drivers/spi/spi-pxa2xx.c?id=3D9df461eca18f5395ee84670cdba6755dddec1898
+
+>  In any case thank you for your review, always appreciated!
+
+You/re welcome!
+
+--=20
+With Best Regards,
+Andy Shevchenko
