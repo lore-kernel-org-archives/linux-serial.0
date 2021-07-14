@@ -2,95 +2,202 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-19.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A47C07E9A
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 07:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D7FC07E9A
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 08:06:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E5AFE61374
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 07:58:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6263A613B0
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 08:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238343AbhGNIBr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Jul 2021 04:01:47 -0400
-Received: from mail-wr1-f45.google.com ([209.85.221.45]:46978 "EHLO
-        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238287AbhGNIBq (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Jul 2021 04:01:46 -0400
-Received: by mail-wr1-f45.google.com with SMTP id d12so1984265wre.13;
-        Wed, 14 Jul 2021 00:58:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=w1b6wrWBKDKa+tZj2BRGOgdt3If+IOv+NClRdPNKcBM=;
-        b=i8TEsoj8sokpDLOGUixv3RBwmDnYqp9xviN9mTQUnaPfIzBJIr7giU1BeIDV0PYmam
-         g9EjK8yBDymEsmDIAvChYJOB0PX8rBGkKYo7uPXpc0sRokQCV1zi1c/Vk7vg/edVuVH6
-         8FZOZyc6Y3Gh1BRDDE/pSWfwRXsY3PswKWsrdBVksn9IVs1iACUBLPPO9v9pw6q0orh1
-         +3uQY3kIU7laj2zmlQO3BegrGGYUyUl2/ZvOlqWdrEWVp1MINUwXTlaJElDrSAVjsXl+
-         9HqlMyWkQ1F2TuzS6fc3wWxdhuD1jc2LS20slwh680bTBiTkco+YHhL+Fvl+/o+Qui2r
-         bG4g==
-X-Gm-Message-State: AOAM531Su37pjqoLE2hCEC1C6X1oudHLqzIp7AmE6WWiKc/yIhjUPOa4
-        4mAxj8jCCLjan5bYdAFgwoSx/wDtP8nSHQ==
-X-Google-Smtp-Source: ABdhPJwPiZtOidE+kXKOB8zP/AitNMoyELHpBDkGKEgZ8xjPkTHgfAPY2I0Fhi98OW30ehHRa+RbxA==
-X-Received: by 2002:adf:eacb:: with SMTP id o11mr11844778wrn.62.1626249534391;
-        Wed, 14 Jul 2021 00:58:54 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id h9sm1265193wmb.35.2021.07.14.00.58.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Jul 2021 00:58:53 -0700 (PDT)
-Subject: Re: [PATCH v1 3/4] serial: 8250_pci: Always try MSI/MSI-X
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
-References: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
- <20210713104026.58560-3-andriy.shevchenko@linux.intel.com>
- <9af24b96-8119-7ccf-f0d0-d725af80aa0b@kernel.org>
-Message-ID: <33767cf0-2104-d7aa-2da8-5a3f5f20a654@kernel.org>
-Date:   Wed, 14 Jul 2021 09:58:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S238418AbhGNIJk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Jul 2021 04:09:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34446 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238385AbhGNIJj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 14 Jul 2021 04:09:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 58FA3613AF;
+        Wed, 14 Jul 2021 08:06:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626250008;
+        bh=Ya3u94eMIcTHm5PPl4FfDKsZbgE5F56Nv1jfp2qsi8Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DXxuwXaLwhI9n2rtysmsiXshuTT4jZIfwP4LrA8Ah/69Pg8rJrWjavP4kfhSitSjV
+         RwBrWYuFqveLqZQ3dL49cWAfoX8Q9wVcpifnpnhN1lf6+yPStO6CfSONrSpRpbg2bI
+         4r5TvL3Ys2wrVVg3WbxJZjN4bMtidPRa5jBwpbNwtWHEDan78BlHil4rrffWNwzZWt
+         PhJZwdhW8wG2EhN84fi82OMR9PfwxVlnbYuDmYU37SdVhZTYOcVUsBSscWjyDJqldW
+         nkuXzshcT6Np4Te4lpzrtBpl0GWHc5gaxfP8YKrXwrWwM3UxsRxDRbwW9Pmg14o6yK
+         9iyVHMskpfQOw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1m3ZuX-0007LK-KG; Wed, 14 Jul 2021 10:06:30 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>
+Subject: [PATCH] serial: 8250: fix handle_irq locking
+Date:   Wed, 14 Jul 2021 10:04:27 +0200
+Message-Id: <20210714080427.28164-1-johan@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <9af24b96-8119-7ccf-f0d0-d725af80aa0b@kernel.org>
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 14. 07. 21, 8:54, Jiri Slaby wrote:
->> @@ -3994,14 +3982,9 @@ pciserial_init_ports(struct pci_dev *dev, const 
->> struct pciserial_board *board)
->>       if (board->flags & FL_NOIRQ) {
->>           uart.port.irq = 0;
->>       } else {
->> -        if (pci_match_id(pci_use_msi, dev)) {
->> -            dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
->> -            pci_set_master(dev);
->> -            rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
->> -        } else {
->> -            dev_dbg(&dev->dev, "Using legacy interrupts\n");
->> -            rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
->> -        }
->> +        pci_set_master(dev);
-> 
-> But bus mastering is not about MSIs. I *think* it's still OK, but you 
-> need to document that in the commit log too.
-> 
-> Actually, why the commit which added this code turns on bus mastering?
+The 8250 handle_irq callback is not just called from the interrupt
+handler but also from a timer callback when polling (e.g. for ports
+without an interrupt line). Consequently the callback must explicitly
+disable interrupts to avoid a potential deadlock with another interrupt
+in polled mode.
 
-Forget about this line, I wasn't woken enough. Of course, MSI (writes) 
-to bus need bus mastering.
+Add back an irqrestore-version of the sysrq port-unlock helper and use
+it in the 8250 callbacks that need it.
 
-In any case, I'm still not sure what happens to devices which do not 
-support MSI if we enable mastering on them?
+Fixes: 75f4e830fa9c ("serial: do not restore interrupt state in sysrq helper")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Cc: stable@vger.kernel.org	# 5.13
+Cc: Joel Stanley <joel@jms.id.au>
+Cc: Andrew Jeffery <andrew@aj.id.au>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/serial/8250/8250_aspeed_vuart.c |  5 +++--
+ drivers/tty/serial/8250/8250_fsl.c          |  5 +++--
+ drivers/tty/serial/8250/8250_port.c         |  5 +++--
+ include/linux/serial_core.h                 | 24 +++++++++++++++++++++
+ 4 files changed, 33 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 4caab8714e2c..2350fb3bb5e4 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -329,6 +329,7 @@ static int aspeed_vuart_handle_irq(struct uart_port *port)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned int iir, lsr;
++	unsigned long flags;
+ 	unsigned int space, count;
+ 
+ 	iir = serial_port_in(port, UART_IIR);
+@@ -336,7 +337,7 @@ static int aspeed_vuart_handle_irq(struct uart_port *port)
+ 	if (iir & UART_IIR_NO_INT)
+ 		return 0;
+ 
+-	spin_lock(&port->lock);
++	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	lsr = serial_port_in(port, UART_LSR);
+ 
+@@ -370,7 +371,7 @@ static int aspeed_vuart_handle_irq(struct uart_port *port)
+ 	if (lsr & UART_LSR_THRE)
+ 		serial8250_tx_chars(up);
+ 
+-	uart_unlock_and_check_sysrq(port);
++	uart_unlock_and_check_sysrq_irqrestore(port, flags);
+ 
+ 	return 1;
+ }
+diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
+index 4e75d2e4f87c..fc65a2293ce9 100644
+--- a/drivers/tty/serial/8250/8250_fsl.c
++++ b/drivers/tty/serial/8250/8250_fsl.c
+@@ -30,10 +30,11 @@ struct fsl8250_data {
+ int fsl8250_handle_irq(struct uart_port *port)
+ {
+ 	unsigned char lsr, orig_lsr;
++	unsigned long flags;
+ 	unsigned int iir;
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+-	spin_lock(&up->port.lock);
++	spin_lock_irqsave(&up->port.lock, flags);
+ 
+ 	iir = port->serial_in(port, UART_IIR);
+ 	if (iir & UART_IIR_NO_INT) {
+@@ -82,7 +83,7 @@ int fsl8250_handle_irq(struct uart_port *port)
+ 
+ 	up->lsr_saved_flags = orig_lsr;
+ 
+-	uart_unlock_and_check_sysrq(&up->port);
++	uart_unlock_and_check_sysrq_irqrestore(&up->port, flags);
+ 
+ 	return 1;
+ }
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 2164290cbd31..d65778c4e4ca 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1893,11 +1893,12 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 	unsigned char status;
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	bool skip_rx = false;
++	unsigned long flags;
+ 
+ 	if (iir & UART_IIR_NO_INT)
+ 		return 0;
+ 
+-	spin_lock(&port->lock);
++	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	status = serial_port_in(port, UART_LSR);
+ 
+@@ -1923,7 +1924,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 		(up->ier & UART_IER_THRI))
+ 		serial8250_tx_chars(up);
+ 
+-	uart_unlock_and_check_sysrq(port);
++	uart_unlock_and_check_sysrq_irqrestore(port, flags);
+ 
+ 	return 1;
+ }
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 52d7fb92a69d..c58cc142d23f 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -518,6 +518,25 @@ static inline void uart_unlock_and_check_sysrq(struct uart_port *port)
+ 	if (sysrq_ch)
+ 		handle_sysrq(sysrq_ch);
+ }
++
++static inline void uart_unlock_and_check_sysrq_irqrestore(struct uart_port *port,
++		unsigned long flags)
++{
++	int sysrq_ch;
++
++	if (!port->has_sysrq) {
++		spin_unlock_irqrestore(&port->lock, flags);
++		return;
++	}
++
++	sysrq_ch = port->sysrq_ch;
++	port->sysrq_ch = 0;
++
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	if (sysrq_ch)
++		handle_sysrq(sysrq_ch);
++}
+ #else	/* CONFIG_MAGIC_SYSRQ_SERIAL */
+ static inline int uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+ {
+@@ -531,6 +550,11 @@ static inline void uart_unlock_and_check_sysrq(struct uart_port *port)
+ {
+ 	spin_unlock(&port->lock);
+ }
++static inline void uart_unlock_and_check_sysrq_irqrestore(struct uart_port *port,
++		unsigned long flags)
++{
++	spin_unlock_irqrestore(&port->lock, flags);
++}
+ #endif	/* CONFIG_MAGIC_SYSRQ_SERIAL */
+ 
+ /*
 -- 
-js
-suse labs
+2.31.1
+
