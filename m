@@ -2,88 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 147A0C11F67
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 22:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FC3C07E95
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 02:36:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ECBA461374
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jul 2021 22:59:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 081336135A
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 02:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236744AbhGMXBv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Jul 2021 19:01:51 -0400
-Received: from mail-io1-f43.google.com ([209.85.166.43]:45981 "EHLO
-        mail-io1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235417AbhGMXBu (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Jul 2021 19:01:50 -0400
-Received: by mail-io1-f43.google.com with SMTP id y16so6223805iol.12;
-        Tue, 13 Jul 2021 15:59:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JTI1ZBR9D1Ugup4282dbl5tw68/bdXRLNL3cR2M36lk=;
-        b=AqXB8tdCYM+JQVy+8YYIEFzjHv1mck4krMtxLlypCIMHXlHptHapmdZ04Nv+/2G1R+
-         ABDe9RnxG2B2gBul2xAUSeYr2LD/c1fU+68YLq61aTqioe24SzjGio3orVW0VUb27ist
-         FOXsrUERQ2JF8iKQvTcAeHnb/YZZhLmnGYlocvRYXT4DHt4jdm5ATQuLzsRZAmHfBzqM
-         25ukl0fg8Bv9DhBtqmJLfP41WVQohFPKZ03uHEZ1N+POWm0u/YQdxHvNDrui0uLq8XTP
-         pz6hmHSIpOeLPurwuWwA56JlUqrkHKlTpfoP7OZ6MILlKmdebXOH2jf8/7v9KHWPtiwN
-         WfaQ==
-X-Gm-Message-State: AOAM533iZbDjaqz8+WfbsgWHElz6mqMlkWAfSPKBUWs89VegWpr3UJ5U
-        4pnZOiPY54cNNiCFnIzX+Q==
-X-Google-Smtp-Source: ABdhPJwqQj4i60dPLCZFJEHdYwTRX+Yhru1/A8V14H871+oGYZI2ex/1qE4HdMBMRRnO95P5eEF3/Q==
-X-Received: by 2002:a02:cace:: with SMTP id f14mr6161797jap.5.1626217139833;
-        Tue, 13 Jul 2021 15:58:59 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id b2sm224559iln.5.2021.07.13.15.58.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jul 2021 15:58:59 -0700 (PDT)
-Received: (nullmailer pid 1010485 invoked by uid 1000);
-        Tue, 13 Jul 2021 22:58:53 -0000
-Date:   Tue, 13 Jul 2021 16:58:53 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     cl@rock-chips.com
-Cc:     linux-rockchip@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, cnsztl@gmail.com,
-        linux-watchdog@vger.kernel.org, lee.jones@linaro.org,
-        shawn.lin@rock-chips.com, linux-kernel@vger.kernel.org,
-        heiko@sntech.de, huangtao@rock-chips.com, wim@linux-watchdog.org,
-        jensenhuang@friendlyarm.com, linux-serial@vger.kernel.org,
-        maz@kernel.org, zhangqing@rock-chips.com, thierry.reding@gmail.com,
-        jamie@jamieiles.com, ulf.hansson@linaro.org, mail@david-bauer.net,
-        jbx6244@gmail.com, david.wu@rock-chips.com,
-        linux-pwm@vger.kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-mmc@vger.kernel.org, jay.xu@rock-chips.com,
-        uwe@kleine-koenig.org, michael@amarulasolutions.com,
-        linux@roeck-us.net, jagan@amarulasolutions.com,
-        gregkh@linuxfoundation.org, robh+dt@kernel.org, wens@csie.org,
-        devicetree@vger.kernel.org
-Subject: Re: [RESEND PATCH v5 1/4] dt-bindings: pwm: rockchip: add
- description for rk3568
-Message-ID: <20210713225853.GA1010426@robh.at.kernel.org>
-References: <20210622020517.13100-1-cl@rock-chips.com>
- <20210623021303.28015-1-cl@rock-chips.com>
+        id S237478AbhGNCjA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Jul 2021 22:39:00 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:41304 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237457AbhGNCjA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 13 Jul 2021 22:39:00 -0400
+Received: by ajax-webmail-mail.loongson.cn (Coremail) ; Wed, 14 Jul 2021
+ 10:36:05 +0800 (GMT+08:00)
+X-Originating-IP: [112.20.113.90]
+Date:   Wed, 14 Jul 2021 10:36:05 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?6ZmI5Y2O5omN?= <chenhuacai@loongson.cn>
+To:     andy@surfacebook.localdomain
+Cc:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, "Xuefeng Li" <lixuefeng@loongson.cn>,
+        "Jiaxun Yang" <jiaxun.yang@flygoat.com>,
+        "Jianmin Lv" <lvjianmin@loongson.cn>, chenhuacai@gmail.com
+Subject: Re: Re: [PATCH V2] serial: 8250_pnp: Support configurable clock
+ frequency
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.10a build 20191018(4c4f6d15)
+ Copyright (c) 2002-2021 www.mailtech.cn .loongson.cn
+In-Reply-To: <YOynYT29jF6JwgN/@surfacebook.localdomain>
+References: <20210705130010.1231798-1-chenhuacai@loongson.cn>
+ <YOynYT29jF6JwgN/@surfacebook.localdomain>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210623021303.28015-1-cl@rock-chips.com>
+Message-ID: <45d828b0.bcb4.17aa2df0f81.Coremail.chenhuacai@loongson.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAf9BxsOKVTe5g8MofAA--.13900W
+X-CM-SenderInfo: hfkh0x5xdftxo6or00hjvr0hdfq/1tbiAQACBl3QvNqacAABsF
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW5Jw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 23 Jun 2021 10:13:03 +0800, cl@rock-chips.com wrote:
-> From: Liang Chen <cl@rock-chips.com>
-> 
-> add "rockchip,rk3568-pwm", "rockchip,rk3328-pwm" for pwm nodes on
-> a rk3568 platform to pwm-rockchip.yaml.
-> 
-> Signed-off-by: Liang Chen <cl@rock-chips.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-
-Acked-by: Rob Herring <robh@kernel.org>
+SGksIEFuZHkKCgomZ3Q7IC0tLS0t5Y6f5aeL6YKu5Lu2LS0tLS0KJmd0OyDlj5Hku7bkuro6IGFu
+ZHlAc3VyZmFjZWJvb2subG9jYWxkb21haW4KJmd0OyDlj5HpgIHml7bpl7Q6IDIwMjEtMDctMTMg
+MDQ6MzQ6NDEgKOaYn+acn+S6jCkKJmd0OyDmlLbku7bkuro6ICJIdWFjYWkgQ2hlbiIgPGNoZW5o
+dWFjYWlAbG9vbmdzb24uY24+CiZndDsg5oqE6YCBOiAiR3JlZyBLcm9haC1IYXJ0bWFuIiA8Z3Jl
+Z2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+LCBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnLCAi
+WHVlZmVuZyBMaSIgPGxpeHVlZmVuZ0Bsb29uZ3Nvbi5jbj4sICJKaWF4dW4gWWFuZyIgPGppYXh1
+bi55YW5nQGZseWdvYXQuY29tPiwgIkppYW5taW4gTHYiIDxsdmppYW5taW5AbG9vbmdzb24uY24+
+CiZndDsg5Li76aKYOiBSZTogW1BBVENIIFYyXSBzZXJpYWw6IDgyNTBfcG5wOiBTdXBwb3J0IGNv
+bmZpZ3VyYWJsZSBjbG9jayBmcmVxdWVuY3kKJmd0OyAKJmd0OyBNb24sIEp1bCAwNSwgMjAyMSBh
+dCAwOTowMDoxMFBNICswODAwLCBIdWFjYWkgQ2hlbiBraXJqb2l0dGk6CiZndDsgJmd0OyBGcm9t
+OiBKaWFubWluIEx2IDxsdmppYW5taW5AbG9vbmdzb24uY24+CiZndDsgJmd0OyAKJmd0OyAmZ3Q7
+IEFDUEktYmFzZWQgTG9vbmdzb24gYm9hcmRzIG5lZWQgY29uZmlndXJhYmxlIHJhdGhlciB0aGFu
+IGZpeGVkIGNsb2NrCiZndDsgJmd0OyBmcmVxdWVuY3kgZm9yIHNlcmlhbCBwb3J0cy4KJmd0OyAK
+Jmd0OyAuLi4KJmd0OyAKJmd0OyAmZ3Q7ICAjaW5jbHVkZSA8bGludXgga2VybmVsLmg9IiI+CiZn
+dDsgJmd0OyAgI2luY2x1ZGUgPGxpbnV4IHNlcmlhbF9jb3JlLmg9IiI+CiZndDsgJmd0OyAgI2lu
+Y2x1ZGUgPGxpbnV4IGJpdG9wcy5oPSIiPgomZ3Q7ICZndDsgKyNpbmNsdWRlIDxsaW51eCBwcm9w
+ZXJ0eS5oPSIiPgomZ3Q7IAomZ3Q7IENhbiB5b3UgdHJ5IHRvIGtlZXAgaXQgb3JkZXJlZCAodG8g
+c29tZSBleHRlbmQpLCBwbGVhc2U/CkV4aXN0aW5nIGhlYWRlcnMgaXMgbm90IGluIG9yZGVyLCBz
+aG91bGQgSSBzb3J0IHRoZW0gY29tcGxldGVseT8KCiZndDsgCiZndDsgLi4uCiZndDsgCiZndDsg
+Jmd0OyAgCXVhcnQucG9ydC5mbGFncyB8PSBVUEZfU0tJUF9URVNUIHwgVVBGX0JPT1RfQVVUT0NP
+TkY7CiZndDsgJmd0OyAgCWlmIChwbnBfaXJxX2ZsYWdzKGRldiwgMCkgJmFtcDsgSU9SRVNPVVJD
+RV9JUlFfU0hBUkVBQkxFKQomZ3Q7ICZndDsgIAkJdWFydC5wb3J0LmZsYWdzIHw9IFVQRl9TSEFS
+RV9JUlE7CiZndDsgJmd0OyAtCXVhcnQucG9ydC51YXJ0Y2xrID0gMTg0MzIwMDsKJmd0OyAmZ3Q7
+ICsJaWYgKGRldmljZV9wcm9wZXJ0eV9yZWFkX3UzMigmYW1wO2Rldi0mZ3Q7ZGV2LCAiY2xvY2st
+ZnJlcXVlbmN5IiwgJmFtcDt1YXJ0LnBvcnQudWFydGNsaykpCiZndDsgJmd0OyArCQl1YXJ0LnBv
+cnQudWFydGNsayA9IDE4NDMyMDA7CiZndDsgJmd0OyAgCXVhcnQucG9ydC5kZXYgPSAmYW1wO2Rl
+di0mZ3Q7ZGV2OwomZ3Q7IAomZ3Q7IFlvdSBjYW4gYXZvaWQgY29uZGl0aW9uYWwgY29tcGxldGVs
+eSBieSBjYWxsaW5nIAomZ3Q7IAomZ3Q7IAlkZXZpY2VfcHJvcGVydHlfcmVhZF91MzIoJmFtcDtk
+ZXYtJmd0O2RldiwgImNsb2NrLWZyZXF1ZW5jeSIsICZhbXA7dWFydC5wb3J0LnVhcnRjbGspOwpJ
+IHdhbnQgdG8gZ2V0IHRoZSBwcm9wZXJ0eSBieSB0aGlzIGZ1bmN0aW9uLCBhbmQgc2V0IHRvIGRl
+ZmF1bHQgdmFsdWUgKDE4NDMyMDApIGlmIGZhaWxzLiBJZiByZW1vdmUgdGhlIGNvbmRpdGlvbiwg
+aG93IHRvIHNldCB0aGUgZGVmYXVsdD8gVGhhbmtzLgoKSHVhY2FpCiZndDsgCiZndDsgaGVyZS4K
+Jmd0OyAKJmd0OyAtLSAKJmd0OyBXaXRoIEJlc3QgUmVnYXJkcywKJmd0OyBBbmR5IFNoZXZjaGVu
+a28KJmd0OyAKPC9saW51eD48L2xpbnV4PjwvbGludXg+PC9saW51eD48L2x2amlhbm1pbkBsb29u
+Z3Nvbi5jbj48L2x2amlhbm1pbkBsb29uZ3Nvbi5jbj48L2ppYXh1bi55YW5nQGZseWdvYXQuY29t
+PjwvbGl4dWVmZW5nQGxvb25nc29uLmNuPjwvZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+PC9j
+aGVuaHVhY2FpQGxvb25nc29uLmNuPg==
