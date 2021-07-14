@@ -2,146 +2,157 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7363CC07E9A
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 05:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5047C07E9A
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 06:54:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 564F5613B6
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 05:53:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A3893613B2
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 06:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237984AbhGNF40 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Jul 2021 01:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237971AbhGNF40 (ORCPT
+        id S237948AbhGNG5f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Jul 2021 02:57:35 -0400
+Received: from mail-wr1-f45.google.com ([209.85.221.45]:41780 "EHLO
+        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238104AbhGNG5e (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Jul 2021 01:56:26 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DF2C0613DD;
-        Tue, 13 Jul 2021 22:53:35 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id g6-20020a17090adac6b029015d1a9a6f1aso3014081pjx.1;
-        Tue, 13 Jul 2021 22:53:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=FcWz93B3TY2NaEB6A00DYMs3rnSUlD4JI48Qjj+1dto=;
-        b=I6dUFLht6XEJWdXKzQSNpt8coqO8492xaA25/5tMPw5iCpQnwB4fWPN5qNIi6+TsWC
-         4Yx/Nx4YAvxsa6jEcXtzipX1qDevkNk56obKp/XH2BiIgp9achR1cuKPZSgXbo0cRs+M
-         P6R35psBXBseb34/aTufJH1uUccG9KLwuCvwPV6OdB/psTLtJBbLSS9+u9eR4K7TZ6K1
-         ze76dsl/bjZXoD2t4oGNx99sp9GzELsovZeB+CSelTPOeJ2ZcW2s6LVvHVbJm02adi/r
-         USf13g11MyOKMdHUB/cAT9Z2g+2KwbXqd+UTP2Fvlblh0kmnrpJcAlpPzYfjLcJE0b7q
-         56sw==
+        Wed, 14 Jul 2021 02:57:34 -0400
+Received: by mail-wr1-f45.google.com with SMTP id k4so1809975wrc.8;
+        Tue, 13 Jul 2021 23:54:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FcWz93B3TY2NaEB6A00DYMs3rnSUlD4JI48Qjj+1dto=;
-        b=jaLivzZ1yli5t9BcJxY8cONcm+gxDT9HSOgQCOT7mEVWPjhvTMgP8kYehK7169IA6r
-         VlFWJpul9+LyvEhtxdcXp07qcW64HlCpVWTLHAjekEhBYyu3oDA5+KWB27Q+I3eSgyxW
-         rcubYK9mJKCI4HrG18KE165TU9t23ObLqK0icezI0z/1AOPydUEJKI0F0tNF80wgP9mf
-         tuRCPMKuDq6BjPwamSifKOiZVCmQuph2lH4USBWLoflQeqZx+DJj1keqT0H15gU2TLXR
-         oPFB81CuyaRYeQk+LaGXKD+aD7tLyIopwHW8n3FkHWSVBsrpdcTDucgC/03BTa676oPa
-         k45g==
-X-Gm-Message-State: AOAM531mKOfCyOoXtT6/ZXhALgpNV6CqCaVp4PSML2kw2pJyUIOuVP2M
-        5F5KIc5Pjh5SZtu9fq70sQ==
-X-Google-Smtp-Source: ABdhPJxpcAXRl+b1TV9SBrV8jdbj55m3TVAZEPwCuDwd44O866ldbFvfB5dIc51IGFv1oqgWqD817Q==
-X-Received: by 2002:a17:90a:b284:: with SMTP id c4mr8180136pjr.213.1626242014991;
-        Tue, 13 Jul 2021 22:53:34 -0700 (PDT)
-Received: from vultr.guest ([107.191.53.97])
-        by smtp.gmail.com with ESMTPSA id c11sm1143812pfp.0.2021.07.13.22.53.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Jul 2021 22:53:34 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        rclemsmith@gmail.com
-Cc:     zheyuma97@gmail.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] tty: serial: jsm: hold port lock when reporting modem line changes
-Date:   Wed, 14 Jul 2021 05:53:23 +0000
-Message-Id: <1626242003-3809-1-git-send-email-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=krbJiHzO9v7NiomaRq+vI2Zouy+TLw2zKDa7Ig1bng0=;
+        b=ICKdiKx0Uo3z5XWzvsX9d2kOsYbzyh9YWED+Dp3CG2gGGN8jQ50a+fsMhFLNTMPkhx
+         1l3oFvVt5B19WGcJjIo559vuww5ZV/j+0NkHj25+PLM46Tx+5RBQSwdrfi1M4tVU45sN
+         2Tl4AwXh5kkBP1q6h9JX6t8B6msSA8TrhIVzYTIssg6UOzCxp8Ae2KuBgUNvo7WmPZAv
+         4OQVynroNZmaw8qNT7U/TaFw9bsY+7KFtrYCVWq7u2O/pbXWWtQ2mGBJTx/h1tiZvPJI
+         KYUe9A3KtxoQJEgC/Kh9ORlMggp5ae//C1bBywBAwq4VlAFlieV+kOFA3oE/zetbSJn7
+         jTAw==
+X-Gm-Message-State: AOAM532Tt6ef/uPBusGRR9ce8YtUhXniXsqgP9WvdyCkgUePnVqeR5Rn
+        1ggG7ihGL1dRF+bUrg5wNdQ=
+X-Google-Smtp-Source: ABdhPJzJ1pu7xDxgzV2No4aaHhVSpHGm2+EaKL+TXWjLPszrmlvx6Mt1de12V59EYRDe/0tQatOhQA==
+X-Received: by 2002:a5d:6dd2:: with SMTP id d18mr11005264wrz.94.1626245681918;
+        Tue, 13 Jul 2021 23:54:41 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id o3sm1359925wrm.5.2021.07.13.23.54.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Jul 2021 23:54:41 -0700 (PDT)
+Subject: Re: [PATCH v1 3/4] serial: 8250_pci: Always try MSI/MSI-X
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
+References: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
+ <20210713104026.58560-3-andriy.shevchenko@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <9af24b96-8119-7ccf-f0d0-d725af80aa0b@kernel.org>
+Date:   Wed, 14 Jul 2021 08:54:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20210713104026.58560-3-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-uart_handle_dcd_change() requires a port lock to be held and will emit a
-warning when lockdep is enabled.
+On 13. 07. 21, 12:40, Andy Shevchenko wrote:
+> There is no need to try MSI/MSI-X only on selected devices.
+> If MSI is not supported while neing advertised it means device
 
-Held corresponding lock to fix the following warnings.
+being
 
-[  132.528648] WARNING: CPU: 5 PID: 11600 at drivers/tty/serial/serial_core.c:3046 uart_handle_dcd_change+0xf4/0x120
-[  132.530482] Modules linked in:
-[  132.531050] CPU: 5 PID: 11600 Comm: jsm Not tainted 5.14.0-rc1-00003-g7fef2edf7cc7-dirty #31
-[  132.535268] RIP: 0010:uart_handle_dcd_change+0xf4/0x120
-[  132.557100] Call Trace:
-[  132.557562]  ? __free_pages+0x83/0xb0
-[  132.558213]  neo_parse_modem+0x156/0x220
-[  132.558897]  neo_param+0x399/0x840
-[  132.559495]  jsm_tty_open+0x12f/0x2d0
-[  132.560131]  uart_startup.part.18+0x153/0x340
-[  132.560888]  ? lock_is_held_type+0xe9/0x140
-[  132.561660]  uart_port_activate+0x7f/0xe0
-[  132.562351]  ? uart_startup.part.18+0x340/0x340
-[  132.563003]  tty_port_open+0x8d/0xf0
-[  132.563523]  ? uart_set_options+0x1e0/0x1e0
-[  132.564125]  uart_open+0x24/0x40
-[  132.564604]  tty_open+0x15c/0x630
+> is broken and we rather introduce a list of such devices which
+> hopefully will be small or never appear.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
-Changes in v2:
-    - Attach an excerpt from the warning
----
- drivers/tty/serial/jsm/jsm_neo.c | 2 ++
- drivers/tty/serial/jsm/jsm_tty.c | 3 +++
- 2 files changed, 5 insertions(+)
+Hmm, have you checked the commit which introduced the whitelist?
 
-diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
-index bf0e2a4cb0ce..c6f927a76c3b 100644
---- a/drivers/tty/serial/jsm/jsm_neo.c
-+++ b/drivers/tty/serial/jsm/jsm_neo.c
-@@ -815,7 +815,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
- 		/* Parse any modem signal changes */
- 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
- 			"MOD_STAT: sending to parse_modem_sigs\n");
-+		spin_lock_irqsave(&ch->uart_port.lock, lock_flags);
- 		neo_parse_modem(ch, readb(&ch->ch_neo_uart->msr));
-+		spin_unlock_irqrestore(&ch->uart_port.lock, lock_flags);
- 	}
- }
- 
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index 8e42a7682c63..d74cbbbf33c6 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -187,6 +187,7 @@ static void jsm_tty_break(struct uart_port *port, int break_state)
- 
- static int jsm_tty_open(struct uart_port *port)
- {
-+	unsigned long lock_flags;
- 	struct jsm_board *brd;
- 	struct jsm_channel *channel =
- 		container_of(port, struct jsm_channel, uart_port);
-@@ -240,6 +241,7 @@ static int jsm_tty_open(struct uart_port *port)
- 	channel->ch_cached_lsr = 0;
- 	channel->ch_stops_sent = 0;
- 
-+	spin_lock_irqsave(&port->lock, lock_flags);
- 	termios = &port->state->port.tty->termios;
- 	channel->ch_c_cflag	= termios->c_cflag;
- 	channel->ch_c_iflag	= termios->c_iflag;
-@@ -259,6 +261,7 @@ static int jsm_tty_open(struct uart_port *port)
- 	jsm_carrier(channel);
- 
- 	channel->ch_open_count++;
-+	spin_unlock_irqrestore(&port->lock, lock_flags);
- 
- 	jsm_dbg(OPEN, &channel->ch_bd->pci_dev, "finish\n");
- 	return 0;
+     Nevertheless, this needs to handled with care: while many 8250 devices
+     actually claim to support MSI(-X) interrupts it should not be 
+enabled be
+     default. I had at least one device in my hands with broken MSI
+     implementation.
+
+     So better introduce a whitelist with devices that are known to support
+     MSI(-X) interrupts. I tested all devices mentioned in the patch.
+
+
+You should have at least CCed the author for an input.
+
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>   drivers/tty/serial/8250/8250_pci.c | 28 ++++++++--------------------
+>   1 file changed, 8 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 937861327aca..02825c8c5f84 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -58,18 +58,6 @@ struct serial_private {
+>   
+>   #define PCI_DEVICE_ID_HPE_PCI_SERIAL	0x37e
+>   
+> -static const struct pci_device_id pci_use_msi[] = {
+> -	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9900,
+> -			 0xA000, 0x1000) },
+> -	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9912,
+> -			 0xA000, 0x1000) },
+> -	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9922,
+> -			 0xA000, 0x1000) },
+> -	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_HP_3PAR, PCI_DEVICE_ID_HPE_PCI_SERIAL,
+> -			 PCI_ANY_ID, PCI_ANY_ID) },
+> -	{ }
+> -};
+> -
+>   static int pci_default_setup(struct serial_private*,
+>   	  const struct pciserial_board*, struct uart_8250_port *, int);
+>   
+> @@ -3994,14 +3982,9 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
+>   	if (board->flags & FL_NOIRQ) {
+>   		uart.port.irq = 0;
+>   	} else {
+> -		if (pci_match_id(pci_use_msi, dev)) {
+> -			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
+> -			pci_set_master(dev);
+> -			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
+> -		} else {
+> -			dev_dbg(&dev->dev, "Using legacy interrupts\n");
+> -			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
+> -		}
+> +		pci_set_master(dev);
+
+But bus mastering is not about MSIs. I *think* it's still OK, but you 
+need to document that in the commit log too.
+
+Actually, why the commit which added this code turns on bus mastering?
+
+> +
+> +		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
+>   		if (rc < 0) {
+>   			kfree(priv);
+>   			priv = ERR_PTR(rc);
+> @@ -4009,6 +3992,11 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
+>   		}
+>   
+>   		uart.port.irq = pci_irq_vector(dev, 0);
+> +
+> +		if (pci_dev_msi_enabled(dev))
+> +			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
+> +		else
+> +			dev_dbg(&dev->dev, "Using legacy interrupts\n");
+>   	}
+>   
+>   	uart.port.dev = &dev->dev;
+> 
+
+thanks,
 -- 
-2.17.6
-
+js
+suse labs
