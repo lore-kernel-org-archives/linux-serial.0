@@ -6,56 +6,55 @@ X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5047C07E9A
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 06:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D9A4C07E9A
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 06:57:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A3893613B2
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 06:54:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5C5FD613AF
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 06:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237948AbhGNG5f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Jul 2021 02:57:35 -0400
-Received: from mail-wr1-f45.google.com ([209.85.221.45]:41780 "EHLO
-        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238104AbhGNG5e (ORCPT
+        id S238104AbhGNG77 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Jul 2021 02:59:59 -0400
+Received: from mail-wr1-f42.google.com ([209.85.221.42]:36594 "EHLO
+        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237948AbhGNG77 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Jul 2021 02:57:34 -0400
-Received: by mail-wr1-f45.google.com with SMTP id k4so1809975wrc.8;
-        Tue, 13 Jul 2021 23:54:42 -0700 (PDT)
+        Wed, 14 Jul 2021 02:59:59 -0400
+Received: by mail-wr1-f42.google.com with SMTP id v5so1846382wrt.3;
+        Tue, 13 Jul 2021 23:57:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=krbJiHzO9v7NiomaRq+vI2Zouy+TLw2zKDa7Ig1bng0=;
-        b=ICKdiKx0Uo3z5XWzvsX9d2kOsYbzyh9YWED+Dp3CG2gGGN8jQ50a+fsMhFLNTMPkhx
-         1l3oFvVt5B19WGcJjIo559vuww5ZV/j+0NkHj25+PLM46Tx+5RBQSwdrfi1M4tVU45sN
-         2Tl4AwXh5kkBP1q6h9JX6t8B6msSA8TrhIVzYTIssg6UOzCxp8Ae2KuBgUNvo7WmPZAv
-         4OQVynroNZmaw8qNT7U/TaFw9bsY+7KFtrYCVWq7u2O/pbXWWtQ2mGBJTx/h1tiZvPJI
-         KYUe9A3KtxoQJEgC/Kh9ORlMggp5ae//C1bBywBAwq4VlAFlieV+kOFA3oE/zetbSJn7
-         jTAw==
-X-Gm-Message-State: AOAM532Tt6ef/uPBusGRR9ce8YtUhXniXsqgP9WvdyCkgUePnVqeR5Rn
-        1ggG7ihGL1dRF+bUrg5wNdQ=
-X-Google-Smtp-Source: ABdhPJzJ1pu7xDxgzV2No4aaHhVSpHGm2+EaKL+TXWjLPszrmlvx6Mt1de12V59EYRDe/0tQatOhQA==
-X-Received: by 2002:a5d:6dd2:: with SMTP id d18mr11005264wrz.94.1626245681918;
-        Tue, 13 Jul 2021 23:54:41 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id o3sm1359925wrm.5.2021.07.13.23.54.40
+        bh=VhK975TeGNNyvZ4Fkw5/IuH4eLLeWHK0uf+OS1Uzh0M=;
+        b=f7ZY739VsT7y8UaTnSqPUtXjWWnmTEE77aZFYga5yv05hoYrnU2ObWjVpMW93WbaJJ
+         VZllACxH5NfZnIpL68+n5sCNSfPEj1dMk+LBnRTnD1DIRnI9Nl7u/zvcT5psDG4ndSAB
+         PbqeGADxl0PX7x0Uv5gvpqeWi5yPXo63TDQAhMV9ZTvPffMT/sFYNaRzmG5YbMhNk7+X
+         iWlVU8X6O1n8nrI4HNksZ2huV3uEjNCEw7vmDRqA3n92t+lkSoELQIeOK4wjvea0Og83
+         Q29hHD+ME4tdNZGbyPXOr3r/32unL81lmHm7qLNcn1xEY5xIHci35Sf730Auvc61SG85
+         P6lQ==
+X-Gm-Message-State: AOAM530m/c9nm8MEDSFKIl1fsgiGR9lXaG3YcfyxkpH40Fx1zdih6//o
+        ziHcnttItyB7d37k1jgluLw=
+X-Google-Smtp-Source: ABdhPJyL9/9bP39IyZtaVdQS+RhLxXtpjFjcNa/dxj/xvBzmRdG+TFCw+mfAfK7cTqEsjH7ckD0N1Q==
+X-Received: by 2002:a5d:634e:: with SMTP id b14mr10532450wrw.81.1626245827528;
+        Tue, 13 Jul 2021 23:57:07 -0700 (PDT)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id u12sm1388132wrt.50.2021.07.13.23.57.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Jul 2021 23:54:41 -0700 (PDT)
-Subject: Re: [PATCH v1 3/4] serial: 8250_pci: Always try MSI/MSI-X
+        Tue, 13 Jul 2021 23:57:06 -0700 (PDT)
+Subject: Re: [PATCH v1 1/4] serial: 8250_pci: Refactor the loop in
+ pci_ite887x_init()
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 References: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
- <20210713104026.58560-3-andriy.shevchenko@linux.intel.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <9af24b96-8119-7ccf-f0d0-d725af80aa0b@kernel.org>
-Date:   Wed, 14 Jul 2021 08:54:40 +0200
+Message-ID: <136e3881-bff4-d1f0-e146-b5c0a58f2e80@kernel.org>
+Date:   Wed, 14 Jul 2021 08:57:06 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210713104026.58560-3-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset=iso-8859-2; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -64,95 +63,71 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 13. 07. 21, 12:40, Andy Shevchenko wrote:
-> There is no need to try MSI/MSI-X only on selected devices.
-> If MSI is not supported while neing advertised it means device
-
-being
-
-> is broken and we rather introduce a list of such devices which
-> hopefully will be small or never appear.
-
-Hmm, have you checked the commit which introduced the whitelist?
-
-     Nevertheless, this needs to handled with care: while many 8250 devices
-     actually claim to support MSI(-X) interrupts it should not be 
-enabled be
-     default. I had at least one device in my hands with broken MSI
-     implementation.
-
-     So better introduce a whitelist with devices that are known to support
-     MSI(-X) interrupts. I tested all devices mentioned in the patch.
-
-
-You should have at least CCed the author for an input.
-
+> The loop can be refactored by using ARRAY_SIZE() instead of NULL terminator.
+> This reduces code base and makes it easier to read and understand.
+> 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->   drivers/tty/serial/8250/8250_pci.c | 28 ++++++++--------------------
->   1 file changed, 8 insertions(+), 20 deletions(-)
+>   drivers/tty/serial/8250/8250_pci.c | 16 +++++-----------
+>   1 file changed, 5 insertions(+), 11 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 937861327aca..02825c8c5f84 100644
+> index 02985cf90ef2..b9138bd08b7f 100644
 > --- a/drivers/tty/serial/8250/8250_pci.c
 > +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -58,18 +58,6 @@ struct serial_private {
+> @@ -897,37 +897,31 @@ static int pci_netmos_init(struct pci_dev *dev)
+>   /* enable IO_Space bit */
+>   #define ITE_887x_POSIO_ENABLE		(1 << 31)
 >   
->   #define PCI_DEVICE_ID_HPE_PCI_SERIAL	0x37e
+> +/* inta_addr are the configuration addresses of the ITE */
+> +static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0, 0x200, 0x280, };
+>   static int pci_ite887x_init(struct pci_dev *dev)
+>   {
+> -	/* inta_addr are the configuration addresses of the ITE */
+> -	static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0,
+> -							0x200, 0x280, 0 };
+>   	int ret, i, type;
+>   	struct resource *iobase = NULL;
+>   	u32 miscr, uartbar, ioport;
 >   
-> -static const struct pci_device_id pci_use_msi[] = {
-> -	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9900,
-> -			 0xA000, 0x1000) },
-> -	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9912,
-> -			 0xA000, 0x1000) },
-> -	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9922,
-> -			 0xA000, 0x1000) },
-> -	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_HP_3PAR, PCI_DEVICE_ID_HPE_PCI_SERIAL,
-> -			 PCI_ANY_ID, PCI_ANY_ID) },
-> -	{ }
-> -};
-> -
->   static int pci_default_setup(struct serial_private*,
->   	  const struct pciserial_board*, struct uart_8250_port *, int);
->   
-> @@ -3994,14 +3982,9 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
->   	if (board->flags & FL_NOIRQ) {
->   		uart.port.irq = 0;
->   	} else {
-> -		if (pci_match_id(pci_use_msi, dev)) {
-> -			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
-> -			pci_set_master(dev);
-> -			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
-> -		} else {
-> -			dev_dbg(&dev->dev, "Using legacy interrupts\n");
-> -			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
-> -		}
-> +		pci_set_master(dev);
+>   	/* search for the base-ioport */
+> -	i = 0;
+> -	while (inta_addr[i] && iobase == NULL) {
+> -		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE,
+> -								"ite887x");
+> +	for (i = 0; i < ARRAY_SIZE(inta_addr); i++) {
+> +		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE, "ite887x");
 
-But bus mastering is not about MSIs. I *think* it's still OK, but you 
-need to document that in the commit log too.
+Irrelevant whitespace change.
 
-Actually, why the commit which added this code turns on bus mastering?
+>   		if (iobase != NULL) {
+>   			/* write POSIO0R - speed | size | ioport */
+>   			pci_write_config_dword(dev, ITE_887x_POSIO0,
+>   				ITE_887x_POSIO_ENABLE | ITE_887x_POSIO_SPEED |
+>   				ITE_887x_POSIO_IOSIZE_32 | inta_addr[i]);
+>   			/* write INTCBAR - ioport */
+> -			pci_write_config_dword(dev, ITE_887x_INTCBAR,
+> -								inta_addr[i]);
+> +			pci_write_config_dword(dev, ITE_887x_INTCBAR, inta_addr[i]);
 
-> +
-> +		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
->   		if (rc < 0) {
->   			kfree(priv);
->   			priv = ERR_PTR(rc);
-> @@ -4009,6 +3992,11 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
+detto
+
+>   			ret = inb(inta_addr[i]);
+>   			if (ret != 0xff) {
+>   				/* ioport connected */
+>   				break;
+>   			}
+>   			release_region(iobase->start, ITE_887x_IOSIZE);
+> -			iobase = NULL;
 >   		}
->   
->   		uart.port.irq = pci_irq_vector(dev, 0);
-> +
-> +		if (pci_dev_msi_enabled(dev))
-> +			dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
-> +		else
-> +			dev_dbg(&dev->dev, "Using legacy interrupts\n");
+> -		i++;
 >   	}
 >   
->   	uart.port.dev = &dev->dev;
-> 
+>   	if (!inta_addr[i]) {
 
-thanks,
+OOB access?
+
+regards,
 -- 
 js
 suse labs
