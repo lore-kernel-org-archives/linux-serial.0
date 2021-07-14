@@ -2,229 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEF9C11F72
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 10:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A59C07E9A
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 10:44:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 87727613B5
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 10:27:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8B10D6128B
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jul 2021 10:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238871AbhGNK35 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Jul 2021 06:29:57 -0400
-Received: from foss.arm.com ([217.140.110.172]:32922 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230270AbhGNK3w (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Jul 2021 06:29:52 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 354A311D4;
-        Wed, 14 Jul 2021 03:27:00 -0700 (PDT)
-Received: from bogus (unknown [10.57.79.213])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2FF633F774;
-        Wed, 14 Jul 2021 03:26:27 -0700 (PDT)
-Date:   Wed, 14 Jul 2021 11:25:29 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+        id S239132AbhGNKr2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Jul 2021 06:47:28 -0400
+Received: from smtprelay0009.hostedemail.com ([216.40.44.9]:60952 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S239148AbhGNKr0 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 14 Jul 2021 06:47:26 -0400
+Received: from omf17.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 4D6742AF17;
+        Wed, 14 Jul 2021 10:44:33 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id 5B78427DD3E;
+        Wed, 14 Jul 2021 10:44:32 +0000 (UTC)
+Message-ID: <91d4f67011eb83c4e4b17c7cfb4f4b8aef190978.camel@perches.com>
+Subject: Re: [PATCH v1 1/4] serial: 8250_pci: Refactor the loop in
+ pci_ite887x_init()
+From:   Joe Perches <joe@perches.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@pengutronix.de, Sudeep Holla <sudeep.holla@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alexandre Bounine <alex.bou9@gmail.com>,
-        Alex Dubov <oakad@yahoo.com>, Alex Elder <elder@kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bodo Stroesser <bostroesser@gmail.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Dexuan Cui <decui@microsoft.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Finn Thain <fthain@linux-m68k.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Frank Li <lznuaa@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Geoff Levand <geoff@infradead.org>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>, Ira Weiny <ira.weiny@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jason Wang <jasowang@redhat.com>,
-        Jens Taprogge <jens.taprogge@taprogge.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joey Pabalan <jpabalanb@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Johannes Thumshirn <morbidrsa@gmail.com>,
-        Jon Mason <jdmason@kudzu.us>, Juergen Gross <jgross@suse.com>,
-        Julien Grall <jgrall@amazon.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lee Jones <lee.jones@linaro.org>, Len Brown <lenb@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Maxim Levitsky <maximlevitsky@gmail.com>,
-        Michael Buesch <m@bues.ch>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michael Jamet <michael.jamet@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Moritz Fischer <mdf@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Rich Felker <dalias@libc.org>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Samuel Holland <samuel@sholland.org>,
-        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
-        SeongJae Park <sjpark@amazon.de>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thorsten Scherer <t.scherer@eckelmann.de>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Tom Rix <trix@redhat.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>, Wu Hao <hao.wu@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Yufen Yu <yuyufen@huawei.com>, alsa-devel@alsa-project.org,
-        dmaengine@vger.kernel.org, greybus-dev@lists.linaro.org,
-        industrypack-devel@lists.sourceforge.net, kvm@vger.kernel.org,
-        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-fpga@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linux-media@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-ntb@googlegroups.com, linux-parisc@vger.kernel.org,
-        linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-sh@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-sunxi@lists.linux.dev,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, nvdimm@lists.linux.dev,
-        platform-driver-x86@vger.kernel.org, sparclinux@vger.kernel.org,
-        target-devel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org,
-        Johannes Thumshirn <jth@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v4 5/5] bus: Make remove callback return void
-Message-ID: <20210714102529.ehwquc2s2qlbccyg@bogus>
-References: <20210713193522.1770306-1-u.kleine-koenig@pengutronix.de>
- <20210713193522.1770306-6-u.kleine-koenig@pengutronix.de>
+        Jiri Slaby <jirislaby@kernel.org>
+Date:   Wed, 14 Jul 2021 03:44:31 -0700
+In-Reply-To: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
+References: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210713193522.1770306-6-u.kleine-koenig@pengutronix.de>
+X-Stat-Signature: htenwmm663a1y4q5mmh17wpywfynss3u
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: 5B78427DD3E
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/8sEb/SnuH+4J1L45TBkLGiY5c7ic2qm8=
+X-HE-Tag: 1626259472-225770
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 13, 2021 at 09:35:22PM +0200, Uwe Kleine-König wrote:
-> The driver core ignores the return value of this callback because there
-> is only little it can do when a device disappears.
+On Tue, 2021-07-13 at 13:40 +0300, Andy Shevchenko wrote:
+> The loop can be refactored by using ARRAY_SIZE() instead of NULL terminator.
+> This reduces code base and makes it easier to read and understand.
+[]
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+[]
+> @@ -897,37 +897,31 @@ static int pci_netmos_init(struct pci_dev *dev)
+>  /* enable IO_Space bit */
+>  #define ITE_887x_POSIO_ENABLE		(1 << 31)
+>  
 > 
-> This is the final bit of a long lasting cleanup quest where several
-> buses were converted to also return void from their remove callback.
-> Additionally some resource leaks were fixed that were caused by drivers
-> returning an error code in the expectation that the driver won't go
-> away.
+> +/* inta_addr are the configuration addresses of the ITE */
+> +static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0, 0x200, 0x280, };
+
+Why move this outside the only function it's used in?
+The trailing comma isn't necessary/useful and possibly confusing too.
+
+>  static int pci_ite887x_init(struct pci_dev *dev)
+>  {
+> -	/* inta_addr are the configuration addresses of the ITE */
+> -	static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0,
+> -							0x200, 0x280, 0 };
+>  	int ret, i, type;
+>  	struct resource *iobase = NULL;
+>  	u32 miscr, uartbar, ioport;
 > 
-> With struct bus_type::remove returning void it's prevented that newly
-> implemented buses return an ignored error code and so don't anticipate
-> wrong expectations for driver authors.
+>  	/* search for the base-ioport */
+> -	i = 0;
+> -	while (inta_addr[i] && iobase == NULL) {
+> -		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE,
+> -								"ite887x");
+> +	for (i = 0; i < ARRAY_SIZE(inta_addr); i++) {
+> +		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE, "ite887x");
+>  		if (iobase != NULL) {
+
+continue and unindent the block below?
+
+>  			/* write POSIO0R - speed | size | ioport */
+>  			pci_write_config_dword(dev, ITE_887x_POSIO0,
+>  				ITE_887x_POSIO_ENABLE | ITE_887x_POSIO_SPEED |
+>  				ITE_887x_POSIO_IOSIZE_32 | inta_addr[i]);
+>  			/* write INTCBAR - ioport */
+> -			pci_write_config_dword(dev, ITE_887x_INTCBAR,
+> -								inta_addr[i]);
+> +			pci_write_config_dword(dev, ITE_887x_INTCBAR, inta_addr[i]);
+>  			ret = inb(inta_addr[i]);
+>  			if (ret != 0xff) {
+>  				/* ioport connected */
+>  				break;
+>  			}
+>  			release_region(iobase->start, ITE_887x_IOSIZE);
+> -			iobase = NULL;
+>  		}
+> -		i++;
+>  	}
+>  
 > 
+>  	if (!inta_addr[i]) {
 
-[...]
 
-> diff --git a/drivers/firmware/arm_scmi/bus.c b/drivers/firmware/arm_scmi/bus.c
-> index 784cf0027da3..2682c3df651c 100644
-> --- a/drivers/firmware/arm_scmi/bus.c
-> +++ b/drivers/firmware/arm_scmi/bus.c
-> @@ -116,15 +116,13 @@ static int scmi_dev_probe(struct device *dev)
->  	return scmi_drv->probe(scmi_dev);
->  }
->  
-> -static int scmi_dev_remove(struct device *dev)
-> +static void scmi_dev_remove(struct device *dev)
->  {
->  	struct scmi_driver *scmi_drv = to_scmi_driver(dev->driver);
->  	struct scmi_device *scmi_dev = to_scmi_dev(dev);
->  
->  	if (scmi_drv->remove)
->  		scmi_drv->remove(scmi_dev);
-> -
-> -	return 0;
->  }
->  
->  static struct bus_type scmi_bus_type = {
-
-Acked-by: Sudeep Holla <sudeep.holla@arm.com>
-
---
-Regards,
-Sudeep
