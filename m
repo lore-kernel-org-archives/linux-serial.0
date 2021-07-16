@@ -2,230 +2,150 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.9 required=3.0 tests=BAYES_00,DKIM_ADSP_NXDOMAIN,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D65C636C8
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Jul 2021 21:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 990FEC12002
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Jul 2021 13:07:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EF4F861374
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Jul 2021 21:16:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 71432613F3
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Jul 2021 13:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbhGOVTL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Jul 2021 17:19:11 -0400
-Received: from fgw20-7.mail.saunalahti.fi ([62.142.5.81]:65296 "EHLO
-        fgw20-7.mail.saunalahti.fi" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229742AbhGOVTL (ORCPT
+        id S238560AbhGPNKN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 16 Jul 2021 09:10:13 -0400
+Received: from mta02.hs-regensburg.de ([194.95.104.12]:55476 "EHLO
+        mta02.hs-regensburg.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238380AbhGPNKN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Jul 2021 17:19:11 -0400
-Received: from localhost (88-115-248-186.elisa-laajakaista.fi [88.115.248.186])
-        by fgw20.mail.saunalahti.fi (Halon) with ESMTP
-        id e12a8b70-e5b1-11eb-ba24-005056bd6ce9;
-        Fri, 16 Jul 2021 00:16:15 +0300 (EEST)
-Date:   Fri, 16 Jul 2021 00:16:11 +0300
-From:   andy@surfacebook.localdomain
-To:     "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>
-Cc:     'Geert Uytterhoeven' <geert@linux-m68k.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "erosca@de.adit-jv.com" <erosca@de.adit-jv.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
-        "yoshihiro.shimoda.uh@renesas.com" <yoshihiro.shimoda.uh@renesas.com>,
-        "uli+renesas@fpond.eu" <uli+renesas@fpond.eu>,
-        "george_davis@mentor.com" <george_davis@mentor.com>,
-        "andrew_gabbasov@mentor.com" <andrew_gabbasov@mentor.com>,
-        "jiada_wang@mentor.com" <jiada_wang@mentor.com>,
-        "yuichi.kusakabe@denso-ten.com" <yuichi.kusakabe@denso-ten.com>,
-        "yasano@jp.adit-jv.com" <yasano@jp.adit-jv.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jslaby@suse.com" <jslaby@suse.com>,
-        "yohhei.fukui@denso-ten.com" <yohhei.fukui@denso-ten.com>,
-        "magnus.damm@gmail.com" <magnus.damm@gmail.com>,
-        "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
-Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
-Message-ID: <YPClm+OPLVhlhgdm@surfacebook.localdomain>
-References: <20200129161955.30562-1-erosca@de.adit-jv.com>
- <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
- <20200210205735.GB1347752@kroah.com>
- <OSBPR01MB29496E76BE5FD0C5BC56D0F0C1FD0@OSBPR01MB2949.jpnprd01.prod.outlook.com>
- <CAMuHMdXYPG8t=vBn6c2B=8TwbWJfFCjW8peDLgHBwW_AxpH5Hw@mail.gmail.com>
- <OSBPR01MB50612C6EF774733B3496AECADFFD0@OSBPR01MB5061.jpnprd01.prod.outlook.com>
- <OSBPR01MB506141BA2FDD08FE11FC4DEBDFCB0@OSBPR01MB5061.jpnprd01.prod.outlook.com>
+        Fri, 16 Jul 2021 09:10:13 -0400
+Received: from E16S03.hs-regensburg.de (e16s03.hs-regensburg.de [IPv6:2001:638:a01:8013::93])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client CN "E16S03", Issuer "E16S03" (not verified))
+        by mta02.hs-regensburg.de (Postfix) with ESMTPS id 4GRBNN6NC5zy2y;
+        Fri, 16 Jul 2021 15:07:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oth-regensburg.de;
+        s=mta01-20160622; t=1626440836;
+        bh=ouFmdmxN9fdZ0nW/HOuNa4kwdbEZ+5X3c22BP5HazTQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To:From;
+        b=Yy5exus8dhK9N7VsMhq5VzrOcLNW5cQSVfVjHjfrcajRKkOZ1odLg4kjUadpabMHl
+         nNM70AW5X9OwFFm/Nvq6ZtEZmd8ev1BvdrmvzvNrX0vAws1xwb2QgzEj60r+dBydGf
+         lDxj1zweK9QTDT7yWP2pDIgH8zmzIpm+Mpg7DxRg9U1wINo933Tf13PeZnvLbQk6Em
+         e09HV9tHgRCAYEhRdRLPXsuf2op9W8UPJmGa2jfI+jgMBEEcc68Gnj3tggFHq5C+v4
+         oRnZmLGgfjB3rbgcQGrjs+pZfhTwXoKgwsc/Kqc5kTG7GBVOtu/h4ObmcDmAH/esvc
+         snyJCoSynmXxQ==
+Received: from [IPv6:2001:638:a01:8061:5c51:6883:5436:5db]
+ (2001:638:a01:8013::138) by E16S03.hs-regensburg.de (2001:638:a01:8013::93)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.12; Fri, 16 Jul
+ 2021 15:07:16 +0200
+Subject: Re: [EXT] Re: [PATCH v1 3/4] serial: 8250_pci: Always try MSI/MSI-X
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
+ <20210713104026.58560-3-andriy.shevchenko@linux.intel.com>
+ <9af24b96-8119-7ccf-f0d0-d725af80aa0b@kernel.org>
+ <784629f9-677e-ee53-aceb-89397ce0951a@oth-regensburg.de>
+ <CAHp75VdoaE7hCOzsRvuf=7A4mmv0NWBmwqK_mM8vO-K3YZKTUQ@mail.gmail.com>
+From:   Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
+Message-ID: <ac8ac10e-aa43-93a1-d36e-6304643375ae@oth-regensburg.de>
+Date:   Fri, 16 Jul 2021 15:07:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <CAHp75VdoaE7hCOzsRvuf=7A4mmv0NWBmwqK_mM8vO-K3YZKTUQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <OSBPR01MB506141BA2FDD08FE11FC4DEBDFCB0@OSBPR01MB5061.jpnprd01.prod.outlook.com>
+X-Originating-IP: [2001:638:a01:8013::138]
+X-ClientProxiedBy: E16S02.hs-regensburg.de (2001:638:a01:8013::92) To
+ E16S03.hs-regensburg.de (2001:638:a01:8013::93)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Mon, Mar 30, 2020 at 07:43:09AM +0000, ashiduka@fujitsu.com kirjoitti:
-> Dear Greg, Geert,
+
+
+On 14/07/2021 15:35, Andy Shevchenko wrote:
+> On Wed, Jul 14, 2021 at 3:56 PM Ralf Ramsauer
+> <ralf.ramsauer@oth-regensburg.de> wrote:
+>> On 14/07/2021 08:54, Jiri Slaby wrote:
+>>> On 13. 07. 21, 12:40, Andy Shevchenko wrote:
 > 
-> > Right.
-> > Adding "#include <sys/ioctl.h>" to Greg's sample code causes a
-> > compilation error.
-> <snip>
-> > Is it normal to declare ioctl() without "#include <sys/ioctl.h>" ?
+>>> Hmm, have you checked the commit which introduced the whitelist?
+>>>
+>>>     Nevertheless, this needs to handled with care: while many 8250 devices
+>>>     actually claim to support MSI(-X) interrupts it should not be
+>>> enabled be
+>>>     default. I had at least one device in my hands with broken MSI
+>>>     implementation.
+>>>
+>>>     So better introduce a whitelist with devices that are known to support
+>>>     MSI(-X) interrupts. I tested all devices mentioned in the patch.
+>>>
+>>>
+>>> You should have at least CCed the author for an input.
+>>
+>> Yep, back then I was testing three different 8250 pci cards. All of them
+>> claimed to support MSI, while one really worked with MSI, the one that I
+>> whitelisted. So I thought it would be better to use legacy IRQs as long
+>> as no one tested a specific card to work with MSI.
 > 
-> I would be happy if you could give me some comments.
+> Can you shed a light eventually what those cards are?
+
+So I found a no-name el-cheapo card that has some issues with MSI:
+
+18:00.0 Serial controller: Device 1c00:3253 (rev 10) (prog-if 05 [16850])
+
+The card comes with two serial lines. It comes perfectly up, if I enable
+it to use MSI in the whitelist:
+
+serial 0000:18:00.0: Using MSI(-X) interrupts
+serial 0000:18:00.0: Setup PCI port: port 40c0, irq 104, type 0
+0000:18:00.0: ttyS6 at I/O 0x40c0 (irq = 104, base_baud = 115200) is a
+XR16850
+serial 0000:18:00.0: Setup PCI port: port 40c8, irq 104, type 0
+0000:18:00.0: ttyS7 at I/O 0x40c8 (irq = 104, base_baud = 115200) is a
+XR16850
+
+After loading 8250_pci, lspci -vvs 18:0.0 tells:
+
+	Capabilities: [68] MSI: Enable+ Count=1/32 Maskable+ 64bit+
+		Address: 00000000fee000b8  Data: 0000
+		Masking: ffffffff  Pending: 00000000
+
+Looks good so far. Now let's echo to the device.
+
+$ echo asdf > /dev/ttyS6
+
+-- stuck. The echoing process stucks at close():
+
+write(1, "asdf\n", 5)                   = 5
+close(1
+
+Stuck in the sense of: the echo is still killable, no crashes. The same
+happens if I try to access the device with stty. So something is odd
+here. However, the Netmos cards that I whitelisted do a great job.
+
+So I can't tell if I was just unlucky to grab a card that has issues
+with MSI, and this is an exception rather than the rule…
+
+HTH,
+  Ralf
+
+
 > 
-> > http://www.panix.com/~grante/arbitrary-baud.c
+>> Don't do that… And don't convert it to a blacklist. A blacklist will
+>> break users until they report that something doesn't work.
 > 
-> We think this sample code is no good.
-> Should I work on glibc changes instead of kernel fixes?
-
-Side note: I hope introducing spd_cust hack hadn't made upstream.
-
-To the point. Use BOTHER as in code excerpt. Yes, there is a problematic parts
-with the headers regarding to this feature. But you may look how others solve
-it.
-
-https://github.com/npat-efault/picocom/blob/master/termios2.txt
-
-> > Subject: RE: [PATCH] serial: sh-sci: Support custom speed setting
-> > 
-> > Dear Greg, Geert,
-> > 
-> > > I guess you mean the forward declaration of ioctrl()?
-> > > No, they should include <sys/ioctl.h> instead.
-> > 
-> > Right.
-> > Adding "#include <sys/ioctl.h>" to Greg's sample code causes a
-> > compilation error.
-> > 
-> > > > I saw the code above, I thought I wouldn't write such code
-> > normally.
-> > > Why not?
-> > 
-> > Is it normal to declare ioctl() without "#include <sys/ioctl.h>" ?
-> > 
-> > Thanks & Best Regards,
-> > Yuusuke Ashiduka <ashiduka@fujitsu.com>
-> > Embedded System Development Dept. Embedded System Development Div.
-> > FUJITSU COMPUTER TECHNOLOGIES Ltd.
-> > 
-> > > -----Original Message-----
-> > > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > Sent: Thursday, March 12, 2020 6:03 PM
-> > > To: Torii, Kenichi/鳥居 健一 <torii.ken1@fujitsu.com>
-> > > Cc: gregkh@linuxfoundation.org; erosca@de.adit-jv.com;
-> > > linux-serial@vger.kernel.org;
-> > linux-renesas-soc@vger.kernel.org;
-> > > wsa+renesas@sang-engineering.com;
-> > > yoshihiro.shimoda.uh@renesas.com; uli+renesas@fpond.eu;
-> > > george_davis@mentor.com; andrew_gabbasov@mentor.com;
-> > > jiada_wang@mentor.com; yuichi.kusakabe@denso-ten.com;
-> > > yasano@jp.adit-jv.com; linux-kernel@vger.kernel.org;
-> > > jslaby@suse.com; yohhei.fukui@denso-ten.com; Ashizuka, Yuusuke/
-> > > 芦塚 雄介 <ashiduka@fujitsu.com>; magnus.damm@gmail.com
-> > > Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
-> > >
-> > > Hi Torii-san,
-> > >
-> > > On Thu, Mar 12, 2020 at 6:10 AM torii.ken1@fujitsu.com
-> > > <torii.ken1@fujitsu.com> wrote:
-> > > > On Tue, 11 Feb 2020 05:57:35 +0900,
-> > > > Greg Kroah-Hartman wrote:
-> > > > > On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven
-> > > wrote:
-> > > > > > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca
-> > > <erosca@de.adit-jv.com> wrote:
-> > > > > > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > > > > > >
-> > > > > > > This patch is necessary to use BT module and XM module
-> > with
-> > > DENSO TEN
-> > > > > > > development board.
-> > > > > > >
-> > > > > > > This patch supports ASYNC_SPD_CUST flag by
-> > ioctl(TIOCSSERIAL),
-> > > enables
-> > > > > > > custom speed setting with setserial(1).
-> > > > > > >
-> > > > > > > The custom speed is calculated from uartclk and
-> > > custom_divisor.
-> > > > > > > If custom_divisor is zero, custom speed setting is invalid.
-> > > > > > >
-> > > > > > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > > > > > > [erosca: rebase against v5.5]
-> > > > > > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
-> > > > > >
-> > > > > > Thanks for your patch!
-> > > > > >
-> > > > > > While this seems to work fine[*], I have a few
-> > > comments/questions:
-> > > > > >   1. This feature seems to be deprecated:
-> > > > > >
-> > > > > >          sh-sci e6e68000.serial: setserial sets custom speed
-> > > on
-> > > > > > ttySC1. This is deprecated.
-> > > > > >
-> > > > > >   2. As the wanted speed is specified as a divider, the
-> > resulting
-> > > speed
-> > > > > >      may be off, cfr. the example for 57600 below.
-> > > > > >      Note that the SCIF device has multiple clock inputs,
-> > and
-> > > can do
-> > > > > >      57600 perfectly if the right crystal has been fitted.
-> > > > > >
-> > > > > >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update
-> > uartclk
-> > > based
-> > > > > >      on selected clock"
-> > > (https://patchwork.kernel.org/patch/11103703/)?
-> > > > > >      Combined with this, things become pretty complicated
-> > and
-> > > > > >      unpredictable, as uartclk now always reflect the
-> > frequency
-> > > of the
-> > > > > >      last used base clock, which was the optimal one for the
-> > > previously
-> > > > > >      used speed....
-> > > > > >
-> > > > > > I think it would be easier if we just had an API to specify
-> > > a raw speed.
-> > > > > > Perhaps that already exists?
-> > > > >
-> > > > > Yes, see:
-> > > > >       http://www.panix.com/~grante/arbitrary-baud.c
-> > > >
-> > > > I saw the code above, I thought I wouldn't write such code
-> > normally.
-> > > >
-> > > > >#include <linux/termios.h>
-> > > > >
-> > > > >int ioctl(int d, int request, ...);
-> > > >
-> > > > Do application programmers have to accept this bad code?
-> > >
-> > > I guess you mean the forward declaration of ioctrl()?
-> > > No, they should include <sys/ioctl.h> instead.
-> > >
-> > > Gr{oetje,eeting}s,
-> > >
-> > >                         Geert
-> > >
-> > > --
-> > > Geert Uytterhoeven -- There's lots of Linux beyond ia32 --
-> > > geert@linux-m68k.org
-> > >
-> > > In personal conversations with technical people, I call myself
-> > a
-> > > hacker. But
-> > > when I'm talking to journalists I just say "programmer" or
-> > something
-> > > like that.
-> > >                                 -- Linus Torvalds
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> White list is not okay either. MSI in general is a right thing to do.
+> preventing users from MSI is asking for the performance degradation
+> and IRQ resource conflicts (in case the IRQ line is shared).
+> 
+> Besides that, shouldn't it be rather the specific field in private (to
+> 8250_pci) structure than constantly growing list?
+> 
