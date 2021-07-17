@@ -2,220 +2,214 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2492CC636CA
-	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFAEC636CA
+	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:44:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0B16A61002
-	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:39:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BA9A26128C
+	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbhGQMmW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 17 Jul 2021 08:42:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39658 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230112AbhGQMmV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 17 Jul 2021 08:42:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E213611C1;
-        Sat, 17 Jul 2021 12:39:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626525565;
-        bh=K6FKq2NmXzk9TyUl3buQDg5LY+AZGHy3lCAN8OTMS+E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nby5l6ojX9m54x9eJTp9/09VzM8+1X/hdyDfX48z3W72vfKaN4bWwi0UXwpckiscX
-         Kq+IjjGBH3uTwNrROzqincKriR2eRRQ5/IsBtm5+3q0uSn24BOA+iYKKJ5f8hso1Xb
-         VbDDhSHGpdPsRkeg6qNh2iqcTBnoRTs8fmwt87QSPSMBpJBedXdalnizYmryrs6ZOy
-         EPY9sYu1wYX/8vKQTVGVhnvIDJ9gcidThGH3h0pdQuUkcXKBQ8za2LaxKUi9ceW26i
-         popqxMk4qVC4tJ31r/1kFOvtOrsJo/7S6Cq4E2H2yFl4t9wBMor+eC/cul+esqST+g
-         xTD0aijgvG8FQ==
-Received: by pali.im (Postfix)
-        id 4AE1BEA7; Sat, 17 Jul 2021 14:39:23 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+        id S230112AbhGQMrq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 17 Jul 2021 08:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229746AbhGQMrp (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 17 Jul 2021 08:47:45 -0400
+Received: from mta02.hs-regensburg.de (mta02.hs-regensburg.de [IPv6:2001:638:a01:1096::12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D63C06175F;
+        Sat, 17 Jul 2021 05:44:48 -0700 (PDT)
+Received: from E16S03.hs-regensburg.de (e16s03.hs-regensburg.de [IPv6:2001:638:a01:8013::93])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client CN "E16S03", Issuer "E16S03" (not verified))
+        by mta02.hs-regensburg.de (Postfix) with ESMTPS id 4GRnqw2sPQzxxM;
+        Sat, 17 Jul 2021 14:44:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oth-regensburg.de;
+        s=mta01-20160622; t=1626525884;
+        bh=DObdPEz8dc9fpgzhCh0TXIKplWQjWy3yuMi0S8nVwn0=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To:From;
+        b=Atwzcr1LfwKQOLIsRwfQKHCtxICogZrce/pO56aFJR5Gvy/3z2X+3J/wPY9WtBaAm
+         CjV2iMk3Ev34F4KTeC4bzRcvshIaJVv8SOnf+Vb0hp+qm9jM6fFlL7AH0J37ddRuMh
+         DgCgAXUiOGEbj3CHwc7GH+ZL1Eg7RlEpW1ZYKeB+UdBIfBc3E47clmot3uglsmy8ij
+         qFLlvQMSuCvOlNREXXvzk3R/YMSQXq4Sk0rXQVJG63ZT9wDhhWg9wfydUkIgL5lbTC
+         Hnki53ZCd8XjuBE6tExAzLSC/ycetejhLz+G5301r/RnKOMx5ytaDG8ahAjecjY6vv
+         6PRbDMd3J52pg==
+Received: from [IPv6:2001:678:ddc:11:17a4:3bb5:620b:1dcb]
+ (2001:638:a01:8013::138) by E16S03.hs-regensburg.de (2001:638:a01:8013::93)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.12; Sat, 17 Jul
+ 2021 14:44:43 +0200
+Subject: Re: [EXT] Re: [PATCH v1 3/4] serial: 8250_pci: Always try MSI/MSI-X
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     Jiri Slaby <jirislaby@kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Andrew Lunn" <andrew@lunn.ch>,
-        "Gregory Clement" <gregory.clement@bootlin.com>,
-        "Sebastian Hesselbarth" <sebastian.hesselbarth@gmail.com>,
-        "Vladimir Vid" <vladimir.vid@sartura.hr>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Geert Uytterhoeven" <geert@linux-m68k.org>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 5/5] serial: mvebu-uart: implement support for baudrates higher than 230400
-Date:   Sat, 17 Jul 2021 14:38:29 +0200
-Message-Id: <20210717123829.5201-6-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210717123829.5201-1-pali@kernel.org>
-References: <20210624224909.6350-1-pali@kernel.org>
- <20210717123829.5201-1-pali@kernel.org>
+References: <20210713104026.58560-1-andriy.shevchenko@linux.intel.com>
+ <20210713104026.58560-3-andriy.shevchenko@linux.intel.com>
+ <9af24b96-8119-7ccf-f0d0-d725af80aa0b@kernel.org>
+ <784629f9-677e-ee53-aceb-89397ce0951a@oth-regensburg.de>
+ <CAHp75VdoaE7hCOzsRvuf=7A4mmv0NWBmwqK_mM8vO-K3YZKTUQ@mail.gmail.com>
+ <ac8ac10e-aa43-93a1-d36e-6304643375ae@oth-regensburg.de>
+ <CAHp75VcLicxAz5BjP+Lp2yHxEGiKcT9OUZbPeRUgZVcYLdY0FA@mail.gmail.com>
+ <599a37bd-3cb4-1e4b-d5f8-936c4daae71f@oth-regensburg.de>
+ <YPHBhpfk8RoEuQx2@smile.fi.intel.com>
+From:   Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
+Message-ID: <447b30df-cb9e-cfaf-6381-0a1c426fa57c@oth-regensburg.de>
+Date:   Sat, 17 Jul 2021 14:44:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YPHBhpfk8RoEuQx2@smile.fi.intel.com>
+Content-Type: multipart/mixed;
+        boundary="------------22358B651524AC6FC03F8265"
+Content-Language: en-US
+X-Originating-IP: [2001:638:a01:8013::138]
+X-ClientProxiedBy: E16S01.hs-regensburg.de (2001:638:a01:8013::91) To
+ E16S03.hs-regensburg.de (2001:638:a01:8013::93)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This change implements simple usage of fractional divisor. When main
-divisor D is too large to represent requested baudrate then use divisor M
-from fractional divisor feature. All the M prescalers are set to same and
-maximal value 63, so fractional part is not used at all.
+--------------22358B651524AC6FC03F8265
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-Tests showed that UART at 1500000 baudrate via this configuration is stable
-and usable. So there is no need to implement complicated calculation of
-fractional coefficients yet.
 
-To use this feature with higher baudrates, it is required to use UART clock
-provided by UART clock driver. Default boot xtal clock is not capable of
-higher baudrates and this change also contains code for determining upper
-limit of possible baudrate.
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/tty/serial/mvebu-uart.c | 79 ++++++++++++++++++++++++++-------
- 1 file changed, 62 insertions(+), 17 deletions(-)
+On 16/07/2021 19:27, Andy Shevchenko wrote:
+> On Fri, Jul 16, 2021 at 05:27:36PM +0200, Ralf Ramsauer wrote:
+>> On 16/07/2021 17:01, Andy Shevchenko wrote:
+>>> On Fri, Jul 16, 2021 at 4:07 PM Ralf Ramsauer
+>>> <ralf.ramsauer@oth-regensburg.de> wrote:
+>>>> On 14/07/2021 15:35, Andy Shevchenko wrote:
+>>>>> On Wed, Jul 14, 2021 at 3:56 PM Ralf Ramsauer
+>>>>> <ralf.ramsauer@oth-regensburg.de> wrote:
+>>>>>> On 14/07/2021 08:54, Jiri Slaby wrote:
+>>>>>>> On 13. 07. 21, 12:40, Andy Shevchenko wrote:
+>>>>>
+>>>>>>> Hmm, have you checked the commit which introduced the whitelist?
+>>>>>>>
+>>>>>>>     Nevertheless, this needs to handled with care: while many 8250 devices
+>>>>>>>     actually claim to support MSI(-X) interrupts it should not be
+>>>>>>> enabled be
+>>>>>>>     default. I had at least one device in my hands with broken MSI
+>>>>>>>     implementation.
+>>>>>>>
+>>>>>>>     So better introduce a whitelist with devices that are known to support
+>>>>>>>     MSI(-X) interrupts. I tested all devices mentioned in the patch.
+>>>>>>>
+>>>>>>>
+>>>>>>> You should have at least CCed the author for an input.
+>>>>>>
+>>>>>> Yep, back then I was testing three different 8250 pci cards. All of them
+>>>>>> claimed to support MSI, while one really worked with MSI, the one that I
+>>>>>> whitelisted. So I thought it would be better to use legacy IRQs as long
+>>>>>> as no one tested a specific card to work with MSI.
+>>>>>
+>>>>> Can you shed a light eventually what those cards are?
+>>>
+>>>> So I found a no-name el-cheapo card that has some issues with MSI:
+>>>
+>>> Win Chip Head (WCH)
+>>>
+>>>> 18:00.0 Serial controller: Device 1c00:3253 (rev 10) (prog-if 05 [16850])
+> 
+> Thank you!
+> 
+> One more thing, ist it possible to see entire PCI configuration space (w/ or
+> w/o MSI, I don't think it matters)? Something like
+> 
+> 	`lspci -nk -vvv -xxx -s 18:0`
+> 
+> to run.
+> 
+> (I believe there are a lot of 0xff bytes)
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index f3fb1f3718f2..925b3e0c098c 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -99,6 +99,7 @@
- #define UART_OSAMP		0x14
- #define  OSAMP_DEFAULT_DIVISOR	16
- #define  OSAMP_DIVISORS_MASK	0x3F3F3F3F
-+#define  OSAMP_MAX_DIVISOR	63
- 
- #define MVEBU_NR_UARTS		2
- 
-@@ -479,18 +480,59 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- 		return -EOPNOTSUPP;
- 
- 	/*
--	 * The baudrate is derived from the UART clock thanks to two divisors:
--	 *   > D ("baud generator"): can divide the clock from 2 to 2^10 - 1.
--	 *   > M ("fractional divisor"): allows a better accuracy for
--	 *     baudrates higher than 230400.
-+	 * The baudrate is derived from the UART clock thanks to divisors:
-+	 *   > d1 * d2 ("TBG divisors"): can divide only TBG clock from 1 to 6
-+	 *   > D ("baud generator"): can divide the clock from 1 to 1023
-+	 *   > M ("fractional divisor"): allows a better accuracy (from 1 to 63)
- 	 *
--	 * As the derivation of M is rather complicated, the code sticks to its
--	 * default value (x16) when all the prescalers are zeroed, and only
--	 * makes use of D to configure the desired baudrate.
-+	 * Exact formulas for calculating baudrate:
-+	 *
-+	 * with default x16 scheme:
-+	 *   baudrate = xtal / (d * 16)
-+	 *   baudrate = tbg / (d1 * d2 * d * 16)
-+	 *
-+	 * with fractional divisor:
-+	 *   baudrate = 10 * xtal / (d * (3 * (m1 + m2) + 2 * (m3 + m4)))
-+	 *   baudrate = 10 * tbg / (d1*d2 * d * (3 * (m1 + m2) + 2 * (m3 + m4)))
-+	 *
-+	 * Oversampling value:
-+	 *   osamp = (m1 << 0) | (m2 << 8) | (m3 << 16) | (m4 << 24);
-+	 *
-+	 * Where m1 controls number of clock cycles per bit for bits 1,2,3;
-+	 * m2 for bits 4,5,6; m3 for bits 7,8 and m4 for bits 9,10.
-+	 *
-+	 * To simplify baudrate setup set all the M prescalers to same value.
-+	 * For 9600 baudrate and higher it is enough to use just default (x16)
-+	 * divisor or fractional divisor with M = 63, so there is no need to
-+	 * use real fractional support (when the M prescalers are not equal).
-+	 *
-+	 * When all the M prescalers are zeroed then default (x16) divisor is
-+	 * used. Default x16 scheme is more stable than M (fractional divisor),
-+	 * so use M only when D divisor is not enough to derivate baudrate.
-+	 *
-+	 * Member port->uartclk is either xtal clock rate or TBG clock rate
-+	 * divided by (d1 * d2). So UART clock driver already sets d1 and d2
-+	 * divisors and UART driver cannot change them. Moreover they are
-+	 * shared with both UARTs.
- 	 */
-+
- 	m_divisor = OSAMP_DEFAULT_DIVISOR;
- 	d_divisor = DIV_ROUND_CLOSEST(port->uartclk, baud * m_divisor);
- 
-+	if (d_divisor > BRDV_BAUD_MAX) {
-+		/*
-+		 * Experiments showed that small M divisors are unstable.
-+		 * So use maximal possible M = 63 and calculate D divisor.
-+		 */
-+		m_divisor = OSAMP_MAX_DIVISOR;
-+		d_divisor = DIV_ROUND_CLOSEST(port->uartclk, baud * m_divisor);
-+	}
-+
-+	if (d_divisor < 1)
-+		d_divisor = 1;
-+	else if (d_divisor > BRDV_BAUD_MAX)
-+		d_divisor = BRDV_BAUD_MAX;
-+
- 	spin_lock_irqsave(&mvebu_uart_lock, flags);
- 	brdv = readl(port->membase + UART_BRDV);
- 	brdv &= ~BRDV_BAUD_MASK;
-@@ -500,6 +542,9 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- 
- 	osamp = readl(port->membase + UART_OSAMP);
- 	osamp &= ~OSAMP_DIVISORS_MASK;
-+	if (m_divisor != OSAMP_DEFAULT_DIVISOR)
-+		osamp |= (m_divisor << 0) | (m_divisor << 8) |
-+			(m_divisor << 16) | (m_divisor << 24);
- 	writel(osamp, port->membase + UART_OSAMP);
- 
- 	return 0;
-@@ -529,14 +574,14 @@ static void mvebu_uart_set_termios(struct uart_port *port,
- 		port->ignore_status_mask |= STAT_RX_RDY(port) | STAT_BRK_ERR;
- 
- 	/*
--	 * Maximal divisor is 1023 * 16 when using default (x16) scheme.
--	 * Maximum achievable frequency with simple baudrate divisor is 230400.
--	 * Since the error per bit frame would be of more than 15%, achieving
--	 * higher frequencies would require to implement the fractional divisor
--	 * feature.
-+	 * Maximal divisor is 1023 and maximal fractional divisor is 63. And
-+	 * experiments showed that baudrates above 1/80 of base clock are not
-+	 * stable and usable. So disallow baudrate above 1/80 of the base clock.
-+	 * When port->uartclk is not available then mvebu_uart_baud_rate_set()
-+	 * fails so values min_baud and max_baud in this case does not matter.
- 	 */
--	min_baud = DIV_ROUND_UP(port->uartclk, 1023 * 16);
--	max_baud = 230400;
-+	min_baud = DIV_ROUND_UP(port->uartclk, BRDV_BAUD_MAX*OSAMP_MAX_DIVISOR);
-+	max_baud = port->uartclk / 80;
- 
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
- 	if (mvebu_uart_baud_rate_set(port, baud)) {
-@@ -1394,14 +1439,14 @@ static int mvebu_uart_clock_probe(struct platform_device *pdev)
- 			 * Calculate the smallest TBG d1 and d2 divisors that
- 			 * still can provide 9600 baudrate.
- 			 */
--			d1 = DIV_ROUND_UP(rate, 9600 * OSAMP_DEFAULT_DIVISOR *
-+			d1 = DIV_ROUND_UP(rate, 9600 * OSAMP_MAX_DIVISOR *
- 						BRDV_BAUD_MAX);
- 			if (d1 < 1)
- 				d1 = 1;
- 			else if (d1 > CLK_TBG_DIV1_MAX)
- 				d1 = CLK_TBG_DIV1_MAX;
- 
--			d2 = DIV_ROUND_UP(rate, 9600 * OSAMP_DEFAULT_DIVISOR *
-+			d2 = DIV_ROUND_UP(rate, 9600 * OSAMP_MAX_DIVISOR *
- 						BRDV_BAUD_MAX * d1);
- 			if (d2 < 1)
- 				d2 = 1;
-@@ -1416,7 +1461,7 @@ static int mvebu_uart_clock_probe(struct platform_device *pdev)
- 		}
- 
- 		/* Skip clock source which cannot provide 9600 baudrate */
--		if (rate > 9600 * OSAMP_DEFAULT_DIVISOR * BRDV_BAUD_MAX * d1 * d2)
-+		if (rate > 9600 * OSAMP_MAX_DIVISOR * BRDV_BAUD_MAX * d1 * d2)
- 			continue;
- 
- 		/*
--- 
-2.20.1
+Find it attached, w/ MSI+. Not that many, only the 0xffs for the MSI
+mask, afaict.
 
+  Ralf
+
+--------------22358B651524AC6FC03F8265
+Content-Type: text/plain; charset="UTF-8"; name="18.0.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="18.0.txt"
+
+MTg6MDAuMCAwNzAwOiAxYzAwOjMyNTMgKHJldiAxMCkgKHByb2ctaWYgMDUgWzE2ODUwXSkK
+CVN1YnN5c3RlbTogMWMwMDozMjUzCglDb250cm9sOiBJL08rIE1lbSsgQnVzTWFzdGVyKyBT
+cGVjQ3ljbGUtIE1lbVdJTlYtIFZHQVNub29wLSBQYXJFcnItIFN0ZXBwaW5nLSBTRVJSLSBG
+YXN0QjJCLSBEaXNJTlR4KwoJU3RhdHVzOiBDYXArIDY2TUh6LSBVREYtIEZhc3RCMkItIFBh
+ckVyci0gREVWU0VMPWZhc3QgPlRBYm9ydC0gPFRBYm9ydC0gPE1BYm9ydC0gPlNFUlItIDxQ
+RVJSLSBJTlR4LQoJTGF0ZW5jeTogMAoJSW50ZXJydXB0OiBwaW4gQSByb3V0ZWQgdG8gSVJR
+IDEwNAoJTlVNQSBub2RlOiAwCglSZWdpb24gMDogSS9PIHBvcnRzIGF0IDQwMDAgW3NpemU9
+MjU2XQoJUmVnaW9uIDE6IE1lbW9yeSBhdCBhYjAwMDAwMCAoMzItYml0LCBwcmVmZXRjaGFi
+bGUpIFtzaXplPTMyS10KCVJlZ2lvbiAyOiBJL08gcG9ydHMgYXQgNDEwMCBbc2l6ZT00XQoJ
+RXhwYW5zaW9uIFJPTSBhdCBhYjIwMDAwMCBbZGlzYWJsZWRdIFtzaXplPTMyS10KCUNhcGFi
+aWxpdGllczogWzYwXSBQb3dlciBNYW5hZ2VtZW50IHZlcnNpb24gMwoJCUZsYWdzOiBQTUVD
+bGstIERTSS0gRDEtIEQyLSBBdXhDdXJyZW50PTM3NW1BIFBNRShEMCssRDEtLEQyLSxEM2hv
+dCssRDNjb2xkKykKCQlTdGF0dXM6IEQwIE5vU29mdFJzdC0gUE1FLUVuYWJsZS0gRFNlbD0w
+IERTY2FsZT0wIFBNRS0KCUNhcGFiaWxpdGllczogWzY4XSBNU0k6IEVuYWJsZSsgQ291bnQ9
+MS8zMiBNYXNrYWJsZSsgNjRiaXQrCgkJQWRkcmVzczogMDAwMDAwMDBmZWUwMDBiOCAgRGF0
+YTogMDAwMAoJCU1hc2tpbmc6IGZmZmZmZmZmICBQZW5kaW5nOiAwMDAwMDAwMAoJQ2FwYWJp
+bGl0aWVzOiBbODBdIEV4cHJlc3MgKHYyKSBMZWdhY3kgRW5kcG9pbnQsIE1TSSAwMAoJCURl
+dkNhcDoJTWF4UGF5bG9hZCAyNTYgYnl0ZXMsIFBoYW50RnVuYyAwLCBMYXRlbmN5IEwwcyA8
+MnVzLCBMMSA8MzJ1cwoJCQlFeHRUYWctIEF0dG5CdG4tIEF0dG5JbmQtIFB3ckluZC0gUkJF
+KyBGTFJlc2V0LQoJCURldkN0bDoJQ29yckVyci0gTm9uRmF0YWxFcnIrIEZhdGFsRXJyKyBV
+bnN1cFJlcSsKCQkJUmx4ZE9yZCsgRXh0VGFnLSBQaGFudEZ1bmMtIEF1eFB3ci0gTm9Tbm9v
+cCsKCQkJTWF4UGF5bG9hZCAyNTYgYnl0ZXMsIE1heFJlYWRSZXEgNTEyIGJ5dGVzCgkJRGV2
+U3RhOglDb3JyRXJyLSBOb25GYXRhbEVyci0gRmF0YWxFcnItIFVuc3VwUmVxLSBBdXhQd3Ir
+IFRyYW5zUGVuZC0KCQlMbmtDYXA6CVBvcnQgIzAsIFNwZWVkIDIuNUdUL3MsIFdpZHRoIHgx
+LCBBU1BNIEwwcyBMMSwgRXhpdCBMYXRlbmN5IEwwcyB1bmxpbWl0ZWQsIEwxIHVubGltaXRl
+ZAoJCQlDbG9ja1BNKyBTdXJwcmlzZS0gTExBY3RSZXAtIEJ3Tm90LSBBU1BNT3B0Q29tcC0K
+CQlMbmtDdGw6CUFTUE0gRGlzYWJsZWQ7IFJDQiA2NCBieXRlcywgRGlzYWJsZWQtIENvbW1D
+bGsrCgkJCUV4dFN5bmNoLSBDbG9ja1BNLSBBdXRXaWREaXMtIEJXSW50LSBBdXRCV0ludC0K
+CQlMbmtTdGE6CVNwZWVkIDIuNUdUL3MgKG9rKSwgV2lkdGggeDEgKG9rKQoJCQlUckVyci0g
+VHJhaW4tIFNsb3RDbGsrIERMQWN0aXZlLSBCV01nbXQtIEFCV01nbXQtCgkJRGV2Q2FwMjog
+Q29tcGxldGlvbiBUaW1lb3V0OiBOb3QgU3VwcG9ydGVkLCBUaW1lb3V0RGlzKyBOUk9QclBy
+UC0gTFRSLQoJCQkgMTBCaXRUYWdDb21wLSAxMEJpdFRhZ1JlcS0gT0JGRiBOb3QgU3VwcG9y
+dGVkLCBFeHRGbXQtIEVFVExQUHJlZml4LQoJCQkgRW1lcmdlbmN5UG93ZXJSZWR1Y3Rpb24g
+Tm90IFN1cHBvcnRlZCwgRW1lcmdlbmN5UG93ZXJSZWR1Y3Rpb25Jbml0LQoJCQkgRlJTLQoJ
+CQkgQXRvbWljT3BzQ2FwOiAzMmJpdC0gNjRiaXQtIDEyOGJpdENBUy0KCQlEZXZDdGwyOiBD
+b21wbGV0aW9uIFRpbWVvdXQ6IDUwdXMgdG8gNTBtcywgVGltZW91dERpcy0gTFRSLSBPQkZG
+IERpc2FibGVkLAoJCQkgQXRvbWljT3BzQ3RsOiBSZXFFbi0KCQlMbmtDdGwyOiBUYXJnZXQg
+TGluayBTcGVlZDogMi41R1QvcywgRW50ZXJDb21wbGlhbmNlLSBTcGVlZERpcy0KCQkJIFRy
+YW5zbWl0IE1hcmdpbjogTm9ybWFsIE9wZXJhdGluZyBSYW5nZSwgRW50ZXJNb2RpZmllZENv
+bXBsaWFuY2UtIENvbXBsaWFuY2VTT1MtCgkJCSBDb21wbGlhbmNlIERlLWVtcGhhc2lzOiAt
+NmRCCgkJTG5rU3RhMjogQ3VycmVudCBEZS1lbXBoYXNpcyBMZXZlbDogLTZkQiwgRXF1YWxp
+emF0aW9uQ29tcGxldGUtIEVxdWFsaXphdGlvblBoYXNlMS0KCQkJIEVxdWFsaXphdGlvblBo
+YXNlMi0gRXF1YWxpemF0aW9uUGhhc2UzLSBMaW5rRXF1YWxpemF0aW9uUmVxdWVzdC0KCQkJ
+IFJldGltZXItIDJSZXRpbWVycy0gQ3Jvc3NsaW5rUmVzOiB1bnN1cHBvcnRlZAoJQ2FwYWJp
+bGl0aWVzOiBbMTAwIHYxXSBBZHZhbmNlZCBFcnJvciBSZXBvcnRpbmcKCQlVRVN0YToJRExQ
+LSBTREVTLSBUTFAtIEZDUC0gQ21wbHRUTy0gQ21wbHRBYnJ0LSBVbnhDbXBsdC0gUnhPRi0g
+TWFsZlRMUC0gRUNSQy0gVW5zdXBSZXEtIEFDU1Zpb2wtCgkJVUVNc2s6CURMUC0gU0RFUy0g
+VExQLSBGQ1AtIENtcGx0VE8tIENtcGx0QWJydC0gVW54Q21wbHQrIFJ4T0YtIE1hbGZUTFAt
+IEVDUkMtIFVuc3VwUmVxLSBBQ1NWaW9sKwoJCVVFU3ZydDoJRExQKyBTREVTLSBUTFArIEZD
+UCsgQ21wbHRUTysgQ21wbHRBYnJ0LSBVbnhDbXBsdC0gUnhPRisgTWFsZlRMUCsgRUNSQysg
+VW5zdXBSZXEtIEFDU1Zpb2wtCgkJQ0VTdGE6CVJ4RXJyLSBCYWRUTFAtIEJhZERMTFAtIFJv
+bGxvdmVyLSBUaW1lb3V0LSBBZHZOb25GYXRhbEVyci0KCQlDRU1zazoJUnhFcnIrIEJhZFRM
+UCsgQmFkRExMUCsgUm9sbG92ZXIrIFRpbWVvdXQrIEFkdk5vbkZhdGFsRXJyKwoJCUFFUkNh
+cDoJRmlyc3QgRXJyb3IgUG9pbnRlcjogMDAsIEVDUkNHZW5DYXArIEVDUkNHZW5FbisgRUNS
+Q0Noa0NhcCsgRUNSQ0Noa0VuKwoJCQlNdWx0SGRyUmVjQ2FwLSBNdWx0SGRyUmVjRW4tIFRM
+UFBmeFByZXMtIEhkckxvZ0NhcC0KCQlIZWFkZXJMb2c6IDAwMDAwMDAwIDAwMDAwMDAwIDAw
+MDAwMDAwIDAwMDAwMDAwCglLZXJuZWwgZHJpdmVyIGluIHVzZTogc2VyaWFsCglLZXJuZWwg
+bW9kdWxlczogODI1MF9wY2kKMDA6IDAwIDFjIDUzIDMyIDA3IDA0IDEwIDAwIDEwIDA1IDAw
+IDA3IDAwIDAwIDAwIDAwCjEwOiAwMSA0MCAwMCAwMCAwOCAwMCAwMCBhYiAwMSA0MSAwMCAw
+MCAwMCAwMCAwMCAwMAoyMDogMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
+MDAgMWMgNTMgMzIKMzA6IDAwIDgwIGZmIGZmIDYwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIGZm
+IDAxIDAwIDAwCjQwOiAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
+MCAwMCAwMAo1MDogMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
+MDAgMDAKNjA6IDAxIDY4IGMzIGM5IDAwIDAwIDAwIDAwIDA1IDgwIDhiIDAxIGI4IDAwIGUw
+IGZlCjcwOiAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCBmZiBmZiBmZiBmZiAwMCAwMCAwMCAw
+MAo4MDogMTAgMDAgMTIgMDAgNDEgOGIgNjQgMDAgM2UgMjggMTAgMDAgMTEgZmMgMDcgMDAK
+OTA6IDQwIDAwIDExIDEwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwCmEw
+OiAwMCAwMCAwMCAwMCAxMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMApiMDog
+MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAKYzA6IDAw
+IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwCmQwOiAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMAplMDogMDAgMDAg
+MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAKZjA6IDAwIDAwIDAw
+IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwCgo=
+--------------22358B651524AC6FC03F8265--
