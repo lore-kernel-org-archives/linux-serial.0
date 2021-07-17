@@ -2,107 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C71C12002
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Jul 2021 22:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72192C636CB
+	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:38:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 47F33613DF
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Jul 2021 22:55:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 427A6613F5
+	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbhGPW6X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 16 Jul 2021 18:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbhGPW6U (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 16 Jul 2021 18:58:20 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8945C06175F
-        for <linux-serial@vger.kernel.org>; Fri, 16 Jul 2021 15:55:23 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id l11so864323ljq.4
-        for <linux-serial@vger.kernel.org>; Fri, 16 Jul 2021 15:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NzFZx7BjonyE5OA8jgKf/uBGn05pZovkKHpoMsBKMNQ=;
-        b=gjVHRBBZk7KgDEfyUyY9zZcFkWzFGyiJnJ9DhAKstZittZZ3OfkCiaFUtQf39dPpXZ
-         +SrblgSrFwyPn4RGWEWCdUWaLS8FSJXMQPSMpYL6OrwwdwVGhUOnS2AjNPTuvxEQK17H
-         eOoPwPXexVrUqeBheNEL2pQAy5r1+Hw7hDD7DoavLtZPGsx3JpeVamrmp1LYraIiPflF
-         6FRJd5maRd6WbCiy4G+EfAqYHv8GxTib3hINQzZpfNBraYOrLlqHyOZYzW6i4UV7gkzd
-         wqsN4gjY/A53myCaH7IUgybczXz8qtFlJniBPRbSnjTVV7tTYoKoP+/mpcGVP4JGrCfk
-         IEUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NzFZx7BjonyE5OA8jgKf/uBGn05pZovkKHpoMsBKMNQ=;
-        b=Oe98P9i4xf8xyjztuQPwS4L+bPFNTv0sFo+5nBauXMBel8mOXAWJ7T1jBGFmdFe9uF
-         dLbA5H5xQeROeX5MsPuE8v90Kd0Wzo70qCeyzZSToH+Kuubn7eKZkSENgD6igixQvU/a
-         uiNO/TY6C/IiNj3sedW/tsHt/QL5xkSUNwusSWyXdSj6ExOF4gX690CN+eR8AHOcFGSk
-         yfeUHM9iyO+C04Z2QiOUBwG4NsevRVIzNosj2AW2pTJ5UKlta9Ju9XezAolFKwdKHeKw
-         XQTv7f15KJkPSrEAsTw4ve15iH2omO51dSzdt+/VcCAgcPAmECD3SZ/w9M1OTJIaI741
-         0EbQ==
-X-Gm-Message-State: AOAM532Xr33m30BG/tD4NGOaQu4t7W/cNnFm7U+xilKYpWM7e92RQVmZ
-        5wjlP6+O5hVFNPZ2cQLhu13PlqTOfG6Zeg==
-X-Google-Smtp-Source: ABdhPJxHFsQEvvmOMxDUSMQwcWDUKlgq9Mj/1HKuDjfV0f3+VNfRfeV+vS4FbXIb7hMC96T6rDwiAA==
-X-Received: by 2002:a05:651c:488:: with SMTP id s8mr10820962ljc.328.1626476121798;
-        Fri, 16 Jul 2021 15:55:21 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id t81sm741677lff.296.2021.07.16.15.55.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jul 2021 15:55:21 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     linux-serial@vger.kernel.org,
+        id S232040AbhGQMlp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 17 Jul 2021 08:41:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38150 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229471AbhGQMlo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 17 Jul 2021 08:41:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 389D961285;
+        Sat, 17 Jul 2021 12:38:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626525528;
+        bh=2Yit2k4uDAQ+Npx8/IXzxBh/GhjT1kx6H+uYPeax3WY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oJ4/by3lNsgTX1+KqA4I3lcmb5kYVk8Mt4AZOmz38C34j9iQS00kUes7WOj50syU0
+         j+U54LAqA8voUBURpN2B5/54zX69nsvgar31Bvomy9wZ9ZdTHfrQFB98baR/MEet40
+         JC5lRQVCxwbBZnFXb6CJZPRkzk2VJTYH772oq5UGWacj46sDrGyW3eKcvO4rqiogxC
+         qHBjsobDlIZ38T3Wsr7WZ1UaXEk5PvRyH13LGu0D/iLegumP6GyEDGTBXheiQI8QZX
+         njaSIceFvdFLn8r6EKaP6gY0Ikjzz22D9VZ2+HKlzO05igPnM36rDLLyIdJXv/4CHM
+         pYzCkPlI3Ocqg==
+Received: by pali.im (Postfix)
+        id 6CD79EA7; Sat, 17 Jul 2021 14:38:45 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH] dt-bindings: serial: 8250: Add Exar compatibles
-Date:   Sat, 17 Jul 2021 00:53:19 +0200
-Message-Id: <20210716225319.1282704-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
+Cc:     "Andrew Lunn" <andrew@lunn.ch>,
+        "Gregory Clement" <gregory.clement@bootlin.com>,
+        "Sebastian Hesselbarth" <sebastian.hesselbarth@gmail.com>,
+        "Vladimir Vid" <vladimir.vid@sartura.hr>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "Geert Uytterhoeven" <geert@linux-m68k.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 0/5] serial: mvebu-uart: Support for higher baudrates
+Date:   Sat, 17 Jul 2021 14:38:24 +0200
+Message-Id: <20210717123829.5201-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210624224909.6350-1-pali@kernel.org>
+References: <20210624224909.6350-1-pali@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The Intel IXP425 Vulcan board has an Exar XR16L2551 8250-compatible.
-It works like an 8250 but it is always good to specify exactly which
-component we are using. This allows us to specify:
+This patch series add support for baudrates higher than 230400 on
+Marvell Armada 37xx boards.
 
-compatible = "exar,xr16l2551", "ns8250";
+This new version v3 is rebased on top of Linus master branch and all
+already applied patches were dropped. There are no changes in patches
+itself since v2.
 
-Put in some sibling Exar serial compatibles while we're at it.
+Please review these patches as they touch both Device Tree bindings and
+mvebu-uart.c driver.
 
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- Documentation/devicetree/bindings/serial/8250.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+Pali Rohár (5):
+  math64: New DIV_U64_ROUND_CLOSEST helper
+  serial: mvebu-uart: implement UART clock driver for configuring UART
+    base clock
+  dt-bindings: mvebu-uart: document DT bindings for
+    marvell,armada-3700-uart-clock
+  arm64: dts: marvell: armada-37xx: add device node for UART clock and
+    use it
+  serial: mvebu-uart: implement support for baudrates higher than 230400
 
-diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-index a0bf061b80fe..fa767440f281 100644
---- a/Documentation/devicetree/bindings/serial/8250.yaml
-+++ b/Documentation/devicetree/bindings/serial/8250.yaml
-@@ -64,6 +64,12 @@ properties:
-       - const: nuvoton,npcm750-uart
-       - const: nvidia,tegra20-uart
-       - const: nxp,lpc3220-uart
-+      - items:
-+          - enum:
-+              - exar,xr16l2552
-+              - exar,xr16l2551
-+              - exar,xr16l2550
-+          - const: ns8250
-       - items:
-           - enum:
-               - altr,16550-FIFO32
+ .../bindings/clock/armada3700-uart-clock.txt  |  24 +
+ .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
+ .../arm64/boot/dts/marvell/armada-3720-db.dts |   4 +
+ .../dts/marvell/armada-3720-espressobin.dtsi  |   4 +
+ .../dts/marvell/armada-3720-turris-mox.dts    |   4 +
+ .../boot/dts/marvell/armada-3720-uDPU.dts     |   4 +
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  15 +-
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
+ include/linux/math64.h                        |  13 +
+ 10 files changed, 649 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/armada3700-uart-clock.txt
+
 -- 
-2.31.1
+2.20.1
 
