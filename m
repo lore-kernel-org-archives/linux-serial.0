@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72192C636CB
-	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FB2C636CE
+	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:38:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 427A6613F5
-	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:38:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CEF61613E3
+	for <linux-serial@archiver.kernel.org>; Sat, 17 Jul 2021 12:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232040AbhGQMlp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 17 Jul 2021 08:41:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38150 "EHLO mail.kernel.org"
+        id S233125AbhGQMlq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 17 Jul 2021 08:41:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38168 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229471AbhGQMlo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 17 Jul 2021 08:41:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 389D961285;
+        id S229746AbhGQMlp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 17 Jul 2021 08:41:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 76FF3613D9;
         Sat, 17 Jul 2021 12:38:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1626525528;
-        bh=2Yit2k4uDAQ+Npx8/IXzxBh/GhjT1kx6H+uYPeax3WY=;
+        bh=Ke1OwpWSzbImBXh38I5IeSSNi+Q5RSfaXaZ9pXeQzBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oJ4/by3lNsgTX1+KqA4I3lcmb5kYVk8Mt4AZOmz38C34j9iQS00kUes7WOj50syU0
-         j+U54LAqA8voUBURpN2B5/54zX69nsvgar31Bvomy9wZ9ZdTHfrQFB98baR/MEet40
-         JC5lRQVCxwbBZnFXb6CJZPRkzk2VJTYH772oq5UGWacj46sDrGyW3eKcvO4rqiogxC
-         qHBjsobDlIZ38T3Wsr7WZ1UaXEk5PvRyH13LGu0D/iLegumP6GyEDGTBXheiQI8QZX
-         njaSIceFvdFLn8r6EKaP6gY0Ikjzz22D9VZ2+HKlzO05igPnM36rDLLyIdJXv/4CHM
-         pYzCkPlI3Ocqg==
+        b=V7iIELCi9OM8fPWEL6qjIfvY6whY/MBi/7JREp06TUt87IClGjLslAwT6izfkPOb0
+         4hbZCKeF+KarYUW8akH743hSEB5WST2KhpTHRfRs9SAW5DYSfBnLbi6oaQo72vckLj
+         zRzj2VffMMZDOpSeCN4Jhmty7V0lWwiO5IuSWK6/rYMc6x4z1ddxtrd/xYWdGBeXPA
+         ehN7R1ET1NBNB9Iszt7NEC3USsSF2FLPUt+2j0mOm9/s34nwWg5IMXBioSfG7tkOuH
+         /yjirHAj7acsfmOJ+9PJo158EPM+1B4dIil+2FESPD0xBtIIbeG7IENtW+pdcM0lC6
+         3NoxT9Y0opuMg==
 Received: by pali.im (Postfix)
-        id 6CD79EA7; Sat, 17 Jul 2021 14:38:45 +0200 (CEST)
+        id 944F0EEB; Sat, 17 Jul 2021 14:38:46 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -46,12 +46,13 @@ Cc:     "Andrew Lunn" <andrew@lunn.ch>,
         "Geert Uytterhoeven" <geert@linux-m68k.org>,
         linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 0/5] serial: mvebu-uart: Support for higher baudrates
-Date:   Sat, 17 Jul 2021 14:38:24 +0200
-Message-Id: <20210717123829.5201-1-pali@kernel.org>
+Subject: [PATCH v3 1/5] math64: New DIV_U64_ROUND_CLOSEST helper
+Date:   Sat, 17 Jul 2021 14:38:25 +0200
+Message-Id: <20210717123829.5201-2-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210624224909.6350-1-pali@kernel.org>
+In-Reply-To: <20210717123829.5201-1-pali@kernel.org>
 References: <20210624224909.6350-1-pali@kernel.org>
+ <20210717123829.5201-1-pali@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -59,39 +60,40 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch series add support for baudrates higher than 230400 on
-Marvell Armada 37xx boards.
+Provide DIV_U64_ROUND_CLOSEST helper which uses div_u64 to perform
+division rounded to the closest integer using unsigned 64bit
+dividend and unsigned 32bit divisor.
 
-This new version v3 is rebased on top of Linus master branch and all
-already applied patches were dropped. There are no changes in patches
-itself since v2.
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ include/linux/math64.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Please review these patches as they touch both Device Tree bindings and
-mvebu-uart.c driver.
-
-Pali Rohár (5):
-  math64: New DIV_U64_ROUND_CLOSEST helper
-  serial: mvebu-uart: implement UART clock driver for configuring UART
-    base clock
-  dt-bindings: mvebu-uart: document DT bindings for
-    marvell,armada-3700-uart-clock
-  arm64: dts: marvell: armada-37xx: add device node for UART clock and
-    use it
-  serial: mvebu-uart: implement support for baudrates higher than 230400
-
- .../bindings/clock/armada3700-uart-clock.txt  |  24 +
- .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
- .../arm64/boot/dts/marvell/armada-3720-db.dts |   4 +
- .../dts/marvell/armada-3720-espressobin.dtsi  |   4 +
- .../dts/marvell/armada-3720-turris-mox.dts    |   4 +
- .../boot/dts/marvell/armada-3720-uDPU.dts     |   4 +
- arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  15 +-
- drivers/tty/serial/Kconfig                    |   1 +
- drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
- include/linux/math64.h                        |  13 +
- 10 files changed, 649 insertions(+), 21 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/armada3700-uart-clock.txt
-
+diff --git a/include/linux/math64.h b/include/linux/math64.h
+index 2928f03d6d46..a14f40de1dca 100644
+--- a/include/linux/math64.h
++++ b/include/linux/math64.h
+@@ -300,6 +300,19 @@ u64 mul_u64_u64_div_u64(u64 a, u64 mul, u64 div);
+ #define DIV64_U64_ROUND_CLOSEST(dividend, divisor)	\
+ 	({ u64 _tmp = (divisor); div64_u64((dividend) + _tmp / 2, _tmp); })
+ 
++/*
++ * DIV_U64_ROUND_CLOSEST - unsigned 64bit divide with 32bit divisor rounded to nearest integer
++ * @dividend: unsigned 64bit dividend
++ * @divisor: unsigned 32bit divisor
++ *
++ * Divide unsigned 64bit dividend by unsigned 32bit divisor
++ * and round to closest integer.
++ *
++ * Return: dividend / divisor rounded to nearest integer
++ */
++#define DIV_U64_ROUND_CLOSEST(dividend, divisor)	\
++	({ u32 _tmp = (divisor); div_u64((u64)(dividend) + _tmp / 2, _tmp); })
++
+ /*
+  * DIV_S64_ROUND_CLOSEST - signed 64bit divide with 32bit divisor rounded to nearest integer
+  * @dividend: signed 64bit dividend
 -- 
 2.20.1
 
