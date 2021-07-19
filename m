@@ -2,77 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 121CEC07E9D
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Jul 2021 10:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B87C07E9B
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Jul 2021 12:45:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E661E6113A
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Jul 2021 10:24:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9F50F6113E
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Jul 2021 12:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235172AbhGSJnn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Jul 2021 05:43:43 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:59552
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235416AbhGSJnm (ORCPT
+        id S237028AbhGSMFI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Jul 2021 08:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236899AbhGSMFI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Jul 2021 05:43:42 -0400
-Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id C20B6408AC;
-        Mon, 19 Jul 2021 10:24:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1626690261;
-        bh=/JBcKsCAbvLS/jGaoHAwAJn9H+K+APuZd6w9Cs1hFM0=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=qo/CuGv8V5FYn2fkdtH4QqfD2Hl+AyBjizdXL2ZGuglndyXuZe0S9rnS7Oe8yj2XT
-         uDxHVO1inJcUSSL20u/bPLwRaNu/uRVNNHH3q9xq9ej1wAAcrdT5/grvY81rzxzfM/
-         EYFC7AMGhj4E4Iyh6hMRheQ1XQ3+abesKFL7c6umW/5xW2h7MU/Sxugj74s8D2nPpI
-         1/yFJOaSfsagVmQDs4IddeevyZU88ULJYFq+MEiWaUy6ufncXpSokQPfYiG5jdKIF3
-         u14A/xzP+M//E3VPiqZy1AmolDrUUiLfhcKyXoJjN4+J8I5GaA377f2vx6avBf6YqM
-         ziZuKQFjkC4ww==
-From:   Colin King <colin.king@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: serial: Fix spelling mistake "Asychronous" -> "Asynchronous"
-Date:   Mon, 19 Jul 2021 11:24:21 +0100
-Message-Id: <20210719102421.14813-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 19 Jul 2021 08:05:08 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA3CC061574;
+        Mon, 19 Jul 2021 05:03:33 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id s18so18849807pgg.8;
+        Mon, 19 Jul 2021 05:45:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=tto4OVvjuCgq4lBBMOSB4qS7FSxO1fllKtx/pkaH/aM=;
+        b=LuQ/kJePBiQ2sZZAE0U5rHZDK1pdMQwE9VZ/S1Ngpg6VDNtB2XUn3nHKtrus/jXsFL
+         i1lw2oX51zCuDbuZUa4I1oUHkZLWAHBLZbqo2+4AP94xWDDpwz2RAMITYgt3Z2NYrbsJ
+         OmzY7hYqC/SQz0xg4Ih0X55QSOi7Pk6pdKCt+E67doyzAo3xVWu8+mYajawkR49UeerC
+         ZZ6Lycm/hFybFuKM2+4qybHbosPe5tR++hIoIrWSoIeSf6R+xn37t0WDEALhJyku01EC
+         pG1O5vPG10586FZ7rWFMqvGuxgj+mJj+CS31+3sGJL4lFmIVLPAkvLoFJQFUY6kjtok9
+         DlJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tto4OVvjuCgq4lBBMOSB4qS7FSxO1fllKtx/pkaH/aM=;
+        b=hz4cQqpFW+i7zmx/Le2W/npqr1OhU+n93YzfHev/h1XodIQp2+PJJcEUuYFm++1yqK
+         FS0+U3Zph2HH3F7nq+5GeCzcs0rDKFiGtwJkJkXHnvkpjRtsKTwnALw7trf326InDem4
+         XhKHRbfDCjDWhoLB7RUJO6KdR2Taxw84Jl9/piYqJKUaTVkiGV+0yDHp6JrU2phxBKF6
+         3L/Na1AmbPFCiWNxymmNdWLXBOmJG0zn1E90JOtD455AURYxjTRThUz7P0cwupjE+gMi
+         qOIyG41TaeSIK4ko0h2cwP+Pg5CiItoL05gUWp2uyebDLiZl9dJAw/A3mDEzbkVANkzs
+         Wh0A==
+X-Gm-Message-State: AOAM531uPY5pMPgfA//0rXQ106mViL3asyfPAMU/3mxKLZFOQYivXUER
+        fxIpxzyhm/4CLHd28FD8YE8LzGJ2JQW36qWlLZo=
+X-Google-Smtp-Source: ABdhPJwpKyQgs0rJ1djIB80LNagdLFagxsrcE0J+H7ot1s1STaLkL2e1Q8aLp4hs86aGu8FTDeXY8TYxDB9kCjSh568=
+X-Received: by 2002:a65:434a:: with SMTP id k10mr25333382pgq.4.1626698747965;
+ Mon, 19 Jul 2021 05:45:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20210624224909.6350-1-pali@kernel.org> <20210625143617.12826-1-pali@kernel.org>
+ <20210625143617.12826-8-pali@kernel.org> <CAMuHMdUCEHtqNk-nGJhPK_=NrgSoRhmC99J9pdGqQxcWpoFqGg@mail.gmail.com>
+ <20210625153803.u6uesckcqyvvo7dl@pali>
+In-Reply-To: <20210625153803.u6uesckcqyvvo7dl@pali>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 19 Jul 2021 15:45:08 +0300
+Message-ID: <CAHp75Vdzb9yhm490vAhL7O0S+5FPR=sM1Tohqi70xYV+bXVr8g@mail.gmail.com>
+Subject: Re: [PATCH v2 07/11] math64: New DIV_U64_ROUND_CLOSEST helper
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vladimir Vid <vladimir.vid@sartura.hr>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Fri, Jun 25, 2021 at 6:39 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> On Friday 25 June 2021 17:22:31 Geert Uytterhoeven wrote:
+> > On Fri, Jun 25, 2021 at 4:37 PM Pali Roh=C3=A1r <pali@kernel.org> wrote=
+:
 
-There is a spelling mistake in the Kconfig text. Fix it.
+...
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > > +/*
+> > > + * DIV_U64_ROUND_CLOSEST - unsigned 64bit divide with 32bit divisor =
+rounded to nearest integer
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 24282ad99d85..e0f6d5bfdc94 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1382,7 +1382,7 @@ config SERIAL_ST_ASC
- 	select SERIAL_CORE
- 	depends on ARM || COMPILE_TEST
- 	help
--	  This driver is for the on-chip Asychronous Serial Controller on
-+	  This driver is for the on-chip Asynchronous Serial Controller on
- 	  STMicroelectronics STi SoCs.
- 	  ASC is embedded in ST COMMS IP block. It supports Rx & Tx functionality.
- 	  It support all industry standard baud rates.
--- 
-2.31.1
+> > > + * @dividend: unsigned 64bit dividend
 
+(1)
+
+> > > + * @divisor: unsigned 32bit divisor
+> > > + *
+> > > + * Divide unsigned 64bit dividend by unsigned 32bit divisor
+> > > + * and round to closest integer.
+> > > + *
+> > > + * Return: dividend / divisor rounded to nearest integer
+> > > + */
+> > > +#define DIV_U64_ROUND_CLOSEST(dividend, divisor)       \
+> > > +       ({ u32 _tmp =3D (divisor); div_u64((u64)(dividend) + _tmp / 2=
+, _tmp); })
+> >
+> > Given "dividend" should already be an unsigned 64-bit value, I don't
+> > think the cast to "u64" is needed. Similar macros in this file also
+> > don't have the cast.
+>
+> It is just to ensure that plus operation between dividend and _tmp is
+> evaluated in 64-bit context to prevent overflow. Just a case when user
+> calls this macro with 32-bit dividend param.
+
+This contradicts (1).
+
+> As it is a macro (and not
+> inline function) type is not automatically enforced.
+>
+> DIV_S64_ROUND_CLOSEST macro assigns its argument into temporary 64-bit
+> variable which then ensures usage of 64-bit arithmetic operations. Same
+> applies for DIV64_U64_ROUND_CLOSEST and DIV64_U64_ROUND_UP macros.
+>
+> So this is reason why I added explicit cast to u64.
+
+I don't see the reason for casting in the current code. Probably you
+need to rephrase documentation to explain why it's there.
+
+--=20
+With Best Regards,
+Andy Shevchenko
