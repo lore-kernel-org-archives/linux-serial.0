@@ -2,112 +2,78 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 363D3C636C9
-	for <linux-serial@archiver.kernel.org>; Sun, 18 Jul 2021 00:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7499AC12002
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Jul 2021 09:55:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0600061153
-	for <linux-serial@archiver.kernel.org>; Sun, 18 Jul 2021 00:39:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 52C9861182
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Jul 2021 09:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbhGRAmF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 17 Jul 2021 20:42:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34480 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230259AbhGRAmF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 17 Jul 2021 20:42:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 83B5D610CD;
-        Sun, 18 Jul 2021 00:39:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626568747;
-        bh=UjYo2V0cXJyspi9AgX26xgd83MEXg3QGm8D9TQwRIt8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Fxyf2mO8PJrZSzLuZk/HO6MeLoe8dkSgzwBezY1Son2QTPNBIiecYq7zse6MO+x7Z
-         mzHZE0xYxsn9kgnclS2Dm+v0tgC2iAAwpneW88yWWecalj5AzUkML7G169iyGkvSby
-         +uGeOKpCiIvqrgQcYkjgMpXmS1W2+ppybzeTwfA6NvC7YmwNeF43ciqmnhFusN71sE
-         +3b/z/BFaaVgUWbFlR2RMZUJWAZQ+AuGpm0D8DXJZ86Z0X3a1qVeg5UIX2BnjIMSGf
-         X5rIJErSoWBctNIvem62E3o5ER/Y8qCxfO9obRrJmekasJG7aFLsur10vK4qYuJzVk
-         XDAKESYWndqEQ==
-Date:   Sat, 17 Jul 2021 20:39:06 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Jim Quinlan <jim2101024@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.13 013/114] serial: 8250: of: Check for
- CONFIG_SERIAL_8250_BCM7271
-Message-ID: <YPN4KiU/50HGeXHj@sashalap>
-References: <20210710021748.3167666-1-sashal@kernel.org>
- <20210710021748.3167666-13-sashal@kernel.org>
- <b431c751-0a45-47f1-c5c6-7ca02581ad57@gmail.com>
+        id S235032AbhGSJPB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Jul 2021 05:15:01 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:44148
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231928AbhGSJPB (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 19 Jul 2021 05:15:01 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 913D940333;
+        Mon, 19 Jul 2021 09:55:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1626688533;
+        bh=NeHvk9CH9MzNaHMMnngpGmg0816fMoabsjV9w7Sujo0=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=L0DAiBLGaexsMDOLjcAxv5HUFc5vJ6tef9lciZSKNT2fJYWcCTsNlj2JI/ON2X+W9
+         SGudH1exrM9v7V27hYzs6ORXdVaKcua97w3i/RfwHuOAGPCtDiHJ0lb8e+Dspe6WQV
+         W1S/j8Ka7J8VbIVkeMcOdP3tDDd2gKjr3vyi1OgXq8S8fjWKiaXsI4uDiwBUfzWVoj
+         gYFoQi8Q7BLeBxy+98reKgyOkwdasIh8ssgsL8gyiuudkjO36jvkbk+7mlPN4R1K3L
+         YnNm3Fc6ZEeVJzY5zlP+TR7NvkkBfKD5ylXVo/FynF6WWPf/JLOdilJSIsPNDjAdPs
+         0kZSWwCWmEn0g==
+From:   Colin King <colin.king@canonical.com>
+To:     Al Cooper <alcooperx@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250_bcm7271: use NULL to initialized a null pointer
+Date:   Mon, 19 Jul 2021 10:55:33 +0100
+Message-Id: <20210719095533.14017-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <b431c751-0a45-47f1-c5c6-7ca02581ad57@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 09, 2021 at 07:33:25PM -0700, Florian Fainelli wrote:
->
->
->On 7/9/2021 7:16 PM, Sasha Levin wrote:
->>From: Jim Quinlan <jim2101024@gmail.com>
->>
->>[ Upstream commit f5b08386dee439c7a9e60ce0a4a4a705f3a60dff ]
->>
->>Our SoC's have always had a NS16650A UART core and older SoC's would
->>have a compatible string of: 'compatible = ""ns16550a"' and use the
->>8250_of driver. Our newer SoC's have added enhancements to the base
->>core to add support for DMA and accurate high speed baud rates and use
->>this newer 8250_bcm7271 driver. The Device Tree node for our enhanced
->>UARTs has a compatible string of: 'compatible = "brcm,bcm7271-uart",
->>"ns16550a"''. With both drivers running and the link order setup so
->>that the 8250_bcm7217 driver is initialized before the 8250_of driver,
->>we should bind the 8250_bcm7271 driver to the enhanced UART, or for
->>upstream kernels that don't have the 8250_bcm7271 driver, we bind to
->>the 8250_of driver.
->>
->>The problem is that when both the 8250_of and 8250_bcm7271 drivers
->>were running, occasionally the 8250_of driver would be bound to the
->>enhanced UART instead of the 8250_bcm7271 driver. This was happening
->>because we use SCMI based clocks which come up late in initialization
->>and cause probe DEFER's when the two drivers get their clocks.
->>
->>Occasionally the SCMI clock would become ready between the 8250_bcm7271
->>probe and the 8250_of probe and the 8250_of driver would be bound. To
->>fix this we decided to config only our 8250_bcm7271 driver and added
->>"ns16665a0" to the compatible string so the driver would work on our
->>older system.
->>
->>This commit has of_platform_serial_probe() check specifically for the
->>"brcm,bcm7271-uart" and whether its companion driver is enabled. If it
->>is the case, and the clock provider is not ready, we want to make sure
->>that when the 8250_bcm7271.c driver returns EPROBE_DEFER, we are not
->>getting the UART registered via 8250_of.c.
->>
->>Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
->>Signed-off-by: Jim Quinlan <jim2101024@gmail.com>
->>Signed-off-by: Al Cooper <alcooperx@gmail.com>
->>Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->>Link: https://lore.kernel.org/r/20210423183206.3917725-1-f.fainelli@gmail.com
->>Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>Signed-off-by: Sasha Levin <sashal@kernel.org>
->
->This commit is only relevant with 
->41a469482de257ea8db43cf74b6311bd055de030 ("serial: 8250: Add new 
->8250-core based Broadcom STB driver") which is included in v5.13 and 
->newer. You would want to drop that commit from the 5.12, 5.10 and 5.4 
->auto-selection.
+From: Colin Ian King <colin.king@canonical.com>
 
-I'll drop it from 5.12 and older, thanks!
+Pointer membase is currently being in initialized with zero rather
+than NULL. Fix this.
 
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 725a450058f8..7f656fac503f 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -941,7 +941,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+ 	struct clk *baud_mux_clk;
+ 	struct uart_8250_port up;
+ 	struct resource *irq;
+-	void __iomem *membase = 0;
++	void __iomem *membase = NULL;
+ 	resource_size_t mapbase = 0;
+ 	u32 clk_rate = 0;
+ 	int ret;
 -- 
-Thanks,
-Sasha
+2.31.1
+
