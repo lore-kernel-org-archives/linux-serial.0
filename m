@@ -2,363 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-27.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9011DC63797
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Jul 2021 08:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BA1C6377D
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Jul 2021 09:04:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6ED4461355
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Jul 2021 08:46:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9B8736108B
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Jul 2021 09:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbhGVIFc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Jul 2021 04:05:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55882 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231189AbhGVIFZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Jul 2021 04:05:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A43AE6128C;
-        Thu, 22 Jul 2021 08:45:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1626943559;
-        bh=iHEKpKP05yPtSDo0WVw13tR4OsPIw3x7iurEQu7Pc7Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d2l4V14jYNVya/romP2w2ezg4x2LnX47K9dLSJmCxQOKyIqkdonEoIsuSyzycFfD4
-         aHamBXJweC7B8K4Qi3lPBaud6oc7vHctb7fViEzj6oXWZWpeL9VSuOZpThr23TyNei
-         Kh7xAATxCTMeB2NBX21iFqK668swZChaCi9FSwpo=
-Date:   Thu, 22 Jul 2021 10:45:55 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     kernel@pengutronix.de,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alexandre Bounine <alex.bou9@gmail.com>,
-        Alex Dubov <oakad@yahoo.com>, Alex Elder <elder@kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bodo Stroesser <bostroesser@gmail.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Dexuan Cui <decui@microsoft.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Farman <farman@linux.ibm.com>,
-        Finn Thain <fthain@linux-m68k.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Frank Li <lznuaa@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Geoff Levand <geoff@infradead.org>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>, Ira Weiny <ira.weiny@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jason Wang <jasowang@redhat.com>,
-        Jens Taprogge <jens.taprogge@taprogge.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joey Pabalan <jpabalanb@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Johannes Thumshirn <morbidrsa@gmail.com>,
-        Jon Mason <jdmason@kudzu.us>, Juergen Gross <jgross@suse.com>,
-        Julien Grall <jgrall@amazon.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lee Jones <lee.jones@linaro.org>, Len Brown <lenb@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Maxim Levitsky <maximlevitsky@gmail.com>,
-        Michael Buesch <m@bues.ch>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michael Jamet <michael.jamet@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Moritz Fischer <mdf@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Rich Felker <dalias@libc.org>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Samuel Holland <samuel@sholland.org>,
-        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
-        SeongJae Park <sjpark@amazon.de>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thorsten Scherer <t.scherer@eckelmann.de>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Tom Rix <trix@redhat.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>, Wu Hao <hao.wu@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Yufen Yu <yuyufen@huawei.com>, alsa-devel@alsa-project.org,
-        dmaengine@vger.kernel.org, greybus-dev@lists.linaro.org,
-        industrypack-devel@lists.sourceforge.net, kvm@vger.kernel.org,
-        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-fpga@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linux-media@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-ntb@googlegroups.com, linux-parisc@vger.kernel.org,
-        linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-sh@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-sunxi@lists.linux.dev,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, nvdimm@lists.linux.dev,
-        platform-driver-x86@vger.kernel.org, sparclinux@vger.kernel.org,
-        target-devel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v4 0/5] bus: Make remove callback return void
-Message-ID: <YPkwQwf0dUKnGA7L@kroah.com>
-References: <20210713193522.1770306-1-u.kleine-koenig@pengutronix.de>
- <YPfyZen4Y0uDKqDT@kroah.com>
+        id S230491AbhGVIX7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Jul 2021 04:23:59 -0400
+Received: from mailgw02.mediatek.com ([1.203.163.81]:52273 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230330AbhGVIX6 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 22 Jul 2021 04:23:58 -0400
+X-UUID: 91421b5c386f4357bc4539c6146e6a42-20210722
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=SUfFUHHeAiy7xHB0h/Imsj6WwwpQ9EOfIzx4JdwN/vE=;
+        b=GsEi1ZINroU+gGMj6dryC39Rbo1RNYLRaqwQwRa0LNApMnhChyl7SeZGuskAbdw1md+HIFRXAHYanlY5Lprlu3hD2eQ5mKZUON8T3H5UvoCi3exy+VRuMLr+3ix9XAc4pNR/a7qfGhdi4bfO6UVuCGykz9NsH2ttTnRLp7qocx4=;
+X-UUID: 91421b5c386f4357bc4539c6146e6a42-20210722
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+        (envelope-from <zhiyong.tao@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1242842288; Thu, 22 Jul 2021 17:04:29 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
+ (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 22 Jul
+ 2021 17:04:26 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 22 Jul 2021 17:04:25 +0800
+Message-ID: <1626944665.29611.22.camel@mhfsdcap03>
+Subject: Re: [PATCH] uart: mediatek: fix memory corruption issue
+From:   zhiyong tao <zhiyong.tao@mediatek.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     "timur@kernel.org" <timur@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "alcooperx@gmail.com" <alcooperx@gmail.com>,
+        "tklauser@distanz.ch" <tklauser@distanz.ch>,
+        "sean.wang@kernel.org" <sean.wang@kernel.org>,
+        "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>,
+        "hui.liu@mediatek.com" <hui.liu@mediatek.com>,
+        "yuchen.huang@mediatek.com" <yuchen.huang@mediatek.com>,
+        "huihui.wang@mediatek.com" <huihui.wang@mediatek.com>,
+        "eddie.huang@mediatek.com" <eddie.huang@mediatek.com>,
+        "sean.wang@mediatek.com" <sean.wang@mediatek.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Date:   Thu, 22 Jul 2021 17:04:25 +0800
+In-Reply-To: <CAHp75VeZL53VN0w3O160vMurmRT9ZJzJek6=4X6osqjJDuxD3g@mail.gmail.com>
+References: <20210710090103.2643-1-zhiyong.tao@mediatek.com>
+         <20210710090103.2643-2-zhiyong.tao@mediatek.com>
+         <CAHp75VeZL53VN0w3O160vMurmRT9ZJzJek6=4X6osqjJDuxD3g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YPfyZen4Y0uDKqDT@kroah.com>
+X-TM-SNTS-SMTP: 807C9821DB6278E61EADEB2C44AB602CE8CBB4FB77B86B8C8DCE9240BB9B9AA02000:8
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 21, 2021 at 12:09:41PM +0200, Greg Kroah-Hartman wrote:
-> On Tue, Jul 13, 2021 at 09:35:17PM +0200, Uwe Kleine-König wrote:
-> > Hello,
-> > 
-> > this is v4 of the final patch set for my effort to make struct
-> > bus_type::remove return void.
-> > 
-> > The first four patches contain cleanups that make some of these
-> > callbacks (more obviously) always return 0. They are acked by the
-> > respective maintainers. Bjorn Helgaas explicitly asked to include the
-> > pci patch (#1) into this series, so Greg taking this is fine. I assume
-> > the s390 people are fine with Greg taking patches #2 to #4, too, they
-> > didn't explicitly said so though.
-> > 
-> > The last patch actually changes the prototype and so touches quite some
-> > drivers and has the potential to conflict with future developments, so I
-> > consider it beneficial to put these patches into next soon. I expect
-> > that it will be Greg who takes the complete series, he already confirmed
-> > via irc (for v2) to look into this series.
-> > 
-> > The only change compared to v3 is in the fourth patch where I modified a
-> > few more drivers to fix build failures. Some of them were found by build
-> > bots (thanks!), some of them I found myself using a regular expression
-> > search. The newly modified files are:
-> > 
-> >  arch/sparc/kernel/vio.c
-> >  drivers/nubus/bus.c
-> >  drivers/sh/superhyway/superhyway.c
-> >  drivers/vlynq/vlynq.c
-> >  drivers/zorro/zorro-driver.c
-> >  sound/ac97/bus.c
-> > 
-> > Best regards
-> > Uwe
-> 
-> Now queued up.  I can go make a git tag that people can pull from after
-> 0-day is finished testing this to verify all is good, if others need it.
+T24gV2VkLCAyMDIxLTA3LTE0IGF0IDAxOjIwICswMzAwLCBBbmR5IFNoZXZjaGVua28gd3JvdGU6
+DQo+IA0KPiANCj4gT24gU2F0dXJkYXksIEp1bHkgMTAsIDIwMjEsIFpoaXlvbmcgVGFvIDx6aGl5
+b25nLnRhb0BtZWRpYXRlay5jb20+DQo+IHdyb3RlOg0KPiANCj4gDQo+IFBsZWFzZSwgdXNlIOKA
+nHNlcmlhbDogODI2MF9tdGs64oCdIHByZWZpeC4NCg0KPT0+IEhpIEFuZHksDQoNClRoYW5rcyBm
+b3IgeW91ciBzdWdnZXN0aW9uLg0Kd2Ugd2lsbCBjaGFuZ2UgaXQgaW4gdGhlIG5leHQgdmVyc2lv
+bi4NCj4gDQo+ICAgICAgICAgVGhpcyBwYXRjaCBpcyB1c2VkIHRvIGZpeCBtZW1vcnkgDQo+ICAg
+ICAgICAgDQo+IA0KPiANCj4gVGhpcyBpcyBjb21wbGV0ZWx5IGNvbmZ1c2luZyBzdGFydCBvZiB0
+aGUgc2VudGVuY2UuIFRoZSBmb3JtIG9mIOKAnGJlDQo+IHVzZWQgdG/igJ0gc3Ryb25nbHkgc3Vn
+Z2VzdHMgdHdvIHRoaW5nczogMSkgaXQgd2FzIGEgcGF0Y2ggdG8gZml4DQo+IHNvbWV0aGluZzsg
+MikgaXQgaXMgbm90IHVzZWQgYW55bW9yZSBhbmQgbmV2ZXIgY29uc2lkZXJlZCB0byBiZSB1c2Vk
+DQo+IGFnYWluLA0KPiANCj4gDQo+IEJlc2lkZXMgdGhhdCBTdWJtaXR0aW5nIFBhdGNoZXMgZG9j
+dW1lbnQgaGlnaGx5IHJlY29tbWVuZHMgdG8gYXZvaWQNCj4gc2VudGVuY2VzIHRoYXQgc3RhcnRz
+IHdpdGgg4oCcdGhpcyBwYXRjaOKAnS4NCj4gIA0KDQo9PT5XZSB3aWxsIGNoYW5nZSB0aGUgY29t
+bWl0IG1lc3NhZ2UgYXMgIkZpeCB1YXJ0IGNvcnJ1cHRpb24gaXNzdWUgd2hlbg0KcnggcG93ZXIg
+b2ZmICJpbiB0aGUgbmV4dCB2ZXJzaW9uLg0KDQpUaGFua3MuDQo+ICAgICAgICAgDQo+ICAgICAg
+ICAgY29ycnVwdGlvbiBpc3N1ZSB3aGVuIHJ4IHBvd2VyIG9mZi4NCj4gICAgICAgICAxLiBhZGQg
+c3BpbiBsb2NrIGluIG10azgyNTBfZG1hX3J4X2NvbXBsZXRlIGZ1bmN0aW9uIGluIEFQRE1BDQo+
+ICAgICAgICAgbW9kZS4NCj4gICAgICAgICAyLiBhZGQgcHJvY2Vzc2luZyBtZWNoYW5pc20gd2hp
+Y2ggY291bnQgdmFsdWUgaXMgMA0KPiAgICAgICAgIA0KPiAgICAgICAgIFNpZ25lZC1vZmYtYnk6
+IFpoaXlvbmcgVGFvIDx6aGl5b25nLnRhb0BtZWRpYXRlay5jb20+DQo+ICAgICAgICAgLS0tDQo+
+ICAgICAgICAgIGRyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfbXRrLmMgfCAxNSArKysrKysr
+KysrKy0tLS0NCj4gICAgICAgICAgMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDQg
+ZGVsZXRpb25zKC0pDQo+ICAgICAgICAgDQo+ICAgICAgICAgZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+dHR5L3NlcmlhbC84MjUwLzgyNTBfbXRrLmMNCj4gICAgICAgICBiL2RyaXZlcnMvdHR5L3Nlcmlh
+bC84MjUwLzgyNTBfbXRrLmMNCj4gICAgICAgICBpbmRleCBmN2QzMDIzZjg2MGYuLjA5ZjdkMjE2
+NjMxNSAxMDA2NDQNCj4gICAgICAgICAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUw
+X210ay5jDQo+ICAgICAgICAgKysrIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9tdGsu
+Yw0KPiAgICAgICAgIEBAIC05MSwxMiArOTEsMTUgQEAgc3RhdGljIHZvaWQgbXRrODI1MF9kbWFf
+cnhfY29tcGxldGUodm9pZA0KPiAgICAgICAgICpwYXJhbSkNCj4gICAgICAgICAgICAgICAgIHN0
+cnVjdCBtdGs4MjUwX2RhdGEgKmRhdGEgPSB1cC0+cG9ydC5wcml2YXRlX2RhdGE7DQo+ICAgICAg
+ICAgICAgICAgICBzdHJ1Y3QgdHR5X3BvcnQgKnR0eV9wb3J0ID0gJnVwLT5wb3J0LnN0YXRlLT5w
+b3J0Ow0KPiAgICAgICAgICAgICAgICAgc3RydWN0IGRtYV90eF9zdGF0ZSBzdGF0ZTsNCj4gICAg
+ICAgICAtICAgICAgIGludCBjb3BpZWQsIHRvdGFsLCBjbnQ7DQo+ICAgICAgICAgKyAgICAgICB1
+bnNpZ25lZCBpbnQgY29waWVkLCB0b3RhbCwgY250Ow0KPiAgICAgICAgICAgICAgICAgdW5zaWdu
+ZWQgY2hhciAqcHRyOw0KPiAgICAgICAgICsgICAgICAgdW5zaWduZWQgbG9uZyBmbGFnczsNCj4g
+ICAgICAgICANCj4gICAgICAgICAgICAgICAgIGlmIChkYXRhLT5yeF9zdGF0dXMgPT0gRE1BX1JY
+X1NIVVRET1dOKQ0KPiAgICAgICAgICAgICAgICAgICAgICAgICByZXR1cm47DQo+ICAgICAgICAg
+DQo+ICAgICAgICAgKyAgICAgICBzcGluX2xvY2tfaXJxc2F2ZSgmdXAtPnBvcnQubG9jaywgZmxh
+Z3MpOw0KPiAgICAgICAgICsNCj4gICAgICAgICAgICAgICAgIGRtYWVuZ2luZV90eF9zdGF0dXMo
+ZG1hLT5yeGNoYW4sIGRtYS0+cnhfY29va2llLA0KPiAgICAgICAgICZzdGF0ZSk7DQo+ICAgICAg
+ICAgICAgICAgICB0b3RhbCA9IGRtYS0+cnhfc2l6ZSAtIHN0YXRlLnJlc2lkdWU7DQo+ICAgICAg
+ICAgICAgICAgICBjbnQgPSB0b3RhbDsNCj4gICAgICAgICBAQCAtMTA0LDkgKzEwNywxMSBAQCBz
+dGF0aWMgdm9pZCBtdGs4MjUwX2RtYV9yeF9jb21wbGV0ZSh2b2lkDQo+ICAgICAgICAgKnBhcmFt
+KQ0KPiAgICAgICAgICAgICAgICAgaWYgKChkYXRhLT5yeF9wb3MgKyBjbnQpID4gZG1hLT5yeF9z
+aXplKQ0KPiAgICAgICAgICAgICAgICAgICAgICAgICBjbnQgPSBkbWEtPnJ4X3NpemUgLSBkYXRh
+LT5yeF9wb3M7DQo+ICAgICAgICAgDQo+ICAgICAgICAgLSAgICAgICBwdHIgPSAodW5zaWduZWQg
+Y2hhciAqKShkYXRhLT5yeF9wb3MgKyBkbWEtPnJ4X2J1Zik7DQo+ICAgICAgICAgLSAgICAgICBj
+b3BpZWQgPSB0dHlfaW5zZXJ0X2ZsaXBfc3RyaW5nKHR0eV9wb3J0LCBwdHIsIGNudCk7DQo+ICAg
+ICAgICAgLSAgICAgICBkYXRhLT5yeF9wb3MgKz0gY250Ow0KPiAgICAgICAgICsgICAgICAgaWYg
+KGNudCAhPSAwKSB7DQo+ICAgICAgICAgKyAgICAgICAgICAgICAgIHB0ciA9ICh1bnNpZ25lZCBj
+aGFyICopKGRhdGEtPnJ4X3BvcyArDQo+ICAgICAgICAgZG1hLT5yeF9idWYpOw0KPiAgICAgICAg
+ICsgICAgICAgICAgICAgICBjb3BpZWQgPSB0dHlfaW5zZXJ0X2ZsaXBfc3RyaW5nKHR0eV9wb3J0
+LCBwdHIsDQo+ICAgICAgICAgY250KTsNCj4gICAgICAgICArICAgICAgICAgICAgICAgZGF0YS0+
+cnhfcG9zICs9IGNudDsNCj4gICAgICAgICArICAgICAgIH0NCj4gICAgICAgICANCj4gICAgICAg
+ICAgICAgICAgIGlmICh0b3RhbCA+IGNudCkgew0KPiAgICAgICAgICAgICAgICAgICAgICAgICBw
+dHIgPSAodW5zaWduZWQgY2hhciAqKShkbWEtPnJ4X2J1Zik7DQo+ICAgICAgICAgQEAgLTEyMCw2
+ICsxMjUsOCBAQCBzdGF0aWMgdm9pZCBtdGs4MjUwX2RtYV9yeF9jb21wbGV0ZSh2b2lkDQo+ICAg
+ICAgICAgKnBhcmFtKQ0KPiAgICAgICAgICAgICAgICAgdHR5X2ZsaXBfYnVmZmVyX3B1c2godHR5
+X3BvcnQpOw0KPiAgICAgICAgIA0KPiAgICAgICAgICAgICAgICAgbXRrODI1MF9yeF9kbWEodXAp
+Ow0KPiAgICAgICAgICsNCj4gICAgICAgICArICAgICAgIHNwaW5fdW5sb2NrX2lycXJlc3RvcmUo
+JnVwLT5wb3J0LmxvY2ssIGZsYWdzKTsNCj4gICAgICAgICAgfQ0KPiAgICAgICAgIA0KPiAgICAg
+ICAgICBzdGF0aWMgdm9pZCBtdGs4MjUwX3J4X2RtYShzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnVw
+KQ0KPiANCj4gDQo=
 
-Ok, here's a tag that any other subsystem can pull from if they want
-these changes in their tree before 5.15-rc1 is out.  I might pull it
-into my char-misc-next tree as well just to keep that tree sane as it
-seems to pick up new busses on a regular basis...
-
-thanks,
-
-greg k-h
-
------------------------------------
-
-
-The following changes since commit 2734d6c1b1a089fb593ef6a23d4b70903526fe0c:
-
-  Linux 5.14-rc2 (2021-07-18 14:13:49 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/bus_remove_return_void-5.15
-
-for you to fetch changes up to fc7a6209d5710618eb4f72a77cd81b8d694ecf89:
-
-  bus: Make remove callback return void (2021-07-21 11:53:42 +0200)
-
-----------------------------------------------------------------
-Bus: Make remove callback return void tag
-
-Tag for other trees/branches to pull from in order to have a stable
-place to build off of if they want to add new busses for 5.15.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Uwe Kleine-König (5):
-      PCI: endpoint: Make struct pci_epf_driver::remove return void
-      s390/cio: Make struct css_driver::remove return void
-      s390/ccwgroup: Drop if with an always false condition
-      s390/scm: Make struct scm_driver::remove return void
-      bus: Make remove callback return void
-
- arch/arm/common/locomo.c                  | 3 +--
- arch/arm/common/sa1111.c                  | 4 +---
- arch/arm/mach-rpc/ecard.c                 | 4 +---
- arch/mips/sgi-ip22/ip22-gio.c             | 3 +--
- arch/parisc/kernel/drivers.c              | 5 ++---
- arch/powerpc/platforms/ps3/system-bus.c   | 3 +--
- arch/powerpc/platforms/pseries/ibmebus.c  | 3 +--
- arch/powerpc/platforms/pseries/vio.c      | 3 +--
- arch/s390/include/asm/eadm.h              | 2 +-
- arch/sparc/kernel/vio.c                   | 4 +---
- drivers/acpi/bus.c                        | 3 +--
- drivers/amba/bus.c                        | 4 +---
- drivers/base/auxiliary.c                  | 4 +---
- drivers/base/isa.c                        | 4 +---
- drivers/base/platform.c                   | 4 +---
- drivers/bcma/main.c                       | 6 ++----
- drivers/bus/sunxi-rsb.c                   | 4 +---
- drivers/cxl/core.c                        | 3 +--
- drivers/dax/bus.c                         | 4 +---
- drivers/dma/idxd/sysfs.c                  | 4 +---
- drivers/firewire/core-device.c            | 4 +---
- drivers/firmware/arm_scmi/bus.c           | 4 +---
- drivers/firmware/google/coreboot_table.c  | 4 +---
- drivers/fpga/dfl.c                        | 4 +---
- drivers/hid/hid-core.c                    | 4 +---
- drivers/hid/intel-ish-hid/ishtp/bus.c     | 4 +---
- drivers/hv/vmbus_drv.c                    | 5 +----
- drivers/hwtracing/intel_th/core.c         | 4 +---
- drivers/i2c/i2c-core-base.c               | 5 +----
- drivers/i3c/master.c                      | 4 +---
- drivers/input/gameport/gameport.c         | 3 +--
- drivers/input/serio/serio.c               | 3 +--
- drivers/ipack/ipack.c                     | 4 +---
- drivers/macintosh/macio_asic.c            | 4 +---
- drivers/mcb/mcb-core.c                    | 4 +---
- drivers/media/pci/bt8xx/bttv-gpio.c       | 3 +--
- drivers/memstick/core/memstick.c          | 3 +--
- drivers/mfd/mcp-core.c                    | 3 +--
- drivers/misc/mei/bus.c                    | 4 +---
- drivers/misc/tifm_core.c                  | 3 +--
- drivers/mmc/core/bus.c                    | 4 +---
- drivers/mmc/core/sdio_bus.c               | 4 +---
- drivers/net/netdevsim/bus.c               | 3 +--
- drivers/ntb/core.c                        | 4 +---
- drivers/ntb/ntb_transport.c               | 4 +---
- drivers/nubus/bus.c                       | 6 ++----
- drivers/nvdimm/bus.c                      | 3 +--
- drivers/pci/endpoint/pci-epf-core.c       | 7 ++-----
- drivers/pci/pci-driver.c                  | 3 +--
- drivers/pcmcia/ds.c                       | 4 +---
- drivers/platform/surface/aggregator/bus.c | 4 +---
- drivers/platform/x86/wmi.c                | 4 +---
- drivers/pnp/driver.c                      | 3 +--
- drivers/rapidio/rio-driver.c              | 4 +---
- drivers/rpmsg/rpmsg_core.c                | 7 ++-----
- drivers/s390/block/scm_drv.c              | 4 +---
- drivers/s390/cio/ccwgroup.c               | 6 +-----
- drivers/s390/cio/chsc_sch.c               | 3 +--
- drivers/s390/cio/css.c                    | 7 +++----
- drivers/s390/cio/css.h                    | 2 +-
- drivers/s390/cio/device.c                 | 9 +++------
- drivers/s390/cio/eadm_sch.c               | 4 +---
- drivers/s390/cio/scm.c                    | 5 +++--
- drivers/s390/cio/vfio_ccw_drv.c           | 3 +--
- drivers/s390/crypto/ap_bus.c              | 4 +---
- drivers/scsi/scsi_debug.c                 | 3 +--
- drivers/sh/superhyway/superhyway.c        | 8 ++------
- drivers/siox/siox-core.c                  | 4 +---
- drivers/slimbus/core.c                    | 4 +---
- drivers/soc/qcom/apr.c                    | 4 +---
- drivers/spi/spi.c                         | 4 +---
- drivers/spmi/spmi.c                       | 3 +--
- drivers/ssb/main.c                        | 4 +---
- drivers/staging/fieldbus/anybuss/host.c   | 4 +---
- drivers/staging/greybus/gbphy.c           | 4 +---
- drivers/target/loopback/tcm_loop.c        | 5 ++---
- drivers/thunderbolt/domain.c              | 4 +---
- drivers/tty/serdev/core.c                 | 4 +---
- drivers/usb/common/ulpi.c                 | 4 +---
- drivers/usb/serial/bus.c                  | 4 +---
- drivers/usb/typec/bus.c                   | 4 +---
- drivers/vdpa/vdpa.c                       | 4 +---
- drivers/vfio/mdev/mdev_driver.c           | 4 +---
- drivers/virtio/virtio.c                   | 3 +--
- drivers/vlynq/vlynq.c                     | 4 +---
- drivers/vme/vme.c                         | 4 +---
- drivers/xen/xenbus/xenbus.h               | 2 +-
- drivers/xen/xenbus/xenbus_probe.c         | 4 +---
- drivers/zorro/zorro-driver.c              | 3 +--
- include/linux/device/bus.h                | 2 +-
- include/linux/pci-epf.h                   | 2 +-
- sound/ac97/bus.c                          | 6 ++----
- sound/aoa/soundbus/core.c                 | 4 +---
- 93 files changed, 107 insertions(+), 263 deletions(-)
