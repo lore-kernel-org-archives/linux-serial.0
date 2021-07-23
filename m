@@ -2,99 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	FROM_LOCAL_NOVOWEL,HEADER_FROM_DIFFERENT_DOMAINS,HK_RANDOM_FROM,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A7EAC4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 10:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 389A9C432BE
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 10:20:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 52895600D3
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 10:18:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2110B600D3
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 10:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbhGWJhq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Jul 2021 05:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230046AbhGWJhq (ORCPT
+        id S231623AbhGWJkE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Jul 2021 05:40:04 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:53288 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230025AbhGWJik (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Jul 2021 05:37:46 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B664BC061575;
-        Fri, 23 Jul 2021 03:18:18 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id z26so1161169edr.0;
-        Fri, 23 Jul 2021 03:18:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FBPRKY3kAU7k5qQgFJyXkiaf1woJOD/WKKAjcqGHd5U=;
-        b=hkYhqb+jNLAqV05N76rJ81VuMYz8g6RicGw00y/l3CFcIHdn7GaLggMFnHYy70sZYJ
-         mTeZZ1a1OKe5GW27ABJqWKTACATxk+3V8P9iAvSzg9xzq/gBGNRKcwNqpTj2s6H/Ydgj
-         1OUxVyw/RkETRVb8coSDiE+5+XAI0jfpXpZ2yDTfHbLDqdlhW8v/xFD/SXy+N+pWLo8c
-         FaNFz4yBP2VA8LwWSZciw/W8B68pJn/ZSVph6OwF3So7crEVZXeatwvUszBzXqnllAaF
-         TYgMrz/PxzIt0uVjJjALEiSTnm094dd1RtbaCPinu9Wr8EW9YqeOJJ88yvqVep5mv3Yc
-         iixg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FBPRKY3kAU7k5qQgFJyXkiaf1woJOD/WKKAjcqGHd5U=;
-        b=sHFtoWQAvJx4Eqh0VhUKLjYl3pzzsGJjEY2v22r8DBuL3Bn1gOzv0kCYz7m8/gwsmH
-         kYmK7xAdkF39pYwLenKejER9pUBJsjG2Go8hs40YSnIT1t5vSxgrmRz9lLsug2iz9UHj
-         8nK/0CD/9gzvACt9jHQ95kG75EDO+hOGeOrCvt1B+G4340raAaNNWnVGLCh7/jSznAEL
-         YlMhP2voWY8iKC/Ou/TyH1bQJHXkfKiNQ9GCo6ci2619dz+kX1//zaP2hnJDByKkSIyy
-         FRhtTQdsOxZ9mD11n4nv0NALeF7/PdnsmSwh5lBk0MKfUT1lLO6Oj8GboBgf2Cryk+UJ
-         0/4g==
-X-Gm-Message-State: AOAM533u4qDEVZ9GutJFH0wG9jS4l1K22lWaOjMl023RdUdmZpvvDAFv
-        0+CiLHwvLaYpwJKX+zg3kZZa4r6990otI02Y15Q=
-X-Google-Smtp-Source: ABdhPJw2Ynvl7onUFB8T7RfBl9YWi2ELmdwKrnUPYTZpXvVDDoy4Uf6lMGaBkm6qck3YoWSYv+Eb+kS9i2d9p7EoC8w=
-X-Received: by 2002:aa7:c1ca:: with SMTP id d10mr4479428edp.107.1627035497315;
- Fri, 23 Jul 2021 03:18:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210723074317.32690-1-jslaby@suse.cz> <20210723074317.32690-2-jslaby@suse.cz>
-In-Reply-To: <20210723074317.32690-2-jslaby@suse.cz>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Fri, 23 Jul 2021 03:18:05 -0700
-Message-ID: <CAMo8Bf+Hm+qg_oUjN6P8ATOqXxHFBPnXA3D9SG+X4P3+wDzPjw@mail.gmail.com>
-Subject: Re: [PATCH 1/8] xtensa: ISS: don't panic in rs_init
+        Fri, 23 Jul 2021 05:38:40 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id AD9C721D14;
+        Fri, 23 Jul 2021 10:19:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1627035544;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gmHe3ajgK+HjFK8KkF+gABXqiis37kvwVyeiZz5OmKo=;
+        b=1/W/I4WGrqcfO/J8AN1DGJTHc8rW3ngDLZKIPIFVxss8ESHQRhglbIcScmw4d513vENR4s
+        ttCdxrmJmtQKzHan0YibsaMJrGBPM4BXiIuOO+pzGlJ701Mq/kOak5ERpaFKbhXq5x5s7Z
+        7hoNXzdG4aI9MYQXigDxTKVAtifl4dI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1627035544;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gmHe3ajgK+HjFK8KkF+gABXqiis37kvwVyeiZz5OmKo=;
+        b=PMbUifUNUU6Y9HquV52TDnsAUSYapDli/w8iVGF1B1IrY4E3FwEsw0mKupneshT6pRLp0Q
+        yu2YaAlqDe0nExBw==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 32BE4A3B85;
+        Fri, 23 Jul 2021 10:19:04 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 00BC3DA8EB; Fri, 23 Jul 2021 12:16:21 +0200 (CEST)
+Date:   Fri, 23 Jul 2021 12:16:21 +0200
+From:   David Sterba <dsterba@suse.cz>
 To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
         Chris Zankel <chris@zankel.net>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>
-Content-Type: text/plain; charset="UTF-8"
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        David Sterba <dsterba@suse.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Oliver Neukum <oneukum@suse.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Subject: Re: [PATCH 4/8] tty: stop using alloc_tty_driver
+Message-ID: <20210723101621.GC19710@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Jiri Slaby <jslaby@suse.cz>,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Kosina <jikos@kernel.org>, David Sterba <dsterba@suse.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Oliver Neukum <oneukum@suse.com>, Felipe Balbi <balbi@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+References: <20210723074317.32690-1-jslaby@suse.cz>
+ <20210723074317.32690-5-jslaby@suse.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210723074317.32690-5-jslaby@suse.cz>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 12:43 AM Jiri Slaby <jslaby@suse.cz> wrote:
->
-> While alloc_tty_driver failure in rs_init would mean we have much bigger
-> problem, there is no reason to panic when tty_register_driver fails
-> there. It can fail for various reasons.
->
-> So handle the failure gracefully. Actually handle them both while at it.
-> This will make at least the console functional as it was enabled earlier
-> by console_initcall in iss_console_init. Instead of shooting down the
-> whole system.
->
-> We move tty_port_init() after alloc_tty_driver(), so that we don't need
-> to destroy the port in case the latter function fails.
->
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: Chris Zankel <chris@zankel.net>
-> Cc: Max Filippov <jcmvbkbc@gmail.com>
-> Cc: linux-xtensa@linux-xtensa.org
-> ---
->  arch/xtensa/platforms/iss/console.c | 17 ++++++++++++++---
->  1 file changed, 14 insertions(+), 3 deletions(-)
+On Fri, Jul 23, 2021 at 09:43:13AM +0200, Jiri Slaby wrote:
 
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+>  drivers/tty/ipwireless/tty.c           |  8 ++++----
 
--- 
-Thanks.
--- Max
+Acked-by: David Sterba <dsterba@suse.com>
