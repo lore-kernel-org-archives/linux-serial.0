@@ -2,181 +2,160 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE134C4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 21:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4328C4338F
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BA75960EBC
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 21:55:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B16C760F25
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232504AbhGWVO5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Jul 2021 17:14:57 -0400
-Received: from mail-eopbgr40067.outbound.protection.outlook.com ([40.107.4.67]:9359
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        id S232629AbhGWVvd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Jul 2021 17:51:33 -0400
+Received: from mail-eopbgr130051.outbound.protection.outlook.com ([40.107.13.51]:51343
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231902AbhGWVO4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Jul 2021 17:14:56 -0400
+        id S231742AbhGWVvc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 23 Jul 2021 17:51:32 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WhALJiSBKVCTa3MNwGzFp6WJd4GTB47DFZdUX9CA8avU3E35MOfeXb6NQB9nqm9GkPnUfUeXI0swCCNCKMSISb37yVt5+8YShTfQr3EvRbnR3YRNzfXbZ5XCNeDhtNmnLanq6ZBjdA9nfih4+cEcVq5KadjRuSsN2NMm4FnnMpaHuXl5trGx2EehIG0IYxYm8gK/jWxThFbupX7kTG8DmaMZAJeIYAoa7gL6WKIkmZPNFty4bLybIPS64PMs7zmM7J8FTXJEVXC9GF8RF11O4VnSfG9tBWjNnWUKptW0xqQKrvUSkFipv0vWcXnZ4f1jObtypmVMjt5zCUe2ilde7Q==
+ b=EfV6Pl1zsHBOlH8ODnuXLkGf2uSYQm04Q0OZeD4+6zh3b2WTAx7Hhd2kT8Sjl1Xf0Oxx4wRlQTbD5Z70rYyxmWl36g0O/tDMVzF4VT0uQB2QjYhiJyEr2DQu2eROkoY/Q9pm96YvKICRmqCXRtCRtPQZHCSWiIldd01IQlvK4aG3MX5i0V6GNyqARW/j3zkgCxOw1k6B7Nzlp6+PYTFKyETk/7LCJziE3VFGxvxdhM3TftD00E6aJqlZXZdjif0rvwR5GffDULDzisLB36JogNxVAk0uMU42UIPqo5xGS9+Llv6U2zFL0Uav2F1ZaTJHBTJgpGu2QTTcF+9nWScfwg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tSvJrNtakflp4kN56jueQaoM+DPIttIYdWCduXqbSE4=;
- b=iqjASCXMPvLd+f4LAQ95RTOBSsWg80HwafyJFglROu93G6Ql5fJNjraVRKjwHb769EOIKe1fLOHai78Ht+vgBJIQ7qK0c+/6A7rjpCd0Y34A731dDsdRPSKfcjMDogqiu8Gf5Z8DxZ+3hDTxqmIDyFGkUslfcXkIFGrXr8K6s+A01EmqMRgwADnNesvTgU+B+4Zy/d+aC6SkpziQm98Flx1LfJAq/CvnRwN5GzXYiUcVdPj9eRfM4RwPAi6/Qyv2sFu7cjlpys9JjFoqkKAdplCHvdJGLodvgRG83JdrCiawSsukPIn3uPB4uKYnSow7xNVni/ajv9LNd8dlIiHk0A==
+ bh=fEHpd2iF9JzEb9VUQM0djmm7q87IWxsXdGHa7aozkRs=;
+ b=TJKrw+NAu+GGb5z4dE11d85NbwqpxWbEMXqO8aHPYL5AsMO0cb7cONuwQmUHVJ7WiRewgvvQy9UOEmVxQHkbpnQWr1HGKlxsAirxTF3X2dNYCaCw8Nlwp6mq/Rk87mMg1onFXVIg8z6Fdffj3EMrbp0XZjy0gp1DQTMD1PmiA/6ZLt9XDgr+Yl+oMCxpivAw2E9JW94hDdTX2auFR/qRAIfvRnW9pHu+1c0lN9af2VWCfnTz8mlyF8nJZPdjWxeKgChrm+1A+x52UdmM+SwAsQU8jCP7fkoSypwSebeV9ZDGrGleNCGCqeuq6rVNv57boW9TqSc7Kxn+S4Am6Jcd9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tSvJrNtakflp4kN56jueQaoM+DPIttIYdWCduXqbSE4=;
- b=C/4Oq73Zmyzu/AynYcEsjA6JYwScFawcEFh9ltW8m5XOvlURxdoNWDWgO0ocucCieT4L+d3538z8nDu3QVaq+ifprzw8i8Glvp7792oKHat8Y+ND+ezuhKkPdUm9z7q32umWA/pJnoXTEomiXjjxHPh2CUqWE8nU0L8H56njdwA=
-Authentication-Results: korsgaard.com; dkim=none (message not signed)
- header.d=none;korsgaard.com; dmarc=none action=none header.from=seco.com;
+ bh=fEHpd2iF9JzEb9VUQM0djmm7q87IWxsXdGHa7aozkRs=;
+ b=joHHfB7g8xzSKOybGkRK0DWzFvFVJ57WVMkx1PFCb0ttFiWGlK5d9Nl4FBS0rRIWjCduUjOSsaBjuPUVBm49hp8CjzTvdpNg46fS7SqnN70jreFfeRt0sP6Sr4Ndp97u9qRD8PqnppjNiRr9R7TmydQJEE9gIE0N+9TnzLOD2q0=
+Authentication-Results: barco.com; dkim=none (message not signed)
+ header.d=none;barco.com; dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
- by DB7PR03MB3963.eurprd03.prod.outlook.com (2603:10a6:5:38::28) with
+ by DBBPR03MB7068.eurprd03.prod.outlook.com (2603:10a6:10:20e::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Fri, 23 Jul
- 2021 21:55:28 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Fri, 23 Jul
+ 2021 22:32:01 +0000
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::dc6c:815b:2062:d1f1]) by DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::dc6c:815b:2062:d1f1%7]) with mapi id 15.20.4352.025; Fri, 23 Jul 2021
- 21:55:27 +0000
-Subject: Re: [PATCH] tty: serial: uartlite: Use read_poll_timeout for a
- polling loop
-To:     linux-serial@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>
-Cc:     Michal Simek <michal.simek@xilinx.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Korsgaard <peter.korsgaard@barco.com>,
-        Peter Korsgaard <peter@korsgaard.com>
-References: <20210723215220.624204-1-sean.anderson@seco.com>
+ 22:32:01 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <36a6d163-6c9b-7f6d-8e60-d12f0da2b010@seco.com>
-Date:   Fri, 23 Jul 2021 17:55:23 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20210723215220.624204-1-sean.anderson@seco.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR04CA0017.namprd04.prod.outlook.com
- (2603:10b6:208:d4::30) To DB7PR03MB4523.eurprd03.prod.outlook.com
+To:     Peter Korsgaard <peter.korsgaard@barco.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Rich Felker <dalias@libc.org>, Rob Herring <robh@kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        devicetree@vger.kernel.org
+Subject: [PATCH 0/5] tty: serial: uartlite: Disable changing fixed parameters
+Date:   Fri, 23 Jul 2021 18:31:46 -0400
+Message-Id: <20210723223152.648326-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BLAP220CA0027.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:208:32c::32) To DB7PR03MB4523.eurprd03.prod.outlook.com
  (2603:10a6:10:19::27)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [172.27.1.65] (50.195.82.171) by MN2PR04CA0017.namprd04.prod.outlook.com (2603:10b6:208:d4::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25 via Frontend Transport; Fri, 23 Jul 2021 21:55:27 +0000
+Received: from plantagenet.inhand.com (50.195.82.171) by BLAP220CA0027.NAMP220.PROD.OUTLOOK.COM (2603:10b6:208:32c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend Transport; Fri, 23 Jul 2021 22:32:00 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 61fd9bc7-8834-4ab1-f094-08d94e249532
-X-MS-TrafficTypeDiagnostic: DB7PR03MB3963:
-X-Microsoft-Antispam-PRVS: <DB7PR03MB39635E516C9A6145EBB49FCF96E59@DB7PR03MB3963.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Office365-Filtering-Correlation-Id: 8ae941fc-7557-4e7b-5570-08d94e29b098
+X-MS-TrafficTypeDiagnostic: DBBPR03MB7068:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DBBPR03MB7068B7EF32F828E49100CF3496E59@DBBPR03MB7068.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fudjjUYo5XBcSXD2FHzwwiNcrkE58IrpC/zze8HyPMLV7Smyu9wb/jnDxkZ+6rDSrNtx7oBfvljhTpaM38OHmJFX+VLqk+0nC6vSaz/MTxjVu941Z1Sjb5ty1Y2wZFF1/D4xwFBtJ3AprFmWRzUInpTx2W03bB+zjL4ba5V9BVzjtNnCwwWO3ufmKJS/mexbdhnjdGDUEPBOd7XJ3EdwNi2ahW4YeWxv4d26O32YLihxSCKBWVOTTDYPZWz1tSRMN88XFDLOqzqEymF+4rfdoWwtMEVb9+reVCNIu7Qmc74ur+ib/jTqe8Icch64BJG4687g2G+gowfuV8n0SWZypR4dwF55FRhzNuaRw1pqPq/lBS64lbiYZa/nW1TuFH0L//L2yl0vXPb+Mf4QX943mGr5Uh5H81sv6bV4HYCrdaCyVRVvOWFdV5Mdr9hyiQLrfMaGBWYwqmn8K6HnQSDMMYkBshz5Kns0YX35zD/qmdLguuwvpoFhqCFBeiDBqYCWNNck1pPL/6GLFG7HGezsm8GjPRzjRF+qv0GJ13vnTLlGai08W3MhZ4Opm8zpr9QVBHV82LzjluddUDE9Oj0azRAxUkFkW+/paKQB81Dags6KkY/E5qKLEymLyHZNNlMk7+4MMDAFS3qkk9gf1d/MaBN8IOaGDDJyTIYvPBmR2/tlupXn9eOj0ifvmYwYBMWDUBZBB9/TWPO0bs1LJTLnjZGykFhL5Om5yu7ZTlloB2xsWrUr8yxm3Uh6rNzgjj+J697S34ikmVU1hvfrKlK3Ow==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(26005)(8936002)(5660300002)(54906003)(956004)(52116002)(4326008)(31696002)(53546011)(186003)(31686004)(2906002)(8676002)(38350700002)(38100700002)(6666004)(86362001)(6486002)(83380400001)(508600001)(16576012)(316002)(2616005)(44832011)(6916009)(36756003)(66946007)(66476007)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: kGgyLtvLZo4WoCggVdnXkDnePCignD0FIYqCXIbasqMG5cPvtRLBpSYEKP0kjuhmFm+vhPhMNVamMzCAu33oQpABU4Xjvoi3Jr5Fw+wzvMMOQCLelQjpZiyV2SA2J7LLYsPC/lbTlyFYHQEczncUIwI5ybbQwCYHr6L4LXbYTzR8JALLuJb+Camrpe1hKkvlvISBAX3uUVn+pEY5a1ATRG9I5hz0upVAfog2Pq5kGjVCgmNd1EZTDsDPTJLSyXLlPeoG4byvRaFDRKCgyTfDtadqVPvHJn8uTSggPbba5pFveQI1zZ+ji29WXoWh+0Z0IwbT3HF3JLrlduIVSfmlR0dcjcMADucFOwRgX/R1VqWLo6oiFrs+Y3PELy8PT7H67+FAhqjsLQBKVWRL1LLhh7j/TMNkiC/3iuLLBWKa8kkNaZp00nPjQ6z6qzSt+qrjfVmxTesn9EPgfhy5FWDYA2xye3RChrYtvSq512rp0UromEJWxhySfTERSHg0bAvbxkXiNqQ7sgFHvDjBRAbD9QeBaXVzke/EbTW3oAfy5Dw3UNGG8GqPfuHI1dckr36oodN9fneNp7pye4D0ZEvg1gacV1N9RmkNqFhSm0IjpU/uTPVoPCnp18ChsLcOkzTPZQAcFs0XMfpWSpPJ4C9w6oLWQlzmFWOBM+xmbdKPvge0l0VRJ1fgbFT1YN904urnMq0m3CwPurAL3zIavUxEXA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(376002)(366004)(346002)(39840400004)(52116002)(478600001)(2906002)(2616005)(6512007)(6666004)(186003)(26005)(1076003)(7416002)(956004)(44832011)(5660300002)(36756003)(38350700002)(38100700002)(316002)(8676002)(110136005)(4326008)(86362001)(6486002)(8936002)(83380400001)(66556008)(66476007)(6506007)(54906003)(66946007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K1NrT2xCdFQ0N3FTbE1JZ2RyUk00UHVjbDdRb09kSXJFRkVkUjQ0R3A5TitO?=
- =?utf-8?B?SzdWVzNzb2ttQlYyYzdhNUl0blBzeDlkNUpaNHlOMDRkcFF5dmVJTkF6dWxJ?=
- =?utf-8?B?VTNxWGVocVk2WThHOUNCc3dVNit3VVpWaWJwTG1vRG9oTUFRM0c5T3NBVTJX?=
- =?utf-8?B?QWhCVktkNWFPT3dhQXBqd1krQVZtYitDaFFmSUs4cUUyRjN5cm12b2JMeGhD?=
- =?utf-8?B?M0prUlBMckhIcWptUm5yYWVLTTZtSVlKQzQvcTdhMURZKzJ4QlFhM2xQNFVF?=
- =?utf-8?B?VE9TTlRsYll3ei8vSUd3dFFBNG9tbkhRenVaQTgwTXNHZTd0SkNUbVdaeCtj?=
- =?utf-8?B?TWY0QVpvUlk4bU5NYi9LdmJhRHk3bWhaLzNvMXZGZDF5bjFSejBQVURJQUxJ?=
- =?utf-8?B?ZHppcCtXNGlHdWdaZVl6ZXRSVFVzN0c3Y0hzdTg5UUg1dFZQMTdvbkc4cVZk?=
- =?utf-8?B?WTFHQnQrL21Ga2xzNnFndmhBdG90WEVSOEQ0c0hjQitGVERSVFEzNEZWUERH?=
- =?utf-8?B?NENlUTBPVDJZejhyUW5wRW5CTmZTcmJWVTN0YUt0SFRWcTJTQUxnR09TZktB?=
- =?utf-8?B?VUFFWDNrQ0RvUzAzS0lySFQ5YXBMb2owM0JXQzF0eDdOYy92SGNpdUs1dk1y?=
- =?utf-8?B?c2IvTWpNaXNMQ1FvUkIvb0R1Vjd2QzVuL3RXbTdhbVh1U01ZRmRjaERPNmJX?=
- =?utf-8?B?REllaU5wLzhZZ3ZyMGpPM1Fid216ZFpoRFlyRHA1a3ZkbzgvY0RibmVXaFor?=
- =?utf-8?B?S0YvZnJuVTV6Z1F4eTFZdWlQd1B4OHZDN0lZQ2FuT0k1ZVFudEppcEFRTWhF?=
- =?utf-8?B?cGJDOCs0aHYzcWNMTHpTS2N2QVRWRzBhc2ptYUlnaG8wUU9zMW5QSmVYL0JK?=
- =?utf-8?B?RWppc1llbUF1b2tHZlBXbHRBN0Z5VnRCUDEvMFk1cUpWMkpXUmNYVTB6d2M3?=
- =?utf-8?B?VnZzS3lNeVV3TTNBRml0L3pmL3dBcCtDWStYTVRobFZwLzZPaGFETmFSNWhS?=
- =?utf-8?B?YW1zVlBzdFByVUZGOEplQ2FaMnVsTE9nYmxCaHlpV0JwTHUxQVBBa0ZMWi9o?=
- =?utf-8?B?bU51b21VNzNURzAwa2xjZW90U3JWc1dOR3c0SXk2MFBuMzdiaDVLSXZlVTNO?=
- =?utf-8?B?cUJLYWdKL0R1RWZCVHB6U1JQb1E2L3JITUs0T2piclJBOHZwVG0xSmNRazJa?=
- =?utf-8?B?am45a1Q4dko4Qytjd2ZvaERWMnBQdjFHTE9LT25WSFUxL21Rc3o5bXpaM3VN?=
- =?utf-8?B?MWZDbW9mUUJpU3pjb052cDFuRSttdCtGYW9FbTdmTGZJMjZDY2k1ajFJNWZZ?=
- =?utf-8?B?dllMeGF1UFVHUGltVElQMzV6UzdScFN3RzRjMUxmd1BoMUFFUEs3MDVnbDZR?=
- =?utf-8?B?K0x2d3I3UHJ6RTVycVZGanFHaERSR1pJUE5QbmNWREVnVFF1RlRiQXVzRnN3?=
- =?utf-8?B?UXN6aXpFeWVWQ0hYV2NmU2xEMlhuTlZVVTdydTc0ZGl5YnpYWVV2OC83clh0?=
- =?utf-8?B?bjlWSDFBOHhsVDI1cUVqSHRybnUvOUlEaEZwbWRwenJSUktBMEIveXBzOUV6?=
- =?utf-8?B?SHkxRndGOVNuTmlSV0Q2T2RnNExXNWc3SWR3eit6bWNwWjlBUm1LM3ZxS284?=
- =?utf-8?B?RWpXaUM2VzEyZ2Y4dTVQQ3VEaDM3VkFZQUxKU3NKNVozcjhpMUZMNGhocWkz?=
- =?utf-8?B?Ynl4L1BsS3BYWGlhRXZkaFZxT3NvallnZHN0OExzMzFoS0x6UEJBRXJZRjVy?=
- =?utf-8?Q?A0te4NBQb8RMt3sOfjuLkdfGF+DymNk41ey2x2q?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?b04QBCnrs+iJhi4HW/qeViwVp1/xs0XKbiXnRATBc7+OmRp4BCMEF21vNhPi?=
+ =?us-ascii?Q?zYw8tdI9imMaXaoGu0YajIK9kd5arxFlsnYJ8Jk63nlmaqCt1M90hAcgRqOt?=
+ =?us-ascii?Q?0kxyRMXEpuNEJKRgRavx78w8PnU9w7nYkNPaCBIqaApaxXhQZ66CThVAWWbs?=
+ =?us-ascii?Q?AFhrNpCxh+M4nCCxXi2oQmUxQm+T5QccgL/pxcLOm5GMClISEauPTht7214c?=
+ =?us-ascii?Q?W7kQUw5ntTh/BN08vETWM5agoxchXlHCO3GpsRavsTABrhCjpyseu+YHV9Gh?=
+ =?us-ascii?Q?2AltxObikbDMU0c3qDSPmKyvt7snOwf6eTB8y2MqT9orLsR+mRmTdpQbrYdO?=
+ =?us-ascii?Q?k4MyF5MuL71qL3KF1+M/FYWzyRKOoJqsj+Cx+c08Tc1aIXhO1SZ6n+03rJLR?=
+ =?us-ascii?Q?+s7whv5v95po2+p67esb6XuCxTt/j+c8nCURMljM47WkZsdqGlx8cjNYuPQU?=
+ =?us-ascii?Q?+Ub9PhUKWGxdbJvd8gpRbxNCvi2+kO9HtTECFr/Wepz6XCrOJzyftNwaPat9?=
+ =?us-ascii?Q?aecqUnD1R0wy93sZQa0M6RoN1JBnbH5xGL2JZqUKG75WKsNBek4a5f7ZH1fB?=
+ =?us-ascii?Q?ZhawvjC5xkjSHGNEiUSPqI+gOZOCS8M52EWHH4diKx/FDt2IjyStXK12dwba?=
+ =?us-ascii?Q?enPaG4EbG8I+2IenwliD3cxqfLqx7CzRdH3we/+fYlmwCiA0vUss9MPi+uNj?=
+ =?us-ascii?Q?kW6JdsIbSTG+QbDfi3GqFeHfP4JiQsCqEnvo0npM0kHg2h3AaaR3tAZThZ7w?=
+ =?us-ascii?Q?4PgUajpCj5xRAc7VVyo5NIG9iOkpudPUK7ZXAGu1hIwl9R2UTy9yw/cKH1Uk?=
+ =?us-ascii?Q?4VM55qfEB+ter9tSstQ5h3eSaP9QwSAeHAbOl3TWImW1NEbd7wwbqc5IJkmf?=
+ =?us-ascii?Q?yAjyrReow5IOoHc1nLPJ6iEcHVIwZ/v5dVCOyPq7jX5RDnAiuE/+YiUIrADX?=
+ =?us-ascii?Q?u8GlJWaBEFlp9XhloJtqskPYsWg5VJh3S4SSVhPeh/T2NX9wg01uWjTIdYML?=
+ =?us-ascii?Q?h5v8D/rYfb8kUg2L/POJwQQ5CeYmigG0snC4QQXrhVbzCnAK7UlnkjyF6L6X?=
+ =?us-ascii?Q?4wP3VoAQZbQgc/lwYB5oVkZ5NnyoASwDp6lt8ihZ9KtTb/kPQBEvpkb8jHYf?=
+ =?us-ascii?Q?IFGTpzf47fJS0wx7TKRNqSkpVAcWEQnNR2qtDVNbBRQS8ItFnt1xYqv/SEYF?=
+ =?us-ascii?Q?hGi82y3GWBhx4HnVUAAqzpR0YMVdU5wNZe1F/YhmyB5KPriL+QHptJIbDKNo?=
+ =?us-ascii?Q?WZ/yxe7/dOkqC+qZa1jSPYYVT/TAw4UAQ3uDl8jcGIfmq07QaaLY+82McVyc?=
+ =?us-ascii?Q?otsIS8kWA8nClrs0ab6D/YkW?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 61fd9bc7-8834-4ab1-f094-08d94e249532
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ae941fc-7557-4e7b-5570-08d94e29b098
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2021 21:55:27.9248
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2021 22:32:01.3774
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6iRwSvtUvnkFyExaOIN3EMarT7jJd7/SboMeqn+xNKdAcHnVKR3OPCMYAmq+UtcIqIq2mBOQMLob43SXDVHb+Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB3963
+X-MS-Exchange-CrossTenant-UserPrincipalName: WWz1VbhXxstDJgdsJKyUBXvkyzHUVRg5yHfwh89L3w7C4roLzV+5fGYgPjwa+hIpnZ0G5PEofhpTMkm9E1sXjg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB7068
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Looks like Peter's email bounces.
+The uartlite device is a "soft" device and certain parameters (such as
+data bits, parity, and baud) are configured at synthesis time, and
+cannot be discovered at runtime. Fortunately, bindings for this device
+typically include some of these parameters (especially baud rate).
+Instead of silently letting Linux's termios drift away from what the
+hardware is actually doing, make the termios reflect the hardware, and
+prevent them from being changed. With this series applied, the user
+recieves an error message the first time they try and change these
+termios:
 
-+CC the other emails of "Peter Korsgaard" in MAINTAINERS
+    # stty parity
+    [    7.221696] uartlite 84000000.serial: only 'n' parity supported
+    [    7.222139] uartlite 84000000.serial: only 8 data bits supported
+    stty: standard input: cannot perform all requested operations
 
-On 7/23/21 5:52 PM, Sean Anderson wrote:
-> This uses read_poll_timeout_atomic to spin while waiting on uart_in32.
-> 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> 
->   drivers/tty/serial/uartlite.c | 18 +++++-------------
->   1 file changed, 5 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-> index f42ccc40ffa6..106bbbc86c87 100644
-> --- a/drivers/tty/serial/uartlite.c
-> +++ b/drivers/tty/serial/uartlite.c
-> @@ -17,6 +17,7 @@
->   #include <linux/interrupt.h>
->   #include <linux/init.h>
->   #include <linux/io.h>
-> +#include <linux/iopoll.h>
->   #include <linux/of.h>
->   #include <linux/of_address.h>
->   #include <linux/of_device.h>
-> @@ -448,24 +449,15 @@ static const struct uart_ops ulite_ops = {
->   static void ulite_console_wait_tx(struct uart_port *port)
->   {
->   	u8 val;
-> -	unsigned long timeout;
->   
->   	/*
->   	 * Spin waiting for TX fifo to have space available.
->   	 * When using the Microblaze Debug Module this can take up to 1s
->   	 */
-> -	timeout = jiffies + msecs_to_jiffies(1000);
-> -	while (1) {
-> -		val = uart_in32(ULITE_STATUS, port);
-> -		if ((val & ULITE_STATUS_TXFULL) == 0)
-> -			break;
-> -		if (time_after(jiffies, timeout)) {
-> -			dev_warn(port->dev,
-> -				 "timeout waiting for TX buffer empty\n");
-> -			break;
-> -		}
-> -		cpu_relax();
-> -	}
-> +	if (read_poll_timeout_atomic(uart_in32, val, !(val & ULITE_STATUS_TXFULL),
-> +				     0, 1000000, false, ULITE_STATUS, port))
-> +		dev_warn(port->dev,
-> +			 "timeout waiting for TX buffer empty\n");
->   }
->   
->   static void ulite_console_putchar(struct uart_port *port, int ch)
-> 
+In addition, the configured baud/parity/bits/etc. are exposed through
+the standard termios ioctls, instead of using the default termios for
+unconfigured ttys.
+
+
+Sean Anderson (5):
+  dt-bindings: serial: uartlite: Convert to json-schema
+  dt-bindings: serial: uartlite: Add properties for synthesis-time
+    parameters
+  sh: j2: Update uartlite binding with data and parity properties
+  tty: serial: uartlite: Initialize termios with fixed synthesis
+    parameters
+  tty: serial: uartlite: Prevent changing fixed parameters
+
+ .../bindings/serial/xlnx,opb-uartlite.txt     |  23 ----
+ .../bindings/serial/xlnx,opb-uartlite.yaml    |  92 ++++++++++++++
+ arch/sh/boot/dts/j2_mimas_v2.dts              |   2 +
+ drivers/tty/serial/uartlite.c                 | 118 ++++++++++++++++--
+ 4 files changed, 203 insertions(+), 32 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
+
+-- 
+2.25.1
+
