@@ -2,220 +2,166 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC45C4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 16:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1864C4338F
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 21:52:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C9C4C60E78
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 16:47:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C55F960ED7
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 21:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbhGWQHQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Jul 2021 12:07:16 -0400
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:2792 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229847AbhGWQHQ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Jul 2021 12:07:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1627058869; x=1658594869;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=2JKy2ljYCiKdg4+77F6qV26c1zbXUcznA/csadAmEGk=;
-  b=TSgs6qbRx7rRw7XLTjnhI1PzllsN6iOVJwntN0zL/Uo9p4Et/xNWol23
-   5mlqWDL1ngDo06tnoA3oxviMYJ8RMVBwYpaUH7gH0h2aIiAgekgabf/TW
-   GIGHYjGUeVKsU/iq1MuV8kIvOjwr+onLhVr+rsTwBHBmfB1VEtWxm4TFH
-   o=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Jul 2021 09:47:49 -0700
-X-QCInternal: smtphost
-Received: from nasanexm03e.na.qualcomm.com ([10.85.0.48])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/AES256-SHA; 23 Jul 2021 09:47:49 -0700
-Received: from [10.111.172.214] (10.80.80.8) by nasanexm03e.na.qualcomm.com
- (10.85.0.48) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Fri, 23 Jul
- 2021 09:47:48 -0700
-Subject: Re: [PATCH v5] arm pl011 serial: support multi-irq request
-To:     Bing Fan <hptsfb@gmail.com>, <gregkh@linuxfoundation.org>,
-        Bing Fan <tombinfan@tencent.com>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <1625103512-30182-1-git-send-email-hptsfb@gmail.com>
-From:   Qian Cai <quic_qiancai@quicinc.com>
-Message-ID: <60f007b3-bb01-dd0a-b1a2-a6da62a486e5@quicinc.com>
-Date:   Fri, 23 Jul 2021 12:47:47 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232156AbhGWVMN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Jul 2021 17:12:13 -0400
+Received: from mail-vi1eur05on2058.outbound.protection.outlook.com ([40.107.21.58]:37376
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231839AbhGWVMM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 23 Jul 2021 17:12:12 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SWoU1ehWxNM7HepqOjgzVvlmb1YAW7o6ug5GCgtyOdIOLHDYB4/INUgKZ53DTvTrwi7wmO9Y5ZSZZ578Eo1OIiYXJHThrwQG2m7czs9iCNcTb0OJei2Ii0FiX7PtJvaaha1A7anSUgmjnk71hwM9oQ2QgkqSzSogG5CFh746knNnMR118rIH9yQIFJsnXPtEF8+e55HXcFJPLkjI0wLGBpAh8kEC1ikScG/r8ztTxm0nao9P4qse7B7JqZzf86dopq8PCOPpxHjDoepcVGIMu8jaySJxN5fmyUHWWCxdqu2UbsZE5yCwqgS7sb05Tp12hI6+7d5JDa0sNNPeh5rCsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BaVcJD/ZHJDJS8lwbMVtG2LeehdHRLPPPBXj43R3psY=;
+ b=eGJ1S/gDM2/NEUVUn1yYCcI39qDtEzKfiNelf0FHYJWsLgv6m0TJJxoRip6qDs2IQGVTnj8nqZvW7cWEhILAw7052l+fHkQr4FF30A2LWxmEB/gj0CWbb1CyBQ8WYe/1SdQRzi/OHjdxWgA6NaAfoVrfaoZOuxa1cmK8rjlxYeANg0iiAZaN2FaUhw0tSSL9AR2ws7tt/2nHEZmZv/q5dAedvlExcdCHziKaG7CxeO3RBtyf5+FQsRwrBJWaZ1lW4/kx9kTmphHDTJdBeRus6isp3xCItgck2zOjBHunFEx34HMExgzLqHj9CATjkSCz3jB8NPs5JBZoQJqzEBBlVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BaVcJD/ZHJDJS8lwbMVtG2LeehdHRLPPPBXj43R3psY=;
+ b=3IvCQXzlH4u+Mgcxk+2gLQz9COXW5vgOBFI0yBDIcr3/Dr/3mHiPwfVuLRv/orfntr5slYmrsx+2xZKqkNx2d3ZsFe64HFOgGahWxDBzsO3yTvVUWEu+uF6yvyYfFKYykAE+QqHs0giB1dbcU6kWx6+9oJVgKNhMjHH9KxUSm90=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by DB7PR03MB3963.eurprd03.prod.outlook.com (2603:10a6:5:38::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Fri, 23 Jul
+ 2021 21:52:34 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::dc6c:815b:2062:d1f1]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::dc6c:815b:2062:d1f1%7]) with mapi id 15.20.4352.025; Fri, 23 Jul 2021
+ 21:52:34 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     linux-serial@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>
+Cc:     Michal Simek <michal.simek@xilinx.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [PATCH] tty: serial: uartlite: Use read_poll_timeout for a polling loop
+Date:   Fri, 23 Jul 2021 17:52:20 -0400
+Message-Id: <20210723215220.624204-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR05CA0024.namprd05.prod.outlook.com
+ (2603:10b6:208:c0::37) To DB7PR03MB4523.eurprd03.prod.outlook.com
+ (2603:10a6:10:19::27)
 MIME-Version: 1.0
-In-Reply-To: <1625103512-30182-1-git-send-email-hptsfb@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanexm03f.na.qualcomm.com (10.85.0.47) To
- nasanexm03e.na.qualcomm.com (10.85.0.48)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR05CA0024.namprd05.prod.outlook.com (2603:10b6:208:c0::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.7 via Frontend Transport; Fri, 23 Jul 2021 21:52:33 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 099f760f-ac1c-404a-41cc-08d94e242dba
+X-MS-TrafficTypeDiagnostic: DB7PR03MB3963:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB7PR03MB396393CCD86AB16F74EE923996E59@DB7PR03MB3963.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CISzP6QVgx0YokaMJb5vuV5CjkXN7hOo3gzQZznZhjWzSO6/vTarKOzD27VVmAoSN08XK8MQBcdaKSP1NIoQ5+sn6potFsfjd9Nxtz0hGYm/NdOi+sDFMpt4nqXeyG9b2WguCExk3E+ZOmxDTFrdXKdMi9YAAGJrigWMn73MU1rAhikyD6G6ko6t++r6EUn+BqCXpqDhKyrGdMeyueZimwNtvO4UquOkVd1h8O9i5YGMNH737egggsTAIV8nFGe6u8fFD0tM1cEMDFn4idcyoH1YMsXc4TKFmh9QW/yqqDlX2ZxgagjKrWSkD4kXg7s45NDgPcBLW5f7BCgSPK8YiqqJd+E5MroyI+iONBjhHqFftMLuczGStaa5/fpPXgyLB7l+VjEPuEsclrNigH5yt+xU3HwFop93Zg2Wjp3sdsf8TC9L5aUFFO/ppOty5ksdTmsn49+s+srHqRI1nqkXtZ9uTSpiYw3dBw3g2WhcM+9YHmzp2lIT3vRUtJ6GqmAHVVQFoQeiKF2izbV58iQcfWubhCOAjELggQbgCEVZSLaiyLEHCzcaKoq0UgKdbXoLTdoZk+mZIVbsYJTXfwyi2duwV/0gxQgwysBreyn8kgi2xSD6ZJ8oti9IuJDfkWogfOWERcFxPg8YFDKj/wVjJhsVInAx7i2kJlDE2Q1jwPIkl6iipKZfu943ND1BTwvr
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(26005)(8936002)(5660300002)(54906003)(956004)(6512007)(52116002)(4326008)(186003)(6506007)(2906002)(8676002)(38350700002)(38100700002)(6666004)(107886003)(86362001)(6486002)(83380400001)(508600001)(1076003)(316002)(2616005)(44832011)(6916009)(36756003)(66946007)(66476007)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ew8TQfSqmpzIm3z1HeQuib2y9kgjjidB8uDOpREsx5sV/1RnenIKNwz5yslN?=
+ =?us-ascii?Q?XrEAVipFS3CtkAYMg917JzYtWSj5JgQvAVGZsQ/m34bgVd57WeMY6O9r8Khs?=
+ =?us-ascii?Q?vTt3OIQLctt0Z7DmmJ7v6U1egXXkZkvAyTzlhVxAxhL40RODjVwoqQoNbtGZ?=
+ =?us-ascii?Q?BRgmYPiFjTdgOXw6RzH7Hl+5OcqJFWGmxHaBtmS3WUSdEd+bAicH5srFKDA1?=
+ =?us-ascii?Q?WIl/zQRkOwbweQ/e/eQsDnU+/30/nfkbsHvi7KrRt4jxHLw2CQeBNmdHSL3N?=
+ =?us-ascii?Q?8rhvaNftZe35tZ4xSjRVPml4y72gwINyhZNkaEXyKWb9tL11VlLLumvl1TW2?=
+ =?us-ascii?Q?noOPPWjuzd97JXDTnv9HTgONFBoO4bWxquhEfd/MUAv+YQ4NKsp2zIpwBrrh?=
+ =?us-ascii?Q?s1szgLY4/+mEsJ6im145g1QKrtikmEgZk/eEERbX7rD0aushtLscVcAT8IyB?=
+ =?us-ascii?Q?Vz9G5Y6k9AF8IVh/Qf4gtflfq4wJT3MDqyd1JqD5qwjKLE0B/WHyfpDyDuoN?=
+ =?us-ascii?Q?ygRjebM+9BRdwhBckmBZJHtu7kA3wxsehgyfN9jHppQZkJ5fMHHQlmd7KoRY?=
+ =?us-ascii?Q?+yqHQX+1RN4RfLDJhstKEQyDgskNWkbYEUZ3wnfEJg83mWOjpAEKbPmxmqoP?=
+ =?us-ascii?Q?JQ+ZXFkGztUmc5FNbGHJjDA9OqQkZTjt3iNfKQn4jJCEvgv8O11njmUIVgB9?=
+ =?us-ascii?Q?sy0aEyA6TSJuCQET3Y1XYeMFiqZFU/ce41cZZQFvLPUnBSaWBx6MuYjE6t3v?=
+ =?us-ascii?Q?hzBIj8Z908DUtNBMU5YTwrfuJvjDeks4WWea3krXyoqIxIMMdayPtqYfAiXj?=
+ =?us-ascii?Q?z6FZwnApz4IRKuW7/54LuMGNu1CIN76aUpmhaQRU9+WCXQ4bILZNLre4snFX?=
+ =?us-ascii?Q?DM1DA7QdWtteXb0vGeuY3wdjW9sWiv5sId6r7j9QtwF4cts0OV/o8u3k1ZYy?=
+ =?us-ascii?Q?cQNQFft3yJ9t3c+pGMP0179tn55bg1nodo0fbXNSkBJ0pZxHaKsULbe63GaO?=
+ =?us-ascii?Q?Qn/5OFKc2PYHFwFZ+D16WMVeRMM+VUQTX4l9Jrs5RD5LWxKmqdtjiVaID+Qs?=
+ =?us-ascii?Q?I5a49zALMHJxr+w8p9bYmOeZ5fO/jBWQGMQsppj0QymhSj6jk02XKDpfcrBo?=
+ =?us-ascii?Q?eUumiICPQWqzIqrOp0XFX+nFxDijgCqM9QJOXnRsu9M+fsflItdGZNQ5e5Gu?=
+ =?us-ascii?Q?bDGIVdDhtX6EgRLSEo10Uu1TI6icrezAFnnvbaiv2bovm009BNAIbVgsOwiC?=
+ =?us-ascii?Q?6iGCVEu6hNa61Bqdrvy4o2vqKmO4TFUd/Qjw1TRn++tXtPuSh2PsubB74+BV?=
+ =?us-ascii?Q?vVytQH8QiQTy6wcj+dGVAKzs?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 099f760f-ac1c-404a-41cc-08d94e242dba
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2021 21:52:34.3505
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4HfbmUHKo0mMgBPB2KgiPrESl9AOmx0SXKzZjhWhbKIKGcr5XeQlz9uX4oylWcpcFIb1tWqjRA2IA/8tWeRxLA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB3963
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This uses read_poll_timeout_atomic to spin while waiting on uart_in32.
 
+Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+---
 
-On 6/30/2021 9:38 PM, Bing Fan wrote:
-> From: Bing Fan <tombinfan@tencent.com>
-> 
-> In order to make pl011 work better, multiple interrupts are
-> required, such as TXIM, RXIM, RTIM, error interrupt(FE/PE/BE/OE);
-> at the same time, pl011 to GIC does not merge the interrupt
-> lines(each serial-interrupt corresponding to different GIC hardware
-> interrupt), so need to enable and request multiple gic interrupt
-> numbers in the driver.
-> 
-> Signed-off-by: Bing Fan <tombinfan@tencent.com>
-> ---
->  drivers/tty/serial/amba-pl011.c | 34 ++++++++++++++++++++++++++++++---
->  1 file changed, 31 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 78682c12156a..7bfe8efcc787 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -1701,11 +1701,39 @@ static void pl011_write_lcr_h(struct uart_amba_port *uap, unsigned int lcr_h)
->  	}
->  }
->  
-> +static void pl011_release_irq(struct uart_amba_port *uap, unsigned int max_cnt)
-> +{
-> +	struct amba_device *amba_dev = container_of(uap->port.dev, struct amba_device, dev);
-> +	int i;
-> +
-> +	for (i = 0; i < max_cnt; i++)
-> +		if (amba_dev->irq[i])
-> +			free_irq(amba_dev->irq[i], uap);
-> +}
-> +
->  static int pl011_allocate_irq(struct uart_amba_port *uap)
->  {
-> +	int ret = 0;
-> +	int i;
-> +	unsigned int virq;
-> +	struct amba_device *amba_dev = container_of(uap->port.dev, struct amba_device, dev);
-> +
->  	pl011_write(uap->im, uap, REG_IMSC);
->  
-> -	return request_irq(uap->port.irq, pl011_int, IRQF_SHARED, "uart-pl011", uap);
-> +	for (i = 0; i < AMBA_NR_IRQS; i++) {
-> +		virq = amba_dev->irq[i];
+ drivers/tty/serial/uartlite.c | 18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
 
-This could trigger a slab-out-of-bounds during booting.
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index f42ccc40ffa6..106bbbc86c87 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -17,6 +17,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
++#include <linux/iopoll.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
+@@ -448,24 +449,15 @@ static const struct uart_ops ulite_ops = {
+ static void ulite_console_wait_tx(struct uart_port *port)
+ {
+ 	u8 val;
+-	unsigned long timeout;
+ 
+ 	/*
+ 	 * Spin waiting for TX fifo to have space available.
+ 	 * When using the Microblaze Debug Module this can take up to 1s
+ 	 */
+-	timeout = jiffies + msecs_to_jiffies(1000);
+-	while (1) {
+-		val = uart_in32(ULITE_STATUS, port);
+-		if ((val & ULITE_STATUS_TXFULL) == 0)
+-			break;
+-		if (time_after(jiffies, timeout)) {
+-			dev_warn(port->dev,
+-				 "timeout waiting for TX buffer empty\n");
+-			break;
+-		}
+-		cpu_relax();
+-	}
++	if (read_poll_timeout_atomic(uart_in32, val, !(val & ULITE_STATUS_TXFULL),
++				     0, 1000000, false, ULITE_STATUS, port))
++		dev_warn(port->dev,
++			 "timeout waiting for TX buffer empty\n");
+ }
+ 
+ static void ulite_console_putchar(struct uart_port *port, int ch)
+-- 
+2.25.1
 
-[   18.716444] BUG: KASAN: slab-out-of-bounds in pl011_allocate_irq+0x1f8/0x2f8
-[   18.724191] Read of size 4 at addr ffff00001a3a0508 by task swapper/0/1
-
-[   18.733680] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 5.14.0-rc2-next-20210723 #69
-[   18.741941] Hardware name: MiTAC RAPTOR EV-883832-X3-0001/RAPTOR, BIOS 1.6 06/28/2020
-[   18.750461] Call trace:
-[   18.753597]  dump_backtrace+0x0/0x3b8
-[   18.757956]  show_stack+0x20/0x30
-[   18.761964]  dump_stack_lvl+0x8c/0xb8
-[   18.766319]  print_address_description.constprop.0+0x74/0x3c8
-[   18.772759]  kasan_report+0x1f0/0x208
-[   18.777113]  __asan_report_load4_noabort+0x34/0x60
-[   18.782596]  pl011_allocate_irq+0x1f8/0x2f8
-[   18.787471]  sbsa_uart_startup+0x44/0x98
-[   18.792086]  uart_startup.part.0+0x28c/0x618
-[   18.797048]  uart_port_activate+0xf0/0x178
-[   18.801836]  tty_port_open+0x118/0x1c8
-[   18.806278]  uart_open+0x44/0x70
-[   18.810199]  tty_open+0x248/0x960
-[   18.814207]  chrdev_open+0x19c/0x440
-[   18.818476]  do_dentry_open+0x3ac/0xdb0
-[   18.823005]  vfs_open+0x98/0xd0
-[   18.826838]  do_open.isra.0+0x4a8/0x8c0
-[   18.831366]  path_openat+0x3ac/0xe28
-[   18.835633]  do_filp_open+0x150/0x220
-[   18.839987]  file_open_name+0x120/0x200
-[   18.844515]  filp_open+0x40/0x80
-[   18.848436]  console_on_rootfs+0x30/0x7c
-[   18.853052]  kernel_init_freeable+0x74c/0x7d0
-[   18.858100]  kernel_init+0x2c/0x140
-[   18.862282]  ret_from_fork+0x10/0x18
-
-[   18.868732] Allocated by task 1:
-[   18.872651]  kasan_save_stack+0x28/0x58
-[   18.877181]  __kasan_kmalloc+0x8c/0xb0
-[   18.881622]  __kmalloc+0x260/0x3d0
-[   18.885716]  platform_device_alloc+0x34/0x1b8
-[   18.890766]  platform_device_register_full+0x68/0x418
-[   18.896509]  acpi_create_platform_device.part.0+0x170/0x538
-[   18.902776]  acpi_create_platform_device+0x8c/0xa8
-[   18.908259]  acpi_default_enumeration+0x54/0xd0
-[   18.913482]  acpi_bus_attach+0x664/0x7d0
-[   18.918096]  acpi_bus_attach+0x178/0x7d0
-[   18.922709]  acpi_bus_attach+0x178/0x7d0
-[   18.927324]  acpi_bus_attach+0x178/0x7d0
-[   18.931937]  acpi_bus_scan+0xa8/0x170
-[   18.936291]  acpi_scan_init+0x220/0x554
-[   18.940819]  acpi_init+0x1fc/0x27c
-[   18.944912]  do_one_initcall+0x170/0xb98
-[   18.949527]  kernel_init_freeable+0x718/0x7d0
-[   18.954575]  kernel_init+0x2c/0x140
-[   18.958759]  ret_from_fork+0x10/0x18
-
-[   18.965214] The buggy address belongs to the object at ffff00001a3a0000
-                which belongs to the cache kmalloc-2k of size 2048
-[   18.979117] The buggy address is located 1288 bytes inside of
-                2048-byte region [ffff00001a3a0000, ffff00001a3a0800)
-[   18.992412] The buggy address belongs to the page:
-[   18.997894] page:ffffffc000068e00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x9a38
-[   19.007805] head:ffffffc000068e00 order:2 compound_mapcount:0 compound_pincount:0
-[   19.015977] flags: 0x7ffff800010200(slab|head|node=0|zone=0|lastcpupid=0xfffff)
-[   19.023982] raw: 007ffff800010200 ffffffc000067508 ffffffc000069f08 ffff000012911280
-[   19.032416] raw: 0000000000000000 00000000002a002a 00000001ffffffff 0000000000000000
-[   19.040848] page dumped because: kasan: bad access detected
-
-[   19.049291] Memory state around the buggy address:
-[   19.054772]  ffff00001a3a0400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-[   19.062684]  ffff00001a3a0480: 00 00 00 00 00 00 00 00 00 00 00 04 fc fc fc fc
-[   19.070595] >ffff00001a3a0500: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   19.078506]                       ^
-[   19.082686]  ffff00001a3a0580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   19.090597]  ffff00001a3a0600: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-
-
-> +		if (virq == 0)
-> +			break;
-> +
-> +		ret = request_irq(virq, pl011_int, IRQF_SHARED, dev_name(&amba_dev->dev), uap);
-> +		if (ret) {
-> +			dev_err(uap->port.dev, "request %u interrupt failed\n", virq);
-> +			pl011_release_irq(uap, i - 1);
-> +			break;
-> +		}
-> +	}
-> +
-> +	return ret;
->  }
->  
->  /*
-> @@ -1864,7 +1892,7 @@ static void pl011_shutdown(struct uart_port *port)
->  
->  	pl011_dma_shutdown(uap);
->  
-> -	free_irq(uap->port.irq, uap);
-> +	pl011_release_irq(uap, AMBA_NR_IRQS);
->  
->  	pl011_disable_uart(uap);
->  
-> @@ -1894,7 +1922,7 @@ static void sbsa_uart_shutdown(struct uart_port *port)
->  
->  	pl011_disable_interrupts(uap);
->  
-> -	free_irq(uap->port.irq, uap);
-> +	pl011_release_irq(uap, AMBA_NR_IRQS);
->  
->  	if (uap->port.ops->flush_buffer)
->  		uap->port.ops->flush_buffer(port);
-> 
