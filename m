@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655D4C4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B00C4320A
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C4FF60F23
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1B18260F25
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232848AbhGWVvp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Jul 2021 17:51:45 -0400
+        id S232226AbhGWVvq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Jul 2021 17:51:46 -0400
 Received: from mail-eopbgr130051.outbound.protection.outlook.com ([40.107.13.51]:51343
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232226AbhGWVvo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Jul 2021 17:51:44 -0400
+        id S232301AbhGWVvq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 23 Jul 2021 17:51:46 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FzjV6G1Mmp5NnvmWHJBuiYVE6nDBJeZSHvhG/i2nidYfriw8EwImzBW9RoWpPUC3skVTKX3l18mkQd7x/MLQkkzGAF8LKahFDhhucWCMv5++oV/B26yCEVvpqBnkiul8/3kqzSwVzTOPhXtOsY6OxM+NE6xb0qtTqJO6fEdFGPqOUjkbM/rDX9kBLFQpklRZmd6xtij7eK8lqJbenaF7j7LkAaweY4LjnbKGzmyf010Q7dv9h29MCtbWd49Uzy275s0/vi4njAodO1GFLYlAHFZORVP2lDNc4QQWSumWcJsebdZuxxMXkbZj4xKBXU87g39oai4L6Ka0bth1Fmw+rw==
+ b=gh+aysgwIfh147GyDHvLdjaKtmk94uME0Cao3xbXsCOuLH0ghuop9+OXf0yOnQZL7Sy2MkoIX6WfxnpxS0WYBPcG7G5+6oUQuDjp/EY7v3oncQ03Nts4HVKFaUDJPGjQFzSoZibLFXREx7Y6E1MBlrwdtxoAALtk6zaG2TPhdXAm1ZT+RK/wDQMpky9Q59KgXg/Ctc8EwnOGKDqFls9hIjl9HUDrge/YEg78rnlQuyobeTpPjJc0GDErsRon1R9sN6CtRdfy3t73muu/aiM8CkrJvjg9518TLAsuKzpV1o+JQw/5/SiBRwElnD/IT++xbyIZibwS45Fstszd5JTduA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CNFvKMBCv+YGQGZYX8BGVhpzTXsTcFW0MbLi0AEGLAI=;
- b=jyQ3kf4gMyVi1LFxWg0j36z1Wuw7m4JMJBpOFa5uHd2ObcYi/6XWN1rBh960+HcKXZ0/lBTMajTa0KkITj/rUkqGpzqXmwc0dnAJR5RifUmU0vjDdBMdYQ995qkRAwt5H3M4eeIErNSFnNge43AoVPPsCOfzDYyJFHRS8Ei1KbPuxhMj94glrEFQx/rTNIdsIai0pwvLnWwu6exkP5jMps/hptaVHflR48SyCzrA2aurhx5BfWnGWxCnydvxD9iRvs3YBrXOM0ehkCATcAoyXB2Pr6MrQMtzHISkbya0yev/d3ENTcb7f96kpAT7U29l7qIaGGUmUuOLW7RuIU66pA==
+ bh=rtu5cragWjS+0rol8msqzz9d6l18kgzG1WAxZSpmIlQ=;
+ b=nmTcOzV6RU24jRIS65ySd8k5a8VIQRxlM7B2c3UuJgRn8+vLfIbGoJDGyYAVgglg/n9p3vT6vxE7WOBo+fZs2QcwAuF8m0lUEm6O+dPQ0GRG01uATdFsTlVWQFv/z96CvoAMrUOaCtvLVl9yoChTjyp03eAYTI8fZYnWCNdUZN7v997hpjmjCM5QzjIMcRjKJk18oH07EuFIBfi6dSfuc/yiIx7Y35cqmUWIkmatcmJOSOm2iUXjBx36lXeiYqUFUwSfe4oTZdfGLNZQE6l9vGwkljBryO0HI520Gm2aQZ/V09nkutiYqI9ltvdxKsz18KFua2dN7p45uDMdsx3Bnw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CNFvKMBCv+YGQGZYX8BGVhpzTXsTcFW0MbLi0AEGLAI=;
- b=mtSIPiIirA1FGm9PT2HO1j8Vk2A48BN1YuKsXofT1s7pBdd9lZZkaZvM7gbsuatIpeuifEW9pZ6ObXVl9L1iXnYiRsmKGUfOyqmwLCkz+MHcLdVh6kVEpVXvoV08HnkiIsrRhq0oWVxMn89XAL7t0A0LFJPwgW4ihUYmvrDsoYI=
+ bh=rtu5cragWjS+0rol8msqzz9d6l18kgzG1WAxZSpmIlQ=;
+ b=Drk+bgArGU8mM2wSoz/wcm09jalRW3SeF9QY/QJWHIdBdaF9wlpQiKBs+OGoh7T96ifBa5wB4sVCpL+sqG7VXpUDd7fb9+G/C50OJoPkI/jex84YASWDK7VQRf2a6s7mVfc+Nv7cM7NNJ0Icl+gnjbkYGUA2jhxi3SrflzJa46E=
 Authentication-Results: barco.com; dkim=none (message not signed)
  header.d=none;barco.com; dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
  by DBBPR03MB7068.eurprd03.prod.outlook.com (2603:10a6:10:20e::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Fri, 23 Jul
- 2021 22:32:07 +0000
+ 2021 22:32:08 +0000
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::dc6c:815b:2062:d1f1]) by DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::dc6c:815b:2062:d1f1%7]) with mapi id 15.20.4352.025; Fri, 23 Jul 2021
- 22:32:07 +0000
+ 22:32:08 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Peter Korsgaard <peter.korsgaard@barco.com>,
         Peter Korsgaard <peter@korsgaard.com>,
@@ -54,9 +54,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Alexander Sverdlin <alexander.sverdlin@nokia.com>,
         Michal Simek <michal.simek@xilinx.com>,
         Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH 4/5] tty: serial: uartlite: Initialize termios with fixed synthesis parameters
-Date:   Fri, 23 Jul 2021 18:31:50 -0400
-Message-Id: <20210723223152.648326-5-sean.anderson@seco.com>
+Subject: [PATCH 5/5] tty: serial: uartlite: Prevent changing fixed parameters
+Date:   Fri, 23 Jul 2021 18:31:51 -0400
+Message-Id: <20210723223152.648326-6-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210723223152.648326-1-sean.anderson@seco.com>
 References: <20210723223152.648326-1-sean.anderson@seco.com>
@@ -67,173 +67,140 @@ X-ClientProxiedBy: BLAP220CA0027.NAMP220.PROD.OUTLOOK.COM
  (2603:10a6:10:19::27)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plantagenet.inhand.com (50.195.82.171) by BLAP220CA0027.NAMP220.PROD.OUTLOOK.COM (2603:10b6:208:32c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend Transport; Fri, 23 Jul 2021 22:32:06 +0000
+Received: from plantagenet.inhand.com (50.195.82.171) by BLAP220CA0027.NAMP220.PROD.OUTLOOK.COM (2603:10b6:208:32c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend Transport; Fri, 23 Jul 2021 22:32:07 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5f916e65-8313-427c-d66f-08d94e29b40c
+X-MS-Office365-Filtering-Correlation-Id: d743082a-28cf-475d-d604-08d94e29b4cc
 X-MS-TrafficTypeDiagnostic: DBBPR03MB7068:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBBPR03MB70680C8771B8BDD883ED3DB096E59@DBBPR03MB7068.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <DBBPR03MB7068FAEA9E42E69CA33DC76A96E59@DBBPR03MB7068.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zPqI02X2NtBcC5H6LYKBaRJ8Us3F/3L5JJuSP2RxgYky94/Hkp47MqQKtVo57iBJGB/+6kSTeKBA48eMvpXx8T0s67Sa9WEp9ncdXs62jJuUKu1MCUeWwSaLV8rCSm7J4eKrKz+6pQpNSOJdcR5hY7Il0DpOWyqy5qPEGbtsjcAAX/GBJ28Mj6ZvoIJrK6qlQl8HaGSQf9mgHTysFKUEDULRDWmp3cHbqOY9WfASa1JfcizA0mTTpETaTY7XqQdj9+AeMVnmhfmd5pwsG91YcZMxbTn4NBFmR3dLuQpQxq3FQu/o/DoDUeM3QA/dNP7kYV5F/s4ZcSuGK5X3deAuGLg4u0FYQAs/yLutintSJ+DprOzyAmjQh0zyLh/5fr+nne/wHJPiVcdhGpqfM/BzQYICc9M3nudMBaztD6Hf5RcqNSIa4XMcqNMbGPHhFgCj9K+30tqCVQiXh6tCttEJ+aSdr+C8In9cLm5V9WSskqvL0YK8wGa+MnHAJlnlNck01GPQqgpPLgJFkyXUT8zI1JDalWab1CqmshELzEvezIK7/iyyeXCGyHzCNZ0YjthG2638lRC73TKrZ96ZPCyNzHwg0zSEuT1evvK3sbBPnPXxuMW0LhOqF1/RTTn86JM+5dVRO3AG7SVPWiw46roBJgWoMMApyerUOeJomuq1Va42ZK6E9wYjMTcT18/WwokBOJJOkoRQz3AoWNo7n5wRPQ==
+X-Microsoft-Antispam-Message-Info: Oj07zPLqw5H+rMZaPc4d9FVQTOgxy5vl/w5p37BOL81aS/q3iR231MGf0o4dObRA6kN11/wzeWF/9nkMJDZD6kfpjs7WwpSLIlsa5kf1R11JxAAcch4YqlPmI2Pg9AA0G6G6YgIyis4SYpx7lEZ9Znq919i7wU6HGUrhVSGmSxPwsJHRWZY36MIy5EISYHVTBOe+HU1HOY8sI/vU4X3AZl3SQj6SI2VBZH7eya9fkEjUhn4lgagpQ5b5CGl8MvAY6+FtBrRmHfC/fJ5e0Ida1HGbKjDSdXIzMsRzmI8ceJGgRLLoJXVv+33o/aIsmVKHDAbt6fHdquWuSu/onch1nXtUFREBk6z1AkOudGekMdf9oulcMIpboeBXbBSNiUzu+e9f7dg5G2G+bXjQN/5MTRdBkFaBaQK/B2bra6HCa34dT8EOlGONrFnTWBXquvHFRIEzzhJZxYuMcYGA2y0TSBhu1WfDDw4bqczJPLckcsIT9dO8OJYj5zH49gcBfcsjS8ZI9A9153jDYT+BNBsHFjA79c7F6dkGcWvtWVqhbayahLu/Swj0EsNwvS9wU+j5nU1wNt4+jViZNC1l14LwdRIU5gVUDpd298XFoL33UDJHIN0d7DX4uAftHSL5k1cYL0v6bRQpSU1+Wol/2SlM5XSWnDQVCnrTZ++ziJg1YGjXseS2A4Bi89vwGloyY6sBV5uZo7HI/mrCK3iA4wHLug==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(376002)(366004)(346002)(39840400004)(52116002)(478600001)(2906002)(2616005)(6512007)(6666004)(186003)(26005)(1076003)(956004)(107886003)(44832011)(5660300002)(36756003)(38350700002)(38100700002)(316002)(8676002)(110136005)(4326008)(86362001)(6486002)(8936002)(83380400001)(66556008)(66476007)(6506007)(54906003)(66946007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NcIvNBIx33rIggKb1su1uqBuq0OKeoZUh2C6ntotWKwK+PneR8YpbfQZAx/4?=
- =?us-ascii?Q?4UiSKuHCawsG6bT1DloozZcLSRsBNCdNFek6a46ZftoHzqMpMAmeuvIhDGl+?=
- =?us-ascii?Q?OJWjoiF2tzqMI3tqwsljOkNAmvayoBhjJofdsDKi1NAgKA68NGuZlrkFV6SA?=
- =?us-ascii?Q?G0ejxMkCZ2usMKpUnNg4sTpQUK3T3U75e3dtx0S9iP79WUkBijWqsjEb9i54?=
- =?us-ascii?Q?Tf49sWs633ubw6p+Z6evphJw+ZclWOwcBQfV1GDfI1xB7ZehlNf3gZjitu0Q?=
- =?us-ascii?Q?AhP/QEROIgsvKUctuH1xSRUhZ4o6bgifUGDoffXo6zo98m7IkfIf/16UUy4q?=
- =?us-ascii?Q?waE/5VakTxxiOSyXFeWkZjLO1d10sm1KUlgnOEilbbEWHApff9IDyHxnuWy7?=
- =?us-ascii?Q?KW0MAKppnMKhSbSUreH033VHPV6IBYHImTJTHHklEqVlDwfwPAY6NVSZNhq9?=
- =?us-ascii?Q?JJcPtRB8adQP8IBoVaPrCDWFZYbiSdxaKV/mTGFIJr6ItoAarDFjUgUhhvNo?=
- =?us-ascii?Q?WPfuvuYlAQhnvJ48WesccT87E7ft600FB+TXvp5Gzs7c2bHgxooMuFaIVECy?=
- =?us-ascii?Q?eeMBW3mr9mXgMgocwj0ZklWDDX19PDf5PwNFOidiyZdAAko5hnIdf6AkYWLt?=
- =?us-ascii?Q?lufssCUbEwGzQTSmCGfQvr486x/YLXK5TTQP2fh3a8TxZyuhS9YALUIRPlJe?=
- =?us-ascii?Q?bIby6h/laIvCw4tAqkrV75HVCfnMbPpnFYvI9cE4ODTI8g7Hbdy6X3Oah/KA?=
- =?us-ascii?Q?7BYwp8yM91Stbo9+7SD9LtylK2FxochaufvJ2+djUvyMO5KXsjl/9hQDsE6a?=
- =?us-ascii?Q?jzBJgpyKDT2jn5pOwQ51znu0hoyzoGRLrjECnCUm7u5B+MCBs+q5OHoedwcz?=
- =?us-ascii?Q?isysTWOt9UYuiE49RPaKpx0xGaRjpycydfSR2z0rAb1qlJngYVA3tE+xiuLu?=
- =?us-ascii?Q?Mb4pKevfYveNGMMMZtVTSn47e171h/3E73+yOSKqrwl5XUwTXCITLM5vJqo/?=
- =?us-ascii?Q?PP2pfkvUx9njcrfaAnU/ZopW/UAEKsOTYZUoKFsevLiTrSRFhYh5twyBBnj6?=
- =?us-ascii?Q?Rxb0/dO0M0tVroojcXKaarX061f7pC8d0kHUnEese7kSC1Swp+D+0uQumeMO?=
- =?us-ascii?Q?FwSxW7E9eLstAluH1MJp6sFI/ayv1U6GqN1a/7UbaiRd7rQhCcUb2DxTeUaj?=
- =?us-ascii?Q?T2zoCIUnAZHwNToHuOoflY3PigV9yszhPoy3OGq4Y7luuNrpJn9f+0ER9FyL?=
- =?us-ascii?Q?Uhy/2YDCWIG7DcmjVvuZ5srVCrX0LhkovES+OOwPoc72W2YdIbG2Js3JWC+w?=
- =?us-ascii?Q?WCG7GoX+C/YNJtI8L+VheVNQ?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?79iIBCtrnGtokt9qCj1IJK2+p2EQA/rvb6tZ+f5W5I+487Pg7CDsTTRdo/oq?=
+ =?us-ascii?Q?R1q0nzF5WgDv3oD4BtQk0J5nxGJV2uvaJsE8HkE+dOsaAqAzMRFA8x8Nm/Eo?=
+ =?us-ascii?Q?xqhK+orLG2kOWUs7PWZmE40FA7ShOPT0773GX4Mh7fFaqCuylfMZ5aLgI9kv?=
+ =?us-ascii?Q?uM3QuCx9fWJ7QgbssaX3gsF/siS24bcxYcUf+dXC6Z15m6DiwwgJNZv8wqmP?=
+ =?us-ascii?Q?t4x8qRRXvjAUotAvvnyOBza+ua/P0KVHhO+vkG6yQvJ33CkasWclnGuW//fp?=
+ =?us-ascii?Q?R2vRVQlKZrvjsYdhFHuNc3E6GWE3F2JE1p0uFdaXesXZshdjC8PFjGhNSVWw?=
+ =?us-ascii?Q?f1KeLdcMkROWSK/w2itP+j7Y5RyfCBhLFZYLUajftwzndQMgBkC6O3jVHrLh?=
+ =?us-ascii?Q?RGWdoMYzioDvZQ+A0yp/QKz8MkklWnp/x5SUlJWh/lHr0OBCfMRES09P5F7J?=
+ =?us-ascii?Q?RbH5E8MlUiqPsKo/uaD6kLXHwN25TVcsQ1eyL0apZy4LvcuawzeUUl/SLG2x?=
+ =?us-ascii?Q?X8KtA2fodvn8tl1F9MGw7eYegrWXtVIrna6n89TdZhsklrB6b0oQA1t/9zXF?=
+ =?us-ascii?Q?aIM9lB66OzDVslJc3JlcKIGsLQCT11zEKC5qhaELo9sB2xy5VDMWHD8/Xqiz?=
+ =?us-ascii?Q?2wCuQRI/RDqBiX+MA9+j876FUewdueKfXhtc7t0pKWiHYBym5mc1y+rj6tcq?=
+ =?us-ascii?Q?wixTqhdk6Rp9/AJMv9xEzOfpm50ZnZ2COthfi2BLk7XN5wE7Sm9xq3TLw5sB?=
+ =?us-ascii?Q?qDE5ps5Z9dxaI88HEg5Htih7fv9Miovfvh2EfFe7V6QFYSVgiloaROW+1BaT?=
+ =?us-ascii?Q?5S9BrZqZ0K2ftrEk74QNHMccOv6ARf4iTYmPcbOz7kQX5zJ9WvWDubbEZWop?=
+ =?us-ascii?Q?ML0bei09HBY4/DuiV9o9IRFyoop8aRUlI8aNZjmxQ0wTzC2kryyr2Q5S+ys2?=
+ =?us-ascii?Q?UkD40h0Y432Gw2Gft6NCdJu/iC8XKbJdPiC/8OB+nNAzQhVPLxgx2l7ollY9?=
+ =?us-ascii?Q?xEGG90wkjUOAWRTSaN/5cy6RM6gcuOaVhFzzRkqhAxEwU1V5+5ApJMsRGMY3?=
+ =?us-ascii?Q?6DzFzaKycQLD249xv8ZhXt/enA1AlyYRshMNKQbsg/1WvP35n1qxf490V/LT?=
+ =?us-ascii?Q?2T0WAhACU7CPe9N2gQBb4Z08c75xUyAqB04wBWuIlDvtIL893PybyZMvA72T?=
+ =?us-ascii?Q?SI1pL5rmpKU3cgMKrZc8XbIqtrAvMdA0i4zimVvZUcfqFO4dI+7FtgbwbKo8?=
+ =?us-ascii?Q?POvkzyo8K2E464VaGxOTIrERLlKlPrUol3N6klF0MpZAdiMmjWVKWJRZJStO?=
+ =?us-ascii?Q?kYS69nM8sPeiEFptJb4GTATg?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f916e65-8313-427c-d66f-08d94e29b40c
+X-MS-Exchange-CrossTenant-Network-Message-Id: d743082a-28cf-475d-d604-08d94e29b4cc
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2021 22:32:07.1771
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2021 22:32:08.4923
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x1mFzwpp2Q64SHPzeTR8LrvFQQdSw5EaEQP/7Z/gz1mXUQe5U6fdleFKggGy58WAhnyLtgz0apCxfUcI1FWeQA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: z13ebU1ILRFEzOYzWTZRmlCn1QeqdG2cH2s2eGSKvtf4vORxkLFWQFsWS0CNmDKX1O/ria5QM4hPv1nQuDE1hA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB7068
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This reads the various new devicetree parameters to discover how the
-uart was configured when it was synthesized. Note that these properties
-are fixed and undiscoverable. Once we have determined how the uart is
-configured, we set the termios to let users know, and to initialize the
-timeout to the correct value.
-
-The defaults match ulite_console_setup. xlnx,use-parity,
-xlnx,odd-parity, and xlnx,data-bits are optional since there were
-in-tree users (and presumably out-of-tree users) who did not set them.
+This device does not support changing baud, parity, data bits, stop
+bits, or detecting breaks. Disable "changing" these settings to prevent
+their termios from diverging from the actual state of the uart. To inform
+users of these limitations, warn if the new termios change these
+parameters. We only do this once to avoid spamming the log. These
+warnings are inspired by those in the sifive driver.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
- drivers/tty/serial/uartlite.c | 66 +++++++++++++++++++++++++++++++----
- 1 file changed, 60 insertions(+), 6 deletions(-)
+ drivers/tty/serial/uartlite.c | 52 +++++++++++++++++++++++++++++++++--
+ 1 file changed, 49 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index f42ccc40ffa6..39c17ab206ca 100644
+index 39c17ab206ca..0aed70039f46 100644
 --- a/drivers/tty/serial/uartlite.c
 +++ b/drivers/tty/serial/uartlite.c
-@@ -60,9 +60,20 @@
- static struct uart_port *console_port;
- #endif
- 
-+/**
-+ * struct uartlite_data: Driver private data
-+ * reg_ops: Functions to read/write registers
-+ * clk: Our parent clock, if present
-+ * baud: The baud rate configured when this device was synthesized
-+ * parity: The parity settings, like for uart_set_options()
-+ * bits: The number of data bits
-+ */
- struct uartlite_data {
- 	const struct uartlite_reg_ops *reg_ops;
- 	struct clk *clk;
-+	int baud;
-+	int parity;
-+	int bits;
- };
- 
- struct uartlite_reg_ops {
-@@ -652,6 +663,9 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
- 	port->type = PORT_UNKNOWN;
- 	port->line = id;
- 	port->private_data = pdata;
-+	/* Initialize the termios to what was configured at synthesis-time */
-+	uart_set_options(port, NULL, pdata->baud, pdata->parity, pdata->bits,
-+			 'n');
- 
- 	dev_set_drvdata(dev, port);
- 
-@@ -756,18 +770,58 @@ static int ulite_probe(struct platform_device *pdev)
- 	struct uartlite_data *pdata;
- 	int irq, ret;
- 	int id = pdev->id;
--#ifdef CONFIG_OF
--	const __be32 *prop;
- 
--	prop = of_get_property(pdev->dev.of_node, "port-number", NULL);
--	if (prop)
--		id = be32_to_cpup(prop);
--#endif
- 	pdata = devm_kzalloc(&pdev->dev, sizeof(struct uartlite_data),
- 			     GFP_KERNEL);
- 	if (!pdata)
- 		return -ENOMEM;
- 
-+	if (IS_ENABLED(CONFIG_OF)) {
-+		const char *prop;
-+		struct device_node *np = pdev->dev.of_node;
-+		u32 val;
+@@ -314,7 +314,54 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			      struct ktermios *old)
+ {
+ 	unsigned long flags;
+-	unsigned int baud;
++	struct uartlite_data *pdata = port->private_data;
++	tcflag_t old_cflag;
 +
-+		prop = "port-number";
-+		ret = of_property_read_u32(np, prop, &id);
-+		if (ret && ret != -EINVAL)
-+of_err:
-+			return dev_err_probe(&pdev->dev, ret,
-+					     "could not read %s\n", prop);
++	if (termios->c_iflag & BRKINT)
++		dev_err_once(port->dev, "BREAK detection not supported\n");
++	termios->c_iflag &= ~BRKINT;
 +
-+		prop = "current-speed";
-+		ret = of_property_read_u32(np, prop, &pdata->baud);
-+		if (ret)
-+			goto of_err;
++	if (termios->c_cflag & CSTOPB)
++		dev_err_once(port->dev, "only one stop bit supported\n");
++	termios->c_cflag &= ~CSTOPB;
 +
-+		prop = "xlnx,use-parity";
-+		ret = of_property_read_u32(np, prop, &val);
-+		if (ret && ret != -EINVAL)
-+			goto of_err;
++	old_cflag = termios->c_cflag;
++	termios->c_cflag &= ~(PARENB | PARODD);
++	if (pdata->parity == 'e')
++		termios->c_cflag |= PARENB;
++	else if (pdata->parity == 'o')
++		termios->c_cflag |= PARENB | PARODD;
 +
-+		if (val) {
-+			prop = "xlnx,odd-parity";
-+			ret = of_property_read_u32(np, prop, &val);
-+			if (ret)
-+				goto of_err;
++	if (termios->c_cflag != old_cflag)
++		dev_err_once(port->dev, "only '%c' parity supported\n",
++			     pdata->parity);
 +
-+			if (val)
-+				pdata->parity = 'o';
-+			else
-+				pdata->parity = 'e';
-+		} else {
-+			pdata->parity = 'n';
-+		}
-+
-+		prop = "xlnx,data-bits";
-+		ret = of_property_read_u32(np, prop, &pdata->bits);
-+		if (ret && ret != -EINVAL)
-+			goto of_err;
-+	} else {
-+		pdata->baud = 9600;
-+		pdata->parity = 'n';
-+		pdata->bits = 8;
++	old_cflag = termios->c_cflag;
++	termios->c_cflag &= ~CSIZE;
++	switch (termios->c_cflag & CSIZE) {
++	case 5:
++		termios->c_cflag |= CS5;
++		break;
++	case 6:
++		termios->c_cflag |= CS6;
++		break;
++	case 7:
++		termios->c_cflag |= CS7;
++		break;
++	default:
++	case 8:
++		termios->c_cflag |= CS8;
++		break;
 +	}
++	if (termios->c_cflag != old_cflag)
++		dev_err_once(port->dev, "only %d data bits supported\n",
++			     pdata->bits);
 +
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res)
- 		return -ENODEV;
++	old_cflag = termios->c_cflag;
++	tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
++	if (termios->c_cflag != old_cflag)
++		dev_err_once(port->dev, "only %d baud supported\n",
++			     pdata->baud);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+@@ -337,8 +384,7 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			| ULITE_STATUS_FRAME | ULITE_STATUS_OVERRUN;
+ 
+ 	/* update timeout */
+-	baud = uart_get_baud_rate(port, termios, old, 0, 460800);
+-	uart_update_timeout(port, termios->c_cflag, baud);
++	uart_update_timeout(port, termios->c_cflag, pdata->baud);
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
 -- 
 2.25.1
 
