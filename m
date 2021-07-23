@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09976C4320E
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 07:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F4DC4338F
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 07:43:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E8D7C60EBD
+	by mail.kernel.org (Postfix) with ESMTP id 20CB960EBD
 	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 07:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234183AbhGWHCz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Jul 2021 03:02:55 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:59064 "EHLO
+        id S234047AbhGWHCv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Jul 2021 03:02:51 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:59148 "EHLO
         smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233656AbhGWHCr (ORCPT
+        with ESMTP id S233801AbhGWHCt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Jul 2021 03:02:47 -0400
+        Fri, 23 Jul 2021 03:02:49 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 60E6E1FF60;
-        Fri, 23 Jul 2021 07:43:20 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 85D8A1FF64;
+        Fri, 23 Jul 2021 07:43:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1627026200; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1627026201; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DW9wHXGIn920h02inTUK5OGEuw+ZnYhjNpBhkTFMVto=;
-        b=Ah71VLGtVNcynC3Jqau1eNfmmPwZIjhCM8BEw7jiuSYnzcfKpgSeeFGNLSNoqnUpjzgg3V
-        CEsMdtI4YgCgndn5GezJRrHr5FvlYNXewyOSK3UUv0WW+DpTzJAwAWih2a0GPRez/mGGQj
-        8ez9EJThLKjVQxhykXu3IrIdX7t05jY=
+        bh=tHHqgSA+5+vJdxCMl6tUjSj6k9Xer6y3hN4cn+5i+Ig=;
+        b=jBIPTJbYGNR20NPo495yvhQS4dd0qoAmxkLjweLz4A6ajgAuSReucZr6z40mn+pPQUR4JH
+        V4Rcd+d15HvEDe01KktN+QqY03S7NU6bFO/M+R7axmYaIRAy+3YOK/Wl/imIIoqZfO6o0T
+        G9L3F/r/RU71xnsqcgEbhnMzRrRwP6E=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1627026200;
+        s=susede2_ed25519; t=1627026201;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DW9wHXGIn920h02inTUK5OGEuw+ZnYhjNpBhkTFMVto=;
-        b=gbR3v70pynvuqyrj2kpW9Kk3vrIW20LK84zztZF6WNbshNtldBnLLDH3j6NS1tUrrMrfyM
-        sfQ1ruRrBTEEl2AQ==
+        bh=tHHqgSA+5+vJdxCMl6tUjSj6k9Xer6y3hN4cn+5i+Ig=;
+        b=7R1GujrtwpMOc+UnCe1sKvCChYneDiV2wWnetrwH+sL8U0lhPqVon6ts/U1VEqpZ+IYvPb
+        AKQA+S/uC4OmfcAw==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 05BDDA3B87;
-        Fri, 23 Jul 2021 07:43:19 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id AB53FA3B93;
+        Fri, 23 Jul 2021 07:43:20 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -54,35 +54,42 @@ Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
         Matt Turner <mattst88@gmail.com>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, Jeff Dike <jdike@addtoit.com>,
+        Jeff Dike <jdike@addtoit.com>,
         Richard Weinberger <richard@nod.at>,
         Anton Ivanov <anton.ivanov@cambridgegreys.com>,
         Chris Zankel <chris@zankel.net>,
         Max Filippov <jcmvbkbc@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
         Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
         Jens Taprogge <jens.taprogge@taprogge.org>,
         Karsten Keil <isdn@linux-pingi.de>,
+        Scott Branden <scott.branden@broadcom.com>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Heiko Carstens <hca@linux.ibm.com>,
         Vasily Gorbik <gor@linux.ibm.com>,
         Christian Borntraeger <borntraeger@de.ibm.com>,
+        David Lin <dtwlin@gmail.com>, Johan Hovold <johan@kernel.org>,
+        Alex Elder <elder@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Laurentiu Tudor <laurentiu.tudor@nxp.com>,
         Jiri Kosina <jikos@kernel.org>,
         David Sterba <dsterba@suse.com>,
         Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         Oliver Neukum <oneukum@suse.com>,
         Felipe Balbi <balbi@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
         Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: [PATCH 4/8] tty: stop using alloc_tty_driver
-Date:   Fri, 23 Jul 2021 09:43:13 +0200
-Message-Id: <20210723074317.32690-5-jslaby@suse.cz>
+Subject: [PATCH 7/8] tty: drop put_tty_driver
+Date:   Fri, 23 Jul 2021 09:43:16 +0200
+Message-Id: <20210723074317.32690-8-jslaby@suse.cz>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210723074317.32690-1-jslaby@suse.cz>
 References: <20210723074317.32690-1-jslaby@suse.cz>
@@ -92,899 +99,985 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-alloc_tty_driver was deprecated by tty_alloc_driver in commit
-7f0bc6a68ed9 (TTY: pass flags to alloc_tty_driver) in 2012.
-
-I never got into eliminating alloc_tty_driver until now. So we still
-have two functions for allocating drivers which might be confusing. So
-get rid of alloc_tty_driver uses to eliminate it for good in the next
-patch.
-
-Note we need to switch return value checking as tty_alloc_driver uses
-ERR_PTR. And flags are now a parameter of tty_alloc_driver.
+put_tty_driver() is an alias for tty_driver_kref_put(). There is no need
+for two exported identical functions, therefore switch all users of
+old put_tty_driver() to new tty_driver_kref_put() and remove the former
+for good.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Richard Henderson <rth@twiddle.net>(odd fixer:ALPHA PORT)
+Cc: Richard Henderson <rth@twiddle.net>
 Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 Cc: Matt Turner <mattst88@gmail.com>
 Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: Helge Deller <deller@gmx.de>
 Cc: Jeff Dike <jdike@addtoit.com>
 Cc: Richard Weinberger <richard@nod.at>
 Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 Cc: Chris Zankel <chris@zankel.net>
 Cc: Max Filippov <jcmvbkbc@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
 Cc: Jens Taprogge <jens.taprogge@taprogge.org>
 Cc: Karsten Keil <isdn@linux-pingi.de>
+Cc: Scott Branden <scott.branden@broadcom.com>
 Cc: Ulf Hansson <ulf.hansson@linaro.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Heiko Carstens <hca@linux.ibm.com>
 Cc: Vasily Gorbik <gor@linux.ibm.com>
 Cc: Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: David Lin <dtwlin@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Alex Elder <elder@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
 Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 Cc: Jiri Kosina <jikos@kernel.org>
 Cc: David Sterba <dsterba@suse.com>
 Cc: Shawn Guo <shawnguo@kernel.org>
 Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
 Cc: Oliver Neukum <oneukum@suse.com>
 Cc: Felipe Balbi <balbi@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
+Cc: Mathias Nyman <mathias.nyman@intel.com>
 Cc: Marcel Holtmann <marcel@holtmann.org>
 Cc: Johan Hedberg <johan.hedberg@gmail.com>
 Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
 ---
- arch/alpha/kernel/srmcons.c            |  6 +++---
- arch/m68k/emu/nfcon.c                  |  7 +++----
- arch/parisc/kernel/pdc_cons.c          |  9 ++++-----
- arch/um/drivers/line.c                 | 11 ++++++-----
- arch/xtensa/platforms/iss/console.c    |  7 +++----
- drivers/ipack/devices/ipoctal.c        |  9 ++++-----
- drivers/isdn/capi/capi.c               | 10 ++++------
- drivers/mmc/core/sdio_uart.c           |  8 ++++----
- drivers/net/usb/hso.c                  |  8 ++++----
- drivers/s390/char/con3215.c            |  7 +++----
- drivers/s390/char/sclp_tty.c           |  7 +++----
- drivers/s390/char/sclp_vt220.c         |  7 +++----
- drivers/staging/gdm724x/gdm_tty.c      |  9 ++++-----
- drivers/tty/amiserial.c                |  7 +++----
- drivers/tty/ehv_bytechan.c             |  8 ++++----
- drivers/tty/goldfish.c                 | 14 +++++++-------
- drivers/tty/hvc/hvc_console.c          |  8 ++++----
- drivers/tty/hvc/hvcs.c                 |  8 ++++----
- drivers/tty/hvc/hvsi.c                 |  7 +++----
- drivers/tty/ipwireless/tty.c           |  8 ++++----
- drivers/tty/mxser.c                    |  8 ++++----
- drivers/tty/n_gsm.c                    |  9 ++++-----
- drivers/tty/nozomi.c                   |  8 ++++----
- drivers/tty/serial/kgdb_nmi.c          |  7 +++----
- drivers/tty/serial/serial_core.c       |  8 +++++---
- drivers/tty/synclink_gt.c              |  8 ++++----
- drivers/tty/vt/vt.c                    |  6 +++---
- drivers/usb/class/cdc-acm.c            |  8 ++++----
- drivers/usb/gadget/function/u_serial.c |  8 ++++----
- drivers/usb/serial/usb-serial.c        |  9 ++++-----
- net/bluetooth/rfcomm/tty.c             |  8 ++++----
- 31 files changed, 120 insertions(+), 132 deletions(-)
+ arch/alpha/kernel/srmcons.c            | 2 +-
+ arch/m68k/emu/nfcon.c                  | 4 ++--
+ arch/um/drivers/line.c                 | 2 +-
+ arch/xtensa/platforms/iss/console.c    | 2 +-
+ drivers/char/pcmcia/synclink_cs.c      | 4 ++--
+ drivers/char/ttyprintk.c               | 4 ++--
+ drivers/ipack/devices/ipoctal.c        | 4 ++--
+ drivers/isdn/capi/capi.c               | 4 ++--
+ drivers/misc/bcm-vk/bcm_vk_tty.c       | 8 ++++----
+ drivers/mmc/core/sdio_uart.c           | 4 ++--
+ drivers/net/usb/hso.c                  | 4 ++--
+ drivers/s390/char/con3215.c            | 4 ++--
+ drivers/s390/char/sclp_tty.c           | 8 ++++----
+ drivers/s390/char/sclp_vt220.c         | 2 +-
+ drivers/s390/char/tty3270.c            | 4 ++--
+ drivers/staging/fwserial/fwserial.c    | 8 ++++----
+ drivers/staging/gdm724x/gdm_tty.c      | 4 ++--
+ drivers/staging/greybus/uart.c         | 4 ++--
+ drivers/tty/amiserial.c                | 8 ++++----
+ drivers/tty/ehv_bytechan.c             | 6 +++---
+ drivers/tty/goldfish.c                 | 4 ++--
+ drivers/tty/hvc/hvc_console.c          | 2 +-
+ drivers/tty/hvc/hvcs.c                 | 4 ++--
+ drivers/tty/ipwireless/tty.c           | 4 ++--
+ drivers/tty/mips_ejtag_fdc.c           | 2 +-
+ drivers/tty/moxa.c                     | 4 ++--
+ drivers/tty/mxser.c                    | 4 ++--
+ drivers/tty/n_gsm.c                    | 4 ++--
+ drivers/tty/nozomi.c                   | 4 ++--
+ drivers/tty/serial/kgdb_nmi.c          | 4 ++--
+ drivers/tty/serial/serial_core.c       | 4 ++--
+ drivers/tty/synclink_gt.c              | 4 ++--
+ drivers/tty/tty_io.c                   | 6 ------
+ drivers/tty/ttynull.c                  | 4 ++--
+ drivers/tty/vcc.c                      | 4 ++--
+ drivers/usb/class/cdc-acm.c            | 6 +++---
+ drivers/usb/gadget/function/u_serial.c | 4 ++--
+ drivers/usb/host/xhci-dbgtty.c         | 4 ++--
+ drivers/usb/serial/usb-serial.c        | 4 ++--
+ include/linux/tty_driver.h             | 1 -
+ net/bluetooth/rfcomm/tty.c             | 4 ++--
+ 41 files changed, 82 insertions(+), 89 deletions(-)
 
 diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-index fc03471a0b0f..d0a1b08d851d 100644
+index d0a1b08d851d..90635ef5dafa 100644
 --- a/arch/alpha/kernel/srmcons.c
 +++ b/arch/alpha/kernel/srmcons.c
-@@ -204,9 +204,9 @@ srmcons_init(void)
- 		struct tty_driver *driver;
- 		int err;
- 
--		driver = alloc_tty_driver(MAX_SRM_CONSOLE_DEVICES);
--		if (!driver)
--			return -ENOMEM;
-+		driver = tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
-+		if (IS_ERR(driver))
-+			return PTR_ERR(driver);
- 
- 		tty_port_init(&srmcons_singleton.port);
- 
+@@ -221,7 +221,7 @@ srmcons_init(void)
+ 		tty_port_link_device(&srmcons_singleton.port, driver, 0);
+ 		err = tty_register_driver(driver);
+ 		if (err) {
+-			put_tty_driver(driver);
++			tty_driver_kref_put(driver);
+ 			tty_port_destroy(&srmcons_singleton.port);
+ 			return err;
+ 		}
 diff --git a/arch/m68k/emu/nfcon.c b/arch/m68k/emu/nfcon.c
-index f393af375c90..b3b64d03bad6 100644
+index b3b64d03bad6..557d60867f98 100644
 --- a/arch/m68k/emu/nfcon.c
 +++ b/arch/m68k/emu/nfcon.c
-@@ -127,9 +127,9 @@ static int __init nfcon_init(void)
- 	if (!stderr_id)
- 		return -ENODEV;
- 
--	driver = alloc_tty_driver(1);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
- 
- 	tty_port_init(&nfcon_tty_port);
- 
-@@ -138,7 +138,6 @@ static int __init nfcon_init(void)
- 	driver->type = TTY_DRIVER_TYPE_SYSTEM;
- 	driver->subtype = SYSTEM_TYPE_TTY;
- 	driver->init_termios = tty_std_termios;
--	driver->flags = TTY_DRIVER_REAL_RAW;
- 
- 	tty_set_operations(driver, &nfcon_tty_ops);
- 	tty_port_link_device(&nfcon_tty_port, driver, 0);
-diff --git a/arch/parisc/kernel/pdc_cons.c b/arch/parisc/kernel/pdc_cons.c
-index 650cb01203de..70c2a1648fc1 100644
---- a/arch/parisc/kernel/pdc_cons.c
-+++ b/arch/parisc/kernel/pdc_cons.c
-@@ -161,9 +161,10 @@ static int __init pdc_console_tty_driver_init(void)
- 	printk(KERN_INFO "The PDC console driver is still registered, removing CON_BOOT flag\n");
- 	pdc_cons.flags &= ~CON_BOOT;
- 
--	driver = alloc_tty_driver(1);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_RESET_TERMIOS);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
- 
- 	tty_port_init(&tty_port);
- 
-@@ -173,8 +174,6 @@ static int __init pdc_console_tty_driver_init(void)
- 	driver->minor_start = 0;
- 	driver->type = TTY_DRIVER_TYPE_SYSTEM;
- 	driver->init_termios = tty_std_termios;
--	driver->flags = TTY_DRIVER_REAL_RAW |
--		TTY_DRIVER_RESET_TERMIOS;
- 	tty_set_operations(driver, &pdc_console_tty_ops);
- 	tty_port_link_device(&tty_port, driver, 0);
+@@ -144,7 +144,7 @@ static int __init nfcon_init(void)
+ 	res = tty_register_driver(driver);
+ 	if (res) {
+ 		pr_err("failed to register nfcon tty driver\n");
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		tty_port_destroy(&nfcon_tty_port);
+ 		return res;
+ 	}
+@@ -161,7 +161,7 @@ static void __exit nfcon_exit(void)
+ {
+ 	unregister_console(&nf_console);
+ 	tty_unregister_driver(nfcon_tty_driver);
+-	put_tty_driver(nfcon_tty_driver);
++	tty_driver_kref_put(nfcon_tty_driver);
+ 	tty_port_destroy(&nfcon_tty_port);
+ }
  
 diff --git a/arch/um/drivers/line.c b/arch/um/drivers/line.c
-index fbc623d2cc07..0d8f4ee6335d 100644
+index 0d8f4ee6335d..8febf95da96e 100644
 --- a/arch/um/drivers/line.c
 +++ b/arch/um/drivers/line.c
-@@ -538,12 +538,14 @@ int register_lines(struct line_driver *line_driver,
- 		   const struct tty_operations *ops,
- 		   struct line *lines, int nlines)
- {
--	struct tty_driver *driver = alloc_tty_driver(nlines);
-+	struct tty_driver *driver;
- 	int err;
- 	int i;
- 
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(nlines, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
- 
- 	driver->driver_name = line_driver->name;
- 	driver->name = line_driver->device_name;
-@@ -551,9 +553,8 @@ int register_lines(struct line_driver *line_driver,
- 	driver->minor_start = line_driver->minor_start;
- 	driver->type = line_driver->type;
- 	driver->subtype = line_driver->subtype;
--	driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	driver->init_termios = tty_std_termios;
--	
-+
- 	for (i = 0; i < nlines; i++) {
- 		tty_port_init(&lines[i].port);
- 		lines[i].port.ops = &line_port_ops;
+@@ -568,7 +568,7 @@ int register_lines(struct line_driver *line_driver,
+ 	if (err) {
+ 		printk(KERN_ERR "register_lines : can't register %s driver\n",
+ 		       line_driver->name);
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		for (i = 0; i < nlines; i++)
+ 			tty_port_destroy(&lines[i].port);
+ 		return err;
 diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
-index 9c3cf369b7b2..0b8a0565cdfd 100644
+index 0b8a0565cdfd..81f988914d9a 100644
 --- a/arch/xtensa/platforms/iss/console.c
 +++ b/arch/xtensa/platforms/iss/console.c
-@@ -139,9 +139,9 @@ static int __init rs_init(void)
- 	struct tty_driver *driver;
- 	int ret;
+@@ -178,7 +178,7 @@ static int __init rs_init(void)
+ static __exit void rs_exit(void)
+ {
+ 	tty_unregister_driver(serial_driver);
+-	put_tty_driver(serial_driver);
++	tty_driver_kref_put(serial_driver);
+ 	tty_port_destroy(&serial_port);
+ }
  
--	driver = alloc_tty_driver(SERIAL_MAX_NUM_LINES);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(SERIAL_MAX_NUM_LINES, TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
+diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
+index 6eaefea0520e..fd78d5856841 100644
+--- a/drivers/char/pcmcia/synclink_cs.c
++++ b/drivers/char/pcmcia/synclink_cs.c
+@@ -2841,7 +2841,7 @@ static int __init synclink_cs_init(void)
+ err_unreg_tty:
+ 	tty_unregister_driver(serial_driver);
+ err_put_tty:
+-	put_tty_driver(serial_driver);
++	tty_driver_kref_put(serial_driver);
+ err:
+ 	return rc;
+ }
+@@ -2850,7 +2850,7 @@ static void __exit synclink_cs_exit(void)
+ {
+ 	pcmcia_unregister_driver(&mgslpc_driver);
+ 	tty_unregister_driver(serial_driver);
+-	put_tty_driver(serial_driver);
++	tty_driver_kref_put(serial_driver);
+ }
  
- 	tty_port_init(&serial_port);
+ module_init(synclink_cs_init);
+diff --git a/drivers/char/ttyprintk.c b/drivers/char/ttyprintk.c
+index 230b2c9b3e3c..adf941c47506 100644
+--- a/drivers/char/ttyprintk.c
++++ b/drivers/char/ttyprintk.c
+@@ -198,7 +198,7 @@ static int __init ttyprintk_init(void)
+ 	return 0;
  
-@@ -156,7 +156,6 @@ static int __init rs_init(void)
- 	driver->init_termios = tty_std_termios;
- 	driver->init_termios.c_cflag =
- 		B9600 | CS8 | CREAD | HUPCL | CLOCAL;
--	driver->flags = TTY_DRIVER_REAL_RAW;
+ error:
+-	put_tty_driver(ttyprintk_driver);
++	tty_driver_kref_put(ttyprintk_driver);
+ 	tty_port_destroy(&tpk_port.port);
+ 	return ret;
+ }
+@@ -206,7 +206,7 @@ static int __init ttyprintk_init(void)
+ static void __exit ttyprintk_exit(void)
+ {
+ 	tty_unregister_driver(ttyprintk_driver);
+-	put_tty_driver(ttyprintk_driver);
++	tty_driver_kref_put(ttyprintk_driver);
+ 	tty_port_destroy(&tpk_port.port);
+ }
  
- 	tty_set_operations(driver, &serial_ops);
- 	tty_port_link_device(&serial_port, driver, 0);
 diff --git a/drivers/ipack/devices/ipoctal.c b/drivers/ipack/devices/ipoctal.c
-index 20fa02c81070..be6d11f46e62 100644
+index be6d11f46e62..c14e65a5d38f 100644
 --- a/drivers/ipack/devices/ipoctal.c
 +++ b/drivers/ipack/devices/ipoctal.c
-@@ -347,10 +347,10 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
- 	/* Register the TTY device */
+@@ -371,7 +371,7 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
+ 	res = tty_register_driver(tty);
+ 	if (res) {
+ 		dev_err(&ipoctal->dev->dev, "Can't register tty driver.\n");
+-		put_tty_driver(tty);
++		tty_driver_kref_put(tty);
+ 		return res;
+ 	}
  
- 	/* Each IP-OCTAL channel is a TTY port */
--	tty = alloc_tty_driver(NR_CHANNELS);
--
--	if (!tty)
--		return -ENOMEM;
-+	tty = tty_alloc_driver(NR_CHANNELS, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(tty))
-+		return PTR_ERR(tty);
+@@ -696,7 +696,7 @@ static void __ipoctal_remove(struct ipoctal *ipoctal)
+ 	}
  
- 	/* Fill struct tty_driver with ipoctal data */
- 	tty->owner = THIS_MODULE;
-@@ -362,7 +362,6 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
- 	tty->minor_start = 0;
- 	tty->type = TTY_DRIVER_TYPE_SERIAL;
- 	tty->subtype = SERIAL_TYPE_NORMAL;
--	tty->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	tty->init_termios = tty_std_termios;
- 	tty->init_termios.c_cflag = B9600 | CS8 | CREAD | HUPCL | CLOCAL;
- 	tty->init_termios.c_ispeed = 9600;
+ 	tty_unregister_driver(ipoctal->tty_drv);
+-	put_tty_driver(ipoctal->tty_drv);
++	tty_driver_kref_put(ipoctal->tty_drv);
+ 	kfree(ipoctal);
+ }
+ 
 diff --git a/drivers/isdn/capi/capi.c b/drivers/isdn/capi/capi.c
-index d5f9261fa879..32abf4d15450 100644
+index 32abf4d15450..0f00be62438d 100644
 --- a/drivers/isdn/capi/capi.c
 +++ b/drivers/isdn/capi/capi.c
-@@ -1269,10 +1269,11 @@ static int __init capinc_tty_init(void)
- 	if (!capiminors)
- 		return -ENOMEM;
- 
--	drv = alloc_tty_driver(capi_ttyminors);
--	if (!drv) {
-+	drv = tty_alloc_driver(capi_ttyminors, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_RESET_TERMIOS | TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(drv)) {
- 		kfree(capiminors);
--		return -ENOMEM;
-+		return PTR_ERR(drv);
- 	}
- 	drv->driver_name = "capi_nc";
- 	drv->name = "capi!";
-@@ -1285,9 +1286,6 @@ static int __init capinc_tty_init(void)
- 	drv->init_termios.c_oflag = OPOST | ONLCR;
- 	drv->init_termios.c_cflag = B9600 | CS8 | CREAD | HUPCL | CLOCAL;
- 	drv->init_termios.c_lflag = 0;
--	drv->flags =
--		TTY_DRIVER_REAL_RAW | TTY_DRIVER_RESET_TERMIOS |
--		TTY_DRIVER_DYNAMIC_DEV;
- 	tty_set_operations(drv, &capinc_ops);
+@@ -1290,7 +1290,7 @@ static int __init capinc_tty_init(void)
  
  	err = tty_register_driver(drv);
+ 	if (err) {
+-		put_tty_driver(drv);
++		tty_driver_kref_put(drv);
+ 		kfree(capiminors);
+ 		printk(KERN_ERR "Couldn't register capi_nc driver\n");
+ 		return err;
+@@ -1302,7 +1302,7 @@ static int __init capinc_tty_init(void)
+ static void __exit capinc_tty_exit(void)
+ {
+ 	tty_unregister_driver(capinc_tty_driver);
+-	put_tty_driver(capinc_tty_driver);
++	tty_driver_kref_put(capinc_tty_driver);
+ 	kfree(capiminors);
+ }
+ 
+diff --git a/drivers/misc/bcm-vk/bcm_vk_tty.c b/drivers/misc/bcm-vk/bcm_vk_tty.c
+index dae9eeed84a2..1b6076a89ca6 100644
+--- a/drivers/misc/bcm-vk/bcm_vk_tty.c
++++ b/drivers/misc/bcm-vk/bcm_vk_tty.c
+@@ -249,7 +249,7 @@ int bcm_vk_tty_init(struct bcm_vk *vk, char *name)
+ 	tty_drv->name = kstrdup(name, GFP_KERNEL);
+ 	if (!tty_drv->name) {
+ 		err = -ENOMEM;
+-		goto err_put_tty_driver;
++		goto err_tty_driver_kref_put;
+ 	}
+ 	tty_drv->type = TTY_DRIVER_TYPE_SERIAL;
+ 	tty_drv->subtype = SERIAL_TYPE_NORMAL;
+@@ -295,8 +295,8 @@ int bcm_vk_tty_init(struct bcm_vk *vk, char *name)
+ 	kfree(tty_drv->name);
+ 	tty_drv->name = NULL;
+ 
+-err_put_tty_driver:
+-	put_tty_driver(tty_drv);
++err_tty_driver_kref_put:
++	tty_driver_kref_put(tty_drv);
+ 
+ 	return err;
+ }
+@@ -317,7 +317,7 @@ void bcm_vk_tty_exit(struct bcm_vk *vk)
+ 	kfree(vk->tty_drv->name);
+ 	vk->tty_drv->name = NULL;
+ 
+-	put_tty_driver(vk->tty_drv);
++	tty_driver_kref_put(vk->tty_drv);
+ }
+ 
+ void bcm_vk_tty_terminate_tty_user(struct bcm_vk *vk)
 diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
-index c36242b86b1d..04a57832e486 100644
+index 04a57832e486..04c0823e0359 100644
 --- a/drivers/mmc/core/sdio_uart.c
 +++ b/drivers/mmc/core/sdio_uart.c
-@@ -1135,9 +1135,10 @@ static int __init sdio_uart_init(void)
- 	int ret;
- 	struct tty_driver *tty_drv;
+@@ -1165,7 +1165,7 @@ static int __init sdio_uart_init(void)
+ err2:
+ 	tty_unregister_driver(tty_drv);
+ err1:
+-	put_tty_driver(tty_drv);
++	tty_driver_kref_put(tty_drv);
+ 	return ret;
+ }
  
--	sdio_uart_tty_driver = tty_drv = alloc_tty_driver(UART_NR);
--	if (!tty_drv)
--		return -ENOMEM;
-+	sdio_uart_tty_driver = tty_drv = tty_alloc_driver(UART_NR,
-+			TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(tty_drv))
-+		return PTR_ERR(tty_drv);
+@@ -1173,7 +1173,7 @@ static void __exit sdio_uart_exit(void)
+ {
+ 	sdio_unregister_driver(&sdio_uart_driver);
+ 	tty_unregister_driver(sdio_uart_tty_driver);
+-	put_tty_driver(sdio_uart_tty_driver);
++	tty_driver_kref_put(sdio_uart_tty_driver);
+ }
  
- 	tty_drv->driver_name = "sdio_uart";
- 	tty_drv->name =   "ttySDIO";
-@@ -1145,7 +1146,6 @@ static int __init sdio_uart_init(void)
- 	tty_drv->minor_start = 0;
- 	tty_drv->type = TTY_DRIVER_TYPE_SERIAL;
- 	tty_drv->subtype = SERIAL_TYPE_NORMAL;
--	tty_drv->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	tty_drv->init_termios = tty_std_termios;
- 	tty_drv->init_termios.c_cflag = B4800 | CS8 | CREAD | HUPCL | CLOCAL;
- 	tty_drv->init_termios.c_ispeed = 4800;
+ module_init(sdio_uart_init);
 diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index dec96e8ab567..29df4b34e002 100644
+index 29df4b34e002..d4cc5bc425c3 100644
 --- a/drivers/net/usb/hso.c
 +++ b/drivers/net/usb/hso.c
-@@ -3242,9 +3242,10 @@ static int __init hso_init(void)
- 		serial_table[i] = NULL;
+@@ -3282,7 +3282,7 @@ static int __init hso_init(void)
+ err_unreg_tty:
+ 	tty_unregister_driver(tty_drv);
+ err_free_tty:
+-	put_tty_driver(tty_drv);
++	tty_driver_kref_put(tty_drv);
+ 	return result;
+ }
  
- 	/* allocate our driver using the proper amount of supported minors */
--	tty_drv = alloc_tty_driver(HSO_SERIAL_TTY_MINORS);
--	if (!tty_drv)
--		return -ENOMEM;
-+	tty_drv = tty_alloc_driver(HSO_SERIAL_TTY_MINORS, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(tty_drv))
-+		return PTR_ERR(tty_drv);
+@@ -3293,7 +3293,7 @@ static void __exit hso_exit(void)
+ 	tty_unregister_driver(tty_drv);
+ 	/* deregister the usb driver */
+ 	usb_deregister(&hso_driver);
+-	put_tty_driver(tty_drv);
++	tty_driver_kref_put(tty_drv);
+ }
  
- 	/* fill in all needed values */
- 	tty_drv->driver_name = driver_name;
-@@ -3257,7 +3258,6 @@ static int __init hso_init(void)
- 	tty_drv->minor_start = 0;
- 	tty_drv->type = TTY_DRIVER_TYPE_SERIAL;
- 	tty_drv->subtype = SERIAL_TYPE_NORMAL;
--	tty_drv->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	tty_drv->init_termios = tty_std_termios;
- 	hso_init_termios(&tty_drv->init_termios);
- 	tty_set_operations(tty_drv, &hso_serial_ops);
+ /* Module definitions */
 diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
-index 67c0009ca545..3818a89aef5c 100644
+index 3818a89aef5c..f356607835d8 100644
 --- a/drivers/s390/char/con3215.c
 +++ b/drivers/s390/char/con3215.c
-@@ -1076,9 +1076,9 @@ static int __init tty3215_init(void)
- 	if (!CONSOLE_IS_3215)
- 		return 0;
- 
--	driver = alloc_tty_driver(NR_3215);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(NR_3215, TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
+@@ -1082,7 +1082,7 @@ static int __init tty3215_init(void)
  
  	ret = ccw_driver_register(&raw3215_ccw_driver);
  	if (ret) {
-@@ -1101,7 +1101,6 @@ static int __init tty3215_init(void)
- 	driver->init_termios.c_iflag = IGNBRK | IGNPAR;
- 	driver->init_termios.c_oflag = ONLCR;
- 	driver->init_termios.c_lflag = ISIG;
--	driver->flags = TTY_DRIVER_REAL_RAW;
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		return ret;
+ 	}
+ 	/*
+@@ -1104,7 +1104,7 @@ static int __init tty3215_init(void)
  	tty_set_operations(driver, &tty3215_ops);
  	ret = tty_register_driver(driver);
  	if (ret) {
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		return ret;
+ 	}
+ 	tty3215_driver = driver;
 diff --git a/drivers/s390/char/sclp_tty.c b/drivers/s390/char/sclp_tty.c
-index 6be9de8ed37d..48790f8fb3b1 100644
+index 48790f8fb3b1..971fbb52740b 100644
 --- a/drivers/s390/char/sclp_tty.c
 +++ b/drivers/s390/char/sclp_tty.c
-@@ -503,9 +503,9 @@ sclp_tty_init(void)
- 		return 0;
- 	if (!sclp.has_linemode)
- 		return 0;
--	driver = alloc_tty_driver(1);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
+@@ -509,14 +509,14 @@ sclp_tty_init(void)
  
  	rc = sclp_rw_init();
  	if (rc) {
-@@ -548,7 +548,6 @@ sclp_tty_init(void)
- 	driver->init_termios.c_iflag = IGNBRK | IGNPAR;
- 	driver->init_termios.c_oflag = ONLCR;
- 	driver->init_termios.c_lflag = ISIG | ECHO;
--	driver->flags = TTY_DRIVER_REAL_RAW;
- 	tty_set_operations(driver, &sclp_ops);
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		return rc;
+ 	}
+ 	/* Allocate pages for output buffering */
+ 	for (i = 0; i < MAX_KMEM_PAGES; i++) {
+ 		page = (void *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
+ 		if (page == NULL) {
+-			put_tty_driver(driver);
++			tty_driver_kref_put(driver);
+ 			return -ENOMEM;
+ 		}
+ 		list_add_tail((struct list_head *) page, &sclp_tty_pages);
+@@ -532,7 +532,7 @@ sclp_tty_init(void)
+ 
+ 	rc = sclp_register(&sclp_input_event);
+ 	if (rc) {
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		return rc;
+ 	}
+ 
+@@ -552,7 +552,7 @@ sclp_tty_init(void)
  	tty_port_link_device(&sclp_port, driver, 0);
  	rc = tty_register_driver(driver);
+ 	if (rc) {
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		tty_port_destroy(&sclp_port);
+ 		return rc;
+ 	}
 diff --git a/drivers/s390/char/sclp_vt220.c b/drivers/s390/char/sclp_vt220.c
-index da2496306c04..c6a7ea32aa5c 100644
+index c6a7ea32aa5c..29a6a0099f83 100644
 --- a/drivers/s390/char/sclp_vt220.c
 +++ b/drivers/s390/char/sclp_vt220.c
-@@ -732,9 +732,9 @@ static int __init sclp_vt220_tty_init(void)
+@@ -763,7 +763,7 @@ static int __init sclp_vt220_tty_init(void)
+ out_init:
+ 	__sclp_vt220_cleanup();
+ out_driver:
+-	put_tty_driver(driver);
++	tty_driver_kref_put(driver);
+ 	return rc;
+ }
+ __initcall(sclp_vt220_tty_init);
+diff --git a/drivers/s390/char/tty3270.c b/drivers/s390/char/tty3270.c
+index adc33846bf8e..5c83f71c1d0e 100644
+--- a/drivers/s390/char/tty3270.c
++++ b/drivers/s390/char/tty3270.c
+@@ -1935,7 +1935,7 @@ static int __init tty3270_init(void)
+ 	tty_set_operations(driver, &tty3270_ops);
+ 	ret = tty_register_driver(driver);
+ 	if (ret) {
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		return ret;
+ 	}
+ 	tty3270_driver = driver;
+@@ -1952,7 +1952,7 @@ tty3270_exit(void)
+ 	driver = tty3270_driver;
+ 	tty3270_driver = NULL;
+ 	tty_unregister_driver(driver);
+-	put_tty_driver(driver);
++	tty_driver_kref_put(driver);
+ 	tty3270_del_views();
+ }
  
- 	/* Note: we're not testing for CONSOLE_IS_SCLP here to preserve
- 	 * symmetry between VM and LPAR systems regarding ttyS1. */
--	driver = alloc_tty_driver(1);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
- 	rc = __sclp_vt220_init(MAX_KMEM_PAGES);
- 	if (rc)
- 		goto out_driver;
-@@ -746,7 +746,6 @@ static int __init sclp_vt220_tty_init(void)
- 	driver->type = TTY_DRIVER_TYPE_SYSTEM;
- 	driver->subtype = SYSTEM_TYPE_TTY;
- 	driver->init_termios = tty_std_termios;
--	driver->flags = TTY_DRIVER_REAL_RAW;
- 	tty_set_operations(driver, &sclp_vt220_ops);
- 	tty_port_link_device(&sclp_vt220_port, driver, 0);
+diff --git a/drivers/staging/fwserial/fwserial.c b/drivers/staging/fwserial/fwserial.c
+index 38a280e876c2..e8fa7f53cd5e 100644
+--- a/drivers/staging/fwserial/fwserial.c
++++ b/drivers/staging/fwserial/fwserial.c
+@@ -2852,11 +2852,11 @@ static int __init fwserial_init(void)
+ 		tty_unregister_driver(fwloop_driver);
+ put_loop:
+ 	if (create_loop_dev)
+-		put_tty_driver(fwloop_driver);
++		tty_driver_kref_put(fwloop_driver);
+ unregister_driver:
+ 	tty_unregister_driver(fwtty_driver);
+ put_tty:
+-	put_tty_driver(fwtty_driver);
++	tty_driver_kref_put(fwtty_driver);
+ remove_debugfs:
+ 	debugfs_remove_recursive(fwserial_debugfs);
+ 
+@@ -2871,10 +2871,10 @@ static void __exit fwserial_exit(void)
+ 	kmem_cache_destroy(fwtty_txn_cache);
+ 	if (create_loop_dev) {
+ 		tty_unregister_driver(fwloop_driver);
+-		put_tty_driver(fwloop_driver);
++		tty_driver_kref_put(fwloop_driver);
+ 	}
+ 	tty_unregister_driver(fwtty_driver);
+-	put_tty_driver(fwtty_driver);
++	tty_driver_kref_put(fwtty_driver);
+ 	debugfs_remove_recursive(fwserial_debugfs);
+ }
  
 diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
-index 279de2cd9c4a..918575417264 100644
+index 918575417264..04df6f9f5403 100644
 --- a/drivers/staging/gdm724x/gdm_tty.c
 +++ b/drivers/staging/gdm724x/gdm_tty.c
-@@ -281,9 +281,10 @@ int register_lte_tty_driver(void)
- 	int ret;
+@@ -299,7 +299,7 @@ int register_lte_tty_driver(void)
  
- 	for (i = 0; i < TTY_MAX_COUNT; i++) {
--		tty_driver = alloc_tty_driver(GDM_TTY_MINOR);
--		if (!tty_driver)
--			return -ENOMEM;
-+		tty_driver = tty_alloc_driver(GDM_TTY_MINOR,
-+				TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
-+		if (IS_ERR(tty_driver))
-+			return PTR_ERR(tty_driver);
+ 		ret = tty_register_driver(tty_driver);
+ 		if (ret) {
+-			put_tty_driver(tty_driver);
++			tty_driver_kref_put(tty_driver);
+ 			return ret;
+ 		}
  
- 		tty_driver->owner = THIS_MODULE;
- 		tty_driver->driver_name = DRIVER_STRING[i];
-@@ -291,8 +292,6 @@ int register_lte_tty_driver(void)
- 		tty_driver->major = GDM_TTY_MAJOR;
- 		tty_driver->type = TTY_DRIVER_TYPE_SERIAL;
- 		tty_driver->subtype = SERIAL_TYPE_NORMAL;
--		tty_driver->flags = TTY_DRIVER_REAL_RAW |
--					TTY_DRIVER_DYNAMIC_DEV;
- 		tty_driver->init_termios = tty_std_termios;
- 		tty_driver->init_termios.c_cflag = B9600 | CS8 | HUPCL | CLOCAL;
- 		tty_driver->init_termios.c_lflag = ISIG | ICANON | IEXTEN;
+@@ -318,7 +318,7 @@ void unregister_lte_tty_driver(void)
+ 		tty_driver = gdm_driver[i];
+ 		if (tty_driver) {
+ 			tty_unregister_driver(tty_driver);
+-			put_tty_driver(tty_driver);
++			tty_driver_kref_put(tty_driver);
+ 		}
+ 	}
+ }
+diff --git a/drivers/staging/greybus/uart.c b/drivers/staging/greybus/uart.c
+index 73f01ed1e5b7..e6d860a9678e 100644
+--- a/drivers/staging/greybus/uart.c
++++ b/drivers/staging/greybus/uart.c
+@@ -973,7 +973,7 @@ static int gb_tty_init(void)
+ 	return 0;
+ 
+ fail_put_gb_tty:
+-	put_tty_driver(gb_tty_driver);
++	tty_driver_kref_put(gb_tty_driver);
+ fail_unregister_dev:
+ 	return retval;
+ }
+@@ -981,7 +981,7 @@ static int gb_tty_init(void)
+ static void gb_tty_exit(void)
+ {
+ 	tty_unregister_driver(gb_tty_driver);
+-	put_tty_driver(gb_tty_driver);
++	tty_driver_kref_put(gb_tty_driver);
+ 	idr_destroy(&tty_minors);
+ }
+ 
 diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index bfd3acc1ecfa..50f1a54ef35a 100644
+index 50f1a54ef35a..1e60dbef676c 100644
 --- a/drivers/tty/amiserial.c
 +++ b/drivers/tty/amiserial.c
-@@ -1494,9 +1494,9 @@ static int __init amiga_serial_probe(struct platform_device *pdev)
- 	unsigned long flags;
- 	int error;
+@@ -1519,7 +1519,7 @@ static int __init amiga_serial_probe(struct platform_device *pdev)
  
--	driver = alloc_tty_driver(1);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
+ 	error = tty_register_driver(driver);
+ 	if (error)
+-		goto fail_put_tty_driver;
++		goto fail_tty_driver_kref_put;
  
- 	/* Initialize the tty_driver structure */
+ 	printk(KERN_INFO "ttyS0 is the amiga builtin serial port\n");
  
-@@ -1509,7 +1509,6 @@ static int __init amiga_serial_probe(struct platform_device *pdev)
- 	driver->init_termios = tty_std_termios;
- 	driver->init_termios.c_cflag =
- 		B9600 | CS8 | CREAD | HUPCL | CLOCAL;
--	driver->flags = TTY_DRIVER_REAL_RAW;
- 	tty_set_operations(driver, &serial_ops);
+@@ -1566,9 +1566,9 @@ static int __init amiga_serial_probe(struct platform_device *pdev)
+ 	free_irq(IRQ_AMIGA_TBE, state);
+ fail_unregister:
+ 	tty_unregister_driver(driver);
+-fail_put_tty_driver:
++fail_tty_driver_kref_put:
+ 	tty_port_destroy(&state->tport);
+-	put_tty_driver(driver);
++	tty_driver_kref_put(driver);
+ 	return error;
+ }
  
- 	memset(state, 0, sizeof(*state));
+@@ -1577,7 +1577,7 @@ static int __exit amiga_serial_remove(struct platform_device *pdev)
+ 	struct serial_state *state = platform_get_drvdata(pdev);
+ 
+ 	tty_unregister_driver(serial_driver);
+-	put_tty_driver(serial_driver);
++	tty_driver_kref_put(serial_driver);
+ 	tty_port_destroy(&state->tport);
+ 
+ 	free_irq(IRQ_AMIGA_TBE, state);
 diff --git a/drivers/tty/ehv_bytechan.c b/drivers/tty/ehv_bytechan.c
-index 97ae940af478..f580a5de3c98 100644
+index f580a5de3c98..19d32cb6af84 100644
 --- a/drivers/tty/ehv_bytechan.c
 +++ b/drivers/tty/ehv_bytechan.c
-@@ -774,9 +774,10 @@ static int __init ehv_bc_init(void)
- 	if (!bcs)
- 		return -ENOMEM;
- 
--	driver = alloc_tty_driver(count);
--	if (!driver) {
--		ret = -ENOMEM;
-+	driver = tty_alloc_driver(count, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(driver)) {
-+		ret = PTR_ERR(driver);
- 		goto err_free_bcs;
+@@ -791,7 +791,7 @@ static int __init ehv_bc_init(void)
+ 	ret = tty_register_driver(driver);
+ 	if (ret) {
+ 		pr_err("ehv-bc: could not register tty driver (ret=%i)\n", ret);
+-		goto err_put_tty_driver;
++		goto err_tty_driver_kref_put;
  	}
  
-@@ -785,7 +786,6 @@ static int __init ehv_bc_init(void)
- 	driver->type = TTY_DRIVER_TYPE_CONSOLE;
- 	driver->subtype = SYSTEM_TYPE_CONSOLE;
- 	driver->init_termios = tty_std_termios;
--	driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	tty_set_operations(driver, &ehv_bc_ops);
+ 	ehv_bc_driver = driver;
+@@ -808,8 +808,8 @@ static int __init ehv_bc_init(void)
+ err_deregister_tty_driver:
+ 	ehv_bc_driver = NULL;
+ 	tty_unregister_driver(driver);
+-err_put_tty_driver:
+-	put_tty_driver(driver);
++err_tty_driver_kref_put:
++	tty_driver_kref_put(driver);
+ err_free_bcs:
+ 	kfree(bcs);
  
- 	ret = tty_register_driver(driver);
 diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index ccb683a6e6f5..853083fcebb8 100644
+index 853083fcebb8..d24af649a8bb 100644
 --- a/drivers/tty/goldfish.c
 +++ b/drivers/tty/goldfish.c
-@@ -253,18 +253,18 @@ static int goldfish_tty_create_driver(void)
- 		ret = -ENOMEM;
- 		goto err_alloc_goldfish_ttys_failed;
- 	}
--	tty = alloc_tty_driver(goldfish_tty_line_count);
--	if (tty == NULL) {
--		ret = -ENOMEM;
--		goto err_alloc_tty_driver_failed;
-+	tty = tty_alloc_driver(goldfish_tty_line_count,
-+			TTY_DRIVER_RESET_TERMIOS | TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(tty)) {
-+		ret = PTR_ERR(tty);
-+		goto err_tty_alloc_driver_failed;
- 	}
- 	tty->driver_name = "goldfish";
- 	tty->name = "ttyGF";
- 	tty->type = TTY_DRIVER_TYPE_SERIAL;
- 	tty->subtype = SERIAL_TYPE_NORMAL;
- 	tty->init_termios = tty_std_termios;
--	tty->flags = TTY_DRIVER_RESET_TERMIOS | TTY_DRIVER_REAL_RAW |
--						TTY_DRIVER_DYNAMIC_DEV;
- 	tty_set_operations(tty, &goldfish_tty_ops);
- 	ret = tty_register_driver(tty);
- 	if (ret)
-@@ -275,7 +275,7 @@ static int goldfish_tty_create_driver(void)
+@@ -274,7 +274,7 @@ static int goldfish_tty_create_driver(void)
+ 	return 0;
  
  err_tty_register_driver_failed:
- 	put_tty_driver(tty);
--err_alloc_tty_driver_failed:
-+err_tty_alloc_driver_failed:
+-	put_tty_driver(tty);
++	tty_driver_kref_put(tty);
+ err_tty_alloc_driver_failed:
  	kfree(goldfish_ttys);
  	goldfish_ttys = NULL;
- err_alloc_goldfish_ttys_failed:
+@@ -285,7 +285,7 @@ static int goldfish_tty_create_driver(void)
+ static void goldfish_tty_delete_driver(void)
+ {
+ 	tty_unregister_driver(goldfish_tty_driver);
+-	put_tty_driver(goldfish_tty_driver);
++	tty_driver_kref_put(goldfish_tty_driver);
+ 	goldfish_tty_driver = NULL;
+ 	kfree(goldfish_ttys);
+ 	goldfish_ttys = NULL;
 diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
-index 5bb8c4e44961..9215dd4bd9f0 100644
+index 9215dd4bd9f0..7b30d5a05e2f 100644
 --- a/drivers/tty/hvc/hvc_console.c
 +++ b/drivers/tty/hvc/hvc_console.c
-@@ -1021,9 +1021,10 @@ static int hvc_init(void)
- 	int err;
- 
- 	/* We need more than hvc_count adapters due to hotplug additions. */
--	drv = alloc_tty_driver(HVC_ALLOC_TTY_ADAPTERS);
--	if (!drv) {
--		err = -ENOMEM;
-+	drv = tty_alloc_driver(HVC_ALLOC_TTY_ADAPTERS, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_RESET_TERMIOS);
-+	if (IS_ERR(drv)) {
-+		err = PTR_ERR(drv);
- 		goto out;
- 	}
- 
-@@ -1033,7 +1034,6 @@ static int hvc_init(void)
- 	drv->minor_start = HVC_MINOR;
- 	drv->type = TTY_DRIVER_TYPE_SYSTEM;
- 	drv->init_termios = tty_std_termios;
--	drv->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_RESET_TERMIOS;
- 	tty_set_operations(drv, &hvc_ops);
- 
- 	/* Always start the kthread because there can be hotplug vty adapters
+@@ -1063,7 +1063,7 @@ static int hvc_init(void)
+ 	kthread_stop(hvc_task);
+ 	hvc_task = NULL;
+ put_tty:
+-	put_tty_driver(drv);
++	tty_driver_kref_put(drv);
+ out:
+ 	return err;
+ }
 diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index fe5e6b4f43de..23aebc964201 100644
+index 23aebc964201..245da1dfd818 100644
 --- a/drivers/tty/hvc/hvcs.c
 +++ b/drivers/tty/hvc/hvcs.c
-@@ -1445,10 +1445,11 @@ static int hvcs_initialize(void)
- 	} else
- 		num_ttys_to_alloc = hvcs_parm_num_devs;
+@@ -1509,7 +1509,7 @@ static int hvcs_initialize(void)
+ register_fail:
+ 	hvcs_free_index_list();
+ index_fail:
+-	put_tty_driver(hvcs_tty_driver);
++	tty_driver_kref_put(hvcs_tty_driver);
+ 	hvcs_tty_driver = NULL;
+ 	mutex_unlock(&hvcs_init_mutex);
+ 	return rc;
+@@ -1562,7 +1562,7 @@ static void __exit hvcs_module_exit(void)
  
--	hvcs_tty_driver = alloc_tty_driver(num_ttys_to_alloc);
--	if (!hvcs_tty_driver) {
-+	hvcs_tty_driver = tty_alloc_driver(num_ttys_to_alloc,
-+			TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(hvcs_tty_driver)) {
- 		mutex_unlock(&hvcs_init_mutex);
--		return -ENOMEM;
-+		return PTR_ERR(hvcs_tty_driver);
- 	}
+ 	hvcs_free_index_list();
  
- 	if (hvcs_alloc_index_list(num_ttys_to_alloc)) {
-@@ -1473,7 +1474,6 @@ static int hvcs_initialize(void)
- 	 * throw us into a horrible recursive echo-echo-echo loop.
- 	 */
- 	hvcs_tty_driver->init_termios = hvcs_tty_termios;
--	hvcs_tty_driver->flags = TTY_DRIVER_REAL_RAW;
+-	put_tty_driver(hvcs_tty_driver);
++	tty_driver_kref_put(hvcs_tty_driver);
  
- 	tty_set_operations(hvcs_tty_driver, &hvcs_ops);
- 
-diff --git a/drivers/tty/hvc/hvsi.c b/drivers/tty/hvc/hvsi.c
-index bfde7b1936a5..aa81f4835fef 100644
---- a/drivers/tty/hvc/hvsi.c
-+++ b/drivers/tty/hvc/hvsi.c
-@@ -1041,9 +1041,9 @@ static int __init hvsi_init(void)
- 	struct tty_driver *driver;
- 	int i, ret;
- 
--	driver = alloc_tty_driver(hvsi_count);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(hvsi_count, TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
- 
- 	driver->driver_name = "hvsi";
- 	driver->name = "hvsi";
-@@ -1054,7 +1054,6 @@ static int __init hvsi_init(void)
- 	driver->init_termios.c_cflag = B9600 | CS8 | CREAD | HUPCL;
- 	driver->init_termios.c_ispeed = 9600;
- 	driver->init_termios.c_ospeed = 9600;
--	driver->flags = TTY_DRIVER_REAL_RAW;
- 	tty_set_operations(driver, &hvsi_ops);
- 
- 	for (i=0; i < hvsi_count; i++) {
+ 	printk(KERN_INFO "HVCS: driver module removed.\n");
+ }
 diff --git a/drivers/tty/ipwireless/tty.c b/drivers/tty/ipwireless/tty.c
-index e3a5a5ba752c..d24404c222e0 100644
+index d24404c222e0..9edd5ae17580 100644
 --- a/drivers/tty/ipwireless/tty.c
 +++ b/drivers/tty/ipwireless/tty.c
-@@ -564,9 +564,10 @@ int ipwireless_tty_init(void)
+@@ -585,7 +585,7 @@ int ipwireless_tty_init(void)
+ 	if (result) {
+ 		printk(KERN_ERR IPWIRELESS_PCCARD_NAME
+ 		       ": failed to register tty driver\n");
+-		put_tty_driver(ipw_tty_driver);
++		tty_driver_kref_put(ipw_tty_driver);
+ 		return result;
+ 	}
+ 
+@@ -595,7 +595,7 @@ int ipwireless_tty_init(void)
+ void ipwireless_tty_release(void)
  {
- 	int result;
+ 	tty_unregister_driver(ipw_tty_driver);
+-	put_tty_driver(ipw_tty_driver);
++	tty_driver_kref_put(ipw_tty_driver);
+ }
  
--	ipw_tty_driver = alloc_tty_driver(IPWIRELESS_PCMCIA_MINORS);
--	if (!ipw_tty_driver)
--		return -ENOMEM;
-+	ipw_tty_driver = tty_alloc_driver(IPWIRELESS_PCMCIA_MINORS,
-+			TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(ipw_tty_driver))
-+		return PTR_ERR(ipw_tty_driver);
+ int ipwireless_tty_is_modem(struct ipw_tty *tty)
+diff --git a/drivers/tty/mips_ejtag_fdc.c b/drivers/tty/mips_ejtag_fdc.c
+index 3b5915b94fac..02c10a968de1 100644
+--- a/drivers/tty/mips_ejtag_fdc.c
++++ b/drivers/tty/mips_ejtag_fdc.c
+@@ -1042,7 +1042,7 @@ static int mips_ejtag_fdc_tty_probe(struct mips_cdmm_device *dev)
+ 		dport = &priv->ports[nport];
+ 		tty_port_destroy(&dport->port);
+ 	}
+-	put_tty_driver(priv->driver);
++	tty_driver_kref_put(priv->driver);
+ 	return ret;
+ }
  
- 	ipw_tty_driver->driver_name = IPWIRELESS_PCCARD_NAME;
- 	ipw_tty_driver->name = "ttyIPWp";
-@@ -574,7 +575,6 @@ int ipwireless_tty_init(void)
- 	ipw_tty_driver->minor_start = IPWIRELESS_PCMCIA_START;
- 	ipw_tty_driver->type = TTY_DRIVER_TYPE_SERIAL;
- 	ipw_tty_driver->subtype = SERIAL_TYPE_NORMAL;
--	ipw_tty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	ipw_tty_driver->init_termios = tty_std_termios;
- 	ipw_tty_driver->init_termios.c_cflag =
- 	    B9600 | CS8 | CREAD | HUPCL | CLOCAL;
+diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+index 64b18177c790..776f78de0f82 100644
+--- a/drivers/tty/moxa.c
++++ b/drivers/tty/moxa.c
+@@ -1053,7 +1053,7 @@ static int __init moxa_init(void)
+ 
+ 	if (tty_register_driver(moxaDriver)) {
+ 		printk(KERN_ERR "can't register MOXA Smartio tty driver!\n");
+-		put_tty_driver(moxaDriver);
++		tty_driver_kref_put(moxaDriver);
+ 		return -1;
+ 	}
+ 
+@@ -1119,7 +1119,7 @@ static void __exit moxa_exit(void)
+ 	del_timer_sync(&moxaTimer);
+ 
+ 	tty_unregister_driver(moxaDriver);
+-	put_tty_driver(moxaDriver);
++	tty_driver_kref_put(moxaDriver);
+ }
+ 
+ module_init(moxa_init);
 diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 900ccb2ca166..650fc6fac88e 100644
+index 650fc6fac88e..335e4e50d679 100644
 --- a/drivers/tty/mxser.c
 +++ b/drivers/tty/mxser.c
-@@ -1976,9 +1976,10 @@ static int __init mxser_module_init(void)
+@@ -2008,7 +2008,7 @@ static int __init mxser_module_init(void)
+ err_unr:
+ 	tty_unregister_driver(mxvar_sdriver);
+ err_put:
+-	put_tty_driver(mxvar_sdriver);
++	tty_driver_kref_put(mxvar_sdriver);
+ 	return retval;
+ }
+ 
+@@ -2016,7 +2016,7 @@ static void __exit mxser_module_exit(void)
  {
- 	int retval;
+ 	pci_unregister_driver(&mxser_driver);
+ 	tty_unregister_driver(mxvar_sdriver);
+-	put_tty_driver(mxvar_sdriver);
++	tty_driver_kref_put(mxvar_sdriver);
+ }
  
--	mxvar_sdriver = alloc_tty_driver(MXSER_PORTS);
--	if (!mxvar_sdriver)
--		return -ENOMEM;
-+	mxvar_sdriver = tty_alloc_driver(MXSER_PORTS, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(mxvar_sdriver))
-+		return PTR_ERR(mxvar_sdriver);
- 
- 	/* Initialize the tty_driver structure */
- 	mxvar_sdriver->name = "ttyMI";
-@@ -1988,7 +1989,6 @@ static int __init mxser_module_init(void)
- 	mxvar_sdriver->subtype = SERIAL_TYPE_NORMAL;
- 	mxvar_sdriver->init_termios = tty_std_termios;
- 	mxvar_sdriver->init_termios.c_cflag = B9600|CS8|CREAD|HUPCL|CLOCAL;
--	mxvar_sdriver->flags = TTY_DRIVER_REAL_RAW|TTY_DRIVER_DYNAMIC_DEV;
- 	tty_set_operations(mxvar_sdriver, &mxser_ops);
- 
- 	retval = tty_register_driver(mxvar_sdriver);
+ module_init(mxser_module_init);
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index e907b7a5cab5..0308669c21c6 100644
+index 0308669c21c6..1d92d2a84889 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -3252,10 +3252,11 @@ static int __init gsm_init(void)
- 		return status;
- 	}
+@@ -3279,7 +3279,7 @@ static int __init gsm_init(void)
+ 			gsm_tty_driver->major, gsm_tty_driver->minor_start);
+ 	return 0;
+ err_put_driver:
+-	put_tty_driver(gsm_tty_driver);
++	tty_driver_kref_put(gsm_tty_driver);
+ err_unreg_ldisc:
+ 	tty_unregister_ldisc(&tty_ldisc_packet);
+ 	return status;
+@@ -3289,7 +3289,7 @@ static void __exit gsm_exit(void)
+ {
+ 	tty_unregister_ldisc(&tty_ldisc_packet);
+ 	tty_unregister_driver(gsm_tty_driver);
+-	put_tty_driver(gsm_tty_driver);
++	tty_driver_kref_put(gsm_tty_driver);
+ }
  
--	gsm_tty_driver = alloc_tty_driver(256);
--	if (!gsm_tty_driver) {
-+	gsm_tty_driver = tty_alloc_driver(256, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV | TTY_DRIVER_HARDWARE_BREAK);
-+	if (IS_ERR(gsm_tty_driver)) {
- 		pr_err("gsm_init: tty allocation failed.\n");
--		status = -ENOMEM;
-+		status = PTR_ERR(gsm_tty_driver);
- 		goto err_unreg_ldisc;
- 	}
- 	gsm_tty_driver->driver_name	= "gsmtty";
-@@ -3264,8 +3265,6 @@ static int __init gsm_init(void)
- 	gsm_tty_driver->minor_start	= 0;
- 	gsm_tty_driver->type		= TTY_DRIVER_TYPE_SERIAL;
- 	gsm_tty_driver->subtype	= SERIAL_TYPE_NORMAL;
--	gsm_tty_driver->flags	= TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV
--						| TTY_DRIVER_HARDWARE_BREAK;
- 	gsm_tty_driver->init_termios	= tty_std_termios;
- 	/* Fixme */
- 	gsm_tty_driver->init_termios.c_lflag &= ~ECHO;
+ module_init(gsm_init);
 diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
-index 0c80f25c8c3d..f3eb0aaec79b 100644
+index f3eb0aaec79b..0454c78deee6 100644
 --- a/drivers/tty/nozomi.c
 +++ b/drivers/tty/nozomi.c
-@@ -1824,16 +1824,16 @@ static __init int nozomi_init(void)
+@@ -1857,7 +1857,7 @@ static __init int nozomi_init(void)
+ unr_tty:
+ 	tty_unregister_driver(ntty_driver);
+ free_tty:
+-	put_tty_driver(ntty_driver);
++	tty_driver_kref_put(ntty_driver);
+ 	return ret;
+ }
+ 
+@@ -1865,7 +1865,7 @@ static __exit void nozomi_exit(void)
  {
- 	int ret;
+ 	pci_unregister_driver(&nozomi_driver);
+ 	tty_unregister_driver(ntty_driver);
+-	put_tty_driver(ntty_driver);
++	tty_driver_kref_put(ntty_driver);
+ }
  
--	ntty_driver = alloc_tty_driver(NTTY_TTY_MAXMINORS);
--	if (!ntty_driver)
--		return -ENOMEM;
-+	ntty_driver = tty_alloc_driver(NTTY_TTY_MAXMINORS, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(ntty_driver))
-+		return PTR_ERR(ntty_driver);
- 
- 	ntty_driver->driver_name = NOZOMI_NAME_TTY;
- 	ntty_driver->name = "noz";
- 	ntty_driver->major = 0;
- 	ntty_driver->type = TTY_DRIVER_TYPE_SERIAL;
- 	ntty_driver->subtype = SERIAL_TYPE_NORMAL;
--	ntty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	ntty_driver->init_termios = tty_std_termios;
- 	ntty_driver->init_termios.c_cflag = B115200 | CS8 | CREAD | \
- 						HUPCL | CLOCAL;
+ module_init(nozomi_init);
 diff --git a/drivers/tty/serial/kgdb_nmi.c b/drivers/tty/serial/kgdb_nmi.c
-index 3e7c6ee8e4b3..9209573a7e37 100644
+index 9209573a7e37..55c3c9db7462 100644
 --- a/drivers/tty/serial/kgdb_nmi.c
 +++ b/drivers/tty/serial/kgdb_nmi.c
-@@ -330,17 +330,16 @@ int kgdb_register_nmi_console(void)
- 	if (!arch_kgdb_ops.enable_nmi)
- 		return 0;
+@@ -355,7 +355,7 @@ int kgdb_register_nmi_console(void)
  
--	kgdb_nmi_tty_driver = alloc_tty_driver(1);
--	if (!kgdb_nmi_tty_driver) {
-+	kgdb_nmi_tty_driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
-+	if (IS_ERR(kgdb_nmi_tty_driver)) {
- 		pr_err("%s: cannot allocate tty\n", __func__);
--		return -ENOMEM;
-+		return PTR_ERR(kgdb_nmi_tty_driver);
- 	}
- 	kgdb_nmi_tty_driver->driver_name	= "ttyNMI";
- 	kgdb_nmi_tty_driver->name		= "ttyNMI";
- 	kgdb_nmi_tty_driver->num		= 1;
- 	kgdb_nmi_tty_driver->type		= TTY_DRIVER_TYPE_SERIAL;
- 	kgdb_nmi_tty_driver->subtype		= SERIAL_TYPE_NORMAL;
--	kgdb_nmi_tty_driver->flags		= TTY_DRIVER_REAL_RAW;
- 	kgdb_nmi_tty_driver->init_termios	= tty_std_termios;
- 	tty_termios_encode_baud_rate(&kgdb_nmi_tty_driver->init_termios,
- 				     KGDB_NMI_BAUD, KGDB_NMI_BAUD);
+ 	return 0;
+ err_drv_reg:
+-	put_tty_driver(kgdb_nmi_tty_driver);
++	tty_driver_kref_put(kgdb_nmi_tty_driver);
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(kgdb_register_nmi_console);
+@@ -373,7 +373,7 @@ int kgdb_unregister_nmi_console(void)
+ 		return ret;
+ 
+ 	tty_unregister_driver(kgdb_nmi_tty_driver);
+-	put_tty_driver(kgdb_nmi_tty_driver);
++	tty_driver_kref_put(kgdb_nmi_tty_driver);
+ 
+ 	return 0;
+ }
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 69092deba11f..b03a883a21c5 100644
+index b03a883a21c5..17a6c2f4d806 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -2522,9 +2522,12 @@ int uart_register_driver(struct uart_driver *drv)
- 	if (!drv->state)
- 		goto out;
+@@ -2560,7 +2560,7 @@ int uart_register_driver(struct uart_driver *drv)
  
--	normal = alloc_tty_driver(drv->nr);
--	if (!normal)
-+	normal = tty_alloc_driver(drv->nr, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(normal)) {
-+		retval = PTR_ERR(normal);
- 		goto out_kfree;
-+	}
+ 	for (i = 0; i < drv->nr; i++)
+ 		tty_port_destroy(&drv->state[i].port);
+-	put_tty_driver(normal);
++	tty_driver_kref_put(normal);
+ out_kfree:
+ 	kfree(drv->state);
+ out:
+@@ -2582,7 +2582,7 @@ void uart_unregister_driver(struct uart_driver *drv)
+ 	unsigned int i;
  
- 	drv->tty_driver = normal;
- 
-@@ -2537,7 +2540,6 @@ int uart_register_driver(struct uart_driver *drv)
- 	normal->init_termios	= tty_std_termios;
- 	normal->init_termios.c_cflag = B9600 | CS8 | CREAD | HUPCL | CLOCAL;
- 	normal->init_termios.c_ispeed = normal->init_termios.c_ospeed = 9600;
--	normal->flags		= TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	normal->driver_state    = drv;
- 	tty_set_operations(normal, &uart_ops);
- 
+ 	tty_unregister_driver(p);
+-	put_tty_driver(p);
++	tty_driver_kref_put(p);
+ 	for (i = 0; i < drv->nr; i++)
+ 		tty_port_destroy(&drv->state[i].port);
+ 	kfree(drv->state);
 diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 5bb928b7873e..525f3a568c32 100644
+index 525f3a568c32..c89f7de38d12 100644
 --- a/drivers/tty/synclink_gt.c
 +++ b/drivers/tty/synclink_gt.c
-@@ -3689,10 +3689,11 @@ static int __init slgt_init(void)
- 
- 	printk(KERN_INFO "%s\n", driver_name);
- 
--	serial_driver = alloc_tty_driver(MAX_DEVICES);
--	if (!serial_driver) {
-+	serial_driver = tty_alloc_driver(MAX_DEVICES, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(serial_driver)) {
- 		printk("%s can't allocate tty driver\n", driver_name);
--		return -ENOMEM;
-+		return PTR_ERR(serial_driver);
+@@ -3650,7 +3650,7 @@ static void slgt_cleanup(void)
+ 		for (info=slgt_device_list ; info != NULL ; info=info->next_device)
+ 			tty_unregister_device(serial_driver, info->line);
+ 		tty_unregister_driver(serial_driver);
+-		put_tty_driver(serial_driver);
++		tty_driver_kref_put(serial_driver);
  	}
  
- 	/* Initialize the tty_driver structure */
-@@ -3708,7 +3709,6 @@ static int __init slgt_init(void)
- 		B9600 | CS8 | CREAD | HUPCL | CLOCAL;
- 	serial_driver->init_termios.c_ispeed = 9600;
- 	serial_driver->init_termios.c_ospeed = 9600;
--	serial_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
+ 	/* reset devices */
+@@ -3712,7 +3712,7 @@ static int __init slgt_init(void)
  	tty_set_operations(serial_driver, &ops);
  	if ((rc = tty_register_driver(serial_driver)) < 0) {
  		DBGERR(("%s can't register serial driver\n", driver_name));
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index ef981d3b7bb4..744caa327d8c 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -3559,8 +3559,9 @@ int __init vty_init(const struct file_operations *console_fops)
+-		put_tty_driver(serial_driver);
++		tty_driver_kref_put(serial_driver);
+ 		serial_driver = NULL;
+ 		goto error;
+ 	}
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 16e3fce6f88d..e8532006e960 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3438,12 +3438,6 @@ void tty_driver_kref_put(struct tty_driver *driver)
+ }
+ EXPORT_SYMBOL(tty_driver_kref_put);
  
- 	vcs_init();
+-void put_tty_driver(struct tty_driver *d)
+-{
+-	tty_driver_kref_put(d);
+-}
+-EXPORT_SYMBOL(put_tty_driver);
+-
+ /*
+  * Called by a tty driver to register itself.
+  */
+diff --git a/drivers/tty/ttynull.c b/drivers/tty/ttynull.c
+index af3311a24917..1d4438472442 100644
+--- a/drivers/tty/ttynull.c
++++ b/drivers/tty/ttynull.c
+@@ -84,7 +84,7 @@ static int __init ttynull_init(void)
  
--	console_driver = alloc_tty_driver(MAX_NR_CONSOLES);
--	if (!console_driver)
-+	console_driver = tty_alloc_driver(MAX_NR_CONSOLES, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_RESET_TERMIOS);
-+	if (IS_ERR(console_driver))
- 		panic("Couldn't allocate console driver\n");
+ 	ret = tty_register_driver(driver);
+ 	if (ret < 0) {
+-		put_tty_driver(driver);
++		tty_driver_kref_put(driver);
+ 		tty_port_destroy(&ttynull_port);
+ 		return ret;
+ 	}
+@@ -99,7 +99,7 @@ static void __exit ttynull_exit(void)
+ {
+ 	unregister_console(&ttynull_console);
+ 	tty_unregister_driver(ttynull_driver);
+-	put_tty_driver(ttynull_driver);
++	tty_driver_kref_put(ttynull_driver);
+ 	tty_port_destroy(&ttynull_port);
+ }
  
- 	console_driver->name = "tty";
-@@ -3571,7 +3572,6 @@ int __init vty_init(const struct file_operations *console_fops)
- 	console_driver->init_termios = tty_std_termios;
- 	if (default_utf8)
- 		console_driver->init_termios.c_iflag |= IUTF8;
--	console_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_RESET_TERMIOS;
- 	tty_set_operations(console_driver, &con_ops);
- 	if (tty_register_driver(console_driver))
- 		panic("Couldn't register console driver\n");
+diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+index d06bcc3b4c07..e11383ae1e7e 100644
+--- a/drivers/tty/vcc.c
++++ b/drivers/tty/vcc.c
+@@ -1028,7 +1028,7 @@ static int vcc_tty_init(void)
+ 	rv = tty_register_driver(vcc_tty_driver);
+ 	if (rv) {
+ 		pr_err("VCC: TTY driver registration failed\n");
+-		put_tty_driver(vcc_tty_driver);
++		tty_driver_kref_put(vcc_tty_driver);
+ 		vcc_tty_driver = NULL;
+ 		return rv;
+ 	}
+@@ -1041,7 +1041,7 @@ static int vcc_tty_init(void)
+ static void vcc_tty_exit(void)
+ {
+ 	tty_unregister_driver(vcc_tty_driver);
+-	put_tty_driver(vcc_tty_driver);
++	tty_driver_kref_put(vcc_tty_driver);
+ 	vccdbg("VCC: TTY driver unregistered\n");
+ 
+ 	vcc_tty_driver = NULL;
 diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index 4895325b16a4..c19b59583d9f 100644
+index c19b59583d9f..8bbd8e29e60d 100644
 --- a/drivers/usb/class/cdc-acm.c
 +++ b/drivers/usb/class/cdc-acm.c
-@@ -2027,16 +2027,16 @@ static const struct tty_operations acm_ops = {
- static int __init acm_init(void)
+@@ -2044,14 +2044,14 @@ static int __init acm_init(void)
+ 
+ 	retval = tty_register_driver(acm_tty_driver);
+ 	if (retval) {
+-		put_tty_driver(acm_tty_driver);
++		tty_driver_kref_put(acm_tty_driver);
+ 		return retval;
+ 	}
+ 
+ 	retval = usb_register(&acm_driver);
+ 	if (retval) {
+ 		tty_unregister_driver(acm_tty_driver);
+-		put_tty_driver(acm_tty_driver);
++		tty_driver_kref_put(acm_tty_driver);
+ 		return retval;
+ 	}
+ 
+@@ -2064,7 +2064,7 @@ static void __exit acm_exit(void)
  {
- 	int retval;
--	acm_tty_driver = alloc_tty_driver(ACM_TTY_MINORS);
--	if (!acm_tty_driver)
--		return -ENOMEM;
-+	acm_tty_driver = tty_alloc_driver(ACM_TTY_MINORS, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(acm_tty_driver))
-+		return PTR_ERR(acm_tty_driver);
- 	acm_tty_driver->driver_name = "acm",
- 	acm_tty_driver->name = "ttyACM",
- 	acm_tty_driver->major = ACM_TTY_MAJOR,
- 	acm_tty_driver->minor_start = 0,
- 	acm_tty_driver->type = TTY_DRIVER_TYPE_SERIAL,
- 	acm_tty_driver->subtype = SERIAL_TYPE_NORMAL,
--	acm_tty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	acm_tty_driver->init_termios = tty_std_termios;
- 	acm_tty_driver->init_termios.c_cflag = B9600 | CS8 | CREAD |
- 								HUPCL | CLOCAL;
+ 	usb_deregister(&acm_driver);
+ 	tty_unregister_driver(acm_tty_driver);
+-	put_tty_driver(acm_tty_driver);
++	tty_driver_kref_put(acm_tty_driver);
+ 	idr_destroy(&acm_minors);
+ }
+ 
 diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
-index c99917a07a96..74289f68a2ab 100644
+index 74289f68a2ab..72961c1beeef 100644
 --- a/drivers/usb/gadget/function/u_serial.c
 +++ b/drivers/usb/gadget/function/u_serial.c
-@@ -1449,9 +1449,10 @@ static int userial_init(void)
- 	unsigned			i;
- 	int				status;
+@@ -1491,7 +1491,7 @@ static int userial_init(void)
  
--	driver = alloc_tty_driver(MAX_U_SERIAL_PORTS);
--	if (!driver)
--		return -ENOMEM;
-+	driver = tty_alloc_driver(MAX_U_SERIAL_PORTS, TTY_DRIVER_REAL_RAW |
-+			TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(driver))
-+		return PTR_ERR(driver);
- 
- 	driver->driver_name = "g_serial";
- 	driver->name = "ttyGS";
-@@ -1459,7 +1460,6 @@ static int userial_init(void)
- 
- 	driver->type = TTY_DRIVER_TYPE_SERIAL;
- 	driver->subtype = SERIAL_TYPE_NORMAL;
--	driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	driver->init_termios = tty_std_termios;
- 
- 	/* 9600-8-N-1 ... matches defaults expected by "usbser.sys" on
+ 	return status;
+ fail:
+-	put_tty_driver(driver);
++	tty_driver_kref_put(driver);
+ 	return status;
+ }
+ module_init(userial_init);
+@@ -1499,7 +1499,7 @@ module_init(userial_init);
+ static void userial_cleanup(void)
+ {
+ 	tty_unregister_driver(gs_tty_driver);
+-	put_tty_driver(gs_tty_driver);
++	tty_driver_kref_put(gs_tty_driver);
+ 	gs_tty_driver = NULL;
+ }
+ module_exit(userial_cleanup);
+diff --git a/drivers/usb/host/xhci-dbgtty.c b/drivers/usb/host/xhci-dbgtty.c
+index bef104511352..6e784f2fc26d 100644
+--- a/drivers/usb/host/xhci-dbgtty.c
++++ b/drivers/usb/host/xhci-dbgtty.c
+@@ -541,7 +541,7 @@ static int dbc_tty_init(void)
+ 	ret = tty_register_driver(dbc_tty_driver);
+ 	if (ret) {
+ 		pr_err("Can't register dbc tty driver\n");
+-		put_tty_driver(dbc_tty_driver);
++		tty_driver_kref_put(dbc_tty_driver);
+ 	}
+ 	return ret;
+ }
+@@ -550,7 +550,7 @@ static void dbc_tty_exit(void)
+ {
+ 	if (dbc_tty_driver) {
+ 		tty_unregister_driver(dbc_tty_driver);
+-		put_tty_driver(dbc_tty_driver);
++		tty_driver_kref_put(dbc_tty_driver);
+ 		dbc_tty_driver = NULL;
+ 	}
+ }
 diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index eeb441c77207..2f7855da645f 100644
+index 2f7855da645f..090a78c948f2 100644
 --- a/drivers/usb/serial/usb-serial.c
 +++ b/drivers/usb/serial/usb-serial.c
-@@ -1319,9 +1319,10 @@ static int __init usb_serial_init(void)
- {
- 	int result;
+@@ -1366,7 +1366,7 @@ static int __init usb_serial_init(void)
  
--	usb_serial_tty_driver = alloc_tty_driver(USB_SERIAL_TTY_MINORS);
--	if (!usb_serial_tty_driver)
--		return -ENOMEM;
-+	usb_serial_tty_driver = tty_alloc_driver(USB_SERIAL_TTY_MINORS,
-+			TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(usb_serial_tty_driver))
-+		return PTR_ERR(usb_serial_tty_driver);
+ exit_bus:
+ 	pr_err("%s - returning with error %d\n", __func__, result);
+-	put_tty_driver(usb_serial_tty_driver);
++	tty_driver_kref_put(usb_serial_tty_driver);
+ 	return result;
+ }
  
- 	/* Initialize our global data */
- 	result = bus_register(&usb_serial_bus_type);
-@@ -1336,8 +1337,6 @@ static int __init usb_serial_init(void)
- 	usb_serial_tty_driver->minor_start = 0;
- 	usb_serial_tty_driver->type = TTY_DRIVER_TYPE_SERIAL;
- 	usb_serial_tty_driver->subtype = SERIAL_TYPE_NORMAL;
--	usb_serial_tty_driver->flags = TTY_DRIVER_REAL_RAW |
--						TTY_DRIVER_DYNAMIC_DEV;
- 	usb_serial_tty_driver->init_termios = tty_std_termios;
- 	usb_serial_tty_driver->init_termios.c_cflag = B9600 | CS8 | CREAD
- 							| HUPCL | CLOCAL;
+@@ -1378,7 +1378,7 @@ static void __exit usb_serial_exit(void)
+ 	usb_serial_generic_deregister();
+ 
+ 	tty_unregister_driver(usb_serial_tty_driver);
+-	put_tty_driver(usb_serial_tty_driver);
++	tty_driver_kref_put(usb_serial_tty_driver);
+ 	bus_unregister(&usb_serial_bus_type);
+ 	idr_destroy(&serial_minors);
+ }
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index 6092ce9180aa..c20431d8def8 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -329,7 +329,6 @@ extern struct list_head tty_drivers;
+ 
+ extern struct tty_driver *__tty_alloc_driver(unsigned int lines,
+ 		struct module *owner, unsigned long flags);
+-extern void put_tty_driver(struct tty_driver *driver);
+ extern struct tty_driver *tty_find_polling_driver(char *name, int *line);
+ 
+ extern void tty_driver_kref_put(struct tty_driver *driver);
 diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index 4e095746e002..8ec0600cd927 100644
+index 8ec0600cd927..ebd78fdbd6e8 100644
 --- a/net/bluetooth/rfcomm/tty.c
 +++ b/net/bluetooth/rfcomm/tty.c
-@@ -1127,9 +1127,10 @@ int __init rfcomm_init_ttys(void)
+@@ -1146,7 +1146,7 @@ int __init rfcomm_init_ttys(void)
+ 	error = tty_register_driver(rfcomm_tty_driver);
+ 	if (error) {
+ 		BT_ERR("Can't register RFCOMM TTY driver");
+-		put_tty_driver(rfcomm_tty_driver);
++		tty_driver_kref_put(rfcomm_tty_driver);
+ 		return error;
+ 	}
+ 
+@@ -1158,5 +1158,5 @@ int __init rfcomm_init_ttys(void)
+ void rfcomm_cleanup_ttys(void)
  {
- 	int error;
- 
--	rfcomm_tty_driver = alloc_tty_driver(RFCOMM_TTY_PORTS);
--	if (!rfcomm_tty_driver)
--		return -ENOMEM;
-+	rfcomm_tty_driver = tty_alloc_driver(RFCOMM_TTY_PORTS,
-+			TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
-+	if (IS_ERR(rfcomm_tty_driver))
-+		return PTR_ERR(rfcomm_tty_driver);
- 
- 	rfcomm_tty_driver->driver_name	= "rfcomm";
- 	rfcomm_tty_driver->name		= "rfcomm";
-@@ -1137,7 +1138,6 @@ int __init rfcomm_init_ttys(void)
- 	rfcomm_tty_driver->minor_start	= RFCOMM_TTY_MINOR;
- 	rfcomm_tty_driver->type		= TTY_DRIVER_TYPE_SERIAL;
- 	rfcomm_tty_driver->subtype	= SERIAL_TYPE_NORMAL;
--	rfcomm_tty_driver->flags	= TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
- 	rfcomm_tty_driver->init_termios	= tty_std_termios;
- 	rfcomm_tty_driver->init_termios.c_cflag	= B9600 | CS8 | CREAD | HUPCL;
- 	rfcomm_tty_driver->init_termios.c_lflag &= ~ICANON;
+ 	tty_unregister_driver(rfcomm_tty_driver);
+-	put_tty_driver(rfcomm_tty_driver);
++	tty_driver_kref_put(rfcomm_tty_driver);
+ }
 -- 
 2.32.0
 
