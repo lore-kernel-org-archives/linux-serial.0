@@ -2,105 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773A2C4320A
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Jul 2021 21:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32644C4338F
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 07:43:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 59B2460EBA
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Jul 2021 21:57:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0C3C560E8E
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 07:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbhGVVRM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Jul 2021 17:17:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49724 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231336AbhGVVRL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Jul 2021 17:17:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C3FE60EB4;
-        Thu, 22 Jul 2021 21:57:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626991066;
-        bh=jxHLi9bM6Hq+3vf5t//DlAv09jjPbBHB2nQxogyaotI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HuiSFsbPNO4Ffxt3+mAvxMTMoqe8AB3wjCAbc8L9bjtP/7VLqTomE1tbVss2cTk9C
-         gCKzDk9iIErDPnc6i8+BAaA3ELCWYEYO7EsrsUn24BbteMEygIYJL4noaUsJY4wYkn
-         qf8NO1SxTmEEh1Pq6PoxFm3DI5Q+y1nj0llY3dEfkWcWNB1BCWnIndCKy4eG3Dv2Ad
-         W48MtT5N/QT03aPxC/Ds/vMsAoHLr+EhDrOJV7iB83XdqdumbmS4rMOAcquJBxyimh
-         7wRId4g7kklBZqE4VFXI1G24pBNqE4EdqZbD9zScKK/egZ2HwtuMep9WPFAyTD+yS8
-         9bCVvQp2ul+yA==
-Received: by pali.im (Postfix)
-        id 9ECB3805; Thu, 22 Jul 2021 23:57:43 +0200 (CEST)
-Date:   Thu, 22 Jul 2021 23:57:43 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vladimir Vid <vladimir.vid@sartura.hr>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Willy Tarreau <w@1wt.eu>
-Subject: Re: [PATCH v3 1/5] math64: New DIV_U64_ROUND_CLOSEST helper
-Message-ID: <20210722215743.gtwccvokecvoocmm@pali>
-References: <20210624224909.6350-1-pali@kernel.org>
- <20210717123829.5201-1-pali@kernel.org>
- <20210717123829.5201-2-pali@kernel.org>
- <CAHp75VeCC3cYu3RZPxuRN4iaM+vxp2rX+E4z+ZxzRGM8oHaMkw@mail.gmail.com>
+        id S233205AbhGWHCp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Jul 2021 03:02:45 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:55362 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229799AbhGWHCo (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 23 Jul 2021 03:02:44 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id D253C225F9;
+        Fri, 23 Jul 2021 07:43:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1627026197; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=GrONBBxOFl8xDimt+FsB8lhbYxtf9ATz8q2XpqkvTM8=;
+        b=Kwed4iF8DmjhfHHMgDseKkOnloLoUvvLjs8aH6VoSKkcAlmx3xal116zX7htX/HqDb4NVw
+        jt8kHgmoLn+tn05kiuHM1uU8ZikTe7VyXbEPPOv8m8KPDY9mtXt1nzRXbJ1Qz3WDsppQhH
+        c1g67QsKv18rrjAM2/SX70Wg3tkGJBk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1627026197;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=GrONBBxOFl8xDimt+FsB8lhbYxtf9ATz8q2XpqkvTM8=;
+        b=WYSZu2/qmP1Iqi8eCcWEw/U5aN+s0mf8dkM14sqW/4gDfI38FfPd6/4+78kiaZXhHyYooe
+        ad0zNBHhPglXQCCA==
+Received: from localhost.localdomain (unknown [10.100.201.122])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B644EA3B90;
+        Fri, 23 Jul 2021 07:43:17 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 0/8] Get rid of old tty_driver functions
+Date:   Fri, 23 Jul 2021 09:43:09 +0200
+Message-Id: <20210723074317.32690-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75VeCC3cYu3RZPxuRN4iaM+vxp2rX+E4z+ZxzRGM8oHaMkw@mail.gmail.com>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Monday 19 July 2021 15:47:07 Andy Shevchenko wrote:
-> On Sat, Jul 17, 2021 at 3:39 PM Pali Rohár <pali@kernel.org> wrote:
-> >
-> > Provide DIV_U64_ROUND_CLOSEST helper which uses div_u64 to perform
-> > division rounded to the closest integer using unsigned 64bit
-> > dividend and unsigned 32bit divisor.
-> 
-> ...
-> 
-> > +/*
-> > + * DIV_U64_ROUND_CLOSEST - unsigned 64bit divide with 32bit divisor rounded to nearest integer
-> 
-> > + * @dividend: unsigned 64bit dividend
-> 
-> Here you insist users to provide a u64 (or compatible) type.
-> 
-> > + * @divisor: unsigned 32bit divisor
-> > + *
-> > + * Divide unsigned 64bit dividend by unsigned 32bit divisor
-> > + * and round to closest integer.
-> > + *
-> > + * Return: dividend / divisor rounded to nearest integer
-> > + */
-> > +#define DIV_U64_ROUND_CLOSEST(dividend, divisor)       \
-> 
-> > +       ({ u32 _tmp = (divisor); div_u64((u64)(dividend) + _tmp / 2, _tmp); })
-> 
-> Here is the casting to u64. Why? (Yes, I have read v1 discussion and I
-> just want to continue it here).
+This series converts the rest of the drivers to use:
+* tty_alloc_driver instead of alloc_tty_driver, and
+* tty_driver_kref_put instead of put_tty_driver.
 
-See also Willy's response: https://lore.kernel.org/lkml/20210625155008.GB16901@1wt.eu/
+They were more of less interchangeable, alloc_tty_driver() and
+put_tty_driver() are older interfaces which weren't eliminated until
+now.
 
-Macro does not enforce type as opposite to function.
+There are few fix and cleanup patches around tty_driver too.
 
-There is no compile time check for correct type and neither compile time
-warning if smaller typed value is passed.
+Jiri Slaby (8):
+  xtensa: ISS: don't panic in rs_init
+  hvsi: don't panic on tty_register_driver failure
+  tty: don't store semi-state into tty drivers
+  tty: stop using alloc_tty_driver
+  tty: drop alloc_tty_driver
+  tty: make tty_set_operations an inline
+  tty: drop put_tty_driver
+  tty: pdc_cons, free tty_driver upon failure
 
-And e.g. passing constant with explicit ULL suffix or casting external
-constant to 64bit type is impractical.
+ arch/alpha/kernel/srmcons.c            |  8 ++--
+ arch/m68k/emu/nfcon.c                  | 30 +++++++-------
+ arch/parisc/kernel/pdc_cons.c          | 34 ++++++++--------
+ arch/um/drivers/line.c                 | 13 +++---
+ arch/xtensa/platforms/iss/console.c    | 45 +++++++++++++--------
+ drivers/char/pcmcia/synclink_cs.c      |  4 +-
+ drivers/char/ttyprintk.c               |  4 +-
+ drivers/ipack/devices/ipoctal.c        | 13 +++---
+ drivers/isdn/capi/capi.c               | 14 +++----
+ drivers/misc/bcm-vk/bcm_vk_tty.c       |  8 ++--
+ drivers/mmc/core/sdio_uart.c           | 12 +++---
+ drivers/net/usb/hso.c                  | 12 +++---
+ drivers/s390/char/con3215.c            | 11 +++---
+ drivers/s390/char/sclp_tty.c           | 15 ++++---
+ drivers/s390/char/sclp_vt220.c         |  9 ++---
+ drivers/s390/char/tty3270.c            |  4 +-
+ drivers/staging/fwserial/fwserial.c    |  8 ++--
+ drivers/staging/gdm724x/gdm_tty.c      | 13 +++---
+ drivers/staging/greybus/uart.c         |  4 +-
+ drivers/tty/amiserial.c                | 42 ++++++++++----------
+ drivers/tty/ehv_bytechan.c             | 34 +++++++++-------
+ drivers/tty/goldfish.c                 | 18 ++++-----
+ drivers/tty/hvc/hvc_console.c          | 10 ++---
+ drivers/tty/hvc/hvcs.c                 | 12 +++---
+ drivers/tty/hvc/hvsi.c                 | 55 ++++++++++++++++----------
+ drivers/tty/ipwireless/tty.c           | 12 +++---
+ drivers/tty/mips_ejtag_fdc.c           |  2 +-
+ drivers/tty/moxa.c                     |  4 +-
+ drivers/tty/mxser.c                    | 12 +++---
+ drivers/tty/n_gsm.c                    | 13 +++---
+ drivers/tty/nozomi.c                   | 12 +++---
+ drivers/tty/serial/kgdb_nmi.c          | 11 +++---
+ drivers/tty/serial/serial_core.c       | 12 +++---
+ drivers/tty/synclink_gt.c              | 12 +++---
+ drivers/tty/tty_io.c                   | 13 ------
+ drivers/tty/ttynull.c                  |  4 +-
+ drivers/tty/vcc.c                      |  4 +-
+ drivers/tty/vt/vt.c                    |  6 +--
+ drivers/usb/class/cdc-acm.c            | 14 +++----
+ drivers/usb/gadget/function/u_serial.c | 36 +++++++++--------
+ drivers/usb/host/xhci-dbgtty.c         |  4 +-
+ drivers/usb/serial/usb-serial.c        | 13 +++---
+ include/linux/tty_driver.h             | 21 +++-------
+ net/bluetooth/rfcomm/tty.c             | 12 +++---
+ 44 files changed, 330 insertions(+), 319 deletions(-)
+
+-- 
+2.32.0
+
