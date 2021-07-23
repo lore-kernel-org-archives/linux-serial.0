@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05761C4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC6DC432BE
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D7FA360F25
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3688560ED7
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jul 2021 22:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231742AbhGWVvg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Jul 2021 17:51:36 -0400
+        id S232825AbhGWVvh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Jul 2021 17:51:37 -0400
 Received: from mail-eopbgr130051.outbound.protection.outlook.com ([40.107.13.51]:51343
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232301AbhGWVvd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Jul 2021 17:51:33 -0400
+        id S232848AbhGWVvg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 23 Jul 2021 17:51:36 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Qh3k+uWWNSea+Wf0/hHky1krVO6I5OeFDi6hF5FbioFlnQfL6KidJs5dsHU/lQTQFEHK64mOxIs5wIaB7laacoj3bU6gUADRHv1VTIH2H5kSC+d0uhdC3dxYSOGSWUdKiUOQOK/q0ds4l5InsmjWCYFS6pxk2/9nPcTKTtws9Ac9KVoYCt+nCWLO5ySiRyphEZa22CIrtajvC9JG5fVUBXkVApD/Q78kpwJRQiXh1vWHUob2VVSPsKGIUrvLvVx0+75s1P3Pv1RQA2P4q2V1Tvp1qvZ74i9J3FkUY2Bn7C8b/Azy4GmAw60836RhbBw/Vpqm3WztIE8DBYWKe/XDUQ==
+ b=LrlWRfbGrhyYFAPO5j4OhA7crZfE9hNYI/c1owkGbpj+5lOwezZ97WbcmMoO49AP8tfGfSIaD5gRCEKOJFL3rDoA3nHsrRBbUWqQMBIuLvOC/FHOVpGbRdRVMz+Cf7feR3MguEpx2vvXhF7Pc/Zgca6VFsRJvSHMV+8xcvMyN4pQu4a5kKkOM+dYiMKlbHszF35bJTsyWuN0On54aUMD8TYrUKqCkJ0Cd/hG8ufv7VJ756Pu51N+FSa4CVcBa5HGeiJ6/REkXk2neiwNhl7sBBeUa1XzF6qantL8C4RMT4ttwuhwK9CrYc08gqMVea0+1XvdG333xrpif1p/gD3lyA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ckz772AntD/S+oZfxN8PtWWTbWO9arb0RHy2pzyEU3k=;
- b=A8d2SUUKJcRHQT0FPCxcfwPBm06CpT27wZ5Eg+uR518p4t9cR07SAwnu3D8kFXrZIpvKirMwPDwTGzlCcIIs1fGFx3gV3S/9bYf5fKGyDylQ4NtygNUe2bshmnSdLQggxAQxwA3taUUz8QRE8MRvS44rDS+s7piRgjiV50jy4MUWTrgvBnT65lAQgzHFEkEqy8jWquzkf2GJYXXPROovdm5EHY3BtVVKTAXxQGoiMOxjyU2BBIbY3u1G1ZH+LE9llb0fwU0uNArrrX+mFaHMHy14a8wnWBp+rOZxDAUfsVkGcd/3MW1jM1KzF0eIof3+tE0n2LBSUDIk8fFLSSA3lw==
+ bh=kn4Oetd7MVi77TxHQzbs3926LvqsikxwXRIREgwnJ80=;
+ b=LQECZN2eeRU0WIgjikU4hE9mxRQTrZr2Ejrat2CX4CYV2iZ5a464tKPAQkCodFpLjGeHcmx5aFYagT38sN2nAW2Nb9/tKYCxetW7qq1L9ljwLSPR1rynWqPSffIwsBUBO/cjVtpzMJ5qZJpzIt9QpJYfQPem/xvoCxJEkvoFTOYQ1VZ0D5QUkf+nyahxcQSB2slP+NgnQh8BlJwExV8xJSK3gOf7HNvyqqECsazXqGVZ1PnXcXFa+vZQ4a0bGKv6EQJ6dQTXyIryDLxvd7ZRVLC/ZQ17FuU+hoX1P8w4bLPYBCdcQNrw2rZvahrxSDl7j0L98CXIGXEWJOKn+ZVpKQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ckz772AntD/S+oZfxN8PtWWTbWO9arb0RHy2pzyEU3k=;
- b=UdvQqtgr2h2HyETvOZSgVfJTzmhZ0nOc9VVbH7T5OhJ/Tk6/SJfcKlgbdqFAmTBsuVBmdz1WwNANU3vyEvJUgqZ8U+quXcq/LH+VR95dAJGDqiuD1U3phEHYP4hfo73B4YpNEvdD5taG2M0GTWjUo5JFK3lR2LvDMn5Qi5W6nRU=
+ bh=kn4Oetd7MVi77TxHQzbs3926LvqsikxwXRIREgwnJ80=;
+ b=tZPhcGgyv6L5M348zTz+mSosqoXPUeLJ8UsZpNVnRaDV1n6W5msyW4zACZ44j5IdVq36ZNWT6HUUEE6vGASr3JxmeRyBhm/mqgL3WEMd/5d627huSQabQghPXvEml6fBKIdUV6pOQGPQcOt86UGFDV6iFGOkRfuB7Sx+fjOTOKU=
 Authentication-Results: barco.com; dkim=none (message not signed)
  header.d=none;barco.com; dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
  by DBBPR03MB7068.eurprd03.prod.outlook.com (2603:10a6:10:20e::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Fri, 23 Jul
- 2021 22:32:03 +0000
+ 2021 22:32:04 +0000
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::dc6c:815b:2062:d1f1]) by DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::dc6c:815b:2062:d1f1%7]) with mapi id 15.20.4352.025; Fri, 23 Jul 2021
- 22:32:02 +0000
+ 22:32:04 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Peter Korsgaard <peter.korsgaard@barco.com>,
         Peter Korsgaard <peter@korsgaard.com>,
@@ -55,9 +55,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Michal Simek <michal.simek@xilinx.com>,
         Sean Anderson <sean.anderson@seco.com>,
         Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH 1/5] dt-bindings: serial: uartlite: Convert to json-schema
-Date:   Fri, 23 Jul 2021 18:31:47 -0400
-Message-Id: <20210723223152.648326-2-sean.anderson@seco.com>
+Subject: [PATCH 2/5] dt-bindings: serial: uartlite: Add properties for synthesis-time parameters
+Date:   Fri, 23 Jul 2021 18:31:48 -0400
+Message-Id: <20210723223152.648326-3-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210723223152.648326-1-sean.anderson@seco.com>
 References: <20210723223152.648326-1-sean.anderson@seco.com>
@@ -68,157 +68,137 @@ X-ClientProxiedBy: BLAP220CA0027.NAMP220.PROD.OUTLOOK.COM
  (2603:10a6:10:19::27)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plantagenet.inhand.com (50.195.82.171) by BLAP220CA0027.NAMP220.PROD.OUTLOOK.COM (2603:10b6:208:32c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend Transport; Fri, 23 Jul 2021 22:32:01 +0000
+Received: from plantagenet.inhand.com (50.195.82.171) by BLAP220CA0027.NAMP220.PROD.OUTLOOK.COM (2603:10b6:208:32c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend Transport; Fri, 23 Jul 2021 22:32:03 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fc634b06-5ad0-4b54-346b-08d94e29b178
+X-MS-Office365-Filtering-Correlation-Id: 6e1fd1a1-1e23-44d3-d699-08d94e29b258
 X-MS-TrafficTypeDiagnostic: DBBPR03MB7068:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBBPR03MB70684EE537F48B46B91E73CA96E59@DBBPR03MB7068.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:580;
+X-Microsoft-Antispam-PRVS: <DBBPR03MB7068B6D3D1DEBEB248466FF596E59@DBBPR03MB7068.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LyIjhiO/rcfF1DGk2rnBLRCwYZXc4S5x6r/RcEZREkSQiPO/GBQDBoKsch79kcfRtn+dOtdY7QazDTYqAuJWu27l1BLjjK3xi32hg73pBhNxGAGubJauSEjLdhJtatMcVzhcS5QnBfW36CQmTEvGdWa3CSCZtljdvT1Oxd5Q0XFu8E0Q/6x2riyqg88P+Ha/WuXQRrIZxtg+qwg4kQdWDkis6Zr2yAaTETSILaM2gusb4SmIJi6uqKAYPIe+do8n2h6yKVD/2Johjp2AsAxLUZPqKuY4zvctz73TSX0IGRuJLfJl92EM7kK7v0NkQTg5x1kQgvLNC2n/wPPv9VzOQNqCDza9LMdres9VrWv6iHoxG0xhp3gIZjb9qUxmsEEuqo3xlT1qvGLgHyjFd/C9A2zWBiNTJS8zvYk7tnG2UgOhC+YqIkTRitG1yVcak0sYl+pTJfosGgZqzG3pTf9hSPVL8JRK2fTMfYsSKDpP/kT5Reo7xoiqmUQTQQotDyCCkdYkO33dn/dS4qfwDXSlpH+8FiIqdWArJ2rcPx97lA+Pf/bc1KEZIHHhpYhPiCE0Mbvl47O8bvw0Pc1af5p+QPD+TZ+ozKA0K192iidEugB8+0c/tSCLF5xeBXuCGSATxrPJBAfhjQeWk3RMQU7g8Lwwy+dklv+knm8FrIVQEd+Uxell3ojV656b7E0ncrLMC9XIYkbdCziXhBTvg+vHIIe57J90uLhY+9oq7bZBAD8Vk8X+DRFebT9rZ66g7+Cqv8X4ZEuv8H0u5w6XDqp1GW69+s5U6CyiTK9f4Ky0QmY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(376002)(366004)(346002)(39840400004)(52116002)(478600001)(2906002)(2616005)(6512007)(6666004)(186003)(26005)(1076003)(956004)(44832011)(966005)(5660300002)(36756003)(38350700002)(38100700002)(316002)(8676002)(110136005)(4326008)(86362001)(6486002)(8936002)(83380400001)(66556008)(66476007)(6506007)(54906003)(66946007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ULuoTR0nbtenVH9K+8UIAfnn2CAJCp41ySoregR4Zow+nsFnp/QtW2/IUDKxs5tITy1FjOjaMcaNyHVoZu/ZlabBV/5MTO/47HlzAgRZOpBvY//HHNbalrPu3iX+M9tKh1DXx6Anpl0TdiUx4P+bL6qTWIc+nLC+STV/wBS6+6aXQIR9F2ruVK1k62OB6gGTs8GCoTPSAke969F4ns/u2Aq15TH7UijN3wNIBsjZhGpn9QQ9N7YiQE0q9e9K7WXzKK3ZQavHOG29FvQMg133d28l5A4NP3FPhkxo70vD7rqwdqEFRi2xT8tEK5ZJxAS9hwkdmkAYvzDQcpSk3wVRdtK2at/Avcumdc/1bfpoC9yhv19Q4Op3ayWJrdF1pLSAJG+0xQzYyXe3kNfo5hnOx4eBMR3O+Aq3ourSpZWYSf3wAbFn3WDWnMFvtuOSvaUraNA9St0/0guEg61uVC+bkQon6pSA5swSINq9d2SifW2cqYaHHyyOrnFuUYk/+kxGa+F2Tq/OQaAgIzcxTUiiYy7rRPgySpn/m8TCODOMbMn7YTefG6DXO1JPNMe3NTgAG2Fw/uZ0W7CpBfI4V60X7uSaJMDaBM99bW7sRRS7YRW4mb0bAIfaoQtEzTJ2dbFJXS8dNINg9UNPIIOiscd524vK5700RfAcyBG724gKrQQLe/X1dFDDRi1v4i06UZWnjJxVb2B1FLSR03kBD5iW8A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(376002)(366004)(346002)(39840400004)(52116002)(478600001)(2906002)(2616005)(6512007)(6666004)(186003)(26005)(1076003)(956004)(44832011)(5660300002)(36756003)(38350700002)(38100700002)(316002)(8676002)(110136005)(4326008)(86362001)(6486002)(8936002)(83380400001)(66556008)(66476007)(6506007)(54906003)(66946007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IviaRhzZG1b4rjq2rPFXP6TwqidA+6USK3MBn+KJ719z0ZK7NImP8PhpQsXj?=
- =?us-ascii?Q?/PKF95/M8tyV8w8Z2VQBqov5ouiMxn21Cd0DyDLX+iXxnYpsa2ra6s78U2nT?=
- =?us-ascii?Q?jYpawdl8YLhGh3MTwvynkjyLUrIzWoZxQO0thXnCYsaVlvxbgpu15PYhZ4gT?=
- =?us-ascii?Q?U4xZSNuieeKLM+hd92FfM8rdrk0V/Vv1cdryiRWx3Vschjo1Rg1hkCeQMD6T?=
- =?us-ascii?Q?AQinv/ENWSJBwHZVgb8VCXE/pEaRZBiFP1itkYMq8h+t761JKHUWA/r5ob1G?=
- =?us-ascii?Q?LLi/G2/FbMhSOQwwDn9beTlMFY7ad1pdIMBwfnr1VTla+mFZmZTSmTptDlzN?=
- =?us-ascii?Q?b+qsDHPSI34obIjjwKhd3uHgh/kn8YocNX48DM40QslPReC0n/YTYoh9CIXE?=
- =?us-ascii?Q?e7Y6tUZLUeV+gsZiPI+nvU4auI2hOYppMz0WdyVlhnLdMq22sFc9nNe+JLVD?=
- =?us-ascii?Q?oTTG3cOJF7SEPz+qeiMzpXecLOCgSCuqzL2CHWo8KBAjdcg/J3I58kbQulhK?=
- =?us-ascii?Q?IuAT/xqczKI7qTZClnh5/M2llQXuE+G5sKlyIPrpaCUlefUrSPowKr4N4Vyq?=
- =?us-ascii?Q?tRBHRbmyJmwN/RWxZI2dmVhShjylFeha9DiR8Ra6CYZOyKbLdYWowvZBLV1D?=
- =?us-ascii?Q?AAeqMiSt/sYbJstTaBNShoHWgYTxWNm5Hno3gyBQWyaW7AbxfwFgEZWcN/ht?=
- =?us-ascii?Q?dBGah1lfiI6c/lCTSmL6lDlfK36+wgAEzB44xpiGiC6p1U6F0prp6/sAsuk/?=
- =?us-ascii?Q?cIZ+p5TaSxxvn1DMytbTI/IhLk8nF3Y5mu5Wecb/IHFcCefB4f74Cv/xQ06S?=
- =?us-ascii?Q?CXdt5XZ3HqrcCPEg9GL4GHBWPaYXrJE6ACkv4p3y5FvGBi6Zo9opv32BIcw0?=
- =?us-ascii?Q?Q6jI8vDAgf9UBPhaa2rQtOetECnZEAoxul+oceV4cbB8I/m1wErd+L+FfR7p?=
- =?us-ascii?Q?NRAVGQM6dtS+N46+ZQh1eCOJ82VjUguEUc9byaFtpzGLKq8nPT6uJSGRhX0A?=
- =?us-ascii?Q?yXtICabR8LRDfZsyA7NXhR02lS8DgNfe0ByVkaVjL8qCx2tDHwnIA/0htP44?=
- =?us-ascii?Q?T5YnuSAN+ZzaT1if5DdfFBo8n5zOij9IxfC/S8Usa5ZVRWzwmhhB8tsJhJwk?=
- =?us-ascii?Q?DW9eUxTwsBLAE2V1w9k8FM9vfHISpm5kXQlQkcL9cW6WObvWvXv9tFMKzALX?=
- =?us-ascii?Q?ZMnhqDBALxeyw0A/231u4eBAuDkEOLN5k4mnYip5MIOuEyYolXrLrCePSQj5?=
- =?us-ascii?Q?XM9VV1Za1Ygxl08bavlgkx2d3hxOpLh7ED0bWS5349iweQFY3No+tp5vNKDn?=
- =?us-ascii?Q?39hpng5iqpKHoCoASQlrGd+/?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?a6De966cIAuiehdBHdfSFuMtnInJwgS0Sf4/3kHBCZ2Q5lu5QMzbz9i7tupf?=
+ =?us-ascii?Q?JvXF02lecJu8DUCikvLWwGRzcylbsHJzMbcYu6Hv7uf5wRD1ZJmhauRTPfC0?=
+ =?us-ascii?Q?cNeTQcRGjtNNax0X+fnMywJG6j0Nxm9n+FgWPo0THJhaJ8iP7yvCBkrr9jj0?=
+ =?us-ascii?Q?3mswwJ74Bo1TSKKxJriqzWSiQ0C4SjAMsqjEsr+MUcFDAgdZZbRTGcjc2BIU?=
+ =?us-ascii?Q?cSLSoIs6AHA+TRkNvy/k/ox15Yq0ufJHOazO6/ArtZKsOhJs3dhoooh+Ayn0?=
+ =?us-ascii?Q?E/+RY9IJlDk5Fa6gMyyGlajZWRCH1zt1CP1r0Lu6etdUonjXRiaXAswHvpxu?=
+ =?us-ascii?Q?SXFNrYdLxJVG8HZj0N6yjrXTeIclXwrtaMIXnSab2hS6SmGqSvfzGkPnSE6k?=
+ =?us-ascii?Q?IxPmn/Q5j7uysnYP76SWSBccUKHAF+o2ytMq4koM1zP4n6iFsNgion4xD/c8?=
+ =?us-ascii?Q?hk/5L/6AWoE5C319fwNxmZ1x8wSeAjvwwiees5mfIiMhJNEtDC0nV4T7y8oa?=
+ =?us-ascii?Q?HBa9LU91kKD7L7T3kjXLK/nhuha+QUkQSxsnm8ni7eFi4Sp0M2Jd/82N6a0b?=
+ =?us-ascii?Q?w0Q2TyCtbYse3BWRZ7VFm9771liPAIyF8uvueKXRtsYM1hX3zbI2CUd+lPpk?=
+ =?us-ascii?Q?Hh5HbEAWfAY7cN3UZn9Gq/TzTvxg0x5zBBOQZsUvxiHHdAoX7dz7UFK01xwC?=
+ =?us-ascii?Q?Yy0xn1vJkKa2H14XBA6sk7vcCiraILngTkCY872c8kNkmccJbL1t+ATtQHnU?=
+ =?us-ascii?Q?vge5Gu20N7YdqL2xS+Y31o1J/zqkNi5bESh+H6oLTiLjQLfQPOK2iyS8VzFi?=
+ =?us-ascii?Q?F9lxBYaRNRGZpKksqASxLelWlZKjcg9uLwVA0Bu5G3aqr6zCBnFAaYOwmqO9?=
+ =?us-ascii?Q?3HaS6k8jpt3RvnCp8DSxtZ7YMSiQDsS2s+BXbeqalTm3J4pABvZnB5ULiAPF?=
+ =?us-ascii?Q?FeoGMX4gn5s2pCpfkDOu+HjuXjvEKY7mLUEjd+puxON85dIVvcEtQmBW/792?=
+ =?us-ascii?Q?c+FQx+dqmKODPUqZz8Bgo/Q/5fBEImnre+yBu55XmKgLzWRRADd3plRT8IeG?=
+ =?us-ascii?Q?0Lri2pLmJ0A23jVvFijnx8okuGpJxn9g/NLoO/D0Rf0urkBqLWWFlPT9dxPo?=
+ =?us-ascii?Q?o2uUe2m9p3MhKUIv3s5cNucirRG6QwS9gcjftep/Uqo24i2lQetnkQfh1Tmw?=
+ =?us-ascii?Q?emd1Ce4EDXbCQmY87Q42AFd3LST/wmBNBuu7BleB1HO7xwk4Y6194ntU/1aL?=
+ =?us-ascii?Q?1l072gLzfcaEfk28yOE9qFEFJ5IAkcbfgx4mneI3fKfABSyYDjKyaluc7CRl?=
+ =?us-ascii?Q?qFuP9A5o1DjbZh5FnXTw/g3Y?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc634b06-5ad0-4b54-346b-08d94e29b178
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e1fd1a1-1e23-44d3-d699-08d94e29b258
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2021 22:32:02.8635
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2021 22:32:04.3187
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hN/3yFqPlXa0S9nLsMSZMf5bagD3ZXQbGXIu9x6SJcTUV2feD6ZMzVpcZUuJ6gXP7lxEjmu5o+UuzBh/t0GeUQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: WzY3SL0nNHEAw601kbEIhD6aGmXnikv9YuaPJ0+bEHpoOHCGPycZzH9mleOIeK6k01eORWB5xLesFuumWUIvqw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB7068
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This converts the existing documentation for the uartlite binding to
-json-schema.
+The uartlite device is a "soft" device. Many parameters, such as baud
+rate, data bits, and the presence of a parity bit are configured before
+synthesis and may not be changed (or discovered) at runtime. However, we
+must know what these settings are in order to properly calculate the
+uart timeout (and to inform the user about the actual baud of the uart).
+
+These properties are present for out-of-tree bindings generated by
+Xilinx's tools. However, they are also (mostly) present in in-tree
+bindings. I chose current-speed over xlnx,baudrate primarily because it
+seemed to be used by more existing bindings.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
- .../bindings/serial/xlnx,opb-uartlite.txt     | 23 --------
- .../bindings/serial/xlnx,opb-uartlite.yaml    | 53 +++++++++++++++++++
- 2 files changed, 53 insertions(+), 23 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
- create mode 100644 Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
+ .../bindings/serial/xlnx,opb-uartlite.yaml    | 39 +++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
-deleted file mode 100644
-index c37deb44dead..000000000000
---- a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
-+++ /dev/null
-@@ -1,23 +0,0 @@
--Xilinx Axi Uartlite controller Device Tree Bindings
-----------------------------------------------------------
--
--Required properties:
--- compatible		: Can be either of
--				"xlnx,xps-uartlite-1.00.a"
--				"xlnx,opb-uartlite-1.00.b"
--- reg			: Physical base address and size of the Axi Uartlite
--			  registers map.
--- interrupts		: Should contain the UART controller interrupt.
--
--Optional properties:
--- port-number		: Set Uart port number
--- clock-names		: Should be "s_axi_aclk"
--- clocks		: Input clock specifier. Refer to common clock bindings.
--
--Example:
--serial@800c0000 {
--	compatible = "xlnx,xps-uartlite-1.00.a";
--	reg = <0x0 0x800c0000 0x10000>;
--	interrupts = <0x0 0x6e 0x1>;
--	port-number = <0>;
--};
 diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-new file mode 100644
-index 000000000000..4ef29784ae97
---- /dev/null
+index 4ef29784ae97..28859e70e60f 100644
+--- a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
 +++ b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-@@ -0,0 +1,53 @@
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/xlnx,opb-uartlite.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Xilinx Axi Uartlite
-+
-+maintainers:
-+  - Peter Korsgaard <jacmet@sunsite.dk>
-+
-+properties:
-+  compatible:
-+    contains:
-+      enum:
-+        - xlnx,xps-uartlite-1.00.a
-+        - xlnx,opb-uartlite-1.00.b
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  port-number:
+@@ -32,13 +32,49 @@ properties:
+   clock-names:
+     const: s_axi_aclk
+ 
++  current-speed:
 +    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Set Uart port number
++    description:
++      The fixed baud rate that the device was configured for.
 +
-+  clocks:
-+    maxItems: 1
++  xlnx,data-bits:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [5, 6, 7, 8]
++    default: 8
++    description:
++      The fixed number of data bits that the device was configured for.
 +
-+  clock-names:
-+    const: s_axi_aclk
++  xlnx,use-parity:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 1]
++    default: 0
++    description:
++      Whether parity checking was enabled when the device was configured.
 +
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
++  xlnx,odd-parity:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 1]
++    description:
++      Whether odd parity was configured.
 +
-+allOf:
-+  - $ref: /schemas/serial.yaml#
-+
-+additionalProperties: true
-+
-+examples:
-+  - |
-+      serial@800c0000 {
-+        compatible = "xlnx,xps-uartlite-1.00.a";
-+        reg = <0x800c0000 0x10000>;
-+        interrupts = <0x0 0x6e 0x1>;
-+        port-number = <0>;
-+      };
-+...
+ required:
+   - compatible
+   - reg
+   - interrupts
++  - current-speed
++  - xlnx,data-bits
++  - xlnx,use-parity
+ 
+ allOf:
+   - $ref: /schemas/serial.yaml#
++  - if:
++      properties:
++        xlnx,use-parity:
++          contains:
++            const: 1
++    then:
++      required:
++        - xlnx,odd-parity
+ 
+ additionalProperties: true
+ 
+@@ -49,5 +85,8 @@ examples:
+         reg = <0x800c0000 0x10000>;
+         interrupts = <0x0 0x6e 0x1>;
+         port-number = <0>;
++        current-speed = <115200>;
++        xlnx,data-bits = <8>;
++        xlnx,use-parity = <0>;
+       };
+ ...
 -- 
 2.25.1
 
