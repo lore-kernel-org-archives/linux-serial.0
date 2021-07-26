@@ -2,86 +2,189 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7950C4320E
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Jul 2021 09:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F4BC43216
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Jul 2021 09:20:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C8FF60D07
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Jul 2021 09:05:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DBFD260C51
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Jul 2021 09:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232605AbhGZIZZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Jul 2021 04:25:25 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:33190 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232041AbhGZIZY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Jul 2021 04:25:24 -0400
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1m7wYL-0001MM-Tu; Mon, 26 Jul 2021 11:05:37 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     cl@rock-chips.com
-Cc:     robh+dt@kernel.org, jagan@amarulasolutions.com, wens@csie.org,
-        uwe@kleine-koenig.org, mail@david-bauer.net, jbx6244@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jensenhuang@friendlyarm.com, michael@amarulasolutions.com,
-        cnsztl@gmail.com, devicetree@vger.kernel.org,
-        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-i2c@vger.kernel.org, jay.xu@rock-chips.com,
-        shawn.lin@rock-chips.com, david.wu@rock-chips.com,
-        zhangqing@rock-chips.com, huangtao@rock-chips.com,
-        cl@rock-chips.com, wim@linux-watchdog.org, linux@roeck-us.net,
-        jamie@jamieiles.com, linux-watchdog@vger.kernel.org, maz@kernel.org
-Subject: Re: [PATCH v5 1/4] dt-bindings: pwm: rockchip: add description for rk3568
-Date:   Mon, 26 Jul 2021 11:05:36 +0200
-Message-ID: <6196734.7s5MMGUR32@diego>
-In-Reply-To: <20210622020517.13100-2-cl@rock-chips.com>
-References: <20210622020517.13100-1-cl@rock-chips.com> <20210622020517.13100-2-cl@rock-chips.com>
+        id S232688AbhGZIjy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 26 Jul 2021 04:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232482AbhGZIjx (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 26 Jul 2021 04:39:53 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E12AC061764
+        for <linux-serial@vger.kernel.org>; Mon, 26 Jul 2021 02:20:21 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id d17so14344918lfv.0
+        for <linux-serial@vger.kernel.org>; Mon, 26 Jul 2021 02:20:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UyAhVW8SUVdW2juHf4NXSIfTyUpw2d4E9HcLC6UlbsU=;
+        b=PFhaUyyioW4u4jvnVZfDpQc+0BSgWt8O5W+h2/JkXloGBxxa1lz6qvX+LcbuUXQc2N
+         Z/sV52rf44gz4YnpyNlA3a5x50wV6yKSQCx7U00BnemtwgGM+ascTy/4/9Bei7pKU0i6
+         ejhLDXqu6p6hD3mYKZgz79DXesDgefxzliTwg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UyAhVW8SUVdW2juHf4NXSIfTyUpw2d4E9HcLC6UlbsU=;
+        b=RLkdZhzl0Z5uuZdMq+hsWZ/I7QoR2ah+7vmfun8Dt5jfXePUQT6nLmKKVoCAmSjYUU
+         WQbGULj8QNC5nL7uba3P7Fg7UFfbgFWIj9nEJ7CwkDYp5Poc7PGrxo82qo54DYIAsV1G
+         4j8LEKiLCd/l2nL7ca8x+s/w6fNMpWWSKhaRHZaBgTpGLs2Ef2F11PPPyvw0BrqsFlds
+         oeonXL30eNCa6UBVlXfcovLMfqBrymH1NKGAVRnsfEcFcsWIA9e5k6cflyq4bnOAVkJI
+         27jLGZbqFyCF/pFDJZJz6ifMOF3K9Rswhr8sU/XV8fvebZYST9smy46F2FUrnp/oEbH4
+         MHdw==
+X-Gm-Message-State: AOAM532Whp7QEroByEL4o0nOOMUt/FXmZTRfUOny8ebBTW69G+R5JrAg
+        J2YyBcdkB0L0ZksIf5cbyIxEISu1eYAyHs0CU+5XDQ==
+X-Google-Smtp-Source: ABdhPJxZeDoaO4+lBiCkXyq/2Admv1+kefRfVNjKKrFIMZn357CPp9SKVLhT5mJJhxTofCy8T41M60sD5j6u/8BBBOQ=
+X-Received: by 2002:ac2:48b8:: with SMTP id u24mr12319860lfg.587.1627291219448;
+ Mon, 26 Jul 2021 02:20:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+References: <20210726071439.14248-1-sam.shih@mediatek.com> <20210726071439.14248-2-sam.shih@mediatek.com>
+In-Reply-To: <20210726071439.14248-2-sam.shih@mediatek.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Mon, 26 Jul 2021 17:20:08 +0800
+Message-ID: <CAGXv+5GeEBAkXKfA=S7XGOLYtCRihP5ov6kSiw+eevPAi74GAQ@mail.gmail.com>
+Subject: Re: [PATCH 01/12] dt-bindings: clock: mediatek: document clk bindings
+ for mediatek mt7986 SoC
+To:     Sam Shih <sam.shih@mediatek.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Sean Wang <sean.wang@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Seiya Wang <seiya.wang@mediatek.com>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>, linux-gpio@vger.kernel.org,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org,
+        John Crispin <john@phrozen.org>,
+        Ryder Lee <Ryder.Lee@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am Dienstag, 22. Juni 2021, 04:05:14 CEST schrieb cl@rock-chips.com:
-> From: Liang Chen <cl@rock-chips.com>
-> 
-> add "rockchip,rk3568-pwm", "rockchip,rk3328-pwm" for pwm nodes on
-> a rk3568 platform to pwm-rockchip.yaml.
-> 
-> Signed-off-by: Liang Chen <cl@rock-chips.com>
-
-I've picked this for a new separate patch submission to finalize adding pwm
-for rk3568 in
-https://lore.kernel.org/r/20210726090355.1548483-1-heiko@sntech.de
-
-
+On Mon, Jul 26, 2021 at 3:17 PM Sam Shih <sam.shih@mediatek.com> wrote:
+>
+> This patch adds the binding documentation for topckgen, apmixedsys,
+> infracfg, infracfg_ao, and ethernet subsystem clocks.
+>
+> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
 > ---
->  Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-> index 5596bee70509..81a54a4e8e3e 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-> @@ -29,6 +29,7 @@ properties:
->            - enum:
->                - rockchip,px30-pwm
->                - rockchip,rk3308-pwm
-> +              - rockchip,rk3568-pwm
->            - const: rockchip,rk3328-pwm
->  
->    reg:
-> 
+>  .../devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt    | 1 +
+>  .../devicetree/bindings/arm/mediatek/mediatek,ethsys.txt        | 1 +
+>  .../devicetree/bindings/arm/mediatek/mediatek,infracfg.txt      | 2 ++
+>  .../devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt      | 2 ++
+>  .../devicetree/bindings/arm/mediatek/mediatek,topckgen.txt      | 1 +
+>  5 files changed, 7 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+> index ea827e8763de..3fa755866528 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+> @@ -14,6 +14,7 @@ Required Properties:
+>         - "mediatek,mt7622-apmixedsys"
+>         - "mediatek,mt7623-apmixedsys", "mediatek,mt2701-apmixedsys"
+>         - "mediatek,mt7629-apmixedsys"
+> +       - "mediatek,mt7986-apmixedsys"
+>         - "mediatek,mt8135-apmixedsys"
+>         - "mediatek,mt8167-apmixedsys", "syscon"
+>         - "mediatek,mt8173-apmixedsys"
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,ethsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,ethsys.txt
+> index 6b7e8067e7aa..0502db73686b 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,ethsys.txt
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,ethsys.txt
+> @@ -10,6 +10,7 @@ Required Properties:
+>         - "mediatek,mt7622-ethsys", "syscon"
+>         - "mediatek,mt7623-ethsys", "mediatek,mt2701-ethsys", "syscon"
+>         - "mediatek,mt7629-ethsys", "syscon"
+> +       - "mediatek,mt7986-ethsys", "syscon"
+>  - #clock-cells: Must be 1
+>  - #reset-cells: Must be 1
+>
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
+> index eb3523c7a7be..5f68c30162bf 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
+> @@ -15,6 +15,8 @@ Required Properties:
+>         - "mediatek,mt7622-infracfg", "syscon"
+>         - "mediatek,mt7623-infracfg", "mediatek,mt2701-infracfg", "syscon"
+>         - "mediatek,mt7629-infracfg", "syscon"
+> +       - "mediatek,mt7986-infracfg", "syscon"
+> +       - "mediatek,mt7986-infracfg_ao", "syscon"
+>         - "mediatek,mt8135-infracfg", "syscon"
+>         - "mediatek,mt8167-infracfg", "syscon"
+>         - "mediatek,mt8173-infracfg", "syscon"
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+> index 30cb645c0e54..0e1184392941 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+> @@ -8,6 +8,8 @@ Required Properties:
+>  - compatible: Should be:
+>         - "mediatek,mt7622-sgmiisys", "syscon"
+>         - "mediatek,mt7629-sgmiisys", "syscon"
+> +       - "mediatek,mt7986-sgmiisys", "mediatek,mt7986-sgmiisys_0", "syscon"
+> +       - "mediatek,mt7986-sgmiisys", "mediatek,mt7986-sgmiisys_1", "syscon"
+
+The order should be: most specific compatible string first, followed by
+fallbacks.
+
+Furthermore, based on the driver patch and the fact that they share the
+same compatible string, it seems you shouldn't need to have two compatible
+strings for two identical hardware blocks. The need for separate entries
+to have different clock names is an implementation detail. Please consider
+using and supporting clock-output-names.
+
+Also, please check out the MT8195 clock driver series [1]. I'm guessing
+a lot of the comments apply to this one as well.
+
+Regards
+ChenYu
+
+[1] https://lore.kernel.org/linux-mediatek/20210616224743.5109-1-chun-jie.chen@mediatek.com/T/#t
 
 
-
-
+>  - #clock-cells: Must be 1
+>
+>  The SGMIISYS controller uses the common clk binding from
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt
+> index 5ce7578cf274..b82422bb717f 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt
+> @@ -14,6 +14,7 @@ Required Properties:
+>         - "mediatek,mt7622-topckgen"
+>         - "mediatek,mt7623-topckgen", "mediatek,mt2701-topckgen"
+>         - "mediatek,mt7629-topckgen"
+> +       - "mediatek,mt7986-topckgen", "syscon"
+>         - "mediatek,mt8135-topckgen"
+>         - "mediatek,mt8167-topckgen", "syscon"
+>         - "mediatek,mt8173-topckgen"
+> --
+> 2.29.2
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
