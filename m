@@ -2,252 +2,169 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 851D3C4338F
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Jul 2021 13:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1650C4338F
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Jul 2021 14:19:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5F19D60F11
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Jul 2021 13:43:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D3C73608FB
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Jul 2021 14:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233961AbhGZNDJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Jul 2021 09:03:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60966 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233970AbhGZNDI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Jul 2021 09:03:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3191160E08;
-        Mon, 26 Jul 2021 13:43:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1627307016;
-        bh=Z7luSsBKo+vKZ+wNEkeorNXjVJpdTMQxsxikgpRhDy8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dd8PtS14ZH3SvAZEhLRnGcRhbaLuxMg353rqMEWty7/CFKK/4FAcqXdzDf5UBLDOv
-         jruEnuUZHJYRY6Lw2PR7VZ8ZpYwkxMFEnGvXSrOO8thvEoAg2nTEWwhDrdlHBbvhHw
-         Ei/dLgQ96I2JbG691i4ttQQIvlSSVfq0MgkI/xnk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-serial@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jordy Zomer <jordy@pwning.systems>
-Subject: [PATCH 2/2] vt: keyboard.c: make console an unsigned int
-Date:   Mon, 26 Jul 2021 15:43:22 +0200
-Message-Id: <20210726134322.2274919-2-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210726134322.2274919-1-gregkh@linuxfoundation.org>
-References: <20210726134322.2274919-1-gregkh@linuxfoundation.org>
+        id S233194AbhGZNjQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 26 Jul 2021 09:39:16 -0400
+Received: from mail-mw2nam10on2087.outbound.protection.outlook.com ([40.107.94.87]:10100
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233206AbhGZNjP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 26 Jul 2021 09:39:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Qyw1A4fNiCSmKY2RgVdwepR1W4xbI7h3gioX8JcL0SVjKoe1P9u7FtTsitwbpcs1M4R/hW1KMdL0bML0QTmvcekaOp60MiurIea4EHfxBY7EwbOSQcz/Co/KxvRK4sdVPq4MVuYkFmDetEjQTb11nusjk3CWCT3KDjPM826b/QDRnPo5nWUBWeet+3OytnjwGDq22SABAUvJwGb/zRHi0bnUoJSbmI7NXo7wF3qBUGJA95burizuadp22Ve3KYV1MaoRqwAdokP+nFLqZexyZ/NRg68Jps819/uCq0IkMkMrxX0QCfgbT/bmYKtraJiNPeOrnt26IkUzTXTvr69q2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z0DNVMeSoqTwyQP+GzPa/0Vq33q1/wISK9c+iuyhm7Q=;
+ b=DfQoxSdPPKONadlusHAH9oiSg7iPrYAk52oDpBzE+nbvrzdCg7CizYhCk64yNTglMEoIcB5UpF5diiMj3VK6ONBDOmEj6kC00/OLTlJr7f6kbVwaG+way2OwckgUHGo7PEqCygS/nYVSVbjZWL/Ns340PVRvIHaViRnJH1IJbPxH3venNAnhmZ00R3rQQIpw/HQU+VcCbLDgElLHqSccQbTxOHRCIuZ8qNELwj48vqT0fPFNOJrIGaSY390y/lNta5aO/ulMZcB74lvCulJdCiA8G/OyH8mf7dOuZjDV5KG8qgkN208omI0jY+EErOThXXRtKV50OmvEkEVbLyDWqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
+ is 149.199.62.198) smtp.rcpttodomain=linuxfoundation.org
+ smtp.mailfrom=xilinx.com; dmarc=temperror action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z0DNVMeSoqTwyQP+GzPa/0Vq33q1/wISK9c+iuyhm7Q=;
+ b=WxyQF5G34ZctnPutw7ERJ16dbyVpNopiGIZi4sS47XfhltUDsPV9fecz3HMac+KEXY7SYF8KhKsRGcNcxnMT6utQunHrMZI8Y5+vKa/IDtFFvLCME7FuDtlepZ3BU9GCs9IG9Jpz2d2FZkA7LpQ3Gean7+qfaHWM1NPBM/JwFMI=
+Received: from DM5PR18CA0091.namprd18.prod.outlook.com (2603:10b6:3:3::29) by
+ DM5PR02MB2252.namprd02.prod.outlook.com (2603:10b6:3:53::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4352.26; Mon, 26 Jul 2021 14:19:39 +0000
+Received: from DM3NAM02FT049.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:3:3:cafe::f8) by DM5PR18CA0091.outlook.office365.com
+ (2603:10b6:3:3::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25 via Frontend
+ Transport; Mon, 26 Jul 2021 14:19:39 +0000
+X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is
+ 149.199.62.198) smtp.mailfrom=xilinx.com; linuxfoundation.org; dkim=none
+ (message not signed) header.d=none;linuxfoundation.org; dmarc=temperror
+ action=none header.from=xilinx.com;
+Received-SPF: TempError (protection.outlook.com: error in processing during
+ lookup of xilinx.com: DNS Timeout)
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT049.mail.protection.outlook.com (10.13.5.68) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4352.24 via Frontend Transport; Mon, 26 Jul 2021 14:19:38 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 26 Jul 2021 07:19:38 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Mon, 26 Jul 2021 07:19:38 -0700
+Envelope-to: gregkh@linuxfoundation.org,
+ jacmet@sunsite.dk,
+ linux-serial@vger.kernel.org,
+ sean.anderson@seco.com
+Received: from [172.30.17.109] (port=59064)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1m81SD-0000at-OX; Mon, 26 Jul 2021 07:19:37 -0700
+Subject: Re: [PATCH] tty: serial: uartlite: Use read_poll_timeout for a
+ polling loop
+To:     Sean Anderson <sean.anderson@seco.com>,
+        <linux-serial@vger.kernel.org>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+CC:     Michal Simek <michal.simek@xilinx.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20210723215220.624204-1-sean.anderson@seco.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+Message-ID: <292d7088-063c-9649-7b87-a7f3fd48b796@xilinx.com>
+Date:   Mon, 26 Jul 2021 16:19:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7926; h=from:subject; bh=Z7luSsBKo+vKZ+wNEkeorNXjVJpdTMQxsxikgpRhDy8=; b=owGbwMvMwCRo6H6F97bub03G02pJDAn/dv/8zOlaP0H+2pl1D4VzC8svmpa1OoZza/L0zbP6UCt2 iFeuI5aFQZCJQVZMkeXLNp6j+ysOKXoZ2p6GmcPKBDKEgYtTACZiuJFhnmmAjYdWys4lWocOe78tz6 mMCD/0gWHBDofbHBH/bWe9ijvpkmY1beX/PMsKAA==
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210723215220.624204-1-sean.anderson@seco.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7562d3e8-089f-4b20-cb97-08d950406713
+X-MS-TrafficTypeDiagnostic: DM5PR02MB2252:
+X-Microsoft-Antispam-PRVS: <DM5PR02MB2252F424B9C7F8D06888ABEDC6E89@DM5PR02MB2252.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3Gd2r0zzt+mC445vGgaea5CuTmNG+ItkJNpDjws6rDcwWEqNOXXJfoiYxb8D6GwelZYHCWdpWyIUspzveRRAspKc31Ebsae/0DKbioOkjCC0rfqynNAYzqMtBWOjkD0CnFYA/I446DhutQWPDghgZu1hIVIb1zchhKW9CXNGCV0S5KcpLexrnGcf2wYIT1cv6WOdEWnFtmtCDRwjfLlCcnyc9XYBFrCu9Sf+VJuDpq+nuONyUZ85t6J3QyMD9Mp+u+kysuwm/dETOscn+tRTUCSQH14qy1eVKj1DTgRT/JnjXQpQS2SoVPGWBMAEiEZAfXJ7xNDxJnuXw77/f3DaFV31r2IzOtRq2VANb16jEYUmYo2BU4+Vp5mU5zgeArptrpuvaSo+EIuDxZfIrvvTBF+gtwIVoHPENRt8fmfjgzqLDzqoOWTbHWYlbIAA7ROJQtPbl8a7en+DX0VXia/TfQe52vVAg2RApOlg9AmCBFxmeCaR021+IA9kr1sYOuoRH37iI7vd/cjaoGcwBcqLi6QdSpDZByvU5IFWdcJ9lzs0gzuQKDSERhgFvgEd32Dzx2vI32fjkvEJlAj7qdDlvntsMJT9nd5+Fx4gVbM5oyAf6cUPOoVOxGnnSR7a0ZLba14sLDZVz3O7T3Apyo6I6gqsFhFsf2s2Av4/SRUVJlknFPbLKMjfSzJVMX+2naqNiVT68PFpEg9N+Zb35aH/2PUYYqXPInj8sh+ARXgvoiu8qzdQWTg7PLZOXLq6rb1b
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(376002)(346002)(136003)(46966006)(36840700001)(70206006)(70586007)(54906003)(4326008)(53546011)(36906005)(8676002)(356005)(7636003)(31696002)(36756003)(83380400001)(5660300002)(316002)(110136005)(26005)(8936002)(9786002)(6636002)(82740400003)(47076005)(478600001)(336012)(63350400001)(63370400001)(2906002)(2616005)(31686004)(44832011)(426003)(82310400003)(186003)(36860700001)(50156003)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2021 14:19:38.6195
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7562d3e8-089f-4b20-cb97-08d950406713
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT049.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2252
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The console variable is used everywhere in some fun pointer path and
-array indexes and for some reason isn't always declared as unsigned.
-This plays havoc with some static analysis tools so mark the variable as
-unsigned so we "know" we can not wrap the arrays backwards here.
++Shubhrajyoti
 
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reported-by: Jordy Zomer <jordy@pwning.systems>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/vt/keyboard.c | 30 +++++++++++++++---------------
- include/linux/vt_kern.h   | 30 +++++++++++++++---------------
- 2 files changed, 30 insertions(+), 30 deletions(-)
-
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index e81c940a2ea1..c7fbbcdcc346 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -1171,7 +1171,7 @@ static inline unsigned char getleds(void)
-  *
-  *	Check the status of a keyboard led flag and report it back
-  */
--int vt_get_leds(int console, int flag)
-+int vt_get_leds(unsigned int console, int flag)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	int ret;
-@@ -1193,7 +1193,7 @@ EXPORT_SYMBOL_GPL(vt_get_leds);
-  *	Set the LEDs on a console. This is a wrapper for the VT layer
-  *	so that we can keep kbd knowledge internal
-  */
--void vt_set_led_state(int console, int leds)
-+void vt_set_led_state(unsigned int console, int leds)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	setledstate(kb, leds);
-@@ -1212,7 +1212,7 @@ void vt_set_led_state(int console, int leds)
-  *	don't hold the lock. We probably need to split out an LED lock
-  *	but not during an -rc release!
-  */
--void vt_kbd_con_start(int console)
-+void vt_kbd_con_start(unsigned int console)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	unsigned long flags;
-@@ -1229,7 +1229,7 @@ void vt_kbd_con_start(int console)
-  *	Handle console stop. This is a wrapper for the VT layer
-  *	so that we can keep kbd knowledge internal
-  */
--void vt_kbd_con_stop(int console)
-+void vt_kbd_con_stop(unsigned int console)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	unsigned long flags;
-@@ -1825,7 +1825,7 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
-  *	Update the keyboard mode bits while holding the correct locks.
-  *	Return 0 for success or an error code.
-  */
--int vt_do_kdskbmode(int console, unsigned int arg)
-+int vt_do_kdskbmode(unsigned int console, unsigned int arg)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	int ret = 0;
-@@ -1865,7 +1865,7 @@ int vt_do_kdskbmode(int console, unsigned int arg)
-  *	Update the keyboard meta bits while holding the correct locks.
-  *	Return 0 for success or an error code.
-  */
--int vt_do_kdskbmeta(int console, unsigned int arg)
-+int vt_do_kdskbmeta(unsigned int console, unsigned int arg)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	int ret = 0;
-@@ -2008,7 +2008,7 @@ static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
- }
- 
- int vt_do_kdsk_ioctl(int cmd, struct kbentry __user *user_kbe, int perm,
--						int console)
-+						unsigned int console)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	struct kbentry kbe;
-@@ -2097,7 +2097,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 	return ret;
- }
- 
--int vt_do_kdskled(int console, int cmd, unsigned long arg, int perm)
-+int vt_do_kdskled(unsigned int console, int cmd, unsigned long arg, int perm)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
-         unsigned long flags;
-@@ -2139,7 +2139,7 @@ int vt_do_kdskled(int console, int cmd, unsigned long arg, int perm)
-         return -ENOIOCTLCMD;
- }
- 
--int vt_do_kdgkbmode(int console)
-+int vt_do_kdgkbmode(unsigned int console)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	/* This is a spot read so needs no locking */
-@@ -2163,7 +2163,7 @@ int vt_do_kdgkbmode(int console)
-  *
-  *	Report the meta flag status of this console
-  */
--int vt_do_kdgkbmeta(int console)
-+int vt_do_kdgkbmeta(unsigned int console)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
-         /* Again a spot read so no locking */
-@@ -2176,7 +2176,7 @@ int vt_do_kdgkbmeta(int console)
-  *
-  *	Restore the unicode console state to its default
-  */
--void vt_reset_unicode(int console)
-+void vt_reset_unicode(unsigned int console)
- {
- 	unsigned long flags;
- 
-@@ -2204,7 +2204,7 @@ int vt_get_shift_state(void)
-  *	Reset the keyboard bits for a console as part of a general console
-  *	reset event
-  */
--void vt_reset_keyboard(int console)
-+void vt_reset_keyboard(unsigned int console)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	unsigned long flags;
-@@ -2234,7 +2234,7 @@ void vt_reset_keyboard(int console)
-  *	caller must be sure that there are no synchronization needs
-  */
- 
--int vt_get_kbd_mode_bit(int console, int bit)
-+int vt_get_kbd_mode_bit(unsigned int console, int bit)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	return vc_kbd_mode(kb, bit);
-@@ -2249,7 +2249,7 @@ int vt_get_kbd_mode_bit(int console, int bit)
-  *	caller must be sure that there are no synchronization needs
-  */
- 
--void vt_set_kbd_mode_bit(int console, int bit)
-+void vt_set_kbd_mode_bit(unsigned int console, int bit)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	unsigned long flags;
-@@ -2268,7 +2268,7 @@ void vt_set_kbd_mode_bit(int console, int bit)
-  *	caller must be sure that there are no synchronization needs
-  */
- 
--void vt_clr_kbd_mode_bit(int console, int bit)
-+void vt_clr_kbd_mode_bit(unsigned int console, int bit)
- {
- 	struct kbd_struct *kb = &kbd_table[console];
- 	unsigned long flags;
-diff --git a/include/linux/vt_kern.h b/include/linux/vt_kern.h
-index 0da94a6dee15..b5ab452fca5b 100644
---- a/include/linux/vt_kern.h
-+++ b/include/linux/vt_kern.h
-@@ -148,26 +148,26 @@ void hide_boot_cursor(bool hide);
- 
- /* keyboard  provided interfaces */
- int vt_do_diacrit(unsigned int cmd, void __user *up, int eperm);
--int vt_do_kdskbmode(int console, unsigned int arg);
--int vt_do_kdskbmeta(int console, unsigned int arg);
-+int vt_do_kdskbmode(unsigned int console, unsigned int arg);
-+int vt_do_kdskbmeta(unsigned int console, unsigned int arg);
- int vt_do_kbkeycode_ioctl(int cmd, struct kbkeycode __user *user_kbkc,
- 			  int perm);
- int vt_do_kdsk_ioctl(int cmd, struct kbentry __user *user_kbe, int perm,
--		     int console);
-+		     unsigned int console);
- int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm);
--int vt_do_kdskled(int console, int cmd, unsigned long arg, int perm);
--int vt_do_kdgkbmode(int console);
--int vt_do_kdgkbmeta(int console);
--void vt_reset_unicode(int console);
-+int vt_do_kdskled(unsigned int console, int cmd, unsigned long arg, int perm);
-+int vt_do_kdgkbmode(unsigned int console);
-+int vt_do_kdgkbmeta(unsigned int console);
-+void vt_reset_unicode(unsigned int console);
- int vt_get_shift_state(void);
--void vt_reset_keyboard(int console);
--int vt_get_leds(int console, int flag);
--int vt_get_kbd_mode_bit(int console, int bit);
--void vt_set_kbd_mode_bit(int console, int bit);
--void vt_clr_kbd_mode_bit(int console, int bit);
--void vt_set_led_state(int console, int leds);
--void vt_kbd_con_start(int console);
--void vt_kbd_con_stop(int console);
-+void vt_reset_keyboard(unsigned int console);
-+int vt_get_leds(unsigned int console, int flag);
-+int vt_get_kbd_mode_bit(unsigned int console, int bit);
-+void vt_set_kbd_mode_bit(unsigned int console, int bit);
-+void vt_clr_kbd_mode_bit(unsigned int console, int bit);
-+void vt_set_led_state(unsigned int console, int leds);
-+void vt_kbd_con_start(unsigned int console);
-+void vt_kbd_con_stop(unsigned int console);
- 
- void vc_scrolldelta_helper(struct vc_data *c, int lines,
- 		unsigned int rolled_over, void *_base, unsigned int size);
--- 
-2.32.0
-
+On 7/23/21 11:52 PM, Sean Anderson wrote:
+> This uses read_poll_timeout_atomic to spin while waiting on uart_in32.
+> 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> 
+>  drivers/tty/serial/uartlite.c | 18 +++++-------------
+>  1 file changed, 5 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> index f42ccc40ffa6..106bbbc86c87 100644
+> --- a/drivers/tty/serial/uartlite.c
+> +++ b/drivers/tty/serial/uartlite.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/init.h>
+>  #include <linux/io.h>
+> +#include <linux/iopoll.h>
+>  #include <linux/of.h>
+>  #include <linux/of_address.h>
+>  #include <linux/of_device.h>
+> @@ -448,24 +449,15 @@ static const struct uart_ops ulite_ops = {
+>  static void ulite_console_wait_tx(struct uart_port *port)
+>  {
+>  	u8 val;
+> -	unsigned long timeout;
+>  
+>  	/*
+>  	 * Spin waiting for TX fifo to have space available.
+>  	 * When using the Microblaze Debug Module this can take up to 1s
+>  	 */
+> -	timeout = jiffies + msecs_to_jiffies(1000);
+> -	while (1) {
+> -		val = uart_in32(ULITE_STATUS, port);
+> -		if ((val & ULITE_STATUS_TXFULL) == 0)
+> -			break;
+> -		if (time_after(jiffies, timeout)) {
+> -			dev_warn(port->dev,
+> -				 "timeout waiting for TX buffer empty\n");
+> -			break;
+> -		}
+> -		cpu_relax();
+> -	}
+> +	if (read_poll_timeout_atomic(uart_in32, val, !(val & ULITE_STATUS_TXFULL),
+> +				     0, 1000000, false, ULITE_STATUS, port))
+> +		dev_warn(port->dev,
+> +			 "timeout waiting for TX buffer empty\n");
+>  }
+>  
+>  static void ulite_console_putchar(struct uart_port *port, int ch)
+> 
