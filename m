@@ -2,119 +2,189 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E44CDC4338F
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Jul 2021 06:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58652C4338F
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Jul 2021 07:03:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C6B3D61042
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Jul 2021 06:04:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3BD3061054
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Jul 2021 07:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233899AbhG2GEF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Jul 2021 02:04:05 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:49309 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230223AbhG2GEE (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Jul 2021 02:04:04 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 51A46580B39;
-        Thu, 29 Jul 2021 02:04:01 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 29 Jul 2021 02:04:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=oOA9yKbtZrclxkXt8oi2w9Qy4VI
-        sBkPwwH4Zip+yF2Q=; b=jlS/9w7SQZpmcYyil/QHB10d4j+LqD1BBnEeV4VpVbv
-        YZcHJh/Vq7gQ63HSRfNySSGszZLBGMRyX1HZCbzDmg98A2mDQDi9CL2eo/w+lBeZ
-        9rpP82l3iy8NfhCPOD4RfvQs5zQGdY9wjNBUtjqYjF1AFeAJ3mEGZSxluDAgsqSX
-        YcJUHUl1XVpqLVSIG+P7e52LxOPCsz3M/NPpapeIjUKNYZmhv/lebtp/qOd2meNd
-        rEUU8cBd+lDKoxPGgYkpcbdhX3u974W8teP+KCvkJ4I1cT1OyQrtyR8pToEKAhuh
-        i8/SQExgJwN6Q2vtcdzs1yf3lKlMoM4xPjQPYuouStg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=oOA9yK
-        btZrclxkXt8oi2w9Qy4VIsBkPwwH4Zip+yF2Q=; b=ErtoLAJ54DmhkFR0iJpgqm
-        9ERknF9Qyd1Esscd3Cy/Jh109VV7+BA16zm23A4kNc+Q5nhpTd1Ncu19h+a8bOWD
-        rss1BNt43SQWfUysU2ae1tPSYAAPOhpRkvnWjdcBx0BGuh2FKfDxgxCx3zdnnwTh
-        aGWwKrbBr67B4XNUUAitjbo+WQAYZEHhyBjlCKWFvyHQNYoCqwoPi6adNPoTuDfK
-        FIwj5ID3KnQ9Jh+cEuzw8s8bQZTusEXoKwn4PSHeNwV5LOZvcpQmTqRBkbNI73w9
-        MCEaOoM/fdDer11hxBw/9Ow43j2/r671/LX7PS3SiGFeNBJkqyY6uN7EAlJj1Gpg
-        ==
-X-ME-Sender: <xms:0EQCYbyYxtkJu4glF-PyF7Vmo43tTOkmvx7vk1EntVZdLMEsHu3C3Q>
-    <xme:0EQCYTQMDkRSNrRfWPG-hblj2PmnOTxNvFK7bUM5dB0oC_22euwHulzvy7WykXbDR
-    hcIb45NDz3qsA>
-X-ME-Received: <xmr:0EQCYVVCQuiiDMb-vlKynWBt1gusm3RY0N0qSpi8uTEjqcbSEDY8vYCjsGkVpQytv_Ajx3LMmq2fb0184BL90bN5-mEmdm76>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrhedtgdelfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghgucfm
-    jfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepfeefueduhe
-    egtddvueejueeiveelhedthfejudehteejgfegudffgedttdetheeknecuffhomhgrihhn
-    pegsohhothhlihhnrdgtohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
-    hmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
-X-ME-Proxy: <xmx:0EQCYVgIDo1Ew43r7hAFpqP8nmJpY5A5vd9QDYdocfnL7YV5_tY1qw>
-    <xmx:0EQCYdBh3Od3AAwJM5CHD0pPk69bSsf7bG7F1_I1lMG6ty4Onw0P6g>
-    <xmx:0EQCYeIhXcVY50E1ruC0Z8OVs-Gv2-qNTmHE6IJR-H-yWCCk6BNUhQ>
-    <xmx:0UQCYdansu-BxNZUR8BiGYppnOc_z2YNFJumpJ6Ouh-OROzART6GgQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 29 Jul 2021 02:04:00 -0400 (EDT)
-Date:   Thu, 29 Jul 2021 08:03:58 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Zhiyong Tao <zhiyong.tao@mediatek.com>
-Cc:     timur@kernel.org, linux@armlinux.org.uk, alcooperx@gmail.com,
-        tklauser@distanz.ch, sean.wang@kernel.org,
-        srv_heupstream@mediatek.com, hui.liu@mediatek.com,
-        yuchen.huang@mediatek.com, huihui.wang@mediatek.com,
-        eddie.huang@mediatek.com, sean.wang@mediatek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 0/1] Mediatek uart patch
-Message-ID: <YQJEzlb2NyxD1EpD@kroah.com>
-References: <20210729014817.11879-1-zhiyong.tao@mediatek.com>
+        id S234339AbhG2HDL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Jul 2021 03:03:11 -0400
+Received: from mga02.intel.com ([134.134.136.20]:59110 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234312AbhG2HDK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 29 Jul 2021 03:03:10 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10059"; a="199997199"
+X-IronPort-AV: E=Sophos;i="5.84,278,1620716400"; 
+   d="scan'208";a="199997199"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2021 00:03:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,278,1620716400"; 
+   d="scan'208";a="666272447"
+Received: from lkp-server01.sh.intel.com (HELO d053b881505b) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 29 Jul 2021 00:03:06 -0700
+Received: from kbuild by d053b881505b with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1m904P-0008xS-Bn; Thu, 29 Jul 2021 07:03:05 +0000
+Date:   Thu, 29 Jul 2021 15:02:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ ccd1c4d7947907b723a5d43d61383578c2f130b6
+Message-ID: <6102529b.hPeUBe1rjNHLKZBX%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210729014817.11879-1-zhiyong.tao@mediatek.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 09:48:16AM +0800, Zhiyong Tao wrote:
-> This series includes 1 patches:
-> 1.fix uart corruption issue when rx power off
-> 
-> when uart is used as a communication port with external device(GPS).
-> when external device(GPS) power off, the power of rx pin is also from
-> 1.8v to 0v. Even if there is not any data in rx. But uart rx pin can
-> capture the data "0".
-> If uart don't receive any data in specified cycle, uart will generates
-> BI(Break interrupt) interrupt.
-> If external device(GPS) power off, we found that BI interrupt appeared
-> continuously and very frequently.
-> When uart interrupt type is BI, uart IRQ handler(8250 framwork
-> API:serial8250_handle_irq) will push data to tty buffer.
-> The code path:
-> https://elixir.bootlin.com/linux/latest/source/drivers/tty/serial/8250/8250_port.c#L1917
-> mtk8250_dma_rx_complete is a task of mtk_uart_apdma_rx_handler.
-> mtk8250_dma_rx_complete priority is lower than uart irq
-> handler(serial8250_handle_irq).
-> if we are in process of mtk8250_dma_rx_complete, uart appear BI
-> interrupt:1)serial8250_handle_irq will priority execution.2)it may cause
-> write tty buffer conflict in mtk8250_dma_rx_complete.
-> So the spin lock protect the rx receive data process is not break.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: ccd1c4d7947907b723a5d43d61383578c2f130b6  Revert "v253_init: eliminate pointer to string"
 
-All of this information should be in the changelog for the patch itself.
-There is no need for a "cover letter" for a single patch like this.
+elapsed time: 724m
 
-Can you redo your 1/1 patch and add the above information to the
-changelog text and resend it as a v2?
+configs tested: 123
+configs skipped: 3
 
-thanks,
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-greg k-h
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20210728
+arc                        vdk_hs38_defconfig
+ia64                          tiger_defconfig
+arc                           tb10x_defconfig
+sparc                       sparc32_defconfig
+h8300                            alldefconfig
+arm                        multi_v7_defconfig
+powerpc                         ps3_defconfig
+powerpc                      chrp32_defconfig
+sparc64                          alldefconfig
+mips                       rbtx49xx_defconfig
+m68k                            mac_defconfig
+sh                     sh7710voipgw_defconfig
+xtensa                generic_kc705_defconfig
+parisc                           alldefconfig
+sh                             espt_defconfig
+powerpc                       holly_defconfig
+arm                        neponset_defconfig
+mips                           ip28_defconfig
+arm                       aspeed_g5_defconfig
+powerpc                        icon_defconfig
+powerpc                       ebony_defconfig
+mips                           mtx1_defconfig
+arm                          simpad_defconfig
+nds32                             allnoconfig
+sh                          r7780mp_defconfig
+mips                     cu1000-neo_defconfig
+um                                  defconfig
+mips                      maltasmvp_defconfig
+mips                  cavium_octeon_defconfig
+sh                          rsk7269_defconfig
+m68k                       m5249evb_defconfig
+sh                           sh2007_defconfig
+sh                          urquell_defconfig
+arm                            mmp2_defconfig
+powerpc                      katmai_defconfig
+x86_64                              defconfig
+mips                     cu1830-neo_defconfig
+xtensa                    xip_kc705_defconfig
+m68k                       m5208evb_defconfig
+xtensa                          iss_defconfig
+arm                          pxa910_defconfig
+x86_64                            allnoconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a006-20210728
+x86_64               randconfig-a003-20210728
+x86_64               randconfig-a001-20210728
+x86_64               randconfig-a004-20210728
+x86_64               randconfig-a005-20210728
+x86_64               randconfig-a002-20210728
+i386                 randconfig-a005-20210728
+i386                 randconfig-a003-20210728
+i386                 randconfig-a004-20210728
+i386                 randconfig-a002-20210728
+i386                 randconfig-a001-20210728
+i386                 randconfig-a006-20210728
+x86_64               randconfig-a016-20210729
+x86_64               randconfig-a011-20210729
+x86_64               randconfig-a014-20210729
+x86_64               randconfig-a013-20210729
+x86_64               randconfig-a012-20210729
+x86_64               randconfig-a015-20210729
+i386                 randconfig-a016-20210728
+i386                 randconfig-a012-20210728
+i386                 randconfig-a013-20210728
+i386                 randconfig-a014-20210728
+i386                 randconfig-a011-20210728
+i386                 randconfig-a015-20210728
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-c001-20210728
+x86_64               randconfig-a016-20210728
+x86_64               randconfig-a011-20210728
+x86_64               randconfig-a014-20210728
+x86_64               randconfig-a013-20210728
+x86_64               randconfig-a012-20210728
+x86_64               randconfig-a015-20210728
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
