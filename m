@@ -2,182 +2,198 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3DDC4320A
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Jul 2021 15:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4CC1C4338F
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Jul 2021 15:27:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2BEAA60F43
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Jul 2021 15:26:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B441F60F22
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Jul 2021 15:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237854AbhG2P0i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Jul 2021 11:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237839AbhG2P0i (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Jul 2021 11:26:38 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708B5C061765
-        for <linux-serial@vger.kernel.org>; Thu, 29 Jul 2021 08:26:34 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id m10-20020a17090a34cab0290176b52c60ddso9840223pjf.4
-        for <linux-serial@vger.kernel.org>; Thu, 29 Jul 2021 08:26:34 -0700 (PDT)
+        id S237314AbhG2P1K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Jul 2021 11:27:10 -0400
+Received: from mail-eopbgr20071.outbound.protection.outlook.com ([40.107.2.71]:60548
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237531AbhG2P1J (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 29 Jul 2021 11:27:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QS1VYYIERXD87iteIxkNE3Wof0s/+Yhn5diKQauFzqlZMcnG/vC4P+QdORly6Ya3VHhrsfupQbWez//lCpufb1le5rLWyXBr5UqgYtDAW+5sd3gh01dO3uyTMd4jwfYajiWro1Me+UKYwdzGWD9DkHSxERA151zJ9JNSn5ErZKQH/PqVA4TGTi0shimDxfyDRUZ7bBAtJJ51ayl1KcsM0XiMokKXTH+aYcuufF1lz2nwH6Q5AcXnRjB611ZXVooMv3y6GpmZs5lzTA0U20HfxyAqPkDyQ/gvPvh0CZhhdFI4WC7bUz0urcgwCfBACPlU/6qgOK0DdAabQ/CF934QNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hlCT3T8pLsHS2hYAYHYVSN2V50lGRn/HyCikpyjjFZA=;
+ b=f8v+nhtNwOB6xyPPUC4NsFO42kH7967J1NpsQEclWbVMSh+MNKh5S/0O4LSURd8Tq1KqUGsJALYCI1K3feJeMApVOO1BNFuxTcmX6NDRf1zkzaNbqwM+Ug/eFbZDaRQKU9c1+DBqQ37HZeQpgD8dG1SJPyROentyRqbRMqa5LDiNwG54PXvFTEGSeFhJ+MTr/lrnva68uxtCoiydyqoWJB379H1I0Lcj8HZ39WdRMetpQdOyFqnxdIZ2zJ+wHXrIIhBbe6plAXGsn1tGXqv6OligJWk6yKZ4AyUxsbVl9eEHNr43L0+mUA3k5pjw9ppqwm/o/YlUofQG6A0hDP2IeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CKAnZUzlZMwAPvgZHfW5VSNzran0EoCWpWRP+oBSRf4=;
-        b=mPFvlCGBu8ySTQhxcgIqG5Y15Hytyy4uz7oNzS6sm5waHpDmplDdxO/LQQffaZTHyy
-         6s9OmcTIg8xcWtKe6V0zG/eg6zaBsjp0TcqKfgYqH1pIJrGFUoXjYmxV0G54CpDaYXpe
-         m53s/8ctNRjhOy8gp+hYx+KqTQeyp4odJivNOayp3Tripm8kh6Wk7ah/Fp4bvNP22iI8
-         3KlflpL4BmTSBQCDb2KYOzC0QXI6EHzcJwGP7jyXiYtHZPqrP1YcZrLbiDFxt7ykhakq
-         c4yxD6W6VTfAnykjN23r1h5F9ffAlNS4HS/NewFv19ovvG98fn9AUzsJsZuLFT2nuQ0l
-         OSzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CKAnZUzlZMwAPvgZHfW5VSNzran0EoCWpWRP+oBSRf4=;
-        b=jUuhgbOiqoLrf28DnQAW28nW9vwjEpPwbfvtQYQcMwZ4DO9EkRn89szBsHc1M3aywK
-         snrxGm5DBwpcMoWkDnkekhc6mKWoygTTK5akyXsXAHZJD/v1+x5ZIfd4FVikEQO70LAQ
-         y+cCAliR1C7dSCgmx+wqpBRO5XuwYadT0I0jjjt/wvVihe+oCa499mRIiT+apW7+heZ6
-         y01QBUWs0rxDV7gYLpA+NP6Eqo2a3MCFFjBsw1l2yqvuQsGvm6LX6mji5z81/80QqLrT
-         k6xIsvjVJh2tdvsYVEm/P3m2J4p1xlKcP/ajjqcK+vj2lS0RF8woiOgHDfPqfFp3vvRH
-         delA==
-X-Gm-Message-State: AOAM533++cjGqrX0yg40+9a0yuDQv/mTWnMfjx705mi858KKBR685tDZ
-        zQpHI0W2hsJBAEzxeC3YpHD8ahTwSvYb/Fb2IQs=
-X-Google-Smtp-Source: ABdhPJw0kSq7enIB1OBE2SzyLHVgG3M8ZY1IwIbIfjMmweJeU/cJAhJX84NHMKcoxLO1RY+XhcLmTz4fykxeBB2BhCw=
-X-Received: by 2002:a17:90a:7146:: with SMTP id g6mr5926757pjs.228.1627572393943;
- Thu, 29 Jul 2021 08:26:33 -0700 (PDT)
+ d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hlCT3T8pLsHS2hYAYHYVSN2V50lGRn/HyCikpyjjFZA=;
+ b=OSFwqjkrkPb7noYSQbDewBJXQ8JEzRz90JDTmUaEwZ1Zf4OPI5vTkGb3FXuirB41GlmqOS3Cw7t8WaO4Vj4MPAog5Pq4ap/3/4ov8gRLpsfPiQpLfRE/FKotFC8FtQWtYKQnn8jMyVsHU9A011jND2gMk63RAlee31HjQ0Nkr/w=
+Authentication-Results: xilinx.com; dkim=none (message not signed)
+ header.d=none;xilinx.com; dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by DBAPR03MB6408.eurprd03.prod.outlook.com (2603:10a6:10:194::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.31; Thu, 29 Jul
+ 2021 15:27:03 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::dc6c:815b:2062:d1f1]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::dc6c:815b:2062:d1f1%7]) with mapi id 15.20.4373.018; Thu, 29 Jul 2021
+ 15:27:03 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH 5/5] tty: serial: uartlite: Prevent changing fixed
+ parameters
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Peter Korsgaard <peter.korsgaard@barco.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        linux-serial@vger.kernel.org,
+        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
+        Michal Simek <michal.simek@xilinx.com>
+References: <20210723223152.648326-1-sean.anderson@seco.com>
+ <20210723223152.648326-6-sean.anderson@seco.com> <YQLC4L2Z3T4SuryE@kroah.com>
+Message-ID: <d46e0a4a-d9d4-190f-b41b-9c2b9e4748ae@seco.com>
+Date:   Thu, 29 Jul 2021 11:26:59 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <YQLC4L2Z3T4SuryE@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0285.namprd13.prod.outlook.com
+ (2603:10b6:208:2bc::20) To DB7PR03MB4523.eurprd03.prod.outlook.com
+ (2603:10a6:10:19::27)
 MIME-Version: 1.0
-References: <20210729043306.18528-1-mario.kleiner.de@gmail.com> <283da956-e020-209e-052b-bfdd499ccca1@oth-regensburg.de>
-In-Reply-To: <283da956-e020-209e-052b-bfdd499ccca1@oth-regensburg.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 29 Jul 2021 18:25:54 +0300
-Message-ID: <CAHp75VcX3_0G=Ks4PZxVqTP6Ztzi7yUHAHSENOs9eNXj0=MwFQ@mail.gmail.com>
-Subject: Re: [EXT] [PATCH] serial: 8250_pci: Avoid irq sharing for MSI(-X) interrupts.
-To:     Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
-Cc:     Mario Kleiner <mario.kleiner.de@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [172.27.1.65] (50.195.82.171) by BL1PR13CA0285.namprd13.prod.outlook.com (2603:10b6:208:2bc::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.10 via Frontend Transport; Thu, 29 Jul 2021 15:27:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3da0ef14-b7bf-47cc-225e-08d952a550db
+X-MS-TrafficTypeDiagnostic: DBAPR03MB6408:
+X-Microsoft-Antispam-PRVS: <DBAPR03MB6408B825AF30A5BA94B3250296EB9@DBAPR03MB6408.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: OAw3SlmVprO50KYLVLVIPDbqr21gvKZD9p3CB87T0SNVxFiV+p9LuCYaf8CY8LHGHDH5AzlpeVbMahKvnXO3Q9arEiI45gFHBYPmBw64bknshrD1YVe1ypTGXm+r1ff4hn/A2tcWaqpf+e36L5/XzSmAMwkzj330YvbKp2qNaWVOC1ajoyDvTDczI3wWD0m7L9TJW24OpuT757S0xlmC1baxXkUgdmgSUajreTtmYoetK+mNMUm9Am3bB0Zz0/y7AR/4AhrbUlGVFH2LlbsMcsAyTBBoyzlDplpAj4Lb7imi3qhwnb5NlkEZVDYxjfNbhQj1saz6T+yhAWo9egxKouZYJbMfeHhuTsOdRbupcgwaBJB+viy+X0nsFg2XCjl7Q7HR3L9d5Ikf71eVDRCPBFeQYdpXf6xQvtkWd1oAbd4Tybq3m0HlQgSQ1tSMkryEl9YnxXGLaZzSjJ++MVZZFMm+qisyblL03L7C8drjTHr2E5iLZ0onIJ1j+h7HkKucgiAXUpWL76YKaphA/x5TURs4hQ759wOAS1SaiKlFCIop0kLTKVuzTrxVmqO3YBTxVka6E6n/41UGzED0i43JdAJRVD+aEYkoZbRn8ux8wSyzV1307Dr7L7DqSW5di/sxGjNQbvg5M3hHyLW3faC8DU+AEStVjT5clqMjbaCuUVnUOp1XCQlDEf8Jgyl8C6gsbSTjG2RVOA4oOWU81ZR21rHc5trwtROqh68QTQn66tZggF1RFfmxhFObhwAAb1zL4fRC/P38tgg4Sia30AR+fw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(396003)(39840400004)(376002)(346002)(53546011)(5660300002)(66556008)(26005)(83380400001)(31696002)(186003)(86362001)(66946007)(956004)(6666004)(66476007)(36756003)(38350700002)(2616005)(8676002)(52116002)(6916009)(6486002)(44832011)(31686004)(4326008)(38100700002)(8936002)(16576012)(478600001)(2906002)(54906003)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Wlk5N0lBZitneHBVWHh1YzI3c2cxR29XVDBsYWNHQnl4MGlSTHZTUEFMaXUr?=
+ =?utf-8?B?YjZQaC82UkoyU0tib3QxYlhzdFM5QVhzYmV4MFQ2aWE2S01TbHAvWm1qKzNN?=
+ =?utf-8?B?MGlPTWgrWGxrNXJCZktEMlYrWTJ1V0hpL1kya1dPdXJlMS9qd1YxSGlhMVVB?=
+ =?utf-8?B?TEFNMUsxNVlNbngrTFNOTC95Wm5zZmFSZUx5QUhUY3JBRndjTUlSaDlVOGY3?=
+ =?utf-8?B?anlXUDdzOWZIc0pTOTVhL3BwZEQ3UENWWEFGNzJrV2tNVFE0UWQ5MUtDcEM5?=
+ =?utf-8?B?UXRiMEFTS3ZUNGYrVTlzU05PaVpCRUlhMkptMWN5UmlxNVI4c0wrYkM3UnVr?=
+ =?utf-8?B?QkhFMThUeWZXY2JQQVdHek55enpFWWJDZWJGWThIdmlkOWJEMzJ5MVU4dUFk?=
+ =?utf-8?B?TXA2c21NUmg0UkZjUnpDNFg5YU1VbS9tUTMrUCtvRDBuUlc0L28zYXVMZVZ4?=
+ =?utf-8?B?OTB5L0xrUG5namN0T1lYWmtoNDRRNzZOM0ZvWk9ud3dTaEdSWEVDYW5PWFZq?=
+ =?utf-8?B?R0xBMUp2Ti8xTnF0WGRLcnVEeENjME9OU0Z6UVF6ZWxlbzdKcnk0ZUQ2Yis3?=
+ =?utf-8?B?a2ZNSE83Nm1PM3l1WENoc3dCeEJjeExVR2w0bi8zckJyZlE1TkZuRjJqZHN0?=
+ =?utf-8?B?QjdVdit3K1JxRWVkVnVsdk9sdDcxaGNFZkFxUlZCbFF2VU0rcmZvOWhqcFFs?=
+ =?utf-8?B?MFc0SzZrZDViRUp2YktycFhhY1dNUUdKNHBLUDlZVGE4M29BbE5IRzFUaU55?=
+ =?utf-8?B?VHE3U1JKaUxKbHFMS3BCTmNWYlA0a21rbVEyU2ROOElhNUl4QmJWcFN4enFU?=
+ =?utf-8?B?N0xLN3l3THBVQ25uTFdTTllmTmpIbmdSTm1NckN3aTVobjZiL2VXNVFERWxM?=
+ =?utf-8?B?NUc1S0l3U08xMHF0U0dwT1M4SjAvUGxyRW5IMG5RSUkzV0x3dnpHZ1Q5d0ZN?=
+ =?utf-8?B?ZzdSdmxwSFBvNkxIamc4L21LNFhoei9scm9qTEZNMzc2NlhvUmFIVEpYbzls?=
+ =?utf-8?B?eHA0eFBvTzVlVS9FcVhTeWY3MURna3NpNE5FUkFiN2FQSjI2Tk1KSUJEbDZK?=
+ =?utf-8?B?L2dwRUFZeGM0Ym1aU0VaUUdJa0V2dTRBMTl5bWdlZmZ4NVdsTFN5MGlZcXlt?=
+ =?utf-8?B?aUpDOCs4bU91c3FoQVNMa3llajhkbUlaRmthd0RBVitwYlNyTlRGR2VFYmdG?=
+ =?utf-8?B?eG92VlVGWUErbm1BeC9LQkMvZVVYemhLZ0FHTjhGbjdIZUU5QUhRYm5UeEU0?=
+ =?utf-8?B?UEYxdGRCcnM4cXVReWFTby96QWlmdlZQa1h2b1FyQVkzQURFRCtKVDRzbzhV?=
+ =?utf-8?B?SXFSTHFiN1htRzZaME0zYWp2M3BaeHMwd3BNTkxNV2pPZzdoL3JwaHl3Wks4?=
+ =?utf-8?B?MWw4amFPQm1IcXVwaUVWa0xBVldab0UrcFdMdVdURjJWb3h6UDArS1RVS0ZF?=
+ =?utf-8?B?QXFVMUxRK1RBejAwYmMzbVJWUzNFczd1R3I0Y3JTRy80S2hnVmhmTm5zZmRp?=
+ =?utf-8?B?aFZHaWhWbFRhUW1xU2xoM21GTGltZGxGeXpPMTVEaWI2SWpZb2JGdkdLUXBa?=
+ =?utf-8?B?Qk1tUWppK0Rjb09zK2dWRHY2K0R5di90TWJQQlMvNzFZY0M4SVZCWGQ1MThl?=
+ =?utf-8?B?K01kc3JIdjhsc2pZWDRrcnZFeVl1UmIrUDNPbEJSM0ZjUW1xekpEMUJQS28v?=
+ =?utf-8?B?RXZDd3gySHFOeGdtSG5UY1VTMVZHRmVIamY5US9DZTJ0MmQwa2RPZFhjb0hT?=
+ =?utf-8?Q?jHZsX9SOOSesOXYG4jgot5hpRMcDl6tRxjVaYEN?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3da0ef14-b7bf-47cc-225e-08d952a550db
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2021 15:27:03.0065
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4+nrDHYM1xeJ1AIophJVNMB+qpgpenTAj9bkiMS9lo4Ck6mPOHKrbj2rGY2aV9ALHblxbyS/FJUfU/rFo4iEtA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR03MB6408
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 11:37 AM Ralf Ramsauer
-<ralf.ramsauer@oth-regensburg.de> wrote:
-> On 29/07/2021 06:33, Mario Kleiner wrote:
-> > This attempts to fix a bug found with a serial port card which uses
-> > an MCS9922 chip, one of the 4 models for which MSI-X interrupts are
-> > currently supported. I don't possess such a card, and i'm not
-> > experienced with the serial subsystem, so this patch is based on what
-> > i think i found as a likely reason for failure, based on walking the
-> > user who actually owns the card through some diagnostic.
+
+
+On 7/29/21 11:01 AM, Greg Kroah-Hartman wrote:
+> On Fri, Jul 23, 2021 at 06:31:51PM -0400, Sean Anderson wrote:
+>> This device does not support changing baud, parity, data bits, stop
+>> bits, or detecting breaks. Disable "changing" these settings to prevent
+>> their termios from diverging from the actual state of the uart. To inform
+>> users of these limitations, warn if the new termios change these
+>> parameters. We only do this once to avoid spamming the log. These
+>> warnings are inspired by those in the sifive driver.
+>>
+>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>> ---
+>>
+>>  drivers/tty/serial/uartlite.c | 52 +++++++++++++++++++++++++++++++++--
+>>  1 file changed, 49 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+>> index 39c17ab206ca..0aed70039f46 100644
+>> --- a/drivers/tty/serial/uartlite.c
+>> +++ b/drivers/tty/serial/uartlite.c
+>> @@ -314,7 +314,54 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
+>>  			      struct ktermios *old)
+>>  {
+>>  	unsigned long flags;
+>> -	unsigned int baud;
+>> +	struct uartlite_data *pdata = port->private_data;
+>> +	tcflag_t old_cflag;
+>> +
+>> +	if (termios->c_iflag & BRKINT)
+>> +		dev_err_once(port->dev, "BREAK detection not supported\n");
+>> +	termios->c_iflag &= ~BRKINT;
+>> +
+>> +	if (termios->c_cflag & CSTOPB)
+>> +		dev_err_once(port->dev, "only one stop bit supported\n");
+>> +	termios->c_cflag &= ~CSTOPB;
+>> +
+>> +	old_cflag = termios->c_cflag;
+>> +	termios->c_cflag &= ~(PARENB | PARODD);
+>> +	if (pdata->parity == 'e')
+>> +		termios->c_cflag |= PARENB;
+>> +	else if (pdata->parity == 'o')
+>> +		termios->c_cflag |= PARENB | PARODD;
+>> +
+>> +	if (termios->c_cflag != old_cflag)
+>> +		dev_err_once(port->dev, "only '%c' parity supported\n",
+>> +			     pdata->parity);
 >
-> As there's currently some (stuck) discussion on how to generally handle
-> MSI capable serial cards, and this is issue related to some degree, let
-> me Cc Jiri and Andy.
+> Through all of this, you are warning that nothing is supported, yet you
+> are continuing on as if all of this worked just fine.
 
-Thanks, Ralf!
+We don't. The idea is that we see if (e.g.) CSIZE is something the
+hardware can't produce, warn about it (once), and then set it to what we
+can support. That way the user can (programmatically) detect if this
+device can support their use-case. So e.g. if you you have a serial bus
+or something, the driver can find out that (e.g.) the UART has the wrong
+CSIZE, and it can fail to probe. Before this series, it would continue
+along as if nothing was wrong, and the user then has to debug why their
+device does not work as expected.
 
-> > The user who reported the problem finds the following in his dmesg
-> > output for the relevant ttyS4 and ttyS5:
-> >
-> > [    0.580425] serial 0000:02:00.0: enabling device (0000 -> 0003)
-> > [    0.601448] 0000:02:00.0: ttyS4 at I/O 0x3010 (irq = 125, base_baud = 115200) is a ST16650V2
-> > [    0.603089] serial 0000:02:00.1: enabling device (0000 -> 0003)
-> > [    0.624119] 0000:02:00.1: ttyS5 at I/O 0x3000 (irq = 126, base_baud = 115200) is a ST16650V2
-> > ...
-> > [    6.323784] genirq: Flags mismatch irq 128. 00000080 (ttyS5) vs. 00000000 (xhci_hcd)
-> > [    6.324128] genirq: Flags mismatch irq 128. 00000080 (ttyS5) vs. 00000000 (xhci_hcd)
-> > ...
-> >
-> > Output of setserial -a:
-> >
-> > /dev/ttyS4, Line 4, UART: 16650V2, Port: 0x3010, IRQ: 127
-> >       Baud_base: 115200, close_delay: 50, divisor: 0
-> >       closing_wait: 3000
-> >       Flags: spd_normal skip_test
-> >
-> > This suggests to me that the serial driver wants to register and share a
-> > MSI/MSI-X irq 128 with the xhci_hcd driver, whereas the xhci driver does
-> > not want to share the irq, as flags 0x00000080 (== IRQF_SHARED) from the
-> > serial port driver means to share the irq, and this mismatch ends in some
-> > failed irq init?
-> >
-> > With this setup, data reception works very unreliable, with dropped data,
-> > already at a transmission rate of only a 16 Bytes chunk every 1/120th of
-> > a second, ie. 1920 Bytes/sec, presumably due to rx fifo overflow due to
-> > mishandled or not used at all rx irq's?
-> >
-> > See full discussion thread with attempted diagnosis at:
-> >
-> > https://psychtoolbox.discourse.group/t/issues-with-iscan-serial-port-recording/3886
-> >
-> > Disabling the use of MSI interrupts for the serial port pci card did
-> > fix the reliability problems. The user executed the following sequence
-> > of commands to achieve this:
-> >
-> > # Disable PCI serial port driver, shut down card:
-> > echo 0000:02:00.0 | sudo tee /sys/bus/pci/drivers/serial/unbind
-> > echo 0000:02:00.1 | sudo tee /sys/bus/pci/drivers/serial/unbind
-> >
-> > # Disallow use of MSI/MSI-X interrupts on pci serial port card:
-> > echo 0 | sudo tee /sys/bus/pci/devices/0000:02:00.0/msi_bus
-> > echo 0 | sudo tee /sys/bus/pci/devices/0000:02:00.1/msi_bus
-> >
-> > # Restart driver, reinitialize card, hopefully without MSI irqs now:
-> > echo 0000:02:00.0 | sudo tee /sys/bus/pci/drivers/serial/bind
-> > echo 0000:02:00.1 | sudo tee /sys/bus/pci/drivers/serial/bind
-> >
-> > This resulted in the following log output:
-> >
-> > [   82.179021] pci 0000:02:00.0: MSI/MSI-X disallowed for future drivers
-> > [   87.003031] pci 0000:02:00.1: MSI/MSI-X disallowed for future drivers
-> > [   98.537010] 0000:02:00.0: ttyS4 at I/O 0x3010 (irq = 17, base_baud = 115200) is a ST16650V2
-> > [  103.648124] 0000:02:00.1: ttyS5 at I/O 0x3000 (irq = 18, base_baud = 115200) is a ST16650V2
-> >
-> > This patch attempts to fix the problem by disabling irq sharing when
-> > using MSI irq's. Note that all i know for sure is that disabling MSI
+--Sean
 
-In general the shared MSI interrupts are weird things that can be done
-with IRQs.
-
-> > irq's fixed the problem for the user, so this patch could be wrong and
-> > is untested. Please review with caution, keeping this in mind.
-
-I think it's a good idea in general. I have no objections.
-
-> > Fixes: 8428413b1d14 ("serial: 8250_pci: Implement MSI(-X) support")
-> > Signed-off-by: Mario Kleiner <mario.kleiner.de@gmail.com>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
-> > ---
-> >  drivers/tty/serial/8250/8250_pci.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> > index 780cc99732b6..35fd5c4e831a 100644
-> > --- a/drivers/tty/serial/8250/8250_pci.c
-> > +++ b/drivers/tty/serial/8250/8250_pci.c
-> > @@ -3964,6 +3964,7 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
-> >               if (pci_match_id(pci_use_msi, dev)) {
-> >                       dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
-> >                       pci_set_master(dev);
-> > +                     uart.port.flags &= ~UPF_SHARE_IRQ;
-> >                       rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
-> >               } else {
-> >                       dev_dbg(&dev->dev, "Using legacy interrupts\n");
-> >
-
-
-
---
-With Best Regards,
-Andy Shevchenko
+>
+> That feels odd, why is this needed at all?  If you really do not support
+> any changes here, why even fake it?
+>
+> thanks,
+>
+> greg k-h
+>
