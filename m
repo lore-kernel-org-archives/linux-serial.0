@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70EF3C4338F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD488C4320A
 	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 03:14:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4AB6460ED4
+	by mail.kernel.org (Postfix) with ESMTP id 992EF60ED4
 	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 03:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230196AbhG3DOw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S229991AbhG3DOw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 29 Jul 2021 23:14:52 -0400
-Received: from mga07.intel.com ([134.134.136.100]:30837 "EHLO mga07.intel.com"
+Received: from mga05.intel.com ([192.55.52.43]:15911 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229991AbhG3DOw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S229971AbhG3DOw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Thu, 29 Jul 2021 23:14:52 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10060"; a="276797184"
+X-IronPort-AV: E=McAfee;i="6200,9189,10060"; a="298603590"
 X-IronPort-AV: E=Sophos;i="5.84,280,1620716400"; 
-   d="scan'208";a="276797184"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2021 20:14:47 -0700
+   d="scan'208";a="298603590"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2021 20:14:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,280,1620716400"; 
-   d="scan'208";a="476767258"
+   d="scan'208";a="438849388"
 Received: from lkp-server01.sh.intel.com (HELO d053b881505b) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Jul 2021 20:14:46 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 29 Jul 2021 20:14:46 -0700
 Received: from kbuild by d053b881505b with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1m9Iyz-0009YW-SD; Fri, 30 Jul 2021 03:14:45 +0000
-Date:   Fri, 30 Jul 2021 11:14:42 +0800
+        id 1m9Iyz-0009Ya-VD; Fri, 30 Jul 2021 03:14:45 +0000
+Date:   Fri, 30 Jul 2021 11:14:39 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- 06e91df16f3e1ca1a1886968fb22d4258f3b6b6f
-Message-ID: <61036ea2.VsreKIz2lXGVI1Hf%lkp@intel.com>
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 6c44eb5905f6cc731b36c4170f703f81e477f039
+Message-ID: <61036e9f.Zi/Tcld59eRg9p6h%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -47,8 +47,8 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: 06e91df16f3e1ca1a1886968fb22d4258f3b6b6f  tty: serial: fsl_lpuart: fix the wrong return value in lpuart32_get_mctrl
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 6c44eb5905f6cc731b36c4170f703f81e477f039  serial: omap: Only allow if 8250_omap is not selected
 
 elapsed time: 721m
 
