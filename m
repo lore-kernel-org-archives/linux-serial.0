@@ -2,137 +2,138 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F03B2C4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 05:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D23C41537
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 06:01:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CC5F260F46
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 05:25:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 90B6561040
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 06:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbhG3FZN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Jul 2021 01:25:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36122 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230108AbhG3FZM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Jul 2021 01:25:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B10D460E76;
-        Fri, 30 Jul 2021 05:25:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1627622707;
-        bh=ESVBrsm80myU8Sk+cQfy5BsOrCGZGHO54b2AzvwiXnU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YFO8hUhm8jvQf9NQ9T99JGWgOMFYceWdyhAFQz9hlUV7VnikT15uLI8MhouHYFBwt
-         0NAH4rvEekcYQ9SVVWEvEcfzjZlSw8glgbL7yzWA1ehzlEv3beSz0vlKiecpBevVTQ
-         OC7KeXbIyusly5xCm0zuoshl5kjQkuPNQboon7sU=
-Date:   Fri, 30 Jul 2021 07:25:04 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Peter Korsgaard <peter.korsgaard@barco.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        linux-serial@vger.kernel.org,
-        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 5/5] tty: serial: uartlite: Prevent changing fixed
- parameters
-Message-ID: <YQONMMetaYI4aLMJ@kroah.com>
-References: <20210723223152.648326-1-sean.anderson@seco.com>
- <20210723223152.648326-6-sean.anderson@seco.com>
- <YQLC4L2Z3T4SuryE@kroah.com>
- <d46e0a4a-d9d4-190f-b41b-9c2b9e4748ae@seco.com>
- <YQLKB5jqx0/eFLR9@kroah.com>
- <79157167-335c-b2b3-8104-e3272226b369@seco.com>
+        id S237274AbhG3GBZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Jul 2021 02:01:25 -0400
+Received: from mailgw01.mediatek.com ([60.244.123.138]:59332 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229999AbhG3GBY (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 30 Jul 2021 02:01:24 -0400
+X-UUID: 133bdf798d1d4bdea61193d3e62c6a14-20210730
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=qN+SSS+RDr3jspXwlX0b2sqOdjALlK8YN/RxXhX+HtU=;
+        b=F5tJrVikPsZsZt+aDmcnRYAKw2SUgurm3iZQ/Ieh0koIjw7ItGOeRbvggTjlu3ldloprb/G0RDMBzZYbCyQaE9B9fHhprZXGT5f/TETvr5aiCxa2dXJyHaQOR6lEiE1aclzzAn6d38siifOGDhX/9wJb4gSnpOFigtdV6cT7bb0=;
+X-UUID: 133bdf798d1d4bdea61193d3e62c6a14-20210730
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <sam.shih@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 2073826091; Fri, 30 Jul 2021 14:01:16 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 30 Jul
+ 2021 14:01:14 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 30 Jul 2021 14:01:14 +0800
+Message-ID: <083a0e8fdd07c0f940285dce2dc26cb0f5e798a6.camel@mediatek.com>
+Subject: Re: [PATCH 01/12] dt-bindings: clock: mediatek: document clk
+ bindings for mediatek mt7986 SoC
+From:   Sam Shih <sam.shih@mediatek.com>
+To:     Chen-Yu Tsai <wenst@chromium.org>
+CC:     Rob Herring <robh+dt@kernel.org>, Sean Wang <sean.wang@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        "Seiya Wang" <seiya.wang@mediatek.com>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>, <linux-gpio@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-crypto@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Ryder Lee <Ryder.Lee@mediatek.com>
+Date:   Fri, 30 Jul 2021 14:01:14 +0800
+In-Reply-To: <CAGXv+5GeEBAkXKfA=S7XGOLYtCRihP5ov6kSiw+eevPAi74GAQ@mail.gmail.com>
+References: <20210726071439.14248-1-sam.shih@mediatek.com>
+         <20210726071439.14248-2-sam.shih@mediatek.com>
+         <CAGXv+5GeEBAkXKfA=S7XGOLYtCRihP5ov6kSiw+eevPAi74GAQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <79157167-335c-b2b3-8104-e3272226b369@seco.com>
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 11:43:08AM -0400, Sean Anderson wrote:
-> 
-> 
-> On 7/29/21 11:32 AM, Greg Kroah-Hartman wrote:
-> > On Thu, Jul 29, 2021 at 11:26:59AM -0400, Sean Anderson wrote:
-> >>
-> >>
-> >> On 7/29/21 11:01 AM, Greg Kroah-Hartman wrote:
-> >> > On Fri, Jul 23, 2021 at 06:31:51PM -0400, Sean Anderson wrote:
-> >> > > This device does not support changing baud, parity, data bits, stop
-> >> > > bits, or detecting breaks. Disable "changing" these settings to prevent
-> >> > > their termios from diverging from the actual state of the uart. To inform
-> >> > > users of these limitations, warn if the new termios change these
-> >> > > parameters. We only do this once to avoid spamming the log. These
-> >> > > warnings are inspired by those in the sifive driver.
-> >> > >
-> >> > > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> >> > > ---
-> >> > >
-> >> > >  drivers/tty/serial/uartlite.c | 52 +++++++++++++++++++++++++++++++++--
-> >> > >  1 file changed, 49 insertions(+), 3 deletions(-)
-> >> > >
-> >> > > diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-> >> > > index 39c17ab206ca..0aed70039f46 100644
-> >> > > --- a/drivers/tty/serial/uartlite.c
-> >> > > +++ b/drivers/tty/serial/uartlite.c
-> >> > > @@ -314,7 +314,54 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
-> >> > >  			      struct ktermios *old)
-> >> > >  {
-> >> > >  	unsigned long flags;
-> >> > > -	unsigned int baud;
-> >> > > +	struct uartlite_data *pdata = port->private_data;
-> >> > > +	tcflag_t old_cflag;
-> >> > > +
-> >> > > +	if (termios->c_iflag & BRKINT)
-> >> > > +		dev_err_once(port->dev, "BREAK detection not supported\n");
-> >> > > +	termios->c_iflag &= ~BRKINT;
-> >> > > +
-> >> > > +	if (termios->c_cflag & CSTOPB)
-> >> > > +		dev_err_once(port->dev, "only one stop bit supported\n");
-> >> > > +	termios->c_cflag &= ~CSTOPB;
-> >> > > +
-> >> > > +	old_cflag = termios->c_cflag;
-> >> > > +	termios->c_cflag &= ~(PARENB | PARODD);
-> >> > > +	if (pdata->parity == 'e')
-> >> > > +		termios->c_cflag |= PARENB;
-> >> > > +	else if (pdata->parity == 'o')
-> >> > > +		termios->c_cflag |= PARENB | PARODD;
-> >> > > +
-> >> > > +	if (termios->c_cflag != old_cflag)
-> >> > > +		dev_err_once(port->dev, "only '%c' parity supported\n",
-> >> > > +			     pdata->parity);
-> >> >
-> >> > Through all of this, you are warning that nothing is supported, yet you
-> >> > are continuing on as if all of this worked just fine.
-> >>
-> >> We don't. The idea is that we see if (e.g.) CSIZE is something the
-> >> hardware can't produce, warn about it (once), and then set it to what we
-> >> can support.
-> >
-> > So you are ignoring what the user wanted, and doing whatever you wanted.
-> >
-> > As you can only support one setting, why even care?  Just set it to what
-> > you want and ignore userspace's requests.
-> 
-> That is exactly what we are doing. We set it to what we can support and
-> ignore what userspace requested.
+SGksDQoNCk9uIE1vbiwgMjAyMS0wNy0yNiBhdCAxNzoyMCArMDgwMCwgQ2hlbi1ZdSBUc2FpIHdy
+b3RlOg0KPiBGdXJ0aGVybW9yZSwgYmFzZWQgb24gdGhlIGRyaXZlciBwYXRjaCBhbmQgdGhlIGZh
+Y3QgdGhhdCB0aGV5IHNoYXJlDQo+IHRoZQ0KPiBzYW1lIGNvbXBhdGlibGUgc3RyaW5nLCBpdCBz
+ZWVtcyB5b3Ugc2hvdWxkbid0IG5lZWQgdG8gaGF2ZSB0d28NCj4gY29tcGF0aWJsZQ0KPiBzdHJp
+bmdzIGZvciB0d28gaWRlbnRpY2FsIGhhcmR3YXJlIGJsb2Nrcy4gVGhlIG5lZWQgZm9yIHNlcGFy
+YXRlDQo+IGVudHJpZXMNCj4gdG8gaGF2ZSBkaWZmZXJlbnQgY2xvY2sgbmFtZXMgaXMgYW4gaW1w
+bGVtZW50YXRpb24gZGV0YWlsLiBQbGVhc2UNCj4gY29uc2lkZXINCj4gdXNpbmcgYW5kIHN1cHBv
+cnRpbmcgY2xvY2stb3V0cHV0LW5hbWVzLg0KPiANCj4gQWxzbywgcGxlYXNlIGNoZWNrIG91dCB0
+aGUgTVQ4MTk1IGNsb2NrIGRyaXZlciBzZXJpZXMgWzFdLiBJJ20NCj4gZ3Vlc3NpbmcNCj4gYSBs
+b3Qgb2YgdGhlIGNvbW1lbnRzIGFwcGx5IHRvIHRoaXMgb25lIGFzIHdlbGwuDQo+IA0KPiBSZWdh
+cmRzDQo+IENoZW5ZdQ0KPiANCj4gWzFdIA0KPiBodHRwczovL3VybGRlZmVuc2UuY29tL3YzL19f
+aHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtbWVkaWF0ZWsvMjAyMTA2MTYyMjQ3NDMuNTEw
+OS0xLWNodW4tamllLmNoZW5AbWVkaWF0ZWsuY29tL1QvKnRfXztJdyEhQ1RSTktBOXdNZzBBUmJ3
+ITI5cGI0VEppR0hMdkxiWUpnREIyRGhmOE1wdzVWVTh6Vi1XM05yTWFuX1JQUXJ0V1QyRWRSVHl5
+aldwdTBuWkUkDQo+ICANCj4gDQoNCkkgaGF2ZSBvcmdhbml6ZWQgeW91ciBjb21tZW50cyBpbiAi
+TWVkaWF0ZWsgTVQ4MTk1IGNsb2NrIHN1cHBvcnQiDQpzZXJpZXMgaW50byB0aGUgZm9sbG93aW5n
+IGxpc3QsIHJlcGx5IHRvIHlvdXIgaGVyZToNCg0KPiBkdC1iaW5kaW5nOiBNb3ZlIHRoZSBub3Qt
+dG8tYmUtZXhwb3NlZCBjbG9jayB0byBkcml2ZXIgZGlyZWN0b3J5IG9yDQo+IHNpbXBseSBsZWZ0
+IG91dA0KT2theSwgdGhhbmtzIGZvciB5b3VyIGNvbW1lbnQsIEkgd2lsbCB1cGRhdGUgdGhpcyBp
+biB0aGUgbmV4dCBwYXRjaCBzZXQNCg0KPiBkZXNjcmliZSBzb21lIG9mIHRoZSBjbG9jayByZWxh
+dGlvbnMgYmV0d2VlbiB0aGUgdmFyaW91cyBjbG9jaw0KPiBjb250cm9sbGVycw0KSSBoYXZlIGNo
+ZWNrZWQgdGhlIGZpbGVzIGluDQoiRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2Fy
+bS9tZWRpYXRlayIsIEl0IHNlZW1zIHRoYXQgYWxsDQpNZWRpYVRlayBTb0MgY2xvY2tzIGFyZSBz
+aW1wbHkgZGVzY3JpYmVkIGJ5IGVhY2ggY29udHJvbGxlciwgbGlrZQ0KIm1lZGlhdGVrLGluZnJh
+Y2ZnLnR4dCIgYW5kICJtZWRpYXRlayx0b3Bja2dlbi50eHQiLCBhbmQgdGhvc2UgZG9jdW1lbnQN
+Cm9ubHkgaW5jbHVkZSBjb21wYXRpYmxlIHN0cmluZ3MgaW5mb3JtYXRpb24gYW5kIGV4YW1wbGVz
+Lg0KQ2FuIHdlIGluc2VydCB0aGUgY2xvY2sgcmVsYXRpb25zaGlwIG9mIE1UNzk4NiBkaXJlY3Rs
+bHkgaW4gY29tbW9uDQpkb2N1bWVudHM/DQpPciB3ZSBzaG91bGQgYWRkIGEgbmV3ICJtZWRpYXRl
+ayxtdDc5ODYtY2xvY2sueWFtbCIgYW5kIG1vdmUgY29tcGF0aWJsZQ0Kc3RyaW5ncyBpbmZvcm1h
+dGlvbiBhbmQgZXhhbXBsZSB0byB0aGlzIGZpbGUsIGFuZCBpbnNlcnQgY2xvY2sNCnJlbGF0aW9u
+c2hpcCBkZXNjcmlwdGlvbnMgdG8gdGhpcyBmaWxlPyBXb3VsZG7igJl0IGl0IGJlIHN0cmFuZ2Ug
+dG8gc2tpcA0KZXhpc3RpbmcgZmlsZXMgYW5kIGNyZWF0ZSBhIG5ldyBvbmU/DQoNCj4gZXh0ZXJu
+YWwgb3NjaWxsYXRvcidzIGNhc2UsIHRoZSBvc2NpbGxhdG9yIGlzIGRlc2NyaWJlZCBpbiB0aGUg
+ZGV2aWNlDQo+IHRyZWUNClllcywgd2UgaGF2ZSAiY2xreHRhbCIgaW4gdGhlIERULCB3aGljaCBz
+dGFuZHMgZm9yIGV4dGVybmFsIG9zY2lsbGF0b3IsDQpBbGwgY2xvY2tzIGluIGFwbWl4ZWRzeXMg
+dXNlICJjbGt4dGFsIiBhcyB0aGUgcGFyZW50IGNsb2NrDQoNCj4gRHVhbCBsaWNlbnNlIHBsZWFz
+ZSAoYW5kIHRoZSBkdHMgZmlsZXMpLg0KT2theSwgdGhhbmtzIGZvciB5b3VyIGNvbW1lbnQsIEkg
+d2lsbCB1cGRhdGUgdGhpcyBpbiB0aGUgbmV4dCBwYXRjaCBzZXQNCg0KPiBXaHkgYXJlIHRoaXMg
+YW5kIG90aGVyIDE6MSBmYWN0b3IgY2xrcyBuZWVkZWQ/IFRoZXkgbG9vayBsaWtlDQo+IHBsYWNl
+aG9sZGVycy4gUGxlYXNlIHJlbW92ZSB0aGVtLg0KT2theSwgdGhhbmtzIGZvciB5b3VyIGNvbW1l
+bnQsIEkgd2lsbCB1cGRhdGUgdGhpcyBpbiB0aGUgbmV4dCBwYXRjaCBzZXQNCg0KPiBNZXJnZSBk
+dXBsaWNhdGUgcGFyZW50IGluc3RhbmNlcw0KV2UgaGF2ZSBjb25zaWRlcmVkIHRoaXMgaW4gdGhl
+IE1UNzk4NiBiYXNpYyBjbG9jayBkcml2ZXIsIGJ1dCBJIHdpbGwNCmNoZWNrIGFnYWluLiBJZiBj
+b3JyZWN0aW9ucyBhcmUgbmVlZGVkLCBJIHdpbGwgbWFrZSBjaGFuZ2VzIGluIHRoZSBuZXh0DQpw
+YXRjaCBzZXQuDQoNCj4gTGVha2luZyBjbGtfZGF0YSBpZiBzb21lIGZ1bmN0aW9uIHJldHVybiBm
+YWlsDQpPa2F5LCB0aGFua3MgZm9yIHlvdXIgY29tbWVudCwgSSB3aWxsIHVwZGF0ZSB0aGlzIGlu
+IHRoZSBuZXh0IHBhdGNoIHNldA0KDQo+IFRoaXMgZmlsZSBjb250YWlucyBmb3VyIGRyaXZlcnMu
+IFRoZXkgZG8gbm90IGhhdmUgZGVwZW5kIG9uIGVhY2gNCj4gb3RoZXIsIGFuZCBkbyBub3QgbmVl
+ZCB0byBiZSBpbiB0aGUgc2FtZSBmaWxlLiBQbGVhc2Ugc3BsaXQgdGhlbSBpbnRvDQo+IGRpZmZl
+cmVuIGZpbGVzIGFuZCBwcmVmZXJhYmx5IGRpZmZlcmVudCBwYXRjaGVzDQpPa2F5LCB0aGFua3Mg
+Zm9yIHlvdXIgY29tbWVudCwgSSB3aWxsIHNlcGFyYXRlIHRob3NlIGNsb2NrIGRyaXZlcnMgaW4N
+CnRoZSBuZXh0IHBhdGNoIHNldA0KDQo+IElzIHRoZXJlIGFueSBwYXJ0aWN1bGFyIHJlYXNvbiBm
+b3IgYXJjaF9pbml0Y2FsbA0KV2UgaGF2ZSBjb25zaWRlcmVkIHRoaXMgaW4gTVQ3OTg2IGJhc2lj
+IGNsb2NrIGRyaXZlciwgYW5kIHVzZQ0KQ0xLX09GX0RFQ0xBUkUgaW5zdGVhZCBvZiBhcmNoX2lu
+aXRjYWxsLg0KDQpBbm90aGVyIHF1ZXN0aW9uOg0KU2hvdWxkIHRoZSBjbG9jayBwYXRjaGVzIGlu
+ICJBZGQgYmFzaWMgU29DIHN1cHBvcnQgZm9yIE1lZGlhVGVrIG10Nzk4NiINCm5lZWQgdG8gYmUg
+c2VwYXJhdGVkIGludG8gYW5vdGhlciBwYXRjaCBzZXJpZXMsIHN1Y2ggYXMgTVQ4MTk1DQoiTWVk
+aWF0ZWsgTVQ4MTk1IGNsb2NrIHN1cHBvcnQiID8gDQoNCg0KUmVnYXJkcw0KU2FtDQo=
 
-If you can only support one set of options, just set it and always fail
-the tcsetattr call which will allow userspace to know it shouldn't have
-tried to do that.
-
-> > Of course that is a pain but
-> > no one is going to notice kernel log messages either, right?
-> 
-> *shrug* Why does sifive_serial_set_termios do it?
-
-I didn't notice it during the review process.  Doesn't mean you should
-copy a bad example :)
-
-thanks,
-
-greg k-h
