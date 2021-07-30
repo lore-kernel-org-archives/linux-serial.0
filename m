@@ -2,118 +2,148 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5C1C19F31
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 22:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 491C1C4338F
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 23:10:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CC6F760EE2
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 22:28:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 30E7560F3A
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 23:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232680AbhG3W2Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Jul 2021 18:28:25 -0400
-Received: from mail-il1-f172.google.com ([209.85.166.172]:43586 "EHLO
-        mail-il1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233153AbhG3W2X (ORCPT
+        id S234752AbhG3XKx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Jul 2021 19:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234753AbhG3XKw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Jul 2021 18:28:23 -0400
-Received: by mail-il1-f172.google.com with SMTP id x7so7577261ilh.10;
-        Fri, 30 Jul 2021 15:28:18 -0700 (PDT)
+        Fri, 30 Jul 2021 19:10:52 -0400
+Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CFE5C061765
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 16:10:47 -0700 (PDT)
+Received: by mail-vs1-xe31.google.com with SMTP id x66so3799880vsb.1
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 16:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1TbM8t6BNkSg4D2ia1l4JTeH7i8cCps/pEqFiTm27VI=;
+        b=pQrODr43Tq85sO7xev8VokbneJbm5zeP5yoYuIENZPWPGzqaou9BgZY6fwo8YMfy6q
+         DEFyoI0Tx3ZLIau3mYWwHsSB/8Kg2TJawcyxM1fcczHY+wiJFggCXrMuRL7kQwc69fn5
+         ON1gNh74Lzl4gbRJPb3Bs2yS/iisOBmc54wJYt9sU4bVuNDZobMpypQ3IvmA8SVuQlh9
+         F9BHRVHFYm7u3dtmaNYHIQlhS3yVdC7cuuarR8UBtAAKEwIPbpdVSIGbVrrLnPyVtYAp
+         fBNaIGi2wmKmLVl5CqYRJUbFkTmA8e+stGXBEqNEaykxSePM9u8UKNBbEabeb6oqGo2J
+         rCgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=D52Vy0CgcE0wfPHmI57Uv6O5bCcoMUm9q+qsHe1m5OE=;
-        b=Ym4V16ChMgDMYEcRaLIj91P7ur1Qpanl56iMYdBlNaTx4OaPOpycWoNmHs2h6uc6b1
-         rWad75hIj6FZhjv4bpojPzVl5R1KsRsAGITujjg9Fd129vMnaYoK9R6zpqIxNkR1TFkW
-         F+jdqyyGp5YOqfaEumsa3lxkY4HWr0QXlAx8kxjn8WFmpKFhgQ6qm6DpFGyDkw4ZmBc4
-         dbmmL1RldrAwQRvqs7CkELEhY5DtJDz7rUGNPsoi+QsV1LI0l2hZLe9kPa/7+ouAkNpB
-         SbKqpjGzpO0pHBtY7+n4azgp7JpDxW4Dads8t8CwG7VVUMxifGWE6f18PjPdmvGQrafP
-         Aihg==
-X-Gm-Message-State: AOAM53277ZtUwun3pAOoYs/Kbi1yt+9CBm0ReEgPi/3lX0JeN5sxY2oX
-        +ZPV1vkG28VVt1q/uAlH6Q==
-X-Google-Smtp-Source: ABdhPJwxFmwDv+5IpRAc36U/IY0R6KHUZxqyVwE7pzDL8f+orD1mZ/cnblLwZldJa1oLxZ4RdtDipw==
-X-Received: by 2002:a92:cf4d:: with SMTP id c13mr1018767ilr.300.1627684098045;
-        Fri, 30 Jul 2021 15:28:18 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id d18sm1505290ile.32.2021.07.30.15.28.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 15:28:17 -0700 (PDT)
-Received: (nullmailer pid 3442795 invoked by uid 1000);
-        Fri, 30 Jul 2021 22:28:10 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Sam Protsenko <semen.protsenko@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1TbM8t6BNkSg4D2ia1l4JTeH7i8cCps/pEqFiTm27VI=;
+        b=ClRr18aSk9FQPDTFRBSTpWGNlA4Tb8INGuD8GBmOXDb4sZYZamStOeEseweOPHjQ1N
+         rgoNXQEK929pRRnowWsi56fXR7/cpwl69g+llEkIbSK/ewUP436MBu/KSIyAJyGpYfSs
+         E0td6Fe5IMzuUdUYHEckQ08PwCxl1QUJihUaiNDxcjnqeUCZwSpTBlPursiQ6Eiv+Dtn
+         0AzrurZjpYExKi0AGCW9vQLLIVSL++OWRK4xfdYTQ1KsamkYzgXIG/dHU6+ROMeoNtuN
+         BmEd7a1PrWUe0vHsHhXTSHdAlWfxM3p+RAjzVLfk1GkJ3JTFXL/2Jk4NycpR/loUe205
+         9yUg==
+X-Gm-Message-State: AOAM530sp4jBJWdI481lKUOidGDGR7DxMj0ncOLuCeGGQj0zp3daDSTv
+        l9CQSXyZUQdAAMtFAEpT8pJaV35X2nyUS8HMXyjllA==
+X-Google-Smtp-Source: ABdhPJzjN4/BBXYdmqDYw3Auz5/+2Hw4s/UhDtBUqd4bFeznRfXGoaUAkywM5B9TqucDz/hqA+hxev/WRZVElP9J8As=
+X-Received: by 2002:a05:6102:21b:: with SMTP id z27mr4528245vsp.27.1627686646549;
+ Fri, 30 Jul 2021 16:10:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210730144922.29111-1-semen.protsenko@linaro.org>
+ <20210730144922.29111-7-semen.protsenko@linaro.org> <5826bc3e-e9e8-a9bb-4541-21c1b944a60e@canonical.com>
+In-Reply-To: <5826bc3e-e9e8-a9bb-4541-21c1b944a60e@canonical.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Sat, 31 Jul 2021 02:10:35 +0300
+Message-ID: <CAPLW+4=yOETYdVWvG_YUzewRDg9wB1h+z4i3DRDxJQHeVgu1EQ@mail.gmail.com>
+Subject: Re: [PATCH 06/12] tty: serial: samsung: Add Exynos850 SoC data
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Chanwoo Choi <cw00.choi@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Amit Pundir <amit.pundir@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tom Gall <tom.gall@linaro.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        Ryu Euiyoul <ryu.real@samsung.com>,
-        Stephen Boyd <sboyd@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
-        linux-serial@vger.kernel.org
-In-Reply-To: <20210730144922.29111-10-semen.protsenko@linaro.org>
-References: <20210730144922.29111-1-semen.protsenko@linaro.org> <20210730144922.29111-10-semen.protsenko@linaro.org>
-Subject: Re: [PATCH 09/12] dt-bindings: clock: Add bindings for Exynos850 clock controller
-Date:   Fri, 30 Jul 2021 16:28:10 -0600
-Message-Id: <1627684090.562853.3442794.nullmailer@robh.at.kernel.org>
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
+        Ryu Euiyoul <ryu.real@samsung.com>,
+        Tom Gall <tom.gall@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 30 Jul 2021 17:49:19 +0300, Sam Protsenko wrote:
-> Add documentation for Exynos850 clock driver bindings and corresponding
-> clock ID constants, which will be used further both in clock driver and
-> in device tree files. Constants are grouped per domain basis (CMU) for
-> more convenient usage, but those are just unique numbers and have
-> nothing to do with register offsets, etc.
-> 
-> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> ---
->  .../bindings/clock/exynos850-clock.yaml       |  70 +++++
->  include/dt-bindings/clock/exynos850.h         | 267 ++++++++++++++++++
->  2 files changed, 337 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/exynos850-clock.yaml
->  create mode 100644 include/dt-bindings/clock/exynos850.h
-> 
+On Fri, 30 Jul 2021 at 19:05, Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
+>
+> On 30/07/2021 16:49, Sam Protsenko wrote:
+> > Add serial driver data for Exynos850 SoC. This driver data is basically
+> > reusing EXYNOS_COMMON_SERIAL_DRV_DATA, which is common for all Exynos
+> > chips, but also enables USI init, which was added in previous commit:
+> > "tty: serial: samsung: Init USI to keep clocks running".
+> >
+> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > ---
+> >  drivers/tty/serial/samsung_tty.c | 13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> >
+> > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> > index 75ccbb08df4a..d059b516a0f4 100644
+> > --- a/drivers/tty/serial/samsung_tty.c
+> > +++ b/drivers/tty/serial/samsung_tty.c
+> > @@ -2814,11 +2814,19 @@ static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
+> >       .fifosize = { 64, 256, 16, 256 },
+> >  };
+> >
+> > +static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
+> > +     EXYNOS_COMMON_SERIAL_DRV_DATA_USI(1),
+> > +     .fifosize = { 0, },
+>
+> This does not look correct. You rely on samsung,uart-fifosize property
+> but it is optional.
+>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Good point. I will replace fifosize elements (in patch series v2) with
+this code (the reasoning is below):
 
-yamllint warnings/errors:
+    .fifosize = { 256, 64, 64, 64 }
 
-dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/clock/exynos850-clock.example.dts:71.27-28 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:380: Documentation/devicetree/bindings/clock/exynos850-clock.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1419: dt_binding_check] Error 2
-\ndoc reference errors (make refcheckdocs):
+TRM mentions that USI block has configurable FIFO of 16/32/64/128/256
+byte. In vendor kernel they are setting default values in dtsi instead
+of driver, that's where fifosize = { 0 } appeared from. And in vendor
+dtsi they set 256 for serial_0 (USI UART instance), 64 for serial_1
+(CMGP0 UART instance) and 64 for serial_2 (CMGP1 UART instance). I
+tested 256 and 64 for serial_0 (which is used for serial console)
 
-See https://patchwork.ozlabs.org/patch/1511715
+As for fifosize array elements count: though it's possible to
+configure up to 7 UARTs in Exynos850 (it has 5 USI blocks and 2 CMGP
+blocks, which can be configured as USIs), in a regular case it's only
+3 UARTs (1 in USI and 2 in CMGP). This is how it's done in vendor's
+device tree, and I doubt someone is going to need more than 3 serials
+anyway, looks like very specific case for a mobile SoC. But
+CONFIG_SERIAL_SAMSUNG_UARTS_4=y is set by default when using arm64
+defconfig, and I'd like to keep minimal delta for this defconfig for
+now.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+Hope you are ok with this?
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+Thanks!
 
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+>
+> Best regards,
+> Krzysztof
