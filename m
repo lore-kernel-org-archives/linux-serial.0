@@ -2,192 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD488C4320A
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 03:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F03B2C4338F
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 05:25:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 992EF60ED4
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 03:14:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CC5F260F46
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 05:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbhG3DOw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Jul 2021 23:14:52 -0400
-Received: from mga05.intel.com ([192.55.52.43]:15911 "EHLO mga05.intel.com"
+        id S229696AbhG3FZN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Jul 2021 01:25:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229971AbhG3DOw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Jul 2021 23:14:52 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10060"; a="298603590"
-X-IronPort-AV: E=Sophos;i="5.84,280,1620716400"; 
-   d="scan'208";a="298603590"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2021 20:14:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,280,1620716400"; 
-   d="scan'208";a="438849388"
-Received: from lkp-server01.sh.intel.com (HELO d053b881505b) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 29 Jul 2021 20:14:46 -0700
-Received: from kbuild by d053b881505b with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1m9Iyz-0009Ya-VD; Fri, 30 Jul 2021 03:14:45 +0000
-Date:   Fri, 30 Jul 2021 11:14:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 6c44eb5905f6cc731b36c4170f703f81e477f039
-Message-ID: <61036e9f.Zi/Tcld59eRg9p6h%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S230108AbhG3FZM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 30 Jul 2021 01:25:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B10D460E76;
+        Fri, 30 Jul 2021 05:25:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1627622707;
+        bh=ESVBrsm80myU8Sk+cQfy5BsOrCGZGHO54b2AzvwiXnU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YFO8hUhm8jvQf9NQ9T99JGWgOMFYceWdyhAFQz9hlUV7VnikT15uLI8MhouHYFBwt
+         0NAH4rvEekcYQ9SVVWEvEcfzjZlSw8glgbL7yzWA1ehzlEv3beSz0vlKiecpBevVTQ
+         OC7KeXbIyusly5xCm0zuoshl5kjQkuPNQboon7sU=
+Date:   Fri, 30 Jul 2021 07:25:04 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Peter Korsgaard <peter.korsgaard@barco.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        linux-serial@vger.kernel.org,
+        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
+        Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH 5/5] tty: serial: uartlite: Prevent changing fixed
+ parameters
+Message-ID: <YQONMMetaYI4aLMJ@kroah.com>
+References: <20210723223152.648326-1-sean.anderson@seco.com>
+ <20210723223152.648326-6-sean.anderson@seco.com>
+ <YQLC4L2Z3T4SuryE@kroah.com>
+ <d46e0a4a-d9d4-190f-b41b-9c2b9e4748ae@seco.com>
+ <YQLKB5jqx0/eFLR9@kroah.com>
+ <79157167-335c-b2b3-8104-e3272226b369@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <79157167-335c-b2b3-8104-e3272226b369@seco.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 6c44eb5905f6cc731b36c4170f703f81e477f039  serial: omap: Only allow if 8250_omap is not selected
+On Thu, Jul 29, 2021 at 11:43:08AM -0400, Sean Anderson wrote:
+> 
+> 
+> On 7/29/21 11:32 AM, Greg Kroah-Hartman wrote:
+> > On Thu, Jul 29, 2021 at 11:26:59AM -0400, Sean Anderson wrote:
+> >>
+> >>
+> >> On 7/29/21 11:01 AM, Greg Kroah-Hartman wrote:
+> >> > On Fri, Jul 23, 2021 at 06:31:51PM -0400, Sean Anderson wrote:
+> >> > > This device does not support changing baud, parity, data bits, stop
+> >> > > bits, or detecting breaks. Disable "changing" these settings to prevent
+> >> > > their termios from diverging from the actual state of the uart. To inform
+> >> > > users of these limitations, warn if the new termios change these
+> >> > > parameters. We only do this once to avoid spamming the log. These
+> >> > > warnings are inspired by those in the sifive driver.
+> >> > >
+> >> > > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> >> > > ---
+> >> > >
+> >> > >  drivers/tty/serial/uartlite.c | 52 +++++++++++++++++++++++++++++++++--
+> >> > >  1 file changed, 49 insertions(+), 3 deletions(-)
+> >> > >
+> >> > > diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> >> > > index 39c17ab206ca..0aed70039f46 100644
+> >> > > --- a/drivers/tty/serial/uartlite.c
+> >> > > +++ b/drivers/tty/serial/uartlite.c
+> >> > > @@ -314,7 +314,54 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
+> >> > >  			      struct ktermios *old)
+> >> > >  {
+> >> > >  	unsigned long flags;
+> >> > > -	unsigned int baud;
+> >> > > +	struct uartlite_data *pdata = port->private_data;
+> >> > > +	tcflag_t old_cflag;
+> >> > > +
+> >> > > +	if (termios->c_iflag & BRKINT)
+> >> > > +		dev_err_once(port->dev, "BREAK detection not supported\n");
+> >> > > +	termios->c_iflag &= ~BRKINT;
+> >> > > +
+> >> > > +	if (termios->c_cflag & CSTOPB)
+> >> > > +		dev_err_once(port->dev, "only one stop bit supported\n");
+> >> > > +	termios->c_cflag &= ~CSTOPB;
+> >> > > +
+> >> > > +	old_cflag = termios->c_cflag;
+> >> > > +	termios->c_cflag &= ~(PARENB | PARODD);
+> >> > > +	if (pdata->parity == 'e')
+> >> > > +		termios->c_cflag |= PARENB;
+> >> > > +	else if (pdata->parity == 'o')
+> >> > > +		termios->c_cflag |= PARENB | PARODD;
+> >> > > +
+> >> > > +	if (termios->c_cflag != old_cflag)
+> >> > > +		dev_err_once(port->dev, "only '%c' parity supported\n",
+> >> > > +			     pdata->parity);
+> >> >
+> >> > Through all of this, you are warning that nothing is supported, yet you
+> >> > are continuing on as if all of this worked just fine.
+> >>
+> >> We don't. The idea is that we see if (e.g.) CSIZE is something the
+> >> hardware can't produce, warn about it (once), and then set it to what we
+> >> can support.
+> >
+> > So you are ignoring what the user wanted, and doing whatever you wanted.
+> >
+> > As you can only support one setting, why even care?  Just set it to what
+> > you want and ignore userspace's requests.
+> 
+> That is exactly what we are doing. We set it to what we can support and
+> ignore what userspace requested.
 
-elapsed time: 721m
+If you can only support one set of options, just set it and always fail
+the tcsetattr call which will allow userspace to know it shouldn't have
+tried to do that.
 
-configs tested: 126
-configs skipped: 3
+> > Of course that is a pain but
+> > no one is going to notice kernel log messages either, right?
+> 
+> *shrug* Why does sifive_serial_set_termios do it?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+I didn't notice it during the review process.  Doesn't mean you should
+copy a bad example :)
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20210728
-powerpc                      pcm030_defconfig
-arc                 nsimosci_hs_smp_defconfig
-m68k                          amiga_defconfig
-arm                        cerfcube_defconfig
-mips                      pistachio_defconfig
-arc                          axs103_defconfig
-powerpc                      ep88xc_defconfig
-arm                            lart_defconfig
-powerpc                 mpc832x_mds_defconfig
-powerpc                        fsp2_defconfig
-arm                           h5000_defconfig
-mips                           ci20_defconfig
-powerpc                    sam440ep_defconfig
-arm                       imx_v4_v5_defconfig
-mips                        nlm_xlr_defconfig
-powerpc                 mpc85xx_cds_defconfig
-arc                     haps_hs_smp_defconfig
-sh                           se7724_defconfig
-sh                            titan_defconfig
-sh                           se7343_defconfig
-powerpc                mpc7448_hpc2_defconfig
-mips                   sb1250_swarm_defconfig
-sh                           se7206_defconfig
-arm                           omap1_defconfig
-arm                         lubbock_defconfig
-powerpc                     skiroot_defconfig
-sh                   rts7751r2dplus_defconfig
-mips                      maltasmvp_defconfig
-powerpc                     powernv_defconfig
-powerpc                  storcenter_defconfig
-arm                         s5pv210_defconfig
-xtensa                       common_defconfig
-arm                           sunxi_defconfig
-m68k                       m5249evb_defconfig
-powerpc                       holly_defconfig
-sh                           se7780_defconfig
-arm                         shannon_defconfig
-sh                      rts7751r2d1_defconfig
-powerpc                    amigaone_defconfig
-sh                           se7751_defconfig
-m68k                         amcore_defconfig
-arm                           tegra_defconfig
-x86_64                            allnoconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a006-20210728
-x86_64               randconfig-a003-20210728
-x86_64               randconfig-a001-20210728
-x86_64               randconfig-a004-20210728
-x86_64               randconfig-a005-20210728
-x86_64               randconfig-a002-20210728
-i386                 randconfig-a005-20210728
-i386                 randconfig-a003-20210728
-i386                 randconfig-a004-20210728
-i386                 randconfig-a002-20210728
-i386                 randconfig-a001-20210728
-i386                 randconfig-a006-20210728
-x86_64               randconfig-a016-20210729
-x86_64               randconfig-a011-20210729
-x86_64               randconfig-a014-20210729
-x86_64               randconfig-a013-20210729
-x86_64               randconfig-a012-20210729
-x86_64               randconfig-a015-20210729
-i386                 randconfig-a016-20210728
-i386                 randconfig-a012-20210728
-i386                 randconfig-a013-20210728
-i386                 randconfig-a014-20210728
-i386                 randconfig-a011-20210728
-i386                 randconfig-a015-20210728
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                                  kexec
+thanks,
 
-clang tested configs:
-x86_64               randconfig-c001-20210729
-x86_64               randconfig-a016-20210728
-x86_64               randconfig-a011-20210728
-x86_64               randconfig-a014-20210728
-x86_64               randconfig-a013-20210728
-x86_64               randconfig-a012-20210728
-x86_64               randconfig-a015-20210728
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+greg k-h
