@@ -2,170 +2,140 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45173C4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 08:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D58C43214
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 14:49:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2335E60F9B
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 08:37:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2AC0F610A2
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 14:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230336AbhG3IhM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Jul 2021 04:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36444 "EHLO
+        id S239304AbhG3Otc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Jul 2021 10:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230285AbhG3IhM (ORCPT
+        with ESMTP id S239320AbhG3Otb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Jul 2021 04:37:12 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BFCC061765
-        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 01:37:07 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id k4-20020a17090a5144b02901731c776526so19730369pjm.4
-        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 01:37:07 -0700 (PDT)
+        Fri, 30 Jul 2021 10:49:31 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47F7C0613D5
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 07:49:25 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id cf5so1993744edb.2
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 07:49:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cJ+7WYNLUg8PY/jkycoOhRSiWUznYW9Jj4dDM8aTpA0=;
-        b=fD8gj63cybxYBSC1k6d7/umtB8/6Af2bA+Lj+KGz4SrAfK7WAvLNy2NpdLbb/7r3wL
-         LR3GOHu+kQmIm0JndzDYzp98BOJ7Nd/U9adKn8KjT+e99jUZRx3OI7JNXamGoaaD6NEP
-         VEWsH1ZphDIlrM0QWfAuJHklg21fHNgxgV5pguoFMbOdNhBbXkovL7BSnq7essZyQ9j+
-         RZSNC8lhKTteHAIqrj6F8R2ECa1M7BUaXKmZvT9Uio1hSABvaBUTCnr020XTjF9//5Ay
-         mj+csdQ+jj+FFKiTuEeYDJwXsRZi2iK1Mgwpg/PeMTqQwXtR6DKD7DnFYS4AJPxvFBlh
-         vOpQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5PHkR+YSvqa36gxNmyyX6WoOgZM8UVlxbzCVysbca2U=;
+        b=ppXxSci0wZJY7XnVRY4yu+4+WjQPwflcLFwiLy+QQ2ntOFZXb3dYBrtgAZwQGOi+NV
+         8ryr8dUU1x3Pk72hg5RJMDLvQ6HSfUlWQ8EhsjLq8MHTWl9lHdDa4QV/YXWlXDc0UCNe
+         memZ6BED5+EO4wvTQgR1+L8lXlCDQ5+LPoltjuRKc5UlGaxNzX9gLhdJYS/OBhee8/Vc
+         vF93q4YTSPaGqnxeDvez4Id9seJG7z85l00ime4MS8Q4naLZzzVDb/iC/jBEJatL+c+8
+         imSkgBkD7IX3F6D//6uXm7OsGe26LDkBDkshApcHXIjIpdAH4bgPtgEvxKRogza7ZtXh
+         y8SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cJ+7WYNLUg8PY/jkycoOhRSiWUznYW9Jj4dDM8aTpA0=;
-        b=K/pmOttXoIbppjEuZkaWZnWkhfCZezgl09PbIKPMI1lv0Z6ro2eBBBmOyQCHsuidYg
-         6eYO21lBI7D5JiW3t3v0kuKVHdz3vYo3DPUtrfAJ2I4QgkWZFuCLhWH0z8Li/AE0rUQ/
-         qDuNzEfDCUCn+Tr1w2QOPzOSWBLvLS7kn2m+bbSQEkTll7SWztmWrrb9RDuJCH6zhaQe
-         VW6QB9VzAi+XhSgsDBAAAoCvPsmtvrLw13UO1XajtFeoClL3GCkmUzfb4YiXNUWdbotM
-         jAmHApVy06nA2e6J8UDsdxkHwAc3U8ksBNTw5ipm4FK22l96l+w1zyJZKNGYo4n3UEax
-         yZNA==
-X-Gm-Message-State: AOAM530BjvXVXHQLkM3R57hL3P3mKaAr0/vrdBsBqP8MMbTZVbwBkk9+
-        svwsrplP3NmpJexPpzgDwm6P8P3nCR+St3cscNc=
-X-Google-Smtp-Source: ABdhPJyz2W3BuKmW0vuu+CHb2kSdLxJ14g/qsWW79DKsQ2UVck6XwpoyZqKIGH4a4a/jJZySOFvbW6sPUVsD3VvQfvg=
-X-Received: by 2002:a63:cf0a:: with SMTP id j10mr1044258pgg.4.1627634227325;
- Fri, 30 Jul 2021 01:37:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5PHkR+YSvqa36gxNmyyX6WoOgZM8UVlxbzCVysbca2U=;
+        b=JWduR2/Q7rY/QpyyqrZIemyg4GPfe5ozwMnwNKtLLAr+bg9NPJIhE9dNX0ke7l4q9d
+         +aZf9ldV1jiVVv/8WfBGLoredINP2EDJLs/9lDtiCBLskH8o41XQ4qYBpOqMpqOfIwZ1
+         YwynjponAcN5gcQYIvpKVLLYPKx8uApNDkder+KK4zM9xYskIIDtKpUuv2KZ/2Vu9zLX
+         p0GNpTDA70t3V6bWgQvM+H0zTyMtG9HmtIo50Gbi7HQrRaWDdugoOhbiVioCoiGEEfDq
+         O1KaT3lF7eypjqzW4VQwQj9Ed6x+ezNQYKViMLdLWKsws7mZz2lGwlY7QFUOTgdp/Rb6
+         P/MA==
+X-Gm-Message-State: AOAM530z2gKXIR6NS+6wq4xlcZibYQs+AXY+mz2PsRGy9H5BSE6owpSS
+        7Rp1rNLaGbFfkL5zjg+MOxWwiA==
+X-Google-Smtp-Source: ABdhPJwdxvjBr38jNA7cLuHBawxASA9D/0kL5M54NafNl/0JLAWo7243dU/nVXHaEZWEexPUYsyDJw==
+X-Received: by 2002:a05:6402:49a:: with SMTP id k26mr3291469edv.279.1627656564172;
+        Fri, 30 Jul 2021 07:49:24 -0700 (PDT)
+Received: from localhost ([31.134.121.151])
+        by smtp.gmail.com with ESMTPSA id p16sm785006eds.73.2021.07.30.07.49.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Jul 2021 07:49:23 -0700 (PDT)
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+To:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
+        Ryu Euiyoul <ryu.real@samsung.com>,
+        Tom Gall <tom.gall@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH 00/12] Add minimal support for Exynos850 SoC
+Date:   Fri, 30 Jul 2021 17:49:10 +0300
+Message-Id: <20210730144922.29111-1-semen.protsenko@linaro.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20210729043306.18528-1-mario.kleiner.de@gmail.com>
- <283da956-e020-209e-052b-bfdd499ccca1@oth-regensburg.de> <CAHp75VcX3_0G=Ks4PZxVqTP6Ztzi7yUHAHSENOs9eNXj0=MwFQ@mail.gmail.com>
- <YQO2SytBcDzz1m5F@kroah.com>
-In-Reply-To: <YQO2SytBcDzz1m5F@kroah.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 30 Jul 2021 11:36:27 +0300
-Message-ID: <CAHp75VfkK+i1mh=_UFnbobqsSOocze4uzUtQjf_S+wZxzuw=uQ@mail.gmail.com>
-Subject: Re: [EXT] [PATCH] serial: 8250_pci: Avoid irq sharing for MSI(-X) interrupts.
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>,
-        Mario Kleiner <mario.kleiner.de@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 30, 2021 at 11:20 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Jul 29, 2021 at 06:25:54PM +0300, Andy Shevchenko wrote:
-> > On Thu, Jul 29, 2021 at 11:37 AM Ralf Ramsauer
-> > <ralf.ramsauer@oth-regensburg.de> wrote:
-> > > On 29/07/2021 06:33, Mario Kleiner wrote:
-> > > > This attempts to fix a bug found with a serial port card which uses
-> > > > an MCS9922 chip, one of the 4 models for which MSI-X interrupts are
-> > > > currently supported. I don't possess such a card, and i'm not
-> > > > experienced with the serial subsystem, so this patch is based on what
-> > > > i think i found as a likely reason for failure, based on walking the
-> > > > user who actually owns the card through some diagnostic.
-> > >
-> > > As there's currently some (stuck) discussion on how to generally handle
-> > > MSI capable serial cards, and this is issue related to some degree, let
-> > > me Cc Jiri and Andy.
-> >
-> > Thanks, Ralf!
-> >
-> > > > The user who reported the problem finds the following in his dmesg
-> > > > output for the relevant ttyS4 and ttyS5:
-> > > >
-> > > > [    0.580425] serial 0000:02:00.0: enabling device (0000 -> 0003)
-> > > > [    0.601448] 0000:02:00.0: ttyS4 at I/O 0x3010 (irq = 125, base_baud = 115200) is a ST16650V2
-> > > > [    0.603089] serial 0000:02:00.1: enabling device (0000 -> 0003)
-> > > > [    0.624119] 0000:02:00.1: ttyS5 at I/O 0x3000 (irq = 126, base_baud = 115200) is a ST16650V2
-> > > > ...
-> > > > [    6.323784] genirq: Flags mismatch irq 128. 00000080 (ttyS5) vs. 00000000 (xhci_hcd)
-> > > > [    6.324128] genirq: Flags mismatch irq 128. 00000080 (ttyS5) vs. 00000000 (xhci_hcd)
-> > > > ...
-> > > >
-> > > > Output of setserial -a:
-> > > >
-> > > > /dev/ttyS4, Line 4, UART: 16650V2, Port: 0x3010, IRQ: 127
-> > > >       Baud_base: 115200, close_delay: 50, divisor: 0
-> > > >       closing_wait: 3000
-> > > >       Flags: spd_normal skip_test
-> > > >
-> > > > This suggests to me that the serial driver wants to register and share a
-> > > > MSI/MSI-X irq 128 with the xhci_hcd driver, whereas the xhci driver does
-> > > > not want to share the irq, as flags 0x00000080 (== IRQF_SHARED) from the
-> > > > serial port driver means to share the irq, and this mismatch ends in some
-> > > > failed irq init?
-> > > >
-> > > > With this setup, data reception works very unreliable, with dropped data,
-> > > > already at a transmission rate of only a 16 Bytes chunk every 1/120th of
-> > > > a second, ie. 1920 Bytes/sec, presumably due to rx fifo overflow due to
-> > > > mishandled or not used at all rx irq's?
-> > > >
-> > > > See full discussion thread with attempted diagnosis at:
-> > > >
-> > > > https://psychtoolbox.discourse.group/t/issues-with-iscan-serial-port-recording/3886
-> > > >
-> > > > Disabling the use of MSI interrupts for the serial port pci card did
-> > > > fix the reliability problems. The user executed the following sequence
-> > > > of commands to achieve this:
-> > > >
-> > > > # Disable PCI serial port driver, shut down card:
-> > > > echo 0000:02:00.0 | sudo tee /sys/bus/pci/drivers/serial/unbind
-> > > > echo 0000:02:00.1 | sudo tee /sys/bus/pci/drivers/serial/unbind
-> > > >
-> > > > # Disallow use of MSI/MSI-X interrupts on pci serial port card:
-> > > > echo 0 | sudo tee /sys/bus/pci/devices/0000:02:00.0/msi_bus
-> > > > echo 0 | sudo tee /sys/bus/pci/devices/0000:02:00.1/msi_bus
-> > > >
-> > > > # Restart driver, reinitialize card, hopefully without MSI irqs now:
-> > > > echo 0000:02:00.0 | sudo tee /sys/bus/pci/drivers/serial/bind
-> > > > echo 0000:02:00.1 | sudo tee /sys/bus/pci/drivers/serial/bind
-> > > >
-> > > > This resulted in the following log output:
-> > > >
-> > > > [   82.179021] pci 0000:02:00.0: MSI/MSI-X disallowed for future drivers
-> > > > [   87.003031] pci 0000:02:00.1: MSI/MSI-X disallowed for future drivers
-> > > > [   98.537010] 0000:02:00.0: ttyS4 at I/O 0x3010 (irq = 17, base_baud = 115200) is a ST16650V2
-> > > > [  103.648124] 0000:02:00.1: ttyS5 at I/O 0x3000 (irq = 18, base_baud = 115200) is a ST16650V2
-> > > >
-> > > > This patch attempts to fix the problem by disabling irq sharing when
-> > > > using MSI irq's. Note that all i know for sure is that disabling MSI
-> >
-> > In general the shared MSI interrupts are weird things that can be done
-> > with IRQs.
-> >
-> > > > irq's fixed the problem for the user, so this patch could be wrong and
-> > > > is untested. Please review with caution, keeping this in mind.
-> >
-> > I think it's a good idea in general. I have no objections.
->
-> So is that a "reviewed-by" for this patch?
+This patch series adds initial platform support for Samsung Exynos850
+SoC [1]. With this patchset it's possible to run the kernel with BusyBox
+rootfs as a RAM disk. More advanced platform support (like MMC driver
+additions) will be added later. The idea is to keep the first submission
+minimal to ease the review, and then build up on top of that.
 
-You may consider this way.
+[1] https://www.samsung.com/semiconductor/minisite/exynos/products/mobileprocessor/exynos-850/
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Jaehyoung Choi (1):
+  pinctrl: samsung: Fix pinctrl bank pin count
+
+Sam Protsenko (11):
+  pinctrl: samsung: Add Exynos850 SoC specific data
+  dt-bindings: pinctrl: samsung: Add Exynos850 doc
+  tty: serial: samsung: Init USI to keep clocks running
+  tty: serial: samsung: Fix driver data macros style
+  tty: serial: samsung: Add Exynos850 SoC data
+  dt-bindings: serial: samsung: Add Exynos850 doc
+  MAINTAINERS: Cover Samsung clock YAML bindings
+  dt-bindings: clock: Add bindings for Exynos850 clock controller
+  clk: samsung: Add Exynos850 clock driver stub
+  dt-bindings: interrupt-controller: Add IRQ constants for Exynos850
+  arm64: dts: exynos: Add Exynos850 SoC support
+
+ .../bindings/clock/exynos850-clock.yaml       |  70 ++
+ .../bindings/pinctrl/samsung-pinctrl.txt      |   1 +
+ .../bindings/serial/samsung_uart.yaml         |   1 +
+ MAINTAINERS                                   |   3 +-
+ .../boot/dts/exynos/exynos850-pinctrl.dtsi    | 782 ++++++++++++++++++
+ arch/arm64/boot/dts/exynos/exynos850-usi.dtsi |  30 +
+ arch/arm64/boot/dts/exynos/exynos850.dtsi     | 245 ++++++
+ drivers/clk/samsung/Makefile                  |   1 +
+ drivers/clk/samsung/clk-exynos850.c           |  63 ++
+ .../pinctrl/samsung/pinctrl-exynos-arm64.c    | 129 +++
+ drivers/pinctrl/samsung/pinctrl-exynos.h      |  29 +
+ drivers/pinctrl/samsung/pinctrl-samsung.c     |   4 +-
+ drivers/pinctrl/samsung/pinctrl-samsung.h     |   1 +
+ drivers/tty/serial/samsung_tty.c              |  50 +-
+ include/dt-bindings/clock/exynos850.h         | 267 ++++++
+ .../interrupt-controller/exynos850.h          | 290 +++++++
+ include/linux/serial_s3c.h                    |   9 +
+ 17 files changed, 1970 insertions(+), 5 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/exynos850-clock.yaml
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos850-usi.dtsi
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos850.dtsi
+ create mode 100644 drivers/clk/samsung/clk-exynos850.c
+ create mode 100644 include/dt-bindings/clock/exynos850.h
+ create mode 100644 include/dt-bindings/interrupt-controller/exynos850.h
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.30.2
+
