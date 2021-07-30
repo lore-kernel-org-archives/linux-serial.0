@@ -8,63 +8,62 @@ X-Spam-Status: No, score=-17.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E993EC43216
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 16:05:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C07BC43216
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 16:32:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D1A7160EBC
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 16:05:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 16BB360EE6
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 16:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbhG3QF4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Jul 2021 12:05:56 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:50340
+        id S229911AbhG3QcL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Jul 2021 12:32:11 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:52284
         "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229558AbhG3QFy (ORCPT
+        by vger.kernel.org with ESMTP id S229852AbhG3QcG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Jul 2021 12:05:54 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        Fri, 30 Jul 2021 12:32:06 -0400
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 47B143F237
-        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 16:05:46 +0000 (UTC)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 124BA3F243
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 16:32:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627661148;
-        bh=ckOz90kE72EEodkfysirBp4bfPPhomkbsSq4zFCD8p4=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+        s=20210705; t=1627662720;
+        bh=cdkeBF7KTOrwZe4RSaJRZayxTRjOsHfP6nNB8Tio5O4=;
+        h=To:Cc:References:From:Subject:Message-ID:Date:MIME-Version:
          In-Reply-To:Content-Type;
-        b=ivOSwVeQ0XHeXJBn214ExMBSMaX2KvjrEqvC+7lTcxGxtfWL13XYfOQpgoFMqebyL
-         lKFXypmXXtKLme757tve6gpoWOI7zOxyYNZgqjALJxUvxOtTabZIWt4GCV8pH9pGNr
-         uH5TNdRyTINpmfX10QPA19OX2vYHPuTv2CtnFEes1iwLWMSsQiahHYyvamYA6K9VkG
-         JCF73vvZFCBmbl3EWPkbfzNPMXxtMj5mOxerhiQyBn4IsPLzPQ1lDzlub4DfgPLPZr
-         gv6YGzFsgOfDfMMAKTIXQdBY4PqKp7vH4tAPYitmmTgV5nXROYHrlFZ7jdbzpufSZT
-         jbATtbenVqPVg==
-Received: by mail-ed1-f70.google.com with SMTP id s8-20020a0564020148b02903948b71f25cso4828175edu.4
-        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 09:05:46 -0700 (PDT)
+        b=S3sQOFMWcpTO38J6XWn73hbTGH/lWIfJy1s1LYlwhy99eWXLP4H4cb+aJ3x11TiGO
+         xuVB7w8Ef6c9Nq3vEVZIWfwcu1oSYBhJAbp68tUHP8mHgfgdavsnLVegENAELFuDPr
+         gy/WC4EzN7kxW+RGYLw8IvJy/oTP9lOWHnzf7WzCCqph2t4AOo8aXVFK0PrvXOElIh
+         G4c6/qEWGmQ3zcAW64j2ijbF6Td43vFZR8BwKNAnaBx15ebq1ZeH2lPNJQQF0goo2k
+         coHda49noSF474ewBSOzYHBEtZVaZnHuJkedKqX1KEtfDi/jrey+RXxyMXqfoAnb3c
+         cw92rHhUbOGzg==
+Received: by mail-ej1-f71.google.com with SMTP id k21-20020a1709062a55b0290590e181cc34so2207826eje.3
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 09:32:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ckOz90kE72EEodkfysirBp4bfPPhomkbsSq4zFCD8p4=;
-        b=r4RPfdTk6HWnmLebXuQLJd+bu0GJPVqACCrn3cgRTl6MJ3bHtekmCaB1PlQ4hJPJRU
-         EYEMgcGXsoOrFdMXF9SGmAWLMkq/BDPrDs6Dy7AK81A9tjPkApKa+LjIzaCIYOLhPwjz
-         V+deSZM/RIZptOqkEsqRACiG0nG4lBwUPZhjH+9npTHcx41PPUdDth80MLZVK5OmCAej
-         Fe0BkpNjtnS+pkHjFBKIufdPQ6ouhtpRUv5+DsDO1dGCsRHFVGtf/toApn6EoBBopMzU
-         q27uBWMx/Sem4d/7N4a12zGnNotUc5IM6rIV0yM++s8XazQj3oOfIGq5t3aSkygmVJhT
-         AmXg==
-X-Gm-Message-State: AOAM530+eyEZEl6U7fbL0QOujUZy4UTCf3gIAF0FXhmKUbK9QT+2RaHT
-        plwhSnE4SJsST3yl9UAmrnUlR1vn+RfH29pA70RN1b/9PP0zinHVXFG/QWFJDtoXL5jVuluuITv
-        gP43gtVrR37jS14oIjdx2P9HmY7Xlh8ORg5qfixjnwQ==
-X-Received: by 2002:a17:906:c0cd:: with SMTP id bn13mr3270797ejb.251.1627661145659;
-        Fri, 30 Jul 2021 09:05:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz7c3uXOvkRzFd+EjfGwOi9GkfnP6xyPWeV21oXtz+M8LxzO4q9ZXaaXNPEO6I0wjp44bYNLA==
-X-Received: by 2002:a17:906:c0cd:: with SMTP id bn13mr3270781ejb.251.1627661145512;
-        Fri, 30 Jul 2021 09:05:45 -0700 (PDT)
+        bh=cdkeBF7KTOrwZe4RSaJRZayxTRjOsHfP6nNB8Tio5O4=;
+        b=keHuJJoA8E5uT1vEhKdoYwmZCLdJUuo/0+SMYK/467xc9LDsLm+vhp/tWjAjCdYTgA
+         qSiPkcGrDgehiDhYXcotYLlIUn4slQFnCa+rLIx3ahK5J+563y9pxjNXmAMRQVBG+XtK
+         uamU4lqtKyp8nxr431LtSa3/+64AwD0xVovGX61OF9t4ubfRZr0Ai9kYPcP1Z/eGhEIr
+         WqLL5cNxbd3WfUF14nS1FZ3rwmdGMF17a7K7IG5YXhEZoL2IcVufr3xKYD+juV/q0DXd
+         nEv43YsboHvwWCCkJuwy3gspjmhc/7n22zujokP39/wzqP6lGcfKS4cRHvUf+P3FGqW5
+         vtZQ==
+X-Gm-Message-State: AOAM533P/50XT5ecpXBBeCMirJwm93GaHiDyXU8syMetP56V6xUNFl9q
+        1u5FJ7FdlJuhh0moOGE3L+qzb4JRfsL3CH/7dDBbBejY96ARw+XHYDj1bfOBad0sP5hp7lS5IsU
+        Gnj9666ELVLQ9xQzOx0mcoG6efIuTQOhEWjc5ByAz5Q==
+X-Received: by 2002:a50:fb18:: with SMTP id d24mr3933027edq.225.1627662718833;
+        Fri, 30 Jul 2021 09:31:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJznpHPrHjFlOb+VuZi7FIsAImjbSiLLF3mhXsmZY17xgLFw6xzBdtYFFywclnCr3+C+w8ivdg==
+X-Received: by 2002:a50:fb18:: with SMTP id d24mr3933008edq.225.1627662718644;
+        Fri, 30 Jul 2021 09:31:58 -0700 (PDT)
 Received: from [192.168.8.102] ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id b3sm697246ejb.7.2021.07.30.09.05.43
+        by smtp.gmail.com with ESMTPSA id q8sm896087edv.95.2021.07.30.09.31.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Jul 2021 09:05:45 -0700 (PDT)
-Subject: Re: [PATCH 06/12] tty: serial: samsung: Add Exynos850 SoC data
+        Fri, 30 Jul 2021 09:31:58 -0700 (PDT)
 To:     Sam Protsenko <semen.protsenko@linaro.org>,
         Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Chanwoo Choi <cw00.choi@samsung.com>,
@@ -85,46 +84,164 @@ Cc:     Rob Herring <robh+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
         linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-serial@vger.kernel.org
 References: <20210730144922.29111-1-semen.protsenko@linaro.org>
- <20210730144922.29111-7-semen.protsenko@linaro.org>
+ <20210730144922.29111-5-semen.protsenko@linaro.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <5826bc3e-e9e8-a9bb-4541-21c1b944a60e@canonical.com>
-Date:   Fri, 30 Jul 2021 18:05:43 +0200
+Subject: Re: [PATCH 04/12] tty: serial: samsung: Init USI to keep clocks
+ running
+Message-ID: <a1701931-136e-235c-8392-a3f64c050d74@canonical.com>
+Date:   Fri, 30 Jul 2021 18:31:56 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210730144922.29111-7-semen.protsenko@linaro.org>
+In-Reply-To: <20210730144922.29111-5-semen.protsenko@linaro.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 30/07/2021 16:49, Sam Protsenko wrote:
-> Add serial driver data for Exynos850 SoC. This driver data is basically
-> reusing EXYNOS_COMMON_SERIAL_DRV_DATA, which is common for all Exynos
-> chips, but also enables USI init, which was added in previous commit:
-> "tty: serial: samsung: Init USI to keep clocks running".
+> UART block is a part of USI (Universal Serial Interface) IP-core in
+> Samsung SoCs since Exynos9810 (e.g. in Exynos850). USI allows one to
+> enable one of three types of serial interface: UART, SPI or I2C. That's
+> possible because USI shares almost all internal circuits within each
+> protocol. USI also provides some additional registers so it's possible
+> to configure it.
+> 
+> One USI register called USI_OPTION has reset value of 0x0. Because of
+> this the clock gating behavior is controlled by hardware (HWACG =
+> Hardware Auto Clock Gating), which simply means the serial won't work
+> after reset as is. In order to make it work, USI_OPTION[2:1] bits must
+> be set to 0b01, so that HWACG is controlled manually (by software).
+> Bits meaning:
+>   - CLKREQ_ON = 1: clock is continuously provided to IP
+>   - CLKSTOP_ON = 0: drive IP_CLKREQ to High (needs to be set along with
+>                     CLKREQ_ON = 1)
+> 
+> USI is not present on older chips, like s3c2410, s3c2412, s3c2440,
+> s3c6400, s5pv210, exynos5433, exynos4210. So the new boolean field
+> '.has_usi' was added to struct s3c24xx_uart_info. USI registers will be
+> only actually accessed when '.has_usi' field is set to "1".
+> 
+> This feature is needed for further serial enablement on Exynos850, but
+> some other new Exynos chips (like Exynos9810) may benefit from this
+> feature as well.
 > 
 > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 > ---
->  drivers/tty/serial/samsung_tty.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
+>  drivers/tty/serial/samsung_tty.c | 33 +++++++++++++++++++++++++++++++-
+>  include/linux/serial_s3c.h       |  9 +++++++++
+>  2 files changed, 41 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 75ccbb08df4a..d059b516a0f4 100644
+> index 9fbc61151c2e..0f3cbd0b37e3 100644
 > --- a/drivers/tty/serial/samsung_tty.c
 > +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -2814,11 +2814,19 @@ static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
->  	.fifosize = { 64, 256, 16, 256 },
->  };
+> @@ -65,6 +65,7 @@ enum s3c24xx_port_type {
+>  struct s3c24xx_uart_info {
+>  	char			*name;
+>  	enum s3c24xx_port_type	type;
+> +	unsigned int		has_usi;
+>  	unsigned int		port_type;
+>  	unsigned int		fifosize;
+>  	unsigned long		rx_fifomask;
+> @@ -1352,6 +1353,29 @@ static int apple_s5l_serial_startup(struct uart_port *port)
+>  	return ret;
+>  }
 >  
-> +static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
-> +	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(1),
-> +	.fifosize = { 0, },
+> +static void exynos_usi_init(struct uart_port *port)
+> +{
+> +	struct s3c24xx_uart_port *ourport = to_ourport(port);
+> +	struct s3c24xx_uart_info *info = ourport->info;
+> +
+> +	if (!info->has_usi)
+> +		return;
+> +
+> +	/*
+> +	 * USI_RESET is an active High signal. Reset value of USI_RESET is 0x1
+> +	 * to drive stable value to PAD. Due to this feature, the USI_RESET must
+> +	 * be cleared (set as 0x0) before starting a transaction.
 
-This does not look correct. You rely on samsung,uart-fifosize property
-but it is optional.
+"before starting a transaction" suggests it is related with transaction
+or something before starting it. Don't you need it simply after reset or
+resume?
+
+> +	 */
+> +	wr_regl(port, USI_CON, USI_RESET);
+
+You are clearing entire register, not only USI_RESET bitfield. Is it
+really what you want?
+
+> +	udelay(1);
+> +
+> +	/*
+> +	 * Set the HWACG option bit in case of UART Rx mode.
+> +	 * CLKREQ_ON = 1, CLKSTOP_ON = 0 (set USI_OPTION[2:1] = 0x1).
+> +	 */
+> +	wr_regl(port, USI_OPTION, USI_HWACG_CLKREQ_ON);
+> +}
+> +
+>  /* power power management control */
+>  
+>  static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+> @@ -1379,6 +1403,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+>  		if (!IS_ERR(ourport->baudclk))
+>  			clk_prepare_enable(ourport->baudclk);
+>  
+> +		exynos_usi_init(port);
+>  		break;
+>  	default:
+>  		dev_err(port->dev, "s3c24xx_serial: unknown pm %d\n", level);
+> @@ -2102,6 +2127,8 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+>  	if (ret)
+>  		pr_warn("uart: failed to enable baudclk\n");
+>  
+> +	exynos_usi_init(port);
+> +
+>  	/* Keep all interrupts masked and cleared */
+>  	switch (ourport->info->type) {
+>  	case TYPE_S3C6400:
+> @@ -2750,10 +2777,11 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+>  #endif
+>  
+>  #if defined(CONFIG_ARCH_EXYNOS)
+> -#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
+> +#define EXYNOS_COMMON_SERIAL_DRV_DATA_USI(_has_usi)		\
+>  	.info = &(struct s3c24xx_uart_info) {			\
+>  		.name		= "Samsung Exynos UART",	\
+>  		.type		= TYPE_S3C6400,			\
+> +		.has_usi	= _has_usi,			\
+>  		.port_type	= PORT_S3C6400,			\
+>  		.has_divslot	= 1,				\
+>  		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
+> @@ -2773,6 +2801,9 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+>  		.has_fracval	= 1,				\
+>  	}							\
+>  
+> +#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
+> +	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(0)
+> +
+>  static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
+>  	EXYNOS_COMMON_SERIAL_DRV_DATA,
+>  	.fifosize = { 256, 64, 16, 16 },
+> diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
+> index f6c3323fc4c5..013c2646863e 100644
+> --- a/include/linux/serial_s3c.h
+> +++ b/include/linux/serial_s3c.h
+> @@ -28,6 +28,15 @@
+>  #define S3C2410_UFSTAT	  (0x18)
+>  #define S3C2410_UMSTAT	  (0x1C)
+>  
+> +/* USI Control Register offset */
+> +#define USI_CON			(0xC4)
+> +/* USI Option Register offset */
+> +#define USI_OPTION		(0xC8)
+> +/* USI_CON[0] = 0b0: clear USI global software reset (Active High) */
+> +#define USI_RESET		(0<<0)
+
+Just 0x0. I understand you wanted to hint it is a bit field, but the
+shift of 0 actually creates more questions.
 
 
 Best regards,
