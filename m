@@ -2,60 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D58C43214
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 14:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E431CC41537
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 14:49:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2AC0F610A2
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 14:49:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D245360C3F
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jul 2021 14:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239304AbhG3Otc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Jul 2021 10:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
+        id S239413AbhG3Ote (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Jul 2021 10:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239320AbhG3Otb (ORCPT
+        with ESMTP id S239351AbhG3Otc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Jul 2021 10:49:31 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47F7C0613D5
-        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 07:49:25 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id cf5so1993744edb.2
-        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 07:49:25 -0700 (PDT)
+        Fri, 30 Jul 2021 10:49:32 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E38C061798
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 07:49:27 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id h8so13545901ede.4
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jul 2021 07:49:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5PHkR+YSvqa36gxNmyyX6WoOgZM8UVlxbzCVysbca2U=;
-        b=ppXxSci0wZJY7XnVRY4yu+4+WjQPwflcLFwiLy+QQ2ntOFZXb3dYBrtgAZwQGOi+NV
-         8ryr8dUU1x3Pk72hg5RJMDLvQ6HSfUlWQ8EhsjLq8MHTWl9lHdDa4QV/YXWlXDc0UCNe
-         memZ6BED5+EO4wvTQgR1+L8lXlCDQ5+LPoltjuRKc5UlGaxNzX9gLhdJYS/OBhee8/Vc
-         vF93q4YTSPaGqnxeDvez4Id9seJG7z85l00ime4MS8Q4naLZzzVDb/iC/jBEJatL+c+8
-         imSkgBkD7IX3F6D//6uXm7OsGe26LDkBDkshApcHXIjIpdAH4bgPtgEvxKRogza7ZtXh
-         y8SQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VTDgPgWodE/cSRF6bHIc6D1D5Dn1jvPwRYXuY/lAMLo=;
+        b=TkueiDTdOMqYTmTxIiWclFQDmAoJQIi9pKg/pDn4T1rA2VjfILkGJNRgYCunu870MP
+         qypWhzFqenbxNDZV4QPpZvTBiL0T6ZzwAkBRHMaovinMWM8mTUwcZ1jc6pskjFipGKIM
+         IXhUOo6SBJYFp2Yht0rWwR6rKjHOixSLarchv5uf56EVbCILFXRb+G0Y547em6aa4I8/
+         BqZr3+joyNVs85IjpkswpDcIjciP+mlO9g6EoGxO1/d3NIEJTlZbuskA5bb08gAkGtd4
+         2oFBaMMAzmc1lYRJdhu9xkPqeQH6gQLUdBaAq+YpDbbvFgnFduiJnZeySi1IBccyGB81
+         Sgjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5PHkR+YSvqa36gxNmyyX6WoOgZM8UVlxbzCVysbca2U=;
-        b=JWduR2/Q7rY/QpyyqrZIemyg4GPfe5ozwMnwNKtLLAr+bg9NPJIhE9dNX0ke7l4q9d
-         +aZf9ldV1jiVVv/8WfBGLoredINP2EDJLs/9lDtiCBLskH8o41XQ4qYBpOqMpqOfIwZ1
-         YwynjponAcN5gcQYIvpKVLLYPKx8uApNDkder+KK4zM9xYskIIDtKpUuv2KZ/2Vu9zLX
-         p0GNpTDA70t3V6bWgQvM+H0zTyMtG9HmtIo50Gbi7HQrRaWDdugoOhbiVioCoiGEEfDq
-         O1KaT3lF7eypjqzW4VQwQj9Ed6x+ezNQYKViMLdLWKsws7mZz2lGwlY7QFUOTgdp/Rb6
-         P/MA==
-X-Gm-Message-State: AOAM530z2gKXIR6NS+6wq4xlcZibYQs+AXY+mz2PsRGy9H5BSE6owpSS
-        7Rp1rNLaGbFfkL5zjg+MOxWwiA==
-X-Google-Smtp-Source: ABdhPJwdxvjBr38jNA7cLuHBawxASA9D/0kL5M54NafNl/0JLAWo7243dU/nVXHaEZWEexPUYsyDJw==
-X-Received: by 2002:a05:6402:49a:: with SMTP id k26mr3291469edv.279.1627656564172;
-        Fri, 30 Jul 2021 07:49:24 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VTDgPgWodE/cSRF6bHIc6D1D5Dn1jvPwRYXuY/lAMLo=;
+        b=HZa3wBoFN7ocO84qdH3cJ7nKvaeJ60aUWTcDXJ4CpUvH53FrfPpMpoY1fZ1vo7TBFw
+         u+YKjYtyGvw8xFHLA98YBzw4nXJuaLUtZNbMXgsAnbK7A0SSc8c0QW2RYUqqVtB/1b1T
+         bSonDbJRVPLoDSqAQsW4HodQiRO2STLbc5LdTLtFQMmFawGlucViEZqPEha7PKo89vW2
+         2FfvgRVkN5rWTQ/ss8s4o6BokZyInKDwx9MJ1Yee23eNdZSl3XFAuMBVBQF6xeqZwbdQ
+         jCCtzOHbgiqs8rYQg6S/P7lalKfqlIVjBMpDpQJWESoUOzyoJl5DXYUmHKWAjSTPRDYk
+         8sEQ==
+X-Gm-Message-State: AOAM532nbefWOv7Yiv/d9C4bIAfJGt2J/gEv7jzqbfwSBQ0XpSKmPNG/
+        ViNbFCDMm4lcuPvwFoE3rTD97Q==
+X-Google-Smtp-Source: ABdhPJwQ3Vu/iMAI2TwOY1RDcotd+8kXvX1qj2ZROjO1I6ex2OtKHUvLBmtYk8c0mf//n0KTncs5Fw==
+X-Received: by 2002:a05:6402:31ba:: with SMTP id dj26mr3436625edb.252.1627656565567;
+        Fri, 30 Jul 2021 07:49:25 -0700 (PDT)
 Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id p16sm785006eds.73.2021.07.30.07.49.23
+        by smtp.gmail.com with ESMTPSA id o17sm629581ejb.84.2021.07.30.07.49.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jul 2021 07:49:23 -0700 (PDT)
+        Fri, 30 Jul 2021 07:49:25 -0700 (PDT)
 From:   Sam Protsenko <semen.protsenko@linaro.org>
 To:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Chanwoo Choi <cw00.choi@samsung.com>,
@@ -76,66 +76,47 @@ Cc:     Rob Herring <robh+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
         linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH 00/12] Add minimal support for Exynos850 SoC
-Date:   Fri, 30 Jul 2021 17:49:10 +0300
-Message-Id: <20210730144922.29111-1-semen.protsenko@linaro.org>
+Subject: [PATCH 01/12] pinctrl: samsung: Fix pinctrl bank pin count
+Date:   Fri, 30 Jul 2021 17:49:11 +0300
+Message-Id: <20210730144922.29111-2-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210730144922.29111-1-semen.protsenko@linaro.org>
+References: <20210730144922.29111-1-semen.protsenko@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch series adds initial platform support for Samsung Exynos850
-SoC [1]. With this patchset it's possible to run the kernel with BusyBox
-rootfs as a RAM disk. More advanced platform support (like MMC driver
-additions) will be added later. The idea is to keep the first submission
-minimal to ease the review, and then build up on top of that.
+From: Jaehyoung Choi <jkkkkk.choi@samsung.com>
 
-[1] https://www.samsung.com/semiconductor/minisite/exynos/products/mobileprocessor/exynos-850/
+Commit 1abd18d1a51a ("pinctrl: samsung: Register pinctrl before GPIO")
+changes the order of GPIO and pinctrl registration: now pinctrl is
+registered before GPIO. That means gpio_chip->ngpio is not set when
+samsung_pinctrl_register() called, and one cannot rely on that value
+anymore. Use `pin_bank->nr_pins' instead of `pin_bank->gpio_chip.ngpio'
+to fix mentioned inconsistency.
 
-Jaehyoung Choi (1):
-  pinctrl: samsung: Fix pinctrl bank pin count
+Fixes: 1abd18d1a51a ("pinctrl: samsung: Register pinctrl before GPIO")
+Signed-off-by: Jaehyoung Choi <jkkkkk.choi@samsung.com>
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+---
+ drivers/pinctrl/samsung/pinctrl-samsung.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Sam Protsenko (11):
-  pinctrl: samsung: Add Exynos850 SoC specific data
-  dt-bindings: pinctrl: samsung: Add Exynos850 doc
-  tty: serial: samsung: Init USI to keep clocks running
-  tty: serial: samsung: Fix driver data macros style
-  tty: serial: samsung: Add Exynos850 SoC data
-  dt-bindings: serial: samsung: Add Exynos850 doc
-  MAINTAINERS: Cover Samsung clock YAML bindings
-  dt-bindings: clock: Add bindings for Exynos850 clock controller
-  clk: samsung: Add Exynos850 clock driver stub
-  dt-bindings: interrupt-controller: Add IRQ constants for Exynos850
-  arm64: dts: exynos: Add Exynos850 SoC support
-
- .../bindings/clock/exynos850-clock.yaml       |  70 ++
- .../bindings/pinctrl/samsung-pinctrl.txt      |   1 +
- .../bindings/serial/samsung_uart.yaml         |   1 +
- MAINTAINERS                                   |   3 +-
- .../boot/dts/exynos/exynos850-pinctrl.dtsi    | 782 ++++++++++++++++++
- arch/arm64/boot/dts/exynos/exynos850-usi.dtsi |  30 +
- arch/arm64/boot/dts/exynos/exynos850.dtsi     | 245 ++++++
- drivers/clk/samsung/Makefile                  |   1 +
- drivers/clk/samsung/clk-exynos850.c           |  63 ++
- .../pinctrl/samsung/pinctrl-exynos-arm64.c    | 129 +++
- drivers/pinctrl/samsung/pinctrl-exynos.h      |  29 +
- drivers/pinctrl/samsung/pinctrl-samsung.c     |   4 +-
- drivers/pinctrl/samsung/pinctrl-samsung.h     |   1 +
- drivers/tty/serial/samsung_tty.c              |  50 +-
- include/dt-bindings/clock/exynos850.h         | 267 ++++++
- .../interrupt-controller/exynos850.h          | 290 +++++++
- include/linux/serial_s3c.h                    |   9 +
- 17 files changed, 1970 insertions(+), 5 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/exynos850-clock.yaml
- create mode 100644 arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi
- create mode 100644 arch/arm64/boot/dts/exynos/exynos850-usi.dtsi
- create mode 100644 arch/arm64/boot/dts/exynos/exynos850.dtsi
- create mode 100644 drivers/clk/samsung/clk-exynos850.c
- create mode 100644 include/dt-bindings/clock/exynos850.h
- create mode 100644 include/dt-bindings/interrupt-controller/exynos850.h
-
+diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.c b/drivers/pinctrl/samsung/pinctrl-samsung.c
+index 376876bd6605..2975b4369f32 100644
+--- a/drivers/pinctrl/samsung/pinctrl-samsung.c
++++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
+@@ -918,7 +918,7 @@ static int samsung_pinctrl_register(struct platform_device *pdev,
+ 		pin_bank->grange.pin_base = drvdata->pin_base
+ 						+ pin_bank->pin_base;
+ 		pin_bank->grange.base = pin_bank->grange.pin_base;
+-		pin_bank->grange.npins = pin_bank->gpio_chip.ngpio;
++		pin_bank->grange.npins = pin_bank->nr_pins;
+ 		pin_bank->grange.gc = &pin_bank->gpio_chip;
+ 		pinctrl_add_gpio_range(drvdata->pctl_dev, &pin_bank->grange);
+ 	}
 -- 
 2.30.2
 
