@@ -7,62 +7,64 @@ X-Spam-Status: No, score=-7.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCD2C4320A
-	for <linux-serial@archiver.kernel.org>; Sat, 31 Jul 2021 07:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB14C4338F
+	for <linux-serial@archiver.kernel.org>; Sat, 31 Jul 2021 08:13:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2899C60F35
-	for <linux-serial@archiver.kernel.org>; Sat, 31 Jul 2021 07:29:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA0A760FE7
+	for <linux-serial@archiver.kernel.org>; Sat, 31 Jul 2021 08:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbhGaH3q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 31 Jul 2021 03:29:46 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:41054
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229724AbhGaH3q (ORCPT
+        id S229703AbhGaINI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 31 Jul 2021 04:13:08 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:56750
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230338AbhGaINI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 31 Jul 2021 03:29:46 -0400
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        Sat, 31 Jul 2021 04:13:08 -0400
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id BB2D83F23F
-        for <linux-serial@vger.kernel.org>; Sat, 31 Jul 2021 07:29:39 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 6A7443F106
+        for <linux-serial@vger.kernel.org>; Sat, 31 Jul 2021 08:13:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627716579;
-        bh=7szpzek0sYJQJU9q3jPOrpIZQhKhL2Waoumc2yNvU78=;
-        h=To:Cc:References:From:Subject:Message-ID:Date:MIME-Version:
+        s=20210705; t=1627719181;
+        bh=HofaMjseVcCUgqSYBsyKnJ2om6JL+Ag5g9O40Ge5/aA=;
+        h=Subject:From:To:Cc:References:Message-ID:Date:MIME-Version:
          In-Reply-To:Content-Type;
-        b=gK78iDW31WXNAKEY4Te/5C3LOWAvuswD7dRowoPNOqIa7S7gKSrL/h4sAjkLqOmO4
-         690GdyEGZKfaksZdIxDQ1bhvZLp0inZ7qBzjfR/FNodDiojeXoiH3dvv+/uho0iY4K
-         uL2Gwcr5PesTeHH0lexDebXVRP8SM9tRaBgBTQsWaGyKQUdwLU95OZ3GPzDLWLyOA5
-         mQAi3umgoOZLfoCSHXlqlNfzh/nrx6B9srMGjZ47Oho4xhDRjxlI1Lcz9akh46w8r6
-         sTrfPNVbyRMVPs4y2HaRSeOBvxQwVyITfQOvCW8h4iQqVXJYMnjtMHOR/WbbXat/Bq
-         qcoorMFnGj/fg==
-Received: by mail-ej1-f69.google.com with SMTP id a19-20020a1709063e93b0290551ea218ea2so3725530ejj.5
-        for <linux-serial@vger.kernel.org>; Sat, 31 Jul 2021 00:29:39 -0700 (PDT)
+        b=cFHIgSPpu/sGsOPndTjRXGDBAd0529AJshrSWTSCtsihiiFpB9HHQ7914mT26qELD
+         f9aX9K5tF1HLyttQFOC/98yiVH93FUYzVIKjAFfjDDIpFRIIMzSEoIRHdHWxWwAvxo
+         yORNBOJVppsPMiq2XtoOjGKV11uLlDYdxDgdQ1OwMe7jC1vEF9QyaiLzhMgHPu3FUr
+         wALe54UxHbkWWugLq+45Tj2+UFTsayom9qEHPsoU/BQExqGr6kWzcbMJG1yYBEvgBb
+         odzPmzXZTNXB8LV50qo38j3/x6U/Vta6NU0lO+19BoHxk4VEhNzKjo83b3QOak3UdB
+         zaDZOLPYn1PQw==
+Received: by mail-wr1-f70.google.com with SMTP id p12-20020a5d68cc0000b02901426384855aso4037498wrw.11
+        for <linux-serial@vger.kernel.org>; Sat, 31 Jul 2021 01:13:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=7szpzek0sYJQJU9q3jPOrpIZQhKhL2Waoumc2yNvU78=;
-        b=h8nfyaN3fRSQXnUz8jivFU9Kl8/OheRJi/1gQNNcYz5lKt4DTcohCXkfAoZmTRROIg
-         gmsGEIxwxaokCTDRfGYKriDY0e5Sp3IehoP/fB7VCKuageCQQFijF7zp7eM01aV+KNN/
-         HewbYVqAI5z/WEWmLchuOGWGI/hX/29se40cZpPzWyfZQHPuDtXvfR+OpPy9jCTJ+Vwn
-         +t/x4UKfdNvnS5gC7EMNMLkduXZ7W6fiN4S6GCbKL1mAYRH0Jw7m3zheXtTh033LYfiv
-         28a/A71LyXXZ9i9FEwEqLR+bN4RI0ZSRgNOPXB89QzB/vANdZ1FjcjOHNLQO/xC3P/jH
-         Pf2A==
-X-Gm-Message-State: AOAM531A3P+YCm2D/0VYJ41Pyg7uNHAldyjj1VAYnyLYU4JXb++ucmx3
-        Gl7sXQ9LgMGnxjQPtARICEhhi8fucHr2UFMYCnfwnK7uf9mmaLREMtuyEM9oTajFLndfJ8R1uln
-        1ldLMi3LqmpmyQyfOrAre1bHoLYQncT6YBz9hNXN0Ug==
-X-Received: by 2002:a05:6402:299:: with SMTP id l25mr7768584edv.283.1627716579287;
-        Sat, 31 Jul 2021 00:29:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxUxBOyxyGNdZMeniqKHPWuWGs2AKaZZj7ShbIHSxUlg3RJCNhhDtExvwhxpbohpRLzf5RItQ==
-X-Received: by 2002:a05:6402:299:: with SMTP id l25mr7768575edv.283.1627716579171;
-        Sat, 31 Jul 2021 00:29:39 -0700 (PDT)
+        bh=HofaMjseVcCUgqSYBsyKnJ2om6JL+Ag5g9O40Ge5/aA=;
+        b=rfltWHZ3pvEe8SmJ0aICmqfSCZ6kPfkITom2SBah/YgvbhZpPLcRfTwEw7SQbg3fTJ
+         7RDz19MvmwwvdGAQvwHm6tjTPiFDXKipEukOqRFIraQNltHjsqr98LmrBDFTrMXI9n/Q
+         EzRwqPSrOjWQhlIIs+clGFOTvwFAxs57su7Lk1FhGuRFgRhk9sJJYbCHAHtZ4KzbbiII
+         Y4zc7+nAMWXzTRW9BeBNg7IDvWzsSaOKsiN7cmHovHrptBrwVAe0PqbSUFljzgpx3UqK
+         1fyXqtojl7aPBbGSQPI6xiu+G4npPF/TP4tnZNayZN8g8jtTQHufl8jrEMRRPYv4KkiU
+         VtLA==
+X-Gm-Message-State: AOAM533k8B75sNU84z1zb5PJal0VfO6qpEhOpDCshj1sNiqKE2usAVK+
+        NEhrDTooZKmAtBxzvisZi3PoIUuJCsMNZ4pf9nodBUnhzvYuHzPFwqxX5VwN9MijCvIgNtmN334
+        FRjASRvpyoxXBmqvPXzApG2uS0nNUGXriWngefJB5Zg==
+X-Received: by 2002:a17:906:cd1a:: with SMTP id oz26mr6577404ejb.101.1627719170294;
+        Sat, 31 Jul 2021 01:12:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwm7c/vYPdEZ6qJ4RX+9vAac/dbPuwTMcFunGU0oW5pq2v9q/TLiem2CXVaQ4vIsN9WXGr5Fg==
+X-Received: by 2002:a17:906:cd1a:: with SMTP id oz26mr6577395ejb.101.1627719170126;
+        Sat, 31 Jul 2021 01:12:50 -0700 (PDT)
 Received: from [192.168.8.102] ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id v13sm1361312ejh.62.2021.07.31.00.29.37
+        by smtp.gmail.com with ESMTPSA id r16sm1860561edt.15.2021.07.31.01.12.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Jul 2021 00:29:38 -0700 (PDT)
+        Sat, 31 Jul 2021 01:12:49 -0700 (PDT)
+Subject: Re: [PATCH 00/12] Add minimal support for Exynos850 SoC
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Sam Protsenko <semen.protsenko@linaro.org>
 Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Chanwoo Choi <cw00.choi@samsung.com>,
@@ -90,76 +92,83 @@ References: <20210730144922.29111-1-semen.protsenko@linaro.org>
  <5e35b0a7-13aa-3c62-ca49-14af2fcb2a08@canonical.com>
  <c3486111-0ec9-9679-d2a2-68b2f33a2450@canonical.com>
  <CAPLW+4kbnJEBkc0D=RWt59JxBan8X1uDy6sSXBiYAq8N9FDV6A@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH 00/12] Add minimal support for Exynos850 SoC
-Message-ID: <13f166bb-7103-25d5-35a6-8ec53a1f1817@canonical.com>
-Date:   Sat, 31 Jul 2021 09:29:36 +0200
+ <13f166bb-7103-25d5-35a6-8ec53a1f1817@canonical.com>
+Message-ID: <2dacc205-04ce-c206-a393-50ba0d5aa1a7@canonical.com>
+Date:   Sat, 31 Jul 2021 10:12:47 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <CAPLW+4kbnJEBkc0D=RWt59JxBan8X1uDy6sSXBiYAq8N9FDV6A@mail.gmail.com>
+In-Reply-To: <13f166bb-7103-25d5-35a6-8ec53a1f1817@canonical.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 30/07/2021 21:02, Sam Protsenko wrote:
-> Hi Krzysztof,
-> 
-> On Fri, 30 Jul 2021 at 20:21, Krzysztof Kozlowski
-> <krzysztof.kozlowski@canonical.com> wrote:
+On 31/07/2021 09:29, Krzysztof Kozlowski wrote:
+> On 30/07/2021 21:02, Sam Protsenko wrote:
+>> Hi Krzysztof,
 >>
->> On 30/07/2021 17:18, Krzysztof Kozlowski wrote:
->>> On 30/07/2021 16:49, Sam Protsenko wrote:
->>>> This patch series adds initial platform support for Samsung Exynos850
->>>> SoC [1]. With this patchset it's possible to run the kernel with BusyBox
->>>> rootfs as a RAM disk. More advanced platform support (like MMC driver
->>>> additions) will be added later. The idea is to keep the first submission
->>>> minimal to ease the review, and then build up on top of that.
->>>>
->>>> [1] https://www.samsung.com/semiconductor/minisite/exynos/products/mobileprocessor/exynos-850/
->>>>
+>> On Fri, 30 Jul 2021 at 20:21, Krzysztof Kozlowski
+>> <krzysztof.kozlowski@canonical.com> wrote:
 >>>
->>> Great work!
->>>
-> 
-> Thanks, Krzysztof! And thank you for reviewing the whole series.
-> 
->>> What's the SoC revision number (should be accessible via
->>> /sys/bus/soc/devices/soc0/)? Recent wrap in numbering of Exynos chips
->>> might bring confusion...
-> 
-> # cat /sys/devices/soc0/revision
-> 0
-
-soc_id but you're right it won't be set for unknown SoCs. You need to
-extend drivers/soc/samsung/exynos-chipid.c to parse new values (E3830000
-for product ID) and maybe new register offsets (previous offset is 0x0,
-for 3830 is 0x10 I think). Also revision mask might change.
-
->> Judging by vendor's sources it is quite confusing. It looks mostly like
->> Exynos3830 but in few other cases it uses Exynos9 compatibles (Exynos9,
->> Exynos9820). Only in few places there is Exynos850. Marketing department
->> made it so confusing...  The revision embedded in SoC would be very
->> interesting.
+>>> On 30/07/2021 17:18, Krzysztof Kozlowski wrote:
+>>>> On 30/07/2021 16:49, Sam Protsenko wrote:
+>>>>> This patch series adds initial platform support for Samsung Exynos850
+>>>>> SoC [1]. With this patchset it's possible to run the kernel with BusyBox
+>>>>> rootfs as a RAM disk. More advanced platform support (like MMC driver
+>>>>> additions) will be added later. The idea is to keep the first submission
+>>>>> minimal to ease the review, and then build up on top of that.
+>>>>>
+>>>>> [1] https://www.samsung.com/semiconductor/minisite/exynos/products/mobileprocessor/exynos-850/
+>>>>>
+>>>>
+>>>> Great work!
+>>>>
 >>
+>> Thanks, Krzysztof! And thank you for reviewing the whole series.
+>>
+>>>> What's the SoC revision number (should be accessible via
+>>>> /sys/bus/soc/devices/soc0/)? Recent wrap in numbering of Exynos chips
+>>>> might bring confusion...
+>>
+>> # cat /sys/devices/soc0/revision
+>> 0
 > 
-> As I understand, this SoC is called Exynos850 everywhere now.
-> Exynos3830 is its old name, not used anymore. As you noticed from
-> patch #2, it shares some definitions with Exynos9 SoC, so I guess some
-> software is similar for both architectures. Not sure about hardware
-> though, never worked with Exynos9 CPUs. Anyway, I asked Samsung
-> representatives about naming, and it seems like we should stick to
-> "Exynos850" name, even in code.
+> soc_id but you're right it won't be set for unknown SoCs. You need to
+> extend drivers/soc/samsung/exynos-chipid.c to parse new values (E3830000
+> for product ID) and maybe new register offsets (previous offset is 0x0,
+> for 3830 is 0x10 I think). Also revision mask might change.
+> 
+>>> Judging by vendor's sources it is quite confusing. It looks mostly like
+>>> Exynos3830 but in few other cases it uses Exynos9 compatibles (Exynos9,
+>>> Exynos9820). Only in few places there is Exynos850. Marketing department
+>>> made it so confusing...  The revision embedded in SoC would be very
+>>> interesting.
+>>>
+>>
+>> As I understand, this SoC is called Exynos850 everywhere now.
+>> Exynos3830 is its old name, not used anymore. As you noticed from
+>> patch #2, it shares some definitions with Exynos9 SoC, so I guess some
+>> software is similar for both architectures. Not sure about hardware
+>> though, never worked with Exynos9 CPUs. Anyway, I asked Samsung
+>> representatives about naming, and it seems like we should stick to
+>> "Exynos850" name, even in code.
+> 
+> 
+> Since the chip identifies itself as E3830000, I would prefer naming
+> matching real product ID instead of what is pushed by marketing or sales
+> representatives. The marketing names don't have to follow any
+> engineering rules, they can be changed and renamed. Sales follows rather
+> money and corporate rules, not consistency for upstream project.
 
-
-Since the chip identifies itself as E3830000, I would prefer naming
-matching real product ID instead of what is pushed by marketing or sales
-representatives. The marketing names don't have to follow any
-engineering rules, they can be changed and renamed. Sales follows rather
-money and corporate rules, not consistency for upstream project.
+On the other hand we have already two exceptions for naming
+inconsistency - Exynos3250 identifies itself as 3472 (which is confusing
+because 3250 is two core and there is a separate quad-core
+Exyons3472...) and Exynos5800 is actually marketing name for a revision
+of Exynos5422. Maybe indeed will be easier to go with the branded name
+850...
 
 
 Best regards,
