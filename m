@@ -6,44 +6,44 @@ X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99781C4320A
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 20:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F60EC4338F
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 21:24:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 76ECE60F93
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 20:57:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5E38B6023F
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 21:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231433AbhHBU6E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Aug 2021 16:58:04 -0400
-Received: from mail-io1-f48.google.com ([209.85.166.48]:37667 "EHLO
-        mail-io1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbhHBU6E (ORCPT
+        id S230313AbhHBVY3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 Aug 2021 17:24:29 -0400
+Received: from mail-il1-f176.google.com ([209.85.166.176]:40781 "EHLO
+        mail-il1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229567AbhHBVY2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Aug 2021 16:58:04 -0400
-Received: by mail-io1-f48.google.com with SMTP id r18so21915937iot.4;
-        Mon, 02 Aug 2021 13:57:54 -0700 (PDT)
+        Mon, 2 Aug 2021 17:24:28 -0400
+Received: by mail-il1-f176.google.com with SMTP id d10so17759713ils.7;
+        Mon, 02 Aug 2021 14:24:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Hv9R9uX/9Exwcr0vk3gW4fJPMgYHDULDKeCFcu/R1KM=;
-        b=kmU9Tc9voZMV3VoO2dAN86grqQi/SedWcrUfCSnmJFp+hR/5a1RMZqyOKIY8UbDbW8
-         Nyk4zk44bGEkcVC/Pxm8YVkxr49ATmiicdp41sV8scYJBN4btKQrsxaSoVWL26J2Y+ac
-         pK/wX3bdkx/YzKdUiHt6m0Mg2AceT5M2FpgXnyMyrf5+Xu/UekEtgGcaGpJy/des4xEe
-         r+N+ETFhdHmRl0sHjxMrkNx/j1qYIgX3vidJIukncVSxcxji4LpGMO4yNpjcv9oliD2R
-         QM+A1XzALpaqqJY/cppXFdFCzBeF18XBZCbvdWSYnv7WyQIXFplFaV76j6LjPNiJnmQs
-         /LZw==
-X-Gm-Message-State: AOAM5304z/MudEIWln5LDB8ifRjgoEENT3G3hNfq150P5fCAckD362vL
-        g85I757WQNdCUpU8t+fPnwahKNBXMA==
-X-Google-Smtp-Source: ABdhPJzixwLjci4+iW7Ky6PRSd/rUvs5wjNDYhhd29hWdI5dE8PIPAqhPrVTQtWnhpRdzTVupn7DFw==
-X-Received: by 2002:a02:ca19:: with SMTP id i25mr16481252jak.78.1627937873930;
-        Mon, 02 Aug 2021 13:57:53 -0700 (PDT)
+        bh=tuVZ24LVGMoBzY6dKcuqHBiIi1ycbFa41YAKYiSlnEU=;
+        b=m3cWAf31IBxGk/kHBaG/a7m+obK7N3wd9dGFXwvxX1MdQwIVxWmdYznFdpLzO3SFXo
+         LqrVXkd2rp+x90GjqNj+GGEFnE2AlxcV1mVAlKR/LYbjhghyZrtYqJG7o0MKclTjXgwD
+         PAB+trDoFJQh8qkPvKYvxUEzfTTYOx9Bh1EHklmypR3GDLMhGdBeF3wPGAiEkWuCn34e
+         +z12mw2e3ni1OYlToxGLsxZlGHVZlod1sp4J24DVdVwCbYSptG/WVqjx2AScjxNBmcJO
+         MblJtCv27utEyrsfjtn5LeJYFkYt4h61m+hGrSB/dECfN2OuzAc/cLw2yhxS5AV5qX59
+         m89Q==
+X-Gm-Message-State: AOAM533rtkAYVLf7uoooXl7/gJrbZHl/nC+suRNNZ2MpzvP/OGDHUAtC
+        8rQzVQU/+/hoz5Fb/2543A==
+X-Google-Smtp-Source: ABdhPJyelfwLh59fnuv6TYF7OQgdh2i7svgVS8hXg0hxqVdxCNAZn65bZTLeZnDbA9sl5YLkksGwVg==
+X-Received: by 2002:a92:190f:: with SMTP id 15mr1294800ilz.45.1627939458494;
+        Mon, 02 Aug 2021 14:24:18 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id o13sm6285739ilq.58.2021.08.02.13.57.51
+        by smtp.gmail.com with ESMTPSA id t1sm6359686ilf.34.2021.08.02.14.24.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 13:57:52 -0700 (PDT)
-Received: (nullmailer pid 1597856 invoked by uid 1000);
-        Mon, 02 Aug 2021 20:57:50 -0000
-Date:   Mon, 2 Aug 2021 14:57:50 -0600
+        Mon, 02 Aug 2021 14:24:17 -0700 (PDT)
+Received: (nullmailer pid 1638528 invoked by uid 1000);
+        Mon, 02 Aug 2021 21:24:16 -0000
+Date:   Mon, 2 Aug 2021 15:24:16 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Sean Anderson <sean.anderson@seco.com>
 Cc:     Peter Korsgaard <peter.korsgaard@barco.com>,
@@ -54,129 +54,108 @@ Cc:     Peter Korsgaard <peter.korsgaard@barco.com>,
         Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
         Alexander Sverdlin <alexander.sverdlin@nokia.com>,
         devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] dt-bindings: serial: uartlite: Convert to
- json-schema
-Message-ID: <YQhcTmq9NIiOkaMS@robh.at.kernel.org>
+Subject: Re: [PATCH v2 2/4] dt-bindings: serial: uartlite: Add properties for
+ synthesis-time parameters
+Message-ID: <YQhigKhqp0VvrBr0@robh.at.kernel.org>
 References: <20210727221740.1997731-1-sean.anderson@seco.com>
- <20210727221740.1997731-2-sean.anderson@seco.com>
+ <20210727221740.1997731-3-sean.anderson@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210727221740.1997731-2-sean.anderson@seco.com>
+In-Reply-To: <20210727221740.1997731-3-sean.anderson@seco.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 06:17:37PM -0400, Sean Anderson wrote:
-> This converts the existing documentation for the uartlite binding to
-> json-schema.
+On Tue, Jul 27, 2021 at 06:17:38PM -0400, Sean Anderson wrote:
+> The uartlite device is a "soft" device. Many parameters, such as baud
+> rate, data bits, and the presence of a parity bit are configured before
+> synthesis and may not be changed (or discovered) at runtime. However, we
+> must know what these settings are in order to properly calculate the
+> uart timeout (and to inform the user about the actual baud of the uart).
+> 
+> These properties are present for out-of-tree bindings generated by
+> Xilinx's tools. However, they are also (mostly) present in in-tree
+> bindings. I chose current-speed over xlnx,baudrate primarily because it
+> seemed to be used by more existing bindings. Although these properties
+> are marked as "required", note that only current-speed is required by
+> the driver itself. Hopefully, this will allow for an easier transition.
 > 
 > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 > ---
 > 
 > (no changes since v1)
 > 
->  .../bindings/serial/xlnx,opb-uartlite.txt     | 23 --------
->  .../bindings/serial/xlnx,opb-uartlite.yaml    | 53 +++++++++++++++++++
->  2 files changed, 53 insertions(+), 23 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
+>  .../bindings/serial/xlnx,opb-uartlite.yaml    | 39 +++++++++++++++++++
+>  1 file changed, 39 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
-> deleted file mode 100644
-> index c37deb44dead..000000000000
-> --- a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
-> +++ /dev/null
-> @@ -1,23 +0,0 @@
-> -Xilinx Axi Uartlite controller Device Tree Bindings
-> ----------------------------------------------------------
-> -
-> -Required properties:
-> -- compatible		: Can be either of
-> -				"xlnx,xps-uartlite-1.00.a"
-> -				"xlnx,opb-uartlite-1.00.b"
-> -- reg			: Physical base address and size of the Axi Uartlite
-> -			  registers map.
-> -- interrupts		: Should contain the UART controller interrupt.
-> -
-> -Optional properties:
-> -- port-number		: Set Uart port number
-> -- clock-names		: Should be "s_axi_aclk"
-> -- clocks		: Input clock specifier. Refer to common clock bindings.
-> -
-> -Example:
-> -serial@800c0000 {
-> -	compatible = "xlnx,xps-uartlite-1.00.a";
-> -	reg = <0x0 0x800c0000 0x10000>;
-> -	interrupts = <0x0 0x6e 0x1>;
-> -	port-number = <0>;
-> -};
 > diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-> new file mode 100644
-> index 000000000000..4ef29784ae97
-> --- /dev/null
+> index 4ef29784ae97..28859e70e60f 100644
+> --- a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
 > +++ b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-> @@ -0,0 +1,53 @@
-> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/xlnx,opb-uartlite.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Xilinx Axi Uartlite
-> +
-> +maintainers:
-> +  - Peter Korsgaard <jacmet@sunsite.dk>
-> +
-> +properties:
-> +  compatible:
-> +    contains:
-> +      enum:
-> +        - xlnx,xps-uartlite-1.00.a
-> +        - xlnx,opb-uartlite-1.00.b
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  port-number:
+> @@ -32,13 +32,49 @@ properties:
+>    clock-names:
+>      const: s_axi_aclk
+>  
+> +  current-speed:
 > +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: Set Uart port number
+> +    description:
+> +      The fixed baud rate that the device was configured for.
 > +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    const: s_axi_aclk
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +allOf:
-> +  - $ref: /schemas/serial.yaml#
-> +
-> +additionalProperties: true
+> +  xlnx,data-bits:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [5, 6, 7, 8]
+> +    default: 8
 
-unevaluatedProperties: false
+default with required doesn't make sense as 'default' what value is 
+assumed in the property isn't present.
 
-With that,
-
-Reviewed-by: Rob Herring <robh@kernel.org>
-
+> +    description:
+> +      The fixed number of data bits that the device was configured for.
 > +
-> +examples:
-> +  - |
-> +      serial@800c0000 {
-> +        compatible = "xlnx,xps-uartlite-1.00.a";
-> +        reg = <0x800c0000 0x10000>;
-> +        interrupts = <0x0 0x6e 0x1>;
-> +        port-number = <0>;
-> +      };
-> +...
+> +  xlnx,use-parity:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [0, 1]
+> +    default: 0
+> +    description:
+> +      Whether parity checking was enabled when the device was configured.
+> +
+> +  xlnx,odd-parity:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [0, 1]
+> +    description:
+> +      Whether odd parity was configured.
+> +
+>  required:
+>    - compatible
+>    - reg
+>    - interrupts
+> +  - current-speed
+> +  - xlnx,data-bits
+> +  - xlnx,use-parity
+>  
+>  allOf:
+>    - $ref: /schemas/serial.yaml#
+> +  - if:
+> +      properties:
+> +        xlnx,use-parity:
+> +          contains:
+> +            const: 1
+> +    then:
+> +      required:
+> +        - xlnx,odd-parity
+>  
+>  additionalProperties: true
+>  
+> @@ -49,5 +85,8 @@ examples:
+>          reg = <0x800c0000 0x10000>;
+>          interrupts = <0x0 0x6e 0x1>;
+>          port-number = <0>;
+> +        current-speed = <115200>;
+> +        xlnx,data-bits = <8>;
+> +        xlnx,use-parity = <0>;
+>        };
+>  ...
 > -- 
 > 2.25.1
 > 
