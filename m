@@ -2,118 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 564A7C43216
-	for <linux-serial@archiver.kernel.org>; Sun,  1 Aug 2021 20:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D35C4338F
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 12:50:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4A342610A2
-	for <linux-serial@archiver.kernel.org>; Sun,  1 Aug 2021 20:48:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7DE89610A0
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 12:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231319AbhHAUtB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 1 Aug 2021 16:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbhHAUtA (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 1 Aug 2021 16:49:00 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E195C06175F;
-        Sun,  1 Aug 2021 13:48:51 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id c7-20020a9d27870000b02904d360fbc71bso15598963otb.10;
-        Sun, 01 Aug 2021 13:48:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3wDs4TscZnBfih/RoUBpjRLjosLDw2uLwbF2csntLTo=;
-        b=IxfENPjH2e4w5qRT7ASIYRIozgQ+/sX8NCAKqSMc6b8w5WRry3ukSep3aE2Fdahxn6
-         06QxofQwMZSunlFhvJ35+J6SYxpVw2+IItEPpV3WL1PO9zjtPi3cPwE4M4guMKfNdiTn
-         d06Vtv5iYNjJAk6E3J1cmLMEqxDXekYvaqh8C3R2LpUrtBoMXTXuHEp7GWlQfesx7fKI
-         ZmAVqd7Z/Xjr6/bA44sAEb95fSmTPw3Apd/Up7D3P/GfAn3D4X6TmYn4VU0nBl12ATDj
-         KCwnHIE1lE8wm7IwmhLBMER1of3SIGWivzBShnm66w1mNspn295cJaqgc5CW/yRPXXY/
-         0YTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=3wDs4TscZnBfih/RoUBpjRLjosLDw2uLwbF2csntLTo=;
-        b=duCQPL6C6rFZ9lVO21qEAQz/CC9lC1KScbt3yZox+09MfKhslBZpyWW/0FcEVUHKd6
-         LxF1tNa418mes8hVr5/aaDXl4tG8EIeFM9j4mdJslLyR+aCpWrGHwmqU+th2YyRFxzA8
-         Zp2Br76PK440LkTVBoxlJTVzOPcH3qACyH43M3LApouNLTqDFUUoQEDyncdhmPoQV7vd
-         f1pZIn6ruWSgVYy4j4+298ooC2tAAGmfYtTzZoqjVCWh5r4avvPIRfrOpdT8CL5SwNsC
-         aKFJa7bJI54wUG1epTWXRwhQU/JdVSW4AEVA+zk0zjvnS4tcaMy4Q8i0pZlmF4+KkkES
-         Y00w==
-X-Gm-Message-State: AOAM531/ra+0E64sHJ1R99ee+uhmtWskrv7g0jiJ4fWFzvQtEagtlLXI
-        LlEa4maE6aDQ3M//fMR2vpA=
-X-Google-Smtp-Source: ABdhPJzlGbNGz7fO6f3aMCFJPAHsiwpnrYGwxdWj9tPS+NunUjP161qUG9vYt6Ii2t5StdpPw6vNDQ==
-X-Received: by 2002:a9d:26a:: with SMTP id 97mr9282002otb.333.1627850930545;
-        Sun, 01 Aug 2021 13:48:50 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id c11sm1559290otm.37.2021.08.01.13.48.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Aug 2021 13:48:50 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sun, 1 Aug 2021 13:48:48 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Sam Shih <sam.shih@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Sean Wang <sean.wang@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Seiya Wang <seiya.wang@mediatek.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-clk@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Ryder Lee <Ryder.Lee@mediatek.com>
-Subject: Re: [PATCH 10/12] dt-bindings: watchdog: Add compatible for Mediatek
- MT7986
-Message-ID: <20210801204848.GA2800586@roeck-us.net>
-References: <20210726071439.14248-1-sam.shih@mediatek.com>
- <20210726071439.14248-11-sam.shih@mediatek.com>
+        id S232629AbhHBMut (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 Aug 2021 08:50:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51240 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233736AbhHBMur (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 2 Aug 2021 08:50:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 31A2E60F58;
+        Mon,  2 Aug 2021 12:50:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627908637;
+        bh=3MKa7wkl36ZJdn/Xya+VfMjlloeBPMGrEJKPARDl+yQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DxTuvGr3pW6lB1+3AQgFJu9HPjbAUosWqP6/9JWJz3LeNTIPpxD/F/a1D7jrcb2ZT
+         +/FYU6dQKC6lYf6oTXbeUAV5Ktvza34J84OhoAGva0cmythnZjuSkmUSi7sSJGyj7H
+         lQz3rD7EOzaKmuCUi+bi+XUPqxvIUOtDDWrisnIHNQO3A1ZRi5q2ltRqt/jBiKmhXc
+         KhDHv3cde1TW9PuskA/3YtYrgLTosUEJsOulfC3AiTcxJ0/xtgqEsWK2Up4rM+ZCd/
+         khkmw00tUWx07XG+laKvEPGNrnGkU0PsKfui1s3QPIIJLzT059cbe/j/TC9IZzrIFz
+         P7O69YhvrI2eg==
+Received: by pali.im (Postfix)
+        id BE1C1B98; Mon,  2 Aug 2021 14:50:34 +0200 (CEST)
+Date:   Mon, 2 Aug 2021 14:50:34 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Cc:     Glibc <libc-alpha@sourceware.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+Subject: Re: Document the types "struct termios" and "struct termios2"
+Message-ID: <20210802125034.gubtf24tsm7lkh3k@pali>
+References: <ef6a352d-4926-9cdc-9894-e387866a00c4@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210726071439.14248-11-sam.shih@mediatek.com>
+In-Reply-To: <ef6a352d-4926-9cdc-9894-e387866a00c4@gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 26, 2021 at 03:14:37PM +0800, Sam Shih wrote:
-> This commit adds dt-binding documentation of watchdog for Mediatek MT7986
-> SoC Platform.
-> 
-> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-> Acked-by: Rob Herring <robh@kernel.org>
++ linux-serial
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-
-> ---
->  Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 1 +
->  1 file changed, 1 insertion(+)
+On Monday 02 August 2021 14:38:43 Alejandro Colomar (man-pages) wrote:
+> Hi,
 > 
-> diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> index 416d716403f6..a4e31ce96e0e 100644
-> --- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> +++ b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> @@ -13,6 +13,7 @@ Required properties:
->  	"mediatek,mt7622-wdt", "mediatek,mt6589-wdt": for MT7622
->  	"mediatek,mt7623-wdt", "mediatek,mt6589-wdt": for MT7623
->  	"mediatek,mt7629-wdt", "mediatek,mt6589-wdt": for MT7629
-> +	"mediatek,mt7986-wdt", "mediatek,mt6589-wdt": for MT7986
->  	"mediatek,mt8183-wdt": for MT8183
->  	"mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
->  	"mediatek,mt8192-wdt": for MT8192
+> From a few patches of Pali and their subsequent discussions,
+
+For others, link to patch with code example:
+https://lore.kernel.org/linux-man/20210801135146.14849-1-pali@kernel.org/
+
+And links to other discussions:
+https://lore.kernel.org/linux-man/20210725225506.7404-1-pali@kernel.org/t/#u
+https://lore.kernel.org/linux-man/20210730105353.10424-1-pali@kernel.org/t/#u
+https://lore.kernel.org/linux-man/20210730153044.23673-1-pali@kernel.org/t/#u
+
+> it was clear
+> that those types need to be documented (the most appropriate place being
+> system_data_types(7), with link pages termios-struct(3) and
+> termios2-struct(3)).
+> 
+> The most important part (the one we had problems with) being which headers
+> should be included for each type (and for each version of the type
+> (kernel/glibc)).  That includes the recommended header, and other headers
+> that _shall_ also provide the type.
+> 
+> Is there someone that knows those types enough to write such documentation
+> and wants to do it? :)
+> 
+> Thanks,
+> 
+> Alex
+> 
+> -- 
+> Alejandro Colomar
+> Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+> http://www.alejandro-colomar.es/
