@@ -2,127 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-18.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 801F3C4320A
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 13:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E17C43214
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 14:45:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6AB5560FF2
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 13:07:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 06E30610CC
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 14:45:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233762AbhHBNH2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Aug 2021 09:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233645AbhHBNH2 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Aug 2021 09:07:28 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B4BC06175F;
-        Mon,  2 Aug 2021 06:07:17 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id p5so21438109wro.7;
-        Mon, 02 Aug 2021 06:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NYcQMy/qifVRiMiSDikyJJrDjDDR52fe7Fa16GoTEnQ=;
-        b=uogQNy/ncaTFt18nfNPBmExmyzX3ropBliOkmrlAi5+tyutGmGEtzT+ZPXcEDmvH6S
-         uXov3oxzZqp5YzDzTJuo3G7g6nPeYtBpQFACYFPaQxzO35R+7ar5jRn5HcWf4f9/jvb1
-         XYpNwoeDvl88xWcOnxbRKoKwQI0AnWx3JzSwiXsUHvkQ/iMzrYRDVpR1ledvXBIx1gpI
-         1W5trqcXtGweV07QLvdzjaQrw8aub/P/NDVTXZ3GBRmI1WiN9nEvSPL0GIb+4nI04Wf3
-         2BlWPC9UQcnQDUCuEspBTwlroLXbelOXDIAD1OC1LMcnipDoyayrv3tjOiv8ZPKSrjHf
-         XEEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NYcQMy/qifVRiMiSDikyJJrDjDDR52fe7Fa16GoTEnQ=;
-        b=H53ABV8heFK9dJm0MEiT4fy0Xy4XTiuxZ8MX+GbpZTNbW6Q+bBJT5G8pqCDfivX2KH
-         lu0oBwsnMSRa884HKSr/kE1Mx2YazGSUZCHrBRbvRHEIwcWi0a2s5nUYMx4oQ0l7bhFf
-         A3LZlvvPNUF1zg+yorSl3ZFGZRXgrMNVt4X4JA/1Sd6ppHxpIOXudxm626sh0M2TYxKp
-         UQyG4m50rL4R3N5DTu9S0lvxnaR7KNF6PpjSLBOWfJixeqhaNB4sHd0oDgV1+XSz31Mc
-         S88ne7DadM3zVBpAFiwzklo1HBNiJ4IinHawGjCYoFrJIRm8kQG2HgTlaCDCWYIz8ZOg
-         sRKQ==
-X-Gm-Message-State: AOAM530Bc7lgLYgRiRWjDRWnDKww48rVpn4Q+pRnvUjgIluwKdg2BPQ9
-        MuGic/n8ZInz8uD7b/cxJ0HXaqmGAm4=
-X-Google-Smtp-Source: ABdhPJy6QdKrnMgOf9Ja2/DDd4GkYHWkhMhGQuq1/g1jFTf0aYdB8hly0hPoCjqIkmGCGJG3df0goA==
-X-Received: by 2002:a5d:44c7:: with SMTP id z7mr18083465wrr.286.1627909636606;
-        Mon, 02 Aug 2021 06:07:16 -0700 (PDT)
-Received: from [10.8.0.10] ([195.53.121.100])
-        by smtp.gmail.com with ESMTPSA id c190sm2536698wma.21.2021.08.02.06.07.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Aug 2021 06:07:16 -0700 (PDT)
-Subject: Re: Document the types "struct termios" and "struct termios2"
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     Glibc <libc-alpha@sourceware.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-serial@vger.kernel.org, linux-man <linux-man@vger.kernel.org>
-References: <ef6a352d-4926-9cdc-9894-e387866a00c4@gmail.com>
- <20210802125034.gubtf24tsm7lkh3k@pali>
-From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Message-ID: <5e9e1f1a-1e08-59f5-6579-a02c0738b9a4@gmail.com>
-Date:   Mon, 2 Aug 2021 15:07:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S233925AbhHBOpv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 Aug 2021 10:45:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48474 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234313AbhHBOpv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 2 Aug 2021 10:45:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AEF9660F51;
+        Mon,  2 Aug 2021 14:45:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627915541;
+        bh=b3goBFQFlOeosgGSS9BAcZLInoN1rgbRE/qkSS4IUwk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p5QKCazERFukk3GhG9g7lKnYjLV4cHHODJD6YUhbm0BxCZ5rgUDcSvBvGdPJepnML
+         zgZHM/wKeujvshgV9nXr/8axigN3iWv2Pst3p+qHPEY4H8StJnd3idQPjN9jGtVVT4
+         g5xRSqqOCNt6zfCAvvHMGhIQphvaKzQlHlVtmOoWPk4c5WtkpMW/3z/+8CJp0oLK/Q
+         zlKNNl1zJjCJx2LhVvnPPDnHYDp83bSVdIMciBcrbDz6QpNt7+vhfNrkEw81oVres7
+         XkDvgKCJeOZb0uHuvPcMtXzK8vSkDoxljGn0q7hg1IA51Y0BzjuMuHGLRtbXZZFsFC
+         ANgBRQ40Pi5NA==
+Received: by pali.im (Postfix)
+        id DAAA2B98; Mon,  2 Aug 2021 16:45:38 +0200 (CEST)
+Date:   Mon, 2 Aug 2021 16:45:38 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vladimir Vid <vladimir.vid@sartura.hr>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 3/5] dt-bindings: mvebu-uart: document DT bindings for
+ marvell, armada-3700-uart-clock
+Message-ID: <20210802144538.zbnshv3xml3t4euj@pali>
+References: <20210624224909.6350-1-pali@kernel.org>
+ <20210717123829.5201-1-pali@kernel.org>
+ <20210717123829.5201-4-pali@kernel.org>
+ <YPMTq1wSo1YLJBQi@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20210802125034.gubtf24tsm7lkh3k@pali>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YPMTq1wSo1YLJBQi@lunn.ch>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-+= linux-man@
-
-:)
-
-On 8/2/21 2:50 PM, Pali Rohár wrote:
-> + linux-serial
+On Saturday 17 July 2021 19:30:19 Andrew Lunn wrote:
+> On Sat, Jul 17, 2021 at 02:38:27PM +0200, Pali Rohár wrote:
+> > This change adds DT bindings documentation for device nodes with compatible
+> > string "marvell,armada-3700-uart-clock".
+> > 
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > ---
+> >  .../bindings/clock/armada3700-uart-clock.txt  | 24 +++++++++++++++++++
+> >  .../devicetree/bindings/serial/mvebu-uart.txt |  9 ++++---
+> >  2 files changed, 30 insertions(+), 3 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/clock/armada3700-uart-clock.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/clock/armada3700-uart-clock.txt b/Documentation/devicetree/bindings/clock/armada3700-uart-clock.txt
+> > new file mode 100644
+> > index 000000000000..144bc6d7eae8
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/clock/armada3700-uart-clock.txt
 > 
-> On Monday 02 August 2021 14:38:43 Alejandro Colomar (man-pages) wrote:
->> Hi,
->>
->>  From a few patches of Pali and their subsequent discussions,
-> 
-> For others, link to patch with code example:
-> https://lore.kernel.org/linux-man/20210801135146.14849-1-pali@kernel.org/
-> 
-> And links to other discussions:
-> https://lore.kernel.org/linux-man/20210725225506.7404-1-pali@kernel.org/t/#u
-> https://lore.kernel.org/linux-man/20210730105353.10424-1-pali@kernel.org/t/#u
-> https://lore.kernel.org/linux-man/20210730153044.23673-1-pali@kernel.org/t/#u
-> 
->> it was clear
->> that those types need to be documented (the most appropriate place being
->> system_data_types(7), with link pages termios-struct(3) and
->> termios2-struct(3)).
->>
->> The most important part (the one we had problems with) being which headers
->> should be included for each type (and for each version of the type
->> (kernel/glibc)).  That includes the recommended header, and other headers
->> that _shall_ also provide the type.
->>
->> Is there someone that knows those types enough to write such documentation
->> and wants to do it? :)
->>
->> Thanks,
->>
->> Alex
->>
->> -- 
->> Alejandro Colomar
->> Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
->> http://www.alejandro-colomar.es/
+> Since this is a new binding, please use YAML.
 
-
--- 
-Alejandro Colomar
-Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
-http://www.alejandro-colomar.es/
+Changed in v4.
