@@ -2,117 +2,186 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	INVALID_DATE_TZ_ABSURD,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67351C4320E
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 12:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C53D5C4320A
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 13:13:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4F68B60FA0
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 12:58:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B2C1F604AC
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 13:13:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236122AbhHCM7C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Aug 2021 08:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236051AbhHCM7C (ORCPT
+        id S235975AbhHCNNQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Aug 2021 09:13:16 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:56050 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235954AbhHCNNP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Aug 2021 08:59:02 -0400
-Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D465C06175F
-        for <linux-serial@vger.kernel.org>; Tue,  3 Aug 2021 05:58:50 -0700 (PDT)
-Received: by mail-ua1-x929.google.com with SMTP id t26so8130957uao.12
-        for <linux-serial@vger.kernel.org>; Tue, 03 Aug 2021 05:58:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZNSRpZlFlkmyaZcGeRCdqzNpmwaM/CsxmQZTU5Q+xqI=;
-        b=JTvNoxAfXZ9vd1+wTKKiK81cryvFYXUGiGJWt11dtugSKCRZzRqEhcPYJix7xbxCp3
-         YKo8vQZvgq9xZzfTHfarl0LQRITIaB4flkRr46M/PM11DUdJZCYJj4JHzB1m4bqx5bK8
-         EtJobyfZ5hYhOHAmCcTk1L77+1UWYJBdyJGjdJ30Ntetl239/qIi+Fiv0aETt/cPMddI
-         ms9C8NsZJic+woCQWggmqJrKuEW+FhJ3tl1PWC1C8h6wEZIajpUf5wuiwiZo6WQaNEmA
-         JlftDOWGep6h0KpoD8jIiUEJIHA707wXiVqyP72XfW2jJC1M40uKyybpRAtzIlzWGXYI
-         vljQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZNSRpZlFlkmyaZcGeRCdqzNpmwaM/CsxmQZTU5Q+xqI=;
-        b=cICJlpGipu8ltK8FZZCLOaTKwhk1LZwwLehe5/9jcHkHH5vc9UQvNrpQITgfK5nR6R
-         sc/fKSdMM4knlqESem7BKG/74VzuM0bal/EB7WCKMKjnHlTFV6bzze0yZ+xeeDL2rTAK
-         3CAw2l6hpBrm6//MtraTRliNn8sb+wUaFew3BMul/Lwsg4hrBZMJL5bTKKkiSOTQ8R1x
-         yspDaurAuu+wIPWyFi5xr4RQ9NDLcv3dDtPTxOhAD0iKz5YDAWBodZTaIIIeXOmjx8gT
-         Zueyi35EE/K+Pav7DMqzzHzQpj2xY6x8DM7wDM0hsOUY7yIQE+6tzVsi+CbR017tXeve
-         ieUA==
-X-Gm-Message-State: AOAM531e7qs9VjMmaVxLYRoMj+OB1Vj0mdMeN5Df6qu2Xlqrwkob/Hzo
-        DIuHdmnTLASTjq1pCCv2GKsK1HhVqEuKmitksa8yWw==
-X-Google-Smtp-Source: ABdhPJwmT+9f8+SVTRLGGJ8jMXd1p1owMfyXKEFiXfIxd5UXzXpXp2cbHPwsCzFyYJ/B7mnJE2eGb95SBJDpnGdNpVs=
-X-Received: by 2002:ab0:6f4b:: with SMTP id r11mr4698819uat.104.1627995529623;
- Tue, 03 Aug 2021 05:58:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210730144922.29111-1-semen.protsenko@linaro.org>
- <20210730144922.29111-12-semen.protsenko@linaro.org> <d603be80-4fb6-1bad-1963-c9fa7d1e63fb@canonical.com>
-In-Reply-To: <d603be80-4fb6-1bad-1963-c9fa7d1e63fb@canonical.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Tue, 3 Aug 2021 15:58:38 +0300
-Message-ID: <CAPLW+4mPeSOuiQ1iYTVXqTzmPP7o1uPX8Gapzr7Es0wRBpYt6g@mail.gmail.com>
-Subject: Re: [PATCH 11/12] dt-bindings: interrupt-controller: Add IRQ
- constants for Exynos850
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Tue, 3 Aug 2021 09:13:15 -0400
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1627996383;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zratP/d2dqbzr5A3KZPCTDEa+UpOjiFaTT3D2EIH/Pg=;
+        b=zk5sPz0A/N68QiMZNa4XnUH53XQGAkBgxmMF9RdDFSoOGdHXqC//ofK9o10vkQtIIgxpxy
+        o3gzfJIWcGuD/7CJSo5P2+b6eNhxoNOxZol539AjZC3laI2y9WkzZGJ7p/8XuGC/SI6py5
+        6Mpztfu+HxmsRcOTqIZJcFq3yrOVV08E2vhgrY8or5Z3uRGykD2IiT/TXmzbGy4LL+sBHS
+        cGTPp1pxVnfmrDUBXMNIf7pO9xGKJUUaHa3+Iftq3TyMFoNPnqWV077wktj4wMXkILY+0N
+        qrvzjb5E1n/5VK5Jn8gch/Yneaa2fDy8JybmbeFc/b2DSqzfflXIeOBn73Azfw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1627996383;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zratP/d2dqbzr5A3KZPCTDEa+UpOjiFaTT3D2EIH/Pg=;
+        b=eiwsN3XDO7gIOKIO/tyPKCl9YBM/K+0P9ejFJ1AFeHJgY6RpWMpxmcaTC14bbaMpVCrVQI
+        kAWF+aftd/6aNtAw==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        Chengyang Fan <cy.fan@huawei.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        kgdb-bugreport@lists.sourceforge.net,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
-        Ryu Euiyoul <ryu.real@samsung.com>,
-        Tom Gall <tom.gall@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Amit Pundir <amit.pundir@linaro.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Vitor Massaru Iha <vitor@massaru.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Changbin Du <changbin.du@intel.com>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Cengiz Can <cengiz@kernel.wtf>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        kuldip dwivedi <kuldip.dwivedi@puresoftware.com>,
+        Wang Qing <wangqing@vivo.com>, Andrij Abyzov <aabyzov@slb.com>,
+        Johan Hovold <johan@kernel.org>,
+        Eddie Huang <eddie.huang@mediatek.com>,
+        Claire Chang <tientzu@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Al Cooper <alcooperx@gmail.com>, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH printk v1 00/10] printk: introduce atomic consoles and sync mode
+Date:   Tue,  3 Aug 2021 15:18:51 +0206
+Message-Id: <20210803131301.5588-1-john.ogness@linutronix.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 31 Jul 2021 at 11:45, Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> On 30/07/2021 16:49, Sam Protsenko wrote:
-> > Add external GIC interrupt constants for SPI[479:0] for Exynos850 SoC.
-> > Interrupt names were taken from TRM without change, hence double
-> > underscore in const namings.
->
-> I am not sure what is the benefit of defining these in header. Unlike
-> other DT consts (e.g. clock IDs) drivers do not us them at all. Using
-> them in DT does not reduce chance of mistakes in numbers - instead of in
-> DTS you can make a mistake here in header file. In the same time, they
-> grow the interrupt property in DTS making it more difficult to read.
->
-> I also did not see anyone else using this approach, so it's not only me
-> (Marc also find it confusing).
->
-> If vendor kernel did similar, it's not an argument. Samsung LSI /.
-> vendor kernel has terrible code quality so usually it is not a good example.
->
+Hi,
 
-Agreed. I'll use IRQ numbers in dts directly, in v2. I probably
-thought that IRQ header might replace missing public TRM, but that's a
-poor substitute anyway.
+This is the next part of our printk-rework effort (points 3 and
+4 of the LPC 2019 summary [0]).
 
->
-> Best regards,
-> Krzysztof
+Here the concept of "atomic consoles" is introduced through  a
+new (optional) write_atomic() callback for console drivers. This
+callback must be implemented as an NMI-safe variant of the
+write() callback, meaning that it can function from any context
+without relying on questionable tactics such as ignoring locking
+and also without relying on the synchronization of console
+semaphore.
+
+As an example of how such an atomic console can look like, this
+series implements write_atomic() for the 8250 UART driver.
+
+This series also introduces a new console printing mode called
+"sync mode" that is only activated when the kernel is about to
+end (such as panic, oops, shutdown, reboot). Sync mode can only
+be activated if atomic consoles are available. A system without
+registered atomic consoles will be unaffected by this series.
+
+When in sync mode, the console printing behavior becomes:
+
+- only consoles implementing write_atomic() will be called
+
+- printing occurs within vprintk_store() instead of
+  console_unlock(), since the console semaphore is irrelevant
+  for atomic consoles
+
+For systems that have registered atomic consoles, this series
+improves the reliability of seeing crash messages by using new
+locking techniques rather than "ignoring locks and hoping for
+the best". In particular, atomic consoles rely on the
+CPU-reentrant spinlock (i.e. the printk cpulock) for
+synchronizing console output.
+
+John Ogness
+
+[0] https://lore.kernel.org/lkml/87k1acz5rx.fsf@linutronix.de/
+
+John Ogness (10):
+  printk: relocate printk cpulock functions
+  printk: rename printk cpulock API and always disable interrupts
+  kgdb: delay roundup if holding printk cpulock
+  printk: relocate printk_delay()
+  printk: call boot_delay_msec() in printk_delay()
+  printk: use seqcount_latch for console_seq
+  console: add write_atomic interface
+  printk: introduce kernel sync mode
+  kdb: if available, only use atomic consoles for output mirroring
+  serial: 8250: implement write_atomic
+
+ arch/powerpc/include/asm/smp.h         |   1 +
+ arch/powerpc/kernel/kgdb.c             |  10 +-
+ arch/powerpc/kernel/smp.c              |   5 +
+ arch/x86/kernel/kgdb.c                 |   9 +-
+ drivers/tty/serial/8250/8250.h         |  47 ++-
+ drivers/tty/serial/8250/8250_core.c    |  17 +-
+ drivers/tty/serial/8250/8250_fsl.c     |   9 +
+ drivers/tty/serial/8250/8250_ingenic.c |   7 +
+ drivers/tty/serial/8250/8250_mtk.c     |  29 +-
+ drivers/tty/serial/8250/8250_port.c    |  92 ++--
+ drivers/tty/serial/8250/Kconfig        |   1 +
+ include/linux/console.h                |  32 ++
+ include/linux/kgdb.h                   |   3 +
+ include/linux/printk.h                 |  57 +--
+ include/linux/serial_8250.h            |   5 +
+ kernel/debug/debug_core.c              |  45 +-
+ kernel/debug/kdb/kdb_io.c              |  16 +
+ kernel/printk/printk.c                 | 554 +++++++++++++++++--------
+ lib/Kconfig.debug                      |   3 +
+ lib/dump_stack.c                       |   4 +-
+ lib/nmi_backtrace.c                    |   4 +-
+ 21 files changed, 684 insertions(+), 266 deletions(-)
+
+
+base-commit: 23d8adcf8022b9483605531d8985f5b77533cb3a
+-- 
+2.20.1
+
