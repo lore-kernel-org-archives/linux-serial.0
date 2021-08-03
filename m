@@ -2,67 +2,68 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A56D2C43216
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 23:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB7B5C4320E
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 07:37:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8DF8260EC0
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Aug 2021 23:27:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C444A60EB9
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 07:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232311AbhHBX2H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Aug 2021 19:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232530AbhHBX2H (ORCPT
+        id S234183AbhHCHiE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Aug 2021 03:38:04 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:48374
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234205AbhHCHiC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Aug 2021 19:28:07 -0400
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3593C061799
-        for <linux-serial@vger.kernel.org>; Mon,  2 Aug 2021 16:27:56 -0700 (PDT)
-Received: by mail-vs1-xe29.google.com with SMTP id ba4so7537537vsb.5
-        for <linux-serial@vger.kernel.org>; Mon, 02 Aug 2021 16:27:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QlzAmryyyeDSDQ1srUNZEgdUE1Lb18Ti4rrmaegWVkw=;
-        b=Ajmr1ho9O5wL+Ew02Av/bUFYn8XmF5TlaNe9PnsD4qjKZxYPBh8Ge6NcYutRfxIzUc
-         JzKbAgn+JG95Zms5Z5w0a2ZuyOjUQWCuyc9IxcYp61b9ECvW9FXLrqERM7GgSVg8cNHW
-         zOJHKvgJHXFIZAc7W7wvYHcGLp3zh5CaIo49Ttue+NXQGnSzoEWNn5lQSeOtryypEVU7
-         B/RKTe48HxHJspuGTebmsxIS1Wg/+LaA22N5jp/iqCGfOvsWgWY2BRLf/F33Bivk3UBt
-         2+f/FYN/8cvKYlCMFXDkVTvCA/ocfTaDlhP7x+uxHc+w6C7WVl0L13Zk6bdrEHKgsX4C
-         gC9A==
+        Tue, 3 Aug 2021 03:38:02 -0400
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 94BB13F367
+        for <linux-serial@vger.kernel.org>; Tue,  3 Aug 2021 07:37:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1627976271;
+        bh=HMiKxFSYa20UfSETkthFhrIjVbst/OK+au8qKZgzUks=;
+        h=To:Cc:References:From:Subject:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=tZPpox8+0BquNgSZ6ecGhH7CeD6Gfbvs8fSbHlXERoCPYAgrhBx0xV+eqLRUCk7dd
+         4s0XBWSKA3EWT4F6raOkB/wPlEJCAIVKHN9iJeN4YluKq5kil8flQDBO4IUOUQeApJ
+         dKtNloUtPxbD7QsOyvmdXXY3ZnGGRa0uhKLdiws/JRty/qpemQqor8EMDDhp78xFNC
+         SDsVuB0FCthYlZS6/+NEIFInmL/GlRaZu7xpGzkIw0569HElsijNyAThfKZEZC0y1V
+         SVMP1i0bkrAhPMAa0O+AY+r4rOsbYaTl2yaoEnYocmFw85Txf7sNnm27gJ8IgGlwSW
+         nWrvRf1uMKOHQ==
+Received: by mail-ed1-f72.google.com with SMTP id y19-20020a0564021713b02903bbfec89ebcso9966804edu.16
+        for <linux-serial@vger.kernel.org>; Tue, 03 Aug 2021 00:37:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QlzAmryyyeDSDQ1srUNZEgdUE1Lb18Ti4rrmaegWVkw=;
-        b=jGvDbJyixnMWTNCKtjdXx+ZgYMAc1lSq91QRTarCP9569YYzjmcD94fU0cjUfhLz6g
-         SSvUyMZTMRj0rNTQHr65g3CygkHfq4Lm46MuYXO0rLgGXHzYQdEtRZD60oDO4KbcdtyY
-         hf9deQ4mrr2oaWyL0As777ZwSg4oOacYWkhQlhiZY3CqE8yMG6R9o2fdAgSCazW1qzg7
-         1l065OOabMoloLhz/dKDvzCnQUe3IVFty4k7ErTPrzj4PdwO/kB4rphEGXWlLqZb0SrQ
-         mJoNQmYW7NswYegWe1kI8hp2oCrV2vFMI6DS69N6raySADGitI/heLRhzHKc9xeq6riy
-         LJig==
-X-Gm-Message-State: AOAM5311HUVhf9ZR/xYtpPuou44WzyLPvN9Mr0xomE/OuvPyfGTCTmhg
-        UU3f7citr8HbN+S8CS+mi3KBx1zr0/6HzBB+9ro9SA==
-X-Google-Smtp-Source: ABdhPJzJ3U5wtXY2YCtx/k4DqUJTlrgpZ48cDKUw9DVG41O8Yu+2eqmJVsghdHYCgAijN2Q95YtCA/yFaRSlHV3vfbA=
-X-Received: by 2002:a67:f60e:: with SMTP id k14mr12216795vso.30.1627946875840;
- Mon, 02 Aug 2021 16:27:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210730144922.29111-1-semen.protsenko@linaro.org>
- <5e35b0a7-13aa-3c62-ca49-14af2fcb2a08@canonical.com> <c3486111-0ec9-9679-d2a2-68b2f33a2450@canonical.com>
- <CAPLW+4kbnJEBkc0D=RWt59JxBan8X1uDy6sSXBiYAq8N9FDV6A@mail.gmail.com>
- <13f166bb-7103-25d5-35a6-8ec53a1f1817@canonical.com> <2dacc205-04ce-c206-a393-50ba0d5aa1a7@canonical.com>
-In-Reply-To: <2dacc205-04ce-c206-a393-50ba0d5aa1a7@canonical.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Tue, 3 Aug 2021 02:27:44 +0300
-Message-ID: <CAPLW+4=1Anr6rCWEBL04D81aEAEVKD5cGE+ObXH3q-HNHce07w@mail.gmail.com>
-Subject: Re: [PATCH 00/12] Add minimal support for Exynos850 SoC
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HMiKxFSYa20UfSETkthFhrIjVbst/OK+au8qKZgzUks=;
+        b=HQ9xko6EEJ6jsU4e4/IbqDEZ0WVmW7P8z822s9I1aFwws/mBbk/R74Rg/a0rG+u5Be
+         +EIQgBhVoQBhr9p25cPZqdl2olatcxJ8CYGVTJlo7Nnqew5cKVa3a62/ISbC8KrryttI
+         eMHbTf3lUDw19ZcDbI9YL75K4a3Il+t0CYYdMuy4fzVe5D7wRcacC52rsYCmRc7Um663
+         LGHvbKo0de5X92o+A4X6BHc1jRftb4+E6xr2haD5fmqNqRh4+cmh9hmBMtmvydE3PX0G
+         h8qPXK0T2MCf4x836bKnYPT4loKB3QMOB0UIQZIvPfxhv/zo4hartF3+4eKSY0hHSOGZ
+         i1ng==
+X-Gm-Message-State: AOAM533MRwbi5J/p7WkzyOK03BwI2y09wul/99bZi/5RKPIdVB1Q0qzp
+        kiiw9nJh0buYBgT/cRL4TDdC82FJ8wsRIDYE6SLkNPGeQw73K+0/KdKwEPwA68JdC4FAE72BeME
+        BmaepO7sIO+epI+NBKfynKgO8oeRfj4G4ASfJobMZwQ==
+X-Received: by 2002:a17:906:350c:: with SMTP id r12mr19518832eja.44.1627976270902;
+        Tue, 03 Aug 2021 00:37:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzyFBe5dbNxwlXlBXERsGZZkwqR37lHAwmEzaRMwA5uBHV4D/DUtM//HZhRsSt8v4oHJ3em0g==
+X-Received: by 2002:a17:906:350c:: with SMTP id r12mr19518821eja.44.1627976270751;
+        Tue, 03 Aug 2021 00:37:50 -0700 (PDT)
+Received: from [192.168.8.102] ([86.32.43.172])
+        by smtp.gmail.com with ESMTPSA id fi23sm4651493ejc.83.2021.08.03.00.37.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Aug 2021 00:37:49 -0700 (PDT)
+To:     Sam Protsenko <semen.protsenko@linaro.org>
 Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Chanwoo Choi <cw00.choi@samsung.com>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -85,88 +86,82 @@ Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+References: <20210730144922.29111-1-semen.protsenko@linaro.org>
+ <20210730144922.29111-5-semen.protsenko@linaro.org>
+ <a1701931-136e-235c-8392-a3f64c050d74@canonical.com>
+ <CAPLW+4mMCzzyqqJTse-UEpjQoVu1b-9Xz3_3L=nmg63uKYFnGw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH 04/12] tty: serial: samsung: Init USI to keep clocks
+ running
+Message-ID: <7364ccb2-70da-6400-ae6d-6a30171b6678@canonical.com>
+Date:   Tue, 3 Aug 2021 09:37:47 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <CAPLW+4mMCzzyqqJTse-UEpjQoVu1b-9Xz3_3L=nmg63uKYFnGw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 31 Jul 2021 at 11:12, Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> On 31/07/2021 09:29, Krzysztof Kozlowski wrote:
-> > On 30/07/2021 21:02, Sam Protsenko wrote:
-> >> Hi Krzysztof,
-> >>
-> >> On Fri, 30 Jul 2021 at 20:21, Krzysztof Kozlowski
-> >> <krzysztof.kozlowski@canonical.com> wrote:
-> >>>
-> >>> On 30/07/2021 17:18, Krzysztof Kozlowski wrote:
-> >>>> On 30/07/2021 16:49, Sam Protsenko wrote:
-> >>>>> This patch series adds initial platform support for Samsung Exynos850
-> >>>>> SoC [1]. With this patchset it's possible to run the kernel with BusyBox
-> >>>>> rootfs as a RAM disk. More advanced platform support (like MMC driver
-> >>>>> additions) will be added later. The idea is to keep the first submission
-> >>>>> minimal to ease the review, and then build up on top of that.
-> >>>>>
-> >>>>> [1] https://www.samsung.com/semiconductor/minisite/exynos/products/mobileprocessor/exynos-850/
-> >>>>>
-> >>>>
-> >>>> Great work!
-> >>>>
-> >>
-> >> Thanks, Krzysztof! And thank you for reviewing the whole series.
-> >>
-> >>>> What's the SoC revision number (should be accessible via
-> >>>> /sys/bus/soc/devices/soc0/)? Recent wrap in numbering of Exynos chips
-> >>>> might bring confusion...
-> >>
-> >> # cat /sys/devices/soc0/revision
-> >> 0
-> >
-> > soc_id but you're right it won't be set for unknown SoCs. You need to
-> > extend drivers/soc/samsung/exynos-chipid.c to parse new values (E3830000
-> > for product ID) and maybe new register offsets (previous offset is 0x0,
-> > for 3830 is 0x10 I think). Also revision mask might change.
-> >
-> >>> Judging by vendor's sources it is quite confusing. It looks mostly like
-> >>> Exynos3830 but in few other cases it uses Exynos9 compatibles (Exynos9,
-> >>> Exynos9820). Only in few places there is Exynos850. Marketing department
-> >>> made it so confusing...  The revision embedded in SoC would be very
-> >>> interesting.
-> >>>
-> >>
-> >> As I understand, this SoC is called Exynos850 everywhere now.
-> >> Exynos3830 is its old name, not used anymore. As you noticed from
-> >> patch #2, it shares some definitions with Exynos9 SoC, so I guess some
-> >> software is similar for both architectures. Not sure about hardware
-> >> though, never worked with Exynos9 CPUs. Anyway, I asked Samsung
-> >> representatives about naming, and it seems like we should stick to
-> >> "Exynos850" name, even in code.
-> >
-> >
-> > Since the chip identifies itself as E3830000, I would prefer naming
-> > matching real product ID instead of what is pushed by marketing or sales
-> > representatives. The marketing names don't have to follow any
-> > engineering rules, they can be changed and renamed. Sales follows rather
-> > money and corporate rules, not consistency for upstream project.
->
-> On the other hand we have already two exceptions for naming
-> inconsistency - Exynos3250 identifies itself as 3472 (which is confusing
-> because 3250 is two core and there is a separate quad-core
-> Exyons3472...) and Exynos5800 is actually marketing name for a revision
-> of Exynos5422. Maybe indeed will be easier to go with the branded name
-> 850...
->
+On 03/08/2021 01:06, Sam Protsenko wrote:
 
-Well, chip engraving says "3830", but I was specifically told to stick
-to "850" in upstream kernel. I can presume there was some mix ups with
-this naming, and it might be the case it's better to stick to "850"
-exactly to avoid further confusion. Yes, I can see that
-EXYNOS3830_SOC_ID = 0xE3830000 in chipid driver, but we can return
-"EXYNOS850" string for that const, right? If you google "Exynos850"
-and "Exynos3830", it's obvious everybody uses the former, so I'd
-appreciate if we can stick to "850" in the end.
+(...)
 
->
-> Best regards,
-> Krzysztof
+>>> diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
+>>> index f6c3323fc4c5..013c2646863e 100644
+>>> --- a/include/linux/serial_s3c.h
+>>> +++ b/include/linux/serial_s3c.h
+>>> @@ -28,6 +28,15 @@
+>>>  #define S3C2410_UFSTAT         (0x18)
+>>>  #define S3C2410_UMSTAT         (0x1C)
+>>>
+>>> +/* USI Control Register offset */
+>>> +#define USI_CON                      (0xC4)
+>>> +/* USI Option Register offset */
+>>> +#define USI_OPTION           (0xC8)
+>>> +/* USI_CON[0] = 0b0: clear USI global software reset (Active High) */
+>>> +#define USI_RESET            (0<<0)
+>>
+>> Just 0x0. I understand you wanted to hint it is a bit field, but the
+>> shift of 0 actually creates more questions.
+>>
+> 
+> After some consideration I decided to adhere to existing style and do
+> something like this (in v2):
+> 
+> 8<--------------------------------------------------------------------->8
+> #define USI_CON          (0xC4)
+> #define USI_OPTION      (0xC8)
+> 
+> #define USI_CON_RESET_CLEAR        (0<<0)
+> #define USI_CON_RESET_SET        (1<<0)
+> #define USI_CON_RESET_MASK        (1<<0)
+> 
+> #define USI_OPTION_HWACG_CLKREQ_ON    (1<<1)
+> #define USI_OPTION_HWACG_CLKSTOP_ON    (1<<2)
+> #define USI_OPTION_HWACG_MASK        (3<<1)
+> 8<--------------------------------------------------------------------->8
+> 
+> The whole reason for those comments was missing public TRM. But in the
+> end I decided it just looks ugly. Also, this way I can do RMW
+> operation (discussed above) in more logical way.
+> 
+> Please let me know if code snippets above look good to you.
+
+Please skip the USI_CON_RESET_CLEAR. There is no such pattern in the
+code. Clearing bit is an obvious operation and such code is already
+everywhere:
+    val &= ~USI_CON_RESET
+
+(or &= ~USI_RESET_MASK)
+
+Therefore for USI_CON_RESET only:
+    #define USI_CON_RESET             (1<<0)
+    #define USI_CON_RESET_MASK        (1<<0)
+
+
+Best regards,
+Krzysztof
