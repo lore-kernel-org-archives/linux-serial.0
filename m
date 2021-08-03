@@ -2,204 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2911DC4320A
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 14:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7B2C432BE
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 19:28:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0BA1D60F46
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 14:08:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 13E9760F93
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Aug 2021 19:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236428AbhHCOIR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Aug 2021 10:08:17 -0400
-Received: from mga18.intel.com ([134.134.136.126]:12751 "EHLO mga18.intel.com"
+        id S239848AbhHCT3I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Aug 2021 15:29:08 -0400
+Received: from mga17.intel.com ([192.55.52.151]:13482 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236469AbhHCOIQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Aug 2021 10:08:16 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10064"; a="200888330"
-X-IronPort-AV: E=Sophos;i="5.84,291,1620716400"; 
-   d="scan'208";a="200888330"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 07:08:05 -0700
-X-IronPort-AV: E=Sophos;i="5.84,291,1620716400"; 
-   d="scan'208";a="568680226"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 07:07:58 -0700
-Received: from andy by smile with local (Exim 4.94.2)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mAv5C-004kW7-El; Tue, 03 Aug 2021 17:07:50 +0300
-Date:   Tue, 3 Aug 2021 17:07:50 +0300
+        id S230376AbhHCT3I (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 3 Aug 2021 15:29:08 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="194045227"
+X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
+   d="scan'208";a="194045227"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2021 12:28:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,292,1620716400"; 
+   d="scan'208";a="585103661"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 03 Aug 2021 12:28:53 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 32976169; Tue,  3 Aug 2021 22:29:22 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        kuldip dwivedi <kuldip.dwivedi@puresoftware.com>,
-        Wang Qing <wangqing@vivo.com>, Andrij Abyzov <aabyzov@slb.com>,
-        Johan Hovold <johan@kernel.org>,
-        Eddie Huang <eddie.huang@mediatek.com>,
-        Claire Chang <tientzu@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Al Cooper <alcooperx@gmail.com>, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH printk v1 10/10] serial: 8250: implement write_atomic
-Message-ID: <YQlNtr7TNAWtB8XF@smile.fi.intel.com>
-References: <20210803131301.5588-1-john.ogness@linutronix.de>
- <20210803131301.5588-11-john.ogness@linutronix.de>
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Rob Herring <robh@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v1 1/5] serdev: Split and export serdev_acpi_get_uart_resource()
+Date:   Tue,  3 Aug 2021 22:29:01 +0300
+Message-Id: <20210803192905.72246-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210803131301.5588-11-john.ogness@linutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 03:19:01PM +0206, John Ogness wrote:
-> Implement an NMI-safe write_atomic() console function in order to
-> support synchronous console printing.
-> 
-> Since interrupts need to be disabled during transmit, all usage of
-> the IER register is wrapped with access functions that use the
-> printk cpulock to synchronize register access while tracking the
-> state of the interrupts. This is necessary because write_atomic()
-> can be called from an NMI context that has preempted write_atomic().
+The same as for I²C Serial Bus resource split and export
+serdev_acpi_get_uart_resource(). We have already 3 users
+one of which is converted here.
 
-...
+Rationale of this is to consolidate parsing UART Serial Bus
+resource in one place as it's done, e.g., for I²C Serial Bus.
 
-> +static inline void serial8250_set_IER(struct uart_8250_port *up,
-> +				      unsigned char ier)
-> +{
-> +	struct uart_port *port = &up->port;
-> +	unsigned long flags;
-> +	bool is_console;
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serdev/core.c | 36 +++++++++++++++++++++++++++++-------
+ include/linux/serdev.h    | 14 ++++++++++++++
+ 2 files changed, 43 insertions(+), 7 deletions(-)
 
-> +	is_console = uart_console(port);
-> +
-> +	if (is_console)
-> +		console_atomic_cpu_lock(flags);
-> +
-> +	serial_out(up, UART_IER, ier);
-> +
-> +	if (is_console)
-> +		console_atomic_cpu_unlock(flags);
-
-I would rewrite it as
-
-	if (uart_console()) {
-		console_atomic_cpu_lock(flags);
-		serial_out(up, UART_IER, ier);
-		console_atomic_cpu_unlock(flags);
-	} else {
-		serial_out(up, UART_IER, ier);
-	}
-
-No additional variable, easier to get the algorithm on the first glance, less
-error prone.
-
-> +}
-
-> +static inline unsigned char serial8250_clear_IER(struct uart_8250_port *up)
-> +{
-> +	struct uart_port *port = &up->port;
-> +	unsigned int clearval = 0;
-> +	unsigned long flags;
-> +	unsigned int prior;
-> +	bool is_console;
-> +
-> +	is_console = uart_console(port);
-> +
-> +	if (up->capabilities & UART_CAP_UUE)
-> +		clearval = UART_IER_UUE;
-> +
-> +	if (is_console)
-> +		console_atomic_cpu_lock(flags);
-> +
-> +	prior = serial_port_in(port, UART_IER);
-> +	serial_port_out(port, UART_IER, clearval);
-> +
-> +	if (is_console)
-> +		console_atomic_cpu_unlock(flags);
-
-Ditto.
-
-> +	return prior;
-> +}
-
-...
-
-> +		is_console = uart_console(port);
-> +
-> +		if (is_console)
-> +			console_atomic_cpu_lock(flags);
->  		up->ier = port->serial_in(port, UART_IER);
-> +		if (is_console)
-> +			console_atomic_cpu_unlock(flags);
-> +
-
-I'm wondering why you can't call above function here?
-
-...
-
-> +		is_console = uart_console(p);
-> +		if (is_console)
-> +			console_atomic_cpu_lock(flags);
->  		ier = p->serial_in(p, UART_IER);
-> +		if (is_console)
-> +			console_atomic_cpu_unlock(flags);
-
-Ditto.
-
-...
-
-> +	is_console = uart_console(port);
-> +
-> +	if (is_console)
-> +		console_atomic_cpu_lock(flags);
-> +
-> +	ier = serial_in(up, UART_IER);
-> +	serial_out(up, UART_IER, ier & (~mask));
-> +
-> +	if (is_console)
-> +		console_atomic_cpu_unlock(flags);
-
-Ditto.
-
-...
-
-> +	if (uart_console(port))
-> +		console_atomic_cpu_lock(flags);
-> +
-> +	ier = serial_in(up, UART_IER);
-> +	serial_out(up, UART_IER, ier | mask);
-> +
-> +	if (uart_console(port))
-> +		console_atomic_cpu_unlock(flags);
-
-Ditto.
-
-Looking into above note, that uart_console(port) can give different results
-here, AFAIR.
-
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 92498961fd92..436e3d1ba92c 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -562,23 +562,45 @@ struct acpi_serdev_lookup {
+ 	int index;
+ };
+ 
++/**
++ * serdev_acpi_get_uart_resource - Gets UARTSerialBus resource if type matches
++ * @ares:	ACPI resource
++ * @uart:	Pointer to UARTSerialBus resource will be returned here
++ *
++ * Checks if the given ACPI resource is of type UARTSerialBus.
++ * In this case, returns a pointer to it to the caller.
++ *
++ * Returns true if resource type is of UARTSerialBus, otherwise false.
++ */
++bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
++				   struct acpi_resource_uart_serialbus **uart)
++{
++	struct acpi_resource_uart_serialbus *sb;
++
++	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
++		return false;
++
++	sb = &ares->data.uart_serial_bus;
++	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_UART)
++		return false;
++
++	*uart = sb;
++	return true;
++}
++EXPORT_SYMBOL_GPL(serdev_acpi_get_uart_resource);
++
+ static int acpi_serdev_parse_resource(struct acpi_resource *ares, void *data)
+ {
+ 	struct acpi_serdev_lookup *lookup = data;
+ 	struct acpi_resource_uart_serialbus *sb;
+ 	acpi_status status;
+ 
+-	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
+-		return 1;
+-
+-	if (ares->data.common_serial_bus.type != ACPI_RESOURCE_SERIAL_TYPE_UART)
++	if (!serdev_acpi_get_uart_resource(ares, &sb))
+ 		return 1;
+ 
+ 	if (lookup->index != -1 && lookup->n++ != lookup->index)
+ 		return 1;
+ 
+-	sb = &ares->data.uart_serial_bus;
+-
+ 	status = acpi_get_handle(lookup->device_handle,
+ 				 sb->resource_source.string_ptr,
+ 				 &lookup->controller_handle);
+@@ -586,7 +608,7 @@ static int acpi_serdev_parse_resource(struct acpi_resource *ares, void *data)
+ 		return 1;
+ 
+ 	/*
+-	 * NOTE: Ideally, we would also want to retreive other properties here,
++	 * NOTE: Ideally, we would also want to retrieve other properties here,
+ 	 * once setting them before opening the device is supported by serdev.
+ 	 */
+ 
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index 9f14f9c12ec4..3368c261ab62 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -327,4 +327,18 @@ static inline int serdev_tty_port_unregister(struct tty_port *port)
+ }
+ #endif /* CONFIG_SERIAL_DEV_CTRL_TTYPORT */
+ 
++struct acpi_resource;
++struct acpi_resource_uart_serialbus;
++
++#ifdef CONFIG_ACPI
++bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
++				   struct acpi_resource_uart_serialbus **uart);
++#else
++static inline bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
++						 struct acpi_resource_uart_serialbus **uart)
++{
++	return false;
++}
++#endif /* CONFIG_ACPI */
++
+ #endif /*_LINUX_SERDEV_H */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.30.2
 
