@@ -2,159 +2,230 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35BCCC43214
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Aug 2021 14:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B3E1C4338F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Aug 2021 14:39:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1FC4461050
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Aug 2021 14:31:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 35B5260F01
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Aug 2021 14:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238785AbhHDObL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Aug 2021 10:31:11 -0400
-Received: from mga14.intel.com ([192.55.52.115]:29074 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238816AbhHDOaq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Aug 2021 10:30:46 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10065"; a="213660110"
-X-IronPort-AV: E=Sophos;i="5.84,294,1620716400"; 
-   d="scan'208";a="213660110"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2021 07:29:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,294,1620716400"; 
-   d="scan'208";a="420052084"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 04 Aug 2021 07:29:31 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2391AB9; Wed,  4 Aug 2021 17:30:00 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc:     Mark Gross <mgross@linux.intel.com>, Rob Herring <robh@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v2 1/2] serdev: Split and export serdev_acpi_get_uart_resource()
-Date:   Wed,  4 Aug 2021 17:29:58 +0300
-Message-Id: <20210804142959.67981-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        id S237939AbhHDOkF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Aug 2021 10:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235304AbhHDOkD (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 4 Aug 2021 10:40:03 -0400
+Received: from mail-vk1-xa34.google.com (mail-vk1-xa34.google.com [IPv6:2607:f8b0:4864:20::a34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E13C0613D5
+        for <linux-serial@vger.kernel.org>; Wed,  4 Aug 2021 07:39:51 -0700 (PDT)
+Received: by mail-vk1-xa34.google.com with SMTP id m1so495518vko.3
+        for <linux-serial@vger.kernel.org>; Wed, 04 Aug 2021 07:39:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rDKZtg82NP3ddCZ+CbKtTQlVqMfRo/3JfYFc/Sav3bE=;
+        b=Rb4w2JW9NDUtFI5B1DdY4p2VknlohGp3Ak2rkEyHilaSfQWGfO0PvM1LI8VTGSK58E
+         E5E1B7V9pL3lsFa9AlJN5av9Qj+fCiZP+6tceSKxdI88Ba47f90C3X8Z4yv2iUc+dHm0
+         I4ldJ6XAhqprsW6XOH5F45fxk02OUBmUTwEKyL9gV6aedQ/k3CI1uHi8cB5PtGBQKZG6
+         Odz6nToeGDrD5vdlizhxdCzailrpXe2J3KfMjoivaI8rPBD1almFcOU+6j2dUPFr0uer
+         zfNkuOoXistHWz3jiy1hDLDplsrrln/1yOHA4dOaP9Z9uNs+SeRuriIj+AuA6y67mGyN
+         xNTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rDKZtg82NP3ddCZ+CbKtTQlVqMfRo/3JfYFc/Sav3bE=;
+        b=ACuUTdJJ0OHvXs539K2skEdYVbis+o4syWjfEgZeOxwvS2NrsUBjBPnJDuyd1I5bYp
+         5U5jWVS0LmNWbfiiHAeyQqoFZh9uq4TprkTveNtwVe4qlmxzvflg3W2zTyEsIBeXMQOS
+         SEGoSYvphKeFbjdIWwMIrBMUVSQPqRLeZImNRAapIYpb+VRH3JGD0Uj8JSndWZW7gLdb
+         yX1P9fd6VlF4TzOc/aGYLcYQUUffpl8Na0QJynWu3p4NBoavGUYQjpkazXEZLG+nbUAH
+         gSSLrFM5LOPcMkMYVEYoCStxXhU9XivzP/NF32IAbVCbm6/hzDm0F8WULfvdvm5ZzFN6
+         rNNA==
+X-Gm-Message-State: AOAM530BovZrw2t95uTK+7Vn1pA+cFuQCJFwGW5jvE0UfGoK3cOoSY6I
+        DuRMqru1J5ojgqEjwvh6W/5PBDJSZL38SEkVbhXEcg==
+X-Google-Smtp-Source: ABdhPJxlsfrubol74U2vzDZDlR75ZOAD7I215GfcgIYKIkBbyLzJAazUw8L/PPcVieLCSBWNf4qgTYF7TKl9M+mp1Eo=
+X-Received: by 2002:a05:6122:549:: with SMTP id y9mr5395608vko.7.1628087990034;
+ Wed, 04 Aug 2021 07:39:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210730144922.29111-1-semen.protsenko@linaro.org>
+ <20210730144922.29111-13-semen.protsenko@linaro.org> <15871f8ced3c757fad1ab3b6e62c4e64@misterjones.org>
+In-Reply-To: <15871f8ced3c757fad1ab3b6e62c4e64@misterjones.org>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Wed, 4 Aug 2021 17:39:38 +0300
+Message-ID: <CAPLW+4=v4bDcuxGVqs06mobGj34At4cD+vg48b4dPujarS07Tg@mail.gmail.com>
+Subject: Re: [PATCH 12/12] arm64: dts: exynos: Add Exynos850 SoC support
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
+        Ryu Euiyoul <ryu.real@samsung.com>,
+        Tom Gall <tom.gall@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The same as for I²C Serial Bus resource split and export
-serdev_acpi_get_uart_resource(). We have already a few users
-one of which is converted here.
+Hi Marc,
 
-Rationale of this is to consolidate parsing UART Serial Bus
-resource in one place as it's done, e.g., for I²C Serial Bus.
+On Fri, 30 Jul 2021 at 19:50, Marc Zyngier <maz@kernel.org> wrote:
+>
+> On 2021-07-30 15:49, Sam Protsenko wrote:
+> > Samsung Exynos850 is ARMv8-based mobile-oriented SoC.
+> >
+> > Features:
+> >  * CPU: Cortex-A55 Octa (8 cores), up to 2 GHz
+> >  * Memory interface: LPDDR4/4x 2 channels (12.8 GB/s)
+> >  * SD/MMC: SD 3.0, eMMC5.1 DDR 8-bit
+> >  * Modem: 4G LTE, 3G, GSM/GPRS/EDGE
+> >  * RF: Quad GNSS, WiFi 5 (802.11ac), Bluetooth 5.0
+> >  * GPU: Mali-G52 MP1
+> >  * Codec: 1080p 60fps H64, HEVC, JPEG HW Codec
+> >  * Display: Full HD+ (2520x1080)@60fps LCD
+> >  * Camera: 16+5MP/13+8MP ISP, MIPI CSI 4/4/2, FD, DRC
+> >  * Connectivity: USB 2.0 DRD, USI (SPI/UART/I2C), HSI2C, I3C, ADC,
+> > Audio
+> >
+> > This patch adds minimal SoC support. Particular board device tree files
+> > can include exynos850.dtsi file to get SoC related nodes, and then
+> > reference those nodes further as needed.
+> >
+> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > ---
+> >  .../boot/dts/exynos/exynos850-pinctrl.dtsi    | 782 ++++++++++++++++++
+> >  arch/arm64/boot/dts/exynos/exynos850-usi.dtsi |  30 +
+> >  arch/arm64/boot/dts/exynos/exynos850.dtsi     | 245 ++++++
+> >  3 files changed, 1057 insertions(+)
+> >  create mode 100644 arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi
+> >  create mode 100644 arch/arm64/boot/dts/exynos/exynos850-usi.dtsi
+> >  create mode 100644 arch/arm64/boot/dts/exynos/exynos850.dtsi
+> >
+> > diff --git a/arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi
+> > b/arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi
+> > new file mode 100644
+> > index 000000000000..4cf0a22cc6db
+>
+> [...]
+>
+> > +     gic: interrupt-controller@12a00000 {
+> > +             compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
+>
+> One thing for sure, it cannot be both. And given that it is
+> an A55-based SoC, it isn't either. It is more likely a GIC400.
+>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
----
-v2: added Rb tag (Hans)
- drivers/tty/serdev/core.c | 36 +++++++++++++++++++++++++++++-------
- include/linux/serdev.h    | 14 ++++++++++++++
- 2 files changed, 43 insertions(+), 7 deletions(-)
+Yes, it's GIC-400, thanks for pointing that out. Will fix that in v2.
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 92498961fd92..436e3d1ba92c 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -562,23 +562,45 @@ struct acpi_serdev_lookup {
- 	int index;
- };
- 
-+/**
-+ * serdev_acpi_get_uart_resource - Gets UARTSerialBus resource if type matches
-+ * @ares:	ACPI resource
-+ * @uart:	Pointer to UARTSerialBus resource will be returned here
-+ *
-+ * Checks if the given ACPI resource is of type UARTSerialBus.
-+ * In this case, returns a pointer to it to the caller.
-+ *
-+ * Returns true if resource type is of UARTSerialBus, otherwise false.
-+ */
-+bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
-+				   struct acpi_resource_uart_serialbus **uart)
-+{
-+	struct acpi_resource_uart_serialbus *sb;
-+
-+	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
-+		return false;
-+
-+	sb = &ares->data.uart_serial_bus;
-+	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_UART)
-+		return false;
-+
-+	*uart = sb;
-+	return true;
-+}
-+EXPORT_SYMBOL_GPL(serdev_acpi_get_uart_resource);
-+
- static int acpi_serdev_parse_resource(struct acpi_resource *ares, void *data)
- {
- 	struct acpi_serdev_lookup *lookup = data;
- 	struct acpi_resource_uart_serialbus *sb;
- 	acpi_status status;
- 
--	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
--		return 1;
--
--	if (ares->data.common_serial_bus.type != ACPI_RESOURCE_SERIAL_TYPE_UART)
-+	if (!serdev_acpi_get_uart_resource(ares, &sb))
- 		return 1;
- 
- 	if (lookup->index != -1 && lookup->n++ != lookup->index)
- 		return 1;
- 
--	sb = &ares->data.uart_serial_bus;
--
- 	status = acpi_get_handle(lookup->device_handle,
- 				 sb->resource_source.string_ptr,
- 				 &lookup->controller_handle);
-@@ -586,7 +608,7 @@ static int acpi_serdev_parse_resource(struct acpi_resource *ares, void *data)
- 		return 1;
- 
- 	/*
--	 * NOTE: Ideally, we would also want to retreive other properties here,
-+	 * NOTE: Ideally, we would also want to retrieve other properties here,
- 	 * once setting them before opening the device is supported by serdev.
- 	 */
- 
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 9f14f9c12ec4..3368c261ab62 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -327,4 +327,18 @@ static inline int serdev_tty_port_unregister(struct tty_port *port)
- }
- #endif /* CONFIG_SERIAL_DEV_CTRL_TTYPORT */
- 
-+struct acpi_resource;
-+struct acpi_resource_uart_serialbus;
-+
-+#ifdef CONFIG_ACPI
-+bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
-+				   struct acpi_resource_uart_serialbus **uart);
-+#else
-+static inline bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
-+						 struct acpi_resource_uart_serialbus **uart)
-+{
-+	return false;
-+}
-+#endif /* CONFIG_ACPI */
-+
- #endif /*_LINUX_SERDEV_H */
--- 
-2.30.2
+> > +             #interrupt-cells = <3>;
+> > +             #address-cells = <0>;
+> > +             interrupt-controller;
+> > +             reg = <0x0 0x12a01000 0x1000>,
+> > +                   <0x0 0x12a02000 0x1000>,
+>
+> This is wrong. It is architecturally set to 8kB.
+>
 
+Nice catch! Actually there is an error (typo?) in SoC's TRM, saying
+that Virtual Interface Control Register starts at 0x3000 offset (from
+0x12a00000), where it obviously should be 0x4000, that's probably
+where this dts error originates from. Btw, I'm also seeing the same
+error in exynos7.dtsi. Though I don't have a TRM for Exynos7 SoCs, so
+not sure if I should go ahead and fix that too. Anyway, for Exynos850,
+I'll fix that in v2 series.
+
+> > +                   <0x0 0x12a04000 0x2000>,
+> > +                   <0x0 0x12a06000 0x2000>;
+> > +             interrupts = <GIC_PPI 9
+> > +                             (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
+>
+> 4? With 8 CPUs?
+>
+
+Will be fixed in v2, thanks.
+
+> I also find it curious that you went through the unusual
+> (and IMO confusing) effort to allocate a name to each and
+> every SPI in the system, but didn't do it for any on the PPIs...
+>
+
+Yeah, after some consideration I removed the whole interrupts header
+and used hard-coded values instead. I probably felt it would be right
+thing to have, just because there is no public TRM for Exynos850, thus
+documenting interrupts somewhere would be nice. But that reasoning is
+wrong, as trying to mix that kind of documentation with code just
+clutters it. The right thing to do is probably just provide a public
+TRM, but that's not for me to decide, alas :) Anyway, will be fixed in
+v2.
+
+>
+> > +     };
+> > +
+> > +     timer {
+> > +             compatible = "arm,armv8-timer";
+> > +             interrupts = <GIC_PPI 13
+> > +                             (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> > +                          <GIC_PPI 14
+> > +                             (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> > +                          <GIC_PPI 11
+> > +                             (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> > +                          <GIC_PPI 10
+> > +                             (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
+> > +             clock-frequency = <26000000>;
+>
+> No, please. Fix the firmware to program CNTFRQ_EL0 on each
+> and every CPU. This isn't 2012 anymore.
+>
+
+Ok, will remove that property in v2. Though it looks like CNTFRQ_EL0
+register can be only changed in EL3 execution level, so I'll have to
+ask the vendor to fix their BL31 or whatever. But that might take some
+time, so I'll have to keep "clock-frequency" workaround in my local
+tree for now, to make scheduler work.
+
+> You are also missing the hypervisor virtual timer interrupt.
+>
+
+Checked SoC TRM, there is no PPI for hypervisor virtual timer
+interrupt, and no mentioning of it at all. Likewise, I checked ARMv8
+ARM and TRM, almost no description of it. Also, I checked other
+platforms, and seems like everyone does the same (having only 4
+interrupts). And I wasn't able to find any documentation on that, so I
+guess I'll leave it as is, if you don't mind.
+
+> > +             use-clocksource-only;
+> > +             use-physical-timer;
+>
+> Thankfully, these two properties do not exist.
+>
+
+Yeah, that's just some leftover from vendor's kernel, overlook by
+me... Will remove in v2, thanks.
+
+> Thanks,
+>
+>          M.
+> --
+> Jazz is not dead. It just smells funny...
