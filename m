@@ -2,224 +2,162 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-23.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA51C4338F
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 09:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C390FC4320A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:28:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 056EB6104F
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 09:51:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A83AB61151
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234746AbhHEJvR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 05:51:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53472 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232728AbhHEJvQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 05:51:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ADB2C60F58;
-        Thu,  5 Aug 2021 09:51:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628157063;
-        bh=Hsuw7RVHA7GIqj/NP45jfBuP0u5uf6WRtP6zB54Pn9s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gLXYNCBEcndfLc/UEKxQNRP2fGVcqO4+Vhwsa86VNNwUrOgvFx92Y+TAfTaJmkeGP
-         Mpgv+al3K1mw7YK8zeBpuvIkDXJ0E+VWG/ab1YKowB/uWKkLI+fZudlBO3JJ+yOl3J
-         nUYsphznIm2jJvOvSWk6U0n1WENuTrpmx1c5zVWE5/PzDovTMctVvOI+FyhZfH0ai5
-         UXIIIZ4QkLk7a/lgsb5erruq6qFY4WPL5Ut7j68Ywq869HsYhnrgI0WIZXh9+0t43k
-         ySC0rNJd3m2PnL51MQCRARTMJL0NpP9loywQveuY2IjzRKaAvvSZ3QUZUqD6yioj+j
-         dPgMse5KmeAGA==
-Received: by pali.im (Postfix)
-        id 3F9E6817; Thu,  5 Aug 2021 11:51:00 +0200 (CEST)
-Date:   Thu, 5 Aug 2021 11:51:00 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        id S242072AbhHEP3I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Aug 2021 11:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242000AbhHEP3H (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Aug 2021 11:29:07 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E06AC061765;
+        Thu,  5 Aug 2021 08:28:53 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id c16so7063996wrp.13;
+        Thu, 05 Aug 2021 08:28:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=X8OKOFT3oxnoboikDpFfPBkWTsiFzFpBrY0QV7ZSIdQ=;
+        b=heEWAxty/xo2BtzEd8ePdoV3viVS59b8A2E1WaPZukAt1khXy8SRkSLhIOUxb3lFNZ
+         3vJXvZGKFHsPYbReQsNTtG1foFv46t01VIwhYuKRC1KuVFBs70A8+fgVweyb7NsgWmH6
+         jneC3t8Qous4WYgwoGTJa8BJjucfG0pBKcDvI6apYyPwuAQceGC62Dvg9RvZKbjW7H5J
+         Qd+O89XaOQoR12nZ+iPjMGY2a0rNngVTzyZcfDjHQ2XIUqIiQzDNS3zVkiYbjULz+7zH
+         eOCUiVVeEZY9Fv58mfG8eXXij5vB7mqRz7+BY1ebQkyuRwn4QmDOBO+7uBJUu0RR3Ol2
+         9JEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=X8OKOFT3oxnoboikDpFfPBkWTsiFzFpBrY0QV7ZSIdQ=;
+        b=YWS0zngavy/gsZ7SDh2XnSIDgsi7Mtqef944adPgEksPJi/huhsHbilb7GP9VMgrAk
+         lwbcWtIUcpj35gppn89vVUsKmPY1ME9luxa++Cbv7p47H5VMKX+GvHMVwvSO79DPB9GJ
+         RC0RNKHmwfNOrjA7D848wT8Ovei7cq7ki6E8SgC/c65HvxXFlPVayQHBlRuXWXOxknfJ
+         hyqiYmafq8emtp6cqepqoprCG53ODW9uuFt86shMGtiVbw30ny8C/RTLH4H7kAVZQ+88
+         H0vrBp5h7NwIQRgSfkqpU6eXpuj/pFmrp6VfDItKnL1ti92TgJPs5YksblWEHVfUNdnd
+         XJhg==
+X-Gm-Message-State: AOAM533ukckhXkiVFZfIE3m4b5IubXtHle+OnhxjsF9OQfCqctPuPHm+
+        ZRNNxzK3ZJE9TgyHcgScuJ1oE0FDeqA=
+X-Google-Smtp-Source: ABdhPJx9ToecQZyJLBXXbrTgJ8Kz3sCOOp9GOOUjOblBQh3OV22rD/eWZusjr29frE56RF3D8lC58g==
+X-Received: by 2002:adf:d84b:: with SMTP id k11mr5870488wrl.135.1628177331836;
+        Thu, 05 Aug 2021 08:28:51 -0700 (PDT)
+Received: from [10.8.0.10] ([195.53.121.100])
+        by smtp.gmail.com with ESMTPSA id o24sm8099331wmm.37.2021.08.05.08.28.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Aug 2021 08:28:51 -0700 (PDT)
+Subject: Re: [PATCH v3] ioctl_tty.2: Add example how to get or set baudrate on
+ the serial port
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+Cc:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
         libc-alpha@sourceware.org,
         "G. Branden Robinson" <g.branden.robinson@gmail.com>,
-        linux-man@vger.kernel.org, linux-serial@vger.kernel.org,
-        Alejandro Colomar <alx.manpages@gmail.com>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Subject: Re: [PATCH v3] ioctl_tty.2: Add example how to get or set baudrate
- on the serial port
-Message-ID: <20210805095100.n2qkm3kdiucwt6jd@pali>
+        linux-man@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20210730095333.6118-1-pali@kernel.org>
  <20210801135146.14849-1-pali@kernel.org>
- <20210804220808.cetleob6dldpfnjk@pali>
- <YQt8g+ECel20fA/g@kroah.com>
- <20210805082243.qciylqnt5g74if7i@pali>
- <YQuhl18CgJ2+LUPW@kroah.com>
- <20210805084410.sb5lybdri6r7t2da@pali>
- <YQumV3qljhFSau0y@kroah.com>
+ <20210804220808.cetleob6dldpfnjk@pali> <YQt8g+ECel20fA/g@kroah.com>
+ <20210805082243.qciylqnt5g74if7i@pali> <YQuhl18CgJ2+LUPW@kroah.com>
+ <20210805084410.sb5lybdri6r7t2da@pali> <YQumV3qljhFSau0y@kroah.com>
+ <20210805095100.n2qkm3kdiucwt6jd@pali>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Message-ID: <418a281b-441d-66fc-6929-5d29fafc459b@gmail.com>
+Date:   Thu, 5 Aug 2021 17:28:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <20210805095100.n2qkm3kdiucwt6jd@pali>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YQumV3qljhFSau0y@kroah.com>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thursday 05 August 2021 10:50:31 Greg Kroah-Hartman wrote:
-> On Thu, Aug 05, 2021 at 10:44:10AM +0200, Pali Rohár wrote:
-> > On Thursday 05 August 2021 10:30:15 Greg Kroah-Hartman wrote:
-> > > On Thu, Aug 05, 2021 at 10:22:43AM +0200, Pali Rohár wrote:
-> > > > On Thursday 05 August 2021 07:52:03 Greg Kroah-Hartman wrote:
-> > > > > On Thu, Aug 05, 2021 at 12:08:08AM +0200, Pali Rohár wrote:
-> > > > > > + linux-serial
-> > > > > > + Greg
-> > > > > > 
-> > > > > > Greg, could I ask you for reviewing this documentation manpage patch?
-> > > > > 
-> > > > > If it is submitted in a format I can review, sure (i.e. not top-post...)
-> > > > > 
-> > > > > But I will dig down below to say one thing...
-> > > > > 
-> > > > > > 
-> > > > > > On Sunday 01 August 2021 15:51:45 Pali Rohár wrote:
-> > > > > > > Signed-off-by: Pali Rohár <pali@kernel.org>
-> > > > > > > 
-> > > > > > > ---
-> > > > > > > Changes in v3:
-> > > > > > > * Check support for custom baudrate only based on BOTHER macro
-> > > > > > > * Use TCGETS/TCSETS/termios when TCGETS2/TCSETS2/termios2 is not available
-> > > > > > > 
-> > > > > > > Changes in v2:
-> > > > > > > * Use \e for backslash
-> > > > > > > * Use exit(EXIT_*) instead of return num
-> > > > > > > * Sort includes
-> > > > > > > * Add comment about possible fallback
-> > > > > > > ---
-> > > > > > > 
-> > > > > > > Hello Alejandro!
-> > > > > > > 
-> > > > > > > I found out that this stuff is more complicated as I originally thought.
-> > > > > > > And seems that additional documentation on this topic is needed...
-> > > > > > > 
-> > > > > > > For setting custom baudrate it is needed to set BOTHER flag in c_cflag
-> > > > > > > field and baudrate value itself in c_ospeed and c_ispeed fields.
-> > > > > > > 
-> > > > > > > So when BOTHER flag is not provided by <asm/termbits.h> then setting custom
-> > > > > > > baudrate is not possible, fields c_ospeed and c_ispeed do not exist (and
-> > > > > > > only some predefined Bnnn baudrate values are supported). This applies when
-> > > > > > > compiling application with older version of header files (prior support for
-> > > > > > > custom baudrate was introduced into header files).
-> > > > > > > 
-> > > > > > > First caveat: BOTHER constant is different for different architectures.
-> > > > > > > So it is not possible to provide fallback #ifndef..#define BOTHER.
-> > > > > > > 
-> > > > > > > And now the biggest issue: Some architectures have these c_ospeed and
-> > > > > > > c_ispeed fields in struct termios and some in struct termios2.
-> > > > > > > 
-> > > > > > > TCGETS/TCSETS ioctls use struct termios and TCGETS/TCSETS2 use
-> > > > > > > struct termios2.
-> > > > > > > 
-> > > > > > > Some architectures (e.g. amd64) provide both struct termios and struct
-> > > > > > > termios2, but c_ospeed and c_ispeed are only in struct termios2.
-> > > > > > > 
-> > > > > > > Some other architectures (e.g. alpha) provide both struct termios and struct
-> > > > > > > termios2 and both have c_ospeed and c_ispeed fields.
-> > > > > > > 
-> > > > > > > And some other architectures (e.g. powerpc) provide only struct termios
-> > > > > > > (no struct termios2) and it has c_ospeed and c_ispeed fields.
-> > > > > > > 
-> > > > > > > So basically to support all architectures it is needed to use
-> > > > > > > struct termios2 when TCGETS2/TCSETS2 is supported. Otherwise it is needed
-> > > > > > > to use struct termios with TCGETS/TCSETS (case for e.g. powerpc).
-> > > > > > > 
-> > > > > > > I updated v3 patch to handle this logic.
-> > > > > > > ---
-> > > > > > >  man2/ioctl_tty.2 | 73 ++++++++++++++++++++++++++++++++++++++++++++++++
-> > > > > > >  1 file changed, 73 insertions(+)
-> > > > > > > 
-> > > > > > > diff --git a/man2/ioctl_tty.2 b/man2/ioctl_tty.2
-> > > > > > > index 3020f9984872..d83cbd17225b 100644
-> > > > > > > --- a/man2/ioctl_tty.2
-> > > > > > > +++ b/man2/ioctl_tty.2
-> > > > > > > @@ -764,6 +764,79 @@ main(void)
-> > > > > > >      close(fd);
-> > > > > > >  }
-> > > > > > >  .EE
-> > > > > > > +.PP
-> > > > > > > +Get or set arbitrary baudrate on the serial port.
-> > > > > > > +.PP
-> > > > > > > +.EX
-> > > > > > > +#include <asm/termbits.h>
-> > > > > > > +#include <fcntl.h>
-> > > > > > > +#include <stdio.h>
-> > > > > > > +#include <stdlib.h>
-> > > > > > > +#include <sys/ioctl.h>
-> > > > > > > +#include <sys/types.h>
-> > > > > > > +#include <unistd.h>
-> > > > > > > +
-> > > > > > > +int
-> > > > > > > +main(int argc, char *argv[])
-> > > > > > > +{
-> > > > > > > +#ifndef BOTHER
-> > > > > > > +    fprintf(stderr, "BOTHER is unsupported\en");
-> > > > > > > +    /* Program may fallback to TCGETS/TCSETS with Bnnn constants */
-> > > > > > > +    exit(EXIT_FAILURE);
-> > > > > 
-> > > > > So this is a BOTHER test only?
-> > > > 
-> > > > Yes.
-> > > > 
-> > > > > What is the goal of this program?  Don't throw a bunch of #ifdef in here
-> > > > > for no good reason.  These options should all be present on all normal
-> > > > > kernels, why wouldn't they be?
-> > > > 
-> > > > I wanted to provide complete example which compiles fine on all Linux
-> > > > systems, even with older include header files. I do not know right now
-> > > > in which kernel version was introduced BOTHER support for all
-> > > > architectures.
-> > > 
-> > > We have all of the kernel source in a tool that would allow you to to
-> > > determine this quite easily :)
-> > > 
-> > > > If BOHTER is not supported then it is possible to still use Bnnn
-> > > > constants to get / set baudrate. Just it is needed to write long code
-> > > > for converting number to suitable Bnnn constant.
-> > > > 
-> > > > Do you think that this BOTHER check is not useful in this case?
-> > > 
-> > > I think you should provide an example of how to use BOTHER, yes, as it
-> > > is hard to find good examples out there as they keep floating around.
-> > 
-> > Exactly, and this is one of the reason why I sent this my patch for
-> > ioctl_tty.2.
-> > 
-> > > Here's one that I point people to a lot:
-> > > 	https://github.com/GrantEdwards/Linux-arbitrary-baud
-> > 
-> > I'm looking at this example at it has lot of problems:
-> > 
-> > * Does not compile on powerpc (see explanation above).
-> > * Does not include <sys/ioctl.h> and instead provide open-coded
-> >   declaration of ioctl: int ioctl(int d, int request, ...);
-> > * Does not handle case when TCGETS/TCSETS contains t.c_ospeed
-> 
-> Great, then fix all of that :)
+Hi Pali,
 
-It should have been already in this my patch which provides this
-example. That is why I asked for review from other people :-)
+On 8/5/21 11:51 AM, Pali Rohár wrote:
+>>>> Also, you forgot a license for this code, that is required if you want
+>>>> people to use it...
+>>>
+>>> Hm... I do not see any license in other manpage examples. Does not apply
+>>> for it global license defined in ioctl_tty.2 file?
+>>
+>> That does not mean you do not need it.
 
-> > In my opinion include header files should be used instead of writing own
-> > declaration of functions.
-> 
-> I agree.
-> 
-> > > Make the example code easy to follow.
-> > > 
-> > > Also, you forgot a license for this code, that is required if you want
-> > > people to use it...
-> > 
-> > Hm... I do not see any license in other manpage examples. Does not apply
-> > for it global license defined in ioctl_tty.2 file?
-> 
-> That does not mean you do not need it.
+I don't know what is the status of the current code examples in terms of 
+licensing.
 
-I will wait for Alejandro's reaction on this topic as I think he wants
-to have all manpages consistent and with the same style, headers, etc...
+I thought I had seen an SPDX license identifier in one of them some time 
+ago, but now I can't find it.
+
+Technically, the pages have a license at the top of each file, which 
+isn't printed on the rendered output (the license text doesn't require 
+so) (see that text below).
+
+If you want a different license for your example (let's say you want it 
+BSD for example), I guess you could add an SPDX line at the top of the 
+example for simplicity.
+
+But if your code example adheres to the same license as the rest of the 
+page, I guess you don't need to do anything in your patch.
+
+But I'm not sure at all; maybe Michael can tell you more about it.
+
+> 
+> I will wait for Alejandro's reaction on this topic as I think he wants
+> to have all manpages consistent and with the same style, headers, etc...
+> 
+
+Thanks!
+
+Alex
+
+
+---
+$ head -n 26 man7/system_data_types.7
+.\" Copyright (c) 2020 by Alejandro Colomar <colomar.6.4.3@gmail.com>
+.\" and Copyright (c) 2020 by Michael Kerrisk <mtk.manpages@gmail.com>
+.\"
+.\" %%%LICENSE_START(VERBATIM)
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\" Since the Linux kernel and libraries are constantly changing, this
+.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+.\" responsibility for errors or omissions, or for damages resulting from
+.\" the use of the information contained herein.  The author(s) may not
+.\" have taken the same level of care in the production of this manual,
+.\" which is licensed free of charge, as they might when working
+.\" professionally.
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" %%%LICENSE_END
+.\"
+.\"
+
+
+
+-- 
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
