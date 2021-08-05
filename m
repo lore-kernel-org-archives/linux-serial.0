@@ -5,44 +5,44 @@ X-Spam-Level:
 X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,URIBL_RED,USER_AGENT_GIT autolearn=ham
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99ECAC4338F
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 06:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5A3C4320A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 06:55:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 791C860F58
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 06:55:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 09CE7610FF
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 06:55:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238157AbhHEGzY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 02:55:24 -0400
-Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:49716 "EHLO
+        id S238220AbhHEGzm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Aug 2021 02:55:42 -0400
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:42787 "EHLO
         de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238134AbhHEGzW (ORCPT
+        by vger.kernel.org with ESMTP id S238268AbhHEGz0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 02:55:22 -0400
+        Thu, 5 Aug 2021 02:55:26 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1628146507;
+        t=1628146512;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dQ3sNnxHrPW+0NfPoOZXUmTpCXoqKD62Mr9gJOSmmRU=;
-        b=SwmXJpQBByUAAP5TYEbnQJnAnfsQZxziGf+VxiS3lCp0U3wlzwz/nuLL+JXIWuNe/Q6JYR
-        vqFHuUSkhhVh+2fmPNk+ROlbSH8jamS2EDMmPoqhCL1I8B8iCuoKig1T4LULYQNEC2t2Kj
-        l2suQI+2jBbBnbCjHjasULiTT6LaCH0=
+        bh=fzP2am0mAceIOfn7bgIN9HS7l+KOoyWK9Oa0OawNj5E=;
+        b=lt4T+hMq6+QA4figlZU9WlOc9LI6PzIzv3+90XR6/wQ4v1NpSWpLDVn0sj7OOdnm8llXHI
+        rKKmFuoKcNn5nppN7D1/FC18XUPzmO9HDxb6S2CeF/X5AV1iwiaeGU8a8mZ89VqOOrvXqi
+        PokSZa7D3dOF9EPNRvjb0MmCYkYNr3g=
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com
- (mail-he1eur04lp2058.outbound.protection.outlook.com [104.47.13.58]) (Using
+ (mail-he1eur04lp2057.outbound.protection.outlook.com [104.47.13.57]) (Using
  TLS) by relay.mimecast.com with ESMTP id
- de-mta-16-nzQwq9hVN2WeBoLoozovjQ-1; Thu, 05 Aug 2021 08:55:06 +0200
-X-MC-Unique: nzQwq9hVN2WeBoLoozovjQ-1
+ de-mta-28-JuQAzW8SPu6Yrlzbjlh2aQ-1; Thu, 05 Aug 2021 08:55:10 +0200
+X-MC-Unique: JuQAzW8SPu6Yrlzbjlh2aQ-1
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NapABS16R6ap2YLFnly+1fX7uztH9mtRuAtJERQYfZE4VKS/hY2cHYWMo05Hl8ThNSs7nnZFF9f0UXag2rR1/32nRO6LaC9FCG8K1enJj9RkkJpdXIsMiQjEv4g/34GKACReFjYnco/yGX3/PITs9zh1GKwYjlqwngvdwHDHYOfzhYG4OSYJhRMBuruhNnRH2kk/HmlBER1w6hGY8hGSoRbhXubO78tE5/ZxgY0Lvr66IZPFdLArYgnai8P0ATdnKioFJTMdFQUILuZf4OsxPOETqYwdfWw8+sU6w2l0DbkHlmPtt16Cn2yFsve6Uks2VUwTG0VLrseZSB/2AI3o5w==
+ b=HjfU5pDuvXyCwiW6TzMYF6dNDiNFJGoRYZqZa5hrF7pRyqEhRJB+/bQYf9QsTyWkRFKTHeedaB/c4AvCDPohTAoZ5xxLiaQDllvsyFixqLRPY91ptQO+8LojnsXv5NSPq5o4N4NAF16Ywlv/5UjVJl24vG4BP1XjykHj1SIA2cnZyyjnc/hJoOw0JZNuKT8opInVMTT3XVw6fduVyAB+sqcDj1LmQdlxh4aXqLr0FlUjVF/dXj/9VxEl6K1wtHVMTAO/vd/vYWbBTT0WI/7YpG44BDrPJkQGErNX74OSQlu701V8afDXodIhrkAQg9X+7+UE3EZf6TOYAXGFMr9GXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=81yB69k1vG4wf6qDlHCwCoVh0suoz8CGiIPEt4LR5vI=;
- b=HDAhw1P6oJkRscYFU3+l6v+mu/TLGpWU5a1zN2yzn/eW9iJzTuBRMTZ2ExAj/y194t+fwmy0776yEzy0sGtQwPNalvOgtBRUjiI2lFMeXNc9VIbSrFxlCLSv409s6tfcUPGFZEax/AW7cbCz4Ojbu+cpBZuPd8Vo9dEI6oTkn91pawXYxHOY7kndMaEMyoEpG52jb45z7se0z+Br0/ACCVwuRfRmZINKVGgmjk7nDFoBxCbyHNq1pDUmYX3rr6YM2L3rHQLSbP5HGlenWU4plXryybdixkxd9XWuD9R9aUoR2EIz9f7NwMcP9PNg1BuhvcQMHLcWQVqmF+CrrxFCcg==
+ bh=8LJvtl16I+hoBAOeBVHcYMF8agvos6aS1wgLlSb9TqQ=;
+ b=GEtKDAQ7G62a42lVpt+8tC+zF4d67+ahjhYVFl0E0zembADSneV0G95N0YWbJZaKGX02EiRMQsxLgYGjWNMu0wiTS+9VJTNgBi534QasU0eH80RoeCaNiOVcn2fAg2/qhungpjSM5yYamE8IGiAo17GDP/5Y6kqSSUmj4mkoB8NqpwKi/deiIyqlOGu82FA7lq3MaZtE0GgJMqSGw5X7p19kbKu7EMqH9K2DINl9gLqdmIJYPoBdbq7eHsd97gOS5gG5weD8iQRavnkfrzmbrY9aCGxIFxhn7F8nqlWjCDMXWLZww6aP/WgC30xZl4JHds+T7cOailFYIG0m8sMEfw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
  dkim=pass header.d=suse.com; arc=none
@@ -53,11 +53,11 @@ Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com (2603:10a6:803:4::13)
  by VI1PR0401MB2368.eurprd04.prod.outlook.com (2603:10a6:800:29::25) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17; Thu, 5 Aug
- 2021 06:55:03 +0000
+ 2021 06:55:08 +0000
 Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com
  ([fe80::f1df:db6f:4ff8:a667]) by VI1PR0402MB3439.eurprd04.prod.outlook.com
  ([fe80::f1df:db6f:4ff8:a667%5]) with mapi id 15.20.4373.026; Thu, 5 Aug 2021
- 06:55:03 +0000
+ 06:55:08 +0000
 From:   Chester Lin <clin@suse.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -81,167 +81,125 @@ CC:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
         "Ivan T . Ivanov" <iivanov@suse.de>,
         "Lee, Chun-Yi" <jlee@suse.com>, Chester Lin <clin@suse.com>
-Subject: [PATCH 2/8] dt-bindings: serial: fsl-linflexuart: convert to json-schema format
-Date:   Thu,  5 Aug 2021 14:54:23 +0800
-Message-ID: <20210805065429.27485-3-clin@suse.com>
+Subject: [PATCH 3/8] dt-bindings: serial: fsl-linflexuart: Add compatible for S32G2
+Date:   Thu,  5 Aug 2021 14:54:24 +0800
+Message-ID: <20210805065429.27485-4-clin@suse.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210805065429.27485-1-clin@suse.com>
 References: <20210805065429.27485-1-clin@suse.com>
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-ClientProxiedBy: AM3PR05CA0141.eurprd05.prod.outlook.com
- (2603:10a6:207:3::19) To VI1PR0402MB3439.eurprd04.prod.outlook.com
+X-ClientProxiedBy: AM3PR05CA0146.eurprd05.prod.outlook.com
+ (2603:10a6:207:3::24) To VI1PR0402MB3439.eurprd04.prod.outlook.com
  (2603:10a6:803:4::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (118.166.54.149) by AM3PR05CA0141.eurprd05.prod.outlook.com (2603:10a6:207:3::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17 via Frontend Transport; Thu, 5 Aug 2021 06:55:02 +0000
+Received: from localhost (118.166.54.149) by AM3PR05CA0146.eurprd05.prod.outlook.com (2603:10a6:207:3::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Thu, 5 Aug 2021 06:55:07 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 22155975-0f0b-4e18-2348-08d957ddf383
+X-MS-Office365-Filtering-Correlation-Id: cce3f095-f558-433c-f832-08d957ddf611
 X-MS-TrafficTypeDiagnostic: VI1PR0401MB2368:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB23689FC4B0A6503D55564AF8ADF29@VI1PR0401MB2368.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB2368F61AC57F639CFBA14320ADF29@VI1PR0401MB2368.eurprd04.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3MoIkS5YxdR1Ap1chjNH01i58N6epMe1I9SZyUfiRLVn/qwcvu02KwnsIa/8ZYefuyAe3EqIZh/OYLk8aCvN/rBxni7ig2m+PG1g5jg799nlXB3BWiHtb+g7z9/f4KZm31vrBE+JsB5mIyUiTojB+3NWewh+lR63DGhAcbciQ/gxUo7xVuOo3OytOXyc5Ys+w6J5ERykVaWgQIA3myPSoDikcOnevxG5FdckKMiSt9duBNrEIEtcLkjsa1JT9w/dBRsl/ju740ejJeTK/4Avp9Idy3Tinh53WBmeSQrdYbEnF71Q+CfqQPkAGFmOieb2LaSgZhPniqIxo7h9/A8tZnuf2JMYCxSA+xajRFHLFEZBnwG3YSihH1PRawr0Rcvb5KRJIORvf0fJUU5qGh6AztPnS25VzUoN2sZC6AhHJG7mwrB2pRj9iyN2FO/Rikb0RgPp74l5/la33dOUwM7INA5icaHszLmesaaivD766n2LcKqns1YjhJ0gQOtn4YVV4wWx8r1JCq45z7a+VxA58Wp4FzUWfZtJNnDbc/Cx1lYP5kz94aWFvbQv40+Ja4elGp8bJZjWyD6b3YxXTXq4TJX9i9sqlnolCM1eEWDt3GIkZuytVuAIngLs32BDYgoY30twS5s42r4CFiYNKjDSzugcvmxfm81AoG4mIr4Cm7lw9VqGr9UYA0icPE7xn3tJdbHOJm0LtISI7DDZyfd2LmctNeHndwyKHkrnw/CKI2o=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3439.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(8676002)(86362001)(6666004)(8936002)(66946007)(66476007)(66556008)(966005)(956004)(2616005)(508600001)(83380400001)(1076003)(5660300002)(26005)(4326008)(7416002)(6486002)(186003)(36756003)(107886003)(2906002)(54906003)(38100700002)(55236004)(110136005)(316002)(6496006);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ip9obbrlElSRcGfVHR/B3GRHV9AzLcggm++0Ka88A7/yGRB5WeJQcgr2wvuqli6cn3pEIJw3eVAEVe2CJnNIR/Vciu00bkDwdt+SnlmfAcuYCJN0A2nkkBDXS6edJI1AlG3LHN/JvvCHrQoaFvgSlc/a5cEFmGNg5sMFBSCk0Sq/ETrlaCMtkD/zLz3gvvKwfl9lGS9bKwaO0ng40YFVBUR6Bc/ekXDvqQj61ID9YFeevwhhRWsllRvVu22qGu8isgP7OSnCDk6UYhSsZ57D1kF+Blc25K0sacRxqMkh/UCQdVEVNOKP3BmDZR+iLqjuCMBww7p1vEYu5bx1jshuiz8makptgRYH31Mqoo04ahA28gqbI/LIfkFfvWe5zpRnV3livEb2urM5EoQgYhiU6kQFCC+29yp1vCTfVqD0TH5zk+Vs/SWKcw5RqCzbrWTqvBGV5IHoNZ0hAIYkzNVkb0FmQHhYq5N8u8fZUBi5enPlM5rxo99D/WExlnqazIz2QZjMVMryYnIqDgMJFvTd1i6PkwPg1u6lw9jtHhC+k6Gu/tfzTothZmDEkVsrv5P3XyGfUmL4RLNixpzgb/3zYXKohlUUglSL8E2y7AL9bOR3LkhmCFKT1ur8PQVCuhvITDxbYgryOitAd47F+E9cCg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3439.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(8676002)(86362001)(6666004)(8936002)(66946007)(66476007)(66556008)(956004)(2616005)(508600001)(83380400001)(1076003)(5660300002)(26005)(4326008)(7416002)(6486002)(186003)(36756003)(107886003)(2906002)(54906003)(38100700002)(55236004)(110136005)(316002)(6496006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RJoFFTwqd8X1vu6r9FZzaJG6cCk0gIX16tm+wazGYzVGIMy1zkz/QUUA/kuv?=
- =?us-ascii?Q?RvljxkyueqmTj89S7tcpC4x9lxVgslwj9PFvf2XPBhZM8iPOeVihF0pYLGTZ?=
- =?us-ascii?Q?9SjJ2+AUi1Qb7/h5DqusCh4JJqQS9EqojaUn70PfW60TBR6qkbWZkxjzeKPH?=
- =?us-ascii?Q?bNErOZdmeXTQVUs/ukK23ZC+O4ALzWi7eLTPlSXNkXF95bBpAe5QSgeZeAIv?=
- =?us-ascii?Q?tlegWlmfYb57T+liAxVbYofr/xvRrQnhJY6xr6y59HU2MIDWoRysm+kaUpZL?=
- =?us-ascii?Q?renghX8Iioy01u9RxytftqxSFlehcpkAQ55QK+/f1r5TOCSgbH0mCJSq+Bn0?=
- =?us-ascii?Q?8v3UYixmDzhfQuAOul2QJpStga0sFAMUt+rRyUzqBBWsFaehIXwAAGD0HwEr?=
- =?us-ascii?Q?p1vw8yrdhJWIEzcw8Isqfs0XizAGAU1HasvCi97QHMB/GmdvMSHwOHqu5vnj?=
- =?us-ascii?Q?zRC9XP9K4XGHFiV7UN8WeLtngQbdi218iRuv7Mqh1grZipLjnwK5jx5tROHl?=
- =?us-ascii?Q?zNQEdxgcRjVW4nwELLAEbWSi35dcGVT8Fxl63potTvuwolTYJcCFCM4b0o9d?=
- =?us-ascii?Q?xz8TZQMNPmSxabV4jLFm1KYYsBHqadP9DkcE3A8yuXS8YhMRjWLGRHdFxHm9?=
- =?us-ascii?Q?8YvJSbdxjfWFIoCCx/yY1FsXj6369+OhAdQWdJm0im9oZvGDqYNyxakyLgvu?=
- =?us-ascii?Q?wd/0HZ3UFM43xaJfBKHmQIzjbYFJZWXWmgH5MZU4LGCejwraoSpWblCsHzUd?=
- =?us-ascii?Q?a3e6YqtZlv9KfHCJvvf55FDzjqx1uTOGz8fhzfaMoZhO6A1P674h2KUuN3W8?=
- =?us-ascii?Q?QIkE7Y3S5VgydgKgK2h5YPvfweoUzXRhzEm0QS/oU+e8s6osrQzw1MQqtJNl?=
- =?us-ascii?Q?wclSkGTVyHiZbU+b9lVvlUsL2/4SVczeYVW7/0HIOhZwhmJO6JQEuMJQQ3g4?=
- =?us-ascii?Q?QSOP7FK5TKP2x6q48T1viglgBv56s0ZquOYKGxw4KPkKSpKrmUUWYnCt57NW?=
- =?us-ascii?Q?mpltyZbmbj/L9xIfn5wYfO0NteN2QpVEJh0QCMQqWmVUK8ToOj08blhWRJSM?=
- =?us-ascii?Q?9nKFqyAXDcdOLoi2jVOP4mcFVE3YH7u3WnZH56tgDVFAuIFYJ8c5bCFNi7h8?=
- =?us-ascii?Q?3VKoDBKMCcu7PjTupxByjc7QnYkHMWiB+PTib/gtRq0Xo7infLaKm31IpcLi?=
- =?us-ascii?Q?86demHikBkpRqychfr6YNUMTAA5v/ylu23Pw59l6TZ/yzyXboEeC1aOSfLQe?=
- =?us-ascii?Q?Pad0f/I23sB/+gGpxgMXKsm0yGSTDWvqqWNKgx91OdUkw29Rguifeljue8lU?=
- =?us-ascii?Q?EUgqbaKVk7HsMUm1AUeGUtx6?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ygsW36Ijm+kjUOxbCZ8yPodW9eZEqtXFOVEDVjMkksnvGQxkRB9CbUigRIYd?=
+ =?us-ascii?Q?VOLYpBOZbUCbrwXo6Zl9ZVdCg9+TELlgURbpxczQeF67nIoUFCEnOKI0xG7E?=
+ =?us-ascii?Q?SwbKiIfx+K/mnxtFFhJBL3Ifucp89rJyI6kcpvQA/D+snczmeToPr21CTYC0?=
+ =?us-ascii?Q?E0l9KVSRddXvzLHAObfWq0/YAkLSmO5Q6lb9Ub73RZJg1gKPN++ILUGADsK5?=
+ =?us-ascii?Q?QKGsD8zpkSfEtxPi9Sg2kFqKuSQkIZVFlpYVX4geCwUPxmMeXEPKvAwTez3M?=
+ =?us-ascii?Q?8IHTdoVvwXiKWHP1AXXYb4VPa/fd9Z5RlmsrlRSVeTOn3IzIC968KQUraYpz?=
+ =?us-ascii?Q?QQXZEJTYyjGC0mJ+A7bvcL50PzF0BxGxah9Hd3qg1UHVgsxaQXhK2QdFe7fp?=
+ =?us-ascii?Q?rMdaj0qsLqImp6ATC5bVnktGzELjm0njTR6sl8B5YAx9J4Z/TCbma+eXKN2O?=
+ =?us-ascii?Q?7x/P5/nmdvo5d6Ldotm3eZkuNuIDBkRdWJxEMAIzftMwn8InJ1Pet7Clp0LP?=
+ =?us-ascii?Q?yRGYKgNe2eJLoudgENbM9YzkZoxTjxvghrqFrtdm8x4oat7j+Gxyls2De9U2?=
+ =?us-ascii?Q?Diw4y/PTgWPICfSSeRS09d4Gi8T55FsScbHCSGJjsn+I1r9xtGuE9VWxTHp5?=
+ =?us-ascii?Q?w79p0fd6jnIOPxi4kYsSfeNUu9oXef9wtQhp5o3VEi4IpmQd5a6XypfVcUrH?=
+ =?us-ascii?Q?duAS1QvvUAUe+urnOzgsiL9oIuvNhJI6jCo0mX3dYqaLCi9L8iNjX18FhhpS?=
+ =?us-ascii?Q?odBv1/t39RiK6pFEVIYzQgqTPtkugyTibBtk0XFGyy0Y6N2hVTL2xJgypQ7z?=
+ =?us-ascii?Q?X5Z77Xcj/k4CKr5Urpl3W8ZmxPpzDQKVmtyZpfwM3Jq/3uCJwpcc+MXqW2Py?=
+ =?us-ascii?Q?sziWqK9p9NOOHjsBQmgTsirxzHCKidJM9ulfczu9QYhrS8C+nhNf7YVjJKpy?=
+ =?us-ascii?Q?XBF3BXW3y6yKaiTghVfm2GdWLyoY9vUyj1GWxrPQy7Rjxa5WXFmv0RTj3wEN?=
+ =?us-ascii?Q?EI9cwVsum1MmAZEjC9jE3jKJnVitfKWdZG4wPsvZSANqWb0dRM77qt/YwsXj?=
+ =?us-ascii?Q?eeUnwKxmYwz1li4beNeRDjn9il5Bcf6t59+dE8nXYsgU5vVJjDzC0IZzaVdq?=
+ =?us-ascii?Q?/a/wCwFDFftjTLGGpaFbPRwxJAcsDhKcMI3aYE7Y/XcHP4ZpZ2wXEsjD+D8j?=
+ =?us-ascii?Q?rboWiWOMcTPlcqmPE1h5NBLW2A5FA5slNpuWHJGmPZcps19F08CUx9fPtAyt?=
+ =?us-ascii?Q?qAsxWTAf0UJB/Wu6FfhBYpaebYoC84ca3F4ZEr7/OWSzcAbfU3B7YCyYnztv?=
+ =?us-ascii?Q?VEs7DC75e01kPD7atK1ZQfMQ?=
 X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 22155975-0f0b-4e18-2348-08d957ddf383
+X-MS-Exchange-CrossTenant-Network-Message-Id: cce3f095-f558-433c-f832-08d957ddf611
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3439.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2021 06:55:03.7220
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2021 06:55:08.0395
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kOB10xJSAW9pRj6+bgqUlecBvib0Y1LysaSuY8RiuwgFd6xHVkdKHvUH24+jyfSH
+X-MS-Exchange-CrossTenant-UserPrincipalName: uLxGp7Ijy1h7RXnjwOpBEPslr11wMR1x/m39myN35qKOTIwpvIutG29O+o/Wvow4
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2368
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the FSL LINFlexD UART binding to json-schema.
+Add a compatible string for the uart binding of NXP S32G2 platforms. Here
+we use "s32v234-linflexuart" as fallback since the current linflexuart
+driver still works on S32G2.
 
 Signed-off-by: Chester Lin <clin@suse.com>
 ---
- .../bindings/serial/fsl,s32-linflexuart.txt   | 22 ---------
- .../bindings/serial/fsl,s32-linflexuart.yaml  | 48 +++++++++++++++++++
- 2 files changed, 48 insertions(+), 22 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/fsl,s32-linfle=
-xuart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/fsl,s32-linfle=
-xuart.yaml
+ .../bindings/serial/fsl,s32-linflexuart.yaml  | 26 ++++++++++++++++---
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.t=
-xt b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
-deleted file mode 100644
-index f1bbe0826be5..000000000000
---- a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
-+++ /dev/null
-@@ -1,22 +0,0 @@
--* Freescale LINFlexD UART
--
--The LINFlexD controller implements several LIN protocol versions, as well =
-as
--support for full-duplex UART communication through 8-bit and 9-bit frames.
--
--See chapter 47 ("LINFlexD") in the reference manual[1].
--
--Required properties:
--- compatible :
--  - "fsl,s32v234-linflexuart" for LINFlexD configured in UART mode, which
--    is compatible with the one integrated on S32V234 SoC
--- reg : Address and length of the register set for the device
--- interrupts : Should contain uart interrupt
--
--Example:
--uart0: serial@40053000 {
--	compatible =3D "fsl,s32v234-linflexuart";
--	reg =3D <0x0 0x40053000 0x0 0x1000>;
--	interrupts =3D <0 59 4>;
--};
--
--[1] https://www.nxp.com/webapp/Download?colCode=3DS32V234RM
 diff --git a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.y=
 aml b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
-new file mode 100644
-index 000000000000..acfe34706ccb
---- /dev/null
+index acfe34706ccb..e731f3f6cea4 100644
+--- a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
 +++ b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/fsl,s32-linflexuart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+@@ -21,10 +21,20 @@ allOf:
+=20
+ properties:
+   compatible:
+-    description: The LINFlexD controller on S32V234 SoC, which can be
+-      configured in UART mode.
+-    items:
+-      - const: fsl,s32v234-linflexuart
++    minItems: 1
++    maxItems: 2
++    oneOf:
++      - description: The LINFlexD controller on S32G2 SoC, which can be
++          configured in UART mode.
++        items:
++          - enum:
++              - fsl,s32g2-linflexuart
++          - const: fsl,s32v234-linflexuart
 +
-+title: Freescale LINFlexD UART
++      - description: The LINFlexD controller on S32V234 SoC, which can be
++          configured in UART mode.
++        items:
++          - const: fsl,s32v234-linflexuart
+=20
+   reg:
+     maxItems: 1
+@@ -41,8 +51,16 @@ unevaluatedProperties: false
+=20
+ examples:
+   - |
++    /* S32V234 */
+     serial@40053000 {
+         compatible =3D "fsl,s32v234-linflexuart";
+         reg =3D <0x40053000 0x1000>;
+         interrupts =3D <0 59 4>;
+     };
 +
-+description: |
-+  The LINFlexD controller implements several LIN protocol versions, as wel=
-l
-+  as support for full-duplex UART communication through 8-bit and 9-bit
-+  frames. See chapter 47 ("LINFlexD") in the reference manual
-+  https://www.nxp.com/webapp/Download?colCode=3DS32V234RM.
-+
-+maintainers:
-+  - Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-+  - Rob Herring <robh@kernel.org>
-+
-+allOf:
-+  - $ref: "serial.yaml"
-+
-+properties:
-+  compatible:
-+    description: The LINFlexD controller on S32V234 SoC, which can be
-+      configured in UART mode.
-+    items:
-+      - const: fsl,s32v234-linflexuart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    serial@40053000 {
-+        compatible =3D "fsl,s32v234-linflexuart";
-+        reg =3D <0x40053000 0x1000>;
-+        interrupts =3D <0 59 4>;
++    /* S32G2 */
++    serial@401c8000 {
++        compatible =3D "fsl,s32g2-linflexuart", "fsl,s32v234-linflexuart";
++        reg =3D <0x401c8000 0x3000>;
++        interrupts =3D <0 82 1>;
 +    };
 --=20
 2.30.0
