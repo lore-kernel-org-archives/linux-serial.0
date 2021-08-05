@@ -2,162 +2,216 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C390FC4320A
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ACEC4320E
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:30:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A83AB61151
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:28:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 57B8A61155
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242072AbhHEP3I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 11:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
+        id S242000AbhHEPav (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Aug 2021 11:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242000AbhHEP3H (ORCPT
+        with ESMTP id S241715AbhHEPat (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 11:29:07 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E06AC061765;
-        Thu,  5 Aug 2021 08:28:53 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id c16so7063996wrp.13;
-        Thu, 05 Aug 2021 08:28:53 -0700 (PDT)
+        Thu, 5 Aug 2021 11:30:49 -0400
+Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB75C06179A
+        for <linux-serial@vger.kernel.org>; Thu,  5 Aug 2021 08:30:35 -0700 (PDT)
+Received: by mail-vs1-xe36.google.com with SMTP id b138so3315852vsd.2
+        for <linux-serial@vger.kernel.org>; Thu, 05 Aug 2021 08:30:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=X8OKOFT3oxnoboikDpFfPBkWTsiFzFpBrY0QV7ZSIdQ=;
-        b=heEWAxty/xo2BtzEd8ePdoV3viVS59b8A2E1WaPZukAt1khXy8SRkSLhIOUxb3lFNZ
-         3vJXvZGKFHsPYbReQsNTtG1foFv46t01VIwhYuKRC1KuVFBs70A8+fgVweyb7NsgWmH6
-         jneC3t8Qous4WYgwoGTJa8BJjucfG0pBKcDvI6apYyPwuAQceGC62Dvg9RvZKbjW7H5J
-         Qd+O89XaOQoR12nZ+iPjMGY2a0rNngVTzyZcfDjHQ2XIUqIiQzDNS3zVkiYbjULz+7zH
-         eOCUiVVeEZY9Fv58mfG8eXXij5vB7mqRz7+BY1ebQkyuRwn4QmDOBO+7uBJUu0RR3Ol2
-         9JEg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2HwiUKZxqy53dDfBp1901/849S4t5mjJtJjeA2wMPec=;
+        b=wg/GjsYLif0ZYYHMg3KnRLOxv3tYLMjO5yw61rpFo2U6f/PHccXPTRMbf7TjDmFtIy
+         SaTMUBl6mtykhQHxwVxwXJdpsqEsHECguuguS4suj2+mcgflMfdF0s+ZKBY/mMwQDdPU
+         akilIu+Sq0Sui1mKolQYpIPGxSkmZDxq5dA+WIymASwSwHXudWOYS2o/qCTkvAHocnl3
+         C/RrpZm24VqvSY06dlB6yx07zS4xtnbXplFKA/cAVOVuu+r+47pbvV9OUzUTh6gqIuEK
+         Ra4N9BqLgbBx/+PV59gv17Jp1pvOjvaqtB6MrhpxChT5YJ6s07YTularepv+VbeBnprM
+         biwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=X8OKOFT3oxnoboikDpFfPBkWTsiFzFpBrY0QV7ZSIdQ=;
-        b=YWS0zngavy/gsZ7SDh2XnSIDgsi7Mtqef944adPgEksPJi/huhsHbilb7GP9VMgrAk
-         lwbcWtIUcpj35gppn89vVUsKmPY1ME9luxa++Cbv7p47H5VMKX+GvHMVwvSO79DPB9GJ
-         RC0RNKHmwfNOrjA7D848wT8Ovei7cq7ki6E8SgC/c65HvxXFlPVayQHBlRuXWXOxknfJ
-         hyqiYmafq8emtp6cqepqoprCG53ODW9uuFt86shMGtiVbw30ny8C/RTLH4H7kAVZQ+88
-         H0vrBp5h7NwIQRgSfkqpU6eXpuj/pFmrp6VfDItKnL1ti92TgJPs5YksblWEHVfUNdnd
-         XJhg==
-X-Gm-Message-State: AOAM533ukckhXkiVFZfIE3m4b5IubXtHle+OnhxjsF9OQfCqctPuPHm+
-        ZRNNxzK3ZJE9TgyHcgScuJ1oE0FDeqA=
-X-Google-Smtp-Source: ABdhPJx9ToecQZyJLBXXbrTgJ8Kz3sCOOp9GOOUjOblBQh3OV22rD/eWZusjr29frE56RF3D8lC58g==
-X-Received: by 2002:adf:d84b:: with SMTP id k11mr5870488wrl.135.1628177331836;
-        Thu, 05 Aug 2021 08:28:51 -0700 (PDT)
-Received: from [10.8.0.10] ([195.53.121.100])
-        by smtp.gmail.com with ESMTPSA id o24sm8099331wmm.37.2021.08.05.08.28.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Aug 2021 08:28:51 -0700 (PDT)
-Subject: Re: [PATCH v3] ioctl_tty.2: Add example how to get or set baudrate on
- the serial port
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Cc:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        libc-alpha@sourceware.org,
-        "G. Branden Robinson" <g.branden.robinson@gmail.com>,
-        linux-man@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20210730095333.6118-1-pali@kernel.org>
- <20210801135146.14849-1-pali@kernel.org>
- <20210804220808.cetleob6dldpfnjk@pali> <YQt8g+ECel20fA/g@kroah.com>
- <20210805082243.qciylqnt5g74if7i@pali> <YQuhl18CgJ2+LUPW@kroah.com>
- <20210805084410.sb5lybdri6r7t2da@pali> <YQumV3qljhFSau0y@kroah.com>
- <20210805095100.n2qkm3kdiucwt6jd@pali>
-From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Message-ID: <418a281b-441d-66fc-6929-5d29fafc459b@gmail.com>
-Date:   Thu, 5 Aug 2021 17:28:49 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2HwiUKZxqy53dDfBp1901/849S4t5mjJtJjeA2wMPec=;
+        b=uYkmG5TRbW2VsvDUc2mUBWcBgQsyNWJtzXzKFcbiKBIZo6q0u+DGdE2JlWw3UtOTup
+         MGnFL9o8qO+AO2F5tlmCCVn+2HFHlVMh9OdQuhKHagZapG3/7yOsmbqL0bMudyeUss/d
+         o9NpzBL4pJi8WJodlhV4/8nciFjPL+RBSBGx262xM+1V9Bcs4+DKrOvkkU8YFC3fZhof
+         XogTEkgThRbnBEi4ie6YbGyLdyjvMLwurwQlIMwHlYqgUjT8lObOGBMxgBhd6BeNIJr/
+         vl/28xyt46WfZG8r7mnFjxbISfUeSlZr+6HBgwFzYXPpeXOKaHDJwGy3HfojfMKwIfLG
+         kYWQ==
+X-Gm-Message-State: AOAM532RYT0/PkD9e2BL/ia+Xxwh3AlBMZruHWnkjMnYxQc4WmSlTLs7
+        /Nga7yKHWWSBDd4C9L8tqtGyZ8lYoqnC7VmgTRjERg==
+X-Google-Smtp-Source: ABdhPJz7ndSuSpMNkkGlw9G/nEeHBUu9O9atQyI5vE3atZWBaEoYd/rSmKp8dYwaj/T41dDFjGZta+VdrhSjdEuiiNo=
+X-Received: by 2002:a67:de06:: with SMTP id q6mr5210772vsk.57.1628177434529;
+ Thu, 05 Aug 2021 08:30:34 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210805095100.n2qkm3kdiucwt6jd@pali>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210730144922.29111-1-semen.protsenko@linaro.org>
+ <20210730144922.29111-13-semen.protsenko@linaro.org> <15871f8ced3c757fad1ab3b6e62c4e64@misterjones.org>
+ <CAPLW+4=v4bDcuxGVqs06mobGj34At4cD+vg48b4dPujarS07Tg@mail.gmail.com>
+ <87k0l1w8y5.wl-maz@kernel.org> <CAPLW+4mMF9B2BiY2hTgHz5=DNbDJZ7TDzt=Xefb5tDKwQhpEew@mail.gmail.com>
+ <87y29gbas7.wl-maz@kernel.org>
+In-Reply-To: <87y29gbas7.wl-maz@kernel.org>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Thu, 5 Aug 2021 18:30:23 +0300
+Message-ID: <CAPLW+4nCfSBfwMcemaVvU5MgBACgnhXaW9eAAjw66G6Zhz2Gbw@mail.gmail.com>
+Subject: Re: [PATCH 12/12] arm64: dts: exynos: Add Exynos850 SoC support
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
+        Ryu Euiyoul <ryu.real@samsung.com>,
+        Tom Gall <tom.gall@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Pali,
+On Thu, 5 Aug 2021 at 10:39, Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Wed, 04 Aug 2021 19:37:24 +0100,
+> Sam Protsenko <semen.protsenko@linaro.org> wrote:
+> >
+> > On Wed, 4 Aug 2021 at 18:01, Marc Zyngier <maz@kernel.org> wrote:
+> > >
+> > > On Wed, 04 Aug 2021 15:39:38 +0100,
+> > > Sam Protsenko <semen.protsenko@linaro.org> wrote:
+> > >
+> > > > > You are also missing the hypervisor virtual timer interrupt.
+> > > > >
+> > > >
+> > > > Checked SoC TRM, there is no PPI for hypervisor virtual timer
+> > > > interrupt, and no mentioning of it at all. Likewise, I checked ARMv8
+> > > > ARM and TRM, almost no description of it. Also, I checked other
+> > > > platforms, and seems like everyone does the same (having only 4
+> > > > interrupts). And I wasn't able to find any documentation on that, so I
+> > > > guess I'll leave it as is, if you don't mind.
+> > >
+> > > I *do* mind, and other DTs being wrong isn't a good enough excuse! ;-)
+> > >
+> > > From the ARMv8 ARM (ARM DDI 0487G.b)
+> > > <quote>
+> > > D11.2.4 Timers
+> > >
+> > > In an implementation of the Generic Timer that includes EL3, if EL3
+> > > can use AArch64, the following timers are implemented:
+> > >
+> > > * An EL1 physical timer, that:
+> > >   - In Secure state, can be accessed from EL1.
+> > >   - In Non-secure state, can be accessed from EL1 unless those
+> > >     accesses are trapped to EL2.
+> > >     When this timer can be accessed from EL1, an EL1 control
+> > >     determines whether it can be accessed from EL0.
+> > > * A Non-secure EL2 physical timer.
+> > > * A Secure EL3 physical timer. An EL3 control determines whether this
+> > >   register is accessible from Secure EL1.
+> > > * An EL1 virtual timer.
+> > > * When FEAT_VHE is implemented, a Non-secure EL2 virtual timer.
+> > > * When FEAT_SEL2 is implemented, a Secure EL2 physical timer.
+> > > * When FEAT_SEL2 is implemented, a Secure EL2 virtual timer.
+> > > </quote>
+> > >
+> > > Cortex-A55 being an ARMv8.2 implementation, it has FEAT_VHE, and thus
+> > > it does have a NS-EL2 virtual timer. This is further confirmed by the
+> > > TRM which documents CNTHV*_EL2 as valid system registers[1].
+> > >
+> > > So the timer exists, the signal is routed out of the core, and it
+> > > is likely that it is connected to the GIC.
+> > >
+> > > If the designers have omitted it, then it needs to be documented as
+> > > such.
+> > >
+> >
+> > Ok, I've checked thoroughly all docs again, and it seems like there is
+> > no dedicated PPI number for this "EL2 Hypervisor Virtual Timer" in
+> > Exynos850 SoC. The timer instance itself might exist of course, but
+> > interrupt line is probably wasn't connected to GIC by SoC designers,
+> > at least it's not documented.
+>
+> Can you try and check this? You can directly program the virtual timer
+> so that it has a pending interrupt, and then check the pending
+> register on the same CPU to see if there is anything appearing there.
+>
+> > Moreover, from [1,2] it looks like if it were existing it would have
+> > been PPI=12 (INTID=28). But in GIC-400 TRM this PPI is assigned to
+> > "Legacy FIQ signal",
+>
+> No. That's only if you set the bypass bits in GICD_CTLR, which nobody
+> with half a brain would consider doing.
+>
+> > and all there is no PPI for Hypervisor Virtual
+> > Timer documented there as well. In Exynos850 TRM the source for this
+> > PPI's interrupt source is marked as "-", which means it's not used.
+> >
+> > So if you know something that I don't know -- please point me out the
+> > doc where this PPI line is documented. Otherwise I can add the comment
+> > to device tree, stating that this interrupt line is not present in
+> > SoC's GIC, i.e. something like this:
+> >
+> > 8<------------------------------------------------------------------------------->8
+> >     timer {
+> >         compatible = "arm,armv8-timer";
+> >         interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) |
+> >                       IRQ_TYPE_LEVEL_LOW)>,
+> >                  <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) |
+> >                       IRQ_TYPE_LEVEL_LOW)>,
+> >                  <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) |
+> >                       IRQ_TYPE_LEVEL_LOW)>,
+> >                  <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8) |
+> >                       IRQ_TYPE_LEVEL_LOW)>;
+> >         /* Hypervisor Virtual Timer PPI is not present in this SoC GIC */
+> >     };
+> > 8<------------------------------------------------------------------------------->8
+> >
+> > Is that ok with you?
+>
+> I'd rather you verify the above first. And if you can't, I'd like a
+> comment that is a bit more explicit:
+>
 
-On 8/5/21 11:51 AM, Pali Rohár wrote:
->>>> Also, you forgot a license for this code, that is required if you want
->>>> people to use it...
->>>
->>> Hm... I do not see any license in other manpage examples. Does not apply
->>> for it global license defined in ioctl_tty.2 file?
->>
->> That does not mean you do not need it.
+I'm afraid I won't be able to verify your idea: seems like CNTHV_EL2
+can be only modified (or read) in EL2. I tried to read that reg
+anyway, which unsurprisingly resulted in el1_undef() BUG. The kernel
+on my board is running in EL1, and I don't have access to the source
+code for EL3 bootloaders. I have the source code for the last
+bootloader, but it's already running in EL1.
 
-I don't know what is the status of the current code examples in terms of 
-licensing.
+> /* The vendor couldn't be bothered to wire the EL2 Virtual Timers */
+>
 
-I thought I had seen an SPDX license identifier in one of them some time 
-ago, but now I can't find it.
-
-Technically, the pages have a license at the top of each file, which 
-isn't printed on the rendered output (the license text doesn't require 
-so) (see that text below).
-
-If you want a different license for your example (let's say you want it 
-BSD for example), I guess you could add an SPDX line at the top of the 
-example for simplicity.
-
-But if your code example adheres to the same license as the rest of the 
-page, I guess you don't need to do anything in your patch.
-
-But I'm not sure at all; maybe Michael can tell you more about it.
-
-> 
-> I will wait for Alejandro's reaction on this topic as I think he wants
-> to have all manpages consistent and with the same style, headers, etc...
-> 
+I'll add the comment as you suggested. I propose we come back to this
+issue later, either when the need for HV timer arises or when I have
+some means to test your theory about existing PPI.
 
 Thanks!
 
-Alex
-
-
----
-$ head -n 26 man7/system_data_types.7
-.\" Copyright (c) 2020 by Alejandro Colomar <colomar.6.4.3@gmail.com>
-.\" and Copyright (c) 2020 by Michael Kerrisk <mtk.manpages@gmail.com>
-.\"
-.\" %%%LICENSE_START(VERBATIM)
-.\" Permission is granted to make and distribute verbatim copies of this
-.\" manual provided the copyright notice and this permission notice are
-.\" preserved on all copies.
-.\"
-.\" Permission is granted to copy and distribute modified versions of this
-.\" manual under the conditions for verbatim copying, provided that the
-.\" entire resulting derived work is distributed under the terms of a
-.\" permission notice identical to this one.
-.\"
-.\" Since the Linux kernel and libraries are constantly changing, this
-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
-.\" responsibility for errors or omissions, or for damages resulting from
-.\" the use of the information contained herein.  The author(s) may not
-.\" have taken the same level of care in the production of this manual,
-.\" which is licensed free of charge, as they might when working
-.\" professionally.
-.\"
-.\" Formatted or processed versions of this manual, if unaccompanied by
-.\" the source, must acknowledge the copyright and authors of this work.
-.\" %%%LICENSE_END
-.\"
-.\"
-
-
-
--- 
-Alejandro Colomar
-Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
-http://www.alejandro-colomar.es/
+> Thanks,
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
