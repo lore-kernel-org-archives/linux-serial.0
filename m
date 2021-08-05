@@ -6,212 +6,214 @@ X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ACEC4320E
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E2D3C4320A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:47:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 57B8A61155
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:30:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ECD5960F35
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 15:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242000AbhHEPav (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 11:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241715AbhHEPat (ORCPT
+        id S242660AbhHEPrp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Aug 2021 11:47:45 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:35250 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242471AbhHEPri (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 11:30:49 -0400
-Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB75C06179A
-        for <linux-serial@vger.kernel.org>; Thu,  5 Aug 2021 08:30:35 -0700 (PDT)
-Received: by mail-vs1-xe36.google.com with SMTP id b138so3315852vsd.2
-        for <linux-serial@vger.kernel.org>; Thu, 05 Aug 2021 08:30:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2HwiUKZxqy53dDfBp1901/849S4t5mjJtJjeA2wMPec=;
-        b=wg/GjsYLif0ZYYHMg3KnRLOxv3tYLMjO5yw61rpFo2U6f/PHccXPTRMbf7TjDmFtIy
-         SaTMUBl6mtykhQHxwVxwXJdpsqEsHECguuguS4suj2+mcgflMfdF0s+ZKBY/mMwQDdPU
-         akilIu+Sq0Sui1mKolQYpIPGxSkmZDxq5dA+WIymASwSwHXudWOYS2o/qCTkvAHocnl3
-         C/RrpZm24VqvSY06dlB6yx07zS4xtnbXplFKA/cAVOVuu+r+47pbvV9OUzUTh6gqIuEK
-         Ra4N9BqLgbBx/+PV59gv17Jp1pvOjvaqtB6MrhpxChT5YJ6s07YTularepv+VbeBnprM
-         biwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2HwiUKZxqy53dDfBp1901/849S4t5mjJtJjeA2wMPec=;
-        b=uYkmG5TRbW2VsvDUc2mUBWcBgQsyNWJtzXzKFcbiKBIZo6q0u+DGdE2JlWw3UtOTup
-         MGnFL9o8qO+AO2F5tlmCCVn+2HFHlVMh9OdQuhKHagZapG3/7yOsmbqL0bMudyeUss/d
-         o9NpzBL4pJi8WJodlhV4/8nciFjPL+RBSBGx262xM+1V9Bcs4+DKrOvkkU8YFC3fZhof
-         XogTEkgThRbnBEi4ie6YbGyLdyjvMLwurwQlIMwHlYqgUjT8lObOGBMxgBhd6BeNIJr/
-         vl/28xyt46WfZG8r7mnFjxbISfUeSlZr+6HBgwFzYXPpeXOKaHDJwGy3HfojfMKwIfLG
-         kYWQ==
-X-Gm-Message-State: AOAM532RYT0/PkD9e2BL/ia+Xxwh3AlBMZruHWnkjMnYxQc4WmSlTLs7
-        /Nga7yKHWWSBDd4C9L8tqtGyZ8lYoqnC7VmgTRjERg==
-X-Google-Smtp-Source: ABdhPJz7ndSuSpMNkkGlw9G/nEeHBUu9O9atQyI5vE3atZWBaEoYd/rSmKp8dYwaj/T41dDFjGZta+VdrhSjdEuiiNo=
-X-Received: by 2002:a67:de06:: with SMTP id q6mr5210772vsk.57.1628177434529;
- Thu, 05 Aug 2021 08:30:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210730144922.29111-1-semen.protsenko@linaro.org>
- <20210730144922.29111-13-semen.protsenko@linaro.org> <15871f8ced3c757fad1ab3b6e62c4e64@misterjones.org>
- <CAPLW+4=v4bDcuxGVqs06mobGj34At4cD+vg48b4dPujarS07Tg@mail.gmail.com>
- <87k0l1w8y5.wl-maz@kernel.org> <CAPLW+4mMF9B2BiY2hTgHz5=DNbDJZ7TDzt=Xefb5tDKwQhpEew@mail.gmail.com>
- <87y29gbas7.wl-maz@kernel.org>
-In-Reply-To: <87y29gbas7.wl-maz@kernel.org>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Thu, 5 Aug 2021 18:30:23 +0300
-Message-ID: <CAPLW+4nCfSBfwMcemaVvU5MgBACgnhXaW9eAAjw66G6Zhz2Gbw@mail.gmail.com>
-Subject: Re: [PATCH 12/12] arm64: dts: exynos: Add Exynos850 SoC support
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Thu, 5 Aug 2021 11:47:38 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 05DC41FE69;
+        Thu,  5 Aug 2021 15:47:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1628178443; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xjyShzouPrJcHBbruWtTQutmAQhza4mB7qEDF4um5Mg=;
+        b=HFFKv1lODf3gm58MqBGWAh8qSB3SjD0CWH1FfzIS9Ttb2ITfRIGZdfCH1BtAnoyP4ESIec
+        etQbWzYl+6ASAoafzEiq37hiOIvpPGQL0Maxr2rIGqwGWJypE77o36bBPH1bIEeFynFgxE
+        JPgwV+WeWHfe1PUy2fE9+HyrOT/gvco=
+Received: from suse.cz (pmladek.udp.ovpn1.prg.suse.de [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 9259EA3EC0;
+        Thu,  5 Aug 2021 15:47:22 +0000 (UTC)
+Date:   Thu, 5 Aug 2021 17:47:22 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        Chengyang Fan <cy.fan@huawei.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        kgdb-bugreport@lists.sourceforge.net,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
-        Ryu Euiyoul <ryu.real@samsung.com>,
-        Tom Gall <tom.gall@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Amit Pundir <amit.pundir@linaro.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Vitor Massaru Iha <vitor@massaru.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Changbin Du <changbin.du@intel.com>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Cengiz Can <cengiz@kernel.wtf>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        kuldip dwivedi <kuldip.dwivedi@puresoftware.com>,
+        Wang Qing <wangqing@vivo.com>, Andrij Abyzov <aabyzov@slb.com>,
+        Johan Hovold <johan@kernel.org>,
+        Eddie Huang <eddie.huang@mediatek.com>,
+        Claire Chang <tientzu@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Al Cooper <alcooperx@gmail.com>, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH printk v1 00/10] printk: introduce atomic consoles and
+ sync mode
+Message-ID: <YQwHwT2wYM1dJfVk@alley>
+References: <20210803131301.5588-1-john.ogness@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210803131301.5588-1-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 5 Aug 2021 at 10:39, Marc Zyngier <maz@kernel.org> wrote:
+On Tue 2021-08-03 15:18:51, John Ogness wrote:
+> Hi,
+> 
+> This is the next part of our printk-rework effort (points 3 and
+> 4 of the LPC 2019 summary [0]).
+> 
+> Here the concept of "atomic consoles" is introduced through  a
+> new (optional) write_atomic() callback for console drivers. This
+> callback must be implemented as an NMI-safe variant of the
+> write() callback, meaning that it can function from any context
+> without relying on questionable tactics such as ignoring locking
+> and also without relying on the synchronization of console
+> semaphore.
+> 
+> As an example of how such an atomic console can look like, this
+> series implements write_atomic() for the 8250 UART driver.
+> 
+> This series also introduces a new console printing mode called
+> "sync mode" that is only activated when the kernel is about to
+> end (such as panic, oops, shutdown, reboot). Sync mode can only
+> be activated if atomic consoles are available. A system without
+> registered atomic consoles will be unaffected by this series.
 >
-> On Wed, 04 Aug 2021 19:37:24 +0100,
-> Sam Protsenko <semen.protsenko@linaro.org> wrote:
-> >
-> > On Wed, 4 Aug 2021 at 18:01, Marc Zyngier <maz@kernel.org> wrote:
-> > >
-> > > On Wed, 04 Aug 2021 15:39:38 +0100,
-> > > Sam Protsenko <semen.protsenko@linaro.org> wrote:
-> > >
-> > > > > You are also missing the hypervisor virtual timer interrupt.
-> > > > >
-> > > >
-> > > > Checked SoC TRM, there is no PPI for hypervisor virtual timer
-> > > > interrupt, and no mentioning of it at all. Likewise, I checked ARMv8
-> > > > ARM and TRM, almost no description of it. Also, I checked other
-> > > > platforms, and seems like everyone does the same (having only 4
-> > > > interrupts). And I wasn't able to find any documentation on that, so I
-> > > > guess I'll leave it as is, if you don't mind.
-> > >
-> > > I *do* mind, and other DTs being wrong isn't a good enough excuse! ;-)
-> > >
-> > > From the ARMv8 ARM (ARM DDI 0487G.b)
-> > > <quote>
-> > > D11.2.4 Timers
-> > >
-> > > In an implementation of the Generic Timer that includes EL3, if EL3
-> > > can use AArch64, the following timers are implemented:
-> > >
-> > > * An EL1 physical timer, that:
-> > >   - In Secure state, can be accessed from EL1.
-> > >   - In Non-secure state, can be accessed from EL1 unless those
-> > >     accesses are trapped to EL2.
-> > >     When this timer can be accessed from EL1, an EL1 control
-> > >     determines whether it can be accessed from EL0.
-> > > * A Non-secure EL2 physical timer.
-> > > * A Secure EL3 physical timer. An EL3 control determines whether this
-> > >   register is accessible from Secure EL1.
-> > > * An EL1 virtual timer.
-> > > * When FEAT_VHE is implemented, a Non-secure EL2 virtual timer.
-> > > * When FEAT_SEL2 is implemented, a Secure EL2 physical timer.
-> > > * When FEAT_SEL2 is implemented, a Secure EL2 virtual timer.
-> > > </quote>
-> > >
-> > > Cortex-A55 being an ARMv8.2 implementation, it has FEAT_VHE, and thus
-> > > it does have a NS-EL2 virtual timer. This is further confirmed by the
-> > > TRM which documents CNTHV*_EL2 as valid system registers[1].
-> > >
-> > > So the timer exists, the signal is routed out of the core, and it
-> > > is likely that it is connected to the GIC.
-> > >
-> > > If the designers have omitted it, then it needs to be documented as
-> > > such.
-> > >
-> >
-> > Ok, I've checked thoroughly all docs again, and it seems like there is
-> > no dedicated PPI number for this "EL2 Hypervisor Virtual Timer" in
-> > Exynos850 SoC. The timer instance itself might exist of course, but
-> > interrupt line is probably wasn't connected to GIC by SoC designers,
-> > at least it's not documented.
->
-> Can you try and check this? You can directly program the virtual timer
-> so that it has a pending interrupt, and then check the pending
-> register on the same CPU to see if there is anything appearing there.
->
-> > Moreover, from [1,2] it looks like if it were existing it would have
-> > been PPI=12 (INTID=28). But in GIC-400 TRM this PPI is assigned to
-> > "Legacy FIQ signal",
->
-> No. That's only if you set the bypass bits in GICD_CTLR, which nobody
-> with half a brain would consider doing.
->
-> > and all there is no PPI for Hypervisor Virtual
-> > Timer documented there as well. In Exynos850 TRM the source for this
-> > PPI's interrupt source is marked as "-", which means it's not used.
-> >
-> > So if you know something that I don't know -- please point me out the
-> > doc where this PPI line is documented. Otherwise I can add the comment
-> > to device tree, stating that this interrupt line is not present in
-> > SoC's GIC, i.e. something like this:
-> >
-> > 8<------------------------------------------------------------------------------->8
-> >     timer {
-> >         compatible = "arm,armv8-timer";
-> >         interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) |
-> >                       IRQ_TYPE_LEVEL_LOW)>,
-> >                  <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) |
-> >                       IRQ_TYPE_LEVEL_LOW)>,
-> >                  <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) |
-> >                       IRQ_TYPE_LEVEL_LOW)>,
-> >                  <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8) |
-> >                       IRQ_TYPE_LEVEL_LOW)>;
-> >         /* Hypervisor Virtual Timer PPI is not present in this SoC GIC */
-> >     };
-> > 8<------------------------------------------------------------------------------->8
-> >
-> > Is that ok with you?
->
-> I'd rather you verify the above first. And if you can't, I'd like a
-> comment that is a bit more explicit:
->
+> When in sync mode, the console printing behavior becomes:
+> 
+> - only consoles implementing write_atomic() will be called
+> 
+> - printing occurs within vprintk_store() instead of
+>   console_unlock(), since the console semaphore is irrelevant
+>   for atomic consoles
 
-I'm afraid I won't be able to verify your idea: seems like CNTHV_EL2
-can be only modified (or read) in EL2. I tried to read that reg
-anyway, which unsurprisingly resulted in el1_undef() BUG. The kernel
-on my board is running in EL1, and I don't have access to the source
-code for EL3 bootloaders. I have the source code for the last
-bootloader, but it's already running in EL1.
+I am fine with the new behavior at this stage. It is a quite clear
+win when (only) the atomic console is used. And it does not make any
+difference when atomic consoles are disabled.
 
-> /* The vendor couldn't be bothered to wire the EL2 Virtual Timers */
->
+But I am not sure about the proposed terms and implementation.
+I want to be sure that we are on the right way for introducing
+console kthreads.
 
-I'll add the comment as you suggested. I propose we come back to this
-issue later, either when the need for HV timer arises or when I have
-some means to test your theory about existing PPI.
+Let me try to compare the behavior:
 
-Thanks!
+1. before this patchset():
 
-> Thanks,
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+	/* printk: store immediately; try all consoles immediately */
+	int printk(...)
+	{
+		vprintk_store();
+		if (console_try_lock()) {
+			/* flush pending messages to the consoles */
+			console_unlock();
+		}
+	}
+
+	/* panic: try hard to flush messages to the consoles and avoid deadlock */
+	void panic()
+	{
+		/* Ignore locks in console drivers */
+		bust_spinlocks(1);
+
+		printk("Kernel panic ...);
+		dump_stack();
+
+		smp_send_stop();
+		/* ignore console lock */
+		console_flush_on_panic();
+	}
+
+
+2. after this patchset():
+
+   + same as before in normal mode or when there is no atomic console
+
+   + in panic with atomic console; it modifies the behavior:
+
+	/*
+	 * printk: store immediately; immediately flush atomic consoles;
+	 *         unsafe consoles are not used anymore;
+	 */
+	int printk(...)
+	{
+		vprintk_store();
+		flush_atomic_consoles();
+	}
+
+	/* panic: no hacks; only atomic consoles are used */
+	void panic()
+	{
+		printk("Kernel panic ...);
+		dump_stack();
+	}
+
+
+3. After introducing console kthread(s):
+
+	int printk(...)
+	{
+		vprintk_store();
+		wake_consoles_via_irqwork();
+	}
+
+	+ in panic:
+
+	    + with atomic console like after this patchset?
+	    + without atomic consoles?
+
+	+ during early boot?
+
+
+I guess that we will need another sync mode for the early boot,
+panic, suspend, kexec, etc.. It must be posible to debug these states
+even wihtout atomic console and working kthreads.
+
+Best Regards,
+Petr
