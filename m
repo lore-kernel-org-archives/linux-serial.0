@@ -2,153 +2,188 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INVALID_DATE_TZ_ABSURD,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-21.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD08C4320A
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 08:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9B7C43214
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 08:30:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DC65660EBC
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 08:26:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 531DE610CD
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 08:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236363AbhHEI0z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 04:26:55 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:41152 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234559AbhHEI0z (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 04:26:55 -0400
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1628152000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sDS1DpN+l+aAEkSP0+4dZetYVLkYHfUOpL7O0zwMLwc=;
-        b=MImQslRh8bXrcBZeI2HDBMRTK4c/v9imWShtcDMCrlnPalgFEqSiy2FGo68lC1I7yc2RkE
-        Em8eGKX0qzihnzwENOEW+Oh9efhvYi2oZJf6xdQ139MGwJguEVfmXcMJL2TxERNkPayZBy
-        OtHmI8wIs5nobQLvfZS7PRnMzQtYNnCetnYyIQ5iFpuA6pWaJyOnHOT0oemivFz8+ZGHdk
-        UHNiMhA9S69jhkOCxfC2Yzu79L7UdnADSap+2nvqBlEAyjCKqCIgpBoFQZEEgAoE2qNOOJ
-        SpRxIr/lpvUnfbS992agNZC/gE7b35WvIK5Spo2m7hQw/axnaea8Z6xM7cCfag==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1628152000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sDS1DpN+l+aAEkSP0+4dZetYVLkYHfUOpL7O0zwMLwc=;
-        b=/S1XK1SD2cNKm5oAne6Zd473q9DfZCgTAnfgMziAxO0ToB6fXXJLqRt7JMYFx4wKuVe2sm
-        7SczodRzMkLRhxBA==
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        kuldip dwivedi <kuldip.dwivedi@puresoftware.com>,
-        Wang Qing <wangqing@vivo.com>, Andrij Abyzov <aabyzov@slb.com>,
-        Johan Hovold <johan@kernel.org>,
-        Eddie Huang <eddie.huang@mediatek.com>,
-        Claire Chang <tientzu@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Al Cooper <alcooperx@gmail.com>, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH printk v1 10/10] serial: 8250: implement write_atomic
-In-Reply-To: <931ebc1a-3cc9-677c-44c3-7cbd645eb4f4@kernel.org>
-References: <20210803131301.5588-1-john.ogness@linutronix.de> <20210803131301.5588-11-john.ogness@linutronix.de> <YQlNtr7TNAWtB8XF@smile.fi.intel.com> <931ebc1a-3cc9-677c-44c3-7cbd645eb4f4@kernel.org>
-Date:   Thu, 05 Aug 2021 10:32:38 +0206
-Message-ID: <87k0l0wb41.fsf@jogness.linutronix.de>
+        id S239568AbhHEIae (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Aug 2021 04:30:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45264 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234796AbhHEIae (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Aug 2021 04:30:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B3E960F43;
+        Thu,  5 Aug 2021 08:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1628152218;
+        bh=zeb3qJUSxyPK9h0+JXsnecaNm4A/kQexp6o8pYdnCQw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OLJ/GybJqQUIzF1wAIJ8b+WolEVEMv1l5vYwKShxIc7OrjhpqCrTiNN64ayvtxZ9O
+         sXlzkJRqIhPq0fXjR7Yc0EIabpTbMf4NH3NcjKhntrFHHgM11CfwaTqDvX4xkga7kn
+         2HDS6w1M9l5hVytvPysIj9Bmslwysl+NbTCdjymQ=
+Date:   Thu, 5 Aug 2021 10:30:15 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        libc-alpha@sourceware.org,
+        "G. Branden Robinson" <g.branden.robinson@gmail.com>,
+        linux-man@vger.kernel.org, linux-serial@vger.kernel.org,
+        Alejandro Colomar <alx.manpages@gmail.com>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+Subject: Re: [PATCH v3] ioctl_tty.2: Add example how to get or set baudrate
+ on the serial port
+Message-ID: <YQuhl18CgJ2+LUPW@kroah.com>
+References: <20210730095333.6118-1-pali@kernel.org>
+ <20210801135146.14849-1-pali@kernel.org>
+ <20210804220808.cetleob6dldpfnjk@pali>
+ <YQt8g+ECel20fA/g@kroah.com>
+ <20210805082243.qciylqnt5g74if7i@pali>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210805082243.qciylqnt5g74if7i@pali>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2021-08-05, Jiri Slaby <jirislaby@kernel.org> wrote:
-> On 03. 08. 21, 16:07, Andy Shevchenko wrote:
->> On Tue, Aug 03, 2021 at 03:19:01PM +0206, John Ogness wrote:
->>> Implement an NMI-safe write_atomic() console function in order to
->>> support synchronous console printing.
->>>
->>> Since interrupts need to be disabled during transmit, all usage of
->>> the IER register is wrapped with access functions that use the
->>> printk cpulock to synchronize register access while tracking the
->>> state of the interrupts. This is necessary because write_atomic()
->>> can be called from an NMI context that has preempted write_atomic().
->> 
->> ...
->> 
->>> +static inline void serial8250_set_IER(struct uart_8250_port *up,
->>> +				      unsigned char ier)
->>> +{
->>> +	struct uart_port *port = &up->port;
->>> +	unsigned long flags;
->>> +	bool is_console;
->> 
->>> +	is_console = uart_console(port);
->>> +
->>> +	if (is_console)
->>> +		console_atomic_cpu_lock(flags);
->>> +
->>> +	serial_out(up, UART_IER, ier);
->>> +
->>> +	if (is_console)
->>> +		console_atomic_cpu_unlock(flags);
->> 
->> I would rewrite it as
->> 
->> 	if (uart_console()) {
->> 		console_atomic_cpu_lock(flags);
->> 		serial_out(up, UART_IER, ier);
->> 		console_atomic_cpu_unlock(flags);
->> 	} else {
->> 		serial_out(up, UART_IER, ier);
->> 	}
+On Thu, Aug 05, 2021 at 10:22:43AM +0200, Pali Rohár wrote:
+> On Thursday 05 August 2021 07:52:03 Greg Kroah-Hartman wrote:
+> > On Thu, Aug 05, 2021 at 12:08:08AM +0200, Pali Rohár wrote:
+> > > + linux-serial
+> > > + Greg
+> > > 
+> > > Greg, could I ask you for reviewing this documentation manpage patch?
+> > 
+> > If it is submitted in a format I can review, sure (i.e. not top-post...)
+> > 
+> > But I will dig down below to say one thing...
+> > 
+> > > 
+> > > On Sunday 01 August 2021 15:51:45 Pali Rohár wrote:
+> > > > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > > > 
+> > > > ---
+> > > > Changes in v3:
+> > > > * Check support for custom baudrate only based on BOTHER macro
+> > > > * Use TCGETS/TCSETS/termios when TCGETS2/TCSETS2/termios2 is not available
+> > > > 
+> > > > Changes in v2:
+> > > > * Use \e for backslash
+> > > > * Use exit(EXIT_*) instead of return num
+> > > > * Sort includes
+> > > > * Add comment about possible fallback
+> > > > ---
+> > > > 
+> > > > Hello Alejandro!
+> > > > 
+> > > > I found out that this stuff is more complicated as I originally thought.
+> > > > And seems that additional documentation on this topic is needed...
+> > > > 
+> > > > For setting custom baudrate it is needed to set BOTHER flag in c_cflag
+> > > > field and baudrate value itself in c_ospeed and c_ispeed fields.
+> > > > 
+> > > > So when BOTHER flag is not provided by <asm/termbits.h> then setting custom
+> > > > baudrate is not possible, fields c_ospeed and c_ispeed do not exist (and
+> > > > only some predefined Bnnn baudrate values are supported). This applies when
+> > > > compiling application with older version of header files (prior support for
+> > > > custom baudrate was introduced into header files).
+> > > > 
+> > > > First caveat: BOTHER constant is different for different architectures.
+> > > > So it is not possible to provide fallback #ifndef..#define BOTHER.
+> > > > 
+> > > > And now the biggest issue: Some architectures have these c_ospeed and
+> > > > c_ispeed fields in struct termios and some in struct termios2.
+> > > > 
+> > > > TCGETS/TCSETS ioctls use struct termios and TCGETS/TCSETS2 use
+> > > > struct termios2.
+> > > > 
+> > > > Some architectures (e.g. amd64) provide both struct termios and struct
+> > > > termios2, but c_ospeed and c_ispeed are only in struct termios2.
+> > > > 
+> > > > Some other architectures (e.g. alpha) provide both struct termios and struct
+> > > > termios2 and both have c_ospeed and c_ispeed fields.
+> > > > 
+> > > > And some other architectures (e.g. powerpc) provide only struct termios
+> > > > (no struct termios2) and it has c_ospeed and c_ispeed fields.
+> > > > 
+> > > > So basically to support all architectures it is needed to use
+> > > > struct termios2 when TCGETS2/TCSETS2 is supported. Otherwise it is needed
+> > > > to use struct termios with TCGETS/TCSETS (case for e.g. powerpc).
+> > > > 
+> > > > I updated v3 patch to handle this logic.
+> > > > ---
+> > > >  man2/ioctl_tty.2 | 73 ++++++++++++++++++++++++++++++++++++++++++++++++
+> > > >  1 file changed, 73 insertions(+)
+> > > > 
+> > > > diff --git a/man2/ioctl_tty.2 b/man2/ioctl_tty.2
+> > > > index 3020f9984872..d83cbd17225b 100644
+> > > > --- a/man2/ioctl_tty.2
+> > > > +++ b/man2/ioctl_tty.2
+> > > > @@ -764,6 +764,79 @@ main(void)
+> > > >      close(fd);
+> > > >  }
+> > > >  .EE
+> > > > +.PP
+> > > > +Get or set arbitrary baudrate on the serial port.
+> > > > +.PP
+> > > > +.EX
+> > > > +#include <asm/termbits.h>
+> > > > +#include <fcntl.h>
+> > > > +#include <stdio.h>
+> > > > +#include <stdlib.h>
+> > > > +#include <sys/ioctl.h>
+> > > > +#include <sys/types.h>
+> > > > +#include <unistd.h>
+> > > > +
+> > > > +int
+> > > > +main(int argc, char *argv[])
+> > > > +{
+> > > > +#ifndef BOTHER
+> > > > +    fprintf(stderr, "BOTHER is unsupported\en");
+> > > > +    /* Program may fallback to TCGETS/TCSETS with Bnnn constants */
+> > > > +    exit(EXIT_FAILURE);
+> > 
+> > So this is a BOTHER test only?
+> 
+> Yes.
+> 
+> > What is the goal of this program?  Don't throw a bunch of #ifdef in here
+> > for no good reason.  These options should all be present on all normal
+> > kernels, why wouldn't they be?
+> 
+> I wanted to provide complete example which compiles fine on all Linux
+> systems, even with older include header files. I do not know right now
+> in which kernel version was introduced BOTHER support for all
+> architectures.
 
-Some locations have more than just 1 line of code in between
-lock/unlock. I agree this looks better, but am unsure how much
-copy/paste code is acceptable.
+We have all of the kernel source in a tool that would allow you to to
+determine this quite easily :)
 
->> No additional variable, easier to get the algorithm on the first
->> glance, less error prone.
->
-> Yes, the original is terrible.
->
-> Another option:
->
-> bool locked = console_atomic_cpu_lock(flags, uart_console());
-> serial_out(up, UART_IER, ier);
-> console_atomic_cpu_unlock(flags, locked);
->
-> Which makes console_atomic_cpu_lock to lock only if second parameter
-> is true and return its value too.
+> If BOHTER is not supported then it is possible to still use Bnnn
+> constants to get / set baudrate. Just it is needed to write long code
+> for converting number to suitable Bnnn constant.
+> 
+> Do you think that this BOTHER check is not useful in this case?
 
-I am not sure how common such semantics for lock/unlock functions
-are. But since this pattern, using uart_console(), will most likely be a
-common pattern for atomic consoles, I can see how this will be useful.
+I think you should provide an example of how to use BOTHER, yes, as it
+is hard to find good examples out there as they keep floating around.
 
-I will choose one of these 2 suggestions for v2. Thanks.
+Here's one that I point people to a lot:
+	https://github.com/GrantEdwards/Linux-arbitrary-baud
 
-> BTW I actually don't know what console_atomic_cpu_lock does to think 
-> about it more as I was not CCed, and neither lore sees the other patches:
-> https://lore.kernel.org/linux-mips/20210803131301.5588-1-john.ogness@linutronix.de/
+Make the example code easy to follow.
 
-Only the lkml mailing list saw the full series:
+Also, you forgot a license for this code, that is required if you want
+people to use it...
 
-https://lore.kernel.org/lkml/20210803131301.5588-1-john.ogness@linutronix.de/
+thanks,
 
-John Ogness
+greg k-h
