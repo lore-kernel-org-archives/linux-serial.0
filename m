@@ -2,151 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.6 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A70C4338F
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 07:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A8E2C4320E
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 07:49:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2F08A61008
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 07:47:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 309A36104F
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 07:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238827AbhHEHrl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 03:47:41 -0400
-Received: from mail-wm1-f43.google.com ([209.85.128.43]:43544 "EHLO
-        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238826AbhHEHr3 (ORCPT
+        id S236297AbhHEHuM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Aug 2021 03:50:12 -0400
+Received: from mail-ed1-f52.google.com ([209.85.208.52]:38700 "EHLO
+        mail-ed1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229674AbhHEHuL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 03:47:29 -0400
-Received: by mail-wm1-f43.google.com with SMTP id l8-20020a05600c1d08b02902b5acf7d8b5so2296589wms.2;
-        Thu, 05 Aug 2021 00:47:14 -0700 (PDT)
+        Thu, 5 Aug 2021 03:50:11 -0400
+Received: by mail-ed1-f52.google.com with SMTP id y7so7062533eda.5;
+        Thu, 05 Aug 2021 00:49:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=I526ijbe8/74kjOA75IwkOyaPcqEXfx0YMdi/ub5h0M=;
-        b=CNUVuwoD+bs9BID+JkSaLIZ2GUCNFulvqOo+Hu9aoGFY3i2YrDFagG5Bftny8vQ+I0
-         TZyQfhn/+RnJt+5wbKum24h8ePCDokT8c8zQ6aXD1T3GnHGGK8vocsLWhvqp6PHC8L6Z
-         72Ws3qvrBkFp9B2PYh0e4AtBRUXDyTJPAWQUXNPX/PiffiiKewZXgOOuX6rVPsCaERQU
-         GpB+i6a+nz+dZOQTJ+dAQ6D1Majpkzqfw1+biIj7llVZk5hBuakG8MVfRQff6Vw5jg4F
-         ZttSaDJLBeoYYUVvR0FdcJs8n5C6swpOBBxRyrlQII6zMJWoDx4ikRRyoAaA2xuK0r1q
-         b83g==
-X-Gm-Message-State: AOAM531WbBYnjSR7/aw9jd7zADyRepkD//levFYY+JEvWPXy0adItB2i
-        jnhWmYJh01eRWNsxD396FI8=
-X-Google-Smtp-Source: ABdhPJwvOwnv09InkfauY/5dCjERsBYo1U1VQMOeA1IMI5PuQsUW4j8b79rm41Lbc7bMwllLsM9EwQ==
-X-Received: by 2002:a05:600c:290:: with SMTP id 16mr13385731wmk.71.1628149634054;
-        Thu, 05 Aug 2021 00:47:14 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id t1sm4985968wrm.42.2021.08.05.00.47.12
+        bh=9imV97Ad6WYuvPH2ugJvx2YUE8x6OeUHcu+XGnBPGbQ=;
+        b=r8s3MRApQfsvCWQi29fqXPwI0mJaxcZ6HaH20OtkTdK1ItJ2V7AGQvJ9S2iqGpDZ/f
+         dvw1+j4Q1x21yhtOnzw4RyaogB0BhCX1A8NXSguzTq09qLL2bq/sMo7WYcl943RkC/JF
+         pzKodynCHZUzA/xJD47+YRuBpKO5/v2Iuzqx/Xc4lQWSxXFVcqwV71Cl33R9FBr7zr36
+         GOkjLw30+E4NFXU5TPOcP39zSOzZIzpmaXN27z/YVXczNGmlTxn5kARbVqR73F9DFkuy
+         h4z0jVgJ5jmUhpIPCWk0h6GU5c2xBbBT6njiZvcKBsVE/6xao9dMVAsXB4vYVvhbNrve
+         +6rA==
+X-Gm-Message-State: AOAM533j30jqx7OPf+fTlW/bL0wq37JnYRaKV5d8HtDK2WRfx9SmszCs
+        vytRBBuPAKWT1VKdsDuiJys=
+X-Google-Smtp-Source: ABdhPJy5mfk+ekbYHHyshhd4t5KAiMoCWiLkn4OrTESc6Ilms5hyKTlFZ+sW/7yEuB9zubx6zvwdaw==
+X-Received: by 2002:a05:6402:270f:: with SMTP id y15mr4835943edd.65.1628149795612;
+        Thu, 05 Aug 2021 00:49:55 -0700 (PDT)
+Received: from [192.168.8.102] ([86.32.42.198])
+        by smtp.googlemail.com with ESMTPSA id h19sm1934341edt.87.2021.08.05.00.49.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Aug 2021 00:47:13 -0700 (PDT)
-Subject: Re: [PATCH printk v1 10/10] serial: 8250: implement write_atomic
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
+        Thu, 05 Aug 2021 00:49:54 -0700 (PDT)
+To:     Chester Lin <clin@suse.com>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Paul Cercueil <paul@crapouillou.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Stefan Riedmueller <s.riedmueller@phytec.de>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Matteo Lisi <matteo.lisi@engicam.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Jagan Teki <jagan@amarulasolutions.com>, s32@nxp.com,
+        catalin-dan.udma@nxp.com, bogdan.hamciuc@nxp.com,
+        bogdan.folea@nxp.com, ciprianmarian.costea@nxp.com,
+        radu-nicolae.pirea@nxp.com, ghennadi.procopciuc@nxp.com,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        kuldip dwivedi <kuldip.dwivedi@puresoftware.com>,
-        Wang Qing <wangqing@vivo.com>, Andrij Abyzov <aabyzov@slb.com>,
-        Johan Hovold <johan@kernel.org>,
-        Eddie Huang <eddie.huang@mediatek.com>,
-        Claire Chang <tientzu@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Al Cooper <alcooperx@gmail.com>, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20210803131301.5588-1-john.ogness@linutronix.de>
- <20210803131301.5588-11-john.ogness@linutronix.de>
- <YQlNtr7TNAWtB8XF@smile.fi.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <931ebc1a-3cc9-677c-44c3-7cbd645eb4f4@kernel.org>
-Date:   Thu, 5 Aug 2021 09:47:12 +0200
+        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
+        "Ivan T . Ivanov" <iivanov@suse.de>, "Lee, Chun-Yi" <jlee@suse.com>
+References: <20210805065429.27485-1-clin@suse.com>
+ <20210805065429.27485-9-clin@suse.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 8/8] MAINTAINERS: Add an entry for NXP S32G2 boards
+Message-ID: <32310c2a-9800-8b04-b6ac-d8ada044c0f8@kernel.org>
+Date:   Thu, 5 Aug 2021 09:49:51 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <YQlNtr7TNAWtB8XF@smile.fi.intel.com>
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
+In-Reply-To: <20210805065429.27485-9-clin@suse.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 03. 08. 21, 16:07, Andy Shevchenko wrote:
-> On Tue, Aug 03, 2021 at 03:19:01PM +0206, John Ogness wrote:
->> Implement an NMI-safe write_atomic() console function in order to
->> support synchronous console printing.
->>
->> Since interrupts need to be disabled during transmit, all usage of
->> the IER register is wrapped with access functions that use the
->> printk cpulock to synchronize register access while tracking the
->> state of the interrupts. This is necessary because write_atomic()
->> can be called from an NMI context that has preempted write_atomic().
+On 05/08/2021 08:54, Chester Lin wrote:
+> Add a new entry for the maintenance of NXP S32G2 DT files.
 > 
-> ...
+> Signed-off-by: Chester Lin <clin@suse.com>
+> ---
+>  MAINTAINERS | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
->> +static inline void serial8250_set_IER(struct uart_8250_port *up,
->> +				      unsigned char ier)
->> +{
->> +	struct uart_port *port = &up->port;
->> +	unsigned long flags;
->> +	bool is_console;
-> 
->> +	is_console = uart_console(port);
->> +
->> +	if (is_console)
->> +		console_atomic_cpu_lock(flags);
->> +
->> +	serial_out(up, UART_IER, ier);
->> +
->> +	if (is_console)
->> +		console_atomic_cpu_unlock(flags);
-> 
-> I would rewrite it as
-> 
-> 	if (uart_console()) {
-> 		console_atomic_cpu_lock(flags);
-> 		serial_out(up, UART_IER, ier);
-> 		console_atomic_cpu_unlock(flags);
-> 	} else {
-> 		serial_out(up, UART_IER, ier);
-> 	}
-> 
-> No additional variable, easier to get the algorithm on the first glance, less
-> error prone.
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 36aee8517ab0..3c6ba6cefd8f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -2281,6 +2281,12 @@ F:	arch/arm/boot/dts/nuvoton-wpcm450*
+>  F:	arch/arm/mach-npcm/wpcm450.c
+>  F:	drivers/*/*wpcm*
+>  
+> +ARM/NXP S32G2 ARCHITECTURE
+> +M:	Chester Lin <clin@suse.com>
+> +L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+> +S:	Maintained
+> +F:	arch/arm64/boot/dts/freescale/s32g2*
 
-Yes, the original is terrible.
-
-Another option:
-
-bool locked = console_atomic_cpu_lock(flags, uart_console());
-serial_out(up, UART_IER, ier);
-console_atomic_cpu_unlock(flags, locked);
+I support the idea of sub-sub-architecture maintainers but I think idea
+of in-file addresses was preferred:
+https://lore.kernel.org/lkml/20200830122922.3884-1-shawnguo@kernel.org/
 
 
-Which makes console_atomic_cpu_lock to lock only if second parameter is 
-true and return its value too.
-
-BTW I actually don't know what console_atomic_cpu_lock does to think 
-about it more as I was not CCed, and neither lore sees the other patches:
-https://lore.kernel.org/linux-mips/20210803131301.5588-1-john.ogness@linutronix.de/
-
-thanks,
--- 
-js
-suse labs
+Best regards,
+Krzysztof
