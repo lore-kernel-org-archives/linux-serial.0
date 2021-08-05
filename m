@@ -5,62 +5,62 @@ X-Spam-Level:
 X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD2EC4338F
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 06:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C65DC4320A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 06:56:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6EDED6056B
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 06:56:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 550F26056B
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 06:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238663AbhHEG4X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 02:56:23 -0400
-Received: from de-smtp-delivery-102.mimecast.com ([194.104.109.102]:35519 "EHLO
+        id S238685AbhHEG4Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Aug 2021 02:56:24 -0400
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:40128 "EHLO
         de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238269AbhHEGzn (ORCPT
+        by vger.kernel.org with ESMTP id S238528AbhHEGzr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 02:55:43 -0400
+        Thu, 5 Aug 2021 02:55:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1628146528;
+        t=1628146532;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BCCC9Syx6UuJsaIS43c31Wz4vCLY3Y5n1wxKYn8SM4E=;
-        b=eC6PRb2IseinidN35Fu1q4EqAj0O5h/LDamnGy9fRCXWp6tAFau/LW+Qhxi+q8gwZ7a/31
-        V4cJGrll+ALZuDlMDhvaw8g32DZUijcGS1/apoJS3rV4rh+2WskUUfh/vveFzVwuzdJ7NI
-        MYe/ajaOe6T5Uz8HZpwH+PP29WDlMwQ=
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com
- (mail-db8eur05lp2105.outbound.protection.outlook.com [104.47.17.105])
- (Using TLS) by relay.mimecast.com with ESMTP id
- de-mta-21-Vahh3s1uMJmyv8i6MOS4ug-1; Thu, 05 Aug 2021 08:55:27 +0200
-X-MC-Unique: Vahh3s1uMJmyv8i6MOS4ug-1
+        bh=aWZQwouCRguyRVYUrbJB0b52caFxPb8vLemC9Kxx0AM=;
+        b=U2LMr7NFNp0Xi6VvJbmh6kmoA83k9PfiMui3QDK6Q8dkdFc+q1shrB30EmSre7QQBZIQ3Q
+        2morhTubgCywfJvjPO4M5DGJxLNrHTNfm8frZ2bVjG/7d6565hIHijaq5xQLwg7yGMn58y
+        zuwkZzYfVWC9gayDAA/uqdwRYimQhDQ=
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com
+ (mail-am5eur03lp2052.outbound.protection.outlook.com [104.47.8.52]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ de-mta-26-NXpk25gSNxOjCPCS7cMEkw-1; Thu, 05 Aug 2021 08:55:30 +0200
+X-MC-Unique: NXpk25gSNxOjCPCS7cMEkw-1
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YRQGvLU76L07xAJiIpJU1WIiUm3RTEYqJzpojrPkNwMvuDSMYjNEhKe9cI3+GndNs3FCF7FFFMKC68U0PODUWvFnIfFGDJJFKXDpt3tYP7a3UUcuFnYGb+DqGikW6ZZcSxVESVSB3DnTDxLEp9lgjjfc1Yopyz7F9zqBKGPe34zTJvIbjvU/QRXBszlNrEjXe/Pr9C1zZgaO7NGoJ5Tg1GlWDWCtogPEYVkbcYLIhYE5JRO+dLx4X//UjSdy20F+f9t/dIfvZOKk0o+4U/ioNUiCjNhNjKGf0XETdjCF31xia3FIfdJhcTmpQBPu/cNwyPtRHcixs20tsVdQotT5qg==
+ b=Nr0n+Y6CR/7Xm67ohuAtqYxz3qj+KsTMJxMtzaVIxLBbP45jcLHYwYiJcWTEYDVzYuC9LF23ne/C2ZFldhAnGMcfGoMcKuqUXeA+mg2N8aUsnQXXLGIvj049ufM0tw/NWPe2r9VI7e2nBBHv2HLw91ky5P4+vRFQX1nTRhEcDFwtcVNItzezykTJCDOEHk5FpkjUuwNmMGGEB03AjS+VS3DVEzOJqEM52pFVH8RZYY7/7F5OgGjowg7urPZ9nKopqjc624Ur54YSY83AV6ogbfmJj2b1SXZYaWUe8EBaOJ2nAGjHH7SrjvoEWOTP/zkXDDAM9bd/Ei7O7mDImNa3LQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KxlE0toVtsEVgBR9KurVJLbFKGuIuBanUf78w1pErgQ=;
- b=Z8X3Wruhz+RJtQITg05wspsvSJUgSvAlBEDA0px2/NGvX+w7VueAaJS/LBo4H/mu2I83HXb6dVYJsWjPeM/FN4GaiGdrdj10Y/MQFoNzuFIDhlJeh57ycf4IHZap3tlfLiHe/tz++fbfI0p530SmhJdtJIrwOMHjEHKUzcnjcFmF6njytmxxTbnzo2vfi3r4KO2Ik12Mttr+wJyr1E4mUyD+t3+XbWihw65owosNmyhyI5Ox21cm+YzbYsccozswjEVcFWtGRWc6Do7yOBNojlOQo2w6r45YF8TWmeeULJs6ZUrEqZvFEqdbImJvukuf6/z67Pg++W67w+G2MABJgg==
+ bh=osw/i73KgwmK6xFxOMQmECeYBvjJJnhr3Z0jaUZynVs=;
+ b=BJVA7nCBpuZgm4VFH4mmwLeD9ly7Wax0j2PM4B1+uZ0XzmvNa6loDNZWUl19HyYiP0CNJJ3Ac/7d1k37eQMO3q+LQMwZE3uF2W574Hld9gIUFZ26eBLu3wBOp3QTZicR5fXuN6joUbnj4LxpHiaSvKgoAUPNbpI9tRdfI2L4k5sZsJnamx+CfLe/fS19hFDdqN19xMsppxJzvKVdxdTuaI42S+fF/JMfv8mntuIWm4PofpSg9yhwSZAUhm87O9XZ+MVkpTJ8PiXuXyvN6JTSD4L/P+rHYC7awaCdWWmtGprUZE2TEKcSMUGd91/7ON8oz1DqufAMv5V0WcrI9MrsLA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
  dkim=pass header.d=suse.com; arc=none
 Authentication-Results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=suse.com;
 Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com (2603:10a6:803:4::13)
- by VI1PR0401MB2368.eurprd04.prod.outlook.com (2603:10a6:800:29::25) with
+ by VI1PR0402MB2735.eurprd04.prod.outlook.com (2603:10a6:800:b5::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.17; Thu, 5 Aug
- 2021 06:55:24 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16; Thu, 5 Aug
+ 2021 06:55:28 +0000
 Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com
  ([fe80::f1df:db6f:4ff8:a667]) by VI1PR0402MB3439.eurprd04.prod.outlook.com
  ([fe80::f1df:db6f:4ff8:a667%5]) with mapi id 15.20.4373.026; Thu, 5 Aug 2021
- 06:55:24 +0000
+ 06:55:28 +0000
 From:   Chester Lin <clin@suse.com>
-To:     Rob Herring <robh+dt@kernel.org>
-CC:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+To:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+CC:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Shawn Guo <shawnguo@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -80,133 +80,94 @@ CC:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
         "Ivan T . Ivanov" <iivanov@suse.de>,
         "Lee, Chun-Yi" <jlee@suse.com>, Chester Lin <clin@suse.com>
-Subject: [PATCH 7/8] arm64: dts: s32g2: add memory nodes for evb and rdb2
-Date:   Thu,  5 Aug 2021 14:54:28 +0800
-Message-ID: <20210805065429.27485-8-clin@suse.com>
+Subject: [PATCH 8/8] MAINTAINERS: Add an entry for NXP S32G2 boards
+Date:   Thu,  5 Aug 2021 14:54:29 +0800
+Message-ID: <20210805065429.27485-9-clin@suse.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210805065429.27485-1-clin@suse.com>
 References: <20210805065429.27485-1-clin@suse.com>
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-ClientProxiedBy: AM4PR0202CA0017.eurprd02.prod.outlook.com
- (2603:10a6:200:89::27) To VI1PR0402MB3439.eurprd04.prod.outlook.com
+X-ClientProxiedBy: AM4PR0202CA0019.eurprd02.prod.outlook.com
+ (2603:10a6:200:89::29) To VI1PR0402MB3439.eurprd04.prod.outlook.com
  (2603:10a6:803:4::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (118.166.54.149) by AM4PR0202CA0017.eurprd02.prod.outlook.com (2603:10a6:200:89::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.15 via Frontend Transport; Thu, 5 Aug 2021 06:55:23 +0000
+Received: from localhost (118.166.54.149) by AM4PR0202CA0019.eurprd02.prod.outlook.com (2603:10a6:200:89::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4394.16 via Frontend Transport; Thu, 5 Aug 2021 06:55:27 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 42082391-6b23-4155-26db-08d957ddfff5
-X-MS-TrafficTypeDiagnostic: VI1PR0401MB2368:
+X-MS-Office365-Filtering-Correlation-Id: 6f83ce73-99f5-4650-688f-08d957de027f
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB2735:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB23686F31F28FBE26F184E027ADF29@VI1PR0401MB2368.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1079;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB2735E6B0E0A1B5D82458F02DADF29@VI1PR0402MB2735.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mqYFzWbged0ieRmWnfb0bU2lTelTqJCV+L/X3Sqlq4OJld6i0Qi7XEBVzZXjJqGmjgf2hzCmLaZR6g2uS8mY1Ap4oL4aQh7bnNPPcNjCGZxN7RrItaxDREkF4KgNsI5Fj0Jv8hp4b4r6O7QVx1pURe5UQiNtCjqd9HMB+ImVha7PABZccN2cGI30JmcuwXsX2r2GygHVUkPuImqBqpXEGFlwaLAGHw+PR3xuiDfzZhnZICxsDcMVUYwRLllE6nola5P426PhM6xBD2B7XIIMWlfxw4endASgzoBfySwIg8XHjjJ55fkcHCrT6KzaDj8EvASZvoWqRnNh5hUtxbw0+uMcxKuxLkZxCJaufP3yJsVpmc4cwnzGkCMmY5FPP1EXIUh6G9X8JB4xhhfbsV2hYTRcWm/VFCiGsIh7cSeEJXy+XLP1x3CJTuBEqlgSXF4G1hpYYCZmbRB4ZgKxUCrBJ61ix/hEtu1n02renBOj9lj2U+OPWh47c1vn5aicFTPR34tt+zh6CYx9qNuesw6Am+VvZq5Et6HXo/mjTShvXhk2Vt0tFR1SBj3k5GEAtTVVkrLDsaKOGpvf4NFRhiGJIGONVCOiXpDWHabSDgG4uCoZl42ItJX0bB1hZGRMKn04VyxXNqklSjVIfW1SPZ53Lw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3439.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(8676002)(86362001)(8936002)(66946007)(66476007)(66556008)(956004)(2616005)(508600001)(1076003)(5660300002)(26005)(4326008)(7416002)(6486002)(186003)(36756003)(107886003)(2906002)(54906003)(38100700002)(55236004)(316002)(6496006);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: KR5ECY8LNiXGK2ypmeYUsjE03XoU/4Q/a77YqEiYH+r7ebIz2Cg/vgBTwbv+fyx3Sgp2m5FCocf63u0cuHo3QqVy62cF8p989YKptgcq9txUV7xVjNXT59s7KyY7MqUZlrMqvOjSYwRqfKqoYJULUO813agSW2+3/LVfYJS4plNGYhH7/8GuoKm35XcaxSTTCrXLqpLVtIr43xXO0cDhGsSzfglDx5UTmhsEbW8SRUp9JkITZtCA9f0Ysio3IvSh7vf6d2+cGnbM/7UhLdy44BrCcMUwUonqQTAtd0sFZUX5T7qsB3s5Cdr4kgBwypdTjrHAwx65xOqfBRxMwstz4+I4Qr3OhHBAWVVkg+zVkXszaUYy8mpVaUqOgToLIvAusl4PoxWuM0J5BgCa+GbMMxtZLNdxGR99QDgCviDvo8VdrvgttZsrbHwu81AmbUZXSHXwdZ9I/bnlXMKoQUSlmIwWqXZ1uk7yek1rmmShTLSDLReaa+u5LqsXrNWN2apoRYoHXhUAfMAGyXrTd1DuYCZ69GbOnvlzAM3HcPdHOTicrYFfq4m+pb3MSkaqSGzrW1RTBDxLNhuEcj8U/yod++UTVDANL9se/tHoSQ0gLY/05kUJeDRxwU7+1Nfc+vYq0tZ3Gnr8j7x8gWOrpIlwjg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3439.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(39850400004)(346002)(376002)(366004)(36756003)(38100700002)(66946007)(2616005)(66556008)(66476007)(5660300002)(956004)(8676002)(86362001)(1076003)(4744005)(6486002)(7416002)(107886003)(186003)(54906003)(2906002)(8936002)(6496006)(4326008)(55236004)(478600001)(316002)(26005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LnFJvhi4Asbl3FrP8xeecf9E2+ZnHMu3ymy86j0Pxt9iAvCcOa2kAFDgRTGm?=
- =?us-ascii?Q?I+Q5Vxc0Jn2yedTo0S1URllBBFPBffT4Jma220V8X39pDtpfIfsyXJeWq59M?=
- =?us-ascii?Q?+g3PBKw2eaykmZOyY2B0D7WlQG5oCnHHbPGn/yPVufwT9PaYcat2HgxjJo7Z?=
- =?us-ascii?Q?myF5gyi2yEAad+nEwsj6gkR+l5qwCOU9bJSg7WoPSPb92b1xVdiVF68R8PbY?=
- =?us-ascii?Q?Nuo8sGy458olLvujvs7Td/XLba8CsPpyrSeoDlR0Yd/yMUiyjGUJEb3Civ2i?=
- =?us-ascii?Q?VQnbZXyRBMs/UDPNEfoQa7QuswvewAh7DAyla3QgSgMf+HqI0jt3KgmpbC62?=
- =?us-ascii?Q?VPOWr1dGpYXbGgVks1MzyRXQPkt+DHuyBAhXqxFbSXZDZtASHBr5K7IVURbr?=
- =?us-ascii?Q?GgVaPA63NneYxIHhiRpKhci7xg9hKXZm9pYyGZhKq4bxzCgUf4A3rZXmFLqi?=
- =?us-ascii?Q?yAGhfq9WpOJ+gNloalyq8k158LZwdrdGTlx0FqPUAUWwT3G1OBBi/eY1JanO?=
- =?us-ascii?Q?wqtufpMXn03nnqwWTh7XqbnEA2i39yAg+2dbpTS67OWQJ4vEOg8yuIM1HIQl?=
- =?us-ascii?Q?zbzA+9UJEZt8zi9jzmm5Qtd+k/3FhwtzMIwifs7pEd3JmlOMH9Ft5VuKZHdz?=
- =?us-ascii?Q?I4Rl66MwqMwDvOoo/c3XcZNDI4vOD5EE7tkBVYUnyMmAMq+ABaqt4J51O2s1?=
- =?us-ascii?Q?QzNJb3UKrM4lZSqIwm3qgCoeenI1A9f7cY3/zdc6I3yF1tiBq1MqBHXQafBJ?=
- =?us-ascii?Q?0yngveWEAc/gZjXTIBMrpq7tLodeMX7Yf+1O95vC3pRAfFF6j8FKIsc10mJy?=
- =?us-ascii?Q?fol/aRK+0HJB5C495Ng0jqiz0M+OKKiLOfy/mFSfGL3O2ZAojRpbwYDEz/ye?=
- =?us-ascii?Q?dsO4jW4nGzjp4A56xG/9XKj3AZ2usI2nm0XUw3sfqQ4Tn1eYfCJtKGkLyD4j?=
- =?us-ascii?Q?lOos5FrQJM9Jg8lD5ResG82+Ny+oBJLTXwLnMwmd+/OXCsRogu5smii28Vn6?=
- =?us-ascii?Q?8HHQBg9+mga+OP/blZKr+Z+IxInYuVhn5HJgMO64MGQr/O1cAgS6NT33dmcN?=
- =?us-ascii?Q?6cML9flhCZ9/cuIcm7kCg5yNXbLmehywbTtm8VPjolT1yFO5SyawforAyYGz?=
- =?us-ascii?Q?S8eOqX8eiKHuv9NBGA9+KG/ugRzQb+hiOK32aUs6IhoscGDVp2R8iKFAXYXm?=
- =?us-ascii?Q?bVqEWxNQNNnriR+REEWB7TQt2NGnYF8qZWCIf/jm74UXnZNDHgkZmfYh7AZu?=
- =?us-ascii?Q?cOrwuW77vMIRxCtzcz7zwzYy5P3B+mjO9b4/Sfv5vsh9zG1FsuaEEY9OO6f7?=
- =?us-ascii?Q?4luQikyL9t3868Iwc6KAsLQc?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+Sl5Lo0eoTkHL9FNYNehbfHq0jRc2t5zxDNiJh1UBttZjrcAbi068Hbo3cDr?=
+ =?us-ascii?Q?QsoALRztwJqcIuH3iTXBn8CFZQKkruJW4/7Wkh6AY7w/6n3ecLyuDhrjGCSB?=
+ =?us-ascii?Q?qdMlcW7s8BFslk08SnGwIE1ONi7f0bfNZr62ZUZdHFYtKgkxCCNwlFMJmtZy?=
+ =?us-ascii?Q?U1hnMdLN8AVbHLumU+6YBJE/jI+WYhv8lEjhDk1+vzyCJ6rKst5LBCZBnqR1?=
+ =?us-ascii?Q?oRIG0CSG7wUvJqqi+Kv2+X9XTlMGgkZFmh4c5wDwyVjheSqzOuh0UHkHgLXx?=
+ =?us-ascii?Q?tjE/RecEp8ZIVDlNLWWSWfMXUzwZvHHmskerP1t4ErllB87pbZwW1bJlhQnc?=
+ =?us-ascii?Q?rqOxKOUO4iuxdXguuMAGISLkpflVUFEVTvVnslPRJrhMipHkRAIeaq084gUB?=
+ =?us-ascii?Q?uhOmZ5X2K70r70JKrfDYX9x57oSqb/29POFFcHCUIK8HvRRoQXIo4zpHslYJ?=
+ =?us-ascii?Q?9RN87W5/m0HbIhknNJEpqj1yHtuVODnf93kZTbqJwCnynlwIw/hxd8pEbKca?=
+ =?us-ascii?Q?uRoptJeMmrewRdVvp79QfcdN5QD+VFjMVRaX8JXapNIGvTAbe/q44aEvn9Xa?=
+ =?us-ascii?Q?VhXeU4x6KFoSi9CTxfUvqTLviS4SuPgVnI/6mAB4U/cH2J5m/kmE2nPes+2G?=
+ =?us-ascii?Q?74Ek1Phx/E12uBmRlPPtWa3MdciC5Ab0GdYWOrM05cf3SZYXT2iXim/gw87H?=
+ =?us-ascii?Q?LNrxbrF9Ui1e03mAtTu7MVThh6hJqUcd8VhKsR43LMJtEbzKbOtynMVwBqFS?=
+ =?us-ascii?Q?gNxeP9dV4TcMYlsaM+6rzB+6lXwaJKYCwmKFEBBaUZPTXxByjtXg/Lv7lZI/?=
+ =?us-ascii?Q?ZMyP93RWnQE0/QotOIcZyjWv9+bDkBa9Rnbl9zptWiXYpR7Wi/T/YGa6cW+u?=
+ =?us-ascii?Q?yTuLhu8amV01BTeB8x8Iw/FCg2LSY7y9Q6msmunpEK/Sl6+HM90z18EAMZk5?=
+ =?us-ascii?Q?A7EWKD3IhVMOXRGd7DzvmN+fxNkj7U/k6+9xSIEbDYc+2BjVfz2ZkhamGWd7?=
+ =?us-ascii?Q?6KNlRKL8rJQ0V7QQrPQIOu9uBDuvpZ1zVD6aKtt0Lvfnbu6tOc2XnA4fME27?=
+ =?us-ascii?Q?B6mXRLaBbF9mr/03PCUFsnX2CMyjUMlpYIKFoEeVpHA0VdMPf7ScoloAA2qd?=
+ =?us-ascii?Q?VPoLk3VgIJ1oy2JBDaIWbHKvQtCIkgGBqSlIaxBwZcuCczfWcmbrjtV2+t4D?=
+ =?us-ascii?Q?OWbmCAJ9WtN9KSfljy9dEXzhGPinq2KUzT6CIi94NpOnSeX15GJT5x2bB7U5?=
+ =?us-ascii?Q?sBXfX0PsO1YfRc6tSrbFKYFkrMCcBDQ96aHTh0TNQRKwdwtxdpiZ0RotjpiF?=
+ =?us-ascii?Q?89+9w6Umd/DXcH2mXUqTwKCi?=
 X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42082391-6b23-4155-26db-08d957ddfff5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f83ce73-99f5-4650-688f-08d957de027f
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3439.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2021 06:55:24.6189
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2021 06:55:28.6685
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mVleUQphznbvLyCnfMV4O8Pb0ZTS7sqxu7V9cxScigH7TPz5dlCEz9lKy9HBSEfw
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2368
+X-MS-Exchange-CrossTenant-UserPrincipalName: rAO2e5JKAYLfSM5bn+m5LgqO5YpsRI5HWx4gcnp3cLKEjU6YBq9C1BP9XqMD+BwQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2735
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add memory nodes for S32G-VNP-EVB and S32G-VNP-RDB2 since they have fixed
-RAM size.
+Add a new entry for the maintenance of NXP S32G2 DT files.
 
 Signed-off-by: Chester Lin <clin@suse.com>
 ---
- arch/arm64/boot/dts/freescale/s32g274a-evb.dts  | 8 ++++++++
- arch/arm64/boot/dts/freescale/s32g274a-rdb2.dts | 8 ++++++++
- 2 files changed, 16 insertions(+)
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/s32g274a-evb.dts b/arch/arm64/bo=
-ot/dts/freescale/s32g274a-evb.dts
-index a1ae5031730a..cd41f0af5dd8 100644
---- a/arch/arm64/boot/dts/freescale/s32g274a-evb.dts
-+++ b/arch/arm64/boot/dts/freescale/s32g274a-evb.dts
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
- /*
-  * Copyright (c) 2021 SUSE LLC
-+ * Copyright 2019-2020 NXP
-  */
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 36aee8517ab0..3c6ba6cefd8f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2281,6 +2281,12 @@ F:	arch/arm/boot/dts/nuvoton-wpcm450*
+ F:	arch/arm/mach-npcm/wpcm450.c
+ F:	drivers/*/*wpcm*
 =20
- /dts-v1/;
-@@ -14,6 +15,13 @@ / {
- 	chosen {
- 		stdout-path =3D "serial0:115200n8";
- 	};
++ARM/NXP S32G2 ARCHITECTURE
++M:	Chester Lin <clin@suse.com>
++L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
++S:	Maintained
++F:	arch/arm64/boot/dts/freescale/s32g2*
 +
-+	memory@80000000 {
-+		device_type =3D "memory";
-+		/* 4GB RAM */
-+		reg =3D <0 0x80000000 0 0x80000000>,
-+		      <8 0x80000000 0 0x80000000>;
-+	};
- };
-=20
- &uart0 {
-diff --git a/arch/arm64/boot/dts/freescale/s32g274a-rdb2.dts b/arch/arm64/b=
-oot/dts/freescale/s32g274a-rdb2.dts
-index b2faae306b70..8fbbf3b45eb8 100644
---- a/arch/arm64/boot/dts/freescale/s32g274a-rdb2.dts
-+++ b/arch/arm64/boot/dts/freescale/s32g274a-rdb2.dts
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
- /*
-  * Copyright (c) 2021 SUSE LLC
-+ * Copyright 2019-2020 NXP
-  */
-=20
- /dts-v1/;
-@@ -14,6 +15,13 @@ / {
- 	chosen {
- 		stdout-path =3D "serial0:115200n8";
- 	};
-+
-+	memory@80000000 {
-+		device_type =3D "memory";
-+		/* 4GB RAM */
-+		reg =3D <0 0x80000000 0 0x80000000>,
-+		      <8 0x80000000 0 0x80000000>;
-+	};
- };
-=20
- &uart0 {
+ ARM/OPENMOKO NEO FREERUNNER (GTA02) MACHINE SUPPORT
+ L:	openmoko-kernel@lists.openmoko.org (subscribers-only)
+ S:	Orphan
 --=20
 2.30.0
 
