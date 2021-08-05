@@ -2,119 +2,178 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF2ACC432BE
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 08:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0FBC4320A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 08:22:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B281360EC0
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 08:21:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A7036105A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Aug 2021 08:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239449AbhHEIVz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 04:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbhHEIVz (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 04:21:55 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2CEC061765;
-        Thu,  5 Aug 2021 01:21:41 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id mz5-20020a17090b3785b0290176ecf64922so12909196pjb.3;
-        Thu, 05 Aug 2021 01:21:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KN00QyUePsg/nfcJcgy2UYBcl0jMuOx+ehoRGZbZcX4=;
-        b=Zjl8qznF1QgqiUJuycxBpGxXHqxwRQhTCI3RXTSfNUoaXb6q6QBOaQNYzesrJKl20b
-         UAqWwZY0fx6/3hG63OJUH+fLSg/onSppLd3kYf7A3zrB5cFWKym37DdIYC+NEHrgk5sx
-         fSIjlzcQ9zV7Rar/GhB0X4Lmjlw+pSlSVMVrdfq+K2MCIeF6JjVY7hFCi81M9a8BH263
-         Hz8kha5k2kF+WgayGmw3ZjwAPKutYm4H11BG+l2dAgxHaESdGWoLj6Ab0ujXSpvfcMQv
-         XPjdKXSnwF4k4UPyDOIAhUVE7j1UpWB0RfWhu4+PUrA7RsHcFCIpNlx4ca5TuI+GIzF4
-         X9TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KN00QyUePsg/nfcJcgy2UYBcl0jMuOx+ehoRGZbZcX4=;
-        b=Je/F5/Z7ly8W9NMv3zEE48Tb1P3C6pwTwBmvtWZNZrGKMgDgN4hyLp4Y670F2aqRzA
-         K4RKyUYTsxQnTtsShPoeqXLo7vHPDrxJX0EKTr/kJtvX5VinnTl+lC8AS6NkO1mufoUR
-         NBTZ/1iHPI2vUNj5mSeyh1k4lirpiCzI8TrG6FKuh5+GVzCmi1YOYZx1V1dE5MKdPr+H
-         BRn0RyX9UapG3EUXHGeBwGmpwagII/T6e1RU3dAkG7Y9oXhhAvql7Ah2cnjvwN6fRDkH
-         9T/pxU1HDYocz63NgpDZhAUJRW+5ZxqxstiljbJbakIKyW3rwtJgEaZ5K+GPBlrFA0si
-         GK9w==
-X-Gm-Message-State: AOAM5319YmHaAXMw04xPtoZj2Tpl0j2InHypP5Bp2f7pMJFizk7ByAoI
-        xL57rndS2lTPLkJZCb529t1zWpg2fPWZmvqHKVc=
-X-Google-Smtp-Source: ABdhPJztRzTRnYhc1zuSCEMBALMx9NoK8WeoBL24jmVXJI6AnTZaiOOAeBp4l+SSdKjI/j0TRotXmkWbiyz+f6FXF/I=
-X-Received: by 2002:a17:90b:912:: with SMTP id bo18mr3531824pjb.228.1628151700671;
- Thu, 05 Aug 2021 01:21:40 -0700 (PDT)
+        id S236130AbhHEIXA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Aug 2021 04:23:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41894 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232358AbhHEIW7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Aug 2021 04:22:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D242D60F43;
+        Thu,  5 Aug 2021 08:22:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628151766;
+        bh=SByQopdCQKEfuZ11VCINKTM02XMIJPvHnDY+cop8/1s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fVsSyJTXyQ7VJEsIR6qbCvpuNTCApKvEkhgWdt3Xt3KsWo1VlVOvDz0sSyBAOmZeZ
+         Bjc4AWkluL2Gsixone/7EtseDxNTpsCC7OcTtW1DSl7dIFPWoLcQAv59tvdzXzN0YX
+         OTdgMG+lc2ooTGlSDUL26mqT88ZJpbZPTaV2vFNgKO9ZWsfH3HK3jgPWmtElP+zaRs
+         u3SHn/YX8d746fgZEjEFpk45C2d8UgwqyvF7brkdzAghx9Xn6Z9uz1Zgv6265EEkbE
+         yZYOUd9U8PJVVlM+XZa8iJBqfxGuzCFQnoPh1vy8OQxZA8OoR1vik39E9xutNq+7JH
+         H8Fccn9S+vmnQ==
+Received: by pali.im (Postfix)
+        id 2C418817; Thu,  5 Aug 2021 10:22:43 +0200 (CEST)
+Date:   Thu, 5 Aug 2021 10:22:43 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        libc-alpha@sourceware.org,
+        "G. Branden Robinson" <g.branden.robinson@gmail.com>,
+        linux-man@vger.kernel.org, linux-serial@vger.kernel.org,
+        Alejandro Colomar <alx.manpages@gmail.com>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+Subject: Re: [PATCH v3] ioctl_tty.2: Add example how to get or set baudrate
+ on the serial port
+Message-ID: <20210805082243.qciylqnt5g74if7i@pali>
+References: <20210730095333.6118-1-pali@kernel.org>
+ <20210801135146.14849-1-pali@kernel.org>
+ <20210804220808.cetleob6dldpfnjk@pali>
+ <YQt8g+ECel20fA/g@kroah.com>
 MIME-Version: 1.0
-References: <20210804142959.67981-1-andriy.shevchenko@linux.intel.com> <e34fdf56-4fdb-b422-17d6-0b35779e37b7@kernel.org>
-In-Reply-To: <e34fdf56-4fdb-b422-17d6-0b35779e37b7@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 5 Aug 2021 11:21:01 +0300
-Message-ID: <CAHp75VfSt=vibmiSEVP68UkAHmkDJ3tXt0W7yxmQ8UH-CTYCAA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] serdev: Split and export serdev_acpi_get_uart_resource()
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YQt8g+ECel20fA/g@kroah.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 5, 2021 at 10:36 AM Jiri Slaby <jirislaby@kernel.org> wrote:
-> On 04. 08. 21, 16:29, Andy Shevchenko wrote:
+On Thursday 05 August 2021 07:52:03 Greg Kroah-Hartman wrote:
+> On Thu, Aug 05, 2021 at 12:08:08AM +0200, Pali Rohár wrote:
+> > + linux-serial
+> > + Greg
+> > 
+> > Greg, could I ask you for reviewing this documentation manpage patch?
+> 
+> If it is submitted in a format I can review, sure (i.e. not top-post...)
+> 
+> But I will dig down below to say one thing...
+> 
+> > 
+> > On Sunday 01 August 2021 15:51:45 Pali Rohár wrote:
+> > > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > > 
+> > > ---
+> > > Changes in v3:
+> > > * Check support for custom baudrate only based on BOTHER macro
+> > > * Use TCGETS/TCSETS/termios when TCGETS2/TCSETS2/termios2 is not available
+> > > 
+> > > Changes in v2:
+> > > * Use \e for backslash
+> > > * Use exit(EXIT_*) instead of return num
+> > > * Sort includes
+> > > * Add comment about possible fallback
+> > > ---
+> > > 
+> > > Hello Alejandro!
+> > > 
+> > > I found out that this stuff is more complicated as I originally thought.
+> > > And seems that additional documentation on this topic is needed...
+> > > 
+> > > For setting custom baudrate it is needed to set BOTHER flag in c_cflag
+> > > field and baudrate value itself in c_ospeed and c_ispeed fields.
+> > > 
+> > > So when BOTHER flag is not provided by <asm/termbits.h> then setting custom
+> > > baudrate is not possible, fields c_ospeed and c_ispeed do not exist (and
+> > > only some predefined Bnnn baudrate values are supported). This applies when
+> > > compiling application with older version of header files (prior support for
+> > > custom baudrate was introduced into header files).
+> > > 
+> > > First caveat: BOTHER constant is different for different architectures.
+> > > So it is not possible to provide fallback #ifndef..#define BOTHER.
+> > > 
+> > > And now the biggest issue: Some architectures have these c_ospeed and
+> > > c_ispeed fields in struct termios and some in struct termios2.
+> > > 
+> > > TCGETS/TCSETS ioctls use struct termios and TCGETS/TCSETS2 use
+> > > struct termios2.
+> > > 
+> > > Some architectures (e.g. amd64) provide both struct termios and struct
+> > > termios2, but c_ospeed and c_ispeed are only in struct termios2.
+> > > 
+> > > Some other architectures (e.g. alpha) provide both struct termios and struct
+> > > termios2 and both have c_ospeed and c_ispeed fields.
+> > > 
+> > > And some other architectures (e.g. powerpc) provide only struct termios
+> > > (no struct termios2) and it has c_ospeed and c_ispeed fields.
+> > > 
+> > > So basically to support all architectures it is needed to use
+> > > struct termios2 when TCGETS2/TCSETS2 is supported. Otherwise it is needed
+> > > to use struct termios with TCGETS/TCSETS (case for e.g. powerpc).
+> > > 
+> > > I updated v3 patch to handle this logic.
+> > > ---
+> > >  man2/ioctl_tty.2 | 73 ++++++++++++++++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 73 insertions(+)
+> > > 
+> > > diff --git a/man2/ioctl_tty.2 b/man2/ioctl_tty.2
+> > > index 3020f9984872..d83cbd17225b 100644
+> > > --- a/man2/ioctl_tty.2
+> > > +++ b/man2/ioctl_tty.2
+> > > @@ -764,6 +764,79 @@ main(void)
+> > >      close(fd);
+> > >  }
+> > >  .EE
+> > > +.PP
+> > > +Get or set arbitrary baudrate on the serial port.
+> > > +.PP
+> > > +.EX
+> > > +#include <asm/termbits.h>
+> > > +#include <fcntl.h>
+> > > +#include <stdio.h>
+> > > +#include <stdlib.h>
+> > > +#include <sys/ioctl.h>
+> > > +#include <sys/types.h>
+> > > +#include <unistd.h>
+> > > +
+> > > +int
+> > > +main(int argc, char *argv[])
+> > > +{
+> > > +#ifndef BOTHER
+> > > +    fprintf(stderr, "BOTHER is unsupported\en");
+> > > +    /* Program may fallback to TCGETS/TCSETS with Bnnn constants */
+> > > +    exit(EXIT_FAILURE);
+> 
+> So this is a BOTHER test only?
 
-...
+Yes.
 
-> > +/**
-> > + * serdev_acpi_get_uart_resource - Gets UARTSerialBus resource if type matches
-> > + * @ares:    ACPI resource
-> > + * @uart:    Pointer to UARTSerialBus resource will be returned here
-> > + *
-> > + * Checks if the given ACPI resource is of type UARTSerialBus.
-> > + * In this case, returns a pointer to it to the caller.
-> > + *
-> > + * Returns true if resource type is of UARTSerialBus, otherwise false.
->
-> Better to write:
->   * Return: True if resource type is of UARTSerialBus, otherwise false.
-> which is recognized by sphinx.
+> What is the goal of this program?  Don't throw a bunch of #ifdef in here
+> for no good reason.  These options should all be present on all normal
+> kernels, why wouldn't they be?
 
-Will fix it in v3.
+I wanted to provide complete example which compiles fine on all Linux
+systems, even with older include header files. I do not know right now
+in which kernel version was introduced BOTHER support for all
+architectures.
 
-> > + */
+If BOHTER is not supported then it is possible to still use Bnnn
+constants to get / set baudrate. Just it is needed to write long code
+for converting number to suitable Bnnn constant.
 
-...
+Do you think that this BOTHER check is not useful in this case?
 
-> Why don't you return NULL, or sb, thus eliminating the parameter?
-
-1. That's how other similar APIs are done.
-2. It will save a line of code in the callers. Usual pattern
-  if (...get_res(..., &sb))
-   return ERR_or_so;
-
-With your proposal
-
-  sb = get_res(...);
-  if (!sb)
-    return ERR_or_so;
-
-> > +}
-
--- 
-With Best Regards,
-Andy Shevchenko
+> thanks,
+> 
+> greg k-h
