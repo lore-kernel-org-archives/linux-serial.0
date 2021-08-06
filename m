@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE906C432BE
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Aug 2021 15:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16984C432BE
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Aug 2021 15:22:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8EE4E611C9
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Aug 2021 15:22:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E975361179
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Aug 2021 15:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244507AbhHFPWW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Aug 2021 11:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42908 "EHLO
+        id S244745AbhHFPXB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 6 Aug 2021 11:23:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244503AbhHFPWQ (ORCPT
+        with ESMTP id S244568AbhHFPWR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Aug 2021 11:22:16 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064ABC0617A1
-        for <linux-serial@vger.kernel.org>; Fri,  6 Aug 2021 08:21:56 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id h2so216160lji.6
-        for <linux-serial@vger.kernel.org>; Fri, 06 Aug 2021 08:21:55 -0700 (PDT)
+        Fri, 6 Aug 2021 11:22:17 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520CEC06139E
+        for <linux-serial@vger.kernel.org>; Fri,  6 Aug 2021 08:21:59 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id p38so18723893lfa.0
+        for <linux-serial@vger.kernel.org>; Fri, 06 Aug 2021 08:21:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7149QsY3bxKHTBqGFladXmfU1OHnqAYwWvtju/kpgDw=;
-        b=mU3tb0VOjIyfm2Q/1wxVB5IQeJY6SOfiPtxtSTAQSM7URQzOPL3Aj6JlwK9ogcH3sU
-         SMRfbF3EFe3/V4/9h71BBGirdS9wb8TFJYrsXsbbkuV8Uiol9nOthlQtIBB3C+u0xHri
-         2Z917j9Wby2pjv5vyCqcjnIkOzxPZDgdZpHMDnwUTRYVWg8ENCrBT2mnatKNXyLzDTIs
-         MTWCN8MC66Q6+dNxDk4R74/+PBJttkSfuGBh52UEQgGHiIgd+2GsCAO/TZjeJ9sXrw5w
-         0FBuR3pF8HVMuy85s7WKXXTLaKqIrxc9JsVbxi4yBObBekrmgOHh6gv0vNu76QiLGXOp
-         A/VA==
+        bh=bjAidQVjPnsdyg/2uwjvZwZUIqwFqOyk06P5z8n6Pdk=;
+        b=w3bhoI9TaLN9+BaimUNJdAjGiFas7439LuvvPO8mNbDlicCeKyi4nWUx/VModoGVzN
+         61TIDRksKmXIdADyvk9S+YFXan+9/kjvEYf3AT1cHXjR1QwcLNnZIfdrk2gvkAntlfV0
+         K6VwycLQ+HSAwMMNXhyCL8a/tsA/9BBPnetOkQUJ3KcTOOPcAaVz5dizGOtSvHyK8Djh
+         qHmWrZ6bEOKg7WWM+e+yCt5InvbFG4U0tOMwUbx1BAAPc2SrzbF24cASRp1V0p0VxckO
+         YMqy9bkGMPPR2828C4oShzaEi9rck++WFZT/2nXpJ2Ou+jXfmrn1XYbpwTEtaHD0ulfS
+         vivA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7149QsY3bxKHTBqGFladXmfU1OHnqAYwWvtju/kpgDw=;
-        b=AIyG4VEx0cJFr0BezJWltxwJWb1lZrrbW94lrmYYzd2IvrmaYhxtpWiyOCT7Jg7ZA3
-         nSngKhT8Vx0LA/ia8Hm5aPle9o4dLMXUyvyKi3zT1yqhXYNNNDJlAoZOP5Ex8pKKE6zg
-         zitZq8Xo6Usuy2Uw5wxWrGppwZQJm4XxQudUVz9EY4Wt6bKRF6oq9QMP78fle5fBO/aQ
-         wA9DSbTeTuGMVOM6v++KRepCz1tL3tzqyLe0MPXscmYmQ3o0hQAiWLqmoOekKEkAfJwP
-         n0dFTlcXOcExFGjMKHclKXLb7l3mCwwDigUtVvcVAng0jcozpnlXyH57TYXekI9qIooe
-         MT9A==
-X-Gm-Message-State: AOAM532zo87W/mjwjZcK7IhxYSHzUtvWN69+z4c9w+xyX3csgxdYOOP3
-        lPLg256NmB+587oixvqYoLYTRw==
-X-Google-Smtp-Source: ABdhPJz/nCSkupmdZvO+O/nPY21YE/Jn23nLsw919q8+GtfFLWrOy8Lwwb/7fmeR6+l9D649lgfGfQ==
-X-Received: by 2002:a2e:a887:: with SMTP id m7mr7083249ljq.236.1628263314373;
-        Fri, 06 Aug 2021 08:21:54 -0700 (PDT)
+        bh=bjAidQVjPnsdyg/2uwjvZwZUIqwFqOyk06P5z8n6Pdk=;
+        b=qkAyJxTjg7mvacGT1pXVsSy7ZuJwNCyVE9vsexxvQWQpN8BpnyAaTkBwns01qfoR9g
+         nAwjUxH2pkQ/fajTmCbTy/k4NAvBT5BiAc/SadHMVVdNFHeXL1wshTvwzbUrz0/VZ2g+
+         wt1+5s+xQxKemFBRE4MFIykv1ToMN1c/R7FfimbK47e1jqmOISKh/5VlB4kUvOhnCoPr
+         46GFiomf82oYLF5J2XSfoHNqj44+PkoS7w47maw3ZaCLF0uicGntXWZ2DGu7DRDXsgyg
+         1ZmyTk668MF+7ijHB/YfgU7zAYC00VilwA4yrfrGqmY1s5iSbUNo+VLHRvVcVC7rKV8E
+         9PWA==
+X-Gm-Message-State: AOAM532khPslDL2YSqXRR2JLSf6POrW2t9N9K36L483Gm/hlpYEiApfj
+        6pzUW+Wz2H4x63ow/K2hbemarw==
+X-Google-Smtp-Source: ABdhPJyNqJD0uINMyeXLyFGbH4gPkm7zTB1xHT/l74cQsoPIXDTz+BX+WJCAjByqRpZnZpbWyOCjsw==
+X-Received: by 2002:ac2:5087:: with SMTP id f7mr7702795lfm.43.1628263317657;
+        Fri, 06 Aug 2021 08:21:57 -0700 (PDT)
 Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id u18sm87339ljj.2.2021.08.06.08.21.53
+        by smtp.gmail.com with ESMTPSA id j18sm861634lfg.65.2021.08.06.08.21.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Aug 2021 08:21:53 -0700 (PDT)
+        Fri, 06 Aug 2021 08:21:57 -0700 (PDT)
 From:   Sam Protsenko <semen.protsenko@linaro.org>
 To:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Chanwoo Choi <cw00.choi@samsung.com>,
@@ -78,9 +78,9 @@ Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH v2 4/8] tty: serial: samsung: Init USI to keep clocks running
-Date:   Fri,  6 Aug 2021 18:21:42 +0300
-Message-Id: <20210806152146.16107-5-semen.protsenko@linaro.org>
+Subject: [PATCH v2 6/8] tty: serial: samsung: Add Exynos850 SoC data
+Date:   Fri,  6 Aug 2021 18:21:44 +0300
+Message-Id: <20210806152146.16107-7-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210806152146.16107-1-semen.protsenko@linaro.org>
 References: <20210806152146.16107-1-semen.protsenko@linaro.org>
@@ -90,144 +90,62 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-UART block is a part of USI (Universal Serial Interface) IP-core in
-Samsung SoCs since Exynos9810 (e.g. in Exynos850). USI allows one to
-enable one of three types of serial interface: UART, SPI or I2C. That's
-possible because USI shares almost all internal circuits within each
-protocol. USI also provides some additional registers so it's possible
-to configure it.
-
-One USI register called USI_OPTION has reset value of 0x0. Because of
-this the clock gating behavior is controlled by hardware (HWACG =
-Hardware Auto Clock Gating), which simply means the serial won't work
-after reset as is. In order to make it work, USI_OPTION[2:1] bits must
-be set to 0b01, so that HWACG is controlled manually (by software).
-Bits meaning:
-  - CLKREQ_ON = 1: clock is continuously provided to IP
-  - CLKSTOP_ON = 0: drive IP_CLKREQ to High (needs to be set along with
-                    CLKREQ_ON = 1)
-
-USI is not present on older chips, like s3c2410, s3c2412, s3c2440,
-s3c6400, s5pv210, exynos5433, exynos4210. So the new boolean field
-'.has_usi' was added to struct s3c24xx_uart_info. USI registers will be
-only actually accessed when '.has_usi' field is set to "1".
-
-This feature is needed for further serial enablement on Exynos850, but
-some other new Exynos chips (like Exynos9810) may benefit from this
-feature as well.
+Add serial driver data for Exynos850 SoC. This driver data is basically
+reusing EXYNOS_COMMON_SERIAL_DRV_DATA, which is common for all Exynos
+chips, but also enables USI init, which was added in previous commit:
+"tty: serial: samsung: Init USI to keep clocks running".
 
 Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 ---
 Changes in v2:
-  - Non-intrusive modification of USI registers
-  - Improved comments
-  - Rearranged USI register definitions to conform with existing style
+  - Fixed default fifo sizes
 
- drivers/tty/serial/samsung_tty.c | 32 +++++++++++++++++++++++++++++++-
- include/linux/serial_s3c.h       |  9 +++++++++
- 2 files changed, 40 insertions(+), 1 deletion(-)
+ drivers/tty/serial/samsung_tty.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 9fbc61151c2e..b8034c1168e0 100644
+index 130bdc978e93..a069e7bb858f 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -65,6 +65,7 @@ enum s3c24xx_port_type {
- struct s3c24xx_uart_info {
- 	char			*name;
- 	enum s3c24xx_port_type	type;
-+	unsigned int		has_usi;
- 	unsigned int		port_type;
- 	unsigned int		fifosize;
- 	unsigned long		rx_fifomask;
-@@ -1352,6 +1353,28 @@ static int apple_s5l_serial_startup(struct uart_port *port)
- 	return ret;
- }
+@@ -2813,11 +2813,19 @@ static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
+ 	.fifosize = { 64, 256, 16, 256 },
+ };
  
-+static void exynos_usi_init(struct uart_port *port)
-+{
-+	struct s3c24xx_uart_port *ourport = to_ourport(port);
-+	struct s3c24xx_uart_info *info = ourport->info;
-+	unsigned int val;
++static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
++	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(1),
++	.fifosize = { 256, 64, 64, 64 },
++};
 +
-+	if (!info->has_usi)
-+		return;
+ #define EXYNOS4210_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos4210_serial_drv_data)
+ #define EXYNOS5433_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos5433_serial_drv_data)
++#define EXYNOS850_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos850_serial_drv_data)
 +
-+	/* Clear the software reset of USI block (it's set at startup) */
-+	val = rd_regl(port, USI_CON);
-+	val &= ~USI_CON_RESET_MASK;
-+	wr_regl(port, USI_CON, val);
-+	udelay(1);
-+
-+	/* Continuously provide the clock to USI IP w/o gating (for Rx mode) */
-+	val = rd_regl(port, USI_OPTION);
-+	val &= ~USI_OPTION_HWACG_MASK;
-+	val |= USI_OPTION_HWACG_CLKREQ_ON;
-+	wr_regl(port, USI_OPTION, val);
-+}
-+
- /* power power management control */
- 
- static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
-@@ -1379,6 +1402,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
- 		if (!IS_ERR(ourport->baudclk))
- 			clk_prepare_enable(ourport->baudclk);
- 
-+		exynos_usi_init(port);
- 		break;
- 	default:
- 		dev_err(port->dev, "s3c24xx_serial: unknown pm %d\n", level);
-@@ -2102,6 +2126,8 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 	if (ret)
- 		pr_warn("uart: failed to enable baudclk\n");
- 
-+	exynos_usi_init(port);
-+
- 	/* Keep all interrupts masked and cleared */
- 	switch (ourport->info->type) {
- 	case TYPE_S3C6400:
-@@ -2750,10 +2776,11 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ #else
+ #define EXYNOS4210_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
+ #define EXYNOS5433_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
++#define EXYNOS850_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
  #endif
  
- #if defined(CONFIG_ARCH_EXYNOS)
--#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
-+#define EXYNOS_COMMON_SERIAL_DRV_DATA_USI(_has_usi)		\
- 	.info = &(struct s3c24xx_uart_info) {			\
- 		.name		= "Samsung Exynos UART",	\
- 		.type		= TYPE_S3C6400,			\
-+		.has_usi	= _has_usi,			\
- 		.port_type	= PORT_S3C6400,			\
- 		.has_divslot	= 1,				\
- 		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
-@@ -2773,6 +2800,9 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 		.has_fracval	= 1,				\
- 	}							\
- 
-+#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
-+	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(0)
-+
- static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
- 	EXYNOS_COMMON_SERIAL_DRV_DATA,
- 	.fifosize = { 256, 64, 16, 16 },
-diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
-index f6c3323fc4c5..cf0de4a86640 100644
---- a/include/linux/serial_s3c.h
-+++ b/include/linux/serial_s3c.h
-@@ -27,6 +27,15 @@
- #define S3C2410_UERSTAT	  (0x14)
- #define S3C2410_UFSTAT	  (0x18)
- #define S3C2410_UMSTAT	  (0x1C)
-+#define USI_CON		  (0xC4)
-+#define USI_OPTION	  (0xC8)
-+
-+#define USI_CON_RESET			(1<<0)
-+#define USI_CON_RESET_MASK		(1<<0)
-+
-+#define USI_OPTION_HWACG_CLKREQ_ON	(1<<1)
-+#define USI_OPTION_HWACG_CLKSTOP_ON	(1<<2)
-+#define USI_OPTION_HWACG_MASK		(3<<1)
- 
- #define S3C2410_LCON_CFGMASK	  ((0xF<<3)|(0x3))
- 
+ #ifdef CONFIG_ARCH_APPLE
+@@ -2873,6 +2881,9 @@ static const struct platform_device_id s3c24xx_serial_driver_ids[] = {
+ 	}, {
+ 		.name		= "s5l-uart",
+ 		.driver_data	= S5L_SERIAL_DRV_DATA,
++	}, {
++		.name		= "exynos850-uart",
++		.driver_data	= EXYNOS850_SERIAL_DRV_DATA,
+ 	},
+ 	{ },
+ };
+@@ -2896,6 +2907,8 @@ static const struct of_device_id s3c24xx_uart_dt_match[] = {
+ 		.data = (void *)EXYNOS5433_SERIAL_DRV_DATA },
+ 	{ .compatible = "apple,s5l-uart",
+ 		.data = (void *)S5L_SERIAL_DRV_DATA },
++	{ .compatible = "samsung,exynos850-uart",
++		.data = (void *)EXYNOS850_SERIAL_DRV_DATA },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
 -- 
 2.30.2
 
