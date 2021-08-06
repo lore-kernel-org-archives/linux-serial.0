@@ -2,195 +2,162 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-6.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB624C4338F
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Aug 2021 01:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41188C4320A
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Aug 2021 07:23:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D0E3461167
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Aug 2021 01:01:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2042D611C9
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Aug 2021 07:23:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241019AbhHFBBc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Aug 2021 21:01:32 -0400
-Received: from mga06.intel.com ([134.134.136.31]:24856 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243070AbhHFBBb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Aug 2021 21:01:31 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10067"; a="275330517"
-X-IronPort-AV: E=Sophos;i="5.84,299,1620716400"; 
-   d="scan'208";a="275330517"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2021 18:01:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,299,1620716400"; 
-   d="scan'208";a="503673783"
-Received: from lkp-server01.sh.intel.com (HELO d053b881505b) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 05 Aug 2021 18:01:15 -0700
-Received: from kbuild by d053b881505b with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mBoEc-000GOY-IA; Fri, 06 Aug 2021 01:01:14 +0000
-Date:   Fri, 06 Aug 2021 09:00:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 1fe0e1fa3209ad8e9124147775bd27b1d9f04bd4
-Message-ID: <610c89af.l2AMrRMcZnVm7sgA%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S241509AbhHFHXT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 6 Aug 2021 03:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235225AbhHFHXT (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 6 Aug 2021 03:23:19 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3DEC061798;
+        Fri,  6 Aug 2021 00:23:03 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id b128so4944210wmb.4;
+        Fri, 06 Aug 2021 00:23:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XuFVVa+IMMyIjGvlQhvPPAoGBz5/jLQa04J04GCQSYI=;
+        b=rGj5rTUQ1W/0zoNZ6p7yRnvlqLLdu1YRf1xIXyrSHiWvq9LIkAIBaqVUusPtMpM6/2
+         2eFFOc3OeVPVV0rgXWRIXFYZLqmdKL0ESUFpd5poVLvcBl5cKKcmCclD/9BBlkiXFZkQ
+         Zy4uKsa9Pw4r53VvxJ+wK6xkwEwvtQpoZ3TufsXQAQyS8psrs7KkSJivu8I6G7qdzguL
+         wt6E+oeqbwwCBd32oKiusYAE/I1GCjmxipxXqXmlHIqrDhUI2YnLsOdmVmdMEH/B0J4O
+         K8ET/q/VDtpjF4+S94EubXb5uv5MfvmaoFj0nJaoXBdA/HKx8cQc1XUP03EEA+FmfChW
+         fG0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XuFVVa+IMMyIjGvlQhvPPAoGBz5/jLQa04J04GCQSYI=;
+        b=qFslqxOvtR6mICXcDrMIaT8xPVvPbski+/Vut8t3UCjDa/kGlFVAo62yEiffU9seKE
+         Rsa2vobN9qUA4gnadC12e7U2QKBH8RtwHG5LBVWGr9Bs+5rtsNcgUuXEhKgMhwuZuF6S
+         a6bFeMUDNQ3G23MoO+dtWvCcyCWakTgc4/yMaCgZ7Rn7MCACpmVPclM7TvgEgnMYIhUy
+         QzhIWrx0pR73JIOn0E3/IWmPTCQPtDiQfZ5jD2ozjZ4PXTkOaZpVvNZx9uQ4DyRb+snH
+         8Q5U/wQ3oEu3JHNxCXD++a75n2obugEHEoKkjCXXXgVdOglvDlP8DPw4HI2AInKZ9na2
+         i6Jw==
+X-Gm-Message-State: AOAM532s7jnIKQJGZDlfl3wiTQxIR0Q6aO3UPczwSfeNqvDtK+/mI0uY
+        1Imi0IEgHe2pjgMW2yOHMbDsXYO8eXA=
+X-Google-Smtp-Source: ABdhPJwgJQjv/NbyE304lE5CEG8PAxWAXeHwIHnZWvsmkPXHi/AwUbxMuFcNACq2ntz5ADN8NmciaA==
+X-Received: by 2002:a1c:4409:: with SMTP id r9mr1779947wma.150.1628234581727;
+        Fri, 06 Aug 2021 00:23:01 -0700 (PDT)
+Received: from [10.8.0.10] ([195.53.121.100])
+        by smtp.gmail.com with ESMTPSA id z3sm11314317wmf.6.2021.08.06.00.23.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Aug 2021 00:23:01 -0700 (PDT)
+Subject: Re: Licensing example programs in man-pages (was [PATCH v3]
+ ioctl_tty.2: Add example how to get or set baudrate on the serial port)
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+Cc:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        libc-alpha@sourceware.org,
+        "G. Branden Robinson" <g.branden.robinson@gmail.com>,
+        linux-man@vger.kernel.org, linux-serial@vger.kernel.org,
+        Walter Harms <wharms@bfs.de>, Andres Brouwer <aeb@cwi.nl>
+References: <20210804220808.cetleob6dldpfnjk@pali>
+ <YQt8g+ECel20fA/g@kroah.com> <20210805082243.qciylqnt5g74if7i@pali>
+ <YQuhl18CgJ2+LUPW@kroah.com> <20210805084410.sb5lybdri6r7t2da@pali>
+ <YQumV3qljhFSau0y@kroah.com> <20210805095100.n2qkm3kdiucwt6jd@pali>
+ <418a281b-441d-66fc-6929-5d29fafc459b@gmail.com> <YQwOaWqbHFG29wQF@kroah.com>
+ <4757a0c3-896f-a402-acb1-7e7fcadaa907@gmail.com> <YQwl0dTUIFZf5Ax4@kroah.com>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Message-ID: <40ed8a18-cf49-f807-9227-201e994e9a5a@gmail.com>
+Date:   Fri, 6 Aug 2021 09:22:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <YQwl0dTUIFZf5Ax4@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 1fe0e1fa3209ad8e9124147775bd27b1d9f04bd4  serial: 8250_omap: Handle optional overrun-throttle-ms property
+Hi Greg, Pali,
 
-elapsed time: 727m
+Hi GregOn 8/5/21 7:54 PM, Greg Kroah-Hartman wrote:
+>>> What is the license of this page?
+>>
+>> .../linux/man-pages$ head -n8 man2/ioctl_tty.2
+>> .\" Copyright 2002 Walter Harms <walter.harms@informatik.uni-oldenburg.de>
+>> .\" and Andries Brouwer <aeb@cwi.nl>.
+>> .\"
+>> .\" %%%LICENSE_START(GPL_NOVERSION_ONELINE)
+>> .\" Distributed under GPL
+> 
+> What version of GPL?
 
-configs tested: 129
-configs skipped: 3
+I don't know :/
+Maybe v1...
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> 
+>> .\" %%%LICENSE_END
+>> .\"
+>> .TH IOCTL_TTY 2 2021-03-22 "Linux" "Linux Programmer's Manual"
+>>
+>> I'm don't know what GPL_NOVERSION_ONLINE is at all.
+> 
+> I would recommend adding proper SPDX markings to all of these files.
+> Even better, work to make the whole repo REUSE compliant which means
+> that there is no ambuiguity here.
+> 
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20210804
-i386                 randconfig-c001-20210805
-s390                       zfcpdump_defconfig
-arm                       imx_v4_v5_defconfig
-sh                          rsk7269_defconfig
-arc                 nsimosci_hs_smp_defconfig
-h8300                               defconfig
-arm                         socfpga_defconfig
-csky                             alldefconfig
-powerpc                     pseries_defconfig
-m68k                         amcore_defconfig
-m68k                        mvme147_defconfig
-powerpc                     tqm8560_defconfig
-m68k                       m5249evb_defconfig
-arm                        multi_v7_defconfig
-arm                      jornada720_defconfig
-arm                     davinci_all_defconfig
-sh                           se7750_defconfig
-nios2                            allyesconfig
-arm                            lart_defconfig
-parisc                generic-64bit_defconfig
-sh                        apsh4ad0a_defconfig
-arm                       omap2plus_defconfig
-powerpc                 mpc832x_rdb_defconfig
-mips                            gpr_defconfig
-parisc                           allyesconfig
-sh                          urquell_defconfig
-arc                     haps_hs_smp_defconfig
-powerpc                     ep8248e_defconfig
-x86_64                            allnoconfig
-sh                         ecovec24_defconfig
-arm                    vt8500_v6_v7_defconfig
-arm                        mvebu_v5_defconfig
-powerpc                      katmai_defconfig
-arm                       versatile_defconfig
-um                                  defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a002-20210805
-x86_64               randconfig-a006-20210805
-x86_64               randconfig-a004-20210805
-x86_64               randconfig-a003-20210805
-x86_64               randconfig-a001-20210805
-x86_64               randconfig-a005-20210805
-i386                 randconfig-a005-20210804
-i386                 randconfig-a004-20210804
-i386                 randconfig-a002-20210804
-i386                 randconfig-a006-20210804
-i386                 randconfig-a003-20210804
-i386                 randconfig-a001-20210804
-i386                 randconfig-a005-20210805
-i386                 randconfig-a004-20210805
-i386                 randconfig-a002-20210805
-i386                 randconfig-a006-20210805
-i386                 randconfig-a003-20210805
-i386                 randconfig-a001-20210805
-x86_64               randconfig-a012-20210804
-x86_64               randconfig-a016-20210804
-x86_64               randconfig-a011-20210804
-x86_64               randconfig-a013-20210804
-x86_64               randconfig-a014-20210804
-x86_64               randconfig-a015-20210804
-i386                 randconfig-a012-20210805
-i386                 randconfig-a011-20210805
-i386                 randconfig-a015-20210805
-i386                 randconfig-a013-20210805
-i386                 randconfig-a014-20210805
-i386                 randconfig-a016-20210805
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                                  kexec
+Agree.  If Michael has no problems with that, I'll add it to my TODO list.
 
-clang tested configs:
-x86_64               randconfig-c001-20210804
-x86_64               randconfig-c001-20210805
-x86_64               randconfig-a002-20210804
-x86_64               randconfig-a006-20210804
-x86_64               randconfig-a004-20210804
-x86_64               randconfig-a003-20210804
-x86_64               randconfig-a001-20210804
-x86_64               randconfig-a005-20210804
-x86_64               randconfig-a012-20210805
-x86_64               randconfig-a016-20210805
-x86_64               randconfig-a011-20210805
-x86_64               randconfig-a013-20210805
-x86_64               randconfig-a014-20210805
-x86_64               randconfig-a015-20210805
+> But, the above license does not show up on the code in the original
+> example here, and that needs to be present if anyone wants this to be
+> used.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Yup.
+
+> 
+>> Still, if the code is going to have a different license than the rest of the
+>> page, it could perfectly have an SPDX comment in the first line of the
+>> example program.
+> 
+> Even if it is different, it should still be present as no one can see
+> the license of a man page "easily" when reading the documentation
+> through normal tools.
+
+Yup.
+
+> 
+> thanks,
+> 
+> greg k-h
+> 
+
+Pali,
+
+If you want to specify a specific license for your code, add 2 SPDX 
+lines according to REUSE <https://reuse.software/>.  If not, I'll assume 
+that you don't care, and when I fix the pages to show the license (which 
+in this case I'm not sure which one will be, maybe GPLv1) your code will 
+use that same license.  I'll take care of any necessary adjustments such 
+as providing  the license text in the repository; you don't need to do that.
+
+
+Cheers,
+
+Alex
+
+
+-- 
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
