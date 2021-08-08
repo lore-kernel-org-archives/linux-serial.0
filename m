@@ -2,127 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-26.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED92AC432BE
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Aug 2021 12:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4C7C4320E
+	for <linux-serial@archiver.kernel.org>; Sun,  8 Aug 2021 11:31:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CD743610FC
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Aug 2021 12:00:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6FF5660F9E
+	for <linux-serial@archiver.kernel.org>; Sun,  8 Aug 2021 11:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232177AbhHGMAq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 7 Aug 2021 08:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60402 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbhHGMAp (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 7 Aug 2021 08:00:45 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708D6C0613CF;
-        Sat,  7 Aug 2021 05:00:27 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id w17so20187347ybl.11;
-        Sat, 07 Aug 2021 05:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WyWRBH02aF7TMZK2H9iKEqjuVSj2aT5mi1GkBNRCyKg=;
-        b=QOdR5x9JTDfThKVhuyhEYPReV0+hyqKytp6bhrDU9jtJxybQG/OIAaA3oWXzAmhUeI
-         OpdNdHL2cTWOdcoGJdjl6SMiapPShk5dqCtzePXNHkSDDTyDYEUVEMRWoeWDVMRgEvWT
-         F3WsjtH95W2GEqcxmYbu5Nki6iHjaP/wAYl8B41Jx1LBzEzxM7r/El9yGNDidzRbvvqa
-         Kmis+CIiKYZTjEfn/MyNVZZE/sJlnMzcMNu5e2sZtEh+M3pQUSfAAN/s+5gpulRT28gX
-         WpDFxD9aYBck7JqESW1IHpFohPSZLTlNkFRqH4KUtyrj9Pxrh4lb4vBKQjKvBi3tS5E+
-         KYxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WyWRBH02aF7TMZK2H9iKEqjuVSj2aT5mi1GkBNRCyKg=;
-        b=FENVn+x4TjHqCmYz0t/+7EfVYf1QGqh+zYpVEYmMGPTqnHOOisyXnxzs+6hlVBhG+N
-         QQph2pPY6TkLAa3m8sU5mMDcy4AbNmu15kNxTPMh6DRzmYDaBbUc85RmuCV1GgVPqryW
-         EgWH6cNXsXTLSpg6B9wVdvY2oBP9UeTHGYzrneA/3AB/2K+eaIJpiLLBRcK3tG7HJVWy
-         PmCOFC3lrqXyvRa0Wpq4I6Uqs1KnDmVexInUNu2TpoP7L058z7s7FQ5UCxjlV4esc5Xh
-         WYznK39bNlKg0rsWYXzKfSaqIiE+k6l8K5fA5SOb3CL1CbUEZEhfI1nTa5rZz4m7xdaV
-         hF5g==
-X-Gm-Message-State: AOAM532Vo5TEnmV+KE0rkq3yYrSNcJSnBO2C/YT8KQjFaTRcaDHjTde0
-        nUc2OVB7nPEWNSFFrrQgxPso62OY9pkddZvu+yA=
-X-Google-Smtp-Source: ABdhPJxo9qHswzoJFxioC74Rd4uuv/McBZ+hRPGpGsGEvfuOE6rZWY4LuFWwzY6Vg59fOtg8kqf5oNFF1j4ZtwtEzDU=
-X-Received: by 2002:a25:1546:: with SMTP id 67mr19373700ybv.331.1628337626600;
- Sat, 07 Aug 2021 05:00:26 -0700 (PDT)
+        id S229473AbhHHLb0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 8 Aug 2021 07:31:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44032 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230420AbhHHLbZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 8 Aug 2021 07:31:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C3816101D;
+        Sun,  8 Aug 2021 11:31:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1628422267;
+        bh=cQR9HjELS5wfqjRmJ6RrRMXOCCvZAs4SRF+f6Wp2mbs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=yhvoNhcaPEmU/LPg9keHrZIAsz8IVOqM8MNYDBMYyuF/EyyTyyWeLUecTWvvoSHwp
+         Thtusv7zMDFjK7GHUyLZBaR5AQOebPK8nyL9ibXgAQ9bFU6aBO4m5z0covl8lDMent
+         ampsx/A6UxORIDLmUEkZPWaIh+TrLs9gg/pRb1+w=
+Date:   Sun, 8 Aug 2021 13:31:04 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.14-rc5
+Message-ID: <YQ/AeMGGzEwsxJkh@kroah.com>
 MIME-Version: 1.0
-References: <20210807091927.1974404-1-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20210807091927.1974404-1-u.kleine-koenig@pengutronix.de>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Sat, 7 Aug 2021 12:59:50 +0100
-Message-ID: <CADVatmO7Wtc8+4mzorrmcwKv2QXg579avynK==9D1Dqz9PHaJw@mail.gmail.com>
-Subject: Re: [PATCH v2] parisc: Make struct parisc_driver::remove() return void
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        alsa-devel@alsa-project.org, Corey Minyard <minyard@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>, linux-scsi@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        linux-parisc <linux-parisc@vger.kernel.org>,
-        linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Aug 7, 2021 at 10:19 AM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> The caller of this function (parisc_driver_remove() in
-> arch/parisc/kernel/drivers.c) ignores the return value, so better don't
-> return any value at all to not wake wrong expectations in driver authors.
->
-> The only function that could return a non-zero value before was
-> ipmi_parisc_remove() which returns the return value of
-> ipmi_si_remove_by_dev(). Make this function return void, too, as for all
-> other callers the value is ignored, too.
->
-> Also fold in a small checkpatch fix for:
->
-> WARNING: Unnecessary space before function pointer arguments
-> +       void (*remove) (struct parisc_device *dev);
->
-> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> (for drivers/input)
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
-> changes since v1 sent with Message-Id:
-> 20210806093938.1950990-1-u.kleine-koenig@pengutronix.de:
->
->  - Fix a compiler error noticed by the kernel test robot
->  - Add Ack for Dmitry
->
->  arch/parisc/include/asm/parisc-device.h  | 4 ++--
->  drivers/char/ipmi/ipmi_si.h              | 2 +-
->  drivers/char/ipmi/ipmi_si_intf.c         | 6 +-----
->  drivers/char/ipmi/ipmi_si_parisc.c       | 4 ++--
->  drivers/char/ipmi/ipmi_si_platform.c     | 4 +++-
->  drivers/input/keyboard/hilkbd.c          | 4 +---
->  drivers/input/serio/gscps2.c             | 3 +--
->  drivers/net/ethernet/i825xx/lasi_82596.c | 3 +--
->  drivers/parport/parport_gsc.c            | 3 +--
+The following changes since commit 2734d6c1b1a089fb593ef6a23d4b70903526fe0c:
 
-Acked-by:  Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+  Linux 5.14-rc2 (2021-07-18 14:13:49 -0700)
 
+are available in the Git repository at:
 
---=20
-Regards
-Sudip
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.14-rc5
+
+for you to fetch changes up to 341abd693d10e5f337a51f140ae3e7a1ae0febf6:
+
+  serial: 8250_pci: Avoid irq sharing for MSI(-X) interrupts. (2021-07-30 13:06:19 +0200)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 5.14-rc5
+
+Here are some small tty/serial driver fixes for 5.14-rc5 to resolve a
+number of reported problems.
+
+They include:
+	- mips serial driver fixes
+	- 8250 driver fixes for reported problems
+	- fsl_lpuart driver fixes
+	- other tiny driver fixes
+
+All have been in linux-next for a while with no reported problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andy Shevchenko (2):
+      serial: max310x: Unprepare and disable clock in error path
+      serial: 8250_pci: Enumerate Elkhart Lake UARTs via dedicated driver
+
+Johan Hovold (1):
+      serial: 8250: fix handle_irq locking
+
+Jon Hunter (1):
+      serial: tegra: Only print FIFO error message when an error occurs
+
+Maciej W. Rozycki (2):
+      serial: 8250: Mask out floating 16/32-bit bus bits
+      MIPS: Malta: Do not byte-swap accesses to the CBUS UART
+
+Mario Kleiner (1):
+      serial: 8250_pci: Avoid irq sharing for MSI(-X) interrupts.
+
+Sherry Sun (1):
+      tty: serial: fsl_lpuart: fix the wrong return value in lpuart32_get_mctrl
+
+Zhiyong Tao (1):
+      serial: 8250_mtk: fix uart corruption issue when rx power off
+
+ arch/mips/mti-malta/malta-platform.c        |  3 ++-
+ drivers/tty/serial/8250/8250_aspeed_vuart.c |  5 +++--
+ drivers/tty/serial/8250/8250_fsl.c          |  5 +++--
+ drivers/tty/serial/8250/8250_mtk.c          |  5 +++++
+ drivers/tty/serial/8250/8250_pci.c          |  7 +++++++
+ drivers/tty/serial/8250/8250_port.c         | 17 ++++++++++++-----
+ drivers/tty/serial/fsl_lpuart.c             |  2 +-
+ drivers/tty/serial/max310x.c                |  3 ++-
+ drivers/tty/serial/serial-tegra.c           |  6 ++++--
+ include/linux/serial_core.h                 | 24 ++++++++++++++++++++++++
+ 10 files changed, 63 insertions(+), 14 deletions(-)
