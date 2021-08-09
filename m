@@ -2,219 +2,300 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C18C43214
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 14:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2438C4320E
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 18:18:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 734E76103B
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 14:55:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9FDC960F8F
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 18:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235129AbhHIOzl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Aug 2021 10:55:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44416 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235293AbhHIOzW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Aug 2021 10:55:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3AC796101D;
-        Mon,  9 Aug 2021 14:54:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628520896;
-        bh=YCFy1J2Y2QsNsPSVYSAN99rjizBKWXJw6JQNinsDlbo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TS4nSHJiOxNWQNoIxwClvDENw00c1lcg2XvB9Pv7QTObBnjaAH+2CZ8tNOb9lSCNT
-         X9z+pcGnnF/mhQal3Th0n/ZG7aF6Ho1GyedVBXb1Imp63+jeiFPXUcg30N9LvCrIYh
-         9E/1wYctTBFC8FmMso6G27anRRcH6uhMh8GXrUeCgVfKFSypVQnZgXqy0i9dWcDN1K
-         K9tOscWmJ2VsmN+11JXSm/yl+0wX9pnZjpNXpUBKux4MXLBWfdOWh6RhCNUbHf6jvi
-         6Ddjn48Ib0RCtufyT743xEqV2I4PHEuFt6fnOiwdUSvtTpPAq6ZPYMF8f3fqKzRMoj
-         DsPVJ13fA55sg==
-Received: by pali.im (Postfix)
-        id EFC1AC7C; Mon,  9 Aug 2021 16:54:55 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vladimir Vid <vladimir.vid@sartura.hr>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v5 6/6] serial: mvebu-uart: implement support for baudrates higher than 230400
-Date:   Mon,  9 Aug 2021 16:53:29 +0200
-Message-Id: <20210809145329.24177-7-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210809145329.24177-1-pali@kernel.org>
-References: <20210624224909.6350-1-pali@kernel.org>
- <20210809145329.24177-1-pali@kernel.org>
+        id S234949AbhHISTE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Aug 2021 14:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234993AbhHISTC (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 9 Aug 2021 14:19:02 -0400
+Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0805FC06179C
+        for <linux-serial@vger.kernel.org>; Mon,  9 Aug 2021 11:18:42 -0700 (PDT)
+Received: by mail-vk1-xa2d.google.com with SMTP id l6so4147946vkr.8
+        for <linux-serial@vger.kernel.org>; Mon, 09 Aug 2021 11:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kjXVJjhEvR65+Z4ewOj5xb9PKKSWhFxsxBVNcUv+8M0=;
+        b=smQyp8aCntQWqx50j3QCg9imrJunJPc/fUtV2QCjb25K8h6DM663/X997pvKkuAIt4
+         F+2wnhwGDszBtm7bu15NgY3VaroX3gOC7zzDBi0UyBW/CRfDBSV1ACdVK8XWfsSkYWgD
+         zHneNu3AlOQI6wfINpBJEUnLqZ/91LPuyPb8HuZ6RezQ6Cl4C4dtjUse7Tyd3vpyF/kP
+         Qc1oLo6nCaL9DVFljinZIWdSkFphDzO+1nGuSM5SZ5UCSmgTxu8r7g0++1wE85YerrJs
+         AswwaUIO76/xPKTCYoPR64GznLV8OHhT85TzOaTrx1osrE0Bd1sgkKEvSA/LkF9sVQys
+         Nb0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kjXVJjhEvR65+Z4ewOj5xb9PKKSWhFxsxBVNcUv+8M0=;
+        b=qo73MFdWjGWnKC1cWf20q59XUR8dLindSZ9x9E9JH7uxFkK1Tzzt6fOgZ/5JicUhMU
+         HM8yOHQe1YnHnejeqbtUhgyKRzCXuA6XJOb+4b8gWAM3sHLPAgtZCQbRYChCszgwz3/4
+         NeiZHCEmPN3FlQsZfkQ5jCTiNgJKtgGz2nqykKV9hcroKVXHpNdYqURPMKEssVasUSES
+         Df64D4XJNr1pjoxHIQSSu8ejhFItZLlPBmpOMEZo9bHkdnAWzgczGilQHVG+dXsLFv8C
+         7h5ILvHxoxvObcI6mhR+BLFWQephl2Wbk34JIlgCAv8fk6mPiRsU76fkgzDpuiDGrbIR
+         vrAg==
+X-Gm-Message-State: AOAM530m8OrpnMQvkfUQvT99fllXET9/FVi7xc+VW/AGCWmOhBYYQ0e2
+        9FE5eYS9bgT1YmN67eLoeMKDssSGGIdpV/DK7dirsg==
+X-Google-Smtp-Source: ABdhPJxZIMAieQwRraZ3xFtXse7kceCifmxgmHFDrtnoOgP6oXdmx/b2tdhN9tRkyzJ9KjHmPAmG6AO4++pOLiw8bbQ=
+X-Received: by 2002:a1f:1dc2:: with SMTP id d185mr15370667vkd.21.1628533120787;
+ Mon, 09 Aug 2021 11:18:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210806152146.16107-1-semen.protsenko@linaro.org>
+ <20210806152146.16107-3-semen.protsenko@linaro.org> <407ee65f-6004-5173-9fcc-99023c85db4e@canonical.com>
+In-Reply-To: <407ee65f-6004-5173-9fcc-99023c85db4e@canonical.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Mon, 9 Aug 2021 21:18:29 +0300
+Message-ID: <CAPLW+4mfTMWWssW8+nTt8Yp3dN5=WJpji=o_rRYYr6+kx_dctA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/8] pinctrl: samsung: Add Exynos850 SoC specific data
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        =?UTF-8?Q?Pawe=C5=82_Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
+        Ryu Euiyoul <ryu.real@samsung.com>,
+        Tom Gall <tom.gall@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This change implements simple usage of fractional divisor. When main
-divisor D is too large to represent requested baudrate then use divisor M
-from fractional divisor feature. All the M prescalers are set to same and
-maximal value 63, so fractional part is not used at all.
+On Mon, 9 Aug 2021 at 13:43, Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
+>
+> On 06/08/2021 17:21, Sam Protsenko wrote:
+> > Add Samsung Exynos850 SoC specific data to enable pinctrl support for
+> > all platforms based on Exynos850.
+> >
+> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > ---
+> > Changes in v2:
+> >   - Removed .suspend/.resume callbacks, as retention registers are not
+> >     implemented yet for Exynos850
+> >   - Removed .eint_gpio_init for AUD domain, as there are no external
+> >     interrupts available for that domain
+> >
+> >  .../pinctrl/samsung/pinctrl-exynos-arm64.c    | 116 ++++++++++++++++++
+> >  drivers/pinctrl/samsung/pinctrl-exynos.h      |  29 +++++
+> >  drivers/pinctrl/samsung/pinctrl-samsung.c     |   2 +
+> >  drivers/pinctrl/samsung/pinctrl-samsung.h     |   1 +
+> >  4 files changed, 148 insertions(+)
+> >
+> > diff --git a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+> > index b6e56422a700..3157bdf0233c 100644
+> > --- a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+> > +++ b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+> > @@ -40,6 +40,24 @@ static const struct samsung_pin_bank_type exynos5433_bank_type_alive = {
+> >       .reg_offset = { 0x00, 0x04, 0x08, 0x0c, },
+> >  };
+> >
+> > +/*
+> > + * Bank type for non-alive type. Bit fields:
+> > + * CON: 4, DAT: 1, PUD: 4, DRV: 4, CONPDN: 2, PUDPDN: 4
+> > + */
+> > +static struct samsung_pin_bank_type exynos850_bank_type_off  = {
+> > +     .fld_width = { 4, 1, 4, 4, 2, 4, },
+> > +     .reg_offset = { 0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, },
+> > +};
+> > +
+> > +/*
+> > + * Bank type for alive type. Bit fields:
+> > + * CON: 4, DAT: 1, PUD: 4, DRV: 4
+> > + */
+> > +static struct samsung_pin_bank_type exynos850_bank_type_alive = {
+>
+> I missed that part last time - this and one before should be const.
+>
+> > +     .fld_width = { 4, 1, 4, 4, },
+> > +     .reg_offset = { 0x00, 0x04, 0x08, 0x0c, },
+> > +};
+> > +
+> >  /* Pad retention control code for accessing PMU regmap */
+> >  static atomic_t exynos_shared_retention_refcnt;
+> >
+> > @@ -422,3 +440,101 @@ const struct samsung_pinctrl_of_match_data exynos7_of_data __initconst = {
+> >       .ctrl           = exynos7_pin_ctrl,
+> >       .num_ctrl       = ARRAY_SIZE(exynos7_pin_ctrl),
+> >  };
+> > +
+> > +/* pin banks of exynos850 pin-controller 0 (ALIVE) */
+> > +static struct samsung_pin_bank_data exynos850_pin_banks0[] = {
+>
+> All these as well - initconst - unless they are somehow different than
+> rest of such structures?
+>
+> > +     /* Must start with EINTG banks, ordered by EINT group number. */
+> > +     EXYNOS9_PIN_BANK_EINTW(8, 0x000, "gpa0", 0x00),
+> > +     EXYNOS9_PIN_BANK_EINTW(8, 0x020, "gpa1", 0x04),
+> > +     EXYNOS9_PIN_BANK_EINTW(8, 0x040, "gpa2", 0x08),
+> > +     EXYNOS9_PIN_BANK_EINTW(8, 0x060, "gpa3", 0x0c),
+> > +     EXYNOS9_PIN_BANK_EINTW(4, 0x080, "gpa4", 0x10),
+> > +     EXYNOS9_PIN_BANK_EINTN(3, 0x0A0, "gpq0"),
+> > +};
+> > +
+> > +/* pin banks of exynos850 pin-controller 1 (CMGP) */
+> > +static struct samsung_pin_bank_data exynos850_pin_banks1[] = {
+> > +     /* Must start with EINTG banks, ordered by EINT group number. */
+> > +     EXYNOS9_PIN_BANK_EINTW(1, 0x000, "gpm0", 0x00),
+> > +     EXYNOS9_PIN_BANK_EINTW(1, 0x020, "gpm1", 0x04),
+> > +     EXYNOS9_PIN_BANK_EINTW(1, 0x040, "gpm2", 0x08),
+> > +     EXYNOS9_PIN_BANK_EINTW(1, 0x060, "gpm3", 0x0C),
+> > +     EXYNOS9_PIN_BANK_EINTW(1, 0x080, "gpm4", 0x10),
+> > +     EXYNOS9_PIN_BANK_EINTW(1, 0x0A0, "gpm5", 0x14),
+> > +     EXYNOS9_PIN_BANK_EINTW(1, 0x0C0, "gpm6", 0x18),
+> > +     EXYNOS9_PIN_BANK_EINTW(1, 0x0E0, "gpm7", 0x1C),
+> > +};
+> > +
+> > +/* pin banks of exynos850 pin-controller 2 (AUD) */
+> > +static struct samsung_pin_bank_data exynos850_pin_banks2[] = {
+> > +     /* Must start with EINTG banks, ordered by EINT group number. */
+> > +     EXYNOS9_PIN_BANK_EINTG(5, 0x000, "gpb0", 0x00),
+> > +     EXYNOS9_PIN_BANK_EINTG(5, 0x020, "gpb1", 0x04),
+> > +};
+> > +
+> > +/* pin banks of exynos850 pin-controller 3 (HSI) */
+> > +static struct samsung_pin_bank_data exynos850_pin_banks3[] = {
+> > +     /* Must start with EINTG banks, ordered by EINT group number. */
+> > +     EXYNOS9_PIN_BANK_EINTG(6, 0x000, "gpf2", 0x00),
+> > +};
+> > +
+> > +/* pin banks of exynos850 pin-controller 4 (CORE) */
+> > +static struct samsung_pin_bank_data exynos850_pin_banks4[] = {
+> > +     /* Must start with EINTG banks, ordered by EINT group number. */
+> > +     EXYNOS9_PIN_BANK_EINTG(4, 0x000, "gpf0", 0x00),
+> > +     EXYNOS9_PIN_BANK_EINTG(8, 0x020, "gpf1", 0x04),
+> > +};
+> > +
+> > +/* pin banks of exynos850 pin-controller 5 (PERI) */
+> > +static struct samsung_pin_bank_data exynos850_pin_banks5[] = {
+> > +     /* Must start with EINTG banks, ordered by EINT group number. */
+> > +     EXYNOS9_PIN_BANK_EINTG(2, 0x000, "gpg0", 0x00),
+> > +     EXYNOS9_PIN_BANK_EINTG(6, 0x020, "gpp0", 0x04),
+> > +     EXYNOS9_PIN_BANK_EINTG(4, 0x040, "gpp1", 0x08),
+> > +     EXYNOS9_PIN_BANK_EINTG(4, 0x060, "gpp2", 0x0C),
+> > +     EXYNOS9_PIN_BANK_EINTG(8, 0x080, "gpg1", 0x10),
+> > +     EXYNOS9_PIN_BANK_EINTG(8, 0x0A0, "gpg2", 0x14),
+> > +     EXYNOS9_PIN_BANK_EINTG(1, 0x0C0, "gpg3", 0x18),
+> > +     EXYNOS9_PIN_BANK_EINTG(3, 0x0E0, "gpc0", 0x1C),
+> > +     EXYNOS9_PIN_BANK_EINTG(6, 0x100, "gpc1", 0x20),
+> > +};
+> > +
+> > +static const struct samsung_pin_ctrl exynos850_pin_ctrl[] __initconst = {
+> > +     {
+> > +             /* pin-controller instance 0 ALIVE data */
+> > +             .pin_banks      = exynos850_pin_banks0,
+> > +             .nr_banks       = ARRAY_SIZE(exynos850_pin_banks0),
+> > +             .eint_gpio_init = exynos_eint_gpio_init,
+> > +             .eint_wkup_init = exynos_eint_wkup_init,
+> > +     }, {
+> > +             /* pin-controller instance 1 CMGP data */
+> > +             .pin_banks      = exynos850_pin_banks1,
+> > +             .nr_banks       = ARRAY_SIZE(exynos850_pin_banks1),
+> > +             .eint_gpio_init = exynos_eint_gpio_init,
+> > +             .eint_wkup_init = exynos_eint_wkup_init,
+> > +     }, {
+> > +             /* pin-controller instance 2 AUD data */
+> > +             .pin_banks      = exynos850_pin_banks2,
+> > +             .nr_banks       = ARRAY_SIZE(exynos850_pin_banks2),
+> > +     }, {
+> > +             /* pin-controller instance 3 HSI data */
+> > +             .pin_banks      = exynos850_pin_banks3,
+> > +             .nr_banks       = ARRAY_SIZE(exynos850_pin_banks3),
+> > +             .eint_gpio_init = exynos_eint_gpio_init,
+> > +     }, {
+> > +             /* pin-controller instance 4 CORE data */
+> > +             .pin_banks      = exynos850_pin_banks4,
+> > +             .nr_banks       = ARRAY_SIZE(exynos850_pin_banks4),
+> > +             .eint_gpio_init = exynos_eint_gpio_init,
+> > +     }, {
+> > +             /* pin-controller instance 5 PERI data */
+> > +             .pin_banks      = exynos850_pin_banks5,
+> > +             .nr_banks       = ARRAY_SIZE(exynos850_pin_banks5),
+> > +             .eint_gpio_init = exynos_eint_gpio_init,
+> > +     },
+> > +};
+> > +
+> > +const struct samsung_pinctrl_of_match_data exynos850_of_data __initconst = {
+> > +     .ctrl           = exynos850_pin_ctrl,
+> > +     .num_ctrl       = ARRAY_SIZE(exynos850_pin_ctrl),
+> > +};
+> > diff --git a/drivers/pinctrl/samsung/pinctrl-exynos.h b/drivers/pinctrl/samsung/pinctrl-exynos.h
+> > index da1ec13697e7..595086f2d5dd 100644
+> > --- a/drivers/pinctrl/samsung/pinctrl-exynos.h
+> > +++ b/drivers/pinctrl/samsung/pinctrl-exynos.h
+> > @@ -108,6 +108,35 @@
+> >               .pctl_res_idx   = pctl_idx,                     \
+> >       }                                                       \
+> >
+> > +#define EXYNOS9_PIN_BANK_EINTN(pins, reg, id)                        \
+> > +     {                                                       \
+> > +             .type           = &exynos850_bank_type_alive,   \
+>
+> Having the prefix EXYNOS9 is actually confusing because:
+> 1. There is no Exynos9 support,
+> 2. The type is exynos850.
+>
+> Let's keep it consistent, so 850 everywhere,
+>
 
-Tests showed that UART at 1500000 baudrate via this configuration is stable
-and usable. So there is no need to implement complicated calculation of
-fractional coefficients yet.
+Sure. Will send v3 shortly with fixes for everything you mentioned.
 
-To use this feature with higher baudrates, it is required to use UART clock
-provided by UART clock driver. Default boot xtal clock is not capable of
-higher baudrates and this change also contains code for determining upper
-limit of possible baudrate.
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/tty/serial/mvebu-uart.c | 79 ++++++++++++++++++++++++++-------
- 1 file changed, 62 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index a31235add99f..0fe251b8627b 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -99,6 +99,7 @@
- #define UART_OSAMP		0x14
- #define  OSAMP_DEFAULT_DIVISOR	16
- #define  OSAMP_DIVISORS_MASK	0x3F3F3F3F
-+#define  OSAMP_MAX_DIVISOR	63
- 
- #define MVEBU_NR_UARTS		2
- 
-@@ -479,18 +480,59 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- 		return -EOPNOTSUPP;
- 
- 	/*
--	 * The baudrate is derived from the UART clock thanks to two divisors:
--	 *   > D ("baud generator"): can divide the clock from 2 to 2^10 - 1.
--	 *   > M ("fractional divisor"): allows a better accuracy for
--	 *     baudrates higher than 230400.
-+	 * The baudrate is derived from the UART clock thanks to divisors:
-+	 *   > d1 * d2 ("TBG divisors"): can divide only TBG clock from 1 to 6
-+	 *   > D ("baud generator"): can divide the clock from 1 to 1023
-+	 *   > M ("fractional divisor"): allows a better accuracy (from 1 to 63)
- 	 *
--	 * As the derivation of M is rather complicated, the code sticks to its
--	 * default value (x16) when all the prescalers are zeroed, and only
--	 * makes use of D to configure the desired baudrate.
-+	 * Exact formulas for calculating baudrate:
-+	 *
-+	 * with default x16 scheme:
-+	 *   baudrate = xtal / (d * 16)
-+	 *   baudrate = tbg / (d1 * d2 * d * 16)
-+	 *
-+	 * with fractional divisor:
-+	 *   baudrate = 10 * xtal / (d * (3 * (m1 + m2) + 2 * (m3 + m4)))
-+	 *   baudrate = 10 * tbg / (d1*d2 * d * (3 * (m1 + m2) + 2 * (m3 + m4)))
-+	 *
-+	 * Oversampling value:
-+	 *   osamp = (m1 << 0) | (m2 << 8) | (m3 << 16) | (m4 << 24);
-+	 *
-+	 * Where m1 controls number of clock cycles per bit for bits 1,2,3;
-+	 * m2 for bits 4,5,6; m3 for bits 7,8 and m4 for bits 9,10.
-+	 *
-+	 * To simplify baudrate setup set all the M prescalers to same value.
-+	 * For 9600 baudrate and higher it is enough to use just default (x16)
-+	 * divisor or fractional divisor with M = 63, so there is no need to
-+	 * use real fractional support (when the M prescalers are not equal).
-+	 *
-+	 * When all the M prescalers are zeroed then default (x16) divisor is
-+	 * used. Default x16 scheme is more stable than M (fractional divisor),
-+	 * so use M only when D divisor is not enough to derivate baudrate.
-+	 *
-+	 * Member port->uartclk is either xtal clock rate or TBG clock rate
-+	 * divided by (d1 * d2). So UART clock driver already sets d1 and d2
-+	 * divisors and UART driver cannot change them. Moreover they are
-+	 * shared with both UARTs.
- 	 */
-+
- 	m_divisor = OSAMP_DEFAULT_DIVISOR;
- 	d_divisor = DIV_ROUND_CLOSEST(port->uartclk, baud * m_divisor);
- 
-+	if (d_divisor > BRDV_BAUD_MAX) {
-+		/*
-+		 * Experiments showed that small M divisors are unstable.
-+		 * So use maximal possible M = 63 and calculate D divisor.
-+		 */
-+		m_divisor = OSAMP_MAX_DIVISOR;
-+		d_divisor = DIV_ROUND_CLOSEST(port->uartclk, baud * m_divisor);
-+	}
-+
-+	if (d_divisor < 1)
-+		d_divisor = 1;
-+	else if (d_divisor > BRDV_BAUD_MAX)
-+		d_divisor = BRDV_BAUD_MAX;
-+
- 	spin_lock_irqsave(&mvebu_uart_lock, flags);
- 	brdv = readl(port->membase + UART_BRDV);
- 	brdv &= ~BRDV_BAUD_MASK;
-@@ -500,6 +542,9 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- 
- 	osamp = readl(port->membase + UART_OSAMP);
- 	osamp &= ~OSAMP_DIVISORS_MASK;
-+	if (m_divisor != OSAMP_DEFAULT_DIVISOR)
-+		osamp |= (m_divisor << 0) | (m_divisor << 8) |
-+			(m_divisor << 16) | (m_divisor << 24);
- 	writel(osamp, port->membase + UART_OSAMP);
- 
- 	return 0;
-@@ -529,14 +574,14 @@ static void mvebu_uart_set_termios(struct uart_port *port,
- 		port->ignore_status_mask |= STAT_RX_RDY(port) | STAT_BRK_ERR;
- 
- 	/*
--	 * Maximal divisor is 1023 * 16 when using default (x16) scheme.
--	 * Maximum achievable frequency with simple baudrate divisor is 230400.
--	 * Since the error per bit frame would be of more than 15%, achieving
--	 * higher frequencies would require to implement the fractional divisor
--	 * feature.
-+	 * Maximal divisor is 1023 and maximal fractional divisor is 63. And
-+	 * experiments showed that baudrates above 1/80 of base clock are not
-+	 * stable and usable. So disallow baudrate above 1/80 of the base clock.
-+	 * When port->uartclk is not available then mvebu_uart_baud_rate_set()
-+	 * fails so values min_baud and max_baud in this case does not matter.
- 	 */
--	min_baud = DIV_ROUND_UP(port->uartclk, 1023 * 16);
--	max_baud = 230400;
-+	min_baud = DIV_ROUND_UP(port->uartclk, BRDV_BAUD_MAX*OSAMP_MAX_DIVISOR);
-+	max_baud = port->uartclk / 80;
- 
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
- 	if (mvebu_uart_baud_rate_set(port, baud)) {
-@@ -1397,14 +1442,14 @@ static int mvebu_uart_clock_probe(struct platform_device *pdev)
- 			 * Calculate the smallest TBG d1 and d2 divisors that
- 			 * still can provide 9600 baudrate.
- 			 */
--			d1 = DIV_ROUND_UP(rate, 9600 * OSAMP_DEFAULT_DIVISOR *
-+			d1 = DIV_ROUND_UP(rate, 9600 * OSAMP_MAX_DIVISOR *
- 						BRDV_BAUD_MAX);
- 			if (d1 < 1)
- 				d1 = 1;
- 			else if (d1 > CLK_TBG_DIV1_MAX)
- 				d1 = CLK_TBG_DIV1_MAX;
- 
--			d2 = DIV_ROUND_UP(rate, 9600 * OSAMP_DEFAULT_DIVISOR *
-+			d2 = DIV_ROUND_UP(rate, 9600 * OSAMP_MAX_DIVISOR *
- 						BRDV_BAUD_MAX * d1);
- 			if (d2 < 1)
- 				d2 = 1;
-@@ -1419,7 +1464,7 @@ static int mvebu_uart_clock_probe(struct platform_device *pdev)
- 		}
- 
- 		/* Skip clock source which cannot provide 9600 baudrate */
--		if (rate > 9600 * OSAMP_DEFAULT_DIVISOR * BRDV_BAUD_MAX * d1 * d2)
-+		if (rate > 9600 * OSAMP_MAX_DIVISOR * BRDV_BAUD_MAX * d1 * d2)
- 			continue;
- 
- 		/*
--- 
-2.20.1
-
+> > +             .pctl_offset    = reg,                          \
+> > +             .nr_pins        = pins,                         \
+> > +             .eint_type      = EINT_TYPE_NONE,               \
+> > +             .name           = id                            \
+> > +     }
+> > +
+> > +#define EXYNOS9_PIN_BANK_EINTG(pins, reg, id, offs)          \
+> > +     {                                                       \
+> > +             .type           = &exynos850_bank_type_off,     \
+> > +             .pctl_offset    = reg,                          \
+> > +             .nr_pins        = pins,                         \
+> > +             .eint_type      = EINT_TYPE_GPIO,               \
+> > +             .eint_offset    = offs,                         \
+> > +             .name           = id                            \
+> > +     }
+> > +
+> > +#define EXYNOS9_PIN_BANK_EINTW(pins, reg, id, offs)          \
+> > +     {                                                       \
+> > +             .type           = &exynos850_bank_type_alive,   \
+> > +             .pctl_offset    = reg,                          \
+> > +             .nr_pins        = pins,                         \
+> > +             .eint_type      = EINT_TYPE_WKUP,               \
+> > +             .eint_offset    = offs,                         \
+> > +             .name           = id                            \
+> > +     }
+> > +
+>
+> Best regards,
+> Krzysztof
