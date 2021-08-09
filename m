@@ -8,62 +8,62 @@ X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20A8C4320A
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 10:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3659FC432BE
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 11:23:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C3FF0610A7
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 10:55:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 198BE61019
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 11:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233953AbhHIK4D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Aug 2021 06:56:03 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:41076
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233706AbhHIK4C (ORCPT
+        id S234965AbhHILXV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Aug 2021 07:23:21 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:42928
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235007AbhHILXV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Aug 2021 06:56:02 -0400
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com [209.85.221.71])
+        Mon, 9 Aug 2021 07:23:21 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id E0C883F350
-        for <linux-serial@vger.kernel.org>; Mon,  9 Aug 2021 10:55:41 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 06BFC40675
+        for <linux-serial@vger.kernel.org>; Mon,  9 Aug 2021 11:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1628506541;
-        bh=0/QQ7GCmzFb/lwnEgdDUeVfna7ZuR+UkebHo1Vz0Gqw=;
+        s=20210705; t=1628508180;
+        bh=vRoT5BSxcI/qFuszLL/O88HOU90cRS5N0ZHejOSe9B0=;
         h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
          In-Reply-To:Content-Type;
-        b=o4v51BtmV6l1lVGPCsIQr7Ya42beu6cJPs/twA5Pyy25CgFJqqqPE35dV6DJzMG6N
-         LDIkBFSj5W5X2TNPASKa3COAxGP2Ts/uwqAHFhcFIavXdLC2PXZSy11XAuZf2+h3hz
-         GZQUeY9VkX4f44MwkES7BhIA+R0ViSL7GoITzLZNU9H7+lCOijBTB4RODF51JXxNn+
-         /9alYNRhBfKO1zqFdqIp03piTGhOawhQ8mruftBAei2PZj3ypBF1HnhmsVxjT4qYBZ
-         k+YlEhjrRZ3z5VEw/ksTMMQeQKRswXclLYkbOEQ83Fv51rwaNndLTnQ+WGVgTKbUCh
-         xrJqlrhPv/4Ag==
-Received: by mail-wr1-f71.google.com with SMTP id z2-20020adff1c20000b0290154f60e3d2aso473846wro.23
-        for <linux-serial@vger.kernel.org>; Mon, 09 Aug 2021 03:55:41 -0700 (PDT)
+        b=K8WXEFizaOIS97FxjtNRGLTUZaT9nl2ucESqfkoG+cMNDTUhcZJ40xWc8OBetmCmn
+         enKQh703G5l+tlnKTNK+BCokxn2sMlg0IEnJJK1ts9RosMhc6jGroCVbD2oKHtqXUO
+         T7wkAWxpB0FpnaVGnlKeiDQpjMuoIIFg4JPK4CXlgquZ2p36k5PucjppSgbllguwyf
+         mHTvL/UrcTliQAdhhFev6vczzGgZvKwsitkH9AoiFUoK8S7ENNUGBDmjkxsUv8tGuR
+         YviE4apNMrWlw7kRGwg+6QiJ8vtE83GuLE7P+sV0G5jC5Fzp7ZVCpBmP2xwM9WbQs4
+         JiWlEOhYZfS4g==
+Received: by mail-ed1-f70.google.com with SMTP id u4-20020a50eac40000b02903bddc52675eso8541670edp.4
+        for <linux-serial@vger.kernel.org>; Mon, 09 Aug 2021 04:23:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=0/QQ7GCmzFb/lwnEgdDUeVfna7ZuR+UkebHo1Vz0Gqw=;
-        b=NtIxP2mUktiw7ZSq2sHFEWx7AVGSSRn7dr2saneBUnE1IYAAkjsyzi6Q4r6EqhRfVf
-         nw+/DrX3pO+423+7oR5LzkCMvZMm6R8bFKJQTmoUSxPtpkt0qf3yZCtd9RTTnAgKLiZL
-         UDJSE/9Sv5+cI73xLFcODjUWqO01xWq7lTmtDva3GSU2qBt/XqPX0AmLeYelqahPZR8R
-         d2X79bRNhSIeVkFMxnqIHRvLOGcwqFE+kFXToC6w1UQqNEhDwAN4p3+2xcpJ3TZfpRhW
-         tJv97lIFslI8Jr1b/wiccZ5yPyPpSyRnbJlfzLohsJAxbhppjCc2q1j7RZyMEY1Cx9Y7
-         q0KA==
-X-Gm-Message-State: AOAM530bEAOF7O7pD7xKGXRnSrH3zcwEa5Es66TIWNnBaubCLE/6ZDL6
-        0FkX5rzstqzWVdscPhAe6a3qlKaUrF++M0F6nyluHsCrTnWfFanvH4RAMF2QBw4tMx3Fak/NjDf
-        Z/rqAQWCAISANnMyKru1QY0GYsxX+IDeMgZk7F3cf9A==
-X-Received: by 2002:a17:906:1b54:: with SMTP id p20mr404472ejg.395.1628506530735;
-        Mon, 09 Aug 2021 03:55:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxUplgKeUyXmIIles2EuYZDpGS9skc6nxGXUAbVQyS+5moWpAWS0mJjpD2RuM252XF4XwBPcA==
-X-Received: by 2002:a17:906:1b54:: with SMTP id p20mr404451ejg.395.1628506530585;
-        Mon, 09 Aug 2021 03:55:30 -0700 (PDT)
+        bh=vRoT5BSxcI/qFuszLL/O88HOU90cRS5N0ZHejOSe9B0=;
+        b=KWGtt0YSJeRIxLVS9qla/5yXTkYgSG0JBO7SItaKj/VKGoHTv4chdXiswuxfb78IlU
+         hrKcxxUEcmoJIzmWWRXOft7pw+Do4hE5fMZ8K46Aqf007nGFHEZj+S8InsLk50zFMUZ8
+         eMfkYgi+MMiOl7Jyjni2X5KZC1WWwHLQSDm7sy4NTPEGmcARTIgySWxAVEwhC/kQpByC
+         ZC+SdNxzuUfJEGHXY4dDtkkHZtcn1uQ1HCOOKGOKYKrJygwVrVgwOrmYw0AIVuRQk4A4
+         +YuS8uCGaqQRSn74JpKg6vtVZ7nbI11cqLXm0uo18k+Bm6Fgs+ob86ytiPdfllM0m523
+         d1/g==
+X-Gm-Message-State: AOAM5309jYwlUbhjC6zAJabLG7CAHCZ3OVDAuMf3R2gLuxsmrzbYvUiX
+        EvGG1hrTYEijo5VlyBgxPTWCkPBpO2KskbWwhv6y2wpRvHkOE0Cqir2at63iixZ/FcLMNavctOz
+        sJxdgNAjx7dIcTVt2i6iQv3TuhOw6Sj26ThCu1rAWvg==
+X-Received: by 2002:a50:cc06:: with SMTP id m6mr8360378edi.97.1628508179569;
+        Mon, 09 Aug 2021 04:22:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy6XjMI02FzZDa29mvOYI4lhR2QTlk6CwiRU3KFxBkR1w1Iwv1+C2mD+X6K5L1Go6NB91ffkw==
+X-Received: by 2002:a50:cc06:: with SMTP id m6mr8360357edi.97.1628508179449;
+        Mon, 09 Aug 2021 04:22:59 -0700 (PDT)
 Received: from [192.168.8.102] ([86.32.42.198])
-        by smtp.gmail.com with ESMTPSA id b5sm5798891ejq.56.2021.08.09.03.55.28
+        by smtp.gmail.com with ESMTPSA id l20sm5813866ejb.23.2021.08.09.04.22.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Aug 2021 03:55:29 -0700 (PDT)
+        Mon, 09 Aug 2021 04:22:59 -0700 (PDT)
 Subject: Re: [PATCH v2 7/8] clk: samsung: Add Exynos850 clock driver stub
 To:     Sam Protsenko <semen.protsenko@linaro.org>,
         Sylwester Nawrocki <s.nawrocki@samsung.com>,
@@ -89,8 +89,8 @@ Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
 References: <20210806152146.16107-1-semen.protsenko@linaro.org>
  <20210806152146.16107-8-semen.protsenko@linaro.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <7110b1e2-1aee-6ddf-803f-ee392e494f2d@canonical.com>
-Date:   Mon, 9 Aug 2021 12:55:27 +0200
+Message-ID: <3add6f87-7293-e1ae-8f9e-c69e9de18cf5@canonical.com>
+Date:   Mon, 9 Aug 2021 13:22:56 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
@@ -108,15 +108,6 @@ On 06/08/2021 17:21, Sam Protsenko wrote:
 > only registers the UART clock as a fixed-rate clock. Without this clock
 > driver the UART driver won't work, as it's trying to obtain "uart" clock
 > and fails if it's not able to.
-
-You know that as temporary solution you can add necessary clocks
-directly in your DTS as fixed-rate-clocks? Effect would be quite similar
-to the one here for UART driver but instead adding some temporary code
-you would add temporary DTS nodes and references.
-
-I am fine with this approach although the binding (if ever defined...)
-would need to be marked as experimental.
-
 > 
 > In order to get a functional serial console we have to implement that
 > minimal clock driver with "uart" clock. It's not necessary to actually
@@ -193,38 +184,17 @@ would need to be marked as experimental.
 > +
 > +static const struct of_device_id ext_clk_match[] __initconst = {
 > +	{ .compatible = "samsung,exynos850-oscclk" },
-> +	{}
-> +};
-> +
-> +static void __init exynos850_clk_init(struct device_node *np)
-> +{
-> +	void __iomem *reg_base;
-> +	struct samsung_clk_provider *ctx;
-> +
-> +	reg_base = of_iomap(np, 0);
-> +	if (!reg_base)
-> +		panic("%s: failed to map registers\n", __func__);
-> +
-> +	ctx = samsung_clk_init(np, reg_base, CLK_NR_CLKS);
-> +	if (!ctx)
-> +		panic("%s: unable to allocate ctx\n", __func__);
 
-Not needed, the samsung_clk_init() panics or returns valid memory.
+One more thing - I am not sure anymore if this is correct. AFAIR, we
+wanted to drop compatibles for external clocks.
 
-> +
-> +	samsung_clk_of_register_fixed_ext(ctx,
-> +			exynos850_fixed_rate_ext_clks,
-> +			ARRAY_SIZE(exynos850_fixed_rate_ext_clks),
-> +			ext_clk_match);
-> +
-> +	samsung_clk_register_fixed_rate(ctx, exynos850_peri_clks,
-> +			ARRAY_SIZE(exynos850_peri_clks));
-> +
-> +	samsung_clk_of_add_provider(np, ctx);
-> +}
-> +
-> +CLK_OF_DECLARE(exynos850_clk, "samsung,exynos850-clock", exynos850_clk_init);
-> 
+Chanwoo, Sylwester, Tomasz,
+Do you remember the recommended approach? Shall it be like Exynos542x
+(samsung,exynos5420-oscclk) or Exynos5433?
+
+
+BTW, I am now converting some of existing clock controller bindings to
+dtschema.
 
 Best regards,
 Krzysztof
