@@ -2,228 +2,210 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B16A4C4320E
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 18:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDAB5C4338F
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 19:25:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 946AA61040
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 18:52:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 99EF860FE3
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 19:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235728AbhHISwW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Aug 2021 14:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49288 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235666AbhHISwW (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Aug 2021 14:52:22 -0400
-Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664EFC06179A
-        for <linux-serial@vger.kernel.org>; Mon,  9 Aug 2021 11:52:01 -0700 (PDT)
-Received: by mail-vk1-xa35.google.com with SMTP id d15so4177475vka.13
-        for <linux-serial@vger.kernel.org>; Mon, 09 Aug 2021 11:52:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d/b2tS7YMRHPjI6VGiV4WlYzcCT+N2pnoJeTL1fGmn8=;
-        b=x+VgKgaGdpHjdkRUURCM+NYQxSTBy0MkPCmpbM3VIbSGIOsKT8McvVHvOqpCfPDp7H
-         M4W8cRoidhuJJ6xT+Q0fvemdLheGyBHuuf5PbDY/5f/gJVpiXvdbLy8wi5Fwg9b41XRO
-         y0nFK2KV9XPrj+MkW1Ph1EeavmWj8Yhtfftbfkr0al6WVOiySz908r+BA0cssptNHJQc
-         6Z4Rfg52GaKWJPr5qdvIIg51iZXrOjEC+yV4RslNN/Crz2zsd1wfyKnhglVo780qMky2
-         4hfrfphfWh78WUlxasiDzHL7OqWsWdhaRa6FjMADzGi5pnL3DD5vxXq06vA/PITiesQu
-         WXiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d/b2tS7YMRHPjI6VGiV4WlYzcCT+N2pnoJeTL1fGmn8=;
-        b=ErgSGnFiUxVZcC0wbaQ5O5jtj4ZJJZVoA9SS6QrHLLbI5nee6NMx0GbZBcyyjf+BVo
-         TkdhaSZZY2cEHaMMblsC2rNYlILlkjyv0TuVnd1d8deUYgMW+XG78SVbQgXm5+nY9knD
-         Fd/jVkkuHybdcJ+5dR+osg4d5QdNogaIUDZ1Z8IpDTWuQki8thg6wGdmr9UuoffOXf60
-         55pk+KkYqpgCSi6V6+aln9BztWewqaRPQMVJPf1BEFTh7kMaTY6pJd7MizTtEuw357z+
-         gS9QIppGTYjUfkbd0AV3uLdNf1EYGsn7ub34RpzbHrNwDK9D8sTntGeA6YP5wZBd+6AB
-         Hvlg==
-X-Gm-Message-State: AOAM533UeBNhp/8I4SIzOV/DDVYcqCV1ca09OyWxMJeIxurgkcUfU2yO
-        EKPocv4Clq2heJOXoLfIrxP7fxvFzmvPQePekKWklw==
-X-Google-Smtp-Source: ABdhPJztTV7fFHE7DAa32TUbP4AmYOxZsrntgIge/gVbMCQBwXCNWE/Kq/pQ1JbUoXC+yXA/gvcXiKD7IlttIEP5jKE=
-X-Received: by 2002:a1f:6203:: with SMTP id w3mr15362595vkb.24.1628535120427;
- Mon, 09 Aug 2021 11:52:00 -0700 (PDT)
+        id S235487AbhHITZl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Aug 2021 15:25:41 -0400
+Received: from mga11.intel.com ([192.55.52.93]:20233 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231439AbhHITZk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 9 Aug 2021 15:25:40 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10070"; a="211655872"
+X-IronPort-AV: E=Sophos;i="5.84,308,1620716400"; 
+   d="scan'208";a="211655872"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2021 12:25:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,308,1620716400"; 
+   d="scan'208";a="515349438"
+Received: from lkp-server01.sh.intel.com (HELO d053b881505b) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 09 Aug 2021 12:25:18 -0700
+Received: from kbuild by d053b881505b with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mDAti-000Jpy-5O; Mon, 09 Aug 2021 19:25:18 +0000
+Date:   Tue, 10 Aug 2021 03:24:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 15e580283f2654b3455970c404ae363197aa176d
+Message-ID: <611180ed.Dwuj9zVrV+eGsJ3q%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20210806152146.16107-1-semen.protsenko@linaro.org>
- <20210806152146.16107-8-semen.protsenko@linaro.org> <7110b1e2-1aee-6ddf-803f-ee392e494f2d@canonical.com>
-In-Reply-To: <7110b1e2-1aee-6ddf-803f-ee392e494f2d@canonical.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Mon, 9 Aug 2021 21:51:48 +0300
-Message-ID: <CAPLW+4=yK-dfWjKjLEOKL2o2sG1eyqSNqgVCnQNYvbUHo+Om4w@mail.gmail.com>
-Subject: Re: [PATCH v2 7/8] clk: samsung: Add Exynos850 clock driver stub
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        =?UTF-8?Q?Pawe=C5=82_Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
-        Ryu Euiyoul <ryu.real@samsung.com>,
-        Tom Gall <tom.gall@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Amit Pundir <amit.pundir@linaro.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 9 Aug 2021 at 13:55, Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> On 06/08/2021 17:21, Sam Protsenko wrote:
-> > For now it's just a stub driver to make the serial driver work. Later it
-> > will be implemented properly. This driver doesn't really change clocks,
-> > only registers the UART clock as a fixed-rate clock. Without this clock
-> > driver the UART driver won't work, as it's trying to obtain "uart" clock
-> > and fails if it's not able to.
->
-> You know that as temporary solution you can add necessary clocks
-> directly in your DTS as fixed-rate-clocks? Effect would be quite similar
-> to the one here for UART driver but instead adding some temporary code
-> you would add temporary DTS nodes and references.
->
-> I am fine with this approach although the binding (if ever defined...)
-> would need to be marked as experimental.
->
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 15e580283f2654b3455970c404ae363197aa176d  Merge 5.14-rc5 into tty-next
 
-Let's keep this driver then. My next step would be implementing the
-proper clk driver, so this review would be a good starting point for
-me. I will, of course, address your other comments.
+elapsed time: 729m
 
-> >
-> > In order to get a functional serial console we have to implement that
-> > minimal clock driver with "uart" clock. It's not necessary to actually
-> > configure clocks, as those are already configured in bootloader, so
-> > kernel can rely on that for now.
-> >
-> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > ---
-> > Changes in v2:
-> >   - Used hard coded clock indexes, as clock bindings were removed; will
-> >     add clock bindings back (reimplemented) once proper clock driver is
-> >     ready
-> >   - Removed .data = 0 for exynos850-oscclk, as it's in BSS section
-> >   - Removed comma for terminator {}
-> >   - Made exynos850_clk_init() static
-> >   - Removed checking np for NULL, as it's already done in of_iomap()
-> >
-> >  drivers/clk/samsung/Makefile        |  1 +
-> >  drivers/clk/samsung/clk-exynos850.c | 64 +++++++++++++++++++++++++++++
-> >  2 files changed, 65 insertions(+)
-> >  create mode 100644 drivers/clk/samsung/clk-exynos850.c
-> >
-> > diff --git a/drivers/clk/samsung/Makefile b/drivers/clk/samsung/Makefile
-> > index 028b2e27a37e..c46cf11e4d0b 100644
-> > --- a/drivers/clk/samsung/Makefile
-> > +++ b/drivers/clk/samsung/Makefile
-> > @@ -17,6 +17,7 @@ obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)       += clk-exynos5433.o
-> >  obj-$(CONFIG_EXYNOS_AUDSS_CLK_CON) += clk-exynos-audss.o
-> >  obj-$(CONFIG_EXYNOS_CLKOUT)  += clk-exynos-clkout.o
-> >  obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)        += clk-exynos7.o
-> > +obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)        += clk-exynos850.o
-> >  obj-$(CONFIG_S3C2410_COMMON_CLK)+= clk-s3c2410.o
-> >  obj-$(CONFIG_S3C2410_COMMON_DCLK)+= clk-s3c2410-dclk.o
-> >  obj-$(CONFIG_S3C2412_COMMON_CLK)+= clk-s3c2412.o
-> > diff --git a/drivers/clk/samsung/clk-exynos850.c b/drivers/clk/samsung/clk-exynos850.c
-> > new file mode 100644
-> > index 000000000000..36c7c7fe7cf0
-> > --- /dev/null
-> > +++ b/drivers/clk/samsung/clk-exynos850.c
-> > @@ -0,0 +1,64 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (C) 2019 Samsung Electronics Co., Ltd.
-> > + * Copyright (C) 2021 Linaro Ltd.
-> > + *
-> > + * Common Clock Framework support for Exynos850 SoC.
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/clkdev.h>
-> > +#include <linux/clk-provider.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_address.h>
-> > +
-> > +#include "clk.h"
-> > +
-> > +/* Will be extracted to bindings header once proper clk driver is implemented */
-> > +#define OSCCLK               1
-> > +#define DOUT_UART    2
-> > +#define CLK_NR_CLKS  3
-> > +
-> > +/* Fixed rate clocks generated outside the SoC */
-> > +static struct samsung_fixed_rate_clock exynos850_fixed_rate_ext_clks[] __initdata = {
-> > +     FRATE(OSCCLK, "fin_pll", NULL, 0, 26000000),
-> > +};
-> > +
-> > +/*
-> > + * Model the UART clock as a fixed-rate clock for now, to make serial driver
-> > + * work. This clock is already configured in the bootloader.
-> > + */
-> > +static const struct samsung_fixed_rate_clock exynos850_peri_clks[] __initconst = {
-> > +     FRATE(DOUT_UART, "DOUT_UART", NULL, 0, 200000000),
-> > +};
-> > +
-> > +static const struct of_device_id ext_clk_match[] __initconst = {
-> > +     { .compatible = "samsung,exynos850-oscclk" },
-> > +     {}
-> > +};
-> > +
-> > +static void __init exynos850_clk_init(struct device_node *np)
-> > +{
-> > +     void __iomem *reg_base;
-> > +     struct samsung_clk_provider *ctx;
-> > +
-> > +     reg_base = of_iomap(np, 0);
-> > +     if (!reg_base)
-> > +             panic("%s: failed to map registers\n", __func__);
-> > +
-> > +     ctx = samsung_clk_init(np, reg_base, CLK_NR_CLKS);
-> > +     if (!ctx)
-> > +             panic("%s: unable to allocate ctx\n", __func__);
->
-> Not needed, the samsung_clk_init() panics or returns valid memory.
->
+configs tested: 144
+configs skipped: 3
 
-Done. Btw, I noticed that similar check is present in clk-exynos5433.c.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-> > +
-> > +     samsung_clk_of_register_fixed_ext(ctx,
-> > +                     exynos850_fixed_rate_ext_clks,
-> > +                     ARRAY_SIZE(exynos850_fixed_rate_ext_clks),
-> > +                     ext_clk_match);
-> > +
-> > +     samsung_clk_register_fixed_rate(ctx, exynos850_peri_clks,
-> > +                     ARRAY_SIZE(exynos850_peri_clks));
-> > +
-> > +     samsung_clk_of_add_provider(np, ctx);
-> > +}
-> > +
-> > +CLK_OF_DECLARE(exynos850_clk, "samsung,exynos850-clock", exynos850_clk_init);
-> >
->
-> Best regards,
-> Krzysztof
+gcc tested configs:
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+sh                           se7750_defconfig
+arm                         at91_dt_defconfig
+arm                          iop32x_defconfig
+nds32                             allnoconfig
+m68k                       m5208evb_defconfig
+arc                         haps_hs_defconfig
+riscv                            alldefconfig
+arm                       netwinder_defconfig
+powerpc                     ksi8560_defconfig
+powerpc                 mpc8272_ads_defconfig
+powerpc                      obs600_defconfig
+m68k                         amcore_defconfig
+powerpc                      ppc64e_defconfig
+powerpc                   microwatt_defconfig
+arm                       aspeed_g5_defconfig
+h8300                     edosk2674_defconfig
+sh                          r7785rp_defconfig
+sh                        edosk7705_defconfig
+arm                         lpc18xx_defconfig
+powerpc                     taishan_defconfig
+arm                        keystone_defconfig
+x86_64                            allnoconfig
+sh                     sh7710voipgw_defconfig
+arc                              allyesconfig
+powerpc                    klondike_defconfig
+i386                                defconfig
+sh                           se7343_defconfig
+powerpc                     tqm8541_defconfig
+sh                         apsh4a3a_defconfig
+mips                       capcella_defconfig
+arm                      pxa255-idp_defconfig
+sh                          rsk7201_defconfig
+xtensa                         virt_defconfig
+arm                         bcm2835_defconfig
+sparc64                             defconfig
+powerpc                      ppc40x_defconfig
+mips                        nlm_xlp_defconfig
+mips                     cu1830-neo_defconfig
+sh                          sdk7780_defconfig
+mips                       bmips_be_defconfig
+mips                  decstation_64_defconfig
+powerpc                     stx_gp3_defconfig
+powerpc                 mpc837x_rdb_defconfig
+mips                         tb0287_defconfig
+powerpc                      ep88xc_defconfig
+powerpc64                           defconfig
+m68k                        stmark2_defconfig
+powerpc                 mpc85xx_cds_defconfig
+sh                          urquell_defconfig
+mips                     loongson1b_defconfig
+mips                     loongson1c_defconfig
+powerpc                       holly_defconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a004-20210809
+i386                 randconfig-a005-20210809
+i386                 randconfig-a006-20210809
+i386                 randconfig-a002-20210809
+i386                 randconfig-a001-20210809
+i386                 randconfig-a003-20210809
+i386                 randconfig-a004-20210808
+i386                 randconfig-a005-20210808
+i386                 randconfig-a006-20210808
+i386                 randconfig-a002-20210808
+i386                 randconfig-a001-20210808
+i386                 randconfig-a003-20210808
+x86_64               randconfig-a016-20210808
+x86_64               randconfig-a012-20210808
+x86_64               randconfig-a013-20210808
+x86_64               randconfig-a011-20210808
+x86_64               randconfig-a014-20210808
+x86_64               randconfig-a015-20210808
+i386                 randconfig-a012-20210808
+i386                 randconfig-a015-20210808
+i386                 randconfig-a011-20210808
+i386                 randconfig-a013-20210808
+i386                 randconfig-a014-20210808
+i386                 randconfig-a016-20210808
+x86_64               randconfig-a002-20210809
+x86_64               randconfig-a004-20210809
+x86_64               randconfig-a006-20210809
+x86_64               randconfig-a003-20210809
+x86_64               randconfig-a001-20210809
+x86_64               randconfig-a005-20210809
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-c001-20210809
+x86_64               randconfig-c001-20210810
+x86_64               randconfig-a002-20210808
+x86_64               randconfig-a004-20210808
+x86_64               randconfig-a006-20210808
+x86_64               randconfig-a003-20210808
+x86_64               randconfig-a001-20210808
+x86_64               randconfig-a005-20210808
+x86_64               randconfig-a016-20210809
+x86_64               randconfig-a012-20210809
+x86_64               randconfig-a013-20210809
+x86_64               randconfig-a011-20210809
+x86_64               randconfig-a014-20210809
+x86_64               randconfig-a015-20210809
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
