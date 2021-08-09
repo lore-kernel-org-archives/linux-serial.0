@@ -2,122 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-18.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 022FFC432BE
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 04:19:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C726FC4338F
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 08:03:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D208B61028
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 04:19:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9F4136105A
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 08:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231753AbhHIET7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Aug 2021 00:19:59 -0400
-Received: from mail-ed1-f45.google.com ([209.85.208.45]:36405 "EHLO
-        mail-ed1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230394AbhHIET7 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Aug 2021 00:19:59 -0400
-Received: by mail-ed1-f45.google.com with SMTP id b7so22642278edu.3;
-        Sun, 08 Aug 2021 21:19:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5hPnLfQOdhJ9VmhjHCFa74vmYcG7vey0A+Y6VMqc53E=;
-        b=o5PGXIZWnReQszCos4kWlfLBt0BR2K+i/ixajhAC0ytTL+YgV8pwCUSwODB7AK4Orr
-         LBvPtAqCZYIbNdEc4vemBXGCfiFDb0TWVKOKrXRLmhVeVya4oGnaLkpoa99coPcK0ycO
-         yCD+b+RubYjEXdoIy6QH+G1jv7YhNOZhJ03Q7EZCLLhMAgY5+hsgpHdEgrDnM4jZBSsi
-         8qxUqy2W8UZrr151UCS7CQq/2KfKpQLguObnqFSdFanXSwSKKCV8+iCcLfFtpWeEss6U
-         Jj+59B3m1vjkJCTZwOmmGRLoIi/b+02G4Wm0kUZ3YVy4Wdk3HgjXqDoF6Jp8UWPC+9ch
-         B8fA==
-X-Gm-Message-State: AOAM530zpLhmZx5pZ+t/qf7hxsTGnv/3Fj+Se6yxwE+K5fCKtXA1HXSn
-        snRSjh4UdEJ7Cy8lqWZVAJc=
-X-Google-Smtp-Source: ABdhPJxLBa4EXTSLKfWMi4nEZ8Wk8PrT9QK9XE4M+ir2fnBq9dIuQxK16aytPtIw8dDJgnbvoCv0Eg==
-X-Received: by 2002:a05:6402:5251:: with SMTP id t17mr22730430edd.157.1628482776972;
-        Sun, 08 Aug 2021 21:19:36 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id z70sm3240588ede.76.2021.08.08.21.19.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Aug 2021 21:19:36 -0700 (PDT)
-Subject: Re: [PATCH v2] parisc: Make struct parisc_driver::remove() return
- void
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>
-Cc:     kernel@pengutronix.de, alsa-devel@alsa-project.org,
-        Corey Minyard <minyard@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        id S233707AbhHIIEP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Aug 2021 04:04:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50556 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233697AbhHIIEP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 9 Aug 2021 04:04:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AC43A60C41;
+        Mon,  9 Aug 2021 08:03:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628496235;
+        bh=BgZ+4KPqzAbLsG8u4CXByZNOUReuukaF29yR436Xm60=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VaFZ1hlqVY2K0WlwjIEb4ulccFUv3JQrmQ7f9Ud1m0FBK0spesGU+ipppeGTxhMnO
+         +4V4Cq9NwQWEbyKkAgF8xGwMBnRETvlylYwLL+zphIUX3OYH2tkx2wzKu6IAAFuqHD
+         qAQP5OBxkG5bk2A1c+amL/l5ReV+wOZ+NNTv/nZmYZpvlR9hosT+EEinNCbZpX21OK
+         AllR0G75t6ZD1VA2+h1a8p6+qecIePHptsEa7okHsk4qTfkpT2qbeuxyW50Xcb0IVs
+         P2yEgBIaLIp4DFm4qAVjJ6OKR5u9wTvNxZWJEGvEv18SlIObOX+FaiYgSTSjCwGGW6
+         sTqetlZDnLGkg==
+Date:   Mon, 9 Aug 2021 16:03:47 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Chester Lin <clin@suse.com>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-input@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Jaroslav Kysela <perex@perex.cz>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20210807091927.1974404-1-u.kleine-koenig@pengutronix.de>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Message-ID: <bef58281-91b3-b2d6-ace8-afe0d08221e1@kernel.org>
-Date:   Mon, 9 Aug 2021 06:19:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Stefan Riedmueller <s.riedmueller@phytec.de>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Matteo Lisi <matteo.lisi@engicam.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Jagan Teki <jagan@amarulasolutions.com>, s32@nxp.com,
+        catalin-dan.udma@nxp.com, bogdan.hamciuc@nxp.com,
+        bogdan.folea@nxp.com, ciprianmarian.costea@nxp.com,
+        radu-nicolae.pirea@nxp.com, ghennadi.procopciuc@nxp.com,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+        "Ivan T . Ivanov" <iivanov@suse.de>, "Lee, Chun-Yi" <jlee@suse.com>
+Subject: Re: [PATCH 8/8] MAINTAINERS: Add an entry for NXP S32G2 boards
+Message-ID: <20210809080346.GO30984@dragon>
+References: <20210805065429.27485-1-clin@suse.com>
+ <20210805065429.27485-9-clin@suse.com>
+ <32310c2a-9800-8b04-b6ac-d8ada044c0f8@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210807091927.1974404-1-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <32310c2a-9800-8b04-b6ac-d8ada044c0f8@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07. 08. 21, 11:19, Uwe Kleine-König wrote:
-> The caller of this function (parisc_driver_remove() in
-> arch/parisc/kernel/drivers.c) ignores the return value, so better don't
-> return any value at all to not wake wrong expectations in driver authors.
+On Thu, Aug 05, 2021 at 09:49:51AM +0200, Krzysztof Kozlowski wrote:
+> On 05/08/2021 08:54, Chester Lin wrote:
+> > Add a new entry for the maintenance of NXP S32G2 DT files.
+> > 
+> > Signed-off-by: Chester Lin <clin@suse.com>
+> > ---
+> >  MAINTAINERS | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> > 
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 36aee8517ab0..3c6ba6cefd8f 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -2281,6 +2281,12 @@ F:	arch/arm/boot/dts/nuvoton-wpcm450*
+> >  F:	arch/arm/mach-npcm/wpcm450.c
+> >  F:	drivers/*/*wpcm*
+> >  
+> > +ARM/NXP S32G2 ARCHITECTURE
+> > +M:	Chester Lin <clin@suse.com>
+> > +L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+> > +S:	Maintained
+> > +F:	arch/arm64/boot/dts/freescale/s32g2*
 > 
-> The only function that could return a non-zero value before was
-> ipmi_parisc_remove() which returns the return value of
-> ipmi_si_remove_by_dev(). Make this function return void, too, as for all
-> other callers the value is ignored, too.
-> 
-> Also fold in a small checkpatch fix for:
-> 
-> WARNING: Unnecessary space before function pointer arguments
-> +	void (*remove) (struct parisc_device *dev);
-> 
-> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> (for drivers/input)
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
-> changes since v1 sent with Message-Id:
-> 20210806093938.1950990-1-u.kleine-koenig@pengutronix.de:
-> 
->   - Fix a compiler error noticed by the kernel test robot
->   - Add Ack for Dmitry
-> 
->   arch/parisc/include/asm/parisc-device.h  | 4 ++--
->   drivers/char/ipmi/ipmi_si.h              | 2 +-
->   drivers/char/ipmi/ipmi_si_intf.c         | 6 +-----
->   drivers/char/ipmi/ipmi_si_parisc.c       | 4 ++--
->   drivers/char/ipmi/ipmi_si_platform.c     | 4 +++-
->   drivers/input/keyboard/hilkbd.c          | 4 +---
->   drivers/input/serio/gscps2.c             | 3 +--
->   drivers/net/ethernet/i825xx/lasi_82596.c | 3 +--
->   drivers/parport/parport_gsc.c            | 3 +--
->   drivers/scsi/lasi700.c                   | 4 +---
->   drivers/scsi/zalon.c                     | 4 +---
->   drivers/tty/serial/mux.c                 | 3 +--
+> I support the idea of sub-sub-architecture maintainers but I think idea
+> of in-file addresses was preferred:
+> https://lore.kernel.org/lkml/20200830122922.3884-1-shawnguo@kernel.org/
 
-For the TTY piece:
-Acked-by: Jiri Slaby <jirislaby@kernel.org>
+Thanks for reminding that the patch didn't land.  I just resent it with
+your Reviewed-by tag added.  Thanks!
 
-thanks,
--- 
--- 
-js
-suse labs
+Shawn
