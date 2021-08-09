@@ -2,66 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD500C4338F
-	for <linux-serial@archiver.kernel.org>; Sun,  8 Aug 2021 18:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 022FFC432BE
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 04:19:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B079860F11
-	for <linux-serial@archiver.kernel.org>; Sun,  8 Aug 2021 18:35:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D208B61028
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Aug 2021 04:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbhHHSgO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 8 Aug 2021 14:36:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37830 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230502AbhHHSgN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 8 Aug 2021 14:36:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 79F4160EBD;
-        Sun,  8 Aug 2021 18:35:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628447754;
-        bh=EDKaKRRWvRiECONXIitcpw1r11iM5HmKm8oKj/4Ovgo=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=N95q4d/P8gLA92GWLR2C7vKMxpYqU8MYZbjFjDbF5qGDoWHg/4t5EmwhONqGYbgIc
-         xm1tTMgQupQY0WVnXmVFBiK7w4uofmHTImrM/rHyxoN+EFVLdqsBhVxWjqIcit/8iw
-         0qEn6c7AhE64oEu7HWTLdgYYWItXkFWfKodKES3E7Jo4wrNqz4laQCkKDwKm651xvd
-         7P7RWny6z62dvXrGWO80Rr9mSOhVwzFXEE2t2yqyzjLa3i7OSTiWkHNoF/Bag/qfva
-         VpPSC9SXZsi3KfoNB7jU+fT+wK6KUXIP1lFlOgbDhEB4wHb1jX6niGgZem5J0S0yCQ
-         RUWhh8KtAuhpQ==
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.14-rc5
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YQ/AeMGGzEwsxJkh@kroah.com>
-References: <YQ/AeMGGzEwsxJkh@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YQ/AeMGGzEwsxJkh@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.14-rc5
-X-PR-Tracked-Commit-Id: 341abd693d10e5f337a51f140ae3e7a1ae0febf6
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6463e54cc64ec87d550ae86c697b466fecf7ba7b
-Message-Id: <162844775445.32600.5214476388871318128.pr-tracker-bot@kernel.org>
-Date:   Sun, 08 Aug 2021 18:35:54 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        id S231753AbhHIET7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Aug 2021 00:19:59 -0400
+Received: from mail-ed1-f45.google.com ([209.85.208.45]:36405 "EHLO
+        mail-ed1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230394AbhHIET7 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 9 Aug 2021 00:19:59 -0400
+Received: by mail-ed1-f45.google.com with SMTP id b7so22642278edu.3;
+        Sun, 08 Aug 2021 21:19:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5hPnLfQOdhJ9VmhjHCFa74vmYcG7vey0A+Y6VMqc53E=;
+        b=o5PGXIZWnReQszCos4kWlfLBt0BR2K+i/ixajhAC0ytTL+YgV8pwCUSwODB7AK4Orr
+         LBvPtAqCZYIbNdEc4vemBXGCfiFDb0TWVKOKrXRLmhVeVya4oGnaLkpoa99coPcK0ycO
+         yCD+b+RubYjEXdoIy6QH+G1jv7YhNOZhJ03Q7EZCLLhMAgY5+hsgpHdEgrDnM4jZBSsi
+         8qxUqy2W8UZrr151UCS7CQq/2KfKpQLguObnqFSdFanXSwSKKCV8+iCcLfFtpWeEss6U
+         Jj+59B3m1vjkJCTZwOmmGRLoIi/b+02G4Wm0kUZ3YVy4Wdk3HgjXqDoF6Jp8UWPC+9ch
+         B8fA==
+X-Gm-Message-State: AOAM530zpLhmZx5pZ+t/qf7hxsTGnv/3Fj+Se6yxwE+K5fCKtXA1HXSn
+        snRSjh4UdEJ7Cy8lqWZVAJc=
+X-Google-Smtp-Source: ABdhPJxLBa4EXTSLKfWMi4nEZ8Wk8PrT9QK9XE4M+ir2fnBq9dIuQxK16aytPtIw8dDJgnbvoCv0Eg==
+X-Received: by 2002:a05:6402:5251:: with SMTP id t17mr22730430edd.157.1628482776972;
+        Sun, 08 Aug 2021 21:19:36 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id z70sm3240588ede.76.2021.08.08.21.19.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Aug 2021 21:19:36 -0700 (PDT)
+Subject: Re: [PATCH v2] parisc: Make struct parisc_driver::remove() return
+ void
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>
+Cc:     kernel@pengutronix.de, alsa-devel@alsa-project.org,
+        Corey Minyard <minyard@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-input@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Jaroslav Kysela <perex@perex.cz>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20210807091927.1974404-1-u.kleine-koenig@pengutronix.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Message-ID: <bef58281-91b3-b2d6-ace8-afe0d08221e1@kernel.org>
+Date:   Mon, 9 Aug 2021 06:19:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+MIME-Version: 1.0
+In-Reply-To: <20210807091927.1974404-1-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Sun, 8 Aug 2021 13:31:04 +0200:
+On 07. 08. 21, 11:19, Uwe Kleine-König wrote:
+> The caller of this function (parisc_driver_remove() in
+> arch/parisc/kernel/drivers.c) ignores the return value, so better don't
+> return any value at all to not wake wrong expectations in driver authors.
+> 
+> The only function that could return a non-zero value before was
+> ipmi_parisc_remove() which returns the return value of
+> ipmi_si_remove_by_dev(). Make this function return void, too, as for all
+> other callers the value is ignored, too.
+> 
+> Also fold in a small checkpatch fix for:
+> 
+> WARNING: Unnecessary space before function pointer arguments
+> +	void (*remove) (struct parisc_device *dev);
+> 
+> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> (for drivers/input)
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
+> changes since v1 sent with Message-Id:
+> 20210806093938.1950990-1-u.kleine-koenig@pengutronix.de:
+> 
+>   - Fix a compiler error noticed by the kernel test robot
+>   - Add Ack for Dmitry
+> 
+>   arch/parisc/include/asm/parisc-device.h  | 4 ++--
+>   drivers/char/ipmi/ipmi_si.h              | 2 +-
+>   drivers/char/ipmi/ipmi_si_intf.c         | 6 +-----
+>   drivers/char/ipmi/ipmi_si_parisc.c       | 4 ++--
+>   drivers/char/ipmi/ipmi_si_platform.c     | 4 +++-
+>   drivers/input/keyboard/hilkbd.c          | 4 +---
+>   drivers/input/serio/gscps2.c             | 3 +--
+>   drivers/net/ethernet/i825xx/lasi_82596.c | 3 +--
+>   drivers/parport/parport_gsc.c            | 3 +--
+>   drivers/scsi/lasi700.c                   | 4 +---
+>   drivers/scsi/zalon.c                     | 4 +---
+>   drivers/tty/serial/mux.c                 | 3 +--
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.14-rc5
+For the TTY piece:
+Acked-by: Jiri Slaby <jirislaby@kernel.org>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6463e54cc64ec87d550ae86c697b466fecf7ba7b
-
-Thank you!
-
+thanks,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+-- 
+js
+suse labs
