@@ -6,44 +6,44 @@ X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66AEC4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Aug 2021 18:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B255C4338F
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Aug 2021 18:09:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 963E7610EA
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Aug 2021 18:07:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 37A5D610F7
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Aug 2021 18:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbhHMSHs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Aug 2021 14:07:48 -0400
-Received: from mail-ot1-f48.google.com ([209.85.210.48]:39830 "EHLO
-        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbhHMSHq (ORCPT
+        id S229919AbhHMSJq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Aug 2021 14:09:46 -0400
+Received: from mail-ot1-f54.google.com ([209.85.210.54]:46746 "EHLO
+        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229612AbhHMSJq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Aug 2021 14:07:46 -0400
-Received: by mail-ot1-f48.google.com with SMTP id v10-20020a9d604a0000b02904fa9613b53dso12994446otj.6;
-        Fri, 13 Aug 2021 11:07:19 -0700 (PDT)
+        Fri, 13 Aug 2021 14:09:46 -0400
+Received: by mail-ot1-f54.google.com with SMTP id v33-20020a0568300921b0290517cd06302dso233360ott.13;
+        Fri, 13 Aug 2021 11:09:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=iihg9oRsXmwP2LhA3OLBni38vE7IHeZGut4WUp0feJE=;
-        b=YOTdLIbLF6otxkpG+XL/zC7TZbZ9kgjZRJtRxQuu+b0fKelwTum4dFkDdHZW64CIxE
-         RIGFFQvwAibxKFQ8hIhiTLITRsgz7wROdQWf1KhRnrlzNZUvgoWrjZ9WRKOWiAK8phNy
-         8itNpfKmeePEKNuLze3numVDYAuK6XCcCEUKsAlukFZ6vHAJQGV71BHP8p4K1bVVMYBJ
-         l8evuA0JQaRJj8d2ZmUHEv49WHPDcjv73y+mJg9K+4x7nzodGo52uxBVzSUSoS/DBHEE
-         kAU3xxBPxRwZeTWOjf4ZktC24IaWqhKXaPcEwVbkU3hH9kfdmMngxbaHVGXH2gYZKq2H
-         yOFA==
-X-Gm-Message-State: AOAM531Qj0SUYcIamovC9+qd0Dn/DC251tzGjZuybeA1v6A16hBsxKtF
-        RoJXiIML16hYQZmoWjsBxg==
-X-Google-Smtp-Source: ABdhPJwjoyNFeYNurFTeKCKi0twKkY7fxrdc9/HBCH8Vet1bzVMNhHbiW8MFbwKmkDJ0MC3q6mH5Lw==
-X-Received: by 2002:a9d:4806:: with SMTP id c6mr577839otf.210.1628878039192;
-        Fri, 13 Aug 2021 11:07:19 -0700 (PDT)
+        bh=RNAJ6CKuegXmSd2Yyh9RqrbADSON9AKbMmt2xHYGKZ0=;
+        b=enAd95i+F1XkIoTp5lS6D4lNvzQmu7WQL1kgR+t77upo1YxEgYUVXNZVQs7z440zdE
+         AffejsEEwPwBKuvVF1w9dvOi9O1mvAZxQKy2oHOweZgz+QQA5hUaNC/wQn84+pbPMCw7
+         L5i/y/+wpQS/lB+5VZiC8RO2v6XiPOokYF70u8Eukhq/f8RmDjGqXn1hT2ROD0KSJitn
+         uApM+0HN96+Xnt7PND9jUpHwCPq5X3B7f2NIZl4WxVc2O3G8xIhs9BqtxTOtT/p+CmFq
+         X2kM+iH+cB8V7aims2Bn/GOOJlm0jZ7PHwM6nUTlh7Ix/PzHKWdi1L2ixy1qGxabtAl8
+         3Ypg==
+X-Gm-Message-State: AOAM531vj2VCzmZgI8TWWzxb1Wj4wAosO5R2PDWBUOXhIzVu8I0gnQgK
+        d5THD3hKZhN4vmqEDdAr3Q==
+X-Google-Smtp-Source: ABdhPJz0uGlikeQEKkF423szyYb04V8X2TX58aZ6PjFZdAZBO9pfrGTtD8c/lMNwUldYLyLlNiyJYg==
+X-Received: by 2002:a05:6830:2783:: with SMTP id x3mr3185257otu.37.1628878158745;
+        Fri, 13 Aug 2021 11:09:18 -0700 (PDT)
 Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id a19sm457340otl.48.2021.08.13.11.07.17
+        by smtp.gmail.com with ESMTPSA id u15sm472572oiu.43.2021.08.13.11.09.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Aug 2021 11:07:18 -0700 (PDT)
-Received: (nullmailer pid 3780434 invoked by uid 1000);
-        Fri, 13 Aug 2021 18:07:17 -0000
-Date:   Fri, 13 Aug 2021 13:07:17 -0500
+        Fri, 13 Aug 2021 11:09:18 -0700 (PDT)
+Received: (nullmailer pid 3783560 invoked by uid 1000);
+        Fri, 13 Aug 2021 18:09:16 -0000
+Date:   Fri, 13 Aug 2021 13:09:16 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Chester Lin <clin@suse.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -66,119 +66,78 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
         "Ivan T . Ivanov" <iivanov@suse.de>, "Lee, Chun-Yi" <jlee@suse.com>
-Subject: Re: [PATCH 2/8] dt-bindings: serial: fsl-linflexuart: convert to
- json-schema format
-Message-ID: <YRa01Xj1i9bF2xbR@robh.at.kernel.org>
+Subject: Re: [PATCH 3/8] dt-bindings: serial: fsl-linflexuart: Add compatible
+ for S32G2
+Message-ID: <YRa1THsZ/6BFkzo5@robh.at.kernel.org>
 References: <20210805065429.27485-1-clin@suse.com>
- <20210805065429.27485-3-clin@suse.com>
+ <20210805065429.27485-4-clin@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210805065429.27485-3-clin@suse.com>
+In-Reply-To: <20210805065429.27485-4-clin@suse.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 05, 2021 at 02:54:23PM +0800, Chester Lin wrote:
-> Convert the FSL LINFlexD UART binding to json-schema.
+On Thu, Aug 05, 2021 at 02:54:24PM +0800, Chester Lin wrote:
+> Add a compatible string for the uart binding of NXP S32G2 platforms. Here
+> we use "s32v234-linflexuart" as fallback since the current linflexuart
+> driver still works on S32G2.
 > 
 > Signed-off-by: Chester Lin <clin@suse.com>
 > ---
->  .../bindings/serial/fsl,s32-linflexuart.txt   | 22 ---------
->  .../bindings/serial/fsl,s32-linflexuart.yaml  | 48 +++++++++++++++++++
->  2 files changed, 48 insertions(+), 22 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
+>  .../bindings/serial/fsl,s32-linflexuart.yaml  | 26 ++++++++++++++++---
+>  1 file changed, 22 insertions(+), 4 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
-> deleted file mode 100644
-> index f1bbe0826be5..000000000000
-> --- a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
-> +++ /dev/null
-> @@ -1,22 +0,0 @@
-> -* Freescale LINFlexD UART
-> -
-> -The LINFlexD controller implements several LIN protocol versions, as well as
-> -support for full-duplex UART communication through 8-bit and 9-bit frames.
-> -
-> -See chapter 47 ("LINFlexD") in the reference manual[1].
-> -
-> -Required properties:
-> -- compatible :
-> -  - "fsl,s32v234-linflexuart" for LINFlexD configured in UART mode, which
-> -    is compatible with the one integrated on S32V234 SoC
-> -- reg : Address and length of the register set for the device
-> -- interrupts : Should contain uart interrupt
-> -
-> -Example:
-> -uart0: serial@40053000 {
-> -	compatible = "fsl,s32v234-linflexuart";
-> -	reg = <0x0 0x40053000 0x0 0x1000>;
-> -	interrupts = <0 59 4>;
-> -};
-> -
-> -[1] https://www.nxp.com/webapp/Download?colCode=S32V234RM
 > diff --git a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
-> new file mode 100644
-> index 000000000000..acfe34706ccb
-> --- /dev/null
+> index acfe34706ccb..e731f3f6cea4 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
 > +++ b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
-> @@ -0,0 +1,48 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/fsl,s32-linflexuart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Freescale LINFlexD UART
-> +
-> +description: |
-> +  The LINFlexD controller implements several LIN protocol versions, as well
-> +  as support for full-duplex UART communication through 8-bit and 9-bit
-> +  frames. See chapter 47 ("LINFlexD") in the reference manual
-> +  https://www.nxp.com/webapp/Download?colCode=S32V234RM.
-> +
-> +maintainers:
-> +  - Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> +  - Rob Herring <robh@kernel.org>
+> @@ -21,10 +21,20 @@ allOf:
+>  
+>  properties:
+>    compatible:
+> -    description: The LINFlexD controller on S32V234 SoC, which can be
+> -      configured in UART mode.
+> -    items:
+> -      - const: fsl,s32v234-linflexuart
+> +    minItems: 1
+> +    maxItems: 2
 
-Someone that cares about this h/w, not who applies patches.
+minItems/maxItems not needed here.
 
+> +    oneOf:
+> +      - description: The LINFlexD controller on S32G2 SoC, which can be
+> +          configured in UART mode.
+> +        items:
+> +          - enum:
+> +              - fsl,s32g2-linflexuart
+> +          - const: fsl,s32v234-linflexuart
 > +
-> +allOf:
-> +  - $ref: "serial.yaml"
+> +      - description: The LINFlexD controller on S32V234 SoC, which can be
+> +          configured in UART mode.
+> +        items:
+> +          - const: fsl,s32v234-linflexuart
+>  
+>    reg:
+>      maxItems: 1
+> @@ -41,8 +51,16 @@ unevaluatedProperties: false
+>  
+>  examples:
+>    - |
+> +    /* S32V234 */
+>      serial@40053000 {
+>          compatible = "fsl,s32v234-linflexuart";
+>          reg = <0x40053000 0x1000>;
+>          interrupts = <0 59 4>;
+>      };
 > +
-> +properties:
-> +  compatible:
-> +    description: The LINFlexD controller on S32V234 SoC, which can be
-> +      configured in UART mode.
-
-Drop 'on S32V234 SoC' so we're not editting for every new SoC.
-
-> +    items:
-> +      - const: fsl,s32v234-linflexuart
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    serial@40053000 {
-> +        compatible = "fsl,s32v234-linflexuart";
-> +        reg = <0x40053000 0x1000>;
-> +        interrupts = <0 59 4>;
+> +    /* S32G2 */
+> +    serial@401c8000 {
+> +        compatible = "fsl,s32g2-linflexuart", "fsl,s32v234-linflexuart";
+> +        reg = <0x401c8000 0x3000>;
+> +        interrupts = <0 82 1>;
 > +    };
-> -- 
-> 2.30.0
-> 
-> 
+
+This doesn't really warrant another example just for a new compatible 
+string.
