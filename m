@@ -2,72 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69AA5C4320A
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Aug 2021 17:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14634C00143
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Aug 2021 18:35:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4CD1560EE5
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Aug 2021 17:39:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA28461053
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Aug 2021 18:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232230AbhHQRjc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Aug 2021 13:39:32 -0400
-Received: from mga04.intel.com ([192.55.52.120]:2277 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232256AbhHQRj1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Aug 2021 13:39:27 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10079"; a="214307359"
-X-IronPort-AV: E=Sophos;i="5.84,329,1620716400"; 
-   d="scan'208";a="214307359"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 10:38:53 -0700
-X-IronPort-AV: E=Sophos;i="5.84,329,1620716400"; 
-   d="scan'208";a="676598040"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 10:38:51 -0700
-Received: from andy by smile with local (Exim 4.94.2)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mG32y-00ApCu-WF; Tue, 17 Aug 2021 20:38:45 +0300
-Date:   Tue, 17 Aug 2021 20:38:44 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Utkarsh Verma <utkarshverma294@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Valmer Huhn <valmer.huhn@concurrent-rt.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [PATCH] serial: 8250_exar: Add missing call to
- pci_free_irq_vectors()
-Message-ID: <YRv0JO64HRHrl7Gb@smile.fi.intel.com>
-References: <20210817170057.16783-1-utkarshverma294@gmail.com>
+        id S231470AbhHQSfu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 17 Aug 2021 14:35:50 -0400
+Received: from mail-oi1-f170.google.com ([209.85.167.170]:44929 "EHLO
+        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232351AbhHQSft (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Aug 2021 14:35:49 -0400
+Received: by mail-oi1-f170.google.com with SMTP id w6so439852oiv.11;
+        Tue, 17 Aug 2021 11:35:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/UUvHVstpSmeWABSjaVWOHHhgWPHGVYAwroY70/1r94=;
+        b=nHLj/+3Kc/8ZkYMmQ8YSehgvh7z9YuywpQytNAP4Z1NZWnUgYlit5MTTrnpyGBRaq/
+         qLNpizLVS77kAwJELa2ZP2Y2NAIxIrjJqXYRM01UyzJxHXVWNm9DaEAN7LEl1yzHUb5t
+         +FKJeIleMm9UB9matX4ugFyopEbxEXz+nvCO7v9U2B/Vc7ZQpL4vSzgiYv+xi/960sVf
+         7r+jcbKs7mqf/JwwGM1Zv4Dpf3B8xg3Cx/Nz8sDb4pB3VYG+YcEGGI3i9O6LC3jccjGP
+         fnKOfGsXpXP2OKhM8PSL0+R0Ws2HQJoyp/VeiUYRzt2xr6o8oKE5nJ+QuWZj1xdIjp0o
+         c9nA==
+X-Gm-Message-State: AOAM532kvBMbEXYKCp3WWXihxlR/g9vBDLjYPAzUogdcgTIPoydaU3uj
+        WcNKIdqsJJVY6v3qecgLfw==
+X-Google-Smtp-Source: ABdhPJxHDyYdGDQTyFagNlU1mVrzpbwIf8BHui2z91Z+R5Jv1ubcn+BSVtrJieSjNOPPeBcp9iqtag==
+X-Received: by 2002:a05:6808:1807:: with SMTP id bh7mr3621195oib.52.1629225314988;
+        Tue, 17 Aug 2021 11:35:14 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id p2sm634161oip.35.2021.08.17.11.35.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Aug 2021 11:35:14 -0700 (PDT)
+Received: (nullmailer pid 618703 invoked by uid 1000);
+        Tue, 17 Aug 2021 18:35:12 -0000
+Date:   Tue, 17 Aug 2021 13:35:12 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Sam Shih <sam.shih@mediatek.com>
+Cc:     Sean Wang <sean.wang@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Seiya Wang <seiya.wang@mediatek.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-clk@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Ryder Lee <Ryder.Lee@mediatek.com>
+Subject: Re: [v2,08/12] dt-bindings: rng: mediatek: add mt7986 to mtk rng
+ binding
+Message-ID: <YRwBYJmfAQ/3hGuI@robh.at.kernel.org>
+References: <20210817074557.30953-1-sam.shih@mediatek.com>
+ <20210817074557.30953-9-sam.shih@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210817170057.16783-1-utkarshverma294@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20210817074557.30953-9-sam.shih@mediatek.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 10:30:57PM +0530, Utkarsh Verma wrote:
-> Free the pci irq vectors if the call to pci_alloc_irq_vectors() fails
-> or if the device is removed.
+On Tue, Aug 17, 2021 at 03:45:53PM +0800, Sam Shih wrote:
+> Add RNG binding for MT7986 SoC.
+> 
+> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> 
+> ---
+> v2: patch v1 has been applied
 
-...
+Then don't send the patch again.
 
->  	rc = pci_alloc_irq_vectors(pcidev, 1, 1, PCI_IRQ_ALL_TYPES);
-> -	if (rc < 0)
-> +	if (rc < 0) {
-
-> +		pci_free_irq_vectors(pcidev);
-
-Why?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Rob
