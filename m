@@ -2,100 +2,175 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE1DC43216
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Aug 2021 01:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A210C4338F
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Aug 2021 03:18:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 35B8860C3E
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Aug 2021 01:20:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3E61E60F38
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Aug 2021 03:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237521AbhHRBVI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Aug 2021 21:21:08 -0400
-Received: from mail-ot1-f50.google.com ([209.85.210.50]:44571 "EHLO
-        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232410AbhHRBVG (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Aug 2021 21:21:06 -0400
-Received: by mail-ot1-f50.google.com with SMTP id l36-20020a0568302b24b0290517526ce5e3so760722otv.11;
-        Tue, 17 Aug 2021 18:20:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SvKci2pGuG7ajQwJqFrJTn5mqUzF+JKynExPCCsdFYI=;
-        b=lX4ZiWBwjAeKqlK/nkbkIk4CHAGr1HZbhKE2hF+SXpBx6DYunb6cz8VL2ZwH90JJwW
-         5uC1Y7OeYOOyik4H8o11AcpZO6n3GsHqBjgXP8pSYBQ0GH+/86qBK90tkR44d++aLBFd
-         rH6bQ/IKnt6XxNitlXs3aABspCfPYYLe5Ft09gkLe1kXM3VN7p3kAA+0uEJEz+7n7zvL
-         l4lovIMH8fCkZd6s8wqvo+yWU0Rp5j3ftW9ZcliW4KHKceSkkVheI5z363vF3aQSiCU1
-         Tk9Gg/ojptwKGWHyDaY0dozzS4Cd5PVBjIdY394AReyrU48KGAYNXVaXaTH+deGApFK0
-         Si0w==
-X-Gm-Message-State: AOAM530ekd3Dp58+GjFXX8hWNwnA+1Z1FL9jPIKMItss71gOUBM7SIJo
-        BFbfC07UXBJg/EWJoE9VOg==
-X-Google-Smtp-Source: ABdhPJw+xR0Z6Q/+z2YaeF5ZyVo4tytqq09prFN4la6ON8Lt4wub10K9mhw5q6rk8gFvLBnMjoJ6XA==
-X-Received: by 2002:a9d:71c7:: with SMTP id z7mr5012000otj.194.1629249632592;
-        Tue, 17 Aug 2021 18:20:32 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id d26sm781598oos.41.2021.08.17.18.20.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Aug 2021 18:20:32 -0700 (PDT)
-Received: (nullmailer pid 1182736 invoked by uid 1000);
-        Wed, 18 Aug 2021 01:20:30 -0000
-Date:   Tue, 17 Aug 2021 20:20:30 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sam Shih <sam.shih@mediatek.com>
-Cc:     linux-clk@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-watchdog@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-serial@vger.kernel.org, Sean Wang <sean.wang@kernel.org>,
-        linux-gpio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        linux-crypto@vger.kernel.org, Matt Mackall <mpm@selenic.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        John Crispin <john@phrozen.org>,
-        Ryder Lee <Ryder.Lee@mediatek.com>,
-        Seiya Wang <seiya.wang@mediatek.com>,
-        devicetree@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Michael Turquette <mturquette@baylibre.com>
-Subject: Re: [v2,02/12] clk: mediatek: add mt7986 clock IDs
-Message-ID: <YRxgXso7qQcAqg6+@robh.at.kernel.org>
-References: <20210817074557.30953-1-sam.shih@mediatek.com>
- <20210817074557.30953-3-sam.shih@mediatek.com>
+        id S235959AbhHRDTD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 17 Aug 2021 23:19:03 -0400
+Received: from mga06.intel.com ([134.134.136.31]:60374 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236113AbhHRDSy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Aug 2021 23:18:54 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10079"; a="277269694"
+X-IronPort-AV: E=Sophos;i="5.84,330,1620716400"; 
+   d="scan'208";a="277269694"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2021 20:18:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,330,1620716400"; 
+   d="scan'208";a="680588714"
+Received: from lkp-server01.sh.intel.com (HELO d053b881505b) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 17 Aug 2021 20:18:18 -0700
+Received: from kbuild by d053b881505b with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mGC5p-000SUi-GQ; Wed, 18 Aug 2021 03:18:17 +0000
+Date:   Wed, 18 Aug 2021 11:17:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 1143637f00cd8205c43bad702b2aff57c01913f8
+Message-ID: <611c7bc3.vkNt1l8/oFSzqsJi%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210817074557.30953-3-sam.shih@mediatek.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 17 Aug 2021 15:45:47 +0800, Sam Shih wrote:
-> Add MT7986 clock dt-bindings, include topckgen, apmixedsys,
-> infracfg, and ethernet subsystem clocks.
-> 
-> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-> 
-> ---
-> v2: changed to dual licience
->     applied the comment suggested by reviewers:
->     - removed 1:1 factor clock
->     - renamed factor clock for easier to understand
-> 
-> ---
->  include/dt-bindings/clock/mt7986-clk.h | 169 +++++++++++++++++++++++++
->  1 file changed, 169 insertions(+)
->  create mode 100644 include/dt-bindings/clock/mt7986-clk.h
-> 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 1143637f00cd8205c43bad702b2aff57c01913f8  tty: replace in_irq() with in_hardirq()
 
-Acked-by: Rob Herring <robh@kernel.org>
+elapsed time: 2009m
+
+configs tested: 108
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20210816
+powerpc                   motionpro_defconfig
+sh                          rsk7203_defconfig
+nds32                               defconfig
+powerpc                         wii_defconfig
+powerpc                     skiroot_defconfig
+powerpc64                        alldefconfig
+powerpc                         ps3_defconfig
+powerpc                  mpc866_ads_defconfig
+arm                         lpc18xx_defconfig
+arm                         lubbock_defconfig
+powerpc                   bluestone_defconfig
+powerpc                     ep8248e_defconfig
+parisc                generic-32bit_defconfig
+arm                        neponset_defconfig
+arm                          simpad_defconfig
+mips                        workpad_defconfig
+powerpc                    mvme5100_defconfig
+powerpc                     rainier_defconfig
+mips                        nlm_xlr_defconfig
+sh                             shx3_defconfig
+m68k                             alldefconfig
+arc                        vdk_hs38_defconfig
+powerpc                       ebony_defconfig
+arm                         s3c6400_defconfig
+sh                         ecovec24_defconfig
+arm                         orion5x_defconfig
+alpha                            alldefconfig
+m68k                        mvme16x_defconfig
+arm                      pxa255-idp_defconfig
+sh                           se7750_defconfig
+m68k                       m5208evb_defconfig
+arm                         s5pv210_defconfig
+x86_64                            allnoconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a006-20210816
+x86_64               randconfig-a004-20210816
+x86_64               randconfig-a003-20210816
+x86_64               randconfig-a001-20210816
+x86_64               randconfig-a005-20210816
+x86_64               randconfig-a002-20210816
+i386                 randconfig-a004-20210816
+i386                 randconfig-a003-20210816
+i386                 randconfig-a002-20210816
+i386                 randconfig-a001-20210816
+i386                 randconfig-a006-20210816
+i386                 randconfig-a005-20210816
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+i386                 randconfig-c001-20210816
+x86_64               randconfig-a011-20210816
+x86_64               randconfig-a013-20210816
+x86_64               randconfig-a016-20210816
+x86_64               randconfig-a012-20210816
+x86_64               randconfig-a015-20210816
+x86_64               randconfig-a014-20210816
+i386                 randconfig-a011-20210816
+i386                 randconfig-a015-20210816
+i386                 randconfig-a013-20210816
+i386                 randconfig-a014-20210816
+i386                 randconfig-a016-20210816
+i386                 randconfig-a012-20210816
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
