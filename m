@@ -2,148 +2,226 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8982C4338F
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Aug 2021 02:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB581C4338F
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Aug 2021 13:34:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ADF69610FD
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Aug 2021 02:11:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CED746109F
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Aug 2021 13:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235558AbhHSCMZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Aug 2021 22:12:25 -0400
-Received: from mail-db8eur05on2082.outbound.protection.outlook.com ([40.107.20.82]:23521
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235384AbhHSCMY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Aug 2021 22:12:24 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eye0bf5YZndkOVeCBiM9p2Qtk81LcdQZk7dcoMaZYwWk1/EaxqKIBKG3nIQUCjEF6RLHQAfu5oyWmHkOBOjmaIijLuDSbpkf9+saWIPmsBcYYG1yOHSpiGGYglNOp14bROBzh7CVbbHfJpwTaNbCiOHnZiU6Z2uj3LDNxMhGPd+ypR22L4ECu2g8OOumU1Vvjm+gBQYfkzvMfY6lOfyPZx6omOx49OMBltg+PZN3hVtQdsPWvDLPS+9b53tSWPAsDpg5ZXMgwq8u5qX3YxE2z9puTgO+pdieac86GyUYEw+mL8qDVxB/p/Jl4uWmzmwBMuZY6FDPsfQdgB4Wv3ZQbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cd3CrGWKXNbJ0lFlUToA2eZ7qsaZRo1E/cTkjc6D/wE=;
- b=LO+QMqL6caFmKwGQGZWN8We+s8nOdDmx8XT9cxCCGTy5rfBXPB5+snbmKWxQLJunDOFvzbXquLKjq7XNIo1XwPe8f2wa6eOGmp7uKCVjee19UPIrMs80fhbAPTDsL6LZznuCj/DOqGZCPyHplbbmoRcuIfC/mlEsY9rIqfF09mQUqnsPgbAEwv1Qqn8y0JF5M3nD/wpqTHlQJ5FuAdxGJmpHVIwzpNPnR70lntUTMDtc3S2NqwCxiGB+6jAy1mak9NQuaJCv2Jdiy6vbQkQfTzUNT9dFKVsyXGRxsWP83RVqrAl+0rufKeZxBaFzOuU8UVUuv8dy4fRJ4FDwgX9FVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cd3CrGWKXNbJ0lFlUToA2eZ7qsaZRo1E/cTkjc6D/wE=;
- b=N7xZko4UuGJm3ujmh0tOfOVabwWklQJb8e+x6EPoCHQUrsNu28gqetdPSM64s4NuEBmbiLL2X5+rTvlUrln+XHzGOShzYHZnxWw2+dlqe1Onb82rAPXWN8eUsG5dcXehLKY3j2CyNc37tzxg2e9rQFjehpllqeyiMMclcWMHeIE=
-Authentication-Results: linuxfoundation.org; dkim=none (message not signed)
- header.d=none;linuxfoundation.org; dmarc=none action=none
- header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AM6PR04MB5830.eurprd04.prod.outlook.com (2603:10a6:20b:ac::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.19; Thu, 19 Aug
- 2021 02:11:47 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::91c1:5ce4:cc:ddcd]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::91c1:5ce4:cc:ddcd%8]) with mapi id 15.20.4436.019; Thu, 19 Aug 2021
- 02:11:47 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com, festevam@gmail.com
-Subject: [PATCH V3] tty: serial: fsl_lpuart: fix the wrong mapbase value
-Date:   Thu, 19 Aug 2021 10:10:33 +0800
-Message-Id: <20210819021033.32606-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR06CA0201.apcprd06.prod.outlook.com (2603:1096:4:1::33)
- To AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+        id S240051AbhHSNfJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Aug 2021 09:35:09 -0400
+Received: from mga07.intel.com ([134.134.136.100]:48202 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240010AbhHSNfI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 19 Aug 2021 09:35:08 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10080"; a="280288328"
+X-IronPort-AV: E=Sophos;i="5.84,334,1620716400"; 
+   d="scan'208";a="280288328"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2021 06:34:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,334,1620716400"; 
+   d="scan'208";a="681776427"
+Received: from lkp-server01.sh.intel.com (HELO d053b881505b) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 19 Aug 2021 06:34:30 -0700
+Received: from kbuild by d053b881505b with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mGiBi-000TzO-3K; Thu, 19 Aug 2021 13:34:30 +0000
+Date:   Thu, 19 Aug 2021 21:33:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 88c1d2478ec8a420cf60a3c25503e37b34fea5aa
+Message-ID: <611e5dbb.JfRXJx9EykV5sDG1%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR06CA0201.apcprd06.prod.outlook.com (2603:1096:4:1::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Thu, 19 Aug 2021 02:11:44 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5aeda286-fb24-4304-ae0f-08d962b6b272
-X-MS-TrafficTypeDiagnostic: AM6PR04MB5830:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6PR04MB5830803D92BCB6CA3E2C50BC92C09@AM6PR04MB5830.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fNoXFOH8ODmP06Zh1MaXzE1hQqTFKITuws+8lJf0/6Z1Lgv7Wd8zlcAGxJF5bSeopSt57v63bs/fyENObxHKIBx9CUobwukkoPDzv5taQrtxz81zX1txfZW41ZmyoIwmahpiNRTaYEni1AWK6bsve5FexfddXaTwGMaMOm+YY+wM5yZWWOUZbrBisT7n1QX4cMCSigZMahhj7FoClS8lAOA5Iq/ueXv00CqSDlWl8h51Q+0edXnHx43Bebtp+kGLv4Pc9Qwh+K7b2Q2MpHejyeOLaoTScGWuXhlYtEbM5sBbPvx5AElt2FyqfGczH1iJ8XHoY2tWLzVxc6FVc3M/y/trI+6JZvJOYy9T81vul9qhY38/JXLmnl798I5nfW6tWHryK/p1SLWQ7soZvgpGiQQoMpn2xA0W+RoIk9fON1WYWwHUxCdCikuC9Pr4OUBqz1xNhym9EnR2UvEPC+fsfM0dinAQkTeCUa3kGzSV0ouDMmU5iACViPybcgTEUJNQ9HLECP0YfE/o8iDkoEHnOSTQOVNChYvL5dailEhMMJxuPgyRLe6HYgew4Mc2ytMgRD3UwIxN5Z6HwWaFX16JgvXjoLpAhngD7LYdCF8pDvKkStei27JtJoz5PH8/161Kaf8yH/WGbXa+KvV3PxqZ8kaVgoYy5r2PcQ7vJblnl0qMjfgYoKA6dSxd+Dvb8JFrdkR9bfu7fy6onPxQWH8hiw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(396003)(39860400002)(376002)(346002)(8936002)(1076003)(6512007)(478600001)(4326008)(38100700002)(8676002)(66556008)(26005)(66476007)(38350700002)(316002)(6506007)(2906002)(2616005)(6486002)(186003)(66946007)(52116002)(956004)(5660300002)(36756003)(6666004)(44832011)(83380400001)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fkln1J5vlbFgNpK63BtsPPKkco52LBrVnEHMnCz1cZEdaOh+tZVPVq1pJEIx?=
- =?us-ascii?Q?SKLTzzV2K725y67Zzw0SrWNOWvsEXa5glTT1Fcf+XCgMDSSy569oHhVsjjj9?=
- =?us-ascii?Q?ftrmfiXVQ6i3qfO/+VPOqKT80VWMnviCqPDtWa776P/e8Ngc36Oxyb+ZDhzu?=
- =?us-ascii?Q?GxC+s2j9lc1xl9ouJRt9L1QYC9/5wU+ybkOy6PAAOaTvPbm2pSFRnSaOS4L4?=
- =?us-ascii?Q?2ZAKN+bo5VuaMeFufm3vVfpYt87k/COt6n0imJ+BRXEkPKj0ilRxppPNw62Z?=
- =?us-ascii?Q?umUIxgGocaTmJj+4uOWDfuhg8i/Zwb/E0Sp91eynj7ZeJzTRQrnZdZsi1Z0A?=
- =?us-ascii?Q?OOrWobsl225d34LkX+YctUwA30sOThojviOnhGzrHEP9kJirhyhTY4Es11pz?=
- =?us-ascii?Q?USKPnpjFWooQCPxfOoW5bs5aCvIBbZVl1ZLMmfigJGjwATrmkVqNOQRp4FFb?=
- =?us-ascii?Q?DvN3TVGtU9UNRdE2fPAnK4JMCi/r2E9W5pwdAnO/zfAMbK69fSFPr0DayOrA?=
- =?us-ascii?Q?Tz5W3d+mrhi+a3fOrLSdcbSOLeR+PIzwrHRNapy16zJIU6gAKeEZKiS+2d61?=
- =?us-ascii?Q?bpDGzWuD9FN+bBc0TWWbbA0bdRySGQHCY93sLiz3Xjb2tMNeMU/9fCiWKJrW?=
- =?us-ascii?Q?G/Q3Etn7/Uywsk8cwSr6P/POsFxXsNc8oGy3gvQzeMn5j4BrwYFcTx78ic6U?=
- =?us-ascii?Q?9effIGIECIn3M/Z1ZA2xN2KHsNZ1pB1fkLYT9295gWuLUS7HEeAdfNSjsPbO?=
- =?us-ascii?Q?f4SL5TG35CvbxocNLc3NHZ/TzucRfZp1g7csiiaeD/OjIdKGreMmsZj31ues?=
- =?us-ascii?Q?KdFVK0HxZsDP9kyblFbQ4O3PmJgb7usmXyhKmnFQHCEOBwqqD4bZJ8woEl0d?=
- =?us-ascii?Q?lPW8sTArt8wNQWeQt/hsyvWqmdZXrYj8QsENtB8tklFdAKyL5tw8JMSHVkw4?=
- =?us-ascii?Q?81q568HBaolZsjVWUV7Aj7ULF3UwnLSlvAOnQPgEsJfQVR6JtqHGft7yY5my?=
- =?us-ascii?Q?qD1Jlu7MdCuCJ5mwcF3nZzQJ0hrJm44JwuS5zdu1rRZBJsQjyqJu6qNcCOUg?=
- =?us-ascii?Q?2oeu5iKKxSZ0xDMooWg+uzHJ5EUYQQIfQ6wdhnn4Oth1l3zywkeoShx/0jyH?=
- =?us-ascii?Q?rSb8Xu7HN48Lx9CDupmsZrStqHwyfLFD/Uti4RQK7qAwCypDA0R5qoxa7IBA?=
- =?us-ascii?Q?SH1KvTNsHC4aFDV5bzPLwG886518hUBHdM1GfuvfbnAWSkDFocNZsGGyjevS?=
- =?us-ascii?Q?ad0hh9GuLdbUoFiTEMpReGLM5JEyM22oidJMwaOzP7DJL0qHy4oXIVajd6Et?=
- =?us-ascii?Q?Dy+2OMRFmAEQJ2veCOwTC4yo?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5aeda286-fb24-4304-ae0f-08d962b6b272
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2021 02:11:46.9883
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7nwHNrpvx4XvHxlEflGBJfQAFTkxJ32j21qQuETmyFchm4cNMfdPxm2bHJTbNij9FUeYeVse6Vt9il9g/mYesg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5830
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Andy Duan <fugang.duan@nxp.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 88c1d2478ec8a420cf60a3c25503e37b34fea5aa  tty: serial: fsl_lpuart: check dma_tx_in_progress in tx dma callback
 
-Register offset needs to be applied on mapbase also.
-dma_tx/rx_request use the physical address of UARTDATA.
-Register offset is currently only applied to membase (the
-corresponding virtual addr) but not on mapbase.
+elapsed time: 1397m
 
-Fixes: 24b1e5f0e83c ("tty: serial: lpuart: add imx7ulp support")
-Reviewed-by: Leonard Crestez <leonard.crestez@nxp.com>
-Signed-off-by: Adriana Reus <adriana.reus@nxp.com>
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-Signed-off-by: Andy Duan <fugang.duan@nxp.com>
+configs tested: 160
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20210816
+i386                 randconfig-c001-20210818
+powerpc                      ep88xc_defconfig
+arm                         at91_dt_defconfig
+powerpc                 mpc832x_rdb_defconfig
+mips                     loongson1c_defconfig
+arm                        mvebu_v5_defconfig
+mips                           ip27_defconfig
+arm                         bcm2835_defconfig
+m68k                        m5307c3_defconfig
+arm                         mv78xx0_defconfig
+sh                     magicpanelr2_defconfig
+alpha                            alldefconfig
+sh                     sh7710voipgw_defconfig
+powerpc               mpc834x_itxgp_defconfig
+sh                             shx3_defconfig
+um                                  defconfig
+powerpc                 mpc834x_mds_defconfig
+arm                       aspeed_g4_defconfig
+nios2                         10m50_defconfig
+m68k                       m5249evb_defconfig
+m68k                       bvme6000_defconfig
+microblaze                          defconfig
+sh                          r7780mp_defconfig
+x86_64                           alldefconfig
+mips                        jmr3927_defconfig
+powerpc                      acadia_defconfig
+mips                   sb1250_swarm_defconfig
+arm                  colibri_pxa300_defconfig
+sh                   sh7724_generic_defconfig
+sparc                            alldefconfig
+x86_64                           allyesconfig
+mips                          rm200_defconfig
+sh                   sh7770_generic_defconfig
+arm                          iop32x_defconfig
+powerpc                        icon_defconfig
+m68k                            mac_defconfig
+powerpc                   currituck_defconfig
+sh                  sh7785lcr_32bit_defconfig
+arm                          lpd270_defconfig
+powerpc                 mpc8315_rdb_defconfig
+arm                       imx_v4_v5_defconfig
+mips                      pic32mzda_defconfig
+sh                        apsh4ad0a_defconfig
+xtensa                          iss_defconfig
+sh                           se7780_defconfig
+powerpc                 mpc8540_ads_defconfig
+powerpc                     mpc83xx_defconfig
+ia64                      gensparse_defconfig
+x86_64                            allnoconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a004-20210818
+x86_64               randconfig-a006-20210818
+x86_64               randconfig-a003-20210818
+x86_64               randconfig-a005-20210818
+x86_64               randconfig-a002-20210818
+x86_64               randconfig-a001-20210818
+x86_64               randconfig-a006-20210816
+x86_64               randconfig-a004-20210816
+x86_64               randconfig-a003-20210816
+x86_64               randconfig-a001-20210816
+x86_64               randconfig-a005-20210816
+x86_64               randconfig-a002-20210816
+i386                 randconfig-a004-20210818
+i386                 randconfig-a006-20210818
+i386                 randconfig-a002-20210818
+i386                 randconfig-a001-20210818
+i386                 randconfig-a003-20210818
+i386                 randconfig-a005-20210818
+x86_64               randconfig-a013-20210819
+x86_64               randconfig-a011-20210819
+x86_64               randconfig-a012-20210819
+x86_64               randconfig-a016-20210819
+x86_64               randconfig-a014-20210819
+x86_64               randconfig-a015-20210819
+i386                 randconfig-a015-20210819
+i386                 randconfig-a011-20210819
+i386                 randconfig-a014-20210819
+i386                 randconfig-a013-20210819
+i386                 randconfig-a016-20210819
+i386                 randconfig-a012-20210819
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+i386                 randconfig-c001-20210818
+x86_64               randconfig-a004-20210819
+x86_64               randconfig-a006-20210819
+x86_64               randconfig-a003-20210819
+x86_64               randconfig-a002-20210819
+x86_64               randconfig-a005-20210819
+x86_64               randconfig-a001-20210819
+i386                 randconfig-a004-20210817
+i386                 randconfig-a003-20210817
+i386                 randconfig-a001-20210817
+i386                 randconfig-a002-20210817
+i386                 randconfig-a006-20210817
+i386                 randconfig-a005-20210817
+i386                 randconfig-a004-20210819
+i386                 randconfig-a006-20210819
+i386                 randconfig-a001-20210819
+i386                 randconfig-a002-20210819
+i386                 randconfig-a003-20210819
+i386                 randconfig-a005-20210819
+x86_64               randconfig-a013-20210818
+x86_64               randconfig-a011-20210818
+x86_64               randconfig-a012-20210818
+x86_64               randconfig-a016-20210818
+x86_64               randconfig-a014-20210818
+x86_64               randconfig-a015-20210818
+i386                 randconfig-a015-20210818
+i386                 randconfig-a011-20210818
+i386                 randconfig-a013-20210818
+i386                 randconfig-a014-20210818
+i386                 randconfig-a016-20210818
+i386                 randconfig-a012-20210818
+
 ---
-changes in V3:
-  Add the Fixes tag suggested by Fabio.
-changes in V2:
-  Add author signed-off-by tag suggested by Greg.
----
- drivers/tty/serial/fsl_lpuart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 31d715c4787a..117e011aff5f 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2615,7 +2615,7 @@ static int lpuart_probe(struct platform_device *pdev)
- 		return PTR_ERR(sport->port.membase);
- 
- 	sport->port.membase += sdata->reg_off;
--	sport->port.mapbase = res->start;
-+	sport->port.mapbase = res->start + sdata->reg_off;
- 	sport->port.dev = &pdev->dev;
- 	sport->port.type = PORT_LPUART;
- 	sport->devtype = sdata->devtype;
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
