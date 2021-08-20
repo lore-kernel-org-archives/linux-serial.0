@@ -2,149 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C78C4338F
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Aug 2021 15:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A83C4320A
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Aug 2021 17:22:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 090DF61214
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Aug 2021 15:29:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 93F0661101
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Aug 2021 17:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240988AbhHTP3m convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Aug 2021 11:29:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56884 "EHLO mail.kernel.org"
+        id S232904AbhHTRXT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 20 Aug 2021 13:23:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238097AbhHTP3k (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Aug 2021 11:29:40 -0400
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CC10A61102;
-        Fri, 20 Aug 2021 15:29:02 +0000 (UTC)
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1mH6S4-006Dc2-Vr; Fri, 20 Aug 2021 16:29:01 +0100
-Date:   Fri, 20 Aug 2021 16:29:00 +0100
-Message-ID: <87lf4wqgn7.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     Chester Lin <clin@suse.com>
-Cc:     Andreas =?UTF-8?B?RsOkcmJlcg==?= <afaerber@suse.de>,
-        Rob Herring <robh+dt@kernel.org>, s32@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        id S232598AbhHTRXT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Aug 2021 13:23:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5341D61154;
+        Fri, 20 Aug 2021 17:22:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629480161;
+        bh=NtBbpRqS1/eYwYOxSrX1KDFfMTuxY8jViL2MBLXG2Ag=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bIh2j4rnKv4rLSL2S/xW+E95f5meZHEUMlJhw7ffG+4wWQjELyVecEyBc7fr0PeHD
+         1jwPDMM01WLqV2cUQgupVegZwFv622VKVHqnfWImWZlXCtvIkGky388p5sKRqY4w8g
+         6wL8mKaTox1a0v7Lv3CRgXSKM9E+gArd9XG7Dg7MFVJ5zR5L1Ec85tL221/y1adKDc
+         jvwZW6gwD71iJK4Z5nRas07sD/hhBdv0vMjssStMB2lFJXAp+WzIe+KV8bsOwpmLFz
+         FQB3CO/gs0hJAX+vuzzWH7PFqp9PrMu9ftVvhO8MiTxiac+edyy1hkq+4bTjOVTI8b
+         7lrzKaS25px/Q==
+Received: by pali.im (Postfix)
+        id 22CDAB8A; Fri, 20 Aug 2021 19:22:39 +0200 (CEST)
+Date:   Fri, 20 Aug 2021 19:22:38 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Matteo Lisi <matteo.lisi@engicam.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        catalin-dan.udma@nxp.com, bogdan.hamciuc@nxp.com,
-        bogdan.folea@nxp.com, ciprianmarian.costea@nxp.com,
-        radu-nicolae.pirea@nxp.com, ghennadi.procopciuc@nxp.com,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Ivan T . Ivanov" <iivanov@suse.de>, "Lee, Chun-Yi" <jlee@suse.com>
-Subject: Re: [PATCH 4/8] arm64: dts: add NXP S32G2 support
-In-Reply-To: <YR/HJQDGJ1C+ku6O@linux-8mug>
-References: <20210805065429.27485-1-clin@suse.com>
-        <20210805065429.27485-5-clin@suse.com>
-        <d09ed0fd-83e7-a6aa-0bd6-f679ffb64eaf@suse.de>
-        <87o89sqmz6.wl-maz@kernel.org>
-        <YR/HJQDGJ1C+ku6O@linux-8mug>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: clin@suse.com, afaerber@suse.de, robh+dt@kernel.org, s32@nxp.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, shawnguo@kernel.org, krzk@kernel.org, linux@rempel-privat.de, s.riedmueller@phytec.de, matthias.schiffer@ew.tq-group.com, leoyang.li@nxp.com, festevam@gmail.com, matteo.lisi@engicam.com, frieder.schrempf@kontron.de, tharvey@gateworks.com, jagan@amarulasolutions.com, catalin-dan.udma@nxp.com, bogdan.hamciuc@nxp.com, bogdan.folea@nxp.com, ciprianmarian.costea@nxp.com, radu-nicolae.pirea@nxp.com, ghennadi.procopciuc@nxp.com, matthias.bgg@gmail.com, iivanov@suse.de, jlee@suse.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vladimir Vid <vladimir.vid@sartura.hr>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 0/6] serial: mvebu-uart: Support for higher baudrates
+Message-ID: <20210820172238.ekvo42s7oqxkeomt@pali>
+References: <20210624224909.6350-1-pali@kernel.org>
+ <20210809145329.24177-1-pali@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210809145329.24177-1-pali@kernel.org>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 20 Aug 2021 16:15:49 +0100,
-Chester Lin <clin@suse.com> wrote:
+On Monday 09 August 2021 16:53:23 Pali Rohár wrote:
+> This patch series add support for baudrates higher than 230400 on
+> Marvell Armada 37xx boards.
 > 
-> On Fri, Aug 20, 2021 at 02:12:13PM +0100, Marc Zyngier wrote:
-> > On Thu, 12 Aug 2021 18:26:28 +0100,
-> > Andreas Färber <afaerber@suse.de> wrote:
-> > > 
-> > > Hi Chester et al.,
-> > > 
-> > > On 05.08.21 08:54, Chester Lin wrote:
-> > > > Add an initial dtsi file for generic SoC features of NXP S32G2.
-> > > > 
-> > > > Signed-off-by: Chester Lin <clin@suse.com>
-> > > > ---
-> > > >  arch/arm64/boot/dts/freescale/s32g2.dtsi | 98 ++++++++++++++++++++++++
-> > > >  1 file changed, 98 insertions(+)
-> > > >  create mode 100644 arch/arm64/boot/dts/freescale/s32g2.dtsi
-> > > > 
-> > > > diff --git a/arch/arm64/boot/dts/freescale/s32g2.dtsi b/arch/arm64/boot/dts/freescale/s32g2.dtsi
-> > > > new file mode 100644
-> > > > index 000000000000..3321819c1a2d
-> > > > --- /dev/null
-> > > > +++ b/arch/arm64/boot/dts/freescale/s32g2.dtsi
-> > 
-> > [...]
-> > 
-> > > > +		gic: interrupt-controller@50800000 {
-> > > > +			compatible = "arm,gic-v3";
-> > > > +			#interrupt-cells = <3>;
-> > > > +			interrupt-controller;
-> > > > +			reg = <0 0x50800000 0 0x10000>,
-> > > > +			      <0 0x50880000 0 0x200000>,
-> > 
-> > That's enough redistributor space for 16 CPUs. However, you only
-> > describe 4. Either the number of CPUs is wrong, the size is wrong, or
-> > the GIC has been configured for more cores than the SoC has.
+> Please review these patches as they touch both Device Tree bindings and
+> mvebu-uart.c driver.
+
+Stephen, is this patch series OK now? Or is there any other issue?
+
+> Changes in v5:
+> * fixed yaml binding file
 > 
-> Confirmed the SoC can only find 4 redistributors:
+> Changes in v4:
+> * converted armada3700-uart-clock documentation to YAML
+> * split documentation changes into two commits:
+>   - first which adds clock documentation
+>   - second which updates UART documentation
 > 
-> localhost:~ # dmesg | grep CPU
-> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd034]
-> [    0.000000] Detected VIPT I-cache on CPU0
-> [    0.000000] CPU features: detected: GIC system register CPU interface
-> [    0.000000] CPU features: detected: ARM erratum 845719
-> [    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
-> [    0.000000] rcu:     RCU restricting CPUs from NR_CPUS=480 to nr_cpu_ids=4.
-> [    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x0000000050880000
-> [    0.063865] smp: Bringing up secondary CPUs ...
-> [    0.068852] Detected VIPT I-cache on CPU1
-> [    0.068894] GICv3: CPU1: found redistributor 1 region 0:0x00000000508a0000
-> [    0.068963] CPU1: Booted secondary processor 0x0000000001 [0x410fd034]
-> [    0.069809] Detected VIPT I-cache on CPU2
-> [    0.069851] GICv3: CPU2: found redistributor 100 region 0:0x00000000508c0000
-> [    0.069903] CPU2: Booted secondary processor 0x0000000100 [0x410fd034]
-> [    0.070698] Detected VIPT I-cache on CPU3
-> [    0.070722] GICv3: CPU3: found redistributor 101 region 0:0x00000000508e0000
-> [    0.070749] CPU3: Booted secondary processor 0x0000000101 [0x410fd034]
-> [    0.070847] smp: Brought up 1 node, 4 CPUs
-> <..snip..>
-
-That's not the correct way to find out. Each CPU tries to find its
-matching RD in the region. This doesn't mean there aren't more RDs
-present in the GIC.
-
-You need to iterate over all the RDs in the region until you find one
-that has GICR_TYPER.Last == 1. This will give you the actual count.
-Alternatively, you can check whether the RD at 508e0000 has that bit
-set. If it doesn't, then you know there are more RDs than CPUs.
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+> Changes in v3:
+> v3 is rebased on top of Linus master branch and all already applied patches
+> were dropped. There are no changes in patches itself since v2.
+> 
+> Pali Rohár (6):
+>   math64: New DIV_U64_ROUND_CLOSEST helper
+>   serial: mvebu-uart: implement UART clock driver for configuring UART
+>     base clock
+>   dt-bindings: mvebu-uart: document DT bindings for
+>     marvell,armada-3700-uart-clock
+>   dt-bindings: mvebu-uart: update information about UART clock
+>   arm64: dts: marvell: armada-37xx: add device node for UART clock and
+>     use it
+>   serial: mvebu-uart: implement support for baudrates higher than 230400
+> 
+>  .../bindings/clock/armada3700-uart-clock.yaml |  57 ++
+>  .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
+>  .../arm64/boot/dts/marvell/armada-3720-db.dts |   4 +
+>  .../dts/marvell/armada-3720-espressobin.dtsi  |   4 +
+>  .../dts/marvell/armada-3720-turris-mox.dts    |   4 +
+>  .../boot/dts/marvell/armada-3720-uDPU.dts     |   4 +
+>  arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  15 +-
+>  drivers/tty/serial/Kconfig                    |   1 +
+>  drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
+>  include/linux/math64.h                        |  13 +
+>  10 files changed, 682 insertions(+), 21 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/clock/armada3700-uart-clock.yaml
+> 
+> -- 
+> 2.20.1
+> 
