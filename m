@@ -2,92 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA2AC00143
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 11:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B94C432BE
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 14:09:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 32FB5610C9
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 11:57:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7A24161076
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 14:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242404AbhHZL6i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Aug 2021 07:58:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44448 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242307AbhHZL6f (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Aug 2021 07:58:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B82B6102A;
-        Thu, 26 Aug 2021 11:57:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1629979068;
-        bh=VqrmZfvdySGGpRkZfJ9sTmMn3wWb3fwMDv/A6XRJ5g0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lzvupKGm6DHeJEI0TqRmS03OkixQqyNvn5fHICulBulOAdMBqEccYq8nc5D2E6XhM
-         gWy/yQjptw7v0BYdQVMP3sXyUlMzJb2TDV9Ccg4Kg4G1aHaVRKNtLVfFwr83vd5wme
-         FgPiaOq7JB0o7euja3GB3WosZG/JyuK67iUcwAk8=
-Date:   Thu, 26 Aug 2021 13:57:44 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Vignesh R <vigneshr@ti.com>, Marc Zyngier <maz@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-spi@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Use 'enum' instead of 'oneOf' plus 'const'
- entries
-Message-ID: <YSeBuMtUa77AR7Tn@kroah.com>
-References: <20210824202014.978922-1-robh@kernel.org>
+        id S229875AbhHZOKD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Aug 2021 10:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229832AbhHZOKC (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 26 Aug 2021 10:10:02 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0AAC061757;
+        Thu, 26 Aug 2021 07:09:15 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id x4so3206769pgh.1;
+        Thu, 26 Aug 2021 07:09:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IHu9tR/6Cya7biP79tZOJnTzvsP2TvD1XGVXSlWQptc=;
+        b=nOxTMSOthtkjbNfMJmiDbRBqwR99W6NY3um9pitOe/YvF8Pesoqc3KYuvI4jKAq9lW
+         Mhc/Danh+eSy4aK6FNWZMrAJ/azsGr8x1yUHM4YB/R0HbBAgD/LmJbyxopQxKsUSp9la
+         8HoXUT/gI8ZK3UiSnY4xt47YDXyTiN+Q7xEmgLZXlso26skqrAHmpJBcX7r6Iu4aukXh
+         pcVbQ5R1RONsrj3/5VOVsG+FlVEgK532l/tHTgGUuap8A9h7IAWHY+1skfFGILmMFM+a
+         4bWN+iJo0wPiZHsrM5IYdlBhF9EJyZFlxfqlEaL4Ofq9Q+chfhWpi4DozZHl/+jJ+/UZ
+         IVLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IHu9tR/6Cya7biP79tZOJnTzvsP2TvD1XGVXSlWQptc=;
+        b=CRqY9FGpyuGW0szhxkIWNPS43R1ecfqAT2QVE7V5ztzUdO+dFyt9aPLU1431oGtChe
+         7iApdRMweZdSUM0kVpaGY3S8L5EcssgIuhwlVHrBmccJYuXn84EHxU7yALnxdxS+FEv3
+         i3LeaouRuOPnGyj5dWF6J1W21HvPEuPDzhudygSt7tBAeYV4mXpDVSINHGJShTLVWIi2
+         /u+fJ08LRAk/JcqCLaDTtblDXGnICdy0bdKD+6zjgoyOoLROpxN78a4DgUL+9OfpPhK3
+         RCZ/r0xVYsewMxVrAt6C9ZQX889iL+74wmKjPqP4RE2i3DNuPNHq4GlgY2aPIwZJ1TLt
+         01YQ==
+X-Gm-Message-State: AOAM5323iwAqWRcMFXW35a7kcn7aykae9PTjMhhZiMwy90e5The0fnLY
+        r89hl2s0MNt0iL8F+HvZgJJhI/xU1Iuh8J68lMaiHhjm5pd3eg==
+X-Google-Smtp-Source: ABdhPJwdW5JDTSv7/6D2pbzvuhN3sHFkC2wCg7ta7mwBvl1yqMkNzMe2+t9z1HROcwNl3zJWpalmuWHvOcP29Ak1JBo=
+X-Received: by 2002:aa7:800b:0:b029:330:455f:57a8 with SMTP id
+ j11-20020aa7800b0000b0290330455f57a8mr3861506pfi.7.1629986955001; Thu, 26 Aug
+ 2021 07:09:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210824202014.978922-1-robh@kernel.org>
+References: <20210817081401.3440-1-utkarshverma294@gmail.com> <YRuyoWujcSB6zKl5@kroah.com>
+In-Reply-To: <YRuyoWujcSB6zKl5@kroah.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 26 Aug 2021 17:08:35 +0300
+Message-ID: <CAHp75Vev9=mkNxi__eH3Lj+a9_rNBQ8M90EGgvsjbtQ_OqcOtg@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_mid: Use pci_irq_vector() to get IRQ
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Utkarsh Verma <utkarshverma294@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 03:20:14PM -0500, Rob Herring wrote:
-> 'enum' is equivalent to 'oneOf' with a list of 'const' entries, but 'enum'
-> is more concise and yields better error messages.
-> 
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Vignesh R <vigneshr@ti.com>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: dmaengine@vger.kernel.org
-> Cc: linux-i2c@vger.kernel.org
-> Cc: linux-media@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-pci@vger.kernel.org
-> Cc: linux-phy@lists.infradead.org
-> Cc: linux-serial@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-spi@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+On Tue, Aug 17, 2021 at 3:59 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Tue, Aug 17, 2021 at 01:44:01PM +0530, Utkarsh Verma wrote:
+> > Instead of a direct assignment, use pci_irq_vector() to get the
+> > Linux IRQ number.
+>
+> Why is this needed?
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+It's not.
+
+> > +     uart.port.irq = pci_irq_vector(pdev, 0);
+>
+> What problem does this solve?
+>
+> Do not describe what you are doing, but rather, _why_ you are doing it.
+
+I think I know what was the motivation here, but actually there is no
+problem with current code. Indeed, when we enable MSI we have to
+update the vIRQ line, but this is done in the platform related
+->setup() callbacks (for example, dnv_setup() does it). So we have two
+scenarios:
+ 1) there is no MSI enabled and in this case pdev->irq is correct;
+ 2) we have MSI enabled and we need to update previously saved pdev->irq.
+
+What you, Utkarsh, are doing in the patch has no effect, because at
+that point MSI will never be enabled and pci_irq_vector(pdev, 0) will
+return the very same value as kept in pdev->irq.
+
+-- 
+With Best Regards,
+Andy Shevchenko
