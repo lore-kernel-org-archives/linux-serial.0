@@ -5,47 +5,47 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7701C43214
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 19:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E7FBC00143
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 19:22:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A11616103E
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 19:22:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3DB7061037
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 19:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243394AbhHZTXL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S243391AbhHZTXL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 26 Aug 2021 15:23:11 -0400
-Received: from mail-eopbgr60074.outbound.protection.outlook.com ([40.107.6.74]:17536
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+Received: from mail-vi1eur05on2071.outbound.protection.outlook.com ([40.107.21.71]:10016
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243391AbhHZTXK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S243342AbhHZTXK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Thu, 26 Aug 2021 15:23:10 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UPNBd07lyBy0F3mtS700q8cSDT92gqSfByDWix9lJe2ULto91savPmFjhj+vetSlDatx2YZ8oxxLp0ZCs7ijLJocrdo4DgbO76eYTR6E/Jdo8cyzVRBn4+3PHOwMUQkg09GiBJcQGbQgaSSvFhYKX7uVA4qNEWz7ldoNnDq71P3WzJumItH45aCn208KeAdbyNiDk7jaiEVsem8enZAaxJZcJApFYF5MGxZxxF57WjEkV1xfTu+B3x/ahW3pX7b7e5jh4ohfB6vGn9rzgKKwz4VD+OFjte2cSimH82C/wlA/AO8Y+K4rHb472cFg2npmh/acJADxbYIKykwfRiyaSg==
+ b=RfNA9psK3TC5w1VX6r3jxF1oxabbbrL6yaNrFP+ez6SYxQyb6lmNIGtQps0FslM78FK4A9LKYUGh6/60B5ChoNwwd+Ev2lN2NMJszURMZ9YAgU9bW0qSw8kxY4WpnrWM068ZA3Z3cujoydEOQz7RhzT/ks+x2qyAMmwNhguUMgwUJsUv9GUdo16BSub+t/mH/+OgSapOtmUW2sKx2pXOZGofY8qrh+mkfvtbz9/Krzlsb61TM5BhnYuhE2r8REoHeXM8ioqqTIud5R4Kpytvy8rGSdp7kP6dr8zq6u8BTiIuMtCtq1wzrtOny20WMAwqcmbtgcSALMxEraPwfz8kdA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+++k6yptvMRCw1rPf0eQVBc8YD/HmfwtiBLN60iOdtM=;
- b=eaXgk4opYx4WxgMWDCgINvW8WSAicctOLWBtA2URBFt4h723zdfslU1FbGXplQVOyPlFx36qVX6pCH0Fs8OLdmifotPIM/2a7pUgW0FBxsCqZskt72JcAY6pP8iOLd5LhBqT1Irabwh8RXxwXhN/qAiRgp8Asnx3uhDS8ogZ4yKv7cZedWRs+ORbIvMt4UCZrRU01chDngabNWErmmv+zsG8JUPhHLq58/C6BMHQpKzgr149uVX/a6yfsiQfpN1aAqGgsRHmns0a/HCdxZAJXKgI6jjkKmSr3rm6AykQFA9AyE2F+/mlX2QxrrRPRR0YZ0wM6h+Ik1bJTV+TPXmyqA==
+ bh=1hej7rbzxBDMjsHNDpAmXDL4Of/gybLbwFsjz0+SA3w=;
+ b=EiIoXU8qUA9THN+M3rzuniBFCaRDz0DssAucELEGewi5VIhsvrFZnIZQ9DLGfdB6lYQEZxmhcwHzkplMD7XS/tG7oFkugSL5SV3N9Ck0eyWtEWuYqE858B9hii5EtrjypHEJL0Ub5lt6zoWaLXsSRXaQgWAdlxynkbuwcPfsQIKxX8wUM/yZhhphTthMiSQTf3ZQU93qahPt1rEFBBXi/Jp8tSZOMBufwmUnYsWrkH36Ei1YvoPdWOKSxi6naGGdXxYBD3ZmxyUJI8SG+Gz5puMEj7Q7KSTuf0EYq+6Zh93sqDs8nh16g1t1SYp109OQZh5zdZh/nV/DLLU03Jo8fw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+++k6yptvMRCw1rPf0eQVBc8YD/HmfwtiBLN60iOdtM=;
- b=gZoUpeXQYa8oVVqNLMz7pWQamzuvfNDpWzDgw1I/mhc1OajrTb81+E8sqIAuBAKlDlN19lHVur6SERGBRhjfaQQ33ZQx4uAyNVBJNaxMaP0LMx88NmYyQlTjUtJajClxvCLMyxvMXXACBaLDAyGWjBuIHh6M369a4z97q9q8ATQ=
+ bh=1hej7rbzxBDMjsHNDpAmXDL4Of/gybLbwFsjz0+SA3w=;
+ b=BpzqP14ci2WFbr/DzS09oGx1tNM5lIlJnJUkWiIoBibtMFHCc4gPl3350cDfWCFWQD9C8+jygytXxhXCjtaeh/xc7YLH9lnXPCm280JBYQc629iP5Arg7z8olppYd2zuc1EDYDtWNfMrZ2oF4MyEpJKVG5eoz1Qpl/FHapRb978=
 Authentication-Results: barco.com; dkim=none (message not signed)
  header.d=none;barco.com; dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
- by DB7PR03MB4859.eurprd03.prod.outlook.com (2603:10a6:10:33::20) with
+ by DBBPR03MB6748.eurprd03.prod.outlook.com (2603:10a6:10:204::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.20; Thu, 26 Aug
- 2021 19:22:18 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19; Thu, 26 Aug
+ 2021 19:22:13 +0000
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::dc6c:815b:2062:d1f1]) by DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::dc6c:815b:2062:d1f1%7]) with mapi id 15.20.4436.025; Thu, 26 Aug 2021
- 19:22:18 +0000
+ 19:22:13 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Peter Korsgaard <peter.korsgaard@barco.com>,
         Peter Korsgaard <peter@korsgaard.com>,
@@ -54,10 +54,11 @@ Cc:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Michal Simek <michal.simek@xilinx.com>,
         Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH v3 4/4] tty: serial: uartlite: Prevent changing fixed parameters
-Date:   Thu, 26 Aug 2021 15:21:54 -0400
-Message-Id: <20210826192154.3202269-5-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v3 1/4] dt-bindings: serial: uartlite: Convert to json-schema
+Date:   Thu, 26 Aug 2021 15:21:51 -0400
+Message-Id: <20210826192154.3202269-2-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210826192154.3202269-1-sean.anderson@seco.com>
 References: <20210826192154.3202269-1-sean.anderson@seco.com>
@@ -68,243 +69,161 @@ X-ClientProxiedBy: BL1PR13CA0046.namprd13.prod.outlook.com
  (2603:10a6:10:19::27)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plantagenet.inhand.com (50.195.82.171) by BL1PR13CA0046.namprd13.prod.outlook.com (2603:10b6:208:257::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.8 via Frontend Transport; Thu, 26 Aug 2021 19:22:17 +0000
+Received: from plantagenet.inhand.com (50.195.82.171) by BL1PR13CA0046.namprd13.prod.outlook.com (2603:10b6:208:257::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.8 via Frontend Transport; Thu, 26 Aug 2021 19:22:12 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5ddc284c-042f-4b1c-4871-08d968c6d1c1
-X-MS-TrafficTypeDiagnostic: DB7PR03MB4859:
+X-MS-Office365-Filtering-Correlation-Id: 66ff275a-6521-4ed1-3235-08d968c6cf11
+X-MS-TrafficTypeDiagnostic: DBBPR03MB6748:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB7PR03MB4859A8DF7759BD603DDFE01696C79@DB7PR03MB4859.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <DBBPR03MB674830D4B7E7C4BAEFD4D42E96C79@DBBPR03MB6748.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:580;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nRHoR1hSHEaaKmX1na6l3VqvPCqbSnH1BHfqiFL3VaLeMMB35uRhUisjfUWLD8hwXbWLHc/DiI+knMQRdJ16yfAjIEoxyNXMKoVnAsOn/ou8es4+f++pFwX2frd2kDqEAKs5gUlVSyD9pmfn+y6UoSzVRv+sB7kyXI8h2ST0x2xk+17PRnWnRA5fWwKqxBcwGt4zV7DanoYcuZFXr61YAidsqAxnflkYh5OQx9rlSA5R4CqDC3PiwlGNS17h2T1thbva2Nh4plB6P3AV9OW+Mx0P63t0IeEi2M9uLRSv0jMEtldqrEYNHDijJWN4uzZBvg4oJK+rY8M5qUdggrFDr7JzSliYBtssJH/4R4kr1ivSLgzw4ejrYr8lXIMrZS/c+lCQDGLNU5BVIIFxSaVaQq/UoJiJG9jlHL6bjrfUYPm9hmAv46SDpHe4DvWFYcEkokvG9xYOyo31OXCF5ZB5Oszt0Xk7LZGC2Mao3LCQaWq85cTl8WffxnjK3YJxDOv/XT2UE8MEM7cc/DWz/IMHh/YuYljQZYt9O7Ah1LMOXutv7bZFXMgL4rdpRNy5wwpYKAAeBqFliiF1PWMU97wrmrPWldAfzu9lfZdlCPRXS0kyKitRrc41tlFvoeQaYF/YSFycjzbZXAwbtGWADrNnIWIyF21RRQdeL7djSbeR6ENaKANd9cxgKG36S4gMgbVl0VGs5+CP/wkIgrPKWt2RAQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(366004)(39840400004)(396003)(136003)(86362001)(54906003)(110136005)(478600001)(6512007)(316002)(83380400001)(5660300002)(6506007)(1076003)(186003)(8936002)(8676002)(26005)(66556008)(2616005)(4326008)(6666004)(66476007)(52116002)(107886003)(44832011)(66946007)(38350700002)(38100700002)(2906002)(956004)(36756003)(6486002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: VdCEXApyPnI6KdU4q27rzYQt81xbd7B4f92TcUHrnR+LLrZEEsiOutHqM8YjGJ3QufTk1sfsEOeAugAqoTmcSrsS+psG9o63PjYq0FAKwYyjdzITg1vCwtMiTyTQ9QEOh1l9KfHn3HwbTazSwf2ksPzWziqhOjxqUf2JbcE5+nTgWN4rTgxZtsluHy6DLnhCskqhQ2jY19r48LsYcUjPyT/4Cq/OvwJDnlG6lcyivDudQl9QcahZ5JxP3pzOBaQMvLIk9RNPUt8NvR4nZpYxZQ9tbZESN81mOfvZjNwRuqDHmlhuZu4H/FDsO7mdy1CzIq0vQU+vYfPNECw10x1tZq0cgA+PBoxRROLfFLMQUbvto2rgBFA6Kamp92fbeR5uGntWaVCP55vRB6xWG1YE5Jb5F5e5J67J1KXDpGZejgLJC1wCaUQxLwyYXTvnHq+YMCmZFCaZJIEOto3Vv0So9LHJtJ8R0uk/YcEwdjONxU86+1y9M2AkHmvmDJOdP3C/hZ5elDahIcbCXAT4jDwvU5v0hAEWfXQYDdDm/xn+G3gotunwdmFPb9efJ1jeInb+rstv/FS3Q1x198Ib4ehdhAIXyFy5iReTgG9UxcODMj0vUdHHSwRtFeQSgHaQ/ceAmUI0cxxVRhVRsMxDSxJ44wSdXGEHlTrgOc1NaRSVF4pNb0Rg4vLjg5EnGcwWF4TWLt0JNxiN824o6T/h75rqdpwuLzyWzzU9zqH+a5mJBGD6KlMiSzTKZq0twEjp7BnY9QEB4A2drf0nA7tWgrhcCmw8roVSR37Igw2PI/9a23A=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(39840400004)(346002)(136003)(366004)(396003)(376002)(83380400001)(6512007)(966005)(66476007)(86362001)(478600001)(110136005)(186003)(66556008)(4326008)(54906003)(38100700002)(36756003)(38350700002)(316002)(6486002)(52116002)(8676002)(26005)(6506007)(6666004)(2616005)(44832011)(956004)(5660300002)(66946007)(2906002)(1076003)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9rba6ZBJqaN3xEeH1CbmOrGiz7vqkt5Jf37gO6wRkoEnYaHDoojcMyUBi/Vk?=
- =?us-ascii?Q?Si1atC6NayH0z5xoipQ6vYH+ym9m/cpCscmvFOVRwE1Rvj3+guuER2gYWipK?=
- =?us-ascii?Q?H7+SfhVWZYGAz/37G53ekwZj5ztxN07h3hPwb8wtq/FwS+AjFQkSTnY+nDI+?=
- =?us-ascii?Q?8q58ZhNhq6SidiEILmnhyLUhc/zWpZ3/rKP9qO/QuTNWR762J8UNDlh0O2mF?=
- =?us-ascii?Q?3OPAJrGoK0mq36UHbOlK/EUZ6+XDU+TuiGQx/eqqxuXPYgxd35S9qCQCPM8Q?=
- =?us-ascii?Q?hEBkUmN34RijfxkfHOuCl2cjn5aKdSAiovI1QO/I95zkbQi6LJFo0P2gAbux?=
- =?us-ascii?Q?g32mY1Vov9ELarHERVf8YXM0XhOtysjU/afVEgoyufrBm/BI47J/kWwXYEex?=
- =?us-ascii?Q?X0w9ywvqXGnAWNpXzdwSDrS86d/mA7ahF9ufif3yL0TljfaahmcVNRwcgDhV?=
- =?us-ascii?Q?OH01LHpT84PhNpxuDkGA1boL4VoAGFbvzHO3Y2nhpdraAaaRYrT2LJlkoLYp?=
- =?us-ascii?Q?pIGLU44ZYeQ1TQgLnXxxz067vnOzwto6gFbw/WC9OaJ9/OMZS1ZmJ9C/u53Q?=
- =?us-ascii?Q?XakwzBAju2TrCoJJsu29NemH0SV3za+mCwVIW/MTcZWvSEi5urA0VXNN9XwW?=
- =?us-ascii?Q?jyB9Ns7FNNKymkZ+rpYEKfPjPU8VqIiwoxDnSiVBXqUgwSbk5tynMu8kUsKG?=
- =?us-ascii?Q?Yeh25ZM3GYf0uVWIZpVrzhZuiSODfOsCROZDDOA0ZMbsajah2MX4fIduFagw?=
- =?us-ascii?Q?/gNueos9ujlqaZbYVaV7P6vn4NnV503if890hZHi/QZ7xEb7DWpeWuArt4yx?=
- =?us-ascii?Q?PDKglA5ZIVzwQUKNPqqSjsBQmZvDaKkc/4LvdpDjY1LA7oFOBkYeRtQVSbF0?=
- =?us-ascii?Q?5xX8kRg+0+s93s5VSE9ArIWHyriM7tQs+xakoCT3+GDDPeLNIg0E1NusewRO?=
- =?us-ascii?Q?BWTWYRGRB1p7mvgWDZZOPxkzDIu2R2xXjllry/DyEKeQ5YXBrWtX4T1pL4TJ?=
- =?us-ascii?Q?61t5wgNOjeszSLRqbHxAupGXKJvtiEMGz1Hurq0Yop4ATvQoq6AWI+ZzpREF?=
- =?us-ascii?Q?IvZzfS6einHSJONug49nif10NakI4C6tv7D/6mKCDgUa475R0up7OE54fsH3?=
- =?us-ascii?Q?5WwZ9HuZWjr8aIXm69GKojqmafNiEf4yRUYS738hXnjRwTgWD7S8zvH9Lkwz?=
- =?us-ascii?Q?dOmejuM09eBNxX8y/a1uM24tFa9hPq7ZWFMmXJWNLTZpg+6BiNEO0220t2rB?=
- =?us-ascii?Q?jlWlYa84V0RablocrB7Yjnea4zY4iHsy1RbxeVoyE7gI/GcBUTKwz2pyncCs?=
- =?us-ascii?Q?9Mm61mTpOBmk5Py7pQSvrUgP?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sK+8wMd0wuFy+grOgfzhkGm/ucpt0FCg7daFDQNn5CYDV1Fs7K8acn7CZLRs?=
+ =?us-ascii?Q?PkcPA91y7HlXx+03OZ1QLAjGbEru99VK5IJKjdC7ZJSJqHWjpUeXSyaiC/b0?=
+ =?us-ascii?Q?bNNh6WvEcv14ahczIKgBRAZLc9XYOPO+jfXeKEk7O32rEa8ei/IAQRjYckZ7?=
+ =?us-ascii?Q?QvM0Y0pJx70WuJ44DJv769DyX65B7IK1geXXt1vFAneXjS6DapRiA62O43lu?=
+ =?us-ascii?Q?4ZcwmZD9CE8cXIZlZbl8YFF2mUFO7SGFBa7bZOjcflYQxN+uZ01e4FnC/rCP?=
+ =?us-ascii?Q?VN+C7LTKxdsrVwP/k7cN36wrHCerldimg2BcVfD0P2xVG/6KhLstH1VAIapg?=
+ =?us-ascii?Q?rx9Cc46qIzXG5UlgWP+4h9VRqop7S6/eVtaZJL8fF/jAKtmJb9WrWH7kqynb?=
+ =?us-ascii?Q?iAd1EvVm/RylVOvTwGNgkJAmKQK96UfK2SBO3dtxQ+sCT0pequc92PA+DtJq?=
+ =?us-ascii?Q?HALItPKFDeRZzNRdNWTLr9jk+fwvyy02Ss98fee4HcQS1v9zCdFdryo24xTt?=
+ =?us-ascii?Q?7QHmLQuI1P8EzGXlNsTplb5uJ6DRWAehDFe0MUqd6TpMfpsZJdhH86iHjAi0?=
+ =?us-ascii?Q?fG838mCVVkzkQa+jvBSN+joLuGRhWgvMxCm0/UsnBTxPxX47ivar7cl3s1jw?=
+ =?us-ascii?Q?VczGD4XL3wfNIsXp2UWMVBYB2zKIXqIT22QahJ0vwdXWom+iKIytyMv1dOln?=
+ =?us-ascii?Q?Ye1NsdUUfgtXoK63yX673SJhRUHVtgQF9Uoxl6JF5k50v6PUfZXMytMPl6uV?=
+ =?us-ascii?Q?Y2mP4QH/mHd2fqmEhhxYiRfx12pjkYW4/FLTf/Hk4yC2MeSL0popvgwYdmID?=
+ =?us-ascii?Q?wVOCXsqVAtQ5NPkAIWaWK9eGJYPleRF7/X0Tn0MKVxds0Ai00C8vbkXzzY6E?=
+ =?us-ascii?Q?pkACJE7SdobHDY20fM2lCR3HEgmpVF2AVGKKko7OjyHX3lKy5u2aulErjlAY?=
+ =?us-ascii?Q?kezu2vSMPtvCMvaoAU9/O3n5su7JUBfCMeXhplmclgRXoMBK6ctEM5unCCDe?=
+ =?us-ascii?Q?5cteTktWqiqj9smrZTJHaDjbNFlyq8MFg+EQqQ5ekk6YEKuQqI9NQxmSg+oK?=
+ =?us-ascii?Q?T/1ijtuzN9iS8XiMIXCTbM/CuHodOvS3HoUJETrkRkV6OQm8+PybZWnyRMeP?=
+ =?us-ascii?Q?KQ8ZnAdRoVsoKJvsFkNZT0jVevh6D+QsQBxHcUc6bSb+zmLeVbMJ+XVrgh+m?=
+ =?us-ascii?Q?MXOBWokqawgdxQ8AG0gy4Sgk35oO9ExUK51XIV+o6XHwn85I1t3gPWmomfJJ?=
+ =?us-ascii?Q?r5WomR+5eH/kHYXIXzeA0x/iQitzquf17xlDN9YT9CUYB+1Y0Cw79YE69ejP?=
+ =?us-ascii?Q?go92/x4LAfGT0QYkme9D4uOf?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ddc284c-042f-4b1c-4871-08d968c6d1c1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66ff275a-6521-4ed1-3235-08d968c6cf11
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2021 19:22:18.3293
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2021 19:22:13.7789
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: I3/Bb0Vk/iFYcb9i9aCkJpBP6a1KddC2jSWEFPIZsum+I3rb7jnnC2yap3c8N5WG3zPjNtM/bpffK/cQipr26w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB4859
+X-MS-Exchange-CrossTenant-UserPrincipalName: QlHxruYnHaegj8Y/eVCUIRG+IIdEhsiT1EauiXBECsu2bmvH3Di1PRGKpWVVHnBe4fkfV/741S4eSFZ9MfBRpg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB6748
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This device does not support changing baud, parity, data bits, stop
-bits, or detecting breaks. Disable "changing" these settings to prevent
-their termios from diverging from the actual state of the uart.
-
-In order to determine the correct parameters to enforce, we read the
-various new devicetree parameters to discover how the uart was
-configured when it was synthesized. The defaults match
-ulite_console_setup. xlnx,use-parity, xlnx,odd-parity, and
-xlnx,data-bits are optional since there were in-tree users (and
-presumably out-of-tree users) who did not set them.
+This converts the existing documentation for the uartlite binding to
+json-schema.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
 
 Changes in v3:
-- Remove warnings about unsupported termios
-- Set defaults for xlnx,data-bits and xlnx,use-parity
+- Use unevaluatedProperties: false instead of additionalProperties
 
-Changes in v2:
-- Compare the baud computed with uart_get_baud_rate to pdata->baud,
-  instead of just checking c_cflag. This will catch anything that messes
-  with ispeed and ospeed.
-- Don't bother trying to set the initial termios. Instead, just skip
-  warning if old is NULL.
-- Because we no longer use uart_set_options, just convert the devicetree
-  properties directly to clflags.
-- Merge with [PATCH 4/5] ("tty: serial: uartlite: Initialize termios
-  with fixed synthesis parameters") to make it clearer what the
-  properties we read are being used for.
+ .../bindings/serial/xlnx,opb-uartlite.txt     | 23 --------
+ .../bindings/serial/xlnx,opb-uartlite.yaml    | 53 +++++++++++++++++++
+ 2 files changed, 53 insertions(+), 23 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
 
- drivers/tty/serial/uartlite.c | 91 ++++++++++++++++++++++++++++++-----
- 1 file changed, 80 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index f42ccc40ffa6..0bea3866bfb8 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -8,6 +8,7 @@
- 
- #include <linux/platform_device.h>
- #include <linux/module.h>
-+#include <linux/bitfield.h>
- #include <linux/console.h>
- #include <linux/serial.h>
- #include <linux/serial_core.h>
-@@ -60,9 +61,18 @@
- static struct uart_port *console_port;
- #endif
- 
-+/**
-+ * struct uartlite_data: Driver private data
-+ * reg_ops: Functions to read/write registers
-+ * clk: Our parent clock, if present
-+ * baud: The baud rate configured when this device was synthesized
-+ * cflags: The cflags for parity and data bits
-+ */
- struct uartlite_data {
- 	const struct uartlite_reg_ops *reg_ops;
- 	struct clk *clk;
-+	unsigned int baud;
-+	tcflag_t cflags;
- };
- 
- struct uartlite_reg_ops {
-@@ -116,6 +126,8 @@ static inline void uart_out32(u32 val, u32 offset, struct uart_port *port)
- 
- static struct uart_port ulite_ports[ULITE_NR_UARTS];
- 
-+static struct uart_driver ulite_uart_driver;
-+
- /* ---------------------------------------------------------------------
-  * Core UART driver operations
-  */
-@@ -303,7 +315,12 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
- 			      struct ktermios *old)
- {
- 	unsigned long flags;
--	unsigned int baud;
-+	struct uartlite_data *pdata = port->private_data;
-+
-+	/* Set termios to what the hardware supports */
-+	termios->c_cflag &= ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE);
-+	termios->c_cflag |= pdata->cflags & (PARENB | PARODD | CSIZE);
-+	tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 
-@@ -326,8 +343,7 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
- 			| ULITE_STATUS_FRAME | ULITE_STATUS_OVERRUN;
- 
- 	/* update timeout */
--	baud = uart_get_baud_rate(port, termios, old, 0, 460800);
--	uart_update_timeout(port, termios->c_cflag, baud);
-+	uart_update_timeout(port, termios->c_cflag, pdata->baud);
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
-@@ -532,8 +548,6 @@ static int ulite_console_setup(struct console *co, char *options)
- 	return uart_set_options(port, co, baud, parity, bits, flow);
- }
- 
--static struct uart_driver ulite_uart_driver;
+diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
+deleted file mode 100644
+index c37deb44dead..000000000000
+--- a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.txt
++++ /dev/null
+@@ -1,23 +0,0 @@
+-Xilinx Axi Uartlite controller Device Tree Bindings
+----------------------------------------------------------
 -
- static struct console ulite_console = {
- 	.name	= ULITE_NAME,
- 	.write	= ulite_console_write,
-@@ -756,18 +770,73 @@ static int ulite_probe(struct platform_device *pdev)
- 	struct uartlite_data *pdata;
- 	int irq, ret;
- 	int id = pdev->id;
--#ifdef CONFIG_OF
--	const __be32 *prop;
- 
--	prop = of_get_property(pdev->dev.of_node, "port-number", NULL);
--	if (prop)
--		id = be32_to_cpup(prop);
--#endif
- 	pdata = devm_kzalloc(&pdev->dev, sizeof(struct uartlite_data),
- 			     GFP_KERNEL);
- 	if (!pdata)
- 		return -ENOMEM;
- 
-+	if (IS_ENABLED(CONFIG_OF)) {
-+		const char *prop;
-+		struct device_node *np = pdev->dev.of_node;
-+		u32 val = 0;
+-Required properties:
+-- compatible		: Can be either of
+-				"xlnx,xps-uartlite-1.00.a"
+-				"xlnx,opb-uartlite-1.00.b"
+-- reg			: Physical base address and size of the Axi Uartlite
+-			  registers map.
+-- interrupts		: Should contain the UART controller interrupt.
+-
+-Optional properties:
+-- port-number		: Set Uart port number
+-- clock-names		: Should be "s_axi_aclk"
+-- clocks		: Input clock specifier. Refer to common clock bindings.
+-
+-Example:
+-serial@800c0000 {
+-	compatible = "xlnx,xps-uartlite-1.00.a";
+-	reg = <0x0 0x800c0000 0x10000>;
+-	interrupts = <0x0 0x6e 0x1>;
+-	port-number = <0>;
+-};
+diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
+new file mode 100644
+index 000000000000..0cc94c920b17
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
+@@ -0,0 +1,53 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/xlnx,opb-uartlite.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+		prop = "port-number";
-+		ret = of_property_read_u32(np, prop, &id);
-+		if (ret && ret != -EINVAL)
-+of_err:
-+			return dev_err_probe(&pdev->dev, ret,
-+					     "could not read %s\n", prop);
++title: Xilinx Axi Uartlite
 +
-+		prop = "current-speed";
-+		ret = of_property_read_u32(np, prop, &pdata->baud);
-+		if (ret)
-+			goto of_err;
++maintainers:
++  - Peter Korsgaard <jacmet@sunsite.dk>
 +
-+		prop = "xlnx,use-parity";
-+		ret = of_property_read_u32(np, prop, &val);
-+		if (ret && ret != -EINVAL)
-+			goto of_err;
++properties:
++  compatible:
++    contains:
++      enum:
++        - xlnx,xps-uartlite-1.00.a
++        - xlnx,opb-uartlite-1.00.b
 +
-+		if (val) {
-+			prop = "xlnx,odd-parity";
-+			ret = of_property_read_u32(np, prop, &val);
-+			if (ret)
-+				goto of_err;
++  reg:
++    maxItems: 1
 +
-+			if (val)
-+				pdata->cflags |= PARODD;
-+			pdata->cflags |= PARENB;
-+		}
++  interrupts:
++    maxItems: 1
 +
-+		val = 8;
-+		prop = "xlnx,data-bits";
-+		ret = of_property_read_u32(np, prop, &val);
-+		if (ret && ret != -EINVAL)
-+			goto of_err;
++  port-number:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Set Uart port number
 +
-+		switch (val) {
-+		case 5:
-+			pdata->cflags |= CS5;
-+			break;
-+		case 6:
-+			pdata->cflags |= CS6;
-+			break;
-+		case 7:
-+			pdata->cflags |= CS7;
-+			break;
-+		case 8:
-+			pdata->cflags |= CS8;
-+			break;
-+		default:
-+			return dev_err_probe(&pdev->dev, -EINVAL,
-+					     "bad data bits %d\n", val);
-+		}
-+	} else {
-+		pdata->baud = 9600;
-+		pdata->cflags = CS8;
-+	}
++  clocks:
++    maxItems: 1
 +
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res)
- 		return -ENODEV;
++  clock-names:
++    const: s_axi_aclk
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++allOf:
++  - $ref: /schemas/serial.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++      serial@800c0000 {
++        compatible = "xlnx,xps-uartlite-1.00.a";
++        reg = <0x800c0000 0x10000>;
++        interrupts = <0x0 0x6e 0x1>;
++        port-number = <0>;
++      };
++...
 -- 
 2.25.1
 
