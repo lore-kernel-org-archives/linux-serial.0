@@ -2,155 +2,277 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF56C432BE
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 19:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00911C4320E
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Aug 2021 04:49:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 70BCF60F11
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Aug 2021 19:43:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D8CA960FD8
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Aug 2021 04:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230307AbhHZToY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Aug 2021 15:44:24 -0400
-Received: from mail-eopbgr10073.outbound.protection.outlook.com ([40.107.1.73]:22611
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243360AbhHZToX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Aug 2021 15:44:23 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LkrlOU4nF9rHvSy1quNYd/QWSXNEcVJNHQSoGAMZDbnElZCgxlcIIgCR0iRK1rcNjwRYizEjib6j9GZGix418BkyY3sd/e8L5y/Xrf/AczTZ6VeoTboz7lrS47UrgB+JqUasLQGbCGUqpgIN6Ku72eAE0Y7yu5g7xfoNmfPHANhNdGKsUVBvyvBmV0jZlzJLm71kROz9REmbdy/mRKCN6Egyjlhj6JKnREFLJEMBCKtPqeq3VQfjTtDn+Oe/9A0RiHDc37b9zAK4nOKLnEcOv0gqNNqdJ3uMlQvRGdJkiE4x9RktPMPMZ4UbrzUweEleKO1JjJ8i56pt5pcb0rDsiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LmZyGEbnwy5EUcni39cIgbVP6x8kh6MVPU3wHwVrql0=;
- b=PHIj4RUSGjK07b3uScjXAp6ETSTsK7e9XbsmgpUm9A+P5LTfwX2hbMbaJ5DLY8EeLeHWhEHLDKEwskYARmNgm8JzmAxGWKJqzCS0m1GjHog9KNwTS8TWE1n5TMY7Yrlw2sWHgbqbldZmzp8aPbpaRmTayt6vcfbAFjS/p3k5tG2/z9KlzA9NVMVK2teIUaLxvvngEbvMFPIJIX/AzO1TBZt0x6KyCsjxsemrx90p8rgL1KL33+/vp3tLgK7LGDrgI9yk+Qg0MPm1Aa/BdFYIL9fpLrtkvg6Da/L6sCuJkwuwG6fwEl328jytVVQZOSFywtl4SMtl+gih3JL11MSc3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LmZyGEbnwy5EUcni39cIgbVP6x8kh6MVPU3wHwVrql0=;
- b=5DeT7dcu4mIQF8dvm2IcLMwdHJ2M+OUeYrMx/5r2Oa3/upt7kiZxwrfAceDhZDR5HKEXgCKzUIDileCvPiDcv7JoSwddxxZObfos9aJnLhvkOkKRMBYjzUMwamCKw9YIpKVBaiQ8dgqq+1NHplDiAAQtzcAYdi0k6Vg3Y7C+ruA=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
- by DB8PR03MB5883.eurprd03.prod.outlook.com (2603:10a6:10:e4::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.20; Thu, 26 Aug
- 2021 19:43:33 +0000
-Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
- ([fe80::dc6c:815b:2062:d1f1]) by DB7PR03MB4523.eurprd03.prod.outlook.com
- ([fe80::dc6c:815b:2062:d1f1%7]) with mapi id 15.20.4436.025; Thu, 26 Aug 2021
- 19:43:33 +0000
-From:   Sean Anderson <sean.anderson@seco.com>
-To:     linux-serial@vger.kernel.org,
-        Peter Korsgaard <peter.korsgaard@barco.com>,
-        Peter Korsgaard <peter@korsgaard.com>
-Cc:     Michal Simek <michal.simek@xilinx.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH] tty: serial: uartlite: Use constants in early_uartlite_putc
-Date:   Thu, 26 Aug 2021 15:43:23 -0400
-Message-Id: <20210826194323.3209227-1-sean.anderson@seco.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MN2PR05CA0039.namprd05.prod.outlook.com
- (2603:10b6:208:236::8) To DB7PR03MB4523.eurprd03.prod.outlook.com
- (2603:10a6:10:19::27)
+        id S234063AbhH0Et6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Aug 2021 00:49:58 -0400
+Received: from mga09.intel.com ([134.134.136.24]:19441 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233858AbhH0Et6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 27 Aug 2021 00:49:58 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10088"; a="217897447"
+X-IronPort-AV: E=Sophos;i="5.84,355,1620716400"; 
+   d="scan'208";a="217897447"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2021 21:49:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,355,1620716400"; 
+   d="scan'208";a="474447204"
+Received: from lkp-server01.sh.intel.com (HELO 4fbc2b3ce5aa) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 26 Aug 2021 21:49:08 -0700
+Received: from kbuild by 4fbc2b3ce5aa with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mJTnf-0001yS-L9; Fri, 27 Aug 2021 04:49:07 +0000
+Date:   Fri, 27 Aug 2021 12:48:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ bb2853a6a421a052268eee00fd5d3f6b3504b2b1
+Message-ID: <61286ea5.y/qIfAS6N9xoKP9G%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR05CA0039.namprd05.prod.outlook.com (2603:10b6:208:236::8) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.10 via Frontend Transport; Thu, 26 Aug 2021 19:43:32 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 80640caf-94bf-4879-f45c-08d968c9c9f6
-X-MS-TrafficTypeDiagnostic: DB8PR03MB5883:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB8PR03MB58830AC494E20F27CCE5623C96C79@DB8PR03MB5883.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5iM+iQKCRV+RfsezNOhtP6hHKVwdmyXYkJIG/YqXFFeDw4vyynLWksKx/+vSGo7MtG1Vn8171VIxh8ru0SXtEOd2rw6/XlrFwusp3thDQOOabyQLRjPH4Ky09/mTaWUNWdE68EZfYf0KEsDPjug23Qe0Kj3ZYP6mnibd7UCLoHiIl7iDSX+1qs2+f3fEyuXGsxsgpsDUaQEFYopt/FmpqgF81hup6+BRLqypAMiy5kaU/kkkNhqXQrRamN3zY7J7dX0sg40A2yrSoxIhJN+fZOi/Cg0TH2px0Fvb3FrHI1+Do9EI2S+Mgwr0kE6DPvdifysdEVktZd8SA/sPYsSqHw+71Gkca3ZinZF1kGIVRnA+TzCS3NmPrpMTqgQdy7gGz+12+6eL6aNdgqtfsYukVgNfHkrL4J0f5ILVvEPtwsVtA1l0wkTxlen6OS7/h+4I5r2XdOm5bTG7s4FU0iLRvrQs4YtTqv3xzPDXVdhNSkx5qtUwz3dUQM1jyXUTY0xwHlKO94s+qctGCINHINK4GebxX7B5R9ged5EUncCjpu9783aW1jeTl+iLJFGUL14BQKfJCdYl1zZ5cTa79i8shcly1MUgBffKjibUuwK0IBS0mFkJjDHDxk3yWPLW/DFICbTFPNtpRTLODCXqzkMHlM9QqaTCx0fVeILKFhftI6GKknoYBnhxBI0j2EfBTQoRyEe2LoCYcGu2MBa+0Iqvfg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(110136005)(6666004)(86362001)(8936002)(54906003)(107886003)(5660300002)(316002)(8676002)(2616005)(44832011)(38100700002)(38350700002)(956004)(1076003)(66946007)(66556008)(26005)(66476007)(52116002)(186003)(2906002)(36756003)(6506007)(4326008)(6486002)(6512007)(83380400001)(508600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rGTIh15dULtYjK5ET/yyJn0f2Ci+Od8esCN4n+8NRj9im9At0YeW3aUh02HZ?=
- =?us-ascii?Q?PholZC2TVasQWjU1sDVefwZPxUBIK8OtzLys6jDZ6nD0L+95zxLMIuspL/Vd?=
- =?us-ascii?Q?i9arvt6KUYG7bvxQieKKGAfY/TdgzKpEXH5y5iZEcV/mkxAMMsZ2rWzurFfI?=
- =?us-ascii?Q?89w7vAEWkcUjjZaSRU0JYI3Z+2/7CfmqMTnFDBxpvfyjec0CQviRAjXVGv5B?=
- =?us-ascii?Q?89qpjVnpdYWwPATpX4pkF1WE6/d9+JxAiFUMA8BxHzsATXMWjwTVqEQb2qEv?=
- =?us-ascii?Q?y1Wsa7F36qOdmA4z7kOcXkyC52DB9ZL5DTSANWDhY81i8SfZx6RJccmFVACF?=
- =?us-ascii?Q?nHm25FSZAnSKt/LM8CQulELtmv5wGsPiTG0emxVxtlWxnVWGr0E/iu4eEThA?=
- =?us-ascii?Q?JYb4Q/EfYlE6FBFEq15sytdUqAxSe2I2EMC7w0+7hl28T93OhpxTVn/fUqLw?=
- =?us-ascii?Q?oXtv6Yn8xFcNnCp+LnCf3FxlXR8wFko+zizvDsxiXTi3neteMFtud21ok472?=
- =?us-ascii?Q?wlf0a/kQZgZtnAYoxZJdf05hIp488Z7sUke9zTaspPscFsfwU4KRyGpbgvH1?=
- =?us-ascii?Q?JybLfaPvhRfcVlCkmyw96howlOTyuXAtY2HhfhvGfYC9AmXp+xavn7KyY4RR?=
- =?us-ascii?Q?lMK5qzWNcMK/ohQejKd3Cat1zfeT1biBFIjYfQb2Xy8eT6+rZaHRtLdErD9m?=
- =?us-ascii?Q?NAlbPsBU2m2q8Ee4qdfYww8zjek/5UJW34FicYfJpmL4P9KvYPxU235lddTO?=
- =?us-ascii?Q?T067LRwTqUtsdj5d1DOQW2Svftno3L02xQbITQk49o8UdMHH9ZUQsOw7nfug?=
- =?us-ascii?Q?P0aPHsDDbQ9Sj5ej01yuVA2EeldbbOuBdO9aHtGzbUSrE+s6D9pc3gO/qOYs?=
- =?us-ascii?Q?xCIzCPN1mTfPTR5sKX1TZjlTskaWr6rO9e5GQsxXwSFGsfJmt8N2cl2MZvJr?=
- =?us-ascii?Q?5BLk4t9mt1DcsMeyWi8XPJyajVcdxAPstcsaeTwnv6bK2eGSicfMsncjTSqn?=
- =?us-ascii?Q?W1myzDmrchgG7JJh+8T+3/TJ0sUPe5MGueA6zE+07mLJOGPEwv55wItu8BRS?=
- =?us-ascii?Q?QvEpzOvSQTMk482H+PSenDfHAJGWaQmsrPREA9qOc4l4QdW3CTUvvlFwbNTh?=
- =?us-ascii?Q?9K2rQUs3SRIo1mnFjRWYae/tWCBJUydPmPm1rooKiQ1z5rBkuwQWvcH2DDK0?=
- =?us-ascii?Q?LIG7yHPbTpBWxa2ZLqwE6U5XjVRCbqVicry7/8sQtNDXh8K76xB5jbRP2RVp?=
- =?us-ascii?Q?hwLRypiOlG68G9Z4DFOG4sxBO++IHALpCCBt/XPWArq8gJjhR7NjJ+gsaooS?=
- =?us-ascii?Q?pYWAFwD5mR/dLyptc7aQCiMY?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80640caf-94bf-4879-f45c-08d968c9c9f6
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2021 19:43:33.7844
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rI78zfTpzJznCxJIc/W9U1QkgtVNF6+vIIdWQTmpOQMAh+biuEOu9lh2VCdWhQARWoC9Zr28s1DpUH40NXLQmQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR03MB5883
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use the constants defined at the beginning of this file instead of
-integer literals when accessing registers. This makes this code easier
-to read, and obviates the need for some explanatory comments.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: bb2853a6a421a052268eee00fd5d3f6b3504b2b1  tty: Fix data race between tiocsti() and flush_to_ldisc()
 
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+elapsed time: 907m
+
+configs tested: 210
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20210826
+i386                 randconfig-c001-20210827
+sh                           se7722_defconfig
+powerpc                     powernv_defconfig
+powerpc                        warp_defconfig
+mips                      loongson3_defconfig
+powerpc                 mpc834x_itx_defconfig
+sh                         microdev_defconfig
+arm                       netwinder_defconfig
+arm                         mv78xx0_defconfig
+ia64                      gensparse_defconfig
+x86_64                           allyesconfig
+powerpc                      bamboo_defconfig
+arm                          badge4_defconfig
+arc                          axs103_defconfig
+arm                    vt8500_v6_v7_defconfig
+xtensa                    xip_kc705_defconfig
+mips                     loongson1b_defconfig
+powerpc                      ppc64e_defconfig
+parisc                generic-32bit_defconfig
+arm                          ep93xx_defconfig
+powerpc                    amigaone_defconfig
+m68k                       m5249evb_defconfig
+arm                            mmp2_defconfig
+powerpc                       eiger_defconfig
+powerpc                 canyonlands_defconfig
+nds32                            alldefconfig
+powerpc                    ge_imp3a_defconfig
+sh                          rsk7269_defconfig
+powerpc                 mpc837x_mds_defconfig
+arm                      integrator_defconfig
+m68k                            q40_defconfig
+sh                             sh03_defconfig
+arm                           spitz_defconfig
+arm                       multi_v4t_defconfig
+um                           x86_64_defconfig
+powerpc                   lite5200b_defconfig
+riscv                    nommu_virt_defconfig
+arm                         vf610m4_defconfig
+arm                          collie_defconfig
+sh                          rsk7264_defconfig
+arm                      pxa255-idp_defconfig
+powerpc                    gamecube_defconfig
+arm                        spear3xx_defconfig
+powerpc                      pcm030_defconfig
+openrisc                  or1klitex_defconfig
+arm                        realview_defconfig
+m68k                            mac_defconfig
+mips                      pistachio_defconfig
+arm                             mxs_defconfig
+x86_64                           alldefconfig
+sh                          rsk7201_defconfig
+ia64                          tiger_defconfig
+sh                                  defconfig
+openrisc                            defconfig
+powerpc                     asp8347_defconfig
+sparc                       sparc64_defconfig
+sh                            shmin_defconfig
+s390                          debug_defconfig
+powerpc                 mpc8272_ads_defconfig
+arc                            hsdk_defconfig
+arm                           h5000_defconfig
+arm                            mps2_defconfig
+powerpc                 mpc836x_mds_defconfig
+parisc                              defconfig
+sh                           se7712_defconfig
+m68k                        m5272c3_defconfig
+xtensa                  cadence_csp_defconfig
+powerpc                     akebono_defconfig
+arm                             ezx_defconfig
+powerpc                 mpc85xx_cds_defconfig
+sh                         apsh4a3a_defconfig
+sh                   secureedge5410_defconfig
+mips                       bmips_be_defconfig
+sh                     magicpanelr2_defconfig
+mips                           ip28_defconfig
+arc                    vdk_hs38_smp_defconfig
+powerpc                   microwatt_defconfig
+xtensa                  nommu_kc705_defconfig
+riscv                    nommu_k210_defconfig
+sh                          landisk_defconfig
+arm                           corgi_defconfig
+sh                ecovec24-romimage_defconfig
+mips                            e55_defconfig
+arm                        oxnas_v6_defconfig
+sh                          sdk7780_defconfig
+mips                          malta_defconfig
+ia64                             alldefconfig
+powerpc                        icon_defconfig
+mips                         tb0287_defconfig
+sh                      rts7751r2d1_defconfig
+nios2                         3c120_defconfig
+sh                            hp6xx_defconfig
+mips                      maltasmvp_defconfig
+arm                       aspeed_g4_defconfig
+sh                           se7724_defconfig
+powerpc                    mvme5100_defconfig
+arm                     am200epdkit_defconfig
+arm                         shannon_defconfig
+arm                             pxa_defconfig
+powerpc                      pmac32_defconfig
+mips                        vocore2_defconfig
+powerpc                     pseries_defconfig
+arm                           omap1_defconfig
+powerpc                  storcenter_defconfig
+arm                       spear13xx_defconfig
+arm                          pcm027_defconfig
+microblaze                      mmu_defconfig
+x86_64                            allnoconfig
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a005-20210826
+x86_64               randconfig-a006-20210826
+x86_64               randconfig-a001-20210826
+x86_64               randconfig-a003-20210826
+x86_64               randconfig-a004-20210826
+x86_64               randconfig-a002-20210826
+i386                 randconfig-a006-20210826
+i386                 randconfig-a001-20210826
+i386                 randconfig-a002-20210826
+i386                 randconfig-a005-20210826
+i386                 randconfig-a003-20210826
+i386                 randconfig-a004-20210826
+x86_64               randconfig-a014-20210827
+x86_64               randconfig-a015-20210827
+x86_64               randconfig-a016-20210827
+x86_64               randconfig-a013-20210827
+x86_64               randconfig-a012-20210827
+x86_64               randconfig-a011-20210827
+arc                  randconfig-r043-20210827
+riscv                randconfig-r042-20210827
+s390                 randconfig-r044-20210827
+riscv                            allyesconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                             i386_defconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+
+clang tested configs:
+i386                 randconfig-c001-20210826
+s390                 randconfig-c005-20210826
+arm                  randconfig-c002-20210826
+riscv                randconfig-c006-20210826
+powerpc              randconfig-c003-20210826
+x86_64               randconfig-c007-20210826
+mips                 randconfig-c004-20210826
+s390                 randconfig-c005-20210827
+i386                 randconfig-c001-20210827
+arm                  randconfig-c002-20210827
+riscv                randconfig-c006-20210827
+powerpc              randconfig-c003-20210827
+x86_64               randconfig-c007-20210827
+mips                 randconfig-c004-20210827
+x86_64               randconfig-a005-20210827
+x86_64               randconfig-a001-20210827
+x86_64               randconfig-a006-20210827
+x86_64               randconfig-a003-20210827
+x86_64               randconfig-a004-20210827
+x86_64               randconfig-a002-20210827
+x86_64               randconfig-a014-20210826
+x86_64               randconfig-a015-20210826
+x86_64               randconfig-a016-20210826
+x86_64               randconfig-a013-20210826
+x86_64               randconfig-a012-20210826
+x86_64               randconfig-a011-20210826
+i386                 randconfig-a011-20210826
+i386                 randconfig-a016-20210826
+i386                 randconfig-a012-20210826
+i386                 randconfig-a014-20210826
+i386                 randconfig-a013-20210826
+i386                 randconfig-a015-20210826
+hexagon              randconfig-r041-20210826
+hexagon              randconfig-r045-20210826
+riscv                randconfig-r042-20210826
+s390                 randconfig-r044-20210826
+
 ---
-
- drivers/tty/serial/uartlite.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index f42ccc40ffa6..bcea7ef4699f 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -553,16 +553,15 @@ static void early_uartlite_putc(struct uart_port *port, int c)
- 	 * This limit is pretty arbitrary, unless we are at about 10 baud
- 	 * we'll never timeout on a working UART.
- 	 */
--
- 	unsigned retries = 1000000;
--	/* read status bit - 0x8 offset */
--	while (--retries && (readl(port->membase + 8) & (1 << 3)))
-+
-+	while (--retries &&
-+	       (readl(port->membase + ULITE_STATUS) & ULITE_STATUS_TXFULL))
- 		;
- 
- 	/* Only attempt the iowrite if we didn't timeout */
--	/* write to TX_FIFO - 0x4 offset */
- 	if (retries)
--		writel(c & 0xff, port->membase + 4);
-+		writel(c & 0xff, port->membase + ULITE_TX);
- }
- 
- static void early_uartlite_write(struct console *console,
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
