@@ -7,61 +7,62 @@ X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B22C43216
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 18:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F805C3F6A3
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 18:59:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9B7196108B
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 18:58:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 13B06610E5
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 18:59:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbhHaS7S (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Aug 2021 14:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43600 "EHLO
+        id S239509AbhHaTAn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 Aug 2021 15:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239509AbhHaS7M (ORCPT
+        with ESMTP id S239608AbhHaTAk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Aug 2021 14:59:12 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A9FC0617AE
-        for <linux-serial@vger.kernel.org>; Tue, 31 Aug 2021 11:58:17 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id j1so193953pjv.3
-        for <linux-serial@vger.kernel.org>; Tue, 31 Aug 2021 11:58:17 -0700 (PDT)
+        Tue, 31 Aug 2021 15:00:40 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E78C0617A8
+        for <linux-serial@vger.kernel.org>; Tue, 31 Aug 2021 11:59:44 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id me10so914784ejb.11
+        for <linux-serial@vger.kernel.org>; Tue, 31 Aug 2021 11:59:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hja3k4ZIoHMyQ4VMtlG5szRRbScDh1UjpE02C2d4Keg=;
-        b=kicsjtll2NsAKBfjPi48UpmCfWsb4FJEcTRGcrE5uks4vHLsX71gqk79m8Us/tamin
-         XNurIf+3NS5RgfXBPJDOh5b+AFFP3+H7hsFSxfL9Vwb+FBInOrB3bUMzGzI4HG1pv0yo
-         qByPbg69R4mh1iyiutn783XwUDEuViZZh+wWLzAxV8KNPAXLYMLnMQ7ZIC5dBF/jJ0Uf
-         ATOJBlEbDfKr49CyoQE3NS/wdpgXRK43XqUolPGY7v+/2iaZWnEhp4NxfHpSzOq8tAFY
-         KPm7dvp3HOyllOHPqJ3OaYwVF710GR7FGM2+FU87sCMEW7HnJZYMbvATrp2kicNQo/Lp
-         wZIQ==
+        bh=K4O58ZgiMsf0cCMtsvw/t7AJFM1T3tlDvm3uUGsU/to=;
+        b=m/p6PQxMro/Ee7fR7WvozEwx71BnscpCpL2xs1XR6unVL7bfCWki5mm/DL8tzkxtlv
+         IgmDAUJlZv7+KUUNuYAb3NRkVROzdUIxdGRwwrqEOUO0vD6Cu/HZq+bSFieTd9983AeD
+         YktyhmMz20Tq1h8uROtJTQQFwlHuUy+Bds8+ZIoQqHDYDTRBZ7xIrXRop6SBBaMcqz3D
+         KSsC4i4L46l25F26x2rXCk4fmowpOEt5kNPUpUjO3ZN5jtoqzJulRjdNVM64Yw8ZBWOt
+         rXYGE77kjE3hfKV3j/NE4j8c0xfhsFszf/XJGAR6u3atTQlztdBXyq7sYYSIi6VfUO2y
+         mhuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hja3k4ZIoHMyQ4VMtlG5szRRbScDh1UjpE02C2d4Keg=;
-        b=C6Bfc/mnCpiWvD4jNs11CB2MHxTUBvOhQ8gdfnWU+hkDMLuLMZwJpTIHE6/GxoIUUh
-         zFadHISy5CXgEbckWncaCL18txxPeRxgfxkQBc6sPxM5C2SaiLk5SSYqpgEsyPJ6JJNA
-         8I8cHGIRmN3Yy26LkytptuOZNbl7gbBIwZ4hhvrE5hYzhtROHV1CdJX+qVIv842n+mnE
-         h1T1EyG9LVqtXI3iCO2DqqpViteCu5moWP358CYXBnPlflvV6op0lxWxOK/lV3NJ2aGP
-         VSifw1OgntzFy7PbqhYkzPhLzJLz9hC+YaxuJLFKoR1hVKdOnd0Toqmbq4uM5inrmLpv
-         K5TA==
-X-Gm-Message-State: AOAM530KODPRuSbihXG9rFuwMsEwQpv8k33GuhL521fYl1pbk90nmIpP
-        FtDIR2N6bnkG91fGEaywjqyraMBZSDdqsV+gY/bIpA==
-X-Google-Smtp-Source: ABdhPJwoE2JSRabTcXsiA1AgYUTphGBwkKAbOMuVGJ2LSP+gzTcAsVPbn/x852sYGDfXxMDArhTShQzlDIpbLKeNN64=
-X-Received: by 2002:a17:90a:708c:: with SMTP id g12mr7220358pjk.13.1630436296443;
- Tue, 31 Aug 2021 11:58:16 -0700 (PDT)
+        bh=K4O58ZgiMsf0cCMtsvw/t7AJFM1T3tlDvm3uUGsU/to=;
+        b=jYIxBZPgp3ZXMOukn4e7U9EjIXCsM8hYJBDtnrWKqWW716yzE/bdOute1WszMdX6QP
+         pwOojy4GgI/TSjB5By5nOJB92JPdLKKzRS7MNVClNDgaWtrcF3l3n93yH5VdIHBK7pmY
+         5xXnBT2idv4aRzRrZlY9+8tLtocJZbKUuerft+rVRztsC5OnhaPfSzS0whjH2GiDu79v
+         Al8U4GMrNjoaysLP8vukpZOzbVdMm0FLrAdFaNnbRHFFtlNWGhsChOnS150oiG51ssBn
+         L/s9qD79in6bOJTL6fOQjRrmljHWdqyb1mJ5Q4X2Sh1PDQCTVzQjyuFm6gduDvcGyhpK
+         DaEw==
+X-Gm-Message-State: AOAM530RCZVq3rthgv/a6T1WFAOARrwsETZoaCklssE2T61RO6Pyr+7W
+        nasgmor9xHCLog0upPYWtcwZ6Em2lKV0kbehvaLq
+X-Google-Smtp-Source: ABdhPJynhzjWiT5WygcinC1v/vpSrVXtKhAajoj91Y8oOaAf641QOi9pajzp20JXEjTMXZ2nBzK8acBfiZKG6sYGsHg=
+X-Received: by 2002:a17:906:2cd6:: with SMTP id r22mr31706715ejr.398.1630436382385;
+ Tue, 31 Aug 2021 11:59:42 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210616085118.1141101-1-omosnace@redhat.com> <CAPcyv4jvR8CT4rYODR5KUHNdiqMwQSwJZ+OkVf61kLT3JfjC_Q@mail.gmail.com>
- <CAFqZXNtuH0329Xvcb415Kar-=o6wwrkFuiP8BZ_2OQhHLqkkAg@mail.gmail.com> <CAHC9VhTGECM2p+Q8n48aSdfJzY6XrpXQ5tcFurjWc4A3n8Qxjg@mail.gmail.com>
-In-Reply-To: <CAHC9VhTGECM2p+Q8n48aSdfJzY6XrpXQ5tcFurjWc4A3n8Qxjg@mail.gmail.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 31 Aug 2021 11:58:05 -0700
-Message-ID: <CAPcyv4i8YXo=xOL2vO67KLABQRDNAxzrzT=a1xtwtrts5pVPKw@mail.gmail.com>
+ <CAFqZXNtuH0329Xvcb415Kar-=o6wwrkFuiP8BZ_2OQhHLqkkAg@mail.gmail.com>
+ <CAHC9VhTGECM2p+Q8n48aSdfJzY6XrpXQ5tcFurjWc4A3n8Qxjg@mail.gmail.com> <CAPcyv4i8YXo=xOL2vO67KLABQRDNAxzrzT=a1xtwtrts5pVPKw@mail.gmail.com>
+In-Reply-To: <CAPcyv4i8YXo=xOL2vO67KLABQRDNAxzrzT=a1xtwtrts5pVPKw@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 31 Aug 2021 14:59:31 -0400
+Message-ID: <CAHC9VhReGcV=cngDMmAcEiS2NpkXZQ6b09go9m0omzxLdrUQXg@mail.gmail.com>
 Subject: Re: [PATCH v3] lockdown,selinux: fix wrong subject in some SELinux
  lockdown checks
-To:     Paul Moore <paul@paul-moore.com>
+To:     Dan Williams <dan.j.williams@intel.com>
 Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
         Linux Security Module list 
         <linux-security-module@vger.kernel.org>,
@@ -90,46 +91,52 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 6:53 AM Paul Moore <paul@paul-moore.com> wrote:
->
-> On Tue, Aug 31, 2021 at 5:09 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> > On Sat, Jun 19, 2021 at 12:18 AM Dan Williams <dan.j.williams@intel.com> wrote:
-> > > On Wed, Jun 16, 2021 at 1:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
->
-> ...
->
-> > > > diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
-> > > > index 2acc6173da36..c1747b6555c7 100644
-> > > > --- a/drivers/cxl/mem.c
-> > > > +++ b/drivers/cxl/mem.c
-> > > > @@ -568,7 +568,7 @@ static bool cxl_mem_raw_command_allowed(u16 opcode)
-> > > >         if (!IS_ENABLED(CONFIG_CXL_MEM_RAW_COMMANDS))
-> > > >                 return false;
-> > > >
-> > > > -       if (security_locked_down(LOCKDOWN_NONE))
-> > > > +       if (security_locked_down(current_cred(), LOCKDOWN_NONE))
-> > >
-> > > Acked-by: Dan Williams <dan.j.williams@intel.com>
-> > >
-> > > ...however that usage looks wrong. The expectation is that if kernel
-> > > integrity protections are enabled then raw command access should be
-> > > disabled. So I think that should be equivalent to LOCKDOWN_PCI_ACCESS
-> > > in terms of the command capabilities to filter.
+On Tue, Aug 31, 2021 at 2:58 PM Dan Williams <dan.j.williams@intel.com> wrote:
+> On Tue, Aug 31, 2021 at 6:53 AM Paul Moore <paul@paul-moore.com> wrote:
+> > On Tue, Aug 31, 2021 at 5:09 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> > > On Sat, Jun 19, 2021 at 12:18 AM Dan Williams <dan.j.williams@intel.com> wrote:
+> > > > On Wed, Jun 16, 2021 at 1:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
 > >
-> > Yes, the LOCKDOWN_NONE seems wrong here... but it's a pre-existing bug
-> > and I didn't want to go down yet another rabbit hole trying to fix it.
-> > I'll look at this again once this patch is settled - it may indeed be
-> > as simple as replacing LOCKDOWN_NONE with LOCKDOWN_PCI_ACCESS.
+> > ...
+> >
+> > > > > diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
+> > > > > index 2acc6173da36..c1747b6555c7 100644
+> > > > > --- a/drivers/cxl/mem.c
+> > > > > +++ b/drivers/cxl/mem.c
+> > > > > @@ -568,7 +568,7 @@ static bool cxl_mem_raw_command_allowed(u16 opcode)
+> > > > >         if (!IS_ENABLED(CONFIG_CXL_MEM_RAW_COMMANDS))
+> > > > >                 return false;
+> > > > >
+> > > > > -       if (security_locked_down(LOCKDOWN_NONE))
+> > > > > +       if (security_locked_down(current_cred(), LOCKDOWN_NONE))
+> > > >
+> > > > Acked-by: Dan Williams <dan.j.williams@intel.com>
+> > > >
+> > > > ...however that usage looks wrong. The expectation is that if kernel
+> > > > integrity protections are enabled then raw command access should be
+> > > > disabled. So I think that should be equivalent to LOCKDOWN_PCI_ACCESS
+> > > > in terms of the command capabilities to filter.
+> > >
+> > > Yes, the LOCKDOWN_NONE seems wrong here... but it's a pre-existing bug
+> > > and I didn't want to go down yet another rabbit hole trying to fix it.
+> > > I'll look at this again once this patch is settled - it may indeed be
+> > > as simple as replacing LOCKDOWN_NONE with LOCKDOWN_PCI_ACCESS.
+> >
+> > At this point you should be well aware of my distaste for merging
+> > patches that have known bugs in them.  Yes, this is a pre-existing
+> > condition, but it seems well within the scope of this work to address
+> > it as well.
+> >
+> > This isn't something that is going to get merged while the merge
+> > window is open, so at the very least you've got almost two weeks to
+> > sort this out - please do that.
 >
-> At this point you should be well aware of my distaste for merging
-> patches that have known bugs in them.  Yes, this is a pre-existing
-> condition, but it seems well within the scope of this work to address
-> it as well.
->
-> This isn't something that is going to get merged while the merge
-> window is open, so at the very least you've got almost two weeks to
-> sort this out - please do that.
+> Yes, apologies, I should have sent the fix shortly after noticing the
+> problem. I'll get the CXL bug fix out of the way so Ondrej can move
+> this along.
 
-Yes, apologies, I should have sent the fix shortly after noticing the
-problem. I'll get the CXL bug fix out of the way so Ondrej can move
-this along.
+Thanks Dan.
+
+-- 
+paul moore
+www.paul-moore.com
