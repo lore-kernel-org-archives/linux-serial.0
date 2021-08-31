@@ -3,97 +3,91 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA4FC4320E
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 19:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD2EC4320E
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 20:06:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 16F15610A2
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 19:27:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6CF53610CC
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 20:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240791AbhHaT2b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Aug 2021 15:28:31 -0400
-Received: from mail-oi1-f180.google.com ([209.85.167.180]:38868 "EHLO
-        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240607AbhHaT20 (ORCPT
+        id S234644AbhHaUHj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 Aug 2021 16:07:39 -0400
+Received: from mail-ot1-f44.google.com ([209.85.210.44]:34639 "EHLO
+        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240791AbhHaUHj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Aug 2021 15:28:26 -0400
-Received: by mail-oi1-f180.google.com with SMTP id u25so567486oiv.5;
-        Tue, 31 Aug 2021 12:27:31 -0700 (PDT)
+        Tue, 31 Aug 2021 16:07:39 -0400
+Received: by mail-ot1-f44.google.com with SMTP id k12-20020a056830150c00b0051abe7f680bso668954otp.1;
+        Tue, 31 Aug 2021 13:06:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=B18XCxdh5roXXYBkgIgsolQaF3/RyCT+RYjyoh97Brk=;
-        b=p/K7gazXe3lixbGJQhpSlMMBsSaHaLL9r11KMAZPuYN6euzDBiqxKMoPvLu397c0Fx
-         0Yjhxb7elnwVI+RgLm0KersY5tqv1Rn3KROfZfKxND20+0QCkXuP3JFfZxcVpMz1CZbY
-         +V7xCMOeN4zKnCvltLRJLyV48jfcJzBAzL8N0BA5WtNoeaJy7OhTjINMYi78FGsiwEo9
-         st42Pp1rtkSUYeb/kvshA/f4l7aYkJN3TnjEQgTErml7RKRAxGgG+QkQGadiLe3rE6Jk
-         aYBMpz17HUCKL/FONrAzgqigRS4N3MR3OojosvZv9lJS6rsfW41gOdrgh9eoQD+doIMT
-         k10g==
-X-Gm-Message-State: AOAM532L1Ck3ANTACeGOZLg6bMaXtLx0U3s460Y6JEANYkSIwjxNqYhX
-        3tvAg7MDFWyFsVd5Ezq+mjwbX5pO7g==
-X-Google-Smtp-Source: ABdhPJyISGNvUkiwv/aZwGtTy7OmqleXpitzw8KMrZYdmigKN/S7wGPQvq/Drjnoa3iN8bG0Uc6OpA==
-X-Received: by 2002:a54:4182:: with SMTP id 2mr4533320oiy.66.1630438050741;
-        Tue, 31 Aug 2021 12:27:30 -0700 (PDT)
+        bh=I7AE6JNcfye2uRjCkzeW1VdTKMTfLS0Wyak3wfr5kuo=;
+        b=AatWyIZ7vpjonfzFnE+8Dt+VzIWSjorrqrbVMpbOEy+V75ZQowmJx5lA+0wnxcQ8Xs
+         hp8HnBnaX2FyUoNi0WWMYLuIupHobMSUyg5DppcY+wvc4ehuaVnzJ+yBSLaat+V5qhH7
+         yBTN5SFdHm2NgU0UfBgwGigJJJlFHBqtnAwqiU86lmg+CBPCLS4VQ1afG/KK9r56wyL/
+         7g9vB+zqd/50GaQ3u3wsH7WuQUTxvcz9vzvFzZi1MPW9YuyrNNw/qLatSVbLa4N4SSbo
+         MomIhDRjUGqpTzcCV4poc1XJoxzG/Yyr04Q4mtIit7Mw6Pcc9CaJFoOfVmClF+deoT4e
+         ZLbg==
+X-Gm-Message-State: AOAM530M67wqmghf0W+RICyUXwCGVM8Z8TUZIJQ7uSkTevURk47xDcIp
+        K92ulHoWgkqWWzp37K6QYNiYkTk/sA==
+X-Google-Smtp-Source: ABdhPJx45qTlxFXvskqD8CsOdV5Lsk85htt4XAImBruvawSuYM2eiuu+YFIEi+x+X4ZA6xHLMV+wzQ==
+X-Received: by 2002:a9d:6192:: with SMTP id g18mr26182717otk.314.1630440403216;
+        Tue, 31 Aug 2021 13:06:43 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id o8sm3712041oiw.55.2021.08.31.12.27.29
+        by smtp.gmail.com with ESMTPSA id 65sm2815782otc.32.2021.08.31.13.06.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 12:27:30 -0700 (PDT)
-Received: (nullmailer pid 515234 invoked by uid 1000);
-        Tue, 31 Aug 2021 19:27:28 -0000
-Date:   Tue, 31 Aug 2021 14:27:28 -0500
+        Tue, 31 Aug 2021 13:06:42 -0700 (PDT)
+Received: (nullmailer pid 569553 invoked by uid 1000);
+        Tue, 31 Aug 2021 20:06:41 -0000
+Date:   Tue, 31 Aug 2021 15:06:41 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Sam Shih <sam.shih@mediatek.com>
-Cc:     Sean Wang <sean.wang@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Seiya Wang <seiya.wang@mediatek.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-clk@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Ryder Lee <Ryder.Lee@mediatek.com>
-Subject: Re: [v2,05/12] dt-bindings: pinctrl: update bindings for MT7986 SoC
-Message-ID: <YS6CoAxnarhqdTl+@robh.at.kernel.org>
-References: <20210817074557.30953-1-sam.shih@mediatek.com>
- <20210817074557.30953-6-sam.shih@mediatek.com>
+        Peter Korsgaard <peter.korsgaard@barco.com>,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
+        Peter Korsgaard <peter@korsgaard.com>
+Subject: Re: [PATCH v3 2/4] dt-bindings: serial: uartlite: Add properties for
+ synthesis-time parameters
+Message-ID: <YS6L0eZ8VJVcrzCV@robh.at.kernel.org>
+References: <20210826192154.3202269-1-sean.anderson@seco.com>
+ <20210826192154.3202269-3-sean.anderson@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210817074557.30953-6-sam.shih@mediatek.com>
+In-Reply-To: <20210826192154.3202269-3-sean.anderson@seco.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 17, 2021 at 03:45:50PM +0800, Sam Shih wrote:
-> This updates bindings for MT7986 pinctrl driver.
-> The difference of pinctrl between mt7986a and mt7986b
-> is that pin-41 to pin-65 do not exist on mt7986b
+On Thu, 26 Aug 2021 15:21:52 -0400, Sean Anderson wrote:
+> The uartlite device is a "soft" device. Many parameters, such as baud
+> rate, data bits, and the presence of a parity bit are configured before
+> synthesis and may not be changed (or discovered) at runtime. However, we
+> must know what these settings are in order to properly calculate the
+> uart timeout (and to inform the user about the actual baud of the uart).
 > 
-> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> These properties are present for out-of-tree bindings generated by
+> Xilinx's tools. However, they are also (mostly) present in in-tree
+> bindings. I chose current-speed over xlnx,baudrate primarily because it
+> seemed to be used by more existing bindings. Although these properties
+> are marked as "required", note that only current-speed is required by
+> the driver itself. Hopefully, this will allow for an easier transition.
 > 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 > ---
-> v2 : deleted the redundant description of mt7986a/mt7986b
 > 
-> ---
->  .../bindings/pinctrl/pinctrl-mt7622.txt       | 170 ++++++++++++++++++
->  1 file changed, 170 insertions(+)
+> Changes in v3:
+> - Removed defaults for required properties
+> 
+>  .../bindings/serial/xlnx,opb-uartlite.yaml    | 37 +++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+> 
 
-This is adding a lot to not be in schema format. I imagine this will 
-need to be a separate file if the pin and function names are different 
-for each SoC.
-
-Rob
+Reviewed-by: Rob Herring <robh@kernel.org>
