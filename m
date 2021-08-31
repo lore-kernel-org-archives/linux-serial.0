@@ -2,114 +2,263 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DE1C4320E
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 08:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C6BC4320E
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 09:08:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B125C6103E
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 08:35:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3D50161056
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 09:08:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240278AbhHaIgI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Aug 2021 04:36:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41228 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240347AbhHaIgH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Aug 2021 04:36:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B910E6101C;
-        Tue, 31 Aug 2021 08:35:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630398912;
-        bh=Pns88gfzitfY2T3bP8utOQi67YcxT/YNMT+cCdTj+TM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XB3pD9Lnv0T1SincG1NLxCNS8lz7IJ/72EAasUGcnD6pcZZ1uk9uXWxjj7I/3cig6
-         v4yOmN96eaIwbgu8cyGbAPg22s0mAb4OM3lvOqGDyvyR2qKj2poc73gGXZiPbWO6j/
-         SRoAoqYx05phY2s0iZFV96E2Uq8doKLCQtox0pWYFxHWWFSYwPkIxF92e/jhvDgAN1
-         d4pVoGp2EKIt6Phgr6HHvsis7DYruqCjiWeskV/ndapZlYrAdqdBJBt/MJVAXw69/s
-         bsFIfajQZE/MtWPyeAJAb+qQAkLXbKamDm1RSpYel5NuejxTMa13kL6J6oG+FKtxpI
-         6ayyNnaZSckZg==
-Received: by pali.im (Postfix)
-        id 6B42EEF2; Tue, 31 Aug 2021 10:35:10 +0200 (CEST)
-Date:   Tue, 31 Aug 2021 10:35:10 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vladimir Vid <vladimir.vid@sartura.hr>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 0/6] serial: mvebu-uart: Support for higher baudrates
-Message-ID: <20210831083510.iiapfla7iy76fs3w@pali>
-References: <20210624224909.6350-1-pali@kernel.org>
- <20210809145329.24177-1-pali@kernel.org>
- <20210820172238.ekvo42s7oqxkeomt@pali>
+        id S240595AbhHaJJW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 Aug 2021 05:09:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44206 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240593AbhHaJJU (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 31 Aug 2021 05:09:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630400905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lCeb7MSVHIA6AQvPBMrpCMcewt6C5Hp/EtiNe37zzes=;
+        b=OYfklSxIGZ2UAo16GAhdjm2CXSijTlJ9/OeQbold6WiNL+qgGF4I2UWDaYyt0buMlZkM95
+        I4Q3lMjbFppBEPF+ED0Bk64vYbs+Frfirzbp6lVpjTJsSX/N92QB3TfA+mbHefoDvo54Oz
+        n3O6C6OIRRnoNtUiyXA/4j4I3hFB9FY=
+Received: from mail-yb1-f200.google.com (mail-yb1-f200.google.com
+ [209.85.219.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-230-QDR7dmaiOm6v6ueATNr9yA-1; Tue, 31 Aug 2021 05:08:20 -0400
+X-MC-Unique: QDR7dmaiOm6v6ueATNr9yA-1
+Received: by mail-yb1-f200.google.com with SMTP id k187-20020a2556c4000000b00598b2a660e2so5021228ybb.6
+        for <linux-serial@vger.kernel.org>; Tue, 31 Aug 2021 02:08:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lCeb7MSVHIA6AQvPBMrpCMcewt6C5Hp/EtiNe37zzes=;
+        b=DkvgwMyeQZbsXp+b3aiVNeYNVK8jWiVSoJE0XG8mpuQJlOvO/RaRI8R1O/onJ0t9cu
+         4Q1sG2X+JZ2YLcb5Is0xC+4duU85G6rIAMUQefrDgV7j1LH5351V64KPESHpW/5p6JFo
+         9lU4p3gXalr1Sf09B2zRhM77K+d/09r4znSBMnhj1o2/0L5/dqLM86cOSS4RAliC5YWF
+         qhFWxmmHoWL3NThyf+0E3YkgcCbGHYLXoGAiWX7/kqzOvP/NsXOscTBzwOXzw4xN5Nas
+         ra9/NnU3deaCeoY5O7W2lLQkkWCdm8Ff5ymDfrrWTYTLmUHVlTOibWmxO0b9AFJiyG2P
+         mlDw==
+X-Gm-Message-State: AOAM530i6pGqxmXi3UxXAVPa6J0xpSsf+iMAhyIAnLGgpqO9Y0aPT0ff
+        Q28TLqL7AnLQNpBNtTd1jA7fLbYzQoPOYMn6yeYDBB/Ndq/7eMQZ5BW/UcG2CgJCRQfqfSUorwQ
+        NzuCurln+pOkOSe6RNpSfbl9Ks9DylanLnisriYTI
+X-Received: by 2002:a25:c184:: with SMTP id r126mr28651664ybf.123.1630400899636;
+        Tue, 31 Aug 2021 02:08:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy4ZNnqHdPHd1KpwqFLFV6AFeVHb5LZ7Jb5RG2vtJXhk7vybNwPbdTc2aQhHuASLbfSbAuaEwPm90oIL61rhUM=
+X-Received: by 2002:a25:c184:: with SMTP id r126mr28651621ybf.123.1630400899378;
+ Tue, 31 Aug 2021 02:08:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210820172238.ekvo42s7oqxkeomt@pali>
-User-Agent: NeoMutt/20180716
+References: <20210616085118.1141101-1-omosnace@redhat.com> <CAHC9VhSr2KpeBXuyoHR3_hs+qczFUaBx0oCSMfBBA5UNYU+0KA@mail.gmail.com>
+In-Reply-To: <CAHC9VhSr2KpeBXuyoHR3_hs+qczFUaBx0oCSMfBBA5UNYU+0KA@mail.gmail.com>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Tue, 31 Aug 2021 11:08:08 +0200
+Message-ID: <CAFqZXNvJtMOfLk-SLt2S2qt=+-x8fm9jS3NKxFoT0_5d2=8Ckg@mail.gmail.com>
+Subject: Re: [PATCH v3] lockdown,selinux: fix wrong subject in some SELinux
+ lockdown checks
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
+        linux-acpi@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-efi@vger.kernel.org,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-serial@vger.kernel.org, bpf <bpf@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        kexec@lists.infradead.org,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=omosnace@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Friday 20 August 2021 19:22:38 Pali Rohár wrote:
-> On Monday 09 August 2021 16:53:23 Pali Rohár wrote:
-> > This patch series add support for baudrates higher than 230400 on
-> > Marvell Armada 37xx boards.
-> > 
-> > Please review these patches as they touch both Device Tree bindings and
-> > mvebu-uart.c driver.
-> 
-> Stephen, is this patch series OK now? Or is there any other issue?
+On Fri, Jun 18, 2021 at 5:40 AM Paul Moore <paul@paul-moore.com> wrote:
+> On Wed, Jun 16, 2021 at 4:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> >
+> > Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
+> > lockdown") added an implementation of the locked_down LSM hook to
+> > SELinux, with the aim to restrict which domains are allowed to perform
+> > operations that would breach lockdown.
+> >
+> > However, in several places the security_locked_down() hook is called in
+> > situations where the current task isn't doing any action that would
+> > directly breach lockdown, leading to SELinux checks that are basically
+> > bogus.
+> >
+> > To fix this, add an explicit struct cred pointer argument to
+> > security_lockdown() and define NULL as a special value to pass instead
+> > of current_cred() in such situations. LSMs that take the subject
+> > credentials into account can then fall back to some default or ignore
+> > such calls altogether. In the SELinux lockdown hook implementation, use
+> > SECINITSID_KERNEL in case the cred argument is NULL.
+> >
+> > Most of the callers are updated to pass current_cred() as the cred
+> > pointer, thus maintaining the same behavior. The following callers are
+> > modified to pass NULL as the cred pointer instead:
+> > 1. arch/powerpc/xmon/xmon.c
+> >      Seems to be some interactive debugging facility. It appears that
+> >      the lockdown hook is called from interrupt context here, so it
+> >      should be more appropriate to request a global lockdown decision.
+> > 2. fs/tracefs/inode.c:tracefs_create_file()
+> >      Here the call is used to prevent creating new tracefs entries when
+> >      the kernel is locked down. Assumes that locking down is one-way -
+> >      i.e. if the hook returns non-zero once, it will never return zero
+> >      again, thus no point in creating these files. Also, the hook is
+> >      often called by a module's init function when it is loaded by
+> >      userspace, where it doesn't make much sense to do a check against
+> >      the current task's creds, since the task itself doesn't actually
+> >      use the tracing functionality (i.e. doesn't breach lockdown), just
+> >      indirectly makes some new tracepoints available to whoever is
+> >      authorized to use them.
+> > 3. net/xfrm/xfrm_user.c:copy_to_user_*()
+> >      Here a cryptographic secret is redacted based on the value returned
+> >      from the hook. There are two possible actions that may lead here:
+> >      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
+> >         task context is relevant, since the dumped data is sent back to
+> >         the current task.
+> >      b) When adding/deleting/updating an SA via XFRM_MSG_xxxSA, the
+> >         dumped SA is broadcasted to tasks subscribed to XFRM events -
+> >         here the current task context is not relevant as it doesn't
+> >         represent the tasks that could potentially see the secret.
+> >      It doesn't seem worth it to try to keep using the current task's
+> >      context in the a) case, since the eventual data leak can be
+> >      circumvented anyway via b), plus there is no way for the task to
+> >      indicate that it doesn't care about the actual key value, so the
+> >      check could generate a lot of "false alert" denials with SELinux.
+> >      Thus, let's pass NULL instead of current_cred() here faute de
+> >      mieux.
+> >
+> > Improvements-suggested-by: Casey Schaufler <casey@schaufler-ca.com>
+> > Improvements-suggested-by: Paul Moore <paul@paul-moore.com>
+> > Fixes: 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
+> > Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+>
+> This seems reasonable to me, but before I merge it into the SELinux
+> tree I think it would be good to get some ACKs from the relevant
+> subsystem folks.  I don't believe we ever saw a response to the last
+> question for the PPC folks, did we?
 
-PING?
+Can we move this forward somehow, please?
 
-> > Changes in v5:
-> > * fixed yaml binding file
-> > 
-> > Changes in v4:
-> > * converted armada3700-uart-clock documentation to YAML
-> > * split documentation changes into two commits:
-> >   - first which adds clock documentation
-> >   - second which updates UART documentation
-> > 
-> > Changes in v3:
-> > v3 is rebased on top of Linus master branch and all already applied patches
-> > were dropped. There are no changes in patches itself since v2.
-> > 
-> > Pali Rohár (6):
-> >   math64: New DIV_U64_ROUND_CLOSEST helper
-> >   serial: mvebu-uart: implement UART clock driver for configuring UART
-> >     base clock
-> >   dt-bindings: mvebu-uart: document DT bindings for
-> >     marvell,armada-3700-uart-clock
-> >   dt-bindings: mvebu-uart: update information about UART clock
-> >   arm64: dts: marvell: armada-37xx: add device node for UART clock and
-> >     use it
-> >   serial: mvebu-uart: implement support for baudrates higher than 230400
-> > 
-> >  .../bindings/clock/armada3700-uart-clock.yaml |  57 ++
-> >  .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
-> >  .../arm64/boot/dts/marvell/armada-3720-db.dts |   4 +
-> >  .../dts/marvell/armada-3720-espressobin.dtsi  |   4 +
-> >  .../dts/marvell/armada-3720-turris-mox.dts    |   4 +
-> >  .../boot/dts/marvell/armada-3720-uDPU.dts     |   4 +
-> >  arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  15 +-
-> >  drivers/tty/serial/Kconfig                    |   1 +
-> >  drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
-> >  include/linux/math64.h                        |  13 +
-> >  10 files changed, 682 insertions(+), 21 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/clock/armada3700-uart-clock.yaml
-> > 
-> > -- 
-> > 2.20.1
-> > 
+Quoting the yet-unanswered question from the v2 thread for convenience:
+
+> > > The callers migrated to the new hook, passing NULL as cred:
+> > > 1. arch/powerpc/xmon/xmon.c
+[...]
+> >
+> > This definitely sounds like kernel_t based on the description above.
+>
+> Here I'm a little concerned that the hook might be called from some
+> unusual interrupt, which is not masked by spin_lock_irqsave()... We
+> ran into this with PMI (Platform Management Interrupt) before, see
+> commit 5ae5fbd21079 ("powerpc/perf: Fix handling of privilege level
+> checks in perf interrupt context"). While I can't see anything that
+> would suggest something like this happening here, the whole thing is
+> so foreign to me that I'm wary of making assumptions :)
+>
+> @Michael/PPC devs, can you confirm to us that xmon_is_locked_down() is
+> only called from normal syscall/interrupt context (as opposed to
+> something tricky like PMI)?
+
+I strongly suspect the answer will be just "Of course it is, why would
+you even ask such a silly question?", but please let's have it on
+record so we can finally get this patch merged...
+
+
+> > ---
+> >
+> > v3:
+> > - add the cred argument to security_locked_down() and adapt all callers
+> > - keep using current_cred() in BPF, as the hook calls have been shifted
+> >   to program load time (commit ff40e51043af ("bpf, lockdown, audit: Fix
+> >   buggy SELinux lockdown permission checks"))
+> > - in SELinux, don't ignore hook calls where cred == NULL, but use
+> >   SECINITSID_KERNEL as the subject instead
+> > - update explanations in the commit message
+> >
+> > v2: https://lore.kernel.org/lkml/20210517092006.803332-1-omosnace@redhat.com/
+> > - change to a single hook based on suggestions by Casey Schaufler
+> >
+> > v1: https://lore.kernel.org/lkml/20210507114048.138933-1-omosnace@redhat.com/
+> >
+> >  arch/powerpc/xmon/xmon.c             |  4 ++--
+> >  arch/x86/kernel/ioport.c             |  4 ++--
+> >  arch/x86/kernel/msr.c                |  4 ++--
+> >  arch/x86/mm/testmmiotrace.c          |  2 +-
+> >  drivers/acpi/acpi_configfs.c         |  2 +-
+> >  drivers/acpi/custom_method.c         |  2 +-
+> >  drivers/acpi/osl.c                   |  3 ++-
+> >  drivers/acpi/tables.c                |  2 +-
+> >  drivers/char/mem.c                   |  2 +-
+> >  drivers/cxl/mem.c                    |  2 +-
+> >  drivers/firmware/efi/efi.c           |  2 +-
+> >  drivers/firmware/efi/test/efi_test.c |  2 +-
+> >  drivers/pci/pci-sysfs.c              |  6 +++---
+> >  drivers/pci/proc.c                   |  6 +++---
+> >  drivers/pci/syscall.c                |  2 +-
+> >  drivers/pcmcia/cistpl.c              |  2 +-
+> >  drivers/tty/serial/serial_core.c     |  2 +-
+> >  fs/debugfs/file.c                    |  2 +-
+> >  fs/debugfs/inode.c                   |  2 +-
+> >  fs/proc/kcore.c                      |  2 +-
+> >  fs/tracefs/inode.c                   |  2 +-
+> >  include/linux/lsm_hook_defs.h        |  2 +-
+> >  include/linux/lsm_hooks.h            |  1 +
+> >  include/linux/security.h             |  4 ++--
+> >  kernel/bpf/helpers.c                 | 10 ++++++----
+> >  kernel/events/core.c                 |  2 +-
+> >  kernel/kexec.c                       |  2 +-
+> >  kernel/kexec_file.c                  |  2 +-
+> >  kernel/module.c                      |  2 +-
+> >  kernel/params.c                      |  2 +-
+> >  kernel/power/hibernate.c             |  3 ++-
+> >  kernel/trace/bpf_trace.c             | 20 ++++++++++++--------
+> >  kernel/trace/ftrace.c                |  4 ++--
+> >  kernel/trace/ring_buffer.c           |  2 +-
+> >  kernel/trace/trace.c                 | 10 +++++-----
+> >  kernel/trace/trace_events.c          |  2 +-
+> >  kernel/trace/trace_events_hist.c     |  4 ++--
+> >  kernel/trace/trace_events_synth.c    |  2 +-
+> >  kernel/trace/trace_events_trigger.c  |  2 +-
+> >  kernel/trace/trace_kprobe.c          |  6 +++---
+> >  kernel/trace/trace_printk.c          |  2 +-
+> >  kernel/trace/trace_stack.c           |  2 +-
+> >  kernel/trace/trace_stat.c            |  2 +-
+> >  kernel/trace/trace_uprobe.c          |  4 ++--
+> >  net/xfrm/xfrm_user.c                 | 11 +++++++++--
+> >  security/lockdown/lockdown.c         |  3 ++-
+> >  security/security.c                  |  4 ++--
+> >  security/selinux/hooks.c             |  7 +++++--
+> >  48 files changed, 97 insertions(+), 77 deletions(-)
+>
+> --
+> paul moore
+> www.paul-moore.com
+>
+
+--
+Ondrej Mosnacek
+Software Engineer, Linux Security - SELinux kernel
+Red Hat, Inc
+
