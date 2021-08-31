@@ -2,141 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F805C3F6A3
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 18:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA4FC4320E
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 19:27:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 13B06610E5
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 18:59:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 16F15610A2
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Aug 2021 19:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239509AbhHaTAn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Aug 2021 15:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239608AbhHaTAk (ORCPT
+        id S240791AbhHaT2b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 Aug 2021 15:28:31 -0400
+Received: from mail-oi1-f180.google.com ([209.85.167.180]:38868 "EHLO
+        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240607AbhHaT20 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Aug 2021 15:00:40 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E78C0617A8
-        for <linux-serial@vger.kernel.org>; Tue, 31 Aug 2021 11:59:44 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id me10so914784ejb.11
-        for <linux-serial@vger.kernel.org>; Tue, 31 Aug 2021 11:59:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K4O58ZgiMsf0cCMtsvw/t7AJFM1T3tlDvm3uUGsU/to=;
-        b=m/p6PQxMro/Ee7fR7WvozEwx71BnscpCpL2xs1XR6unVL7bfCWki5mm/DL8tzkxtlv
-         IgmDAUJlZv7+KUUNuYAb3NRkVROzdUIxdGRwwrqEOUO0vD6Cu/HZq+bSFieTd9983AeD
-         YktyhmMz20Tq1h8uROtJTQQFwlHuUy+Bds8+ZIoQqHDYDTRBZ7xIrXRop6SBBaMcqz3D
-         KSsC4i4L46l25F26x2rXCk4fmowpOEt5kNPUpUjO3ZN5jtoqzJulRjdNVM64Yw8ZBWOt
-         rXYGE77kjE3hfKV3j/NE4j8c0xfhsFszf/XJGAR6u3atTQlztdBXyq7sYYSIi6VfUO2y
-         mhuw==
+        Tue, 31 Aug 2021 15:28:26 -0400
+Received: by mail-oi1-f180.google.com with SMTP id u25so567486oiv.5;
+        Tue, 31 Aug 2021 12:27:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K4O58ZgiMsf0cCMtsvw/t7AJFM1T3tlDvm3uUGsU/to=;
-        b=jYIxBZPgp3ZXMOukn4e7U9EjIXCsM8hYJBDtnrWKqWW716yzE/bdOute1WszMdX6QP
-         pwOojy4GgI/TSjB5By5nOJB92JPdLKKzRS7MNVClNDgaWtrcF3l3n93yH5VdIHBK7pmY
-         5xXnBT2idv4aRzRrZlY9+8tLtocJZbKUuerft+rVRztsC5OnhaPfSzS0whjH2GiDu79v
-         Al8U4GMrNjoaysLP8vukpZOzbVdMm0FLrAdFaNnbRHFFtlNWGhsChOnS150oiG51ssBn
-         L/s9qD79in6bOJTL6fOQjRrmljHWdqyb1mJ5Q4X2Sh1PDQCTVzQjyuFm6gduDvcGyhpK
-         DaEw==
-X-Gm-Message-State: AOAM530RCZVq3rthgv/a6T1WFAOARrwsETZoaCklssE2T61RO6Pyr+7W
-        nasgmor9xHCLog0upPYWtcwZ6Em2lKV0kbehvaLq
-X-Google-Smtp-Source: ABdhPJynhzjWiT5WygcinC1v/vpSrVXtKhAajoj91Y8oOaAf641QOi9pajzp20JXEjTMXZ2nBzK8acBfiZKG6sYGsHg=
-X-Received: by 2002:a17:906:2cd6:: with SMTP id r22mr31706715ejr.398.1630436382385;
- Tue, 31 Aug 2021 11:59:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210616085118.1141101-1-omosnace@redhat.com> <CAPcyv4jvR8CT4rYODR5KUHNdiqMwQSwJZ+OkVf61kLT3JfjC_Q@mail.gmail.com>
- <CAFqZXNtuH0329Xvcb415Kar-=o6wwrkFuiP8BZ_2OQhHLqkkAg@mail.gmail.com>
- <CAHC9VhTGECM2p+Q8n48aSdfJzY6XrpXQ5tcFurjWc4A3n8Qxjg@mail.gmail.com> <CAPcyv4i8YXo=xOL2vO67KLABQRDNAxzrzT=a1xtwtrts5pVPKw@mail.gmail.com>
-In-Reply-To: <CAPcyv4i8YXo=xOL2vO67KLABQRDNAxzrzT=a1xtwtrts5pVPKw@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 31 Aug 2021 14:59:31 -0400
-Message-ID: <CAHC9VhReGcV=cngDMmAcEiS2NpkXZQ6b09go9m0omzxLdrUQXg@mail.gmail.com>
-Subject: Re: [PATCH v3] lockdown,selinux: fix wrong subject in some SELinux
- lockdown checks
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B18XCxdh5roXXYBkgIgsolQaF3/RyCT+RYjyoh97Brk=;
+        b=p/K7gazXe3lixbGJQhpSlMMBsSaHaLL9r11KMAZPuYN6euzDBiqxKMoPvLu397c0Fx
+         0Yjhxb7elnwVI+RgLm0KersY5tqv1Rn3KROfZfKxND20+0QCkXuP3JFfZxcVpMz1CZbY
+         +V7xCMOeN4zKnCvltLRJLyV48jfcJzBAzL8N0BA5WtNoeaJy7OhTjINMYi78FGsiwEo9
+         st42Pp1rtkSUYeb/kvshA/f4l7aYkJN3TnjEQgTErml7RKRAxGgG+QkQGadiLe3rE6Jk
+         aYBMpz17HUCKL/FONrAzgqigRS4N3MR3OojosvZv9lJS6rsfW41gOdrgh9eoQD+doIMT
+         k10g==
+X-Gm-Message-State: AOAM532L1Ck3ANTACeGOZLg6bMaXtLx0U3s460Y6JEANYkSIwjxNqYhX
+        3tvAg7MDFWyFsVd5Ezq+mjwbX5pO7g==
+X-Google-Smtp-Source: ABdhPJyISGNvUkiwv/aZwGtTy7OmqleXpitzw8KMrZYdmigKN/S7wGPQvq/Drjnoa3iN8bG0Uc6OpA==
+X-Received: by 2002:a54:4182:: with SMTP id 2mr4533320oiy.66.1630438050741;
+        Tue, 31 Aug 2021 12:27:30 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id o8sm3712041oiw.55.2021.08.31.12.27.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Aug 2021 12:27:30 -0700 (PDT)
+Received: (nullmailer pid 515234 invoked by uid 1000);
+        Tue, 31 Aug 2021 19:27:28 -0000
+Date:   Tue, 31 Aug 2021 14:27:28 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Sam Shih <sam.shih@mediatek.com>
+Cc:     Sean Wang <sean.wang@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matt Mackall <mpm@selenic.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        SElinux list <selinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        X86 ML <x86@kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        linux-cxl@vger.kernel.org, linux-efi <linux-efi@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux-pm mailing list <linux-pm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Kexec Mailing List <kexec@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>
-Content-Type: text/plain; charset="UTF-8"
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Seiya Wang <seiya.wang@mediatek.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-clk@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Ryder Lee <Ryder.Lee@mediatek.com>
+Subject: Re: [v2,05/12] dt-bindings: pinctrl: update bindings for MT7986 SoC
+Message-ID: <YS6CoAxnarhqdTl+@robh.at.kernel.org>
+References: <20210817074557.30953-1-sam.shih@mediatek.com>
+ <20210817074557.30953-6-sam.shih@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210817074557.30953-6-sam.shih@mediatek.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 2:58 PM Dan Williams <dan.j.williams@intel.com> wrote:
-> On Tue, Aug 31, 2021 at 6:53 AM Paul Moore <paul@paul-moore.com> wrote:
-> > On Tue, Aug 31, 2021 at 5:09 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> > > On Sat, Jun 19, 2021 at 12:18 AM Dan Williams <dan.j.williams@intel.com> wrote:
-> > > > On Wed, Jun 16, 2021 at 1:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> >
-> > ...
-> >
-> > > > > diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
-> > > > > index 2acc6173da36..c1747b6555c7 100644
-> > > > > --- a/drivers/cxl/mem.c
-> > > > > +++ b/drivers/cxl/mem.c
-> > > > > @@ -568,7 +568,7 @@ static bool cxl_mem_raw_command_allowed(u16 opcode)
-> > > > >         if (!IS_ENABLED(CONFIG_CXL_MEM_RAW_COMMANDS))
-> > > > >                 return false;
-> > > > >
-> > > > > -       if (security_locked_down(LOCKDOWN_NONE))
-> > > > > +       if (security_locked_down(current_cred(), LOCKDOWN_NONE))
-> > > >
-> > > > Acked-by: Dan Williams <dan.j.williams@intel.com>
-> > > >
-> > > > ...however that usage looks wrong. The expectation is that if kernel
-> > > > integrity protections are enabled then raw command access should be
-> > > > disabled. So I think that should be equivalent to LOCKDOWN_PCI_ACCESS
-> > > > in terms of the command capabilities to filter.
-> > >
-> > > Yes, the LOCKDOWN_NONE seems wrong here... but it's a pre-existing bug
-> > > and I didn't want to go down yet another rabbit hole trying to fix it.
-> > > I'll look at this again once this patch is settled - it may indeed be
-> > > as simple as replacing LOCKDOWN_NONE with LOCKDOWN_PCI_ACCESS.
-> >
-> > At this point you should be well aware of my distaste for merging
-> > patches that have known bugs in them.  Yes, this is a pre-existing
-> > condition, but it seems well within the scope of this work to address
-> > it as well.
-> >
-> > This isn't something that is going to get merged while the merge
-> > window is open, so at the very least you've got almost two weeks to
-> > sort this out - please do that.
->
-> Yes, apologies, I should have sent the fix shortly after noticing the
-> problem. I'll get the CXL bug fix out of the way so Ondrej can move
-> this along.
+On Tue, Aug 17, 2021 at 03:45:50PM +0800, Sam Shih wrote:
+> This updates bindings for MT7986 pinctrl driver.
+> The difference of pinctrl between mt7986a and mt7986b
+> is that pin-41 to pin-65 do not exist on mt7986b
+> 
+> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> 
+> ---
+> v2 : deleted the redundant description of mt7986a/mt7986b
+> 
+> ---
+>  .../bindings/pinctrl/pinctrl-mt7622.txt       | 170 ++++++++++++++++++
+>  1 file changed, 170 insertions(+)
 
-Thanks Dan.
+This is adding a lot to not be in schema format. I imagine this will 
+need to be a separate file if the pin and function names are different 
+for each SoC.
 
--- 
-paul moore
-www.paul-moore.com
+Rob
