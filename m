@@ -2,66 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-24.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EDAC4320A
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Sep 2021 17:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0BFC433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Sep 2021 05:06:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CE2386101B
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Sep 2021 17:39:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 936886056C
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Sep 2021 05:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234863AbhIARkB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Sep 2021 13:40:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38986 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232026AbhIARkA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Sep 2021 13:40:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7098460FD7;
-        Wed,  1 Sep 2021 17:39:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630517943;
-        bh=ZFGT3K1IWU0xlh6XfVOWNBFSd3vtQXU+GwzoIVeCK0o=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=jvvcEMZ7O87iOWmeZaVs/uO0Cqf+sERt1lp0RfCL3FnD+GLtLRNpPMIipu+P9lDZP
-         xV0V8AxDSlADWP6kzmWUT8kIFIafNLb25SsuFoydmexcBkG/8fwcdjpUWt7KmkTTDL
-         Bv4zNrfcpqPOCZLaW9UB9NDxIVYayhPBeEhXRi1dLTAsh2eYulKzx+A6lO5mhlpBmJ
-         tOnM60RxzGnjsvI9PbKKs3QPCjgXr/lKNSdSlwPV65JY+HthHfXH1kXXmC4YPCU5+G
-         n3lS8dS2H0K4zmqqlhs7eTEDNJyi9rbauzSiTuuh3oqYNLmbtSTCbR1VsPPBmn6e4n
-         mVeWtTWWDmkgw==
-Subject: Re: [GIT PULL] TTY/Serial driver changes for 5.15-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YS+Lc/G+7JS4c93M@kroah.com>
-References: <YS+Lc/G+7JS4c93M@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YS+Lc/G+7JS4c93M@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.15-rc1
-X-PR-Tracked-Commit-Id: 2e5f3a69b6fcd52a64ce3d746c6ee8390b6cabe8
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 7c314bdfb64e4bb8d2f829376ed56ce663483752
-Message-Id: <163051794332.15355.3223966835279830361.pr-tracker-bot@kernel.org>
-Date:   Wed, 01 Sep 2021 17:39:03 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        id S232717AbhICFHD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Sep 2021 01:07:03 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:38814 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231705AbhICFHC (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 3 Sep 2021 01:07:02 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 18355pJj083943;
+        Fri, 3 Sep 2021 00:05:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1630645551;
+        bh=16inEFXabsPQ+5fjvMPHMEARvL9pL0EtQ7YJm/2UNcs=;
+        h=From:To:CC:Subject:Date;
+        b=zRgMVe7D5f06jqnvYeS2Try55WQgWxvqVYqtOXxxSIB4AMGi111ls2J03HJI8YurU
+         uLs4pF3R0YRhXOISc6V8KjIy6epZ7qIL6RnjGbHdqXTLzxpx5A8uRh57yHjqGNGE1M
+         +dG7YnYu6i48BGICpaOcOUKdlhZp6dXVI9S3ycTY=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 18355p1m043738
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 3 Sep 2021 00:05:51 -0500
+Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 3
+ Sep 2021 00:05:51 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 3 Sep 2021 00:05:51 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 18355pZm090983;
+        Fri, 3 Sep 2021 00:05:51 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        Nishanth Menon <nm@ti.com>, Tony Lindgren <tony@atomide.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        <linux-omap@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH] serial: 8250: 8250_omap: Fix RX_LVL register offset
+Date:   Fri, 3 Sep 2021 00:05:50 -0500
+Message-ID: <20210903050550.29050-1-nm@ti.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Wed, 1 Sep 2021 16:17:23 +0200:
+Commit b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt
+storm on K3 SoCs") introduced fixup including a register read to
+RX_LVL, however, we should be using word offset than byte offset
+since our registers are on 4 byte boundary (port.regshift = 2) for
+8250_omap.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.15-rc1
+Fixes: b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs")
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Vignesh Raghavendra <vigneshr@ti.com>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/7c314bdfb64e4bb8d2f829376ed56ce663483752
+Issue discovered on simulation platform where invalid address read is forced
+to generate aborts than default behavior of read of invalid address
+returning 0x0 (only writes to invalid address would abort).
 
-Thank you!
+Test logs: https://gist.github.com/nmenon/46b1adc2be0a2e771fb848e1c799475a (am654, j721e, j7200)
 
+There is a minor checkpatch error requesting < 75 character commit
+description, but I felt breaking the Fixes line up is probably not good.
+
+ drivers/tty/serial/8250/8250_omap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 891fd8345e25..73e5f1dbd075 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -106,7 +106,7 @@
+ #define UART_OMAP_EFR2_TIMEOUT_BEHAVE	BIT(6)
+ 
+ /* RX FIFO occupancy indicator */
+-#define UART_OMAP_RX_LVL		0x64
++#define UART_OMAP_RX_LVL		0x19
+ 
+ struct omap8250_priv {
+ 	int line;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.32.0
+
