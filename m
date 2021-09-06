@@ -2,127 +2,151 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86005C433EF
-	for <linux-serial@archiver.kernel.org>; Sun,  5 Sep 2021 16:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C115C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Sep 2021 09:35:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6548360E8B
-	for <linux-serial@archiver.kernel.org>; Sun,  5 Sep 2021 16:14:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7123260E76
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Sep 2021 09:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237465AbhIEQPg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 5 Sep 2021 12:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
+        id S241332AbhIFJgO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Sep 2021 05:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbhIEQPg (ORCPT
+        with ESMTP id S241504AbhIFJes (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 5 Sep 2021 12:15:36 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7007C061575;
-        Sun,  5 Sep 2021 09:14:32 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id jg16so8263649ejc.1;
-        Sun, 05 Sep 2021 09:14:32 -0700 (PDT)
+        Mon, 6 Sep 2021 05:34:48 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E10DC0613CF
+        for <linux-serial@vger.kernel.org>; Mon,  6 Sep 2021 02:33:44 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id b6so8859719wrh.10
+        for <linux-serial@vger.kernel.org>; Mon, 06 Sep 2021 02:33:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z1qfnInw6eBkH7VjzzpSAckO42XtWnywfSjVuFVYJ3Q=;
-        b=PU14FLyzP6DjD1Xg8mWVpaBO2svY6s7u4j3xgfY/lmmGPcXclmQGtbrjSBwOBgChCi
-         8U7E3QMqeWunvrr7r0hXeVFaiyvvN47s0sSC9Bu6Slhfyi1XHFeLvQxzz9QCQeGODFu6
-         GzBkWImo3OYYrP/A9bu779vxlYlBVhb6LbO0u+wedSDSFzNxtyLlLEhLCXbIJVNaGojQ
-         UKpGG/kQC2Qj4bMWlecREXAMhXXp0zR6yQo1zym6vn89i9m7VS3HOiPnjngTLTjryZNG
-         O93maFPHunXPw9vRhlTcF+NoE6qAziXBHYdhI+PlI2WYjNz5KZAU3DVjAxZ/Yc/0h34/
-         EntA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=i2+NvsBgnBTOZ+uAcUxvlIaM13WedkLbcL6bup+H1UM=;
+        b=q9eDwDZxue+JjKYKIP+w/ygZ5RrOIy/6a/V0xWsuwzRdA+DY9pSefRgNpnnYpm5BQZ
+         jcdsEFl+fmxv1rv5K31l4dvYsDgRRwrUDRSzPK+5TxnLrRKkeZrRIMX8t00nTTDrCsNi
+         uf638hMv8OsnzcALsgDmG4mf5Gq7vuKLtqqOIWfbZSTBJC9+5AAZImMHCH6jbKGweNZY
+         0rFAtFa8MeWkgidZTVKx5NAsJxCv7TwpC8fsiZdr5uQa0ixm8d4bVKAPP52HXRvZ99cf
+         Q+yyT+iPmmajoU/79Hm6iTVhB2TuOulKMfd2QGm1q9pIns3NH7VucMIJue0cMY68rhls
+         XvRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z1qfnInw6eBkH7VjzzpSAckO42XtWnywfSjVuFVYJ3Q=;
-        b=koiZJxTbwRhvgzA4mSPlMHBYO1wQGTKOFpGZEg4fHsnnr3J7zOHjfAag/SzI8ao9SK
-         nJFqXW+8wN4lKZ0F4MVOtpTMYdhjz4RVg+6p2HgCTVYW+liSsX5ifK2jd2qxDUfBYvTK
-         36xxtmoxFX+SU/RWI0d1ldPR4Si440TiMB+JH7jPytT36IJOetIfaPn9exb9t4hRKnpY
-         Go8/XmF/Q/3FYAJTn4Gt0USgtsq0mGgwRMwzYZYK/0U6LU8bWr4zDcmMF6oekI5gbkj8
-         xsg9lb3gIDXl9S2kgfc6N4fWPcc6cXMt2HfeSBrVrunrzDswKL5S4MODiWLb83cUH9A1
-         g9ww==
-X-Gm-Message-State: AOAM53053aaGwnqdnBUpJIF7qdShuoPEaNeoN7yBqsxRKejnAj/hc3O2
-        kv0NYIzHD7tNi/oegsbPX4eoABt9v5SKq6uYZU4=
-X-Google-Smtp-Source: ABdhPJxkm85otXbfQPQGcjOp49xOcY21ScTLcY2EjtERxtwvx5yiJsEhyTBr9ILLH7j1fsbSn+XqGv9mqB0uojt0ais=
-X-Received: by 2002:a17:906:52c5:: with SMTP id w5mr9401187ejn.567.1630858471430;
- Sun, 05 Sep 2021 09:14:31 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=i2+NvsBgnBTOZ+uAcUxvlIaM13WedkLbcL6bup+H1UM=;
+        b=nQpds1ULBOxkzxhmiqEPyxY00uQUKdN02OPyC6bQ8xwFBoq6hgsDW5LPPAYF/sa5Oh
+         WK42Gs9w5TTgdJpbZfEPChRUt1+iLJ6FBDa4S+h8lKXOP2P9IQzyWopnkzzpsiu/Tf13
+         nxO/pt4ASxImN6WQdjgPsDQxzEIsurl4eUHAv0vfmGp/viNpD7Ow0AK4zi9ml5Saw1Ye
+         Fq1G+OfFpnGoSBV/+5gU4+pEYoPIaAL6e49KB4/eVilL675V5f/53sCbFGFnPJBcHdfS
+         X1Wguz5X+NtV55FzQEZ1GjJ9GZrdVk/rAjYn6HC59aW28ORqjvgejlp2QMaewx+W5QW7
+         ChyQ==
+X-Gm-Message-State: AOAM533D0HnJ3Jw6d3WNtZQghNKB5DOexZ+84JcluuA4dQOeruY3ex8m
+        geGzFLmPoEgftGxk2bvI0hCVEQ==
+X-Google-Smtp-Source: ABdhPJzzIakAt8tQ+64AcWO9lDYlr4Dh32B1+kDEcgR0qe3zm7ry+opFn+4PQ93e0dV7eey6Ev0dkg==
+X-Received: by 2002:adf:8006:: with SMTP id 6mr12342436wrk.38.1630920822630;
+        Mon, 06 Sep 2021 02:33:42 -0700 (PDT)
+Received: from google.com ([31.124.24.187])
+        by smtp.gmail.com with ESMTPSA id i21sm7106080wrb.62.2021.09.06.02.33.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Sep 2021 02:33:42 -0700 (PDT)
+Date:   Mon, 6 Sep 2021 10:33:39 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Vignesh R <vigneshr@ti.com>, Marc Zyngier <maz@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-spi@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Use 'enum' instead of 'oneOf' plus 'const'
+ entries
+Message-ID: <YTXgc/GhZVKzJR9H@google.com>
+References: <20210824202014.978922-1-robh@kernel.org>
 MIME-Version: 1.0
-References: <20210905155728.11147-1-len.baker@gmx.com>
-In-Reply-To: <20210905155728.11147-1-len.baker@gmx.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 5 Sep 2021 19:13:54 +0300
-Message-ID: <CAHp75VcqTf3qef76nAE_TN32MdcvtYxZP2O8Oekap-_34mey0A@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_pci: Prefer struct_size over open coded arithmetic
-To:     Len Baker <len.baker@gmx.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mario Kleiner <mario.kleiner.de@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Randy Wright <rwright@hpe.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        Tobias Diedrich <tobiasdiedrich@gmail.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-hardening@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210824202014.978922-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Sep 5, 2021 at 6:58 PM Len Baker <len.baker@gmx.com> wrote:
->
-> As noted in the "Deprecated Interfaces, Language Features, Attributes,
-> and Conventions" documentation [1], size calculations (especially
-> multiplication) should not be performed in memory allocator (or similar)
-> function arguments due to the risk of them overflowing. This could lead
-> to values wrapping around and a smaller allocation being made than the
-> caller was expecting. Using those allocations could lead to linear
-> overflows of heap memory and other misbehaviors.
->
-> So, use the struct_size() helper to do the arithmetic instead of the
-> argument "size + size * count" in the kzalloc() function.
+On Tue, 24 Aug 2021, Rob Herring wrote:
 
-Makes sense
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-> [1] https://www.kernel.org/doc/html/v5.14/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments
->
-> Signed-off-by: Len Baker <len.baker@gmx.com>
+> 'enum' is equivalent to 'oneOf' with a list of 'const' entries, but 'enum'
+> is more concise and yields better error messages.
+> 
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Vignesh R <vigneshr@ti.com>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: dmaengine@vger.kernel.org
+> Cc: linux-i2c@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-pci@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-spi@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
->  drivers/tty/serial/8250/8250_pci.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index a808c283883e..b97ade35d4a3 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -3981,9 +3981,7 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
->                         nr_ports = rc;
->         }
->
-> -       priv = kzalloc(sizeof(struct serial_private) +
-> -                      sizeof(unsigned int) * nr_ports,
-> -                      GFP_KERNEL);
-> +       priv = kzalloc(struct_size(priv, line, nr_ports), GFP_KERNEL);
->         if (!priv) {
->                 priv = ERR_PTR(-ENOMEM);
->                 goto err_deinit;
-> --
-> 2.25.1
->
+>  .../bindings/display/msm/dsi-phy-10nm.yaml           |  6 +++---
+>  .../bindings/display/msm/dsi-phy-14nm.yaml           |  6 +++---
+>  .../bindings/display/msm/dsi-phy-28nm.yaml           |  8 ++++----
+>  .../bindings/dma/allwinner,sun6i-a31-dma.yaml        | 12 ++++++------
+>  .../devicetree/bindings/firmware/arm,scpi.yaml       |  6 +++---
+>  .../devicetree/bindings/i2c/ti,omap4-i2c.yaml        | 10 +++++-----
+>  .../interrupt-controller/loongson,liointc.yaml       |  8 ++++----
+>  .../devicetree/bindings/media/i2c/mipi-ccs.yaml      |  8 ++++----
+>  .../devicetree/bindings/mfd/ti,lp87565-q1.yaml       |  6 +++---
 
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+>  .../devicetree/bindings/net/realtek-bluetooth.yaml   |  8 ++++----
+>  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml          |  8 ++++----
+>  .../devicetree/bindings/net/ti,k3-am654-cpts.yaml    |  6 +++---
+>  Documentation/devicetree/bindings/pci/loongson.yaml  |  8 ++++----
+>  .../devicetree/bindings/phy/intel,lgm-emmc-phy.yaml  |  6 +++---
+>  .../devicetree/bindings/serial/8250_omap.yaml        |  9 +++++----
+>  .../devicetree/bindings/sound/qcom,sm8250.yaml       |  6 +++---
+>  .../devicetree/bindings/sound/tlv320adcx140.yaml     |  8 ++++----
+>  .../devicetree/bindings/spi/realtek,rtl-spi.yaml     | 12 ++++++------
+>  .../devicetree/bindings/timer/arm,sp804.yaml         |  6 +++---
+>  19 files changed, 74 insertions(+), 73 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
