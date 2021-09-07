@@ -2,117 +2,146 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-21.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 851FCC433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Sep 2021 16:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68EDFC433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Sep 2021 06:59:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6126C61027
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Sep 2021 16:27:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4F7C361100
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Sep 2021 06:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244032AbhIFQ2f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Sep 2021 12:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243691AbhIFQ2e (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Sep 2021 12:28:34 -0400
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9956AC061575
-        for <linux-serial@vger.kernel.org>; Mon,  6 Sep 2021 09:27:29 -0700 (PDT)
-Received: by mail-vs1-xe32.google.com with SMTP id x137so6018222vsx.1
-        for <linux-serial@vger.kernel.org>; Mon, 06 Sep 2021 09:27:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1v7i8HiyO/1Ym8mqrztY8OP2nXDvUjYMU9SPvvdR5iI=;
-        b=KeHclL15otyM8f+dOzQIGQr7RAW+HW31nUm+fsJMd5ukKGOzcIIoebv4l1rxxXdtow
-         2fLv4nH55dwxD6gWWBmA140rbu234m3x5wf0LDpPh4sAK0NohP5zfd6vUKchNaYgOGiA
-         HL7C76TFHjncsA/UknFYGkUCsGfGwNvcBjRl5b9pqn7T8e3GeSmQeE2JviKh+hTXPiH8
-         W3BLdUlb6j6hZMp6lyDcAHGq2rNF5/ZzxpvNboC+KUURUxc2GOwJ+tpmmR73RePzER5F
-         xgX63er1eENm88yda0CY34Qf6EDq5VLW6gBxZ6qPPjiD1bt3kIioC5S7Sq5kOXmX7nKi
-         JUrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1v7i8HiyO/1Ym8mqrztY8OP2nXDvUjYMU9SPvvdR5iI=;
-        b=rOFOr/MdHUWWxyLPQAWjFmhtZj0TsKyUJ5f6OiMFMpLRHwKi7ybCxcGUkXyQ9JAV3m
-         azntmJUHz8C9zF3cHS9DC6BJZ290VzPZE+SDRIbTKfaBu5KZCeHntFo4aP3gWzjD6axq
-         izGkNdaItJDsY2RDGJVi4tcwAvyYgeq3X4gbaceirFzIGSMxOfiQ0JdeBRgjPf2r74il
-         BO4ZcF6ZOPR/LczVSqF1wVfJZJkyiLLC5cESPtFyKyb1hJGETJgVmc4458gbhRJtMK+v
-         h6a3iaY+hS1xnPnQJVB0q/lqaq9JPknpCbmjdtUjM+r3MkQS9IasPgqtXj4p5nPoXUiY
-         h2zg==
-X-Gm-Message-State: AOAM533JMbObXnKElPZyvIwXogSaF55sNUrwnSti5XWxG/26nkRyDaPG
-        +tuhpG7a81/jfIs4bLQkm4XoUqmDe1+4qaKZZ86keg==
-X-Google-Smtp-Source: ABdhPJx42jYyWvN/Qn4VgmviI0/F3R5RsPLT5EvzkWi6iwNer+i/tY/TKP2zG7TW4SPXjMUt+ScleFoLjPAzV0zGCcs=
-X-Received: by 2002:a67:d387:: with SMTP id b7mr6860162vsj.55.1630945648771;
- Mon, 06 Sep 2021 09:27:28 -0700 (PDT)
+        id S235480AbhIGHAg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Sep 2021 03:00:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56254 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234243AbhIGHAf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 7 Sep 2021 03:00:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 17B806103E;
+        Tue,  7 Sep 2021 06:59:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630997970;
+        bh=ryRid3J2fsQadfh/YT1iw6bV3VSQSER/I7xMYiaP9b8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Im7aRQYYwaolx6pMtl84QmPf1n5t5CbshYbRO4pbA2eGc8cC5wh1OEHHLjXH5GJ9Y
+         0furFK1FYcV0GeQgQ9zZF87nQyEO+9EKjGge1ZSN0zrIJbIF1qkKef1oKUkkB28D+q
+         wHCB1I6Kg6IR+NUaprmNS2KwprJoR5ZAUFhpwJOe4FhoJOY2vyCMhEEOnrAn1Gr8gb
+         5IJ0AFFLjDoKAY19jjIm1MGCd5b0JRy1nT98tqOJSiBMOQxrlddYWdYoR3wFMchi1C
+         5dmTMcObz6GW1Xe2QSRKtgzVB5wUSm9YD6zDlTIlUEvmOc13YLdmUJvSmzwouVCqv8
+         1xqXwfrSPfkOg==
+Received: by mail-pj1-f43.google.com with SMTP id j10-20020a17090a94ca00b00181f17b7ef7so910519pjw.2;
+        Mon, 06 Sep 2021 23:59:30 -0700 (PDT)
+X-Gm-Message-State: AOAM532WYjN51cqGgxn8eileVn05QDnv+xcwp3ZXCPPahF5QpW/3rawi
+        pugKBb+zUr62s1NVaZQjnD4nlglkYS3/TzWnUUE=
+X-Google-Smtp-Source: ABdhPJzuiXAU3Njs3qHP0itPJivYcah6VQ3WQtL0F795tm/YRYBtL5gjJyQ539ZAn0iyBxPlf/BInef1vExv9CfCNQ0=
+X-Received: by 2002:a17:902:a3c1:b0:13a:47a:1c5a with SMTP id
+ q1-20020a170902a3c100b0013a047a1c5amr13820893plb.13.1630997969685; Mon, 06
+ Sep 2021 23:59:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210811114827.27322-1-semen.protsenko@linaro.org>
- <20210811114827.27322-4-semen.protsenko@linaro.org> <YRwodjUxlZmvrvSC@robh.at.kernel.org>
-In-Reply-To: <YRwodjUxlZmvrvSC@robh.at.kernel.org>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Mon, 6 Sep 2021 19:27:17 +0300
-Message-ID: <CAPLW+4kvty3PQmSki8eM+WSgcA+zFfyD+--e6KBpird0-gOhMw@mail.gmail.com>
-Subject: Re: [PATCH v3 3/7] dt-bindings: serial: samsung: Add Exynos850 doc
-To:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+References: <20210805065429.27485-1-clin@suse.com> <20210805065429.27485-2-clin@suse.com>
+ <YRaxt1LCF+hWaMJU@robh.at.kernel.org> <YR0akXYPYthDuvCh@linux-8mug> <11f8b913-1057-7d30-e936-f27483f9a6e2@suse.de>
+In-Reply-To: <11f8b913-1057-7d30-e936-f27483f9a6e2@suse.de>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Tue, 7 Sep 2021 08:59:18 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPdZ2iP3-BUk+p5A=UnbGia7s2GAOh84htcEjwB1wNAJrQ@mail.gmail.com>
+Message-ID: <CAJKOXPdZ2iP3-BUk+p5A=UnbGia7s2GAOh84htcEjwB1wNAJrQ@mail.gmail.com>
+Subject: Re: [PATCH 1/8] dt-bindings: arm: fsl: add NXP S32G2 boards
+To:     =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
+Cc:     Chester Lin <clin@suse.com>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tom Gall <tom.gall@linaro.org>, Marc Zyngier <maz@kernel.org>,
-        =?UTF-8?Q?Pawe=C5=82_Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
-        Amit Pundir <amit.pundir@linaro.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Ryu Euiyoul <ryu.real@samsung.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>
+        Shawn Guo <shawnguo@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Stefan Riedmueller <s.riedmueller@phytec.de>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Matteo Lisi <matteo.lisi@engicam.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Jagan Teki <jagan@amarulasolutions.com>, s32@nxp.com,
+        catalin-dan.udma@nxp.com, bogdan.hamciuc@nxp.com,
+        bogdan.folea@nxp.com, ciprianmarian.costea@nxp.com,
+        radu-nicolae.pirea@nxp.com, ghennadi.procopciuc@nxp.com,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Ivan T . Ivanov" <iivanov@suse.de>,
+        "Lee, Chun-Yi" <jlee@suse.com>, Rob Herring <robh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 18 Aug 2021 at 00:22, Rob Herring <robh@kernel.org> wrote:
+On Mon, 6 Sept 2021 at 22:38, Andreas F=C3=A4rber <afaerber@suse.de> wrote:
 >
-> On Wed, 11 Aug 2021 14:48:23 +0300, Sam Protsenko wrote:
-> > Add compatible string for Exynos850 SoC.
-> >
-> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > ---
-> > Changes in v3:
-> >   - None
-> >
-> > Changes in v2:
-> >   - None
-> >
-> >  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
+> Hi Chester,
 >
-> Acked-by: Rob Herring <robh@kernel.org>
+> On 18.08.21 16:34, Chester Lin wrote:
+> > On Fri, Aug 13, 2021 at 12:53:59PM -0500, Rob Herring wrote:
+> >> On Thu, Aug 05, 2021 at 02:54:22PM +0800, Chester Lin wrote:
+> >>> Add bindings for S32G2's evaluation board (S32G-VNP-EVB) and referenc=
+e
+> >>> design 2 board ( S32G-VNP-RDB2).
+> >>>
+> >>> Signed-off-by: Chester Lin <clin@suse.com>
+> >>> ---
+> >>>  Documentation/devicetree/bindings/arm/fsl.yaml | 7 +++++++
+> >>>  1 file changed, 7 insertions(+)
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documen=
+tation/devicetree/bindings/arm/fsl.yaml
+> >>> index e2097011c4b0..3914aa09e503 100644
+> >>> --- a/Documentation/devicetree/bindings/arm/fsl.yaml
+> >>> +++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+> >>> @@ -983,6 +983,13 @@ properties:
+> >>>            - const: solidrun,lx2160a-cex7
+> >>>            - const: fsl,lx2160a
+> >>>
+> >>> +      - description: S32G2 based Boards
+> >>> +        items:
+> >>> +          - enum:
+> >>> +              - fsl,s32g274a-evb
+> >>> +              - fsl,s32g274a-rdb2
+> >>> +          - const: fsl,s32g2
+> >>
+> >> Given this is an entirely different family from i.MX and new?, shouldn=
+'t
+> >> it use 'nxp' instead of 'fsl'? Either way,
+> >
+> > It sounds good and Radu from NXP has mentioned a similar idea for the
+> > compatible string of linflexuart. To keep the naming consistency, shoul=
+d we
+> > change all 'fsl' to 'nxp' as well?
+>
+> I assume that question was just unclearly phrased, so for the record:
+>
+> ABI stability rules forbid us from changing "all 'fsl'" in compatible
+> strings or property names.
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/=
+Documentation/devicetree/bindings/ABI.rst
+>
+> Deployed firmware providing mainline-merged platforms with DTBs using
+> fsl prefix (e.g., the quoted LX2160A) needs to continue working with
+> newer drivers, and deployed mainline Linux should continue working after
+> firmware updates that modify the DTB provided to Linux.
 
-Hi guys,
+This is a new platform/SoC therefore there is no ABI. There is no
+requirement in the kernel that a new ABI (which you define in this
+patchset in the bindings) should be compatible with something
+somewhere. It's some misunderstanding of stable ABI. Therefore all new
+compatibles are allowed to be nxp, not fsl.
 
-Can we please merge this one? I can see that corresponding driver
-changes were pulled in already into malinline, but this one seems to
-be missed.
+No one here proposed renaming existing compatibles from fsl tro nxp.
+We talk about new ones.
 
-Thanks!
+Different question of course whether you want to be nice to some
+existing out-of-tree users... but then have in mind that we don't care
+about out of tree. :) Anyway being nice to out-of-tree is not part of
+ABI. It's just being nice and useful.
+
+Best regards,
+Krzysztof
