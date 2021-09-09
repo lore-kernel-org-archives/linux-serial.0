@@ -7,43 +7,42 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A43F9C433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C613C4321E
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:30:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A12A611F2
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:20:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2CEC56121F
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:30:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354735AbhIINVf (ORCPT
+        id S1351468AbhIINcA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Sep 2021 09:21:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36290 "EHLO mail.kernel.org"
+        Thu, 9 Sep 2021 09:32:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53484 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1359014AbhIINLq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 09:11:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 13B54632D0;
-        Thu,  9 Sep 2021 12:01:40 +0000 (UTC)
+        id S1358410AbhIINHT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Sep 2021 09:07:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 85E77632A7;
+        Thu,  9 Sep 2021 12:00:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188901;
-        bh=t2DnsPgOihfcUtjeeX67dy+A84XuD9Hq03BYlV5z3uA=;
+        s=k20201202; t=1631188831;
+        bh=i87e17WOXkm0v1LGGjaD4mjMUEFLsZckqrJ/BER2TAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PJIkzm9OfMwgYhXvCyEZDf/pb3IyN7qNNcj3tj7OzFl4/CHu1Z7NzR6jq26Cxbrr4
-         yi8yySDAPzj3a0/GaMZYbOUVIqBQ/CxGh6V199uQeJYAozkg7/MZ795yGFCRigrKxP
-         ar3DGOJ9V9DJFkf95lXCFmXgvF2/doq6olNps5H51PortqmoZcNyo4CUwr6K0vRRJk
-         rJEEdoLO5OaeSKzwkC+9sLQRsd3EvvICdY+o0wMmXNerWELg0W7f1I1Fr7lEjqoJdC
-         6b95sBTvEsm3uURZQs3ObbMjPlJ6WIxFIA8Jv/Omi5jLWG2QeZwgcKOConBS1mXjeF
-         tiCzFOTl4a3xQ==
+        b=Yb7J4p7yDnDfU4Naa6UF9PaFoTPEvyKPe6i4M5zoOSpf4deA6CpM7g/s3BL4I2Vpv
+         FVjhMkeDFPqc6D0DkMQw4AoudlBRy8Mqqtn1k3nFQF5XIyoTUAee+4OHkwQ5QzPv3U
+         OyoCyD7EGDUybSWgWUHt8TMwGEmD1wkH4sxd9JUWtRyTs+PCEVj8IVpvcneb3wMLfn
+         MItGW4nTX3z6hkNZAB3H90+nkB1Lu62mi7btg9n3ZBGCn01quJVKv4+2/zxLfeKEh+
+         S6rD3xOA1LnR+vEEQD/hJS2XYkNmSKFhIjdlenZjLjoGW1nSbuswBugDDT6ZfEYsiC
+         ZAshrIXwE20/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jordy Zomer <jordy@pwning.systems>,
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 20/35] serial: 8250_pci: make setup_port() parameters explicitly unsigned
-Date:   Thu,  9 Sep 2021 08:01:01 -0400
-Message-Id: <20210909120116.150912-20-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 12/48] tty: serial: jsm: hold port lock when reporting modem line changes
+Date:   Thu,  9 Sep 2021 07:59:39 -0400
+Message-Id: <20210909120015.150411-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210909120116.150912-1-sashal@kernel.org>
-References: <20210909120116.150912-1-sashal@kernel.org>
+In-Reply-To: <20210909120015.150411-1-sashal@kernel.org>
+References: <20210909120015.150411-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,37 +51,84 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 3a96e97ab4e835078e6f27b7e1c0947814df3841 ]
+[ Upstream commit 240e126c28df084222f0b661321e8e3ecb0d232e ]
 
-The bar and offset parameters to setup_port() are used in pointer math,
-and while it would be very difficult to get them to wrap as a negative
-number, just be "safe" and make them unsigned so that static checkers do
-not trip over them unintentionally.
+uart_handle_dcd_change() requires a port lock to be held and will emit a
+warning when lockdep is enabled.
 
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Reported-by: Jordy Zomer <jordy@pwning.systems>
-Link: https://lore.kernel.org/r/20210726130717.2052096-1-gregkh@linuxfoundation.org
+Held corresponding lock to fix the following warnings.
+
+[  132.528648] WARNING: CPU: 5 PID: 11600 at drivers/tty/serial/serial_core.c:3046 uart_handle_dcd_change+0xf4/0x120
+[  132.530482] Modules linked in:
+[  132.531050] CPU: 5 PID: 11600 Comm: jsm Not tainted 5.14.0-rc1-00003-g7fef2edf7cc7-dirty #31
+[  132.535268] RIP: 0010:uart_handle_dcd_change+0xf4/0x120
+[  132.557100] Call Trace:
+[  132.557562]  ? __free_pages+0x83/0xb0
+[  132.558213]  neo_parse_modem+0x156/0x220
+[  132.558897]  neo_param+0x399/0x840
+[  132.559495]  jsm_tty_open+0x12f/0x2d0
+[  132.560131]  uart_startup.part.18+0x153/0x340
+[  132.560888]  ? lock_is_held_type+0xe9/0x140
+[  132.561660]  uart_port_activate+0x7f/0xe0
+[  132.562351]  ? uart_startup.part.18+0x340/0x340
+[  132.563003]  tty_port_open+0x8d/0xf0
+[  132.563523]  ? uart_set_options+0x1e0/0x1e0
+[  132.564125]  uart_open+0x24/0x40
+[  132.564604]  tty_open+0x15c/0x630
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/1626242003-3809-1-git-send-email-zheyuma97@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/jsm/jsm_neo.c | 2 ++
+ drivers/tty/serial/jsm/jsm_tty.c | 3 +++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 72f6cde146b5..db66e533319e 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -78,7 +78,7 @@ static void moan_device(const char *str, struct pci_dev *dev)
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index c6fdd6369534..96e01bf4599c 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -827,7 +827,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
+ 		/* Parse any modem signal changes */
+ 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
+ 			"MOD_STAT: sending to parse_modem_sigs\n");
++		spin_lock_irqsave(&ch->uart_port.lock, lock_flags);
+ 		neo_parse_modem(ch, readb(&ch->ch_neo_uart->msr));
++		spin_unlock_irqrestore(&ch->uart_port.lock, lock_flags);
+ 	}
+ }
  
- static int
- setup_port(struct serial_private *priv, struct uart_8250_port *port,
--	   int bar, int offset, int regshift)
-+	   u8 bar, unsigned int offset, int regshift)
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+index ec7d8383900f..7c790ff6b511 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -195,6 +195,7 @@ static void jsm_tty_break(struct uart_port *port, int break_state)
+ 
+ static int jsm_tty_open(struct uart_port *port)
  {
- 	struct pci_dev *dev = priv->dev;
++	unsigned long lock_flags;
+ 	struct jsm_board *brd;
+ 	struct jsm_channel *channel =
+ 		container_of(port, struct jsm_channel, uart_port);
+@@ -248,6 +249,7 @@ static int jsm_tty_open(struct uart_port *port)
+ 	channel->ch_cached_lsr = 0;
+ 	channel->ch_stops_sent = 0;
  
++	spin_lock_irqsave(&port->lock, lock_flags);
+ 	termios = &port->state->port.tty->termios;
+ 	channel->ch_c_cflag	= termios->c_cflag;
+ 	channel->ch_c_iflag	= termios->c_iflag;
+@@ -267,6 +269,7 @@ static int jsm_tty_open(struct uart_port *port)
+ 	jsm_carrier(channel);
+ 
+ 	channel->ch_open_count++;
++	spin_unlock_irqrestore(&port->lock, lock_flags);
+ 
+ 	jsm_dbg(OPEN, &channel->ch_bd->pci_dev, "finish\n");
+ 	return 0;
 -- 
 2.30.2
 
