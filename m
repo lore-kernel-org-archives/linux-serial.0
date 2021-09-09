@@ -2,153 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-23.4 required=3.0 tests=BAYES_00,CTE_8BIT_MISMATCH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEB3C433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 11:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE80C433FE
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 11:54:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0C9A860698
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 11:51:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6744C61BF4
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 11:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242890AbhIILwy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Sep 2021 07:52:54 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:39382 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240943AbhIILuv (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 07:50:51 -0400
-Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id EC097200EF;
-        Mon,  6 Sep 2021 19:35:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1630956946; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Myxi+rNyKHYVeMxsZEIiSjP23vQUMmsIvDtzesxP3qg=;
-        b=ugKP2+XRMgyLHw31scY7psFVAofUuJdQ0wYthgcIqdO1wcAgczM7lgWU29SjDbGu7dTiZs
-        aVD8IdJBjscUBRYbHtbhokcjw939BaJBNMOle1VmfAxazChHq9By+omAonWuWBpgpJmFev
-        XehwO2YWmbjutW6950aFcw7W83QDTxQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1630956946;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Myxi+rNyKHYVeMxsZEIiSjP23vQUMmsIvDtzesxP3qg=;
-        b=FoU8I4jEvkIDSm+wRdop7ggSULrkAgMIPo3na5SGl37ix+img2g0cFLU5wXL716PXVEl6O
-        XJkn34qEPE6GioAA==
-Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id 60A0E12FF9;
-        Mon,  6 Sep 2021 19:35:46 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap1.suse-dmz.suse.de with ESMTPSA
-        id f1yAFpJtNmETGQAAGKfGzw
-        (envelope-from <afaerber@suse.de>); Mon, 06 Sep 2021 19:35:46 +0000
-Message-ID: <41b2ff7b-2dee-62e8-abb6-df90d7156313@suse.de>
-Date:   Mon, 6 Sep 2021 21:35:45 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.0.1
-Subject: Re: [PATCH 1/8] dt-bindings: arm: fsl: add NXP S32G2 boards
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>, Chester Lin <clin@suse.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        id S238832AbhIILz4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Sep 2021 07:55:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33232 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243047AbhIILxj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Sep 2021 07:53:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 346E1611B0;
+        Thu,  9 Sep 2021 11:44:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631187879;
+        bh=UGT06HFY6cJVUNZTU6SZBavz6mxaacF/9gOWJPzZD2Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oZ5rOXeZ1epn37WBlJBhsHZtc7eRT4gbcWE64hpI/+2Ym0MIV41G7YuY6JtKLkzNd
+         XUpGg1vJrNOY+jwDYko1E89L08Un3klP7OyqNz+xBVC8t/u3+pvn/JyLpUQHBl2o6/
+         mawuF8e0gZbnwRGluYUxDSAaJnfNJmMvgVzxXblEXGiUTes7isdc5/AJdRkPcvUEBC
+         3EMo2S29abD79reF3PPlEHlMPqejodag3Ec49TvasBs8PBw+zZMfPazzpmQ84o5Sfl
+         EAkhoNTIhKEOgxjV2NiTwyy4GZMwWerXniyzPIrRG4h7QvPYDyQGWEazPz56FFa7uo
+         GMT8ctHTEzWHA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Ulrich Hecht <uli+renesas@fpond.eu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Matteo Lisi <matteo.lisi@engicam.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Jagan Teki <jagan@amarulasolutions.com>, s32@nxp.com,
-        catalin-dan.udma@nxp.com, bogdan.hamciuc@nxp.com,
-        bogdan.folea@nxp.com, ciprianmarian.costea@nxp.com,
-        radu-nicolae.pirea@nxp.com, ghennadi.procopciuc@nxp.com,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Ivan T . Ivanov" <iivanov@suse.de>, "Lee, Chun-Yi" <jlee@suse.com>
-References: <20210805065429.27485-1-clin@suse.com>
- <20210805065429.27485-2-clin@suse.com> <YRaxt1LCF+hWaMJU@robh.at.kernel.org>
-From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Organization: SUSE Software Solutions Germany GmbH
-In-Reply-To: <YRaxt1LCF+hWaMJU@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 163/252] serial: sh-sci: fix break handling for sysrq
+Date:   Thu,  9 Sep 2021 07:39:37 -0400
+Message-Id: <20210909114106.141462-163-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
+References: <20210909114106.141462-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 13.08.21 19:53, Rob Herring wrote:
-> On Thu, Aug 05, 2021 at 02:54:22PM +0800, Chester Lin wrote:
->> Add bindings for S32G2's evaluation board (S32G-VNP-EVB) and reference
->> design 2 board ( S32G-VNP-RDB2).
->>
->> Signed-off-by: Chester Lin <clin@suse.com>
->> ---
->>  Documentation/devicetree/bindings/arm/fsl.yaml | 7 +++++++
->>  1 file changed, 7 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
->> index e2097011c4b0..3914aa09e503 100644
->> --- a/Documentation/devicetree/bindings/arm/fsl.yaml
->> +++ b/Documentation/devicetree/bindings/arm/fsl.yaml
->> @@ -983,6 +983,13 @@ properties:
->>            - const: solidrun,lx2160a-cex7
->>            - const: fsl,lx2160a
->>  
->> +      - description: S32G2 based Boards
->> +        items:
->> +          - enum:
->> +              - fsl,s32g274a-evb
->> +              - fsl,s32g274a-rdb2
->> +          - const: fsl,s32g2
-> 
-> Given this is an entirely different family from i.MX and new?, shouldn't 
-> it use 'nxp' instead of 'fsl'?
+From: Ulrich Hecht <uli+renesas@fpond.eu>
 
-S32V also still used fsl prefix, despite the company name long being NXP
-(same for several Layerscape and i.MX models).
+[ Upstream commit 87b8061bad9bd4b549b2daf36ffbaa57be2789a2 ]
 
-If, as Radu indicated on 3/8, NXP wants to make that switch now for S32G
-then I see no reason against nxp. I verified that it's already defined:
+This fixes two issues that cause the sysrq sequence to be inadvertently
+aborted on SCIF serial consoles:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/Documentation/devicetree/bindings/vendor-prefixes.yaml
+- a NUL character remains in the RX queue after a break has been detected,
+  which is then passed on to uart_handle_sysrq_char()
+- the break interrupt is handled twice on controllers with multiplexed ERI
+  and BRI interrupts
 
-However, should the matching .dts[i] files using nxp prefix (4-6/8) then
-still go under dts/freescale/, or should they go to a new dts/nxp/ then?
-That would separate it from S32V. Intel did do a switch from dts/altera/
-to dts/intel/ at some point, so there's precedence for either, I guess.
-No idea whether anything might break if we moved S32V alongside S32G.
+Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Link: https://lore.kernel.org/r/20210816162201.28801-1-uli+renesas@fpond.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/sh-sci.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Similarly, the easiest and most merge-friendly would be to leave
-arm/fsl.yaml and add the nxp-prefixed S32G2 there, as done here. If NXP
-want to rename fsl.yaml to nxp.yaml in a general housekeeping effort,
-that could be done independently, outside Chester's patchset.
-
-> Either way,
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-
-Thanks,
-Andreas
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 07eb56294371..89ee43061d3a 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1758,6 +1758,10 @@ static irqreturn_t sci_br_interrupt(int irq, void *ptr)
+ 
+ 	/* Handle BREAKs */
+ 	sci_handle_breaks(port);
++
++	/* drop invalid character received before break was detected */
++	serial_port_in(port, SCxRDR);
++
+ 	sci_clear_SCxSR(port, SCxSR_BREAK_CLEAR(port));
+ 
+ 	return IRQ_HANDLED;
+@@ -1837,7 +1841,8 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 		ret = sci_er_interrupt(irq, ptr);
+ 
+ 	/* Break Interrupt */
+-	if ((ssr_status & SCxSR_BRK(port)) && err_enabled)
++	if (s->irqs[SCIx_ERI_IRQ] != s->irqs[SCIx_BRI_IRQ] &&
++	    (ssr_status & SCxSR_BRK(port)) && err_enabled)
+ 		ret = sci_br_interrupt(irq, ptr);
+ 
+ 	/* Overrun Interrupt */
 -- 
-SUSE Software Solutions Germany GmbH
-Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer
-HRB 36809 (AG Nürnberg)
+2.30.2
+
