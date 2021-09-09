@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48232C43217
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 11:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA1CC4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 11:46:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2CC1661504
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 11:46:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 26A1061167
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 11:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240122AbhIILrZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Sep 2021 07:47:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46928 "EHLO mail.kernel.org"
+        id S237752AbhIILru (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Sep 2021 07:47:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45620 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238883AbhIILpW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 07:45:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 70505611C2;
-        Thu,  9 Sep 2021 11:42:45 +0000 (UTC)
+        id S240383AbhIILpv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Sep 2021 07:45:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1469761220;
+        Thu,  9 Sep 2021 11:42:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187766;
-        bh=taLJ9PKWC7x9RU8xDW2ToEJ9OVv2CFyuQyAlImHraLQ=;
+        s=k20201202; t=1631187769;
+        bh=nv/jOUxKTaJ0v/uL56vZxSME+fATAGjjAdnhJxvqmvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTZeCtsr0FnnPETBU78ZtUwe5brd5sjICqbtlAmv3e9eDxScAP2MjgrSB+iX9ZXsc
-         OrGWWOk5Z+oL2yzOBDfsssa3zyqTV0qcpE1TAQFfdqBcl4yRakRw1uDjMCbyHJ4AB4
-         wAXDtZ3GLw3XV31ZEzxCfJMAEU/+YkmRp3UTKXta/zE1xw2Xb3XtVzzh1Hg/0DVvzo
-         M0AjjsvH7sagttVxMxRBJoIm1XRfOCf3jKdh7b8HHU0B70H6LdQERQ7PgrnetzQ2n6
-         0n3mo6BEeLxf40iJrgnON56FY3u9IrvqpmClB92UXn+LPtT+KH1XiTcV7VAmuDn1o1
-         gV+bugAlqZiqQ==
+        b=p6lEtfqZoFBrLpueUlM4qLWOT0GyTQCevXMW7Bki1qxPILz7X9ZXRyi4MthYfkGXK
+         Yl+uhfMhR6kO2CJQDYnQrx1dUgibfMJlf1oQVIxke4QTM8RYLya11/AxsW+PI1fmIE
+         LPM0sar6/eISK/bsHhryFKSDTtoXw1/cw0G6jBGE8bvMaq8E3GJugDnN/TFJv/XXGK
+         LlonlD8lBUmlTE1IL43l13R+FZKl0cPAs+qmTsJceGhBQx9AjZcOU2HruiQ2b45S9O
+         JGkzzVlq+szOVYXv8hC9RjsWGdvZLk0bJq3W6hSpEJjKVkooHca1mloexosFa/gxr+
+         PzvaZJOFOU5SQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dennis Giaya <dgiaya@whoi.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jordy Zomer <jordy@pwning.systems>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 078/252] serial: max310x: Use clock-names property matching to recognize EXTCLK
-Date:   Thu,  9 Sep 2021 07:38:12 -0400
-Message-Id: <20210909114106.141462-78-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.14 081/252] serial: 8250_pci: make setup_port() parameters explicitly unsigned
+Date:   Thu,  9 Sep 2021 07:38:15 -0400
+Message-Id: <20210909114106.141462-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -51,53 +51,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 3d1fa055ea7298345795b982de7a5b9ec6ae238d ]
+[ Upstream commit 3a96e97ab4e835078e6f27b7e1c0947814df3841 ]
 
-Dennis reported that on ACPI-based systems the clock frequency
-isn't enough to configure device properly. We have to respect
-the clock source as well. To achieve this match the clock-names
-property against "osc" to recognize external clock connection.
-On DT-based system this doesn't change anything.
+The bar and offset parameters to setup_port() are used in pointer math,
+and while it would be very difficult to get them to wrap as a negative
+number, just be "safe" and make them unsigned so that static checkers do
+not trip over them unintentionally.
 
-Reported-and-tested-by: Dennis Giaya <dgiaya@whoi.edu>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20210723125943.22039-1-andriy.shevchenko@linux.intel.com
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Reported-by: Jordy Zomer <jordy@pwning.systems>
+Link: https://lore.kernel.org/r/20210726130717.2052096-1-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/max310x.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/tty/serial/8250/8250_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index ef11860cd69e..3df0788ddeb0 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -1271,18 +1271,13 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
- 	/* Always ask for fixed clock rate from a property. */
- 	device_property_read_u32(dev, "clock-frequency", &uartclk);
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index a808c283883e..726912b16a55 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -87,7 +87,7 @@ static void moan_device(const char *str, struct pci_dev *dev)
  
--	s->clk = devm_clk_get_optional(dev, "osc");
-+	xtal = device_property_match_string(dev, "clock-names", "osc") < 0;
-+	if (xtal)
-+		s->clk = devm_clk_get_optional(dev, "xtal");
-+	else
-+		s->clk = devm_clk_get_optional(dev, "osc");
- 	if (IS_ERR(s->clk))
- 		return PTR_ERR(s->clk);
--	if (s->clk) {
--		xtal = false;
--	} else {
--		s->clk = devm_clk_get_optional(dev, "xtal");
--		if (IS_ERR(s->clk))
--			return PTR_ERR(s->clk);
--
--		xtal = true;
--	}
+ static int
+ setup_port(struct serial_private *priv, struct uart_8250_port *port,
+-	   int bar, int offset, int regshift)
++	   u8 bar, unsigned int offset, int regshift)
+ {
+ 	struct pci_dev *dev = priv->dev;
  
- 	ret = clk_prepare_enable(s->clk);
- 	if (ret)
 -- 
 2.30.2
 
