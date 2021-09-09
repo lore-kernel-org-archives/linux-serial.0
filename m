@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B15C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1213C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:12:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 00C8660ED8
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:00:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AA533611CA
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352969AbhIINBY (ORCPT
+        id S1355024AbhIINNm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Sep 2021 09:01:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58618 "EHLO mail.kernel.org"
+        Thu, 9 Sep 2021 09:13:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42448 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354350AbhIIMxc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:53:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E7F0B63247;
-        Thu,  9 Sep 2021 11:57:44 +0000 (UTC)
+        id S1355950AbhIINBD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Sep 2021 09:01:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A2A9E61409;
+        Thu,  9 Sep 2021 11:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188665;
-        bh=YSGUJuDHSnZzOzXmBsKZOAT80LCOSLiqvtDEwYmOCJs=;
+        s=k20201202; t=1631188759;
+        bh=i87e17WOXkm0v1LGGjaD4mjMUEFLsZckqrJ/BER2TAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bwTsTauhnUu3kVTwQq9J7ZT0B4S3mcVzX9UG7grcy/ZsjjbcC3gdG4a+uRTTWj42l
-         S0b18n8zOv8Viny3c7vMLy0FWoq1hq27LFVd+OBYzxEBaK6/t+geypmMW+pIK5Oczj
-         AqRDXE9ru453z7XjD1nJq2fQLIWgfyAbTKIbTgwZzY3d85fP0M+uUUaN/e8poR5oG3
-         dc4fFUUgOfOnajARPRaQNHcQG7zIR0G98dtnnVwPfd9NOCgDQZABYHC5gpQglYLelI
-         oVv0UwCYyQcDnCly0wrm7kxXxBWH2YWimVHyyve4gnCjemHv+4G8Y3qiDUik4kAY/x
-         eDKDbFHG9hM+A==
+        b=ReLAH/7Yl6wdS7KYJeQmj6DD02+Xxp4SUuEpRSQRUxFUFuDu9we9fGGT25bnhC6bM
+         Kh8RTFABpbkuIoY3NXYceQy2yyeLQeOrV8vMvChfXgzwsUqlzploWZrn5jJx8p2hGf
+         WmoWS80xlH09BicrY3ZkYVkJXTeYpaAs0GUmIvcURLX4LCeUCq3Epfn4+3Oy+RZiCo
+         d5oEwSmHDvOS5K1Ns6t1AYUdD166YVnaJ7CDuuGZgnO8tQK9J4YyWC6OEJT/Eu8qmD
+         zKaqLuMt7mSWD+HD4dRDHTFAqkfIxi78A6dZF2daaoY9AmlCOuIn3auPKbcvhC9oGP
+         xR5R/LajzeHuQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Zheyu Ma <zheyuma97@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 15/74] tty: serial: jsm: hold port lock when reporting modem line changes
-Date:   Thu,  9 Sep 2021 07:56:27 -0400
-Message-Id: <20210909115726.149004-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 14/59] tty: serial: jsm: hold port lock when reporting modem line changes
+Date:   Thu,  9 Sep 2021 07:58:15 -0400
+Message-Id: <20210909115900.149795-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210909115726.149004-1-sashal@kernel.org>
-References: <20210909115726.149004-1-sashal@kernel.org>
+In-Reply-To: <20210909115900.149795-1-sashal@kernel.org>
+References: <20210909115900.149795-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -88,10 +88,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 5 insertions(+)
 
 diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
-index bf0e2a4cb0ce..c6f927a76c3b 100644
+index c6fdd6369534..96e01bf4599c 100644
 --- a/drivers/tty/serial/jsm/jsm_neo.c
 +++ b/drivers/tty/serial/jsm/jsm_neo.c
-@@ -815,7 +815,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
+@@ -827,7 +827,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
  		/* Parse any modem signal changes */
  		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
  			"MOD_STAT: sending to parse_modem_sigs\n");
@@ -102,10 +102,10 @@ index bf0e2a4cb0ce..c6f927a76c3b 100644
  }
  
 diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index 689774c073ca..8438454ca653 100644
+index ec7d8383900f..7c790ff6b511 100644
 --- a/drivers/tty/serial/jsm/jsm_tty.c
 +++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -187,6 +187,7 @@ static void jsm_tty_break(struct uart_port *port, int break_state)
+@@ -195,6 +195,7 @@ static void jsm_tty_break(struct uart_port *port, int break_state)
  
  static int jsm_tty_open(struct uart_port *port)
  {
@@ -113,7 +113,7 @@ index 689774c073ca..8438454ca653 100644
  	struct jsm_board *brd;
  	struct jsm_channel *channel =
  		container_of(port, struct jsm_channel, uart_port);
-@@ -240,6 +241,7 @@ static int jsm_tty_open(struct uart_port *port)
+@@ -248,6 +249,7 @@ static int jsm_tty_open(struct uart_port *port)
  	channel->ch_cached_lsr = 0;
  	channel->ch_stops_sent = 0;
  
@@ -121,7 +121,7 @@ index 689774c073ca..8438454ca653 100644
  	termios = &port->state->port.tty->termios;
  	channel->ch_c_cflag	= termios->c_cflag;
  	channel->ch_c_iflag	= termios->c_iflag;
-@@ -259,6 +261,7 @@ static int jsm_tty_open(struct uart_port *port)
+@@ -267,6 +269,7 @@ static int jsm_tty_open(struct uart_port *port)
  	jsm_carrier(channel);
  
  	channel->ch_open_count++;
