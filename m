@@ -2,122 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6DB8C433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946F4C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 14:35:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 879B661051
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:42:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8391C60FDA
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 14:35:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355082AbhIINm4 (ORCPT
+        id S1346952AbhIIOgx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Sep 2021 09:42:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57770 "EHLO mail.kernel.org"
+        Thu, 9 Sep 2021 10:36:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48572 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356435AbhIIMzM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:55:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 082A063239;
-        Thu,  9 Sep 2021 11:57:56 +0000 (UTC)
+        id S240410AbhIIOgu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Sep 2021 10:36:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 13949610FF;
+        Thu,  9 Sep 2021 14:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188677;
-        bh=LLFIR49yD2ezMVv/n1P3cKnpeKgNA92xEKzOZ+a6Xes=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P7rYnqsDtlJkQ268/FTsZIe22MmsfvIgSLcrdZftWykMF7uYgM+xS7/oPPUkOGHCG
-         IhvK0ADHZu4KWtB4gtPVjXdT0YgXt8XlWo7lauDog5wjMz9nVcQZlv+LwF2FtLv4GW
-         CChQvJcVyHDvf6Yw0M4KBObqq0qYXuYBtT91c9hBI64DSslRXOw666IngplKzDSHE7
-         ELfo+Kfabb6n6KDz89FvzYWuMJheLEFF8NA6x8WDY2PzXBdcy86g/MtHNNF8mU6uw0
-         tqc4MXcQayHVGXaVYGx6EMuieIw+JWR6kM3z2TSnsJnAnQMnmPehSJ653SPIObpIvv
-         HDg3ENJV+Qekw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 25/74] serial: 8250: Define RX trigger levels for OxSemi 950 devices
-Date:   Thu,  9 Sep 2021 07:56:37 -0400
-Message-Id: <20210909115726.149004-25-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210909115726.149004-1-sashal@kernel.org>
-References: <20210909115726.149004-1-sashal@kernel.org>
+        s=k20201202; t=1631198140;
+        bh=3WvRIwVpeyfq0j1sXzeynJnZRS8SyezNEtQxr3hPK38=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qqgdmDBG/Fns3u1i7A0XzFuTXxpYaXKQucLMx76M7+ZqS1ktKmorYCP/i/SZxgy0l
+         UmydXrFPcVWfv4ao+ygwl3W+/lQYA7tXNdikrmZ/Odzrg4Pu7X9e7Gix/fOmWeezUd
+         cNhUAhkIAdwQgUY5KzTdbmSwOCc7RxusBIiG+R+iK9zaHeLBUUyu5tMP+qkiQU2r9Z
+         MWNdRl6O90c8eghjehJiZqda/6LOs6Rx3kWnNNHIdhSWjSEbmDLWkjERmFMkEbIGib
+         FoVJAGgPdFEP4SB9Ryjxu8Ri0dMYlyk6/ZY359neTF1AUyXBZ3yMS28xSJOnyTUdKv
+         +IBfEjWgUfa8A==
+Date:   Thu, 9 Sep 2021 16:35:37 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Ulrich Hecht <uli+renesas@fpond.eu>
+Cc:     linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        geert@linux-m68k.org, yoshihiro.shimoda.uh@renesas.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: sh-sci: fix break handling for sysrq
+Message-ID: <YTobuY6QL9e7dyIK@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        geert@linux-m68k.org, yoshihiro.shimoda.uh@renesas.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210816162201.28801-1-uli+renesas@fpond.eu>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="J8NgKiLIdiyTObQC"
+Content-Disposition: inline
+In-Reply-To: <20210816162201.28801-1-uli+renesas@fpond.eu>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 
-[ Upstream commit d7aff291d069c4418285f3c8ee27b0ff67ce5998 ]
+--J8NgKiLIdiyTObQC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Oxford Semiconductor 950 serial port devices have a 128-byte FIFO and in
-the enhanced (650) mode, which we select in `autoconfig_has_efr' with
-the ECB bit set in the EFR register, they support the receive interrupt
-trigger level selectable with FCR bits 7:6 from the set of 16, 32, 112,
-120.  This applies to the original OX16C950 discrete UART[1] as well as
-950 cores embedded into more complex devices.
+On Mon, Aug 16, 2021 at 06:22:01PM +0200, Ulrich Hecht wrote:
+> This fixes two issues that cause the sysrq sequence to be inadvertently
+> aborted on SCIF serial consoles:
+>=20
+> - a NUL character remains in the RX queue after a break has been detected,
+>   which is then passed on to uart_handle_sysrq_char()
+> - the break interrupt is handled twice on controllers with multiplexed ERI
+>   and BRI interrupts
+>=20
+> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
 
-For these devices we set the default to 112, which sets an excessively
-high level of 112 or 7/8 of the FIFO capacity, unlike with other port
-types where we choose at most 1/2 of their respective FIFO capacities.
-Additionally we don't make the trigger level configurable.  Consequently
-frequent input overruns happen with high bit rates where hardware flow
-control cannot be used (e.g. terminal applications) even with otherwise
-highly-performant systems.
+For the record:
 
-Lower the default receive interrupt trigger level to 32 then, and make
-it configurable.  Document the trigger levels along with other port
-types, including the set of 16, 32, 64, 112 for the transmit interrupt
-as well[2].
+Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-References:
 
-[1] "OX16C950 rev B High Performance UART with 128 byte FIFOs", Oxford
-    Semiconductor, Inc., DS-0031, Sep 05, Table 10: "Receiver Trigger
-    Levels", p. 22
+--J8NgKiLIdiyTObQC
+Content-Type: application/pgp-signature; name="signature.asc"
 
-[2] same, Table 9: "Transmit Interrupt Trigger Levels", p. 22
+-----BEGIN PGP SIGNATURE-----
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2106260608480.37803@angie.orcam.me.uk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/8250/8250_port.c | 3 ++-
- include/uapi/linux/serial_reg.h     | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmE6G7QACgkQFA3kzBSg
+KbbTbg//SBsGYNRxfyZXzrX2V0ZjytLsziaOOE61d2ipc+1hSPR6bwCWiV/g0QIb
+otdJozr4RJonEOaqHN2yGjTK8EwrJjGKtaBhSPyJRu8A1G0h/63hkZ8CRKNb4yV9
+Y91Wk16/NFuKedaof8l3VI86b5vAhSS5wmN1Iyh16gOzghmgo5eqOCukJmCb1Awu
+h5YNYskA1M+sEPQ2IbhlWzUWXOhFiniiWsQnyUMehreXOkYhC9CofqO8CBnIA2Xd
+KvrWvVxrgmZ0Y2gAUlzizo6jHUKCawmt1EjEJnWZSmOAsguFhtsaIdVKsi5Bw7na
+VC9gjM+etaVYGVlNU8VcKyNb1scaJ5FAg7wo8mKVS3CnuZMqY+ksRADHbo4OObVl
+3FS7jFF6sGvBBqOCfrFV6aXpZ++Llt/1XyPFrn8ASFUqGPIGM5KtWR011NfwVhsf
+nH11bzWYgfBCPYA7AupC5pwIIkq3U917PDQSwHpvFIAwGFirPKbQAfZoXmqYOYps
+hzK+I81XFGhn+XqPyLN3oYcrxhvQBoplQZtrgGEyhArzMYWOFU3We6OooIDGoVQn
+KU9tQ97UmduI8GhFaq3fc+bYj/7qimCCFSl2dg91fPL2c1elcZ+Tw4KQMZIrsdzp
+Q/QNm6BcvZZohyzM00T733nXnqB0DCYuG736H7LzMKntmyAu2D0=
+=NyQP
+-----END PGP SIGNATURE-----
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 68f71298c11b..39e821d6e537 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -132,7 +132,8 @@ static const struct serial8250_config uart_config[] = {
- 		.name		= "16C950/954",
- 		.fifo_size	= 128,
- 		.tx_loadsz	= 128,
--		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
-+		.rxtrig_bytes	= {16, 32, 112, 120},
- 		/* UART_CAP_EFR breaks billionon CF bluetooth card. */
- 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
- 	},
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index be07b5470f4b..f51bc8f36813 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -62,6 +62,7 @@
-  * ST16C654:	 8  16  56  60		 8  16  32  56	PORT_16654
-  * TI16C750:	 1  16  32  56		xx  xx  xx  xx	PORT_16750
-  * TI16C752:	 8  16  56  60		 8  16  32  56
-+ * OX16C950:	16  32 112 120		16  32  64 112	PORT_16C950
-  * Tegra:	 1   4   8  14		16   8   4   1	PORT_TEGRA
-  */
- #define UART_FCR_R_TRIG_00	0x00
--- 
-2.30.2
-
+--J8NgKiLIdiyTObQC--
