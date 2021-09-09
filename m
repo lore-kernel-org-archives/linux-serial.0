@@ -7,39 +7,40 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50730C433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB309C433FE
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:42:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3C10F6109F
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:35:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E652611C9
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357952AbhIINgz (ORCPT
+        id S1355009AbhIINnR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Sep 2021 09:36:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33700 "EHLO mail.kernel.org"
+        Thu, 9 Sep 2021 09:43:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354430AbhIIM47 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:56:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8C3AB6120C;
-        Thu,  9 Sep 2021 11:58:28 +0000 (UTC)
+        id S1356442AbhIIMzM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:55:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 94DE16326D;
+        Thu,  9 Sep 2021 11:58:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188709;
-        bh=ZuvKr4oSXYZbhtOJp+5D1ACBKk8Hr0/2JvC6f1JF8xE=;
+        s=k20201202; t=1631188681;
+        bh=IG4WzuU9ZzfY8NhFaGUxR7321fnYT+WG2xobM7X31RA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BfqW5jGP2LxboV0Ojj7oKmEch54n4xqxl+TmrGbhbwfWpUuaccmT+dpct8Jw7So2t
-         ZN/TghbPeA4AZk4zW+aUmKaHR37E7DbT485eTfqZOIuIu7mDH2VChj3ub/MwogMWiC
-         8FjiD2KLRG1pNTXzMRyGhCsKG+dMFN6bB/jmNLGWLXgD/7juCNtD4yh9hur+f9LtZN
-         3OinGMpCGW5ocBcyFEJ+3LnlGgc4KUGJNmTuPzbyFNeFX0SQeBmzUhZfvlJ5KWN/y2
-         gSJAMBPeuqq/cZhJ5WeYpkobPqG/yGAGShiWXPeYuJA/5vrL1CRbbD+YeKgG4NoxV5
-         D7bcQ2nT7TPsQ==
+        b=kqX9BVXnhDDKXC7uNbH3BNB/87GILT7b20kU/lU2sKy7mSuXU8hEYrAEH4JT8ePCP
+         mlQjTLVEbONas9uNsAB/9nqzbsRgZ/p2myEjxTsEsLYGMjsBVoMxerOIgXPpixQNyM
+         v9oY28TJXJPCSzC+jS/Wog++txLOKkd0hMWs7REeE+L8MZyfNWzGNUMrIA2kBSnuyY
+         MKow14XflJ+Sb0TyThSgj/6f15UtlRzgKRG2GN3/N1nNTMdqfARq7vdbEAPU7gbXFo
+         s2BgtAh3UwG9oDjAZBY+4FPbjfzcr0sS8lvctGgqxsmnknDCaBA9OpjmqrYo7YN6Ix
+         AzsQtE1PAAc3A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ulrich Hecht <uli+renesas@fpond.eu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jordy Zomer <jordy@pwning.systems>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 50/74] serial: sh-sci: fix break handling for sysrq
-Date:   Thu,  9 Sep 2021 07:57:02 -0400
-Message-Id: <20210909115726.149004-50-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 28/74] serial: 8250_pci: make setup_port() parameters explicitly unsigned
+Date:   Thu,  9 Sep 2021 07:56:40 -0400
+Message-Id: <20210909115726.149004-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115726.149004-1-sashal@kernel.org>
 References: <20210909115726.149004-1-sashal@kernel.org>
@@ -51,51 +52,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Ulrich Hecht <uli+renesas@fpond.eu>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 87b8061bad9bd4b549b2daf36ffbaa57be2789a2 ]
+[ Upstream commit 3a96e97ab4e835078e6f27b7e1c0947814df3841 ]
 
-This fixes two issues that cause the sysrq sequence to be inadvertently
-aborted on SCIF serial consoles:
+The bar and offset parameters to setup_port() are used in pointer math,
+and while it would be very difficult to get them to wrap as a negative
+number, just be "safe" and make them unsigned so that static checkers do
+not trip over them unintentionally.
 
-- a NUL character remains in the RX queue after a break has been detected,
-  which is then passed on to uart_handle_sysrq_char()
-- the break interrupt is handled twice on controllers with multiplexed ERI
-  and BRI interrupts
-
-Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
-Link: https://lore.kernel.org/r/20210816162201.28801-1-uli+renesas@fpond.eu
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Reported-by: Jordy Zomer <jordy@pwning.systems>
+Link: https://lore.kernel.org/r/20210726130717.2052096-1-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sh-sci.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index db5b11879910..6f44c5f0ef3a 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1750,6 +1750,10 @@ static irqreturn_t sci_br_interrupt(int irq, void *ptr)
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 725e5842b8ac..f54c18e4ae90 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -70,7 +70,7 @@ static void moan_device(const char *str, struct pci_dev *dev)
  
- 	/* Handle BREAKs */
- 	sci_handle_breaks(port);
-+
-+	/* drop invalid character received before break was detected */
-+	serial_port_in(port, SCxRDR);
-+
- 	sci_clear_SCxSR(port, SCxSR_BREAK_CLEAR(port));
+ static int
+ setup_port(struct serial_private *priv, struct uart_8250_port *port,
+-	   int bar, int offset, int regshift)
++	   u8 bar, unsigned int offset, int regshift)
+ {
+ 	struct pci_dev *dev = priv->dev;
  
- 	return IRQ_HANDLED;
-@@ -1829,7 +1833,8 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
- 		ret = sci_er_interrupt(irq, ptr);
- 
- 	/* Break Interrupt */
--	if ((ssr_status & SCxSR_BRK(port)) && err_enabled)
-+	if (s->irqs[SCIx_ERI_IRQ] != s->irqs[SCIx_BRI_IRQ] &&
-+	    (ssr_status & SCxSR_BRK(port)) && err_enabled)
- 		ret = sci_br_interrupt(irq, ptr);
- 
- 	/* Overrun Interrupt */
 -- 
 2.30.2
 
