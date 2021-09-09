@@ -7,44 +7,39 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2015C43219
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 12:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 779FBC433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 12:35:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 98AA161100
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 12:35:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 618F2611BF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 12:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354181AbhIIMg7 (ORCPT
+        id S1354189AbhIIMg7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 9 Sep 2021 08:36:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39530 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:45834 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349892AbhIIMb5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:31:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CD90F61B26;
-        Thu,  9 Sep 2021 11:53:01 +0000 (UTC)
+        id S1353821AbhIIMe6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:34:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 164B861B70;
+        Thu,  9 Sep 2021 11:53:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188382;
-        bh=jSJqcUvCFXY0TSGL+J9ywJwvrgzomddM6ITW1FZSD/M=;
+        s=k20201202; t=1631188429;
+        bh=5M+U9qXHvYHNEZev3mvucxufKEpHdDaJvFQ8BTUZvE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pl4UNFSoOvHeEZAn5DrcaoExFc1/XF+Okd2Nx/l2qehY+gKJWffc3WzispvmVco7u
-         EXYRv66Txc2I4YlTH9mAm8GVgi8t0gALeJOLJLETr1qC5nnjAhzot6V7bPC2I5pSkp
-         XyrumU5EyAzHoowMM4loF7zCDE+umCBUlL5MfpjW4ZwFPEExRBqT7wfQNxaZAu5EJz
-         Acs7S7Ehad6NLHd8WaN9PBeJBeQAQYaNYpFIxaBWTB3tp1Ef4SMyVqkFzEVc0E8lf4
-         B16o4n2EX0JPIn1noUrMHmuz3fMwyIntXgkIaIqrmyeijojjCG1msnn3tOPStt1uOM
-         6EKgtgn6nCNwQ==
+        b=CAA13sfBO7SLtEU2WIlH7EiMuT20MLz4nKHXrAVJ4nx3uECBfJOv+w7weQEJjwJCh
+         kDXuHfFmdFkywAQ2r/V6OJoxGK+qVzgzIHjHEhAkZDAzIdGvDd9FtcD1sLW8M/zn7/
+         KuzSgKop28Fqc/KRG9puQSQlpBiQZuv4rXtNfZqwXvpSSqI/7TiKwDGGg/UqThcYtK
+         5JZxhwZIawQ52hRvLRPkY2XbedGuJdLFQzMM2KUmx4mJS5Jsj7UP3NrJGtzxNwHdLp
+         05sVHROy0Cvq5mV27nySUPNyPY53Kk6M6+fMtB4vM7bDQZB4HsyeKppUhVp/Cfa8fJ
+         wbnV6U0W5eQ4Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Carl Philipp Klemm <philipp@uvos.xyz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Sebastian Reichel <sre@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
+Cc:     Ulrich Hecht <uli+renesas@fpond.eu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 081/176] serial: 8250_omap: Handle optional overrun-throttle-ms property
-Date:   Thu,  9 Sep 2021 07:49:43 -0400
-Message-Id: <20210909115118.146181-81-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 117/176] serial: sh-sci: fix break handling for sysrq
+Date:   Thu,  9 Sep 2021 07:50:19 -0400
+Message-Id: <20210909115118.146181-117-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
 References: <20210909115118.146181-1-sashal@kernel.org>
@@ -56,95 +51,51 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Ulrich Hecht <uli+renesas@fpond.eu>
 
-[ Upstream commit 1fe0e1fa3209ad8e9124147775bd27b1d9f04bd4 ]
+[ Upstream commit 87b8061bad9bd4b549b2daf36ffbaa57be2789a2 ]
 
-Handle optional overrun-throttle-ms property as done for 8250_fsl in commit
-6d7f677a2afa ("serial: 8250: Rate limit serial port rx interrupts during
-input overruns"). This can be used to rate limit the UART interrupts on
-noisy lines that end up producing messages like the following:
+This fixes two issues that cause the sysrq sequence to be inadvertently
+aborted on SCIF serial consoles:
 
-ttyS ttyS2: 4 input overrun(s)
+- a NUL character remains in the RX queue after a break has been detected,
+  which is then passed on to uart_handle_sysrq_char()
+- the break interrupt is handled twice on controllers with multiplexed ERI
+  and BRI interrupts
 
-At least on droid4, the multiplexed USB and UART port is left to UART mode
-by the bootloader for a debug console, and if a USB charger is connected
-on boot, we get noise on the UART until the PMIC related drivers for PHY
-and charger are loaded.
-
-With this patch and overrun-throttle-ms = <500> we avoid the extra rx
-interrupts.
-
-Cc: Carl Philipp Klemm <philipp@uvos.xyz>
-Cc: Merlijn Wajer <merlijn@wizzup.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Sebastian Reichel <sre@kernel.org>
-Cc: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20210727103533.51547-2-tony@atomide.com
+Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Link: https://lore.kernel.org/r/20210816162201.28801-1-uli+renesas@fpond.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ drivers/tty/serial/sh-sci.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 95e2d6de4f21..cd85491a52f9 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -604,7 +604,7 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 	struct uart_port *port = dev_id;
- 	struct omap8250_priv *priv = port->private_data;
- 	struct uart_8250_port *up = up_to_u8250p(port);
--	unsigned int iir;
-+	unsigned int iir, lsr;
- 	int ret;
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 70898a999a49..f700bfaef129 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1760,6 +1760,10 @@ static irqreturn_t sci_br_interrupt(int irq, void *ptr)
  
- #ifdef CONFIG_SERIAL_8250_DMA
-@@ -615,6 +615,7 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- #endif
- 
- 	serial8250_rpm_get(up);
-+	lsr = serial_port_in(port, UART_LSR);
- 	iir = serial_port_in(port, UART_IIR);
- 	ret = serial8250_handle_irq(port, iir);
- 
-@@ -629,6 +630,24 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 		serial_port_in(port, UART_RX);
- 	}
- 
-+	/* Stop processing interrupts on input overrun */
-+	if ((lsr & UART_LSR_OE) && up->overrun_backoff_time_ms > 0) {
-+		unsigned long delay;
+ 	/* Handle BREAKs */
+ 	sci_handle_breaks(port);
 +
-+		up->ier = port->serial_in(port, UART_IER);
-+		if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
-+			port->ops->stop_rx(port);
-+		} else {
-+			/* Keep restarting the timer until
-+			 * the input overrun subsides.
-+			 */
-+			cancel_delayed_work(&up->overrun_backoff);
-+		}
++	/* drop invalid character received before break was detected */
++	serial_port_in(port, SCxRDR);
 +
-+		delay = msecs_to_jiffies(up->overrun_backoff_time_ms);
-+		schedule_delayed_work(&up->overrun_backoff, delay);
-+	}
-+
- 	serial8250_rpm_put(up);
+ 	sci_clear_SCxSR(port, SCxSR_BREAK_CLEAR(port));
  
- 	return IRQ_RETVAL(ret);
-@@ -1345,6 +1364,10 @@ static int omap8250_probe(struct platform_device *pdev)
- 		}
- 	}
+ 	return IRQ_HANDLED;
+@@ -1839,7 +1843,8 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 		ret = sci_er_interrupt(irq, ptr);
  
-+	if (of_property_read_u32(np, "overrun-throttle-ms",
-+				 &up.overrun_backoff_time_ms) != 0)
-+		up.overrun_backoff_time_ms = 0;
-+
- 	priv->wakeirq = irq_of_parse_and_map(np, 1);
+ 	/* Break Interrupt */
+-	if ((ssr_status & SCxSR_BRK(port)) && err_enabled)
++	if (s->irqs[SCIx_ERI_IRQ] != s->irqs[SCIx_BRI_IRQ] &&
++	    (ssr_status & SCxSR_BRK(port)) && err_enabled)
+ 		ret = sci_br_interrupt(irq, ptr);
  
- 	pdata = of_device_get_match_data(&pdev->dev);
+ 	/* Overrun Interrupt */
 -- 
 2.30.2
 
