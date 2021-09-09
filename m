@@ -7,40 +7,39 @@ X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C40CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3763FC433EF
 	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:12:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 47CAC60F93
+	by mail.kernel.org (Postfix) with ESMTP id 24F06611CA
 	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 13:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355552AbhIINNo (ORCPT
+        id S1355967AbhIINNn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Sep 2021 09:13:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43766 "EHLO mail.kernel.org"
+        Thu, 9 Sep 2021 09:13:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353016AbhIINBp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 09:01:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D8EB96328C;
-        Thu,  9 Sep 2021 11:59:32 +0000 (UTC)
+        id S1357523AbhIINBk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Sep 2021 09:01:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4F49063285;
+        Thu,  9 Sep 2021 11:59:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188773;
-        bh=av8WWl+49meWu0mDLRsOPNjCV8ibfb2FsHfzZaKO2ok=;
+        s=k20201202; t=1631188770;
+        bh=Sen3VESj6Px/2robRFgre7iwCu/+5nbXyuniCVSJ6GY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AB6u8s3NLLYf4f7zygXz+amVT248PI/7orSgpu8YocWQr3mEggqvrKUXeM9SrBYmf
-         sm0J69j7ye2jcO1ek54VLCBn2TZYu4kt18j8zQcfNdKcEdno1uhkuDkhCcjQ8Yekv/
-         kSxno5cO3GZWLqanxe4hbVErhp1DAKWz7D9t0KONuIsW2tztgqxno1QRPLT7aceII/
-         sNZKX/ARCJm2xwM7DHd+Xep+PGoIWNwmztzqKtJzolW8v2Oq7tdwj3RwIDlKfAmYFt
-         pvw+lXHUdi1twFGZAzCmUAgXN1UeC8zI94c13yaI6Kl8hvFy5sDg5hemZvV4iXlHxv
-         qb7jH1JOAl+fg==
+        b=ewrK79SDSEBIAg2/tb/3pOo8h2yV64EXADaKiMm5L4l4NUhIj1zvcAC/PmUZNNsWx
+         jsoKYBB9UGexhvcfMYR6EJnTJiYNM0hEmZziSFMyIycdwfQ/50Mg5bC8Ucku1n2D+m
+         PzOY4CeMOJ1did6NAEIpxX0rWednWf9PB0tNNVRH9dE923w2KaT8RkLh/mvyu0K2J3
+         Q/Aq9svsfyJHOLFb5yu2nxTgYb0nrmEolL8RDb8OoAv9H9AbcVOxMmFLhOSzHQAtaM
+         METNvfcdCrh7kgNOUg1nYIIj8WGE2broFucftK0/2ySwDdDmCWoNsEYa9F5MulXgbf
+         SDBDQ61fYmVag==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jordy Zomer <jordy@pwning.systems>,
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 26/59] serial: 8250_pci: make setup_port() parameters explicitly unsigned
-Date:   Thu,  9 Sep 2021 07:58:27 -0400
-Message-Id: <20210909115900.149795-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 23/59] serial: 8250: Define RX trigger levels for OxSemi 950 devices
+Date:   Thu,  9 Sep 2021 07:58:24 -0400
+Message-Id: <20210909115900.149795-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115900.149795-1-sashal@kernel.org>
 References: <20210909115900.149795-1-sashal@kernel.org>
@@ -52,37 +51,73 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 
-[ Upstream commit 3a96e97ab4e835078e6f27b7e1c0947814df3841 ]
+[ Upstream commit d7aff291d069c4418285f3c8ee27b0ff67ce5998 ]
 
-The bar and offset parameters to setup_port() are used in pointer math,
-and while it would be very difficult to get them to wrap as a negative
-number, just be "safe" and make them unsigned so that static checkers do
-not trip over them unintentionally.
+Oxford Semiconductor 950 serial port devices have a 128-byte FIFO and in
+the enhanced (650) mode, which we select in `autoconfig_has_efr' with
+the ECB bit set in the EFR register, they support the receive interrupt
+trigger level selectable with FCR bits 7:6 from the set of 16, 32, 112,
+120.  This applies to the original OX16C950 discrete UART[1] as well as
+950 cores embedded into more complex devices.
 
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Reported-by: Jordy Zomer <jordy@pwning.systems>
-Link: https://lore.kernel.org/r/20210726130717.2052096-1-gregkh@linuxfoundation.org
+For these devices we set the default to 112, which sets an excessively
+high level of 112 or 7/8 of the FIFO capacity, unlike with other port
+types where we choose at most 1/2 of their respective FIFO capacities.
+Additionally we don't make the trigger level configurable.  Consequently
+frequent input overruns happen with high bit rates where hardware flow
+control cannot be used (e.g. terminal applications) even with otherwise
+highly-performant systems.
+
+Lower the default receive interrupt trigger level to 32 then, and make
+it configurable.  Document the trigger levels along with other port
+types, including the set of 16, 32, 64, 112 for the transmit interrupt
+as well[2].
+
+References:
+
+[1] "OX16C950 rev B High Performance UART with 128 byte FIFOs", Oxford
+    Semiconductor, Inc., DS-0031, Sep 05, Table 10: "Receiver Trigger
+    Levels", p. 22
+
+[2] same, Table 9: "Transmit Interrupt Trigger Levels", p. 22
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2106260608480.37803@angie.orcam.me.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_port.c | 3 ++-
+ include/uapi/linux/serial_reg.h     | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 071ee37399b7..72015cc7b33f 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -73,7 +73,7 @@ static void moan_device(const char *str, struct pci_dev *dev)
- 
- static int
- setup_port(struct serial_private *priv, struct uart_8250_port *port,
--	   int bar, int offset, int regshift)
-+	   u8 bar, unsigned int offset, int regshift)
- {
- 	struct pci_dev *dev = priv->dev;
- 
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 20f58e9da2fb..7ac6bb38948f 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -136,7 +136,8 @@ static const struct serial8250_config uart_config[] = {
+ 		.name		= "16C950/954",
+ 		.fifo_size	= 128,
+ 		.tx_loadsz	= 128,
+-		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
++		.rxtrig_bytes	= {16, 32, 112, 120},
+ 		/* UART_CAP_EFR breaks billionon CF bluetooth card. */
+ 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
+ 	},
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index 619fe6111dc9..a31ae32161f3 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -62,6 +62,7 @@
+  * ST16C654:	 8  16  56  60		 8  16  32  56	PORT_16654
+  * TI16C750:	 1  16  32  56		xx  xx  xx  xx	PORT_16750
+  * TI16C752:	 8  16  56  60		 8  16  32  56
++ * OX16C950:	16  32 112 120		16  32  64 112	PORT_16C950
+  * Tegra:	 1   4   8  14		16   8   4   1	PORT_TEGRA
+  */
+ #define UART_FCR_R_TRIG_00	0x00
 -- 
 2.30.2
 
