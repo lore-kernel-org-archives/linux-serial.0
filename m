@@ -2,101 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 946F4C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 14:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EC7C433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Sep 2021 13:22:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8391C60FDA
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Sep 2021 14:35:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C1FC61153
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Sep 2021 13:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346952AbhIIOgx (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Sep 2021 10:36:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48572 "EHLO mail.kernel.org"
+        id S236411AbhIKNXq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 11 Sep 2021 09:23:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53200 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240410AbhIIOgu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Sep 2021 10:36:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 13949610FF;
-        Thu,  9 Sep 2021 14:35:39 +0000 (UTC)
+        id S237247AbhIKNVj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 11 Sep 2021 09:21:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 742C361153;
+        Sat, 11 Sep 2021 13:20:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631198140;
-        bh=3WvRIwVpeyfq0j1sXzeynJnZRS8SyezNEtQxr3hPK38=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qqgdmDBG/Fns3u1i7A0XzFuTXxpYaXKQucLMx76M7+ZqS1ktKmorYCP/i/SZxgy0l
-         UmydXrFPcVWfv4ao+ygwl3W+/lQYA7tXNdikrmZ/Odzrg4Pu7X9e7Gix/fOmWeezUd
-         cNhUAhkIAdwQgUY5KzTdbmSwOCc7RxusBIiG+R+iK9zaHeLBUUyu5tMP+qkiQU2r9Z
-         MWNdRl6O90c8eghjehJiZqda/6LOs6Rx3kWnNNHIdhSWjSEbmDLWkjERmFMkEbIGib
-         FoVJAGgPdFEP4SB9Ryjxu8Ri0dMYlyk6/ZY359neTF1AUyXBZ3yMS28xSJOnyTUdKv
-         +IBfEjWgUfa8A==
-Date:   Thu, 9 Sep 2021 16:35:37 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Ulrich Hecht <uli+renesas@fpond.eu>
-Cc:     linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        geert@linux-m68k.org, yoshihiro.shimoda.uh@renesas.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: sh-sci: fix break handling for sysrq
-Message-ID: <YTobuY6QL9e7dyIK@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        geert@linux-m68k.org, yoshihiro.shimoda.uh@renesas.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210816162201.28801-1-uli+renesas@fpond.eu>
+        s=k20201202; t=1631366425;
+        bh=uBS6z2kpKZAxkYk/i40/4ZfBY9GbBSjJVHSkEn8KARA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UocxJ7ZlfwMj7ol7WkDG6ZlzXlhHnzqioyQbGz3Aqi+8foenvDRPPI/x8P4Puzbey
+         JGnqozH5bGbXRY9wKCmFmxuWe1qukTDflCX0N9MRn40/VzcRKjcaasAjNtMS+x1ESv
+         QUiVWAEP/G5NNhkieD3SSWUMbjnnAnTDmJOsT7Z22tj93ABdUrJokDbzQbs6yJgvf+
+         Le+sC1wyPQb1pK7Yb3Anwi0CSAGIVes9qWbrXxxeVrUNM0hZduaHoMIpbZ9dLnt76g
+         1dQHZkpwmAPXACP6MwQpg3QpTLAnPfQyq4WAO/bdXHgTwub5JSvyKsku2gmKy8suuv
+         325dcChTDvOMQ==
+Received: by pali.im (Postfix)
+        id F208788D; Sat, 11 Sep 2021 15:20:22 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: mvebu-uart: fix driver's tx_empty callback
+Date:   Sat, 11 Sep 2021 15:20:17 +0200
+Message-Id: <20210911132017.25505-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="J8NgKiLIdiyTObQC"
-Content-Disposition: inline
-In-Reply-To: <20210816162201.28801-1-uli+renesas@fpond.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Driver's tx_empty callback should signal when the transmit shift register
+is empty. So when the last character has been sent.
 
---J8NgKiLIdiyTObQC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+STAT_TX_FIFO_EMP bit signals only that HW transmit FIFO is empty, which
+happens when the last byte is loaded into transmit shift register.
 
-On Mon, Aug 16, 2021 at 06:22:01PM +0200, Ulrich Hecht wrote:
-> This fixes two issues that cause the sysrq sequence to be inadvertently
-> aborted on SCIF serial consoles:
->=20
-> - a NUL character remains in the RX queue after a break has been detected,
->   which is then passed on to uart_handle_sysrq_char()
-> - the break interrupt is handled twice on controllers with multiplexed ERI
->   and BRI interrupts
->=20
-> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+STAT_TX_EMP bit signals when the both HW transmit FIFO and transmit shift
+register are empty.
 
-For the record:
+So replace STAT_TX_FIFO_EMP check by STAT_TX_EMP in mvebu_uart_tx_empty()
+callback function.
 
-Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Fixes: 30530791a7a0 ("serial: mvebu-uart: initial support for Armada-3700 serial port")
+---
+ drivers/tty/serial/mvebu-uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 590f58176dc3..56ba7180f66d 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -191,7 +191,7 @@ static unsigned int mvebu_uart_tx_empty(struct uart_port *port)
+ 	st = readl(port->membase + UART_STAT);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+-	return (st & STAT_TX_FIFO_EMP) ? TIOCSER_TEMT : 0;
++	return (st & STAT_TX_EMP) ? TIOCSER_TEMT : 0;
+ }
+ 
+ static unsigned int mvebu_uart_get_mctrl(struct uart_port *port)
+-- 
+2.20.1
 
---J8NgKiLIdiyTObQC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmE6G7QACgkQFA3kzBSg
-KbbTbg//SBsGYNRxfyZXzrX2V0ZjytLsziaOOE61d2ipc+1hSPR6bwCWiV/g0QIb
-otdJozr4RJonEOaqHN2yGjTK8EwrJjGKtaBhSPyJRu8A1G0h/63hkZ8CRKNb4yV9
-Y91Wk16/NFuKedaof8l3VI86b5vAhSS5wmN1Iyh16gOzghmgo5eqOCukJmCb1Awu
-h5YNYskA1M+sEPQ2IbhlWzUWXOhFiniiWsQnyUMehreXOkYhC9CofqO8CBnIA2Xd
-KvrWvVxrgmZ0Y2gAUlzizo6jHUKCawmt1EjEJnWZSmOAsguFhtsaIdVKsi5Bw7na
-VC9gjM+etaVYGVlNU8VcKyNb1scaJ5FAg7wo8mKVS3CnuZMqY+ksRADHbo4OObVl
-3FS7jFF6sGvBBqOCfrFV6aXpZ++Llt/1XyPFrn8ASFUqGPIGM5KtWR011NfwVhsf
-nH11bzWYgfBCPYA7AupC5pwIIkq3U917PDQSwHpvFIAwGFirPKbQAfZoXmqYOYps
-hzK+I81XFGhn+XqPyLN3oYcrxhvQBoplQZtrgGEyhArzMYWOFU3We6OooIDGoVQn
-KU9tQ97UmduI8GhFaq3fc+bYj/7qimCCFSl2dg91fPL2c1elcZ+Tw4KQMZIrsdzp
-Q/QNm6BcvZZohyzM00T733nXnqB0DCYuG736H7LzMKntmyAu2D0=
-=NyQP
------END PGP SIGNATURE-----
-
---J8NgKiLIdiyTObQC--
