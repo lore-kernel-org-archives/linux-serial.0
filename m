@@ -5,29 +5,29 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C231C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 08:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0233BC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 08:48:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 39DD360FA0
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 08:48:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E24F56101A
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 08:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238367AbhIMIti (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Sep 2021 04:49:38 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:35298 "EHLO inva021.nxp.com"
+        id S238448AbhIMIuC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Sep 2021 04:50:02 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:58328 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238241AbhIMIt2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Sep 2021 04:49:28 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 756F5202A2C;
-        Mon, 13 Sep 2021 10:48:11 +0200 (CEST)
+        id S238121AbhIMItZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 13 Sep 2021 04:49:25 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id F41191A2A72;
+        Mon, 13 Sep 2021 10:48:08 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 68215202A4A;
-        Mon, 13 Sep 2021 10:48:11 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id F02DD1A2A5A;
+        Mon, 13 Sep 2021 10:48:08 +0200 (CEST)
 Received: from fsr-ub1664-175.ea.freescale.net (fsr-ub1664-175.ea.freescale.net [10.171.82.40])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id D8F85202EC;
-        Mon, 13 Sep 2021 10:48:10 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 6C60E202EC;
+        Mon, 13 Sep 2021 10:48:08 +0200 (CEST)
 From:   Abel Vesa <abel.vesa@nxp.com>
 To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>,
@@ -38,11 +38,10 @@ Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
         linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Abel Vesa <abel.vesa@nxp.com>, Jacky Bai <ping.bai@nxp.com>
-Subject: [PATCH 06/10] arm64: dts: freescale: Add lsio subsys dtsi for imx8dxl
-Date:   Mon, 13 Sep 2021 11:47:50 +0300
-Message-Id: <1631522874-19862-7-git-send-email-abel.vesa@nxp.com>
+        linux-arm-kernel@lists.infradead.org, Abel Vesa <abel.vesa@nxp.com>
+Subject: [PATCH 02/10] arm64: dts: imx8-ss-lsio: Add mu5a mailbox
+Date:   Mon, 13 Sep 2021 11:47:46 +0300
+Message-Id: <1631522874-19862-3-git-send-email-abel.vesa@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1631522874-19862-1-git-send-email-abel.vesa@nxp.com>
 References: <1631522874-19862-1-git-send-email-abel.vesa@nxp.com>
@@ -51,112 +50,32 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jacky Bai <ping.bai@nxp.com>
+The mailbox of the lsio mu5a is used by rpmsg on imx8qxp and
+imx8dxl platforms.
 
-On i.MX8DXL, the LSIO subsystem includes below devices:
-
-1x Inline Encryption Engine (IEE)
-1x FlexSPI
-4x Pulse Width Modulator (PWM)
-5x General Purpose Timer (GPT)
-8x GPIO
-14x Message Unit (MU)
-256KB On-Chip Memory (OCRAM)
-
-compared to the common imx8-ss-lsio dtsi, some nodes' interrupt
-property need to be updated.
-
-Signed-off-by: Jacky Bai <ping.bai@nxp.com>
 Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 ---
- .../boot/dts/freescale/imx8dxl-ss-lsio.dtsi   | 78 +++++++++++++++++++
- 1 file changed, 78 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
+ arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi b/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
-new file mode 100644
-index 000000000000..d90602bab384
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright 2019-2021 NXP
-+ */
-+&lsio_gpio0 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
-+};
+diff --git a/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi b/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi
+index ee4e585a9c39..76abdab40c75 100644
+--- a/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8-ss-lsio.dtsi
+@@ -141,6 +141,13 @@ lsio_mu4: mailbox@5d1f0000 {
+ 		status = "disabled";
+ 	};
+ 
++	lsio_mu5: mailbox@5d200000 {
++		reg = <0x5d200000 0x10000>;
++		interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
++		#mbox-cells = <2>;
++		power-domains = <&pd IMX_SC_R_MU_5A>;
++	};
 +
-+&lsio_gpio1 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio2 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio3 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio4 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio5 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio6 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio7 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu0 {
-+	compatible = "fsl,imx8dxl-mu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu1 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu2 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu3 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu4 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu5 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu13 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
-+};
+ 	lsio_mu13: mailbox@5d280000 {
+ 		reg = <0x5d280000 0x10000>;
+ 		interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.31.1
 
