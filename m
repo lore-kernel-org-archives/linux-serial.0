@@ -2,156 +2,185 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3603C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 17:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F14DBC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 21:05:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B092A610D1
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 17:39:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DBACA6103B
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 21:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346103AbhIMRkh (ORCPT
+        id S1347960AbhIMVGe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Sep 2021 13:40:37 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:59214 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245000AbhIMRjy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Sep 2021 13:39:54 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 674092005AC;
-        Mon, 13 Sep 2021 19:38:37 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4F5EE2005E6;
-        Mon, 13 Sep 2021 19:38:37 +0200 (CEST)
-Received: from fsr-ub1664-175.ea.freescale.net (fsr-ub1664-175.ea.freescale.net [10.171.82.40])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 80C6820363;
-        Mon, 13 Sep 2021 19:38:36 +0200 (CEST)
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Georgi Djakov <djakov@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Abel Vesa <abel.vesa@nxp.com>
-Subject: [RFC 17/19] net: ethernet: fec_main: Add interconnect support
-Date:   Mon, 13 Sep 2021 20:38:12 +0300
-Message-Id: <1631554694-9599-18-git-send-email-abel.vesa@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
-References: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 13 Sep 2021 17:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53518 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345627AbhIMVGd (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 13 Sep 2021 17:06:33 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F89C0613C1
+        for <linux-serial@vger.kernel.org>; Mon, 13 Sep 2021 14:05:17 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id i6so16376806edu.1
+        for <linux-serial@vger.kernel.org>; Mon, 13 Sep 2021 14:05:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=373m7inPGNTCDOiEZsbke1WmzoymEFvAttGADuwHDDA=;
+        b=dZApan+/iH4NW1oyIBh56hyWC0xvVWqlTSK28qynQC4TgDjgqY/p3DDGCieGAdnE+I
+         0aAGZTbnqRM5fK3TAuLjdF7NMMeCiV0kCAfGdpzcWIOkp6sGMVlUrfxYCH3SD3gyogJC
+         4YUBZARL2myz4qpAuMZTGYV2rnkRZ9K57xrX/1azGmh55BtgXM4p6fR98t3Lj/TtI5og
+         R/GBhjg5GXvtd+GgOVsER1+uWOFoeaerYmB9DSE925/Yk+BqT4PYFMFnKhDH3tmHZ5eB
+         xUYs9eTg/9uBmvVggoWXp8e0Cnzsirc3guy7n646rKKVwHb6iHMN/jX2KPg7JseQr8+1
+         ToQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=373m7inPGNTCDOiEZsbke1WmzoymEFvAttGADuwHDDA=;
+        b=wdLOjJhUPsI1yPrm2XD8LFQ1FWL3gSz90thy1OCw528xsQH5jUjc4R5SAfYAHGb0Vw
+         hclB6OXYgEkHLR3IuHTeB8LYRHiS18dMu1ZTpIV+h2LYEni8WUqc42JshcF/ShvVf0wD
+         II7D7HjYEuoT4huvGcoYeNd7T9pbT47xAftSKTtF51xGjzIXnDVytftVspICeqmFmaTi
+         anThLo2/WoHlkTnYQwd3UB0HwgC+WFZULmWBZkRJos2m1ZisfRMsfH+G7PcgczcYpEm4
+         kAdfPO4lM9IUAzRg/DIfVV0jrZAqQsfV29iwDUjeaKH31Y0xxR63oNig2H5RXVNYjDdH
+         WxEQ==
+X-Gm-Message-State: AOAM532I7n/CSakA0y4BdWuMWS2/3NlbpxYpjxQ2dtVeIoAFw5RqtMx0
+        u5+eNqck+PrtjEHjJwURLHW1QaVG/bJA/8e5ys57
+X-Google-Smtp-Source: ABdhPJyhjptYpi0mwh96yMlLzxckfq2tRXqkGTb/ZQJf0dLr8KeUC8PkrIaOITSWhjWsL1Ai+gNDn5oE1rgV2wDOPdI=
+X-Received: by 2002:a05:6402:2810:: with SMTP id h16mr14507917ede.293.1631567115278;
+ Mon, 13 Sep 2021 14:05:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210913140229.24797-1-omosnace@redhat.com>
+In-Reply-To: <20210913140229.24797-1-omosnace@redhat.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 13 Sep 2021 17:05:04 -0400
+Message-ID: <CAHC9VhRw-S+zZUFz5QFFLMBATjo+YbPAiR21jX6p7cT0T+MVLA@mail.gmail.com>
+Subject: Re: [PATCH v4] lockdown,selinux: fix wrong subject in some SELinux
+ lockdown checks
+To:     Ondrej Mosnacek <omosnace@redhat.com>
+Cc:     linux-security-module@vger.kernel.org,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        x86@kernel.org, linux-acpi@vger.kernel.org,
+        linux-cxl@vger.kernel.org, linux-efi@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On probe, if the dts node contains a valid icc path, then look for the
-fsl,icc-rate property and get the rate. Also set the icc bandwidth
-for that path to the nominal rate needed for fec to function right.
-Then enable and disable the path every time the fec is used or not.
-This will result in reducing the clock speeds along the icc path
-for each pl301 and NoC, but still meet the requirements for all the
-other icc consumers.
+On Mon, Sep 13, 2021 at 10:02 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+>
+> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
+> lockdown") added an implementation of the locked_down LSM hook to
+> SELinux, with the aim to restrict which domains are allowed to perform
+> operations that would breach lockdown.
+>
+> However, in several places the security_locked_down() hook is called in
+> situations where the current task isn't doing any action that would
+> directly breach lockdown, leading to SELinux checks that are basically
+> bogus.
+>
+> To fix this, add an explicit struct cred pointer argument to
+> security_lockdown() and define NULL as a special value to pass instead
+> of current_cred() in such situations. LSMs that take the subject
+> credentials into account can then fall back to some default or ignore
+> such calls altogether. In the SELinux lockdown hook implementation, use
+> SECINITSID_KERNEL in case the cred argument is NULL.
+>
+> Most of the callers are updated to pass current_cred() as the cred
+> pointer, thus maintaining the same behavior. The following callers are
+> modified to pass NULL as the cred pointer instead:
+> 1. arch/powerpc/xmon/xmon.c
+>      Seems to be some interactive debugging facility. It appears that
+>      the lockdown hook is called from interrupt context here, so it
+>      should be more appropriate to request a global lockdown decision.
+> 2. fs/tracefs/inode.c:tracefs_create_file()
+>      Here the call is used to prevent creating new tracefs entries when
+>      the kernel is locked down. Assumes that locking down is one-way -
+>      i.e. if the hook returns non-zero once, it will never return zero
+>      again, thus no point in creating these files. Also, the hook is
+>      often called by a module's init function when it is loaded by
+>      userspace, where it doesn't make much sense to do a check against
+>      the current task's creds, since the task itself doesn't actually
+>      use the tracing functionality (i.e. doesn't breach lockdown), just
+>      indirectly makes some new tracepoints available to whoever is
+>      authorized to use them.
+> 3. net/xfrm/xfrm_user.c:copy_to_user_*()
+>      Here a cryptographic secret is redacted based on the value returned
+>      from the hook. There are two possible actions that may lead here:
+>      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
+>         task context is relevant, since the dumped data is sent back to
+>         the current task.
+>      b) When adding/deleting/updating an SA via XFRM_MSG_xxxSA, the
+>         dumped SA is broadcasted to tasks subscribed to XFRM events -
+>         here the current task context is not relevant as it doesn't
+>         represent the tasks that could potentially see the secret.
+>      It doesn't seem worth it to try to keep using the current task's
+>      context in the a) case, since the eventual data leak can be
+>      circumvented anyway via b), plus there is no way for the task to
+>      indicate that it doesn't care about the actual key value, so the
+>      check could generate a lot of "false alert" denials with SELinux.
+>      Thus, let's pass NULL instead of current_cred() here faute de
+>      mieux.
+>
+> Improvements-suggested-by: Casey Schaufler <casey@schaufler-ca.com>
+> Improvements-suggested-by: Paul Moore <paul@paul-moore.com>
+> Fixes: 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
+> Acked-by: Dan Williams <dan.j.williams@intel.com>         [cxl]
+> Acked-by: Steffen Klassert <steffen.klassert@secunet.com> [xfrm]
+> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+> ---
+>
+> v4:
+> - rebase on top of TODO
+> - fix rebase conflicts:
+>   * drivers/cxl/pci.c
+>     - trivial: the lockdown reason was corrected in mainline
+>   * kernel/bpf/helpers.c, kernel/trace/bpf_trace.c
+>     - trivial: LOCKDOWN_BPF_READ was renamed to LOCKDOWN_BPF_READ_KERNEL
+>       in mainline
+>   * kernel/power/hibernate.c
+>     - trivial: !secretmem_active() was added to the condition in
+>       hibernation_available()
+> - cover new security_locked_down() call in kernel/bpf/helpers.c
+>   (LOCKDOWN_BPF_WRITE_USER in BPF_FUNC_probe_write_user case)
+>
+> v3: https://lore.kernel.org/lkml/20210616085118.1141101-1-omosnace@redhat.com/
+> - add the cred argument to security_locked_down() and adapt all callers
+> - keep using current_cred() in BPF, as the hook calls have been shifted
+>   to program load time (commit ff40e51043af ("bpf, lockdown, audit: Fix
+>   buggy SELinux lockdown permission checks"))
+> - in SELinux, don't ignore hook calls where cred == NULL, but use
+>   SECINITSID_KERNEL as the subject instead
+> - update explanations in the commit message
+>
+> v2: https://lore.kernel.org/lkml/20210517092006.803332-1-omosnace@redhat.com/
+> - change to a single hook based on suggestions by Casey Schaufler
+>
+> v1: https://lore.kernel.org/lkml/20210507114048.138933-1-omosnace@redhat.com/
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
----
- drivers/net/ethernet/freescale/fec.h      |  3 +++
- drivers/net/ethernet/freescale/fec_main.c | 19 +++++++++++++++++++
- 2 files changed, 22 insertions(+)
+The changes between v3 and v4 all seem sane to me, but I'm going to
+let this sit for a few days in hopes that we can collect a few more
+Reviewed-bys and ACKs.  If I don't see any objections I'll merge it
+mid-week(ish) into selinux/stable-5.15 and plan on sending it to Linus
+after it goes through a build/test cycle.
 
-diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
-index 7b4961daa254..2c5784febbeb 100644
---- a/drivers/net/ethernet/freescale/fec.h
-+++ b/drivers/net/ethernet/freescale/fec.h
-@@ -558,6 +558,9 @@ struct fec_enet_private {
- 	unsigned int num_tx_queues;
- 	unsigned int num_rx_queues;
- 
-+	struct icc_path *bus_path;
-+	unsigned int bus_rate;
-+
- 	/* The saved address of a sent-in-place packet/buffer, for skfree(). */
- 	struct fec_enet_priv_tx_q *tx_queue[FEC_ENET_MAX_TX_QS];
- 	struct fec_enet_priv_rx_q *rx_queue[FEC_ENET_MAX_RX_QS];
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 80bd5c629fa0..67374d436e73 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -48,6 +48,7 @@
- #include <linux/bitops.h>
- #include <linux/io.h>
- #include <linux/irq.h>
-+#include <linux/interconnect.h>
- #include <linux/clk.h>
- #include <linux/crc32.h>
- #include <linux/platform_device.h>
-@@ -3805,6 +3806,18 @@ fec_probe(struct platform_device *pdev)
- 	fep->pdev = pdev;
- 	fep->dev_id = dev_id++;
- 
-+	fep->bus_path = devm_of_icc_get(&pdev->dev, "path");
-+	if (IS_ERR(fep->bus_path)) {
-+		return PTR_ERR(fep->bus_path);
-+	} else if (fep->bus_path) {
-+		if (of_property_read_u32(np, "fsl,icc-rate", &fep->bus_rate)) {
-+			dev_err(&pdev->dev, "icc-rate missing\n");
-+			return -EINVAL;
-+		}
-+
-+		icc_set_bw(fep->bus_path, 0, fep->bus_rate);
-+	}
-+
- 	platform_set_drvdata(pdev, ndev);
- 
- 	if ((of_machine_is_compatible("fsl,imx6q") ||
-@@ -4075,6 +4088,8 @@ static int __maybe_unused fec_suspend(struct device *dev)
- 	if (fep->clk_enet_out || fep->reg_phy)
- 		fep->link = 0;
- 
-+	icc_disable(fep->bus_path);
-+
- 	return 0;
- }
- 
-@@ -4085,6 +4100,8 @@ static int __maybe_unused fec_resume(struct device *dev)
- 	int ret;
- 	int val;
- 
-+	icc_enable(fep->bus_path);
-+
- 	if (fep->reg_phy && !(fep->wol_flag & FEC_WOL_FLAG_ENABLE)) {
- 		ret = regulator_enable(fep->reg_phy);
- 		if (ret)
-@@ -4134,6 +4151,7 @@ static int __maybe_unused fec_runtime_suspend(struct device *dev)
- 	clk_disable_unprepare(fep->clk_ahb);
- 	clk_disable_unprepare(fep->clk_ipg);
- 
-+	icc_disable(fep->bus_path);
- 	return 0;
- }
- 
-@@ -4143,6 +4161,7 @@ static int __maybe_unused fec_runtime_resume(struct device *dev)
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 	int ret;
- 
-+	icc_enable(fep->bus_path);
- 	ret = clk_prepare_enable(fep->clk_ahb);
- 	if (ret)
- 		return ret;
 -- 
-2.31.1
-
+paul moore
+www.paul-moore.com
