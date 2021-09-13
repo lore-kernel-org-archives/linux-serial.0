@@ -4,31 +4,30 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UPPERCASE_50_75,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A466FC4321E
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 17:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F0DC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 17:39:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8E8A061103
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 17:39:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 81909610F9
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Sep 2021 17:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343909AbhIMRkS (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Sep 2021 13:40:18 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:44140 "EHLO inva020.nxp.com"
+        id S244049AbhIMRjm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Sep 2021 13:39:42 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:43618 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240913AbhIMRj4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Sep 2021 13:39:56 -0400
+        id S243787AbhIMRjl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 13 Sep 2021 13:39:41 -0400
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 2572C1A039A;
-        Mon, 13 Sep 2021 19:38:39 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 305801A038F;
+        Mon, 13 Sep 2021 19:38:24 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 168711A010C;
-        Mon, 13 Sep 2021 19:38:39 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 227801A010C;
+        Mon, 13 Sep 2021 19:38:24 +0200 (CEST)
 Received: from fsr-ub1664-175.ea.freescale.net (fsr-ub1664-175.ea.freescale.net [10.171.82.40])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 3E7AB20363;
-        Mon, 13 Sep 2021 19:38:38 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 4BB9E20363;
+        Mon, 13 Sep 2021 19:38:23 +0200 (CEST)
 From:   Abel Vesa <abel.vesa@nxp.com>
 To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>,
@@ -48,9 +47,9 @@ Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, Abel Vesa <abel.vesa@nxp.com>
-Subject: [RFC 19/19] arm64: defconfig: Add necessary configs for icc+devfreq on i.MX8MQ
-Date:   Mon, 13 Sep 2021 20:38:14 +0300
-Message-Id: <1631554694-9599-20-git-send-email-abel.vesa@nxp.com>
+Subject: [RFC 02/19] devfreq: imx-bus: Switch governor to powersave
+Date:   Mon, 13 Sep 2021 20:37:57 +0300
+Message-Id: <1631554694-9599-3-git-send-email-abel.vesa@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
 References: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
@@ -59,41 +58,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Compile in the interconnect and devfreq drivers for the i.MX8MQ.
-Also compile in the powersave devfreq governor.
+By switching to powersave governor, we allow the imx-bus to always run
+at minimum rate needed by all the running masters.
 
 Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 ---
- arch/arm64/configs/defconfig | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/devfreq/imx-bus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 3bf6f8a86aae..b06f1b01714d 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -1063,8 +1063,9 @@ CONFIG_ARCH_TEGRA_186_SOC=y
- CONFIG_ARCH_TEGRA_194_SOC=y
- CONFIG_ARCH_TEGRA_234_SOC=y
- CONFIG_TI_SCI_PM_DOMAINS=y
--CONFIG_ARM_IMX_BUS_DEVFREQ=m
--CONFIG_ARM_IMX8M_DDRC_DEVFREQ=m
-+CONFIG_DEVFREQ_GOV_POWERSAVE=y
-+CONFIG_ARM_IMX_BUS_DEVFREQ=y
-+CONFIG_ARM_IMX8M_DDRC_DEVFREQ=y
- CONFIG_EXTCON_PTN5150=m
- CONFIG_EXTCON_USB_GPIO=y
- CONFIG_EXTCON_USBC_CROS_EC=y
-@@ -1156,8 +1157,8 @@ CONFIG_SLIM_QCOM_CTRL=m
- CONFIG_SLIM_QCOM_NGD_CTRL=m
- CONFIG_MUX_MMIO=y
- CONFIG_INTERCONNECT=y
--CONFIG_INTERCONNECT_IMX=m
--CONFIG_INTERCONNECT_IMX8MQ=m
-+CONFIG_INTERCONNECT_IMX=y
-+CONFIG_INTERCONNECT_IMX8MQ=y
- CONFIG_INTERCONNECT_QCOM=y
- CONFIG_INTERCONNECT_QCOM_MSM8916=m
- CONFIG_INTERCONNECT_QCOM_OSM_L3=m
+diff --git a/drivers/devfreq/imx-bus.c b/drivers/devfreq/imx-bus.c
+index f3f6e25053ed..9d8dc9824d21 100644
+--- a/drivers/devfreq/imx-bus.c
++++ b/drivers/devfreq/imx-bus.c
+@@ -87,7 +87,7 @@ static int imx_bus_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct imx_bus *priv;
+-	const char *gov = DEVFREQ_GOV_USERSPACE;
++	const char *gov = DEVFREQ_GOV_POWERSAVE;
+ 	int ret;
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 -- 
 2.31.1
 
