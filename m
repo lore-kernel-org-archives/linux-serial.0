@@ -7,61 +7,52 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D87C28B5B
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73743C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1CBF860F58
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5B57661155
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbhINJPn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S231381AbhINJPn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 14 Sep 2021 05:15:43 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:34578 "EHLO
+Received: from smtp-out1.suse.de ([195.135.220.28]:34600 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230175AbhINJPi (ORCPT
+        with ESMTP id S230208AbhINJPi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 14 Sep 2021 05:15:38 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 6F225220D3;
+        by smtp-out1.suse.de (Postfix) with ESMTP id 90616220D5;
         Tue, 14 Sep 2021 09:14:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1631610860; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LMC4EVcw/uF5QULJdQl6X+7D4+czqBFVcA6/z6KRT6U=;
-        b=k3u9KliMlQ1JEcDJvVDy77s4yVKR33N/MOhZteBtose3V9JGHCU5xKsufTw/GNkxmTvPcq
-        ceA7dHCV8Kc0Q9ps41X27qMDo+SS+cEu3ogV+qTVdoRAdiZr17UO1/0grQWpgxWvbIEeyn
-        TeQqHhmfFsBo3/fjQkyDSKIlN6Gzo3U=
+        bh=ptWzO8anEDZUJbbMX+rmrDqkj4g7V1LAPYQTnvJTFXg=;
+        b=VxAY61NZ/P6DOUa6H3xqGUUv578TxOdU6CuArvd+ibeyzofdUaNtb0pyvRPjOomZGIGigT
+        6AlfkON4urLAhMkMy3UpqirnpubXkYA6s9n9JYyJR/8p3IzBfvRAcW2DuWcl/6ZVXOPR2H
+        QfE+ucrgDaqiwUgURcw7ttn3GwqYwLQ=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1631610860;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LMC4EVcw/uF5QULJdQl6X+7D4+czqBFVcA6/z6KRT6U=;
-        b=g7ekpIiGMxbDSdboue8huaHEfTONuSAE/MPja2vjTxyK9Qbst7oCMmpJPa/ZqdrGZgIFUn
-        eAgjdQYKKMFrUZBQ==
+        bh=ptWzO8anEDZUJbbMX+rmrDqkj4g7V1LAPYQTnvJTFXg=;
+        b=g1nTVx8iBsjCS2nrbWqPE3UpsXMNJjK0zM1J7NgKQsgQxrNlEufvPp9hkPibYpKIjTpGg2
+        XJQVUK8LpQ4ZU+BQ==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 4DA9BA3B94;
-        Tue, 14 Sep 2021 09:14:19 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 74E02A3B9E;
+        Tue, 14 Sep 2021 09:14:20 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>,
-        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
-        Jens Taprogge <jens.taprogge@taprogge.org>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: [PATCH 15/16] tty: the rest, stop using tty_flip_buffer_push
-Date:   Tue, 14 Sep 2021 11:14:14 +0200
-Message-Id: <20210914091415.17918-8-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 16/16] tty: drop tty_flip_buffer_push
+Date:   Tue, 14 Sep 2021 11:14:15 +0200
+Message-Id: <20210914091415.17918-9-jslaby@suse.cz>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210914091415.17918-1-jslaby@suse.cz>
 References: <20210914091134.17426-1-jslaby@suse.cz>
@@ -73,117 +64,57 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-going to remove the former, so call the latter directly in the couple of
-remaining users.
+tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). All
+users were converted, so remove tty_flip_buffer_push() completely.
+
+One less exported function.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
-Cc: Jens Taprogge <jens.taprogge@taprogge.org>
-Cc: Scott Branden <scott.branden@broadcom.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
 ---
- drivers/char/pcmcia/synclink_cs.c | 2 +-
- drivers/ipack/devices/ipoctal.c   | 2 +-
- drivers/misc/bcm-vk/bcm_vk_tty.c  | 2 +-
- drivers/mmc/core/sdio_uart.c      | 2 +-
- drivers/net/usb/hso.c             | 2 +-
- net/bluetooth/rfcomm/tty.c        | 4 ++--
- 6 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/tty/tty_buffer.c | 17 -----------------
+ include/linux/tty_flip.h |  1 -
+ 2 files changed, 18 deletions(-)
 
-diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
-index 78baba55a8b5..29a7a89ee58d 100644
---- a/drivers/char/pcmcia/synclink_cs.c
-+++ b/drivers/char/pcmcia/synclink_cs.c
-@@ -952,7 +952,7 @@ static void rx_ready_async(MGSLPC_INFO *info, int tcd)
- 	}
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 635d0af229b7..19b44639c464 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -550,23 +550,6 @@ static void flush_to_ldisc(struct work_struct *work)
  
- 	if (work)
--		tty_flip_buffer_push(port);
-+		tty_schedule_flip(port);
  }
  
+-/**
+- *	tty_flip_buffer_push	-	terminal
+- *	@port: tty port to push
+- *
+- *	Queue a push of the terminal flip buffers to the line discipline.
+- *	Can be called from IRQ/atomic context.
+- *
+- *	In the event of the queue being busy for flipping the work will be
+- *	held off and retried later.
+- */
+-
+-void tty_flip_buffer_push(struct tty_port *port)
+-{
+-	tty_schedule_flip(port);
+-}
+-EXPORT_SYMBOL(tty_flip_buffer_push);
+-
+ /**
+  *	tty_buffer_init		-	prepare a tty buffer structure
+  *	@port: tty port to initialise
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index 9916acb5de49..7efef54df932 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -16,7 +16,6 @@ int tty_insert_flip_string_fixed_flag(struct tty_port *port,
+ 		const unsigned char *chars, char flag, size_t size);
+ int tty_prepare_flip_string(struct tty_port *port, unsigned char **chars,
+ 		size_t size);
+-void tty_flip_buffer_push(struct tty_port *port);
+ void tty_schedule_flip(struct tty_port *port);
+ int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag);
  
-diff --git a/drivers/ipack/devices/ipoctal.c b/drivers/ipack/devices/ipoctal.c
-index c14e65a5d38f..714e2b8c551f 100644
---- a/drivers/ipack/devices/ipoctal.c
-+++ b/drivers/ipack/devices/ipoctal.c
-@@ -184,7 +184,7 @@ static void ipoctal_irq_rx(struct ipoctal_channel *channel, u8 sr)
- 		sr = ioread8(&channel->regs->r.sr);
- 	} while (isr & channel->isr_rx_rdy_mask);
- 
--	tty_flip_buffer_push(port);
-+	tty_schedule_flip(port);
- }
- 
- static void ipoctal_irq_tx(struct ipoctal_channel *channel)
-diff --git a/drivers/misc/bcm-vk/bcm_vk_tty.c b/drivers/misc/bcm-vk/bcm_vk_tty.c
-index 1b6076a89ca6..328109a719be 100644
---- a/drivers/misc/bcm-vk/bcm_vk_tty.c
-+++ b/drivers/misc/bcm-vk/bcm_vk_tty.c
-@@ -114,7 +114,7 @@ static void bcm_vk_tty_wq_handler(struct work_struct *work)
- 		}
- 
- 		if (count) {
--			tty_flip_buffer_push(&vktty->port);
-+			tty_schedule_flip(&vktty->port);
- 
- 			/* Update read offset from shadow register to card */
- 			vkwrite32(vk, vktty->rd, BAR_1,
-diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
-index 04c0823e0359..55fc67bd0937 100644
---- a/drivers/mmc/core/sdio_uart.c
-+++ b/drivers/mmc/core/sdio_uart.c
-@@ -418,7 +418,7 @@ static void sdio_uart_receive_chars(struct sdio_uart_port *port,
- 		*status = sdio_in(port, UART_LSR);
- 	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
- 
--	tty_flip_buffer_push(&port->port);
-+	tty_schedule_flip(&port->port);
- }
- 
- static void sdio_uart_transmit_chars(struct sdio_uart_port *port)
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index 7dc1ef3f93c3..55ea64b162e1 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -2018,7 +2018,7 @@ static int put_rxbuf_data(struct urb *urb, struct hso_serial *serial)
- 	if (count >= urb->actual_length) {
- 		tty_insert_flip_string(&serial->port, urb->transfer_buffer,
- 				       urb->actual_length);
--		tty_flip_buffer_push(&serial->port);
-+		tty_schedule_flip(&serial->port);
- 	} else {
- 		dev_warn(&serial->parent->usb->dev,
- 			 "dropping data, %d bytes lost\n", urb->actual_length);
-diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index ebd78fdbd6e8..2a09637bdb00 100644
---- a/net/bluetooth/rfcomm/tty.c
-+++ b/net/bluetooth/rfcomm/tty.c
-@@ -618,7 +618,7 @@ static void rfcomm_dev_data_ready(struct rfcomm_dlc *dlc, struct sk_buff *skb)
- 	BT_DBG("dlc %p len %d", dlc, skb->len);
- 
- 	tty_insert_flip_string(&dev->port, skb->data, skb->len);
--	tty_flip_buffer_push(&dev->port);
-+	tty_schedule_flip(&dev->port);
- 
- 	kfree_skb(skb);
- }
-@@ -677,7 +677,7 @@ static void rfcomm_tty_copy_pending(struct rfcomm_dev *dev)
- 	rfcomm_dlc_unlock(dev->dlc);
- 
- 	if (inserted > 0)
--		tty_flip_buffer_push(&dev->port);
-+		tty_schedule_flip(&dev->port);
- }
- 
- /* do the reverse of install, clearing the tty fields and releasing the
 -- 
 2.33.0
 
