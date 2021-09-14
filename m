@@ -2,260 +2,185 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E422C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5FFDC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 12:35:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3013860F25
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:18:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C2CE2610CE
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 12:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbhINJTU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Sep 2021 05:19:20 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:40700
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229617AbhINJTT (ORCPT
+        id S232779AbhINMhP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Sep 2021 08:37:15 -0400
+Received: from fanzine.igalia.com ([178.60.130.6]:47869 "EHLO
+        fanzine.igalia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232985AbhINMhL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Sep 2021 05:19:19 -0400
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 217483FDC7
-        for <linux-serial@vger.kernel.org>; Tue, 14 Sep 2021 09:18:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1631611082;
-        bh=aRxLbL6hEiGe6xganEKR1lyiW6DB54cMIWpJYFs9yww=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=rxHl1wUOx9nBhchTjahMS7oehPqJ2Ahnm1yu3xry/v/r0tfu/EUY49q1IGvXg3eFC
-         9ADDdt6dJcOKyUF9bRw/bDXHBK5Udy6LiHW6VNef4sSPEOEvXP/zgsPl2CecruQmr+
-         ZXO46Jdzw2viy4KADDXpSl+SIer6bi4WaKHRtYu+zaLFEL7MVHIWkLKDdns7b7aUtP
-         2Ep4jkGuNxFUBhlxBGV9vJSikXbv8V0OWLTC/n5BbV40uM/5hS+mDMr9/Q+bFOqw+D
-         JglaoEZnzQqt9q1oo8m2DsF8Ov8THYuq8ZvIdqLX/m/nB99CSabkR2mfF688/K8++6
-         GzjllO1OVcM9A==
-Received: by mail-wr1-f70.google.com with SMTP id r7-20020a5d6947000000b0015e0f68a63bso1509583wrw.22
-        for <linux-serial@vger.kernel.org>; Tue, 14 Sep 2021 02:18:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aRxLbL6hEiGe6xganEKR1lyiW6DB54cMIWpJYFs9yww=;
-        b=lQmmoXDNpKgJFzRTVOONAkXQxq41F9ZLhYfBw845E+e82h6siINsfptxT7NWKdnKaE
-         ReBGO7tVfGDYUYdpn7uSyIQk0Rrb/X8yIxr9Qwgvvbw6j+1+0l2MRwBJAwrwiPU0N0w6
-         TkVZ/yOC1o/73ObXlBOMDlsD7trcmcmjOc2tK1KYA8u3APDWFg/yN8aLngB3FrNIV0lE
-         Y3N1vGnfeA9MAyeDgCKJE+WcTEJYcNMkoLXZqSRF7Le/wYxB7lJLeQWQ+mUtmMblb2Wi
-         +fz9Vo0/P4+ZzXkqoYIAp+iB2Sjz8YIeF8riUzZ9nxFr+yGDpLlX3iI5lEwSxmeLjlDT
-         QZgg==
-X-Gm-Message-State: AOAM5325ZOj0Xxbq1qUjHlG87NgR3DKogbYT+0iDa0CRjNXrFaGgoxjH
-        a4oBFk4fUdhRb9IGrr0NLUnerdzImeJ7EdRSiomwnzBEW8wv5VVQEJhdjfyLfoLRGQS8UBKYBkO
-        AVlBoMHC7Rtn9t7hhyEGtMcvSDJmHUUlFeS3/l8+gDQ==
-X-Received: by 2002:adf:9f0d:: with SMTP id l13mr17852470wrf.328.1631611081603;
-        Tue, 14 Sep 2021 02:18:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzyzQztBzbBrYTaOhN+AokKj5GVs0m53CtmIkzfLqV3EcR+H0RZPuNBjuVmjpdyhO8bDxCc7A==
-X-Received: by 2002:adf:9f0d:: with SMTP id l13mr17852425wrf.328.1631611081418;
-        Tue, 14 Sep 2021 02:18:01 -0700 (PDT)
-Received: from [192.168.3.211] (lk.84.20.244.219.dc.cable.static.lj-kabel.net. [84.20.244.219])
-        by smtp.gmail.com with ESMTPSA id n17sm2747552wrp.17.2021.09.14.02.17.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Sep 2021 02:18:00 -0700 (PDT)
-Subject: Re: [PATCH 08/16] tty: drivers/tty/serial/, stop using
- tty_flip_buffer_push
+        Tue, 14 Sep 2021 08:37:11 -0400
+X-Greylist: delayed 2243 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 Sep 2021 08:37:08 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com; s=20170329;
+        h=MIME-Version:Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID; bh=V389QlEPoa4H0g6tvmBCmXe0Mn/biFCGdcUxSHGw0bg=;
+        b=KSMvgSawYxoMYj3QpeMNiCIgFiuis2WmEklbbbFV3SRfOvRg3IE3CNaJswnjVOLYNI9H9rQUmVY7hxHIzvTtLqHWIZJVFLsjkkfhMIpiFwLJk/BUxnqKlyRRo2vT0EsjELD+VyGArNOCzMEgNLKsBNi8OLuoCWQ3fMsirgI98iLz/rJ3zQLfFBmBI2pWXf6NHwHdRPX33N/+PeG+09Aov5k/NxKgR6IFg3ovqoeLkzOXy9E6m90Th193wzRgowxQh5pUqNsK+tvsqQkIMyUGdT7EgPx1tneQTZcAitUNoFfyyH5REnun4UFR4dbPbfnzmgRtwC2b3oNv+5kVfUDfBA==;
+Received: from 101.red-88-4-142.dynamicip.rima-tde.net ([88.4.142.101] helo=[192.168.2.252])
+        by fanzine.igalia.com with esmtpsa 
+        (Cipher TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim)
+        id 1mQ74t-0000M4-1u; Tue, 14 Sep 2021 13:58:19 +0200
+Message-ID: <0f88635bb2da781aede7b63350edc21ccb5c7536.camel@igalia.com>
+Subject: Re: [PATCH 15/16] tty: the rest, stop using tty_flip_buffer_push
+From:   Samuel Iglesias =?ISO-8859-1?Q?Gons=E1lvez?= 
+        <siglesias@igalia.com>
 To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Al Cooper <alcooperx@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Scott Branden <scott.branden@broadcom.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Tue, 14 Sep 2021 13:58:09 +0200
+In-Reply-To: <20210914091415.17918-8-jslaby@suse.cz>
 References: <20210914091134.17426-1-jslaby@suse.cz>
- <20210914091415.17918-1-jslaby@suse.cz>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <3551622b-31a5-d349-5785-a07fc1241958@canonical.com>
-Date:   Tue, 14 Sep 2021 11:17:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+         <20210914091415.17918-1-jslaby@suse.cz>
+         <20210914091415.17918-8-jslaby@suse.cz>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-UdnmcUv33UBwH0NOJ0sJ"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-In-Reply-To: <20210914091415.17918-1-jslaby@suse.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 14/09/2021 11:14, Jiri Slaby wrote:
-> Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-> tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-> going to remove the former, so call the latter directly in
-> drivers/tty/serial/.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: Joel Stanley <joel@jms.id.au>
-> Cc: Andrew Jeffery <andrew@aj.id.au>
-> Cc: Al Cooper <alcooperx@gmail.com>
-> Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> Cc: Tobias Klauser <tklauser@distanz.ch>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Vineet Gupta <vgupta@kernel.org>
-> Cc: Richard Genoud <richard.genoud@gmail.com>
-> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> Cc: Alexander Shiyan <shc_work@mail.ru>
-> Cc: Baruch Siach <baruch@tkos.co.il>
-> Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> Cc: Fabio Estevam <festevam@gmail.com>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Cc: Karol Gugala <kgugala@antmicro.com>
-> Cc: Mateusz Holenko <mholenko@antmicro.com>
-> Cc: Vladimir Zapolskiy <vz@mleia.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc: Jerome Brunet <jbrunet@baylibre.com>
-> Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: "Andreas Färber" <afaerber@suse.de>
-> Cc: Manivannan Sadhasivam <mani@kernel.org>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: Paul Mackerras <paulus@samba.org>
-> Cc: Kevin Cernekee <cernekee@gmail.com>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Cc: Laxman Dewangan <ldewangan@nvidia.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Jonathan Hunter <jonathanh@nvidia.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Orson Zhai <orsonzhai@gmail.com>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Peter Korsgaard <jacmet@sunsite.dk>
-> Cc: Timur Tabi <timur@kernel.org>
-> Cc: Michal Simek <michal.simek@xilinx.com>
-> ---
->  drivers/tty/serial/21285.c                  |  2 +-
->  drivers/tty/serial/8250/8250_aspeed_vuart.c |  2 +-
->  drivers/tty/serial/8250/8250_bcm7271.c      |  2 +-
->  drivers/tty/serial/8250/8250_dma.c          |  2 +-
->  drivers/tty/serial/8250/8250_mtk.c          |  2 +-
->  drivers/tty/serial/8250/8250_omap.c         |  2 +-
->  drivers/tty/serial/8250/8250_port.c         |  2 +-
->  drivers/tty/serial/altera_jtaguart.c        |  2 +-
->  drivers/tty/serial/altera_uart.c            |  2 +-
->  drivers/tty/serial/amba-pl010.c             |  2 +-
->  drivers/tty/serial/amba-pl011.c             |  6 +++---
->  drivers/tty/serial/apbuart.c                |  2 +-
->  drivers/tty/serial/ar933x_uart.c            |  2 +-
->  drivers/tty/serial/arc_uart.c               |  2 +-
->  drivers/tty/serial/atmel_serial.c           |  6 +++---
->  drivers/tty/serial/bcm63xx_uart.c           |  2 +-
->  drivers/tty/serial/clps711x.c               |  2 +-
->  drivers/tty/serial/cpm_uart/cpm_uart_core.c |  2 +-
->  drivers/tty/serial/digicolor-usart.c        |  2 +-
->  drivers/tty/serial/dz.c                     |  2 +-
->  drivers/tty/serial/fsl_linflexuart.c        |  2 +-
->  drivers/tty/serial/fsl_lpuart.c             |  6 +++---
->  drivers/tty/serial/icom.c                   |  2 +-
->  drivers/tty/serial/imx.c                    |  6 +++---
->  drivers/tty/serial/ip22zilog.c              |  4 ++--
->  drivers/tty/serial/jsm/jsm_tty.c            |  2 +-
->  drivers/tty/serial/kgdb_nmi.c               |  2 +-
->  drivers/tty/serial/lantiq.c                 |  4 ++--
->  drivers/tty/serial/liteuart.c               |  2 +-
->  drivers/tty/serial/lpc32xx_hs.c             |  2 +-
->  drivers/tty/serial/max3100.c                |  4 ++--
->  drivers/tty/serial/max310x.c                |  2 +-
->  drivers/tty/serial/mcf.c                    |  2 +-
->  drivers/tty/serial/men_z135_uart.c          |  2 +-
->  drivers/tty/serial/meson_uart.c             |  2 +-
->  drivers/tty/serial/milbeaut_usio.c          |  2 +-
->  drivers/tty/serial/mpc52xx_uart.c           |  2 +-
->  drivers/tty/serial/mps2-uart.c              |  4 ++--
->  drivers/tty/serial/msm_serial.c             |  6 +++---
->  drivers/tty/serial/mux.c                    |  2 +-
->  drivers/tty/serial/mvebu-uart.c             |  2 +-
->  drivers/tty/serial/mxs-auart.c              |  4 ++--
->  drivers/tty/serial/omap-serial.c            |  2 +-
->  drivers/tty/serial/owl-uart.c               |  2 +-
->  drivers/tty/serial/pch_uart.c               |  4 ++--
->  drivers/tty/serial/pic32_uart.c             |  2 +-
->  drivers/tty/serial/pmac_zilog.c             |  4 ++--
->  drivers/tty/serial/pxa.c                    |  2 +-
->  drivers/tty/serial/qcom_geni_serial.c       |  4 ++--
->  drivers/tty/serial/rda-uart.c               |  2 +-
->  drivers/tty/serial/rp2.c                    |  2 +-
->  drivers/tty/serial/sa1100.c                 |  2 +-
->  drivers/tty/serial/samsung_tty.c            |  6 +++---
 
-For Samsung:
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+--=-UdnmcUv33UBwH0NOJ0sJ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 
-BR,
-Krzysztof
+T24gVHVlLCAyMDIxLTA5LTE0IGF0IDExOjE0ICswMjAwLCBKaXJpIFNsYWJ5IHdyb3RlOgo+IFNp
+bmNlIGNvbW1pdCBhOWMzZjY4ZjNjZDhkICh0dHk6IEZpeCBsb3dfbGF0ZW5jeSBCVUcpIGluIDIw
+MTQsCj4gdHR5X2ZsaXBfYnVmZmVyX3B1c2goKSBpcyBvbmx5IGEgd3JhcHBlciB0byB0dHlfc2No
+ZWR1bGVfZmxpcCgpLiBXZQo+IGFyZQo+IGdvaW5nIHRvIHJlbW92ZSB0aGUgZm9ybWVyLCBzbyBj
+YWxsIHRoZSBsYXR0ZXIgZGlyZWN0bHkgaW4gdGhlIGNvdXBsZQo+IG9mCj4gcmVtYWluaW5nIHVz
+ZXJzLgo+IAo+IFNpZ25lZC1vZmYtYnk6IEppcmkgU2xhYnkgPGpzbGFieUBzdXNlLmN6Pgo+IENj
+OiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPgo+IENjOiBTYW11ZWwgSWdsZXNpYXMgR29u
+c2FsdmV6IDxzaWdsZXNpYXNAaWdhbGlhLmNvbT4KPiBDYzogSmVucyBUYXByb2dnZSA8amVucy50
+YXByb2dnZUB0YXByb2dnZS5vcmc+Cj4gQ2M6IFNjb3R0IEJyYW5kZW4gPHNjb3R0LmJyYW5kZW5A
+YnJvYWRjb20uY29tPgo+IENjOiBVbGYgSGFuc3NvbiA8dWxmLmhhbnNzb25AbGluYXJvLm9yZz4K
+PiBDYzogIkRhdmlkIFMuIE1pbGxlciIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+Cj4gQ2M6IEpha3Vi
+IEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+Cj4gQ2M6IE1hcmNlbCBIb2x0bWFubiA8bWFyY2Vs
+QGhvbHRtYW5uLm9yZz4KPiBDYzogSm9oYW4gSGVkYmVyZyA8am9oYW4uaGVkYmVyZ0BnbWFpbC5j
+b20+Cj4gQ2M6IEx1aXogQXVndXN0byB2b24gRGVudHogPGx1aXouZGVudHpAZ21haWwuY29tPgo+
+IC0tLQo+IMKgZHJpdmVycy9jaGFyL3BjbWNpYS9zeW5jbGlua19jcy5jIHwgMiArLQo+IMKgZHJp
+dmVycy9pcGFjay9kZXZpY2VzL2lwb2N0YWwuY8KgwqAgfCAyICstCj4gwqBkcml2ZXJzL21pc2Mv
+YmNtLXZrL2JjbV92a190dHkuY8KgIHwgMiArLQo+IMKgZHJpdmVycy9tbWMvY29yZS9zZGlvX3Vh
+cnQuY8KgwqDCoMKgwqAgfCAyICstCj4gwqBkcml2ZXJzL25ldC91c2IvaHNvLmPCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgfCAyICstCj4gwqBuZXQvYmx1ZXRvb3RoL3JmY29tbS90dHkuY8KgwqDC
+oMKgwqDCoMKgIHwgNCArKy0tCj4gwqA2IGZpbGVzIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwg
+NyBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9jaGFyL3BjbWNpYS9zeW5j
+bGlua19jcy5jCj4gYi9kcml2ZXJzL2NoYXIvcGNtY2lhL3N5bmNsaW5rX2NzLmMKPiBpbmRleCA3
+OGJhYmE1NWE4YjUuLjI5YTdhODllZTU4ZCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2NoYXIvcGNt
+Y2lhL3N5bmNsaW5rX2NzLmMKPiArKysgYi9kcml2ZXJzL2NoYXIvcGNtY2lhL3N5bmNsaW5rX2Nz
+LmMKPiBAQCAtOTUyLDcgKzk1Miw3IEBAIHN0YXRpYyB2b2lkIHJ4X3JlYWR5X2FzeW5jKE1HU0xQ
+Q19JTkZPICppbmZvLCBpbnQKPiB0Y2QpCj4gwqDCoMKgwqDCoMKgwqDCoH0KPiDCoAo+IMKgwqDC
+oMKgwqDCoMKgwqBpZiAod29yaykKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgdHR5
+X2ZsaXBfYnVmZmVyX3B1c2gocG9ydCk7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oHR0eV9zY2hlZHVsZV9mbGlwKHBvcnQpOwo+IMKgfQo+IMKgCj4gwqAKPiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9pcGFjay9kZXZpY2VzL2lwb2N0YWwuYwo+IGIvZHJpdmVycy9pcGFjay9kZXZpY2Vz
+L2lwb2N0YWwuYwo+IGluZGV4IGMxNGU2NWE1ZDM4Zi4uNzE0ZTJiOGM1NTFmIDEwMDY0NAo+IC0t
+LSBhL2RyaXZlcnMvaXBhY2svZGV2aWNlcy9pcG9jdGFsLmMKPiArKysgYi9kcml2ZXJzL2lwYWNr
+L2RldmljZXMvaXBvY3RhbC5jCj4gQEAgLTE4NCw3ICsxODQsNyBAQCBzdGF0aWMgdm9pZCBpcG9j
+dGFsX2lycV9yeChzdHJ1Y3QgaXBvY3RhbF9jaGFubmVsCj4gKmNoYW5uZWwsIHU4IHNyKQo+IMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgc3IgPSBpb3JlYWQ4KCZjaGFubmVsLT5yZWdz
+LT5yLnNyKTsKPiDCoMKgwqDCoMKgwqDCoMKgfSB3aGlsZSAoaXNyICYgY2hhbm5lbC0+aXNyX3J4
+X3JkeV9tYXNrKTsKPiDCoAo+IC3CoMKgwqDCoMKgwqDCoHR0eV9mbGlwX2J1ZmZlcl9wdXNoKHBv
+cnQpOwo+ICvCoMKgwqDCoMKgwqDCoHR0eV9zY2hlZHVsZV9mbGlwKHBvcnQpOwo+IMKgfQo+IMKg
+CgpGb3IgaXBvY3RhbCBjaGFuZ2VzOgoKQWNrZWQtYnk6IFNhbXVlbCBJZ2xlc2lhcyBHb25zw6Fs
+dmV6IDxzaWdsZXNpYXNAaWdhbGlhLmNvbT4KClNhbQoKPiDCoHN0YXRpYyB2b2lkIGlwb2N0YWxf
+aXJxX3R4KHN0cnVjdCBpcG9jdGFsX2NoYW5uZWwgKmNoYW5uZWwpCj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvbWlzYy9iY20tdmsvYmNtX3ZrX3R0eS5jIGIvZHJpdmVycy9taXNjL2JjbS0KPiB2ay9i
+Y21fdmtfdHR5LmMKPiBpbmRleCAxYjYwNzZhODljYTYuLjMyODEwOWE3MTliZSAxMDA2NDQKPiAt
+LS0gYS9kcml2ZXJzL21pc2MvYmNtLXZrL2JjbV92a190dHkuYwo+ICsrKyBiL2RyaXZlcnMvbWlz
+Yy9iY20tdmsvYmNtX3ZrX3R0eS5jCj4gQEAgLTExNCw3ICsxMTQsNyBAQCBzdGF0aWMgdm9pZCBi
+Y21fdmtfdHR5X3dxX2hhbmRsZXIoc3RydWN0Cj4gd29ya19zdHJ1Y3QgKndvcmspCj4gwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9Cj4gwqAKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoGlmIChjb3VudCkgewo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgdHR5X2ZsaXBfYnVmZmVyX3B1c2goJnZrdHR5LT5wb3J0KTsKPiArwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHR0eV9zY2hlZHVsZV9m
+bGlwKCZ2a3R0eS0+cG9ydCk7Cj4gwqAKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAvKiBVcGRhdGUgcmVhZCBvZmZzZXQgZnJvbSBzaGFkb3cgcmVnaXN0
+ZXIgdG8KPiBjYXJkICovCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgdmt3cml0ZTMyKHZrLCB2a3R0eS0+cmQsIEJBUl8xLAo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL21tYy9jb3JlL3NkaW9fdWFydC5jCj4gYi9kcml2ZXJzL21tYy9jb3JlL3NkaW9fdWFy
+dC5jCj4gaW5kZXggMDRjMDgyM2UwMzU5Li41NWZjNjdiZDA5MzcgMTAwNjQ0Cj4gLS0tIGEvZHJp
+dmVycy9tbWMvY29yZS9zZGlvX3VhcnQuYwo+ICsrKyBiL2RyaXZlcnMvbW1jL2NvcmUvc2Rpb191
+YXJ0LmMKPiBAQCAtNDE4LDcgKzQxOCw3IEBAIHN0YXRpYyB2b2lkIHNkaW9fdWFydF9yZWNlaXZl
+X2NoYXJzKHN0cnVjdAo+IHNkaW9fdWFydF9wb3J0ICpwb3J0LAo+IMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgKnN0YXR1cyA9IHNkaW9faW4ocG9ydCwgVUFSVF9MU1IpOwo+IMKgwqDC
+oMKgwqDCoMKgwqB9IHdoaWxlICgoKnN0YXR1cyAmIFVBUlRfTFNSX0RSKSAmJiAobWF4X2NvdW50
+LS0gPiAwKSk7Cj4gwqAKPiAtwqDCoMKgwqDCoMKgwqB0dHlfZmxpcF9idWZmZXJfcHVzaCgmcG9y
+dC0+cG9ydCk7Cj4gK8KgwqDCoMKgwqDCoMKgdHR5X3NjaGVkdWxlX2ZsaXAoJnBvcnQtPnBvcnQp
+Owo+IMKgfQo+IMKgCj4gwqBzdGF0aWMgdm9pZCBzZGlvX3VhcnRfdHJhbnNtaXRfY2hhcnMoc3Ry
+dWN0IHNkaW9fdWFydF9wb3J0ICpwb3J0KQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC91c2Iv
+aHNvLmMgYi9kcml2ZXJzL25ldC91c2IvaHNvLmMKPiBpbmRleCA3ZGMxZWYzZjkzYzMuLjU1ZWE2
+NGIxNjJlMSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL25ldC91c2IvaHNvLmMKPiArKysgYi9kcml2
+ZXJzL25ldC91c2IvaHNvLmMKPiBAQCAtMjAxOCw3ICsyMDE4LDcgQEAgc3RhdGljIGludCBwdXRf
+cnhidWZfZGF0YShzdHJ1Y3QgdXJiICp1cmIsCj4gc3RydWN0IGhzb19zZXJpYWwgKnNlcmlhbCkK
+PiDCoMKgwqDCoMKgwqDCoMKgaWYgKGNvdW50ID49IHVyYi0+YWN0dWFsX2xlbmd0aCkgewo+IMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgdHR5X2luc2VydF9mbGlwX3N0cmluZygmc2Vy
+aWFsLT5wb3J0LCB1cmItCj4gPnRyYW5zZmVyX2J1ZmZlciwKPiDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IHVyYi0+YWN0dWFsX2xlbmd0aCk7Cj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHR0
+eV9mbGlwX2J1ZmZlcl9wdXNoKCZzZXJpYWwtPnBvcnQpOwo+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqB0dHlfc2NoZWR1bGVfZmxpcCgmc2VyaWFsLT5wb3J0KTsKPiDCoMKgwqDCoMKg
+wqDCoMKgfSBlbHNlIHsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGRldl93YXJu
+KCZzZXJpYWwtPnBhcmVudC0+dXNiLT5kZXYsCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgICJkcm9wcGluZyBkYXRhLCAlZCBieXRlcyBsb3N0XG4iLCB1
+cmItCj4gPmFjdHVhbF9sZW5ndGgpOwo+IGRpZmYgLS1naXQgYS9uZXQvYmx1ZXRvb3RoL3JmY29t
+bS90dHkuYyBiL25ldC9ibHVldG9vdGgvcmZjb21tL3R0eS5jCj4gaW5kZXggZWJkNzhmZGJkNmU4
+Li4yYTA5NjM3YmRiMDAgMTAwNjQ0Cj4gLS0tIGEvbmV0L2JsdWV0b290aC9yZmNvbW0vdHR5LmMK
+PiArKysgYi9uZXQvYmx1ZXRvb3RoL3JmY29tbS90dHkuYwo+IEBAIC02MTgsNyArNjE4LDcgQEAg
+c3RhdGljIHZvaWQgcmZjb21tX2Rldl9kYXRhX3JlYWR5KHN0cnVjdAo+IHJmY29tbV9kbGMgKmRs
+Yywgc3RydWN0IHNrX2J1ZmYgKnNrYikKPiDCoMKgwqDCoMKgwqDCoMKgQlRfREJHKCJkbGMgJXAg
+bGVuICVkIiwgZGxjLCBza2ItPmxlbik7Cj4gwqAKPiDCoMKgwqDCoMKgwqDCoMKgdHR5X2luc2Vy
+dF9mbGlwX3N0cmluZygmZGV2LT5wb3J0LCBza2ItPmRhdGEsIHNrYi0+bGVuKTsKPiAtwqDCoMKg
+wqDCoMKgwqB0dHlfZmxpcF9idWZmZXJfcHVzaCgmZGV2LT5wb3J0KTsKPiArwqDCoMKgwqDCoMKg
+wqB0dHlfc2NoZWR1bGVfZmxpcCgmZGV2LT5wb3J0KTsKPiDCoAo+IMKgwqDCoMKgwqDCoMKgwqBr
+ZnJlZV9za2Ioc2tiKTsKPiDCoH0KPiBAQCAtNjc3LDcgKzY3Nyw3IEBAIHN0YXRpYyB2b2lkIHJm
+Y29tbV90dHlfY29weV9wZW5kaW5nKHN0cnVjdAo+IHJmY29tbV9kZXYgKmRldikKPiDCoMKgwqDC
+oMKgwqDCoMKgcmZjb21tX2RsY191bmxvY2soZGV2LT5kbGMpOwo+IMKgCj4gwqDCoMKgwqDCoMKg
+wqDCoGlmIChpbnNlcnRlZCA+IDApCj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHR0
+eV9mbGlwX2J1ZmZlcl9wdXNoKCZkZXYtPnBvcnQpOwo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqB0dHlfc2NoZWR1bGVfZmxpcCgmZGV2LT5wb3J0KTsKPiDCoH0KPiDCoAo+IMKgLyog
+ZG8gdGhlIHJldmVyc2Ugb2YgaW5zdGFsbCwgY2xlYXJpbmcgdGhlIHR0eSBmaWVsZHMgYW5kIHJl
+bGVhc2luZwo+IHRoZQoK
+
+
+--=-UdnmcUv33UBwH0NOJ0sJ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEQP+ZAvaXWkfuKXiEf/S6MvF9w0MFAmFAjlEACgkQf/S6MvF9
+w0NbiQ//ayCKwShaHxMKd9xRqoMn6pdr4lDJbo2vjiZvpqCGVFmsbJSM+T90oXRY
+pisR1tOhThyJZ0Llsa9fulLZhgaZIjka8jnBnIN4Ntvx2yuNYPHremO7KOg8ZFNq
+SdzRIouhe2IghKlE8yRNori9d7daYniGu2SAnzza+yXVAFG28HwJmzsLxjHyYSjW
+hWfMYpL4xp7aHl4ihDJeMSri+GNDsOL7qzV7j1QOvb8mbHDNV7IUiSDh/ulsS0KU
+s8GRR0dopVDu0GXu2BJ6Lhpr79WpW+ZVBl5YIRjIFK4/7zIQ9u7hvQ/XOxmcPGXz
+607NNnYeOy0s4+GTwD4FIoAIjN0zKAAQ9Wnz6EbBG4p0fagR5fYAk1y/wHi2onJX
+WjtHnU5BBVNEYk90hdKSvWr8Xb97rUln+dTiREteZW/aDIyXnXckSmeMmTPRakYt
+ri8kjFTuWiunGWKFbPsex4Rp2XFyoUCXZDX8Whhaq3+LeyrvcpmZO9B/vEKpyneh
+Sg8Q8vPEMQpuojDk7HpUl7KJWG9DRWHMGOutZdCwCuTwwkYUrJMu1IJxKH7GIfhA
+L2oIuQusy24xb5Mzf+AltLwPIaQ/SxaopfRKwBL4kuukuIkQy/SkzqN9HidxPXx1
+PkNAU1aWn8I7ym/VVkvqS+32cf1+M7xxWstcX5s1cYd69FTW08w=
+=/PAG
+-----END PGP SIGNATURE-----
+
+--=-UdnmcUv33UBwH0NOJ0sJ--
+
