@@ -2,124 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C79C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 14:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD10C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 16:06:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 99FB260EFF
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 14:23:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D12260527
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 16:06:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233572AbhINOYg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Sep 2021 10:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233309AbhINOYf (ORCPT
+        id S234854AbhINQHz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Sep 2021 12:07:55 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:59124 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234603AbhINQHz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Sep 2021 10:24:35 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28737C061574
-        for <linux-serial@vger.kernel.org>; Tue, 14 Sep 2021 07:23:18 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id y6so24260960lje.2
-        for <linux-serial@vger.kernel.org>; Tue, 14 Sep 2021 07:23:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JujpZaikMMevY8hhCqH/hKO/zBJYMZ/j4U4Qz2KhW34=;
-        b=sbR73ETHcJ0IxzzKe6OUCJ2Hs5twwz2oM13CzLwDXbh20/HlWA0gf0Cr/MTPpi4UOH
-         fR3aJBjQQuTvFplnFmUiKL641yJPmwkTsaC/4ur99YPYrXuJUtd+vqI9sDp8ZRGI6/7D
-         gxP1YQkrAo+NclbHesmraGMjIICYArX4QkOG8RoaCYuJV0LSqkB5adT1OImlBK4idWBg
-         FOw7uqAEWCgmtMAHkg/eQLkLNMZnFv2TOivrbAcEYSdqx91YsfawPko0yiTQHgddJ7PN
-         SOgKBQ77pU35/mXcrJeuTatWu8hCqsnmEzRR7R0apmmuzr2XfxqkXdU8SJGhTmmgGBXr
-         P+1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JujpZaikMMevY8hhCqH/hKO/zBJYMZ/j4U4Qz2KhW34=;
-        b=T9oggwAiy8gDF74NQrl0HlquM8SDYA8rMk4gyVLBWH16dTA+zcsWOhReOzjGLW+Pia
-         O/xnPEjk9Q2F3SCG6yBZ5jh7ryzj7GOfp+7r3uBSAJRKIicJe5Fy2/iPyXOfCWW/4bjs
-         W52r7n8YSipmn9TZEBkI8EypdSrbbFDPO6IgxG2ls4G1zFz3v0I7WJUn5VmScHLEYpPV
-         fdmhoguPkUUHsyWWCmEgX6+7unZAVO94ptD6OlfhIQptNs3ocaudrUGFFEUvxYlZAy8i
-         MpugI3GnQPAREWuukxFYs88UjygNInazD5T67vTvntTBWMKOybSiCou8arNt3VCLIzEZ
-         YZBA==
-X-Gm-Message-State: AOAM532w5apv6qadkRW++E5a/SwgWclyC7Z2Y9GCh3BnDoGbSB2VWBMA
-        wKhS6wUmxPsSTPJ30JBJ/i+WBw==
-X-Google-Smtp-Source: ABdhPJzAjiJ0v7ayBbIHxT4Urg/v0A5EUKeXvz4EebS/7cNeA0bHkgoDOYpKn1i1YQw9w1HnrAImTQ==
-X-Received: by 2002:a2e:b894:: with SMTP id r20mr15175355ljp.291.1631629396573;
-        Tue, 14 Sep 2021 07:23:16 -0700 (PDT)
-Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id k12sm1318078ljm.65.2021.09.14.07.23.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 07:23:16 -0700 (PDT)
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: serial: samsung: Improve naming for common macro
-Date:   Tue, 14 Sep 2021 17:23:15 +0300
-Message-Id: <20210914142315.26596-1-semen.protsenko@linaro.org>
-X-Mailer: git-send-email 2.30.2
+        Tue, 14 Sep 2021 12:07:55 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id EB2F91FE25;
+        Tue, 14 Sep 2021 16:06:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1631635596;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2cmdmIUTV8GDHvneD23Att1WQ1+A8JvufcMAHGZJuk8=;
+        b=p0I5tc5LtDjYjajveOf93qP8cyA0GL2rTSGB8TpfTNcFUVtG4YUY9oclDy9PaeVQgXGXlY
+        sD4NAzqWPWCOt+SwKAFpaxJz/Y0wEqk5NoFNe62IqX6CaHYawgXqHAD0U8M9jRXO36/YsC
+        lw/TEd1r4em8z31Y6e3jsDPZZBANLM0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1631635596;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2cmdmIUTV8GDHvneD23Att1WQ1+A8JvufcMAHGZJuk8=;
+        b=mBESyHBlLmt0Ra++i1dFs3ZDPaafpOLsfyHjQu+ga4MAyLsTrB9g0VvUcR+DjTODdek8mY
+        CpHz7EtizRwS4WBg==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id DDB29A3B96;
+        Tue, 14 Sep 2021 16:06:36 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id B77E7DA781; Tue, 14 Sep 2021 18:06:28 +0200 (CEST)
+Date:   Tue, 14 Sep 2021 18:06:28 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        David Sterba <dsterba@suse.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 09/16] tty: drivers/tty/, stop using tty_flip_buffer_push
+Message-ID: <20210914160628.GD9286@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Jiri Slaby <jslaby@suse.cz>,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Kosina <jikos@kernel.org>, David Sterba <dsterba@suse.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20210914091134.17426-1-jslaby@suse.cz>
+ <20210914091415.17918-1-jslaby@suse.cz>
+ <20210914091415.17918-2-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210914091415.17918-2-jslaby@suse.cz>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Having "_USI" suffix in EXYNOS_COMMON_SERIAL_DRV_DATA_USI() macro is
-confusing. Rename it to just EXYNOS_COMMON_SERIAL_DRV_DATA() and provide
-USI registers availability for all Exynos variants instead.
+On Tue, Sep 14, 2021 at 11:14:08AM +0200, Jiri Slaby wrote:
+> Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
+> tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
+> going to remove the former, so call the latter directly in the rest of
+> drivers/tty/.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> Cc: Jiri Kosina <jikos@kernel.org>
+> Cc: David Sterba <dsterba@suse.com>
 
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
----
- drivers/tty/serial/samsung_tty.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+For drivers/tty/ipwireless/*
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index e2f49863e9c2..542b7e2b99dc 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2780,7 +2780,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- #endif
- 
- #if defined(CONFIG_ARCH_EXYNOS)
--#define EXYNOS_COMMON_SERIAL_DRV_DATA_USI(_has_usi)		\
-+#define EXYNOS_COMMON_SERIAL_DRV_DATA(_has_usi)			\
- 	.info = &(struct s3c24xx_uart_info) {			\
- 		.name		= "Samsung Exynos UART",	\
- 		.type		= TYPE_S3C6400,			\
-@@ -2804,21 +2804,18 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 		.has_fracval	= 1,				\
- 	}							\
- 
--#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
--	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(0)
--
- static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA,
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(0),
- 	.fifosize = { 256, 64, 16, 16 },
- };
- 
- static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA,
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(0),
- 	.fifosize = { 64, 256, 16, 256 },
- };
- 
- static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(1),
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(1),
- 	.fifosize = { 256, 64, 64, 64 },
- };
- 
--- 
-2.30.2
-
+Acked-by: David Sterba <dsterba@suse.com>
