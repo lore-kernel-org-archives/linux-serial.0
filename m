@@ -2,133 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAE7C4321E
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63CC0C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:15:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CA80061159
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 478CD60F21
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:15:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbhINJPl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Sep 2021 05:15:41 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:34550 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbhINJPg (ORCPT
+        id S231308AbhINJQn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Sep 2021 05:16:43 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:40554
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230213AbhINJQc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Sep 2021 05:15:36 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id CCD36220D4;
-        Tue, 14 Sep 2021 09:14:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1631610858; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=395yGS0ex2VEogWBSAu+RwdEzwssPbbJ8k+scfecEoE=;
-        b=SlwUZn918D+t+/O/s9bdpcv0HtFMw5Jo8MiakKPq5598ISRcR+jMTDBRwQqWzVlBi2ta7e
-        9mQzdV58bHvrNxLYtTPQ3OnJgThis3VKJU+xtW1v4X6huteBRPR90fT8gzYiOUo2tsk/AA
-        bitz/ZkosGG6Gz06R6oPjvVPnczqW10=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1631610858;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=395yGS0ex2VEogWBSAu+RwdEzwssPbbJ8k+scfecEoE=;
-        b=EZfV9JNECZa3I9IKkNFmY1Kbt8x5/44vofy57cayI+AguE8164rxgqfBhC6CfUeTvWX9m/
-        jrWtOfsa3oCGALBg==
-Received: from localhost.localdomain (unknown [10.100.201.122])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 14 Sep 2021 05:16:32 -0400
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1431CA3B8E;
-        Tue, 14 Sep 2021 09:14:18 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 32BC83F33A
+        for <linux-serial@vger.kernel.org>; Tue, 14 Sep 2021 09:15:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1631610909;
+        bh=H5D/FfQQgMg0EZ2Qw/2aFXc39r6WsfLpy3vkmHT7Cb4=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=bu0sP7CW8Sg0NSBNOnvUjffSBeaabt2u9qWWFSzvoqlV0rsYH/cPhu94+HWkXjEMl
+         7h4hJ1mNdARqy4pzbblyx4EdtkbLYBZOOL3+vfiemYU9aQJ9Mm8L7h3c1imuVGLq/y
+         vN24S+ZmKqsxSoeTNMGs0WDCzPJJ7Sq5qWpnTAb2DHplhRmVOJ0LmIMlfmLeg8Zcuj
+         688V8OkopDUPrn2v0xMz/tkZm9EkhxlaqLMughQEY+69qIm2eS5SBZJ9WwKaZ2MH0S
+         czOZF5XsM7itKj15hBbmWy+5IB+8G9gTdnW5CTgCmrLIfCxBFVgPrWh8cPnDUetFpX
+         s9zOs0d2EsA6A==
+Received: by mail-wr1-f69.google.com with SMTP id m18-20020adfe952000000b0015b0aa32fd6so3698730wrn.12
+        for <linux-serial@vger.kernel.org>; Tue, 14 Sep 2021 02:15:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=H5D/FfQQgMg0EZ2Qw/2aFXc39r6WsfLpy3vkmHT7Cb4=;
+        b=GY/W+AhfmbCc0Lgk3iyqv/z1usvB+6VgYUM4nb9bD3W/Heb/6YjfF7xg4os+zjVVlJ
+         64pOw0L5aVF6jaWfWZ4Is50Z1YBTza3IGIyrqJc56KBXclfTg+wTEFkMphdfgq6EzAb7
+         iELl2GVvnrzjaGLAcmMEk6RxGVqgHut4TDi8aHDoJpm1X+NjOWiQOkFBIwQRO83svO17
+         tGkog2XOUpOG8iQF5gTRCr7Z6vdMXkO53xMlZpn6omn8zpgtn2t3QYELcjA26IQbK/J4
+         0mMf9ogKz8CjKUy8ABOcUoaEh4i2SWo5GuXOpuiv4m7DunQkNsb385mwg9z3ngjLsxhX
+         95Mw==
+X-Gm-Message-State: AOAM533BFWWDd9abwCQmbQUilAxpfamArW6ERbA7hlVjjQxQxK5cnSyG
+        ODS69uq9Gv5PIt/n1gTuaS/id2m41TiM/i2iBX3H/PfB448NcBscji7zZGPReJkclRRyhZSHZFi
+        k0W6L1qezvblO3PyXH0w/6jD++pCEYxv6B99oOwrlrw==
+X-Received: by 2002:a1c:9a8e:: with SMTP id c136mr980803wme.191.1631610908915;
+        Tue, 14 Sep 2021 02:15:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzgOA95mgvqIcsSC1Y5VXovrY4W4xHwJSVK/M2pvFoSEXcBrXA1mL9AdaGoym9QoNfQdtyZKw==
+X-Received: by 2002:a1c:9a8e:: with SMTP id c136mr980784wme.191.1631610908759;
+        Tue, 14 Sep 2021 02:15:08 -0700 (PDT)
+Received: from [192.168.3.211] (lk.84.20.244.219.dc.cable.static.lj-kabel.net. [84.20.244.219])
+        by smtp.gmail.com with ESMTPSA id d8sm10448325wrv.20.2021.09.14.02.15.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Sep 2021 02:15:08 -0700 (PDT)
+Subject: Re: [PATCH 06/16] tty: remove file from n_tty_ioctl_helper
+To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org
-Subject: [PATCH 12/16] tty: arch/, stop using tty_flip_buffer_push
-Date:   Tue, 14 Sep 2021 11:14:11 +0200
-Message-Id: <20210914091415.17918-5-jslaby@suse.cz>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210914091415.17918-1-jslaby@suse.cz>
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 References: <20210914091134.17426-1-jslaby@suse.cz>
- <20210914091415.17918-1-jslaby@suse.cz>
+ <20210914091134.17426-6-jslaby@suse.cz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <e446060c-4208-cda5-5ac9-5650b5a1e3b2@canonical.com>
+Date:   Tue, 14 Sep 2021 11:15:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210914091134.17426-6-jslaby@suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-going to remove the former, so call the latter directly in arch/.
+On 14/09/2021 11:11, Jiri Slaby wrote:
+> After the previous patch, there are no users of 'file' in
+> n_tty_ioctl_helper. So remove it also from there.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Marcel Holtmann <marcel@holtmann.org>
+> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> Cc: Paul Mackerras <paulus@samba.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  drivers/bluetooth/hci_ldisc.c | 2 +-
+>  drivers/net/ppp/ppp_async.c   | 2 +-
+>  drivers/net/ppp/ppp_synctty.c | 2 +-
+>  drivers/tty/n_gsm.c           | 2 +-
+>  drivers/tty/n_hdlc.c          | 2 +-
+>  drivers/tty/n_tty.c           | 2 +-
+>  drivers/tty/tty_ioctl.c       | 4 ++--
+>  include/linux/tty.h           | 4 ++--
+>  net/nfc/nci/uart.c            | 2 +-
+>  9 files changed, 11 insertions(+), 11 deletions(-)
+> 
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: Jeff Dike <jdike@addtoit.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: Chris Zankel <chris@zankel.net>
-Cc: Max Filippov <jcmvbkbc@gmail.com>
-Cc: linux-parisc@vger.kernel.org
-Cc: linux-um@lists.infradead.org
-Cc: linux-xtensa@linux-xtensa.org
----
- arch/parisc/kernel/pdc_cons.c       | 2 +-
- arch/um/drivers/chan_kern.c         | 2 +-
- arch/xtensa/platforms/iss/console.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+For NFC:
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-diff --git a/arch/parisc/kernel/pdc_cons.c b/arch/parisc/kernel/pdc_cons.c
-index 2661cdd256ae..221af0ab3382 100644
---- a/arch/parisc/kernel/pdc_cons.c
-+++ b/arch/parisc/kernel/pdc_cons.c
-@@ -128,7 +128,7 @@ static void pdc_console_poll(struct timer_list *unused)
- 	}
- 
- 	if (count)
--		tty_flip_buffer_push(&tty_port);
-+		tty_schedule_flip(&tty_port);
- 
- 	if (pdc_cons.flags & CON_ENABLED)
- 		mod_timer(&pdc_console_timer, jiffies + PDC_CONS_POLL_DELAY);
-diff --git a/arch/um/drivers/chan_kern.c b/arch/um/drivers/chan_kern.c
-index 62997055c454..62164db99f99 100644
---- a/arch/um/drivers/chan_kern.c
-+++ b/arch/um/drivers/chan_kern.c
-@@ -566,5 +566,5 @@ void chan_interrupt(struct line *line, int irq)
- 			return;
- 	}
-  out:
--	tty_flip_buffer_push(port);
-+	tty_schedule_flip(port);
- }
-diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
-index 81d7c7e8f7e9..8d8580d1ef56 100644
---- a/arch/xtensa/platforms/iss/console.c
-+++ b/arch/xtensa/platforms/iss/console.c
-@@ -84,7 +84,7 @@ static void rs_poll(struct timer_list *unused)
- 	}
- 
- 	if (i)
--		tty_flip_buffer_push(port);
-+		tty_schedule_flip(port);
- 	if (rd)
- 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
- 	spin_unlock(&timer_lock);
--- 
-2.33.0
 
+Best regards,
+Krzysztof
