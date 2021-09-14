@@ -2,144 +2,124 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A11F5C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 13:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C79C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 14:23:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 838F261130
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 13:53:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 99FB260EFF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 14:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbhINNy4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Sep 2021 09:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
+        id S233572AbhINOYg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Sep 2021 10:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233380AbhINNyn (ORCPT
+        with ESMTP id S233309AbhINOYf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Sep 2021 09:54:43 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B1CC061764;
-        Tue, 14 Sep 2021 06:53:25 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id g16so20403050wrb.3;
-        Tue, 14 Sep 2021 06:53:25 -0700 (PDT)
+        Tue, 14 Sep 2021 10:24:35 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28737C061574
+        for <linux-serial@vger.kernel.org>; Tue, 14 Sep 2021 07:23:18 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id y6so24260960lje.2
+        for <linux-serial@vger.kernel.org>; Tue, 14 Sep 2021 07:23:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=R5Ll91GiIKwpebUxcKaoRvdeNSdIOg5l+lemZ4KefSc=;
-        b=ZLNVFXPBj8feUKVClnB4owuugv1a86o9TIKQsUKIon3bWAyun2uNCG/XUrXPcfZx/Y
-         ndkQstXdtlpLnoFeORAUzZ6ThLQiKY1bDPoLCps2Wr9jSEE28vUnFCg3IjWI9gd9xykc
-         LQwkqjpSisybWOc2DDHpoVQQ8s2bJg7ANh+AxLyLpkfh66tRQA1WqDjcjnXfXDKvBbPo
-         WTnj8W+w0nD/r0eAS6k5CEl2zUu2THKDDn6n66DisgAv9LEhj6EcTlqXk2cKLoa5xwug
-         Ldv+E3VE+obBlfO40m2lEAL1NX77kJbn9SeoiR4PPKl7rdpLQ/mMs19gpXrfKAgQsD7Z
-         zbgA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JujpZaikMMevY8hhCqH/hKO/zBJYMZ/j4U4Qz2KhW34=;
+        b=sbR73ETHcJ0IxzzKe6OUCJ2Hs5twwz2oM13CzLwDXbh20/HlWA0gf0Cr/MTPpi4UOH
+         fR3aJBjQQuTvFplnFmUiKL641yJPmwkTsaC/4ur99YPYrXuJUtd+vqI9sDp8ZRGI6/7D
+         gxP1YQkrAo+NclbHesmraGMjIICYArX4QkOG8RoaCYuJV0LSqkB5adT1OImlBK4idWBg
+         FOw7uqAEWCgmtMAHkg/eQLkLNMZnFv2TOivrbAcEYSdqx91YsfawPko0yiTQHgddJ7PN
+         SOgKBQ77pU35/mXcrJeuTatWu8hCqsnmEzRR7R0apmmuzr2XfxqkXdU8SJGhTmmgGBXr
+         P+1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=R5Ll91GiIKwpebUxcKaoRvdeNSdIOg5l+lemZ4KefSc=;
-        b=ZeTBCd9WSaOi44io0r8ke6nQxo34OG1G4EW1qktLNJgANrt822gBzCHkNFZX18Zu43
-         NRSVctIAxzTUsRfjpwFeQcHXlkglf0J/GItlDSqqCbmYo2/eXbXKlqvJDabQ13+yUMgE
-         XGBy/nIV51gDbNDF6dUwLQTij7HS4oBj9ZD42+HXxvS6BlL1JKWQBxkuTNBL88FFkofj
-         7/YLNikkw8WA/IFCvapI5jYzd1qe3n/mksmMVlW8c8PnOwYXS0udidRC5YfBnFKNvM/t
-         G/lXH8o/VN87sgsivz6Gq4bnq4t+IQoZKvxgesRjP8EnSD2t7MmjSgaz0bufjnOIhh2F
-         yESw==
-X-Gm-Message-State: AOAM530/OVgHnSkFzkwXOlhvUMqlcmDr73e9ZuhRKT44m8Hf7ATtcu/h
-        +FevEXGg4rp5vKxfU009auE=
-X-Google-Smtp-Source: ABdhPJy3X2Pnc+BXXTdj4AXvyDGV7Z3RE/epMkOU2lYGUjHAdEmUlD4FksFl2tTXfSR+vW1ttdmdGg==
-X-Received: by 2002:a05:6000:374:: with SMTP id f20mr19103683wrf.129.1631627604005;
-        Tue, 14 Sep 2021 06:53:24 -0700 (PDT)
-Received: from [192.168.2.41] ([46.227.18.67])
-        by smtp.gmail.com with ESMTPSA id f3sm1201844wmj.28.2021.09.14.06.53.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Sep 2021 06:53:23 -0700 (PDT)
-Subject: Re: [PATCH 08/16] tty: drivers/tty/serial/, stop using
- tty_flip_buffer_push
-To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Al Cooper <alcooperx@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>
-References: <20210914091134.17426-1-jslaby@suse.cz>
- <20210914091415.17918-1-jslaby@suse.cz>
-From:   Richard Genoud <richard.genoud@gmail.com>
-Message-ID: <9be03e0b-8255-9306-0041-0ed3228709e2@gmail.com>
-Date:   Tue, 14 Sep 2021 15:53:21 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        bh=JujpZaikMMevY8hhCqH/hKO/zBJYMZ/j4U4Qz2KhW34=;
+        b=T9oggwAiy8gDF74NQrl0HlquM8SDYA8rMk4gyVLBWH16dTA+zcsWOhReOzjGLW+Pia
+         O/xnPEjk9Q2F3SCG6yBZ5jh7ryzj7GOfp+7r3uBSAJRKIicJe5Fy2/iPyXOfCWW/4bjs
+         W52r7n8YSipmn9TZEBkI8EypdSrbbFDPO6IgxG2ls4G1zFz3v0I7WJUn5VmScHLEYpPV
+         fdmhoguPkUUHsyWWCmEgX6+7unZAVO94ptD6OlfhIQptNs3ocaudrUGFFEUvxYlZAy8i
+         MpugI3GnQPAREWuukxFYs88UjygNInazD5T67vTvntTBWMKOybSiCou8arNt3VCLIzEZ
+         YZBA==
+X-Gm-Message-State: AOAM532w5apv6qadkRW++E5a/SwgWclyC7Z2Y9GCh3BnDoGbSB2VWBMA
+        wKhS6wUmxPsSTPJ30JBJ/i+WBw==
+X-Google-Smtp-Source: ABdhPJzAjiJ0v7ayBbIHxT4Urg/v0A5EUKeXvz4EebS/7cNeA0bHkgoDOYpKn1i1YQw9w1HnrAImTQ==
+X-Received: by 2002:a2e:b894:: with SMTP id r20mr15175355ljp.291.1631629396573;
+        Tue, 14 Sep 2021 07:23:16 -0700 (PDT)
+Received: from localhost ([31.134.121.151])
+        by smtp.gmail.com with ESMTPSA id k12sm1318078ljm.65.2021.09.14.07.23.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Sep 2021 07:23:16 -0700 (PDT)
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: serial: samsung: Improve naming for common macro
+Date:   Tue, 14 Sep 2021 17:23:15 +0300
+Message-Id: <20210914142315.26596-1-semen.protsenko@linaro.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <20210914091415.17918-1-jslaby@suse.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 14/09/2021 à 11:14, Jiri Slaby a écrit :
-> Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-> tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-> going to remove the former, so call the latter directly in
-> drivers/tty/serial/.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Having "_USI" suffix in EXYNOS_COMMON_SERIAL_DRV_DATA_USI() macro is
+confusing. Rename it to just EXYNOS_COMMON_SERIAL_DRV_DATA() and provide
+USI registers availability for all Exynos variants instead.
 
-For Atmel:
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+---
+ drivers/tty/serial/samsung_tty.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index e2f49863e9c2..542b7e2b99dc 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2780,7 +2780,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ #endif
+ 
+ #if defined(CONFIG_ARCH_EXYNOS)
+-#define EXYNOS_COMMON_SERIAL_DRV_DATA_USI(_has_usi)		\
++#define EXYNOS_COMMON_SERIAL_DRV_DATA(_has_usi)			\
+ 	.info = &(struct s3c24xx_uart_info) {			\
+ 		.name		= "Samsung Exynos UART",	\
+ 		.type		= TYPE_S3C6400,			\
+@@ -2804,21 +2804,18 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ 		.has_fracval	= 1,				\
+ 	}							\
+ 
+-#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
+-	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(0)
+-
+ static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
+-	EXYNOS_COMMON_SERIAL_DRV_DATA,
++	EXYNOS_COMMON_SERIAL_DRV_DATA(0),
+ 	.fifosize = { 256, 64, 16, 16 },
+ };
+ 
+ static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
+-	EXYNOS_COMMON_SERIAL_DRV_DATA,
++	EXYNOS_COMMON_SERIAL_DRV_DATA(0),
+ 	.fifosize = { 64, 256, 16, 256 },
+ };
+ 
+ static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
+-	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(1),
++	EXYNOS_COMMON_SERIAL_DRV_DATA(1),
+ 	.fifosize = { 256, 64, 64, 64 },
+ };
+ 
+-- 
+2.30.2
+
