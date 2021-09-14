@@ -5,58 +5,56 @@ X-Spam-Level:
 X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B015C4167D
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D281C4167E
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 712D560F58
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 60DBF60F58
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Sep 2021 09:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230434AbhINJPl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Sep 2021 05:15:41 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:44046 "EHLO
+        id S231322AbhINJPm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Sep 2021 05:15:42 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:44060 "EHLO
         smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbhINJPh (ORCPT
+        with ESMTP id S230063AbhINJPh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 14 Sep 2021 05:15:37 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 0A8202003B;
+        by smtp-out2.suse.de (Postfix) with ESMTP id 47E81200E2;
         Tue, 14 Sep 2021 09:14:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1631610859; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0inWg5bKmkT0ZZvF/iDW7c5P6F4DFoIeVXk9hb5kLd8=;
-        b=ZEnbIG8xdQNARrC2PEyHBynMMjIBjZGgamhL/F/zc5S8CEuTy1iiVUsD57mz+a5KeNIXZt
-        fJReYaC+WU+uKBQW6Mqaq4VZ8uv86CxF5EiqOu+Qy1kJJ82j/sjyA9RAs8k6JSDUrQjmM1
-        /pbeaMwHX5sjiPK2NG4+TpRmYVM3G54=
+        bh=txOd2IWUIzDSEFZp5372yeQmEvrfSft2wWeQObhBtmQ=;
+        b=Ji4MUNTGGQyTZ+hFIkdlpNPwXoDGHzXXxeiGQdON33E6pNbzW2NNz4JwLSSygvyeVFt5mD
+        jAYuWzaViaue1ATKk9rn29sxKWgt0g8c1sTzvmvwIqSBh95Jy1HQhWl+rAulc/PdEJKgRJ
+        oLN9rqe/K1wnjGFqZFv+rbRhWZVGiGo=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1631610859;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0inWg5bKmkT0ZZvF/iDW7c5P6F4DFoIeVXk9hb5kLd8=;
-        b=R9SWt/BC7G3w63VdHr8ciAbMDX2CqilpjmsUVzvsKe3rxiCv9iQn3qwjGqsRqheyAW46+V
-        QvG/oABrsLAqxiBA==
+        bh=txOd2IWUIzDSEFZp5372yeQmEvrfSft2wWeQObhBtmQ=;
+        b=ttzstxSjRCq5UcgkxklHOopri5R6NOZ5g0oejhtNt08CifpekTXQdd46iYbLByipBFi3cy
+        i+UW18w74OUJsiBg==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D2477A3B94;
-        Tue, 14 Sep 2021 09:14:18 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 161CCA3B8E;
+        Tue, 14 Sep 2021 09:14:19 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        linux-s390@vger.kernel.org
-Subject: [PATCH 13/16] tty: drivers/s390/char/, stop using tty_flip_buffer_push
-Date:   Tue, 14 Sep 2021 11:14:12 +0200
-Message-Id: <20210914091415.17918-6-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>, David Lin <dtwlin@gmail.com>,
+        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+        linux-staging@lists.linux.dev, greybus-dev@lists.linaro.org
+Subject: [PATCH 14/16] tty: drivers/staging/, stop using tty_flip_buffer_push
+Date:   Tue, 14 Sep 2021 11:14:13 +0200
+Message-Id: <20210914091415.17918-7-jslaby@suse.cz>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210914091415.17918-1-jslaby@suse.cz>
 References: <20210914091134.17426-1-jslaby@suse.cz>
@@ -70,76 +68,68 @@ X-Mailing-List: linux-serial@vger.kernel.org
 Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
 tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
 going to remove the former, so call the latter directly in
-drivers/s390/char/.
+drivers/staging/.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-Cc: linux-s390@vger.kernel.org
+Cc: David Lin <dtwlin@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Alex Elder <elder@kernel.org>
+Cc: linux-staging@lists.linux.dev
+Cc: greybus-dev@lists.linaro.org
 ---
- drivers/s390/char/con3215.c    | 4 ++--
- drivers/s390/char/sclp_tty.c   | 4 ++--
- drivers/s390/char/sclp_vt220.c | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/staging/fwserial/fwserial.c | 4 ++--
+ drivers/staging/gdm724x/gdm_tty.c   | 2 +-
+ drivers/staging/greybus/uart.c      | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
-index f356607835d8..f37f4c0594d7 100644
---- a/drivers/s390/char/con3215.c
-+++ b/drivers/s390/char/con3215.c
-@@ -399,7 +399,7 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
- 			case CTRLCHAR_CTRL:
- 				tty_insert_flip_char(&raw->port, cchar,
- 						TTY_NORMAL);
--				tty_flip_buffer_push(&raw->port);
-+				tty_schedule_flip(&raw->port);
- 				break;
+diff --git a/drivers/staging/fwserial/fwserial.c b/drivers/staging/fwserial/fwserial.c
+index e8fa7f53cd5e..b2d3f95edbc3 100644
+--- a/drivers/staging/fwserial/fwserial.c
++++ b/drivers/staging/fwserial/fwserial.c
+@@ -518,7 +518,7 @@ static void fwtty_emit_breaks(struct work_struct *work)
+ 		if (c < t)
+ 			break;
+ 	}
+-	tty_flip_buffer_push(&port->port);
++	tty_schedule_flip(&port->port);
  
- 			case CTRLCHAR_NONE:
-@@ -413,7 +413,7 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
- 					count -= 2;
- 				tty_insert_flip_string(&raw->port, raw->inbuf,
- 						count);
--				tty_flip_buffer_push(&raw->port);
-+				tty_schedule_flip(&raw->port);
- 				break;
- 			}
- 		} else if (req->type == RAW3215_WRITE) {
-diff --git a/drivers/s390/char/sclp_tty.c b/drivers/s390/char/sclp_tty.c
-index 971fbb52740b..99256bea31f7 100644
---- a/drivers/s390/char/sclp_tty.c
-+++ b/drivers/s390/char/sclp_tty.c
-@@ -330,7 +330,7 @@ sclp_tty_input(unsigned char* buf, unsigned int count)
- 		break;
- 	case CTRLCHAR_CTRL:
- 		tty_insert_flip_char(&sclp_port, cchar, TTY_NORMAL);
--		tty_flip_buffer_push(&sclp_port);
-+		tty_schedule_flip(&sclp_port);
- 		break;
- 	case CTRLCHAR_NONE:
- 		/* send (normal) input to line discipline */
-@@ -342,7 +342,7 @@ sclp_tty_input(unsigned char* buf, unsigned int count)
- 			tty_insert_flip_char(&sclp_port, '\n', TTY_NORMAL);
- 		} else
- 			tty_insert_flip_string(&sclp_port, buf, count - 2);
--		tty_flip_buffer_push(&sclp_port);
-+		tty_schedule_flip(&sclp_port);
- 		break;
+ 	if (port->mstatus & (UART_LSR_BI << 24))
+ 		schedule_delayed_work(&port->emit_breaks, FREQ_BREAKS);
+@@ -565,7 +565,7 @@ static int fwtty_rx(struct fwtty_port *port, unsigned char *data, size_t len)
+ 
+ 	c = tty_insert_flip_string_fixed_flag(&port->port, data, TTY_NORMAL, n);
+ 	if (c > 0)
+-		tty_flip_buffer_push(&port->port);
++		tty_schedule_flip(&port->port);
+ 	n -= c;
+ 
+ 	if (n) {
+diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
+index 04df6f9f5403..95a3b4e61fec 100644
+--- a/drivers/staging/gdm724x/gdm_tty.c
++++ b/drivers/staging/gdm724x/gdm_tty.c
+@@ -129,7 +129,7 @@ static int gdm_tty_recv_complete(void *data,
+ 	if (data && len) {
+ 		if (tty_buffer_request_room(&gdm->port, len) == len) {
+ 			tty_insert_flip_string(&gdm->port, data, len);
+-			tty_flip_buffer_push(&gdm->port);
++			tty_schedule_flip(&gdm->port);
+ 		} else {
+ 			return TO_HOST_BUFFER_REQUEST_FAIL;
+ 		}
+diff --git a/drivers/staging/greybus/uart.c b/drivers/staging/greybus/uart.c
+index e6d860a9678e..2bdc2401b652 100644
+--- a/drivers/staging/greybus/uart.c
++++ b/drivers/staging/greybus/uart.c
+@@ -122,7 +122,7 @@ static int gb_uart_receive_data_handler(struct gb_operation *op)
+ 			recv_data_size, count);
  	}
- 	tty_kref_put(tty);
-diff --git a/drivers/s390/char/sclp_vt220.c b/drivers/s390/char/sclp_vt220.c
-index 29a6a0099f83..b1ed3bcf3201 100644
---- a/drivers/s390/char/sclp_vt220.c
-+++ b/drivers/s390/char/sclp_vt220.c
-@@ -542,7 +542,7 @@ sclp_vt220_receiver_fn(struct evbuf_header *evbuf)
- 		buffer++;
- 		count--;
- 		sclp_vt220_handle_input(buffer, count);
--		tty_flip_buffer_push(&sclp_vt220_port);
-+		tty_schedule_flip(&sclp_vt220_port);
- 		break;
- 	}
+ 	if (count)
+-		tty_flip_buffer_push(port);
++		tty_schedule_flip(port);
+ 	return 0;
  }
+ 
 -- 
 2.33.0
 
