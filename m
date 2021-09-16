@@ -2,71 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC81C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Sep 2021 10:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9523FC4321E
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Sep 2021 10:07:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E4E7461185
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Sep 2021 10:03:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 82A9261185
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Sep 2021 10:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235542AbhIPKEk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Sep 2021 06:04:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60612 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235287AbhIPKEk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Sep 2021 06:04:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D222F60F6C;
-        Thu, 16 Sep 2021 10:03:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631786599;
-        bh=nYLXu40n5BlNNZ1ZZo4YAdI74ZwOUPwUslx5aAK6Hq8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=O+Vb4svGeHChlaklUGMZbA+r4Dh4W+rnNEV6FdaLFumpFYtv64HuipBv5qho6Cd1S
-         oGVFyszd3nNUuAXEjtFULgYOA0YCaSmLXdYbJwccvfgEdoFUK8dFJ45bgF0zd2OmmI
-         mSMF8XrFv7j6Bf3JN4PEKgHz/SwHBZJSz0NTPrxfd0w2QKEq745vKVt9KZ0X5Um3c9
-         qKaQLJIsRFE67j0EaIviAmjT13ZJdi/8sFdgFm3c0XfX4oY10uIm/XfMWpL/DNQYjE
-         GjLJ+HkYYNe0Vq4OF8lOCFqeoSj+xQV74yEEeFNYNa9ihMAzU/zyfkMa/Ps04F5bMm
-         JfK5jGYZhROHg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1mQoEi-0005SF-Nx; Thu, 16 Sep 2021 12:03:20 +0200
-Date:   Thu, 16 Sep 2021 12:03:20 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 16/16] tty: drop tty_flip_buffer_push
-Message-ID: <YUMWaCpT4s8dQKiy@hovoldconsulting.com>
-References: <20210914091134.17426-1-jslaby@suse.cz>
- <20210914091415.17918-1-jslaby@suse.cz>
- <20210914091415.17918-9-jslaby@suse.cz>
+        id S236295AbhIPKJM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Sep 2021 06:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43554 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236733AbhIPKJL (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Sep 2021 06:09:11 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8458C061766
+        for <linux-serial@vger.kernel.org>; Thu, 16 Sep 2021 03:07:50 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id p29so16315691lfa.11
+        for <linux-serial@vger.kernel.org>; Thu, 16 Sep 2021 03:07:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jUO5tSYLVRile5AWlAafA8DmhpHLLp7fGg/YtJNAKkA=;
+        b=kb18yEmDjFeTISL5Cj3f+OE1reEAL0nH5XmyNUxp+vvOyzUcj+l9m5OworF15vyOXF
+         b8YVBrLmGwq/u0XPPb8fk3JaoNhQe+7Ho6ZKojUxfMsvVZB1S+AXaj2bjkGQpTH2BDMF
+         RFKGzdZkL5STdbXuztAsLUi82lROJaEFce1QQBJQFnJ6BNDzh73ydU6twoHnOf/LFIT6
+         m36gdukOrXppQsBrmuso+yADYfJZDVaWVxIsFzYI2GyA9+KlNEDbRQnmoxutZH37cusb
+         kMvPFWujPGOtbzPt0qbQ8UKq9xhYrz+jKKgOqdrQtVAmzqRwqbisq3ed603uxeTFFJJ1
+         7TrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jUO5tSYLVRile5AWlAafA8DmhpHLLp7fGg/YtJNAKkA=;
+        b=qcYrCz6FosyYcESGw0SZ7GpKwa7KHO3BK2kfDgevcMy9G7orgvYwFf0SGI/gjrkmeN
+         egWq0m7dZL5XrjMHPndqUX8Y46jC5mD1yVJVRm9RgMsOEtnaqkN2jCyxVPL4XlMQ49RS
+         rqKyhMU6zYoMq9WlN00XvPl98qY+ST/SPX1uVXD8uv4pAsSXkF7oKdddVFMKgV9O98DI
+         ZxFFgEWXrhMCuSDZxA79Jw1FcfyDMV4tol5WhSh3xHQPzZLt5Z4JEsJMI3FI91zmqnLx
+         OKsz+OXMdoM2fik8SQK/5C4DSl7G418mB0smVs1y5dARJL9c6n8Evy9KOdP6rvWzkS09
+         dTgw==
+X-Gm-Message-State: AOAM530tIWDlJ0MErIPJKKd2uZYdAvGzX8quAz3aCw8QsnbW9M3WrfZN
+        InUrD4X50Z6NElXN8W2IigVtYWInt8RyQjD6h2pNWQ==
+X-Google-Smtp-Source: ABdhPJytweAIsY0sxsinkWN7FPbeTdhVCteGXtpk0WGBS/7V1nIDt7Ry+vbrBBnhe783d+4wyWb3AQdWBV5/FDYn/9Q=
+X-Received: by 2002:a05:6512:3096:: with SMTP id z22mr3486963lfd.584.1631786869054;
+ Thu, 16 Sep 2021 03:07:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210914091415.17918-9-jslaby@suse.cz>
+References: <20210914085137.31761-1-sam.shih@mediatek.com> <20210914085137.31761-5-sam.shih@mediatek.com>
+In-Reply-To: <20210914085137.31761-5-sam.shih@mediatek.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 16 Sep 2021 12:07:38 +0200
+Message-ID: <CACRpkdYkvBS5+MHSGBDhNQtvCxRquef1kPHmCSfzruz2N=VCyw@mail.gmail.com>
+Subject: Re: [RESEND,v3,4/9] pinctrl: mediatek: moore: check if pin_desc is
+ valid before use
+To:     Sam Shih <sam.shih@mediatek.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Sean Wang <sean.wang@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Seiya Wang <seiya.wang@mediatek.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Ryder Lee <Ryder.Lee@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 14, 2021 at 11:14:15AM +0200, Jiri Slaby wrote:
-> Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-> tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). All
-> users were converted, so remove tty_flip_buffer_push() completely.
+On Tue, Sep 14, 2021 at 10:52 AM Sam Shih <sam.shih@mediatek.com> wrote:
 
-Did you consider inlining tty_flip_buffer_push() or unexporting
-tty_schedule_flip() instead?
+> Certain SoC are missing the middle part gpios in consecutive pins,
+> it's better to check if mtk_pin_desc is a valid pin for the extensibility
+>
+> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> Acked-by: Sean Wang <sean.wang@mediatek.com>
 
-The name tty_flip_buffer_push() is arguable more descriptive since the
-work may already be running and is also less tied to the implementation.
+This patch applied for v5.16 so we get some stuff merged.
 
-The ratio of drivers using tty_flip_buffer_push() over
-tty_schedule_flip() is also something like 186 to 15 so that would
-amount to a lot less churn too.
-
-Also, can you please start adding cover letters to your series to
-provide an overview of what it is you're trying to accomplish?
-
-Johan
+Yours,
+Linus Walleij
