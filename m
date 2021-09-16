@@ -2,138 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A6CC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Sep 2021 12:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D13EC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Sep 2021 17:11:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 66CC06103C
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Sep 2021 12:54:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 746A860EFF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Sep 2021 17:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239662AbhIPM4Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Sep 2021 08:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230299AbhIPM4P (ORCPT
+        id S240104AbhIPRMn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Sep 2021 13:12:43 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:59514
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345169AbhIPRK3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Sep 2021 08:56:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E673FC061574;
-        Thu, 16 Sep 2021 05:54:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=k7qEZH8MNQnFgVkpsRUU6ymZkKgvkjqbMiDFat6LeT8=; b=Mo38p0Z8scdAodOR/1Bs4GTGkj
-        N2JUAhJ5hpDD5Te4PGHtNHrUwTHXG0s1z2jrZMvj5mcRKoUoSS6HffkwTsTgCQc6twbi21cOkcD4j
-        Oy2ElcymR0xFMNo0YuOM7zGuANf73lf41GHIFdqITf80mi877OYQ3NXdl9vweWn2jkJWUKuNOVgCA
-        5Pod+h0QSlLpplEjykUVb4B/z5gJEEcxeAdXUeOmnWgAG3GSZ+IGRGbgqod3uTxoEX9+Bo4Yppb/l
-        /mYF18lnWisYj0IX0GZZ3j734UrX65uylOd40BD9+fE87iPmHxXEHCZKcrriT1g0i0U70nkpEmjxe
-        uZTvoVVw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45116)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mQqu9-0006pw-1Z; Thu, 16 Sep 2021 13:54:15 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mQqtx-0004zu-7w; Thu, 16 Sep 2021 13:54:05 +0100
-Date:   Thu, 16 Sep 2021 13:54:05 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Al Cooper <alcooperx@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Kevin Cernekee <cernekee@gmail.com>,
+        Thu, 16 Sep 2021 13:10:29 -0400
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 0301840261
+        for <linux-serial@vger.kernel.org>; Thu, 16 Sep 2021 17:09:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1631812148;
+        bh=xPpOqBWr7It3vesqmSTKYQnMNxzHvZ+jahU7C4r+dU0=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=Iooevi3UgMJ+mkq676NMoJgjiVvtG0YQy+kX8NGAWYvMHVHPpNelUZaK0d0XFUHAA
+         P2ToA54XP3ak9kiytO6d9CELRmMyfoDH4bNlmMFctM5Ij/4/hRqBgxP2mL86+5mhKd
+         brJ/Jtp6sY6JNaQCW8nZ3iOjaeyhsRhK2hYRLjgNPA01JosPHbirobHVJSkpfqAMRe
+         ABNlNGRjAGse3og45yS34fhwA0A69GhC++yEbvBXeF6DH/8r6tXvFM3N2fJZ4tJ2E+
+         oCczyH38JeQur4iEfekno82Q9DmzZsvepk4Nwf4tdibeou5EPsEHP46Tv0Xiq4lSoG
+         7D7uDxyCIU4aA==
+Received: by mail-wm1-f71.google.com with SMTP id c187-20020a1c35c4000000b00304b489f2d8so3399289wma.6
+        for <linux-serial@vger.kernel.org>; Thu, 16 Sep 2021 10:09:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xPpOqBWr7It3vesqmSTKYQnMNxzHvZ+jahU7C4r+dU0=;
+        b=SBJU8VINvpwt0igghkyBNfDRDTiDSruE2V+0r5PNFAxNLsnxtrZmNYk49dxhBSz5fw
+         fu3NBLeY5vZcN4t0i/TxZjjtHX+k86IMurxi9q59XpKV99aMYzGZQ5L8/oNsiRBiqSW9
+         ITPUpv+w/vDFY+M0k/wozm7AtXY8IicJrbg5oRfdjoe4iCCeA+b9KcQJOWC0XPN39hny
+         MM53IshXDSI0nxKXmqWqx0fzloxGunkmBtqAJQTGSzDLcGdlqT9/Y6PiN1LrOkj2uAw5
+         i4z4UgTIz5XZgADwjGq2BbQ3uB3IaauGQTV6L/E9JCB8bjDaQ2G5Y3hMdK24HrUwOpnj
+         BjPQ==
+X-Gm-Message-State: AOAM532ubENm9Lm3PCp8ZoLEmjASoQov8iIDTusw057IptjfCNr7YPKe
+        yRvKThhuP3mB6twC88PeFsmtyOkIanENLryUY+HAQcpRbFacO71M++D3yD7e5KNO/rBakcVeIoF
+        iTZz1Lh4FtKbAbBZe+jHP8dUE4VDdNBsZv4btBvc3aQ==
+X-Received: by 2002:a1c:acc2:: with SMTP id v185mr6116422wme.71.1631812146008;
+        Thu, 16 Sep 2021 10:09:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyPp03RDoAih9s3NW/qGubj3h1EcnVLf9/Ph3lRs8Ac+5xs5w5VZJCzJ/TDFN0K5bf63k0ndA==
+X-Received: by 2002:a1c:acc2:: with SMTP id v185mr6116411wme.71.1631812145892;
+        Thu, 16 Sep 2021 10:09:05 -0700 (PDT)
+Received: from kozik-lap.lan (lk.84.20.244.219.dc.cable.static.lj-kabel.net. [84.20.244.219])
+        by smtp.gmail.com with ESMTPSA id f20sm7893839wmb.32.2021.09.16.10.09.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Sep 2021 10:09:05 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 08/16] tty: drivers/tty/serial/, stop using
- tty_flip_buffer_push
-Message-ID: <YUM+bdWcGsewfto7@shell.armlinux.org.uk>
-References: <20210914091134.17426-1-jslaby@suse.cz>
- <20210914091415.17918-1-jslaby@suse.cz>
+        Jianmin Lv <lvjianmin@loongson.cn>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org
+Subject: [PATCH] serial: 8250: remove duplicated BRI0A49 and BDP3336 entries
+Date:   Thu, 16 Sep 2021 19:08:59 +0200
+Message-Id: <20210916170859.138813-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210914091415.17918-1-jslaby@suse.cz>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 14, 2021 at 11:14:07AM +0200, Jiri Slaby wrote:
-> Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-> tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-> going to remove the former, so call the latter directly in
-> drivers/tty/serial/.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> ---
->  drivers/tty/serial/21285.c                  |  2 +-
->  drivers/tty/serial/amba-pl010.c             |  2 +-
->  drivers/tty/serial/amba-pl011.c             |  6 +++---
->  drivers/tty/serial/clps711x.c               |  2 +-
->  drivers/tty/serial/sa1100.c                 |  2 +-
->  drivers/tty/serial/serial_core.c            |  2 +-
+BRI0A49 and BDP3336 are already on the list.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ drivers/tty/serial/8250/8250_pnp.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-Thanks.
-
+diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
+index 98e5ee4d0d08..1974bbadc975 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -56,10 +56,6 @@ static const struct pnp_device_id pnp_dev_table[] = {
+ 	{	"BRI1400",		0	},
+ 	/* Boca 33.6 Kbps Internal FD34FSVD */
+ 	{	"BRI3400",		0	},
+-	/* Boca 33.6 Kbps Internal FD34FSVD */
+-	{	"BRI0A49",		0	},
+-	/* Best Data Products Inc. Smart One 336F PnP Modem */
+-	{	"BDP3336",		0	},
+ 	/* Computer Peripherals Inc */
+ 	/* EuroViVa CommCenter-33.6 SP PnP */
+ 	{	"CPI4050",		0	},
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
