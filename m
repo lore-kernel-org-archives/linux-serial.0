@@ -2,129 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 077FBC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 12:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32EEBC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 15:51:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D762A61186
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 12:04:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1382061186
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 15:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231224AbhIUMGT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Sep 2021 08:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229984AbhIUMGS (ORCPT
+        id S229804AbhIUPxH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Sep 2021 11:53:07 -0400
+Received: from mail-wr1-f44.google.com ([209.85.221.44]:40720 "EHLO
+        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229566AbhIUPxH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Sep 2021 08:06:18 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B5FC061574;
-        Tue, 21 Sep 2021 05:04:50 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id dj4so17643215edb.5;
-        Tue, 21 Sep 2021 05:04:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PjlwybJCIOyk6kI6/r4pWXearyUORkl4g3ybUpCst+U=;
-        b=SarQDHmPNdFnpBy4YkSR+ypw2KsJep6A9+qzjAn/vgdJW93JKYhtRSjuTDzfZoFK5/
-         fhrLc7HQs2lOMlFuPQXW4ZJoXUpTUzWSQI4Yba7ndZUddOOWr7slJs6LKCBOdu5e+V3S
-         OoQSyajjadng/LTRJVDdH26WPJUhJljiO1MFmg/+ik5PtwZUV+TWb3yAgUJPvRSuAOSe
-         Mr1c6QgTlug65gzSrnCJPjh9yLre/uk7ajgPUthJY/Ti6E9F8lPjf7vJh9ABdsmrsWkC
-         bQN8a/Nfi2yNZZYj4O7MkkffT5QTRuQ+NsztZrGYtbKLbSPSFnMqUOg8N7+VgtGc9da1
-         k3Ig==
+        Tue, 21 Sep 2021 11:53:07 -0400
+Received: by mail-wr1-f44.google.com with SMTP id q26so40563397wrc.7;
+        Tue, 21 Sep 2021 08:51:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PjlwybJCIOyk6kI6/r4pWXearyUORkl4g3ybUpCst+U=;
-        b=NKQG5YKuzOajR66+DunQiKSUI7g7eVVWG/zCvrF51TD9luY3UnkbmngtLUOJHepKnx
-         XpuIg1gK8CiU0K6pOdtlwnwkI2EtO2cs8aR0E2+ss5qICqZOZH2V8xaEw8/1jhjm59Uo
-         IiwaiH6zoRPzjh/Ji09RSUgOei85dWhja75WFbJcD63vzJwCXs+vJwH/iVfMuIqd2TVm
-         aqiDRc7zysNeIGD1AQr+KjFFMJkev33nll2jO4C32fuMmkOZVFVFHwzxuc1Let3f+asU
-         joIGSSyy+4vDWXtioGFpvSFLDfl/V/P8AL/bH8fp/7owr96/p45FDCHu7aFiDDLZvlZw
-         PGGA==
-X-Gm-Message-State: AOAM530zRC31zs1OkmtvQ5hI61opJqC8CoWosc2xvlHw/vOUtUbBwnWH
-        USlk9MbKJHJSoetrpPzre6jwoNg7v5OsOMNdmbQ=
-X-Google-Smtp-Source: ABdhPJz3raeyYe4OAKqhiP0XFxXtjQmAUm8g/XPotRYQ96GojP9JjYyw+85vTb3EQpXDDX96JOCmAN6FKYGc8wnWk2o=
-X-Received: by 2002:a17:906:90c9:: with SMTP id v9mr32849608ejw.356.1632225856357;
- Tue, 21 Sep 2021 05:04:16 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SGlNyJc163VHCvQP8ZebJ632wDd/T7gsno9Azu96zu4=;
+        b=0EFjw1sBfoEThUFC0K4kus4xqDy88zI0tl3EDRYK8BTGwK8O2umzS3N+StsERZnQ1x
+         r6jvyxAF5nBcxVZPTrfngat/uA1Hs8oCLCKFOvDElYFk1lw91WIuDf5/oELLMguIm4bl
+         ag7R3QatQwcSlOJTHEkY4m+Od6SWET4he65R1H07YCDCKp5WqOWNZadv0YJeOW3ZaDUu
+         X9YTpuunOkvDxSfU8sKvrcqZehvGPO/ePhpIaIUrPwHPezyofS0U97Aml9h3A1yZ6HPp
+         Wp4DFXZ3K3YdaY+K4rkgLMFeiniUxIyzuChqWeE1iB1A/xHHFtyFQmiKaYqqWA3jAk7v
+         6QJA==
+X-Gm-Message-State: AOAM531dtyq8MkRdv2JlgbSVozCq477f+pAXG0SNkz5QqH6IwcPEq0x6
+        fuIIOl5lt610eAD4amr8UdA=
+X-Google-Smtp-Source: ABdhPJyya/h/DxldyRTL4NEizyEIHfA+enxOKuJ5mY0wnU5nDP4p5OXndeVdOtUKspVUvt7KO1d2nw==
+X-Received: by 2002:a05:6000:2cf:: with SMTP id o15mr35907174wry.364.1632239497492;
+        Tue, 21 Sep 2021 08:51:37 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id z12sm19515035wro.75.2021.09.21.08.51.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Sep 2021 08:51:37 -0700 (PDT)
+Message-ID: <e3473e69-777b-8b96-c3ae-54cfbdbdb9a2@kernel.org>
+Date:   Tue, 21 Sep 2021 17:51:35 +0200
 MIME-Version: 1.0
-References: <20210921103346.64824-1-tony@atomide.com>
-In-Reply-To: <20210921103346.64824-1-tony@atomide.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 21 Sep 2021 15:03:39 +0300
-Message-ID: <CAHp75Vef_Y8M9RmpCvfpo9OWC4Nt3rzV7S9esJBcub_5DZQj1Q@mail.gmail.com>
-Subject: Re: [PATCH 0/6] Get rid of pm_runtime_irq_safe() for 8250_omap
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH 07/16] tty: remove file from tty_ldisc_ops::ioctl and
+ compat_ioctl
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andreas Koensgen <ajk@comnets.uni-bremen.de>,
+        Paul Mackerras <paulus@samba.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+References: <20210914091134.17426-1-jslaby@suse.cz>
+ <20210914091134.17426-7-jslaby@suse.cz> <YUlY5pQQWf2P2fKn@google.com>
+ <9049e956-2865-7309-2eaf-aa4516ab28d6@kernel.org>
+ <YUnDtTEzex5/z90J@kroah.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <YUnDtTEzex5/z90J@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 21, 2021 at 1:34 PM Tony Lindgren <tony@atomide.com> wrote:
->
-> Hi,
->
-> Here are patches to get rid of pm_runtime_irq_safe() for the 8250_omap
-> driver.
->
-> For removing the pm_runtime_irq_safe() usage, serial TX is the last
-> remaining issue. We deal with TX by waking up the port and returning 0
-> bytes written from write_room() and write() if the port is not available
-> because of PM runtime autoidle.
+On 21. 09. 21, 13:36, Greg KH wrote:
+> On Tue, Sep 21, 2021 at 12:52:38PM +0200, Jiri Slaby wrote:
+>> On 21. 09. 21, 6:00, Dmitry Torokhov wrote:
+>>> Hi Jiri,
+>>>
+>>> On Tue, Sep 14, 2021 at 11:11:25AM +0200, Jiri Slaby wrote:
+>>>> diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
+>>>> index 17eb8f2aa48d..55e91d0e70ec 100644
+>>>> --- a/drivers/input/serio/serport.c
+>>>> +++ b/drivers/input/serio/serport.c
+>>>> @@ -207,8 +207,8 @@ static void serport_set_type(struct tty_struct *tty, unsigned long type)
+>>>>     * serport_ldisc_ioctl() allows to set the port protocol, and device ID
+>>>>     */
+>>>> -static int serport_ldisc_ioctl(struct tty_struct *tty, struct file *file,
+>>>> -			       unsigned int cmd, unsigned long arg)
+>>>> +static int serport_ldisc_ioctl(struct tty_struct *tty, unsigned int cmd,
+>>>> +		unsigned long arg)
+>>>
+>>> Can we please keep arguments aligned as they were? Otherwise
+>>
+>> Fixed, thanks. Likely, I will send a follow-up -- depending if Greg drops or
+>> keeps these in the tree.
+> 
+> Up to you.  I can drop them all now if you want to resend a v2 with all
+> of the aggregate acks, or you can send a follow-up set on top of these.
 
-of the PM
+What about if you keep everything up to (and incl.)
+   tty: remove file from n_tty_ioctl_helper
+(i.e. the patch 06/16, the one before this one)? If that works for you, 
+I will send v2 of the rest w/ collected acks. If it doesn't, I prefer 
+sending a complete v2 (incl. collected acks).
 
->
-> This series also removes the dependency to Andy's pending generic serial
-> layer PM runtime patches, and hopefully makes that work a bit easier :)
-
-
-Thank you, Tony, very much! The series looks to me in a good
-condition, hence, FWIW,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-> Regards,
->
-> Tony
->
->
-> Tony Lindgren (6):
->   n_tty: Start making use of -EAGAIN returned from
->     process_output_block()
->   tty: n_gsm: Don't ignore write return value in gsmld_output()
->   serial: core: Add new prep_tx for power management
->   serial: 8250: Implement prep_tx for power management
->   serial: 8250_omap: Require a valid wakeirq for deeper idle states
->   serial: 8250_omap: Drop the use of pm_runtime_irq_safe()
->
->  Documentation/driver-api/serial/driver.rst |  9 ++++++
->  drivers/tty/n_gsm.c                        |  5 ++-
->  drivers/tty/n_tty.c                        |  8 +++--
->  drivers/tty/serial/8250/8250_omap.c        | 36 +++++++++++++++-------
->  drivers/tty/serial/8250/8250_port.c        | 24 +++++++++++++++
->  drivers/tty/serial/serial_core.c           | 23 ++++++++++++++
->  include/linux/serial_core.h                |  1 +
->  7 files changed, 90 insertions(+), 16 deletions(-)
->
-> --
-> 2.33.0
-
-
-
+thanks,
 -- 
-With Best Regards,
-Andy Shevchenko
+js
