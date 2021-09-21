@@ -2,89 +2,131 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8695CC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 11:36:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C216C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 11:59:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 69D0361166
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 11:36:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3908661183
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 11:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbhIULhx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Sep 2021 07:37:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50202 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232341AbhIULhw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Sep 2021 07:37:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0B37E61184;
-        Tue, 21 Sep 2021 11:36:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1632224184;
-        bh=zWZf2YfsXIWdXNp7ZoylUgLi722Ht+rt6qA4OZk5bu4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UpY7XDOXPp6iGWj5JN5TxJLpOTaKKXgJ909BSopPbJF+Ow4wDYtIKu0Y5W8QXQFPG
-         HEFG5RX00HtM/Og1GaITeHa/ctRYWMtF56pRXR4P6udEf2/NGVOIoYfUAqIJYntQ1n
-         YDyimCKgh9i4lVnR3HP0Rdp7/xa9ZJe3rZYjqsvY=
-Date:   Tue, 21 Sep 2021 13:36:21 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andreas Koensgen <ajk@comnets.uni-bremen.de>,
-        Paul Mackerras <paulus@samba.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH 07/16] tty: remove file from tty_ldisc_ops::ioctl and
- compat_ioctl
-Message-ID: <YUnDtTEzex5/z90J@kroah.com>
-References: <20210914091134.17426-1-jslaby@suse.cz>
- <20210914091134.17426-7-jslaby@suse.cz>
- <YUlY5pQQWf2P2fKn@google.com>
- <9049e956-2865-7309-2eaf-aa4516ab28d6@kernel.org>
+        id S232089AbhIUMBF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Sep 2021 08:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231778AbhIUMBF (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Sep 2021 08:01:05 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1155AC061574;
+        Tue, 21 Sep 2021 04:59:37 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id bx4so28912094edb.4;
+        Tue, 21 Sep 2021 04:59:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KHxdyV8EyJ0XBPQEDxJ1v4h9kj1JfLTsZlYSfzSaMA0=;
+        b=HlBo9gi3cYBrHujgvixSoBUWSIePnuwaETvI0dM2Zg0LvfzLZ7Rd2nOyujd9kLs3xM
+         RA+PE9pbT4RBXfsXmbqlJsds5UuHBuekAngHh3DPOwjrFg/lQSEOATEtrnsUIu6NeMS6
+         9EtSMV8JZOu/qiO0/PmvpUfhvQ0g7IyvWPKaP9fFMpWMmC2N3np2yhUWq+yLfmOyTGv3
+         LBmVy4gS2+4LPpRwBTyhtMThNelJr30jqSJSc+iGNxTKI5dvyQIfIdmoFgryXPYtvDdK
+         XYCuQ5NDxTbv3DlHEhKkBogdlGHW/RW5sdfCzetPJXUthJJ7ppx4I9ilKuhGktpqHu+q
+         B2XQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KHxdyV8EyJ0XBPQEDxJ1v4h9kj1JfLTsZlYSfzSaMA0=;
+        b=O54PU5FsxTHkR7p+YMUGqap3hnef4XwgkEsW5ClgFs1zvUuzKIcSIlOOzgajz5g75T
+         3flcdA5lZWyDBj1Z9NZYQ/zLUZtaSZnkV+ayObTLFaMjGvIjkwdxuFU6ai9hfh2Knjt2
+         sLr30cD21FI3nnlqnGu1cOUpwdN1khu3AFTcwbLpO3m6w7DUfHpcohkS0XI9fFOyYWBg
+         zn7Ulx2cV2NPJgzSYINXFszmt0OlCPPDCI/B+izPHvhAT6TlXLvtzp5pxTL9CCpz7Vau
+         TLxNvH7xTRtN+ERprT74zg9UEkbtOskMpoY8BP/xmXXJeXyVSiUQ8f2Td8kGW1fUdeNF
+         3yRw==
+X-Gm-Message-State: AOAM53265p9LgQ/l0IPWjPCXwyQjRo3aoX4PncbuJgy+z5Arvyu4yX0x
+        i6W+Ld/V4JkEx++qarZEgr5yjRBllre/CxHARAI=
+X-Google-Smtp-Source: ABdhPJxmDNUrn/pjfqGBtuarR0ifn3xMY97hBg31i3Lrvhgn4lXmgIdu/Mx35BIvjqGEfO7bu1TPzpTPeYd3gQihQQU=
+X-Received: by 2002:a17:906:90c9:: with SMTP id v9mr32826020ejw.356.1632225573722;
+ Tue, 21 Sep 2021 04:59:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9049e956-2865-7309-2eaf-aa4516ab28d6@kernel.org>
+References: <20210921103346.64824-1-tony@atomide.com> <20210921103346.64824-2-tony@atomide.com>
+In-Reply-To: <20210921103346.64824-2-tony@atomide.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 21 Sep 2021 14:58:55 +0300
+Message-ID: <CAHp75VeBM-k39HJWe8cyiz+7sKbgMwJLivOGSs_8=nMADUbukw@mail.gmail.com>
+Subject: Re: [PATCH 1/6] n_tty: Start making use of -EAGAIN returned from process_output_block()
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 21, 2021 at 12:52:38PM +0200, Jiri Slaby wrote:
-> On 21. 09. 21, 6:00, Dmitry Torokhov wrote:
-> > Hi Jiri,
-> > 
-> > On Tue, Sep 14, 2021 at 11:11:25AM +0200, Jiri Slaby wrote:
-> > > diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
-> > > index 17eb8f2aa48d..55e91d0e70ec 100644
-> > > --- a/drivers/input/serio/serport.c
-> > > +++ b/drivers/input/serio/serport.c
-> > > @@ -207,8 +207,8 @@ static void serport_set_type(struct tty_struct *tty, unsigned long type)
-> > >    * serport_ldisc_ioctl() allows to set the port protocol, and device ID
-> > >    */
-> > > -static int serport_ldisc_ioctl(struct tty_struct *tty, struct file *file,
-> > > -			       unsigned int cmd, unsigned long arg)
-> > > +static int serport_ldisc_ioctl(struct tty_struct *tty, unsigned int cmd,
-> > > +		unsigned long arg)
-> > 
-> > Can we please keep arguments aligned as they were? Otherwise
-> 
-> Fixed, thanks. Likely, I will send a follow-up -- depending if Greg drops or
-> keeps these in the tree.
+On Tue, Sep 21, 2021 at 1:34 PM Tony Lindgren <tony@atomide.com> wrote:
+>
+> We check for -EAGAIN in n_tty_write() but never currently get it from
+> process_output_block(). Let's add -EAGAIN handling and break out with 0
+> bytes processed. Note that if we return -EAGAIN from n_tty_write(), it
+> will be treated as error by the caller rather than a retry.
+>
+> Looking at the patch description for commit 9ef8927f45f2 ("n_tty: check
+> for negative and zero space return from tty_write_room") it looks like we
+> have not made use of -EGAIN from process_output_block() so far, so this
 
-Up to you.  I can drop them all now if you want to resend a v2 with all
-of the aggregate acks, or you can send a follow-up set on top of these.
+-EGAIN?
 
-Your choice.
+> does not seem like it's currently needed as a fix.
+>
+> We can use -EAGAIN for serial layer power management changes as we now
+> will make use of write_room() returning 0 for an idled serial port.
+>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  drivers/tty/n_tty.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -549,6 +549,8 @@ static ssize_t process_output_block(struct tty_struct *tty,
+>         space = tty_write_room(tty);
+>         if (space <= 0) {
+>                 mutex_unlock(&ldata->output_lock);
+> +               if (!space)
+> +                       space = -EAGAIN;
+>                 return space;
+>         }
+>         if (nr > space)
+> @@ -2287,8 +2289,10 @@ static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
+>                         while (nr > 0) {
+>                                 ssize_t num = process_output_block(tty, b, nr);
+>                                 if (num < 0) {
+> -                                       if (num == -EAGAIN)
+> -                                               break;
+> +                                       if (num == -EAGAIN) {
+> +                                               retval = 0;
+> +                                               goto break_out;
+> +                                       }
+>                                         retval = num;
+>                                         goto break_out;
+>                                 }
+> --
+> 2.33.0
 
-thanks,
 
-greg k-h
+
+-- 
+With Best Regards,
+Andy Shevchenko
