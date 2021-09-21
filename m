@@ -2,171 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49AC5C4321E
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 10:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE63C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 10:52:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3983561181
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 10:34:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 81F0061131
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Sep 2021 10:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232143AbhIUKfi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Sep 2021 06:35:38 -0400
-Received: from muru.com ([72.249.23.125]:35568 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232076AbhIUKfe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Sep 2021 06:35:34 -0400
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 11D6E812F;
-        Tue, 21 Sep 2021 10:34:31 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 6/6] serial: 8250_omap: Drop the use of pm_runtime_irq_safe()
-Date:   Tue, 21 Sep 2021 13:33:46 +0300
-Message-Id: <20210921103346.64824-7-tony@atomide.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210921103346.64824-1-tony@atomide.com>
-References: <20210921103346.64824-1-tony@atomide.com>
+        id S232070AbhIUKyM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Sep 2021 06:54:12 -0400
+Received: from mail-ed1-f53.google.com ([209.85.208.53]:45683 "EHLO
+        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232060AbhIUKyL (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Sep 2021 06:54:11 -0400
+Received: by mail-ed1-f53.google.com with SMTP id c22so72460849edn.12;
+        Tue, 21 Sep 2021 03:52:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=STQ1SYPDR3l1tp+29Ksawhjtp3/4UkFtTcVlzO20jxw=;
+        b=eYEEEHY7Yc5Jp+UniIVV9z6z0e7nWxGRT0U7OQim/zRmuUsh7D4BqRX7ikyQICrazc
+         hCgFsxRgVaaDRdWkSfeprfD+ODGF7IPT7NZghF1uKKt+BnVWdolACy3IBXZUTFj1v+kF
+         suUs2NFKCyqyWbRT0jhsab11arF5/ZYKO/MiqG06h3UArFSuaLZkqxKFoNfTGj8AseNd
+         OmeZxHd7aWdQeKyo4ov0r9yUglCQjdocsQO4PLG/Rpw6iiJ8+6wQNz3l2lEphRvmbXaz
+         +SlJkOLXsC1/WvuHu4l8bBif9lfGBSyexLkzS0jhex8xEfYI2ZvH6Bla0NsySlRBTcT/
+         9ZGA==
+X-Gm-Message-State: AOAM530uyk+RTt6eEnhaWogKESv00CJMGi776YHKKZQ0Hp4/O/ziIieU
+        3zcvHsTwy3o70HHKIEQkGj9JPgAoAAQ=
+X-Google-Smtp-Source: ABdhPJzV8kO9F47YfqiJ4yR/67N6EPeYnE5Lb57mIqp/kxCSXyTqietIepnIBS8SxLdoCnSBkVZnxw==
+X-Received: by 2002:a50:bf02:: with SMTP id f2mr21867212edk.98.1632221562314;
+        Tue, 21 Sep 2021 03:52:42 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id 10sm5689589ejo.111.2021.09.21.03.52.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Sep 2021 03:52:41 -0700 (PDT)
+Message-ID: <9049e956-2865-7309-2eaf-aa4516ab28d6@kernel.org>
+Date:   Tue, 21 Sep 2021 12:52:38 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH 07/16] tty: remove file from tty_ldisc_ops::ioctl and
+ compat_ioctl
+Content-Language: en-US
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andreas Koensgen <ajk@comnets.uni-bremen.de>,
+        Paul Mackerras <paulus@samba.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+References: <20210914091134.17426-1-jslaby@suse.cz>
+ <20210914091134.17426-7-jslaby@suse.cz> <YUlY5pQQWf2P2fKn@google.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <YUlY5pQQWf2P2fKn@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We already have the serial layer RX wake path fixed for power management.
-We no longer allow deeper idle states unless the kernel console has been
-detached, and we require that the RX wakeirq is configured.
+On 21. 09. 21, 6:00, Dmitry Torokhov wrote:
+> Hi Jiri,
+> 
+> On Tue, Sep 14, 2021 at 11:11:25AM +0200, Jiri Slaby wrote:
+>> diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
+>> index 17eb8f2aa48d..55e91d0e70ec 100644
+>> --- a/drivers/input/serio/serport.c
+>> +++ b/drivers/input/serio/serport.c
+>> @@ -207,8 +207,8 @@ static void serport_set_type(struct tty_struct *tty, unsigned long type)
+>>    * serport_ldisc_ioctl() allows to set the port protocol, and device ID
+>>    */
+>>   
+>> -static int serport_ldisc_ioctl(struct tty_struct *tty, struct file *file,
+>> -			       unsigned int cmd, unsigned long arg)
+>> +static int serport_ldisc_ioctl(struct tty_struct *tty, unsigned int cmd,
+>> +		unsigned long arg)
+> 
+> Can we please keep arguments aligned as they were? Otherwise
 
-For TX path, we may have the serial port autoidled, and need to wake it
-up before writing to it. With the serial_core prep_tx() changes, we can
-finally drop the dependency to pm_runtime_irq_safe() for 8250_omap driver.
+Fixed, thanks. Likely, I will send a follow-up -- depending if Greg 
+drops or keeps these in the tree.
 
-To drop pm_runtime_irq_safe(), we remove all PM runtime calls from the
-interrupt context. If we ever see an interrupt for an idled port, we just
-bail out. We now also need to restore the port context with interrupts
-disabled to prevent interrupts from happening while restoring the port.
-
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_omap.c | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -134,6 +134,7 @@ struct omap8250_priv {
- 	bool rx_dma_broken;
- 	bool throttled;
- 	unsigned int allow_rpm:1;
-+	unsigned int clocks_off:1;
- };
- 
- struct omap8250_dma_params {
-@@ -621,6 +622,9 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 	unsigned int iir, lsr;
- 	int ret;
- 
-+	if (priv->clocks_off)
-+		return IRQ_NONE;
-+
- #ifdef CONFIG_SERIAL_8250_DMA
- 	if (up->dma) {
- 		ret = omap_8250_dma_handle_irq(port);
-@@ -628,7 +632,6 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 	}
- #endif
- 
--	serial8250_rpm_get(up);
- 	lsr = serial_port_in(port, UART_LSR);
- 	iir = serial_port_in(port, UART_IIR);
- 	ret = serial8250_handle_irq(port, iir);
-@@ -662,8 +665,6 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 		schedule_delayed_work(&up->overrun_backoff, delay);
- 	}
- 
--	serial8250_rpm_put(up);
--
- 	return IRQ_RETVAL(ret);
- }
- 
-@@ -1191,13 +1192,9 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- 	unsigned char status;
- 	u8 iir;
- 
--	serial8250_rpm_get(up);
--
- 	iir = serial_port_in(port, UART_IIR);
--	if (iir & UART_IIR_NO_INT) {
--		serial8250_rpm_put(up);
-+	if (iir & UART_IIR_NO_INT)
- 		return IRQ_HANDLED;
--	}
- 
- 	spin_lock(&port->lock);
- 
-@@ -1226,7 +1223,6 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- 
- 	uart_unlock_and_check_sysrq(port);
- 
--	serial8250_rpm_put(up);
- 	return 1;
- }
- 
-@@ -1420,8 +1416,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 	if (!of_get_available_child_count(pdev->dev.of_node))
- 		pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
- 
--	pm_runtime_irq_safe(&pdev->dev);
--
- 	pm_runtime_get_sync(&pdev->dev);
- 
- 	omap_serial_fill_features_erratas(&up, priv);
-@@ -1637,6 +1631,8 @@ static int omap8250_runtime_suspend(struct device *dev)
- 		omap_8250_rx_dma_flush(up);
- 
- 	priv->latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
-+	priv->clocks_off = 1;
-+
- 	schedule_work(&priv->qos_work);
- 
- 	return 0;
-@@ -1646,13 +1642,18 @@ static int omap8250_runtime_resume(struct device *dev)
- {
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up;
-+	struct uart_port *port;
-+	unsigned long flags;
- 
- 	/* In case runtime-pm tries this before we are setup */
- 	if (!priv)
- 		return 0;
- 
- 	up = serial8250_get_port(priv->line);
-+	port = &up->port;
- 
-+	/* Restore state with interrupts disabled */
-+	spin_lock_irqsave(&port->lock, flags);
- 	if (omap8250_lost_context(up))
- 		omap8250_restore_regs(up);
- 
-@@ -1660,6 +1661,9 @@ static int omap8250_runtime_resume(struct device *dev)
- 		omap_8250_rx_dma(up);
- 
- 	priv->latency = priv->calc_latency;
-+	priv->clocks_off = 0;
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
- 	schedule_work(&priv->qos_work);
- 	return 0;
- }
 -- 
-2.33.0
+js
+suse labs
