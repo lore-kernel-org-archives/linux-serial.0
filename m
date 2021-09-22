@@ -4,35 +4,35 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-20.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D4BC4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Sep 2021 10:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 123BFC433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Sep 2021 10:56:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9662161242
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Sep 2021 10:56:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E7A7860EB6
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Sep 2021 10:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235246AbhIVK6E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Sep 2021 06:58:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57074 "EHLO mail.kernel.org"
+        id S235269AbhIVK6F (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Sep 2021 06:58:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57098 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235150AbhIVK6D (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Sep 2021 06:58:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F012C60EB6;
-        Wed, 22 Sep 2021 10:56:33 +0000 (UTC)
+        id S235245AbhIVK6E (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 22 Sep 2021 06:58:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9201C61050;
+        Wed, 22 Sep 2021 10:56:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632308194;
-        bh=pFht2crJ58fEPAb0efcLhPOBTsC8scTXAQlpfMeAVoo=;
+        bh=mDH2GCHWNM5isTwxDcPNqbsUHNnv4sybjDxlPu8Ps9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=axxF4TAPBPC0vV4Mpka2ZRyclJEe15Nja20qCfmS3Jr13KUwQco1sVR3ha8PCYFbf
-         GFtDR34FSha0wSHGnwWGcZJb221QSBr3MXwfGTUuDJmeXzXDUrOq844Bxeps55tUxY
-         mX4tBMGQ3iJKOufvdYbxVkiGdOmZaT3Q3bU88lzOslh5bCaLKijkmA+bN4sVRAGwnk
-         rGEk3GJ+o5u/lvA4JHuUDxu66z7Wd51GDBZsZFsgPzUdH5BCcRxgFo5Sktq4kJqxIi
-         oqWzWEXqINKttAJUut/XM9a8GXXSm1JgOeoA3M1IxyqamrXNVddHnaN7y7lnaGk9IJ
-         1neIBcG7XxCHw==
+        b=gUcCw7GnDQXqjBVmvA5bwo8O3sjmSQuYLhWC18XUKsjl03ewV8SYH9AScUKMDCswa
+         Uqmo+Y/qEP8irhdMO/etYcUrvpCnuwRaSjDmPUhuDcX4917lsk6kKP+pRi5GTX0qF4
+         i7yDhHZOVCHCh2g/aFirxhhm8ZcMAf+u4YDL4FFnG9HOHSoZbuGAPxsIbkBJrw+nU2
+         XxcMyMEAdPZJ3mL3J29zokY/cu1YC4c1VmN5DYW7dPUv7DNZBVVV9gp6uak3+5kNJF
+         UhRwpXTfdK5wUJBSlNvQeOsOMJa6WO8znOIDGUIiZG2e7Fvid7MU+L9qE1UBD7Tsjq
+         cMTWI/Xdd3+Dw==
 Received: by pali.im (Postfix)
-        id 254A4AC1; Wed, 22 Sep 2021 12:56:32 +0200 (CEST)
+        id 532D679F; Wed, 22 Sep 2021 12:56:34 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -45,9 +45,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
         linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [RESEND PATCH v5 1/6] math64: New DIV_U64_ROUND_CLOSEST helper
-Date:   Wed, 22 Sep 2021 12:54:28 +0200
-Message-Id: <20210922105433.11744-2-pali@kernel.org>
+Subject: [RESEND PATCH v5 3/6] dt-bindings: mvebu-uart: document DT bindings for marvell,armada-3700-uart-clock
+Date:   Wed, 22 Sep 2021 12:54:30 +0200
+Message-Id: <20210922105433.11744-4-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210922105433.11744-1-pali@kernel.org>
 References: <20210922105433.11744-1-pali@kernel.org>
@@ -58,39 +58,78 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Provide DIV_U64_ROUND_CLOSEST helper which uses div_u64 to perform
-division rounded to the closest integer using unsigned 64bit
-dividend and unsigned 32bit divisor.
+This change adds DT bindings documentation for device nodes with compatible
+string "marvell,armada-3700-uart-clock".
 
 Signed-off-by: Pali Rohár <pali@kernel.org>
 ---
- include/linux/math64.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ .../bindings/clock/armada3700-uart-clock.yaml | 57 +++++++++++++++++++
+ 1 file changed, 57 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/armada3700-uart-clock.yaml
 
-diff --git a/include/linux/math64.h b/include/linux/math64.h
-index 2928f03d6d46..a14f40de1dca 100644
---- a/include/linux/math64.h
-+++ b/include/linux/math64.h
-@@ -300,6 +300,19 @@ u64 mul_u64_u64_div_u64(u64 a, u64 mul, u64 div);
- #define DIV64_U64_ROUND_CLOSEST(dividend, divisor)	\
- 	({ u64 _tmp = (divisor); div64_u64((dividend) + _tmp / 2, _tmp); })
- 
-+/*
-+ * DIV_U64_ROUND_CLOSEST - unsigned 64bit divide with 32bit divisor rounded to nearest integer
-+ * @dividend: unsigned 64bit dividend
-+ * @divisor: unsigned 32bit divisor
-+ *
-+ * Divide unsigned 64bit dividend by unsigned 32bit divisor
-+ * and round to closest integer.
-+ *
-+ * Return: dividend / divisor rounded to nearest integer
-+ */
-+#define DIV_U64_ROUND_CLOSEST(dividend, divisor)	\
-+	({ u32 _tmp = (divisor); div_u64((u64)(dividend) + _tmp / 2, _tmp); })
+diff --git a/Documentation/devicetree/bindings/clock/armada3700-uart-clock.yaml b/Documentation/devicetree/bindings/clock/armada3700-uart-clock.yaml
+new file mode 100644
+index 000000000000..5bdb23e0ba3e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/armada3700-uart-clock.yaml
+@@ -0,0 +1,57 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/marvell,armada-3700-uart-clock#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++title: Marvell Armada 3720 UART clocks
 +
- /*
-  * DIV_S64_ROUND_CLOSEST - signed 64bit divide with 32bit divisor rounded to nearest integer
-  * @dividend: signed 64bit dividend
++properties:
++  compatible:
++    const: marvell,armada-3700-uart-clock
++
++  reg:
++    items:
++      - description: UART Clock Control Register
++      - description: UART 2 Baud Rate Divisor Register
++
++  clocks:
++    description: |
++      List of parent clocks suitable for UART from following set:
++        "TBG-A-P", "TBG-B-P", "TBG-A-S", "TBG-B-S", "xtal"
++      UART clock can use one from this set and when more are provided
++      then kernel would choose and configure the most suitable one.
++      It is suggest to specify at least one TBG clock to achieve
++      baudrates above 230400 and also to specify clock which bootloader
++      used for UART (most probably xtal) for smooth boot log on UART.
++
++  clock-names:
++    items:
++      - const: TBG-A-P
++      - const: TBG-B-P
++      - const: TBG-A-S
++      - const: TBG-B-S
++      - const: xtal
++    minItems: 1
++    maxItems: 5
++
++  '#clock-cells':
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - '#clock-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    uartclk: uartclk@12000 {
++      compatible = "marvell,armada-3700-uart-clock";
++      reg = <0x12010 0x4>, <0x12210 0x4>;
++      clocks = <&tbg 0>, <&tbg 1>, <&tbg 2>, <&tbg 3>, <&xtalclk>;
++      clock-names = "TBG-A-P", "TBG-B-P", "TBG-A-S", "TBG-B-S", "xtal";
++      #clock-cells = <1>;
++    };
 -- 
 2.20.1
 
