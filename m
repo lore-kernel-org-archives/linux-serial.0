@@ -2,101 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86FF8C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Sep 2021 06:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C7DC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Sep 2021 07:59:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6635E61184
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Sep 2021 06:57:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1370560EC0
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Sep 2021 07:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232927AbhIVG6v (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Sep 2021 02:58:51 -0400
-Received: from mail-wr1-f41.google.com ([209.85.221.41]:44608 "EHLO
-        mail-wr1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233005AbhIVG6u (ORCPT
+        id S233499AbhIVIBK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Sep 2021 04:01:10 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:37408 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233411AbhIVIBK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Sep 2021 02:58:50 -0400
-Received: by mail-wr1-f41.google.com with SMTP id d6so3600725wrc.11;
-        Tue, 21 Sep 2021 23:57:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Yh0iKTCDgYFSJb9XyCYVMvV6OqeBY6bHXPRIYvm+yjg=;
-        b=DHH8MnWsS94RMlIvrvzGevuRA74xSZaO1WgIJJ1BFnisOIcsikf1Szzl6AZiWdJM1a
-         n1kfTgyJZgldeKPTU18jcUMayQ9Edw45WsOJxo4gh6EG70o03w5tfDPYFBkVju8jR82w
-         HbASvX0B0wcFaDB8GmwwTyptXGrRjz6QuEGG4K9wn2zC3mdWj/ICyOgu8M8MUEEGi2VK
-         mBkguP2xEfhuLvgo8xiwxIB4Ae+F9ldX1HFBboyDoa6AfZ4uOC8J4ZOfrKFes6hk98zB
-         G/Q2/SsNUhmA4hvrZHe3teIi2TySa2B1B83FVL8GrsKQQGfmIaWuWHtPf5xadWPDQidw
-         ir5w==
-X-Gm-Message-State: AOAM5303zMuX53Hi8W3HTweAJYJokh529+snaHq9CbO4VDQvjMdTKZ5c
-        PN7pKzVkzzEGGxoXLXhlmL4aNZlPjU8=
-X-Google-Smtp-Source: ABdhPJyttFxWYlul8CE2uWk9E3jp4KZqp4CxVqDLXA0aqJyIInsfN9Mr2HtAfGCdR5CEcLvoYpEVSg==
-X-Received: by 2002:a7b:cd0f:: with SMTP id f15mr8629589wmj.173.1632293839620;
-        Tue, 21 Sep 2021 23:57:19 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id i67sm1164807wmi.41.2021.09.21.23.57.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Sep 2021 23:57:19 -0700 (PDT)
-Message-ID: <1fd9ed1a-edd2-a154-da1c-022a89b2c722@kernel.org>
-Date:   Wed, 22 Sep 2021 08:57:17 +0200
+        Wed, 22 Sep 2021 04:01:10 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3D64522213;
+        Wed, 22 Sep 2021 07:59:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1632297579; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CAug7AGuSK/Yj33uaIVpKW2B50eLr6wUivZyV39RLjo=;
+        b=TZoE7e4JlOYizEYGM6EN1cqODqEyLVnlm4NbV5h9QT0HA4k3s1keZXh8ZNkkbRjQYGSwHQ
+        fIWJFXYHKOWJ+5qFN7RgGnjiKD1DCPELFgk/UFAVL5aVMvNqtg7jWYnXBppxt8fsFpaAlK
+        gsDe2sJNGbo0g7gpnOxZVll6V2u7920=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1632297579;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CAug7AGuSK/Yj33uaIVpKW2B50eLr6wUivZyV39RLjo=;
+        b=anICzS9w65AtqH7tx3l9mqexD/pNJx5OHOjx88ePVCKd/omEkk7y2z2fYndz/sWbH54uhj
+        khK3CiUwE0EJvPAw==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 14BA3A3B8B;
+        Wed, 22 Sep 2021 07:59:39 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 3/7] mxser: make mxser_port::ldisc_stop_rx a bool
+Date:   Wed, 22 Sep 2021 09:59:34 +0200
+Message-Id: <20210922075938.31390-3-jslaby@suse.cz>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210922075938.31390-1-jslaby@suse.cz>
+References: <20210922075938.31390-1-jslaby@suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH 16/16] tty: drop tty_flip_buffer_push
-Content-Language: en-US
-To:     Johan Hovold <johan@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210914091134.17426-1-jslaby@suse.cz>
- <20210914091415.17918-1-jslaby@suse.cz>
- <20210914091415.17918-9-jslaby@suse.cz>
- <YUMWaCpT4s8dQKiy@hovoldconsulting.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <YUMWaCpT4s8dQKiy@hovoldconsulting.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16. 09. 21, 12:03, Johan Hovold wrote:
-> On Tue, Sep 14, 2021 at 11:14:15AM +0200, Jiri Slaby wrote:
->> Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
->> tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). All
->> users were converted, so remove tty_flip_buffer_push() completely.
-> 
-> Did you consider inlining tty_flip_buffer_push() or unexporting
-> tty_schedule_flip() instead?
+It's used only as a yes-no variable, so make it a bool and switch the
+set values appropriately.
 
-Yes -- I see no reason for two functions doing the very same thing. It's 
-only confusing.
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/mxser.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> The name tty_flip_buffer_push() is arguable more descriptive since the
-> work may already be running and is also less tied to the implementation.
-> 
-> The ratio of drivers using tty_flip_buffer_push() over
-> tty_schedule_flip() is also something like 186 to 15 so that would
-> amount to a lot less churn too.
-
-OK, I can do either way. I chose this path as tty_schedule_flip was a 
-wrapper to tty_flip_buffer_push. In any case, I wouldn't take the number 
-of changed drivers as a measure. But if it makes more sense for people 
-regarding the naming, I will "flip" the two flips.
-
-> Also, can you please start adding cover letters to your series to
-> provide an overview of what it is you're trying to accomplish?
-
-I am not a fan of cover letters as they are not Cced to people who are 
-Cced in separate patches. So what would you like to see in the letter? 
-This series are just a random cleanup and IMO there is not much more to 
-be said except what is in their commit logs.
-
-thanks,
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index f907de56e08b..309acf3f1ec3 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -250,7 +250,7 @@ struct mxser_port {
+ 	u8 IER;			/* Interrupt Enable Register */
+ 	u8 MCR;			/* Modem control register */
+ 
+-	unsigned char ldisc_stop_rx;
++	bool ldisc_stop_rx;
+ 
+ 	struct async_icount icount; /* kernel counters for 4 input interrupts */
+ 	unsigned int timeout;
+@@ -1341,7 +1341,7 @@ static void mxser_stoprx(struct tty_struct *tty)
+ {
+ 	struct mxser_port *info = tty->driver_data;
+ 
+-	info->ldisc_stop_rx = 1;
++	info->ldisc_stop_rx = true;
+ 	if (I_IXOFF(tty)) {
+ 		if (info->board->must_hwid) {
+ 			info->IER &= ~MOXA_MUST_RECV_ISR;
+@@ -1374,7 +1374,7 @@ static void mxser_unthrottle(struct tty_struct *tty)
+ 	struct mxser_port *info = tty->driver_data;
+ 
+ 	/* startrx */
+-	info->ldisc_stop_rx = 0;
++	info->ldisc_stop_rx = false;
+ 	if (I_IXOFF(tty)) {
+ 		if (info->x_char)
+ 			info->x_char = 0;
+@@ -1849,7 +1849,7 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
+ 		tty_port_init(&info->port);
+ 		info->port.ops = &mxser_port_ops;
+ 		info->board = brd;
+-		info->ldisc_stop_rx = 0;
++		info->ldisc_stop_rx = false;
+ 
+ 		/* Enhance mode enabled here */
+ 		if (brd->must_hwid != MOXA_OTHER_UART)
 -- 
-js
-suse labs
+2.33.0
+
