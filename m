@@ -2,122 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6C7C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Sep 2021 12:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33094C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Sep 2021 14:05:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 231DA6109F
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Sep 2021 12:41:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 146C060FC2
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Sep 2021 14:05:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234401AbhI0Mm6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Sep 2021 08:42:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60550 "EHLO mail.kernel.org"
+        id S234698AbhI0OH2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Sep 2021 10:07:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52178 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234333AbhI0Mm5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Sep 2021 08:42:57 -0400
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C64260F46;
-        Mon, 27 Sep 2021 12:41:19 +0000 (UTC)
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1mUpwb-00DF4m-GL; Mon, 27 Sep 2021 13:41:17 +0100
+        id S234461AbhI0OH1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 27 Sep 2021 10:07:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 457AD60F46;
+        Mon, 27 Sep 2021 14:05:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632751549;
+        bh=6VROViTQrHqhxIEB6/H5ChtA2FaNKxLZXhP74mU/Srk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Zs7AHqdCHiOKiAq0eNsgaiimlkEPCatu+nACNpXC3yTOp8BJYfDeYp6DThh5oRmUX
+         8ayUntOGkOtmubwGLS79GH3JdZz0FD5+YMIwuUJqN58Nu2zeKSRoZtpsnMhK7NIZo8
+         Yy0gqjkVUC84QQnC46OVh2+L7H2j7a1EltC/hdwIhHP+F4FgrLXTOSJp06MITtZVR4
+         OqVuIyfSIMlxSfSUPofKTQ82EB/2Dxfou6HDpph4EwPxD9p72xjCOfBS/7vyKWvLpm
+         id1tzNao8SFJzNu2uNrra3RLxADwHR1Izyv7wE9NFrc3iWA9nBjMkCAYFe9ZvP2TMz
+         x5KMD90mWrvyw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mUrGN-0001wu-UU; Mon, 27 Sep 2021 16:05:48 +0200
+Date:   Mon, 27 Sep 2021 16:05:47 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/6] serial: core: Add new prep_tx for power management
+Message-ID: <YVHPu7KGYDWOCav9@hovoldconsulting.com>
+References: <20210921103346.64824-1-tony@atomide.com>
+ <20210921103346.64824-4-tony@atomide.com>
+ <YUx3AkT4Du/PT+V5@hovoldconsulting.com>
+ <YUyXA5UStMHGQDZZ@atomide.com>
+ <YU3isENYUb+aE4qi@hovoldconsulting.com>
+ <YU3qHiMNHVz/JX/y@atomide.com>
 MIME-Version: 1.0
-Date:   Mon, 27 Sep 2021 13:41:17 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Sam Shih <sam.shih@mediatek.com>
-Cc:     matthias.bgg@gmail.com, Ryder.Lee@mediatek.com,
-        devicetree@vger.kernel.org, enric.balletbo@collabora.com,
-        fparent@baylibre.com, gregkh@linuxfoundation.org,
-        herbert@gondor.apana.org.au, hsinyi@chromium.org, john@phrozen.org,
-        linus.walleij@linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux@roeck-us.net,
-        mpm@selenic.com, mturquette@baylibre.com, robh+dt@kernel.org,
-        sboyd@kernel.org, sean.wang@kernel.org, seiya.wang@mediatek.com,
-        wim@linux-watchdog.org
-Subject: Re: [v3,8/9] arm64: dts: mediatek: add mt7986a support
-In-Reply-To: <20210924112017.14107-1-sam.shih@mediatek.com>
-References: <016b501b-a4bf-c74d-9f7f-8145800ca6e0@gmail.com>
- <20210924112017.14107-1-sam.shih@mediatek.com>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <0459da08cddc579f069a28e659e614fd@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: sam.shih@mediatek.com, matthias.bgg@gmail.com, Ryder.Lee@mediatek.com, devicetree@vger.kernel.org, enric.balletbo@collabora.com, fparent@baylibre.com, gregkh@linuxfoundation.org, herbert@gondor.apana.org.au, hsinyi@chromium.org, john@phrozen.org, linus.walleij@linaro.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, linux@roeck-us.net, mpm@selenic.com, mturquette@baylibre.com, robh+dt@kernel.org, sboyd@kernel.org, sean.wang@kernel.org, seiya.wang@mediatek.com, wim@linux-watchdog.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YU3qHiMNHVz/JX/y@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2021-09-24 12:20, Sam Shih wrote:
-> Add basic chip support for Mediatek mt7986a, include
-> uart nodes with correct clocks, rng node with correct clock,
-> and watchdog node and mt7986a pinctrl node.
+On Fri, Sep 24, 2021 at 06:09:18PM +0300, Tony Lindgren wrote:
+> * Johan Hovold <johan@kernel.org> [210924 14:38]:
+> > On Thu, Sep 23, 2021 at 06:02:27PM +0300, Tony Lindgren wrote:
+
+> > > > No need to be patching line disciplines for this.
+> > > 
+> > > Do you see issues with handling the errors in line disciplines?
+> > 
+> > It's just conceptually wrong to push retrying up the stack, possible all
+> > the way to user space in case of non-blocking opens, just because the
+> > device isn't already runtime active.
 > 
-> Add cpu node, timer node, gic node, psci and reserved-memory node
-> for ARM Trusted Firmware,
-> 
-> Add clock controller nodes, include 40M clock source, topckgen, 
-> infracfg,
-> apmixedsys and ethernet subsystem.
-> 
-> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-> ---
-> v3: used the stdout-path instead of console=ttyS0
-> v2: modified clock and uart node due to clock driver updated
-> ---
->  arch/arm64/boot/dts/mediatek/Makefile        |   1 +
->  arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts |  54 +++++
->  arch/arm64/boot/dts/mediatek/mt7986a.dtsi    | 227 +++++++++++++++++++
->  3 files changed, 282 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt7986a.dtsi
+> Yes, I don't see a way around that currently. Maybe if we start making
+> use of uart_tx_stopped() or something similar that could be simplified.
+> And we'll be still hit these line discipline error handling cases
+> anyways depending on how long the serial port wake up takes.
 
-[...]
+I didn't really look at the ldisc change so not saying it isn't needed
+for other reasons such as a full write buffer. But then I'd expect it to
+be presented as a bug fix (perhaps it was).
 
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupt-parent = <&gic>;
-> +		clock-frequency = <13000000>;
-
-No. Please fix your firmware to program CNTFRQ_EL0 on all CPUs.
-This may have been OK in 2011, but not anymore.
-
-> +		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>,
-> +			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW>,
-> +			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>,
-> +			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>;
-> +	};
-> +
-> +	soc {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		ranges;
-> +
-> +		gic: interrupt-controller@c000000 {
-> +			compatible = "arm,gic-v3";
-> +			#interrupt-cells = <3>;
-> +			interrupt-parent = <&gic>;
-> +			interrupt-controller;
-> +			reg = <0 0x0c000000 0 0x40000>,
-> +			      <0 0x0c080000 0 0x200000>;
-
-This looks wrong. 128kB per redistributor frames and 4 CPUs do
-no result in 2MB worth of MMIO.
-
-This is also missing the GICV/GICV/GICH regions that are exposed
-by the CPUs directly.
-
-         M.
--- 
-Jazz is not dead. It just smells funny...
+Johan
