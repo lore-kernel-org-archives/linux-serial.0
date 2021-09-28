@@ -2,55 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E23C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Sep 2021 09:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BACF6C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Sep 2021 10:48:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A99406108E
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Sep 2021 09:52:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A0993610FC
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Sep 2021 10:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240091AbhI1Jyg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Sep 2021 05:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
+        id S240226AbhI1Kt7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Sep 2021 06:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240082AbhI1Jye (ORCPT
+        with ESMTP id S240290AbhI1Kt6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Sep 2021 05:54:34 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCFFC061740;
-        Tue, 28 Sep 2021 02:52:55 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id y186so9251040pgd.0;
-        Tue, 28 Sep 2021 02:52:55 -0700 (PDT)
+        Tue, 28 Sep 2021 06:49:58 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53852C061575;
+        Tue, 28 Sep 2021 03:48:19 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id t11so13875250plq.11;
+        Tue, 28 Sep 2021 03:48:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CAuHAcI76xQ0Hd9F/8pOiXatIqgLvSXHI4DY4YnSB1E=;
-        b=dI5OxGoHSbyLzC45r5RIkTRo//i4hRmgq8c8dapwqnSMH9DLHeHwEfU14c9CCrBI5V
-         744fxdh/1LRHHIozGvHwINlrkdlA3MzjEcghND03ezkh1W2zQk9+bWQiT4BheoxWBiU+
-         eO4L1rPoizfoxyyANnQqT4jWfop0Eb9/r0opoTw5jtPjR8GYW4dUSDdl4g46wfm78ow1
-         xi8sIOcANFEfC4jalurktX+5TTgXwiWSycqdr5dtLPiAF2NE725GG+PbVEKQyvSwBOeZ
-         d2C16d2mR5n6JJgReg8cbH2r/Ih2+IgMqM/HDHSNW2GqLBPxBzBX+4bH+7bDAFB/UUwe
-         OyDQ==
+        bh=RJZR9w8hI2LD2vHDZX/H3aDABh040dBibJcAnh5URyU=;
+        b=NBobBBPAoaIjh0xECEjWcV08qKXbrV8MH4hrrhCW8AVqfGxPnwVcIcgux5uWBByIF7
+         q4jUTzeBbneWuvyrXK5ERbhXT0F2hVwEtJVGrizB2G3x6MQFKI5b7nvjP/IjNKSxsKMo
+         e1JgOtHdsP9LDPtzJXHXb1rPlA0WYfKvhAcNu8bbYXMm/j6K3X7EBYO4ZJFXmlc/LnhL
+         WkSDzV+ovDlLkGHqpNfUv43okxIVE/WG28LtGhoTbYZ6Yg7k6xVCKxLn6w4/k/BrrjZO
+         WeddJLsln0hyfgh4X8UnXsFm7FkXrINCbemiArQUoIgeROIlIg06Cp2zrn7MXitCQJQx
+         onOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CAuHAcI76xQ0Hd9F/8pOiXatIqgLvSXHI4DY4YnSB1E=;
-        b=bDISbEMwjSmPiajmD0p2wKltRdVUxdRJZ/Nac3wVwDpCmas0+CnD60TnPdKySseJG4
-         b4YQwxlGwXTTjukEHM0uNOHMdFUoJk7DPIoFAacBoDds5JAdzoSfuYnQ//OX6aFkfEqh
-         LQRx6U/gcKQfPBNC3UknjVlEDXVJrhn3HzXMpNisJSqKX6A3f5vRf8BQgawW28EDOjYY
-         0Cy7gfnVk5MVSxVEMwigtLGvcWgsGmVCIrzx9VWtkICPLDrYJJv017FJzXRUnbKlbgKn
-         xOr7CkplTmk54VR+g5FzKHFHDUk15lLWuTZ3naXHaCg/RspOtOSiQQv//cISGEx/cmhb
-         XP8A==
-X-Gm-Message-State: AOAM5307ooTqY4QNL+lI5YXaw9+JyfD07lCdldnx0w+IQcDN2SWZo/ss
-        1svBOkKV+vOnKK3xW3BFBLg=
-X-Google-Smtp-Source: ABdhPJziFHZ3ETiuVi7/buRSQRVQ2XbFaFgFy0BTskO6HOUvGtFUSUFVBJaJHZmKuUqRYvkwTeN+Yw==
-X-Received: by 2002:a63:2d46:: with SMTP id t67mr1174932pgt.15.1632822775094;
-        Tue, 28 Sep 2021 02:52:55 -0700 (PDT)
+        bh=RJZR9w8hI2LD2vHDZX/H3aDABh040dBibJcAnh5URyU=;
+        b=6u7KB2vCKOSaa15osdvbOHNs44zRw+3ZbsLLZmX2OGKcc/n9vQGPBvjns8nW5zsGUt
+         bTT44kg1E/VINz/CPgSLwbJVKHq33qMfqWs8pJMvVC2OAImer+rm3TRQZQbVd07aRPuV
+         nRy/jOVlJvqsaaAsrnydGUOrnbXk67ar3HHgdKy+06QqPM6qgiRdy9GPZnlI9tuvClpo
+         NkZdDfHtiZfygVP3/MCZMllFRDmS9CK5Ib2AULNDfeKt8zSAO00r2OSVI4YAeDg+wLoV
+         Fvs6IxGp4ZP/HolhZnCa4ppEt0UTcVLx/AvxTUOq5/Y9ds6lkCUWQkUmxM5KG8BmfCB0
+         yQzA==
+X-Gm-Message-State: AOAM532rSyouahYJMh7U51a4DnJzEPB7wI4KFhuR9Fms/LIQ12a/ovzR
+        Vw0tF4onklcREhi5X3+qDyE=
+X-Google-Smtp-Source: ABdhPJyAqWrGmDI7FsZNyBa2XMSoRiVSs58UXcx1KtZu7IZ17grlfBqS5iruggUIRDPLISVJ6ziegA==
+X-Received: by 2002:a17:90a:6286:: with SMTP id d6mr4723082pjj.199.1632826098647;
+        Tue, 28 Sep 2021 03:48:18 -0700 (PDT)
 Received: from ubt.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id v7sm1950517pjk.37.2021.09.28.02.52.49
+        by smtp.gmail.com with ESMTPSA id v4sm2300380pjr.32.2021.09.28.03.48.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Sep 2021 02:52:54 -0700 (PDT)
+        Tue, 28 Sep 2021 03:48:18 -0700 (PDT)
 From:   Chunyan Zhang <zhang.lyra@gmail.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Arnd Bergmann <arnd@arndb.de>,
@@ -63,11 +63,11 @@ Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         Chunyan Zhang <chunyan.zhang@unisoc.com>,
         LKML <linux-kernel@vger.kernel.org>
 Subject: [PATCH 3/3] arm64: dts: Add support for Unisoc's UMS512
-Date:   Tue, 28 Sep 2021 17:52:29 +0800
-Message-Id: <20210928095229.233572-4-zhang.lyra@gmail.com>
+Date:   Tue, 28 Sep 2021 18:48:04 +0800
+Message-Id: <20210928104804.240144-1-zhang.lyra@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210928095229.233572-1-zhang.lyra@gmail.com>
-References: <20210928095229.233572-1-zhang.lyra@gmail.com>
+In-Reply-To: <20210928095229.233572-4-zhang.lyra@gmail.com>
+References: <20210928095229.233572-4-zhang.lyra@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -371,7 +371,7 @@ index 000000000000..cd4d4abcfca6
 +};
 diff --git a/arch/arm64/boot/dts/sprd/ums512-1h10.dts b/arch/arm64/boot/dts/sprd/ums512-1h10.dts
 new file mode 100644
-index 000000000000..efd0d492fac7
+index 000000000000..8722c3999ade
 --- /dev/null
 +++ b/arch/arm64/boot/dts/sprd/ums512-1h10.dts
 @@ -0,0 +1,69 @@
@@ -385,8 +385,8 @@ index 000000000000..efd0d492fac7
 +/dts-v1/;
 +
 +#include <dt-bindings/gpio/gpio.h>
-+#include "sc2730.dtsi"
 +#include "ums512.dtsi"
++#include "sc2730.dtsi"
 +
 +/ {
 +	model = "Unisoc UMS512-1H10 Board";
