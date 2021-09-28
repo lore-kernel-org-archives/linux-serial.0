@@ -2,27 +2,27 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE27C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Sep 2021 12:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E866EC433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Sep 2021 12:17:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A7A2060F21
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Sep 2021 12:17:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D6809608FE
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Sep 2021 12:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240645AbhI1MTX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Sep 2021 08:19:23 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:60400 "EHLO inva020.nxp.com"
+        id S240664AbhI1MTZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Sep 2021 08:19:25 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:58686 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240599AbhI1MTS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Sep 2021 08:19:18 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id F3BF61A2846;
-        Tue, 28 Sep 2021 14:17:37 +0200 (CEST)
+        id S240611AbhI1MTT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 28 Sep 2021 08:19:19 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 359CC20284E;
+        Tue, 28 Sep 2021 14:17:39 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E585C1A0153;
-        Tue, 28 Sep 2021 14:17:37 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 279CE200235;
+        Tue, 28 Sep 2021 14:17:39 +0200 (CEST)
 Received: from fsr-ub1664-175.ea.freescale.net (fsr-ub1664-175.ea.freescale.net [10.171.82.40])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 5E5402030E;
-        Tue, 28 Sep 2021 14:17:37 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 959E82030E;
+        Tue, 28 Sep 2021 14:17:38 +0200 (CEST)
 From:   Abel Vesa <abel.vesa@nxp.com>
 To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>,
@@ -33,11 +33,10 @@ Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
         linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Abel Vesa <abel.vesa@nxp.com>, Jacky Bai <ping.bai@nxp.com>
-Subject: [PATCH v2 06/10] arm64: dts: freescale: Add lsio subsys dtsi for imx8dxl
-Date:   Tue, 28 Sep 2021 15:17:16 +0300
-Message-Id: <1632831440-5880-7-git-send-email-abel.vesa@nxp.com>
+        linux-arm-kernel@lists.infradead.org, Abel Vesa <abel.vesa@nxp.com>
+Subject: [PATCH v2 08/10] dt-bindings: fsl: scu: Add i.MX8DXL ocotp binding
+Date:   Tue, 28 Sep 2021 15:17:18 +0300
+Message-Id: <1632831440-5880-9-git-send-email-abel.vesa@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1632831440-5880-1-git-send-email-abel.vesa@nxp.com>
 References: <1632831440-5880-1-git-send-email-abel.vesa@nxp.com>
@@ -46,112 +45,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jacky Bai <ping.bai@nxp.com>
+Add i.MX8DXL ocotp compatible to the SCU bindings documentation.
 
-On i.MX8DXL, the LSIO subsystem includes below devices:
-
-1x Inline Encryption Engine (IEE)
-1x FlexSPI
-4x Pulse Width Modulator (PWM)
-5x General Purpose Timer (GPT)
-8x GPIO
-14x Message Unit (MU)
-256KB On-Chip Memory (OCRAM)
-
-compared to the common imx8-ss-lsio dtsi, some nodes' interrupt
-property need to be updated.
-
-Signed-off-by: Jacky Bai <ping.bai@nxp.com>
 Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 ---
- .../boot/dts/freescale/imx8dxl-ss-lsio.dtsi   | 78 +++++++++++++++++++
- 1 file changed, 78 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
+ Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi b/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
-new file mode 100644
-index 000000000000..d90602bab384
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright 2019-2021 NXP
-+ */
-+&lsio_gpio0 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio1 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio2 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio3 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio4 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio5 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio6 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_gpio7 {
-+	compatible = "fsl,imx8dxl-gpio", "fsl,imx35-gpio";
-+	interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu0 {
-+	compatible = "fsl,imx8dxl-mu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu1 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu2 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu3 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu4 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu5 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&lsio_mu13 {
-+	compatible = "fsl,imx8-mu-scu", "fsl,imx8qxp-mu", "fsl,imx6sx-mu";
-+	interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
-+};
+diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt b/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
+index fd0061712443..f1470d562156 100644
+--- a/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
++++ b/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
+@@ -141,7 +141,8 @@ OCOTP bindings based on SCU Message Protocol
+ Required properties:
+ - compatible:		Should be one of:
+ 			"fsl,imx8qm-scu-ocotp",
+-			"fsl,imx8qxp-scu-ocotp".
++			"fsl,imx8qxp-scu-ocotp",
++			"fsl,imx8dxl-scu-ocotp".
+ - #address-cells:	Must be 1. Contains byte index
+ - #size-cells:		Must be 1. Contains byte length
+ 
 -- 
 2.31.1
 
