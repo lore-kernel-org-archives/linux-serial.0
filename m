@@ -2,130 +2,138 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 608B9C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 20:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B4D1C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 21:12:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3D31E61390
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 20:50:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 01DA161465
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 21:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346777AbhI2Uv5 (ORCPT
+        id S1346869AbhI2VOG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Sep 2021 16:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346773AbhI2Uv4 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Sep 2021 16:51:56 -0400
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D240C06161C
-        for <linux-serial@vger.kernel.org>; Wed, 29 Sep 2021 13:50:15 -0700 (PDT)
-Received: by mail-ua1-x933.google.com with SMTP id i8so2549619uae.7
-        for <linux-serial@vger.kernel.org>; Wed, 29 Sep 2021 13:50:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Fv0gX/eAGfXRcPXzdbs24Qf9uwtUlAyl1uWstmgK+2A=;
-        b=Y2x1be+oyeR0xJ/tyKhiHnSwf3F/JVNiOOpUfweB8LHLJBuRXH3wDz/vauMS5SEAUp
-         axpAsGP3Z1oTxoz2UKYDgNU/BdcDbLbq1l8DstRZCZqGMDB0gqDVYtroR/YueVXNy8Z6
-         FACbab9NRMT7XV2KkutIrqc2OUup36ThXBAibDSuXrFQAvs9Roz7OlqI09m2wmt5sorQ
-         E0KNdvf+mvYpCSKJLvO9PL7d01uflAq5y9jqZJU6loiM2gvbA2spgLE6/jps4SMeSpJO
-         vCEBbMHawVPEW4H6nqcwfDu4DcvQ5Qlisqi/qcEStpuO4M+28g2RRz5zGVGrVGnwPz2b
-         kbhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Fv0gX/eAGfXRcPXzdbs24Qf9uwtUlAyl1uWstmgK+2A=;
-        b=xSUo4cIK7S8GxBSEBRjQeW4+nI5V1rzDy7MzTecmQ2aRvlI4ZiQdhWz3v45dk0b2La
-         cOLZQwvO3i5IazHALdcrRGyFWcqZmZr5Jyya0RXOBMX+o8iTRMAOHUccyhI0Inhvc5Xr
-         0wrr0So5sS3zopTKB8ooEugpF1OwdD5U+lYb/F0A2hppmMo0+/dmYgefgcWXCpBzhAe6
-         SzwifTBjv+Z+9orYn+33QCFCG6aaeJJbzv3OEu+dJZmJAW3vOlabrEuRHlH1yyTzSKxM
-         5Zq+b5DK9yCccX/FtoogDsekoI17WrRe69Cq2rVuMr59qItuWF9WjvXBzHJ7rs7kfNjT
-         5BFw==
-X-Gm-Message-State: AOAM532F3vEQ5UjSd/XClUNyBHWrtjH/NZlDOXmqGwOUco+Xbhnl10Ds
-        t3yr+Z2QvZlvCwcjanBTKbiZP10O+WudAjYPFrL3vVCIq6o=
-X-Google-Smtp-Source: ABdhPJyesLGgB5HfgZuhklwZa3z9p49YX+z5Or5ER2v/EHVCBGqwlRRO1gsT3FhCO82/BjsB2ni5xQqAbWHaniLbi7k=
-X-Received: by 2002:ab0:5b5d:: with SMTP id v29mr2458419uae.85.1632948614131;
- Wed, 29 Sep 2021 13:50:14 -0700 (PDT)
+        Wed, 29 Sep 2021 17:14:06 -0400
+Received: from phobos.denx.de ([85.214.62.61]:51580 "EHLO phobos.denx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346861AbhI2VOD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 29 Sep 2021 17:14:03 -0400
+Received: from localhost.localdomain (unknown [IPv6:2804:14c:485:504a:b573:3d62:4f2f:678d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: festevam@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id BE85D80644;
+        Wed, 29 Sep 2021 23:12:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1632949939;
+        bh=+Vbj7BdTPdd2VOuxbKMB9TKssRPFfwfJDUODpvvPd3M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=K5IZR1A5aFzrFJIUpGfPZBfpzwuBAD/7FLZMhRm4ZEUWWxjoQChgko3ydv9E3/Adt
+         3dk31m/AnkfWKUdlZLTumWXWhA5cDeyYboBwtDwfuPEiXyO4B96wIo17uwPcZBamfc
+         z2VLVeaCov+gbUGnJwWWbwVMnqMf7hFK+wfFIg0XA4gpllnMsIPzLO29rRSSY56DmL
+         pRSAjpw4aZ63zDH49UnzUU/vcWw2Xv8FibtbaVtbdUvAfiFy0dhvwaBSGaKA4c1Xe7
+         4fLzoyfLENqjVjp82qJBDzAj5h3FNlAu1RoiBI93RlQgJNJBkB/eeDJSYaEw3IcqgO
+         y/y6JnHW1ZnXA==
+From:   Fabio Estevam <festevam@denx.de>
+To:     gregkh@linuxfoundation.org
+Cc:     michael@walle.cc, linux-serial@vger.kernel.org, johan@kernel.org,
+        marex@denx.de, Fabio Estevam <festevam@denx.de>
+Subject: [PATCH] serial: imx: Fix sysrq deadlock
+Date:   Wed, 29 Sep 2021 18:11:59 -0300
+Message-Id: <20210929211159.6238-1-festevam@denx.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CAOMZO5Du1L4A6okC0GJaEiKQr_=n_AJ8SvA15PPU35=mxz8LZw@mail.gmail.com>
- <CAOMZO5DWFttk49W5qP75gOqpXw4HfX0=UU3rsO+y3Xgqdio4fw@mail.gmail.com>
-In-Reply-To: <CAOMZO5DWFttk49W5qP75gOqpXw4HfX0=UU3rsO+y3Xgqdio4fw@mail.gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Wed, 29 Sep 2021 17:50:03 -0300
-Message-ID: <CAOMZO5D1aQ1WNeU69J3pczw7oXBS2ZFHOWQm2aq5S_pfMfGfVQ@mail.gmail.com>
-Subject: Re: serial: imx: Possible circular locking dependency
-To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     linux-serial@vger.kernel.org, rostedt@goodmis.org,
-        Marek Vasut <marex@denx.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 3:35 PM Fabio Estevam <festevam@gmail.com> wrote:
->
-> On Wed, Sep 29, 2021 at 1:10 PM Fabio Estevam <festevam@gmail.com> wrote:
-> >
-> > Hi Petr and Sergey,
-> >
-> > I know this has been reported before [1] and [2], but I am still
-> > observing the deadlock below
-> > on an imx6q board since commit dbdda842fe96 ("printk: Add console
-> > owner and waiter logic to load balance console writes").
-> >
-> > To reproduce it:
-> >
-> > # echo t > /proc/sysrq-trigger
-> >
-> > [   20.325246] ======================================================
-> > [   20.325252] WARNING: possible circular locking dependency detected
-> > [   20.325260] 5.15.0-rc2-next-20210924-00004-gd2d6e664f29f-dirty #163
->
-> If I move the __imx_uart_rxint() block outside the spin_lock() like this:
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 8b121cd869e9..c94704f5dd99 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -955,13 +955,6 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
->         if ((ucr4 & UCR4_OREN) == 0)
->                 usr2 &= ~USR2_ORE;
->
-> -       if (usr1 & (USR1_RRDY | USR1_AGTIM)) {
-> -               imx_uart_writel(sport, USR1_AGTIM, USR1);
-> -
-> -               __imx_uart_rxint(irq, dev_id);
-> -               ret = IRQ_HANDLED;
-> -       }
-> -
->         if ((usr1 & USR1_TRDY) || (usr2 & USR2_TXDC)) {
->                 imx_uart_transmit_buffer(sport);
->                 ret = IRQ_HANDLED;
-> @@ -993,6 +986,13 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
->
->         spin_unlock(&sport->port.lock);
->
-> +       if (usr1 & (USR1_RRDY | USR1_AGTIM)) {
-> +               imx_uart_writel(sport, USR1_AGTIM, USR1);
-> +
-> +               __imx_uart_rxint(irq, dev_id);
-> +               ret = IRQ_HANDLED;
-> +       }
-> +
->         return ret;
->  }
->
-> Then the problem does not happen anymore.
->
-> Is this a proper fix?
+The following sysrq command causes the following deadlock:
 
-It seems that a proper fix would be to use the same approach as in
+ # echo t > /proc/sysrq-trigger
+ ....
+[   20.325246] ======================================================
+[   20.325252] WARNING: possible circular locking dependency detected
+[   20.325260] 5.15.0-rc2-next-20210924-00004-gd2d6e664f29f-dirty #163
+Not tainted
+[   20.325273] ------------------------------------------------------
+[   20.325279] sh/236 is trying to acquire lock:
+[   20.325293] c1618614 (console_owner){-...}-{0:0}, at:
+console_unlock+0x180/0x5bc
+[   20.325361]
+[   20.325361] but task is already holding lock:
+[   20.325368] eefccc90 (&pool->lock){-.-.}-{2:2}, at:
+show_workqueue_state+0x104/0x3c8
+[   20.325432]
+[   20.325432] which lock already depends on the new lock.
 
-5697df7322fe ("serial: fsl_lpuart: split sysrq handling):
+...
 
-I will send a proper patch with this solution.
+[   20.325657] -> #2 (&pool->lock/1){-.-.}-{2:2}:
+[   20.325690]        __queue_work+0x114/0x810
+[   20.325710]        queue_work_on+0x54/0x94
+[   20.325727]        __imx_uart_rxint.constprop.0+0x1b4/0x2e0
+[   20.325760]        imx_uart_int+0x270/0x310
 
-Thanks
+This problem happens because uart_handle_sysrq_char() is called
+with the lock held.
+
+Fix this by using the same approach done in commit 5697df7322fe ("serial:
+fsl_lpuart: split sysrq handling"), which calls uart_prepare_sysrq_char()
+and uart_unlock_and_check_sysrq() instead.
+
+Its commit log says:
+
+"Instead of uart_handle_sysrq_char() use uart_prepare_sysrq_char() and
+uart_unlock_and_check_sysrq(). This will call handle_sysrq() without
+holding the port lock, which in turn let us drop the spin_trylock hack."
+
+Do the same here to fix the deadlock.
+
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+---
+ drivers/tty/serial/imx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8b121cd869e9..c945f6f64ebe 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -788,6 +788,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ 	unsigned int rx, flg, ignored = 0;
+ 	struct tty_port *port = &sport->port.state->port;
+ 
++	uart_unlock_and_check_sysrq(&sport->port);
+ 	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
+ 		u32 usr2;
+ 
+@@ -803,7 +804,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ 				continue;
+ 		}
+ 
+-		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
++		if (uart_prepare_sysrq_char(&sport->port, (unsigned char)rx))
+ 			continue;
+ 
+ 		if (unlikely(rx & URXD_ERR)) {
+@@ -846,6 +847,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ out:
+ 	tty_flip_buffer_push(port);
+ 
++	spin_lock(&sport->port.lock);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -1977,9 +1979,7 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
+ 	unsigned int ucr1;
+ 	int locked = 1;
+ 
+-	if (sport->port.sysrq)
+-		locked = 0;
+-	else if (oops_in_progress)
++	if (oops_in_progress)
+ 		locked = spin_trylock_irqsave(&sport->port.lock, flags);
+ 	else
+ 		spin_lock_irqsave(&sport->port.lock, flags);
+-- 
+2.25.1
+
