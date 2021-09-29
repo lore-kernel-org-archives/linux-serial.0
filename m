@@ -2,121 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D84FC433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 18:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B9DC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 20:08:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 52DB06141B
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 18:35:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 60CDA61504
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 20:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345800AbhI2Sh3 (ORCPT
+        id S1346400AbhI2UJm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Sep 2021 14:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
+        Wed, 29 Sep 2021 16:09:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244341AbhI2Sh3 (ORCPT
+        with ESMTP id S1345863AbhI2UJl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Sep 2021 14:37:29 -0400
-Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CC8C06161C
-        for <linux-serial@vger.kernel.org>; Wed, 29 Sep 2021 11:35:48 -0700 (PDT)
-Received: by mail-ua1-x932.google.com with SMTP id 20so2276413uaj.6
-        for <linux-serial@vger.kernel.org>; Wed, 29 Sep 2021 11:35:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mBCnYGpXpC2TCSqKuPlCeD5q6oFGkUGnusrYSqf3mO0=;
-        b=evWOGvCb+Cmi/JcVYf6nXtHun1ho9Mi3/28kQJ9Q6jBGQzopqknGuOMuMe03SBw9uI
-         rvTb1MxE5Q7TF3PNE7R9kfOIMn90WmcfM8QNy+rfDorM3HHaBj8fOMJcI38dOhIMVfsO
-         xDc9xpOh/9juoyqNbnWl2mIn1M3iNx+c/dw+vkL/vGNnKINrfzoOJFKxw4oTwc5kURZX
-         68v11+rmRWsR3usfD3syOmdwQz7VzyxOsvHdxOL7ecE/UlXy+gzCaWU/wby1ctftVMvU
-         HmnA+cZbSHtFvHTkC9PeX6AHfwqyKZ8bygoBa1c4wKm0FiHIGaFLak5LJm5VG60fEjT9
-         WfbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mBCnYGpXpC2TCSqKuPlCeD5q6oFGkUGnusrYSqf3mO0=;
-        b=rrON+0NTed2yIoz2bh4nqAQ69ETtJFMeY2/0c2cAUN6OafSU8d0qLvYYckiKvHhrhX
-         Eu53HkiZWDhDRCijYFCtOt79lqovuGgojlYp9VfY1XWKDlIB1fMot1cRLSZEZoP5BXuJ
-         hbluexFYFU/pUceTI3ZD5N5sVRJn0UAjYBjxq0ZqN05mf5hc8C1Hki8AALhJYi8S741r
-         46EvbXeBBPOcOXIWLRr+qzwIdtifBBRYIWxd4X5LJYKsvDPAUc7WnZurPcy5yxhuuixV
-         8tc0ISHgp5giEEVd/0wk3fh0bN/jgBgiCoAmwrM2xqMiTYLBcW087CAUzN2xKpXHfwWm
-         FNJg==
-X-Gm-Message-State: AOAM533C0hWDVWxS1KErOJyJK1oEb6wnEbKqxK8jX1lW6G8e+MuOutpm
-        nVPjj+yKx48o9A2kMlkZ7/ZzhonIszJC3OkmcDQvJK1DCDg=
-X-Google-Smtp-Source: ABdhPJwCPG5SisyPpKkJ/5+2BgttcA4N5Jj3eOjQ/ZSAEMf8375QI/YC0gyMMe6ig4UdESfcX6CCim46UghH9eslEb4=
-X-Received: by 2002:ab0:85b:: with SMTP id b27mr1875786uaf.53.1632940547269;
- Wed, 29 Sep 2021 11:35:47 -0700 (PDT)
+        Wed, 29 Sep 2021 16:09:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529C3C06161C
+        for <linux-serial@vger.kernel.org>; Wed, 29 Sep 2021 13:08:00 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mVfrr-0006o2-DC; Wed, 29 Sep 2021 22:07:51 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mVfrn-0005oh-9u; Wed, 29 Sep 2021 22:07:47 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mVfrn-00030S-8f; Wed, 29 Sep 2021 22:07:47 +0200
+Date:   Wed, 29 Sep 2021 22:07:47 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Eric Tremblay <etremblay@distech-controls.com>,
+        gregkh@linuxfoundation.org, jslaby@suse.com,
+        matwey.kornilov@gmail.com, giulio.benetti@micronovasrl.com,
+        lukas@wunner.de, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        christoph.muellner@theobroma-systems.com, heiko@sntech.de,
+        heiko.stuebner@theobroma-systems.com
+Subject: Re: [PATCH v2 0/3] Handle UART without interrupt on TEMT using em485
+Message-ID: <20210929200747.vpymjmq6ssvltmh4@pengutronix.de>
+References: <20210204161158.643-1-etremblay@distech-controls.com>
+ <YB1UEHEPVQCAjsMO@smile.fi.intel.com>
 MIME-Version: 1.0
-References: <CAOMZO5Du1L4A6okC0GJaEiKQr_=n_AJ8SvA15PPU35=mxz8LZw@mail.gmail.com>
-In-Reply-To: <CAOMZO5Du1L4A6okC0GJaEiKQr_=n_AJ8SvA15PPU35=mxz8LZw@mail.gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Wed, 29 Sep 2021 15:35:36 -0300
-Message-ID: <CAOMZO5DWFttk49W5qP75gOqpXw4HfX0=UU3rsO+y3Xgqdio4fw@mail.gmail.com>
-Subject: Re: serial: imx: Possible circular locking dependency
-To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     linux-serial@vger.kernel.org, rostedt@goodmis.org,
-        Marek Vasut <marex@denx.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="t3hgl3lpu4nlbuht"
+Content-Disposition: inline
+In-Reply-To: <YB1UEHEPVQCAjsMO@smile.fi.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 1:10 PM Fabio Estevam <festevam@gmail.com> wrote:
->
-> Hi Petr and Sergey,
->
-> I know this has been reported before [1] and [2], but I am still
-> observing the deadlock below
-> on an imx6q board since commit dbdda842fe96 ("printk: Add console
-> owner and waiter logic to load balance console writes").
->
-> To reproduce it:
->
-> # echo t > /proc/sysrq-trigger
->
-> [   20.325246] ======================================================
-> [   20.325252] WARNING: possible circular locking dependency detected
-> [   20.325260] 5.15.0-rc2-next-20210924-00004-gd2d6e664f29f-dirty #163
 
-If I move the __imx_uart_rxint() block outside the spin_lock() like this:
+--t3hgl3lpu4nlbuht
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 8b121cd869e9..c94704f5dd99 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -955,13 +955,6 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
-        if ((ucr4 & UCR4_OREN) == 0)
-                usr2 &= ~USR2_ORE;
+Hello,
 
--       if (usr1 & (USR1_RRDY | USR1_AGTIM)) {
--               imx_uart_writel(sport, USR1_AGTIM, USR1);
--
--               __imx_uart_rxint(irq, dev_id);
--               ret = IRQ_HANDLED;
--       }
--
-        if ((usr1 & USR1_TRDY) || (usr2 & USR2_TXDC)) {
-                imx_uart_transmit_buffer(sport);
-                ret = IRQ_HANDLED;
-@@ -993,6 +986,13 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
+On Fri, Feb 05, 2021 at 04:20:00PM +0200, Andy Shevchenko wrote:
+> On Thu, Feb 04, 2021 at 11:11:55AM -0500, Eric Tremblay wrote:
+> > Thanks everyone for the comments. I apply most of the comments on versi=
+on 1
+> > but there is still a pending point with the Jiri comment about the safe=
+ty of:
+> > struct tty_struct *tty =3D p->port.state->port.tty;
+> > I thought about adding a check with tty_port_initialized() before acces=
+sing
+> > the pointer, but I saw some other places where that same pointer is acc=
+essed
+> > without further protection, at least from what I see.
+>=20
+> Thanks for the update. Unfortunately I'm a bit busy with other prioritized
+> stuff, but I will review this next week.
 
-        spin_unlock(&sport->port.lock);
+I assume this fell through the cracks as "next week" is already over ...?
 
-+       if (usr1 & (USR1_RRDY | USR1_AGTIM)) {
-+               imx_uart_writel(sport, USR1_AGTIM, USR1);
-+
-+               __imx_uart_rxint(irq, dev_id);
-+               ret = IRQ_HANDLED;
-+       }
-+
-        return ret;
- }
+Best regards
+Uwe
 
-Then the problem does not happen anymore.
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-Is this a proper fix?
+--t3hgl3lpu4nlbuht
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFUx40ACgkQwfwUeK3K
+7AkodggAoY+CelIz/suqEOF7jym9eQcdHO3wgmNhoA5A3z+B7LfLqBWt2QB35q3X
+nl6xJeMttbCcMWkZLC0IpfzpOY6NUmmDK6VFhZ1DaOBFRSxje/HYb8OxhyL5af3V
+NRYZmnKAu25D5X/TG26BqG2dkgwBbb8qMqSnz+RBP2iuvjLCjX/IggUVgHpBXgvl
+PmSQeAE/H/NC1hsOgjKLBE1723dzQ7GOaWkYac1fiOnoWJgvGRIMV7Dwv53DcYKf
+4D+MYFrXEBdI0kTGCAWpqN0SzBcWl/iEYstw9rwb+4XXD4ECJ+s7FAq8VsMWWy36
+n7oXgeYy0On2l702iiyp6O7mHFPV3A==
+=oPdo
+-----END PGP SIGNATURE-----
+
+--t3hgl3lpu4nlbuht--
