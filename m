@@ -2,32 +2,32 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D44CBC433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 08:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D57EC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 08:22:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B91106142A
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 08:22:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7747861452
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Sep 2021 08:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244615AbhI2IYe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S244703AbhI2IYe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 29 Sep 2021 04:24:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33326 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:33332 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244590AbhI2IYd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S240284AbhI2IYd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 29 Sep 2021 04:24:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1AC52613A5;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1CF9E613A6;
         Wed, 29 Sep 2021 08:22:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632903773;
-        bh=pFht2crJ58fEPAb0efcLhPOBTsC8scTXAQlpfMeAVoo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NE0W7RT1jcYVcpIAlzvMmZd6a92lZSJWgdIA0bWsVhZF0khaC2FuATVFlwg1j/AmG
-         nCyKNQf9gwzuuhJg4m195i1ot/K1jqDxc+xwa/OPFM/9jqiGvUhWiADtfifftW0F8K
-         DlN3VRYHgQD0ra+jGWz4gwSR1lYNHljNF6uxfjyZA+fKE2USBL++8znkmYcu8Z8QkH
-         NY8fUyjCRpzWoztyUeziNi4ywJ2Px5AQEHjKCZ/5Eb2htVpl/A41YH0YEft7k0I44V
-         yUWAW/PRrcARzXB4+do9RTXrtAqaFJDqQEsGY0fiZqAEqf9vuOVx00DuaVy3SoGQ6A
-         e9vGVYvHxRH2Q==
+        bh=CaZv5D6dBea9V73DW6In0hGNMqG2tpf4Jer/zjX4Zto=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uJqGIJiWMZH9pKkJMRU08OKxG3jxLoX7g3bp/nMbKemRyLh7tH+Wp0kKosDPvgg5x
+         hIay9JRi6DG2DJqayM5seWElEItChISfMhCT4Rcxc6Rs8LjU89u4lpMJ4sNNVakkaC
+         ejOaxW2T0b2RgPyF7Mwl3l8lu9iCnXTVmBQs5FQ+D9ZkpizRNV2IixeUJipIBnqRwA
+         USUAJzWleYOQmgYu8rwCzqfL0mEb3t7TnYDhBI2ogCFWFmQoAR8jZz8gbLUVCQSwQq
+         QluSUmg0c6aEOKXpwW6MItasTqcBUr4jGn/wytuLR7EvLOW//wqMp58IWtQo8pKufz
+         m1YymgvpKDckA==
 Received: by pali.im (Postfix)
-        id 2A5811A0B; Wed, 29 Sep 2021 10:22:51 +0200 (CEST)
+        id B552C76E; Wed, 29 Sep 2021 10:22:50 +0200 (CEST)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -41,12 +41,10 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         devicetree@vger.kernel.org
-Subject: [PATCH v6 1/6] math64: New DIV_U64_ROUND_CLOSEST helper
-Date:   Wed, 29 Sep 2021 10:20:29 +0200
-Message-Id: <20210929082034.15098-2-pali@kernel.org>
+Subject: [PATCH v6 0/6] serial: mvebu-uart: Support for higher baudrates
+Date:   Wed, 29 Sep 2021 10:20:28 +0200
+Message-Id: <20210929082034.15098-1-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210929082034.15098-1-pali@kernel.org>
-References: <20210929082034.15098-1-pali@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -54,39 +52,45 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Provide DIV_U64_ROUND_CLOSEST helper which uses div_u64 to perform
-division rounded to the closest integer using unsigned 64bit
-dividend and unsigned 32bit divisor.
+This patch series add support for baudrates higher than 230400 on
+Marvell Armada 37xx boards.
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- include/linux/math64.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Changes in v6:
+* fixed yaml binding file and dts files
 
-diff --git a/include/linux/math64.h b/include/linux/math64.h
-index 2928f03d6d46..a14f40de1dca 100644
---- a/include/linux/math64.h
-+++ b/include/linux/math64.h
-@@ -300,6 +300,19 @@ u64 mul_u64_u64_div_u64(u64 a, u64 mul, u64 div);
- #define DIV64_U64_ROUND_CLOSEST(dividend, divisor)	\
- 	({ u64 _tmp = (divisor); div64_u64((dividend) + _tmp / 2, _tmp); })
- 
-+/*
-+ * DIV_U64_ROUND_CLOSEST - unsigned 64bit divide with 32bit divisor rounded to nearest integer
-+ * @dividend: unsigned 64bit dividend
-+ * @divisor: unsigned 32bit divisor
-+ *
-+ * Divide unsigned 64bit dividend by unsigned 32bit divisor
-+ * and round to closest integer.
-+ *
-+ * Return: dividend / divisor rounded to nearest integer
-+ */
-+#define DIV_U64_ROUND_CLOSEST(dividend, divisor)	\
-+	({ u32 _tmp = (divisor); div_u64((u64)(dividend) + _tmp / 2, _tmp); })
-+
- /*
-  * DIV_S64_ROUND_CLOSEST - signed 64bit divide with 32bit divisor rounded to nearest integer
-  * @dividend: signed 64bit dividend
+Changes in v5:
+* fixed yaml binding file
+
+Changes in v4:
+* converted armada3700-uart-clock documentation to YAML
+* split documentation changes into two commits:
+  - first which adds clock documentation
+  - second which updates UART documentation
+
+Changes in v3:
+v3 is rebased on top of Linus master branch and all already applied patches
+were dropped. There are no changes in patches itself since v2.
+
+Pali Rohár (6):
+  math64: New DIV_U64_ROUND_CLOSEST helper
+  serial: mvebu-uart: implement UART clock driver for configuring UART
+    base clock
+  dt-bindings: mvebu-uart: document DT bindings for
+    marvell,armada-3700-uart-clock
+  dt-bindings: mvebu-uart: update information about UART clock
+  arm64: dts: marvell: armada-37xx: add device node for UART clock and
+    use it
+  serial: mvebu-uart: implement support for baudrates higher than 230400
+
+ .../bindings/clock/armada3700-uart-clock.yaml |  56 ++
+ .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  14 +-
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
+ include/linux/math64.h                        |  13 +
+ 6 files changed, 664 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/armada3700-uart-clock.yaml
+
 -- 
 2.20.1
 
