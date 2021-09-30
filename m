@@ -2,289 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC88CC4321E
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 08:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E27CBC433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 09:59:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CB3CB610A4
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 08:04:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C8BA3619E7
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 09:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348941AbhI3IGV (ORCPT
+        id S1349636AbhI3KAt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Sep 2021 04:06:21 -0400
-Received: from comms.puri.sm ([159.203.221.185]:35176 "EHLO comms.puri.sm"
+        Thu, 30 Sep 2021 06:00:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60486 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348979AbhI3IFr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Sep 2021 04:05:47 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id C7B57E114A;
-        Thu, 30 Sep 2021 01:03:54 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id DGMzyBi4lGRH; Thu, 30 Sep 2021 01:03:53 -0700 (PDT)
-Message-ID: <a01be64e31fbeb910b237ce8b8031fe20f245c7e.camel@puri.sm>
-Subject: Re: [RFC 00/19] Add interconnect and devfreq support for i.MX8MQ
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     a.fatoum@pengutronix.de, adrian.hunter@intel.com,
-        aisheng.dong@nxp.com, catalin.marinas@arm.com,
-        cw00.choi@samsung.com, devicetree@vger.kernel.org,
-        djakov@kernel.org, festevam@gmail.com, kernel@pengutronix.de,
-        kyungmin.park@samsung.com, linux-arm-kernel@lists.infradead.org,
-        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
-        myungjoo.ham@samsung.com, robh@kernel.org, s.hauer@pengutronix.de,
-        shawnguo@kernel.org, ulf.hansson@linaro.org, will.deacon@arm.com
-Date:   Thu, 30 Sep 2021 10:03:46 +0200
-In-Reply-To: <YVRRomS8ut6NjYlV@ryzen>
-References: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
-         <20210924102026.2679952-1-martin.kepplinger@puri.sm>
-         <YVRRomS8ut6NjYlV@ryzen>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        id S1349504AbhI3KAq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 30 Sep 2021 06:00:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 09D03615E2;
+        Thu, 30 Sep 2021 09:59:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632995944;
+        bh=EcQMCqZ6hJ0OCg9NAUge8n9Pch6KHPccpjuPzxh7O0A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SW7pjdwR9AIi4zwIetE5qF0As3jiBUbMhywYs+ISjVoaMwW5u2qEM36GWKTFZuxO0
+         45LSAAF6/fNCvcESjyvOvSH6gltuHGUhaA4HdSdklT6gek+d1gotahqzqyWtPKERcH
+         yeb3qu2HlMwVzdHEk4J4jcBhmupA0JnHjYDnKuJZtHozQetqYtTqqDZY/1hV8KNnRO
+         W/JXtNUUaydCaDHxZfxH+lj6qw1uA2JSnUCFnEHVaiSKoma04V4RO1eoDm6x2h0fjI
+         HsaJ7pU5XAKc+sqKPnYhfDjYaIboDxtym8SA2gFIXC6DMo+ImvYHYV6d6vCyGdAIVq
+         kDnFmn9TpIZ3g==
+Received: by pali.im (Postfix)
+        id 8EBD7E79; Thu, 30 Sep 2021 11:59:01 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vladimir Vid <vladimir.vid@sartura.hr>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v7 0/6] serial: mvebu-uart: Support for higher baudrates
+Date:   Thu, 30 Sep 2021 11:58:32 +0200
+Message-Id: <20210930095838.28145-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am Mittwoch, dem 29.09.2021 um 14:44 +0300 schrieb Abel Vesa:
-> On 21-09-24 12:20:26, Martin Kepplinger wrote:
-> > hi Abel,
-> > 
-> > thank you for the update (this is actually v2 of this RFC right?)!
-> > 
-> > all in all this runs fine on the imx8mq (Librem 5 and devkit) I
-> > use. For all
-> > the pl301 nodes I'm not yet sure what I can actually test / switch
-> > frequencies.
-> > 
-> 
-> You can start by looking into each of the following:
-> 
->  $ ls -1d /sys/devices/platform/soc@0/*/devfreq/*/trans_stat
-> 
-> and look if the transitions happen when a specific driver that is a
-> icc user suspends.
-> 
-> You can also look at:
-> 
->  /sys/kernel/debug/interconnect/interconnect_summary 
-> 
-> and:
-> 
->  /sys/kernel/debug/interconnect/interconnect_graph
-> 
-> > But I still have one problem: lcdif/mxfb already has the
-> > interconnect dram
-> > DT property and I use the following call to request bandwidth:
-> > https://source.puri.sm/martin.kepplinger/linux-next/-/commit/d690e4c021293f938eb2253607f92f5a64f15688
-> > (mainlining this is on our todo list).
-> > 
-> > With your patchset, I get:
-> > 
-> > [    0.792960] genirq: Flags mismatch irq 30. 00000004 (mxsfb-drm)
-> > vs. 00000004 (mxsfb-drm)
-> > [    0.801143] mxsfb 30320000.lcd-controller: Failed to install IRQ
-> > handler
-> > [    0.808058] mxsfb: probe of 30320000.lcd-controller failed with
-> > error -16
-> > 
-> > so the main devfreq user (mxsfb) is not there :) why?
-> > 
-> 
-> OK, I admit, this patchset doesn't provide support for all the icc
-> consumer drivers.
-> But that should come at a later stage. I only provided example like
-> fec and usdhc, to show
-> how it all fits together.
-> 
-> > and when I remove the interconnect property from the lcdif DT node,
-> > mxsfb
-> > probes again, but of course it doesn't lower dram freq as needed.
-> > 
-> > Do I do the icc calls wrong in mxsfb despite it working without
-> > your
-> > patchset, or may there be something wrong on your side that breaks
-> > the mxsfb IRQ?
-> > 
-> 
-> Do you have the following changes into your tree?
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
-> b/arch/arm64/boot/dts/freescale/imx8mq.dtsi               
-> index 00dd8e39a595..c43a84622af5
-> 100644                                                               
->            
-> ---
-> a/arch/arm64/boot/dts/freescale/imx8mq.dtsi                          
->                                         
-> +++
-> b/arch/arm64/boot/dts/freescale/imx8mq.dtsi                          
->                                         
-> @@ -524,7 +524,7 @@ lcdif: lcd-controller@30320000
-> {                                                             
->                                                   <&clk
-> IMX8MQ_VIDEO_PLL1>,                                      
->                                                   <&clk
-> IMX8MQ_VIDEO_PLL1_OUT>;                                  
->                                 assigned-clock-rates = <0>, <0>, <0>,
-> <594000000>;                               
-> -                               interconnects = <&noc
-> IMX8MQ_ICM_LCDIF &noc IMX8MQ_ICS_DRAM>;                    
-> +                               interconnects = <&icc
-> IMX8MQ_ICM_LCDIF &icc IMX8MQ_ICS_DRAM>;                    
->                                 interconnect-names =
-> "dram";                                                     
->                                 status =
-> "disabled";                                                          
->    
->                                                                      
->                                             
-> @@ -1117,7 +1117,7 @@ mipi_csi1: csi@30a70000
-> {                                                                  
->                                          <&src
-> IMX8MQ_RESET_MIPI_CSI1_PHY_REF_RESET>,                            
->                                          <&src
-> IMX8MQ_RESET_MIPI_CSI1_ESC_RESET>;                                
->                                 fsl,mipi-phy-gpr = <&iomuxc_gpr
-> 0x88>;                                           
-> -                               interconnects = <&noc IMX8MQ_ICM_CSI1
-> &noc IMX8MQ_ICS_DRAM>;                     
-> +                               interconnects = <&icc IMX8MQ_ICM_CSI1
-> &icc IMX8MQ_ICS_DRAM>;                     
->                                 interconnect-names =
-> "dram";                                                     
->                                 status =
-> "disabled";                                                          
->    
->                                                                      
->                                             
-> @@ -1169,7 +1169,7 @@ mipi_csi2: csi@30b60000
-> {                                                                  
->                                          <&src
-> IMX8MQ_RESET_MIPI_CSI2_PHY_REF_RESET>,                            
->                                          <&src
-> IMX8MQ_RESET_MIPI_CSI2_ESC_RESET>;                                
->                                 fsl,mipi-phy-gpr = <&iomuxc_gpr
-> 0xa4>;                                           
-> -                               interconnects = <&noc IMX8MQ_ICM_CSI2
-> &noc IMX8MQ_ICS_DRAM>;                     
-> +                               interconnects = <&icc IMX8MQ_ICM_CSI2
-> &icc IMX8MQ_ICS_DRAM>;                     
->                                 interconnect-names =
-> "dram";                                                     
->                                 status =
-> "disabled";                                                          
->    
-> 
-> I forgot to update these in the current version of the patchset. Will
-> do in the next version.
-> 
-> Also, would help a lot if you could give me a link to a tree you're
-> testing with.
-> That way I can look exactly at what's going on.
-> 
-> 
+This patch series add support for baudrates higher than 230400 on
+Marvell Armada 37xx boards.
 
+Changes in v7:
+* fixed lint errors in yaml binding file
 
-thanks Abel, with the above fix of existing interconnects properties my
-system runs as expected and here's the output of
+Changes in v6:
+* fixed yaml binding file and dts files
 
-for each in `ls -1d /sys/devices/platform/soc@0/*/devfreq/*`; do echo
-$each; cat $each/trans_stat; done
+Changes in v5:
+* fixed yaml binding file
 
-for mxsfb requesting (max) bandwith (display on):
+Changes in v4:
+* converted armada3700-uart-clock documentation to YAML
+* split documentation changes into two commits:
+  - first which adds clock documentation
+  - second which updates UART documentation
 
-/sys/devices/platform/soc@0/32700000.noc/devfreq/32700000.noc
-     From  :   To
-           : 133333333 400000000 800000000   time(ms)
-  133333333:         0         1         0       624
-  400000000:         0         0         1        28
-* 800000000:         1         0         0     30624
-Total transition : 3
-/sys/devices/platform/soc@0/3d400000.memory-
-controller/devfreq/3d400000.memory-controller
-     From  :   To
-           :  25000000 100000000 800000000   time(ms)
-   25000000:         0         0         1       620
-  100000000:         0         0         0         0
-* 800000000:         1         0         0     30652
-Total transition : 2
-/sys/devices/platform/soc@0/soc@0:pl301@0/devfreq/soc@0:pl301@0
-     From  :   To
-           :  25000000 133333333 333333333   time(ms)
-   25000000:         0         0         1       616
-  133333333:         0         0         0         0
-* 333333333:         1         0         0     30668
-Total transition : 2
-/sys/devices/platform/soc@0/soc@0:pl301@1/devfreq/soc@0:pl301@1
-     From  :   To
-           :  25000000 266666666   time(ms)
-*  25000000:         0         0     31284
-  266666666:         0         0         0
-Total transition : 0
-/sys/devices/platform/soc@0/soc@0:pl301@2/devfreq/soc@0:pl301@2
-     From  :   To
-           :  25000000 800000000   time(ms)
-*  25000000:         0         0     31288
-  800000000:         1         0         0
-Total transition : 1
-/sys/devices/platform/soc@0/soc@0:pl301@3/devfreq/soc@0:pl301@3
-     From  :   To
-           :  25000000 800000000   time(ms)
-*  25000000:         0         0     31292
-  800000000:         1         0         0
-Total transition : 1
-/sys/devices/platform/soc@0/soc@0:pl301@4/devfreq/soc@0:pl301@4
-     From  :   To
-           :  25000000 333333333   time(ms)
-   25000000:         0         1       648
-* 333333333:         0         0     30652
-Total transition : 1
-/sys/devices/platform/soc@0/soc@0:pl301@5/devfreq/soc@0:pl301@5
-     From  :   To
-           :  25000000 500000000   time(ms)
-*  25000000:         0         0     31304
-  500000000:         1         0         0
-Total transition : 1
-/sys/devices/platform/soc@0/soc@0:pl301@6/devfreq/soc@0:pl301@6
-     From  :   To
-           :  25000000 500000000   time(ms)
-*  25000000:         0         0     31308
-  500000000:         0         0         0
-Total transition : 0
-/sys/devices/platform/soc@0/soc@0:pl301@7/devfreq/soc@0:pl301@7
-     From  :   To
-           :  25000000 128000000 500000000   time(ms)
-*  25000000:         0         0         0     31312
-  128000000:         0         0         0         0
-  500000000:         1         0         0         0
-Total transition : 1
-/sys/devices/platform/soc@0/soc@0:pl301@8/devfreq/soc@0:pl301@8
-     From  :   To
-           :  25000000 133333333   time(ms)
-*  25000000:         0         0     31316
-  133333333:         0         0         0
-Total transition : 0
-/sys/devices/platform/soc@0/soc@0:pl301@9/devfreq/soc@0:pl301@9
-     From  :   To
-           :  25000000 133333333 266666666   time(ms)
-   25000000:         0         0         5      1052
-  133333333:         0         0         0         0
-* 266666666:         5         0         0     30268
-Total transition : 10
+Changes in v3:
+v3 is rebased on top of Linus master branch and all already applied patches
+were dropped. There are no changes in patches itself since v2.
 
+Pali Rohár (6):
+  math64: New DIV_U64_ROUND_CLOSEST helper
+  serial: mvebu-uart: implement UART clock driver for configuring UART
+    base clock
+  dt-bindings: mvebu-uart: document DT bindings for
+    marvell,armada-3700-uart-clock
+  dt-bindings: mvebu-uart: update information about UART clock
+  arm64: dts: marvell: armada-37xx: add device node for UART clock and
+    use it
+  serial: mvebu-uart: implement support for baudrates higher than 230400
 
-but with display off (mxsfb not requesting anything), I get the same
-fast freqs for noc and memory-controller. They should use the lowest
-freqs. Only pl301@4 switches to 25mhz in that case. That's odd.
+ .../clock/marvell,armada-3700-uart-clock.yaml |  59 ++
+ .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  14 +-
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
+ include/linux/math64.h                        |  13 +
+ 6 files changed, 667 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-clock.yaml
 
-said (still) out-of-tree mxsfb request is
-https://source.puri.sm/martin.kepplinger/linux-next/-/commit/ee7b1453295932da1e292b734afa7a03651ad9ba
-
-and the exact tree I'm running for the above is
-https://source.puri.sm/martin.kepplinger/linux-next/-/commits/5.15-rc3/librem5__integration_byzantium_test_new_devfreq_interconnect
-
-thanks,
-
-                              martin
+-- 
+2.20.1
 
