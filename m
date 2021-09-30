@@ -2,31 +2,33 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5773C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 06:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 908DAC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 06:29:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8D1486135E
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 06:06:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7BD0861390
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 06:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348223AbhI3GIO (ORCPT
+        id S1348291AbhI3Ga6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Sep 2021 02:08:14 -0400
-Received: from muru.com ([72.249.23.125]:38814 "EHLO muru.com"
+        Thu, 30 Sep 2021 02:30:58 -0400
+Received: from muru.com ([72.249.23.125]:38848 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347847AbhI3GIN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Sep 2021 02:08:13 -0400
+        id S1348252AbhI3Ga6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 30 Sep 2021 02:30:58 -0400
 Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 45CF780CF;
-        Thu, 30 Sep 2021 06:06:59 +0000 (UTC)
+        by muru.com (Postfix) with ESMTP id 8EF1080CF;
+        Thu, 30 Sep 2021 06:29:43 +0000 (UTC)
 From:   Tony Lindgren <tony@atomide.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: n_gsm: Don't ignore write return value in gsmld_output()
-Date:   Thu, 30 Sep 2021 09:06:24 +0300
-Message-Id: <20210930060624.46523-1-tony@atomide.com>
+Subject: [PATCHv2 0/4] Get rid of pm_runtime_irq_safe() for 8250_omap
+Date:   Thu, 30 Sep 2021 09:29:02 +0300
+Message-Id: <20210930062906.58937-1-tony@atomide.com>
 X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -34,36 +36,50 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We currently have gsmld_output() ignore the return value from device
-write. This means we will lose packets if device write returns 0 or
-an error.
+Hi,
 
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/n_gsm.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Here are v2 patches to get rid of pm_runtime_irq_safe() for the 8250_omap
+driver. Based on comments from Andy and Johan, I improved a bunch of
+things as listed below.
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -687,7 +687,7 @@ static void gsm_data_kick(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- 			print_hex_dump_bytes("gsm_data_kick: ",
- 					     DUMP_PREFIX_OFFSET,
- 					     gsm->txframe, len);
--		if (gsmld_output(gsm, gsm->txframe, len) < 0)
-+		if (gsmld_output(gsm, gsm->txframe, len) <= 0)
- 			break;
- 		/* FIXME: Can eliminate one SOF in many more cases */
- 		gsm->tx_bytes -= msg->len;
-@@ -2358,8 +2358,7 @@ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len)
- 	if (debug & 4)
- 		print_hex_dump_bytes("gsmld_output: ", DUMP_PREFIX_OFFSET,
- 				     data, len);
--	gsm->tty->ops->write(gsm->tty, data, len);
--	return len;
-+	return gsm->tty->ops->write(gsm->tty, data, len);
- }
- 
- /**
+For removing the pm_runtime_irq_safe() usage, serial TX is the last
+remaining issue. We deal with TX by waking up the port and returning 0
+bytes written from write_room() and write() if the port is not available
+because of PM runtime autoidle.
+
+This series also removes the dependency to Andy's pending generic serial
+layer PM runtime patches, and hopefully makes that work a bit easier :)
+
+Regards,
+
+Tony
+
+
+Changes since v1:
+
+- Separated out line discipline patches, n_tty -EAGAIN change I still
+  need to retest
+
+- Changed prep_tx() to more generic wakeup() as also flow control needs it
+
+- Changed over to using wakeup() with device driver runtime PM instead
+  of write_room()
+
+- Added runtime_suspended flag for drivers and generic serial layer PM
+  to use
+
+Tony Lindgren (4):
+  serial: core: Add wakeup() and start_pending_tx() for power management
+  serial: 8250: Implement wakeup for TX and use it for 8250_omap
+  serial: 8250_omap: Require a valid wakeirq for deeper idle states
+  serial: 8250_omap: Drop the use of pm_runtime_irq_safe()
+
+ Documentation/driver-api/serial/driver.rst |  9 ++++
+ drivers/tty/serial/8250/8250_omap.c        | 42 +++++++++++-----
+ drivers/tty/serial/8250/8250_port.c        | 35 +++++++++++++-
+ drivers/tty/serial/serial_core.c           | 56 +++++++++++++++++++++-
+ include/linux/serial_core.h                |  3 ++
+ 5 files changed, 131 insertions(+), 14 deletions(-)
+
 -- 
 2.33.0
