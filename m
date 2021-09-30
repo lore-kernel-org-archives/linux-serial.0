@@ -2,90 +2,136 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C29EC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 12:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 782E9C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 13:45:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 24E5C613CE
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 12:50:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5F09F611C7
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 13:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349543AbhI3Mvr (ORCPT
+        id S1349490AbhI3NrR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Sep 2021 08:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40200 "EHLO
+        Thu, 30 Sep 2021 09:47:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245013AbhI3Mvr (ORCPT
+        with ESMTP id S1348238AbhI3NrR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Sep 2021 08:51:47 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8F9C06176A
-        for <linux-serial@vger.kernel.org>; Thu, 30 Sep 2021 05:50:04 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id qe4-20020a17090b4f8400b0019f663cfcd1so244530pjb.1
-        for <linux-serial@vger.kernel.org>; Thu, 30 Sep 2021 05:50:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=0x0f.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tjWzY8VzHWdTbXC+cDxcBBzi3hKG0ksxrqqtEc9ibDg=;
-        b=itNZYDLUEVAmagLyjLURs5erv6tCZif0vPj5WV0mREJYA5qAg/BcYBbVymj/G8NyWx
-         a7k00f4dCNuWyoHJQUqcDWBYlFETelfEp2S0NGuKMX7W7BEFtynYpPxYks8/6wqsNEZX
-         Xw8bcBehuXZx6pJWXb3Vr0G70uvSkmopRP2Aw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tjWzY8VzHWdTbXC+cDxcBBzi3hKG0ksxrqqtEc9ibDg=;
-        b=iYu5YK5AfKuNXFymphis7MSRtXWgmU19QeJccUbSvEj2siM3q7TYT89hOmbLwyJI/M
-         tznhqSxwPrpYw2ldsunOP20k4syATpWvcj7D12Whi8qu+mZqzyNSMrgBIl8S95RAUy+e
-         Dl8iBmbqu5H6FjEF1CFiRABV215Ku9rP5rwbf7lEvuI8ot8mfDaf74vHU3jOmFEWW1V9
-         IdXAOagHUcVgMR6X0RPvFjDljqrKC3JCV1jNP4/8CKB2GIjJrWkMI/+0n6/DStZYN86g
-         8Ihg7g4EWpM00/fr9iQ8pRSY+TcKTl01xZbK1ejyf1Pc/x5dntttKRXp3d1eouoQapgr
-         bx+w==
-X-Gm-Message-State: AOAM530u9KOTZKVy7T4AZowEZX3HjSeEPuCT78FQX7gijNF6+eWSELrk
-        weegux0qVrLAlGJPoT+TIRSqLOIpwP2u4uDl
-X-Google-Smtp-Source: ABdhPJzneNZwDOj6ZANVb6Tj/81+um+/s/maTYAU/KU680qsEvqVfalIXp4nx37sxgcE4jdcqRTYFg==
-X-Received: by 2002:a17:90a:e7ca:: with SMTP id kb10mr12870755pjb.33.1633006204114;
-        Thu, 30 Sep 2021 05:50:04 -0700 (PDT)
-Received: from shiro.work ([2400:4162:2428:2f01:7285:c2ff:fe8e:66d7])
-        by smtp.googlemail.com with ESMTPSA id b3sm2930417pfo.23.2021.09.30.05.50.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Sep 2021 05:50:03 -0700 (PDT)
-From:   Daniel Palmer <daniel@0x0f.com>
-To:     andriy.shevchenko@linux.intel.com, gregkh@linuxfoundation.org,
-        linux-serial@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>
-Subject: [PATCH] serial: 8250_dw: Mark acpi match table as maybe unused
-Date:   Thu, 30 Sep 2021 21:49:50 +0900
-Message-Id: <20210930124950.3069638-1-daniel@0x0f.com>
-X-Mailer: git-send-email 2.33.0
+        Thu, 30 Sep 2021 09:47:17 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB01BC06176A
+        for <linux-serial@vger.kernel.org>; Thu, 30 Sep 2021 06:45:34 -0700 (PDT)
+Received: from mail.denx.de (unknown [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: festevam@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 9598481EE5;
+        Thu, 30 Sep 2021 15:45:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1633009531;
+        bh=k7j1XPRIW3fFkLBj24ZVOay+lfANmnhIp5FO37Re3tM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0A3TmU+QcYfKHwR+7s3dPisaMq5uEEZG8R7vVJK9xXrHMc1/oYy3Dko29qQbsVRNG
+         9leAK7It8ivNWQ1DZnh4k9I4tbcXDLJkcBCLzwilFYl19A4ZA5O896rnTf5VSVX+KE
+         UGgmzSYDaeEgPQ8a2q2M1e9yc/92btjjeJqqriAWgCltLv5Y/BO7cJftjPvAOz4/Gc
+         HJte+x9ywm5eHtiFjrLBkjh3C2MjbQeR6pRQzUWNUKAJK5DAXl/yCuwDcudqidaw8m
+         RIiwV6V0ea4G+QZF9YM7PUsYipGOVT/9d3EYW3Tt9YsSdnhIVY3Ev9RJixj/Ry6Bju
+         97tyF3/aWngCQ==
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 30 Sep 2021 10:45:31 -0300
+From:   Fabio Estevam <festevam@denx.de>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     gregkh@linuxfoundation.org, michael@walle.cc,
+        linux-serial@vger.kernel.org, marex@denx.de,
+        u.kleine-koenig@pengutronix.de
+Subject: Re: [PATCH v2] serial: imx: Fix sysrq deadlock
+In-Reply-To: <YVVtRw/JlUzn4H54@hovoldconsulting.com>
+References: <20210929214324.44910-1-festevam@denx.de>
+ <YVVtRw/JlUzn4H54@hovoldconsulting.com>
+Message-ID: <bae11ec74a0515841ad36403b9f5a47b@denx.de>
+X-Sender: festevam@denx.de
+User-Agent: Roundcube Webmail/1.3.6
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When building kernels without ACPI support the table is declared
-but is not used because ACPI_PTR() turns it into a NULL.
+Hi Johan,
 
-Add the __maybe_unused attribute to stop the compiler whining.
+On 30/09/2021 04:54, Johan Hovold wrote:
 
-Signed-off-by: Daniel Palmer <daniel@0x0f.com>
----
- drivers/tty/serial/8250/8250_dw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> This is just so broken; you can't just drop the lock. And you clearly
+> haven't even tried to understand how uart_unlock_and_check_sysrq()
+> works.
+> 
+> Please take a closer look at the commit you're trying to mimic.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index a3a0154da567..599d2bfff045 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -704,7 +704,7 @@ static const struct of_device_id dw8250_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
- 
--static const struct acpi_device_id dw8250_acpi_match[] = {
-+static const struct acpi_device_id __maybe_unused dw8250_acpi_match[] = {
- 	{ "INT33C4", 0 },
- 	{ "INT33C5", 0 },
- 	{ "INT3434", 0 },
--- 
-2.33.0
+Thanks for the feedback.
 
+I have changed it to:
+
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8b121cd869e9..b7cda50602d5 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -803,7 +803,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void 
+*dev_id)
+  				continue;
+  		}
+
+-		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
++		if (uart_prepare_sysrq_char(&sport->port, rx))
+  			continue;
+
+  		if (unlikely(rx & URXD_ERR)) {
+@@ -844,6 +844,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void 
+*dev_id)
+  	}
+
+  out:
++	uart_unlock_and_check_sysrq(&sport->port);
+  	tty_flip_buffer_push(port);
+
+  	return IRQ_HANDLED;
+@@ -959,6 +960,7 @@ static irqreturn_t imx_uart_int(int irq, void 
+*dev_id)
+  		imx_uart_writel(sport, USR1_AGTIM, USR1);
+
+  		__imx_uart_rxint(irq, dev_id);
++		spin_lock(&sport->port.lock);
+  		ret = IRQ_HANDLED;
+  	}
+
+@@ -1977,9 +1979,7 @@ imx_uart_console_write(struct console *co, const 
+char *s, unsigned int count)
+  	unsigned int ucr1;
+  	int locked = 1;
+
+-	if (sport->port.sysrq)
+-		locked = 0;
+-	else if (oops_in_progress)
++	if (oops_in_progress)
+  		locked = spin_trylock_irqsave(&sport->port.lock, flags);
+  	else
+  		spin_lock_irqsave(&sport->port.lock, flags);
+
+This makes the deadlock not happen after running:
+echo t > /proc/sysrq-trigger
+
+, but entering <break> + t via the console does not work anymore.
+
+
+It returns the sysrq help instead:
+
+sysrq: HELP : loglevel(0-9) reboot(b) crash(c) show-all-locks(d) 
+terminate-all-tasks(e) memory-full-oom-kill(f) kill-all-tasks(i) 
+thaw-filesystems(j) sak(k) show-backtrace-all-active-cpu
+s(l) show-memory-usage(m) nice-all-RT-tasks(n) poweroff(o) 
+show-registers(p) show-all-timers(q) unraw(r) sync(s) 
+show-task-states(t) unmount(u) show-blocked-tasks(w) 
+dump-ftrace-buffer(z)
+
+Thanks
