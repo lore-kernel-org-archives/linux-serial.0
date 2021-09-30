@@ -2,90 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B90C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 07:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5254FC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 07:54:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A8E6F61439
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 07:29:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 36EEC61452
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Sep 2021 07:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348739AbhI3HbZ (ORCPT
+        id S1348848AbhI3H42 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Sep 2021 03:31:25 -0400
-Received: from muru.com ([72.249.23.125]:39016 "EHLO muru.com"
+        Thu, 30 Sep 2021 03:56:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58886 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348737AbhI3HbV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Sep 2021 03:31:21 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 08AFD8050;
-        Thu, 30 Sep 2021 07:30:08 +0000 (UTC)
-Date:   Thu, 30 Sep 2021 10:29:37 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/4] serial: 8250: Implement wakeup for TX and use it for
- 8250_omap
-Message-ID: <YVVnYfEOw/78ZyI8@atomide.com>
-References: <20210930062906.58937-1-tony@atomide.com>
- <20210930062906.58937-3-tony@atomide.com>
- <CAHp75VeZ98Se+BBDdMeJmwu39CbXEL08RF4BR+uu5oJAycEb=A@mail.gmail.com>
+        id S1348701AbhI3H42 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 30 Sep 2021 03:56:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A88E61527;
+        Thu, 30 Sep 2021 07:54:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632988486;
+        bh=OiXgFJskGnrAjQHW5jvOa+L3VBpqy62OF3JwEaOZj/Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Cal4QdR9imqTGjSkFSQzdx5rMZ0UpWKEbaefZQiahKYwaMVRRTu8Ff5EqTh43uXo6
+         dP3NPQqQLpIexGnzm7mGC2KpliLtUkkTcXCGS+5tjJsZ1sD9k1NbDOgTobQg1m198Y
+         igS5b0tqr5apuopYdX5g8Y9H7KyjGc025bQ4ylhi5AFJxChjYY2+WAwrZ8/Rt21NIc
+         NVeRc0+YbA5BQ/fm56J0XcSA0+OZCvlWRvZDEwXtgqC1D57guiNafB4MfhDDjcI0CK
+         xRDwQLGHdtp1bPK0qLeUB61VRr9C42qL0s1+GCAU3CEA5KwUkjQtEtau/fdVCjWbGm
+         kEVry2gxP7Jew==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mVqtz-0005mt-2Y; Thu, 30 Sep 2021 09:54:47 +0200
+Date:   Thu, 30 Sep 2021 09:54:47 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Fabio Estevam <festevam@denx.de>
+Cc:     gregkh@linuxfoundation.org, michael@walle.cc,
+        linux-serial@vger.kernel.org, marex@denx.de
+Subject: Re: [PATCH v2] serial: imx: Fix sysrq deadlock
+Message-ID: <YVVtRw/JlUzn4H54@hovoldconsulting.com>
+References: <20210929214324.44910-1-festevam@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VeZ98Se+BBDdMeJmwu39CbXEL08RF4BR+uu5oJAycEb=A@mail.gmail.com>
+In-Reply-To: <20210929214324.44910-1-festevam@denx.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Andy Shevchenko <andy.shevchenko@gmail.com> [210930 07:18]:
-> On Thu, Sep 30, 2021 at 9:30 AM Tony Lindgren <tony@atomide.com> wrote:
-> >
-> > We can use the wakeup() and uart_start_pending_tx() calls to wake up an
-> > idle serial port and send out the pending TX buffer on runtime PM resume.
+On Wed, Sep 29, 2021 at 06:43:24PM -0300, Fabio Estevam wrote:
+> The following sysrq command causes the following deadlock:
 > 
-> > This allows us to remove the depedency to pm_runtime_irq_safe() for
+>  # echo t > /proc/sysrq-trigger
+>  ....
+> [   20.325246] ======================================================
+> [   20.325252] WARNING: possible circular locking dependency detected
+> [   20.325260] 5.15.0-rc2-next-20210924-00004-gd2d6e664f29f-dirty #163
+> Not tainted
+> [   20.325273] ------------------------------------------------------
+> [   20.325279] sh/236 is trying to acquire lock:
+> [   20.325293] c1618614 (console_owner){-...}-{0:0}, at:
+> console_unlock+0x180/0x5bc
+> [   20.325361]
+> [   20.325361] but task is already holding lock:
+> [   20.325368] eefccc90 (&pool->lock){-.-.}-{2:2}, at:
+> show_workqueue_state+0x104/0x3c8
+> [   20.325432]
+> [   20.325432] which lock already depends on the new lock.
 > 
-> dependency
+> ...
 > 
-> > 8250_omap driver in the following patches.
-> >
-> > We manage the port runtime_suspended flag in the serial port driver as
-> > only the driver knows when the hardware is runtime PM suspended. Note that
-> > The current flag for rpm_tx_active cannot be used as it is TX specific
-> > for 8250_port.
-> >
-> > We already have serial8250_start_tx() call serial8250_rpm_get_tx(), and
-> > serial8250_stop_tx() call serial8250_rpm_put_tx() to take care of the
-> > runtime PM usage count for TX. To have the serial port driver call
-> > uart_start_pending_tx() on runtime resume, we must now use just
-> > pm_runtime_get() for serial8250_start_tx() instead of the sync version.
-> >
-> > With these changes we must now also flip 8250_omap driver over to call
-> > uart_start_pending_tx(). That's currently the only user of UART_CAP_RPM.
+> [   20.325657] -> #2 (&pool->lock/1){-.-.}-{2:2}:
+> [   20.325690]        __queue_work+0x114/0x810
+> [   20.325710]        queue_work_on+0x54/0x94
+> [   20.325727]        __imx_uart_rxint.constprop.0+0x1b4/0x2e0
+> [   20.325760]        imx_uart_int+0x270/0x310
 > 
-> Do I understand the flow correctly:
->  1) if we suspended, we request resume
->  2) until resume is not fulfilled we return error code to user space
-> to try again
-> ?
+> This problem happens because uart_handle_sysrq_char() is called
+> with the lock held.
+> 
+> Fix this by using the same approach done in commit 5697df7322fe ("serial:
+> fsl_lpuart: split sysrq handling"), which calls 
+> uart_unlock_and_check_sysrq() to drop the lock prior to 
+> uart_handle_sysrq_char().
+> 
+> Signed-off-by: Fabio Estevam <festevam@denx.de>
+> ---
+> Changes since v1:
+> - I noticed that when sending break + t via the terminal, the characters
+> were sometimes lost. Do the minimal changes to fix the deadlock without
+> missing the sysrq input.
+> 
+>  drivers/tty/serial/imx.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 8b121cd869e9..1c768dd3896d 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -788,6 +788,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+>  	unsigned int rx, flg, ignored = 0;
+>  	struct tty_port *port = &sport->port.state->port;
+>  
+> +	uart_unlock_and_check_sysrq(&sport->port);
 
-Correct. I think the only thing we can currently do is return -EAGAIN
-when the serial port registers are not accessible.
+This is just so broken; you can't just drop the lock. And you clearly
+haven't even tried to understand how uart_unlock_and_check_sysrq()
+works.
 
-> In this case we have no register access to the powered off device and
-> ACPI, for example, may have a chance to resume the device in a
-> non-atomic way. Is this the correct interpretation?
+Please take a closer look at the commit you're trying to mimic.
 
-Yes that's correct. That works as long as the serial port device driver
-implements PM runtime resume function, and then at the end of it calls
-uart_start_pending_tx().
+>  	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
+>  		u32 usr2;
+>  
+> @@ -846,6 +847,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+>  out:
+>  	tty_flip_buffer_push(port);
+>  
+> +	spin_lock(&sport->port.lock);
+>  	return IRQ_HANDLED;
+>  }
 
-Regards,
-
-Tony
+Johan
