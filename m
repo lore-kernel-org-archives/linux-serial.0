@@ -2,146 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 059BFC433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Oct 2021 07:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C9BC4332F
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Oct 2021 08:12:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CB9D461A55
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Oct 2021 07:52:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B8B6161A83
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Oct 2021 08:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352547AbhJAHyd (ORCPT
+        id S1352611AbhJAIOF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Oct 2021 03:54:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55926 "EHLO mail.kernel.org"
+        Fri, 1 Oct 2021 04:14:05 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:52584 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231237AbhJAHyd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Oct 2021 03:54:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AFF5D619F7;
-        Fri,  1 Oct 2021 07:52:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633074769;
-        bh=F7vCTf8aUkS3mIGbaMfgFBtWgfqMgiQGONP77SM/h+w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GVdb5bYJSDOFaT6eZ9iS3vtdnfR3WC27BDdiu8LyIaMF4x6P0DctBdV9ubtMX/TFg
-         T8h+Qp+bC5jDF0hd91Wvssdevl8vcVGryVSw1aCEh0Bu3aqQtlS7zZiis6s1s2GyBb
-         E128iMtV+x0i0W1WK5zIjpThRrHpMS5o5Bj6mpOrObWCr93m5YS6L76APmDsFKI1/E
-         ZxvuIVQZCICrtUxy9fKjt7JzGCX8iVH+jIDvFkp71/1r2nkS+wRT9117Lx2qXBTaHM
-         qHcrsPndHrxelzUoyR6l0t8DmL8gbJ2niOeOC+LDz2tEpvSqzVvE4lgpRe8UMJbo9h
-         nMYQRkEYmCxhQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1mWDLg-0007eo-6i; Fri, 01 Oct 2021 09:52:52 +0200
-Date:   Fri, 1 Oct 2021 09:52:52 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Fabio Estevam <festevam@denx.de>
-Cc:     gregkh@linuxfoundation.org, michael@walle.cc,
-        linux-serial@vger.kernel.org, marex@denx.de,
-        u.kleine-koenig@pengutronix.de
-Subject: Re: [PATCH v2] serial: imx: Fix sysrq deadlock
-Message-ID: <YVa+VL5W+Gnp7TUa@hovoldconsulting.com>
-References: <20210929214324.44910-1-festevam@denx.de>
- <YVVtRw/JlUzn4H54@hovoldconsulting.com>
- <bae11ec74a0515841ad36403b9f5a47b@denx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bae11ec74a0515841ad36403b9f5a47b@denx.de>
+        id S231280AbhJAIOE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 1 Oct 2021 04:14:04 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 7DB542019CA;
+        Fri,  1 Oct 2021 10:12:19 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 701792019BA;
+        Fri,  1 Oct 2021 10:12:19 +0200 (CEST)
+Received: from fsr-ub1664-175.ea.freescale.net (fsr-ub1664-175.ea.freescale.net [10.171.82.40])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id DF353202F7;
+        Fri,  1 Oct 2021 10:12:18 +0200 (CEST)
+From:   Abel Vesa <abel.vesa@nxp.com>
+To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fabio Estevam <festevam@gmail.com>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Abel Vesa <abel.vesa@nxp.com>
+Subject: [RESEND v2 00/10] arm64: dts: Add i.MX8DXL initial support
+Date:   Fri,  1 Oct 2021 11:11:25 +0300
+Message-Id: <1633075894-10214-1-git-send-email-abel.vesa@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 10:45:31AM -0300, Fabio Estevam wrote:
-> Hi Johan,
-> 
-> On 30/09/2021 04:54, Johan Hovold wrote:
-> 
-> > This is just so broken; you can't just drop the lock. And you clearly
-> > haven't even tried to understand how uart_unlock_and_check_sysrq()
-> > works.
-> > 
-> > Please take a closer look at the commit you're trying to mimic.
-> 
-> Thanks for the feedback.
-> 
-> I have changed it to:
-> 
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 8b121cd869e9..b7cda50602d5 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -803,7 +803,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void 
-> *dev_id)
->   				continue;
->   		}
-> 
-> -		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
-> +		if (uart_prepare_sysrq_char(&sport->port, rx))
+This allows i.MX8DXL EVK board to boot to prompt.
 
-Why did you drop the cast? If there's anything in the high bits you'd
-see the help text printed as you report below (even if it seems
-unlikely).
+CC'ed devicetree@vger.kernel.org this time and fixed
+the numbering of cover letter, there are only 10 patches in
+this patchset.
 
->   			continue;
-> 
->   		if (unlikely(rx & URXD_ERR)) {
-> @@ -844,6 +844,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void 
-> *dev_id)
->   	}
-> 
->   out:
-> +	uart_unlock_and_check_sysrq(&sport->port);
->   	tty_flip_buffer_push(port);
-> 
->   	return IRQ_HANDLED;
-> @@ -959,6 +960,7 @@ static irqreturn_t imx_uart_int(int irq, void 
-> *dev_id)
->   		imx_uart_writel(sport, USR1_AGTIM, USR1);
-> 
->   		__imx_uart_rxint(irq, dev_id);
-> +		spin_lock(&sport->port.lock);
->   		ret = IRQ_HANDLED;
->   	}
+Abel Vesa (5):
+  arm64: dts: imx8-ss-lsio: Add mu5a mailbox
+  arm64: dts: freescale: Add adma subsystem dtsi for imx8dxl
+  dt-bindings: fsl: scu: Add i.MX8DXL ocotp binding
+  dt-bindings: i2c: imx-lpi2c: Add i.MX8DXL compatible match
+  dt-bindings: serial: fsl-lpuart: Add i.MX8DXL compatible
 
-It's a step in the right direction, but you need to restructure the code
-so that you don't need to drop and reacquire the lock.
+Jacky Bai (5):
+  arm64: dts: freescale: Add the top level dtsi support for imx8dxl
+  arm64: dts: freescale: Add the imx8dxl connectivity subsys dtsi
+  arm64: dts: freescale: Add ddr subsys dtsi for imx8dxl
+  arm64: dts: freescale: Add lsio subsys dtsi for imx8dxl
+  arm64: dts: imx8dxl: Add i.MX8DXL evk board support
 
-> @@ -1977,9 +1979,7 @@ imx_uart_console_write(struct console *co, const 
-> char *s, unsigned int count)
->   	unsigned int ucr1;
->   	int locked = 1;
-> 
-> -	if (sport->port.sysrq)
-> -		locked = 0;
-> -	else if (oops_in_progress)
-> +	if (oops_in_progress)
->   		locked = spin_trylock_irqsave(&sport->port.lock, flags);
->   	else
->   		spin_lock_irqsave(&sport->port.lock, flags);
+ .../bindings/arm/freescale/fsl,scu.txt        |   3 +-
+ .../bindings/i2c/i2c-imx-lpi2c.yaml           |   2 +
+ .../bindings/serial/fsl-lpuart.yaml           |   1 +
+ arch/arm64/boot/dts/freescale/Makefile        |   1 +
+ .../boot/dts/freescale/imx8-ss-lsio.dtsi      |   7 +
+ arch/arm64/boot/dts/freescale/imx8dxl-evk.dts | 266 ++++++++++++++++++
+ .../boot/dts/freescale/imx8dxl-ss-adma.dtsi   |  53 ++++
+ .../boot/dts/freescale/imx8dxl-ss-conn.dtsi   | 137 +++++++++
+ .../boot/dts/freescale/imx8dxl-ss-ddr.dtsi    |  36 +++
+ .../boot/dts/freescale/imx8dxl-ss-lsio.dtsi   |  78 +++++
+ arch/arm64/boot/dts/freescale/imx8dxl.dtsi    | 245 ++++++++++++++++
+ 11 files changed, 828 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-adma.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-ddr.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-lsio.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl.dtsi
 
-And you need to fix the commit summary and commit message since you're
-actually fixing any deadlock. You're just suppressing a false positive
-lockdep warning due to the above sysrq hack.
+-- 
+2.31.1
 
-> This makes the deadlock not happen after running:
-> echo t > /proc/sysrq-trigger
-> 
-> , but entering <break> + t via the console does not work anymore.
-> 
-> 
-> It returns the sysrq help instead:
-> 
-> sysrq: HELP : loglevel(0-9) reboot(b) crash(c) show-all-locks(d) 
-> terminate-all-tasks(e) memory-full-oom-kill(f) kill-all-tasks(i) 
-> thaw-filesystems(j) sak(k) show-backtrace-all-active-cpu
-> s(l) show-memory-usage(m) nice-all-RT-tasks(n) poweroff(o) 
-> show-registers(p) show-all-timers(q) unraw(r) sync(s) 
-> show-task-states(t) unmount(u) show-blocked-tasks(w) 
-> dump-ftrace-buffer(z)
-
-So either you're just pushing garbage to the sysrq handler due to the
-dropped cast above or you may, for example, have a NUL char in the
-receiver due to the break that you don't discard.
-
-I'd start with logging the key that gets passed to the sysrq handler.
-
-Johan
