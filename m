@@ -2,104 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59752C433FE
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Oct 2021 13:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFCEC433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Oct 2021 13:48:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3A52B61263
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Oct 2021 13:18:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 846EA61A07
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Oct 2021 13:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbhJANTY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Oct 2021 09:19:24 -0400
-Received: from mail-ot1-f45.google.com ([209.85.210.45]:41581 "EHLO
-        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231587AbhJANSr (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Oct 2021 09:18:47 -0400
-Received: by mail-ot1-f45.google.com with SMTP id 97-20020a9d006a000000b00545420bff9eso11420513ota.8;
-        Fri, 01 Oct 2021 06:17:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=JmNm4fwvOprJyv3kxO/2sZUF4SyR5k28U6t0hU5FgjQ=;
-        b=gOqXPhp0bX1UmCzKYyZIPlS2vBZ8zogGLTdUQEz/A7yQj0W0S0MUOljylVZWCPvhqw
-         ymAYX7TKRG3RHAbTuYWmUa/zoR7bxpe4HmM9PsUmPLnG/pnBhQizHwAg7sVH+bjhaazz
-         h6x0YxRsdmOK8D1UjoPkwYQF4DE+sRVBmDHUUUXHm3I8iyosjWMjJc4/Zy8qrfAbNzsV
-         htfLx7BnXxDYr349MjcuFJ00oAb92jEpQcOQALUhcHFaNewagN3AELTEeIFj7q3rFEdo
-         zYgURFm/uH3qeDi0L4Lnw0N5oVztjP6HLn68TIV2XFgKEfE8HkxuHJeadQzUsMVCJgJD
-         tv7A==
-X-Gm-Message-State: AOAM531Fy0gleSN/d/tZpLXYMuKSy1c8jny1ZzKTe5XQGXgXy8cBrYYp
-        PDPNISFLyQCYKhyVtjGkAu8yfoLeQg==
-X-Google-Smtp-Source: ABdhPJxxq3oW0g94TnmTeT15Po6GQnjHvadMyLD7HUcKeLZdpO/hq3UAbkMJjbq+EeONotgH/xEmGA==
-X-Received: by 2002:a9d:8cc:: with SMTP id 70mr7650397otf.328.1633094222591;
-        Fri, 01 Oct 2021 06:17:02 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t17sm1200813otl.56.2021.10.01.06.17.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 06:17:02 -0700 (PDT)
-Received: (nullmailer pid 3666448 invoked by uid 1000);
-        Fri, 01 Oct 2021 13:16:57 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, Dong Aisheng <aisheng.dong@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-In-Reply-To: <1633075894-10214-10-git-send-email-abel.vesa@nxp.com>
-References: <1633075894-10214-1-git-send-email-abel.vesa@nxp.com> <1633075894-10214-10-git-send-email-abel.vesa@nxp.com>
-Subject: Re: [RESEND v2 09/10] dt-bindings: i2c: imx-lpi2c: Add i.MX8DXL compatible match
-Date:   Fri, 01 Oct 2021 08:16:57 -0500
-Message-Id: <1633094217.918569.3666447.nullmailer@robh.at.kernel.org>
+        id S230160AbhJANu1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Oct 2021 09:50:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45502 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231186AbhJANu0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 1 Oct 2021 09:50:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6DA89619F9;
+        Fri,  1 Oct 2021 13:48:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633096122;
+        bh=KxoXi+34NWlEGYpaOtbUH6D6Iq4F5KpAQp+v4NZq5nQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aHqPKTd4/akh6ZxyRnYCdQQkaOGNMGPELyK0YPXLAn1NIQpJkbKoxJlhLye29tqi6
+         15gwUNvwaRJviDJX1T7AgLHjpXB1nvjrjaq8o5WdPmFmp1YBqFwKrWbM9TCDKGDT4s
+         KhMWt9rcnEMt0evI+4kZAPLF9ibjEe0VXV2SvdFULEUrpVlpiItKTmmyn4J5jIG/1Z
+         bMwo87iB3+k5puKkx/TtK770U7gsQL+D7/TUnoJInGz5adwzaVYfCUf13vM5TGbP0v
+         4aHEo/X8IMVnDietoV3lt2PPjs4cjtkCWAXH5qLeodIEA0QOlsNWB4JR3y0Z54Ih6+
+         w62/2iaXT0qLQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mWIu5-0008RF-NC; Fri, 01 Oct 2021 15:48:45 +0200
+Date:   Fri, 1 Oct 2021 15:48:45 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     Fabio Estevam <festevam@denx.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Walle <michael@walle.cc>, linux-serial@vger.kernel.org,
+        Marek Vasut <marex@denx.de>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2] serial: imx: Fix sysrq deadlock
+Message-ID: <YVcRvYDqLWZ4liVl@hovoldconsulting.com>
+References: <20210929214324.44910-1-festevam@denx.de>
+ <YVVtRw/JlUzn4H54@hovoldconsulting.com>
+ <bae11ec74a0515841ad36403b9f5a47b@denx.de>
+ <YVa+VL5W+Gnp7TUa@hovoldconsulting.com>
+ <CAOMZO5BD95rpU-ChZp591JnnYbGFUZuUdTVxwDNsMUObWVmA_A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOMZO5BD95rpU-ChZp591JnnYbGFUZuUdTVxwDNsMUObWVmA_A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 01 Oct 2021 11:11:34 +0300, Abel Vesa wrote:
-> Add i.MX8DXL lpi2c compatible to the bindings documentation.
+On Fri, Oct 01, 2021 at 07:17:53AM -0300, Fabio Estevam wrote:
+> Hi Johan,
 > 
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> ---
->  Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml | 2 ++
->  1 file changed, 2 insertions(+)
+> On Fri, Oct 1, 2021 at 4:53 AM Johan Hovold <johan@kernel.org> wrote:
 > 
+> > Why did you drop the cast? If there's anything in the high bits you'd
+> > see the help text printed as you report below (even if it seems
+> > unlikely).
+> 
+> That was it, thanks!
+> 
+> I have taken your feedback into consideration and sent a v3.
+> 
+> The only one that I didn't do was to reorganize the code to avoid the
+> unlock/lock as
+> this would require a significant rework.
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Judging from a quick look at the code is very straight-forward, and we
+don't want to add interrupt latency just to shut up lockdep.
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/1535241
-
-
-i2c@5a800000: compatible: 'oneOf' conditional failed, one must be fixed:
-	arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml
-
-i2c@5a810000: compatible: 'oneOf' conditional failed, one must be fixed:
-	arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml
-
-i2c@5a820000: compatible: 'oneOf' conditional failed, one must be fixed:
-	arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml
-
-i2c@5a830000: compatible: 'oneOf' conditional failed, one must be fixed:
-	arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dt.yaml
-	arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml
-
+Johan
