@@ -2,198 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B457EC433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 16:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 575C9C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 16:15:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C41B61350
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 16:09:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 449B361526
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 16:15:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236449AbhJEQLV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Oct 2021 12:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
+        id S236465AbhJEQRV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Oct 2021 12:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235875AbhJEQLR (ORCPT
+        with ESMTP id S235077AbhJEQRU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Oct 2021 12:11:17 -0400
+        Tue, 5 Oct 2021 12:17:20 -0400
 Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62656C06174E;
-        Tue,  5 Oct 2021 09:09:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B29C061749;
+        Tue,  5 Oct 2021 09:15:29 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 8E61A4246F;
-        Tue,  5 Oct 2021 16:00:06 +0000 (UTC)
-From:   Hector Martin <marcan@marcan.st>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id D599E41EA7;
+        Tue,  5 Oct 2021 16:15:23 +0000 (UTC)
+Subject: Re: [PATCH 3/7] soc: apple: Add driver for Apple PMGR power state
+ controls
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
         Krzysztof Kozlowski <krzk@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Mark Kettenis <mark.kettenis@xs4all.nl>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH 5/7] arm64: dts: apple: t8103: Add the UART PMGR tree
-Date:   Wed,  6 Oct 2021 00:59:21 +0900
-Message-Id: <20211005155923.173399-6-marcan@marcan.st>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211005155923.173399-1-marcan@marcan.st>
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 References: <20211005155923.173399-1-marcan@marcan.st>
+ <20211005155923.173399-4-marcan@marcan.st>
+ <CACRpkdanbovvXXLAGGZEEiKXXrNnW+8p1sCONQYWmAjVi-m-9A@mail.gmail.com>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <3bad7bc3-30ac-851f-57a3-7781dfa23521@marcan.st>
+Date:   Wed, 6 Oct 2021 01:15:21 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACRpkdanbovvXXLAGGZEEiKXXrNnW+8p1sCONQYWmAjVi-m-9A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: es-ES
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Note that the UART driver does not currently support runtime-pm, so this
-effectively always keeps the UART0 device on. However, this does clockgate
-all the other UARTs, as those are not currently instantiated.
+Hi Linus,
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
----
- arch/arm64/boot/dts/apple/t8103.dtsi | 116 +++++++++++++++++++++++++++
- 1 file changed, 116 insertions(+)
+On 06/10/2021 01.08, Linus Walleij wrote:
+> Hi Hector,
+> 
+> On Tue, Oct 5, 2021 at 6:00 PM Hector Martin <marcan@marcan.st> wrote:
+> 
+>>   drivers/soc/apple/Kconfig               |  21 ++
+>>   drivers/soc/apple/Makefile              |   2 +
+>>   drivers/soc/apple/apple-pmgr-pwrstate.c | 281 ++++++++++++++++++++++++
+> 
+> This is traditionally where we put the ARM SoC drivers, but
+> Mac has traditionally used drivers/macintosh for their custom
+> board etc stuff. Or is that just for any off-chip stuff?
+> 
+> I suppose it doesn't matter much (unless there is code under
+> drivers/macintosh we want to reuse for M1), but it could be a bit
+> confusing?
 
-diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
-index 9f60f9e48ea0..63056ddc7ef7 100644
---- a/arch/arm64/boot/dts/apple/t8103.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103.dtsi
-@@ -122,6 +122,7 @@ serial0: serial@235200000 {
- 			 */
- 			clocks = <&clkref>, <&clkref>;
- 			clock-names = "uart", "clk_uart_baud0";
-+			power-domains = <&ps_uart0>;
- 			status = "disabled";
- 		};
- 
-@@ -131,5 +132,120 @@ aic: interrupt-controller@23b100000 {
- 			interrupt-controller;
- 			reg = <0x2 0x3b100000 0x0 0x8000>;
- 		};
-+
-+		pmgr: power-management@23b700000 {
-+			compatible = "apple,t8103-pmgr", "apple,pmgr", "syscon", "simple-mfd";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			reg = <0x2 0x3b700000 0x0 0x14000>;
-+
-+			ps_sio_busif: power-controller@1c0 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x1c0>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "sio_busif";
-+			};
-+
-+			ps_sio: power-controller@1c8 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x1c8>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "sio";
-+				power-domains = <&ps_sio_busif>;
-+			};
-+
-+			ps_uart_p: power-controller@220 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x220>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart_p";
-+				power-domains = <&ps_sio>;
-+			};
-+
-+			ps_uart0: power-controller@270 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x270>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart0";
-+				power-domains = <&ps_uart_p>;
-+			};
-+
-+			ps_uart1: power-controller@278 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x278>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart1";
-+				power-domains = <&ps_uart_p>;
-+			};
-+
-+			ps_uart2: power-controller@280 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x280>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart2";
-+				power-domains = <&ps_uart_p>;
-+			};
-+
-+			ps_uart3: power-controller@288 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x288>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart3";
-+				power-domains = <&ps_uart_p>;
-+			};
-+
-+			ps_uart4: power-controller@290 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x290>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart4";
-+				power-domains = <&ps_uart_p>;
-+			};
-+
-+			ps_uart5: power-controller@298 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x298>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart5";
-+				power-domains = <&ps_uart_p>;
-+			};
-+
-+			ps_uart6: power-controller@2a0 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x2a0>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart6";
-+				power-domains = <&ps_uart_p>;
-+			};
-+
-+			ps_uart7: power-controller@2a8 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x2a8>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart7";
-+				power-domains = <&ps_uart_p>;
-+			};
-+
-+			ps_uart8: power-controller@2b0 {
-+				compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-+				reg = <0x2b0>;
-+				#power-domain-cells = <0>;
-+				#reset-cells = <0>;
-+				apple,domain-name = "uart8";
-+				power-domains = <&ps_uart_p>;
-+			};
-+		};
- 	};
- };
+Hmm, it seems that tree is mostly about the PowerPC era Macs; the only 
+thing enabled for x86 there is MAC_EMUMOUSEBTN. There is also 
+platform/x86/apple-gmux.c for an x86 Mac specific thing...
+
+We already broke tradition with the "apple," DT compatible prefix (used 
+to be AAPL for the PowerPC Macs), and these chips aren't even just used 
+in Macs (e.g. the iPad, which in theory people would be able to run 
+Linux on if someone figures out a jailbreak), so perhaps it's time for 
+another break here?
+
 -- 
-2.33.0
-
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
