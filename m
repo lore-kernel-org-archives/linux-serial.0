@@ -2,108 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 323C5C4332F
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 20:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B63DBC43219
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 22:46:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1EDAF60E94
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 20:26:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9EFFF61177
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 22:46:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236197AbhJEU21 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Oct 2021 16:28:27 -0400
-Received: from sibelius.xs4all.nl ([83.163.83.176]:51040 "EHLO
-        sibelius.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231181AbhJEU20 (ORCPT
+        id S236868AbhJEWr4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Oct 2021 18:47:56 -0400
+Received: from mail-ot1-f52.google.com ([209.85.210.52]:43901 "EHLO
+        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230113AbhJEWry (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Oct 2021 16:28:26 -0400
-Received: from localhost (bloch.sibelius.xs4all.nl [local])
-        by bloch.sibelius.xs4all.nl (OpenSMTPD) with ESMTPA id 2090d571;
-        Tue, 5 Oct 2021 22:26:33 +0200 (CEST)
-Date:   Tue, 5 Oct 2021 22:26:33 +0200 (CEST)
-From:   Mark Kettenis <mark.kettenis@xs4all.nl>
+        Tue, 5 Oct 2021 18:47:54 -0400
+Received: by mail-ot1-f52.google.com with SMTP id x33-20020a9d37a4000000b0054733a85462so788134otb.10;
+        Tue, 05 Oct 2021 15:46:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=rXuuVcqlOPGRQ8KPZYAGmcmEqaRdABG3AyDsI/H0JEo=;
+        b=5M97xTMxwA2Hk+SvV7hrgGEpsSeX+QbhQEm4pI4dXQdmZjkrHhb48cwOgvrbMljcN5
+         mT6w9CHc1L4nqy2I2BHxHHMsRPfJwfSDLpQVVaZzw0H3xh9t7bxozlp48tC6AjNukiW8
+         go1tv3ekdPSW9vpqSGfoiS8ZJwp2RTjpvMsa6eZTS16JnnCGKwd25AhtzeN0Z8tpRQVW
+         /gLyPpU7hHFwXx32+jWtEBAQgDEeWJG83+7X98+m4+PeLSZEPAQBuDkamia3JFW04aBm
+         MQSDtmnAzBP3ZHPu3S0b74YQirxEdzf3HQG6j9c0xZhmESmXsaXpOoQ+UChrIkrzR49+
+         75+w==
+X-Gm-Message-State: AOAM531hoKhBHOZ4l1OgT75hV7T6i95li3l+u6VQG3clR4Qp1dJFYWtQ
+        rldwlE1BZM/7LdnYr2Ddcg==
+X-Google-Smtp-Source: ABdhPJxu1yHXCK7JsFPVWCnV3YwQqmVgBcxLJQObQXFkUx2eUkxTxDAYsMRWCskB3IZu70rdOx5wmA==
+X-Received: by 2002:a9d:72d5:: with SMTP id d21mr17442035otk.181.1633473963274;
+        Tue, 05 Oct 2021 15:46:03 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id i127sm3627476oia.43.2021.10.05.15.46.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Oct 2021 15:46:02 -0700 (PDT)
+Received: (nullmailer pid 106785 invoked by uid 1000);
+        Tue, 05 Oct 2021 22:45:59 -0000
+From:   Rob Herring <robh@kernel.org>
 To:     Hector Martin <marcan@marcan.st>
-Cc:     linux-arm-kernel@lists.infradead.org, marcan@marcan.st,
-        maz@kernel.org, robh+dt@kernel.org, arnd@kernel.org,
-        linus.walleij@linaro.org, alyssa@rosenzweig.io, krzk@kernel.org,
-        gregkh@linuxfoundation.org, p.zabel@pengutronix.de,
-        rafael@kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-In-Reply-To: <20211005155923.173399-8-marcan@marcan.st> (message from Hector
-        Martin on Wed, 6 Oct 2021 00:59:23 +0900)
-Subject: Re: [PATCH 7/7] arm64: dts: apple: t8103: Add UART2
-References: <20211005155923.173399-1-marcan@marcan.st> <20211005155923.173399-8-marcan@marcan.st>
-Message-ID: <d3ca3c3c6aa1f54e@bloch.sibelius.xs4all.nl>
+Cc:     Mark Kettenis <mark.kettenis@xs4all.nl>,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Marc Zyngier <maz@kernel.org>, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-samsung-soc@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>
+In-Reply-To: <20211005155923.173399-2-marcan@marcan.st>
+References: <20211005155923.173399-1-marcan@marcan.st> <20211005155923.173399-2-marcan@marcan.st>
+Subject: Re: [PATCH 1/7] dt-bindings: arm: apple: Add apple,pmgr binding
+Date:   Tue, 05 Oct 2021 17:45:59 -0500
+Message-Id: <1633473959.420655.106783.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> From: Hector Martin <marcan@marcan.st>
-> Date: Wed,  6 Oct 2021 00:59:23 +0900
+On Wed, 06 Oct 2021 00:59:17 +0900, Hector Martin wrote:
+> The PMGR block in Apple Silicon SoCs is responsible for SoC power
+> management. There are two PMGRs in T8103, with different register
+> layouts but compatible registers. In order to support this as well
+> as future SoC generations with backwards-compatible registers, we
+> declare these blocks as syscons and bind to individual registers
+> in child nodes. Each register controls one SoC device.
 > 
-> This UART is connected to the debug port of the WLAN module. It is
-> mostly useless, but makes for a good test case for runtime-pm without
-> having to unbind the console from the main system UART.
+> The respective apple compatibles are defined in case device-specific
+> quirks are necessary in the future, but currently these nodes are
+> expected to be bound by the generic syscon driver.
 > 
 > Signed-off-by: Hector Martin <marcan@marcan.st>
 > ---
->  arch/arm64/boot/dts/apple/t8103-j274.dts |  5 +++++
->  arch/arm64/boot/dts/apple/t8103.dtsi     | 12 ++++++++++++
->  2 files changed, 17 insertions(+)
-
-Doesn't break U-Boot or OpenBSD.
-
-Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
-
-
-> diff --git a/arch/arm64/boot/dts/apple/t8103-j274.dts b/arch/arm64/boot/dts/apple/t8103-j274.dts
-> index e0f6775b9878..16c5eb7f53b1 100644
-> --- a/arch/arm64/boot/dts/apple/t8103-j274.dts
-> +++ b/arch/arm64/boot/dts/apple/t8103-j274.dts
-> @@ -17,6 +17,7 @@ / {
->  
->  	aliases {
->  		serial0 = &serial0;
-> +		serial2 = &serial2;
->  	};
->  
->  	chosen {
-> @@ -43,3 +44,7 @@ memory@800000000 {
->  &serial0 {
->  	status = "okay";
->  };
-> +
-> +&serial2 {
-> +	status = "okay";
-> +};
-> diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
-> index 63056ddc7ef7..844ed7bd0451 100644
-> --- a/arch/arm64/boot/dts/apple/t8103.dtsi
-> +++ b/arch/arm64/boot/dts/apple/t8103.dtsi
-> @@ -126,6 +126,18 @@ serial0: serial@235200000 {
->  			status = "disabled";
->  		};
->  
-> +		serial2: serial@235208000 {
-> +			compatible = "apple,s5l-uart";
-> +			reg = <0x2 0x35208000 0x0 0x1000>;
-> +			reg-io-width = <4>;
-> +			interrupt-parent = <&aic>;
-> +			interrupts = <AIC_IRQ 607 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&clkref>, <&clkref>;
-> +			clock-names = "uart", "clk_uart_baud0";
-> +			power-domains = <&ps_uart2>;
-> +			status = "disabled";
-> +		};
-> +
->  		aic: interrupt-controller@23b100000 {
->  			compatible = "apple,t8103-aic", "apple,aic";
->  			#interrupt-cells = <3>;
-> -- 
-> 2.33.0
+>  .../bindings/arm/apple/apple,pmgr.yaml        | 74 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 75 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
 > 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/arm/apple/apple,pmgr.example.dts:30.40-35.15: ERROR (duplicate_node_names): /example-0/soc/power-management@23b700000: Duplicate node name
+ERROR: Input tree has errors, aborting (use -f to force output)
+make[1]: *** [scripts/Makefile.lib:385: Documentation/devicetree/bindings/arm/apple/apple,pmgr.example.dt.yaml] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1441: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1536742
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
