@@ -2,29 +2,25 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD68BC433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 16:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE57C43217
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 16:09:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9F3F76126A
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 16:09:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC93E61350
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 16:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbhJEQLS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Oct 2021 12:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236399AbhJEQLR (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
+        id S236440AbhJEQLT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Oct 2021 12:11:19 -0400
+Received: from marcansoft.com ([212.63.210.85]:46724 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236390AbhJEQLR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Tue, 5 Oct 2021 12:11:17 -0400
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D09C061749;
-        Tue,  5 Oct 2021 09:09:26 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 8840642481;
-        Tue,  5 Oct 2021 16:00:11 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 8EB4C41F4A;
+        Tue,  5 Oct 2021 16:00:01 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
@@ -40,9 +36,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
         devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH 6/7] tty: serial: samsung_tty: Support runtime PM
-Date:   Wed,  6 Oct 2021 00:59:22 +0900
-Message-Id: <20211005155923.173399-7-marcan@marcan.st>
+Subject: [PATCH 4/7] arm64: dts: apple: t8103: Rename clk24 to clkref
+Date:   Wed,  6 Oct 2021 00:59:20 +0900
+Message-Id: <20211005155923.173399-5-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211005155923.173399-1-marcan@marcan.st>
 References: <20211005155923.173399-1-marcan@marcan.st>
@@ -52,189 +48,42 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This allows idle UART devices to be suspended using the standard
-runtime-PM framework. The logic is modeled after stm32-usart.
+We now know that this frequency comes from the external reference
+oscillator and is used for various SoC blocks, and isn't just a random
+24MHz clock, so let's call it something more appropriate.
 
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/tty/serial/samsung_tty.c | 88 ++++++++++++++++++++------------
- 1 file changed, 54 insertions(+), 34 deletions(-)
+ arch/arm64/boot/dts/apple/t8103.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index e2f49863e9c2..d68e3341adc6 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -40,6 +40,7 @@
- #include <linux/clk.h>
- #include <linux/cpufreq.h>
- #include <linux/of.h>
-+#include <linux/pm_runtime.h>
- #include <asm/irq.h>
+diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
+index a1e22a2ea2e5..9f60f9e48ea0 100644
+--- a/arch/arm64/boot/dts/apple/t8103.dtsi
++++ b/arch/arm64/boot/dts/apple/t8103.dtsi
+@@ -95,11 +95,11 @@ timer {
+ 			     <AIC_FIQ AIC_TMR_HV_VIRT IRQ_TYPE_LEVEL_HIGH>;
+ 	};
  
- /* UART name and device definitions */
-@@ -1381,31 +1382,49 @@ static void exynos_usi_init(struct uart_port *port)
+-	clk24: clock-24m {
++	clkref: clock-ref {
+ 		compatible = "fixed-clock";
+ 		#clock-cells = <0>;
+ 		clock-frequency = <24000000>;
+-		clock-output-names = "clk24";
++		clock-output-names = "clkref";
+ 	};
  
- /* power power management control */
- 
--static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
--			      unsigned int old)
-+static int __maybe_unused s3c24xx_serial_runtime_suspend(struct device *dev)
- {
-+	struct uart_port *port = dev_get_drvdata(dev);
- 	struct s3c24xx_uart_port *ourport = to_ourport(port);
- 	int timeout = 10000;
- 
--	ourport->pm_level = level;
-+	while (--timeout && !s3c24xx_serial_txempty_nofifo(port))
-+		udelay(100);
- 
--	switch (level) {
--	case 3:
--		while (--timeout && !s3c24xx_serial_txempty_nofifo(port))
--			udelay(100);
-+	if (!IS_ERR(ourport->baudclk))
-+		clk_disable_unprepare(ourport->baudclk);
- 
--		if (!IS_ERR(ourport->baudclk))
--			clk_disable_unprepare(ourport->baudclk);
-+	clk_disable_unprepare(ourport->clk);
-+	return 0;
-+};
- 
--		clk_disable_unprepare(ourport->clk);
--		break;
-+static int __maybe_unused s3c24xx_serial_runtime_resume(struct device *dev)
-+{
-+	struct uart_port *port = dev_get_drvdata(dev);
-+	struct s3c24xx_uart_port *ourport = to_ourport(port);
- 
--	case 0:
--		clk_prepare_enable(ourport->clk);
-+	clk_prepare_enable(ourport->clk);
- 
--		if (!IS_ERR(ourport->baudclk))
--			clk_prepare_enable(ourport->baudclk);
-+	if (!IS_ERR(ourport->baudclk))
-+		clk_prepare_enable(ourport->baudclk);
-+	return 0;
-+};
-+
-+static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
-+			      unsigned int old)
-+{
-+	struct s3c24xx_uart_port *ourport = to_ourport(port);
-+
-+	ourport->pm_level = level;
- 
-+	switch (level) {
-+	case UART_PM_STATE_OFF:
-+		pm_runtime_mark_last_busy(port->dev);
-+		pm_runtime_put_sync(port->dev);
-+		break;
-+
-+	case UART_PM_STATE_ON:
-+		pm_runtime_get_sync(port->dev);
- 		exynos_usi_init(port);
- 		break;
- 	default:
-@@ -2282,18 +2301,15 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	pm_runtime_get_noresume(&pdev->dev);
-+	pm_runtime_set_active(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
-+
- 	dev_dbg(&pdev->dev, "%s: adding port\n", __func__);
- 	uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
- 	platform_set_drvdata(pdev, &ourport->port);
- 
--	/*
--	 * Deactivate the clock enabled in s3c24xx_serial_init_port here,
--	 * so that a potential re-enablement through the pm-callback overlaps
--	 * and keeps the clock enabled in this case.
--	 */
--	clk_disable_unprepare(ourport->clk);
--	if (!IS_ERR(ourport->baudclk))
--		clk_disable_unprepare(ourport->baudclk);
-+	pm_runtime_put_sync(&pdev->dev);
- 
- 	ret = s3c24xx_serial_cpufreq_register(ourport);
- 	if (ret < 0)
-@@ -2309,8 +2325,14 @@ static int s3c24xx_serial_remove(struct platform_device *dev)
- 	struct uart_port *port = s3c24xx_dev_to_port(&dev->dev);
- 
- 	if (port) {
-+		pm_runtime_get_sync(&dev->dev);
-+
- 		s3c24xx_serial_cpufreq_deregister(to_ourport(port));
- 		uart_remove_one_port(&s3c24xx_uart_drv, port);
-+
-+		pm_runtime_disable(&dev->dev);
-+		pm_runtime_set_suspended(&dev->dev);
-+		pm_runtime_put_noidle(&dev->dev);
- 	}
- 
- 	uart_unregister_driver(&s3c24xx_uart_drv);
-@@ -2319,8 +2341,8 @@ static int s3c24xx_serial_remove(struct platform_device *dev)
- }
- 
- /* UART power management code */
--#ifdef CONFIG_PM_SLEEP
--static int s3c24xx_serial_suspend(struct device *dev)
-+
-+static int __maybe_unused s3c24xx_serial_suspend(struct device *dev)
- {
- 	struct uart_port *port = s3c24xx_dev_to_port(dev);
- 
-@@ -2330,7 +2352,7 @@ static int s3c24xx_serial_suspend(struct device *dev)
- 	return 0;
- }
- 
--static int s3c24xx_serial_resume(struct device *dev)
-+static int __maybe_unused s3c24xx_serial_resume(struct device *dev)
- {
- 	struct uart_port *port = s3c24xx_dev_to_port(dev);
- 	struct s3c24xx_uart_port *ourport = to_ourport(port);
-@@ -2350,7 +2372,7 @@ static int s3c24xx_serial_resume(struct device *dev)
- 	return 0;
- }
- 
--static int s3c24xx_serial_resume_noirq(struct device *dev)
-+static int __maybe_unused s3c24xx_serial_resume_noirq(struct device *dev)
- {
- 	struct uart_port *port = s3c24xx_dev_to_port(dev);
- 	struct s3c24xx_uart_port *ourport = to_ourport(port);
-@@ -2420,16 +2442,14 @@ static int s3c24xx_serial_resume_noirq(struct device *dev)
- }
- 
- static const struct dev_pm_ops s3c24xx_serial_pm_ops = {
-+#ifdef CONFIG_PM_SLEEP
- 	.suspend = s3c24xx_serial_suspend,
- 	.resume = s3c24xx_serial_resume,
- 	.resume_noirq = s3c24xx_serial_resume_noirq,
-+#endif
-+	SET_RUNTIME_PM_OPS(s3c24xx_serial_runtime_suspend,
-+			   s3c24xx_serial_runtime_resume, NULL)
- };
--#define SERIAL_SAMSUNG_PM_OPS	(&s3c24xx_serial_pm_ops)
--
--#else /* !CONFIG_PM_SLEEP */
--
--#define SERIAL_SAMSUNG_PM_OPS	NULL
--#endif /* CONFIG_PM_SLEEP */
- 
- /* Console code */
- 
-@@ -2924,7 +2944,7 @@ static struct platform_driver samsung_serial_driver = {
- 	.id_table	= s3c24xx_serial_driver_ids,
- 	.driver		= {
- 		.name	= "samsung-uart",
--		.pm	= SERIAL_SAMSUNG_PM_OPS,
-+		.pm	= &s3c24xx_serial_pm_ops,
- 		.of_match_table	= of_match_ptr(s3c24xx_uart_dt_match),
- 	},
- };
+ 	soc {
+@@ -120,7 +120,7 @@ serial0: serial@235200000 {
+ 			 * TODO: figure out the clocking properly, there may
+ 			 * be a third selectable clock.
+ 			 */
+-			clocks = <&clk24>, <&clk24>;
++			clocks = <&clkref>, <&clkref>;
+ 			clock-names = "uart", "clk_uart_baud0";
+ 			status = "disabled";
+ 		};
 -- 
 2.33.0
 
