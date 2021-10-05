@@ -2,134 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17FF3C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 09:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33452C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 12:14:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E555761215
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 09:58:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 139CF61186
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Oct 2021 12:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233870AbhJEKAE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Oct 2021 06:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37514 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233986AbhJEKAE (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Oct 2021 06:00:04 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C186EC061745
-        for <linux-serial@vger.kernel.org>; Tue,  5 Oct 2021 02:58:13 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id n8so27960219lfk.6
-        for <linux-serial@vger.kernel.org>; Tue, 05 Oct 2021 02:58:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rq7MKM2zrv9Ik3HYA0sfeiFO+Ud/aiQ0uN8CoLNzjP8=;
-        b=q6xeJSXDEJCDu7zY5yhSM415ImPMMcJXjo5jezsYRWmGPbMU3MD9kDDhCzV8xbhh5J
-         xuMucvdJ8sKJZQ9rq29tm0S7V0FTdEzd/dty+Z7IbagtQbFRaf6p5f8IOGfIk1tqbWYh
-         /mGljqys/66QZoamXvHtEXjHm8AOLPxo99x26Dsrh3Kbtm9mbpx3cQcNji8t+en5PtOF
-         EeTVWMIPYYeA7cU54LsXvZg/lcix3FPyEBW0m+61lAIdBBuG0TnqY0iSVxkt8tedVGEn
-         rHhY+AcXYhBj4VURLrWv4Kft89rkEL7tqv2xZu1kLgdMp/cBH5dDbI0HQYCHHrtB9ecO
-         AvRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rq7MKM2zrv9Ik3HYA0sfeiFO+Ud/aiQ0uN8CoLNzjP8=;
-        b=nlpgoYKJjpmM4GAljLtNuYSvA1KYcpnpxPlApLubl26l/eZzS+m3UE/C3tRJlDybAt
-         EivEzdYO046H5eW8XUsC+FmkYqGewQfIqzT06NylGGLKNMmdZhGyTdfr/fNL7qffr1zZ
-         XiPQ3OVd7YUqtQcrdZ3bluvcikF2voobBuunwWHQ+OfbUvTumYY/I1Imk9MBBUJKYq5A
-         1nPHcGa2hrDVzTthl+tGg36cxMNMfBpgKO77lxQBdjPRIPLJHh24KvjLC3qUEcc1Ox99
-         AlMqWbqounr+nGR14DD5utpiWo/iXX4mL0CWZ9es3jREHh538U70BTIP5r2y+ScQcGKF
-         HoDQ==
-X-Gm-Message-State: AOAM530D4LhE/3jHmtHFDZfRNWGcLJpmotHY0UZ/uPCwGOEWwSg8s98Y
-        o20pR8RfXM3nXDyBEh0HGXzZKQ==
-X-Google-Smtp-Source: ABdhPJztJNS0D67j+1Xh2JJk3ONd902XRoJ8JO2wypn685qKb8NkIEto9fs/OTRtiLIIdaA347rP9A==
-X-Received: by 2002:a19:790c:: with SMTP id u12mr2535757lfc.490.1633427881861;
-        Tue, 05 Oct 2021 02:58:01 -0700 (PDT)
-Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id b15sm2088546lji.126.2021.10.05.02.58.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Oct 2021 02:58:01 -0700 (PDT)
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] tty: serial: samsung: Improve naming for common macro
-Date:   Tue,  5 Oct 2021 12:58:00 +0300
-Message-Id: <20211005095800.2165-1-semen.protsenko@linaro.org>
-X-Mailer: git-send-email 2.30.2
+        id S234413AbhJEMQ3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Oct 2021 08:16:29 -0400
+Received: from mga12.intel.com ([192.55.52.136]:18523 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233808AbhJEMQ3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 5 Oct 2021 08:16:29 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10127"; a="205845392"
+X-IronPort-AV: E=Sophos;i="5.85,348,1624345200"; 
+   d="scan'208";a="205845392"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2021 05:14:34 -0700
+X-IronPort-AV: E=Sophos;i="5.85,348,1624345200"; 
+   d="scan'208";a="589333436"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2021 05:14:33 -0700
+Received: from andy by smile with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mXjL4-008sJh-A2;
+        Tue, 05 Oct 2021 15:14:30 +0300
+Date:   Tue, 5 Oct 2021 15:14:30 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Daniel Palmer <daniel@0x0f.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250_dw: Mark acpi match table as maybe unused
+Message-ID: <YVxBphzSDG2VmM4I@smile.fi.intel.com>
+References: <20210930124950.3069638-1-daniel@0x0f.com>
+ <YVXWiQWGkzmp6O1A@smile.fi.intel.com>
+ <CAFr9PXkgDaXPb+h3TFmS4VVzzmPqjJJj0Y4cd_ZTUgqMbNZUSA@mail.gmail.com>
+ <YVYmTL8WsgYnxPwc@smile.fi.intel.com>
+ <CAFr9PXmVQFDdMiMUgg4v7DAcFkdaUtFeaXOyW4_NrVd5oYKSSA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFr9PXmVQFDdMiMUgg4v7DAcFkdaUtFeaXOyW4_NrVd5oYKSSA@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Having "_USI" suffix in EXYNOS_COMMON_SERIAL_DRV_DATA_USI() macro is
-confusing. Rename it to just EXYNOS_COMMON_SERIAL_DRV_DATA() and provide
-USI registers availability for all Exynos variants instead. While at it,
-also convert .has_usi field type to bool, so its usage is more obvious.
+On Fri, Oct 01, 2021 at 09:16:24AM +0900, Daniel Palmer wrote:
+> On Fri, 1 Oct 2021 at 06:04, Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > > Doesn't this mean the ACPI table ends up in kernels that will never use ACPI?
+> >
+> > Yes. Is it a problem (*)? If so, you need to use ifdeffery, since __maybe_unused is
+> > not for the ID tables.
+> 
+> Ok, is there a reason it's not for the ID tables? Does it break something?
 
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
----
-Changes in v2:
-  - Converted .has_usi field to boolean
-  - Used true/false instead of 1/0 values in
-    EXYNOS_COMMON_SERIAL_DRV_DATA() macro
+It will look ugly. Why we define a table that may or may not be used?
+Sounds fishy.
 
- drivers/tty/serial/samsung_tty.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+On top of that why you should tell linker to waste resources on something
+that you may well know beforehand will be thrown away?
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index e2f49863e9c2..ca084c10d0bb 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -65,7 +65,7 @@ enum s3c24xx_port_type {
- struct s3c24xx_uart_info {
- 	char			*name;
- 	enum s3c24xx_port_type	type;
--	unsigned int		has_usi;
-+	bool			has_usi;
- 	unsigned int		port_type;
- 	unsigned int		fifosize;
- 	unsigned long		rx_fifomask;
-@@ -2780,7 +2780,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- #endif
- 
- #if defined(CONFIG_ARCH_EXYNOS)
--#define EXYNOS_COMMON_SERIAL_DRV_DATA_USI(_has_usi)		\
-+#define EXYNOS_COMMON_SERIAL_DRV_DATA(_has_usi)			\
- 	.info = &(struct s3c24xx_uart_info) {			\
- 		.name		= "Samsung Exynos UART",	\
- 		.type		= TYPE_S3C6400,			\
-@@ -2804,21 +2804,18 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 		.has_fracval	= 1,				\
- 	}							\
- 
--#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
--	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(0)
--
- static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA,
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(false),
- 	.fifosize = { 256, 64, 16, 16 },
- };
- 
- static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA,
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(false),
- 	.fifosize = { 64, 256, 16, 256 },
- };
- 
- static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA_USI(1),
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(true),
- 	.fifosize = { 256, 64, 64, 64 },
- };
- 
+> > *) while justifying this you also need to show why it's a problem specific
+> > to the ACPI IDs and not a problem for OF ones, which we have tons of in the
+> > Linux kernel without any guards (ifdeffery).
+> 
+> To be honest I don't care about this too much. I just wanted to cut
+> down some of the noise when I build my patch backlog so that warnings
+> in the stuff I'm trying to mainline are more visible.
+
+Which is good intention and thanks for doing this!
+
+> For what it's worth I think the OF ids are a bit wasteful.
+
+Exactly my point, but fixing one driver of zillions does not solve the issue
+in general.
+
+> For some
+> drivers where there are tons of broken variations they add a few K of
+> unneeded data. But since everyone now has gigabytes of memory I doubt
+> they care...
+
+Some actually cares.
+
+> I'm working with 64MB. :)
+
+Then I would imagine that you already using as less kernel configuration as
+possible and have as many modules as you want for the hardware that might
+appear to be connected to that board, right? Then again one driver with 100+
+bytes doesn't affect really your case. Disabling, for example PRINTK, will
+win much more for you.
+
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
