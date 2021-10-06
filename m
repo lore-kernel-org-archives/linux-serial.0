@@ -2,54 +2,58 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AACA4C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 10:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B694EC433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 10:52:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7DFEB60FC4
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 10:49:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7FB46610C7
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 10:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238097AbhJFKvQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Oct 2021 06:51:16 -0400
-Received: from phobos.denx.de ([85.214.62.61]:48306 "EHLO phobos.denx.de"
+        id S237836AbhJFKyV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Oct 2021 06:54:21 -0400
+Received: from phobos.denx.de ([85.214.62.61]:33464 "EHLO phobos.denx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229824AbhJFKvP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Oct 2021 06:51:15 -0400
+        id S229824AbhJFKyT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 Oct 2021 06:54:19 -0400
 Received: from mail.denx.de (unknown [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: festevam@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 35CA48324B;
-        Wed,  6 Oct 2021 12:49:21 +0200 (CEST)
+        by phobos.denx.de (Postfix) with ESMTPSA id A699D801B2;
+        Wed,  6 Oct 2021 12:52:25 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1633517361;
-        bh=oE7kQQEjC3EyGHKWcyJtq4yIkuBJWBR9pWa1Xn24X2M=;
+        s=phobos-20191101; t=1633517545;
+        bh=HMb4bIeDgFpYBqwvWEUi3CqKEZsaRf7KKO09N6gANrY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rKITM9isv0HQg8FQY8n2okU8Jzb03TjukOMGl+/x8GDwUEr2g5Rg+JZhEFjuYwOAK
-         Gqcdz8hJnJJPKhZY0dviMFuOWQ5/p9Fox8nC0pqMdISfYYSz8G1lzmqKsFjhJQ7Q56
-         2MB2iMM+/gRxBFfoskzxBkF+oEUGOJ1j4U7nbffJqp69bmtxDemFzzAhzLZ8LWgh9O
-         ilxPyKsfWmXbH3m4XIIBXRUx7hx5r3T0gkQeXZPF80sP4CkYP0wmy2e27ZiPRvM3kz
-         RCmGEeOWLEZDM9hWAAO9KIBvSoAb6sQiYSS+ZGWdF6k5WJFE8OPJxlIN5B1ZeMtKYX
-         86MKoQLl09BFQ==
+        b=HdikxxREPz8VNRR+istSllerrjDAe+djniO/Zjn/Xpm/QSsGE64zawHYqnmhs2V02
+         VdyDlIzQr9I1OnvKYhSGKMpLKTN2B5sXiMzokuLH/XXAhfMSKH1196j5CmBZSCHhUb
+         dtEuxwbcNHnON56M77ItoKzkoAhgPDM3D6OQQXiEPd9DQ6qVEgGtKYa+nMCB7lriH5
+         HLcjHCP7tFPb+NGZTPqZGd2DvxtdxXTyBjIjj/npz/7SaIxQthUy6qm/m4Bi9ZVpDS
+         YE547/djrWyNw5476mi3VQD15w+6waFRQsf61YUMt3LUyaFcS72ANufuvgB1z8j9+a
+         Y9Tog5enmelEA==
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-Date:   Wed, 06 Oct 2021 07:49:21 -0300
+Date:   Wed, 06 Oct 2021 07:52:25 -0300
 From:   Fabio Estevam <festevam@denx.de>
 To:     Johan Hovold <johan@kernel.org>
-Cc:     Tejun Heo <tj@kernel.org>, Lai Jiangshan <jiangshanlai@gmail.com>,
+Cc:     gregkh@linuxfoundation.org, michael@walle.cc,
+        linux-serial@vger.kernel.org, marex@denx.de,
+        u.kleine-koenig@pengutronix.de, Tejun Heo <tj@kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
         Petr Mladek <pmladek@suse.com>,
         Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         John Ogness <john.ogness@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] workqueue: fix state-dump console deadlock
-In-Reply-To: <20211006081115.20451-1-johan@kernel.org>
-References: <YV1Z8JslFiBSFGJF@hovoldconsulting.com>
- <20211006081115.20451-1-johan@kernel.org>
-Message-ID: <4b350c456eff081e92fe8868cccc52a5@denx.de>
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3]  serial: imx: Suppress false positive sysrq lockdep
+ warning
+In-Reply-To: <YV1Z8JslFiBSFGJF@hovoldconsulting.com>
+References: <20211001101815.729648-1-festevam@denx.de>
+ <YVcTluYb6XOiOXZn@hovoldconsulting.com>
+ <0bbe2832eb2dc3a7c32f3d484ab42208@denx.de>
+ <YV1Z8JslFiBSFGJF@hovoldconsulting.com>
+Message-ID: <c774fe18362b4cc19111078f2cd9ae82@denx.de>
 X-Sender: festevam@denx.de
 User-Agent: Roundcube Webmail/1.3.6
 X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
@@ -60,53 +64,29 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Johan,
 
-On 06/10/2021 05:11, Johan Hovold wrote:
-> Console drivers often queue work while holding locks also taken in 
-> their
-> console write paths, something which can lead to deadlocks on SMP when
-> dumping workqueue state (e.g. sysrq-t or on suspend failures).
-> 
-> For serial console drivers this could look like:
-> 
-> 	CPU0				CPU1
-> 	----				----
-> 
-> 	show_workqueue_state();
-> 	  lock(&pool->lock);		<IRQ>
-> 	  				  lock(&port->lock);
-> 					  schedule_work();
-> 					    lock(&pool->lock);
-> 	  printk();
-> 	    lock(console_owner);
-> 	    lock(&port->lock);
-> 
-> where workqueues are, for example, used to push data to the line
-> discipline, process break signals and handle modem-status changes. Line
-> disciplines and serdev drivers can also queue work on write-wakeup
-> notifications, etc.
-> 
-> Reworking every console driver to avoid queuing work while holding 
-> locks
-> also taken in their write paths would complicate drivers and is neither
-> desirable or feasible.
-> 
-> Instead use the deferred-printk mechanism to avoid printing while
-> holding pool locks when dumping workqueue state.
-> 
-> Note that there are a few WARN_ON() assertions in the workqueue code
-> which could potentially also trigger a deadlock. Hopefully the ongoing
-> printk rework will provide a general solution for this eventually.
-> 
-> This was originally reported after a lockdep splat when executing
-> sysrq-t with the imx serial driver.
-> 
-> Fixes: 3494fc30846d ("workqueue: dump workqueues on sysrq-t")
-> Cc: stable@vger.kernel.org	# 4.0
-> Reported-by: Fabio Estevam <festevam@denx.de>
-> Signed-off-by: Johan Hovold <johan@kernel.org>
+On 06/10/2021 05:10, Johan Hovold wrote:
 
-With this patch applied, I no longer get the lockdep splat when 
-executing
-sysrq-t with the imx serial driver, thanks:
+> Ok, thanks for testing. The above is what I meant and it does fix the
+> false-positive lockdep splat which motivated
+> uart_unlock_and_check_sysrq() to be added in the first place.
+> 
+> Looking closer at the splat you reported (which you've edited quite
+> heavily), it becomes apparent that you are now hitting a different
+> locking issue. And it's not a false positive this time.
+> 
+> There a problem with the workqueue debugging code, which unless fixed 
+> at
+> the source, would prevent any console driver from queueing work while
+> holding a lock also taken in their write paths. And
+> tty_flip_buffer_push() is just one example of many.
+> 
+> I can easily reproduce the splat with another serial driver, and I've
+> also been able to trigger the actual deadlock.
+> 
+> I've prepared a patch that takes care of the workqueue state dumping,
+> which I'll send as a reply to this mail. Would you mind giving it a 
+> spin
+> with the imx driver as well?
 
-Tested-by: Fabio Estevam <festevam@denx.de>
+Yes, after applying only your patch I no longer get the lockdep
+splat. I have replied with my Tested-by, thanks.
