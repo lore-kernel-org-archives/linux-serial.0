@@ -2,63 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85092C433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 06:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE2FC433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 07:05:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 644F761186
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 06:57:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8A885611C1
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 07:05:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237353AbhJFG65 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Oct 2021 02:58:57 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:34624
+        id S229715AbhJFHHd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Oct 2021 03:07:33 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:34822
         "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233968AbhJFG64 (ORCPT
+        by vger.kernel.org with ESMTP id S230227AbhJFHHc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Oct 2021 02:58:56 -0400
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com [209.85.167.70])
+        Wed, 6 Oct 2021 03:07:32 -0400
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D81463FFE5
-        for <linux-serial@vger.kernel.org>; Wed,  6 Oct 2021 06:57:02 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 6F52E3FFE6
+        for <linux-serial@vger.kernel.org>; Wed,  6 Oct 2021 07:05:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633503422;
-        bh=oBd5s4+6tEQT7bthyqlL4VvsdjmF+NhdczufCXOLTMo=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+        s=20210705; t=1633503940;
+        bh=nAaopoD7THJlOCA5cGnPBgaBffQraHOd+wkpq9Lg/oo=;
+        h=To:Cc:References:From:Subject:Message-ID:Date:MIME-Version:
          In-Reply-To:Content-Type;
-        b=pqe/RffEYeekMLQiMSMuP49z97xEm0tFOJPR9w1hprzCLcSFtJvmvYZBM3blRfhWC
-         9h1kUTfvxN+n1hq59AJiTyC8wyflvwO8bZ24z8y/Mr8vzuL+5l4SWgJGr03wUpmOLZ
-         z+Yj8IP4FR1OSU57q7YlZFN6H3TqswM3uMgo3ijg6tnRBJjxE+l3C8Cr0cvwC1eply
-         tM1AVVYQy7zDjXn6MA0k019AI6sfqaLp/CD8NFyhA1WjPqXUrHHp9Gf5MJ4d/8U15Q
-         Fjf+an158teNHNPKry4YA1HBRMZh2gE2LbymDquWDoAqAp3ClPGjScTOO1bGRZrW7w
-         rKF9eQkaWa78g==
-Received: by mail-lf1-f70.google.com with SMTP id a28-20020a056512021c00b003f5883dcd4bso1228636lfo.1
-        for <linux-serial@vger.kernel.org>; Tue, 05 Oct 2021 23:57:02 -0700 (PDT)
+        b=lE2IzW6Iq7psO+FwFOug6v7GLD4DmMxtU3TMcX+zDnXQCV+oUslzTPYUvd5Upj+/N
+         135Sl2nfqhE1F89FNEA1qzDL64qP3HvNDJtvy+Q/JvKUnUJ2SBUQv754yEYEmGvtTL
+         mr3/bEMzPCNDIuA4hBh1Ie2uEu3H8049JPV1V8PC9Fo0LHUZrNsi6WgWIURZRhfxQQ
+         /T5nN8rJJGyfoUffGguEa/vphijPjHCI5a+c/MHA0h4jvlQeHlSzBLBEdZFedRclIA
+         lXTaiYv2OP1DZje+9KbR/nW17dhyzazKWYawpIi1MSrCRVs6EjnLvieCa5BkeQKIXD
+         YOZjrL7O4BK6A==
+Received: by mail-lf1-f72.google.com with SMTP id c6-20020a05651200c600b003fc6d39efa4so1214901lfp.12
+        for <linux-serial@vger.kernel.org>; Wed, 06 Oct 2021 00:05:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=oBd5s4+6tEQT7bthyqlL4VvsdjmF+NhdczufCXOLTMo=;
-        b=ptxaL5WDuDP5hp5IVoJdWmyZdyHooM/3jrwn4ar2BEnSt7vbuhq+02rf8izEtLpAvF
-         l/vQ/wjPBW6cYBf5BdZmgtJu4Mh9KfeejvvKS8961RKNYpT7GR3NoYAHrBt/DnEQ8N7n
-         qD5hTh3WS7e7llP4I00trPzZKIpz+yME0esdjTumS9ex9VzM0AKuRqsdH5mMdquuh33H
-         sq2CYbKWjx14RkWdl2XudK5q1x1b0uEO6OalV/qvnB8QN3bx5ShlokS4CKrEsLgTMwon
-         nxfBT8TLZlbKs8x+CB3CE0TlnBYjCvuVogGQY2bYS5zHjMZ1g7SdE70S2lK1WI769OEQ
-         Fd9Q==
-X-Gm-Message-State: AOAM531TMogDuVCIOAgMtjNOAVTEOZwp4BtqTvr9iJK0IpXoscbQZ93b
-        b/cua8T+Jg+1heliPlCnxI6pZd90M9Mbpg+b08h84FxbMbfI525Mg7Fz/1A4zFyNQLjtsT4Um1A
-        WHhCRRhHwkb7fXlhhSrAzWJEBf5CuHW2BmFq5FY5pXQ==
-X-Received: by 2002:a19:c218:: with SMTP id l24mr8078209lfc.588.1633503421706;
-        Tue, 05 Oct 2021 23:57:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx0wVhgkx+rcS8gRjiHqaAE+DTq9q3wo4KrmTTq5XXnN9gwMBdMs1x5aVB70fvBmq+M87pWPg==
-X-Received: by 2002:a19:c218:: with SMTP id l24mr8078186lfc.588.1633503421491;
-        Tue, 05 Oct 2021 23:57:01 -0700 (PDT)
+        bh=nAaopoD7THJlOCA5cGnPBgaBffQraHOd+wkpq9Lg/oo=;
+        b=aBl2BPLr0ybITploSNwd12/UqfpZxE2F78t4nPBWgGyGwVpXVUaThOFmaw/XLY29jB
+         5WA8cK6nr/d85mAR0w45S5NzxUAMEeRIHFNY92tLOCEWipnue1naOBgpMLL3VK3ZvMnV
+         mWvj3NiXwpe6fedYPw7CXlGARsiG+lVIjU9u8wpD4r6ZEkel5mlxcaxROKjvyzHzKNXi
+         IB6Lc0hzhy3VKsUMM+06Hg8Ww3BprIl3IF92Z6hZd91cLL/WVg+JrpPOhv4Xwg1KN7DG
+         vl4RHWl0ARV3Uvazf+4hY+Z5IhU0C8g7OEeCZutWyF8UPVqrUbIF5SOgxy38VDhKHYbJ
+         pFgQ==
+X-Gm-Message-State: AOAM53171vk3VXoVT5CZ9d9HWCgoCFHIbjz/BqFSCywi8O6nElPycw69
+        ySYU8vRa1MMlHL/KXO7JE9Tta95/nxIEH4nQl2luciAqZ2STZAsgowp6irAPzAHJ/9sPZje6iUe
+        jJ+QfG8JNw0rI/avAIdhkpuCfe3I2fOnsUxO8kCaTRg==
+X-Received: by 2002:a05:651c:3c2:: with SMTP id f2mr27464287ljp.282.1633503939368;
+        Wed, 06 Oct 2021 00:05:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzqjP/ZlfCNmIjtfZP8v/DwYAmTZBGOomHxxpnyH8hP9lZlzbI9SDqyzFFWwnJY47k/i6lNzA==
+X-Received: by 2002:a05:651c:3c2:: with SMTP id f2mr27464269ljp.282.1633503939160;
+        Wed, 06 Oct 2021 00:05:39 -0700 (PDT)
 Received: from [192.168.0.20] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id d7sm2391106lfa.80.2021.10.05.23.57.00
+        by smtp.gmail.com with ESMTPSA id y3sm2177779lfh.132.2021.10.06.00.05.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 23:57:00 -0700 (PDT)
-Subject: Re: [PATCH 1/7] dt-bindings: arm: apple: Add apple,pmgr binding
+        Wed, 06 Oct 2021 00:05:38 -0700 (PDT)
 To:     Hector Martin <marcan@marcan.st>,
         linux-arm-kernel@lists.infradead.org
 Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
@@ -73,146 +72,144 @@ Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-serial@vger.kernel.org
 References: <20211005155923.173399-1-marcan@marcan.st>
- <20211005155923.173399-2-marcan@marcan.st>
+ <20211005155923.173399-3-marcan@marcan.st>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <18818eff-87d7-6a53-a4fd-7f3cbf625a0e@canonical.com>
-Date:   Wed, 6 Oct 2021 08:56:59 +0200
+Subject: Re: [PATCH 2/7] dt-bindings: power: Add apple,pmgr-pwrstate binding
+Message-ID: <b5b3fcb4-077b-d33d-03cc-ac0611cb56a1@canonical.com>
+Date:   Wed, 6 Oct 2021 09:05:37 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211005155923.173399-2-marcan@marcan.st>
+In-Reply-To: <20211005155923.173399-3-marcan@marcan.st>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 05/10/2021 17:59, Hector Martin wrote:
-> The PMGR block in Apple Silicon SoCs is responsible for SoC power
-> management. There are two PMGRs in T8103, with different register
-> layouts but compatible registers. In order to support this as well
-> as future SoC generations with backwards-compatible registers, we
-> declare these blocks as syscons and bind to individual registers
-> in child nodes. Each register controls one SoC device.
+> This syscon child node represents a single SoC device controlled by the
+> PMGR block. This layout allows us to declare all device power state
+> controls (power/clock gating and reset) in the device tree, including
+> dependencies, instead of hardcoding it into the driver. The register
+> layout is uniform.
 > 
-> The respective apple compatibles are defined in case device-specific
-> quirks are necessary in the future, but currently these nodes are
-> expected to be bound by the generic syscon driver.
+> Each pmgr-pwrstate node provides genpd and reset features, to be
+> consumed by downstream device nodes.
+> 
+> Future SoCs are expected to use backwards compatible registers, and the
+> "apple,pmgr-pwrstate" represents any such interfaces (possibly with
+> additional features gated by the more specific compatible), allowing
+> them to be bound without driver updates. If a backwards incompatible
+> change is introduced in future SoCs, it will require a new compatible,
+> such as "apple,pmgr-pwrstate-v2".
 > 
 > Signed-off-by: Hector Martin <marcan@marcan.st>
 > ---
->  .../bindings/arm/apple/apple,pmgr.yaml        | 74 +++++++++++++++++++
->  MAINTAINERS                                   |  1 +
->  2 files changed, 75 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+>  .../bindings/power/apple,pmgr-pwrstate.yaml   | 117 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 118 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml
 > 
-> diff --git a/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+> diff --git a/Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml b/Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml
 > new file mode 100644
-> index 000000000000..0304164e4140
+> index 000000000000..a14bf5f30ff0
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
-> @@ -0,0 +1,74 @@
+> +++ b/Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml
+> @@ -0,0 +1,117 @@
 > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 > +%YAML 1.2
 > +---
-> +$id: http://devicetree.org/schemas/arm/apple/apple,pmgr.yaml#
-
-Please don't store all Apple-related bindings in bindings/arm/apple, but
-instead group per device type like in most of other bindings. In this
-case - this looks like something close to power domain controller, so it
-should be in bindings/power/
-
+> +$id: http://devicetree.org/schemas/power/apple,pmgr-pwrstate.yaml#
 > +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +title: Apple SoC Power Manager (PMGR)
+> +title: Apple SoC PMGR Power States
 > +
 > +maintainers:
 > +  - Hector Martin <marcan@marcan.st>
 > +
+> +allOf:
+> +  - $ref: "power-domain.yaml#"
+> +
 > +description: |
 > +  Apple SoCs include a PMGR block responsible for power management,
 > +  which can control various clocks, resets, power states, and
-> +  performance features. This node represents the PMGR as a syscon,
-> +  with sub-nodes representing individual features.
+> +  performance features. This binding describes the device power
+> +  state registers, which control power states and resets.
 > +
-> +  Apple SoCs may have a secondary "mini-PMGR"; it is represented
-> +  separately in the device tree, but works the same way.
+> +  Each instance of a power controller within the PMGR syscon node
+> +  represents a generic power domain provider, as documented in
+> +  Documentation/devicetree/bindings/power/power-domain.yaml.
+> +  The provider controls a single SoC block. The power hierarchy is
+> +  represented via power-domains relationships between these nodes.
 > +
-> +select:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        enum:
-> +          - apple,t8103-pmgr
-> +          - apple,t8103-minipmgr
-> +          - apple,pmgr
+> +  See Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+> +  for the top-level PMGR node documentation.
 > +
-> +  required:
-> +    - compatible
+> +  IP cores belonging to a power domain should contain a
+> +  "power-domains" property that is a phandle for the
+> +  power domain node representing the domain.
+
+Skip this last paragraph - it is obvious in usage of power domains.
+Specific bindings should not duplicate generic knowledge.
+
 > +
 > +properties:
 > +  $nodename:
-> +    pattern: "^power-management@[0-9a-f]+$"
+> +    pattern: "^power-controller@[0-9a-f]+$"
+
+Usually we call nodes as power-domain.
+
 > +
 > +  compatible:
 > +    items:
 > +      - enum:
-> +          - apple,t8103-pmgr
-> +          - apple,t8103-minipmgr
-> +      - const: apple,pmgr
-> +      - const: syscon
-> +      - const: simple-mfd
-
-No power-domain-cells? Why? What exactly this device is going to do?
-Maybe I'll check the driver first.... :)
-
+> +          - apple,t8103-pmgr-pwrstate
+> +      - const: apple,pmgr-pwrstate
 > +
 > +  reg:
 > +    maxItems: 1
 > +
+> +  "#power-domain-cells":
+> +    const: 0
+> +
+> +  "#reset-cells":
+> +    const: 0
+> +
+> +  power-domains:
+> +    description:
+> +      Reference to parent power domains. A domain may have multiple parents,
+> +      and all will be powered up when it is powered.
+
+How many items?
+
+> +
+> +  apple,domain-name:
+
+Use existing binding "label".
+
+> +    description: |
+> +      Specifies the name of the SoC device being controlled. This is used to
+> +      name the power/reset domains.
+> +    $ref: /schemas/types.yaml#/definitions/string
+> +
+> +  apple,always-on:
+> +    description: |
+> +      Forces this power domain to always be powered up.
+> +    type: boolean
+> +
 > +required:
 > +  - compatible
 > +  - reg
+> +  - "#power-domain-cells"
+> +  - "#reset-cells"
+> +  - "apple,domain-name"
 > +
-> +additionalProperties: true
+> +additionalProperties: false
 
-additionalProperties: false
+Your parent schema should include this one for evaluating children.
 
-> +
-> +examples:
-> +  - |
-> +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        power-management@23b700000 {
-> +            compatible = "apple,t8103-pmgr", "apple,pmgr", "syscon", "simple-mfd";
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +            reg = <0x2 0x3b700000 0x0 0x14000>;
-> +        };
-> +
-> +        power-management@23b700000 {
-> +            compatible = "apple,t8103-minipmgr", "apple,pmgr", "syscon", "simple-mfd";
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +            reg = <0x2 0x3d280000 0x0 0xc000>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index abdcbcfef73d..d25598842d15 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1719,6 +1719,7 @@ B:	https://github.com/AsahiLinux/linux/issues
->  C:	irc://irc.oftc.net/asahi-dev
->  T:	git https://github.com/AsahiLinux/linux.git
->  F:	Documentation/devicetree/bindings/arm/apple.yaml
-> +F:	Documentation/devicetree/bindings/arm/apple/*
->  F:	Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
->  F:	Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
->  F:	arch/arm64/boot/dts/apple/
-> 
 
 
 Best regards,
