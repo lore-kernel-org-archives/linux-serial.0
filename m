@@ -2,153 +2,198 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5A3C433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 09:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE248C433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 10:07:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EDA0D61165
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 09:24:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8CC0660FDC
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 10:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbhJFJ0s convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Oct 2021 05:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237866AbhJFJ0s (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Oct 2021 05:26:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34004C06174E
-        for <linux-serial@vger.kernel.org>; Wed,  6 Oct 2021 02:24:56 -0700 (PDT)
-Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1mY3AD-00058X-K4; Wed, 06 Oct 2021 11:24:37 +0200
-Received: from pza by lupine with local (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1mY3AA-0007WP-J2; Wed, 06 Oct 2021 11:24:34 +0200
-Message-ID: <59334bc1f64926f8106a9b1e885dd88971d34117.camel@pengutronix.de>
-Subject: Re: [PATCH 3/7] soc: apple: Add driver for Apple PMGR power state
- controls
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Hector Martin <marcan@marcan.st>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
+        id S237861AbhJFKIy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Oct 2021 06:08:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59408 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237851AbhJFKIx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 Oct 2021 06:08:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EF0FB60F9E;
+        Wed,  6 Oct 2021 10:07:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633514822;
+        bh=nOOF4YLWBiXhevUt6Vd3TwpA1r313kmZLGqkn3CNjxw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sjxcnEkavf6OaKEnFcwjtBQb7rtQjR8ZfE1jaOB31ZumMGYprVESNdNzAHETh53ac
+         MWxHrtB61YUUpQyGLtyG8fwGjAC4/aTt2N3YtQ/ColA8w8iUIJoT+3q8GAR8BfvfgU
+         /fhbChpCKVuNNqz19xdPWmmQ3VFpP3Ja8yoKxYKf9WKRFSnmJLSCCbHuKuprF+bQwy
+         8CUWn9fIrTUNZQOuIEW40JBAOsO3gXVkLvXxOfnfwIqEm8NFeAXwHcOF4JZt4lD3Qd
+         H2KLWCjTTzSRFrL4UuJ15z72+a10PDJg9afOEgcxrBq4JxbMaiCJPrF9L9QvqNOfeC
+         L76O95w+HqAQw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mY3pG-0005c1-4x; Wed, 06 Oct 2021 12:07:02 +0200
+Date:   Wed, 6 Oct 2021 12:07:02 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Tejun Heo <tj@kernel.org>, Lai Jiangshan <jiangshanlai@gmail.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Date:   Wed, 06 Oct 2021 11:24:34 +0200
-In-Reply-To: <20211005155923.173399-4-marcan@marcan.st>
-References: <20211005155923.173399-1-marcan@marcan.st>
-         <20211005155923.173399-4-marcan@marcan.st>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.30.5-1.1 
+        Fabio Estevam <festevam@denx.de>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] workqueue: fix state-dump console deadlock
+Message-ID: <YV11RhWOroeHjbyU@hovoldconsulting.com>
+References: <YV1Z8JslFiBSFGJF@hovoldconsulting.com>
+ <20211006081115.20451-1-johan@kernel.org>
+ <YV1qBZiXx/IADcb6@alley>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YV1qBZiXx/IADcb6@alley>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Hector,
-
-On Wed, 2021-10-06 at 00:59 +0900, Hector Martin wrote:
-> Implements genpd and reset providers for downstream devices. Each
-> instance of the driver binds to a single register and represents a
-> single SoC power domain.
+On Wed, Oct 06, 2021 at 11:19:01AM +0200, Petr Mladek wrote:
+> On Wed 2021-10-06 10:11:15, Johan Hovold wrote:
+> > Console drivers often queue work while holding locks also taken in their
+> > console write paths, something which can lead to deadlocks on SMP when
+> > dumping workqueue state (e.g. sysrq-t or on suspend failures).
+> > 
+> > For serial console drivers this could look like:
+> > 
+> > 	CPU0				CPU1
+> > 	----				----
+> > 
+> > 	show_workqueue_state();
+> > 	  lock(&pool->lock);		<IRQ>
+> > 	  				  lock(&port->lock);
+> > 					  schedule_work();
+> > 					    lock(&pool->lock);
+> > 	  printk();
+> > 	    lock(console_owner);
+> > 	    lock(&port->lock);
+> > 
+> > where workqueues are, for example, used to push data to the line
+> > discipline, process break signals and handle modem-status changes. Line
+> > disciplines and serdev drivers can also queue work on write-wakeup
+> > notifications, etc.
+> > 
+> > Reworking every console driver to avoid queuing work while holding locks
+> > also taken in their write paths would complicate drivers and is neither
+> > desirable or feasible.
+> > 
+> > Instead use the deferred-printk mechanism to avoid printing while
+> > holding pool locks when dumping workqueue state.
+> > 
+> > Note that there are a few WARN_ON() assertions in the workqueue code
+> > which could potentially also trigger a deadlock. Hopefully the ongoing
+> > printk rework will provide a general solution for this eventually.
+> > 
+> > This was originally reported after a lockdep splat when executing
+> > sysrq-t with the imx serial driver.
+> > 
+> > Fixes: 3494fc30846d ("workqueue: dump workqueues on sysrq-t")
+> > Cc: stable@vger.kernel.org	# 4.0
+> > Reported-by: Fabio Estevam <festevam@denx.de>
+> > Signed-off-by: Johan Hovold <johan@kernel.org>
+> > ---
+> >  kernel/workqueue.c | 10 +++++++++-
+> >  1 file changed, 9 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+> > index 33a6b4a2443d..fded64b48b96 100644
+> > --- a/kernel/workqueue.c
+> > +++ b/kernel/workqueue.c
+> > @@ -4830,8 +4830,16 @@ void show_workqueue_state(void)
+> >  
+> >  		for_each_pwq(pwq, wq) {
+> >  			raw_spin_lock_irqsave(&pwq->pool->lock, flags);
+> > -			if (pwq->nr_active || !list_empty(&pwq->inactive_works))
+> > +			if (pwq->nr_active || !list_empty(&pwq->inactive_works)) {
+> > +				/*
+> > +				 * Defer printing to avoid deadlocks in console
+> > +				 * drivers that queue work while holding locks
+> > +				 * also taken in their write paths.
+> > +				 */
+> > +				printk_deferred_enter();
+> >  				show_pwq(pwq);
+> > +				printk_deferred_exit();
+> > +			}
+> >  			raw_spin_unlock_irqrestore(&pwq->pool->lock, flags);
+> >  			/*
+> >  			 * We could be printing a lot from atomic context, e.g.
 > 
-> The driver does not currently implement all features (auto-pm,
-> clockgate-only state), but we declare the respective registers for
-> documentation purposes. These features will be added as they become
-> useful for downstream devices.
+> This handles only one printk() caller. But there are many more callers
+> under pool->lock, for example in the next for-cycle in this function:
 > 
-> This also creates the apple/soc tree and Kconfig submenu.
+> 	for_each_pool(pool, pi) {
+> 		raw_spin_lock_irqsave(&pool->lock, flags);
+> [...]
+> 		pr_info("pool %d:", pool->id);
+> 		pr_cont_pool_info(pool);
+> 		pr_cont(" hung=%us workers=%d",
+
+Heh, thanks for catching that one. As noted above, I did look through
+the other instances, which are mostly asserts, but missed this obvious
+one.
+
+There does not seem to be "many more callers" under the pool lock when
+not counting the WARN_ON()s (which we also have in the scheduler code).
+
+> And this is the problem with printk_deferred() and printk_deferred_enter().
+> It is a "catch a mole" approach. It might end up with switching half
+> of the kernel into printk_deferred().
+
+The workqueue implementation is core infrastructure where, like in the
+scheduler, some extra care can be justified.
+ 
+> John Ogness is working on a generic solution where any printk() will
+> be deferred out of box. consoles will be called from a dedicated
+> kthreads.
 > 
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  MAINTAINERS                             |   1 +
->  drivers/soc/Kconfig                     |   1 +
->  drivers/soc/Makefile                    |   1 +
->  drivers/soc/apple/Kconfig               |  21 ++
->  drivers/soc/apple/Makefile              |   2 +
->  drivers/soc/apple/apple-pmgr-pwrstate.c | 281 ++++++++++++++++++++++++
->  6 files changed, 307 insertions(+)
->  create mode 100644 drivers/soc/apple/Kconfig
->  create mode 100644 drivers/soc/apple/Makefile
->  create mode 100644 drivers/soc/apple/apple-pmgr-pwrstate.c
+> John has already worked on reworking printk() two years or so. It gets
+> slowly because we need to be careful. Also we started with
+> implementing lockless ringbuffer which was a big challenge. Anyway, there
+> is a stable progress. The lockless ringbuffer is done. And the
+> kthreads are the very next step.
 > 
-[...]
-> diff --git a/drivers/soc/apple/apple-pmgr-pwrstate.c b/drivers/soc/apple/apple-pmgr-pwrstate.c
-> new file mode 100644
-> index 000000000000..a0338dbb29b8
-> --- /dev/null
-> +++ b/drivers/soc/apple/apple-pmgr-pwrstate.c
-> @@ -0,0 +1,281 @@
-[...]
-> +static int apple_pmgr_reset_assert(struct reset_controller_dev *rcdev, unsigned long id)
-> +{
-> +	struct apple_pmgr_ps *ps = rcdev_to_apple_pmgr_ps(rcdev);
-> +
-> +	mutex_lock(&ps->genpd.mlock);
-> +
-> +	if (ps->genpd.status == GENPD_STATE_OFF)
-> +		dev_err(ps->dev, "PS 0x%x: asserting RESET while powered down\n", ps->offset);
-> +
-> +	dev_dbg(ps->dev, "PS 0x%x: assert reset\n", ps->offset);
-> +	/* Quiesce device before asserting reset */
-> +	regmap_set_bits(ps->regmap, ps->offset, APPLE_PMGR_DEV_DISABLE);
-> +	regmap_set_bits(ps->regmap, ps->offset, APPLE_PMGR_RESET);
-> +
-> +	mutex_unlock(&ps->genpd.mlock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int apple_pmgr_reset_deassert(struct reset_controller_dev *rcdev, unsigned long id)
-> +{
-> +	struct apple_pmgr_ps *ps = rcdev_to_apple_pmgr_ps(rcdev);
-> +
-> +	mutex_lock(&ps->genpd.mlock);
-> +
-> +	dev_dbg(ps->dev, "PS 0x%x: deassert reset\n", ps->offset);
-> +	regmap_clear_bits(ps->regmap, ps->offset, APPLE_PMGR_RESET);
-> +	regmap_clear_bits(ps->regmap, ps->offset, APPLE_PMGR_DEV_DISABLE);
-> +
-> +	if (ps->genpd.status == GENPD_STATE_OFF)
-> +		dev_err(ps->dev, "PS 0x%x: RESET was deasserted while powered down\n", ps->offset);
-> +
-> +	mutex_unlock(&ps->genpd.mlock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int apple_pmgr_reset_reset(struct reset_controller_dev *rcdev, unsigned long id)
-> +{
-> +	int ret;
-> +
-> +	ret = apple_pmgr_reset_assert(rcdev, id);
-> +	if (ret)
-> +		return ret;
-> +
-> +	usleep_range(APPLE_PMGR_RESET_TIME, 2 * APPLE_PMGR_RESET_TIME);
+> printk_deferred() is currently used only in the scheduler code where
+> the deadlocks really happened in the past. 
 
-Is this delay known to be long enough for all consumers using the
-reset_control_reset() functionality? Are there any users at all?
+It's actually used in a few places outside of the scheduler already to
+prevent deadlocks and suppress lockdep warnings.
 
-Is it ok for a genpd transition to happen during this sleep?
+> printk_deferred_enter()
+> is used only in printk() because it would be otherwise hard to debug
+> and lockdep would always report problems there.
 
-> +	return apple_pmgr_reset_deassert(rcdev, id);
-> +}
+printk_deferred_enter() is also used in a couple of places outside of
+printk already.
 
-regards
-Philipp
+> From this perspective, I suggest to ignore this possible deadlock if
+> they do not happen in the real life.
+> 
+> If you really want to avoid the lockdep report. Alternative and
+> probably easier workaround is to temporary disable lockdep around
+> queuing the work in the console code.
+
+Now *that* would be playing whack-a-mole. As I alluded to in the commit
+message there are ton of places where we queue work under the serial
+driver port lock and its generally not done explicitly in the drivers
+themselves but rather in the tty layer helpers, line disciplines, serdev
+drivers, etc.
+
+Disabling lockdep is not an option here.
+
+> I do not see any reason
+> why workqueue code would call back to console code directly.
+> So the only source of a possible deadlock is the printk() path.
+> But I think that it is not worth it. It is better to concentrate
+> on the printk() rework.
+
+Right, it's only printk, and it's only in show_workqueue_state() (when
+ignoring the assertions). Since we can't suppress the lockdep warning in
+the console drivers, and since this function is called outside of sysrq
+handling too (e.g. on suspend failures), I'd say the workaround is
+warranted until the printk rework is done.
+
+Johan
