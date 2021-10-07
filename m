@@ -2,104 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271C0C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 13:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E58F7C433F5
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 13:34:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0AB4061251
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 13:33:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D267A611C1
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 13:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241596AbhJGNfG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Oct 2021 09:35:06 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:36600
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241508AbhJGNfG (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Oct 2021 09:35:06 -0400
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0214D3FFE4
-        for <linux-serial@vger.kernel.org>; Thu,  7 Oct 2021 13:33:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633613592;
-        bh=XOOtcMxu4VGplGw4HdBrnq8LT8wk3wMvDJtbbxYgvsw=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=Hm0ObiBkLQ/uvvAkSfpV/DAlHEH9GBBRC7DBOC4aBdXrFVvwWquRyo2ArUINBLpRH
-         F+1aqEXzH9gx8FcWOB1rDC7msnQi2BTzZHzoKzqeqNQqebfyA3M4Rzr+9pcClMtgau
-         f8RQA/Shljmh728voCd24eCl92vpQLDNECfNUlnJRPYUZrPMxzjJBX4epn2vIMQHMm
-         bDuO9JtXZ+s3ODF/Lb8pCXnX9CCyEiih6qE2Btoc01BLTXxYAJTPVsBrQSwCEolvvI
-         xuu+lSx0/oMTno4oHuLsSIG9M82kxFGM06tSIxqbmcEeCaGDA2hO7KUBOAkZ329wfY
-         feVa95XfbHrfw==
-Received: by mail-wr1-f72.google.com with SMTP id 41-20020adf812c000000b00160dfbfe1a2so1037779wrm.3
-        for <linux-serial@vger.kernel.org>; Thu, 07 Oct 2021 06:33:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XOOtcMxu4VGplGw4HdBrnq8LT8wk3wMvDJtbbxYgvsw=;
-        b=eR/KByOX7PPp1VJCDKnIoWemdBcebXsH123nEQ4bZDBPYkekccZx5J66VDSdPCDPVZ
-         q9d06B52FNDbssqlsIQUYz2c9KFrg6k/eIUVi1clXH8rxRER2xUumScjK6beqebh/Wwu
-         yA3/4VmDF+FLp1dskO3BlilSf4fEwi68UKt1T5ZR5g5kwonz2kbuQVnWTM5ZRpVgJ5Yu
-         OiMlAmLxCZOVY7H1Sktm4T7CZmiZu/xYgeMSmYkvrOxSjLaqIJdW6JJVma3Hwpj9n0S/
-         utzhCJ+GprYAN/qCA8bm7KGfTOX+xTK2MPufhHf9CjNJJ5NIJkZx1ZQoZ8HUSpbaNgOQ
-         N/Ew==
-X-Gm-Message-State: AOAM532jq73JHDzVECp8UZw9QcOr1Gpw8Jgs2lW1NQfkpvfPIu6r81XI
-        ga6kKhoQjNWqWP4IU8YijoZirGXm3MnScuAwXHHH3y7nV6BFHVJxkMRQ8FaplzKuClCaqZ2NHKC
-        QGTElDwllLbw/6T1kH0S7xFB34/Br0ILlxmYtd4W++g==
-X-Received: by 2002:a1c:4487:: with SMTP id r129mr16396830wma.127.1633613591677;
-        Thu, 07 Oct 2021 06:33:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxjsCDvHGtPoTWQUiPu1xD+rfOLwo1X6CpLXbYUd/gRjlfYdJKXG9PE5H5BcQatFGmrqVvqCA==
-X-Received: by 2002:a1c:4487:: with SMTP id r129mr16396804wma.127.1633613591523;
-        Thu, 07 Oct 2021 06:33:11 -0700 (PDT)
-Received: from [192.168.1.115] (xdsl-188-155-186-13.adslplus.ch. [188.155.186.13])
-        by smtp.gmail.com with ESMTPSA id y1sm13474952wrh.89.2021.10.07.06.33.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Oct 2021 06:33:11 -0700 (PDT)
-Subject: Re: [PATCH v2] tty: serial: samsung: Improve naming for common macro
-To:     Sam Protsenko <semen.protsenko@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20211005095800.2165-1-semen.protsenko@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <e2e8cf83-b888-9472-c25d-03c4068e25d3@canonical.com>
-Date:   Thu, 7 Oct 2021 15:33:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S241180AbhJGNg2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Oct 2021 09:36:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41148 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241606AbhJGNg1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 7 Oct 2021 09:36:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1AC80611C1;
+        Thu,  7 Oct 2021 13:34:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633613674;
+        bh=4wjtcTAxaenZW1j7DRxaTlTJN1KudhG8p4aKkq2DvOQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UsM5KSY/sAom8geqF4dP1DlLlL2HUk7z/m+QnJ7RXbASSyt0OB3kIrtAqJldAmkoc
+         Z/HgmWCxvDL5BqdOY/NqmJ6p4asvXm191Dm2Y5LxGsIPd4ITFXYMPk6XcUxJ3qM5T4
+         6uSUcbTQZNVioylC6TGxgU3ZzA69vGNGtZgWeHnj4YSOd27xXlnulYSmFCCmP5a+HP
+         Uj0ojtafMn4KXSoyLaxSgg7sFc6+WvbSDWbFvI9wBT9oXn3dOuCBV7Y5O6JcqCiq6f
+         Y6n/NUP7LEkg8HvswQu7SQ39dfQw/eEBW4dchr0jV3CQUKANtrxc4BTaspKmgp4J4n
+         jh0qfiS103npg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mYTXc-0007Y6-Ik; Thu, 07 Oct 2021 15:34:33 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+Subject: [PATCH] Revert "serial: 8250: Fix reporting real baudrate value in c_ospeed field"
+Date:   Thu,  7 Oct 2021 15:31:46 +0200
+Message-Id: <20211007133146.28949-1-johan@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <20211005095800.2165-1-semen.protsenko@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05/10/2021 11:58, Sam Protsenko wrote:
-> Having "_USI" suffix in EXYNOS_COMMON_SERIAL_DRV_DATA_USI() macro is
-> confusing. Rename it to just EXYNOS_COMMON_SERIAL_DRV_DATA() and provide
-> USI registers availability for all Exynos variants instead. While at it,
-> also convert .has_usi field type to bool, so its usage is more obvious.
-> 
-> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> ---
-> Changes in v2:
->   - Converted .has_usi field to boolean
->   - Used true/false instead of 1/0 values in
->     EXYNOS_COMMON_SERIAL_DRV_DATA() macro
-> 
->  drivers/tty/serial/samsung_tty.c | 13 +++++--------
->  1 file changed, 5 insertions(+), 8 deletions(-)
-> 
+This reverts commit 32262e2e429cdb31f9e957e997d53458762931b7.
 
+The commit in question claims to determine the inverse of
+serial8250_get_divisor() but failed to notice that some drivers override
+the default implementation using a get_divisor() callback.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+This means that the computed line-speed values can be completely wrong
+and results in regular TCSETS requests failing (the incorrect values
+would also be passed to any overridden set_divisor() callback).
 
+Similarly, it also failed to honour the old (deprecated) ASYNC_SPD_FLAGS
+and would break applications relying on those when re-encoding the
+actual line speed.
 
-Best regards,
-Krzysztof
+There are also at least two quirks, UART_BUG_QUOT and an OMAP1510
+workaround, which were happily ignored and that are now broken.
+
+Finally, even if the offending commit were to be implemented correctly,
+this is a new feature and not something which should be backported to
+stable.
+
+Cc: Pali Rohár <pali@kernel.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/serial/8250/8250_port.c | 17 -----------------
+ 1 file changed, 17 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index dc6900b2daa8..66374704747e 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2584,19 +2584,6 @@ static unsigned int serial8250_get_divisor(struct uart_port *port,
+ 	return serial8250_do_get_divisor(port, baud, frac);
+ }
+ 
+-static unsigned int serial8250_compute_baud_rate(struct uart_port *port,
+-						 unsigned int quot)
+-{
+-	if ((port->flags & UPF_MAGIC_MULTIPLIER) && quot == 0x8001)
+-		return port->uartclk / 4;
+-	else if ((port->flags & UPF_MAGIC_MULTIPLIER) && quot == 0x8002)
+-		return port->uartclk / 8;
+-	else if (port->type == PORT_NPCM)
+-		return DIV_ROUND_CLOSEST(port->uartclk - 2 * (quot + 2), 16 * (quot + 2));
+-	else
+-		return DIV_ROUND_CLOSEST(port->uartclk, 16 * quot);
+-}
+-
+ static unsigned char serial8250_compute_lcr(struct uart_8250_port *up,
+ 					    tcflag_t c_cflag)
+ {
+@@ -2727,14 +2714,11 @@ void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
+ 
+ 	baud = serial8250_get_baud_rate(port, termios, NULL);
+ 	quot = serial8250_get_divisor(port, baud, &frac);
+-	baud = serial8250_compute_baud_rate(port, quot);
+ 
+ 	serial8250_rpm_get(up);
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+-	if (tty_termios_baud_rate(termios))
+-		tty_termios_encode_baud_rate(termios, baud, baud);
+ 
+ 	serial8250_set_divisor(port, baud, quot, frac);
+ 	serial_port_out(port, UART_LCR, up->lcr);
+@@ -2766,7 +2750,6 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	baud = serial8250_get_baud_rate(port, termios, old);
+ 	quot = serial8250_get_divisor(port, baud, &frac);
+-	baud = serial8250_compute_baud_rate(port, quot);
+ 
+ 	/*
+ 	 * Ok, we're now changing the port state.  Do it with
+-- 
+2.32.0
+
