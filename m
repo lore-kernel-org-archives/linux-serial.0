@@ -2,111 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 469C6C433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 12:03:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E52C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 13:10:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2A16561251
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 12:03:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AD98161139
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 13:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241089AbhJGMFd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Oct 2021 08:05:33 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:57447 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232915AbhJGMFd (ORCPT
+        id S241166AbhJGNMo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Oct 2021 09:12:44 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:35782
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241122AbhJGNMh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Oct 2021 08:05:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1633608220; x=1665144220;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=KfmQwXwjpkUqzPCW9Vy8rMSdY83umdm3xb0l1zYj0nw=;
-  b=YZVlhv2pW2mJHnciZ2vVYwG4bIhtRMJHBr03Z8ieU5nMMelrRFX9cA4A
-   oshxxR78pNKpimdwuGtTAQ4kOlytFh4f7W9NrUTS2z5zVMUmCNROecpQr
-   WS5EDXAK0oKldfX1KuPFck8OOxY3vStpWnR8GnzAPl3zenWcSzG1y0Dbm
-   HzvF60GT1gtf+EOG+uQjOww2RZJ+XQjLuMquAcidm4bTrRYQWtU4zGooS
-   Ydxl+xffuN4us2coq4/xUZm7qKiVt+VDz44tyIjzMEtHPkfhFbOSaBPsz
-   KOIYUc9GAqlY4n3uXAOjXf/MhA1thcJ6ZjlGXX8BmgZOh63Q2wQ29kxS2
-   g==;
-IronPort-SDR: sr4jnZM+FJXVKAHXkdEmopkV7mfeWrF/Zy72PBxUBULmyt8Ycn01hSZ4g8SZQMHXuvoIn7oQ0j
- vVoxKUZz7jx4OwaT25md21ZKYO4zORIzQ0j67knVZmyERH6sf2J4LZ+FuSYax3cxc+c/+JcHrH
- Z+XFnXpd0Gbame39i9wKftNf1q0QcF9Maz2K1BmMSza1AAZqHlwR2bt/vUkwfQ5cDoAG/N3mMV
- BqeLrTql0HR//pRz+PvTTjohYBThBRAR7d7Pzj0mXnu3C2/H5pZ66djoTPRniQzn1wh0GYS+qv
- a5kXWeqsevX3iI57bv9AAE+p
-X-IronPort-AV: E=Sophos;i="5.85,354,1624345200"; 
-   d="scan'208";a="134584212"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Oct 2021 05:03:39 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 7 Oct 2021 05:03:39 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Thu, 7 Oct 2021 05:03:36 -0700
-Subject: Re: [PATCH] tty: serial: atmel: use macros instead of hardcoded
- values
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <alexandre.belloni@bootlin.com>,
-        <ludovic.desroches@microchip.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20211007112014.2332019-1-claudiu.beznea@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <336df8ff-72fa-90af-607b-eeb683de4a37@microchip.com>
-Date:   Thu, 7 Oct 2021 14:03:36 +0200
+        Thu, 7 Oct 2021 09:12:37 -0400
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A10153FFF3
+        for <linux-serial@vger.kernel.org>; Thu,  7 Oct 2021 13:10:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633612243;
+        bh=JhSvZ4bZ9XDCLRxn5WXaBJyzQncLRhcDh11CxYaApWU=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=SQRww+CWPi/Q2poXGMn6psrMEj+mkI4ulRfIKaTDI/o4eRN+80ZrPrMGCf5L1+HFJ
+         iPfifVGNDcCAusIJAFWrcCi1E6KhQcYoeAfbYW3OYnHy+eaipA173pWYSzlu3Xm3CQ
+         GfIDX4iWcEtlyo+LyV/SoslxUoJqJu/KEK7PNd+A9hQHbyZgGeJRxkuj81Q8reK13n
+         c05FMx6GsCJl+GifABM41Eruy9YrkEfssnIb+BFChN1xfyrSbtapu5LXl3+tlCTY7M
+         7ntnP0VIShhej0fU8IyLuZlDj7sH/m/lBduBe6vhZGa1YJ/qYWQC+FsefDakNaADYd
+         hjvA72BltRGvA==
+Received: by mail-wr1-f72.google.com with SMTP id e12-20020a056000178c00b001606927de88so4644331wrg.10
+        for <linux-serial@vger.kernel.org>; Thu, 07 Oct 2021 06:10:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JhSvZ4bZ9XDCLRxn5WXaBJyzQncLRhcDh11CxYaApWU=;
+        b=HgIeM/ytzAlQpOk1zFiC4YN/5oRp/n6fOZX4JdoZdlINxAql9Ew40xvnT9/mN2WhVi
+         83HO7/4Q9VJ/VePM2qz3pZSeBLjRE0XHL797qg8h/DDHTVXSxiL+P6qYOWI0GGcy2Hfj
+         Mfxnie3bE8jq0CJwcNZ1dcIj7WrS/US+qEl0Dxmgn/nuZY1uy+1SDpDosZK5iMOt1q57
+         bjy4/NCcIjbGsQngC3ymON5r8Ufpow1IMAIZmD8pdotTHQWMM1JcWMtq8nUgMigYLZs5
+         Snv/2/NnU4QGzf+ADYsL+KyUgrY8C9+xAHPKa5u4aCmHfeSa/rFkasTE2kBXU8sVGxzz
+         aF/A==
+X-Gm-Message-State: AOAM531NeOGTutoQZuCPX2z0C1EORo0an/gU5pU+WfVF15enm5N6BTxj
+        e7HTvQRVTAIQE1pLhqNbat5TUPUiw2ZacEUQQzcE/Al6mMNHpKljFBl2NIrgVjPwvnioloEkPQ0
+        PMJgM0VmvZ9OUd3xKArebUUTq3EMov4NEV6Ttu9d3NQ==
+X-Received: by 2002:a1c:ac86:: with SMTP id v128mr4569220wme.3.1633612241868;
+        Thu, 07 Oct 2021 06:10:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzLwRYPKIpB+6rBu8rzxazPdAbZRZWVT14g4gFsnMg69geQZ9M20oFRASa/T2iiTTB4yzVtpw==
+X-Received: by 2002:a1c:ac86:: with SMTP id v128mr4568961wme.3.1633612239499;
+        Thu, 07 Oct 2021 06:10:39 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-186-13.adslplus.ch. [188.155.186.13])
+        by smtp.gmail.com with ESMTPSA id v16sm2571457wrq.39.2021.10.07.06.10.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Oct 2021 06:10:39 -0700 (PDT)
+Subject: Re: [PATCH 1/7] dt-bindings: arm: apple: Add apple,pmgr binding
+To:     Hector Martin <marcan@marcan.st>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20211005155923.173399-1-marcan@marcan.st>
+ <20211005155923.173399-2-marcan@marcan.st>
+ <18818eff-87d7-6a53-a4fd-7f3cbf625a0e@canonical.com>
+ <57991dac-196e-a76d-831a-d4ac166bfe29@marcan.st>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <a5d52d94-4d42-6842-a40f-db25d2581929@canonical.com>
+Date:   Thu, 7 Oct 2021 15:10:37 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211007112014.2332019-1-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+In-Reply-To: <57991dac-196e-a76d-831a-d4ac166bfe29@marcan.st>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07/10/2021 at 13:20, Claudiu Beznea wrote:
-> Use UART_PM_STATE_ON, UART_PM_STATE_OFF instead of hardcoded values.
+On 06/10/2021 17:26, Hector Martin wrote:
+> On 06/10/2021 15.56, Krzysztof Kozlowski wrote:
+>>> diff --git a/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+>>> new file mode 100644
+>>> index 000000000000..0304164e4140
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+>>> @@ -0,0 +1,74 @@
+>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/arm/apple/apple,pmgr.yaml#
+>>
+>> Please don't store all Apple-related bindings in bindings/arm/apple, but
+>> instead group per device type like in most of other bindings. In this
+>> case - this looks like something close to power domain controller, so it
+>> should be in bindings/power/
 > 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-
-Reviewed-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-
-Thanks Claudiu, best regards,
-   Nicolas
-
-> ---
->   drivers/tty/serial/atmel_serial.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> This is a controller that, right now, is only used to instantiate device 
+> power management controls, but the controller itself is just a generic 
+> syscon device. Depending on the register range, it could conceivably 
+> encompass other register types (e.g. clock selects) within it, though 
+> I'm not sure I want to do that right now. Apple calls several of these 
+> different register sets as a whole a "PMGR". So I'm not sure if it 
+> really qualifies as "just" a power domain controller. If we want to 
+> restrict this to the power state portion of PMGR, then it might make 
+> sense to call it something more specific...
 > 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 249ea35088d2..2c99a47a2535 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2084,7 +2084,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
->   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
->   
->   	switch (state) {
-> -	case 0:
-> +	case UART_PM_STATE_ON:
->   		/*
->   		 * Enable the peripheral clock for this serial port.
->   		 * This is called on uart_open() or a resume event.
-> @@ -2094,7 +2094,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
->   		/* re-enable interrupts if we disabled some on suspend */
->   		atmel_uart_writel(port, ATMEL_US_IER, atmel_port->backup_imr);
->   		break;
-> -	case 3:
-> +	case UART_PM_STATE_OFF:
->   		/* Back up the interrupt mask and disable all interrupts */
->   		atmel_port->backup_imr = atmel_uart_readl(port, ATMEL_US_IMR);
->   		atmel_uart_writel(port, ATMEL_US_IDR, -1);
+> See arm/rockchip/pmu.yaml for the setup this is modeled after.
 > 
 
+Makes sense now and actually few other designs including Samsung Exynos
+have it as well.
 
--- 
-Nicolas Ferre
+
+Best regards,
+Krzysztof
