@@ -2,77 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 454BBC433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 13:35:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF23FC433F5
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 14:21:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1BAC3611C1
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 13:35:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A20AA610EA
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 14:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233331AbhJGNhe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Oct 2021 09:37:34 -0400
-Received: from mout02.posteo.de ([185.67.36.142]:54653 "EHLO mout02.posteo.de"
+        id S241664AbhJGOX0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Oct 2021 10:23:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40484 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233197AbhJGNhe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Oct 2021 09:37:34 -0400
-X-Greylist: delayed 436 seconds by postgrey-1.27 at vger.kernel.org; Thu, 07 Oct 2021 09:37:34 EDT
-Received: from submission (posteo.de [89.146.220.130]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id AF13D240107
-        for <linux-serial@vger.kernel.org>; Thu,  7 Oct 2021 15:28:22 +0200 (CEST)
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4HQBwL6nS7z9rxK;
-        Thu,  7 Oct 2021 15:28:18 +0200 (CEST)
-Subject: Re: [PATCH] tty: serial: atmel: use macros instead of hardcoded
- values
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        richard.genoud@gmail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20211007112014.2332019-1-claudiu.beznea@microchip.com>
-From:   Richard Genoud <richard.genoud@gmail.com>
-Message-ID: <5e1ab713-b198-b3ed-27eb-0af728ebe274@posteo.net>
-Date:   Thu,  7 Oct 2021 13:28:18 +0000
+        id S241042AbhJGOX0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 7 Oct 2021 10:23:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DA10F610CC;
+        Thu,  7 Oct 2021 14:21:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1633616492;
+        bh=xTguGxb+pvfpaW8x929jVClMOsoXSvmHcgRLD9+ZJIk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FFLspULtvPRf6zffVeQl4pF5v3TsK9H33qbffAfhUHTtRE7+N3w5yENNsIMH7xUlz
+         ANAEhsEb5S+yVA9TmCVyuOpcttIqjWm7cZCMcRjBJJh7tMCyn/HYWD5zyT68lIqRQ4
+         38ypdOnelP0+T3knnMsp9mBKTlx683lZ+t9gA3zI=
+Date:   Thu, 7 Oct 2021 16:21:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Subject: Re: [PATCH] Revert "serial: 8250: Fix reporting real baudrate value
+ in c_ospeed field"
+Message-ID: <YV8CavX93a8XCSJP@kroah.com>
+References: <20211007133146.28949-1-johan@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20211007112014.2332019-1-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr-FR
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211007133146.28949-1-johan@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 07/10/2021 à 13:20, Claudiu Beznea a écrit :
-> Use UART_PM_STATE_ON, UART_PM_STATE_OFF instead of hardcoded values.
+On Thu, Oct 07, 2021 at 03:31:46PM +0200, Johan Hovold wrote:
+> This reverts commit 32262e2e429cdb31f9e957e997d53458762931b7.
 > 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
-
+> The commit in question claims to determine the inverse of
+> serial8250_get_divisor() but failed to notice that some drivers override
+> the default implementation using a get_divisor() callback.
+> 
+> This means that the computed line-speed values can be completely wrong
+> and results in regular TCSETS requests failing (the incorrect values
+> would also be passed to any overridden set_divisor() callback).
+> 
+> Similarly, it also failed to honour the old (deprecated) ASYNC_SPD_FLAGS
+> and would break applications relying on those when re-encoding the
+> actual line speed.
+> 
+> There are also at least two quirks, UART_BUG_QUOT and an OMAP1510
+> workaround, which were happily ignored and that are now broken.
+> 
+> Finally, even if the offending commit were to be implemented correctly,
+> this is a new feature and not something which should be backported to
+> stable.
+> 
+> Cc: Pali Roh�r <pali@kernel.org>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 > ---
->   drivers/tty/serial/atmel_serial.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 249ea35088d2..2c99a47a2535 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2084,7 +2084,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
->   	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
->   
->   	switch (state) {
-> -	case 0:
-> +	case UART_PM_STATE_ON:
->   		/*
->   		 * Enable the peripheral clock for this serial port.
->   		 * This is called on uart_open() or a resume event.
-> @@ -2094,7 +2094,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
->   		/* re-enable interrupts if we disabled some on suspend */
->   		atmel_uart_writel(port, ATMEL_US_IER, atmel_port->backup_imr);
->   		break;
-> -	case 3:
-> +	case UART_PM_STATE_OFF:
->   		/* Back up the interrupt mask and disable all interrupts */
->   		atmel_port->backup_imr = atmel_uart_readl(port, ATMEL_US_IMR);
->   		atmel_uart_writel(port, ATMEL_US_IDR, -1);
-> 
-Thanks !
+>  drivers/tty/serial/8250/8250_port.c | 17 -----------------
+>  1 file changed, 17 deletions(-)
+
+Argh, sorry I missed this, good catch.  I'll go queue this up now,
+thanks.
+
+greg k-h
