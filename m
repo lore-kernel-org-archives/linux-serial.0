@@ -2,74 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456ACC433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 21:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A59C433F5
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 11:20:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2613C61177
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Oct 2021 21:11:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B4BCD60F59
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Oct 2021 11:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239587AbhJFVNX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Oct 2021 17:13:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59252 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239589AbhJFVNX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Oct 2021 17:13:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C4ACF611CA;
-        Wed,  6 Oct 2021 21:11:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633554690;
-        bh=LNqbS/LMwUeuhG2zkUpaTJ+yjUbdFlkv6r1NbAyBvEc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YA++Nn5DpRsJi+OnbxNBvrKTC0QUnxtkG5HvT15TNnluNwqOWca6cjEBPol7eX+Oc
-         gX4GS/tDGlyxOhqmR6munc5e39ebDn4xizkooCyR5IZblmn19m1n1Hx/dqcJcgT/Cn
-         e5TmZF+hE85IXK9/NUWGoGXDidmnb8/ou3wjU7dfNyTGAl1+VzrXzBaDlsO5QD22PZ
-         55AA3Gbx8a/ahzfbbUYCjW43mrvy7uzB6vSXWRkwIJ+Rsq1d29pFCJghA6bqwTQCG+
-         fpMEqaBP2q2P9IAH8ljNjb22rLb7v+4a+3RYp3G0DqbuFBMh00MyavtESllwwxmuPS
-         ly0UOPPYKD6KQ==
-Received: by mail-ed1-f42.google.com with SMTP id p13so15257047edw.0;
-        Wed, 06 Oct 2021 14:11:30 -0700 (PDT)
-X-Gm-Message-State: AOAM530w5P+KpJpCX5ejr1a4Q74JSg79PK64+3lcgQpJ2ei2Ytw21Jpm
-        FyOjwGlIKIwv5CV2cX75HJPWljetpIofayoeqA==
-X-Google-Smtp-Source: ABdhPJzKiId+LYfDotK6HTjCThex+azZFfK2kUjEIgU9HIOsNulHfvi5yvu457cW9uYkiTtQpx2oaFO6JaLRVhFLVcs=
-X-Received: by 2002:a17:906:7217:: with SMTP id m23mr644987ejk.466.1633554689344;
- Wed, 06 Oct 2021 14:11:29 -0700 (PDT)
+        id S232680AbhJGLWO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Oct 2021 07:22:14 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:38201 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232729AbhJGLWN (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 7 Oct 2021 07:22:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1633605620; x=1665141620;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vlqZaYyQczlIggc+IIbpxWrZThEF742WAz3RkstZe4s=;
+  b=0+R8783Fsh5UnDKSC6ov2xOeRylhNSMHjm/aB5B59zfiygju1bSlgu8q
+   ELbqqvnmeT8mg1XBdKbUVzXa/l33YCMGeTjxnCFoqXOG4kBsofyJNxr1U
+   ox/i34Rsb4Er2AnsaXadY1Gzr0jvpMlZugB2NlW1Gst4O0CWyCrhyJCYt
+   XENF1y80iWGdHs6MA3mkwl1VSj0zUm+pgfQojnnRTc0CnRdSp8CqfFv7r
+   mLHRZ66jsFqlLHUP8hilBAhOVhfxa+tEqI9qWS1AEjvDPfTup4xbwPdQa
+   6YDjlJ6YBZ2If5Nc1E0dfNyM5iwU150AWdfARoGfidbAUltMHWDZ8ATvO
+   w==;
+IronPort-SDR: qmE5LOvtPqMIrGH4sECEK1B7k05SsbM6YvNxX6qhNBM+3Ed2EiSukUXOLG+FusinGfhKCjIR8u
+ bHqnpyaJF2QbujJCTY1kYJiHETbzMqdXEfPz/4qe7jOfIstxef26cwkp8ZwMynSjm8B8gskZE/
+ dRUWirNrcB94Z87vyFpZ3zObiLcOgusTgzhqbuEI6VNbFlDXs/JzAD+4WpOB5T5HI6Kx/n1Og8
+ wcJh51OLwoWVUsTJnTVTF3sGPwJec9Jy7bfA5w7juJzaRlCxlwr0zoJWXghpeG1H6AuQ3pAiOH
+ bX9pUsSSetbwBW5JLqZ5+T53
+X-IronPort-AV: E=Sophos;i="5.85,354,1624345200"; 
+   d="scan'208";a="147121102"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Oct 2021 04:20:19 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 7 Oct 2021 04:20:19 -0700
+Received: from rob-dk-mpu01.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 7 Oct 2021 04:20:17 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH] tty: serial: atmel: use macros instead of hardcoded values
+Date:   Thu, 7 Oct 2021 14:20:14 +0300
+Message-ID: <20211007112014.2332019-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20210930095838.28145-1-pali@kernel.org> <20210930095838.28145-5-pali@kernel.org>
-In-Reply-To: <20210930095838.28145-5-pali@kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 6 Oct 2021 16:11:18 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+b5T+q2HbnvWNwg4FZEPnwJgyK2-QF1wCs-=VTvC67Ww@mail.gmail.com>
-Message-ID: <CAL_Jsq+b5T+q2HbnvWNwg4FZEPnwJgyK2-QF1wCs-=VTvC67Ww@mail.gmail.com>
-Subject: Re: [PATCH v7 4/6] dt-bindings: mvebu-uart: update information about
- UART clock
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vladimir Vid <vladimir.vid@sartura.hr>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 4:59 AM Pali Roh=C3=A1r <pali@kernel.org> wrote:
->
-> Device "marvell,armada-3700-uart" should use
-> "marvell,armada-3700-uart-clock" compatible clock.
->
-> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
-> ---
->  Documentation/devicetree/bindings/serial/mvebu-uart.txt | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+Use UART_PM_STATE_ON, UART_PM_STATE_OFF instead of hardcoded values.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/tty/serial/atmel_serial.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 249ea35088d2..2c99a47a2535 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2084,7 +2084,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+ 
+ 	switch (state) {
+-	case 0:
++	case UART_PM_STATE_ON:
+ 		/*
+ 		 * Enable the peripheral clock for this serial port.
+ 		 * This is called on uart_open() or a resume event.
+@@ -2094,7 +2094,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
+ 		/* re-enable interrupts if we disabled some on suspend */
+ 		atmel_uart_writel(port, ATMEL_US_IER, atmel_port->backup_imr);
+ 		break;
+-	case 3:
++	case UART_PM_STATE_OFF:
+ 		/* Back up the interrupt mask and disable all interrupts */
+ 		atmel_port->backup_imr = atmel_uart_readl(port, ATMEL_US_IMR);
+ 		atmel_uart_writel(port, ATMEL_US_IDR, -1);
+-- 
+2.25.1
+
