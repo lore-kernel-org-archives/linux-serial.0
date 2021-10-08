@@ -2,92 +2,131 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1888FC433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Oct 2021 07:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616A4C4321E
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Oct 2021 13:53:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F2F6361029
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Oct 2021 07:50:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A9EB61039
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Oct 2021 13:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbhJHHwM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Oct 2021 03:52:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53870 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229839AbhJHHwL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Oct 2021 03:52:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 36BFD61029;
-        Fri,  8 Oct 2021 07:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633679416;
-        bh=5Dnw1Sn92vfiwdKQwnNNnTDwu84Q7fYoJ44GzEToAbA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=j+kPdrGm20cz+1Vp/TJ/jOwyJ5S0DWWrF6Xvw2vjv5AH5VPE+jGzT5kIOfW9FCu7p
-         1iMaMAC8xxLHk0vZfdjPDmyOqV4i43BgLm+Jz76UlO+TMl8JYKhIjGtCLuaV976TRQ
-         /3uLqYeOUUtUS1g0ekylMZYOq/oYgYQhYZsE3dYSfDgyAdJ/d4vi5N+Qdiv6A5sY+z
-         mOjGp6+NKWKO5dPqT0Nu0VjjeYc+Ry9juu+1c1PoNTAFlCDnkxHCpDG/ezkWavozKj
-         oGGnTun4HSl7MhKgwqj1LhA6Orf3mCgpeCLfTCNVHMLJ1eQ466akH9c9Vi3PtAfWFf
-         OEn3tmOhIm5iA==
-Received: by mail-pj1-f44.google.com with SMTP id q7-20020a17090a2e0700b001a01027dd88so5380245pjd.1;
-        Fri, 08 Oct 2021 00:50:16 -0700 (PDT)
-X-Gm-Message-State: AOAM5319p8Dh5mCN6dljT4BMy6hn7jiXnHBNlE9nN+qYqCtYvwRE0/Sz
-        GUJVQvWmBZJjurtgbRaP6142wy4vCZVcSkUyYAA=
-X-Google-Smtp-Source: ABdhPJwJJdHSMEVTR8H83olSVUxlwjiGbt5wjQLfT8kTPM/V6x19UEn+nSFiRarZ7i5SjGmfdmZxAa28ARGqAhsUBL8=
-X-Received: by 2002:a17:902:a3c1:b0:13a:47a:1c5a with SMTP id
- q1-20020a170902a3c100b0013a047a1c5amr8199445plb.13.1633679415867; Fri, 08 Oct
- 2021 00:50:15 -0700 (PDT)
+        id S234061AbhJHNzV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Oct 2021 09:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232599AbhJHNzU (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 8 Oct 2021 09:55:20 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF714C061570;
+        Fri,  8 Oct 2021 06:53:24 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id m22so30224458wrb.0;
+        Fri, 08 Oct 2021 06:53:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yYWsu0Rg4yRualNrYxMIo7dnaqfU/YPo4u7hxec75RQ=;
+        b=bbohXNY2pN0tG0VfoSJkDk8zsi8ByEGKv47t0+GqCwHguogMWEq0doeEkGAiHLue74
+         tzC3QRTIA9xm3y4nVI7dd05PRfn/yIDLwRTgiUoOH6BzZkknS0tAZpy9gypIagpgixoK
+         0jw3ZjfgZnlMoA7m3VVroeT/TyFmLDmwP7qB32TkscZoDHF5+tUc97n0B582epeuiHVA
+         XEkdmZHdrlEVSr9tym+Wl60MDNgwCWOGQLuFAD7q9V07eDrrdtaETK75mBUjkBvfL78/
+         n4No8br5zx7Wed0F30CPolSvsbqHq7Fc6UQ1F+Pp/FqnvTnAiiWCxJWEEb18deIuqviO
+         vRfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yYWsu0Rg4yRualNrYxMIo7dnaqfU/YPo4u7hxec75RQ=;
+        b=wP3gN/+XWRsYbvnNMJsYtYfIvInb1ty+E70LgnRGe7VgMcYVPfCnEB2gsJ4x1+l3k9
+         BEQaAFSelT5mW+TDTm9q2M2glN6zEH/Vd/7uMmHPK5yBlzlsV4YB3KpkoMhEBtgc6vF6
+         wNcK8xnbRmOUnw7pTVUegmVjwZyfDhcqMJ0P3fztYV4LpiBbltgDmWV9TpGOyfYVCjOA
+         Sq1UkB+deen7n8KFAtfxrfmlXALjOZGch4EGdQVCtK56jIC0zRbq8LcZE1+HKPC7wGoi
+         pCkkgeiUkBcmmtUnVTNDUeogkFXNEzk+th5C9taqwegHt14IeC514gWr77GvsVCDKRaw
+         V0VQ==
+X-Gm-Message-State: AOAM5316C85u+dWnkqIhR0R9pnzXdZWhceBMwzwcAWdq/qneNx3Mc1bO
+        GQ/LZWJW58eChqcZHKnnYTA=
+X-Google-Smtp-Source: ABdhPJwCCsh7mGFTBgvB/ol1kIoTWolzftm8yGGomZgw7NW71Awlwc9f6CNm1UOrwC/9jfT/DR6yCQ==
+X-Received: by 2002:a1c:7c02:: with SMTP id x2mr3427289wmc.165.1633701203204;
+        Fri, 08 Oct 2021 06:53:23 -0700 (PDT)
+Received: from [192.168.2.177] ([206.204.146.29])
+        by smtp.gmail.com with ESMTPSA id c7sm3794235wmq.13.2021.10.08.06.53.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Oct 2021 06:53:19 -0700 (PDT)
+Message-ID: <bc29d5bc-9ce7-6147-a708-e6304249b600@gmail.com>
+Date:   Fri, 8 Oct 2021 15:53:16 +0200
 MIME-Version: 1.0
-References: <20211005155923.173399-1-marcan@marcan.st> <20211005155923.173399-3-marcan@marcan.st>
- <CAL_JsqJenHAOw4gApzGpuj-8nZjkYhmBg0qBj-DV+CEJ7zXuVw@mail.gmail.com>
- <f95f6d61-8809-e668-0458-453a8dfbe641@marcan.st> <b5b25e17-d98b-d447-f917-4d728f52a6ff@marcan.st>
-In-Reply-To: <b5b25e17-d98b-d447-f917-4d728f52a6ff@marcan.st>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Date:   Fri, 8 Oct 2021 09:50:03 +0200
-X-Gmail-Original-Message-ID: <CAJKOXPfp7oMJ+moizqgXyS7LbPajY-_vbXFX6+5PFrcpUFy2nA@mail.gmail.com>
-Message-ID: <CAJKOXPfp7oMJ+moizqgXyS7LbPajY-_vbXFX6+5PFrcpUFy2nA@mail.gmail.com>
-Subject: Re: [PATCH 2/7] dt-bindings: power: Add apple,pmgr-pwrstate binding
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        devicetree@vger.kernel.org,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.2
+Subject: Re: [v3,7/9] dt-bindings: arm64: dts: mediatek: Add mt7986 series
+Content-Language: en-US
+To:     Sam Shih <sam.shih@mediatek.com>
+Cc:     Ryder.Lee@mediatek.com, devicetree@vger.kernel.org,
+        enric.balletbo@collabora.com, fparent@baylibre.com,
+        gregkh@linuxfoundation.org, herbert@gondor.apana.org.au,
+        hsinyi@chromium.org, john@phrozen.org, linus.walleij@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux@roeck-us.net, mpm@selenic.com, mturquette@baylibre.com,
+        robh+dt@kernel.org, sboyd@kernel.org, sean.wang@kernel.org,
+        seiya.wang@mediatek.com, wim@linux-watchdog.org
+References: <9552b0dc-337f-7edc-2997-50603dfe8bcd@gmail.com>
+ <20210924114046.26070-1-sam.shih@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20210924114046.26070-1-sam.shih@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 6 Oct 2021 at 17:56, Hector Martin <marcan@marcan.st> wrote:
->
-> On 07/10/2021 00.52, Hector Martin wrote:
-> > I realize this is all kind of "not the way things are usually done", but
-> > I don't want to pass up on the opportunity to have one driver last us
-> > multiple SoCs if we have the chance, and it's looking like it should :-)
->
-> Addendum: just found some prior art for this. See power/pd-samsung.yaml,
-> which is another single-PD binding (though in that case they put them in
-> the SoC node directly, not under a syscon).
+Hi Sam,
 
-Maybe the design is actually similar. In the Exynos there is a entire
-subblock managing power - called Power Management Unit (PMU). It
-controls most of power-related parts, except clock gating. For example
-it covers registers related to entering deep-sleep modes or power
-domains. However we split this into two:
-1. Actual PMU driver which controls system-level power (and provides
-syscon for other drivers needing to poke its registers... eh, life).
-2. Power domain driver which binds multiple devices to a small address
-spaces (three registers) inside PMU address space.
+I'd advise to split this series in parts for:
+- basic device support via dts.
+- pinctrl driver + dts
+- clk driver + dts
 
-The address spaces above overlap, so the (1) PMU driver takes for
-example 1004_0000 - 1004_5000 and power domain devices bind to e.g.
-1004_4000, 1004_4020, 1004_4040.
+I would also advise to not send new versions of patches as new threads and don't 
+respond in the same thread. At least for me that breaks my workflow as I use b4.
 
-Best regards,
-Krzysztof
+Regards,
+Matthias
+
+
+On 24/09/2021 13:40, Sam Shih wrote:
+> MT7986 series is Mediatek's new 4-core SoC, which is mainly for
+> wifi-router application. The difference between mt7986a and mt7986b
+> is that some pins do not exist on mt7986b.
+> 
+> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> 
+> ---
+> v3: changed 'MT7986' to 'MT7986 series' in the commit message
+> v2: added an Acked-by tag
+> ---
+>   Documentation/devicetree/bindings/arm/mediatek.yaml | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
+> index 80a05f6fee85..a9a778269684 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek.yaml
+> +++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
+> @@ -76,6 +76,14 @@ properties:
+>             - enum:
+>                 - mediatek,mt7629-rfb
+>             - const: mediatek,mt7629
+> +      - items:
+> +          - enum:
+> +              - mediatek,mt7986a-rfb
+> +          - const: mediatek,mt7986a
+> +      - items:
+> +          - enum:
+> +              - mediatek,mt7986b-rfb
+> +          - const: mediatek,mt7986b
+>         - items:
+>             - enum:
+>                 - mediatek,mt8127-moose
+> 
