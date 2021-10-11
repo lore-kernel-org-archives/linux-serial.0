@@ -2,214 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A5F8C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Oct 2021 02:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5187C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Oct 2021 04:42:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D669E60F3A
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Oct 2021 02:32:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 913E160F38
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Oct 2021 04:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233260AbhJKCd7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 10 Oct 2021 22:33:59 -0400
-Received: from mga09.intel.com ([134.134.136.24]:25830 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231872AbhJKCd7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 10 Oct 2021 22:33:59 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10133"; a="226684703"
-X-IronPort-AV: E=Sophos;i="5.85,363,1624345200"; 
-   d="scan'208";a="226684703"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2021 19:31:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,363,1624345200"; 
-   d="scan'208";a="658471309"
-Received: from lkp-server02.sh.intel.com (HELO 08b2c502c3de) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 10 Oct 2021 19:31:58 -0700
-Received: from kbuild by 08b2c502c3de with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mZl6b-0001m5-II; Mon, 11 Oct 2021 02:31:57 +0000
-Date:   Mon, 11 Oct 2021 10:30:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 2cb3315107b5b3312b0f434efdb3ad354274e2a5
-Message-ID: <6163a1e0.ElpuCk9Tt4nlQo3V%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S230379AbhJKEok (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Oct 2021 00:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230102AbhJKEoj (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 11 Oct 2021 00:44:39 -0400
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A8CC061570;
+        Sun, 10 Oct 2021 21:42:39 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id B05B941EF0;
+        Mon, 11 Oct 2021 04:42:32 +0000 (UTC)
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20211005155923.173399-1-marcan@marcan.st>
+ <20211005155923.173399-3-marcan@marcan.st>
+ <b5b3fcb4-077b-d33d-03cc-ac0611cb56a1@canonical.com>
+ <5b89aed0-f9b7-fdba-16d8-a8bd9e2d7437@marcan.st>
+ <6e92a8d3-798a-267a-d24e-6b9ff0c3c645@canonical.com>
+From:   Hector Martin <marcan@marcan.st>
+Subject: Re: [PATCH 2/7] dt-bindings: power: Add apple,pmgr-pwrstate binding
+Message-ID: <60b3f115-8549-9080-774b-f2c8b98ce6d0@marcan.st>
+Date:   Mon, 11 Oct 2021 13:42:30 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <6e92a8d3-798a-267a-d24e-6b9ff0c3c645@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: es-ES
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 2cb3315107b5b3312b0f434efdb3ad354274e2a5  serial: 8250_lpss: Enable PSE UART Auto Flow Control
+On 07/10/2021 22.12, Krzysztof Kozlowski wrote:
+>>>> +  power-domains:
+>>>> +    description:
+>>>> +      Reference to parent power domains. A domain may have multiple parents,
+>>>> +      and all will be powered up when it is powered.
+>>>
+>>> How many items?
+>>
+>> One or more (if there are none the property should not exist). I guess
+>> that should be encoded.
+> 
+> Probably this should not go without any constraints. Are you sure it
+> could have more than one? It would mean more than one parent.
 
-elapsed time: 721m
+Yes, at least that is the way Apple describes it in their device tree. 
+As I understand it, this is basically a dependency tree of SoC blocks 
+that need to be powered up/clocked for a downstream device to work. In 
+other words, it's not just a pure clock/power tree, but also represents 
+blocks of logic that are shared between devices. So, for example, the 
+ADT has relationships like these:
 
-configs tested: 151
-configs skipped: 4
+SIO_BUSIF parents: (none)
+SIO       parents: SIO_BUSIF
+PMS_BUSIF parents: (none)
+PMS       parents: (none)
+AUDIO_P   parents: SIO
+SIO_ADMA  parents: SIO, PMS
+MCA0      parents: AUDIO_P, SIO_ADMA
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+That said, we know some of the data from the ADT is dodgy and doesn't 
+match the true hardware (see also the dependency from SIO to SIO_BUSIF 
+there, but not from PMS to PMS_BUSIF, which feels wrong), so as we learn 
+more about the real relationships between these domains we'll adjust the 
+devicetree to better reflect the hardware layout.
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20211010
-powerpc                    ge_imp3a_defconfig
-m68k                       m5249evb_defconfig
-arm                           viper_defconfig
-openrisc                 simple_smp_defconfig
-arm                       omap2plus_defconfig
-m68k                       m5475evb_defconfig
-sh                               allmodconfig
-powerpc                   lite5200b_defconfig
-arm                          imote2_defconfig
-s390                       zfcpdump_defconfig
-mips                     loongson2k_defconfig
-mips                        maltaup_defconfig
-sh                        apsh4ad0a_defconfig
-powerpc                      ppc40x_defconfig
-arm                            xcep_defconfig
-arm                          badge4_defconfig
-mips                      maltasmvp_defconfig
-mips                         cobalt_defconfig
-sh                           se7780_defconfig
-arm                       imx_v4_v5_defconfig
-powerpc                     redwood_defconfig
-sparc64                             defconfig
-powerpc                         wii_defconfig
-ia64                         bigsur_defconfig
-mips                        bcm63xx_defconfig
-arm                            pleb_defconfig
-arm                        mvebu_v7_defconfig
-m68k                          multi_defconfig
-mips                   sb1250_swarm_defconfig
-nios2                            alldefconfig
-powerpc                    adder875_defconfig
-sh                           se7343_defconfig
-h8300                               defconfig
-sh                          lboxre2_defconfig
-powerpc                    sam440ep_defconfig
-powerpc                    amigaone_defconfig
-sh                         apsh4a3a_defconfig
-sh                               j2_defconfig
-powerpc                       eiger_defconfig
-arm                         axm55xx_defconfig
-arm                           sama7_defconfig
-arm                          iop32x_defconfig
-powerpc                     ksi8560_defconfig
-powerpc                         ps3_defconfig
-riscv                    nommu_k210_defconfig
-nds32                               defconfig
-mips                         tb0219_defconfig
-h8300                            alldefconfig
-powerpc                  iss476-smp_defconfig
-arm                           h3600_defconfig
-powerpc                 mpc8560_ads_defconfig
-mips                          malta_defconfig
-powerpc                     stx_gp3_defconfig
-arm                  colibri_pxa300_defconfig
-powerpc                      acadia_defconfig
-mips                          rb532_defconfig
-xtensa                          iss_defconfig
-arm                          pxa910_defconfig
-m68k                        mvme16x_defconfig
-powerpc                     ep8248e_defconfig
-arm                       cns3420vb_defconfig
-arm                            hisi_defconfig
-arc                           tb10x_defconfig
-arm                         vf610m4_defconfig
-arm                  randconfig-c002-20211010
-x86_64               randconfig-c001-20211010
-arm                  randconfig-c002-20211011
-i386                 randconfig-c001-20211011
-x86_64               randconfig-c001-20211011
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-nios2                            allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-xtensa                           allyesconfig
-parisc                              defconfig
-parisc                           allyesconfig
-s390                                defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                             allyesconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a004-20211010
-x86_64               randconfig-a006-20211010
-x86_64               randconfig-a001-20211010
-x86_64               randconfig-a005-20211010
-x86_64               randconfig-a002-20211010
-x86_64               randconfig-a003-20211010
-i386                 randconfig-a001-20211010
-i386                 randconfig-a003-20211010
-i386                 randconfig-a004-20211010
-i386                 randconfig-a005-20211010
-i386                 randconfig-a002-20211010
-i386                 randconfig-a006-20211010
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allyesconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                                  kexec
-x86_64                           allyesconfig
+There is also the case that even if technically a downstream device 
+depends on two domains (directly), the existing genpd infrastructure 
+doesn't handle that automatically like it does the single domain case, 
+so it ends up making sense to just have some extra domain-domain 
+dependencies to keep a bunch of boilerplate manual genpd handling code 
+out of device drivers.
 
-clang tested configs:
-arm                  randconfig-c002-20211010
-mips                 randconfig-c004-20211010
-i386                 randconfig-c001-20211010
-s390                 randconfig-c005-20211010
-x86_64               randconfig-c007-20211010
-powerpc              randconfig-c003-20211010
-riscv                randconfig-c006-20211010
-x86_64               randconfig-a015-20211010
-x86_64               randconfig-a012-20211010
-x86_64               randconfig-a016-20211010
-x86_64               randconfig-a014-20211010
-x86_64               randconfig-a013-20211010
-x86_64               randconfig-a011-20211010
-i386                 randconfig-a016-20211010
-i386                 randconfig-a014-20211010
-i386                 randconfig-a011-20211010
-i386                 randconfig-a015-20211010
-i386                 randconfig-a012-20211010
-i386                 randconfig-a013-20211010
-hexagon              randconfig-r041-20211010
-s390                 randconfig-r044-20211010
-riscv                randconfig-r042-20211010
-hexagon              randconfig-r045-20211010
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
