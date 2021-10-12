@@ -2,469 +2,183 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09808C43219
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 01:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C2EC43217
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 10:29:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D8AB961076
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 01:26:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5877861100
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 10:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234566AbhJLB2o (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Oct 2021 21:28:44 -0400
-Received: from mail-oi1-f174.google.com ([209.85.167.174]:34561 "EHLO
-        mail-oi1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbhJLB2n (ORCPT
+        id S235922AbhJLKbi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Oct 2021 06:31:38 -0400
+Received: from mailgw01.mediatek.com ([60.244.123.138]:45944 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S235153AbhJLKbh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Oct 2021 21:28:43 -0400
-Received: by mail-oi1-f174.google.com with SMTP id z11so27002037oih.1;
-        Mon, 11 Oct 2021 18:26:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xYWULmZi2gwL6Zs5CDysqFHt9F5WBg3n6QyZkMxdsZg=;
-        b=m6E7AUewflPqPMrk+VhjgfMGSGget/hTMBrl5ezr5L3/NsGPkor6dwAvuojhQCDC16
-         xIkUhN2/jyouoZ28G+9ry5YFlSwBbteSMi4W4O5yX8SO/qWXcXAYK5o3Us0Xx5tE9oyz
-         XKABHXDRSqz88lTU1IqjwLmwKYwNpOPy1SOONXRH6pvfsFLTIlMXifuje3caT7wbvlJX
-         A2Qd5xF5iw0FJHzE1AhRX3Mlodi0Pec/xyhuGb159+HQVBra5IpVaas2OchIPIWLzfDW
-         kV62G/UVTt6k+3zsaFh5zoQDHD3jaYjcCIf0SLKZyPCEUS4Qm5uIgh1uRJcODUoe21+8
-         rSYA==
-X-Gm-Message-State: AOAM530WTsZO0UKEXAumDyWATiZjPFOeKcfhnM670vUblHlltAmx2hIW
-        QB6Ippsz2YfTfdsmtZSs/Q==
-X-Google-Smtp-Source: ABdhPJy3g5tSpc7z/rdo4eBr/EnMTCQPcXwkY4DiMicS1znkv5eJYZS5iW5D5luE/1htopIm91TitA==
-X-Received: by 2002:a05:6808:11c9:: with SMTP id p9mr1677076oiv.169.1634002002089;
-        Mon, 11 Oct 2021 18:26:42 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id h26sm580253oov.28.2021.10.11.18.26.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 18:26:41 -0700 (PDT)
-Received: (nullmailer pid 1543120 invoked by uid 1000);
-        Tue, 12 Oct 2021 01:26:39 -0000
-Date:   Mon, 11 Oct 2021 20:26:39 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sam Shih <sam.shih@mediatek.com>
-Cc:     Ryder.Lee@mediatek.com, devicetree@vger.kernel.org,
-        enric.balletbo@collabora.com, fparent@baylibre.com,
-        gregkh@linuxfoundation.org, herbert@gondor.apana.org.au,
-        hsinyi@chromium.org, john@phrozen.org, linus.walleij@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux@roeck-us.net, matthias.bgg@gmail.com, mpm@selenic.com,
-        mturquette@baylibre.com, sboyd@kernel.org, sean.wang@kernel.org,
-        seiya.wang@mediatek.com, wim@linux-watchdog.org
-Subject: Re: [v6,5/9] dt-bindings: pinctrl: update bindings for MT7986 SoC
-Message-ID: <YWTkT2Oaa5dfnBV6@robh.at.kernel.org>
-References: <1632745399.256353.3097151.nullmailer@robh.at.kernel.org>
- <20211004094140.32014-1-sam.shih@mediatek.com>
+        Tue, 12 Oct 2021 06:31:37 -0400
+X-UUID: 4408c824a8f947aaa53b05f088e8147e-20211012
+X-UUID: 4408c824a8f947aaa53b05f088e8147e-20211012
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <sam.shih@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 869037599; Tue, 12 Oct 2021 18:29:30 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 12 Oct 2021 18:29:29 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 12 Oct 2021 18:29:28 +0800
+Message-ID: <315d7823aa108c909a3d36464fe54763b76ab2f4.camel@mediatek.com>
+Subject: Re: [v3,7/9] dt-bindings: arm64: dts: mediatek: Add mt7986 series
+From:   Sam Shih <sam.shih@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <Ryder.Lee@mediatek.com>, <devicetree@vger.kernel.org>,
+        <enric.balletbo@collabora.com>, <fparent@baylibre.com>,
+        <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>,
+        <hsinyi@chromium.org>, <john@phrozen.org>,
+        <linus.walleij@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-clk@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
+        <linux@roeck-us.net>, <mpm@selenic.com>, <mturquette@baylibre.com>,
+        <robh+dt@kernel.org>, <sboyd@kernel.org>, <sean.wang@kernel.org>,
+        <seiya.wang@mediatek.com>, <wim@linux-watchdog.org>
+Date:   Tue, 12 Oct 2021 18:29:28 +0800
+In-Reply-To: <bc29d5bc-9ce7-6147-a708-e6304249b600@gmail.com>
+References: <9552b0dc-337f-7edc-2997-50603dfe8bcd@gmail.com>
+         <20210924114046.26070-1-sam.shih@mediatek.com>
+         <bc29d5bc-9ce7-6147-a708-e6304249b600@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211004094140.32014-1-sam.shih@mediatek.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 04, 2021 at 05:41:40PM +0800, Sam Shih wrote:
-> This updates bindings for MT7986 pinctrl driver. The
-> difference of pinctrl between mt7986a and mt7986b is that pin-41 to pin-65
-> do not exist on mt7986b
+Hi
+
+On Fri, 2021-10-08 at 15:53 +0200, Matthias Brugger wrote:
+> Hi Sam,
 > 
-> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> I'd advise to split this series in parts for:
+> - basic device support via dts.
+> - pinctrl driver + dts
+> - clk driver + dts
+
+Okay, I will split the patches that are still under review into the
+above patch series.
+
+But I have a dumb question, currently, we have some patches that have
+been assigned version numbers.
+If I want to seprate original patch series, and resend 3 new patch
+series (basic / pinctrl / clock) according to your comment, if I want
+to keep the preview change log, tags in the patch set: 
+
+like:
+---
+v3: changed 'MT7986' to 'MT7986 series' in the commit message
+v2: added an Acked-by tag
+---
+
+Which version number should I use for these new patch series ?
+
+Does the version number in corver-letter and the version number in each
+patch need to be the same in the entire patch series ?
+
+// (Original patch series/thread, version number is v3)
+[PATCH v3 0/3] Add basic SoC support for mediatek mt7986
+  [PATCH v3 1/3] dt-bindings: arm64: dts: mediatek: Add mt7986 series
+  // (the version number has been updated to v5 previously)
+  // (basic part only, not include pinctrl and clock nodes)
+  [PATCH v5 2/3] arm64: dts: mediatek: add mt7986a support
+  [PATCH v5 3/3] arm64: dts: mediatek: add mt7986b support
+
+// (New clock driver patch series)
+[PATCH 0/3] Add clock driver support for mediatek mt7986
+  [PATCH v3,1/3] dt-bindings: clock: mediatek: document clk bindings   
+for mediatek mt7986 SoC
+  // (the version number has been updated to v3 previously)
+  [PATCH v3 2/3] clk: mediatek: add mt7986 clock IDs
+  [PATCH v2 3/3] clk: mediatek: add mt7986 clock support
+
+// (New pinctrl driver patch series)
+[PATCH 0/4] Add pinctrl driver support for mediatek mt7986
+  // (the version number has been updated to v6 previously)
+  [PATCH v6 1/4] dt-bindings: pinctrl: update bindings for MT7986 SoC
+  // (the version number has been updated to v2 previously)
+  [PATCH v2 2/4] pinctrl: mediatek: add support for MT7986 SoC
+  [PATCH 3/4] arm64: dts: mediatek: add mt7986a pinctrl support
+  [PATCH 3/4] arm64: dts: mediatek: add mt7986b pinctrl support
+
 > 
-> ---
-> v6 : fixed yamllint warnings/errors v2
-> v5 : fixed yamllint warnings/errors v1
-> v4 : used yaml format instead of txt format document
-> v3 : make mt7986 pinctrl bindings as a separate file
-> v2 : deleted the redundant description of mt7986a/mt7986b
-> ---
->  .../pinctrl/mediatek,mt7986-pinctrl.yaml      | 361 ++++++++++++++++++
->  1 file changed, 361 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/mediatek,mt7986-pinctrl.yaml
+> I would also advise to not send new versions of patches as new
+> threads and don't 
+> respond in the same thread. At least for me that breaks my workflow
+> as I use b4.
+
+If I don't respond to the next patch set in the same thread, should I
+create an entire new patch series ?
+
+For example, if I want to update PATCH 2/3 in the bellows patch series,
+and my PATCH 1/3 has been accepted by reviewer previously
+
+[PATCH v2 0/3] Add basic SoC support for mediatek mt7986
+  [PATCH v2 1/3] ...   (patch set v1, applied by matainer)
+  [PATCH v2 2/3] ...   (patch set v2, need to be upgrade to v3)
+  [PATCH v2 3/3] ...   (patch set v1, waiting for review)
+
+Is this correct to send patch mail to maintaiers for the above
+situation ?
+
+[PATCH v3 0/2] Add basic SoC support for mediatek mt7986
+  [PATCH v3 1/2] ...   (patch set v3)
+  [PATCH v3 2/2] ...   (still patch set v1, waiting for review)
+
+
 > 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/mediatek,mt7986-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/mediatek,mt7986-pinctrl.yaml
-> new file mode 100644
-> index 000000000000..cde842d093dc
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pinctrl/mediatek,mt7986-pinctrl.yaml
-> @@ -0,0 +1,361 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pinctrl/mediatek,mt7986-pinctrl.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Mediatek MT7986 Pin Controller Device Tree Bindings
-> +
-> +maintainers:
-> +  - Sean Wang <sean.wang@kernel.org>
-> +
-> +description: |+
-> +  The MediaTek's MT7986 Pin controller is used to control SoC pins.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - mediatek,mt7986a-pinctrl
-> +      - mediatek,mt7986b-pinctrl
-> +
-> +  reg:
-> +    minItems: 8
-> +    maxItems: 8
-> +
-> +  reg-names:
-> +    items:
-> +      - const: gpio_base
-> +      - const: iocfg_rt_base
-> +      - const: iocfg_rb_base
-> +      - const: iocfg_lt_base
-> +      - const: iocfg_lb_base
-> +      - const: iocfg_tr_base
-> +      - const: iocfg_tl_base
-
-_base is redundant. Drop.
-
-> +      - const: eint
-> +
-> +  gpio-controller: true
-> +
-> +  "#gpio-cells":
-> +    const: 2
-> +    description: |
-> +      Number of cells in GPIO specifier. Since the generic GPIO
-> +      binding is used, the amount of cells must be specified as 2. See the below
-> +      mentioned gpio binding representation for description of particular cells.
-> +
-> +  gpio-ranges:
-> +    minItems: 1
-> +    maxItems: 5
-> +    description: |
-> +      GPIO valid number range.
-> +
-> +  interrupt-controller: true
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  "#interrupt-cells":
-> +    const: 2
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - reg-names
-> +  - gpio-controller
-> +  - "#gpio-cells"
-> +
-> +patternProperties:
-> +  '-[0-9]+$':
-
-This could be a bit more specific. Most new bindings use '-pins$' here.
-
-> +    type: object
-> +    additionalProperties: false
-> +
-> +    patternProperties:
-> +      'mux':
-
-Do you really mean '.*mux.*' because that's what is allowed here. If the 
-node name is really just 'mux', then this isn't a pattern and should be 
-under 'properties'.
-
-> +        type: object
-> +        additionalProperties: false
-> +        description: |
-> +          pinmux configuration nodes.
-> +
-> +          Valid value	      function    pins (in pin#)
-> +          ---------------------------------------------------------------------
-> +          "watchdog"        "watchdog"  0
-> +          "wifi_led"        "led"       1, 2
-> +          "i2c"             "i2c"       3, 4
-> +          "uart1_0"         "uart"      7, 8, 9, 10
-> +          "pcie_clk"        "pcie"      9
-> +          "pcie_wake"       "pcie"      10
-> +          "spi1_0"          "spi"       11, 12, 13, 14
-> +          "pwm1_1"          "pwm"       20,
-> +          "pwm0"            "pwm"       21,
-> +          "pwm1_0"          "pwm"       22,
-> +          "snfi"            "flash"     23, 24, 25, 26, 27, 28
-> +          "spi1_2"          "spi"       29, 30, 31, 32
-> +          "emmc_45"         "emmc"      22, 23, 24, 25, 26, 27, 28, 29, 30,
-> +                                        31, 32
-> +          "spi1_1"          "spi"       23, 24, 25, 26
-> +          "uart1_2"         "uart"      29, 30, 31, 32
-> +          "uart1_1"         "uart"      23, 24, 25, 26
-> +          "uart2_0"         "uart"      29, 30, 31, 32
-> +          "spi0"            "spi"       33, 34, 35, 36
-> +          "spi0_wp_hold"    "spi"       37, 38
-> +          "uart1_3_rx_tx"   "uart"      35, 36
-> +          "uart1_3_cts_rts" "uart"      37, 38
-> +          "uart2_1"         "uart"      33, 34, 35, 36
-> +          "spi1_3"          "spi"       33, 34, 35, 36
-> +          "uart0"           "uart"      39, 40
-> +          "pcie_pereset"    "pcie"      41
-> +          "uart1"           "uart"      42, 43, 44, 45
-> +          "uart2"           "uart"      46, 47, 48, 49
-> +          "emmc_51"         "emmc"      50, 51, 52, 53, 54, 55, 56, 57, 57,
-> +                                        59, 60, 61
-> +          "pcm"             "audio"     62, 63, 64, 65
-> +          "i2s"             "audio"     62, 63, 64, 65
-> +          "switch_int"      "eth"       66
-> +          "mdc_mdio"        "eth"       67
-> +
-> +        $ref: "/schemas/pinctrl/pinmux-node.yaml"
-> +        properties:
-> +          function:
-> +            description: |
-> +              A string containing the name of the function to mux to the group.
-> +              There is no "audio", "pcie" functions on mt7986b, you can only use
-> +              those functions on mt7986a.
-> +            enum: [audio, emmc, eth, i2c, led, flash, pcie, pwm, spi, uart,
-> +                   watchdog, wifi]
-> +          groups:
-> +            description: |
-> +              An array of strings. Each string contains the name of a group.
-> +              There is no "pcie_pereset", "uart1", "uart2" "emmc_51", "pcm",
-> +              and "i2s" groups on mt7986b, you can only use those groups on
-> +              mt7986a.
-> +        required:
-> +          - function
-> +          - groups
-> +
-> +        allOf:
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: audio
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [pcm, i2s]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: emmc
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [emmc, emmc_rst]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: eth
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [switch_int, mdc_mdio]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: i2c
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [i2c]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: led
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [wifi_led]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: flash
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [snfi]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: pcie
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [pcie_clk, pcie_wake, pcie_pereset]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: pwm
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [pwm0, pwm1_0, pwm1_1]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: spi
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [spi0, spi0_wp_hold, spi1_0, spi1_1, spi1_2, spi1_3]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: uart
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [uart1_0, uart1_1, uart1_2, uart1_3_rx_tx,
-> +                         uart1_3_cts_rts, uart2_0, uart2_1, uart0, uart1, uart2]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: watchdog
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [watchdog]
-> +          - if:
-> +              properties:
-> +                function:
-> +                  const: wifi
-> +            then:
-> +              properties:
-> +                groups:
-> +                  enum: [wf_2g, wf_5g, wf_dbdc]
-> +      'conf':
-
-Same here. pattern or not?
-
-> +        type: object
-> +        additionalProperties: false
-> +        description: |
-> +          pinconf configuration nodes.
-> +        $ref: "/schemas/pinctrl/pincfg-node.yaml"
-> +
-> +        properties:
-> +          pins:
-> +            description: |
-> +              An array of strings. Each string contains the name of a pin.
-> +              There is no PIN 41 to PIN 65 above on mt7686b, you can only use
-> +              those pins on mt7986a.
-> +            enum: [SYS_WATCHDOG, WF2G_LED, WF5G_LED, I2C_SCL, I2C_SDA, GPIO_0,
-> +                   GPIO_1, GPIO_2, GPIO_3, GPIO_4, GPIO_5, GPIO_6, GPIO_7,
-> +                   GPIO_8, GPIO_9, GPIO_10, GPIO_11, GPIO_12, GPIO_13, GPIO_14,
-> +                   GPIO_15, PWM0, PWM1, SPI0_CLK, SPI0_MOSI, SPI0_MISO, SPI0_CS,
-> +                   SPI0_HOLD, SPI0_WP, SPI1_CLK, SPI1_MOSI, SPI1_MISO, SPI1_CS,
-> +                   SPI2_CLK, SPI2_MOSI, SPI2_MISO, SPI2_CS, SPI2_HOLD, SPI2_WP,
-> +                   UART0_RXD, UART0_TXD, PCIE_PERESET_N, UART1_RXD, UART1_TXD,
-> +                   UART1_CTS, UART1_RTS, UART2_RXD, UART2_TXD, UART2_CTS,
-> +                   UART2_RTS, EMMC_DATA_0, EMMC_DATA_1, EMMC_DATA_2,
-> +                   EMMC_DATA_3, EMMC_DATA_4, EMMC_DATA_5, EMMC_DATA_6,
-> +                   EMMC_DATA_7, EMMC_CMD, EMMC_CK, EMMC_DSL, EMMC_RSTB, PCM_DTX,
-> +                   PCM_DRX, PCM_CLK, PCM_FS, MT7531_INT, SMI_MDC, SMI_MDIO,
-> +                   WF0_DIG_RESETB, WF0_CBA_RESETB, WF0_XO_REQ, WF0_TOP_CLK,
-> +                   WF0_TOP_DATA, WF0_HB1, WF0_HB2, WF0_HB3, WF0_HB4, WF0_HB0,
-> +                   WF0_HB0_B, WF0_HB5, WF0_HB6, WF0_HB7, WF0_HB8, WF0_HB9,
-> +                   WF0_HB10, WF1_DIG_RESETB, WF1_CBA_RESETB, WF1_XO_REQ,
-> +                   WF1_TOP_CLK, WF1_TOP_DATA, WF1_HB1, WF1_HB2, WF1_HB3,
-> +                   WF1_HB4, WF1_HB0, WF1_HB0_B, WF1_HB5, WF1_HB6, WF1_HB7,
-> +                   WF1_HB8]
-> +
-> +          bias-disable: true
-> +
-> +          bias-pull-up: true
-> +
-> +          bias-pull-down: true
-> +
-> +          input-enable: true
-> +
-> +          input-disable: true
-> +
-> +          output-enable: true
-> +
-> +          output-low: true
-> +
-> +          output-high: true
-> +
-> +          input-schmitt-enable: true
-> +
-> +          input-schmitt-disable: true
-> +
-> +          drive-strength:
-> +            enum: [2, 4, 6, 8, 10, 12, 14, 16]
-> +
-> +          mediatek,pull-up-adv:
-> +            description: |
-> +              Valid arguments for 'mediatek,pull-up-adv' are '0', '1', '2', '3'
-> +              Pull up setings for 2 pull resistors, R0 and R1. Valid arguments
-> +              are described as below:
-> +              0: (R1, R0) = (0, 0) which means R1 disabled and R0 disabled.
-> +              1: (R1, R0) = (0, 1) which means R1 disabled and R0 enabled.
-> +              2: (R1, R0) = (1, 0) which means R1 enabled and R0 disabled.
-> +              3: (R1, R0) = (1, 1) which means R1 enabled and R0 enabled.
-> +            $ref: /schemas/types.yaml#/definitions/uint32
-> +            enum: [0, 1, 2, 3]
-> +
-> +          mediatek,pull-down-adv:
-> +            description: |
-> +              Valid arguments for 'mediatek,pull-up-adv' are '0', '1', '2', '3'
-> +              Pull down setings for 2 pull resistors, R0 and R1. Valid arguments
-> +              are described as below:
-> +              0: (R1, R0) = (0, 0) which means R1 disabled and R0 disabled.
-> +              1: (R1, R0) = (0, 1) which means R1 disabled and R0 enabled.
-> +              2: (R1, R0) = (1, 0) which means R1 enabled and R0 disabled.
-> +              3: (R1, R0) = (1, 1) which means R1 enabled and R0 enabled.
-> +            $ref: /schemas/types.yaml#/definitions/uint32
-> +            enum: [0, 1, 2, 3]
-> +
-> +        required:
-> +          - pins
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +      pio: pinctrl@1001f000 {
-> +        compatible = "mediatek,mt7986a-pinctrl";
-> +        reg = <0 0x1001f000 0 0x1000>,
-> +              <0 0x11c30000 0 0x1000>,
-> +              <0 0x11c40000 0 0x1000>,
-> +              <0 0x11e20000 0 0x1000>,
-> +              <0 0x11e30000 0 0x1000>,
-> +              <0 0x11f00000 0 0x1000>,
-> +              <0 0x11f10000 0 0x1000>,
-> +              <0 0x1000b000 0 0x1000>;
-> +        reg-names = "gpio_base", "iocfg_rt_base", "iocfg_rb_base",
-> +              "iocfg_lt_base", "iocfg_lb_base", "iocfg_tr_base",
-> +              "iocfg_tl_base", "eint";
-> +        gpio-controller;
-> +        #gpio-cells = <2>;
-> +        gpio-ranges = <&pio 0 0 100>;
-> +        interrupt-controller;
-> +        interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
-> +        interrupt-parent = <&gic>;
-> +        #interrupt-cells = <2>;
-> +
-> +        uart1_pins: uart1-pins-42-to-45 {
-> +          mux {
-> +            function = "uart";
-> +            groups = "uart1";
-> +          };
-> +        };
-> +
-> +        uart2_pins: uart1-pins-46-to-49 {
-> +          mux {
-> +            function = "uart";
-> +            groups = "uart2";
-> +          };
-> +        };
-> +
-> +      };
-> +    };
-> -- 
-> 2.29.2
+> Regards,
+> Matthias
 > 
 > 
+> On 24/09/2021 13:40, Sam Shih wrote:
+> > MT7986 series is Mediatek's new 4-core SoC, which is mainly for
+> > wifi-router application. The difference between mt7986a and mt7986b
+> > is that some pins do not exist on mt7986b.
+> > 
+> > Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> > Acked-by: Rob Herring <robh@kernel.org>
+> > 
+> > ---
+> > v3: changed 'MT7986' to 'MT7986 series' in the commit message
+> > v2: added an Acked-by tag
+> > ---
+> >   Documentation/devicetree/bindings/arm/mediatek.yaml | 8 ++++++++
+> >   1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml
+> > b/Documentation/devicetree/bindings/arm/mediatek.yaml
+> > index 80a05f6fee85..a9a778269684 100644
+> > --- a/Documentation/devicetree/bindings/arm/mediatek.yaml
+> > +++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
+> > @@ -76,6 +76,14 @@ properties:
+> >             - enum:
+> >                 - mediatek,mt7629-rfb
+> >             - const: mediatek,mt7629
+> > +      - items:
+> > +          - enum:
+> > +              - mediatek,mt7986a-rfb
+> > +          - const: mediatek,mt7986a
+> > +      - items:
+> > +          - enum:
+> > +              - mediatek,mt7986b-rfb
+> > +          - const: mediatek,mt7986b
+> >         - items:
+> >             - enum:
+> >                 - mediatek,mt8127-moose
+> > 
+
+Thanks,
+Sam
+
