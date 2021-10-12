@@ -2,58 +2,72 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B08C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 15:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C086C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 15:21:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F1D5661050
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 15:05:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5B3E36108F
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 15:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237352AbhJLPHD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Oct 2021 11:07:03 -0400
-Received: from mail-pf1-f177.google.com ([209.85.210.177]:38684 "EHLO
-        mail-pf1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237223AbhJLPHD (ORCPT
+        id S237419AbhJLPX3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Oct 2021 11:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234023AbhJLPX2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Oct 2021 11:07:03 -0400
-Received: by mail-pf1-f177.google.com with SMTP id k26so17810137pfi.5;
-        Tue, 12 Oct 2021 08:05:01 -0700 (PDT)
+        Tue, 12 Oct 2021 11:23:28 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F9FC061570;
+        Tue, 12 Oct 2021 08:21:26 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id ec8so983514edb.6;
+        Tue, 12 Oct 2021 08:21:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fgwbge5K1EzbR8VI8a8H+Le1NZKMMr2m8pTON2xUTN8=;
+        b=QzV9YbjGsg5t2ZQdqkJweilCwjmv4f72WtizTfjRD1Z69nHKwlfIiVk9MKiRlbEJ3M
+         TIHpw/FxnC/HP+5SA6hgP4KYPicWuytgbi9wK8eIt5nmUVSYpScMPgY+o8EiY28/GHw6
+         N0FLqSe4XHbska7BuYvfFGFuLxwQ5ehC37hDLaiWT7iLXWenpcMsDHXEpDwkNw1UoluY
+         bChBoNeZU/DB1fJvp9iHrNPflFh88J+rkZLx20pNvxo6J434CKGA8xip4fm0zZb645PF
+         duqJZMT7VmJha6C2jowMLglzgpTLnF6hzYtGuX12RQEr/03u8EZDNEWZlzQ1sAhaIRMH
+         /WBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hdJDtZAfGIdmZ/ukdHpeB6ObCJRx81CajNUOCsrybQI=;
-        b=PLODMfvtk0akldX2uKuW3OfA8uRa9S2MSPgbhHny7guY2xuIOIBNg2FKgf0F16h9gz
-         1ZQpB58gQrvKlii1NheXBLFGfoOMdCz3R8BkzJhfAMxqeqbSxvS8JcHTOY16lOP3KWgd
-         RWJ3PuIS79mjngoa84d7DwO7U/9nAybKQtf3By4ioA2y9iilbpLA4Vc54zDhE8tUYQ8W
-         s8vE58lrTTKofu460M46eLmO3h1K8BA+6DPvqx6+TtY6F5VKXYiuhp+HWDNKMSKi2Y49
-         RfEewfNDPke9JF6zh0kFOMMNSRdI85BA7K4pCwFS0v5Z42AT3WqH6UI7ehdTpq9hFJ3d
-         FDJw==
-X-Gm-Message-State: AOAM531G6sDhSraynjZ3qRa1fAWYAhd40u4sRhINO2jDYft/lBxLxoQs
-        E+KVX8gAq3WPk2zhWhFqVU31bqxPjAoYpltM7F8=
-X-Google-Smtp-Source: ABdhPJwjzF1OeRyJAl+WVfOcbYpjaH0YTTRuWHlM9SeqDs+4nR3B9BF7FubISuSdaFjCzlSGaxlHolurGeiz3wPpntQ=
-X-Received: by 2002:a63:b11:: with SMTP id 17mr23103923pgl.51.1634051101136;
- Tue, 12 Oct 2021 08:05:01 -0700 (PDT)
+        bh=Fgwbge5K1EzbR8VI8a8H+Le1NZKMMr2m8pTON2xUTN8=;
+        b=ql1gq/UdrhrACr1IUteuY3VLxmplPBKQ6W7wz143v3hFtUUgBWkbuSema1UN+kB2z8
+         9cMdMtVaY+51VAKEwezmdPOUJNj4NOfNFMf8uZbkGNQCfExrOT4ixrcGJ+dTvTHhcJQM
+         9BkN350mNRCoxEUb/djSlFesBebCPTC6G3U4+fc6mZyiKh2SsJoZkmAiTIbhxs0dikvM
+         beEOWlSnQbF1yuy1yxuzVufAQokh5w0T74y3CJd7gDkdJNk0JMfsvYCBAU6EU8/eA+85
+         1F90qZXadAFWvqcu8fmo8u9j63G+jzyqjuTuEBVoRrTpoxotqfRkQpqeZsWuh9Tzflvg
+         LTJg==
+X-Gm-Message-State: AOAM531n9Uv/bkapCZM1Qbs63HCg+3bBi0KS461YQ4gFar2YNvVB9Ngw
+        bYF+dIkplp0xmVwu3Xh+vj/m37h9QTcOkZWXwroB+vtnfwMhSQ==
+X-Google-Smtp-Source: ABdhPJyH2Cr0E/CmRn2fpGIMT6foljvhODeW0WmDCNiwPWy1V5M7oQBd/zsMp/jE5RFRB/+ZUOCr7c7fggDU4sXQp/0=
+X-Received: by 2002:a05:6402:143b:: with SMTP id c27mr606000edx.224.1634052084925;
+ Tue, 12 Oct 2021 08:21:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211012134027.684712-1-kernel@esmil.dk> <20211012134027.684712-10-kernel@esmil.dk>
- <99ddc44924bcb89110a74d3182b1d3eea623dce1.camel@pengutronix.de>
-In-Reply-To: <99ddc44924bcb89110a74d3182b1d3eea623dce1.camel@pengutronix.de>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Tue, 12 Oct 2021 17:04:49 +0200
-Message-ID: <CANBLGcyA3LzRNhR1pFpZmnHPXHSMcxyF93_p2nvVfscZCAO06w@mail.gmail.com>
-Subject: Re: [PATCH v1 09/16] reset: starfive-jh7100: Add StarFive JH7100
- reset driver
-To:     Philipp Zabel <p.zabel@pengutronix.de>
+References: <20211012134027.684712-1-kernel@esmil.dk> <20211012134027.684712-2-kernel@esmil.dk>
+In-Reply-To: <20211012134027.684712-2-kernel@esmil.dk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 12 Oct 2021 21:20:37 +0300
+Message-ID: <CAHp75VcCCxPmnzoE5PSxtODdguoKa7VA1r2yrJRLQ=gOAevu2Q@mail.gmail.com>
+Subject: Re: [PATCH v1 01/16] RISC-V: Add StarFive SoC Kconfig option
+To:     Emil Renner Berthing <kernel@esmil.dk>
 Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, linux-clk@vger.kernel.org,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-serial@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Rob Herring <robh+dt@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Linus Walleij <linus.walleij@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Daniel Lezcano <daniel.lezcano@linaro.org>,
@@ -72,62 +86,17 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 12 Oct 2021 at 16:31, Philipp Zabel <p.zabel@pengutronix.de> wrote:
+On Tue, Oct 12, 2021 at 4:42 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
 >
-> On Tue, 2021-10-12 at 15:40 +0200, Emil Renner Berthing wrote:
-> > Add a driver for the StarFive JH7100 reset controller.
-> >
-> > Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-> > ---
-> >  MAINTAINERS                           |   7 ++
-> >  drivers/reset/Kconfig                 |   8 ++
-> >  drivers/reset/Makefile                |   1 +
-> >  drivers/reset/reset-starfive-jh7100.c | 164 ++++++++++++++++++++++++++
-> >  4 files changed, 180 insertions(+)
-> >  create mode 100644 drivers/reset/reset-starfive-jh7100.c
-> >
-> [...]
-> > diff --git a/drivers/reset/reset-starfive-jh7100.c b/drivers/reset/reset-starfive-jh7100.c
-> > new file mode 100644
-> > index 000000000000..26bc5b59c1f3
-> > --- /dev/null
-> > +++ b/drivers/reset/reset-starfive-jh7100.c
-> > @@ -0,0 +1,164 @@
-> [...]
-> > +static int jh7100_reset_update(struct reset_controller_dev *rcdev,
-> > +                            unsigned long id, bool assert)
-> > +{
-> > +     struct jh7100_reset *data = jh7100_reset_from(rcdev);
-> > +     unsigned long offset = id / 32;
-> > +     void __iomem *reg_assert = data->base + JH7100_RESET_ASSERT0 + 4 * offset;
-> > +     void __iomem *reg_status = data->base + JH7100_RESET_STATUS0 + 4 * offset;
-> > +     u32 mask = BIT(id % 32);
-> > +     u32 done = jh7100_reset_asserted[offset] & mask;
-> > +     unsigned long flags;
-> > +     u32 value;
-> > +
-> > +     if (!assert)
-> > +             done ^= mask;
-> > +
-> > +     spin_lock_irqsave(&data->lock, flags);
-> > +
-> > +     value = readl(reg_assert);
-> > +     if (assert)
-> > +             value |= mask;
-> > +     else
-> > +             value &= ~mask;
-> > +     writel(value, reg_assert);
-> > +
-> > +     do {
-> > +             value = readl(reg_status) & mask;
-> > +     } while (value != done);
->
-> Looking at the barebox driver, this could loop indefinitely if the
-> caller forgets to enable the corresponding peripheral clock. Maybe
-> use readl_poll_timeout() as a safety net.
+> Add StarFive Kconfig option to select SoC specific and common drivers
+> required for these SoCs.
 
-You're right. Asserting without the clock enabled is fine, but
-deasserting will hang forever. At least for the temperature sensor
-clock/resets I tried it with. I'll add the timeout, thanks!
+...
 
-/Emil
+> +       select SERIAL_8250_DW
+
+Is it critical for boot? Why?
+
+-- 
+With Best Regards,
+Andy Shevchenko
