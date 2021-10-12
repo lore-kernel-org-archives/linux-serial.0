@@ -2,297 +2,684 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9472C43219
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 15:41:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E16BFC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 17:03:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D672D61076
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 15:41:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BD4B360ED4
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 17:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237629AbhJLPnE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Oct 2021 11:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
+        id S229606AbhJLRFi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Oct 2021 13:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237440AbhJLPmu (ORCPT
+        with ESMTP id S229495AbhJLRFi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Oct 2021 11:42:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB716C061766
-        for <linux-serial@vger.kernel.org>; Tue, 12 Oct 2021 08:40:45 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1maJsk-0008NN-05; Tue, 12 Oct 2021 17:39:58 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1maJsa-0004iS-RQ; Tue, 12 Oct 2021 17:39:48 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1maJsa-0004WY-O6; Tue, 12 Oct 2021 17:39:48 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Richard Weinberger <richard@nod.at>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Heiko Schocher <hs@denx.de>, Len Baker <len.baker@gmx.com>,
-        Mark Brown <broonie@kernel.org>,
-        Phil Reid <preid@electromag.com.au>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        dri-devel@lists.freedesktop.org, kernel@pengutronix.de,
-        linux-fbdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-stm32@st-md-mailman.stormreply.com,
-        platform-driver-x86@vger.kernel.org
-Subject: [PATCH v2 00/20] Make some spi device drivers return zero in .remove()
-Date:   Tue, 12 Oct 2021 17:39:25 +0200
-Message-Id: <20211012153945.2651412-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Tue, 12 Oct 2021 13:05:38 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34249C061570;
+        Tue, 12 Oct 2021 10:03:36 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id y12so2160062eda.4;
+        Tue, 12 Oct 2021 10:03:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WlwZrcSv/6qlil8LeTTqWGyZXWB3Ik9RpiBlpWwbVTo=;
+        b=QC7JNyM/eDZROl4H1LtrhVyyTqtOV6o/tJiEWIFPdgv6ADlcB1lihC6y8xk5whSFTc
+         Kqxb6yLx9yP1jLiOt0txGD/QSeOeq6cXsbBQIkhZ8IcEfdTZOBmiNYcRGNF+dCx452lW
+         jLk13H+72hlzON5Ry77b+wbt6FwNalAtPvlChrM1aMX2SfsGnpNrVsz1ieOmFy3GTvbS
+         u9lyDfjsGEriNgchM1jBspc58zWL/KPWh3Y9kC0i5WMbgPkPr2ODociwDZhcEQ8zUBaK
+         PzSo9WwuPC3AOAFKqxSsdCQQnYOurgqQVJPYWHYqwzX1INCZeqKtxTtmcl4F15hKKzrl
+         agQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WlwZrcSv/6qlil8LeTTqWGyZXWB3Ik9RpiBlpWwbVTo=;
+        b=5nGxH+Sqro/wq4+fS6EJDcoiIvbUI3dvJehi+f9YD/oP6c88/iKlrun7y2pDGgPDWy
+         5y8lz7ykoUnRC0mC0BfG6VrjEO+akwgKewLG+bBvsEREiBvQ1OLkas8WE3i+N08QkqsR
+         RlXr3BKTs5YXccQG1tmgFkMG1hOm2HjZmuzH54D4V4C6XQ+31lmMxTPhGQg+BUtiGqUm
+         SXJ5DFnciLyb/o4d3xZMSYISnc1sUbFf2WQXCaqWgMdh3j7v9ITw05/kw8C2kO69ZsSd
+         MjRy0UDnRtXxyU1s4qYXtx4UDydJadIyVwcBo0XuGJJ4dNFxKGd0vvfFLXccrPkbxlL+
+         9o+w==
+X-Gm-Message-State: AOAM531MywU5LdIVOnZpBnkZFK52WiklIMcy2uzTVaxCPaDCNmsAqGkX
+        ZWyiffMJBW26H58653XkyfEUFu8snT1+DHvIjoo=
+X-Google-Smtp-Source: ABdhPJyIJOxuvdWyF3/VdZCTHAEks5EPArers2jrX2ff8Pwb10Qgdvea2DqvU+u5TpKPviqLj0lxEPWa43DVB4meExA=
+X-Received: by 2002:a05:6402:10da:: with SMTP id p26mr1248588edu.283.1634058214489;
+ Tue, 12 Oct 2021 10:03:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+References: <20211012134027.684712-1-kernel@esmil.dk> <20211012134027.684712-13-kernel@esmil.dk>
+In-Reply-To: <20211012134027.684712-13-kernel@esmil.dk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 12 Oct 2021 23:02:46 +0300
+Message-ID: <CAHp75Vep+i+iyJi0LAOKuer-cUZoUoB_ZrWKcmT=EB_4hOgFGw@mail.gmail.com>
+Subject: Re: [PATCH v1 12/16] pinctrl: starfive: Add pinctrl driver for
+ StarFive SoCs
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Huan Feng <huan.feng@starfivetech.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On Tue, Oct 12, 2021 at 4:43 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+>
+> Add a combined pinctrl and gpio driver for the StarFive JH7100 SoC.
+>
+> For each "GPIO" there are two registers for configuring the output and
+> output enable signals which may come from other peripherals. Among these
+> are two special signals that are constant 0 and constant 1 respectively.
+> Controlling the GPIOs from software is done by choosing one of these
+> signals. In other words the same registers are used for both pinmuxing
+> and controlling the GPIOs, which makes it easier to combine the pinctrl
+> and gpio driver in one.
+>
+> I wrote the pinconf and pinmux parts, but the gpio part of the code is
+> based on the gpio driver in the vendor tree written by Huan Feng with
+> cleanups and fixes by Drew and me.
 
-this is v2 of my quest to make spi remove callbacks return void. Today
-they return an int, but the only result of returning a non-zero value is
-a warning message. So it's a bad idea to return an error code in the
-expectation that not freeing some resources is ok then. The same holds
-true for i2c and platform devices which benefit en passant for a few
-drivers.
+s/gpio/GPIO/g
 
-The patches in this series address some of the spi drivers that might
-return non-zero and adapt them accordingly to return zero instead. For
-most drivers it's just about not hiding the fact that they already
-return zero.
+...
 
-Given that there are quite some more patches of this type to create
-before I can change the spi remove callback, I suggest the respective
-subsystem maintainers pick up these patches. There are no
-interdependencies in this series.
+> +config PINCTRL_STARFIVE
 
-Compared to (implicit) v1
+> +       bool "Pinctrl and GPIO driver for the StarFive JH7100 SoC"
 
- - I fixed a few compiler issues (this series it build tested with an
-   allmoddefconfig on arm64, m68k, powerpc, riscv, s390, sparc64 and
-   x86_64).
- - A few new patches (2x gpio, 2x misc, 4x mtd)
- - One patch already landed in next, this one I dropped. The drm/panel
-   patch as claimed to applied, too, but not yet in next. It's included
-   here, but I assume I was just too impatient and this one should be
-   ignored.
+Why not module?
 
-Full range-diff below.
+> +       depends on SOC_STARFIVE || COMPILE_TEST
 
-Best regards
-Uwe
+> +       depends on OF
 
-Uwe Kleine-König (20):
-  drm/panel: s6e63m0: Make s6e63m0_remove() return void
-  gpio: max730x: Make __max730x_remove() return void
-  gpio: mc33880: Drop if with an always false condition
-  hwmon: max31722: Warn about failure to put device in stand-by in
-    .remove()
-  input: adxl34xx: Make adxl34x_remove() return void
-  input: touchscreen: tsc200x: Make tsc200x_remove() return void
-  media: cxd2880: Eliminate dead code
-  mfd: mc13xxx: Make mc13xxx_common_exit() return void
-  mfd: stmpe: Make stmpe_remove() return void
-  mfd: tps65912: Make tps65912_device_exit() return void
-  misc: ad525x_dpot: Make ad_dpot_remove() return void
-  misc: lis3lv02d: Make lis3lv02d_remove_fs() return void
-  mtd: dataflash: Warn about failure to unregister mtd device
-  mtd: mchp23k256: Warn about failure to unregister mtd device
-  mtd: mchp48l640: Warn about failure to unregister mtd device
-  mtd: sst25l: Warn about failure to unregister mtd device
-  serial: max310x: Make max310x_remove() return void
-  serial: sc16is7xx: Make sc16is7xx_remove() return void
-  staging: fbtft: Make fbtft_remove_common() return void
-  tpm: st33zp24: Make st33zp24_remove() return void
+Do you really need this taking into account...
 
- drivers/char/tpm/st33zp24/i2c.c                   |  5 +----
- drivers/char/tpm/st33zp24/spi.c                   |  5 +----
- drivers/char/tpm/st33zp24/st33zp24.c              |  3 +--
- drivers/char/tpm/st33zp24/st33zp24.h              |  2 +-
- drivers/gpio/gpio-max7300.c                       |  4 +++-
- drivers/gpio/gpio-max7301.c                       |  4 +++-
- drivers/gpio/gpio-max730x.c                       |  6 +-----
- drivers/gpio/gpio-mc33880.c                       |  2 --
- drivers/gpu/drm/panel/panel-samsung-s6e63m0-dsi.c |  3 ++-
- drivers/gpu/drm/panel/panel-samsung-s6e63m0-spi.c |  3 ++-
- drivers/gpu/drm/panel/panel-samsung-s6e63m0.c     |  4 +---
- drivers/gpu/drm/panel/panel-samsung-s6e63m0.h     |  2 +-
- drivers/hwmon/max31722.c                          |  8 +++++++-
- drivers/input/misc/adxl34x-i2c.c                  |  4 +++-
- drivers/input/misc/adxl34x-spi.c                  |  4 +++-
- drivers/input/misc/adxl34x.c                      |  4 +---
- drivers/input/misc/adxl34x.h                      |  2 +-
- drivers/input/touchscreen/tsc2004.c               |  4 +++-
- drivers/input/touchscreen/tsc2005.c               |  4 +++-
- drivers/input/touchscreen/tsc200x-core.c          |  4 +---
- drivers/input/touchscreen/tsc200x-core.h          |  2 +-
- drivers/media/spi/cxd2880-spi.c                   | 13 +------------
- drivers/mfd/mc13xxx-core.c                        |  4 +---
- drivers/mfd/mc13xxx-i2c.c                         |  3 ++-
- drivers/mfd/mc13xxx-spi.c                         |  3 ++-
- drivers/mfd/mc13xxx.h                             |  2 +-
- drivers/mfd/stmpe-i2c.c                           |  4 +++-
- drivers/mfd/stmpe-spi.c                           |  4 +++-
- drivers/mfd/stmpe.c                               |  4 +---
- drivers/mfd/stmpe.h                               |  2 +-
- drivers/mfd/tps65912-core.c                       |  4 +---
- drivers/mfd/tps65912-i2c.c                        |  4 +++-
- drivers/mfd/tps65912-spi.c                        |  4 +++-
- drivers/misc/ad525x_dpot-i2c.c                    |  3 ++-
- drivers/misc/ad525x_dpot-spi.c                    |  3 ++-
- drivers/misc/ad525x_dpot.c                        |  4 +---
- drivers/misc/ad525x_dpot.h                        |  2 +-
- drivers/misc/lis3lv02d/lis3lv02d.c                |  3 +--
- drivers/misc/lis3lv02d/lis3lv02d.h                |  2 +-
- drivers/misc/lis3lv02d/lis3lv02d_spi.c            |  4 +++-
- drivers/mtd/devices/mchp23k256.c                  |  9 ++++++++-
- drivers/mtd/devices/mchp48l640.c                  |  8 +++++++-
- drivers/mtd/devices/mtd_dataflash.c               |  5 ++++-
- drivers/mtd/devices/sst25l.c                      |  8 +++++++-
- drivers/platform/x86/hp_accel.c                   |  3 ++-
- drivers/staging/fbtft/fbtft-core.c                |  8 +-------
- drivers/staging/fbtft/fbtft.h                     |  8 +++++---
- drivers/tty/serial/max310x.c                      |  7 +++----
- drivers/tty/serial/sc16is7xx.c                    | 12 +++++++-----
- include/linux/mfd/tps65912.h                      |  2 +-
- include/linux/spi/max7301.h                       |  2 +-
- 51 files changed, 119 insertions(+), 104 deletions(-)
+> +       default SOC_STARFIVE
+> +       select GENERIC_PINCTRL_GROUPS
+> +       select GENERIC_PINMUX_FUNCTIONS
+> +       select GENERIC_PINCONF
+> +       select GPIOLIB
+> +       select GPIOLIB_IRQCHIP
 
-Range-diff against v1:
- 1:  73a1a54d9ea0 =  1:  87fd7940fbfd drm/panel: s6e63m0: Make s6e63m0_remove() return void
- 2:  3bcc8e8bd1a3 <  -:  ------------ hwmon: adt7x10: Make adt7x10_remove() return void
- -:  ------------ >  2:  305311d63bbb gpio: max730x: Make __max730x_remove() return void
- -:  ------------ >  3:  0cafc31ea5c5 gpio: mc33880: Drop if with an always false condition
- 3:  07f067732aa9 !  4:  f39467b50f06 hwmon: max31722: Warn about failure to put device in stand-by in .remove()
-    @@ Commit message
-         nothing happens apart from emitting a generic error message. Make this
-         error message more device specific and return zero instead.
-     
-    -    Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-         Acked-by: Michael Hennerich <michael.hennerich@analog.com>
-    +    Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-     
-      ## drivers/hwmon/max31722.c ##
-     @@ drivers/hwmon/max31722.c: static int max31722_probe(struct spi_device *spi)
- 4:  0b0a5497d105 =  5:  de3a78214008 input: adxl34xx: Make adxl34x_remove() return void
- 5:  0d4f14bc2dd6 !  6:  9629ac3f9e13 input: touchscreen: tsc200x: Make tsc200x_remove() return void
-    @@ drivers/input/touchscreen/tsc2005.c: static int tsc2005_probe(struct spi_device
-     -	return tsc200x_remove(&spi->dev);
-     +	tsc200x_remove(&spi->dev);
-     +
-    -+	return 0
-    ++	return 0;
-      }
-      
-      #ifdef CONFIG_OF
- 6:  a68bbd23223b =  7:  1aab41df9262 media: cxd2880: Eliminate dead code
- 7:  3801b37ac18f !  8:  745d1a5f840e mfd: mc13xxx: Make mc13xxx_common_exit() return void
-    @@ drivers/mfd/mc13xxx-spi.c: static int mc13xxx_spi_probe(struct spi_device *spi)
-      {
-     -	return mc13xxx_common_exit(&spi->dev);
-     +	mc13xxx_common_exit(&spi->dev);
-    -+	return 0
-    ++	return 0;
-      }
-      
-      static struct spi_driver mc13xxx_spi_driver = {
- 8:  22159093ce71 =  9:  7ee04277db66 mfd: stmpe: Make stmpe_remove() return void
- 9:  f91da216c752 = 10:  4a21c90a57f8 mfd: tps65912: Make tps65912_device_exit() return void
- -:  ------------ > 11:  f92aa824fd1c misc: ad525x_dpot: Make ad_dpot_remove() return void
- -:  ------------ > 12:  5b2fccd09a24 misc: lis3lv02d: Make lis3lv02d_remove_fs() return void
- -:  ------------ > 13:  609ab18323fc mtd: dataflash: Warn about failure to unregister mtd device
- -:  ------------ > 14:  3b220d5fa547 mtd: mchp23k256: Warn about failure to unregister mtd device
- -:  ------------ > 15:  baf6f4b3a8c7 mtd: mchp48l640: Warn about failure to unregister mtd device
- -:  ------------ > 16:  edf3788a30b0 mtd: sst25l: Warn about failure to unregister mtd device
-10:  f2def77b74d1 ! 17:  614f7c001377 serial: max310x: Make max310x_remove() return void
-    @@ drivers/tty/serial/max310x.c: static int max310x_spi_probe(struct spi_device *sp
-      {
-     -	return max310x_remove(&spi->dev);
-     +	max310x_remove(&spi->dev);
-    -+	return 0
-    ++	return 0;
-      }
-      
-      static const struct spi_device_id max310x_id_table[] = {
-11:  283e4bbeff38 ! 18:  35d1f5b36de5 serial: sc16is7xx: Make sc16is7xx_remove() return void
-    @@ drivers/tty/serial/sc16is7xx.c: static int sc16is7xx_probe(struct device *dev,
-      {
-      	struct sc16is7xx_port *s = dev_get_drvdata(dev);
-      	int i;
-    +@@ drivers/tty/serial/sc16is7xx.c: static int sc16is7xx_remove(struct device *dev)
-    + 	kthread_stop(s->kworker_task);
-    + 
-    + 	clk_disable_unprepare(s->clk);
-    +-
-    +-	return 0;
-    + }
-    + 
-    + static const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
-     @@ drivers/tty/serial/sc16is7xx.c: static int sc16is7xx_spi_probe(struct spi_device *spi)
-      
-      static int sc16is7xx_spi_remove(struct spi_device *spi)
-12:  5093fbdceee5 ! 19:  d9ec9a96fbb8 staging: fbtft: Make fbtft_remove_common() return void
-    @@ drivers/staging/fbtft/fbtft-core.c: EXPORT_SYMBOL(fbtft_probe_common);
-      
-     
-      ## drivers/staging/fbtft/fbtft.h ##
-    +@@ drivers/staging/fbtft/fbtft.h: void fbtft_unregister_backlight(struct fbtft_par *par);
-    + int fbtft_init_display(struct fbtft_par *par);
-    + int fbtft_probe_common(struct fbtft_display *display, struct spi_device *sdev,
-    + 		       struct platform_device *pdev);
-    +-int fbtft_remove_common(struct device *dev, struct fb_info *info);
-    ++void fbtft_remove_common(struct device *dev, struct fb_info *info);
-    + 
-    + /* fbtft-io.c */
-    + int fbtft_write_spi(struct fbtft_par *par, void *buf, size_t len);
-     @@ drivers/staging/fbtft/fbtft.h: static int fbtft_driver_remove_spi(struct spi_device *spi)                 \
-      {                                                                          \
-      	struct fb_info *info = spi_get_drvdata(spi);                       \
-13:  9156e6380a5e = 20:  89d0b85968a9 tpm: st33zp24: Make st33zp24_remove() return void
+> +       select OF_GPIO
 
-base-commit: 9e1ff307c779ce1f0f810c7ecce3d95bbae40896
+...this one?
+
+...
+
+bits.h ?
+
+> +#include <linux/clk.h>
+> +#include <linux/gpio/driver.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+
+
+mod_devicetable.h ?
+
+> +#include <linux/pinctrl/pinctrl.h>
+> +#include <linux/pinctrl/pinmux.h>
+
+Can you move these as a group after generic linux/* ones?
+
+> +#include <linux/platform_device.h>
+> +#include <linux/reset.h>
+> +#include <linux/spinlock.h>
+
+...
+
+> +/*
+> + * refer to Section 12. GPIO Registers in JH7100 datasheet:
+
+Be consistent in your style, here for example missed capitalization.
+
+> + * https://github.com/starfive-tech/StarLight_Docs
+
+Is it possible to have the datasheet to be provided as Datasheet: tag
+in the commit message?
+
+> + */
+
+...
+
+> +/*
+> + * Global enable for GPIO interrupts, offset: 0x0, field: GPIOEN
+> + * set to 1 if GPIO interrupts are enabled, set to 0 to disable
+> + */
+> +#define IRQ_GLOBAL_EN          0x0
+
+s/0x0/0x00/g
+
+...
+
+> +/*
+> + * Interrupt Type for GPIO[31:0], offset: 0x10, field: GPIOS_0
+> + * set to 1 if edge-triggered, set to 0 for level-triggered
+> + */
+> +#define IRQ_TYPE_LOW           0x10
+> +
+> +/*
+> + * Interrupt Type for GPIO[63:32], offset: 0x14, field: GPIOS_1
+> + */
+> +#define IRQ_TYPE_HIGH          0x14
+
+As I reviewed below, the IRQ is represented by a few registers in a
+row, no need to define low and high separately. Ditto for the rest
+register pairs.
+
+...
+
+> +/*
+> + * Interrupt Status after Masking GPIO[31:0], offset: 0x40, field: GPIOMIS_0
+> + * status of edge-triggered or level-triggered after masking
+> + * value of 1 means edge or level was detected, value of 0 menas not detected
+
+menas?!
+
+> + */
+
+...
+
+> +/*
+> + * Data Value of GPIO for GPIO[31:0], offest: 0x48, field: GPIODIN_0
+
+offest?!
+
+> + * dynamically reflects value on the GPIO pin
+> + */
+
+Please, run a spellchecker.
+
+...
+
+> +#define IO_PADSHARE_SEL                0x1a0
+
+Okay, make all registers to be fixed width, i.e. 0x000 for IRQ global
+enabling and so on.
+
+...
+
+> +#define PAD_SLEW_RATE_MASK             0xe00U
+
+GENMASK()
+
+> +#define PAD_BIAS_STRONG_PULL_UP                0x100U
+> +#define PAD_INPUT_ENABLE               0x080U
+> +#define PAD_INPUT_SCHMITT_ENABLE       0x040U
+> +#define PAD_BIAS_DISABLE               0x020U
+> +#define PAD_BIAS_PULL_DOWN             0x010U
+
+All above seems like BIT(_something_).
+
+> +#define PAD_BIAS_MASK                  0x130U
+> +#define PAD_DRIVE_STRENGTH_MASK                0x007U
+
+GENMASK()
+
+...
+
+> +#ifdef CONFIG_DEBUG_FS
+
+__maybe_unused ?
+
+> +#else
+> +#define starfive_pin_dbg_show NULL
+> +#endif
+
+...
+
+> +       dout = readl_relaxed(reg);
+
+readl_relaxed(reg + 0x00)
+
+> +       reg += 4;
+
+> +       doen = readl_relaxed(reg);
+
+readl_relaxed(reg + 0x04);
+
+...
+
+> +       seq_printf(s, "dout=%u%s doen=%u%s",
+> +                  dout & 0xffU, (dout & 0x80000000U) ? "r" : "",
+> +                  doen & 0xffU, (doen & 0x80000000U) ? "r" : "");
+
+GENMASK()
+BIT()
+
+...
+
+> +       for_each_child_of_node(np, child) {
+> +               const __be32 *pinmux_list;
+> +               const __be32 *pins_list;
+> +               int pinmux_size;
+> +               int pins_size;
+> +
+> +               pinmux_list = of_get_property(child, "pinmux", &pinmux_size);
+> +               pins_list   = of_get_property(child, "pins",   &pins_size);
+> +               if (pinmux_list && pins_list) {
+> +                       dev_err(dev, "invalid pinctrl group %pOFn.%pOFn: %s\n",
+> +                               np, child, "both pinmux and pins set");
+> +                       of_node_put(child);
+> +                       return -EINVAL;
+> +               }
+> +
+> +               if (pinmux_list && pinmux_size > 0) {
+> +                       nmaps += 2;
+> +               } else if (pins_list && pins_size > 0) {
+> +                       nmaps += 1;
+> +               } else {
+> +                       dev_err(dev, "invalid pinctrl group %pOFn.%pOFn: %s\n",
+> +                               np, child, "neither pinmux nor pins set");
+> +                       of_node_put(child);
+> +                       return -EINVAL;
+> +               }
+> +               ngroups += 1;
+> +       }
+
+This entire loop seems like
+1) it should be based on something from pin control core;
+2) it's using some low level APIs instead of better ones like
+of_property_read_uXX();
+3) smells like unoptimized NIH.
+
+...
+
+> +               if ((list = of_get_property(child, "pinmux", &npins))) {
+
+Why not of_property_read_...() ?
+
+...
+
+> +                               u32 v = be32_to_cpu(*list++);
+
+My gosh!
+
+...
+
+> +                       for (i = 0; i < npins; i++)
+> +                               pins[i] = be32_to_cpu(*list++);
+
+Ditto.
+Even for this we have something in byteorder headers.
+
+Summary, make sure you use much better _existing_ APIs instead of the
+above crap.
+
+...
+
+> +free_pinmux:
+> +       devm_kfree(dev, pinmux);
+> +free_pins:
+> +       devm_kfree(dev, pins);
+> +free_grpname:
+> +       devm_kfree(dev, grpname);
+
+What the heck?!
+
+> +free_pgnames:
+> +       devm_kfree(dev, pgnames);
+
+Ditto.
+
+...
+
+> +out:
+
+Useless label.
+
+> +       return ret;
+
+...
+
+> +       for (i = 0; i < group->num_pins; i++) {
+> +               unsigned int gpio = starfive_pin_to_gpio(sfp, group->pins[i]);
+> +               void __iomem *reg_dout;
+> +               void __iomem *reg_doen;
+> +               void __iomem *reg_din;
+> +               u32 v, dout, doen, din;
+> +               unsigned long flags;
+
+> +               if (dev_WARN_ONCE(dev, gpio >= MAX_GPIO,
+
+What?!
+
+> +                                 "%s: invalid gpiomux pin", group->name))
+> +                       continue;
+> +
+> +               v = pinmux[i];
+> +               dout = ((v & BIT(7)) << (31 - 7)) | ((v >> 24) & 0xffU);
+> +               doen = ((v & BIT(6)) << (31 - 6)) | ((v >> 16) & 0xffU);
+> +               din  = (v >> 8) & 0xffU;
+
+What is this voodoo for?
+
+> +               if (din != 0xff)
+> +                       reg_din = sfp->base + GPIO_IN_OFFSET + 4 * din;
+> +               else
+> +                       reg_din = NULL;
+
+This looks like you maybe use gpio-regmap instead?
+
+...
+
+> +       void __iomem *reg = sfp->padctl + 4 * (pin / 2);
+> +       u32 value = readl_relaxed(reg);
+> +
+> +       if (pin & 1U)
+> +               value >>= 16;
+> +       return value;
+
+u8 shift = 16 * (pin % 2);
+
+return readl_relaxed() >> shift;
+
+?
+
+Something similar for below code.
+
+...
+
+> +#ifdef CONFIG_DEBUG_FS
+> +static const struct pin_config_item
+> +starfive_pinconf_custom_conf_items[ARRAY_SIZE(starfive_pinconf_custom_params)] = {
+
+Instead of using ARAY_SIZE() here, use static_assert().
+
+__maybe_unused?
+
+> +       PCONFDUMP(PIN_CONFIG_STARFIVE_STRONG_PULL_UP, "input bias strong pull-up", NULL, false),
+> +};
+> +#else
+> +#define starfive_pinconf_custom_conf_items NULL
+> +#endif
+
+...
+
+> +static const unsigned char starfive_drive_strength[] = {
+> +       14, 21, 28, 35, 42, 49, 56, 63,
+
+Why table? Can you simply use the formula?!
+
+> +};
+
+...
+
+> +       if (unlikely(!group))
+
+Why unlikely() Must be justified here and everywhere where you are using it.
+
+> +               return -EINVAL;
+> +
+> +       return starfive_pinconf_get(pctldev, group->pins[0], config);
+> +}
+
+...
+
+> +               case PIN_CONFIG_BIAS_DISABLE:
+
+> +                       mask |= PAD_BIAS_MASK;
+
+Use it...
+
+> +                       value = (value & ~PAD_BIAS_MASK) | PAD_BIAS_DISABLE;
+
+...here. Ditto for the similar cases in this function and elsewhere.
+
+After done this, you will see how you can simplify and deduplicate the
+switch-cases.
+
+...
+
+> +#ifdef CONFIG_DEBUG_FS
+
+__maybe_unused ?
+
+> +#else
+> +#define starfive_pinconf_dbg_show NULL
+> +#endif
+
+...
+
+> +       if (gpio < 32) {
+> +               value = readl_relaxed(sfp->base + GPIO_DIN_LOW);
+
+> +               value = (value >> gpio) & 1U;
+
+Drop
+
+> +       } else {
+> +               value = readl_relaxed(sfp->base + GPIO_DIN_HIGH);
+
+> +               value = (value >> (gpio - 32)) & 1U;
+
+Drop
+
+> +       }
+
+> +       return value;
+
+return !!(value & BIT(gpio % 32));
+
+...
+
+> +               if (arg == 0)
+
+> +                       return -ENOTSUPP;
+
+Shouldn't we return something else and pin control core will change it
+to something else if needed?
+
+> +               if (arg == 0)
+> +                       return -ENOTSUPP;
+
+Ditto.
+
+> +       default:
+> +               return -ENOTSUPP;
+
+...
+
+> +       if (gpio < 0 || gpio >= MAX_GPIO)
+> +               return;
+> +
+> +       if (gpio < 32) {
+> +               ie = sfp->base + IRQ_ENABLE_LOW;
+> +               mask = BIT(gpio);
+> +       } else {
+> +               ie = sfp->base + IRQ_ENABLE_HIGH;
+> +               mask = BIT(gpio - 32);
+> +       }
+
+See below. And update all occurrences of these lines accordingly and
+everywhere. Also for IRQ may use helper functions if needed (but I
+don't believe the high and low register have stride more than 4).
+
+...
+
+> +       if (gpio < 0 || gpio >= MAX_GPIO)
+> +               return -EINVAL;
+
+How is it possible to be ever triggered?
+
+...
+
+> +       if (gpio < 32) {
+> +               base = sfp->base;
+> +               mask = BIT(gpio);
+> +       } else {
+> +               base = sfp->base + 4;
+> +               mask = BIT(gpio - 32);
+> +       }
+
+base = sfp_base + 4 * (gpio / 32);
+mask = BIT(gpio % 32);
+
+...
+
+> +               irq_set_handler_locked(d, handle_edge_irq);
+
+> +               irq_set_handler_locked(d, handle_edge_irq);
+
+Dup.
+
+...
+
+> +               irq_set_handler_locked(d, handle_edge_irq);
+
+> +               irq_set_handler_locked(d, handle_level_irq);
+
+> +               irq_set_handler_locked(d, handle_level_irq);
+
+Ditto.
+
+...
+
+> +               irq_set_handler_locked(d, handle_bad_irq);
+
+Why is this here? Move it to ->probe().
+
+...
+
+> +       clk = devm_clk_get(dev, NULL);
+> +       if (IS_ERR(clk)) {
+> +               ret = PTR_ERR(clk);
+
+> +               dev_err(dev, "could not get clock: %d\n", ret);
+
+Thank you for spamming logs with this noise.
+
+> +               return ret;
+
+Hint: return dev_err_probe(). Ditto for the rest in this function.
+
+> +       }
+
+...
+
+> +       ret = clk_prepare_enable(clk);
+> +       if (ret) {
+
+> +               reset_control_deassert(rst);
+
+Use devm_add_action_or_reset().
+
+> +               dev_err(dev, "could not enable clock: %d\n", ret);
+> +               return ret;
+> +       }
+
+...
+
+> +       if (!of_property_read_u32(dev->of_node, "starfive,signal-group", &value)) {
+
+Can be refactored without conditional. Also, why not to use
+device_property_read_u32()?
+
+> +               if (value <= 6)
+> +                       writel(value, sfp->padctl + IO_PADSHARE_SEL);
+> +               else
+
+> +                       dev_err(dev, "invalid signal group %u\n", value);
+
+Why _err if you not bail out here?
+
+> +       }
+
+...
+
+> +       value = readl(sfp->padctl + IO_PADSHARE_SEL);
+> +       switch (value) {
+> +       case 0:
+> +               sfp->gpios.pin_base = 0x10000;
+
+Magic number!
+
+> +               goto done;
+> +       case 1:
+> +               sfp->gpios.pin_base = PAD_GPIO(0);
+> +               break;
+> +       case 2:
+> +               sfp->gpios.pin_base = PAD_FUNC_SHARE(72);
+> +               break;
+> +       case 3:
+> +               sfp->gpios.pin_base = PAD_FUNC_SHARE(70);
+> +               break;
+> +       case 4: case 5: case 6:
+> +               sfp->gpios.pin_base = PAD_FUNC_SHARE(0);
+> +               break;
+> +       default:
+> +               dev_err(dev, "invalid signal group %u\n", value);
+> +               return -EINVAL;
+> +       }
+
+...
+
+> +       sfp->gc.of_node = dev->of_node;
+
+Isn't GPIO library do this for you?
+
+...
+
+> +       starfive_irq_chip.parent_device = dev;
+
+Ditto?
+
+...
+
+> +       sfp->gc.irq.parents =
+> +               devm_kcalloc(dev, 1, sizeof(*sfp->gc.irq.parents), GFP_KERNEL);
+
+1 -> sfp->gc.irq.num_parents
+And hence move below line up.
+
+> +       if (!sfp->gc.irq.parents)
+> +               return -ENOMEM;
+
+> +       sfp->gc.irq.num_parents = 1;
+
+...
+
+> +       dev_info(dev, "StarFive GPIO chip registered %d GPIOs\n", sfp->gc.ngpio);
+
+Redundant noise.
+
+...
+
+> +static const struct of_device_id starfive_of_match[] = {
+> +       { .compatible = "starfive,jh7100-pinctrl" },
+
+> +       { /* sentinel */ },
+
+No comma needed for terminator entry.
+
+> +};
+
 -- 
-2.30.2
-
+With Best Regards,
+Andy Shevchenko
