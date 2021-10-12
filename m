@@ -2,183 +2,179 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C2EC43217
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 10:29:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 086CBC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 13:41:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5877861100
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 10:29:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E9D4160F3A
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 13:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235922AbhJLKbi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Oct 2021 06:31:38 -0400
-Received: from mailgw01.mediatek.com ([60.244.123.138]:45944 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235153AbhJLKbh (ORCPT
+        id S236983AbhJLNnm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Oct 2021 09:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236854AbhJLNnl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Oct 2021 06:31:37 -0400
-X-UUID: 4408c824a8f947aaa53b05f088e8147e-20211012
-X-UUID: 4408c824a8f947aaa53b05f088e8147e-20211012
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <sam.shih@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 869037599; Tue, 12 Oct 2021 18:29:30 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 12 Oct 2021 18:29:29 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Oct 2021 18:29:28 +0800
-Message-ID: <315d7823aa108c909a3d36464fe54763b76ab2f4.camel@mediatek.com>
-Subject: Re: [v3,7/9] dt-bindings: arm64: dts: mediatek: Add mt7986 series
-From:   Sam Shih <sam.shih@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <Ryder.Lee@mediatek.com>, <devicetree@vger.kernel.org>,
-        <enric.balletbo@collabora.com>, <fparent@baylibre.com>,
-        <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>,
-        <hsinyi@chromium.org>, <john@phrozen.org>,
-        <linus.walleij@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
-        <linux@roeck-us.net>, <mpm@selenic.com>, <mturquette@baylibre.com>,
-        <robh+dt@kernel.org>, <sboyd@kernel.org>, <sean.wang@kernel.org>,
-        <seiya.wang@mediatek.com>, <wim@linux-watchdog.org>
-Date:   Tue, 12 Oct 2021 18:29:28 +0800
-In-Reply-To: <bc29d5bc-9ce7-6147-a708-e6304249b600@gmail.com>
-References: <9552b0dc-337f-7edc-2997-50603dfe8bcd@gmail.com>
-         <20210924114046.26070-1-sam.shih@mediatek.com>
-         <bc29d5bc-9ce7-6147-a708-e6304249b600@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 12 Oct 2021 09:43:41 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F63C061570;
+        Tue, 12 Oct 2021 06:41:39 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id y26so88692959lfa.11;
+        Tue, 12 Oct 2021 06:41:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jer+D64NwFqg3lswgRPWI11ACDNtMRc57uH44gzLJtg=;
+        b=euUG5Cl85wO2leafnMYDPaOFYjrD5EJsXk6bBLz4KQTDmfddtviBrNxH6ZE/W//Ogq
+         bcFZJskPNi1rzKGw0+ICAivGHQS4GqD5qORdoTYcrbWJ1Meh5W1FSrzMNyqEb4JaefuE
+         0O2kmSv8GcjU+xADdDhGzt4ug+d7lsJWG6F19UAIiTj2h4B5E0rwz1MWNQNdf4cBcXA6
+         ZhZu2gA+DTXk4gm4XGzzwFuG+ztx5swp5eKX86ooAOnfWrNaw76kvYitVF9PBxy+a+Hh
+         DWkk/WoFu129gwJ09TYqRingohCcFKqf+wrcMOvfaNavQgebwIRVJfHLNrbOxXy4SLAJ
+         tISA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=jer+D64NwFqg3lswgRPWI11ACDNtMRc57uH44gzLJtg=;
+        b=3YrajwTFhM1UQlHrix2Hs94jTCoWgnhQWiuwO9Spps/HGnSsHeWnUnQ1os2E0fRDmf
+         lY1cmC+XU1CXRCnbzGMKZh+X6W0dwwPhqM6HWczAn0PhKIfUbkLXLid9VtKJrvxZv5sn
+         JHUPjL8yrRXPgFvJqgHAvGyPHLzhS98czn7bqIHi8YT+qymyIxNbOGWxvxDsF/cX9KBC
+         WXnl8WhB2T8OIaVJqwBhHc8d6NufScoDChtRK8IQzZ++lLQ8nxolLk9BofyyKwZq36X0
+         vo39+MZkA0ptnb57nlVkviISu6lgosG5QewTL74GhNg7CaDozrc+phaKM1mu1KOZqhhr
+         dMgQ==
+X-Gm-Message-State: AOAM5339tVYrEqjndgv7NHFqrjeCi64S0+vzEZYB9ZviNHZq1olBPZXk
+        +xX/v7ZDpOChIhNcktak1Ak=
+X-Google-Smtp-Source: ABdhPJw09X/T52DBQcqbij/xht30zGMRPqEKz9t98hER+srgMXNSFRn7x43yGUM7vmVB443vsV2dkg==
+X-Received: by 2002:a05:6512:3c88:: with SMTP id h8mr8189918lfv.128.1634046097813;
+        Tue, 12 Oct 2021 06:41:37 -0700 (PDT)
+Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
+        by smtp.gmail.com with ESMTPSA id k16sm1033761lfo.219.2021.10.12.06.41.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Oct 2021 06:41:37 -0700 (PDT)
+Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+To:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 00/16] Basic StarFive JH7100 RISC-V SoC support
+Date:   Tue, 12 Oct 2021 15:40:11 +0200
+Message-Id: <20211012134027.684712-1-kernel@esmil.dk>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi
+This series adds support for the StarFive JH7100 RISC-V SoC. The SoC has
+many devices that needs non-coherent dma operations to work which isn't
+upstream yet[1], so this just adds basic support to boot up, get a
+serial console, blink an LED and reboot itself. Unlike the Allwinner D1
+this chip doesn't use any extra pagetable bits, but instead the DDR RAM
+appears twice in the memory map, with and without the cache.
 
-On Fri, 2021-10-08 at 15:53 +0200, Matthias Brugger wrote:
-> Hi Sam,
-> 
-> I'd advise to split this series in parts for:
-> - basic device support via dts.
-> - pinctrl driver + dts
-> - clk driver + dts
+The JH7100 is a test chip for the upcoming JH7110 and about 300 BeagleV
+Starlight Beta boards were sent out with them as part of a now cancelled
+BeagleBoard.org project. However StarFive has produced more of the
+JH7100s and more boards will be available[2] to buy. Hopefully before
+the end of the year.
 
-Okay, I will split the patches that are still under review into the
-above patch series.
+This series is also available at
+https://github.com/esmil/linux/commits/starlight-minimal
+..but a more complete kernel including non-coherent dma operations can
+be found at
+https://github.com/starfive-tech/linux/tree/starlight
 
-But I have a dumb question, currently, we have some patches that have
-been assigned version numbers.
-If I want to seprate original patch series, and resend 3 new patch
-series (basic / pinctrl / clock) according to your comment, if I want
-to keep the preview change log, tags in the patch set: 
+/Emil
 
-like:
----
-v3: changed 'MT7986' to 'MT7986 series' in the commit message
-v2: added an Acked-by tag
----
+[1]: https://lore.kernel.org/linux-riscv/20210723214031.3251801-2-atish.patra@wdc.com/
+[2]: https://www.linkedin.com/pulse/starfive-release-open-source-single-board-platform-q3-2021-starfive/
 
-Which version number should I use for these new patch series ?
+Emil Renner Berthing (12):
+  RISC-V: Add StarFive SoC Kconfig option
+  dt-bindings: timer: Add StarFive JH7100 clint
+  dt-bindings: interrupt-controller: Add StarFive JH7100 plic
+  dt-bindings: reset: Add Starfive JH7100 reset bindings
+  reset: starfive-jh7100: Add StarFive JH7100 reset driver
+  dt-bindings: pinctrl: Add StarFive pinctrl definitions
+  dt-bindings: pinctrl: Add StarFive JH7100 bindings
+  pinctrl: starfive: Add pinctrl driver for StarFive SoCs
+  dt-bindings: serial: snps-dw-apb-uart: Add JH7100 uarts
+  serial: 8250_dw: Add skip_clk_set_rate quirk
+  RISC-V: Add initial StarFive JH7100 device tree
+  RISC-V: Add BeagleV Starlight Beta device tree
 
-Does the version number in corver-letter and the version number in each
-patch need to be the same in the entire patch series ?
+Geert Uytterhoeven (4):
+  dt-bindings: clock: starfive: Add JH7100 clock definitions
+  dt-bindings: clock: starfive: Add JH7100 bindings
+  clk: starfive: Add JH7100 clock generator driver
+  dt-bindings: reset: Add StarFive JH7100 reset definitions
 
-// (Original patch series/thread, version number is v3)
-[PATCH v3 0/3] Add basic SoC support for mediatek mt7986
-  [PATCH v3 1/3] dt-bindings: arm64: dts: mediatek: Add mt7986 series
-  // (the version number has been updated to v5 previously)
-  // (basic part only, not include pinctrl and clock nodes)
-  [PATCH v5 2/3] arm64: dts: mediatek: add mt7986a support
-  [PATCH v5 3/3] arm64: dts: mediatek: add mt7986b support
+ .../clock/starfive,jh7100-clkgen.yaml         |   56 +
+ .../sifive,plic-1.0.0.yaml                    |    1 +
+ .../pinctrl/starfive,jh7100-pinctrl.yaml      |  274 ++++
+ .../bindings/reset/starfive,jh7100-reset.yaml |   38 +
+ .../bindings/serial/snps-dw-apb-uart.yaml     |    5 +
+ .../bindings/timer/sifive,clint.yaml          |    1 +
+ MAINTAINERS                                   |   22 +
+ arch/riscv/Kconfig.socs                       |    8 +
+ arch/riscv/boot/dts/Makefile                  |    1 +
+ arch/riscv/boot/dts/starfive/Makefile         |    2 +
+ .../dts/starfive/jh7100-beaglev-starlight.dts |  162 ++
+ arch/riscv/boot/dts/starfive/jh7100.dtsi      |  228 +++
+ drivers/clk/Kconfig                           |    1 +
+ drivers/clk/Makefile                          |    1 +
+ drivers/clk/starfive/Kconfig                  |   10 +
+ drivers/clk/starfive/Makefile                 |    3 +
+ drivers/clk/starfive/clk-starfive-jh7100.c    |  769 +++++++++
+ drivers/pinctrl/Kconfig                       |   17 +
+ drivers/pinctrl/Makefile                      |    1 +
+ drivers/pinctrl/pinctrl-starfive.c            | 1439 +++++++++++++++++
+ drivers/reset/Kconfig                         |    8 +
+ drivers/reset/Makefile                        |    1 +
+ drivers/reset/reset-starfive-jh7100.c         |  164 ++
+ drivers/tty/serial/8250/8250_dw.c             |   32 +-
+ include/dt-bindings/clock/starfive-jh7100.h   |  202 +++
+ .../dt-bindings/pinctrl/pinctrl-starfive.h    |  274 ++++
+ include/dt-bindings/reset/starfive-jh7100.h   |  126 ++
+ 27 files changed, 3833 insertions(+), 13 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/starfive,jh7100-clkgen.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/starfive,jh7100-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/reset/starfive,jh7100-reset.yaml
+ create mode 100644 arch/riscv/boot/dts/starfive/Makefile
+ create mode 100644 arch/riscv/boot/dts/starfive/jh7100-beaglev-starlight.dts
+ create mode 100644 arch/riscv/boot/dts/starfive/jh7100.dtsi
+ create mode 100644 drivers/clk/starfive/Kconfig
+ create mode 100644 drivers/clk/starfive/Makefile
+ create mode 100644 drivers/clk/starfive/clk-starfive-jh7100.c
+ create mode 100644 drivers/pinctrl/pinctrl-starfive.c
+ create mode 100644 drivers/reset/reset-starfive-jh7100.c
+ create mode 100644 include/dt-bindings/clock/starfive-jh7100.h
+ create mode 100644 include/dt-bindings/pinctrl/pinctrl-starfive.h
+ create mode 100644 include/dt-bindings/reset/starfive-jh7100.h
 
-// (New clock driver patch series)
-[PATCH 0/3] Add clock driver support for mediatek mt7986
-  [PATCH v3,1/3] dt-bindings: clock: mediatek: document clk bindings   
-for mediatek mt7986 SoC
-  // (the version number has been updated to v3 previously)
-  [PATCH v3 2/3] clk: mediatek: add mt7986 clock IDs
-  [PATCH v2 3/3] clk: mediatek: add mt7986 clock support
-
-// (New pinctrl driver patch series)
-[PATCH 0/4] Add pinctrl driver support for mediatek mt7986
-  // (the version number has been updated to v6 previously)
-  [PATCH v6 1/4] dt-bindings: pinctrl: update bindings for MT7986 SoC
-  // (the version number has been updated to v2 previously)
-  [PATCH v2 2/4] pinctrl: mediatek: add support for MT7986 SoC
-  [PATCH 3/4] arm64: dts: mediatek: add mt7986a pinctrl support
-  [PATCH 3/4] arm64: dts: mediatek: add mt7986b pinctrl support
-
-> 
-> I would also advise to not send new versions of patches as new
-> threads and don't 
-> respond in the same thread. At least for me that breaks my workflow
-> as I use b4.
-
-If I don't respond to the next patch set in the same thread, should I
-create an entire new patch series ?
-
-For example, if I want to update PATCH 2/3 in the bellows patch series,
-and my PATCH 1/3 has been accepted by reviewer previously
-
-[PATCH v2 0/3] Add basic SoC support for mediatek mt7986
-  [PATCH v2 1/3] ...   (patch set v1, applied by matainer)
-  [PATCH v2 2/3] ...   (patch set v2, need to be upgrade to v3)
-  [PATCH v2 3/3] ...   (patch set v1, waiting for review)
-
-Is this correct to send patch mail to maintaiers for the above
-situation ?
-
-[PATCH v3 0/2] Add basic SoC support for mediatek mt7986
-  [PATCH v3 1/2] ...   (patch set v3)
-  [PATCH v3 2/2] ...   (still patch set v1, waiting for review)
-
-
-> 
-> Regards,
-> Matthias
-> 
-> 
-> On 24/09/2021 13:40, Sam Shih wrote:
-> > MT7986 series is Mediatek's new 4-core SoC, which is mainly for
-> > wifi-router application. The difference between mt7986a and mt7986b
-> > is that some pins do not exist on mt7986b.
-> > 
-> > Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-> > Acked-by: Rob Herring <robh@kernel.org>
-> > 
-> > ---
-> > v3: changed 'MT7986' to 'MT7986 series' in the commit message
-> > v2: added an Acked-by tag
-> > ---
-> >   Documentation/devicetree/bindings/arm/mediatek.yaml | 8 ++++++++
-> >   1 file changed, 8 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml
-> > b/Documentation/devicetree/bindings/arm/mediatek.yaml
-> > index 80a05f6fee85..a9a778269684 100644
-> > --- a/Documentation/devicetree/bindings/arm/mediatek.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
-> > @@ -76,6 +76,14 @@ properties:
-> >             - enum:
-> >                 - mediatek,mt7629-rfb
-> >             - const: mediatek,mt7629
-> > +      - items:
-> > +          - enum:
-> > +              - mediatek,mt7986a-rfb
-> > +          - const: mediatek,mt7986a
-> > +      - items:
-> > +          - enum:
-> > +              - mediatek,mt7986b-rfb
-> > +          - const: mediatek,mt7986b
-> >         - items:
-> >             - enum:
-> >                 - mediatek,mt8127-moose
-> > 
-
-Thanks,
-Sam
+-- 
+2.33.0
 
