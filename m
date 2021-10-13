@@ -2,115 +2,67 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B87BC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 12:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70867C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 13:25:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 564B7610C8
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 12:33:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4E47261040
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 13:25:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232145AbhJMMfq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Oct 2021 08:35:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38736 "EHLO mail.kernel.org"
+        id S232949AbhJMN1O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Oct 2021 09:27:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38582 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229535AbhJMMfq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Oct 2021 08:35:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 757C860EBB;
-        Wed, 13 Oct 2021 12:33:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1634128422;
-        bh=NhrEwNR2bAsfs+l2bB9QBI31veQH8B8qQsugjF/0Dpk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V4gb21xzpNf8tA9BpjtOahlLhSyztgK/ALPjiTJyAzpN83BxhCpyQvKib3RfWz7kn
-         F2efgMzj/P2L3Hpkd0Z0kMzWl/+PwSmZHsvAHJ/Yi3Sd2aH1xZKZmu0LRkK8LYnAna
-         7rZVmO2+Q5CGH/wkF5Fg3WcFc1i+qAKR2STq2GvM=
-Date:   Wed, 13 Oct 2021 14:33:40 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] serial: core: Add wakeup() and start_pending_tx()
- for power management
-Message-ID: <YWbSJCEkqQ0KzQ5E@kroah.com>
-References: <20210930062906.58937-1-tony@atomide.com>
- <20210930062906.58937-2-tony@atomide.com>
+        id S229535AbhJMN1O (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 13 Oct 2021 09:27:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B5176109E;
+        Wed, 13 Oct 2021 13:25:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634131511;
+        bh=UGcV/mUCdeF23MAlNCj+71r+JKJVmreKKnW9gSNVkpI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=as4GM+yymmKWnuZa+Cd1AjfwLwOcsyUMmBc+1vYOnm2I2ifZeiOKzUf4QLr/WwZpB
+         iCMlEsd6omh7JOqvRZDoCNdNMuFlxEtKqCvVmOCa1Yz+WZKQo+wtKv9mCt10dafUMK
+         Gl00v0aOjB8Sgtk+VQn9+1QOokf5GdRvKFQu6JgD1YE9N0i0298WQG861cUJLFR2sl
+         NnU1wmKFoTIo7rX9zzDoI3MWYlprfaxaJ0J6shhwyVgFaUEvSeKhAtwaseu2EfUYw4
+         R98KQEGXbVowEoi+CD2doEWwJfutvvdpYz3vBjOszdKd2ZemgF0dpLVgwOX+/HBA9/
+         zKYIaefy/dRRw==
+Received: by mail-ed1-f43.google.com with SMTP id p13so10472972edw.0;
+        Wed, 13 Oct 2021 06:25:11 -0700 (PDT)
+X-Gm-Message-State: AOAM532gwkvvdj+uTYsSGBiLpqM78gGX7hx5qJHIZg6NPgxfGX2Femni
+        A5SwQa8TDvr4SB4jarTGu0QNfJ6t7NLjjfdw2g==
+X-Google-Smtp-Source: ABdhPJzaMP5MaQHrWDeZbquEbFJmvW/OITWr+5JKQkAI1+lpde9YiZTx1UaLtUUsXUk9JN9tflZBcGOJOkAkl+A0LJ4=
+X-Received: by 2002:a17:906:c350:: with SMTP id ci16mr12012432ejb.466.1634131509092;
+ Wed, 13 Oct 2021 06:25:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210930062906.58937-2-tony@atomide.com>
+References: <20211008234312.61688-1-david@ixit.cz>
+In-Reply-To: <20211008234312.61688-1-david@ixit.cz>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 13 Oct 2021 08:24:56 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJ6Br4S-P65K+n+3wyD4FpXYXDBkeXj+TbgFz8p9hetfA@mail.gmail.com>
+Message-ID: <CAL_JsqJ6Br4S-P65K+n+3wyD4FpXYXDBkeXj+TbgFz8p9hetfA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: uartlite: drop $ref for -bits property
+To:     David Heidelberg <david@ixit.cz>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 09:29:03AM +0300, Tony Lindgren wrote:
-> If the serial driver implements PM runtime with autosuspend, the port may
-> be powered down on TX. To wake up the port, let's add new wakeup() call
-> for serial drivers to implement as needed. We can call wakeup() from
-> __uart_start() and flow control related functions before attempting to
-> write to the serial port registers.
-> 
-> Let's keep track of the serial port with a new runtime_suspended flag
-> that the device driver runtime PM suspend and resume can manage with
-> atomic_set(). This is because only the device driver knows what the
-> device runtime PM state as in Documentation/power/runtime_pm.rst
-> under "9. Autosuspend, or automatically-delayed suspend" for locking.
-> 
-> To allow the serial port drivers to send out pending tx on runtime PM
-> resume, let's add start_pending_tx() as suggested by Johan Hovold
-> <johan@kernel.org>.
-> 
-> Suggested-by: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
+On Fri, Oct 8, 2021 at 6:54 PM David Heidelberg <david@ixit.cz> wrote:
+>
+> Fixes warning:
+> Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml: properties:xlnx,data-bits: {'const': '$ref'} is not allowed for '$ref'
+>         hint: Standard unit suffix properties don't need a type $ref
+>         from schema $id: http://devicetree.org/meta-schemas/core.yaml#
+>
+> Signed-off-by: David Heidelberg <david@ixit.cz>
 > ---
->  Documentation/driver-api/serial/driver.rst |  9 ++++
->  drivers/tty/serial/serial_core.c           | 56 +++++++++++++++++++++-
->  include/linux/serial_core.h                |  3 ++
->  3 files changed, 66 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-> --- a/Documentation/driver-api/serial/driver.rst
-> +++ b/Documentation/driver-api/serial/driver.rst
-> @@ -234,6 +234,15 @@ hardware.
->  
->  	Interrupts: caller dependent.
->  
-> +  wakeup(port)
-> +	Wake up port if it has been runtime PM suspended.
-> +
-> +	Locking: port->lock taken.
-> +
-> +	Interrupts: locally disabled.
-> +
-> +	This call must not sleep
-> +
->    flush_buffer(port)
->  	Flush any write buffers, reset any DMA state and stop any
->  	ongoing DMA transfers.
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -91,6 +91,23 @@ static inline struct uart_port *uart_port_check(struct uart_state *state)
->  	return state->uart_port;
->  }
->  
-> +/*
-> + * This routine can be used before register access to wake up a serial
-> + * port that has been runtime PM suspended by the serial port driver.
-> + * Note that the runtime_suspended flag is managed by the serial port
-> + * device driver runtime PM.
-> + */
-> +static int uart_port_wakeup(struct uart_port *port)
-> +{
-> +	if (!atomic_read(&port->runtime_suspended))
-> +		return 0;
+>  Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml | 1 -
+>  1 file changed, 1 deletion(-)
 
-And if the value changes right after you read this?
+Thanks for fixing.
 
-Why not use a real lock here?  Don't use an atomic if you don't need it.
-
-thanks,
-
-greg k-h
+Acked-by: Rob Herring <robh@kernel.org>
