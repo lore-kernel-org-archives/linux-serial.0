@@ -2,54 +2,51 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E85FC433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 21:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E74C43217
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 07:05:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5474160F3A
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Oct 2021 21:26:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC82F61027
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 07:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234146AbhJLV2m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Oct 2021 17:28:42 -0400
-Received: from mail-pf1-f171.google.com ([209.85.210.171]:45963 "EHLO
-        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233387AbhJLV2l (ORCPT
+        id S238259AbhJMHHh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Oct 2021 03:07:37 -0400
+Received: from mail-ua1-f42.google.com ([209.85.222.42]:36507 "EHLO
+        mail-ua1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238254AbhJMHHf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Oct 2021 17:28:41 -0400
-Received: by mail-pf1-f171.google.com with SMTP id i65so596943pfe.12;
-        Tue, 12 Oct 2021 14:26:39 -0700 (PDT)
+        Wed, 13 Oct 2021 03:07:35 -0400
+Received: by mail-ua1-f42.google.com with SMTP id g13so2580086uaj.3;
+        Wed, 13 Oct 2021 00:05:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=67Wm548vxd64jvyzHGx2cJ1FuE3KgBqc4EcFAWPdars=;
-        b=krfrf7NoGFvUZvYJEciVJTAnL3G74+xqXa9jDmkqEoV3S8YbN0EC6R0NfmWTMPZxoM
-         n3qMqxwOq3pB56eWLPngeJDiphVt/L9tFRozjz1W40962uvN25rmccaTS8v9vRaoppJJ
-         3q9ai6bqTTSkPt4MdVb+G0iifrR+Npfyv3U+LwG+rzvTb12SeyhzJSAp2aIyHggC/c2r
-         F0BS8GH2+gK9DLTVJvAGzGDotWFvSINGFcKV+ltYVIjzyI8iO8cY/S2/FlBpBS8UJN9v
-         TlWtOQIJ/Qe/uMzNZbV8MI5tNnyBdBzcl4kCQr8+o/mxbQ0kN0/2Zs0uQTGy0PPDrT9a
-         soXw==
-X-Gm-Message-State: AOAM532eqpUgX+BqLk78L1baeU2udIlW/RK4GuB03nZ3j7g9lYxxwW8X
-        Zy+z7gMBm4iJDKm6c65jlZcO7sn/4aDGU++8yDk=
-X-Google-Smtp-Source: ABdhPJx3LuMpsgeccnPFD90fzK89K2LwT3vY2QzV1lqSWMBpesQf1r+E1dxT/hIFDwKbjbdR+DVtVdFWffwQUKpsJoE=
-X-Received: by 2002:a62:5257:0:b0:44c:ed84:350a with SMTP id
- g84-20020a625257000000b0044ced84350amr22789150pfb.79.1634073999294; Tue, 12
- Oct 2021 14:26:39 -0700 (PDT)
+        bh=ODFUHeafSyfJJr/dZjG81Kg2CJUeDy3Vtm7EDZAJVcs=;
+        b=og7nzTLHxkgANB4EI3vWMndMUoWnJePNBajfRt4/EcP2+qxvJZb7xsvMRvvgOwTbRn
+         ndcNHMdBmrsbdtIMwUc6cs9z8iqHhdHvhcuz8rV4rh6YUJvmNnrFHVeVo+CTXYeTe020
+         XSvEgFc02ZVJY8w2I4aFJg5ejL9WyYvZIhFj865qOq2Smh7Ywhpybnuir2TAEuAA/9rm
+         x005ufa1S8p8pwt3JeBu6tFiwzPOzNczqmMQGbegIzIncwpfkJbtTyrIxFIHb5lM2PyE
+         k9MlGZLZYYLUcUP+CylP5SYJeCRhv3zG1aUrVDcxbWdG9uVsG4YCHjjIw+uM7erlbzxh
+         gf+A==
+X-Gm-Message-State: AOAM531bSr84X3Cqs4njlSnzGyNZjZoXYcyqNA4kmVNRpidr5vMcU22r
+        h1+kqz+8KQvD0urdGgXVdlU284+3h+YKlH12CMA=
+X-Google-Smtp-Source: ABdhPJygs5LYNeOJqEM1k5UdNR0eKKutf4oKyYkCZ3Sv+78TmKiKttmATy8/qE8zE082U1qV2JXAhNEbNBitCJBQkF8=
+X-Received: by 2002:a05:6102:290c:: with SMTP id cz12mr15636134vsb.35.1634108731922;
+ Wed, 13 Oct 2021 00:05:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211012134027.684712-1-kernel@esmil.dk> <20211012134027.684712-7-kernel@esmil.dk>
- <CAHp75Vetqi=FMoRxfXHL+d1DhAXgLr+5e7ss1M_Rkhqa07H5Jg@mail.gmail.com>
- <CANBLGcyCpSrxQi7pxLWQLkgbVGAKxJMXhoVbF_DdYDiv5_YJXQ@mail.gmail.com> <CAHp75VcM97vcrNOG_T==E0JyZ_RT_n8MCiVtfmYQM4g8kVtegg@mail.gmail.com>
-In-Reply-To: <CAHp75VcM97vcrNOG_T==E0JyZ_RT_n8MCiVtfmYQM4g8kVtegg@mail.gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Tue, 12 Oct 2021 23:26:27 +0200
-Message-ID: <CANBLGcxBjrhp6sfLqsKu=0hgYh+oxmozriWVCwdSKFYWtYnPmQ@mail.gmail.com>
-Subject: Re: [PATCH v1 06/16] clk: starfive: Add JH7100 clock generator driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+References: <20211012134027.684712-1-kernel@esmil.dk> <20211012134027.684712-3-kernel@esmil.dk>
+In-Reply-To: <20211012134027.684712-3-kernel@esmil.dk>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 13 Oct 2021 09:05:20 +0200
+Message-ID: <CAMuHMdW1YD2hJ+eSwHe8WLK1YJZ9pHYrESX3-M70au_3HCKfdA@mail.gmail.com>
+Subject: Re: [PATCH v1 02/16] dt-bindings: timer: Add StarFive JH7100 clint
+To:     Emil Renner Berthing <kernel@esmil.dk>
 Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
         linux-clk <linux-clk@vger.kernel.org>,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -75,112 +72,20 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 12 Oct 2021 at 23:21, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+On Tue, Oct 12, 2021 at 3:41 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> Add compatible string for the StarFive JH7100 clint.
 >
-> On Tue, Oct 12, 2021 at 11:08 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > On Tue, 12 Oct 2021 at 17:40, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Tue, Oct 12, 2021 at 4:42 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
->
-> ...
->
-> > > > +       value |= readl_relaxed(reg) & ~mask;
-> > >
-> > > value is not masked, is it okay?
-> > >
-> > > Usual pattern for this kind of operations is
-> > >
-> > > value = (current & ~mask) | (value & mask);
-> >
-> > This function is only ever called with constants, already masked
-> > values or the parent number from the clk framework, so it should be
-> > ok.
->
-> Up to you, but I think it's better to have a usual pattern.
->
-> > > > +       writel_relaxed(value, reg);
->
-> ...
->
-> > > > +       rate = parent / div;
-> > > > +       if (rate < req->min_rate && div > 1) {
-> > > > +               div -= 1;
-> > > > +               rate = parent / div;
-> > > > +       }
-> > >
-> > > Seems like homegrown DIV_ROUND_UP() or so. Who will guarantee that
-> > > decreasing div by 1 will satisfy the conditional again?
-> >
-> > Maths unless I'm mistaken: div = DIV_ROUND_UP(parent, target), so in
-> > rational numbers
-> >   div - 1 < parent / target
-> > But the target is clamped by min_rate and max_rate, so
-> >   min_rate <= target < parent / (div - 1) = rate
-> >
-> > Sorry, re-using the rate varable for both the target and result is
-> > confusing. I'll fix that.
->
-> Also needs a comment, I believe.
+> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
 
-Will add.
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-> ...
->
-> > > > +#ifdef CONFIG_DEBUG_FS
-> > >
-> > > Perhaps __maybe_unused?
-> >
-> > I can definitely use __maybe_unused for the function declaration, but
-> > then I'll need a conditional every time clk_ops.debug_init needs to be
-> > initialized to either the function or NULL depending on
-> > CONFIG_DEBUG_FS below. Is that better?
->
-> Actually, why can't you always initialize the field? Shouldn't CLK
-> core take care about this conditional?
+Gr{oetje,eeting}s,
 
-It could, but I see other drivers avoiding the code bloat when debugfs
-is not enabled, so I thought I'd copy that.
+                        Geert
 
-> > > > +#else
-> > > > +#define jh7100_clk_debug_init NULL
-> > > > +#endif
->
-> ...
->
-> > > > +       while (idx > 0)
-> > > > +               clk_hw_unregister(&priv->reg[--idx].hw);
-> > >
-> > > The
-> > >
-> > >        while (idx--)
-> > >                clk_hw_unregister(&priv->reg[idx].hw);
-> > >
-> > > is slightly better to read.
-> >
-> > It's not something I'll insist hard on, but I must admit I disagree.
-> > To me the above looks like cartoon characters running off a cliff and
-> > back. As a middle ground could we maybe do this?
-> >
-> >   while (idx)
-> >     clk_hw_unregister(&priv->reg[--idx].hw);
->
-> My point is exactly in having the common pattern for error paths, i.e.
->
->   while (counter--)
->     ...bla-bla-bla...
->
-> Your second approach is better, but I think that proposed by me is even better.
->
-> ...
->
-> > > > +subsys_initcall(clk_starfive_jh7100_init);
-> > >
-> > > Any  explanation why subsys_initcall() is in use?
-> >
-> > TBH I just inherited that from Geert's first mock driver and never
-> > thought to question it. What would be a better alternative to try?
->
-> At least add a comment to explain the choice.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
