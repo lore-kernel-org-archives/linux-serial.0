@@ -2,91 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC9FC4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 07:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B87BC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 12:33:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A143B61027
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 07:09:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 564B7610C8
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 12:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238305AbhJMHL5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Oct 2021 03:11:57 -0400
-Received: from mail-ua1-f47.google.com ([209.85.222.47]:41602 "EHLO
-        mail-ua1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238307AbhJMHL4 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Oct 2021 03:11:56 -0400
-Received: by mail-ua1-f47.google.com with SMTP id r17so2561627uaf.8;
-        Wed, 13 Oct 2021 00:09:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n2Vfle/L4DE8NNVonQeF5lDlU0mWpcADJWBKbo+5jlg=;
-        b=mz9AbB+VZ5S4MSVRd37pnKGF9QX3inhO7uiZJHzCpVFRPc1xlwSoya1PXLimE8bmTs
-         ydf+H2FFU0sKFJtJ2U+5K3J50EsEwbPRqbVj6SnSFcRXLtXLVvgOGXbrXmDFvpjdULra
-         4q1zJ5RggOXXcBNTN9EtivGfNGt//OcCeqrKvIGLkwsM2cG5jOZh0JkO9GIPWbSDgVRo
-         K86JAUQRpSg2mOalhpLFSCxpDllpLSxG39Fgz4wKlqTVEhTBUGqwuOgYfGmlt1G0oS9P
-         kYB1xUMrXr3q9723zsUcC1+sSNdwmcl/PsojdZ5pgokzAEqDIOI+WLY2CQQPUJNckEsh
-         +MuQ==
-X-Gm-Message-State: AOAM531OalkE6/NdrHATcOrQ71cZGAAtQ3NHR5sbkbf7I6TGq/lp/gIH
-        70r/1xasB/JYc/ZmAWbhSEDwSYO4D10vHvsy4WE=
-X-Google-Smtp-Source: ABdhPJw9m3bolfmVg7DS3DCFf2Y3Gnn0kQSL4lmvuOhPzzjoHLSBo8TqPmo7TCeoJyzlugmfCsY/y5nnNy0Wk1eojM8=
-X-Received: by 2002:ab0:311a:: with SMTP id e26mr28277722ual.122.1634108992835;
- Wed, 13 Oct 2021 00:09:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211012134027.684712-1-kernel@esmil.dk> <20211012134027.684712-14-kernel@esmil.dk>
-In-Reply-To: <20211012134027.684712-14-kernel@esmil.dk>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 13 Oct 2021 09:09:41 +0200
-Message-ID: <CAMuHMdVq4pKovPsk0cAWSZ3T0-z8uVG1Bf306ya37BZnx0knpw@mail.gmail.com>
-Subject: Re: [PATCH v1 13/16] dt-bindings: serial: snps-dw-apb-uart: Add
- JH7100 uarts
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        id S232145AbhJMMfq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Oct 2021 08:35:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38736 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229535AbhJMMfq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 13 Oct 2021 08:35:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 757C860EBB;
+        Wed, 13 Oct 2021 12:33:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1634128422;
+        bh=NhrEwNR2bAsfs+l2bB9QBI31veQH8B8qQsugjF/0Dpk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=V4gb21xzpNf8tA9BpjtOahlLhSyztgK/ALPjiTJyAzpN83BxhCpyQvKib3RfWz7kn
+         F2efgMzj/P2L3Hpkd0Z0kMzWl/+PwSmZHsvAHJ/Yi3Sd2aH1xZKZmu0LRkK8LYnAna
+         7rZVmO2+Q5CGH/wkF5Fg3WcFc1i+qAKR2STq2GvM=
+Date:   Wed, 13 Oct 2021 14:33:40 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Johan Hovold <johan@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] serial: core: Add wakeup() and start_pending_tx()
+ for power management
+Message-ID: <YWbSJCEkqQ0KzQ5E@kroah.com>
+References: <20210930062906.58937-1-tony@atomide.com>
+ <20210930062906.58937-2-tony@atomide.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210930062906.58937-2-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 3:42 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> Add compatibles for the StarFive JH7100 uarts.
->
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+On Thu, Sep 30, 2021 at 09:29:03AM +0300, Tony Lindgren wrote:
+> If the serial driver implements PM runtime with autosuspend, the port may
+> be powered down on TX. To wake up the port, let's add new wakeup() call
+> for serial drivers to implement as needed. We can call wakeup() from
+> __uart_start() and flow control related functions before attempting to
+> write to the serial port registers.
+> 
+> Let's keep track of the serial port with a new runtime_suspended flag
+> that the device driver runtime PM suspend and resume can manage with
+> atomic_set(). This is because only the device driver knows what the
+> device runtime PM state as in Documentation/power/runtime_pm.rst
+> under "9. Autosuspend, or automatically-delayed suspend" for locking.
+> 
+> To allow the serial port drivers to send out pending tx on runtime PM
+> resume, let's add start_pending_tx() as suggested by Johan Hovold
+> <johan@kernel.org>.
+> 
+> Suggested-by: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  Documentation/driver-api/serial/driver.rst |  9 ++++
+>  drivers/tty/serial/serial_core.c           | 56 +++++++++++++++++++++-
+>  include/linux/serial_core.h                |  3 ++
+>  3 files changed, 66 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
+> --- a/Documentation/driver-api/serial/driver.rst
+> +++ b/Documentation/driver-api/serial/driver.rst
+> @@ -234,6 +234,15 @@ hardware.
+>  
+>  	Interrupts: caller dependent.
+>  
+> +  wakeup(port)
+> +	Wake up port if it has been runtime PM suspended.
+> +
+> +	Locking: port->lock taken.
+> +
+> +	Interrupts: locally disabled.
+> +
+> +	This call must not sleep
+> +
+>    flush_buffer(port)
+>  	Flush any write buffers, reset any DMA state and stop any
+>  	ongoing DMA transfers.
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -91,6 +91,23 @@ static inline struct uart_port *uart_port_check(struct uart_state *state)
+>  	return state->uart_port;
+>  }
+>  
+> +/*
+> + * This routine can be used before register access to wake up a serial
+> + * port that has been runtime PM suspended by the serial port driver.
+> + * Note that the runtime_suspended flag is managed by the serial port
+> + * device driver runtime PM.
+> + */
+> +static int uart_port_wakeup(struct uart_port *port)
+> +{
+> +	if (!atomic_read(&port->runtime_suspended))
+> +		return 0;
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+And if the value changes right after you read this?
 
-Gr{oetje,eeting}s,
+Why not use a real lock here?  Don't use an atomic if you don't need it.
 
-                        Geert
+thanks,
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+greg k-h
