@@ -2,100 +2,156 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8885C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 23:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A141EC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Oct 2021 07:11:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A2B20610CB
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Oct 2021 23:32:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7D7F96117A
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Oct 2021 07:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbhJMXe3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Oct 2021 19:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbhJMXe0 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Oct 2021 19:34:26 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7FCC061746
-        for <linux-serial@vger.kernel.org>; Wed, 13 Oct 2021 16:32:22 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id a25so16783211edx.8
-        for <linux-serial@vger.kernel.org>; Wed, 13 Oct 2021 16:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ospeyyhqw0CRqoqClIHT3mWhQW06xSFUt4wC+aB72Do=;
-        b=J0ppSYQmk6ftQ18xXBFf83hWkQjuJ0uLuFrwp5CEMTzHH9X80jUZcDhXJB4Ryq4mKF
-         M2fHKboCOtYZKFEvDiFCbJALu+OngShOiwebyHS6U2HgVMIFe6qAyjjRVan0ulHsTdP1
-         0ztcoUX43Hkg9WoIIPCmcUtPpmq+lBFVaQdl4ZO0KpCg1RCattIhLd14HhE/o+5MZ8JM
-         ygkgNM9Hw9gOspvT9k5K1ZA9nG5u04QksrR1CFB1YgaM0CPsh7EKr76JkDhnE7oSUhPe
-         h8q5pCOZjk9UF7KmI/Pm1RKI8qF+yQXSC4Mn7bGV5CjO5Xj2UA1pNGWkFiK9MWhT10mv
-         gq9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ospeyyhqw0CRqoqClIHT3mWhQW06xSFUt4wC+aB72Do=;
-        b=a+KHmc5PWd0ckJDzotyM27PoSMPAvmALEI/rxis79t52D+TS9o1wp2kTnPK9jzP/GU
-         e7id12aW5dOqatkUqaFt27g9D9RRL6QZO5zHJKeFzd5B+/Qv6Gq2WrDvYRzQu4/tcPpa
-         4OU2ceTbN6ZveuANhjt1N8FRvDNAcgcg10W0fswtMztwoNN/8+UtB2+oL6/XZifvCchC
-         d+NVU43XQ20S9NjaPeBjZ/yP+MOK/PrAUtj34QigWsKgLpQJ8FnnDg0ashYTV+dX9Wth
-         9r8gWM7nJXpTdIRoDQDwWoUI+nXTEpaJK9CdZ6DoyoKy/v+lsS+u43ZTGHL+LH+T7Jxy
-         s68Q==
-X-Gm-Message-State: AOAM530BquyeRvkTK7udUoyOXnXIimWDsm8RygR+hXHMXQNSsw7cBcsb
-        1nLjuwrDYbOiBnBzhG2e9obmS7gIptvD2UVFICcTnA==
-X-Google-Smtp-Source: ABdhPJyuIYlcFJXtQMXt4pTjgAt118n7IntyXdUFIq9VY1B2uFC6+blRjvGj0T3/x3oVRqgidcVcxpMLoAdd+OF/5zA=
-X-Received: by 2002:a05:6402:278a:: with SMTP id b10mr3626283ede.134.1634167940811;
- Wed, 13 Oct 2021 16:32:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211012134027.684712-1-kernel@esmil.dk>
-In-Reply-To: <20211012134027.684712-1-kernel@esmil.dk>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 14 Oct 2021 01:32:09 +0200
-Message-ID: <CACRpkdaB27Ar0a+Kxh9bmH78bUL_vFush==Suua2TDjt7wpYug@mail.gmail.com>
-Subject: Re: [PATCH v1 00/16] Basic StarFive JH7100 RISC-V SoC support
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        id S229929AbhJNHNM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Oct 2021 03:13:12 -0400
+Received: from mail-eopbgr70118.outbound.protection.outlook.com ([40.107.7.118]:50863
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229551AbhJNHNL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 14 Oct 2021 03:13:11 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Eof60p1kOucMntIZnIgUmp9pcWatDMvvENRy2Oz4pDzeXX9//tWS3ixJcEDtQcFUxw/CiHJjZtJ4aGkZ4bLdLVZRdL2OmXvcoUQkHrZ0jtJqVFNgT0tIHvSHWJ4tW0CY0n7B0GWfq+p+bcfeo8RhDs9Qgf3h7tuHyOoImWWSOMVkk+fadoDA3m/fLLoLvrCIhnOVwNeEwu1AJ5wFRQThjyoj+WQ7BFvDSWDuljABS+ZYZrkJL/1DnD0c4lusj3dtZ1c+oVHiJA6yDFqXe2g8dO7QrSA2GrceMMmPsLq62nW9VqNNBowrw43hWV7/p5rbYCos482yrMJ0Gjr+Ima8Rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5DD5YtlIWcNrmvMMKAqkG4Ke4CitufBNgV8CcNK410k=;
+ b=kIqQLq7S4ll4IMyal6MeBpFPt00kjuVMWXjvUlAPVkzP8ZwyHmq2bgfkIiSDoiUWfU4HkwNLwTXHait/AHJS5JVBFMhLPhtKasCS0dbaLnd95gOpRms3Ys6r2WraAmIy/w9+hlJ84ww+abWNjs06r7Vmm4KdQSqxPAALdR2cIIlyiR/dGbltrZKizGwu1LlekN0WZQJmBnm9H8ahvpLAowJUYmkuhT8giTzd+ZERIpPNBcMLTWnUorkMBCZUjqkXE9YB8ho9OtKxeD+7ufgvFJrWQDGt1Gaiq1G9hSys7gVUxlpnJd3PraUqROilshhmA9hGYMYPi8Bc+/w5TQ0HFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5DD5YtlIWcNrmvMMKAqkG4Ke4CitufBNgV8CcNK410k=;
+ b=UurgyzkAvQNstWuHzvKTfEECCgYyxIwZiMrPUti8BxU4MQN5yH8UcRYurHN3hWj5ZYvrNbHO8d6kkPQoJEqZudeiYirD1YY+4MrXIalqstVIOaYxKR10f7+wGJTvNkrJW5/Q8SVjptuwAnI1Xvcdp8qqQJHVSq269O+PBuVvqTQ=
+Authentication-Results: agner.ch; dkim=none (message not signed)
+ header.d=none;agner.ch; dmarc=none action=none header.from=toradex.com;
+Received: from HE1PR0501MB2602.eurprd05.prod.outlook.com (2603:10a6:3:6d::13)
+ by HE1PR0501MB2780.eurprd05.prod.outlook.com (2603:10a6:3:ca::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.21; Thu, 14 Oct
+ 2021 07:11:04 +0000
+Received: from HE1PR0501MB2602.eurprd05.prod.outlook.com
+ ([fe80::8463:d3:5cb2:152c]) by HE1PR0501MB2602.eurprd05.prod.outlook.com
+ ([fe80::8463:d3:5cb2:152c%4]) with mapi id 15.20.4587.026; Thu, 14 Oct 2021
+ 07:11:03 +0000
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Stefan Agner <stefan@agner.ch>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] serial: imx: fix crash when un/re-binding console
+Date:   Thu, 14 Oct 2021 09:10:52 +0200
+Message-Id: <20211014071053.568598-2-francesco.dolcini@toradex.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211014071053.568598-1-francesco.dolcini@toradex.com>
+References: <20211014071053.568598-1-francesco.dolcini@toradex.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: ZR0P278CA0001.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:16::11) To HE1PR0501MB2602.eurprd05.prod.outlook.com
+ (2603:10a6:3:6d::13)
+MIME-Version: 1.0
+Received: from francesco-nb.toradex.int (31.10.206.124) by ZR0P278CA0001.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:16::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.25 via Frontend Transport; Thu, 14 Oct 2021 07:11:01 +0000
+Received: by francesco-nb.toradex.int (Postfix, from userid 1000)       id 7F05410A3843; Thu, 14 Oct 2021 09:11:00 +0200 (CEST)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7b2959d3-1183-4e82-1dc8-08d98ee1c782
+X-MS-TrafficTypeDiagnostic: HE1PR0501MB2780:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR0501MB2780B6B0ACF7069D74397516E2B89@HE1PR0501MB2780.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2331;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: O1NO+aUEUc+O0M6AssisFzzJNmeAR5thC+9Vu4bK2W2CUMsA+Ps3YiBXHVCyQEeIu8Wk7aNTbx5njlGcR6XOBksNIM99LVA8C/c7M9O81jo6Jju6ZdHg7GiF/56a523AmHBXILH37dexH1eEKKUsKX3K4NTtbybfVK/5zMtuv0QZAX8FGKxqQ1HR1iUHB4bWqBaFrAj+khHE54g/AByBDTxPuJ34aj/2yKi2Y82bNFiEJzIZ183VzvcLExkEHU0TSt8Wk4qmjX1fDAR9bEKpnlGHyFXw1CJYORQhci2mVeHhaevxxf28uFy1OpT4D5ysG9JdR7al8vDAUVPmUlhsNQlWHfxbGxBnSmv/wRrrOl/3mxCZopBLrdr+Xko4zvUVk+aLMK1uGFyhNGkYWxUozfbe40R+8UnZhqfH3jtlDAsYYnDZwhcO8XU8MnHUWEVx4XB1V3Du2aK2nBWv0zWohZNBh5a72dZZqUF+NQJSB0mUkRPEdSV9Dy5kVNjgkwZB1fT/0wqwQTMsonqyDtTOh3Fd7S+aeNq8bax8kVgp4yZbcLeDMCfEEZASvkzkZRBjT7f4L0hMemCAuMAzDWbZODYNA3+i8YWaOcCStSCz5LU0YqSNvCSDkjKJ6G+HJRPhfIndgtZPPrVjU8e8ezlVIPR6Ti36FJ87zTjE1Y6vgnAvg6z0j6HLE5MCf2qRtq8Oq8OpG/TXFt8wSxBLzU9wvw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0501MB2602.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(366004)(376002)(346002)(396003)(136003)(36756003)(186003)(52116002)(26005)(316002)(86362001)(6266002)(110136005)(1076003)(508600001)(2616005)(38350700002)(8676002)(66556008)(83380400001)(66946007)(66476007)(5660300002)(8936002)(6666004)(42186006)(7416002)(38100700002)(4326008)(2906002)(44832011);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AYPhq6kdRK7YE5kgsgWQOXq6zgmBLKSbSGIif5vb8hP8OzbtYYu7UFhMnYIr?=
+ =?us-ascii?Q?S8TCRJh9dth1e7IP91X1dB5qt4RYkjQAtZ2pJVpI9ItfSHv/ILCHCnoM7ufM?=
+ =?us-ascii?Q?KScCbH39enNAqJwQ+7IQ4+paTdHfW6E1R0d/XNSxLG8h+07eg5Xkt0BjZ1er?=
+ =?us-ascii?Q?yRhpMA/CKCeqYsZSDX72l63ENMGrwNnu9nK8Twkw0kajDA383n8mGXLqSrhR?=
+ =?us-ascii?Q?PgQGTUAJ6r+bH+VZ7mKjN3X1y1o+RrhnNM4r9prdH0iRNKVxkfBbXbys+gWi?=
+ =?us-ascii?Q?iXdTLV204QxCLzXmdy5U/WSlPrjOSjR6m5csFNbflriljsKGX52IKVFOtq40?=
+ =?us-ascii?Q?gd7KBIeaiO6Erczm3ySSQlpn8BKOfvdJauzAwWf1GmxV2XoHpNlwfQ3oY9PV?=
+ =?us-ascii?Q?hD2vtR/aydEZ3ASnKjiHe+XspHC/+6uIevQTG/IUTDBvllvWCxHNqMXW/t4z?=
+ =?us-ascii?Q?1qHDqYtNwoEpLWRXHFSMokgQuMa4ZWSGFfc4NcF/QhN98+Ax+pdwLerdhW7T?=
+ =?us-ascii?Q?jmTV9hePPT72k845YUq9z4gWHEmFMkOT3mRF4nVc8wfKFDHfWrMBnynXHn5b?=
+ =?us-ascii?Q?2aaNIK9Tm+mey6xA+W2OpVqDDDRB5qqjdOQbKDwQAfs6mMmroGOqwcKTRE3C?=
+ =?us-ascii?Q?rkpiI5c96ZNQF8FcSVKeXuu3LLff4zICgnu5UjQgtTWLNDBW/DlHBRd1qx58?=
+ =?us-ascii?Q?fiF4fxU93j04fNp87wZQfUNm4eRLEz6pKQGTjcuFZs5Wni4g1ntikyeoiakR?=
+ =?us-ascii?Q?zGyihBBmPeRhYq3kVgs4Aa8BLFLbn2Vg6+Gm8gbzbNtScwxDHTd130utkzfH?=
+ =?us-ascii?Q?riye9p95FK/BBmEgC47PVX9l5Rdty0FVd8Oz8jk1lLOscpJ66bOeY+bB+5A6?=
+ =?us-ascii?Q?7hD29aPsmUDhnEjXA752kZg7vS4sgmMN+BVGwxtg3yGK3zUvzGm+p7fTs5f8?=
+ =?us-ascii?Q?/21X5+lc5gN4hrTwCoan0AiKmuK+2PruVNmWUjixyDtLmGoR/m7zfuUatyKr?=
+ =?us-ascii?Q?VQ5QirJ7HIuYsrT1sRqzLokJn9Di8uH6RkZmOnAe3YEraDG8HRMRtROaqMhW?=
+ =?us-ascii?Q?NbPuQX5hoLoZeQniHlIrCo05oFyLKrkwWD7NCuyPsRspnlN3OVf6PctSCyvR?=
+ =?us-ascii?Q?Vg+NBkA2K0Z/HnJurWTcshwwYVEqZaLbPvUdFE3Myw//ncSiEty9fkEtFRDg?=
+ =?us-ascii?Q?pvKQZovQQ6/UZiy//kW4xdzd3JTyyIiQo+DfWw7NQ339GYN9AR7jVLGqqi8R?=
+ =?us-ascii?Q?0ExnvalfB23ygV8sscN4kwEtyFh2iGnDajPnvx82jbGqVZ3IYkwiLB1nt9OU?=
+ =?us-ascii?Q?C3plEvOpN6T7bndfvRqvHMko?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b2959d3-1183-4e82-1dc8-08d98ee1c782
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR0501MB2602.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 07:11:01.8213
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: izAoPUl+dzyqcBN//agLTa1nE+oUnnxAbRavpOawxlI0XzmHPTn4JY6hQ8ep5AASEM+IqkTkYn5hCpO1OilmK7Kqv4dl7xQNby6BlfOQZRk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0501MB2780
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 3:41 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+From: Stefan Agner <stefan@agner.ch>
 
->   dt-bindings: pinctrl: Add StarFive pinctrl definitions
->   dt-bindings: pinctrl: Add StarFive JH7100 bindings
->   pinctrl: starfive: Add pinctrl driver for StarFive SoCs
+If the device used as a serial console gets un/re-binded, then
+register_console() will call imx_uart_setup_console() again.
+Drop __init so that imx_uart_setup_console() can be safely called
+at runtime.
 
-I'd be happy to apply these to the pinctrl tree if everybody is
-happy.
-If you prefer some other merge path:
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+ drivers/tty/serial/imx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Yours,
-Linus Walleij
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8b121cd869e9..51a9f9423b1a 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2017,7 +2017,7 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
+  * If the port was already initialised (eg, by a boot loader),
+  * try to determine the current setup.
+  */
+-static void __init
++static void
+ imx_uart_console_get_options(struct imx_port *sport, int *baud,
+ 			     int *parity, int *bits)
+ {
+@@ -2076,7 +2076,7 @@ imx_uart_console_get_options(struct imx_port *sport, int *baud,
+ 	}
+ }
+ 
+-static int __init
++static int
+ imx_uart_console_setup(struct console *co, char *options)
+ {
+ 	struct imx_port *sport;
+-- 
+2.25.1
+
