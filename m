@@ -2,179 +2,168 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 829E0C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Oct 2021 09:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6129C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Oct 2021 10:28:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6C1A160C49
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Oct 2021 09:12:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE12D610D0
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Oct 2021 10:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229992AbhJNJOt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Oct 2021 05:14:49 -0400
-Received: from mail-db8eur05on2118.outbound.protection.outlook.com ([40.107.20.118]:45665
+        id S230030AbhJNKaW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Oct 2021 06:30:22 -0400
+Received: from mail-db8eur05on2111.outbound.protection.outlook.com ([40.107.20.111]:9057
         "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229551AbhJNJOt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Oct 2021 05:14:49 -0400
+        id S230017AbhJNKaW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 14 Oct 2021 06:30:22 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XnsdIJStLnPaUvzIMMRL0QwMR2lX81ZQ8FSLR++r9axnaijFpVk4Q59vKDnmbmhpK2HnPAcOLp75BElXVFB2m4vkDnlQCHsolKcXpvVZdhUoSxXKsLK+Y6Wquxxkzb1UQYcjNnwrjbMq/BzHacQyZbp++rykiDM11V29f4TesaGKEiWH5veBiGYRhUC12gx2fFJARuV2xzuqhu7EzLcfJE2dMQ6li4ziN0jk+goRZAlI9tQtyBecaR9p7I2RwvErFtiLmLRxQ9FkfOp7sJZtUzBTgmJh/rVIVGXGVQ+2e67Od9lYplDlNOsRulqhe9sH1X90ttRKzTqjXaBaCY2gRQ==
+ b=iFq5R0Y5jlTbeCeI5I10dRddxoFgTjxkIo/VUdjVIbC46hgx8IZ0w1uhB1DVK9IR4ZmxwLpg5p0UIE/4bLCMJ0vwH6ZxGyHW63ejvM9ZfohFGK8kZnEKI10abYDPGaoz+TS/muhVKBB8RLn402VleBpkRBFKd40iOh7tXCXQ6b8mF9aVKOpob2PWxXAnXDF22+wUdnKgDzG7lwMnhWEPVEeAbkhUbdNfmhQ9pWvC77jggSH2/l/iOaQ5JEaNy7NbjO489jguCH1+BuXRVrc4ZIQxoEWbBeHTLxthul9b+ht9SA4CMzRIqUD7w60iPQ2qeqNeBbDN08uhzmhHjo4IVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XlSqpo5ZbCTFf1mw+JibKsseS5XSSvIInmNcZWCjsRc=;
- b=bLVZTfpzhu2G0G2bdGoP6DkFhKdfYIQI16hYEX+hcJY31yYKsZB3gFJ1Q53WslWY2bSPu0jR0off+QZqzMUHlTrX0PS9lxUciDWCSzfrDW3woffox5c4PJi0hYSFf4CG76UOLMDOPiNxQKHGmTru6fcBrF5mwI9SYjRgAJWlLM5R7k3AXnXdJy5DRSaU8B3OKnvO2H4fj1SC9WLoBDo1CY1kjCNtvxqii4W1E7gvdmDmfcZLhwjfP/Q/asXiJJmbf7tB7JxRwQzNUiOVT56eSZdfjl27UGRJ2hsbTXe/wGrdbIbqRMpfaqjlbqYYQtOqyk2riF6IXj59mcyux9ZHmg==
+ bh=QgrkNPNWGKt1PIxU+CyUZN/ENms94mGLvHHk+voJGZs=;
+ b=aQO5TjZyXSdyO1kjj+NuMsicKZsurpMih88RqKE63rmGKlUFMXSvPlRLlGli5s/Ef1gFtcoc1yIKdOnGW8kwuO//MD8c+1yvxFcWvhxfUFX6AEtRnOtYqnNM5F1EjRCS8M8aALVU0RpIaZS/3J4M0Qw6IriQa1VQxOU2a/R0T97uGn88koVDp6UmUKp2dXdtuLYxQ0QiFEZZaTOGjbGoX+6YVEKRyTp+oW8Wxprd+VlgOp3WJYsPbb90N/Cnqet2bl63gB80CFNOMbufanL2XhmWAdDfxC0/FegMsvw1d4iM3b0MTQTeJffqaP2SHaq2QvzyP/Bs2OqHhYejwsBC+A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
  dkim=pass header.d=toradex.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XlSqpo5ZbCTFf1mw+JibKsseS5XSSvIInmNcZWCjsRc=;
- b=eQ4meXrCPMiuCo4nSB6xDETjYnYdxoUuwJrrbjCl1r0FclgjEUm0d8kX46gGO0ux/q1IZv+AcIWNDKwZlDCa7ODx2EEwhrxe/H6s5gUzHpH4v5ULHKpwDHi+eAAAy8IcwQm5yLgrHuOd+PidFoSvFPPG8bwXQzvvV+tf5GNk2tY=
+ bh=QgrkNPNWGKt1PIxU+CyUZN/ENms94mGLvHHk+voJGZs=;
+ b=PN7zStJKMtsKQXwCWPEqaKPcg+RP9/5UlRn0q9azKadH9t2cCea0fQnPBLrePOSN3zHi8w1c8VxjtNnYbSSIIWx5uqhcCndO0/TTofgIdog1qzCmKnx/VlY61QbNpUGBCU67M/vT4Dy9X3qs7fsxNJTEY4trfbqssMDX4fV/R+c=
 Authentication-Results: agner.ch; dkim=none (message not signed)
  header.d=none;agner.ch; dmarc=none action=none header.from=toradex.com;
 Received: from HE1PR0501MB2602.eurprd05.prod.outlook.com (2603:10a6:3:6d::13)
- by HE1PR0502MB3772.eurprd05.prod.outlook.com (2603:10a6:7:8d::16) with
+ by HE1PR05MB3243.eurprd05.prod.outlook.com (2603:10a6:7:2e::28) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Thu, 14 Oct
- 2021 09:12:39 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Thu, 14 Oct
+ 2021 10:28:01 +0000
 Received: from HE1PR0501MB2602.eurprd05.prod.outlook.com
  ([fe80::8463:d3:5cb2:152c]) by HE1PR0501MB2602.eurprd05.prod.outlook.com
  ([fe80::8463:d3:5cb2:152c%4]) with mapi id 15.20.4587.026; Thu, 14 Oct 2021
- 09:12:39 +0000
-Date:   Thu, 14 Oct 2021 11:12:37 +0200
+ 10:28:01 +0000
+Date:   Thu, 14 Oct 2021 12:28:00 +0200
 From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Agner <stefan@agner.ch>, linux-serial@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
+        NXP Linux Team <linux-imx@nxp.com>,
+        Stefan Agner <stefan@agner.ch>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 1/2] serial: imx: fix crash when un/re-binding console
-Message-ID: <20211014091237.GB554920@francesco-nb.int.toradex.com>
+Message-ID: <20211014102800.GC554920@francesco-nb.int.toradex.com>
 References: <20211014071053.568598-1-francesco.dolcini@toradex.com>
  <20211014071053.568598-2-francesco.dolcini@toradex.com>
  <YWfdY/ws353nJEiE@kroah.com>
  <20211014080153.GA554920@francesco-nb.int.toradex.com>
- <20211014081028.xafpuzrxk3jvv5qn@pengutronix.de>
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211014081028.xafpuzrxk3jvv5qn@pengutronix.de>
-X-ClientProxiedBy: ZR0P278CA0141.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:40::20) To HE1PR0501MB2602.eurprd05.prod.outlook.com
+In-Reply-To: <20211014080153.GA554920@francesco-nb.int.toradex.com>
+X-ClientProxiedBy: ZR0P278CA0148.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:41::23) To HE1PR0501MB2602.eurprd05.prod.outlook.com
  (2603:10a6:3:6d::13)
 MIME-Version: 1.0
-Received: from francesco-nb.toradex.int (31.10.206.124) by ZR0P278CA0141.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:40::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend Transport; Thu, 14 Oct 2021 09:12:39 +0000
-Received: by francesco-nb.toradex.int (Postfix, from userid 1000)       id E4E4310A3840; Thu, 14 Oct 2021 11:12:37 +0200 (CEST)
+Received: from francesco-nb.toradex.int (31.10.206.124) by ZR0P278CA0148.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:41::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend Transport; Thu, 14 Oct 2021 10:28:01 +0000
+Received: by francesco-nb.toradex.int (Postfix, from userid 1000)       id 21BD010A3840; Thu, 14 Oct 2021 12:28:00 +0200 (CEST)
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0d9c76f7-8fe3-4c40-16a5-08d98ef2c552
-X-MS-TrafficTypeDiagnostic: HE1PR0502MB3772:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR0502MB3772C360E54947D0A17E4BA5E2B89@HE1PR0502MB3772.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-MS-Office365-Filtering-Correlation-Id: 40941e55-ee68-47af-71b9-08d98efd4c81
+X-MS-TrafficTypeDiagnostic: HE1PR05MB3243:
+X-Microsoft-Antispam-PRVS: <HE1PR05MB324359FD232ECD3B0726195AE2B89@HE1PR05MB3243.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2733;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: E1Wrv5fhuu08G/Hzx0DoUbDWjIMoKuT3tMm30WibnLiEh9UC/vNjjARfX6TOrC0F/QKG3hJTpJsv3EOw9E4b3sUQUlESu+tGpJkAlOZfZchWC23ME6AJzC9v0nKcmVJX2Vycr8iYsVfCdXie9I+ZSqcRwl4j9i7SXCljw0gbvJqcqS4qiqPEytK33N7c963o4Yc28XoC7yxK/te8icdNusDhJ2uuqFKSKdCRjRrEI2INQtNmcafZ2uqiNEf1W+3b3x5AEsqbakywSBiQJSAAutucMZRj5wEHsFXlXuP70o03Mn8XL/NaVA6PlY6fHkGpH92iFTjlJShQEnyNLddTk+0k5/I4q8aMAnLHjJy09JHD69yxRzeEep8UpBSZu6vVlj6A9316YES6V5aXGtXAd029OyCb+lpYTW9Wf8s75TSpR39FXagvoxbxFybM9mBPHIhi7ABBE17kfi11enIBKY62bZBVfFWNvuPps4GQzCmHNiT89MG2HF9/AJpXgOoxIskrz35il4TbqSuh6ESVgpsmZkjx3D5o/xVRF301gont7vZJW9Sv/wznA2yyQM3bRmAGNWPhi+09HrdDqfD3dMbtiTPWwIlovSuyo4gdkmHZy+eqkf/uH8dEdzRDuMQfd25gxpv4sKntWCBE4WNtqVNBQKfoDLdJ3Rzmg2MKiCTpE3qWFaCekb7uNLwgi8DJS7qA0IpKFtrPfr1bzdwH34YeZ0IOtzTQRGCLd3THbhmR8oK0YOWMEL7eESSnxxN6shkRAUATY9H/Gy5C3BhkH3rMTymmhyV6mFZqEka2m7A=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0501MB2602.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(396003)(136003)(346002)(366004)(376002)(1076003)(6916009)(2906002)(966005)(7416002)(66946007)(66574015)(86362001)(33656002)(44832011)(8936002)(83380400001)(54906003)(66556008)(186003)(4326008)(66476007)(6266002)(5660300002)(38350700002)(8676002)(508600001)(38100700002)(26005)(42186006)(316002)(52116002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 1XLUiy616fh/09zpodd9DzGvEGVLWmTaQNYKlBNvjOZYXGkSwYGGrCPQGBa/ezuaNY3DdjfK7SOGzDVziAYl5myyJSEs7gBmvtGENngwLlsILyLk9dlLAi9mLkZfHWqHLoB0fZh7ZLWpMpvtRv9VBYzxgay1IsOkp9xMcO/0aafAxhNM5SvBT77wntKNuSydwvVp2Qv6/gWgLTiufqMNfd7KQQ0pX+liu23g1hfTzpttu5vYZW73TJrdwdjNuoHoIaS+jcGFhg5idTv0RIoIhqP/aO3OBku6ROMFFROim0YkPRXtFUEx6126rlQ+xyBrQBfYXBPKZ+QQA4fFt/HxNKcD1SO0g7wwASGq0y2DmgJ6S6O47c6Vh9WyoqPQpwTrRZOtzca4iGgHCfzmlh6XjM43ETcBgJNjpdB0P7YJ3+aeULDLod5tTdp6GkT287rCAeIDcm41m/5YYP+w6NAMDZzPpmkV4mTVTEQhhg5WzJMmtf9wpx4PJhyP5QM4FfKCcCnQ6bMa6sICS0qeWJupcntTY6FkVkLSjHwHFyDKQeyLGfp2x1vhjRaMVKgGSD5k3CKZEX9Wgvl2TAvVsgvQjnHq2io0bUluke0FHawKEXZ7TFctqokxPjfREomtAFZWmZiOsT3XfNt3WE1rAbvRv49PRHMufO4s+vSrzZUVmWibZkTJ6EdQ8lFuhMeOdE2BQRMLGhd/yjLZGR6Ct/JpWAZi3zZcvrxWlUG7nHhlEet0dazepIpzeUUsH2qTo3RdOyLnFmwCCMNd5LE3BiqoQBTqN8uApBRjS3bha/PQU90=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0501MB2602.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(4326008)(66556008)(66946007)(8936002)(110136005)(44832011)(38350700002)(508600001)(33656002)(66476007)(38100700002)(8676002)(316002)(2906002)(54906003)(52116002)(42186006)(5660300002)(1076003)(26005)(7416002)(83380400001)(86362001)(6266002)(966005)(186003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?5j7llpGGOpAbCexcBbJj+Qe9/d7Kc+4qen72JH/Q1Z1hxCIBPZ9AdNhxpz?=
- =?iso-8859-1?Q?ERN/vLJxF3SDjMTX4XBqeeR2l8IdXzWCqmV1IQCCNkNbtuygdQo/TCt/Zn?=
- =?iso-8859-1?Q?b5qwg9heyGhQzeOk7LrrJdlB4t+4qMhHvmvB5VsdutRnTUj1hMFwHu9vrp?=
- =?iso-8859-1?Q?l+g8/qspq7iClKb2aiRfhtyhNV0w5Sjg98lwmh7xXDyDrLA8O0lehu/91/?=
- =?iso-8859-1?Q?lNaFh2VdJBsVxf33oLlRHCMPzXUbgEfrrNSVJPjIo0WGcS2/TSazlF6Knf?=
- =?iso-8859-1?Q?HapNWBmbDuTTr8zMjNxvzEH8XvHN95ClC/n8UhuTNXiugohioABiszd8Tj?=
- =?iso-8859-1?Q?0/36ggT5f0JioTS2dysnzjP08JwghBuC6ybRyK4qJdSKUr5By28MTt2Xcp?=
- =?iso-8859-1?Q?rnVmaz9cy7tyMMdNN5syRJpql4K0uqpO481H6zqB80fIj9LXvruMqDBdDX?=
- =?iso-8859-1?Q?39LPOGy63L/UnUHa55w0ZUH6Es9YtzsiGrUS/+8B/JWSKihvRyWfqN5qz+?=
- =?iso-8859-1?Q?3WBne4dKWQyI7bg2Bo33FG4EqrBusBFG4Kl2H5P2878fEB8xOsRGsr94r1?=
- =?iso-8859-1?Q?dj0GnfLOqHp104KDPLSc0jL82sd0Zlj+LaPQ+H8Fob+4gcd5TjDCyU+uhF?=
- =?iso-8859-1?Q?VPPr0G7njJ6o7+/iLNAafiffQC9i9MIA0MCPptAhDUmVdp5GKNhwvJPdnP?=
- =?iso-8859-1?Q?oVupL9rni/9iOM4wmVsCu5aRP4iC9AY2Xo/iyoz9affBVRfK4ycfxEEOZR?=
- =?iso-8859-1?Q?1cFdPtw/QCjwPR0HDzAeoDTIyR/6RpnlGB21P/I2Av+dHDTM2qzhMLhRLa?=
- =?iso-8859-1?Q?fJrpQ90n64moO8VKuQnX+7FyHO+YIJDO2KSDoyHbhCQWoNul99pjS/pd/3?=
- =?iso-8859-1?Q?n/4Ufw589pNDodnag8oKMbz8qzWFl7fKU1SiK0EW4yLD00UKN8vczjNFh+?=
- =?iso-8859-1?Q?EWc22zsNXFpO/zkb09DvEEqX13GupWSOd/DQzX0YGGjQ6GHGFj0LH81buh?=
- =?iso-8859-1?Q?JWiivR0p4YuLdDbk/0q1/PrVMTvBLWa5zyPXBX2aZaDWiUmUZatDBp++Fc?=
- =?iso-8859-1?Q?w6pPaWQeDP0kwuNFDtU7kXM0CXdLSpqeaaHCXCmkVGLUGbw8mO7n87ymp6?=
- =?iso-8859-1?Q?MKqTObkYYaX/Xs5kNwMb/63xB2jP2zrTKC60zOmZ09MJEbz6JP7To1F+lT?=
- =?iso-8859-1?Q?0n51poT7EmBoqbbKFPWJe0FscyjUcsLHKulAcPm3SMM3eHHLiys2i/3pCa?=
- =?iso-8859-1?Q?0Uhb9MG6JuYsdwnP2Q6GhJO3ntkOtE4AtbwHD8otOGExtWiJLlKBiFQTN2?=
- =?iso-8859-1?Q?lH2gg3G/hKg6vwkhd6p1czQHBvYz8vdalMKqMshadybrbtCYXq4de3aHH5?=
- =?iso-8859-1?Q?20WnfIt1wS?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?c8gNge2IyZDlJUjs73E9DnMSF3dyG4kZ/m3KQ+zd+EikmVmbpDm1N//Lf5Ln?=
+ =?us-ascii?Q?JY1zXwghBv6pUBQKL3qMRolQ+QVzHOsF22egMG/rFqwWJuimr+yE1RoU9gEA?=
+ =?us-ascii?Q?VxpaZr6n6JFts8m/fLWnhxHzd/TMywzXBxaIN6oP/yr7hCqhS5RJxsBb5EB2?=
+ =?us-ascii?Q?w3Y9SrboGrgnLyWhF2zuMV6DkyE2jcjQehuZLy0lM6zQ29H2/HzaqikEygS2?=
+ =?us-ascii?Q?W5MZ183D579YjOCOBSJycIVx5i+ImXWzP3yFDSjhvGmNUaDU0U2/5zYW/ybZ?=
+ =?us-ascii?Q?6xH8GKtoVcQ42WAf+bBTwece7HkGN8iHtWXpWoiCA0/JO+hIMq2IhYGfuj7I?=
+ =?us-ascii?Q?mVMDMYXmrXkoDtj5IgyRufEfglRkdCMiziwTOD2RsXtXjzO9SS8v7OYfwZkk?=
+ =?us-ascii?Q?jm4H22SJSyAjt0Ttvkt5GaoeyXGhAwIbmd4YPqQGcpUhzavRB8i7Tg8BuUwc?=
+ =?us-ascii?Q?mJBFXrHvP6ic1gC5MMDwAmofVvF/TXB2xnJUf45vxg5YmD06MCw+bjTOkvzJ?=
+ =?us-ascii?Q?94UbY6Q4Q7ejg09QyskCAsOfAuq/Kk5SxWCVUbrG7slsms/8e3D1jDFyUwuc?=
+ =?us-ascii?Q?BnQvEDSh71r27q+H+JOZx4tUoKF8TR9Wszy1QQs7ManzL1yBq80I44aEfR3A?=
+ =?us-ascii?Q?x0OYVYFTF1RQh8kqsOFyEEEYgOFcJiYdHI414t8iBRb2jkk9L5+geERQwvVl?=
+ =?us-ascii?Q?mCpYSkRR/3gK13RA11i5yyvS1ruhJCOBkRB2bLKiEVjqhnzaKiyVAL/eOUem?=
+ =?us-ascii?Q?FYvp4AdGqn+Jp+s96aTUG0ldjWsqzdJjwYR2ebjmAJbQ4LQPA1eZ+NKJXsut?=
+ =?us-ascii?Q?otH9/J7iqQQvOlH34DgYGlDV6FcIQ/b36ncGlUDipcbNnpbsC0Mz6PiWDu1M?=
+ =?us-ascii?Q?VlttugYszW54mw96GJpjY6yn7tks4yO9ZchfeZHr5VYTXAqSROxBtbqBZOGu?=
+ =?us-ascii?Q?zfnIBvVFOyH7pNQv31yTA0e59SnccpZRx4+JW+hNitAfY72uTOp1AjNkmRmm?=
+ =?us-ascii?Q?p0pX7cWK9QWC+IpyTEcDQ6vkPIEZ95X6PhIlHrZY2nzAf0HENLp20GLhC99l?=
+ =?us-ascii?Q?VdqRTfKktfnXJz/tPOrf9ezdnvz5oc+IBqRVDOnY+ZzeYDXIsrseIXe2CBRU?=
+ =?us-ascii?Q?kSCQUpTw8ELocMszKtEzXPy707uDYWSzcX25dt/Uj7Dx3uBNg3wlU8LN8lyd?=
+ =?us-ascii?Q?SURUgPVY5xQt53aEge6TIduwsPCN2u9c8cd8lN2F0JGJ6ppjXb9Siljv9v0p?=
+ =?us-ascii?Q?qid/2+PSeBmRk9ezuB+1xPBJ6jKw/BjBD5Ki98hzPwM8lLXF7VAWrd3ijKRc?=
+ =?us-ascii?Q?zj2z36882sfH6BEKrgbjrH7A?=
 X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d9c76f7-8fe3-4c40-16a5-08d98ef2c552
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40941e55-ee68-47af-71b9-08d98efd4c81
 X-MS-Exchange-CrossTenant-AuthSource: HE1PR0501MB2602.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 09:12:39.5525
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 10:28:01.2946
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YWgwPoumfOMzQMcOvVutvRoMev0mwV2GuF4XWfzNwTYuQocFN+nfrl0jMMuF5nop/0Wi6Fmel7qh3aEO4XDV4rWYrQYVff0ZZfpoF/mBxFg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0502MB3772
+X-MS-Exchange-CrossTenant-UserPrincipalName: HPhX5QsdLHTR8j2s2jPwJJngB+t6nVxmT0HS4g2aRkgpxDI8VQkjLe8fJE1fzjLugA167GnexVSELLJOv7s08CvPyjHOtlsM8WxSDh5cARk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3243
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Uwe,
-
-On Thu, Oct 14, 2021 at 10:10:28AM +0200, Uwe Kleine-König wrote:
-> On Thu, Oct 14, 2021 at 10:01:53AM +0200, Francesco Dolcini wrote:
-> > Hello Greg,
-> > 
-> > On Thu, Oct 14, 2021 at 09:33:55AM +0200, Greg Kroah-Hartman wrote:
-> > > On Thu, Oct 14, 2021 at 09:10:52AM +0200, Francesco Dolcini wrote:
-> > > > From: Stefan Agner <stefan@agner.ch>
-> > > > 
-> > > > If the device used as a serial console gets un/re-binded, then
-> > > > register_console() will call imx_uart_setup_console() again.
-> > > > Drop __init so that imx_uart_setup_console() can be safely called
-> > > > at runtime.
-> > > > 
-> > > > Signed-off-by: Stefan Agner <stefan@agner.ch>
-> > > > Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> > > > ---
-> > > >  drivers/tty/serial/imx.c | 4 ++--
-> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+On Thu, Oct 14, 2021 at 10:01:53AM +0200, Francesco Dolcini wrote:
+> Hello Greg,
+> 
+> On Thu, Oct 14, 2021 at 09:33:55AM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, Oct 14, 2021 at 09:10:52AM +0200, Francesco Dolcini wrote:
+> > > From: Stefan Agner <stefan@agner.ch>
 > > > 
-> > > What commit does this "fix"?
+> > > If the device used as a serial console gets un/re-binded, then
+> > > register_console() will call imx_uart_setup_console() again.
+> > > Drop __init so that imx_uart_setup_console() can be safely called
+> > > at runtime.
+> > > 
+> > > Signed-off-by: Stefan Agner <stefan@agner.ch>
+> > > Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+> > > ---
+> > >  drivers/tty/serial/imx.c | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
 > > 
-> > root@colibri-imx6ull-06746657:~# cat /sys/devices/virtual/tty/console/active 
-> > tty1 ttymxc0
-> > root@colibri-imx6ull-06746657:~# echo -n N > /sys/devices/virtual/tty/console/subsystem/ttymxc0/console
-> > root@colibri-imx6ull-06746657:~# echo -n Y > /sys/devices/virtual/tty/console/subsystem/ttymxc0/console
-> > 
-> > struct console ->setup is called at that time, but imx_uart_console_setup() is gone ...
-> > 
-> > According to the original report from Stefan the issue is the same with unbind/bind of the console,
-> > see https://marc.info/?l=linux-serial&m=154221779312036&w=2.
-> > 
-> > 
-> > > Should this go to stable kernels?  If so, how far back?
-> > This is present also in 4.19 kernel, I feel like the issue is there since it is possible to unbind
-> > a console driver (since ever considering the current LTS releases?). I could
-> > investigate this a little bit more.
-> > 
-> > We have this patch in our kernel branch since 3 years but for some reason we never managed to upstream it.
+> > What commit does this "fix"?
 > 
-> I think this is a bigger problem not only affecting imx.c. Just look at
-> the output of:
+> root@colibri-imx6ull-06746657:~# cat /sys/devices/virtual/tty/console/active 
+> tty1 ttymxc0
+> root@colibri-imx6ull-06746657:~# echo -n N > /sys/devices/virtual/tty/console/subsystem/ttymxc0/console
+> root@colibri-imx6ull-06746657:~# echo -n Y > /sys/devices/virtual/tty/console/subsystem/ttymxc0/console
 > 
-> 	git grep -E '__init.*setup' drivers/tty/serial/
+> struct console ->setup is called at that time, but imx_uart_console_setup() is gone ...
 
-I agree, but I think that all the earlyconsole stuff is not affected, so the amount of drivers
-that should be fixed is less than it looks like.
+This specific way I described here to reproduce the issue was introduced with
+ a3cb39d258ef serial: core: Allow detach and attach serial device for console
 
-Apart for that once you fix this issue you need to be sure that on the unbind/unregister path you undo
-all you did in the setup, maybe for most of the drivers is nothing, but for serial/imx I had to
-disable the clock there (see patch 2/2 in this patchset).
+that is kernel 5.9+
 
-Francesco
+(Andy added to to:)
 
+But the original report was about bind/unbind of the uart driver, I guess this is possible since
+way more time.
+
+> 
+> According to the original report from Stefan the issue is the same with unbind/bind of the console,
+> see https://marc.info/?l=linux-serial&m=154221779312036&w=2.
+> 
+> 
+> > Should this go to stable kernels?  If so, how far back?
+> This is present also in 4.19 kernel, I feel like the issue is there since it is possible to unbind
+> a console driver (since ever considering the current LTS releases?). I could
+> investigate this a little bit more.
+> 
+> We have this patch in our kernel branch since 3 years but for some reason we never managed to upstream it.
+> 
+> 
+> Francesco
