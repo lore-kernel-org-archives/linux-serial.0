@@ -2,93 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85032C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Oct 2021 20:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DC1C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Oct 2021 00:13:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6C6C760C4B
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Oct 2021 20:04:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4F7C46105A
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Oct 2021 00:13:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233810AbhJNUGn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Oct 2021 16:06:43 -0400
-Received: from mail-ot1-f42.google.com ([209.85.210.42]:45867 "EHLO
-        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbhJNUGn (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Oct 2021 16:06:43 -0400
-Received: by mail-ot1-f42.google.com with SMTP id l16-20020a9d6a90000000b0054e7ab56f27so9740157otq.12;
-        Thu, 14 Oct 2021 13:04:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gbYub33Z91e1QS79cd7omO33DSQ85uKXQk88sxDuHRo=;
-        b=1nbehc6lsQTFSMgzJhqHH1xBSMS+TY2DFJU2svaV7b8z0pg+ErK47ExJ0THzYmOCjv
-         CNAyocc0EAhi6F+LSqGvI/Kzo0ywiu1j5esMM94S82tLAylhRDqYiNhHrjTDenDEIJrh
-         dt1g74HN7JWjQbTZu+x/h7+b2u20LziMDbK1hvndGhxdIIbWikezc+/u0rcsVxDsLXbU
-         5ob91O44zz6Q7f4cVuFq8DSKWoKy5mU061/tv+u1f8Z4BJ72cdfiKxeDzGOArne0NaYQ
-         2YWtFL5fPXcSwfvekkWLCXhKS4jZW6jzCOXBCjQNAdiabu6rhaux57y7TxhsWoWhnUc5
-         /JBA==
-X-Gm-Message-State: AOAM532MTePYL610ZvXphya4p84ClR4XOQZc9K+oXkgUt+Hx77qEudNh
-        rzYi31hM0TlQkF4zS8tJNw==
-X-Google-Smtp-Source: ABdhPJyEZuDhUeC1wXYtsFMhBNQ+e7kVyhZEdS6H6Gd1iP1+azFmVrVZKD3F43EjhI4/xoqt25auqw==
-X-Received: by 2002:a9d:8e1:: with SMTP id 88mr4367769otf.339.1634241877348;
-        Thu, 14 Oct 2021 13:04:37 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id g29sm763533oic.27.2021.10.14.13.04.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 13:04:36 -0700 (PDT)
-Received: (nullmailer pid 3830439 invoked by uid 1000);
-        Thu, 14 Oct 2021 20:04:35 -0000
-Date:   Thu, 14 Oct 2021 15:04:35 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Dong Aisheng <aisheng.dong@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 11/11] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL
- compatible
-Message-ID: <YWiNUxP2rLat5T4p@robh.at.kernel.org>
-References: <1633526764-30151-1-git-send-email-abel.vesa@nxp.com>
- <1633526764-30151-12-git-send-email-abel.vesa@nxp.com>
+        id S233000AbhJOAPK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Oct 2021 20:15:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38040 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229718AbhJOAPK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 14 Oct 2021 20:15:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D117460FDC;
+        Fri, 15 Oct 2021 00:13:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634256784;
+        bh=GXQ6Dh4zhTUPR+A2V7JaDgrHk+2tJmJdA1ZsI5rpSH4=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=EEY5oL1O5M1SLzo2ikY6/dNHRHMQsbn/G2GNKe3rG2gCNG9ropEjn56EM4H/iStEu
+         lYr9xSibCNZHXxen0f6bOPPernLsrg0wy6Oxhdp9PxB/5dcv0JbPTkyqGfEggbBxPT
+         Wz3d9wwoYi/8iVENfi+jfk9aSrFniUM1vJOWt07s1tnJD8R4vpdRfAgyrVny/AeY7B
+         u0Bje2o3RRdjEzzVfsP9oam8mZ8uHpUCN2goeZpn2y85H5Ufr+fs62kDP3vCVrsdwH
+         3+Lb0fDrSu4vNng427LfDuJ3sKSgOfA8qhrMy4OGhn6JtpSbqdnpC72qfHNw4xdOxu
+         0Wy50rjcNXuIQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1633526764-30151-12-git-send-email-abel.vesa@nxp.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210930095838.28145-4-pali@kernel.org>
+References: <20210930095838.28145-1-pali@kernel.org> <20210930095838.28145-4-pali@kernel.org>
+Subject: Re: [PATCH v7 3/6] dt-bindings: mvebu-uart: document DT bindings for marvell,armada-3700-uart-clock
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vladimir Vid <vladimir.vid@sartura.hr>,
+        Marek =?utf-8?q?Beh=C3=BAn?= <kabel@kernel.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Pali =?utf-8?q?Roh=C3=A1r?= <pali@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 14 Oct 2021 17:13:03 -0700
+Message-ID: <163425678347.1688384.10695189000353676651@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 06, 2021 at 04:26:04PM +0300, Abel Vesa wrote:
-> Add i.MX8DXL lpuart compatible to the bindings documentation.
-> 
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> ---
->  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-> index a90c971b4f1f..d84bb33f3b4c 100644
-> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-> @@ -22,6 +22,7 @@ properties:
->            - fsl,imx7ulp-lpuart
->            - fsl,imx8qm-lpuart
->        - items:
-> +          - const: fsl,imx8dxl-lpuart
->            - const: fsl,imx8qxp-lpuart
->            - const: fsl,imx7ulp-lpuart
+Quoting Pali Roh=C3=A1r (2021-09-30 02:58:35)
+> diff --git a/Documentation/devicetree/bindings/clock/marvell,armada-3700-=
+uart-clock.yaml b/Documentation/devicetree/bindings/clock/marvell,armada-37=
+00-uart-clock.yaml
+> new file mode 100644
+> index 000000000000..175f5c8f2bc5
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-cl=
+ock.yaml
+> @@ -0,0 +1,59 @@
+[..]
+> +  '#clock-cells':
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +  - '#clock-cells'
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    uartclk: clock-controller@12010 {
 
-If you needed to support:
+The uart device is at 0x12000 and the clock-controller is at 0x12010?
+This looks like a node is being put into DT to represent a clk driver.
+Why can't we register a clk from the uart device driver itself? I think
+we talked about this a month or two ago but it still isn't clear to me.
 
-compatible = "fsl,imx8qxp-lpuart", "fsl,imx7ulp-lpuart";
-
-You just broke it.
-
-Rob
+> +      compatible =3D "marvell,armada-3700-uart-clock";
+> +      reg =3D <0x12010 0x4>, <0x12210 0x4>;
+> +      clocks =3D <&tbg 0>, <&tbg 1>, <&tbg 2>, <&tbg 3>, <&xtalclk>;
+> +      clock-names =3D "TBG-A-P", "TBG-B-P", "TBG-A-S", "TBG-B-S", "xtal";
+> +      #clock-cells =3D <1>;
+> +    };
+> --=20
+> 2.20.1
+>
