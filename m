@@ -2,21 +2,21 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38803C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Oct 2021 11:26:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FCB3C43219
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Oct 2021 11:26:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2490260F44
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Oct 2021 11:26:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23C5760F56
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Oct 2021 11:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233820AbhJOL2k (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Oct 2021 07:28:40 -0400
-Received: from muru.com ([72.249.23.125]:44942 "EHLO muru.com"
+        id S230439AbhJOL2r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Oct 2021 07:28:47 -0400
+Received: from muru.com ([72.249.23.125]:44962 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233342AbhJOL2j (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Oct 2021 07:28:39 -0400
+        id S238514AbhJOL2n (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 15 Oct 2021 07:28:43 -0400
 Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 08AAB80F1;
-        Fri, 15 Oct 2021 11:27:03 +0000 (UTC)
+        by muru.com (Postfix) with ESMTP id DFA6380F1;
+        Fri, 15 Oct 2021 11:27:07 +0000 (UTC)
 From:   Tony Lindgren <tony@atomide.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
@@ -25,64 +25,169 @@ Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCHv3 0/4] Get rid of pm_runtime_irq_safe() for 8250_omap
-Date:   Fri, 15 Oct 2021 14:26:22 +0300
-Message-Id: <20211015112626.35359-1-tony@atomide.com>
+Subject: [PATCH 2/4] serial: 8250: Implement wakeup for TX and use it for 8250_omap
+Date:   Fri, 15 Oct 2021 14:26:24 +0300
+Message-Id: <20211015112626.35359-3-tony@atomide.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211015112626.35359-1-tony@atomide.com>
+References: <20211015112626.35359-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+We can use the wakeup() and uart_start_pending_tx() calls to wake up an
+idle serial port and send out the pending TX buffer on runtime PM resume.
+This allows us to remove the dependency to pm_runtime_irq_safe() for
+8250_omap driver in the following patches.
 
-Here are v3 patches to get rid of pm_runtime_irq_safe() for the 8250_omap
-driver. Based on comments from Andy, Johan and Greg, I improved a bunch of
-things as listed below.
+We manage the port runtime_suspended flag in the serial port driver as
+only the driver knows when the hardware is runtime PM suspended. Note that
+The current flag for rpm_tx_active cannot be used as it is TX specific
+for 8250_port.
 
-For removing the pm_runtime_irq_safe() usage, serial TX is the last
-remaining issue. We deal with TX by waking up the port and returning 0
-bytes written from write_room() and write() if the port is not available
-because of PM runtime autoidle.
+We already have serial8250_start_tx() call serial8250_rpm_get_tx(), and
+serial8250_stop_tx() call serial8250_rpm_put_tx() to take care of the
+runtime PM usage count for TX. To have the serial port driver call
+uart_start_pending_tx() on runtime resume, we must now use just
+pm_runtime_get() for serial8250_start_tx() instead of the sync version.
 
-This series also removes the dependency to Andy's pending generic serial
-layer PM runtime patches, and hopefully makes that work a bit easier :)
+With these changes we must now also flip the 8250_omap driver over to
+call uart_start_pending_tx(). That's currently the only user of
+UART_CAP_RPM.
 
-Regards,
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/serial/8250/8250_omap.c | 19 ++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 39 ++++++++++++++++++++++++++++-
+ 2 files changed, 57 insertions(+), 1 deletion(-)
 
-Tony
-
-Chganges since v2:
-
-- Use locking instead of atomic_t as suggested by Greg
-
-Changes since v1:
-
-- Separated out line discipline patches, n_tty -EAGAIN change I still
-  need to retest
-
-- Changed prep_tx() to more generic wakeup() as also flow control needs it
-
-- Changed over to using wakeup() with device driver runtime PM instead
-  of write_room()
-
-- Added runtime_suspended flag for drivers and generic serial layer PM
-  to use
-
-
-Tony Lindgren (4):
-  serial: core: Add wakeup() and start_pending_tx() for power management
-  serial: 8250: Implement wakeup for TX and use it for 8250_omap
-  serial: 8250_omap: Require a valid wakeirq for deeper idle states
-  serial: 8250_omap: Drop the use of pm_runtime_irq_safe()
-
- Documentation/driver-api/serial/driver.rst |  9 +++
- drivers/tty/serial/8250/8250_omap.c        | 44 ++++++++++----
- drivers/tty/serial/8250/8250_port.c        | 39 ++++++++++++-
- drivers/tty/serial/serial_core.c           | 68 +++++++++++++++++++++-
- include/linux/serial_core.h                |  3 +
- 5 files changed, 149 insertions(+), 14 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1593,12 +1593,16 @@ static int omap8250_runtime_suspend(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up;
++	struct uart_port *port;
++	unsigned long flags;
+ 
+ 	/* In case runtime-pm tries this before we are setup */
+ 	if (!priv)
+ 		return 0;
+ 
+ 	up = serial8250_get_port(priv->line);
++	port = &up->port;
++
+ 	/*
+ 	 * When using 'no_console_suspend', the console UART must not be
+ 	 * suspended. Since driver suspend is managed by runtime suspend,
+@@ -1610,6 +1614,10 @@ static int omap8250_runtime_suspend(struct device *dev)
+ 			return -EBUSY;
+ 	}
+ 
++	spin_lock_irqsave(&port->lock, flags);
++	port->runtime_suspended = 1;
++	spin_unlock_irqrestore(&port->lock, flags);
++
+ 	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
+ 		int ret;
+ 
+@@ -1636,13 +1644,18 @@ static int omap8250_runtime_resume(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up;
++	struct uart_port *port;
++	unsigned long flags;
+ 
+ 	/* In case runtime-pm tries this before we are setup */
+ 	if (!priv)
+ 		return 0;
+ 
+ 	up = serial8250_get_port(priv->line);
++	port = &up->port;
+ 
++	/* Restore state with interrupts disabled */
++	spin_lock_irqsave(&port->lock, flags);
+ 	if (omap8250_lost_context(up))
+ 		omap8250_restore_regs(up);
+ 
+@@ -1651,6 +1664,12 @@ static int omap8250_runtime_resume(struct device *dev)
+ 
+ 	priv->latency = priv->calc_latency;
+ 	schedule_work(&priv->qos_work);
++
++	port->runtime_suspended = 0;
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	uart_start_pending_tx(port);
++
+ 	return 0;
+ }
+ #endif
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -724,7 +724,7 @@ void serial8250_rpm_get_tx(struct uart_8250_port *p)
+ 	rpm_active = xchg(&p->rpm_tx_active, 1);
+ 	if (rpm_active)
+ 		return;
+-	pm_runtime_get_sync(p->port.dev);
++	pm_runtime_get(p->port.dev);
+ }
+ EXPORT_SYMBOL_GPL(serial8250_rpm_get_tx);
+ 
+@@ -2507,6 +2507,42 @@ static void serial8250_shutdown(struct uart_port *port)
+ 		serial8250_do_shutdown(port);
+ }
+ 
++/*
++ * Wakes up the serial port if it has been runtime PM suspended.
++ *
++ * Note that we rely on the serial8250_rpm functions to manage the
++ * runtime PM usage count. We also currently depend on the runtime
++ * PM autosuspend timeout to keep the port awake until start_tx().
++ * Eventually we should just use runtime PM functions and not rely
++ * on the autosuspend timeout.
++ *
++ * Caller must hold port->lock for port->runtime_suspended status.
++ * Also the port drivers must hold port->lock when changing the
++ * state for port->runtime_suspended in runtime PM functions.
++ */
++static int serial8250_wakeup(struct uart_port *port)
++{
++	struct uart_8250_port *up = up_to_u8250p(port);
++	struct device *dev = up->port.dev;
++	int err;
++
++	if (!(up->capabilities & UART_CAP_RPM))
++		return 0;
++
++	if (!port->runtime_suspended) {
++		pm_runtime_mark_last_busy(dev);
++		return 0;
++	}
++
++	err = pm_request_resume(dev);
++	if (err < 0) {
++		dev_warn(dev, "wakeup failed: %d\n", err);
++		return err;
++	}
++
++	return -EINPROGRESS;
++}
++
+ /* Nuvoton NPCM UARTs have a custom divisor calculation */
+ static unsigned int npcm_get_divisor(struct uart_8250_port *up,
+ 		unsigned int baud)
+@@ -3235,6 +3271,7 @@ static const struct uart_ops serial8250_pops = {
+ 	.break_ctl	= serial8250_break_ctl,
+ 	.startup	= serial8250_startup,
+ 	.shutdown	= serial8250_shutdown,
++	.wakeup		= serial8250_wakeup,
+ 	.set_termios	= serial8250_set_termios,
+ 	.set_ldisc	= serial8250_set_ldisc,
+ 	.pm		= serial8250_pm,
 -- 
 2.33.0
