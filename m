@@ -2,398 +2,689 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEE7C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Oct 2021 12:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDF2C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Oct 2021 15:35:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C53F60FC3
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Oct 2021 12:41:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 458BF610FC
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Oct 2021 15:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbhJRMoB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Oct 2021 08:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231727AbhJRMn5 (ORCPT
+        id S233121AbhJRPiD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Oct 2021 11:38:03 -0400
+Received: from mail-pg1-f171.google.com ([209.85.215.171]:37534 "EHLO
+        mail-pg1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232933AbhJRPiC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Oct 2021 08:43:57 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F10C06161C;
-        Mon, 18 Oct 2021 05:41:44 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id d3so70448126edp.3;
-        Mon, 18 Oct 2021 05:41:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6ma438rY78GdjEHQdrb6TeuEWVkfDff3eVr92rQK25g=;
-        b=bcAtQSZOMt385CqDWdkLB/tKrt5rRPBKhcbch35IBWT6Sr3WLk901jzIlD+48ZjV8w
-         KAH93yJNsDq7DOIUt7l6UXvAnST7EhOYi8fVfOjB1sBx1P8ou9IomX99wgP1XJHlE2Kk
-         LHINYnzr/F3bwU9rcVPUAWRdk8MrKSqERp+nuzTC4/kJMrI/BFk9mck8zRNIEccdURJ0
-         DIlJRTGc4WB6uKaPwdgtVYpgJyZH0k5Ppwbq6MFG66zZ7mk/7AU0D9B6xpUxofVl/ikK
-         HgUQu/wcXzHsfRLhPrJTunXyNMh4Y5/HD4enWwsx3d0VDuwnMbuKzBROppO6C1iKT029
-         Japg==
+        Mon, 18 Oct 2021 11:38:02 -0400
+Received: by mail-pg1-f171.google.com with SMTP id s136so13398834pgs.4;
+        Mon, 18 Oct 2021 08:35:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6ma438rY78GdjEHQdrb6TeuEWVkfDff3eVr92rQK25g=;
-        b=IaXf34Mux0AyglbI+aiu5x4/MFKymGPPK6YKWfiNIme/H/syr4UqF5OqC1/KF5o4SJ
-         u8BCy9LHOnilQOeyJEawgkyFCJ1qX9qfqyEviBNCybmXeGwzMjjsrjDDg18ifIp2JgIf
-         +zlnbeQylHNPxmTmc7J6wDFS+0PHjLmQ2hSC8OV55NoT501jPfIOsgAuajHqvlVyHOnI
-         JboUXwgv6idmYKuEi0reURRP9afLqS06exyqPtIyi7pDGuDbuH7NRoU8xcDf4zcCi/Rd
-         v6M7mL/6IkbRb/UhloWnJ6qFggVPiI0SDe3ne/8Q+zw3Q+QIzpE7x0mFOWGMAOZJNdK7
-         PMnw==
-X-Gm-Message-State: AOAM531JQhrxu85GaHZWxChJ5411678sJQloecgl/Yv/PM3XPlysyAp3
-        IteBj3GKrXDD4dG+V4kv6ocKwUk1PhkFBdEc/24=
-X-Google-Smtp-Source: ABdhPJz1PLsDQarVE2punUuKVpCeV/TAxHyeu/Efl7gijXadKdGcoiL62B//S44l/8LUBAQnLezt1XPCjgNtrvKbCk8=
-X-Received: by 2002:a17:907:2bdf:: with SMTP id gv31mr28802835ejc.521.1634560902659;
- Mon, 18 Oct 2021 05:41:42 -0700 (PDT)
+        bh=ix+PjeVUr9M9hmSH2oYIe5g/udBeDCxp0YK/hSiGdg0=;
+        b=xuc6/JQ4yRQF1qlZJB4Ewi3SHbpk5cVeBgQOs192JHYyX0ObnNdwf4cmNq4GKxj2re
+         QIO9Qa4Vn3KJsHvmxHOsIMN/CBluoDuq65REtIdN97tY7ih0FtvDKIXbYJtsaf6RqmMj
+         SqyIRk8fYvKmJjki2dxYtJxLaVZOryT9BL4Jypm6sYHGZm94TbObYjW4wI8bz508Pnf4
+         g08DG8rflvBaLDqBvMwWuX6UrnbZFpaSO8EjS7KEQO15wgl8ck5sS/do2dDW4mx+s8RD
+         nguLj7qe7v43czMAyqM8mLlCtheOgvEOUDb2zDiNMR60LlNGPv21wJY4hl5p9QYI8+BF
+         wXrA==
+X-Gm-Message-State: AOAM53198fWfZddOjt43iH0K5MaHCiPYNy7u+hroO4g6TbShgBLgbu4g
+        PL3oV4GWxB94qlPbQbZlEua9jMBrk56twz4gt9k=
+X-Google-Smtp-Source: ABdhPJzT4LgxUt7FciDLvvzmuxi7pknt0BTuurCI8z6mbkWTQg7776/M/gliut0S1FkbMnG28TD6bZziajZQ25qMB8I=
+X-Received: by 2002:a62:31c5:0:b0:447:cd37:61f8 with SMTP id
+ x188-20020a6231c5000000b00447cd3761f8mr29553098pfx.29.1634571350615; Mon, 18
+ Oct 2021 08:35:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com> <1631554694-9599-9-git-send-email-abel.vesa@nxp.com>
-In-Reply-To: <1631554694-9599-9-git-send-email-abel.vesa@nxp.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Mon, 18 Oct 2021 07:41:31 -0500
-Message-ID: <CAHCN7xLpdLY06vUDW0-oAVWDk-VYf_8kZh2F8f5+jd0RS0y74w@mail.gmail.com>
-Subject: Re: [RFC 08/19] interconnect: imx8: Remove the imx_icc_node_adj_desc
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Georgi Djakov <djakov@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+References: <20211012134027.684712-1-kernel@esmil.dk> <20211012134027.684712-13-kernel@esmil.dk>
+ <CAHp75Vep+i+iyJi0LAOKuer-cUZoUoB_ZrWKcmT=EB_4hOgFGw@mail.gmail.com>
+In-Reply-To: <CAHp75Vep+i+iyJi0LAOKuer-cUZoUoB_ZrWKcmT=EB_4hOgFGw@mail.gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+Date:   Mon, 18 Oct 2021 17:35:39 +0200
+Message-ID: <CANBLGcxHD2vy0+tXYo5Pkqri9mV7aD9jikvs3ygBJRxF4ApLMA@mail.gmail.com>
+Subject: Re: [PATCH v1 12/16] pinctrl: starfive: Add pinctrl driver for
+ StarFive SoCs
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
         devicetree <devicetree@vger.kernel.org>,
-        linux-pm@vger.kernel.org,
-        arm-soc <linux-arm-kernel@lists.infradead.org>
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Huan Feng <huan.feng@starfivetech.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Sep 13, 2021 at 12:39 PM Abel Vesa <abel.vesa@nxp.com> wrote:
+On Tue, 12 Oct 2021 at 19:03, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> On Tue, Oct 12, 2021 at 4:43 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > Add a combined pinctrl and gpio driver for the StarFive JH7100 SoC.
+> >
+> > For each "GPIO" there are two registers for configuring the output and
+> > output enable signals which may come from other peripherals. Among these
+> > are two special signals that are constant 0 and constant 1 respectively.
+> > Controlling the GPIOs from software is done by choosing one of these
+> > signals. In other words the same registers are used for both pinmuxing
+> > and controlling the GPIOs, which makes it easier to combine the pinctrl
+> > and gpio driver in one.
+> >
+> > I wrote the pinconf and pinmux parts, but the gpio part of the code is
+> > based on the gpio driver in the vendor tree written by Huan Feng with
+> > cleanups and fixes by Drew and me.
 >
-> Now that the imx generic interconnect doesn't use the
-> imx_icc_node_adj_desc, we remove it from all the i.MX8M
-> platform drivers.
+> s/gpio/GPIO/g
 >
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> ---
->  drivers/interconnect/imx/imx.h    | 19 ++++-------------
->  drivers/interconnect/imx/imx8mm.c | 32 +++++++++-------------------
->  drivers/interconnect/imx/imx8mn.c | 28 +++++++------------------
->  drivers/interconnect/imx/imx8mq.c | 35 ++++++++++---------------------
->  4 files changed, 33 insertions(+), 81 deletions(-)
+> ...
 >
+> > +config PINCTRL_STARFIVE
+>
+> > +       bool "Pinctrl and GPIO driver for the StarFive JH7100 SoC"
+>
+> Why not module?
+>
+> > +       depends on SOC_STARFIVE || COMPILE_TEST
+>
+> > +       depends on OF
+>
+> Do you really need this taking into account...
+>
+> > +       default SOC_STARFIVE
+> > +       select GENERIC_PINCTRL_GROUPS
+> > +       select GENERIC_PINMUX_FUNCTIONS
+> > +       select GENERIC_PINCONF
+> > +       select GPIOLIB
+> > +       select GPIOLIB_IRQCHIP
+>
+> > +       select OF_GPIO
+>
+> ...this one?
+>
+> ...
+>
+> bits.h ?
+>
+> > +#include <linux/clk.h>
+> > +#include <linux/gpio/driver.h>
+> > +#include <linux/io.h>
+> > +#include <linux/module.h>
+>
+>
+> mod_devicetable.h ?
+>
+> > +#include <linux/pinctrl/pinctrl.h>
+> > +#include <linux/pinctrl/pinmux.h>
+>
+> Can you move these as a group after generic linux/* ones?
+>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/reset.h>
+> > +#include <linux/spinlock.h>
+>
+> ...
+>
+> > +/*
+> > + * refer to Section 12. GPIO Registers in JH7100 datasheet:
+>
+> Be consistent in your style, here for example missed capitalization.
+>
+> > + * https://github.com/starfive-tech/StarLight_Docs
+>
+> Is it possible to have the datasheet to be provided as Datasheet: tag
+> in the commit message?
+>
+> > + */
+>
+> ...
+>
+> > +/*
+> > + * Global enable for GPIO interrupts, offset: 0x0, field: GPIOEN
+> > + * set to 1 if GPIO interrupts are enabled, set to 0 to disable
+> > + */
+> > +#define IRQ_GLOBAL_EN          0x0
+>
+> s/0x0/0x00/g
+>
+> ...
+>
+> > +/*
+> > + * Interrupt Type for GPIO[31:0], offset: 0x10, field: GPIOS_0
+> > + * set to 1 if edge-triggered, set to 0 for level-triggered
+> > + */
+> > +#define IRQ_TYPE_LOW           0x10
+> > +
+> > +/*
+> > + * Interrupt Type for GPIO[63:32], offset: 0x14, field: GPIOS_1
+> > + */
+> > +#define IRQ_TYPE_HIGH          0x14
+>
+> As I reviewed below, the IRQ is represented by a few registers in a
+> row, no need to define low and high separately. Ditto for the rest
+> register pairs.
+>
+> ...
+>
+> > +/*
+> > + * Interrupt Status after Masking GPIO[31:0], offset: 0x40, field: GPIOMIS_0
+> > + * status of edge-triggered or level-triggered after masking
+> > + * value of 1 means edge or level was detected, value of 0 menas not detected
+>
+> menas?!
+>
+> > + */
+>
+> ...
+>
+> > +/*
+> > + * Data Value of GPIO for GPIO[31:0], offest: 0x48, field: GPIODIN_0
+>
+> offest?!
+>
+> > + * dynamically reflects value on the GPIO pin
+> > + */
+>
+> Please, run a spellchecker.
+>
+> ...
+>
+> > +#define IO_PADSHARE_SEL                0x1a0
+>
+> Okay, make all registers to be fixed width, i.e. 0x000 for IRQ global
+> enabling and so on.
+>
+> ...
+>
+> > +#define PAD_SLEW_RATE_MASK             0xe00U
+>
+> GENMASK()
+>
+> > +#define PAD_BIAS_STRONG_PULL_UP                0x100U
+> > +#define PAD_INPUT_ENABLE               0x080U
+> > +#define PAD_INPUT_SCHMITT_ENABLE       0x040U
+> > +#define PAD_BIAS_DISABLE               0x020U
+> > +#define PAD_BIAS_PULL_DOWN             0x010U
+>
+> All above seems like BIT(_something_).
+>
+> > +#define PAD_BIAS_MASK                  0x130U
+> > +#define PAD_DRIVE_STRENGTH_MASK                0x007U
+>
+> GENMASK()
+>
+> ...
+>
+> > +#ifdef CONFIG_DEBUG_FS
+>
+> __maybe_unused ?
+>
+> > +#else
+> > +#define starfive_pin_dbg_show NULL
+> > +#endif
+>
+> ...
+>
+> > +       dout = readl_relaxed(reg);
+>
+> readl_relaxed(reg + 0x00)
+>
+> > +       reg += 4;
+>
+> > +       doen = readl_relaxed(reg);
+>
+> readl_relaxed(reg + 0x04);
+>
+> ...
+>
+> > +       seq_printf(s, "dout=%u%s doen=%u%s",
+> > +                  dout & 0xffU, (dout & 0x80000000U) ? "r" : "",
+> > +                  doen & 0xffU, (doen & 0x80000000U) ? "r" : "");
+>
+> GENMASK()
+> BIT()
+>
+> ...
+>
+> > +       for_each_child_of_node(np, child) {
+> > +               const __be32 *pinmux_list;
+> > +               const __be32 *pins_list;
+> > +               int pinmux_size;
+> > +               int pins_size;
+> > +
+> > +               pinmux_list = of_get_property(child, "pinmux", &pinmux_size);
+> > +               pins_list   = of_get_property(child, "pins",   &pins_size);
+> > +               if (pinmux_list && pins_list) {
+> > +                       dev_err(dev, "invalid pinctrl group %pOFn.%pOFn: %s\n",
+> > +                               np, child, "both pinmux and pins set");
+> > +                       of_node_put(child);
+> > +                       return -EINVAL;
+> > +               }
+> > +
+> > +               if (pinmux_list && pinmux_size > 0) {
+> > +                       nmaps += 2;
+> > +               } else if (pins_list && pins_size > 0) {
+> > +                       nmaps += 1;
+> > +               } else {
+> > +                       dev_err(dev, "invalid pinctrl group %pOFn.%pOFn: %s\n",
+> > +                               np, child, "neither pinmux nor pins set");
+> > +                       of_node_put(child);
+> > +                       return -EINVAL;
+> > +               }
+> > +               ngroups += 1;
+> > +       }
+>
+> This entire loop seems like
+> 1) it should be based on something from pin control core;
+> 2) it's using some low level APIs instead of better ones like
+> of_property_read_uXX();
+> 3) smells like unoptimized NIH.
+>
+> ...
+>
+> > +               if ((list = of_get_property(child, "pinmux", &npins))) {
+>
+> Why not of_property_read_...() ?
+>
+> ...
+>
+> > +                               u32 v = be32_to_cpu(*list++);
+>
+> My gosh!
+>
+> ...
+>
+> > +                       for (i = 0; i < npins; i++)
+> > +                               pins[i] = be32_to_cpu(*list++);
+>
+> Ditto.
+> Even for this we have something in byteorder headers.
+>
+> Summary, make sure you use much better _existing_ APIs instead of the
+> above crap.
+>
+> ...
+>
+> > +free_pinmux:
+> > +       devm_kfree(dev, pinmux);
+> > +free_pins:
+> > +       devm_kfree(dev, pins);
+> > +free_grpname:
+> > +       devm_kfree(dev, grpname);
+>
+> What the heck?!
+>
+> > +free_pgnames:
+> > +       devm_kfree(dev, pgnames);
+>
+> Ditto.
+>
+> ...
+>
+> > +out:
+>
+> Useless label.
+>
+> > +       return ret;
+>
+> ...
+>
+> > +       for (i = 0; i < group->num_pins; i++) {
+> > +               unsigned int gpio = starfive_pin_to_gpio(sfp, group->pins[i]);
+> > +               void __iomem *reg_dout;
+> > +               void __iomem *reg_doen;
+> > +               void __iomem *reg_din;
+> > +               u32 v, dout, doen, din;
+> > +               unsigned long flags;
+>
+> > +               if (dev_WARN_ONCE(dev, gpio >= MAX_GPIO,
+>
+> What?!
+>
+> > +                                 "%s: invalid gpiomux pin", group->name))
+> > +                       continue;
+> > +
+> > +               v = pinmux[i];
+> > +               dout = ((v & BIT(7)) << (31 - 7)) | ((v >> 24) & 0xffU);
+> > +               doen = ((v & BIT(6)) << (31 - 6)) | ((v >> 16) & 0xffU);
+> > +               din  = (v >> 8) & 0xffU;
+>
+> What is this voodoo for?
+>
+> > +               if (din != 0xff)
+> > +                       reg_din = sfp->base + GPIO_IN_OFFSET + 4 * din;
+> > +               else
+> > +                       reg_din = NULL;
+>
+> This looks like you maybe use gpio-regmap instead?
+>
+> ...
+>
+> > +       void __iomem *reg = sfp->padctl + 4 * (pin / 2);
+> > +       u32 value = readl_relaxed(reg);
+> > +
+> > +       if (pin & 1U)
+> > +               value >>= 16;
+> > +       return value;
+>
+> u8 shift = 16 * (pin % 2);
+>
+> return readl_relaxed() >> shift;
+>
+> ?
+>
+> Something similar for below code.
+>
+> ...
+>
+> > +#ifdef CONFIG_DEBUG_FS
+> > +static const struct pin_config_item
+> > +starfive_pinconf_custom_conf_items[ARRAY_SIZE(starfive_pinconf_custom_params)] = {
+>
+> Instead of using ARAY_SIZE() here, use static_assert().
+>
+> __maybe_unused?
+>
+> > +       PCONFDUMP(PIN_CONFIG_STARFIVE_STRONG_PULL_UP, "input bias strong pull-up", NULL, false),
+> > +};
+> > +#else
+> > +#define starfive_pinconf_custom_conf_items NULL
+> > +#endif
+>
+> ...
+>
+> > +static const unsigned char starfive_drive_strength[] = {
+> > +       14, 21, 28, 35, 42, 49, 56, 63,
+>
+> Why table? Can you simply use the formula?!
+>
+> > +};
+>
+> ...
+>
+> > +       if (unlikely(!group))
+>
+> Why unlikely() Must be justified here and everywhere where you are using it.
+>
+> > +               return -EINVAL;
+> > +
+> > +       return starfive_pinconf_get(pctldev, group->pins[0], config);
+> > +}
+>
+> ...
+>
+> > +               case PIN_CONFIG_BIAS_DISABLE:
+>
+> > +                       mask |= PAD_BIAS_MASK;
+>
+> Use it...
+>
+> > +                       value = (value & ~PAD_BIAS_MASK) | PAD_BIAS_DISABLE;
+>
+> ...here. Ditto for the similar cases in this function and elsewhere.
 
-I noticed there are no interconnect nodes in the imx8mm nor the
-imx8mn, so it appears to me like the mini and nano code won't do
-anything.
+I don't follow. How do you want me to use mask? If I did value =
+(value & ~mask) | PAD_BIAS_DISABLE; then I'd wipe the previous
+configuration. Eg. suppose the first config is the drive strength and
+second disables bias. Then on the 2nd loop mask =
+PAD_DRIVE_STRENGTH_MASK | PAD_BIAS_MASK and the drive strength value
+would be wiped.
 
+> After done this, you will see how you can simplify and deduplicate the
+> switch-cases.
+>
+> ...
+>
+> > +#ifdef CONFIG_DEBUG_FS
+>
+> __maybe_unused ?
+>
+> > +#else
+> > +#define starfive_pinconf_dbg_show NULL
+> > +#endif
+>
+> ...
+>
+> > +       if (gpio < 32) {
+> > +               value = readl_relaxed(sfp->base + GPIO_DIN_LOW);
+>
+> > +               value = (value >> gpio) & 1U;
+>
+> Drop
+>
+> > +       } else {
+> > +               value = readl_relaxed(sfp->base + GPIO_DIN_HIGH);
+>
+> > +               value = (value >> (gpio - 32)) & 1U;
+>
+> Drop
+>
+> > +       }
+>
+> > +       return value;
+>
+> return !!(value & BIT(gpio % 32));
+>
+> ...
+>
+> > +               if (arg == 0)
+>
+> > +                       return -ENOTSUPP;
+>
+> Shouldn't we return something else and pin control core will change it
+> to something else if needed?
+>
+> > +               if (arg == 0)
+> > +                       return -ENOTSUPP;
+>
+> Ditto.
+>
+> > +       default:
+> > +               return -ENOTSUPP;
+>
+> ...
+>
+> > +       if (gpio < 0 || gpio >= MAX_GPIO)
+> > +               return;
+> > +
+> > +       if (gpio < 32) {
+> > +               ie = sfp->base + IRQ_ENABLE_LOW;
+> > +               mask = BIT(gpio);
+> > +       } else {
+> > +               ie = sfp->base + IRQ_ENABLE_HIGH;
+> > +               mask = BIT(gpio - 32);
+> > +       }
+>
+> See below. And update all occurrences of these lines accordingly and
+> everywhere. Also for IRQ may use helper functions if needed (but I
+> don't believe the high and low register have stride more than 4).
+>
+> ...
+>
+> > +       if (gpio < 0 || gpio >= MAX_GPIO)
+> > +               return -EINVAL;
+>
+> How is it possible to be ever triggered?
+>
+> ...
+>
+> > +       if (gpio < 32) {
+> > +               base = sfp->base;
+> > +               mask = BIT(gpio);
+> > +       } else {
+> > +               base = sfp->base + 4;
+> > +               mask = BIT(gpio - 32);
+> > +       }
+>
+> base = sfp_base + 4 * (gpio / 32);
+> mask = BIT(gpio % 32);
+>
+> ...
+>
+> > +               irq_set_handler_locked(d, handle_edge_irq);
+>
+> > +               irq_set_handler_locked(d, handle_edge_irq);
+>
+> Dup.
+>
+> ...
+>
+> > +               irq_set_handler_locked(d, handle_edge_irq);
+>
+> > +               irq_set_handler_locked(d, handle_level_irq);
+>
+> > +               irq_set_handler_locked(d, handle_level_irq);
+>
+> Ditto.
+>
+> ...
+>
+> > +               irq_set_handler_locked(d, handle_bad_irq);
+>
+> Why is this here? Move it to ->probe().
+>
+> ...
+>
+> > +       clk = devm_clk_get(dev, NULL);
+> > +       if (IS_ERR(clk)) {
+> > +               ret = PTR_ERR(clk);
+>
+> > +               dev_err(dev, "could not get clock: %d\n", ret);
+>
+> Thank you for spamming logs with this noise.
+>
+> > +               return ret;
+>
+> Hint: return dev_err_probe(). Ditto for the rest in this function.
+>
+> > +       }
+>
+> ...
+>
+> > +       ret = clk_prepare_enable(clk);
+> > +       if (ret) {
+>
+> > +               reset_control_deassert(rst);
+>
+> Use devm_add_action_or_reset().
 
-adam
-> diff --git a/drivers/interconnect/imx/imx.h b/drivers/interconnect/imx/imx.h
-> index 75da51076c68..5c9f5138f6aa 100644
-> --- a/drivers/interconnect/imx/imx.h
-> +++ b/drivers/interconnect/imx/imx.h
-> @@ -14,15 +14,6 @@
+I don't see how that is better. Then I'd first need to call that and
+check for errors, but just on the line below enabling the clock the
+reset line is deasserted anyway, so then the action isn't needed any
+longer. So that 3 lines of code for devm_add_action_or_reset +
+lingering unneeded action or code to remove it again vs. just the line
+above.
+
+> > +               dev_err(dev, "could not enable clock: %d\n", ret);
+> > +               return ret;
+> > +       }
 >
->  #define IMX_ICC_MAX_LINKS      4
+> ...
 >
-> -/*
-> - * struct imx_icc_node_adj - Describe a dynamic adjustable node
-> - */
-> -struct imx_icc_node_adj_desc {
-> -       unsigned int bw_mul, bw_div;
-> -       const char *phandle_name;
-> -       bool main_noc;
-> -};
-> -
->  /*
->   * struct imx_icc_node - Describe an interconnect node
->   * @name: name of the node
-> @@ -35,23 +26,21 @@ struct imx_icc_node_desc {
->         u16 id;
->         u16 links[IMX_ICC_MAX_LINKS];
->         u16 num_links;
-> -       const struct imx_icc_node_adj_desc *adj;
->  };
+> > +       if (!of_property_read_u32(dev->of_node, "starfive,signal-group", &value)) {
 >
-> -#define DEFINE_BUS_INTERCONNECT(_name, _id, _adj, ...)                 \
-> +#define DEFINE_BUS_INTERCONNECT(_name, _id, ...)                       \
->         {                                                               \
->                 .id = _id,                                              \
->                 .name = _name,                                          \
-> -               .adj = _adj,                                            \
->                 .num_links = ARRAY_SIZE(((int[]){ __VA_ARGS__ })),      \
->                 .links = { __VA_ARGS__ },                               \
->         }
+> Can be refactored without conditional. Also, why not to use
+> device_property_read_u32()?
 >
->  #define DEFINE_BUS_MASTER(_name, _id, _dest_id)                                \
-> -       DEFINE_BUS_INTERCONNECT(_name, _id, NULL, _dest_id)
-> +       DEFINE_BUS_INTERCONNECT(_name, _id, _dest_id)
+> > +               if (value <= 6)
+> > +                       writel(value, sfp->padctl + IO_PADSHARE_SEL);
+> > +               else
 >
-> -#define DEFINE_BUS_SLAVE(_name, _id, _adj)                             \
-> -       DEFINE_BUS_INTERCONNECT(_name, _id, _adj)
-> +#define DEFINE_BUS_SLAVE(_name, _id)                                   \
-> +       DEFINE_BUS_INTERCONNECT(_name, _id)
+> > +                       dev_err(dev, "invalid signal group %u\n", value);
 >
->  int imx_icc_register(struct platform_device *pdev,
->                      struct imx_icc_node_desc *nodes,
-> diff --git a/drivers/interconnect/imx/imx8mm.c b/drivers/interconnect/imx/imx8mm.c
-> index 1083490bb391..0c16110bef9d 100644
-> --- a/drivers/interconnect/imx/imx8mm.c
-> +++ b/drivers/interconnect/imx/imx8mm.c
-> @@ -14,18 +14,6 @@
+> Why _err if you not bail out here?
 >
->  #include "imx.h"
+> > +       }
 >
-> -static const struct imx_icc_node_adj_desc imx8mm_dram_adj = {
-> -       .bw_mul = 1,
-> -       .bw_div = 16,
-> -       .phandle_name = "fsl,ddrc",
-> -};
-> -
-> -static const struct imx_icc_node_adj_desc imx8mm_noc_adj = {
-> -       .bw_mul = 1,
-> -       .bw_div = 16,
-> -       .main_noc = true,
-> -};
-> -
->  /*
->   * Describe bus masters, slaves and connections between them
->   *
-> @@ -33,43 +21,43 @@ static const struct imx_icc_node_adj_desc imx8mm_noc_adj = {
->   * PL301 nics which are skipped/merged into PL301_MAIN
->   */
->  static struct imx_icc_node_desc nodes[] = {
-> -       DEFINE_BUS_INTERCONNECT("NOC", IMX8MM_ICN_NOC, &imx8mm_noc_adj,
-> +       DEFINE_BUS_INTERCONNECT("NOC", IMX8MM_ICN_NOC,
->                         IMX8MM_ICS_DRAM, IMX8MM_ICN_MAIN),
+> ...
 >
-> -       DEFINE_BUS_SLAVE("DRAM", IMX8MM_ICS_DRAM, &imx8mm_dram_adj),
-> -       DEFINE_BUS_SLAVE("OCRAM", IMX8MM_ICS_OCRAM, NULL),
-> +       DEFINE_BUS_SLAVE("DRAM", IMX8MM_ICS_DRAM),
-> +       DEFINE_BUS_SLAVE("OCRAM", IMX8MM_ICS_OCRAM),
->         DEFINE_BUS_MASTER("A53", IMX8MM_ICM_A53, IMX8MM_ICN_NOC),
+> > +       value = readl(sfp->padctl + IO_PADSHARE_SEL);
+> > +       switch (value) {
+> > +       case 0:
+> > +               sfp->gpios.pin_base = 0x10000;
 >
->         /* VPUMIX */
->         DEFINE_BUS_MASTER("VPU H1", IMX8MM_ICM_VPU_H1, IMX8MM_ICN_VIDEO),
->         DEFINE_BUS_MASTER("VPU G1", IMX8MM_ICM_VPU_G1, IMX8MM_ICN_VIDEO),
->         DEFINE_BUS_MASTER("VPU G2", IMX8MM_ICM_VPU_G2, IMX8MM_ICN_VIDEO),
-> -       DEFINE_BUS_INTERCONNECT("PL301_VIDEO", IMX8MM_ICN_VIDEO, NULL, IMX8MM_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_VIDEO", IMX8MM_ICN_VIDEO, IMX8MM_ICN_NOC),
+> Magic number!
 >
->         /* GPUMIX */
->         DEFINE_BUS_MASTER("GPU 2D", IMX8MM_ICM_GPU2D, IMX8MM_ICN_GPU),
->         DEFINE_BUS_MASTER("GPU 3D", IMX8MM_ICM_GPU3D, IMX8MM_ICN_GPU),
-> -       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MM_ICN_GPU, NULL, IMX8MM_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MM_ICN_GPU, IMX8MM_ICN_NOC),
+> > +               goto done;
+> > +       case 1:
+> > +               sfp->gpios.pin_base = PAD_GPIO(0);
+> > +               break;
+> > +       case 2:
+> > +               sfp->gpios.pin_base = PAD_FUNC_SHARE(72);
+> > +               break;
+> > +       case 3:
+> > +               sfp->gpios.pin_base = PAD_FUNC_SHARE(70);
+> > +               break;
+> > +       case 4: case 5: case 6:
+> > +               sfp->gpios.pin_base = PAD_FUNC_SHARE(0);
+> > +               break;
+> > +       default:
+> > +               dev_err(dev, "invalid signal group %u\n", value);
+> > +               return -EINVAL;
+> > +       }
 >
->         /* DISPLAYMIX */
->         DEFINE_BUS_MASTER("CSI", IMX8MM_ICM_CSI, IMX8MM_ICN_MIPI),
->         DEFINE_BUS_MASTER("LCDIF", IMX8MM_ICM_LCDIF, IMX8MM_ICN_MIPI),
-> -       DEFINE_BUS_INTERCONNECT("PL301_MIPI", IMX8MM_ICN_MIPI, NULL, IMX8MM_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_MIPI", IMX8MM_ICN_MIPI, IMX8MM_ICN_NOC),
+> ...
 >
->         /* HSIO */
->         DEFINE_BUS_MASTER("USB1", IMX8MM_ICM_USB1, IMX8MM_ICN_HSIO),
->         DEFINE_BUS_MASTER("USB2", IMX8MM_ICM_USB2, IMX8MM_ICN_HSIO),
->         DEFINE_BUS_MASTER("PCIE", IMX8MM_ICM_PCIE, IMX8MM_ICN_HSIO),
-> -       DEFINE_BUS_INTERCONNECT("PL301_HSIO", IMX8MM_ICN_HSIO, NULL, IMX8MM_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_HSIO", IMX8MM_ICN_HSIO, IMX8MM_ICN_NOC),
+> > +       sfp->gc.of_node = dev->of_node;
 >
->         /* Audio */
->         DEFINE_BUS_MASTER("SDMA2", IMX8MM_ICM_SDMA2, IMX8MM_ICN_AUDIO),
->         DEFINE_BUS_MASTER("SDMA3", IMX8MM_ICM_SDMA3, IMX8MM_ICN_AUDIO),
-> -       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MM_ICN_AUDIO, NULL, IMX8MM_ICN_MAIN),
-> +       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MM_ICN_AUDIO, IMX8MM_ICN_MAIN),
+> Isn't GPIO library do this for you?
+
+If it does I can't find it.
+
 >
->         /* Ethernet */
->         DEFINE_BUS_MASTER("ENET", IMX8MM_ICM_ENET, IMX8MM_ICN_ENET),
-> -       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MM_ICN_ENET, NULL, IMX8MM_ICN_MAIN),
-> +       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MM_ICN_ENET, IMX8MM_ICN_MAIN),
+> ...
 >
->         /* Other */
->         DEFINE_BUS_MASTER("SDMA1", IMX8MM_ICM_SDMA1, IMX8MM_ICN_MAIN),
-> @@ -77,7 +65,7 @@ static struct imx_icc_node_desc nodes[] = {
->         DEFINE_BUS_MASTER("USDHC1", IMX8MM_ICM_USDHC1, IMX8MM_ICN_MAIN),
->         DEFINE_BUS_MASTER("USDHC2", IMX8MM_ICM_USDHC2, IMX8MM_ICN_MAIN),
->         DEFINE_BUS_MASTER("USDHC3", IMX8MM_ICM_USDHC3, IMX8MM_ICN_MAIN),
-> -       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MM_ICN_MAIN, NULL,
-> +       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MM_ICN_MAIN,
->                         IMX8MM_ICN_NOC, IMX8MM_ICS_OCRAM),
->  };
+> > +       starfive_irq_chip.parent_device = dev;
 >
-> diff --git a/drivers/interconnect/imx/imx8mn.c b/drivers/interconnect/imx/imx8mn.c
-> index ad97e55fd4e5..8d16bd5cf006 100644
-> --- a/drivers/interconnect/imx/imx8mn.c
-> +++ b/drivers/interconnect/imx/imx8mn.c
-> @@ -11,18 +11,6 @@
+> Ditto?
 >
->  #include "imx.h"
+> ...
 >
-> -static const struct imx_icc_node_adj_desc imx8mn_dram_adj = {
-> -       .bw_mul = 1,
-> -       .bw_div = 4,
-> -       .phandle_name = "fsl,ddrc",
-> -};
-> -
-> -static const struct imx_icc_node_adj_desc imx8mn_noc_adj = {
-> -       .bw_mul = 1,
-> -       .bw_div = 4,
-> -       .main_noc = true,
-> -};
-> -
->  /*
->   * Describe bus masters, slaves and connections between them
->   *
-> @@ -30,23 +18,23 @@ static const struct imx_icc_node_adj_desc imx8mn_noc_adj = {
->   * PL301 nics which are skipped/merged into PL301_MAIN
->   */
->  static struct imx_icc_node_desc nodes[] = {
-> -       DEFINE_BUS_INTERCONNECT("NOC", IMX8MN_ICN_NOC, &imx8mn_noc_adj,
-> +       DEFINE_BUS_INTERCONNECT("NOC", IMX8MN_ICN_NOC,
->                         IMX8MN_ICS_DRAM, IMX8MN_ICN_MAIN),
+> > +       sfp->gc.irq.parents =
+> > +               devm_kcalloc(dev, 1, sizeof(*sfp->gc.irq.parents), GFP_KERNEL);
 >
-> -       DEFINE_BUS_SLAVE("DRAM", IMX8MN_ICS_DRAM, &imx8mn_dram_adj),
-> -       DEFINE_BUS_SLAVE("OCRAM", IMX8MN_ICS_OCRAM, NULL),
-> +       DEFINE_BUS_SLAVE("DRAM", IMX8MN_ICS_DRAM),
-> +       DEFINE_BUS_SLAVE("OCRAM", IMX8MN_ICS_OCRAM),
->         DEFINE_BUS_MASTER("A53", IMX8MN_ICM_A53, IMX8MN_ICN_NOC),
+> 1 -> sfp->gc.irq.num_parents
+> And hence move below line up.
 >
->         /* GPUMIX */
->         DEFINE_BUS_MASTER("GPU", IMX8MN_ICM_GPU, IMX8MN_ICN_GPU),
-> -       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MN_ICN_GPU, NULL, IMX8MN_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MN_ICN_GPU, IMX8MN_ICN_NOC),
+> > +       if (!sfp->gc.irq.parents)
+> > +               return -ENOMEM;
 >
->         /* DISPLAYMIX */
->         DEFINE_BUS_MASTER("CSI1", IMX8MN_ICM_CSI1, IMX8MN_ICN_MIPI),
->         DEFINE_BUS_MASTER("CSI2", IMX8MN_ICM_CSI2, IMX8MN_ICN_MIPI),
->         DEFINE_BUS_MASTER("ISI", IMX8MN_ICM_ISI, IMX8MN_ICN_MIPI),
->         DEFINE_BUS_MASTER("LCDIF", IMX8MN_ICM_LCDIF, IMX8MN_ICN_MIPI),
-> -       DEFINE_BUS_INTERCONNECT("PL301_MIPI", IMX8MN_ICN_MIPI, NULL, IMX8MN_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_MIPI", IMX8MN_ICN_MIPI, IMX8MN_ICN_NOC),
+> > +       sfp->gc.irq.num_parents = 1;
 >
->         /* USB goes straight to NOC */
->         DEFINE_BUS_MASTER("USB", IMX8MN_ICM_USB, IMX8MN_ICN_NOC),
-> @@ -54,11 +42,11 @@ static struct imx_icc_node_desc nodes[] = {
->         /* Audio */
->         DEFINE_BUS_MASTER("SDMA2", IMX8MN_ICM_SDMA2, IMX8MN_ICN_AUDIO),
->         DEFINE_BUS_MASTER("SDMA3", IMX8MN_ICM_SDMA3, IMX8MN_ICN_AUDIO),
-> -       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MN_ICN_AUDIO, NULL, IMX8MN_ICN_MAIN),
-> +       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MN_ICN_AUDIO, IMX8MN_ICN_MAIN),
+> ...
 >
->         /* Ethernet */
->         DEFINE_BUS_MASTER("ENET", IMX8MN_ICM_ENET, IMX8MN_ICN_ENET),
-> -       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MN_ICN_ENET, NULL, IMX8MN_ICN_MAIN),
-> +       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MN_ICN_ENET, IMX8MN_ICN_MAIN),
+> > +       dev_info(dev, "StarFive GPIO chip registered %d GPIOs\n", sfp->gc.ngpio);
 >
->         /* Other */
->         DEFINE_BUS_MASTER("SDMA1", IMX8MN_ICM_SDMA1, IMX8MN_ICN_MAIN),
-> @@ -66,7 +54,7 @@ static struct imx_icc_node_desc nodes[] = {
->         DEFINE_BUS_MASTER("USDHC1", IMX8MN_ICM_USDHC1, IMX8MN_ICN_MAIN),
->         DEFINE_BUS_MASTER("USDHC2", IMX8MN_ICM_USDHC2, IMX8MN_ICN_MAIN),
->         DEFINE_BUS_MASTER("USDHC3", IMX8MN_ICM_USDHC3, IMX8MN_ICN_MAIN),
-> -       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MN_ICN_MAIN, NULL,
-> +       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MN_ICN_MAIN
->                         IMX8MN_ICN_NOC, IMX8MN_ICS_OCRAM),
->  };
+> Redundant noise.
 >
-> diff --git a/drivers/interconnect/imx/imx8mq.c b/drivers/interconnect/imx/imx8mq.c
-> index d7768d3c6d8a..b8c36d668946 100644
-> --- a/drivers/interconnect/imx/imx8mq.c
-> +++ b/drivers/interconnect/imx/imx8mq.c
-> @@ -12,18 +12,6 @@
+> ...
 >
->  #include "imx.h"
+> > +static const struct of_device_id starfive_of_match[] = {
+> > +       { .compatible = "starfive,jh7100-pinctrl" },
 >
-> -static const struct imx_icc_node_adj_desc imx8mq_dram_adj = {
-> -       .bw_mul = 1,
-> -       .bw_div = 4,
-> -       .phandle_name = "fsl,ddrc",
-> -};
-> -
-> -static const struct imx_icc_node_adj_desc imx8mq_noc_adj = {
-> -       .bw_mul = 1,
-> -       .bw_div = 4,
-> -       .main_noc = true,
-> -};
-> -
->  /*
->   * Describe bus masters, slaves and connections between them
->   *
-> @@ -31,43 +19,42 @@ static const struct imx_icc_node_adj_desc imx8mq_noc_adj = {
->   * PL301 nics which are skipped/merged into PL301_MAIN
->   */
->  static struct imx_icc_node_desc nodes[] = {
-> -       DEFINE_BUS_INTERCONNECT("NOC", IMX8MQ_ICN_NOC, &imx8mq_noc_adj,
-> -                       IMX8MQ_ICS_DRAM, IMX8MQ_ICN_MAIN),
-> +       DEFINE_BUS_INTERCONNECT("NOC", IMX8MQ_ICN_NOC, IMX8MQ_ICS_DRAM, IMX8MQ_ICN_MAIN),
+> > +       { /* sentinel */ },
 >
-> -       DEFINE_BUS_SLAVE("DRAM", IMX8MQ_ICS_DRAM, &imx8mq_dram_adj),
-> -       DEFINE_BUS_SLAVE("OCRAM", IMX8MQ_ICS_OCRAM, NULL),
-> +       DEFINE_BUS_SLAVE("DRAM", IMX8MQ_ICS_DRAM),
-> +       DEFINE_BUS_SLAVE("OCRAM", IMX8MQ_ICS_OCRAM),
->         DEFINE_BUS_MASTER("A53", IMX8MQ_ICM_A53, IMX8MQ_ICN_NOC),
+> No comma needed for terminator entry.
 >
->         /* VPUMIX */
->         DEFINE_BUS_MASTER("VPU", IMX8MQ_ICM_VPU, IMX8MQ_ICN_VIDEO),
-> -       DEFINE_BUS_INTERCONNECT("PL301_VIDEO", IMX8MQ_ICN_VIDEO, NULL, IMX8MQ_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_VIDEO", IMX8MQ_ICN_VIDEO, IMX8MQ_ICN_NOC),
->
->         /* GPUMIX */
->         DEFINE_BUS_MASTER("GPU", IMX8MQ_ICM_GPU, IMX8MQ_ICN_GPU),
-> -       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MQ_ICN_GPU, NULL, IMX8MQ_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MQ_ICN_GPU, IMX8MQ_ICN_NOC),
->
->         /* DISPMIX (only for DCSS) */
->         DEFINE_BUS_MASTER("DC", IMX8MQ_ICM_DCSS, IMX8MQ_ICN_DCSS),
-> -       DEFINE_BUS_INTERCONNECT("PL301_DC", IMX8MQ_ICN_DCSS, NULL, IMX8MQ_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_DC", IMX8MQ_ICN_DCSS, IMX8MQ_ICN_NOC),
->
->         /* USBMIX */
->         DEFINE_BUS_MASTER("USB1", IMX8MQ_ICM_USB1, IMX8MQ_ICN_USB),
->         DEFINE_BUS_MASTER("USB2", IMX8MQ_ICM_USB2, IMX8MQ_ICN_USB),
-> -       DEFINE_BUS_INTERCONNECT("PL301_USB", IMX8MQ_ICN_USB, NULL, IMX8MQ_ICN_NOC),
-> +       DEFINE_BUS_INTERCONNECT("PL301_USB", IMX8MQ_ICN_USB, IMX8MQ_ICN_NOC),
->
->         /* PL301_DISPLAY (IPs other than DCSS, inside SUPERMIX) */
->         DEFINE_BUS_MASTER("CSI1", IMX8MQ_ICM_CSI1, IMX8MQ_ICN_DISPLAY),
->         DEFINE_BUS_MASTER("CSI2", IMX8MQ_ICM_CSI2, IMX8MQ_ICN_DISPLAY),
->         DEFINE_BUS_MASTER("LCDIF", IMX8MQ_ICM_LCDIF, IMX8MQ_ICN_DISPLAY),
-> -       DEFINE_BUS_INTERCONNECT("PL301_DISPLAY", IMX8MQ_ICN_DISPLAY, NULL, IMX8MQ_ICN_MAIN),
-> +       DEFINE_BUS_INTERCONNECT("PL301_DISPLAY", IMX8MQ_ICN_DISPLAY, IMX8MQ_ICN_MAIN),
->
->         /* AUDIO */
->         DEFINE_BUS_MASTER("SDMA2", IMX8MQ_ICM_SDMA2, IMX8MQ_ICN_AUDIO),
-> -       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MQ_ICN_AUDIO, NULL, IMX8MQ_ICN_DISPLAY),
-> +       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MQ_ICN_AUDIO, IMX8MQ_ICN_DISPLAY),
->
->         /* ENET */
->         DEFINE_BUS_MASTER("ENET", IMX8MQ_ICM_ENET, IMX8MQ_ICN_ENET),
-> -       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MQ_ICN_ENET, NULL, IMX8MQ_ICN_MAIN),
-> +       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MQ_ICN_ENET, IMX8MQ_ICN_MAIN),
->
->         /* OTHER */
->         DEFINE_BUS_MASTER("SDMA1", IMX8MQ_ICM_SDMA1, IMX8MQ_ICN_MAIN),
-> @@ -76,7 +63,7 @@ static struct imx_icc_node_desc nodes[] = {
->         DEFINE_BUS_MASTER("USDHC2", IMX8MQ_ICM_USDHC2, IMX8MQ_ICN_MAIN),
->         DEFINE_BUS_MASTER("PCIE1", IMX8MQ_ICM_PCIE1, IMX8MQ_ICN_MAIN),
->         DEFINE_BUS_MASTER("PCIE2", IMX8MQ_ICM_PCIE2, IMX8MQ_ICN_MAIN),
-> -       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MQ_ICN_MAIN, NULL,
-> +       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MQ_ICN_MAIN,
->                         IMX8MQ_ICN_NOC, IMX8MQ_ICS_OCRAM),
->  };
+> > +};
 >
 > --
-> 2.31.1
->
+> With Best Regards,
+> Andy Shevchenko
