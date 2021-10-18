@@ -2,48 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A75C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Oct 2021 16:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 066CBC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Oct 2021 17:02:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CA69B610E8
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Oct 2021 16:35:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E987E60EB2
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Oct 2021 17:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233044AbhJRQhe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Oct 2021 12:37:34 -0400
-Received: from mail-pj1-f50.google.com ([209.85.216.50]:54958 "EHLO
-        mail-pj1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbhJRQhd (ORCPT
+        id S232576AbhJRRFH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Oct 2021 13:05:07 -0400
+Received: from mail-pf1-f173.google.com ([209.85.210.173]:41893 "EHLO
+        mail-pf1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232114AbhJRRFG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Oct 2021 12:37:33 -0400
-Received: by mail-pj1-f50.google.com with SMTP id np13so12599211pjb.4;
-        Mon, 18 Oct 2021 09:35:22 -0700 (PDT)
+        Mon, 18 Oct 2021 13:05:06 -0400
+Received: by mail-pf1-f173.google.com with SMTP id y7so15192543pfg.8;
+        Mon, 18 Oct 2021 10:02:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=t0ejuGV5Mekv33Ke5yZ2hDIuNqOJx8vNh5URYlHnJto=;
-        b=6gJgbjgOz8H1lvQqWP/wAmtY+y/pqX+6z+6K3PbPnXm+FZqvHp1IfZ3forvshPWJz+
-         paM31sN7f7HAKISYLy0CQVSRH9CZWbVn1HNEOpwcaspXayWD83mUDscDhvQTOZossZwB
-         9o7z/AoBevUzOramcUFrp1FyxwqHyiUzvtEz1wenNK9NfnY/Y954tyaLw9jCuGUcUORb
-         DtJa1VD4ezGvlZiSWQQ/43uHQ6pghFWJ9CeGp00SM2m4AClNnfjBpaatLDQj5dpOFEeO
-         gXXYzAa95fdCq5SdaS0JqEfF532DdHwlhTWNQpWVpSqMrv5IRUGt208DnegCkK5pmJ88
-         igMA==
-X-Gm-Message-State: AOAM532rLKtk1+J952sNkMhbosBBnvWLhRUVNy+OMNnSw+oLmClUur5l
-        rwptyeuuLnmZEg8PQ1Ae88R2TDcYVUA+TvxtccA=
-X-Google-Smtp-Source: ABdhPJwvaMOxnoenZJe9/ILtrcFiCQv9WRvnnA+r4NIrZLRlZciSQOo/t9cppApR2frz6pS5hFOQgQA/Yz9/Zrjvuhw=
-X-Received: by 2002:a17:902:7783:b0:13d:fee6:8095 with SMTP id
- o3-20020a170902778300b0013dfee68095mr28042663pll.7.1634574921896; Mon, 18 Oct
- 2021 09:35:21 -0700 (PDT)
+        bh=pncH/JsFyTOuX1MFN8WrmdDdgAe+iOiHDqyec0cvtsI=;
+        b=jpI6zqbUv5bYjw+0TiJ9PcQLG5GIjIweGDTDknk6tm4ga9WwBQ6AVdYIe0ISeWfDF4
+         NoocRpl43EqLFWRNtbTnK3vK9YR86tICdCPUuKYNhSi1Wxke8ZpjrFa1ARcE701irSM/
+         aIE7O1rpZj65bgpwdC2QZebC6ZrZ0DNsr+xJFW5NV0Ac2fTkcQhjf8Yd40grYxRvNCuB
+         zA0Hb4+e3x17ubmSdScf+Y2g4THsbAc2R2EQN9M0mXFArGqBXKNWMM/CT3uYAMTpKLGa
+         YgdDteTV144E4JNJo0m4rsOef9metjGU2dbD27gYF4w+MZm/CbLOdgnmSOZ26aoUDD0G
+         RP5g==
+X-Gm-Message-State: AOAM530tzxhnQriLZip/hq4OAOqOXE1gw+TiOWFY4GjnqRPYtR0UxDHF
+        8PV1K/7je9Z2mvoCSNQxGf87V1go/kFlSTIfUlLUDY+pIn0=
+X-Google-Smtp-Source: ABdhPJxBbRec2jyrrXkEQANfBfNhCIEoy1Kd52kI2aZkYtXf49W7q1r7dD5sz5uKW7JBTdSKP3O7I/8meCQjtrHn/bY=
+X-Received: by 2002:a05:6a00:1707:b0:44d:47e1:9ffe with SMTP id
+ h7-20020a056a00170700b0044d47e19ffemr30112553pfc.53.1634576575002; Mon, 18
+ Oct 2021 10:02:55 -0700 (PDT)
 MIME-Version: 1.0
 References: <20211012134027.684712-1-kernel@esmil.dk> <20211012134027.684712-13-kernel@esmil.dk>
  <CAHp75Vep+i+iyJi0LAOKuer-cUZoUoB_ZrWKcmT=EB_4hOgFGw@mail.gmail.com>
  <CANBLGcxHD2vy0+tXYo5Pkqri9mV7aD9jikvs3ygBJRxF4ApLMA@mail.gmail.com>
  <CAHp75Vc65deoHbks-aPmnjEJzm3GdqFMfBCUqw4vVLVr=71Ncg@mail.gmail.com>
- <CANBLGcxriKLZ+CKUsj5sviW8FdHnWTF2koROwmAb=G2tbmE6vQ@mail.gmail.com> <CAHp75VccSDLVbs1sF_-1zghWyLKtKKV1qtxOxZZ-cS0e6S-sBA@mail.gmail.com>
-In-Reply-To: <CAHp75VccSDLVbs1sF_-1zghWyLKtKKV1qtxOxZZ-cS0e6S-sBA@mail.gmail.com>
+ <CANBLGcxriKLZ+CKUsj5sviW8FdHnWTF2koROwmAb=G2tbmE6vQ@mail.gmail.com>
+ <CAHp75VccSDLVbs1sF_-1zghWyLKtKKV1qtxOxZZ-cS0e6S-sBA@mail.gmail.com> <CAHp75VcgFRGpca-pSU9T5Oo1fT4aWQJd5EQfyZscGYx0mDMJ_Q@mail.gmail.com>
+In-Reply-To: <CAHp75VcgFRGpca-pSU9T5Oo1fT4aWQJd5EQfyZscGYx0mDMJ_Q@mail.gmail.com>
 From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Mon, 18 Oct 2021 18:35:10 +0200
-Message-ID: <CANBLGcw1qMB7r7TbuQEevOPHq94wAtZNs=yFQ3UP_DEREvGz6g@mail.gmail.com>
+Date:   Mon, 18 Oct 2021 19:02:43 +0200
+Message-ID: <CANBLGcxHLQZygX9CHsXK4aYS9m4VE5OnLNROOmvP1ps5UP-xAw@mail.gmail.com>
 Subject: Re: [PATCH v1 12/16] pinctrl: starfive: Add pinctrl driver for
  StarFive SoCs
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
@@ -79,99 +80,47 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 18 Oct 2021 at 18:24, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> On Mon, Oct 18, 2021 at 6:56 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > On Mon, 18 Oct 2021 at 17:48, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Mon, Oct 18, 2021 at 6:35 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > > > On Tue, 12 Oct 2021 at 19:03, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > On Tue, Oct 12, 2021 at 4:43 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+On Mon, 18 Oct 2021 at 18:29, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> On Mon, Oct 18, 2021 at 7:23 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Mon, Oct 18, 2021 at 6:56 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > > On Mon, 18 Oct 2021 at 17:48, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > > On Mon, Oct 18, 2021 at 6:35 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > > > > On Tue, 12 Oct 2021 at 19:03, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > > > > On Tue, Oct 12, 2021 at 4:43 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
 >
 > ...
 >
-> > > > > > +               case PIN_CONFIG_BIAS_DISABLE:
+> > > > > > > +       ret = clk_prepare_enable(clk);
+> > > > > > > +       if (ret) {
+> > > > > >
+> > > > > > > +               reset_control_deassert(rst);
+> > > > > >
+> > > > > > Use devm_add_action_or_reset().
 > > > > >
-> > > > > > +                       mask |= PAD_BIAS_MASK;
-> > > > >
-> > > > > Use it...
-> > > > >
-> > > > > > +                       value = (value & ~PAD_BIAS_MASK) | PAD_BIAS_DISABLE;
-> > > > >
-> > > > > ...here. Ditto for the similar cases in this function and elsewhere.
+> > > > > I don't see how that is better.
 > > > >
-> > > > I don't follow. How do you want me to use mask? If I did value =
-> > > > (value & ~mask) | PAD_BIAS_DISABLE; then I'd wipe the previous
-> > > > configuration. Eg. suppose the first config is the drive strength and
-> > > > second disables bias. Then on the 2nd loop mask =
-> > > > PAD_DRIVE_STRENGTH_MASK | PAD_BIAS_MASK and the drive strength value
-> > > > would be wiped.
-> > >
-> > > Collect masks and new values in temporary variables and apply them
-> > > once after the loop is done, no?
-> >
-> > But that's exactly what the code does. It merges all the config
-> > options into a single mask and value so we only need to do rmw on the
-> > register once.
->
-> Then masking the value makes no sense.
-> What you should have is simply as
->
->   mask |= FOO;
->   value |= BAR;
-
-Yeah, but then we could get into weird states if the device tree
-specifies both bias-disable and bias-pull-up by mistake. This code is
-written so that only the last valid state is chosen.
-
-
-> ...
->
-> > > > > > +       ret = clk_prepare_enable(clk);
-> > > > > > +       if (ret) {
-> > > > >
-> > > > > > +               reset_control_deassert(rst);
-> > > > >
-> > > > > Use devm_add_action_or_reset().
+> > > > Pity. The rule of thumb is to either try to use devm_*() everywhere in
+> > > > the probe, or don't use it at all. Above is the more-or-less standard
+> > > > pattern where devn_add_action_or_reset() is being used in the entire
+> > > > kernel.
 > > > >
-> > > > I don't see how that is better.
-> > >
-> > > Pity. The rule of thumb is to either try to use devm_*() everywhere in
-> > > the probe, or don't use it at all. Above is the more-or-less standard
-> > > pattern where devn_add_action_or_reset() is being used in the entire
-> > > kernel.
-> > >
-> > > > Then I'd first need to call that and
-> > > > check for errors, but just on the line below enabling the clock the
-> > > > reset line is deasserted anyway, so then the action isn't needed any
-> > > > longer. So that 3 lines of code for devm_add_action_or_reset +
-> > > > lingering unneeded action or code to remove it again vs. just the line
-> > > > above.
-> > >
-> > > Then don't use devm_*() at all. What's the point?
-> >
-> > I'm confused. So you wan't an unneeded action to linger because the
-> > probe function temporarily asserts reset for 3 lines of code?
->
-> I;m talking about clk_prepare_enable().
-
-Ok, you wrote your comment under the reset_control_deassert call. How
-would devm_add_action_or_reset for clk_prepare_enable work?
-
-> ...
->
-> > > > > > +       sfp->gc.of_node = dev->of_node;
-> > > > >
-> > > > > Isn't GPIO library do this for you?
+> > > > > Then I'd first need to call that and
+> > > > > check for errors, but just on the line below enabling the clock the
+> > > > > reset line is deasserted anyway, so then the action isn't needed any
+> > > > > longer. So that 3 lines of code for devm_add_action_or_reset +
+> > > > > lingering unneeded action or code to remove it again vs. just the line
+> > > > > above.
 > > > >
-> > > > If it does I can't find it.
+> > > > Then don't use devm_*() at all. What's the point?
 > > >
-> > > Heh... `man git grep`
-> > > Hint: `git grep -n 'of_node = .*of_node' -- drivers/gpio/gpiolib*`
+> > > I'm confused. So you wan't an unneeded action to linger because the
+> > > probe function temporarily asserts reset for 3 lines of code?
 > >
-> > That's exactly what I did.
+> > I;m talking about clk_prepare_enable().
 >
-> Now look at the result and find the correct place where it's done.
-> Btw, all hits are in the very same function.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+> Having a second look I found even problematic error paths because of
+> mixing devm_*() with non-devm_*() calls, which only assures me that
+> your ->probe() error path is broken and should be revisited.
+
+So do you want to expand on that now or should I send v2 first?
