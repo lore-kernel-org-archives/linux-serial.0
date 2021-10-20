@@ -2,167 +2,200 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C84C4C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Oct 2021 19:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47983C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Oct 2021 19:39:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A508860ED3
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Oct 2021 19:27:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2DED760FED
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Oct 2021 19:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231622AbhJTT31 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Oct 2021 15:29:27 -0400
-Received: from mail-eopbgr80120.outbound.protection.outlook.com ([40.107.8.120]:1212
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231612AbhJTT30 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Oct 2021 15:29:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K1reiMRBXuS9Iwp485VuPgtmoQ+kIdx3Tixqd6LxNPXJDlGXXB44FBlEwJyKDavjjV9r1Xub2aDgW3OwjXdqinTZQoA3IdRin2t2ziY9j1AKUdJQWWxWYVTs3ahiCbTbOhXwAd1E9ejQ1WhTXnLVNZqpqjHIK0QHunrpXEhud9MENmC+o2MYMfB3f9BPGoPaQ50KzjlJXWFPhNRQvfPyemY44Ih6PVtilnpQWjk/E7r8niAMfp5eBYwh989OrbwlikQX5EJ0CG2sKEYgb2cHDnFn1fpCR1c082yOU6WUpPOJxsYC59sypa8BRx2Fvofl+KoyMC5GFTT2w/hC0qE8Gg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uk4Aq+3imqvr/LIjNMIF8PPZuSEipaDzcqXRp6mLp00=;
- b=Q4Oq0dW9vGYSiOtd883hgbv42fPhnZIxdugUyPCL8fVYCIiHJ5rs3PNShP+wC2KG49l06bu1pbea2khSpZua4/ZjKQW/z1uWqhr2OZnK2qkhDxWFXTtUH77jt2JUTl7SlsAQ9CZM5EOHtPVgVxr3y+kUm0mbMlFN7uvtN7+En1Ic3r2YyToKnWhyVGZYYS+yLBGEwCA7sRH++1zSAvaDN5ObUQSTmMgt1pkkYGPYzy1Iwgv5/Qyd8pZWTp5QngWqmHeOeWAjncrvBP/zEcJ7Vqv0iYdV7+So/YOnDsZYVdWhKf+gXyTMIe3xJLzh/d+mrPjCbPXjHXBf7f92WdYAIA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
- dkim=pass header.d=toradex.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uk4Aq+3imqvr/LIjNMIF8PPZuSEipaDzcqXRp6mLp00=;
- b=hF1n65pSIOzKcByyLpF9wZkJ2Z2arVIPVjJVUOE9pOSG7xA4nMPM/mz5RJnAX43+UL1B4tWopKpu+kTREJgW6OWEK8d97kldYL1GOmAYROSJwpfDuRj7EH+qxeqSwpsE1yhz4/d+b/9U22F7FJ4PU35seiHcEkFwhJESyCOXnBg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=toradex.com;
-Received: from DBAPR05MB7445.eurprd05.prod.outlook.com (2603:10a6:10:1a0::8)
- by DB7PR05MB5338.eurprd05.prod.outlook.com (2603:10a6:10:64::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.15; Wed, 20 Oct
- 2021 19:27:07 +0000
-Received: from DBAPR05MB7445.eurprd05.prod.outlook.com
- ([fe80::98f8:53ac:8110:c783]) by DBAPR05MB7445.eurprd05.prod.outlook.com
- ([fe80::98f8:53ac:8110:c783%3]) with mapi id 15.20.4628.016; Wed, 20 Oct 2021
- 19:27:07 +0000
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S231524AbhJTTlw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Oct 2021 15:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231604AbhJTTlw (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 20 Oct 2021 15:41:52 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9EEC06161C
+        for <linux-serial@vger.kernel.org>; Wed, 20 Oct 2021 12:39:37 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mdHQq-0005D2-Bl; Wed, 20 Oct 2021 21:39:24 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mdHQo-0006ar-E2; Wed, 20 Oct 2021 21:39:22 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mdHQo-0005K5-Ci; Wed, 20 Oct 2021 21:39:22 +0200
+Date:   Wed, 20 Oct 2021 21:39:21 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] serial: imx: disable console clocks on unregister
-Date:   Wed, 20 Oct 2021 21:26:43 +0200
-Message-Id: <20211020192643.476895-3-francesco.dolcini@toradex.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211020192643.476895-1-francesco.dolcini@toradex.com>
+        NXP Linux Team <linux-imx@nxp.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 1/2] serial: imx: fix detach/attach of serial console
+Message-ID: <20211020193921.7fofxvnhgjjadt5u@pengutronix.de>
 References: <20211020192643.476895-1-francesco.dolcini@toradex.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: GV0P278CA0062.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:710:2a::13) To DBAPR05MB7445.eurprd05.prod.outlook.com
- (2603:10a6:10:1a0::8)
+ <20211020192643.476895-2-francesco.dolcini@toradex.com>
 MIME-Version: 1.0
-Received: from francesco-nb.toradex.int (93.49.2.63) by GV0P278CA0062.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:2a::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18 via Frontend Transport; Wed, 20 Oct 2021 19:27:07 +0000
-Received: by francesco-nb.toradex.int (Postfix, from userid 1000)       id 069B410A3948; Wed, 20 Oct 2021 21:27:06 +0200 (CEST)
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aed2924a-e91c-438a-4dac-08d993ff9ad1
-X-MS-TrafficTypeDiagnostic: DB7PR05MB5338:
-X-Microsoft-Antispam-PRVS: <DB7PR05MB5338F4168EEF95DE36137221E2BE9@DB7PR05MB5338.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mORYzimFQMJ4l3L52JsjHnHzDCEm9w3oNht+ltGIMYNn7uW4huTvJn2gBDXQEBrUzHmddlvMcyiLOBM2DaINPZqDgJt3a3EHnmsing6ppBXHvUFPaSM/w2t4iUmVjRz7HdbP6omt96ET7l/zAjQUW08MOAaPNKhrNVB5DESHTp/2T+lxRY2a9m/PQ+Bo5Uto78awI3YyP6+1LJepbjRcKYIFlf2p7j5UT8LUN3a/Z3yQjCPDlG1IhZafriJ41qaBwpEM37ml/e/BiEO/Ux+2p0+nOatdmx/Lgfntubdve8H87waX1bK1uBir4ZwHs3xdwpX2Qh/p0oKn3sD44POVWHS9PgbRXBJ2wawywpTPWjAy6BO6wdOBvjMbuT5vURa16p02jpOJT5DybgpKaBNn7SVaHF30Tc0pn6NHEsvU3k84aKZNV2bc7PdX3fTf7NtgumE9WOWnPAHoelBx9qbpWCoBEjqvM+g2SShFagy9UJqoYdAoeuoFnrgu6u0WdCpO+lk0Y+Tb943ZYnwpCO84P12qR3wwFCbFOZ4KZNUcDzM+L05b+E8gFa3QcSJdGCmKh9JbTyzYCbZbOXvhO+P4le/QjbClj/1QGEx42guWafJq4p9591ED6Hf5jkTxmu5VlZah3bAYR9wCDzlKYbtFQJpQJsCEfTLSOwxlZmIPRGoGwfaoqK8zG0f9/GWQh9S8e3y1LWEMEezFJurROKnM3w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR05MB7445.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39850400004)(346002)(136003)(366004)(396003)(38100700002)(38350700002)(86362001)(66556008)(66946007)(7416002)(6666004)(186003)(66476007)(1076003)(83380400001)(508600001)(2906002)(44832011)(42186006)(316002)(36756003)(6266002)(52116002)(8936002)(5660300002)(4326008)(26005)(110136005)(8676002)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UdWyOD67mEi3ZChrlf8Mfc5da8b3wN77ZeRqwC/lMy5Hkz4QJEaFqKEfxqIc?=
- =?us-ascii?Q?x6AZqL3YdiXewaKO0nm7tfo0RyXT82+LSobJku3MSMRdFWVNbacie18rWMr1?=
- =?us-ascii?Q?hdzLEdX4vhIptN4iOx1UGPlsVVscIZFh/YQ5Ut6TIxfmR/kg5ZNbRtZcv0N3?=
- =?us-ascii?Q?+7vXg6jFuPSHtcQt4kkeFVCVXSIBVOI3BrBEhDWEtGegoFMlmKwpTfR32UjD?=
- =?us-ascii?Q?LIapCyQgQVVLbdvvFLIl+gv28dlYFkCfloDmcnMUF+CthdcTwiqfGzs7CBCx?=
- =?us-ascii?Q?hch9gFtTfNW0ZDR4J7QfOZQBv52Cz3RjGlGpRn1sYbVLsBhsNukzf42VQgJZ?=
- =?us-ascii?Q?ZqyywrTQpg2fyP50DGlo46ihSXUS8WAru/Nvi2ILL4KsrgaCA14KpizdbRPW?=
- =?us-ascii?Q?EyGZMcMCx9busc31F7hC/eRX04nOu0vbrZqYs3i/dHnx9sK+SkkNPnqEBZvP?=
- =?us-ascii?Q?fSgkzCqz+L8wNw2mVLXVmfWAwfANjg+sWBu92jewbrgjH9Dgg4pgbIvuKS5/?=
- =?us-ascii?Q?L1QNyzQsplGGkO7zcpJ5symq2gXzlBs+f6zblXYzYo2YpgcknIK7kcSaj9sA?=
- =?us-ascii?Q?hyYWQkSkSkXSlOxzJizThx3U6mK9Y+y2nG4sqbCHXMLUbUI/6LOeE+qz0llk?=
- =?us-ascii?Q?Qk/I07a0zpjqdeOeM88clBled9zcTqEic4iCMvf8/BZdP5yspZAa4ClwAlOC?=
- =?us-ascii?Q?ZvdH3C/rxwJlHLVK+xss51HqboC2N66msmCbkzZKA032qHxLcZKZxLqPNUgk?=
- =?us-ascii?Q?aBCxe81U7Qs9HN+GCnY1EikqrqgxNniZ4nN7Z0swNcybiLcO9xO7Pa2ySkPH?=
- =?us-ascii?Q?1ZedqbgDur9+FLRqTTQQr6ngHbPURL51jIBG2CGc5hSx3ZXkK8e9zMw0Fzmg?=
- =?us-ascii?Q?kwPto9FdjJo68k04v+mkww1GZmKZy1LuJ2qwkZq3qClsg6ZTKhE5etyMTaCW?=
- =?us-ascii?Q?wi+gCHbbUkR+rGV8gX/YyvA6ZluHPJfxDcV+U9zP2tNZFuERpBXx+MuA0OE8?=
- =?us-ascii?Q?a1+r37bxn8efATOthiblPiCgBKK+EXt7wzaTkyEJUKywld89CvumgJqvByXj?=
- =?us-ascii?Q?1D9mDVXWflA3d8ndeBQeJnIL94Hb8m+Z5pr6hNrujgOIcGeJ8Ze0wEKrYTT7?=
- =?us-ascii?Q?5hfAned2AW+ja1cGvJhOqBjDiqoEffrGSld5H3oHrxMCkFZSb6I2Gy/Y3mvc?=
- =?us-ascii?Q?GJY5LS8HbaXocpXQ5zNqjvGSSakXdYz8ZF5Kc1DtZy0Qmf/iscVarZZZeaFZ?=
- =?us-ascii?Q?JMV29vc1UfV3QbSUBzNbfe83BlVF5K4xtFbgbWNJwPqxfEJTuW3AD9m1CXtz?=
- =?us-ascii?Q?N5xInCB04MxOTANu9MHpn7FDFNcTnxfpjU8TDm6DCmQi2Wt+kqKMjuGc+d7o?=
- =?us-ascii?Q?3RL757USJxAXN7VpWhZkIXjJ8WxIK0qQugJTuj0siNNIZvScEPLRfMgdl5Km?=
- =?us-ascii?Q?1SvnpkgSVYL7q1M+Ov85nRZTG8tIEci8AgXzfGkSASBmy2u94arDu4QavgQm?=
- =?us-ascii?Q?sfhtH0l+qHjc5AGSW7Xcd9PVTm86G97fpLjWekWCwzUDcZfO6PgJLL1Su5zR?=
- =?us-ascii?Q?9dJT8SOXjKANSH/bM5hlpNTEw48DpDpDySP+ghQNOSBb6l5Ad9cE7nlfNjaO?=
- =?us-ascii?Q?p2ZKN8H0o9DsRvqq5B/HkT8uNyAXlirbPS8TdHbTM3c/afDBXlBc7IPASid4?=
- =?us-ascii?Q?9VvZoQ=3D=3D?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aed2924a-e91c-438a-4dac-08d993ff9ad1
-X-MS-Exchange-CrossTenant-AuthSource: DBAPR05MB7445.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2021 19:27:07.3704
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WA7vn/lht/mTi8MZorIF2nBzJwkPJAnIXUA5ATW6Q/liGj9roII6EdFIkqOh3v04N7+uSaaDpWUcx038zh7ybpXqpwViKCBGJHNfESr6Kpg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB5338
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jgyp6rxza6t5nhtz"
+Content-Disposition: inline
+In-Reply-To: <20211020192643.476895-2-francesco.dolcini@toradex.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-During console setup imx_uart_console_setup() enables clocks, but they
-are never disabled when the console is unregistered, this leads to
-clk_prepare_enable() being called multiple times without a matching
-clk_disable_unprepare() in case of console unregister.
 
-Ensure that clock enable/disable are balanced adding
-clk_disable_unprepare() in the console exit callback.
+--jgyp6rxza6t5nhtz
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
----
- drivers/tty/serial/imx.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+On Wed, Oct 20, 2021 at 09:26:42PM +0200, Francesco Dolcini wrote:
+> From: Stefan Agner <stefan@agner.ch>
+>=20
+> If the device used as a serial console gets detached/attached at runtime,
+> register_console() will try to call imx_uart_setup_console(), but this
+> is not possible since it is marked as __init.
+>=20
+> For instance
+>=20
+>   # cat /sys/devices/virtual/tty/console/active
+>   tty1 ttymxc0
+>   # echo -n N > /sys/devices/virtual/tty/console/subsystem/ttymxc0/console
+>   # echo -n Y > /sys/devices/virtual/tty/console/subsystem/ttymxc0/console
+>=20
+> [   73.166649] 8<--- cut here ---
+> [   73.167005] Unable to handle kernel paging request at virtual address =
+c154d928
+> [   73.167601] pgd =3D 55433e84
+> [   73.167875] [c154d928] *pgd=3D8141941e(bad)
+> [   73.168304] Internal error: Oops: 8000000d [#1] SMP ARM
+> [   73.168429] Modules linked in:
+> [   73.168522] CPU: 0 PID: 536 Comm: sh Not tainted 5.15.0-rc6-00056-g396=
+8ddcf05fb #3
+> [   73.168675] Hardware name: Freescale i.MX6 Ultralite (Device Tree)
+> [   73.168791] PC is at imx_uart_console_setup+0x0/0x238
+> [   73.168927] LR is at try_enable_new_console+0x98/0x124
+> [   73.169056] pc : [<c154d928>]    lr : [<c0196f44>]    psr: a0000013
+> [   73.169178] sp : c2ef5e70  ip : 00000000  fp : 00000000
+> [   73.169281] r10: 00000000  r9 : c02cf970  r8 : 00000000
+> [   73.169389] r7 : 00000001  r6 : 00000001  r5 : c1760164  r4 : c1e0fb08
+> [   73.169512] r3 : c154d928  r2 : 00000000  r1 : efffcbd1  r0 : c1760164
+> [   73.169641] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segme=
+nt none
+> [   73.169782] Control: 10c5387d  Table: 8345406a  DAC: 00000051
+> [   73.169895] Register r0 information: non-slab/vmalloc memory
+> [   73.170032] Register r1 information: non-slab/vmalloc memory
+> [   73.170158] Register r2 information: NULL pointer
+> [   73.170273] Register r3 information: non-slab/vmalloc memory
+> [   73.170397] Register r4 information: non-slab/vmalloc memory
+> [   73.170521] Register r5 information: non-slab/vmalloc memory
+> [   73.170647] Register r6 information: non-paged memory
+> [   73.170771] Register r7 information: non-paged memory
+> [   73.170892] Register r8 information: NULL pointer
+> [   73.171009] Register r9 information: non-slab/vmalloc memory
+> [   73.171142] Register r10 information: NULL pointer
+> [   73.171259] Register r11 information: NULL pointer
+> [   73.171375] Register r12 information: NULL pointer
+> [   73.171494] Process sh (pid: 536, stack limit =3D 0xcd1ba82f)
+> [   73.171621] Stack: (0xc2ef5e70 to 0xc2ef6000)
+> [   73.171731] 5e60:                                     ???????? ???????=
+? ???????? ????????
+> [   73.171899] 5e80: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.172059] 5ea0: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.172217] 5ec0: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.172377] 5ee0: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.172537] 5f00: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.172698] 5f20: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.172856] 5f40: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.173016] 5f60: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.173177] 5f80: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.173336] 5fa0: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.173496] 5fc0: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.173654] 5fe0: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.173826] [<c0196f44>] (try_enable_new_console) from [<c01984a8>] (r=
+egister_console+0x10c/0x2ec)
+> [   73.174053] [<c01984a8>] (register_console) from [<c06e2c90>] (console=
+_store+0x14c/0x168)
+> [   73.174262] [<c06e2c90>] (console_store) from [<c0383718>] (kernfs_fop=
+_write_iter+0x110/0x1cc)
+> [   73.174470] [<c0383718>] (kernfs_fop_write_iter) from [<c02cf5f4>] (vf=
+s_write+0x31c/0x548)
+> [   73.174679] [<c02cf5f4>] (vfs_write) from [<c02cf970>] (ksys_write+0x6=
+0/0xec)
+> [   73.174863] [<c02cf970>] (ksys_write) from [<c0100080>] (ret_fast_sysc=
+all+0x0/0x1c)
+> [   73.175052] Exception stack(0xc2ef5fa8 to 0xc2ef5ff0)
+> [   73.175167] 5fa0:                   ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.175327] 5fc0: ???????? ???????? ???????? ???????? ???????? ???????=
+? ???????? ????????
+> [   73.175486] 5fe0: ???????? ???????? ???????? ????????
+> [   73.175608] Code: 00000000 00000000 00000000 00000000 (00000000)
+> [   73.175744] ---[ end trace 9b75121265109bf1 ]---
+>=20
+> A similar issue could be triggered unbinding/binding the serial console
+> device [*].
+>=20
+> Drop __init so that imx_uart_setup_console() can be safely called at
+> runtime.
+>=20
+> [*] https://lore.kernel.org/all/20181114174940.7865-3-stefan@agner.ch/
+>=20
+> Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial device=
+ for console")
+> Signed-off-by: Stefan Agner <stefan@agner.ch>
+> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 51a9f9423b1a..90f82e6c54e4 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -2124,12 +2124,24 @@ imx_uart_console_setup(struct console *co, char *options)
- 	return retval;
- }
- 
-+static int
-+imx_uart_console_exit(struct console *co)
-+{
-+	struct imx_port *sport = imx_uart_ports[co->index];
-+
-+	clk_disable_unprepare(sport->clk_per);
-+	clk_disable_unprepare(sport->clk_ipg);
-+
-+	return 0;
-+}
-+
- static struct uart_driver imx_uart_uart_driver;
- static struct console imx_uart_console = {
- 	.name		= DEV_NAME,
- 	.write		= imx_uart_console_write,
- 	.device		= uart_console_device,
- 	.setup		= imx_uart_console_setup,
-+	.exit		= imx_uart_console_exit,
- 	.flags		= CON_PRINTBUFFER,
- 	.index		= -1,
- 	.data		= &imx_uart_uart_driver,
--- 
-2.25.1
+Thanks
+Uwe
 
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--jgyp6rxza6t5nhtz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFwcGUACgkQwfwUeK3K
+7AlzsAgAj71QeD7ML3yoaettATnFzeluFWpv4tvf7/BicZhCTovrl/PZZ1p1L22/
+Rlh8UFOkE4TMm+geNnH/U27BDvp8C+rIJSRDWNyxqtEQfa07nA+YIS/MahjA+DgF
+PHpE1Y5vpZWnoojKCXn4RnTlhiCDiKP+9OUq/LGZGqnommjUgnxbM0wn6FeFOKiu
+wEDrSzUd+ySSKBaWP/z0T5Z8RwJFUZTFx2V+4aPuu1Bg1bwOt1tOEIz7mUC4I+ap
+3Ah0c8qNKdVEeLU8+NzzKbi5GPeXys9ngbUtrAY2/mUI97m/XnyA8Bm8yO4s8izp
+7kT0wYUkH09lbyVPz+176wsJhdaa7w==
+=zMJ1
+-----END PGP SIGNATURE-----
+
+--jgyp6rxza6t5nhtz--
