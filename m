@@ -2,179 +2,155 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3B8C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Oct 2021 15:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F66C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Oct 2021 19:27:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 55985611EF
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Oct 2021 15:04:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE10B60E74
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Oct 2021 19:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230396AbhJTPGT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Oct 2021 11:06:19 -0400
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:57610 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230372AbhJTPGQ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Oct 2021 11:06:16 -0400
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19KD3Twi008021;
-        Wed, 20 Oct 2021 17:03:53 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=JtIR+oBYy0unpZqp/ZI74GRw2a+uR2l8SS7NVOH8cVc=;
- b=IxwvK7uUj8PkF/HN9XCVbCmtKWgCfa77G5Ns2PEc15wjWiDWnedZ17u5fENhgd9MILrc
- 7oTBCllYkxhT5IMoqGfQP9ON9RSSo0MXu8ZRQ+gBEcGwDy8NyHNaPxcQvKUY8pZWhbyw
- tumioTgIyjR8rGGWGR0yD0ld+WjuIGK46NBrFQ/lUksgkLkZG4wFVHvuzDjNTyoUTEb2
- YUUBG6apHsqmhXgqODtx8hKvFZmAzqVq23asT4SM/KZ1pqZh1aumyy3oSHiZAWxs/jcR
- yjqyHsts++jTuPKQuuNLBAUdq9Tku2fv5P62yzVpVcEAHqtWfUmDGSXBKDSORZvatncF eA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 3btknp8psb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Oct 2021 17:03:53 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D66AB100034;
-        Wed, 20 Oct 2021 17:03:52 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CE3B222A6E8;
-        Wed, 20 Oct 2021 17:03:52 +0200 (CEST)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 20 Oct 2021 17:03:52
- +0200
-From:   Erwan Le Ray <erwan.leray@foss.st.com>
+        id S231532AbhJTT3U (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Oct 2021 15:29:20 -0400
+Received: from mail-eopbgr80108.outbound.protection.outlook.com ([40.107.8.108]:39809
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231530AbhJTT3U (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 20 Oct 2021 15:29:20 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QsmtMYi3rhlesbOG5bxA/kEnLiuipmsBKoZUcnstcrVeF/ybefOPTfCsHGA5K/Aa9x/Op/6Z+4W3Pyo3R9jsEzCtScwSCLRLwIcJa8quSW2vSXm1NkHiMza83M4kYbNIR573v28QuiQZ4MXk3k1iA98C4Ot+44pvHYWJdEAS3a49gspP9b3wZ2BOmzNEzgZ8xw6N6V0lLoOQYb06ixg4rSWp9TXEJNj0FWIQqiLuN7Ypo8h8g3oq4w3KcqGayE3eFKLMEKXCnmKOJw/IfQZGbasyFHajeIv2n+tTDcL+C0cn/Xe48lLZN46ra/Q3Yn6LBE3ltCGFgGH8jdF6WdRwaw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uc87Kk94kEjAHOPxaBV7NNYnRvwV3gaEvrsmBabUOew=;
+ b=ZoSJ4U2a6Q9wMqH2PJK4aB0cXRTxEQwiEWBirPQAlplSJQIkliqmCdFG2Y+fNHru1T0CCEhuVC0NrBLd+X5LQ8u7397JyjMVwMknzuRBKxyex4qNSOCXYi9EFyOSp7Tp3GakSwWozeADqLWeGQ2Vav4ZjuuNLAWMy+PFhPqt9F1KCtd00KLSLbI29JKFcluq4rVKlAGiwHBDDht73pGkLeGOfRwLz1NH6gTdI+jv1E+aYBOWvekMcCvb4BoylGC+iyPVvPnjsI/kLXGJAuHL5SbmQbJLFEjtJukpogBpCbv2GueO8uE2OyC41vmnNje+bnifOMn4i3Q5zfvaG4CCfA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uc87Kk94kEjAHOPxaBV7NNYnRvwV3gaEvrsmBabUOew=;
+ b=YlWRXeeyV3ccB+anfpTaj8WBBd02lbRuiXLbnZYDrD1AH2Bw1V4OeHlS6W9xzZ8lTcvtI4e4dp+qBWqqrXP8OSK1Iq5/GwimPMlb2X9eoSp8mheXTDmp/9Wrap2fXprS1Tr+6QwhVFubSa5gZGjuyaDObi0eVqO5HCaoPOhXklw=
+Authentication-Results: agner.ch; dkim=none (message not signed)
+ header.d=none;agner.ch; dmarc=none action=none header.from=toradex.com;
+Received: from DBAPR05MB7445.eurprd05.prod.outlook.com (2603:10a6:10:1a0::8)
+ by DBAPR05MB7032.eurprd05.prod.outlook.com (2603:10a6:10:183::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.17; Wed, 20 Oct
+ 2021 19:27:02 +0000
+Received: from DBAPR05MB7445.eurprd05.prod.outlook.com
+ ([fe80::98f8:53ac:8110:c783]) by DBAPR05MB7445.eurprd05.prod.outlook.com
+ ([fe80::98f8:53ac:8110:c783%3]) with mapi id 15.20.4628.016; Wed, 20 Oct 2021
+ 19:27:02 +0000
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>
-Subject: [PATCH 3/3] serial: stm32: update throttle and unthrottle ops for dma mode
-Date:   Wed, 20 Oct 2021 17:03:32 +0200
-Message-ID: <20211020150332.10214-4-erwan.leray@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211020150332.10214-1-erwan.leray@foss.st.com>
-References: <20211020150332.10214-1-erwan.leray@foss.st.com>
-MIME-Version: 1.0
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de,
+        Stefan Agner <stefan@agner.ch>
+Subject: [PATCH v2 0/2] serial: imx: fix unregister/register console
+Date:   Wed, 20 Oct 2021 21:26:41 +0200
+Message-Id: <20211020192643.476895-1-francesco.dolcini@toradex.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG1NODE3.st.com (10.75.127.3) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-20_05,2021-10-20_02,2020-04-07_01
+X-ClientProxiedBy: GV0P278CA0011.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:26::21) To DBAPR05MB7445.eurprd05.prod.outlook.com
+ (2603:10a6:10:1a0::8)
+MIME-Version: 1.0
+Received: from francesco-nb.toradex.int (93.49.2.63) by GV0P278CA0011.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:26::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18 via Frontend Transport; Wed, 20 Oct 2021 19:27:02 +0000
+Received: by francesco-nb.toradex.int (Postfix, from userid 1000)       id 3899C10A393E; Wed, 20 Oct 2021 21:27:01 +0200 (CEST)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 12ca5afc-286f-4095-5d67-08d993ff97cf
+X-MS-TrafficTypeDiagnostic: DBAPR05MB7032:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DBAPR05MB70322F85B1486D08F6F6E47EE2BE9@DBAPR05MB7032.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qpXfkK2Ghr8rRFnD1S9hSw7sjxaipqFAea+M011DRZDWh1PyOrUTXn3EKMKqZJLrLbMgRL69L61+/mQfs2NJp2Rd4I+vDZQZ59gGGmhaHr+JFC2eTanxr/CDgK7ksLRJn5BilsRhfe0BY8l3sOHIvMwTsUWPSdq1hP2R8iSOgGvH7oPHUbrOf6i5W2CXNjAjbq8xbz6lTAfkiw/nRG0gucs3MTFczheeDfOndSxiNwEP+xL87ZxkaaAnIGZgooOggHb8WinD00L5OQk4PlOvcb/jGYEw3JXBSuCTJlvZ1jCrXS76unvXVt/zId3tbUTpOH3Gt42fdaNWq7XT2XthiN1b7xCxTBwLehIo9xGmUHaONvz56l1yVuxphaEdho+tEMkFXyCaXGtYcslVQqZ4g+hpiYxbDWjJfgakDUcP22BS1PQ32I+/85Ol2ldRphol0nZNGkQncd2I33nyr1W6bhX1NDexF4USsCdPhFfHMTF6w+OZxZaVVueqs5BYB4o7A29uF7LNugRtWXGkVEF7HeRhMmtRNgWlCiKHcrF2T3ovnyEPqE1prhIvQ9aNoeb3san+N9xZ34wj6g/cfUjNnDP17oiZoXxHiYzu8zlQRkJGVA0A9OaZCa5AUHoLCqeXq+7xy0wvzDOo38esFN3CgUJlmaIV9XylgxbPdYB/8YH7wWtCb8exAmE9467NXZQEJXwE/fD8sdEMHSiUKl1K63wuDtIChwLGhdSohhpw5y3kUYKXwhJSnrJrLmO7y8xMw26UVyX9PpXhD196DTew0Lh7BxVjX/cAxQwhCpu4bbo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR05MB7445.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(42186006)(8676002)(966005)(38350700002)(52116002)(8936002)(54906003)(7416002)(316002)(508600001)(6666004)(26005)(38100700002)(83380400001)(2906002)(6266002)(110136005)(36756003)(5660300002)(2616005)(66556008)(66946007)(66476007)(4326008)(186003)(1076003)(44832011)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0V9olVlzwv19mW40ZkztAaDxYEqIwqkEAS+5wEyFt0G08g7fm17MU8J7y+Ys?=
+ =?us-ascii?Q?bwTtcX+50cjlvfUSsFPepWzXd/BthJAZAuAlDA1R/zVSKzP8PWaTqoz/Vmng?=
+ =?us-ascii?Q?CdBTXdQIP3C88TcTChNE8q6p0bsHG6LwTxrXLLXqMud4Zm53xHPJJ3JDa+7/?=
+ =?us-ascii?Q?Y6fDR1FlcD5POAhZJ+pBkO/thBZ50R55tci9xaSDG5yLP+HXGbvv7SGRv8s/?=
+ =?us-ascii?Q?YPekDdkh+zzuspDfbsKakiDV8aHKeCB/3xgixQ/1xxKCU8l+WAHPQPpleRBt?=
+ =?us-ascii?Q?ILBXS/CdIyI4D++c5HS8wIB8itMm/F+YbIvvjExDhoWRUh9LPZCgy3/PUJ5z?=
+ =?us-ascii?Q?99CBJ+j2oRJqOp9Z7ggW1wIPsmzUAh5lKFT2qHWjrfRjqBHKaOY6CYsEDlW1?=
+ =?us-ascii?Q?MJKpN8IcrNoOp9rXcv2dp7ZZ5Q55FRAPvOzwEEbooIdyltqy0GCDC9JLbPfs?=
+ =?us-ascii?Q?ngg4x1XuDP4GgfVoRMmOhqUwZ5PNZZiDrvdttP962eRazonUYhKQk273RtAm?=
+ =?us-ascii?Q?FIMF25MW/u1NRWFCL7clJB3WFXob73swIn6iXIGXqXOhotmpaXM1xm7aSVWl?=
+ =?us-ascii?Q?6lE20QHpsbMQLRmmQu7FRw3ZjOlNM4eWoQzFHpyBvsMcYkqwF/DweRe4STlC?=
+ =?us-ascii?Q?gwA32EeBpweQJwMxY61UwiXGTxrgKtiUZ2onXxLAxKESVnGmCdneKSKh0bIs?=
+ =?us-ascii?Q?VAeg5BDEkqub4fJcTKZeMkFpaCLfqCW6CpRrWdUs9Vzz1Jli5p4VsCgCos9c?=
+ =?us-ascii?Q?Iu5ipJcjafwWocMDA0haSiXn1/wecpqUEbtQwY/lrv8CL7LjGbiUBk7E0gpf?=
+ =?us-ascii?Q?WJ8tgNLwYKS7QDRCguMSdhNlzQQrlhSD+aoemb+vdXxNL9LRf1Ni3Yyj0fvH?=
+ =?us-ascii?Q?TM4oxZhxTOy/KI9EWZqUX2eyRK6e1uVBmZruoCPDK1l/dgChYaUSvCdXeYlw?=
+ =?us-ascii?Q?jIgPuvsLbw1L+e3z3R6KJz61GErY4Ib7yfmSOsct94eg8F5r6CJoKz8Qd163?=
+ =?us-ascii?Q?3GXr4/IgzDxeqKbQXxdEtRf5hYSbuSod7wI+2tsEOFetJGyOZY4puoiGTJQr?=
+ =?us-ascii?Q?w9TgvK1eA1p9r3ZSSFxafDdteSa5cT55BnDY8cRzTszWVYggFQwZNIDQyJSV?=
+ =?us-ascii?Q?9pELfKlUUaRcBTrGBPoQRueyRQNWqpW8x+JcnSNdDD+kdH/J6zTjqtmmznf5?=
+ =?us-ascii?Q?3iS1hVZXkJEDls/CFOqNgNhshHXEEztVu6xZ+4kUa4cSQ5tVK8t0UdF8YMi1?=
+ =?us-ascii?Q?3KYMVHxE6GwFdRwWL47Mvtkh9FnYzI5fMiBZas2eNDI2xk/FG5ll3WXRDuFP?=
+ =?us-ascii?Q?HZDLg0mrU0j9eMGh0YX0rXW6?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12ca5afc-286f-4095-5d67-08d993ff97cf
+X-MS-Exchange-CrossTenant-AuthSource: DBAPR05MB7445.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2021 19:27:02.3215
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LhljivYMr0Rx0GFXEkidzzaNMYwtrqCYVoj/1EMFCkw1wy1NfVkc+WQ/Ik2NUmCGw4pUYriwizORfA3IhxCCqKU8dNwxcOg2Q9eUmgd2F5o=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR05MB7032
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Disable DMA request line (if enabled) to switch in PIO mode in throttle
-ops, so the RX data gets queues into the FIFO. The hardware flow control
-is triggered when the RX FIFO is full.
+Hi,
+here a couple of fixes to properly handle imx serial console
+unregister/register at runtime.
 
-Switch back to DMA mode (re-enable DMA request line) in unthrottle ops.
-Hardware flow control is stopped when FIFO is not full anymore.
+The patch from Stefan was already posted years ago but never merged [1],
+however is still valid and it's pretty easy to trigger the problem. We have
+this patch in our kernel tree since 3 years, but for some reason we never
+managed to upstream it.
 
-Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
-Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+As correctly wrote by Uwe [2] this issue affects multiple drivers, I could
+provide a patch for those, but I will not have any way to test it.
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index cfdda35499e6..7fd192e1e15d 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -577,9 +577,12 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
- 	 * rx errors in dma mode has to be handled ASAP to avoid overrun as the DMA request
- 	 * line has been masked by HW and rx data are stacking in FIFO.
- 	 */
--	if (((sr & USART_SR_RXNE) && !stm32_usart_rx_dma_enabled(port)) ||
--	    ((sr & USART_SR_ERR_MASK) && stm32_usart_rx_dma_enabled(port)))
--		stm32_usart_receive_chars(port, false);
-+	if (!stm32_port->throttled) {
-+		if (((sr & USART_SR_RXNE) && !stm32_usart_rx_dma_enabled(port)) ||
-+		    ((sr & USART_SR_ERR_MASK) && stm32_usart_rx_dma_enabled(port))) {
-+			stm32_usart_receive_chars(port, false);
-+		}
-+	}
+The second patch is required to have a balanced clock enable/disable
+when doing console register/unregister.
+
+The issue is present at least since
+a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
+
+[1] https://marc.info/?l=linux-serial&m=154221779312036&w=2
+[2] https://lore.kernel.org/all/20211014081028.xafpuzrxk3jvv5qn@pengutronix.de/
+
+Changes in v2:
+  Improved commit message and added fixes tag.
  
- 	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch)) {
- 		spin_lock(&port->lock);
-@@ -596,9 +599,11 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
- static irqreturn_t stm32_usart_threaded_interrupt(int irq, void *ptr)
- {
- 	struct uart_port *port = ptr;
-+	struct stm32_port *stm32_port = to_stm32_port(port);
- 
- 	/* Receiver timeout irq for DMA RX */
--	stm32_usart_receive_chars(port, false);
-+	if (!stm32_port->throttled)
-+		stm32_usart_receive_chars(port, false);
- 
- 	return IRQ_HANDLED;
- }
-@@ -711,10 +716,19 @@ static void stm32_usart_throttle(struct uart_port *port)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&port->lock, flags);
-+
-+	/*
-+	 * Disable DMA request line if enabled, so the RX data gets queued into the FIFO.
-+	 * Hardware flow control is triggered when RX FIFO is full.
-+	 */
-+	if (stm32_usart_rx_dma_enabled(port))
-+		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAR);
-+
- 	stm32_usart_clr_bits(port, ofs->cr1, stm32_port->cr1_irq);
- 	if (stm32_port->cr3_irq)
- 		stm32_usart_clr_bits(port, ofs->cr3, stm32_port->cr3_irq);
- 
-+	stm32_port->throttled = true;
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
-@@ -730,6 +744,14 @@ static void stm32_usart_unthrottle(struct uart_port *port)
- 	if (stm32_port->cr3_irq)
- 		stm32_usart_set_bits(port, ofs->cr3, stm32_port->cr3_irq);
- 
-+	/*
-+	 * Switch back to DMA mode (re-enable DMA request line).
-+	 * Hardware flow control is stopped when FIFO is not full any more.
-+	 */
-+	if (stm32_port->rx_ch)
-+		stm32_usart_set_bits(port, ofs->cr3, USART_CR3_DMAR);
-+
-+	stm32_port->throttled = false;
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
-@@ -775,6 +797,13 @@ static int stm32_usart_startup(struct uart_port *port)
- 	if (ofs->rqr != UNDEF_REG)
- 		writel_relaxed(USART_RQR_RXFRQ, port->membase + ofs->rqr);
- 
-+	/*
-+	 * DMA request line not re-enabled at resume when port is throttled.
-+	 * It will be re-enabled by unthrottle ops.
-+	 */
-+	if (!stm32_port->throttled)
-+		stm32_usart_set_bits(port, ofs->cr3, USART_CR3_DMAR);
-+
- 	/* RX enabling */
- 	val = stm32_port->cr1_irq | USART_CR1_RE | BIT(cfg->uart_enable_bit);
- 	stm32_usart_set_bits(port, ofs->cr1, val);
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 53bcd032fce7..e23916bfbb60 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -265,6 +265,7 @@ struct stm32_port {
- 	u32 cr3_irq;		 /* USART_CR3_RXFTIE */
- 	int last_res;
- 	bool tx_dma_busy;	 /* dma tx busy               */
-+	bool throttled;		 /* port throttled            */
- 	bool hw_flow_control;
- 	bool swap;		 /* swap RX & TX pins */
- 	bool fifoen;
+---
+
+Francesco Dolcini (1):
+  serial: imx: disable console clocks on unregister
+
+Stefan Agner (1):
+  serial: imx: fix detach/attach of serial console
+
+ drivers/tty/serial/imx.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
 -- 
-2.17.1
+2.25.1
 
