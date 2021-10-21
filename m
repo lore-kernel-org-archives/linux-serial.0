@@ -2,106 +2,44 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9AACC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Oct 2021 06:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BCCC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Oct 2021 07:56:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D13DB61251
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Oct 2021 06:33:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5BD0560F6E
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Oct 2021 07:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231332AbhJUGfQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Oct 2021 02:35:16 -0400
-Received: from muru.com ([72.249.23.125]:46880 "EHLO muru.com"
+        id S231133AbhJUH6X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Oct 2021 03:58:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45608 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231443AbhJUGfP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Oct 2021 02:35:15 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 3197480C1;
-        Thu, 21 Oct 2021 06:33:30 +0000 (UTC)
-Date:   Thu, 21 Oct 2021 09:32:55 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] serial: core: Add wakeup() and start_pending_tx()
- for power management
-Message-ID: <YXEJlyuGmhwNSGyb@atomide.com>
-References: <20211015112626.35359-1-tony@atomide.com>
- <20211015112626.35359-2-tony@atomide.com>
- <YW0dkD3jYCsHYs6p@hovoldconsulting.com>
+        id S230440AbhJUH6W (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 21 Oct 2021 03:58:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C92EF611CB;
+        Thu, 21 Oct 2021 07:56:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1634802967;
+        bh=j4UMg4TYoodF8etGC3h6w2j7bcT4DagTggKNft2sEN8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TycN5f8YdzaOyQycrIg3HNZB3PrASMT0Y3RVd97f1ihxf/DvlXSzUO8awhgHZkJBR
+         RMolkBG3wnsNcWnvVq3S/dsi0gU5A397v5tPUzah7V9IHE2vIht4iJhkcxL4XyLoKz
+         pqd7DkpSaufr4BTYjkW1Z1ctG1WhVYlBybAHLVGk=
+Date:   Thu, 21 Oct 2021 09:56:04 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Matthew Howell <matthew.howell@sealevel.com>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Ryan Wenglarz <ryan.wenglarz@sealevel.com>
+Subject: Re: Possible issue with RS485 IOCTLs on 16C950 UARTs?
+Message-ID: <YXEdFPyvpnBCeoxt@kroah.com>
+References: <BY5PR05MB7092A78C7C3441240685522DF9BE9@BY5PR05MB7092.namprd05.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YW0dkD3jYCsHYs6p@hovoldconsulting.com>
+In-Reply-To: <BY5PR05MB7092A78C7C3441240685522DF9BE9@BY5PR05MB7092.namprd05.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+On Wed, Oct 20, 2021 at 08:44:54PM +0000, Matthew Howell wrote:
+> Confidentiality Notice This message is intended exclusively for the individual or entity to which it is addressed. This communication may contain information that is PROPRIETARY, TRADE SECRET, PRIVILEGED, CONFIDENTIAL or otherwise legally exempt from disclosure. If you are not the named addressee, you are not authorized to read, print, retain, copy or disseminate this message or any part of it. If you have received this message in error, please notify the sender immediately either by phone (864.843.4343) or reply to this e-mail and delete all copies of this message.
 
-* Johan Hovold <johan@kernel.org> [211018 07:09]:
-> On Fri, Oct 15, 2021 at 02:26:23PM +0300, Tony Lindgren wrote:
-> > @@ -1067,6 +1116,11 @@ uart_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
-> >  	if (!uport)
-> >  		goto out;
-> >  
-> > +	if (uart_port_wakeup(uport) < 0) {
-> > +		ret = -EAGAIN;
-> > +		goto out;
-> > +	}
-> 
-> ...this isn't right. You should just resume the device synchronously
-> here and not return some random error to user space, which it is
-> unlikely to even handle.
-
-OK I'll check what we can already wake synchronously :)
-
-> Now this may require moving more of the runtime PM into serial core,
-> where it should have been added in the first place, due to a lot of the
-> serial callbacks being called with the port spin lock held.
-
-Yup.. So the good news is that Andy already has the generic serial layer
-runtime PM changes in his WIP tree. I'll take a look if we can already
-add some of that without bringing in all the other dependencies.
-
-> The current implementation is just broken. Take uart_dtr_rts(), for
-> example, nothing makes sure that the device is active before accessing
-> the modem control registers there. You're currently just relying on
-> luck and pm_runtime_irq_safe() (which you are now trying to remove).
-
-Yeah agreed, it's broken. It is usable for at least two limited cases
-though, which are a serial port console with PM, and bluetooth with PM.
-
-The serial port console typically only has RX and TX lines connected, and
-the bluetooth typically uses out-of-band GPIO pins for wakeups.
-
-To enable the serial port PM in general, we need to make sure it is
-enabled only for applications where it can be used. So it needs to be
-enabled from the user space as we do for the serial console, or enabled
-from the consumer device driver for things like bluetooth.
-
-Sure the TX should work in all other cases too..
-
-> > +
-> > +	if (uart_port_wakeup(uport) < 0)
-> > +		goto out;
-> > +
-> >  	uart_port_dtr_rts(uport, raise);
-> > +out:
-> >  	uart_port_deref(uport);
-> >  }
-> 
-> Heh, here you do try to do something about dtr_rts(), but you can't just
-> ignore the request and wish for the best in case the device is
-> suspended. :) There needs to be a synchronous resume here too.
-
-Well for the current use cases the port should be already awake at
-this point :) But yeah, for the TX path we should be able to handle
-all the cases.
-
-Regards,
-
-Tony
+Now deleted.
