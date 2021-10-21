@@ -2,146 +2,198 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68BEFC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Oct 2021 17:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01304C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Oct 2021 17:42:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 447FF60F25
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Oct 2021 17:37:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DB86B61362
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Oct 2021 17:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbhJURkM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Oct 2021 13:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55938 "EHLO
+        id S231326AbhJURov (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Oct 2021 13:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbhJURkM (ORCPT
+        with ESMTP id S230355AbhJURou (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Oct 2021 13:40:12 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FF9C061764
-        for <linux-serial@vger.kernel.org>; Thu, 21 Oct 2021 10:37:55 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id g20so2303389qka.1
-        for <linux-serial@vger.kernel.org>; Thu, 21 Oct 2021 10:37:55 -0700 (PDT)
+        Thu, 21 Oct 2021 13:44:50 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94324C061570;
+        Thu, 21 Oct 2021 10:42:33 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 5so3995660edw.7;
+        Thu, 21 Oct 2021 10:42:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=g-clemson-edu.20210112.gappssmtp.com; s=20210112;
-        h=from:date:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=MfMtQZQ55k5ZQzBjHBoh/0E1V9sA4jpD7fnoidCN0w8=;
-        b=TFZfdtfxbNPNM2ME5TfKpt48QXg2qWGJRuIH3UhwsR0echWOcR17msdb0XAfooKgQl
-         0MNsLg4bmuaPAghK8bd5KRtcEgZlgDK8oyfd7KOAcAwTTK0W0vHd7+nPzgTknKsxvyvK
-         d5Z1pYSwFfFLcqcaJARms8WdsjFElWql204CLoIzJrfVy53At3Mr+JdRc04mquK/Wr+0
-         ZteYxJGPWNvHNmNWq/3QU1ya0sN1qy00PtQ97k1fWrTpQ5VoyhXH2RgeDWs83xqSDgRS
-         HfoyTv4PmeW1pVRi/crchYq092B2oJZHlIXg0s2WaUAsxLWegm7rQp8wzF+hy244PWyg
-         iWnA==
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0Hnxjoxm2iwcZipv3NbHtD4H4YAetTMMxyIE5z5T56c=;
+        b=l6q+vuyUE2OezuYKjC4R79e8L+5o05U3F1UYKTLx/NYflcaM+zCidFzvpB1zaO+iHF
+         WFXlqRwgw1wb/MdplOet4Xk6z4NRTYkO7lviyys1iYJj5ab5ULeqbGd4lFtmmgvLJXIe
+         acg326CXjdgiLlioo2sxOeJcOLyAohkVB9YVpmMnwPGx9iGooANRJuGhSEyWFCdaycDS
+         OU1ApjKRzjx/4UgfZCZL5o4+hJOrdGGYrCvRTDtB3wBHuFgOhM04fdTwMOBsP3TLqxpF
+         4YQ6bHcN58CkecWwGtEYosqd09vIGnZpXB/19LrkAlN1qYOklVXAcLu8ZRsx/FG9qLMX
+         mW8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=MfMtQZQ55k5ZQzBjHBoh/0E1V9sA4jpD7fnoidCN0w8=;
-        b=jbxV6ihXAYShRkemmSHRlnix0DuOKBqPDQPbfl3/5Nd6sU+Jf/7JUuE1ecKnO1Ia5p
-         2v3W/tdzCm7gJLkQoBtYWUtJT/P8cNfnLYxf7Sg8t1OnnXoFzT89d4ZBCZYWvCf0VVfS
-         b+Nb3+h0P6/yRiyhmSG04HmSJzBSmlD06XKp/aLekA0EJG1r/ty0Jd10dnl2NjcS5yC+
-         AZ9rDUHtm8loyVAP9WVpeSO8l6glIaUXU9vzSiLtN4WMSBjFOc3VJHtxtlhx/UDrbDCi
-         nPOon/TCdUNJ1KO0hv/q/oElZFbmGWZ4q8fFjN3c85KtO08tEl3N8dJ8SsYap09L0j0o
-         bXqQ==
-X-Gm-Message-State: AOAM5335oWuGTlCFtNO0UZgISZapek/uOIr6AYfVOK9Oe1iXy0KrZSA6
-        1UwNIimTfoOVLWk1PMFdua4VAIIVY0vb/MbToPA=
-X-Google-Smtp-Source: ABdhPJymGl6mE8toK3S2Ln4e5dqc+7orMuOyx/MQtGrtp0go3+ImVi09cYVQexPJUKpQiD1HTpnKtg==
-X-Received: by 2002:a37:a5c1:: with SMTP id o184mr5611024qke.9.1634837874919;
-        Thu, 21 Oct 2021 10:37:54 -0700 (PDT)
-Received: from SLTS-20200428.int.sealevel.com ([12.18.222.51])
-        by smtp.gmail.com with ESMTPSA id e16sm2842579qkl.108.2021.10.21.10.37.53
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=0Hnxjoxm2iwcZipv3NbHtD4H4YAetTMMxyIE5z5T56c=;
+        b=ybuJjv0zr3ma1aX6vmbuAJCMygV+43foGXK7aGlTBPIcaMNgXQanaC/fkY45TBj2eu
+         3fvSfZpbSnm//TZ9KcfqfAnP+yRKqWkydXFk0GiGW5bnU9wz94B/viKTt50yeRUgSTjC
+         46RoOhfP8lE/ZDkQ69ZAiiEHZ/G8Mh1H5m95vw13wAoxSmeqhnvToroFaEybvjBaqz+i
+         euODhme2DQnrO6TfIGKyzmqdNEPQlBEpejWZeaCJnG/bcnUIFiVUIxKczpUL73+zuuNe
+         tZhuEv3Cfb/x76wMqaeM6YqzzcvAZEPIrHblO1ysFxAVnOamJPB8839QVqj9CA4BKUg9
+         KZ1A==
+X-Gm-Message-State: AOAM533ig4v+Q4PiCDkLQ54cjeYJI5LxOb3YnglWCaLKrf2jPMBjbNzK
+        eK1bbpCfEY4hUnFISClmJ1ykikHUMrJMOg==
+X-Google-Smtp-Source: ABdhPJzcjML/TfsdQg51Kl5oV/Ck6zjteV5YqfLCQabToGl/aFKFPRE2FkvcuLHfSuM0JLjOFWoOYw==
+X-Received: by 2002:a17:906:6c83:: with SMTP id s3mr9177246ejr.13.1634838152001;
+        Thu, 21 Oct 2021 10:42:32 -0700 (PDT)
+Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
+        by smtp.gmail.com with ESMTPSA id h7sm3144847edt.37.2021.10.21.10.42.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Oct 2021 10:37:54 -0700 (PDT)
-From:   mrhowel@g.clemson.edu
-X-Google-Original-From: matthew.howell@sealevel.com
-Date:   Thu, 21 Oct 2021 13:37:48 -0400 (EDT)
-X-X-Sender: ts-test@SLTS-20200428.int.sealevel.com
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-cc:     mrhowel@g.clemson.edu,
-        Matthew Howell <matthew.howell@sealevel.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Ryan Wenglarz <ryan.wenglarz@sealevel.com>
-Subject: Re: Possible issue with RS485 IOCTLs on 16C950 UARTs?
-In-Reply-To: <YXF5nig6PzRWsLjS@kroah.com>
-Message-ID: <alpine.DEB.2.22.394.2110211309240.10868@SLTS-20200428.int.sealevel.com>
-References: <BY5PR05MB7092A78C7C3441240685522DF9BE9@BY5PR05MB7092.namprd05.prod.outlook.com> <YXEdFPyvpnBCeoxt@kroah.com> <alpine.DEB.2.22.394.2110211004030.10664@SLTS-20200428.int.sealevel.com> <YXF5nig6PzRWsLjS@kroah.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Thu, 21 Oct 2021 10:42:31 -0700 (PDT)
+Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+To:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 00/16] Basic StarFive JH7100 RISC-V SoC support
+Date:   Thu, 21 Oct 2021 19:42:07 +0200
+Message-Id: <20211021174223.43310-1-kernel@esmil.dk>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This series adds support for the StarFive JH7100 RISC-V SoC. The SoC has
+many devices that need non-coherent dma operations to work which isn't
+upstream yet[1], so this just adds basic support to boot up, get a
+serial console, blink an LED and reboot itself. Unlike the Allwinner D1
+this chip doesn't use any extra pagetable bits, but instead the DDR RAM
+appears twice in the memory map, with and without the cache.
 
-On Thu, 21 Oct 2021, gregkh@linuxfoundation.org wrote:
+The JH7100 is a test chip for the upcoming JH7110 and about 300 BeagleV
+Starlight Beta boards were sent out with them as part of a now cancelled
+BeagleBoard.org project. However StarFive has produced more of the
+JH7100s and more boards will be available[2] to buy. Hopefully before
+the end of the year.
 
-> On Thu, Oct 21, 2021 at 10:10:30AM -0400, mrhowel@g.clemson.edu wrote:
-> > 
-> > That noticed is enforced by our exchange server. I have removed it by 
-> > using an external email address instead.
-> > 
-> > Original message is copied below.
-> > 
-> > Hi,
-> > 
-> > I'm not sure if this is the right place for this, but hopefully someone 
-> > can help me figure out what else I can do to troubleshoot this problem, or 
-> > point me to the right place to ask questions about this.
-> > 
-> > A recent investigation led us to discover issues related to the RS485 
-> > IOCTLs on our serial cards utilizing the 16C950 UART. More specifically, 
-> > the TIOCSRS485 IOCTL to set the serial_rs485 flags as documented at 
-> > https://www.kernel.org/doc/html/latest/driver-api/serial/serial-rs485.html 
-> > .
-> > 
-> > When attempting to set the SER_RS485_ENABLED flag using TIOCSRS485 as per 
-> > below I receive an error code 25, "Inappropriate IOCTL for device"
-> > 
-> > 	/* -----RS485----- */
-> > 	struct serial_rs485 rs485conf = {0};
-> > 	rs485conf.flags |= SER_RS485_ENABLED;
-> > 	rc = ioctl(fd, TIOCSRS485, &rs485conf);
-> > 	if (rc < 0) {
-> >         	printf("error=%d %s\n", errno, strerror(errno));
-> > 		return rc;
-> > 	}
-> > 
-> > >From what I've read this typically indicates an unsupported serial device, 
-> > but the documentation mentions the 16C950 UART as a specific example, so I 
-> > would think the kernel is intended to support this functionality on the 
-> > 16C950. 
-> >  
-> > I have tried this across several kernel versions: 3.10 (Centos 7) , 4.18 
-> > (Centos 8), and 5.11 (Ubuntu 21.04) with no change in the behavior. 
-> > The issue was originally discovered on a PLX OXPCIe952 UART, but has been 
-> > replicated on 'standard' OX16C950 UARTs as well. setserial -ag correctly 
-> > identifies all cards as 16950's (Specifically "16950/954").
-> > 
-> > Has anyone else had or seen this IOCTL issue on the 16C950? Are there any 
-> > 'known good' 16C950 based cards people can confirm that this works with?
-> 
-> I do not think that that type of hardware actually supports RS485, as the
-> kernel is reporting that the driver says it is not allowed.
->
-> Perhaps you need to find some hardware that does support it?  It is not
-> very common at all.
+This series is also available at
+https://github.com/esmil/linux/commits/starlight-minimal
+..but a more complete kernel including drivers for non-coherent
+peripherals based on this series can be found at
+https://github.com/starfive-tech/linux/tree/starlight
 
-I know support for serial_rs485 is not very common, but the documentation 
-for serial_rs485 explicitly mentions the 16C950 UART, which is the UART 
-used by the serial card under test.
+[1]: https://lore.kernel.org/linux-riscv/20210723214031.3251801-2-atish.patra@wdc.com/
+[2]: https://www.linkedin.com/pulse/starfive-release-open-source-single-board-platform-q3-2021-starfive/
 
-The datasheet for the 16C950 indeed does not mention "RS485 Auto-Enable", 
-but it does say that the DTR pin may be programmed to automatically turn 
-the transmitter on and off. See "485_EN" on Page 10 and "ACR[4:3]: DTR# 
-line configuration" on page 36 of the manual. 
-(https://www.semiconductorstore.com/pdf/newsite/oxford/ox16c950b.pdf)
+/Emil
 
-It doesn't use the same terminology, but it is my understanding that the 
-functionality of these registers is sufficient for the 16C950 to support 
-RS485 Auto-Enable.
+Changes since v1:
+- Let SOC_STARFIVE select RESET_CONTROLLER but drop SERIAL_8250_DW
+- Add missing Signed-of-by to clock dt-binding header
+- Use builtin_platform_driver macro for the clock driver, add explicit
+  comment to the determine_rate callback and other small nits from Andy
+- Use reset-controller for node names in documentation and device tree
+- Use readl_poll_timeout in reset driver to avoid hanging forever if a
+  driver leaves the associated clock gated and sort Kconfig and Makefile
+  entries properly.
+- In the pinctrl driver align register names with documentation, remove
+  invalid __init tag from probe function, use of_property_* functions to
+  parse device tree, hoist pinmux unpacking into helper function to
+  better document what's going on, bail on invalid signal group in
+  device tree and fix many other nits from Andy.
+- Refactor and rebase 8250_dw quirk on tty-next
 
-Additionally, the Windows driver for this card supports RS485 Auto-Enable.
- 
-> good luck!
-> 
-> greg k-h
-> 
+
+Emil Renner Berthing (12):
+  RISC-V: Add StarFive SoC Kconfig option
+  dt-bindings: timer: Add StarFive JH7100 clint
+  dt-bindings: interrupt-controller: Add StarFive JH7100 plic
+  dt-bindings: reset: Add Starfive JH7100 reset bindings
+  reset: starfive-jh7100: Add StarFive JH7100 reset driver
+  dt-bindings: pinctrl: Add StarFive pinctrl definitions
+  dt-bindings: pinctrl: Add StarFive JH7100 bindings
+  pinctrl: starfive: Add pinctrl driver for StarFive SoCs
+  dt-bindings: serial: snps-dw-apb-uart: Add JH7100 uarts
+  serial: 8250_dw: Add skip_clk_set_rate quirk
+  RISC-V: Add initial StarFive JH7100 device tree
+  RISC-V: Add BeagleV Starlight Beta device tree
+
+Geert Uytterhoeven (4):
+  dt-bindings: clock: starfive: Add JH7100 clock definitions
+  dt-bindings: clock: starfive: Add JH7100 bindings
+  clk: starfive: Add JH7100 clock generator driver
+  dt-bindings: reset: Add StarFive JH7100 reset definitions
+
+ .../clock/starfive,jh7100-clkgen.yaml         |   56 +
+ .../sifive,plic-1.0.0.yaml                    |    1 +
+ .../pinctrl/starfive,jh7100-pinctrl.yaml      |  274 ++++
+ .../bindings/reset/starfive,jh7100-reset.yaml |   38 +
+ .../bindings/serial/snps-dw-apb-uart.yaml     |    5 +
+ .../bindings/timer/sifive,clint.yaml          |    1 +
+ MAINTAINERS                                   |   22 +
+ arch/riscv/Kconfig.socs                       |    8 +
+ arch/riscv/boot/dts/Makefile                  |    1 +
+ arch/riscv/boot/dts/starfive/Makefile         |    2 +
+ .../dts/starfive/jh7100-beaglev-starlight.dts |  162 ++
+ arch/riscv/boot/dts/starfive/jh7100.dtsi      |  228 +++
+ drivers/clk/Kconfig                           |    1 +
+ drivers/clk/Makefile                          |    1 +
+ drivers/clk/starfive/Kconfig                  |    9 +
+ drivers/clk/starfive/Makefile                 |    3 +
+ drivers/clk/starfive/clk-starfive-jh7100.c    |  776 +++++++++
+ drivers/pinctrl/Kconfig                       |   16 +
+ drivers/pinctrl/Makefile                      |    1 +
+ drivers/pinctrl/pinctrl-starfive.c            | 1387 +++++++++++++++++
+ drivers/reset/Kconfig                         |    8 +
+ drivers/reset/Makefile                        |    1 +
+ drivers/reset/reset-starfive-jh7100.c         |  165 ++
+ drivers/tty/serial/8250/8250_dw.c             |   19 +-
+ include/dt-bindings/clock/starfive-jh7100.h   |  202 +++
+ .../dt-bindings/pinctrl/pinctrl-starfive.h    |  274 ++++
+ include/dt-bindings/reset/starfive-jh7100.h   |  126 ++
+ 27 files changed, 3784 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/starfive,jh7100-clkgen.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/starfive,jh7100-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/reset/starfive,jh7100-reset.yaml
+ create mode 100644 arch/riscv/boot/dts/starfive/Makefile
+ create mode 100644 arch/riscv/boot/dts/starfive/jh7100-beaglev-starlight.dts
+ create mode 100644 arch/riscv/boot/dts/starfive/jh7100.dtsi
+ create mode 100644 drivers/clk/starfive/Kconfig
+ create mode 100644 drivers/clk/starfive/Makefile
+ create mode 100644 drivers/clk/starfive/clk-starfive-jh7100.c
+ create mode 100644 drivers/pinctrl/pinctrl-starfive.c
+ create mode 100644 drivers/reset/reset-starfive-jh7100.c
+ create mode 100644 include/dt-bindings/clock/starfive-jh7100.h
+ create mode 100644 include/dt-bindings/pinctrl/pinctrl-starfive.h
+ create mode 100644 include/dt-bindings/reset/starfive-jh7100.h
+
+-- 
+2.33.1
+
