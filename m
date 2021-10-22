@@ -2,66 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0D6C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 12:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1759AC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 13:12:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C24D2610A1
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 12:56:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E559960FC1
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 13:12:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232856AbhJVM60 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Oct 2021 08:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232805AbhJVM6Z (ORCPT
+        id S230519AbhJVNOl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Oct 2021 09:14:41 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:40386 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230175AbhJVNOk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Oct 2021 08:58:25 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB45C061764;
-        Fri, 22 Oct 2021 05:56:07 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id t16so5048563eds.9;
-        Fri, 22 Oct 2021 05:56:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+qOi8f1v4+rJCxOKM/1lFt8oaZPEX6smhRzqey4rSCg=;
-        b=YivvG/JsMBUvbb3Fs9tTmqksEjk8+rN0v5A+vUK4z8jS13RgQj58cSSwV7Hs+IWsGB
-         adNRyKbM3yrg9wi18C8DLlOUORLq1BF4FYNWg7JzYi9UuIUeEq4Rn/rDkk/y1zhLxtEc
-         aOJwG8ueEq8fZmlCGlZRCr1VCFNZmF0LBwCeNKdP2CPqZ8YkdZryhKGqdvn5XSpjL1oP
-         4o6i1XlLhy5Ivwsx0XRyu4wrcaRPgu1kTvO9jQ+GdztgGf9HLtxndmPFXuqPLPJ6Ep1B
-         hDkRcHpvS7zlSUe5S45XqZYbcF6yhFGCeBVedFGDj8jrOQeCynGBXo9ZCYD+Q7EnHKgo
-         5Pew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+qOi8f1v4+rJCxOKM/1lFt8oaZPEX6smhRzqey4rSCg=;
-        b=5+uTAOrr2V0dcaVJzZBFq07KW7zK7NmkyRwdwtaiARaSfz73n3ZxgLedNJdgSCcE33
-         xsKyityjBnqQSTB2SAf3jTt3XUjh1D1Q0xdaYWAXKfWPftFNBwilaeQHj7qe1gdxAfoH
-         HveW2bflwxYw9eH6MhI+w6Nvtub3vlCjjtwlyzuKcHub7IIng4wHQLh5JYWruMfWnqpw
-         kPIHTBH3bdwWhTKtepq6wqfueuiyEVgqYvI3hFTic+u0Oeb7H2EMicbiW6AnyJM47C1Z
-         idX1VBSMCDr09/3awkhzPErZG3HVj0hNUbt2Ta23hUKYV90LTEU89hFqmESnw62yeHkW
-         97ng==
-X-Gm-Message-State: AOAM532Q4yyAHXMJDDEFOxDdejELBl7sReiYReMuxZCtVmG54PNyRhWk
-        IHK7LNQsA420HTBS2U1DXi9Qi+WWM0BQtftyME8=
-X-Google-Smtp-Source: ABdhPJxjmbZn/mKzz2MeCcWBTlXcYFWWJdlvVwlzqH5Cmn9IpfIf34cJh9HoSyv6xIrG1HUL+9nURIo/Rrh/wNmzfU8=
-X-Received: by 2002:a17:906:5a47:: with SMTP id my7mr14665000ejc.128.1634907366155;
- Fri, 22 Oct 2021 05:56:06 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-10-kernel@esmil.dk>
-In-Reply-To: <20211021174223.43310-10-kernel@esmil.dk>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 22 Oct 2021 15:55:10 +0300
-Message-ID: <CAHp75VcUv6WH0--FANpRExCdEOJNVo8KCtJ2Go090=FZq-Y0UQ@mail.gmail.com>
-Subject: Re: [PATCH v2 09/16] reset: starfive-jh7100: Add StarFive JH7100
- reset driver
+        Fri, 22 Oct 2021 09:14:40 -0400
+X-Greylist: delayed 364 seconds by postgrey-1.27 at vger.kernel.org; Fri, 22 Oct 2021 09:14:39 EDT
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4HbPjx4cbRz1qwy7;
+        Fri, 22 Oct 2021 15:06:13 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4HbPjx1ZvWz1qqkB;
+        Fri, 22 Oct 2021 15:06:13 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id 47iEcBUIACYB; Fri, 22 Oct 2021 15:06:11 +0200 (CEST)
+X-Auth-Info: pHCxIG/3Fn8LyBofwRXxdTnAKN2ei9mTIkWXITidtoTB3gneygtKBg6A1vL4R5zg
+Received: from igel.home (ppp-46-244-166-255.dynamic.mnet-online.de [46.244.166.255])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Fri, 22 Oct 2021 15:06:11 +0200 (CEST)
+Received: by igel.home (Postfix, from userid 1000)
+        id 914BC2C19B9; Fri, 22 Oct 2021 15:06:10 +0200 (CEST)
+From:   Andreas Schwab <schwab@linux-m68k.org>
 To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
+Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Rob Herring <robh+dt@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -83,107 +60,35 @@ Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
         Anup Patel <anup.patel@wdc.com>,
         Atish Patra <atish.patra@wdc.com>,
         Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 09/16] reset: starfive-jh7100: Add StarFive JH7100
+ reset driver
+References: <20211021174223.43310-1-kernel@esmil.dk>
+        <20211021174223.43310-10-kernel@esmil.dk>
+X-Yow:  ..  Should I get locked in the PRINCIPAL'S OFFICE today --
+ or have a VASECTOMY??
+Date:   Fri, 22 Oct 2021 15:06:10 +0200
+In-Reply-To: <20211021174223.43310-10-kernel@esmil.dk> (Emil Renner Berthing's
+        message of "Thu, 21 Oct 2021 19:42:16 +0200")
+Message-ID: <8735otjjjx.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 21, 2021 at 8:43 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
->
-> Add a driver for the StarFive JH7100 reset controller.
-
-...
+On Okt 21 2021, Emil Renner Berthing wrote:
 
 > +config RESET_STARFIVE_JH7100
-> +       bool "StarFive JH7100 Reset Driver"
-> +       depends on SOC_STARFIVE || COMPILE_TEST
+> +	bool "StarFive JH7100 Reset Driver"
+> +	depends on SOC_STARFIVE || COMPILE_TEST
 
-> +       depends on OF
+Why does it need to depend on SOC_STARFIVE?
 
-No evidence of this dependency. Why to limit test coverage?
-
-> +       default SOC_STARFIVE
-
-...
-
-> +/*
-> + * Reset driver for the StarFive JH7100 SoC
-> + *
-> + * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
-
-> + *
-
-Redundant empty line.
-
-> + */
-
-...
-
-> +#include <linux/of_device.h>
-
-No evidence of any usage of this header. Perhaps you meant mod_devicetable.h?
-
-...
-
-> +static const u32 jh7100_reset_asserted[4] = {
-
-> +       BIT(JH7100_RST_U74 % 32) |
-> +       BIT(JH7100_RST_VP6_DRESET % 32) |
-> +       BIT(JH7100_RST_VP6_BRESET % 32),
-
-It's hard to notice that this is only one entry. See also below.
-
-> +       BIT(JH7100_RST_HIFI4_DRESET % 32) |
-> +       BIT(JH7100_RST_HIFI4_BRESET % 32),
-> +
-> +       BIT(JH7100_RST_E24 % 32)
-
-+ Comma.
-
-> +};
-
-Why all these ugly % 32 against constants?
-
-...
-
-> +       if (!assert)
-> +               done ^= mask;
-
-Can you convert this to simple
-
-  if (assert)
-    ret = readl_...
-  else
-    ret = readl_...
-
-below?
-
-> +       spin_lock_irqsave(&data->lock, flags);
-> +
-> +       value = readl(reg_assert);
-> +       if (assert)
-> +               value |= mask;
-> +       else
-> +               value &= ~mask;
-> +       writel(value, reg_assert);
-
-> +       /* if the associated clock is gated, deasserting might otherwise hang forever */
-> +       ret = readl_poll_timeout(reg_status, value, (value & mask) == done, 0, 1000);
-
-You run delays under spin lock. You need to use _atomic variant.
-
-> +       spin_unlock_irqrestore(&data->lock, flags);
-
-...
-
-> +       u32 value = (readl(reg_status) ^ jh7100_reset_asserted[offset]) & mask;
-
-> +       dev_dbg(rcdev->dev, "status(%lu) = %d\n", id, !value);
-> +       return !value;
-
-Dup of ! operator. Can it be value = !(...); above?
+Andreas.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
