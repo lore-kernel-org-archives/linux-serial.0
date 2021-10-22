@@ -2,205 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A6BEC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 03:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14208C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 08:51:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7C6BC61004
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 03:57:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F170F60EB8
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 08:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231134AbhJVD7T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Oct 2021 23:59:19 -0400
-Received: from mga04.intel.com ([192.55.52.120]:29129 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230393AbhJVD7S (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Oct 2021 23:59:18 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10144"; a="227984508"
-X-IronPort-AV: E=Sophos;i="5.87,171,1631602800"; 
-   d="scan'208";a="227984508"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2021 20:56:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,171,1631602800"; 
-   d="scan'208";a="445110050"
-Received: from lkp-server02.sh.intel.com (HELO 08b2c502c3de) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 21 Oct 2021 20:56:47 -0700
-Received: from kbuild by 08b2c502c3de with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mdlfi-000F4J-Sd; Fri, 22 Oct 2021 03:56:46 +0000
-Date:   Fri, 22 Oct 2021 11:56:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 7c0408d805797178f075f33d0f705a1c6ef76c82
-Message-ID: <6172367c.fe8Vff26LgIcm2o7%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S232385AbhJVIyI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Oct 2021 04:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231563AbhJVIyH (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Oct 2021 04:54:07 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27611C061764;
+        Fri, 22 Oct 2021 01:51:50 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id z20so966985edc.13;
+        Fri, 22 Oct 2021 01:51:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vsSof8B35sJ3TdkUFeoW7PDjPfQXbtV3oB1joueUNsI=;
+        b=LmOW2M7Fls4cmKaeo5kDREtk0zbyuTkrGZBD8wxmaysk/H0O0rScyPc56wgFeg6BtR
+         Oi8BOBQD+Fym+tArVe6z1Y1H1aNXcMv7ojyYr+GFhZEZXyp2DJpyEt9B3MqLdt0ZMIUJ
+         TvGAy/iVDbjKK1Wyha135Etodgnpe8mk04QRAJI0qG+7mRumNyYYXS+JClEOk/xkj8+v
+         dXgtyctgJtieXo7LMiBedb3Vcoub142ihtAxE6RQXey9sjgjhpwhQXulz+s633tIDqDc
+         j6LSTINe9bgiELKxM8C3MTuaYked3bcPiczfVP26IQo7fdvNZ7kS8zxCFteFea8RGbbh
+         YMSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vsSof8B35sJ3TdkUFeoW7PDjPfQXbtV3oB1joueUNsI=;
+        b=XmF2Z//OphpBD45R4K/WSPOeVv/dZkMQDLrcBuJgxbZSsqjJwae1L2foLyrK1Z7aXl
+         Eor3dltASS/f0r5F/tTFk50JWiG/PSu9xdr0SUzkUlP/hq/mI0KqOBV2w4T+kxLI1vJC
+         0EbKM/rgfZMeHtPJWZUAWfz1D7j6Qqr+obvlce8KiShS3xsxFIKzjLyfxohEk2d4Vkgj
+         ezUuBcUZuX8lpXDmTvq6qkkRT0patXPlaET3/wqe+2rcKxH1jZbwSLguq7fCwUtvG4DO
+         s5jNdMHAblyIWyVxYaRG6CQjoxPg5mCDb6D6Ux1owTwmlTnPWhyhYAc5ZawxMEEYWkKc
+         oqMA==
+X-Gm-Message-State: AOAM532oKHdfB/wT4e58xoeQ2MfO63dRgwJzmkkp/+vnLbbaIEoo8Tv+
+        InsuGDKMxFwiQV1DBbykFKbqokDziI3uTYHJ4t8=
+X-Google-Smtp-Source: ABdhPJxg0tLJ7/LdpnuntihRiqWvlRRwACrMPNo7XYl/Y8z0+A5FUElZXiGRbf+lmQ4LBqBm7evjGm3ttticSo63kcs=
+X-Received: by 2002:a17:906:1707:: with SMTP id c7mr13563725eje.377.1634892708737;
+ Fri, 22 Oct 2021 01:51:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-2-kernel@esmil.dk>
+In-Reply-To: <20211021174223.43310-2-kernel@esmil.dk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 22 Oct 2021 11:50:52 +0300
+Message-ID: <CAHp75VfD73Nsrp-3hMzFtuEAfka+rRc=2m0ZZYddhWBAzg=QAw@mail.gmail.com>
+Subject: Re: [PATCH v2 01/16] RISC-V: Add StarFive SoC Kconfig option
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 7c0408d805797178f075f33d0f705a1c6ef76c82  tty: add rpmsg driver
+On Thu, Oct 21, 2021 at 8:42 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+>
+> Add StarFive Kconfig option to select SoC specific and common drivers
+> required for these SoCs.
 
-elapsed time: 1018m
+...
 
-configs tested: 143
-configs skipped: 4
+> +config SOC_STARFIVE
+> +       bool "StarFive SoCs"
+> +       select PINCTRL
+> +       select RESET_CONTROLLER
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> +       select SIFIVE_PLIC
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20211021
-m68k                         apollo_defconfig
-arm                            mmp2_defconfig
-arm                         vf610m4_defconfig
-powerpc                    gamecube_defconfig
-h8300                            alldefconfig
-powerpc                  mpc866_ads_defconfig
-powerpc                     ep8248e_defconfig
-mips                            gpr_defconfig
-powerpc                      makalu_defconfig
-arm                        trizeps4_defconfig
-arm                  colibri_pxa300_defconfig
-powerpc                   bluestone_defconfig
-sh                ecovec24-romimage_defconfig
-powerpc                     sequoia_defconfig
-arm                        magician_defconfig
-xtensa                  cadence_csp_defconfig
-powerpc                        warp_defconfig
-powerpc                 mpc834x_mds_defconfig
-sh                        sh7757lcr_defconfig
-arm                      jornada720_defconfig
-mips                        omega2p_defconfig
-mips                         mpc30x_defconfig
-um                                  defconfig
-arm                         orion5x_defconfig
-powerpc                     akebono_defconfig
-powerpc                      chrp32_defconfig
-powerpc                      ppc64e_defconfig
-arm                         s3c2410_defconfig
-arm                       multi_v4t_defconfig
-parisc                              defconfig
-m68k                          atari_defconfig
-mips                        qi_lb60_defconfig
-m68k                                defconfig
-powerpc                      obs600_defconfig
-mips                malta_qemu_32r6_defconfig
-openrisc                            defconfig
-mips                           ip32_defconfig
-arm                        neponset_defconfig
-sh                        edosk7705_defconfig
-arm                             pxa_defconfig
-arm                      footbridge_defconfig
-sh                     magicpanelr2_defconfig
-nios2                               defconfig
-mips                       capcella_defconfig
-arm                         s5pv210_defconfig
-sh                          rsk7201_defconfig
-m68k                            q40_defconfig
-parisc                           alldefconfig
-arm                           u8500_defconfig
-riscv                    nommu_virt_defconfig
-powerpc                      tqm8xx_defconfig
-sh                         ap325rxa_defconfig
-powerpc                          allyesconfig
-arm                            mps2_defconfig
-arm                          moxart_defconfig
-arc                     haps_hs_smp_defconfig
-sh                           se7751_defconfig
-mips                          rb532_defconfig
-openrisc                 simple_smp_defconfig
-arm                  randconfig-c002-20211022
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-nds32                             allnoconfig
-arc                              allyesconfig
-nds32                               defconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-nios2                            allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-xtensa                           allyesconfig
-s390                                defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64               randconfig-a013-20211021
-x86_64               randconfig-a015-20211021
-x86_64               randconfig-a011-20211021
-x86_64               randconfig-a014-20211021
-x86_64               randconfig-a016-20211021
-x86_64               randconfig-a012-20211021
-i386                 randconfig-a012-20211021
-i386                 randconfig-a013-20211021
-i386                 randconfig-a011-20211021
-i386                 randconfig-a016-20211021
-i386                 randconfig-a015-20211021
-i386                 randconfig-a014-20211021
-arc                  randconfig-r043-20211021
-riscv                randconfig-r042-20211021
-s390                 randconfig-r044-20211021
-riscv                            allyesconfig
-riscv                            allmodconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                                  kexec
-x86_64                           allyesconfig
+If this is well understood and platform related the above two are too
+generic. Why have you selected them?
 
-clang tested configs:
-powerpc              randconfig-c003-20211021
-riscv                randconfig-c006-20211021
-arm                  randconfig-c002-20211021
-x86_64               randconfig-c007-20211021
-mips                 randconfig-c004-20211021
-s390                 randconfig-c005-20211021
-i386                 randconfig-c001-20211021
-x86_64               randconfig-a002-20211021
-x86_64               randconfig-a004-20211021
-x86_64               randconfig-a005-20211021
-x86_64               randconfig-a001-20211021
-x86_64               randconfig-a006-20211021
-x86_64               randconfig-a003-20211021
-i386                 randconfig-a004-20211021
-i386                 randconfig-a003-20211021
-i386                 randconfig-a002-20211021
-i386                 randconfig-a005-20211021
-i386                 randconfig-a001-20211021
-i386                 randconfig-a006-20211021
-hexagon              randconfig-r045-20211021
-hexagon              randconfig-r041-20211021
+> +       help
+> +         This enables support for StarFive SoC platform hardware.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Not too much to read here. What is the point of this help?
+I would elaborate what kind of platform it may support, what kind of
+drivers it selects due to necessity of the accomplishing the boot
+process, etc.
+
+-- 
+With Best Regards,
+Andy Shevchenko
