@@ -2,119 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F19ECC4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 13:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECD3C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 13:51:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D7EA86124D
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 13:50:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23EB161246
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 13:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232972AbhJVNwu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Oct 2021 09:52:50 -0400
-Received: from mail-pl1-f181.google.com ([209.85.214.181]:38832 "EHLO
-        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230342AbhJVNwt (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Oct 2021 09:52:49 -0400
-Received: by mail-pl1-f181.google.com with SMTP id i5so2735843pla.5;
-        Fri, 22 Oct 2021 06:50:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e4VAlxqjX7tVS4RVU1hVLMwxlt5HBKt4g0cT2A4i/lc=;
-        b=CQm86dOsCIjWXawe3/g/e4cs0g6/TUg6PmP6hYoQDl1Zcvv+5uvYJbEtgF6VFROEHr
-         oztYhNAeb18MUGa/RK9O1PN0wHysJiez5sHpViiPltj0fPsoGzl20EHJBbyVSdw9iN4b
-         hB0PDPM1ECf6uXWbIDITJ9IruZcJ/k3NgdyLqpjp/Yk5a/7hjQPkqgrEaTbzHB5mz5vI
-         sBQZzQwXfFSs+B4LYz5G0Jbd1DrTPCek1Wq1XtsFHygBA80wLFl5msAFunQ/PCyp4EZc
-         P5GAjBHEaV1WMr7olA4VESK7TpbTsW7OYQUv6KGYd4nCfgx9dBeVu7U5riIfhqMDbMG1
-         lFSA==
-X-Gm-Message-State: AOAM533TdPzLqSPNeEwH6WCs5XnYRvtS0QbKaN/hVjgLLZXlpooag0tF
-        tx15TPh4oYHEHnH8vLpm25KGqz/o4g7r3siSiNU=
-X-Google-Smtp-Source: ABdhPJxD84S/qyVc64yZN7zn360JIvYLyRoTZQ+nTLW8NPOh4R0Onceuz8xIbXKjs/Zs0RMr8FooFXCbqrByMUrAzuI=
-X-Received: by 2002:a17:90b:390f:: with SMTP id ob15mr13560608pjb.185.1634910632123;
- Fri, 22 Oct 2021 06:50:32 -0700 (PDT)
+        id S232113AbhJVNyM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Oct 2021 09:54:12 -0400
+Received: from mga05.intel.com ([192.55.52.43]:65324 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230342AbhJVNyM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Oct 2021 09:54:12 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10144"; a="315507789"
+X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
+   d="scan'208";a="315507789"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2021 06:51:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
+   d="scan'208";a="663197625"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 22 Oct 2021 06:51:50 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id F06C6136; Fri, 22 Oct 2021 16:51:49 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/3] serial: 8250_pci: Refactor the loop in pci_ite887x_init()
+Date:   Fri, 22 Oct 2021 16:51:45 +0300
+Message-Id: <20211022135147.70965-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-10-kernel@esmil.dk>
- <CAHp75VcUv6WH0--FANpRExCdEOJNVo8KCtJ2Go090=FZq-Y0UQ@mail.gmail.com>
- <CANBLGcysKdqo+FioSkhd1PZRLzPF=fRJrCTsUGR7vXcn2WpYHg@mail.gmail.com> <CAHp75VditKnEcPKgqxz7NfG3ZWLZCu=pW=8qw7HS_iWePTj5Qw@mail.gmail.com>
-In-Reply-To: <CAHp75VditKnEcPKgqxz7NfG3ZWLZCu=pW=8qw7HS_iWePTj5Qw@mail.gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Fri, 22 Oct 2021 15:50:21 +0200
-Message-ID: <CANBLGcxDUNib4C0mrP1bYnJSLyZn7rmV1wwJyj5tK4-nbMnu9g@mail.gmail.com>
-Subject: Re: [PATCH v2 09/16] reset: starfive-jh7100: Add StarFive JH7100
- reset driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 22 Oct 2021 at 15:39, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> On Fri, Oct 22, 2021 at 4:35 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > On Fri, 22 Oct 2021 at 14:56, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Thu, Oct 21, 2021 at 8:43 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
->
-> ...
->
-> > > Why all these ugly % 32 against constants?
-> >
-> > Because the JH7100_RST_ values goes higher than 31. There is a
-> > BIT_MASK macro, but that does % BITS_PER_LONG and this is a 64bit
-> > machine.
->
-> And? It's exactly what you have to use!
+The loop can be refactored by using ARRAY_SIZE() instead of NULL terminator.
+This reduces code base and makes it easier to read and understand.
 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: fixed OOB access (Jiri, Dan), dropped irrelevant changes (Jiri, Joe)
+ drivers/tty/serial/8250/8250_pci.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-> > > Can you convert this to simple
-> > >
-> > >   if (assert)
-> > >     ret = readl_...
-> > >   else
-> > >     ret = readl_...
-> > >
-> > > below?
-> >
-> > I don't see how that would work. We're using the done value in in the
-> > readl_poll_timeout. Maybe you can be a bit more explicit.
->
-> Supply done either == mask or == ^mask. Try it.
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 93159557a2fb..8a2f42507c18 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -897,18 +897,16 @@ static int pci_netmos_init(struct pci_dev *dev)
+ /* enable IO_Space bit */
+ #define ITE_887x_POSIO_ENABLE		(1 << 31)
+ 
++/* inta_addr are the configuration addresses of the ITE */
++static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0, 0x200, 0x280 };
+ static int pci_ite887x_init(struct pci_dev *dev)
+ {
+-	/* inta_addr are the configuration addresses of the ITE */
+-	static const short inta_addr[] = { 0x2a0, 0x2c0, 0x220, 0x240, 0x1e0,
+-							0x200, 0x280, 0 };
+ 	int ret, i, type;
+ 	struct resource *iobase = NULL;
+ 	u32 miscr, uartbar, ioport;
+ 
+ 	/* search for the base-ioport */
+-	i = 0;
+-	while (inta_addr[i] && iobase == NULL) {
++	for (i = 0; i < ARRAY_SIZE(inta_addr); i++) {
+ 		iobase = request_region(inta_addr[i], ITE_887x_IOSIZE,
+ 								"ite887x");
+ 		if (iobase != NULL) {
+@@ -925,12 +923,10 @@ static int pci_ite887x_init(struct pci_dev *dev)
+ 				break;
+ 			}
+ 			release_region(iobase->start, ITE_887x_IOSIZE);
+-			iobase = NULL;
+ 		}
+-		i++;
+ 	}
+ 
+-	if (!inta_addr[i]) {
++	if (i == ARRAY_SIZE(inta_addr)) {
+ 		dev_err(&dev->dev, "ite887x: could not find iobase\n");
+ 		return -ENODEV;
+ 	}
+-- 
+2.33.0
 
-So you want this?
-if (assert)
-  ret = readl_poll_timeout_atomic(reg_status, value, (value & mask) ==
-done, 0, 1000);
-else
-  ret = readl_poll_timeout_atomic(reg_status, value, (value & mask) ==
-^done, 0, 1000);
-
-The compiler might be clever enough, but I'd worry the long body of
-the readl_poll_timeout_atomic macro is inline twice. Rather than just
-flipping the bit in `done`.
