@@ -2,214 +2,205 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0468C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 02:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A6BEC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 03:57:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7FED5611C3
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 02:06:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7C6BC61004
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 03:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232233AbhJVCIs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Oct 2021 22:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57354 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232180AbhJVCIr (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Oct 2021 22:08:47 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7CB4C061764
-        for <linux-serial@vger.kernel.org>; Thu, 21 Oct 2021 19:06:30 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so6788441pjd.1
-        for <linux-serial@vger.kernel.org>; Thu, 21 Oct 2021 19:06:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ic/jkXaDMCMZefIM+INQtLKGqHBF+RCyVHH3h2YGrKw=;
-        b=lOYDkrAgkjTYYjAVXORDOxu+X2oWJ4E99fQkCZASDeb6Bxv82OEj1GN5FK0PImm5Km
-         1ndDDD5m1+pbmgSn1SBOKkTkmI7jOGTmPdscGaAxvuyV0qv9zrNHSWWjIacTclp7IP8m
-         blwJCsF1Eav/gdde5L8blmmtrqSfTEaSWkVhkGUJlXUKR5GLx7C9pNVdNuQpKo0hWD5q
-         r1DrR3i3eTnq/y4cVofFTn7yizNn9/14ZJ233lM7YtM+F0dJDENsEyExx68GpuYIW9j3
-         V12+w1OEyyGSREogPhp1ezeuWIo0c7S25MveUfLpDoYgyADV8XIlq8q5tptjCMaone7i
-         fdWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ic/jkXaDMCMZefIM+INQtLKGqHBF+RCyVHH3h2YGrKw=;
-        b=DDKOoV/hs8czbOD5pPtVHCBZ6hOIBq6Pba3VuPco7n96s2BtEfCHA2KBwZm5BYMDuL
-         D3o+CDoW2M5mF5nLAyKZXJ63P6rhwa7Pp+au7GKan6gWWioqmNadCc8FRTZU1eH4hVPw
-         hGguTLak/dEXnUs6WoxJn5RXKJGwBEMGLO/BBcE4taHdLSsl0Xly32xC9XCZdPEZ28t5
-         4mU2drH0hRKCwbpFNF71hhLuPortLMV+JBquEtcK7tdFS+9kh1/z7msvf0iBBpa01pL/
-         TKTMwtMbkZwo3YGbrr+CrG/+MlBR2k5ibNFMCPXAGgEMy+/cgbHzw6DiMfxD/wuye5Bq
-         pKmA==
-X-Gm-Message-State: AOAM531XWrtBP7l2CCBbnlJGWdY5evxOWBUaDsRRI1Sh3RwETld+Kd6s
-        d5NUrIhtlKuoE6008a0GFMGgSpvCA1Ri3ceq
-X-Google-Smtp-Source: ABdhPJyaepizqaQ/UmIrCDVyrV4BTCHFvghNob7aEx2InsVkBVoe5WCokUrJgYwitOuJP7tHnLeG1Q==
-X-Received: by 2002:a17:903:310c:b0:13f:f70e:6e8f with SMTP id w12-20020a170903310c00b0013ff70e6e8fmr7335147plc.82.1634868390409;
-        Thu, 21 Oct 2021 19:06:30 -0700 (PDT)
-Received: from x1 ([2601:1c2:1080:1950:7c59:380a:adf8:4f49])
-        by smtp.gmail.com with ESMTPSA id p4sm6260957pgc.15.2021.10.21.19.06.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Oct 2021 19:06:29 -0700 (PDT)
-Date:   Thu, 21 Oct 2021 19:06:27 -0700
-From:   Drew Fustini <dfustini@baylibre.com>
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Huan Feng <huan.feng@starfivetech.com>
-Subject: Re: [PATCH v2 12/16] pinctrl: starfive: Add pinctrl driver for
- StarFive SoCs
-Message-ID: <20211022020627.GA1836770@x1>
-References: <20211021174223.43310-1-kernel@esmil.dk>
- <20211021174223.43310-13-kernel@esmil.dk>
- <20211021190118.GA1802180@x1>
- <CANBLGcy2WR2L_CE2FbLPBnDaHWaNgUySxyB4WyPYA1z8zsQAPQ@mail.gmail.com>
+        id S231134AbhJVD7T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Oct 2021 23:59:19 -0400
+Received: from mga04.intel.com ([192.55.52.120]:29129 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230393AbhJVD7S (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 21 Oct 2021 23:59:18 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10144"; a="227984508"
+X-IronPort-AV: E=Sophos;i="5.87,171,1631602800"; 
+   d="scan'208";a="227984508"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2021 20:56:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,171,1631602800"; 
+   d="scan'208";a="445110050"
+Received: from lkp-server02.sh.intel.com (HELO 08b2c502c3de) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 21 Oct 2021 20:56:47 -0700
+Received: from kbuild by 08b2c502c3de with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mdlfi-000F4J-Sd; Fri, 22 Oct 2021 03:56:46 +0000
+Date:   Fri, 22 Oct 2021 11:56:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 7c0408d805797178f075f33d0f705a1c6ef76c82
+Message-ID: <6172367c.fe8Vff26LgIcm2o7%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANBLGcy2WR2L_CE2FbLPBnDaHWaNgUySxyB4WyPYA1z8zsQAPQ@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 21, 2021 at 09:50:42PM +0200, Emil Renner Berthing wrote:
-> On Thu, 21 Oct 2021 at 21:01, Drew Fustini <dfustini@baylibre.com> wrote:
-> > On Thu, Oct 21, 2021 at 07:42:19PM +0200, Emil Renner Berthing wrote:
-> > > +/*
-> > > + * Interrupt Trigger Polarity. If set to 1 the interrupt is triggered on a
-> > > + * rising edge (edge-triggered) or high level (level-triggered). If set to 0 the
-> > > + * interrupt is triggered on a falling edge (edge-triggered) or low level
-> > > + * (level-triggered).
-> > > + */
-> > > +#define GPIOIEV              0x020
-> > > +
-> > > +/*
-> > > + * Interrupt Mask. If set to 1 the interrupt is disabled (masked). If set to 0
-> > > + * the interrupt is enabled (unmasked).
-> > > + */
-> > > +#define GPIOIE               0x028
-> >
-> > It bothered me that the datasheet used the term GPIOIE for the interrupt
-> > mask register. I had used a more verbose #define name because I worried
-> > someone reading GPIOIE in functions might mistake it for an interrupt
-> > enable register. This happened to me when I was originally working with
-> > the gpio driver.
-> >
-> > However I suppose the best solution would have been to get the datasheet
-> > updated as I can see how it is best to have #define names in the driver
-> > match the datasheet.
-> >
-> > > +static void starfive_irq_mask(struct irq_data *d)
-> > > +{
-> > > +     struct starfive_pinctrl *sfp = starfive_from_irq_data(d);
-> > > +     irq_hw_number_t gpio = irqd_to_hwirq(d);
-> > > +     void __iomem *ie = sfp->base + GPIOIE + 4 * (gpio / 32);
-> > > +     u32 mask = BIT(gpio % 32);
-> > > +     unsigned long flags;
-> > > +     u32 value;
-> > > +
-> > > +     raw_spin_lock_irqsave(&sfp->lock, flags);
-> > > +     value = readl_relaxed(ie) & ~mask;
-> > > +     writel_relaxed(value, ie);
-> > > +     raw_spin_unlock_irqrestore(&sfp->lock, flags);
-> > > +}
-> > > +
-> > > +static void starfive_irq_mask_ack(struct irq_data *d)
-> > > +{
-> > > +     struct starfive_pinctrl *sfp = starfive_from_irq_data(d);
-> > > +     irq_hw_number_t gpio = irqd_to_hwirq(d);
-> > > +     void __iomem *ie = sfp->base + GPIOIE + 4 * (gpio / 32);
-> > > +     void __iomem *ic = sfp->base + GPIOIC + 4 * (gpio / 32);
-> > > +     u32 mask = BIT(gpio % 32);
-> > > +     unsigned long flags;
-> > > +     u32 value;
-> > > +
-> > > +     raw_spin_lock_irqsave(&sfp->lock, flags);
-> > > +     value = readl_relaxed(ie) & ~mask;
-> > > +     writel_relaxed(value, ie);
-> > > +     writel_relaxed(mask, ic);
-> > > +     raw_spin_unlock_irqrestore(&sfp->lock, flags);
-> > > +}
-> > > +
-> > > +static void starfive_irq_unmask(struct irq_data *d)
-> > > +{
-> > > +     struct starfive_pinctrl *sfp = starfive_from_irq_data(d);
-> > > +     irq_hw_number_t gpio = irqd_to_hwirq(d);
-> > > +     void __iomem *ie = sfp->base + GPIOIE + 4 * (gpio / 32);
-> > > +     u32 mask = BIT(gpio % 32);
-> > > +     unsigned long flags;
-> > > +     u32 value;
-> > > +
-> > > +     raw_spin_lock_irqsave(&sfp->lock, flags);
-> > > +     value = readl_relaxed(ie) | mask;
-> > > +     writel_relaxed(value, ie);
-> > > +     raw_spin_unlock_irqrestore(&sfp->lock, flags);
-> > > +}
-> > > +
-> 
-> ...
-> 
-> > > +static int starfive_gpio_init_hw(struct gpio_chip *gc)
-> > > +{
-> > > +     struct starfive_pinctrl *sfp = starfive_from_gc(gc);
-> > > +
-> > > +     /* mask all GPIO interrupts */
-> > > +     writel(0, sfp->base + GPIOIE + 0);
-> > > +     writel(0, sfp->base + GPIOIE + 4);
-> >
-> > Woudln't 0 in GPIOIE mean mask is disabled for all interrupts?
-> >
-> > In other words, wouldn't this enable all the interrupts?
-> 
-> Heh, you're right. The code does the exact opposite of what the
-> documentation says it should be doing. However I just tried and with
-> the code as it is now GPIO interrupts work fine, but with the logic
-> flipped the kernel fails to boot. I'm guessing because an interrupt
-> storm. So it seems to me the documentation might be wrong and GPIOIE
-> is actually a good name.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 7c0408d805797178f075f33d0f705a1c6ef76c82  tty: add rpmsg driver
 
-Ah, it seems I once knew this back in July [1] but never got the
-documentation changed:
+elapsed time: 1018m
 
-NOTE: Table 12-9 in the JH7100 datasheet is incorrect regarding fields
-GPIOIE_0 and GPIOIE_1. An interrupt is enabled (unmasked) when the bit
-is   set to 1 and it is disabled (masked) when set to 0. The datasheet
-incorrectly states the opposite. I think this is due to the datasheet
-author thinking of it as mask field which it is not, it is an enable
-field. I will raise an issue on the documentation repo.
+configs tested: 143
+configs skipped: 4
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-> 
-> Michael Zhu: Can you confirm if a 1 or 0 enables the interrupt in the
-> GPIOIE registers?
-> 
-> /Emil
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20211021
+m68k                         apollo_defconfig
+arm                            mmp2_defconfig
+arm                         vf610m4_defconfig
+powerpc                    gamecube_defconfig
+h8300                            alldefconfig
+powerpc                  mpc866_ads_defconfig
+powerpc                     ep8248e_defconfig
+mips                            gpr_defconfig
+powerpc                      makalu_defconfig
+arm                        trizeps4_defconfig
+arm                  colibri_pxa300_defconfig
+powerpc                   bluestone_defconfig
+sh                ecovec24-romimage_defconfig
+powerpc                     sequoia_defconfig
+arm                        magician_defconfig
+xtensa                  cadence_csp_defconfig
+powerpc                        warp_defconfig
+powerpc                 mpc834x_mds_defconfig
+sh                        sh7757lcr_defconfig
+arm                      jornada720_defconfig
+mips                        omega2p_defconfig
+mips                         mpc30x_defconfig
+um                                  defconfig
+arm                         orion5x_defconfig
+powerpc                     akebono_defconfig
+powerpc                      chrp32_defconfig
+powerpc                      ppc64e_defconfig
+arm                         s3c2410_defconfig
+arm                       multi_v4t_defconfig
+parisc                              defconfig
+m68k                          atari_defconfig
+mips                        qi_lb60_defconfig
+m68k                                defconfig
+powerpc                      obs600_defconfig
+mips                malta_qemu_32r6_defconfig
+openrisc                            defconfig
+mips                           ip32_defconfig
+arm                        neponset_defconfig
+sh                        edosk7705_defconfig
+arm                             pxa_defconfig
+arm                      footbridge_defconfig
+sh                     magicpanelr2_defconfig
+nios2                               defconfig
+mips                       capcella_defconfig
+arm                         s5pv210_defconfig
+sh                          rsk7201_defconfig
+m68k                            q40_defconfig
+parisc                           alldefconfig
+arm                           u8500_defconfig
+riscv                    nommu_virt_defconfig
+powerpc                      tqm8xx_defconfig
+sh                         ap325rxa_defconfig
+powerpc                          allyesconfig
+arm                            mps2_defconfig
+arm                          moxart_defconfig
+arc                     haps_hs_smp_defconfig
+sh                           se7751_defconfig
+mips                          rb532_defconfig
+openrisc                 simple_smp_defconfig
+arm                  randconfig-c002-20211022
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                             allyesconfig
+nds32                             allnoconfig
+arc                              allyesconfig
+nds32                               defconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+xtensa                           allyesconfig
+s390                                defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64               randconfig-a013-20211021
+x86_64               randconfig-a015-20211021
+x86_64               randconfig-a011-20211021
+x86_64               randconfig-a014-20211021
+x86_64               randconfig-a016-20211021
+x86_64               randconfig-a012-20211021
+i386                 randconfig-a012-20211021
+i386                 randconfig-a013-20211021
+i386                 randconfig-a011-20211021
+i386                 randconfig-a016-20211021
+i386                 randconfig-a015-20211021
+i386                 randconfig-a014-20211021
+arc                  randconfig-r043-20211021
+riscv                randconfig-r042-20211021
+s390                 randconfig-r044-20211021
+riscv                            allyesconfig
+riscv                            allmodconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+x86_64                           allyesconfig
 
-[1] https://github.com/esmil/linux/pull/34/commits/e247a259e40312d0202cdbdd686dbba09afc7813
+clang tested configs:
+powerpc              randconfig-c003-20211021
+riscv                randconfig-c006-20211021
+arm                  randconfig-c002-20211021
+x86_64               randconfig-c007-20211021
+mips                 randconfig-c004-20211021
+s390                 randconfig-c005-20211021
+i386                 randconfig-c001-20211021
+x86_64               randconfig-a002-20211021
+x86_64               randconfig-a004-20211021
+x86_64               randconfig-a005-20211021
+x86_64               randconfig-a001-20211021
+x86_64               randconfig-a006-20211021
+x86_64               randconfig-a003-20211021
+i386                 randconfig-a004-20211021
+i386                 randconfig-a003-20211021
+i386                 randconfig-a002-20211021
+i386                 randconfig-a005-20211021
+i386                 randconfig-a001-20211021
+i386                 randconfig-a006-20211021
+hexagon              randconfig-r045-20211021
+hexagon              randconfig-r041-20211021
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
