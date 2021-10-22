@@ -2,57 +2,61 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F11C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 12:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0D6C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 12:56:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D1B5560F57
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 12:44:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C24D2610A1
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 12:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbhJVMrH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Oct 2021 08:47:07 -0400
-Received: from mail-ua1-f43.google.com ([209.85.222.43]:40909 "EHLO
-        mail-ua1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbhJVMrG (ORCPT
+        id S232856AbhJVM60 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Oct 2021 08:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232805AbhJVM6Z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Oct 2021 08:47:06 -0400
-Received: by mail-ua1-f43.google.com with SMTP id e2so7355525uax.7;
-        Fri, 22 Oct 2021 05:44:49 -0700 (PDT)
+        Fri, 22 Oct 2021 08:58:25 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB45C061764;
+        Fri, 22 Oct 2021 05:56:07 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id t16so5048563eds.9;
+        Fri, 22 Oct 2021 05:56:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+qOi8f1v4+rJCxOKM/1lFt8oaZPEX6smhRzqey4rSCg=;
+        b=YivvG/JsMBUvbb3Fs9tTmqksEjk8+rN0v5A+vUK4z8jS13RgQj58cSSwV7Hs+IWsGB
+         adNRyKbM3yrg9wi18C8DLlOUORLq1BF4FYNWg7JzYi9UuIUeEq4Rn/rDkk/y1zhLxtEc
+         aOJwG8ueEq8fZmlCGlZRCr1VCFNZmF0LBwCeNKdP2CPqZ8YkdZryhKGqdvn5XSpjL1oP
+         4o6i1XlLhy5Ivwsx0XRyu4wrcaRPgu1kTvO9jQ+GdztgGf9HLtxndmPFXuqPLPJ6Ep1B
+         hDkRcHpvS7zlSUe5S45XqZYbcF6yhFGCeBVedFGDj8jrOQeCynGBXo9ZCYD+Q7EnHKgo
+         5Pew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=76x3pLWRTCP/TRw1WTSC3Z8xBZgXnwV9dr1N3FI35XA=;
-        b=ETAxcbdJEW2BMR3c4GlG5c2Ces+yleAIFYtWXd/UBgUpX1fuXu+y36ofN83I41PtzM
-         VoHr+2TNBGU44ZW6zbNxXM44D97OHqyXQ3bXkOzmPCuWAWJAiMBeec8ihFSJnJGxfXWr
-         mF8uE+NjXbpWSj0mOzvGXQOO3GeB+Oi6lwpRhN0fszuS36xMC9r/bKmKlASFEuH0nkmQ
-         8wzLziGizc998f36i1jhyAD6B5zkMylxVPOySXL21OCVz73FqwxYy94TKQ7+Y8MEhNAt
-         f2kaPO4QHPBrCuMWs4Avam5C17C1TSQpRDNxRSeNDbIZSt6qXe5q9PG1rNNo+Ws/KvXp
-         EGiQ==
-X-Gm-Message-State: AOAM530f1P+42Tc5wlITcJcDRsPdvnrjJyHjdgkudE5VQh4vbuePn198
-        LwicV2Vnad9O/43ZfgetzmxRcDLPk45NZQ==
-X-Google-Smtp-Source: ABdhPJzJ7nT9qULtKar+Jv+RzetLGP+UK6N10bk7KQKB6ggeYUkrz6KkV3x2Sgpxug8Z7HyVTRfoOQ==
-X-Received: by 2002:a67:d810:: with SMTP id e16mr5126900vsj.42.1634906688814;
-        Fri, 22 Oct 2021 05:44:48 -0700 (PDT)
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
-        by smtp.gmail.com with ESMTPSA id p191sm5020484vkp.31.2021.10.22.05.44.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Oct 2021 05:44:48 -0700 (PDT)
-Received: by mail-ua1-f47.google.com with SMTP id e5so278341uam.11;
-        Fri, 22 Oct 2021 05:44:48 -0700 (PDT)
-X-Received: by 2002:a05:6102:290c:: with SMTP id cz12mr14104011vsb.35.1634906688057;
- Fri, 22 Oct 2021 05:44:48 -0700 (PDT)
+        bh=+qOi8f1v4+rJCxOKM/1lFt8oaZPEX6smhRzqey4rSCg=;
+        b=5+uTAOrr2V0dcaVJzZBFq07KW7zK7NmkyRwdwtaiARaSfz73n3ZxgLedNJdgSCcE33
+         xsKyityjBnqQSTB2SAf3jTt3XUjh1D1Q0xdaYWAXKfWPftFNBwilaeQHj7qe1gdxAfoH
+         HveW2bflwxYw9eH6MhI+w6Nvtub3vlCjjtwlyzuKcHub7IIng4wHQLh5JYWruMfWnqpw
+         kPIHTBH3bdwWhTKtepq6wqfueuiyEVgqYvI3hFTic+u0Oeb7H2EMicbiW6AnyJM47C1Z
+         idX1VBSMCDr09/3awkhzPErZG3HVj0hNUbt2Ta23hUKYV90LTEU89hFqmESnw62yeHkW
+         97ng==
+X-Gm-Message-State: AOAM532Q4yyAHXMJDDEFOxDdejELBl7sReiYReMuxZCtVmG54PNyRhWk
+        IHK7LNQsA420HTBS2U1DXi9Qi+WWM0BQtftyME8=
+X-Google-Smtp-Source: ABdhPJxjmbZn/mKzz2MeCcWBTlXcYFWWJdlvVwlzqH5Cmn9IpfIf34cJh9HoSyv6xIrG1HUL+9nURIo/Rrh/wNmzfU8=
+X-Received: by 2002:a17:906:5a47:: with SMTP id my7mr14665000ejc.128.1634907366155;
+ Fri, 22 Oct 2021 05:56:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-7-kernel@esmil.dk>
- <CAHp75VcS7ZZCciAgBH2QU7u8CiHzveAOsvSdv2DQBvpBn_6opQ@mail.gmail.com>
-In-Reply-To: <CAHp75VcS7ZZCciAgBH2QU7u8CiHzveAOsvSdv2DQBvpBn_6opQ@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 22 Oct 2021 14:44:36 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXJES+Jufhs--5vnXq=RwDF+WmZc7_C6Lc4gAVaY5sRRQ@mail.gmail.com>
-Message-ID: <CAMuHMdXJES+Jufhs--5vnXq=RwDF+WmZc7_C6Lc4gAVaY5sRRQ@mail.gmail.com>
-Subject: Re: [PATCH v2 06/16] clk: starfive: Add JH7100 clock generator driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
+References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-10-kernel@esmil.dk>
+In-Reply-To: <20211021174223.43310-10-kernel@esmil.dk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 22 Oct 2021 15:55:10 +0300
+Message-ID: <CAHp75VcUv6WH0--FANpRExCdEOJNVo8KCtJ2Go090=FZq-Y0UQ@mail.gmail.com>
+Subject: Re: [PATCH v2 09/16] reset: starfive-jh7100: Add StarFive JH7100
+ reset driver
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
         devicetree <devicetree@vger.kernel.org>,
         linux-clk <linux-clk@vger.kernel.org>,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
@@ -73,6 +77,7 @@ Cc:     Emil Renner Berthing <kernel@esmil.dk>,
         Maximilian Luz <luzmaximilian@gmail.com>,
         Sagar Kadam <sagar.kadam@sifive.com>,
         Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         Michael Zhu <michael.zhu@starfivetech.com>,
         Fu Wei <tekkamanninja@gmail.com>,
         Anup Patel <anup.patel@wdc.com>,
@@ -84,29 +89,101 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 22, 2021 at 2:34 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Thu, Oct 21, 2021 at 8:43 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > +       while (idx)
-> > +               clk_hw_unregister(&priv->reg[--idx].hw);
+On Thu, Oct 21, 2021 at 8:43 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
 >
-> I still consider that usual pattern, i.e.
->
->        while (idx--)
->                clk_hw_unregister(&priv->reg[idx].hw);
->
-> but since you are pushing hard for your variant I'll leave it to the
-> maintainers and author.
+> Add a driver for the StarFive JH7100 reset controller.
 
-I agree with Andy.
+...
 
-Gr{oetje,eeting}s,
+> +config RESET_STARFIVE_JH7100
+> +       bool "StarFive JH7100 Reset Driver"
+> +       depends on SOC_STARFIVE || COMPILE_TEST
 
-                        Geert
+> +       depends on OF
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+No evidence of this dependency. Why to limit test coverage?
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> +       default SOC_STARFIVE
+
+...
+
+> +/*
+> + * Reset driver for the StarFive JH7100 SoC
+> + *
+> + * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
+
+> + *
+
+Redundant empty line.
+
+> + */
+
+...
+
+> +#include <linux/of_device.h>
+
+No evidence of any usage of this header. Perhaps you meant mod_devicetable.h?
+
+...
+
+> +static const u32 jh7100_reset_asserted[4] = {
+
+> +       BIT(JH7100_RST_U74 % 32) |
+> +       BIT(JH7100_RST_VP6_DRESET % 32) |
+> +       BIT(JH7100_RST_VP6_BRESET % 32),
+
+It's hard to notice that this is only one entry. See also below.
+
+> +       BIT(JH7100_RST_HIFI4_DRESET % 32) |
+> +       BIT(JH7100_RST_HIFI4_BRESET % 32),
+> +
+> +       BIT(JH7100_RST_E24 % 32)
+
++ Comma.
+
+> +};
+
+Why all these ugly % 32 against constants?
+
+...
+
+> +       if (!assert)
+> +               done ^= mask;
+
+Can you convert this to simple
+
+  if (assert)
+    ret = readl_...
+  else
+    ret = readl_...
+
+below?
+
+> +       spin_lock_irqsave(&data->lock, flags);
+> +
+> +       value = readl(reg_assert);
+> +       if (assert)
+> +               value |= mask;
+> +       else
+> +               value &= ~mask;
+> +       writel(value, reg_assert);
+
+> +       /* if the associated clock is gated, deasserting might otherwise hang forever */
+> +       ret = readl_poll_timeout(reg_status, value, (value & mask) == done, 0, 1000);
+
+You run delays under spin lock. You need to use _atomic variant.
+
+> +       spin_unlock_irqrestore(&data->lock, flags);
+
+...
+
+> +       u32 value = (readl(reg_status) ^ jh7100_reset_asserted[offset]) & mask;
+
+> +       dev_dbg(rcdev->dev, "status(%lu) = %d\n", id, !value);
+> +       return !value;
+
+Dup of ! operator. Can it be value = !(...); above?
+
+-- 
+With Best Regards,
+Andy Shevchenko
