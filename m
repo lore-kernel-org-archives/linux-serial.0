@@ -2,53 +2,47 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A231C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 15:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F5EC4332F
+	for <linux-serial@archiver.kernel.org>; Sat, 23 Oct 2021 18:46:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3452461108
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Oct 2021 15:59:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F234260F93
+	for <linux-serial@archiver.kernel.org>; Sat, 23 Oct 2021 18:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233584AbhJVQCK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Oct 2021 12:02:10 -0400
-Received: from mail-pg1-f182.google.com ([209.85.215.182]:40452 "EHLO
-        mail-pg1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233539AbhJVQCD (ORCPT
+        id S230359AbhJWSsa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 23 Oct 2021 14:48:30 -0400
+Received: from mail-pf1-f177.google.com ([209.85.210.177]:37728 "EHLO
+        mail-pf1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230051AbhJWSs3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Oct 2021 12:02:03 -0400
-Received: by mail-pg1-f182.google.com with SMTP id q5so3703244pgr.7;
-        Fri, 22 Oct 2021 08:59:45 -0700 (PDT)
+        Sat, 23 Oct 2021 14:48:29 -0400
+Received: by mail-pf1-f177.google.com with SMTP id q19so6660889pfl.4;
+        Sat, 23 Oct 2021 11:46:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ve3WMv+ekDk2TdI4V72WJsoDE4qRPggIm2D4MYgIa/s=;
-        b=YoSiSqNcsi/ce2Uu1fcFeaqpii6hTMjVDm7gJVw9xDH7AdC8PIx4gZ6uPuL7xRMfKC
-         54vOTvPfjthY2XSwrFXUfAZ2vUmPFxcdmIjrVK9CB27pMhIzll+qEDfnDQXo0s/LiDVf
-         dWF8W7ei5gGRo647Wr5c6gl5mtJtGFEoXxxy8I01BTGmgrqSaevViH5qTX9xyNlbam7d
-         jERbu6pqN3qPhlmXHpFpLvtQmdhKZJ7K4Xyx36X/iWI8B0kd/8j/TebiebSz9ztK3k5i
-         8REQfczYggfpmdnmJptxwh77Sesn5dLd6oDTEceHOpqJAhKrDemxDA0/Hs/W3CJl4d3m
-         uGwg==
-X-Gm-Message-State: AOAM532FBU6tFdSW+DWL7GGC++DXZ0CowbtFTlczbdBiSIOgY3GHbEGa
-        d7+gGptSPuK9PthIGgoSDNCFIkrkN41OTYu6xCQ=
-X-Google-Smtp-Source: ABdhPJytmeUKXJ3sdL/RoZcFfoUxkwHNf715Lzot8ru5O13Qs3evLOYJia2m3U02KPExB+40zvfLAu1iZcMn5ibdDp4=
-X-Received: by 2002:a63:2d46:: with SMTP id t67mr414276pgt.15.1634918385517;
- Fri, 22 Oct 2021 08:59:45 -0700 (PDT)
+        bh=aEAs776K6p8lZTPzkmuLZOOmJgVbRulxd0di0mx4cQo=;
+        b=mnQ2vF/XFd2cx8SWyX6XgvPYUOeltIULyayh81rdDFR94qjc55wsN9EM4QHscEGDLv
+         yU4OrA4Pu2UaRthSjdIJsxFDyYqPOQEKKYIaK/wk7qffddl0svI/imk5qjEX2ibG1cti
+         BPrDieiJ99EoYxMEhCT6ge2alpthnckOJ8wykXvWsoXP/ZmfZejSxWzoryUJPZuZvQjI
+         xvslDNy7fSgXI8DlICLPfwrpjnWj/6J1LB6sps6+0+83u+bpGHZD5vP9frzyUAe+AGHq
+         Pbo+EUjnbeTp2nF6a37WXCJnpdHRDY0rNEhsdx8f2gMJbMycjUGfHfPH72XJWh6JhGa1
+         qjSg==
+X-Gm-Message-State: AOAM533TOELz3qZ+SoKqmYh8FvS67kWhy6sUkWUi3FZhkNi8SAzlnT0M
+        rmW38fmaiSbKEdnJFz1ZJT6aQYdMu5iJ3azZ1ps=
+X-Google-Smtp-Source: ABdhPJwUUFlKXvpsn91+TjHUhvKesdVA98hRAzasAzXJWFUk833ncJyUVkE0wix0yH6ytJf6E1aavF8F7rHyHiD+TzA=
+X-Received: by 2002:a05:6a00:1707:b0:44d:47e1:9ffe with SMTP id
+ h7-20020a056a00170700b0044d47e19ffemr7898940pfc.53.1635014770164; Sat, 23 Oct
+ 2021 11:46:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-10-kernel@esmil.dk>
- <CAHp75VcUv6WH0--FANpRExCdEOJNVo8KCtJ2Go090=FZq-Y0UQ@mail.gmail.com>
- <CANBLGcysKdqo+FioSkhd1PZRLzPF=fRJrCTsUGR7vXcn2WpYHg@mail.gmail.com>
- <CAHp75VditKnEcPKgqxz7NfG3ZWLZCu=pW=8qw7HS_iWePTj5Qw@mail.gmail.com>
- <CANBLGcyaSgbOgA4u_QivUQicyZ0MuUmrSsPq56OAANsav8R=VQ@mail.gmail.com>
- <CAHp75Vf=fGn33JFa-8UwCzv7A6AgHdnvfoabKnCcuKZxOyWX2Q@mail.gmail.com>
- <CANBLGcwZG-HpMuyw0LTGY2fwOJTgcMW7V_6kb=CFhX-Y5RjQSA@mail.gmail.com>
- <CAHp75VfwmSfeUPvUXT3TTf0ZYGMfBZ0qaPoB0_SCzyR=Fb_Emw@mail.gmail.com>
- <CANBLGcwz7s5OJer-37mQC2r_H0trec04S69ovYdU2_LbiVrtYw@mail.gmail.com> <YXLenBb21jTZlGu0@smile.fi.intel.com>
-In-Reply-To: <YXLenBb21jTZlGu0@smile.fi.intel.com>
+References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-13-kernel@esmil.dk>
+ <CAHp75Vf3yNoKxguHP3EPcRV_3tG++Fd=FVM0MXqW4_SmLA6HEw@mail.gmail.com>
+In-Reply-To: <CAHp75Vf3yNoKxguHP3EPcRV_3tG++Fd=FVM0MXqW4_SmLA6HEw@mail.gmail.com>
 From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Fri, 22 Oct 2021 17:59:34 +0200
-Message-ID: <CANBLGcyOiOCeSg0ZHxHjOcpHT9HQ0X3_8Ovff4u2qOnB7BWOsw@mail.gmail.com>
-Subject: Re: [PATCH v2 09/16] reset: starfive-jh7100: Add StarFive JH7100
- reset driver
+Date:   Sat, 23 Oct 2021 20:45:58 +0200
+Message-ID: <CANBLGcxEwkcZn2CC69zLaVqL8ocS6r6HDaaoUF09gg1mpDxFzg@mail.gmail.com>
+Subject: Re: [PATCH v2 12/16] pinctrl: starfive: Add pinctrl driver for
+ StarFive SoCs
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
         devicetree <devicetree@vger.kernel.org>,
@@ -66,6 +60,7 @@ Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jiri Slaby <jirislaby@kernel.org>,
         Maximilian Luz <luzmaximilian@gmail.com>,
         Sagar Kadam <sagar.kadam@sifive.com>,
@@ -76,94 +71,320 @@ Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
         Anup Patel <anup.patel@wdc.com>,
         Atish Patra <atish.patra@wdc.com>,
         Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Huan Feng <huan.feng@starfivetech.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 22 Oct 2021 at 17:55, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> On Fri, Oct 22, 2021 at 05:36:21PM +0200, Emil Renner Berthing wrote:
-> > On Fri, 22 Oct 2021 at 17:25, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Fri, Oct 22, 2021 at 5:56 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > > > On Fri, 22 Oct 2021 at 16:50, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > On Fri, Oct 22, 2021 at 5:25 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+On Fri, 22 Oct 2021 at 15:32, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> On Thu, Oct 21, 2021 at 8:44 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > +       for_each_child_of_node(np, child) {
+> > +               int npins;
+> > +               int i;
+> > +
+> > +               ret = -ENOMEM;
+> > +               grpname = devm_kasprintf(dev, GFP_KERNEL, "%s.%s", np->name, child->name);
+> > +               if (!grpname)
+> > +                       goto put_child;
+> > +
+> > +               pgnames[ngroups++] = grpname;
+> > +
+> > +               if ((npins = of_property_count_u32_elems(child, "pinmux")) > 0) {
+> > +                       pins = devm_kcalloc(dev, npins, sizeof(*pins), GFP_KERNEL);
+> > +                       if (!pins)
+> > +                               goto free_grpname;
+> > +
+> > +                       pinmux = devm_kcalloc(dev, npins, sizeof(*pinmux), GFP_KERNEL);
+> > +                       if (!pinmux)
+> > +                               goto free_pins;
+> > +
+> > +                       for (i = 0; i < npins; i++) {
+> > +                               u32 v;
+> > +
+> > +                               ret = of_property_read_u32_index(child, "pinmux", i, &v);
+> > +                               if (ret)
+> > +                                       goto free_pinmux;
+> > +                               pins[i] = starfive_gpio_to_pin(sfp, starfive_pinmux_to_gpio(v));
+> > +                               pinmux[i] = v;
+> > +                       }
+>
+> Why you can't use of_property_read_u32_array() APIs?
+
+I can here, but..
+
+> > +                       map[nmaps].type = PIN_MAP_TYPE_MUX_GROUP;
+> > +                       map[nmaps].data.mux.function = np->name;
+> > +                       map[nmaps].data.mux.group = grpname;
+> > +                       nmaps += 1;
+> > +               } else if ((npins = of_property_count_u32_elems(child, "pins")) > 0) {
+> > +                       pins = devm_kcalloc(dev, npins, sizeof(*pins), GFP_KERNEL);
+> > +                       if (!pins)
+> > +                               goto free_grpname;
+> > +
+> > +                       pinmux = NULL;
+> > +
+> > +                       for (i = 0; i < npins; i++) {
+> > +                               u32 v;
+> > +
+> > +                               ret = of_property_read_u32_index(child, "pins", i, &v);
+> > +                               if (ret)
+> > +                                       goto free_pins;
+> > +                               pins[i] = v;
+> > +                       }
+>
+> NIH _array() APIs.
+
+.. here the pins array is an int array and not u32 array. I can cast
+it and and hope Linux will never run on a machine where sizeof(int) !=
+4 if you think that's better?
+
+> > +               } else {
+> > +                       ret = -EINVAL;
+> > +                       goto free_grpname;
+> > +               }
+> > +
+> > +               ret = pinctrl_generic_add_group(pctldev, grpname, pins, npins, pinmux);
+> > +               if (ret < 0) {
+> > +                       dev_err(dev, "error adding group %pOFn.%pOFn: %d\n",
+> > +                               np, child, ret);
+> > +                       goto free_pinmux;
+> > +               }
+> > +
+> > +               ret = pinconf_generic_parse_dt_config(child, pctldev,
+> > +                                                     &map[nmaps].data.configs.configs,
+> > +                                                     &map[nmaps].data.configs.num_configs);
+> > +               if (ret) {
+> > +                       dev_err(dev, "invalid pinctrl group %pOFn.%pOFn: %s\n",
+> > +                               np, child, "error parsing pin config");
+> > +                       goto put_child;
+> > +               }
+> > +
+> > +               /* don't create a map if there are no pinconf settings */
+> > +               if (map[nmaps].data.configs.num_configs == 0)
+> > +                       continue;
+> > +
+> > +               map[nmaps].type = PIN_MAP_TYPE_CONFIGS_GROUP;
+> > +               map[nmaps].data.configs.group_or_pin = grpname;
+> > +               nmaps += 1;
+> > +       }
 >
 > ...
 >
-> > > > > AFAICS they are sequential 4 32-bit registers.
-> > > >
-> > > > That's right, but we're on a 64bit machine, so DECLARE_BITMAP will
-> > > > give us an unsigned long array that doesn't match that.
-> > >
-> > > I didn't get it, sorry.
-> > > You will have a bitmap array which you will split to 32-bit values.
-> > > What you will probably need is to move  xgpio_get_value32() and void
-> > > xgpio_set_value32() to the one of bitmap related headers (look for
-> > > bitmap_get_value8() and friends).
-> > >
-> > > > > So bitmap is exactly what is suitable here, you are right!
-> > > > > See gpio-xilinx and gpio-pca953x on how to use bitmaps in the GPIO drivers.
-> > > >
-> > > > None of them has a pre-initialized const DECLARE_BITMAP, so they don't
-> > > > have to deal with the 4 vs. 2 commas problem.
-> > >
-> > > I believe it's well possible to refactor this to look much better with
-> > > bitmaps (as it represents the hardware very well).
+> > +free_pinmux:
+> > +       devm_kfree(dev, pinmux);
+> > +free_pins:
+> > +       devm_kfree(dev, pins);
+> > +free_grpname:
+> > +       devm_kfree(dev, grpname);
+>
+> > +free_pgnames:
+> > +       devm_kfree(dev, pgnames);
+>
+> Just no, please get rid of them either way as I explained in previous reviews.
+
+So I asked you if you thought it was better to leave these unused
+allocations when parsing the device tree node fails but you never
+answered that. I didn't want put words in your mouth so I could only
+assume you didn't. I'd really like a straight answer to that so I have
+something to refer to when people ask why this driver doesn't do the
+same as fx. the pinctrl-single. So just to be clear: do you think it's
+better to leave this unused garbage allocated if parsing the device
+tree node fails?
+
+> > +               raw_spin_lock_irqsave(&sfp->lock, flags);
+> > +               writel_relaxed(dout, reg_dout);
+> > +               writel_relaxed(doen, reg_doen);
+> > +               if (reg_din)
+> > +                       writel_relaxed(gpio + 2, reg_din);
+>
+> Why 0 can't be written?
+
+Because signal 0 is a special "always 0" signal and signal 1 is a
+special "always 1" signal, and after that signal n is the input value
+of GPIO n - 2. We don't want to overwrite the PoR defaults.
+
+> > +       mask = 0;
+> > +       value = 0;
+> > +       for (i = 0; i < num_configs; i++) {
+> > +               int param = pinconf_to_config_param(configs[i]);
+> > +               u32 arg = pinconf_to_config_argument(configs[i]);
 > >
-> > Right, but how exactly? This works on on 64bit, but not with 32bit COMPILE_TEST:
-> >
-> > static const DECLARE_BITMAP(jh7100_reset_asserted, JH7100_RSTN_END) = {
-> >         /* STATUS0 register */
-> >         BIT_MASK(JH7100_RST_U74) |
-> >         BIT_MASK(JH7100_RST_VP6_DRESET) |
-> >         BIT_MASK(JH7100_RST_VP6_BRESET) |
-> >         /* STATUS1 register */
-> >         BIT_MASK(JH7100_RST_HIFI4_DRESET) |
-> >         BIT_MASK(JH7100_RST_HIFI4_BRESET),
-> >         /* STATUS2 register */
-> >         BIT_MASK(JH7100_RST_E24) |
-> >         /* STATUS3 register */
-> >         0,
-> > };
+> +
+> > +               switch (param) {
+> > +               case PIN_CONFIG_BIAS_DISABLE:
+> > +                       mask |= PAD_BIAS_MASK;
+> > +                       value = (value & ~PAD_BIAS_MASK) | PAD_BIAS_DISABLE;
 >
-> BITMAP_FROM_U64() ?
+> Okay, I have got why you are masking on each iteration, but here is
+> the question, shouldn't you apply the cnages belonged to each of the
+> group of options as it's requested by the user? Here you basically
+> ignore all previous changes to bias.
+>
+> I would expect that you have something like
+>
+> for () {
+>   switch (type) {
+>   case BIAS*:
+>     return apply_bias();
+>   ...other types...
+>   default:
+>     return err;
+>   }
+> }
 
-So you think this is better?
+I such cases where you get conflicting PIN_CONFIG_BIAS_* settings I
+don't see why it's better to do the rmw on the padctl register for the
+first bias setting only to then change the bits again a few
+microseconds later when the loop encounters the second bias setting.
+After the loop is done the end result would still be just the last
+bias setting.
 
-static const DECLARE_BITMAP(jh7100_reset_asserted, JH7100_RSTN_END) = {
-        BITMAP_FROM_U64(
-                /* STATUS0 register */
-                BIT_MASK(JH7100_RST_U74) |
-                BIT_MASK(JH7100_RST_VP6_DRESET) |
-                BIT_MASK(JH7100_RST_VP6_BRESET) |
-                /* STATUS1 register */
-                BIT_MASK(JH7100_RST_HIFI4_DRESET) |
-                BIT_MASK(JH7100_RST_HIFI4_BRESET)
-        ),
-        BITMAP_FROM_U64(
-                /* STATUS2 register */
-                BIT_MASK(JH7100_RST_E24) |
-                /* STATUS3 register */
-                0
-        ),
-};
+> > +                       break;
+> > +               case PIN_CONFIG_BIAS_PULL_DOWN:
+> > +                       if (arg == 0)
+> > +                               return -ENOTSUPP;
+> > +                       mask |= PAD_BIAS_MASK;
+> > +                       value = (value & ~PAD_BIAS_MASK) | PAD_BIAS_PULL_DOWN;
+> > +                       break;
+> > +               case PIN_CONFIG_BIAS_PULL_UP:
+> > +                       if (arg == 0)
+> > +                               return -ENOTSUPP;
+> > +                       mask |= PAD_BIAS_MASK;
+> > +                       value = value & ~PAD_BIAS_MASK;
+> > +                       break;
+> > +               case PIN_CONFIG_DRIVE_STRENGTH:
+> > +                       mask |= PAD_DRIVE_STRENGTH_MASK;
+> > +                       value = (value & ~PAD_DRIVE_STRENGTH_MASK) |
+> > +                               starfive_drive_strength_from_max_mA(arg);
+> > +                       break;
+> > +               case PIN_CONFIG_INPUT_ENABLE:
+> > +                       mask |= PAD_INPUT_ENABLE;
+> > +                       if (arg)
+> > +                               value |= PAD_INPUT_ENABLE;
+> > +                       else
+> > +                               value &= ~PAD_INPUT_ENABLE;
+> > +                       break;
+> > +               case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
+> > +                       mask |= PAD_INPUT_SCHMITT_ENABLE;
+> > +                       if (arg)
+> > +                               value |= PAD_INPUT_SCHMITT_ENABLE;
+> > +                       else
+> > +                               value &= ~PAD_INPUT_SCHMITT_ENABLE;
+> > +                       break;
+> > +               case PIN_CONFIG_SLEW_RATE:
+> > +                       mask |= PAD_SLEW_RATE_MASK;
+> > +                       value = (value & ~PAD_SLEW_RATE_MASK) |
+> > +                               ((arg << PAD_SLEW_RATE_POS) & PAD_SLEW_RATE_MASK);
+> > +                       break;
+> > +               case PIN_CONFIG_STARFIVE_STRONG_PULL_UP:
+> > +                       if (arg) {
+> > +                               mask |= PAD_BIAS_MASK;
+> > +                               value = (value & ~PAD_BIAS_MASK) |
+> > +                                       PAD_BIAS_STRONG_PULL_UP;
+> > +                       } else {
+> > +                               mask |= PAD_BIAS_STRONG_PULL_UP;
+> > +                               value = value & ~PAD_BIAS_STRONG_PULL_UP;
+> > +                       }
+> > +                       break;
+> > +               default:
+> > +                       return -ENOTSUPP;
+> > +               }
+> > +       }
+>
+> ...
+>
+> > +static int starfive_gpio_request(struct gpio_chip *gc, unsigned int gpio)
+> > +{
+> > +       return pinctrl_gpio_request(gc->base + gpio);
+> > +}
+> > +
+> > +static void starfive_gpio_free(struct gpio_chip *gc, unsigned int gpio)
+> > +{
+> > +       pinctrl_gpio_free(gc->base + gpio);
+> > +}
+>
+> Point of having these function is...?
 
-> > > > > > Also is there a macro for handling that we'd then need 4 commas on
-> > > > > > 32bit COMPILE_TEST and 2 commas on 64bit?
-> > > > > > If you have some other way in mind you'll have to be a lot more explicit again.
-> > > > > >
-> > > > > > The point of the jh7100_reset_asserted array is that it exactly
-> > > > > > mirrors the values of the status registers when the lines are
-> > > > > > asserted.
+These calls tells the pinctrl system that a certain pin is now used
+for GPIO. Conversely it'll also prevent fx. userspace from doing GPIO
+on a pin that's already used by I2C, a UART or some other peripheral.
+
+> > +       /* enable input and schmitt trigger */
 >
-> --
-> With Best Regards,
-> Andy Shevchenko
+> Use capitalization consistently.
+
+I am?
+
+> > +       case IRQ_TYPE_EDGE_RISING:
+> > +               irq_type  = mask; /* 1: edge triggered */
+> > +               edge_both = 0;    /* 0: single edge */
+> > +               polarity  = mask; /* 1: rising edge */
+> > +               handler   = handle_edge_irq;
+> > +               break;
+> > +       case IRQ_TYPE_EDGE_FALLING:
+> > +               irq_type  = mask; /* 1: edge triggered */
+> > +               edge_both = 0;    /* 0: single edge */
+> > +               polarity  = 0;    /* 0: falling edge */
+> > +               handler   = handle_edge_irq
+> > +               break;
+> > +       case IRQ_TYPE_EDGE_BOTH:
+> > +               irq_type  = mask; /* 1: edge triggered */
+> > +               edge_both = mask; /* 1: both edges */
+> > +               polarity  = 0;    /* 0: ignored */
+> > +               handler   = handle_edge_irq;
 >
+> Dup. You may do it once without any temporary variable.
+> I haven't got why you haven't addressed this.
+
+So you want two switches on the trigger variable, one for irq_type,
+edge_both and polarity, and one for the handler? If this is not what
+you have in mind please be a lot more explicit. Trying to guess what
+you mean gets really old.
+
+> > +               break;
+> > +       case IRQ_TYPE_LEVEL_HIGH:
+> > +               irq_type  = 0;    /* 0: level triggered */
+> > +               edge_both = 0;    /* 0: ignored */
+> > +               polarity  = mask; /* 1: high level */
+> > +               handler   = handle_level_irq;
+> > +               break;
+> > +       case IRQ_TYPE_LEVEL_LOW:
+> > +               irq_type  = 0;    /* 0: level triggered */
+> > +               edge_both = 0;    /* 0: ignored */
+> > +               polarity  = 0;    /* 0: low level */
+> > +               handler   = handle_level_irq;
 >
+> Ditto.
 >
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> > +               break;
+>
+> ...
+>
+> > +       clk = devm_clk_get(dev, NULL);
+> > +       if (IS_ERR(clk)) {
+>
+> > +               ret = PTR_ERR(clk);
+>
+> Inline into below.
+>
+> > +               return dev_err_probe(dev, ret, "could not get clock: %d\n", ret);
+> > +       }
+>
+> Ditto for all other similar cases.
+
+So you would rather want this?
+  return dev_err_probe(dev, PTR_ERR(clk), "could not get clock: %d\n",
+PTR_ERR(clk));
+or just not tell why getting the clock failed?
+
+> > +       if (!device_property_read_u32(dev, "starfive,signal-group", &value)) {
+>
+> Since you are using of_property_* elsewhere, makes sense to use same
+> here, or otherwise, use device_*() APIs there.
+
+Wait, so now you want of_property_read_u32(dev->of_node, ...) here
+again, is that right?
+
+/Emil
