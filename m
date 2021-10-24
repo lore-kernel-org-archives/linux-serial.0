@@ -2,188 +2,143 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38924C433F5
-	for <linux-serial@archiver.kernel.org>; Sun, 24 Oct 2021 09:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12CDDC4167B
+	for <linux-serial@archiver.kernel.org>; Sun, 24 Oct 2021 15:40:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 213B961002
-	for <linux-serial@archiver.kernel.org>; Sun, 24 Oct 2021 09:29:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F339D61002
+	for <linux-serial@archiver.kernel.org>; Sun, 24 Oct 2021 15:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230339AbhJXJbf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 24 Oct 2021 05:31:35 -0400
-Received: from mail-pl1-f180.google.com ([209.85.214.180]:42958 "EHLO
-        mail-pl1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbhJXJbe (ORCPT
+        id S232004AbhJXPnC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 24 Oct 2021 11:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232135AbhJXPmv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 24 Oct 2021 05:31:34 -0400
-Received: by mail-pl1-f180.google.com with SMTP id v16so463818ple.9;
-        Sun, 24 Oct 2021 02:29:14 -0700 (PDT)
+        Sun, 24 Oct 2021 11:42:51 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C48C061745;
+        Sun, 24 Oct 2021 08:40:30 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id o20so5672949qvk.7;
+        Sun, 24 Oct 2021 08:40:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LV+Kgtvh7+La2ITtz0O2xUdXeTpFbYkBF1tkOGmeqvo=;
+        b=W8sl0oty4LeSR/wD4twzLfVyyTY9S3Ml1JSOgTX1o8FBFMPDEzNMEbBGerE9WlXQ/+
+         Vjw6h+ZFPZn8ivalJy7pppYq7YWG5czHuAsuVi76+baVObp20qqawXV6NR6YxZRCGE0r
+         1NIzvWlXWaze7PK+kDq9J3yJfqC4H19jda0oKMKDauhnR2gBJ0txw9brYJg3PMuYpiB5
+         sQ9j7b+mr2FKFCp8wDODpJ8ibvy0acsuanHLDqD7zVKYknWbM06zb5xeBft7o+/Gjj2S
+         6fHMxbyR/dF1CYC9znrHTeE7rBr7ykQyUc32B4bHtn99qzj2bIXXFUW1lDoab8vAbPaB
+         VU7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AtnhJDg1yXoN87a6f65ZXajgyzKarXRMIiguSWzzW8o=;
-        b=iNSgHiUPDPivEFQwBveI/h9upZJiPGv+1cnuN4eqH5eYpcZsUHKjMbigNZeos9CKVZ
-         psIIrmZm+WfxvQ6ngj5AYVrVhc43idSWWTuI1IP9/6Jpf8TgxtfgE90S+9rxObMfVhtb
-         vRn5/25hlazO8DX0iDfwkpfeAHezJpOK4ABzxmOPBVtDy8NQXSvGwVQxGzu4DxsK40bK
-         iTziZ2DmRXuEQQCWG1x8VNh9vZXizOXtu/iEGywor0KYf/SaDXZksThZ34NOY4zGBKXb
-         ksE3rnB60EPFVpHgVbb8m3VKNym/kg/yqE/NmIqP98IqETay7q2fkigHR5Mj5xRQ2ah2
-         RyvA==
-X-Gm-Message-State: AOAM533kq1fYdPUxM0vVChWq4YYynMlEM7A55e6BdJ76m2yQWKGB4qJ+
-        sylcenp+zJ9Lx0c/fsZG7MrKpnRf0sJnF+sfIkI=
-X-Google-Smtp-Source: ABdhPJz/lfKDFYDalcNbEuT9HXlt+qKuPzUIloGK4jMf0z9sSyZLZVrBF5kFG87Y6hx3GLBuxXgcfEV+akBG6htbcZo=
-X-Received: by 2002:a17:90b:390f:: with SMTP id ob15mr26111167pjb.185.1635067753381;
- Sun, 24 Oct 2021 02:29:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LV+Kgtvh7+La2ITtz0O2xUdXeTpFbYkBF1tkOGmeqvo=;
+        b=flOrpzRzB6iAbnL9T95hpY/VseAhc19GyxNdrHktkEWZICpSe96cpyj9EVvhmZxAGP
+         XUPvjY+TYw6N1wUTEbrsgda2oZ558g2fwDiCu2AFHM2e14j7XRaWTfnurz9t/o6s902V
+         KZl7UER5zhu/vwA4dnbsZIx86/QsOrP894a+bRSxfnqA/70NpmAwNvcs24DsC5Nt+g0Z
+         jRXivi3vVR0bhtAbWWkzWA1ddWRj7dVOwWLYsQ+8F/yrCWb9hz9WTcyzH0rFNeparLH8
+         y5sbEIqayqisEq/g3hlBTP1gjMsQqtmoL4TO0BoaO/djTgUY7ywIiePfRTomOSLl+05J
+         K+vw==
+X-Gm-Message-State: AOAM5300NwPa5EnGTMVrDVdkQAMhKzoLaLywkNSrPmXMSeM5pWnKmOyS
+        FOZgSvZUnn8TGQDAOlg5cgg=
+X-Google-Smtp-Source: ABdhPJxrfcYCPfz68n11err6efPvJC+z85O2b06D7iuXsggzwGZIZGXiSuLoNWvtuBAH76Yljnt2Ww==
+X-Received: by 2002:a0c:cdd0:: with SMTP id a16mr11304302qvn.40.1635090029708;
+        Sun, 24 Oct 2021 08:40:29 -0700 (PDT)
+Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
+        by smtp.gmail.com with ESMTPSA id x9sm7291731qtw.84.2021.10.24.08.40.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Oct 2021 08:40:29 -0700 (PDT)
+From:   Jesse Taube <mr.bossman075@gmail.com>
+X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
+To:     linux-imx@nxp.com
+List-Id: <soc.lore.kernel.org>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, ulf.hansson@linaro.org, aisheng.dong@nxp.com,
+        stefan@agner.ch, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
+        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
+        adrian.hunter@intel.com, jirislaby@kernel.org,
+        giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, leonard.crestez@nxp.com,
+        b20788@freescale.com, Mr.Bossman075@gmail.com, fugang.duan@nxp.com,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH 00/13] This patchset aims to add initial support for the i.MXRT10xx family
+Date:   Sun, 24 Oct 2021 11:40:14 -0400
+Message-Id: <20211024154027.1479261-1-Mr.Bossman075@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-13-kernel@esmil.dk>
- <CAHp75Vf3yNoKxguHP3EPcRV_3tG++Fd=FVM0MXqW4_SmLA6HEw@mail.gmail.com>
- <CANBLGcxEwkcZn2CC69zLaVqL8ocS6r6HDaaoUF09gg1mpDxFzg@mail.gmail.com>
- <CAHp75Vc5-Sg-0kKN=OMs_2iJbtc+D9=f0-Sp+SpY5O3roU3XdA@mail.gmail.com> <CANBLGcxnmt4Ki4EHAXeoJX5mJMyeioZXhGaDsKm_wk86D4js3Q@mail.gmail.com>
-In-Reply-To: <CANBLGcxnmt4Ki4EHAXeoJX5mJMyeioZXhGaDsKm_wk86D4js3Q@mail.gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Sun, 24 Oct 2021 11:29:02 +0200
-Message-ID: <CANBLGcyOfo3r0Viidf9kyW0Q9yD4uqTLm90+7O=T49v7ZHurfA@mail.gmail.com>
-Subject: Re: [PATCH v2 12/16] pinctrl: starfive: Add pinctrl driver for
- StarFive SoCs
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Huan Feng <huan.feng@starfivetech.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 23 Oct 2021 at 23:02, Emil Renner Berthing <kernel@esmil.dk> wrote:
-> On Sat, 23 Oct 2021 at 22:29, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Sat, Oct 23, 2021 at 9:46 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > > On Fri, 22 Oct 2021 at 15:32, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > On Thu, Oct 21, 2021 at 8:44 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > > So I asked you if you thought it was better to leave these unused
-> > > allocations when parsing the device tree node fails but you never
-> > > answered that. I didn't want put words in your mouth so I could only
-> > > assume you didn't. I'd really like a straight answer to that so I have
-> > > something to refer to when people ask why this driver doesn't do the
-> > > same as fx. the pinctrl-single. So just to be clear: do you think it's
-> > > better to leave this unused garbage allocated if parsing the device
-> > > tree node fails?
-> >
-> > If it's only one time use, I don't think it's good to have it hanging
-> > around, BUT at the same time devm_*() is not suitable for such
-> > allocations.
->
-> So is that a yes or a no to my question? It's not clear to me.
+Add initial support for the i.MXRT10xx SoC family
+starting with the i.IMXRT1050 SoC.
+This patchset contains:
+- i.MXRT10xx family infrastructure
+- i.MXRT1050 pinctrl driver adaption
+- i.MXRT1050 clock driver adaption
+- i.MXRT1050 sd-card driver adaption
+- i.MXRT1050 uart driver adaption
+- i.MXRT1050-evk basic support
 
-I see now that you've probably misunderstood what the code does. It's
-not one time use. The function parses the device tree and dynamically
-registers groups and functions with the pinctrl framework. Each group
-needs a string name, an int array of pins and optionally the pinmux
-data. Once the group is registered those pieces of data needs to live
-with the group until the drive is unloaded. But if the device tree
-parsing fails before the group is registered then those allocations
-would never be referenced and just hang around as garbage until the
-driver is unloaded. In such cases fx. pinctrl-single uses devm_free to
-free them again.
+Giulio Benetti (6):
+  ARM: imx: add initial support for i.MXRT10xx family
+  dt-bindings: imx: Add pinctrl binding doc for i.MXRT1050
+  pinctrl: freescale: Add i.MXRT1050 pinctrl driver support
+  dt-bindings: imx: Add clock binding for i.MXRT1050
+  ARM: dts: imx: add i.MXRT1050-EVK support
+  ARM: imxrt_defconfig: add i.MXRT family defconfig
 
-> > > > > +               if (reg_din)
-> > > > > +                       writel_relaxed(gpio + 2, reg_din);
-> > > >
-> > > > Why 0 can't be written?
-> > >
-> > > Because signal 0 is a special "always 0" signal and signal 1 is a
-> > > special "always 1" signal, and after that signal n is the input value
-> > > of GPIO n - 2. We don't want to overwrite the PoR defaults.
-> >
-> > Okay, this, perhaps, needs a comment (if I have not missed the existing one).
-> >
-> > And what about checking for reg_din? Do you have some blocks output-only?
->
-> I don't know know what you mean by the first question, but yes fx. the
-> uart tx pins would be an example of pins that have their output signal
-> set to the uart peripheral, the output enable set to the special
-> "always enabled" signal, and no input signal is set to any of the tx
-> pins.
->
-> > > > > +               case PIN_CONFIG_BIAS_DISABLE:
-> > > > > +                       mask |= PAD_BIAS_MASK;
-> > > > > +                       value = (value & ~PAD_BIAS_MASK) | PAD_BIAS_DISABLE;
-> > > >
-> > > > Okay, I have got why you are masking on each iteration, but here is
-> > > > the question, shouldn't you apply the cnages belonged to each of the
-> > > > group of options as it's requested by the user? Here you basically
-> > > > ignore all previous changes to bias.
-> > > >
-> > > > I would expect that you have something like
-> > > >
-> > > > for () {
-> > > >   switch (type) {
-> > > >   case BIAS*:
-> > > >     return apply_bias();
-> > > >   ...other types...
-> > > >   default:
-> > > >     return err;
-> > > >   }
-> > > > }
-> > >
-> > > I such cases where you get conflicting PIN_CONFIG_BIAS_* settings I
-> > > don't see why it's better to do the rmw on the padctl register for the
-> > > first bias setting only to then change the bits again a few
-> > > microseconds later when the loop encounters the second bias setting.
-> > > After the loop is done the end result would still be just the last
-> > > bias setting.
-> >
-> > It could be bias X followed by something else followed by bias Y. You
-> > will write something else with bias Y. I admit I don't know this
-> > hardware and you and maintainers are supposed to decide what's better,
-> > but my guts are telling me that current algo is buggy.
->
-> So there is only one padctl register pr. pin. I don't see why first
-> setting the bias bits to X, then setting some other bits, and then
-> setting the bias bits to Y would be different from just setting all
-> the bits in one go. Except for during that little microsecond window
-> during the loop that I actually think it's better to avoid.
+Jesse Taube (7):
+  dt-bindings: pinctrl: add i.MXRT1050 pinctrl binding doc
+  dt-bindings: clock: imx: Add documentation for i.MXRT clock
+  clk: imx: Add initial support for i.MXRT clock driver
+  dt-bindings: serial: fsl-lpuart: add i.MXRT compatible
+  tty: serial: fsl_lpuart: add i.MXRT support
+  dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT compatible string
+  mmc: sdhci-esdhc-imx: Add sdhc support for i.MXRT series
 
-Maybe an example is in order. Suppose we get strong pull-up, drive
-strength 3 and pull-down config flags (the strong pull-up and pull
-down flags conflict) and the padctl value is 0x0c0 (pull-up, input and
-schmitt trigger enabled). With your solution of just altering the
-padctl bits immediately we'd call starfive_padctl_rmw 3 times in rapid
-succession like this:
+ .../bindings/clock/imxrt-clock.yaml           |  57 +
+ .../bindings/mmc/fsl-imx-esdhc.yaml           |   1 +
+ .../bindings/pinctrl/fsl,imxrt1050.yaml       |  85 ++
+ .../bindings/serial/fsl-lpuart.yaml           |   1 +
+ arch/arm/boot/dts/Makefile                    |   2 +
+ arch/arm/boot/dts/imxrt1050-evk.dts           | 164 +++
+ arch/arm/boot/dts/imxrt1050.dtsi              | 179 ++++
+ arch/arm/configs/imxrt_defconfig              | 157 +++
+ arch/arm/mach-imx/Kconfig                     |   9 +
+ arch/arm/mach-imx/Makefile                    |   2 +
+ arch/arm/mach-imx/mach-imxrt.c                |  19 +
+ drivers/clk/imx/Kconfig                       |   3 +
+ drivers/clk/imx/Makefile                      |   1 +
+ drivers/clk/imx/clk-imxrt.c                   | 156 +++
+ drivers/mmc/host/sdhci-esdhc-imx.c            |   7 +
+ drivers/pinctrl/freescale/Kconfig             |   7 +
+ drivers/pinctrl/freescale/Makefile            |   1 +
+ drivers/pinctrl/freescale/pinctrl-imxrt1050.c | 349 ++++++
+ drivers/tty/serial/fsl_lpuart.c               |   8 +
+ include/dt-bindings/clock/imxrt1050-clock.h   |  72 ++
+ include/dt-bindings/pinctrl/pins-imxrt1050.h  | 993 ++++++++++++++++++
+ 21 files changed, 2273 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/imxrt-clock.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/fsl,imxrt1050.yaml
+ create mode 100644 arch/arm/boot/dts/imxrt1050-evk.dts
+ create mode 100644 arch/arm/boot/dts/imxrt1050.dtsi
+ create mode 100644 arch/arm/configs/imxrt_defconfig
+ create mode 100644 arch/arm/mach-imx/mach-imxrt.c
+ create mode 100644 drivers/clk/imx/clk-imxrt.c
+ create mode 100644 drivers/pinctrl/freescale/pinctrl-imxrt1050.c
+ create mode 100644 include/dt-bindings/clock/imxrt1050-clock.h
+ create mode 100644 include/dt-bindings/pinctrl/pins-imxrt1050.h
 
-starfive_padctl_rmw(pin, 0x130, 0x100);
-starfive_padctl_rmw(pin, 0x007, 0x003);
-starfive_padctl_rmw(pin, 0x130, 0x010);
+-- 
+2.33.0
 
-..and the end result would be 0x0d3, although the strong pull-up would
-be enabled for the microseconds between the 1st and 3nd call.
-As the code is now it'd just directly do
-
-starfive_padctl_rmw(pin, 0x137, 0x013)
-
-..which again results in 0x0d3, only without the microsecond blink of
-the strong pull-up.
