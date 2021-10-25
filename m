@@ -2,105 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 230D8C43217
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 12:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 599B3C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 13:42:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0B7F960F92
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 12:54:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 36D6960EDF
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 13:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233446AbhJYM4q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Oct 2021 08:56:46 -0400
-Received: from mail-ot1-f54.google.com ([209.85.210.54]:39677 "EHLO
-        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233414AbhJYM4n (ORCPT
+        id S232714AbhJYNpM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Oct 2021 09:45:12 -0400
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:43256 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230502AbhJYNpM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Oct 2021 08:56:43 -0400
-Received: by mail-ot1-f54.google.com with SMTP id e59-20020a9d01c1000000b00552c91a99f7so14791170ote.6;
-        Mon, 25 Oct 2021 05:54:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=xfPmPgNFQgIKrWKVU27Szuu0QsSCtm+5R24aa/F4BSg=;
-        b=lefDfrVSvWR8U4WnOGkF76AwFCk8T7kwi4iXWysxEQOHCWhxgytedxzDmpLotohspU
-         4yIHd1goYVMJ62GPiS7B0X1CWbsgkgb5Ahqzrywtp7mk3EcFto3F+iaMnAuSSvGd4SZA
-         z2mSapmsWoNGGnGXMs+2LjUd39+PrxCAB/gXm7/q8cXzs3EI8sx/T6EasX+de84STXna
-         c9/UfbPjWGJWOjO2RajtyLPcLrkp3ds8n+bTR4Rq52mY9fWbDQMLOZD8Noou3ntkp0w6
-         NHR2piQo0ZUn5zoocHV9C1z2Vbr9FEwc0gIdDzqHFqVRZ7VyFZ+qmIVG0xR4OcabjR8r
-         zXWg==
-X-Gm-Message-State: AOAM532ryVk5dLiBR4k316724wgmMcaTKOhvxgMEi0iRdQGPRETIJRTT
-        EIAXQki6lhWh5Tn/vglSPA==
-X-Google-Smtp-Source: ABdhPJxSzDa6Aw86E7HU9PcZR3V6hQx/apZrKRCDa2ilOHhh7Q1/dkrii+HwuqomKgo/nUzIa6Dt1Q==
-X-Received: by 2002:a05:6830:1e08:: with SMTP id s8mr13970909otr.305.1635166460875;
-        Mon, 25 Oct 2021 05:54:20 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bf3sm3946646oib.34.2021.10.25.05.54.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Oct 2021 05:54:20 -0700 (PDT)
-Received: (nullmailer pid 190976 invoked by uid 1000);
-        Mon, 25 Oct 2021 12:54:14 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Jesse Taube <mr.bossman075@gmail.com>
-List-Id: <soc.lore.kernel.org>
-Cc:     arnd@arndb.de, mturquette@baylibre.com, olof@lixom.net,
-        aisheng.dong@nxp.com, sboyd@kernel.org, Mr.Bossman075@gmail.com,
-        fugang.duan@nxp.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        adrian.hunter@intel.com, linux-arm-kernel@lists.infradead.org,
-        b20788@freescale.com, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, linus.walleij@linaro.org,
-        ulf.hansson@linaro.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, s.hauer@pengutronix.de,
-        abel.vesa@nxp.com, leonard.crestez@nxp.com, linux@armlinux.org.uk,
-        shawnguo@kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, jirislaby@kernel.org,
-        linux-imx@nxp.com, linux-mmc@vger.kernel.org, festevam@gmail.com,
-        stefan@agner.ch, giulio.benetti@benettiengineering.com,
-        soc@kernel.org
-In-Reply-To: <20211024154027.1479261-6-Mr.Bossman075@gmail.com>
-References: <20211024154027.1479261-1-Mr.Bossman075@gmail.com> <20211024154027.1479261-6-Mr.Bossman075@gmail.com>
-Subject: Re: [PATCH 05/13] dt-bindings: clock: imx: Add documentation for i.MXRT clock
-Date:   Mon, 25 Oct 2021 07:54:14 -0500
-Message-Id: <1635166454.818167.190975.nullmailer@robh.at.kernel.org>
+        Mon, 25 Oct 2021 09:45:12 -0400
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19P8Cv20003285;
+        Mon, 25 Oct 2021 15:42:35 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=selector1;
+ bh=E7GL8g1LVuwhIdouDAVJoi6iJL0Ledft7BjGYWbxztI=;
+ b=KLAmXwuJpp88Cnn9S2ipCQ4INbPe6u8cnhgTExKCM7OI65kdmJ1oysd94AzwXD7+APVM
+ huWI8HmbJF+VM+Yx83Mz1ScF7X0jzBk12Sl+DE0OIv5NUEfP613at/leLFeMdyuSgJgG
+ DbnmWfBZjAzRhekq6LgYEdMxW3x53xDL1/MCMHY4i5jNxpmhpyZCtEwaXq+qEX6cpzEN
+ JqW+3EYe0O4ebCl0lErHbUYlcJdmHReuK7c1XXrDvth5KpEAY0LE1z9A+XYjzan1vyDV
+ Futyv9vdXW5muXoAo9Lcy1/PuC67egVSqUMYOVoMA7brxYapVCI38XI7BlrZX8C//bS7 kQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 3bwrvj1t9g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Oct 2021 15:42:35 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8DCCD10002A;
+        Mon, 25 Oct 2021 15:42:34 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 85C482309DF;
+        Mon, 25 Oct 2021 15:42:34 +0200 (CEST)
+Received: from localhost (10.75.127.45) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 25 Oct 2021 15:42:34
+ +0200
+From:   Erwan Le Ray <erwan.leray@foss.st.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>
+Subject: [PATCH 0/3] Power management improvements for STM32 UART DMA RX
+Date:   Mon, 25 Oct 2021 15:42:26 +0200
+Message-ID: <20211025134229.8456-1-erwan.leray@foss.st.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG1NODE3.st.com (10.75.127.3) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-25_05,2021-10-25_02,2020-04-07_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 24 Oct 2021 11:40:19 -0400, Jesse Taube wrote:
-> Add DT binding documentation for i.MXRT clock driver.
-> 
-> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-> ---
->  .../bindings/clock/imxrt-clock.yaml           | 57 +++++++++++++++++++
->  1 file changed, 57 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/imxrt-clock.yaml
-> 
+This series improves power management for STM32 UART DMA RX.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Erwan Le Ray (3):
+  serial: stm32: rework RX dma initialization and release
+  serial: stm32: terminate / restart DMA transfer at suspend / resume
+  serial: stm32: push DMA RX data before suspending
 
-yamllint warnings/errors:
+ drivers/tty/serial/stm32-usart.c | 216 +++++++++++++++++++++----------
+ 1 file changed, 148 insertions(+), 68 deletions(-)
 
-dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/clock/imxrt-clock.example.dts:32.27-28 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:385: Documentation/devicetree/bindings/clock/imxrt-clock.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1441: dt_binding_check] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1545398
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+-- 
+2.17.1
 
