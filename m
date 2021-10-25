@@ -2,107 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D64E5C43217
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 14:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A54AC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 18:17:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C364E60EBC
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 14:48:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 58B7660F46
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 18:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233601AbhJYOvO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Oct 2021 10:51:14 -0400
-Received: from marcansoft.com ([212.63.210.85]:38708 "EHLO mail.marcansoft.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233591AbhJYOuf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Oct 2021 10:50:35 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 5BD8541E57;
-        Mon, 25 Oct 2021 14:48:06 +0000 (UTC)
-From:   Hector Martin <marcan@marcan.st>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S232360AbhJYSTV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Oct 2021 14:19:21 -0400
+Received: from mail-oi1-f180.google.com ([209.85.167.180]:46960 "EHLO
+        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231671AbhJYSTV (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 25 Oct 2021 14:19:21 -0400
+Received: by mail-oi1-f180.google.com with SMTP id o204so16731923oih.13;
+        Mon, 25 Oct 2021 11:16:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=c8iDrdrscM2c58XhHr9hAeNjE08nH97DcHB6REi5ScM=;
+        b=MVMb4je/U+cCTo504rqWYnOqCy1cqJD+pgleJIqmP7nhjJ8YxrBp4+fXXe6FcXnBhl
+         eJyBZoRgu6/2TOsL4tiHghjT/qxTJ/Isx06iwalEn96k++a6vFjvr12Mpkkfud775rNR
+         J0tzTCqppreRmWpGt9IRh4ZirYb5OSiE6EskrTIyxMcG6S5GOwogXFYsFFzRh0Cdwr1J
+         XpMKUM4xy5mwjLsMhc8F1eSlRGlJtfGCfhPVJNc0E90+hx+OqZrTbxeilM9Qxy0cRaVV
+         a0mzk/q5g+g9+/SCKYNR45lm0cSs26UYaZpB/p2QVBbcZMPhBT5LwUygrFiMxi4n24UH
+         BDWA==
+X-Gm-Message-State: AOAM5327t8cYkBEgpQimh6rHO9guNz6Pumh60zwfayQo6IhT8vNaNri8
+        mXXx5o5/OPn+X6ckz01+fA==
+X-Google-Smtp-Source: ABdhPJzt9UxcoWWAoSw1waWa4o7cP/4BdO3Lt0f7+VkpxhBaAKmqzO61CJbl9tB6ZxiVOi2kQsPn2g==
+X-Received: by 2002:a05:6808:158c:: with SMTP id t12mr23688907oiw.74.1635185817319;
+        Mon, 25 Oct 2021 11:16:57 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id z8sm3050765oof.47.2021.10.25.11.16.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Oct 2021 11:16:56 -0700 (PDT)
+Received: (nullmailer pid 824870 invoked by uid 1000);
+        Mon, 25 Oct 2021 18:16:53 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>,
         Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
         "Rafael J. Wysocki" <rafael@kernel.org>,
-        Johan Hovold <johan@kernel.org>, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>
-Subject: [PATCH v2 8/8] arm64: dts: apple: t8103: Add UART2
-Date:   Mon, 25 Oct 2021 23:47:18 +0900
-Message-Id: <20211025144718.157794-9-marcan@marcan.st>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211025144718.157794-1-marcan@marcan.st>
-References: <20211025144718.157794-1-marcan@marcan.st>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        devicetree@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+In-Reply-To: <20211025144718.157794-4-marcan@marcan.st>
+References: <20211025144718.157794-1-marcan@marcan.st> <20211025144718.157794-4-marcan@marcan.st>
+Subject: Re: [PATCH v2 3/8] dt-bindings: power: Add apple,pmgr-pwrstate binding
+Date:   Mon, 25 Oct 2021 13:16:53 -0500
+Message-Id: <1635185813.771483.824869.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This UART is connected to the debug port of the WLAN module. It is
-mostly useless, but makes for a good test case for runtime-pm without
-having to unbind the console from the main system UART.
+On Mon, 25 Oct 2021 23:47:13 +0900, Hector Martin wrote:
+> This syscon child node represents a single SoC device controlled by the
+> PMGR block. This layout allows us to declare all device power state
+> controls (power/clock gating and reset) in the device tree, including
+> dependencies, instead of hardcoding it into the driver. The register
+> layout is uniform.
+> 
+> Each pmgr-pwrstate node provides genpd and reset features, to be
+> consumed by downstream device nodes.
+> 
+> Future SoCs are expected to use backwards compatible registers, and the
+> "apple,pmgr-pwrstate" represents any such interfaces (possibly with
+> additional features gated by the more specific compatible), allowing
+> them to be bound without driver updates. If a backwards incompatible
+> change is introduced in future SoCs, it will require a new compatible,
+> such as "apple,pmgr-pwrstate-v2".
+> 
+> Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>  .../bindings/power/apple,pmgr-pwrstate.yaml   | 69 +++++++++++++++++++
+>  1 file changed, 69 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml
+> 
 
-Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
-Signed-off-by: Hector Martin <marcan@marcan.st>
----
- arch/arm64/boot/dts/apple/t8103-j274.dts |  5 +++++
- arch/arm64/boot/dts/apple/t8103.dtsi     | 12 ++++++++++++
- 2 files changed, 17 insertions(+)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/arch/arm64/boot/dts/apple/t8103-j274.dts b/arch/arm64/boot/dts/apple/t8103-j274.dts
-index e0f6775b9878..16c5eb7f53b1 100644
---- a/arch/arm64/boot/dts/apple/t8103-j274.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j274.dts
-@@ -17,6 +17,7 @@ / {
- 
- 	aliases {
- 		serial0 = &serial0;
-+		serial2 = &serial2;
- 	};
- 
- 	chosen {
-@@ -43,3 +44,7 @@ memory@800000000 {
- &serial0 {
- 	status = "okay";
- };
-+
-+&serial2 {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
-index 1d0fac1747c7..92f938a1ad3b 100644
---- a/arch/arm64/boot/dts/apple/t8103.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103.dtsi
-@@ -126,6 +126,18 @@ serial0: serial@235200000 {
- 			status = "disabled";
- 		};
- 
-+		serial2: serial@235208000 {
-+			compatible = "apple,s5l-uart";
-+			reg = <0x2 0x35208000 0x0 0x1000>;
-+			reg-io-width = <4>;
-+			interrupt-parent = <&aic>;
-+			interrupts = <AIC_IRQ 607 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clkref>, <&clkref>;
-+			clock-names = "uart", "clk_uart_baud0";
-+			power-domains = <&ps_uart2>;
-+			status = "disabled";
-+		};
-+
- 		aic: interrupt-controller@23b100000 {
- 			compatible = "apple,t8103-aic", "apple,aic";
- 			#interrupt-cells = <3>;
--- 
-2.33.0
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+
+
+doc reference errors (make refcheckdocs):
+Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml: Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+
+See https://patchwork.ozlabs.org/patch/1545800
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
