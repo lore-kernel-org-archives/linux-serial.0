@@ -2,25 +2,25 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 967D5C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 14:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A1DC43219
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 14:47:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7BE7660EBC
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 14:47:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 43CC960F46
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 14:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233225AbhJYOt5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Oct 2021 10:49:57 -0400
-Received: from marcansoft.com ([212.63.210.85]:38402 "EHLO mail.marcansoft.com"
+        id S233332AbhJYOuF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Oct 2021 10:50:05 -0400
+Received: from marcansoft.com ([212.63.210.85]:38474 "EHLO mail.marcansoft.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232916AbhJYOty (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Oct 2021 10:49:54 -0400
+        id S230128AbhJYOuE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 25 Oct 2021 10:50:04 -0400
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 73AD6419B4;
-        Mon, 25 Oct 2021 14:47:23 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id F107142181;
+        Mon, 25 Oct 2021 14:47:33 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
@@ -35,88 +35,193 @@ Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Johan Hovold <johan@kernel.org>, devicetree@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v2 0/8] Apple SoC PMGR device power states driver
-Date:   Mon, 25 Oct 2021 23:47:10 +0900
-Message-Id: <20211025144718.157794-1-marcan@marcan.st>
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>
+Subject: [PATCH v2 2/8] dt-bindings: arm: apple: Add apple,pmgr binding
+Date:   Mon, 25 Oct 2021 23:47:12 +0900
+Message-Id: <20211025144718.157794-3-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211025144718.157794-1-marcan@marcan.st>
+References: <20211025144718.157794-1-marcan@marcan.st>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This series adds the driver for the Apple PMGR device power state
-registers. These registers can clockgate and (in some cases) powergate
-specific SoC blocks. They also control the reset line, and can have
-additional features such as automatic power management.
+The PMGR block in Apple Silicon SoCs is responsible for SoC power
+management. There are two PMGRs in T8103, with different register
+layouts but compatible registers. In order to support this as well
+as future SoC generations with backwards-compatible registers, we
+declare these blocks as syscons and bind to individual registers
+in child nodes. Each register controls one SoC device.
 
-The current driver supports only the lowest/highest power states,
-provided via the genpd framework, plus reset support provided via
-the reset subsystem.
+The respective apple compatibles are defined in case device-specific
+quirks are necessary in the future, but currently these nodes are
+expected to be bound by the generic syscon driver.
 
-Apple's PMGRs (there are two in the T8103) have a uniform register
-bit layout (sometimes with varying features). To be able to support
-multiple SoC generations as well as express pd relationships
-dynamically, this binding describes each PMGR power state control
-as a single devicetree node. Future SoC generations are expected to
-retain backwards compatibility, allowing this driver to work on them
-with only DT changes.
-
-#1: MAINTAINERS updates, to go via the SoC tree to avert merge hell
-#2-#3: Adds the required device tree bindings
-#4: The driver itself.
-#5: Somewhat unrelated DT change, but I wanted to get it out of the way
-    for #7
-#6: Instantiates the driver in t8103.dtsi.
-#7: Adds runtime-pm support to the Samsung UART driver, as a first
-    consumer.
-#8: Instantiates a second UART, to more easily test this.
-
-There are currently no consumers for the reset functionality, so
-it is untested, but we will be testing it soon with the NVMe driver
-(as it is required to allow driver re-binding to work properly).
-
-== Changes since v1 ==
-
-Mostly addressing review comments.
-
-- DT schema fixes
-- Reference one DT schema from the other
-- Full example in MFD schema
-- s/apple,domain-name/label/
-- Split out MAINTAINERS patch
-- Handle failed regmap reads more sanely
-- Do not bind to apple,t8103-pmgr-pwrstate"
-
-Hector Martin (8):
-  MAINTAINERS: Add PMGR power state files to ARM/APPLE MACHINE
-  dt-bindings: arm: apple: Add apple,pmgr binding
-  dt-bindings: power: Add apple,pmgr-pwrstate binding
-  soc: apple: Add driver for Apple PMGR power state controls
-  arm64: dts: apple: t8103: Rename clk24 to clkref
-  arm64: dts: apple: t8103: Add the UART PMGR tree
-  tty: serial: samsung_tty: Support runtime PM
-  arm64: dts: apple: t8103: Add UART2
-
- .../bindings/arm/apple/apple,pmgr.yaml        | 149 +++++++++
- .../bindings/power/apple,pmgr-pwrstate.yaml   |  69 +++++
- MAINTAINERS                                   |   3 +
- arch/arm64/boot/dts/apple/t8103-j274.dts      |   5 +
- arch/arm64/boot/dts/apple/t8103.dtsi          | 134 ++++++++-
- drivers/soc/Kconfig                           |   1 +
- drivers/soc/Makefile                          |   1 +
- drivers/soc/apple/Kconfig                     |  21 ++
- drivers/soc/apple/Makefile                    |   2 +
- drivers/soc/apple/apple-pmgr-pwrstate.c       | 282 ++++++++++++++++++
- drivers/tty/serial/samsung_tty.c              |  93 +++---
- 11 files changed, 723 insertions(+), 37 deletions(-)
+Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ .../bindings/arm/apple/apple,pmgr.yaml        | 149 ++++++++++++++++++
+ 1 file changed, 149 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
- create mode 100644 Documentation/devicetree/bindings/power/apple,pmgr-pwrstate.yaml
- create mode 100644 drivers/soc/apple/Kconfig
- create mode 100644 drivers/soc/apple/Makefile
- create mode 100644 drivers/soc/apple/apple-pmgr-pwrstate.c
 
+diff --git a/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+new file mode 100644
+index 000000000000..e8b7776163fc
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+@@ -0,0 +1,149 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/apple/apple,pmgr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Apple SoC Power Manager (PMGR)
++
++maintainers:
++  - Hector Martin <marcan@marcan.st>
++
++description: |
++  Apple SoCs include a PMGR block responsible for power management,
++  which can control various clocks, resets, power states, and
++  performance features. This node represents the PMGR as a syscon,
++  with sub-nodes representing individual features.
++
++  Apple SoCs may have a secondary "mini-PMGR"; it is represented
++  separately in the device tree, but works the same way.
++
++select:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - apple,t8103-pmgr
++          - apple,t8103-minipmgr
++          - apple,pmgr
++
++  required:
++    - compatible
++
++properties:
++  $nodename:
++    pattern: "^power-management@[0-9a-f]+$"
++
++  compatible:
++    items:
++      - enum:
++          - apple,t8103-pmgr
++          - apple,t8103-minipmgr
++      - const: apple,pmgr
++      - const: syscon
++      - const: simple-mfd
++
++  reg:
++    maxItems: 1
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 1
++
++patternProperties:
++  "power-controller@[0-9a-f]+$":
++    description: |
++      The individual power management domains within this controller
++    type: object
++    $ref: /power/apple,pmgr-pwrstate.yaml#
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        power-management@23b700000 {
++            compatible = "apple,t8103-pmgr", "apple,pmgr", "syscon", "simple-mfd";
++            #address-cells = <1>;
++            #size-cells = <1>;
++            reg = <0x2 0x3b700000 0x0 0x14000>;
++
++            ps_sio: power-controller@1c0 {
++                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
++                reg = <0x1c0 8>;
++                #power-domain-cells = <0>;
++                #reset-cells = <0>;
++                label = "sio";
++                apple,always-on;
++            };
++
++            ps_uart_p: power-controller@220 {
++                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
++                reg = <0x220 8>;
++                #power-domain-cells = <0>;
++                #reset-cells = <0>;
++                label = "uart_p";
++                power-domains = <&ps_sio>;
++            };
++
++            ps_uart0: power-controller@270 {
++                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
++                reg = <0x270 8>;
++                #power-domain-cells = <0>;
++                #reset-cells = <0>;
++                label = "uart0";
++                power-domains = <&ps_uart_p>;
++            };
++        };
++
++        power-management@23d280000 {
++            compatible = "apple,t8103-minipmgr", "apple,pmgr", "syscon", "simple-mfd";
++            #address-cells = <1>;
++            #size-cells = <1>;
++            reg = <0x2 0x3d280000 0x0 0xc000>;
++
++            ps_aop_filter: power-controller@4000 {
++                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
++                reg = <0x4000 8>;
++                #power-domain-cells = <0>;
++                #reset-cells = <0>;
++                label = "aop_filter";
++            };
++
++            ps_aop_base: power-controller@4010 {
++                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
++                reg = <0x4010 8>;
++                #power-domain-cells = <0>;
++                #reset-cells = <0>;
++                label = "aop_base";
++                power-domains = <&ps_aop_filter>;
++            };
++
++            ps_aop_shim: power-controller@4038 {
++                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
++                reg = <0x4038 8>;
++                #power-domain-cells = <0>;
++                #reset-cells = <0>;
++                label = "aop_shim";
++                power-domains = <&ps_aop_base>;
++            };
++
++            ps_aop_uart0: power-controller@4048 {
++                compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
++                reg = <0x4048 8>;
++                #power-domain-cells = <0>;
++                #reset-cells = <0>;
++                label = "aop_uart0";
++                power-domains = <&ps_aop_shim>;
++            };
++        };
++    };
 -- 
 2.33.0
 
