@@ -2,397 +2,165 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 663FCC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 09:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A95E6C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 10:16:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 44E8860F4F
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 09:00:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 857AA60C41
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Oct 2021 10:16:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232404AbhJYJCd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Oct 2021 05:02:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36918 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232354AbhJYJCb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Oct 2021 05:02:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BF49260F46;
-        Mon, 25 Oct 2021 09:00:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635152409;
-        bh=eKcEw4lncwxaMn1Lo69DdbIqqnhFj+fwsS2cCUcnqBA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r+7fv/b55vGfjT2M8PVLRNca4H2JUWuapMKhKDqpXMAofL2MdMcbXCcIr5PZXdmce
-         RIY26ZcSVYi3L3d8Zc/QR2luW2v5r/tXVA6xKWiYhLqTinOad6aVne09X7MBm9rP7F
-         8FqagPcEtNm8Z6f7Ckf5+bqJLtojtsnn3Vv9QSrBUwxW55hJfC6WQAUi9nFbhCGXJO
-         Kw+WU0a+Cqa+XrnGYaO2WbyTJYInW60UEuKcVEqFSAAxGFjjnyirtn1mm793AV3Up0
-         f9u3kGyLUqyaz1/OvjL9WR4950/Yj4zofBf//ok5ODPvyXS0XhPWF4HGp1eRXMJnVd
-         1sG2ZGmXORTlQ==
-Date:   Mon, 25 Oct 2021 12:00:01 +0300
-From:   Abel Vesa <abelvesa@kernel.org>
-To:     Adam Ford <aford173@gmail.com>
-Cc:     Abel Vesa <abel.vesa@nxp.com>, Rob Herring <robh@kernel.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Georgi Djakov <djakov@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-pm@vger.kernel.org,
-        arm-soc <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [RFC 08/19] interconnect: imx8: Remove the imx_icc_node_adj_desc
-Message-ID: <YXZyEfHLxwsbzjuN@ryzen>
-References: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
- <1631554694-9599-9-git-send-email-abel.vesa@nxp.com>
- <CAHCN7xLpdLY06vUDW0-oAVWDk-VYf_8kZh2F8f5+jd0RS0y74w@mail.gmail.com>
+        id S232778AbhJYKSp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Oct 2021 06:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232772AbhJYKSo (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 25 Oct 2021 06:18:44 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7CAC061745;
+        Mon, 25 Oct 2021 03:16:22 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id l13so20345973edi.8;
+        Mon, 25 Oct 2021 03:16:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NoOyCfUHoc1NYPh3QSE+q8V42pQrvXovBnbm5bi8Q4k=;
+        b=QYH7ZKvRWU1KiiEGEiqhp/peQaL15IJnNfVPiYX/zO0MWra7+JI3SXg0Lc0JOA98XW
+         WPj0LrY1A9k5qE+Fp7rMP4ng0O1HUTlPumAhQb4+v52N+Gxh4ARNPuyOlTxD1lWp2hPU
+         +CZeBnhLNgI5Sswr1xtPARYwEWLeJVIyMo0vKQkodDvIb+wFY1C1QMKmpWuR8CETdaeY
+         +1QUbqZOiVqSWFHOAOgre3vMI8qKI9BZ3oqaxTWnWpEwtFrprfAJnVoUrrormyAw67w8
+         q4J0hElT7j8paGd5sJawJ1zttr7+KMkjayF3pBz9cS4vqbe4A781qONfgGIej61A2KEd
+         BXmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NoOyCfUHoc1NYPh3QSE+q8V42pQrvXovBnbm5bi8Q4k=;
+        b=YLCsN5rUDWHtcgPzdu3n/cvmPBLNUNpadsuByUhqCHuPN9FRhbSojbgwewGPoLVFW3
+         YvMb5UlwcHo5APY2bwX+4jmKSJkjgyae1ziXHJRAlwKqt5RIGyVzqJ/Z1yf3MsOcsoKR
+         +aY1rwdScPqkTZE0AN4poAUofUou2SzzgXWjvSg8tvA5eqCO76isv1PRt/rwFpJHZT+h
+         AAath7Sd++g+EHs9Ff7e398+VCOvbeNtYAuO4VnzbUeSATuM8cWuuAjwb+Az4KIxwVMo
+         0qWYIp4r70suvf7amWwnTzn5caKZ3EIyOjyUwYqaDzLZbI3iSN2IqXzv56o3cnbeQfb7
+         ARDQ==
+X-Gm-Message-State: AOAM531DJ8XveusHL9XjbWZ2rLpP2hXuuEzOxFXhn/IbrAW9uZ/WsTNd
+        vX/GeZ+spkrAEGomKkB9ZJXVnlWojpUURP9pnVU=
+X-Google-Smtp-Source: ABdhPJzVsrEQ2wGc7NbJFC9XtcZJjhMbuy0RLRmB4+JyACp9oh8ch9YE0U1JW5YiiQEFm2TA0W1r11nn0kZxkU7HS/I=
+X-Received: by 2002:a17:906:a158:: with SMTP id bu24mr19541505ejb.356.1635156977533;
+ Mon, 25 Oct 2021 03:16:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHCN7xLpdLY06vUDW0-oAVWDk-VYf_8kZh2F8f5+jd0RS0y74w@mail.gmail.com>
+References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-13-kernel@esmil.dk>
+ <CAHp75Vf3yNoKxguHP3EPcRV_3tG++Fd=FVM0MXqW4_SmLA6HEw@mail.gmail.com>
+ <CANBLGcxEwkcZn2CC69zLaVqL8ocS6r6HDaaoUF09gg1mpDxFzg@mail.gmail.com>
+ <CAHp75Vc5-Sg-0kKN=OMs_2iJbtc+D9=f0-Sp+SpY5O3roU3XdA@mail.gmail.com>
+ <CANBLGcxnmt4Ki4EHAXeoJX5mJMyeioZXhGaDsKm_wk86D4js3Q@mail.gmail.com> <CANBLGcyOfo3r0Viidf9kyW0Q9yD4uqTLm90+7O=T49v7ZHurfA@mail.gmail.com>
+In-Reply-To: <CANBLGcyOfo3r0Viidf9kyW0Q9yD4uqTLm90+7O=T49v7ZHurfA@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 25 Oct 2021 13:15:23 +0300
+Message-ID: <CAHp75Vc1EES8c7XD-MbQNdtCJA3YvvEYd3_e378rVCe6=AmhvQ@mail.gmail.com>
+Subject: Re: [PATCH v2 12/16] pinctrl: starfive: Add pinctrl driver for
+ StarFive SoCs
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Huan Feng <huan.feng@starfivetech.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21-10-18 07:41:31, Adam Ford wrote:
-> On Mon, Sep 13, 2021 at 12:39 PM Abel Vesa <abel.vesa@nxp.com> wrote:
-> >
-> > Now that the imx generic interconnect doesn't use the
-> > imx_icc_node_adj_desc, we remove it from all the i.MX8M
-> > platform drivers.
-> >
-> > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> > ---
-> >  drivers/interconnect/imx/imx.h    | 19 ++++-------------
-> >  drivers/interconnect/imx/imx8mm.c | 32 +++++++++-------------------
-> >  drivers/interconnect/imx/imx8mn.c | 28 +++++++------------------
-> >  drivers/interconnect/imx/imx8mq.c | 35 ++++++++++---------------------
-> >  4 files changed, 33 insertions(+), 81 deletions(-)
-> >
-> 
-> I noticed there are no interconnect nodes in the imx8mm nor the
-> imx8mn, so it appears to me like the mini and nano code won't do
-> anything.
-> 
+On Sun, Oct 24, 2021 at 12:29 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> On Sat, 23 Oct 2021 at 23:02, Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > On Sat, 23 Oct 2021 at 22:29, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > On Sat, Oct 23, 2021 at 9:46 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
 
-icc + imx-bus + imx8m-ddrc is an approach to have support for
-dropping the bus and ddr clock rates when there is no user needing the
-higher rates. This used to be done in our NXP tree via something called
-busfreq. The problem with busfreq is that it cannot be upstreamed and
-it's quite limited. As of now, there is no support for dropping bus and
-ddr clock rates for any of the i.MX platforms in upstream. Parts of the
-implementation of this new approach made it upstream a couple of
-years ago. Therefore, even if you compile the interconnect driver in,
-you won't have the full functionality. With this patchset we'll get
-support for i.MX8MQ first. The rest of 8M platforms would get support
-once we agree on i.MX8MQ since the generic part would not change at all.
-I'll send a subsequent updated version soon, with all the comments taken
-care of.
+...
 
-> 
-> adam
-> > diff --git a/drivers/interconnect/imx/imx.h b/drivers/interconnect/imx/imx.h
-> > index 75da51076c68..5c9f5138f6aa 100644
-> > --- a/drivers/interconnect/imx/imx.h
-> > +++ b/drivers/interconnect/imx/imx.h
-> > @@ -14,15 +14,6 @@
+> > So is that a yes or a no to my question? It's not clear to me.
+>
+> I see now that you've probably misunderstood what the code does. It's
+> not one time use. The function parses the device tree and dynamically
+> registers groups and functions with the pinctrl framework. Each group
+> needs a string name, an int array of pins and optionally the pinmux
+> data. Once the group is registered those pieces of data needs to live
+> with the group until the drive is unloaded. But if the device tree
+> parsing fails before the group is registered then those allocations
+> would never be referenced and just hang around as garbage until the
+> driver is unloaded. In such cases fx. pinctrl-single uses devm_free to
+> free them again.
+
+Thank you for elaboration. Please, drop devm_*(). In this case it's
+inappropriate to use it. pinctrl-single should be amended accordingly,
+but it's out of scope here.
+
+...
+
+> > > > I such cases where you get conflicting PIN_CONFIG_BIAS_* settings I
+> > > > don't see why it's better to do the rmw on the padctl register for the
+> > > > first bias setting only to then change the bits again a few
+> > > > microseconds later when the loop encounters the second bias setting.
+> > > > After the loop is done the end result would still be just the last
+> > > > bias setting.
+> > >
+> > > It could be bias X followed by something else followed by bias Y. You
+> > > will write something else with bias Y. I admit I don't know this
+> > > hardware and you and maintainers are supposed to decide what's better,
+> > > but my guts are telling me that current algo is buggy.
 > >
-> >  #define IMX_ICC_MAX_LINKS      4
-> >
-> > -/*
-> > - * struct imx_icc_node_adj - Describe a dynamic adjustable node
-> > - */
-> > -struct imx_icc_node_adj_desc {
-> > -       unsigned int bw_mul, bw_div;
-> > -       const char *phandle_name;
-> > -       bool main_noc;
-> > -};
-> > -
-> >  /*
-> >   * struct imx_icc_node - Describe an interconnect node
-> >   * @name: name of the node
-> > @@ -35,23 +26,21 @@ struct imx_icc_node_desc {
-> >         u16 id;
-> >         u16 links[IMX_ICC_MAX_LINKS];
-> >         u16 num_links;
-> > -       const struct imx_icc_node_adj_desc *adj;
-> >  };
-> >
-> > -#define DEFINE_BUS_INTERCONNECT(_name, _id, _adj, ...)                 \
-> > +#define DEFINE_BUS_INTERCONNECT(_name, _id, ...)                       \
-> >         {                                                               \
-> >                 .id = _id,                                              \
-> >                 .name = _name,                                          \
-> > -               .adj = _adj,                                            \
-> >                 .num_links = ARRAY_SIZE(((int[]){ __VA_ARGS__ })),      \
-> >                 .links = { __VA_ARGS__ },                               \
-> >         }
-> >
-> >  #define DEFINE_BUS_MASTER(_name, _id, _dest_id)                                \
-> > -       DEFINE_BUS_INTERCONNECT(_name, _id, NULL, _dest_id)
-> > +       DEFINE_BUS_INTERCONNECT(_name, _id, _dest_id)
-> >
-> > -#define DEFINE_BUS_SLAVE(_name, _id, _adj)                             \
-> > -       DEFINE_BUS_INTERCONNECT(_name, _id, _adj)
-> > +#define DEFINE_BUS_SLAVE(_name, _id)                                   \
-> > +       DEFINE_BUS_INTERCONNECT(_name, _id)
-> >
-> >  int imx_icc_register(struct platform_device *pdev,
-> >                      struct imx_icc_node_desc *nodes,
-> > diff --git a/drivers/interconnect/imx/imx8mm.c b/drivers/interconnect/imx/imx8mm.c
-> > index 1083490bb391..0c16110bef9d 100644
-> > --- a/drivers/interconnect/imx/imx8mm.c
-> > +++ b/drivers/interconnect/imx/imx8mm.c
-> > @@ -14,18 +14,6 @@
-> >
-> >  #include "imx.h"
-> >
-> > -static const struct imx_icc_node_adj_desc imx8mm_dram_adj = {
-> > -       .bw_mul = 1,
-> > -       .bw_div = 16,
-> > -       .phandle_name = "fsl,ddrc",
-> > -};
-> > -
-> > -static const struct imx_icc_node_adj_desc imx8mm_noc_adj = {
-> > -       .bw_mul = 1,
-> > -       .bw_div = 16,
-> > -       .main_noc = true,
-> > -};
-> > -
-> >  /*
-> >   * Describe bus masters, slaves and connections between them
-> >   *
-> > @@ -33,43 +21,43 @@ static const struct imx_icc_node_adj_desc imx8mm_noc_adj = {
-> >   * PL301 nics which are skipped/merged into PL301_MAIN
-> >   */
-> >  static struct imx_icc_node_desc nodes[] = {
-> > -       DEFINE_BUS_INTERCONNECT("NOC", IMX8MM_ICN_NOC, &imx8mm_noc_adj,
-> > +       DEFINE_BUS_INTERCONNECT("NOC", IMX8MM_ICN_NOC,
-> >                         IMX8MM_ICS_DRAM, IMX8MM_ICN_MAIN),
-> >
-> > -       DEFINE_BUS_SLAVE("DRAM", IMX8MM_ICS_DRAM, &imx8mm_dram_adj),
-> > -       DEFINE_BUS_SLAVE("OCRAM", IMX8MM_ICS_OCRAM, NULL),
-> > +       DEFINE_BUS_SLAVE("DRAM", IMX8MM_ICS_DRAM),
-> > +       DEFINE_BUS_SLAVE("OCRAM", IMX8MM_ICS_OCRAM),
-> >         DEFINE_BUS_MASTER("A53", IMX8MM_ICM_A53, IMX8MM_ICN_NOC),
-> >
-> >         /* VPUMIX */
-> >         DEFINE_BUS_MASTER("VPU H1", IMX8MM_ICM_VPU_H1, IMX8MM_ICN_VIDEO),
-> >         DEFINE_BUS_MASTER("VPU G1", IMX8MM_ICM_VPU_G1, IMX8MM_ICN_VIDEO),
-> >         DEFINE_BUS_MASTER("VPU G2", IMX8MM_ICM_VPU_G2, IMX8MM_ICN_VIDEO),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_VIDEO", IMX8MM_ICN_VIDEO, NULL, IMX8MM_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_VIDEO", IMX8MM_ICN_VIDEO, IMX8MM_ICN_NOC),
-> >
-> >         /* GPUMIX */
-> >         DEFINE_BUS_MASTER("GPU 2D", IMX8MM_ICM_GPU2D, IMX8MM_ICN_GPU),
-> >         DEFINE_BUS_MASTER("GPU 3D", IMX8MM_ICM_GPU3D, IMX8MM_ICN_GPU),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MM_ICN_GPU, NULL, IMX8MM_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MM_ICN_GPU, IMX8MM_ICN_NOC),
-> >
-> >         /* DISPLAYMIX */
-> >         DEFINE_BUS_MASTER("CSI", IMX8MM_ICM_CSI, IMX8MM_ICN_MIPI),
-> >         DEFINE_BUS_MASTER("LCDIF", IMX8MM_ICM_LCDIF, IMX8MM_ICN_MIPI),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_MIPI", IMX8MM_ICN_MIPI, NULL, IMX8MM_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_MIPI", IMX8MM_ICN_MIPI, IMX8MM_ICN_NOC),
-> >
-> >         /* HSIO */
-> >         DEFINE_BUS_MASTER("USB1", IMX8MM_ICM_USB1, IMX8MM_ICN_HSIO),
-> >         DEFINE_BUS_MASTER("USB2", IMX8MM_ICM_USB2, IMX8MM_ICN_HSIO),
-> >         DEFINE_BUS_MASTER("PCIE", IMX8MM_ICM_PCIE, IMX8MM_ICN_HSIO),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_HSIO", IMX8MM_ICN_HSIO, NULL, IMX8MM_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_HSIO", IMX8MM_ICN_HSIO, IMX8MM_ICN_NOC),
-> >
-> >         /* Audio */
-> >         DEFINE_BUS_MASTER("SDMA2", IMX8MM_ICM_SDMA2, IMX8MM_ICN_AUDIO),
-> >         DEFINE_BUS_MASTER("SDMA3", IMX8MM_ICM_SDMA3, IMX8MM_ICN_AUDIO),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MM_ICN_AUDIO, NULL, IMX8MM_ICN_MAIN),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MM_ICN_AUDIO, IMX8MM_ICN_MAIN),
-> >
-> >         /* Ethernet */
-> >         DEFINE_BUS_MASTER("ENET", IMX8MM_ICM_ENET, IMX8MM_ICN_ENET),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MM_ICN_ENET, NULL, IMX8MM_ICN_MAIN),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MM_ICN_ENET, IMX8MM_ICN_MAIN),
-> >
-> >         /* Other */
-> >         DEFINE_BUS_MASTER("SDMA1", IMX8MM_ICM_SDMA1, IMX8MM_ICN_MAIN),
-> > @@ -77,7 +65,7 @@ static struct imx_icc_node_desc nodes[] = {
-> >         DEFINE_BUS_MASTER("USDHC1", IMX8MM_ICM_USDHC1, IMX8MM_ICN_MAIN),
-> >         DEFINE_BUS_MASTER("USDHC2", IMX8MM_ICM_USDHC2, IMX8MM_ICN_MAIN),
-> >         DEFINE_BUS_MASTER("USDHC3", IMX8MM_ICM_USDHC3, IMX8MM_ICN_MAIN),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MM_ICN_MAIN, NULL,
-> > +       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MM_ICN_MAIN,
-> >                         IMX8MM_ICN_NOC, IMX8MM_ICS_OCRAM),
-> >  };
-> >
-> > diff --git a/drivers/interconnect/imx/imx8mn.c b/drivers/interconnect/imx/imx8mn.c
-> > index ad97e55fd4e5..8d16bd5cf006 100644
-> > --- a/drivers/interconnect/imx/imx8mn.c
-> > +++ b/drivers/interconnect/imx/imx8mn.c
-> > @@ -11,18 +11,6 @@
-> >
-> >  #include "imx.h"
-> >
-> > -static const struct imx_icc_node_adj_desc imx8mn_dram_adj = {
-> > -       .bw_mul = 1,
-> > -       .bw_div = 4,
-> > -       .phandle_name = "fsl,ddrc",
-> > -};
-> > -
-> > -static const struct imx_icc_node_adj_desc imx8mn_noc_adj = {
-> > -       .bw_mul = 1,
-> > -       .bw_div = 4,
-> > -       .main_noc = true,
-> > -};
-> > -
-> >  /*
-> >   * Describe bus masters, slaves and connections between them
-> >   *
-> > @@ -30,23 +18,23 @@ static const struct imx_icc_node_adj_desc imx8mn_noc_adj = {
-> >   * PL301 nics which are skipped/merged into PL301_MAIN
-> >   */
-> >  static struct imx_icc_node_desc nodes[] = {
-> > -       DEFINE_BUS_INTERCONNECT("NOC", IMX8MN_ICN_NOC, &imx8mn_noc_adj,
-> > +       DEFINE_BUS_INTERCONNECT("NOC", IMX8MN_ICN_NOC,
-> >                         IMX8MN_ICS_DRAM, IMX8MN_ICN_MAIN),
-> >
-> > -       DEFINE_BUS_SLAVE("DRAM", IMX8MN_ICS_DRAM, &imx8mn_dram_adj),
-> > -       DEFINE_BUS_SLAVE("OCRAM", IMX8MN_ICS_OCRAM, NULL),
-> > +       DEFINE_BUS_SLAVE("DRAM", IMX8MN_ICS_DRAM),
-> > +       DEFINE_BUS_SLAVE("OCRAM", IMX8MN_ICS_OCRAM),
-> >         DEFINE_BUS_MASTER("A53", IMX8MN_ICM_A53, IMX8MN_ICN_NOC),
-> >
-> >         /* GPUMIX */
-> >         DEFINE_BUS_MASTER("GPU", IMX8MN_ICM_GPU, IMX8MN_ICN_GPU),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MN_ICN_GPU, NULL, IMX8MN_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MN_ICN_GPU, IMX8MN_ICN_NOC),
-> >
-> >         /* DISPLAYMIX */
-> >         DEFINE_BUS_MASTER("CSI1", IMX8MN_ICM_CSI1, IMX8MN_ICN_MIPI),
-> >         DEFINE_BUS_MASTER("CSI2", IMX8MN_ICM_CSI2, IMX8MN_ICN_MIPI),
-> >         DEFINE_BUS_MASTER("ISI", IMX8MN_ICM_ISI, IMX8MN_ICN_MIPI),
-> >         DEFINE_BUS_MASTER("LCDIF", IMX8MN_ICM_LCDIF, IMX8MN_ICN_MIPI),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_MIPI", IMX8MN_ICN_MIPI, NULL, IMX8MN_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_MIPI", IMX8MN_ICN_MIPI, IMX8MN_ICN_NOC),
-> >
-> >         /* USB goes straight to NOC */
-> >         DEFINE_BUS_MASTER("USB", IMX8MN_ICM_USB, IMX8MN_ICN_NOC),
-> > @@ -54,11 +42,11 @@ static struct imx_icc_node_desc nodes[] = {
-> >         /* Audio */
-> >         DEFINE_BUS_MASTER("SDMA2", IMX8MN_ICM_SDMA2, IMX8MN_ICN_AUDIO),
-> >         DEFINE_BUS_MASTER("SDMA3", IMX8MN_ICM_SDMA3, IMX8MN_ICN_AUDIO),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MN_ICN_AUDIO, NULL, IMX8MN_ICN_MAIN),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MN_ICN_AUDIO, IMX8MN_ICN_MAIN),
-> >
-> >         /* Ethernet */
-> >         DEFINE_BUS_MASTER("ENET", IMX8MN_ICM_ENET, IMX8MN_ICN_ENET),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MN_ICN_ENET, NULL, IMX8MN_ICN_MAIN),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MN_ICN_ENET, IMX8MN_ICN_MAIN),
-> >
-> >         /* Other */
-> >         DEFINE_BUS_MASTER("SDMA1", IMX8MN_ICM_SDMA1, IMX8MN_ICN_MAIN),
-> > @@ -66,7 +54,7 @@ static struct imx_icc_node_desc nodes[] = {
-> >         DEFINE_BUS_MASTER("USDHC1", IMX8MN_ICM_USDHC1, IMX8MN_ICN_MAIN),
-> >         DEFINE_BUS_MASTER("USDHC2", IMX8MN_ICM_USDHC2, IMX8MN_ICN_MAIN),
-> >         DEFINE_BUS_MASTER("USDHC3", IMX8MN_ICM_USDHC3, IMX8MN_ICN_MAIN),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MN_ICN_MAIN, NULL,
-> > +       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MN_ICN_MAIN
-> >                         IMX8MN_ICN_NOC, IMX8MN_ICS_OCRAM),
-> >  };
-> >
-> > diff --git a/drivers/interconnect/imx/imx8mq.c b/drivers/interconnect/imx/imx8mq.c
-> > index d7768d3c6d8a..b8c36d668946 100644
-> > --- a/drivers/interconnect/imx/imx8mq.c
-> > +++ b/drivers/interconnect/imx/imx8mq.c
-> > @@ -12,18 +12,6 @@
-> >
-> >  #include "imx.h"
-> >
-> > -static const struct imx_icc_node_adj_desc imx8mq_dram_adj = {
-> > -       .bw_mul = 1,
-> > -       .bw_div = 4,
-> > -       .phandle_name = "fsl,ddrc",
-> > -};
-> > -
-> > -static const struct imx_icc_node_adj_desc imx8mq_noc_adj = {
-> > -       .bw_mul = 1,
-> > -       .bw_div = 4,
-> > -       .main_noc = true,
-> > -};
-> > -
-> >  /*
-> >   * Describe bus masters, slaves and connections between them
-> >   *
-> > @@ -31,43 +19,42 @@ static const struct imx_icc_node_adj_desc imx8mq_noc_adj = {
-> >   * PL301 nics which are skipped/merged into PL301_MAIN
-> >   */
-> >  static struct imx_icc_node_desc nodes[] = {
-> > -       DEFINE_BUS_INTERCONNECT("NOC", IMX8MQ_ICN_NOC, &imx8mq_noc_adj,
-> > -                       IMX8MQ_ICS_DRAM, IMX8MQ_ICN_MAIN),
-> > +       DEFINE_BUS_INTERCONNECT("NOC", IMX8MQ_ICN_NOC, IMX8MQ_ICS_DRAM, IMX8MQ_ICN_MAIN),
-> >
-> > -       DEFINE_BUS_SLAVE("DRAM", IMX8MQ_ICS_DRAM, &imx8mq_dram_adj),
-> > -       DEFINE_BUS_SLAVE("OCRAM", IMX8MQ_ICS_OCRAM, NULL),
-> > +       DEFINE_BUS_SLAVE("DRAM", IMX8MQ_ICS_DRAM),
-> > +       DEFINE_BUS_SLAVE("OCRAM", IMX8MQ_ICS_OCRAM),
-> >         DEFINE_BUS_MASTER("A53", IMX8MQ_ICM_A53, IMX8MQ_ICN_NOC),
-> >
-> >         /* VPUMIX */
-> >         DEFINE_BUS_MASTER("VPU", IMX8MQ_ICM_VPU, IMX8MQ_ICN_VIDEO),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_VIDEO", IMX8MQ_ICN_VIDEO, NULL, IMX8MQ_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_VIDEO", IMX8MQ_ICN_VIDEO, IMX8MQ_ICN_NOC),
-> >
-> >         /* GPUMIX */
-> >         DEFINE_BUS_MASTER("GPU", IMX8MQ_ICM_GPU, IMX8MQ_ICN_GPU),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MQ_ICN_GPU, NULL, IMX8MQ_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_GPU", IMX8MQ_ICN_GPU, IMX8MQ_ICN_NOC),
-> >
-> >         /* DISPMIX (only for DCSS) */
-> >         DEFINE_BUS_MASTER("DC", IMX8MQ_ICM_DCSS, IMX8MQ_ICN_DCSS),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_DC", IMX8MQ_ICN_DCSS, NULL, IMX8MQ_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_DC", IMX8MQ_ICN_DCSS, IMX8MQ_ICN_NOC),
-> >
-> >         /* USBMIX */
-> >         DEFINE_BUS_MASTER("USB1", IMX8MQ_ICM_USB1, IMX8MQ_ICN_USB),
-> >         DEFINE_BUS_MASTER("USB2", IMX8MQ_ICM_USB2, IMX8MQ_ICN_USB),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_USB", IMX8MQ_ICN_USB, NULL, IMX8MQ_ICN_NOC),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_USB", IMX8MQ_ICN_USB, IMX8MQ_ICN_NOC),
-> >
-> >         /* PL301_DISPLAY (IPs other than DCSS, inside SUPERMIX) */
-> >         DEFINE_BUS_MASTER("CSI1", IMX8MQ_ICM_CSI1, IMX8MQ_ICN_DISPLAY),
-> >         DEFINE_BUS_MASTER("CSI2", IMX8MQ_ICM_CSI2, IMX8MQ_ICN_DISPLAY),
-> >         DEFINE_BUS_MASTER("LCDIF", IMX8MQ_ICM_LCDIF, IMX8MQ_ICN_DISPLAY),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_DISPLAY", IMX8MQ_ICN_DISPLAY, NULL, IMX8MQ_ICN_MAIN),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_DISPLAY", IMX8MQ_ICN_DISPLAY, IMX8MQ_ICN_MAIN),
-> >
-> >         /* AUDIO */
-> >         DEFINE_BUS_MASTER("SDMA2", IMX8MQ_ICM_SDMA2, IMX8MQ_ICN_AUDIO),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MQ_ICN_AUDIO, NULL, IMX8MQ_ICN_DISPLAY),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_AUDIO", IMX8MQ_ICN_AUDIO, IMX8MQ_ICN_DISPLAY),
-> >
-> >         /* ENET */
-> >         DEFINE_BUS_MASTER("ENET", IMX8MQ_ICM_ENET, IMX8MQ_ICN_ENET),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MQ_ICN_ENET, NULL, IMX8MQ_ICN_MAIN),
-> > +       DEFINE_BUS_INTERCONNECT("PL301_ENET", IMX8MQ_ICN_ENET, IMX8MQ_ICN_MAIN),
-> >
-> >         /* OTHER */
-> >         DEFINE_BUS_MASTER("SDMA1", IMX8MQ_ICM_SDMA1, IMX8MQ_ICN_MAIN),
-> > @@ -76,7 +63,7 @@ static struct imx_icc_node_desc nodes[] = {
-> >         DEFINE_BUS_MASTER("USDHC2", IMX8MQ_ICM_USDHC2, IMX8MQ_ICN_MAIN),
-> >         DEFINE_BUS_MASTER("PCIE1", IMX8MQ_ICM_PCIE1, IMX8MQ_ICN_MAIN),
-> >         DEFINE_BUS_MASTER("PCIE2", IMX8MQ_ICM_PCIE2, IMX8MQ_ICN_MAIN),
-> > -       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MQ_ICN_MAIN, NULL,
-> > +       DEFINE_BUS_INTERCONNECT("PL301_MAIN", IMX8MQ_ICN_MAIN,
-> >                         IMX8MQ_ICN_NOC, IMX8MQ_ICS_OCRAM),
-> >  };
-> >
-> > --
-> > 2.31.1
-> >
+> > So there is only one padctl register pr. pin. I don't see why first
+> > setting the bias bits to X, then setting some other bits, and then
+> > setting the bias bits to Y would be different from just setting all
+> > the bits in one go. Except for during that little microsecond window
+> > during the loop that I actually think it's better to avoid.
+>
+> Maybe an example is in order. Suppose we get strong pull-up, drive
+> strength 3 and pull-down config flags (the strong pull-up and pull
+> down flags conflict) and the padctl value is 0x0c0 (pull-up, input and
+> schmitt trigger enabled). With your solution of just altering the
+> padctl bits immediately we'd call starfive_padctl_rmw 3 times in rapid
+> succession like this:
+>
+> starfive_padctl_rmw(pin, 0x130, 0x100);
+> starfive_padctl_rmw(pin, 0x007, 0x003);
+> starfive_padctl_rmw(pin, 0x130, 0x010);
+>
+> ..and the end result would be 0x0d3, although the strong pull-up would
+> be enabled for the microseconds between the 1st and 3nd call.
+> As the code is now it'd just directly do
+>
+> starfive_padctl_rmw(pin, 0x137, 0x013)
+>
+> ..which again results in 0x0d3, only without the microsecond blink of
+> the strong pull-up.
+
+You missed the point. Hardware on the other end may behave well
+differently in these two cases.
+
+-- 
+With Best Regards,
+Andy Shevchenko
