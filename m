@@ -2,105 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A2AC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 09:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5A4C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 10:15:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 85AFF60F90
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 09:31:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EC9D60F02
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 10:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240949AbhJ0Jd0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 Oct 2021 05:33:26 -0400
-Received: from mga12.intel.com ([192.55.52.136]:26461 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230195AbhJ0JdZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 Oct 2021 05:33:25 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10149"; a="210203097"
-X-IronPort-AV: E=Sophos;i="5.87,186,1631602800"; 
-   d="scan'208";a="210203097"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2021 02:31:00 -0700
-X-IronPort-AV: E=Sophos;i="5.87,186,1631602800"; 
-   d="scan'208";a="635661120"
-Received: from smile.fi.intel.com ([10.237.72.184])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2021 02:30:54 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mffGT-001QWu-IZ;
-        Wed, 27 Oct 2021 12:30:33 +0300
-Date:   Wed, 27 Oct 2021 12:30:33 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Emil Renner Berthing <kernel@esmil.dk>, devicetree@vger.kernel.org,
-        linux-clk <linux-clk@vger.kernel.org>,
-        linux-gpio@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-serial@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        id S241338AbhJ0KRo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 27 Oct 2021 06:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41760 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241322AbhJ0KRo (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 27 Oct 2021 06:17:44 -0400
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5503C061767
+        for <linux-serial@vger.kernel.org>; Wed, 27 Oct 2021 03:15:18 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:441:6c1a:bc30:46e])
+        by xavier.telenet-ops.be with bizsmtp
+        id AyFF260052hfXWm01yFFKF; Wed, 27 Oct 2021 12:15:15 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mffiU-008HRd-Op; Wed, 27 Oct 2021 11:59:30 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mfdkV-00DitM-UB; Wed, 27 Oct 2021 09:53:27 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 06/16] clk: starfive: Add JH7100 clock generator driver
-Message-ID: <YXkcOZnoGd96wjOU@smile.fi.intel.com>
-References: <20211021174223.43310-1-kernel@esmil.dk>
- <20211021174223.43310-7-kernel@esmil.dk>
- <163527959276.15791.14765586510805526101@swboyd.mtv.corp.google.com>
- <CANBLGcyYb3yNit=GCy4w2zf2=CRtCJP7aCisR8=9n1f7okfCSg@mail.gmail.com>
- <163529604399.15791.378104318036812951@swboyd.mtv.corp.google.com>
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] serial: cpm_uart: Protect udbg definitions by CONFIG_SERIAL_CPM_CONSOLE
+Date:   Wed, 27 Oct 2021 09:53:26 +0200
+Message-Id: <20211027075326.3270785-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <163529604399.15791.378104318036812951@swboyd.mtv.corp.google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 05:54:03PM -0700, Stephen Boyd wrote:
-> Quoting Emil Renner Berthing (2021-10-26 15:35:36)
-> > On Tue, 26 Oct 2021 at 22:20, Stephen Boyd <sboyd@kernel.org> wrote:
-> > > Quoting Emil Renner Berthing (2021-10-21 10:42:13)
+If CONFIG_CONSOLE_POLL=y, and CONFIG_SERIAL_CPM=m (hence
+CONFIG_SERIAL_CPM_CONSOLE=n):
 
-...
+    drivers/tty/serial/cpm_uart/cpm_uart_core.c:1109:12: warning: ‘udbg_cpm_getc’ defined but not used [-Wunused-function]
+     1109 | static int udbg_cpm_getc(void)
+	  |            ^~~~~~~~~~~~~
+    drivers/tty/serial/cpm_uart/cpm_uart_core.c:1095:13: warning: ‘udbg_cpm_putc’ defined but not used [-Wunused-function]
+     1095 | static void udbg_cpm_putc(char c)
+	  |             ^~~~~~~~~~~~~
 
-> > > > +static int __init clk_starfive_jh7100_probe(struct platform_device *pdev)
-> > >
-> > > Drop __init as this can be called after kernel init is over.
-> > 
-> > Oh interesting, I'd like to know when that can happen. The comment for
-> > the builtin_platform_driver macro says it's just a wrapper for
-> 
-> I thought this was using module_platform_driver() macro?
-> 
-> > device_initcall.
-> > 
-> > Won't we then need to remove all the __initconst tags too since the
-> > probe function walks through jh7100_clk_data which eventually
-> > references all __initconst data?
-> 
-> Yes. If it's builtin_platform_driver() it can't be a module/tristate
-> Kconfig, in which case all the init markings can stay.
+Fix this by making the udbg definitions depend on
+CONFIG_SERIAL_CPM_CONSOLE, in addition to CONFIG_CONSOLE_POLL.
 
-What about bind/unbind attribute?
+Fixes: a60526097f42eb98 ("tty: serial: cpm_uart: Add udbg support for enabling xmon")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+One more casualty of CONFIG_WERROR=y.
+http://kisskb.ellerman.id.au/kisskb/buildresult/14652935/
+---
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index c719aa2b18328321..d6d3db9c3b1f83ab 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -1090,6 +1090,7 @@ static void cpm_put_poll_char(struct uart_port *port,
+ 	cpm_uart_early_write(pinfo, ch, 1, false);
+ }
+ 
++#ifdef CONFIG_SERIAL_CPM_CONSOLE
+ static struct uart_port *udbg_port;
+ 
+ static void udbg_cpm_putc(char c)
+@@ -1114,6 +1115,7 @@ static int udbg_cpm_getc(void)
+ 		cpu_relax();
+ 	return c;
+ }
++#endif /* CONFIG_SERIAL_CPM_CONSOLE */
+ 
+ #endif /* CONFIG_CONSOLE_POLL */
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
