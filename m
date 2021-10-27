@@ -2,210 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A37D4C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 13:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5565DC4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 14:44:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8DB3D610A3
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 13:57:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 37C6260F38
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 14:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242330AbhJ0N7w (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 Oct 2021 09:59:52 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:36496 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231838AbhJ0N7p (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 Oct 2021 09:59:45 -0400
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19RD9TUg016081;
-        Wed, 27 Oct 2021 15:56:41 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : from : to
- : cc : references : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=SonikwPLivf5Wf37m9QGw9Dbl0nfvPwQE843HNWkcTc=;
- b=WzTh3e1T+lbbR0asJHNFou5wy8ymDy2S+R6rPJyrqAzstKAMap8J47xdHxMl2RgiS0FA
- GmPrGi2x3OeVUYtOCqe6mJeZ8Qnqgr3AqxOk450p67gxTAT52rOaRO+ShqQ7sCyKWJnI
- akk/0WBtQxfWvGvmNBBFHNJxGj2edblZplh16L99+Icve2UKQ3u0Y7rBt6zEBSDWSZG4
- hjGa2jeJcZtnU6/w30poOeFwKUFpEn8VYHXLg/vCxFZY0lY9ng2HR45n3c8vhiJwnllz
- Jwmg2Jsob0VeZLHlpEugPKm678F0Rb6n0r6pPAbgzUx5bSgYL/7OoJXo5clDxcl3kg2U lg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 3by38r22bq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Oct 2021 15:56:41 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5734910002A;
-        Wed, 27 Oct 2021 15:56:39 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3742D22D168;
-        Wed, 27 Oct 2021 15:56:39 +0200 (CEST)
-Received: from lmecxl0573.lme.st.com (10.75.127.50) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 27 Oct
- 2021 15:56:35 +0200
-Subject: Re: dt-bindings: treewide: Update @st.com email address to
- @foss.st.com
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-To:     Marc Zyngier <maz@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        <joe@perches.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        maxime coquelin <mcoquelin.stm32@gmail.com>,
-        alexandre torgue <alexandre.torgue@foss.st.com>,
-        michael turquette <mturquette@baylibre.com>,
-        stephen boyd <sboyd@kernel.org>,
-        herbert xu <herbert@gondor.apana.org.au>,
-        "david s . miller" <davem@davemloft.net>,
-        david airlie <airlied@linux.ie>,
-        daniel vetter <daniel@ffwll.ch>,
-        thierry reding <thierry.reding@gmail.com>,
-        sam ravnborg <sam@ravnborg.org>,
-        yannick fertre <yannick.fertre@foss.st.com>,
-        "philippe cornu" <philippe.cornu@foss.st.com>,
-        benjamin gaignard <benjamin.gaignard@linaro.org>,
-        vinod koul <vkoul@kernel.org>,
-        ohad ben-cohen <ohad@wizery.com>,
-        bjorn andersson <bjorn.andersson@linaro.org>,
-        baolin wang <baolin.wang7@gmail.com>,
-        jonathan cameron <jic23@kernel.org>,
-        "lars-peter clausen" <lars@metafoo.de>,
-        olivier moysan <olivier.moysan@foss.st.com>,
-        arnaud pouliquen <arnaud.pouliquen@foss.st.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
-        Hugues Fruchet <hugues.fruchet@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "Richard Weinberger" <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matt Mackall <mpm@selenic.com>,
-        "Alessandro Zummo" <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        "Ahmad Fatoum" <a.fatoum@pengutronix.de>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        dillon min <dillon.minfei@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        "Laurent Pinchart" <laurent.pinchart@ideasonboard.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Christophe Roullier <christophe.roullier@foss.st.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Lionel Debieve <lionel.debieve@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Pierre-Yves MORDRET <pierre-yves.mordret@foss.st.com>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        pascal Paillet <p.paillet@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "Jose Abreu" <joabreu@synopsys.com>,
-        Le Ray <erwan.leray@foss.st.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <dmaengine@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <linux-media@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <netdev@vger.kernel.org>, <linux-phy@lists.infradead.org>,
-        <linux-gpio@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>
-References: <20211020065000.21312-1-patrice.chotard@foss.st.com>
- <22fb6f19-21eb-dcb5-fa31-bb243d4a7eaf@canonical.com>
- <878ryoc4dc.wl-maz@kernel.org>
- <82492eb2-5a5e-39a2-a058-5e2ba75323e0@foss.st.com>
-Message-ID: <865a4055-5c2f-0793-bdce-9f04eac167d2@foss.st.com>
-Date:   Wed, 27 Oct 2021 15:56:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S229655AbhJ0Oqs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 27 Oct 2021 10:46:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52014 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229447AbhJ0Oqr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 27 Oct 2021 10:46:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E01E660F21;
+        Wed, 27 Oct 2021 14:44:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635345862;
+        bh=QkaH8i/IP3CIgA/bCVNmnPGWHjIMocsRPHDcPlLjhtw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=QBDnQxRc9qXNWz75JROWosZmxmOsmsNEGEaXVE8jUNBYf26QeTA7w36x4CegZq8kX
+         3e0PmaUOkOTztgiWGxzYGAYj/nSNZWmPMxeDvJRNfNSw0oxD/r3iFzJByDP+KnpeA+
+         iBAnX/vQA3SFskmA1l5OjwZPDJbZBvNjJN0YHq72gfOzoSwt9XZ5vlOJPTMfM0IegE
+         cbA7g5Xfx6sZ9kfI7gPh6dqbVEZecZBvFkOg7WBqTT4QChasCZfq81728KLS0xm/Ed
+         Nrt8BvohV87fehXxiTjwR+b/GjrRbPnP9ZNdVjNThODvjzLr3955aWuISrUCK8eID2
+         tVaxKUDb4Lv+A==
+Received: by mail-ed1-f45.google.com with SMTP id m17so10848442edc.12;
+        Wed, 27 Oct 2021 07:44:21 -0700 (PDT)
+X-Gm-Message-State: AOAM530DRu/A9tEkI609X7JWG0CyjPzvoxt8ZJNdZQoxuJasO69pvzmv
+        zHHlxGONvQBJAkSvn5+aeXdqNIr8J6zNWxr4eQ==
+X-Google-Smtp-Source: ABdhPJzZb8un3hSlLPdikzo4LyAdNxP2rheUbz80i2Mi4iVmyOfTj91TmAOW+jBpNU7/41eeL8Fqjsu/ZlGUzLGLsIQ=
+X-Received: by 2002:a17:906:6a0a:: with SMTP id qw10mr23065885ejc.466.1635345846542;
+ Wed, 27 Oct 2021 07:44:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <82492eb2-5a5e-39a2-a058-5e2ba75323e0@foss.st.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-27_04,2021-10-26_01,2020-04-07_01
+References: <20211025144718.157794-1-marcan@marcan.st> <20211025144718.157794-3-marcan@marcan.st>
+ <YXhINE00HG6hbQI4@robh.at.kernel.org> <c0f2587c-ab69-8194-e618-ce7919c1aeb1@marcan.st>
+In-Reply-To: <c0f2587c-ab69-8194-e618-ce7919c1aeb1@marcan.st>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 27 Oct 2021 09:43:54 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJbVcqy8n0EroV=nFZoJ_WAr+JbrDf-c1jso856NghC2A@mail.gmail.com>
+Message-ID: <CAL_JsqJbVcqy8n0EroV=nFZoJ_WAr+JbrDf-c1jso856NghC2A@mail.gmail.com>
+Subject: Re: [PATCH v2 2/8] dt-bindings: arm: apple: Add apple,pmgr binding
+To:     Hector Martin <marcan@marcan.st>
+Cc:     linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Johan Hovold <johan@kernel.org>, devicetree@vger.kernel.org,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Mark Kettenis <kettenis@openbsd.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Marc
+On Tue, Oct 26, 2021 at 10:38 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> On 27/10/2021 03.25, Rob Herring wrote:
+> > On Mon, Oct 25, 2021 at 11:47:12PM +0900, Hector Martin wrote:
+> >> +  compatible:
+> >> +    items:
+> >> +      - enum:
+> >> +          - apple,t8103-pmgr
+> >> +          - apple,t8103-minipmgr
+> >> +      - const: apple,pmgr
+> >> +      - const: syscon
+> >> +      - const: simple-mfd
+> >
+> >
+> > 'simple-mfd' means 'there's nothing in this node that any of the child
+> > nodes depend on'. You should be somewhat certain as dropping it later
+> > creates compatibility issues.
+>
+> Hmm, I see simple-mfd turns this into a bus which I guess allows child
+> nodes to be probed without the parent node doing anything special (then
+> we use syscon_node_to_regmap to get the syscon instantiated). Do you
+> have a example use case for doing this without simple-mfd?
 
-+Joe Perches
+Drivers calling of_platform_populate or devm_of_platform_populate.
 
-On 10/27/21 8:11 AM, Patrice CHOTARD wrote:
-> Hi Marc
-> 
-> On 10/20/21 1:39 PM, Marc Zyngier wrote:
->> On Wed, 20 Oct 2021 08:45:02 +0100,
->> Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
->>>
->>> On 20/10/2021 08:50, patrice.chotard@foss.st.com wrote:
->>>> From: Patrice Chotard <patrice.chotard@foss.st.com>
->>>>
->>>> Not all @st.com email address are concerned, only people who have
->>>> a specific @foss.st.com email will see their entry updated.
->>>> For some people, who left the company, remove their email.
->>>>
->>>
->>> Please split simple address change from maintainer updates (removal,
->>> addition).
->>>
->>> Also would be nice to see here explained *why* are you doing this.
->>
->> And why this can't be done with a single update to .mailmap, like
->> anyone else does.
-> 
-> Thanks for the tips, yes, it will be simpler.
-> 
-> Thanks
-> Patrice
-> 
->>
->> 	M.
->>
+That of course does mean you need a driver. We could probably make the
+syscon driver call these if needed.
 
-I made a try by updating .mailmap with adding a new entry with my @foss.st.com email :
+> At this point I can't think of anything we'd need from the parent node,
+> especially if we end up using this syscon strictly for pwrstate subnodes
+> (which seems likely at this point). One thing that comes to mind is
+> telling the PMP (a coprocessor in charge of power metrics/management)
+> about some domains being turned on/off, which is apparently a thing, but
+> that wouldn't even be in this node; that'd have to be a phandle property
+> in the child nodes referencing a PMP/coprocessor node elsewhere (none of
+> which is implemented right now, and which should be backwards compatible
+> once it is).
+>
+> If it turns out we do have a dep of some sort in the end, could we just
+> have the child node driver return -EPROBE_DEFER until the parent is
+> probed and has made whatever service available? That would allow us to
+> keep simple-mfd, right?
 
- Pali Rohár <pali@kernel.org> <pali.rohar@gmail.com>
- Paolo 'Blaisorblade' Giarrusso <blaisorblade@yahoo.it>
-+Patrice Chotard <patrice.chotard@foss.st.com> <patrice.chotard@st.com>
- Patrick Mochel <mochel@digitalimplant.org>
- Paul Burton <paulburton@kernel.org> <paul.burton@imgtec.com>
+That would have saved you, but deferred probe is now a fallback to
+fw_devlink and it makes sure parent driver probes first. That works
+unless there isn't a parent driver which is often the case for
+simple-bus[1]. I think you are okay since 'syscon' means there is a
+driver.
 
-But when running ./scripts/get_maintainer.pl Documentation/devicetree/bindings/arm/sti.yaml, by old email is still displayed
+> If it works for you, I'll also just squash the two bindings into one
+> commit for the next spin, since there is a direct dependency at this
+> point and it should make things easier. Otherwise, I can just swap the
+> order if you prefer it that way.
 
-Rob Herring <robh+dt@kernel.org> (maintainer:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS)
-Patrice Chotard <patrice.chotard@st.com> (in file)
-devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS)
-linux-kernel@vger.kernel.org (open list)
+Just swapping seems like less work, but either way.
 
-By default, the get_maintainer.pl script is using .mailmap file ($email_use_mailmap = 1).
+Rob
 
-It seems there is an issue with get_maintainer.pl and maintainer name/e-mail found in yaml file ?
-
-Thanks
-Patrice
+[1] https://lore.kernel.org/all/CAL_JsqJcsqjJBe8aULYYMkFtx8OTj2wHANZ=83VMMyJ=AEgReg@mail.gmail.com/
