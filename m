@@ -2,93 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5A4C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 10:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64073C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 10:22:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4EC9D60F02
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 10:15:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3DE4760EBD
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Oct 2021 10:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241338AbhJ0KRo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 Oct 2021 06:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241322AbhJ0KRo (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 Oct 2021 06:17:44 -0400
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5503C061767
-        for <linux-serial@vger.kernel.org>; Wed, 27 Oct 2021 03:15:18 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:441:6c1a:bc30:46e])
-        by xavier.telenet-ops.be with bizsmtp
-        id AyFF260052hfXWm01yFFKF; Wed, 27 Oct 2021 12:15:15 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mffiU-008HRd-Op; Wed, 27 Oct 2021 11:59:30 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mfdkV-00DitM-UB; Wed, 27 Oct 2021 09:53:27 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S241392AbhJ0KYY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 27 Oct 2021 06:24:24 -0400
+Received: from mail.bitwise.fi ([109.204.228.163]:42724 "EHLO mail.bitwise.fi"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241366AbhJ0KYY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 27 Oct 2021 06:24:24 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.bitwise.fi (Postfix) with ESMTP id 75C02460029;
+        Wed, 27 Oct 2021 13:21:57 +0300 (EEST)
+X-Virus-Scanned: Debian amavisd-new at 
+Received: from mail.bitwise.fi ([127.0.0.1])
+        by localhost (mustetatti.dmz.bitwise.fi [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Zhm03kzXQedL; Wed, 27 Oct 2021 13:21:54 +0300 (EEST)
+Received: from localhost.net (fw1.dmz.bitwise.fi [192.168.69.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: anssiha)
+        by mail.bitwise.fi (Postfix) with ESMTPSA id 91093460026;
+        Wed, 27 Oct 2021 13:21:54 +0300 (EEST)
+From:   Anssi Hannula <anssi.hannula@bitwise.fi>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] serial: cpm_uart: Protect udbg definitions by CONFIG_SERIAL_CPM_CONSOLE
-Date:   Wed, 27 Oct 2021 09:53:26 +0200
-Message-Id: <20211027075326.3270785-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH] tty: Fix extra "not" in TTY_DRIVER_REAL_RAW description
+Date:   Wed, 27 Oct 2021 13:21:24 +0300
+Message-Id: <20211027102124.3049414-1-anssi.hannula@bitwise.fi>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-If CONFIG_CONSOLE_POLL=y, and CONFIG_SERIAL_CPM=m (hence
-CONFIG_SERIAL_CPM_CONSOLE=n):
+TTY_DRIVER_REAL_RAW flag (which is always set for e.g. serial ports)
+documentation says that driver must always set special character
+handling flags in certain conditions.
 
-    drivers/tty/serial/cpm_uart/cpm_uart_core.c:1109:12: warning: ‘udbg_cpm_getc’ defined but not used [-Wunused-function]
-     1109 | static int udbg_cpm_getc(void)
-	  |            ^~~~~~~~~~~~~
-    drivers/tty/serial/cpm_uart/cpm_uart_core.c:1095:13: warning: ‘udbg_cpm_putc’ defined but not used [-Wunused-function]
-     1095 | static void udbg_cpm_putc(char c)
-	  |             ^~~~~~~~~~~~~
+However, as the following sentence makes clear, what is actually
+intended is the opposite.
 
-Fix this by making the udbg definitions depend on
-CONFIG_SERIAL_CPM_CONSOLE, in addition to CONFIG_CONSOLE_POLL.
+Fix that by removing the unintended double negation.
 
-Fixes: a60526097f42eb98 ("tty: serial: cpm_uart: Add udbg support for enabling xmon")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
 ---
-One more casualty of CONFIG_WERROR=y.
-http://kisskb.ellerman.id.au/kisskb/buildresult/14652935/
----
- drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index c719aa2b18328321..d6d3db9c3b1f83ab 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -1090,6 +1090,7 @@ static void cpm_put_poll_char(struct uart_port *port,
- 	cpm_uart_early_write(pinfo, ch, 1, false);
- }
- 
-+#ifdef CONFIG_SERIAL_CPM_CONSOLE
- static struct uart_port *udbg_port;
- 
- static void udbg_cpm_putc(char c)
-@@ -1114,6 +1115,7 @@ static int udbg_cpm_getc(void)
- 		cpu_relax();
- 	return c;
- }
-+#endif /* CONFIG_SERIAL_CPM_CONSOLE */
- 
- #endif /* CONFIG_CONSOLE_POLL */
- 
+This one seems to have been there since 1994.
+
+ include/linux/tty_driver.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index c20431d8def8..5bec04481c60 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -360,7 +360,7 @@ static inline void tty_set_operations(struct tty_driver *driver,
+  * 	Used for PTY's, in particular.
+  * 
+  * TTY_DRIVER_REAL_RAW --- if set, indicates that the driver will
+- * 	guarantee never not to set any special character handling
++ * 	guarantee never to set any special character handling
+  * 	flags if ((IGNBRK || (!BRKINT && !PARMRK)) && (IGNPAR ||
+  * 	!INPCK)).  That is, if there is no reason for the driver to
+  * 	send notifications of parity and break characters up to the
 -- 
-2.25.1
+2.31.1
 
