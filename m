@@ -2,80 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D9FC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Oct 2021 08:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DAAC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Oct 2021 10:14:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0216D610CF
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Oct 2021 08:45:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1639F60D07
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Oct 2021 10:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbhJ1Irg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Oct 2021 04:47:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37214 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230016AbhJ1Irf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Oct 2021 04:47:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D56C9610C7;
-        Thu, 28 Oct 2021 08:45:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635410707;
-        bh=6FnoWItqhX4i2tVirmjmWtZScoYaiHnnimIFWjGaDxQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NZ3P9zZZtFG40mdnjQbz+sZr67CPVdGcvrOk7fnrpulWEKbcv3w4BCbRH1ylyPqjy
-         1zS0ChoaLbv2NPEHVX78T1IES9RCzWng4NtEqzO4hP8n1+KxbGwjviChxLTXbaOLWO
-         rPbeTOD1pLzXD2lubeLicEkzN49R5IKNK/rlROTQGPozCYS0nQYTZcQP+3XIbdpT+/
-         E26aIiX1sukCpksG4h09lC72f39grkktecPfolr7Z+vzJhTMgP6yHRnDmAJ5pzozJm
-         e332bVC0WuIh7JzcmbcxeN3ccWTBxxMEM3jSZC/lV+VGxQPgOvOgZ9ErVqJEql2Pgu
-         2eINs7j9LvM3A==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1mg121-0006wF-7T; Thu, 28 Oct 2021 10:45:05 +0200
-Date:   Thu, 28 Oct 2021 10:45:05 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Anssi Hannula <anssi.hannula@bitwise.fi>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: Fix extra "not" in TTY_DRIVER_REAL_RAW description
-Message-ID: <YXpjEeeajd706Nak@hovoldconsulting.com>
-References: <20211027102124.3049414-1-anssi.hannula@bitwise.fi>
+        id S229788AbhJ1KQw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Oct 2021 06:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229775AbhJ1KQv (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 28 Oct 2021 06:16:51 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211C2C061570;
+        Thu, 28 Oct 2021 03:14:24 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id p40so665603pfh.8;
+        Thu, 28 Oct 2021 03:14:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cGRFFkbWPTpn78tArCV7l81qRRNeflw+gfeWzgd3Hsg=;
+        b=AOCFHTvxB2nikILO2omNQt5gXOpPro5gwBYzusab4FwTwq5bh5BY1w0XHmZbX2KNcc
+         ezGnMbIC8G0V4A2FtTUQ8WZYZgPJFf1QasqgKO3DS6YMsHqLdlFOPIwuRDG8f5YH9cqv
+         YxvOU2rjuiXlBib160jJnV/TORTJ16c/Qj9ovOWb2fl7YSJ4gBWE9qa04KFgcJFi4uGd
+         AboAe0zGa0SMsyMeFTm8F8M/7IJIIq6gTeft0mxT/HSVLEdN8yt/VbH7IrR6XwZIyk+U
+         VSXst6JBK2pvKVyJoboL4Eqf2oh1R/yTTZSSddDwwgpFnJR5AypDCtuNws81iExCyF0U
+         URsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cGRFFkbWPTpn78tArCV7l81qRRNeflw+gfeWzgd3Hsg=;
+        b=73qJnnxwUKGA7u+vBTSoEGxega2LSr1ujgX/LtZ2PKGP0br5e2TGTF/FPMD/dRWInr
+         zNxrdKijm2OQgYl9mze+d5+jT/VLwZHJNWtnG7z/T6bvOxOV82q02S88v1kFJVHT05pE
+         mnTnwWnpgYxybpBeH5Dk45PsAQRYHg9Ioa55yraWZrgt/iSYtRqPp5MNg7QgbRoe7ohi
+         8isa/7DIL5Hd3VifhkNiOZzBd77pg9X/zrjmzC0UwUDbEt81YuPx/xe7qg7K9HzIwVhF
+         vKfn0EnIUYxq0R6kpQdJX1dR1z+PWTqBSCcVf7Bc2G85B5lnFktia3YN5syyoa9sDwT4
+         FhoA==
+X-Gm-Message-State: AOAM530NG/7jkQ1j/80YuPjbIpJE2rJ0SS0Ntl68P7f9CrDSnGwNKvF2
+        GXV30ugPN2uksPTdv+xl+xA=
+X-Google-Smtp-Source: ABdhPJxJQcPt7Q9aPbVzsGu3HlkUvWz8Yz+Slvx7rw8A2GPzAYj1+DfzTQkNBysLCraz5+bwNT4TLg==
+X-Received: by 2002:a63:85c1:: with SMTP id u184mr2481407pgd.243.1635416063677;
+        Thu, 28 Oct 2021 03:14:23 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id mt16sm2468674pjb.22.2021.10.28.03.14.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Oct 2021 03:14:23 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: yao.jing2@zte.com.cn
+To:     gregkh@linuxfoundation.org
+Cc:     jirislaby@kernel.org, johan@kernel.org, macro@orcam.me.uk,
+        fancer.lancer@gmail.com, andrew@aj.id.au, pali@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] drivers: tty: replace snprintf in show functions with sysfs_emit
+Date:   Thu, 28 Oct 2021 10:13:50 +0000
+Message-Id: <20211028101350.14172-1-yao.jing2@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211027102124.3049414-1-anssi.hannula@bitwise.fi>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 01:21:24PM +0300, Anssi Hannula wrote:
-> TTY_DRIVER_REAL_RAW flag (which is always set for e.g. serial ports)
-> documentation says that driver must always set special character
-> handling flags in certain conditions.
-> 
-> However, as the following sentence makes clear, what is actually
-> intended is the opposite.
-> 
-> Fix that by removing the unintended double negation.
-> 
-> Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
-> ---
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-Acked-by: Johan Hovold <johan@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+---
+ drivers/tty/serial/8250/8250_port.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> This one seems to have been there since 1994.
-> 
->  include/linux/tty_driver.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
-> index c20431d8def8..5bec04481c60 100644
-> --- a/include/linux/tty_driver.h
-> +++ b/include/linux/tty_driver.h
-> @@ -360,7 +360,7 @@ static inline void tty_set_operations(struct tty_driver *driver,
->   * 	Used for PTY's, in particular.
->   * 
->   * TTY_DRIVER_REAL_RAW --- if set, indicates that the driver will
-> - * 	guarantee never not to set any special character handling
-> + * 	guarantee never to set any special character handling
->   * 	flags if ((IGNBRK || (!BRKINT && !PARMRK)) && (IGNPAR ||
->   * 	!INPCK)).  That is, if there is no reason for the driver to
->   * 	send notifications of parity and break characters up to the
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 5775cbff8f6e..557e8b13b5c1 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3099,7 +3099,7 @@ static ssize_t rx_trig_bytes_show(struct device *dev,
+ 	if (rxtrig_bytes < 0)
+ 		return rxtrig_bytes;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", rxtrig_bytes);
++	return sysfs_emit(buf, PAGE_SIZE, "%d\n", rxtrig_bytes);
+ }
+ 
+ static int do_set_rxtrig(struct tty_port *port, unsigned char bytes)
+-- 
+2.25.1
+
