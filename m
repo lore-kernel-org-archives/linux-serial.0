@@ -2,116 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9571C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Oct 2021 07:09:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF010C4321E
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Oct 2021 13:00:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9756860FC0
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Oct 2021 07:09:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DE89F611F0
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Oct 2021 13:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbhJ2HLj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Oct 2021 03:11:39 -0400
-Received: from marcansoft.com ([212.63.210.85]:49316 "EHLO mail.marcansoft.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229464AbhJ2HLj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Oct 2021 03:11:39 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 02A34424B9;
-        Fri, 29 Oct 2021 07:09:04 +0000 (UTC)
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Johan Hovold <johan@kernel.org>, devicetree@vger.kernel.org,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Mark Kettenis <kettenis@openbsd.org>
-References: <20211025144718.157794-1-marcan@marcan.st>
- <20211025144718.157794-3-marcan@marcan.st>
- <YXhINE00HG6hbQI4@robh.at.kernel.org>
- <c0f2587c-ab69-8194-e618-ce7919c1aeb1@marcan.st>
- <CAL_JsqJbVcqy8n0EroV=nFZoJ_WAr+JbrDf-c1jso856NghC2A@mail.gmail.com>
- <CAJKOXPfDAnECHzGDTisuujT-rGvUqVp4a5WTOQ196yTqwLKHuA@mail.gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-Subject: Re: [PATCH v2 2/8] dt-bindings: arm: apple: Add apple,pmgr binding
-Message-ID: <0614b9ba-79f8-afc5-793d-6d465df51bed@marcan.st>
-Date:   Fri, 29 Oct 2021 16:09:02 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S231589AbhJ2NCs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Oct 2021 09:02:48 -0400
+Received: from mail-pl1-f174.google.com ([209.85.214.174]:34756 "EHLO
+        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231563AbhJ2NCq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 29 Oct 2021 09:02:46 -0400
+Received: by mail-pl1-f174.google.com with SMTP id r5so6792891pls.1;
+        Fri, 29 Oct 2021 06:00:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Vci1DyK0tNZcKwN8+74I1l8VTd7Fc9WtyWPYQLOUtNM=;
+        b=d66PWdxVVP78tzUD5V0VkUAvR1NUY/r435jpc5ovvOhSB8/bkHxypaFQTd7jbX3lIf
+         cRplV07dxxlfacUyzLht6kw1eCzwvIcycgBj5nbVk9jU11ZJhvpBPBMRBbvS5QtYNUM4
+         rYMfP5SxFzfAXJEjlT5KmmqITpRQUu8MReNYBrPWyJP5l/M+EU2Q0MrIC+FetueqAyB6
+         5vrV/CL0YMjH9Snly4/8LGsTmna6d/2RSJSlXHxHFt9mntjNYen9ZL/tx/4y9DXQqyJS
+         EN3d5fux0EYuNY824n53kVKl57IprUORl9XUnFxOZUm1b744nwHcvm+Ht6fzuLRX2qUl
+         JajQ==
+X-Gm-Message-State: AOAM532FZEoPiO/1UKIBnkC2RqtFhCsMkZoNl91XMJ2AQOF30SfFek/c
+        +AvjX9NXfW3/N3U41lzE+xDlWnkqixXr2yP4zn0=
+X-Google-Smtp-Source: ABdhPJxsp4eURPFfgHBqWP+J4XlcL6ko0y3ikmW0sFVG++7P+Et7Yhh+lE5BR8RUsKI/L2xnep1G6HRqNfFSCc/WsFk=
+X-Received: by 2002:a17:903:11c5:b0:13f:ef40:e319 with SMTP id
+ q5-20020a17090311c500b0013fef40e319mr9604054plh.33.1635512418019; Fri, 29 Oct
+ 2021 06:00:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAJKOXPfDAnECHzGDTisuujT-rGvUqVp4a5WTOQ196yTqwLKHuA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: es-ES
-Content-Transfer-Encoding: 8bit
+References: <20211021174223.43310-1-kernel@esmil.dk> <20211021174223.43310-12-kernel@esmil.dk>
+ <YXtTUGC5P41JtvoR@robh.at.kernel.org>
+In-Reply-To: <YXtTUGC5P41JtvoR@robh.at.kernel.org>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+Date:   Fri, 29 Oct 2021 15:00:05 +0200
+Message-ID: <CANBLGcx3L1DmqjzqRAb+vEYWZTTxeGNUVx=BUfDuw=h3q5Nkgg@mail.gmail.com>
+Subject: Re: [PATCH v2 11/16] dt-bindings: pinctrl: Add StarFive JH7100 bindings
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 27/10/2021 23.51, Krzysztof Kozlowski wrote:
-> On Wed, 27 Oct 2021 at 16:44, Rob Herring <robh@kernel.org> wrote:
->>
->> On Tue, Oct 26, 2021 at 10:38 PM Hector Martin <marcan@marcan.st> wrote:
->>>
->>> On 27/10/2021 03.25, Rob Herring wrote:
->>>> On Mon, Oct 25, 2021 at 11:47:12PM +0900, Hector Martin wrote:
->>>>> +  compatible:
->>>>> +    items:
->>>>> +      - enum:
->>>>> +          - apple,t8103-pmgr
->>>>> +          - apple,t8103-minipmgr
->>>>> +      - const: apple,pmgr
->>>>> +      - const: syscon
->>>>> +      - const: simple-mfd
->>>>
->>>>
->>>> 'simple-mfd' means 'there's nothing in this node that any of the child
->>>> nodes depend on'. You should be somewhat certain as dropping it later
->>>> creates compatibility issues.
->>>
->>> Hmm, I see simple-mfd turns this into a bus which I guess allows child
->>> nodes to be probed without the parent node doing anything special (then
->>> we use syscon_node_to_regmap to get the syscon instantiated). Do you
->>> have a example use case for doing this without simple-mfd?
->>
->> Drivers calling of_platform_populate or devm_of_platform_populate.
->>
->> That of course does mean you need a driver. We could probably make the
->> syscon driver call these if needed.
->>
-> 
-> Hi Hector,
-> 
-> I thought I mentioned this with your v1, maybe the comment got lost.
-> We have it for Exynos PMU:
-> drivers/soc/samsung/exynos-pmu.c
-> arch/arm/boot/dts/exynos-syscon-restart.dtsi (extending node from
-> arch/arm/boot/dts/exynos5420.dtsi)
-> Maybe you can base on that.
+On Fri, 29 Oct 2021 at 03:50, Rob Herring <robh@kernel.org> wrote:
+> On Thu, Oct 21, 2021 at 07:42:18PM +0200, Emil Renner Berthing wrote:
+> > +patternProperties:
+> > +  '-[0-9]*$':
+>
+> Can you make this more specific. As-is, '-' and 'foo-' are valid.
+>
+> > +    type: object
+> > +    patternProperties:
+> > +      '-pins*$':
+>
+> So foo-pinsssssss is okay? Drop the '*' or use ? if you intend to
+> support 'foo-pin'.
 
-Ah, I remember the discrete power domains but I missed this syscon.
+Ah, thanks. Both this and the pattern above was taken from
+pinctrl/mediatek,mt6779-pinctrl.yaml if anyone feels like fixing that
+too. I see now that '-[0-9]+$' and '-pins$' is more common. I'll just
+use that.
 
-I see this is mostly used for poweroff/reboot, which makes sense in this 
-context. For pmgr though, the binding only describes the uniform power 
-state registers, so I think I'm comfortable leaving it as a simple-mfd. 
-Other pmgr sub-blocks will probably end up as separate nodes with 
-different bindings anyway (e.g. whatever I do for the clock muxes, need 
-to see how that ties in with audio which I think is the only consumer so 
-far).
+> > +        type: object
+> > +        description: |
+> > +          A pinctrl node should contain at least one subnode representing the
+> > +          pinctrl groups available on the machine. Each subnode will list the
+> > +          pins it needs, and how they should be configured, with regard to
+> > +          muxer configuration, bias, input enable/disable, input schmitt
+> > +          trigger enable/disable, slew-rate and drive strength.
+> > +        $ref: "/schemas/pinctrl/pincfg-node.yaml"
+> > +
+> > +        properties:
+> > +          pins:
+> > +            description: |
+> > +              The list of pin identifiers that properties in the node apply to.
+> > +              This should be set using either the PAD_GPIO or PAD_FUNC_SHARE
+> > +              macro. Either this or "pinmux" has to be specified.
+> > +
+> > +          pinmux:
+> > +            description: |
+> > +              The list of GPIO identifiers and their mux settings that
+> > +              properties in the node apply to. This should be set using the
+> > +              GPIOMUX macro. Either this or "pins" has to be specified.
+> > +
+> > +          bias-disable: true
+> > +
+> > +          bias-pull-up:
+> > +            type: boolean
+>
+> Already has a type. Need to reference the common schema.
 
-If things get more complicated in future SoCs then we can change how we 
-do it on those, of course :)
-
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+Right, but the common schema specifies one of boolean or uint32. Is
+there a way to reference that, but still say that this binding
+supports only the boolean version?
