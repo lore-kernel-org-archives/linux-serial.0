@@ -2,55 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 553DDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3A6C4167B
 	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:44:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 450EA60EE9
+	by mail.kernel.org (Postfix) with ESMTP id 69E90610FC
 	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:44:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234936AbhKBQq4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Nov 2021 12:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44502 "EHLO
+        id S234914AbhKBQqy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Nov 2021 12:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234775AbhKBQqt (ORCPT
+        with ESMTP id S234707AbhKBQqs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Nov 2021 12:46:49 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B847C06122B;
-        Tue,  2 Nov 2021 09:12:00 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id w15so77758933edc.9;
-        Tue, 02 Nov 2021 09:12:00 -0700 (PDT)
+        Tue, 2 Nov 2021 12:46:48 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF54AC06118D;
+        Tue,  2 Nov 2021 09:12:12 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id m14so24530823edd.0;
+        Tue, 02 Nov 2021 09:12:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=S07ZlNyPM9aXYOfmi3L50ieiCZ4bZ/2J0IfM/InNuyU=;
-        b=JJTA+SybBinzM+vGWoCK8Zj+OROkF68vq6cvWOXoq3PB7eP5OQDD/BBh9UoBnl4H7+
-         mzldCTY/3gwMbwy2/neOvNSdYxixLqIvU0Qdrw21IdYCHaGjktwVmmVG5oN8LWhnCc5z
-         OwKKgEzutOC0DfsrPTgNS7jL7rgRhB81TEKv6IfV1pZJfSNbHfOqbZUg7F+u4NiirNO2
-         AOxBZVBxhUaLD49kV8yqGK7HFx+7iFzgjwYDSoRVLOeYKdUixaP/O4zAbee3fH5TY4DB
-         59QiMCog5d6CZpBgOAbMhmXaL+FaMY85smJF7SEJZlSEHTKam63H1zZ2SK+DJzw8UaPg
-         kw5A==
+        bh=n3D3isQYQoZt8oK+QagFyG/F4ee/acgQw48favSVe0E=;
+        b=dljsXv3wZeh8L5SZBGkLn6Pt+w3Saj23K1mjCSrTEgOWc/68atJmLq05wJs6FL7xxh
+         SIS7v5MG7pbqSgcnyDOEp8PWErMj0F0ctDDlM4lF1BoMVkXW5Y3Sp+vjaxrC8lkiUSli
+         gcVGHCDHjCodm5u8tBjp8LjIuCwdSpJMJkTK6eP+mma8bk87BDhtiJztT21OggOqurCj
+         /0hNVRrz2WnFye6g+9vcUnvedC8aRQDW+x+24ww6klSRKCDKx1e7jHOLB54Jwdtm0ulm
+         mR/UX3HgKvY9vGFAAXvhTIghvJIXQ5+jDAI7s2v109xY1YroDwwpXFHg/XFilnXvucy2
+         Tt5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=S07ZlNyPM9aXYOfmi3L50ieiCZ4bZ/2J0IfM/InNuyU=;
-        b=DuZIT6jlkEtUy1fvaRfMMB+fmbDkoIfyFxBmjzcKSWx3/COCswyOZfSgQk7oAtLZW3
-         yIv1unJ61q+9VTplCUBlixRSrSjAQTSUsmzzgK4LLsOJNp6nkBRoM6AcE8/sYkmTIrFt
-         lbUinNDYXjdTNYFtx6yFUEBpE4Ssv/OjeuELHH8PUZ/Lqo3FU1TfYDiuvkiJqpeEaArS
-         y1e7myNzZwtgUdMy4vEj4vk58iUBisL9povERSgWjc7OEzT51pVLF+YEUIIEHuKkIuZZ
-         4kXDi58q6E8Uf+xL7elv5upDAr9z8mtLHC4PIj0rCXcYMK5vJX8Q5FFyMldHt1naXMwg
-         byNw==
-X-Gm-Message-State: AOAM533Wy6CfwrOetjGLO+YDenDzE9B+fgbsDbSpZl3hheoBqUU9Ja+n
-        MVllF1c88h6z0xCFcb8eT4I=
-X-Google-Smtp-Source: ABdhPJxvPFom9mlEjjVUIlLhKJOwt4kgVVrbP9xtfptymruWIARqgA1j1tb6QG0G6R4K61k3zlKa1A==
-X-Received: by 2002:a17:906:4f95:: with SMTP id o21mr47162618eju.61.1635869517753;
-        Tue, 02 Nov 2021 09:11:57 -0700 (PDT)
+        bh=n3D3isQYQoZt8oK+QagFyG/F4ee/acgQw48favSVe0E=;
+        b=5jnXYkJxRphCx9ZcXiEvHjc8CSgnUaLWX0qObC7BmGri8bf2EjtJTfqEGQ4Ar/t3mC
+         +rV6F/GQt8OfRgSIcS5OFYzCv1CPnHBotMw8l3JrvsHGS+ioLYfCwc/GovZS31Nr+yta
+         wIocGJD76z+upEv4pkM3xP1rpm70LbNC4HpP99fBOwd9xWgnPRj41is6a35ec2GlfaUH
+         KoOMl3QUk1TYugaSuR71HE8oZWqNjN+28+dxMQm2dnH6/oQtHogAWRSenP6myUe4pHH+
+         y0MYK67FzcPaJN4dqd0hH9FTxXcNLHHcix8Nn1cuk4DPtXyq+/YIrqZnKN/eZEcjJuO1
+         Rj4A==
+X-Gm-Message-State: AOAM533z7+r/HMGwJuqYATrMyU9pe46sYm+qpvwhXgzKs87+6p9VOVT4
+        zN9Zj532K09eopSgqI/a9eA=
+X-Google-Smtp-Source: ABdhPJwqsnQ8XwkGvDCTh7wJhlcnFGeqD1H43P++XZjui4DqdM1Mm5nlAPqbxstxZhhXo8If7vSMyA==
+X-Received: by 2002:a17:907:961a:: with SMTP id gb26mr45903415ejc.527.1635869529075;
+        Tue, 02 Nov 2021 09:12:09 -0700 (PDT)
 Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id c7sm8451374ejd.91.2021.11.02.09.11.56
+        by smtp.gmail.com with ESMTPSA id c7sm8451374ejd.91.2021.11.02.09.12.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Nov 2021 09:11:57 -0700 (PDT)
+        Tue, 02 Nov 2021 09:12:08 -0700 (PDT)
 Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
 From:   Emil Renner Berthing <kernel@esmil.dk>
 To:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
@@ -80,9 +80,9 @@ Cc:     Emil Renner Berthing <kernel@esmil.dk>,
         Atish Patra <atish.patra@wdc.com>,
         Matteo Croce <mcroce@microsoft.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 08/16] dt-bindings: reset: Add Starfive JH7100 reset bindings
-Date:   Tue,  2 Nov 2021 17:11:17 +0100
-Message-Id: <20211102161125.1144023-9-kernel@esmil.dk>
+Subject: [PATCH v3 16/16] RISC-V: Add BeagleV Starlight Beta device tree
+Date:   Tue,  2 Nov 2021 17:11:25 +0100
+Message-Id: <20211102161125.1144023-17-kernel@esmil.dk>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211102161125.1144023-1-kernel@esmil.dk>
 References: <20211102161125.1144023-1-kernel@esmil.dk>
@@ -92,59 +92,213 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add bindings for the reset controller on the JH7100 RISC-V SoC by
-StarFive Ltd. This is a test chip for their upcoming JH7110 SoC.
+Add initial device tree for the BeagleV Starlight Beta board. About 300
+of these boards were sent out as part of a now cancelled BeagleBoard.org
+project.
+
+I2C timing data is based on the device tree in the vendor u-boot port.
+Heartbeat LED added by Geert.
 
 Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Co-developed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- .../bindings/reset/starfive,jh7100-reset.yaml | 38 +++++++++++++++++++
- 1 file changed, 38 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/reset/starfive,jh7100-reset.yaml
+ arch/riscv/boot/dts/Makefile                  |   1 +
+ arch/riscv/boot/dts/starfive/Makefile         |   2 +
+ .../dts/starfive/jh7100-beaglev-starlight.dts | 164 ++++++++++++++++++
+ 3 files changed, 167 insertions(+)
+ create mode 100644 arch/riscv/boot/dts/starfive/Makefile
+ create mode 100644 arch/riscv/boot/dts/starfive/jh7100-beaglev-starlight.dts
 
-diff --git a/Documentation/devicetree/bindings/reset/starfive,jh7100-reset.yaml b/Documentation/devicetree/bindings/reset/starfive,jh7100-reset.yaml
+diff --git a/arch/riscv/boot/dts/Makefile b/arch/riscv/boot/dts/Makefile
+index fe996b88319e..ff174996cdfd 100644
+--- a/arch/riscv/boot/dts/Makefile
++++ b/arch/riscv/boot/dts/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ subdir-y += sifive
++subdir-y += starfive
+ subdir-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += canaan
+ subdir-y += microchip
+ 
+diff --git a/arch/riscv/boot/dts/starfive/Makefile b/arch/riscv/boot/dts/starfive/Makefile
 new file mode 100644
-index 000000000000..300359a5e14b
+index 000000000000..0ea1bc15ab30
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/reset/starfive,jh7100-reset.yaml
-@@ -0,0 +1,38 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/reset/starfive,jh7100-reset.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/arch/riscv/boot/dts/starfive/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++dtb-$(CONFIG_SOC_STARFIVE) += jh7100-beaglev-starlight.dtb
+diff --git a/arch/riscv/boot/dts/starfive/jh7100-beaglev-starlight.dts b/arch/riscv/boot/dts/starfive/jh7100-beaglev-starlight.dts
+new file mode 100644
+index 000000000000..c9af67f7a0d2
+--- /dev/null
++++ b/arch/riscv/boot/dts/starfive/jh7100-beaglev-starlight.dts
+@@ -0,0 +1,164 @@
++// SPDX-License-Identifier: GPL-2.0 OR MIT
++/*
++ * Copyright (C) 2021 StarFive Technology Co., Ltd.
++ * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
++ */
 +
-+title: StarFive JH7100 SoC Reset Controller Device Tree Bindings
++/dts-v1/;
++#include "jh7100.dtsi"
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/leds/common.h>
++#include <dt-bindings/pinctrl/pinctrl-starfive.h>
 +
-+maintainers:
-+  - Emil Renner Berthing <kernel@esmil.dk>
++/ {
++	model = "BeagleV Starlight Beta";
++	compatible = "beagle,beaglev-starlight-jh7100-r0", "starfive,jh7100";
 +
-+properties:
-+  compatible:
-+    enum:
-+      - starfive,jh7100-reset
++	aliases {
++		serial0 = &uart3;
++	};
 +
-+  reg:
-+    maxItems: 1
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
 +
-+  "#reset-cells":
-+    const: 1
++	cpus {
++		timebase-frequency = <6250000>;
++	};
 +
-+required:
-+  - compatible
-+  - reg
-+  - "#reset-cells"
++	memory@80000000 {
++		device_type = "memory";
++		reg = <0x0 0x80000000 0x2 0x0>;
++	};
 +
-+additionalProperties: false
++	leds {
++		compatible = "gpio-leds";
 +
-+examples:
-+  - |
-+    reset-controller@11840000 {
-+        compatible = "starfive,jh7100-reset";
-+        reg = <0x11840000 0x10000>;
-+        #reset-cells = <1>;
-+    };
++		led-ack {
++			gpios = <&gpio 43 GPIO_ACTIVE_HIGH>;
++			color = <LED_COLOR_ID_GREEN>;
++			function = LED_FUNCTION_HEARTBEAT;
++			linux,default-trigger = "heartbeat";
++			label = "ack";
++		};
++	};
++};
 +
-+...
++&gpio {
++	i2c0_pins: i2c0-0 {
++		i2c-pins {
++			pinmux = <GPIOMUX(62, GPO_LOW,
++				  GPO_I2C0_PAD_SCK_OEN,
++				  GPI_I2C0_PAD_SCK_IN)>,
++				 <GPIOMUX(61, GPO_LOW,
++				  GPO_I2C0_PAD_SDA_OEN,
++				  GPI_I2C0_PAD_SDA_IN)>;
++			bias-disable; /* external pull-up */
++			input-enable;
++			input-schmitt-enable;
++		};
++	};
++
++	i2c1_pins: i2c1-0 {
++		i2c-pins {
++			pinmux = <GPIOMUX(47, GPO_LOW,
++				  GPO_I2C1_PAD_SCK_OEN,
++				  GPI_I2C1_PAD_SCK_IN)>,
++				 <GPIOMUX(48, GPO_LOW,
++				  GPO_I2C1_PAD_SDA_OEN,
++				  GPI_I2C1_PAD_SDA_IN)>;
++			bias-pull-up;
++			input-enable;
++			input-schmitt-enable;
++		};
++	};
++
++	i2c2_pins: i2c2-0 {
++		i2c-pins {
++			pinmux = <GPIOMUX(60, GPO_LOW,
++				  GPO_I2C2_PAD_SCK_OEN,
++				  GPI_I2C2_PAD_SCK_IN)>,
++				 <GPIOMUX(59, GPO_LOW,
++				  GPO_I2C2_PAD_SDA_OEN,
++				  GPI_I2C2_PAD_SDA_IN)>;
++			bias-disable; /* external pull-up */
++			input-enable;
++			input-schmitt-enable;
++		};
++	};
++
++	uart3_pins: uart3-0 {
++		rx-pins {
++			pinmux = <GPIOMUX(13, GPO_LOW, GPO_DISABLE,
++				  GPI_UART3_PAD_SIN)>;
++			bias-pull-up;
++			drive-strength = <14>;
++			input-enable;
++			input-schmitt-enable;
++			slew-rate = <0>;
++		};
++		tx-pins {
++			pinmux = <GPIOMUX(14, GPO_UART3_PAD_SOUT,
++				  GPO_ENABLE, GPI_NONE)>;
++			bias-disable;
++			drive-strength = <35>;
++			input-disable;
++			input-schmitt-disable;
++			slew-rate = <0>;
++		};
++	};
++};
++
++&i2c0 {
++	clock-frequency = <100000>;
++	i2c-sda-hold-time-ns = <300>;
++	i2c-sda-falling-time-ns = <500>;
++	i2c-scl-falling-time-ns = <500>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c0_pins>;
++	status = "okay";
++
++	pmic@5e {
++		compatible = "ti,tps65086";
++		reg = <0x5e>;
++		gpio-controller;
++		#gpio-cells = <2>;
++
++		regulators {
++		};
++	};
++};
++
++&i2c1 {
++	clock-frequency = <400000>;
++	i2c-sda-hold-time-ns = <300>;
++	i2c-sda-falling-time-ns = <100>;
++	i2c-scl-falling-time-ns = <100>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1_pins>;
++	status = "okay";
++};
++
++&i2c2 {
++	clock-frequency = <100000>;
++	i2c-sda-hold-time-ns = <300>;
++	i2c-sda-falling-time-ns = <500>;
++	i2c-scl-falling-time-ns = <500>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2_pins>;
++	status = "okay";
++};
++
++&osc_sys {
++	clock-frequency = <25000000>;
++};
++
++&osc_aud {
++	clock-frequency = <27000000>;
++};
++
++&uart3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart3_pins>;
++	status = "okay";
++};
 -- 
 2.33.1
 
