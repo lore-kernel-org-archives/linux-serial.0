@@ -2,125 +2,64 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFC8C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 07:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9808FC433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 07:32:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 818F660F02
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 07:20:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 864D161100
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 07:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231405AbhKBHXO convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Nov 2021 03:23:14 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:59147 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230465AbhKBHXN (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Nov 2021 03:23:13 -0400
-Received: from smtpclient.apple (p4fefc15c.dip0.t-ipconnect.de [79.239.193.92])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 86F41CECE9;
-        Tue,  2 Nov 2021 08:20:36 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
-Subject: Re: [PATCH v1 1/3] serdev: Add interface serdev_device_ioctl
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <1635836707-29341-1-git-send-email-zijuhu@codeaurora.org>
-Date:   Tue, 2 Nov 2021 08:20:36 +0100
-Cc:     robh@kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Zijun Hu <quic_zijuhu@quicinc.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <C6172915-FCF9-4638-BB9C-F7E9FCAEF9F0@holtmann.org>
-References: <1635836707-29341-1-git-send-email-zijuhu@codeaurora.org>
+        id S231715AbhKBHfC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Nov 2021 03:35:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231661AbhKBHfA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 2 Nov 2021 03:35:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CFBDA60C51;
+        Tue,  2 Nov 2021 07:32:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1635838346;
+        bh=uv4ufzZGU1l7JY8t1NRhOWd+QqYv9Wc508fqxnm/Xeo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2PScwB+aJRKaUhAkILDjNHxl0g3Ie9M9m8GxbxXaLtY4ub7WP7GX4t1WE0k6u4kAl
+         4Z9NuxEXhPnaTxYL6gtErpjW+jpWuoqQ0kujSG+NBzxHa9TMBxO4JNnWBuRi2QXcRH
+         p4ML4KjBg3w3ZUh3mXrz5iESbQNYZ9fwzoBQTwnw=
+Date:   Tue, 2 Nov 2021 08:32:23 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Zijun Hu <zijuhu@codeaurora.org>
-X-Mailer: Apple Mail (2.3693.20.0.1.32)
+Cc:     robh@kernel.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
+Subject: Re: [PATCH v1 1/3] serdev: Add interface serdev_device_ioctl
+Message-ID: <YYDphyMRE1z7K0KC@kroah.com>
+References: <1635836707-29341-1-git-send-email-zijuhu@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1635836707-29341-1-git-send-email-zijuhu@codeaurora.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Zijun,
-
+On Tue, Nov 02, 2021 at 03:05:07PM +0800, Zijun Hu wrote:
+> From: Zijun Hu <quic_zijuhu@quicinc.com>
+> 
 > For serdev_device which is mounted at virtual tty port, tty ioctl()
 > maybe be used to make serdev_device ready to talk with tty port, so
 > add interface serdev_device_ioctl().
 > 
 > Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 > ---
-> drivers/tty/serdev/core.c           | 13 +++++++++++++
-> drivers/tty/serdev/serdev-ttyport.c | 12 ++++++++++++
-> include/linux/serdev.h              |  9 +++++++++
-> 3 files changed, 34 insertions(+)
-> 
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index f1324fe99378..dee934203277 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -405,6 +405,19 @@ int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
-> }
-> EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
-> 
-> +int serdev_device_ioctl(struct serdev_device *serdev, unsigned int cmd, unsigned long arg)
-> +{
-> +	struct serdev_controller *ctrl = serdev->ctrl;
-> +
-> +	if (!ctrl)
-> +		return -ENOTTY;
-> +	else if	(!ctrl->ops->ioctl)
-> +		return -ENOSYS;
-> +	else
-> +		return ctrl->ops->ioctl(ctrl, cmd, arg);
-> +}
-> +EXPORT_SYMBOL_GPL(serdev_device_ioctl);
-> +
-> static int serdev_drv_probe(struct device *dev)
-> {
-> 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
-> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-> index d367803e2044..66afad1eb1b7 100644
-> --- a/drivers/tty/serdev/serdev-ttyport.c
-> +++ b/drivers/tty/serdev/serdev-ttyport.c
-> @@ -247,6 +247,17 @@ static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, u
-> 	return tty->ops->tiocmset(tty, set, clear);
-> }
-> 
-> +static int ttyport_ioctl(struct serdev_controller *ctrl, unsigned int cmd, unsigned long arg)
-> +{
-> +	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-> +	struct tty_struct *tty = serport->tty;
-> +
-> +	if (!tty->ops->ioctl)
-> +		return -ENOSYS;
-> +
-> +	return tty->ops->ioctl(tty, cmd, arg);
-> +}
-> +
-> static const struct serdev_controller_ops ctrl_ops = {
-> 	.write_buf = ttyport_write_buf,
-> 	.write_flush = ttyport_write_flush,
-> @@ -259,6 +270,7 @@ static const struct serdev_controller_ops ctrl_ops = {
-> 	.wait_until_sent = ttyport_wait_until_sent,
-> 	.get_tiocm = ttyport_get_tiocm,
-> 	.set_tiocm = ttyport_set_tiocm,
-> +	.ioctl = ttyport_ioctl,
-> };
-> 
-> struct device *serdev_tty_port_register(struct tty_port *port,
-> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-> index 3368c261ab62..5804201fafb2 100644
-> --- a/include/linux/serdev.h
-> +++ b/include/linux/serdev.h
-> @@ -91,6 +91,7 @@ struct serdev_controller_ops {
-> 	void (*wait_until_sent)(struct serdev_controller *, long);
-> 	int (*get_tiocm)(struct serdev_controller *);
-> 	int (*set_tiocm)(struct serdev_controller *, unsigned int, unsigned int);
-> +	int (*ioctl)(struct serdev_controller *ctrl, unsigned int cmd, unsigned long arg);
-> };
+>  drivers/tty/serdev/core.c           | 13 +++++++++++++
+>  drivers/tty/serdev/serdev-ttyport.c | 12 ++++++++++++
+>  include/linux/serdev.h              |  9 +++++++++
+>  3 files changed, 34 insertions(+)
 
-I thought the conclusion was not do this and instead have a proper Bluetooth driver. So please drop this patch.
+Why did I only recieve patch 1/3 here?  Where are the rest of them?
 
-Regards
+And as Marcel said, I though we stated that this change was NOT needed
+at all.  What driver needs special ioctls for bluetooth that is not
+already handled by the bluetooth layer?
 
-Marcel
+thanks,
 
+greg k-h
