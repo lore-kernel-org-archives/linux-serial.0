@@ -2,190 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E842C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 06:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03243C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 06:52:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E3B9760F02
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 06:38:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D8CFD60F02
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 06:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbhKBGk5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Nov 2021 02:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47100 "EHLO
+        id S229505AbhKBGzO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Nov 2021 02:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhKBGk4 (ORCPT
+        with ESMTP id S229497AbhKBGzN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Nov 2021 02:40:56 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5358C061714;
-        Mon,  1 Nov 2021 23:38:21 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id c4so1591885wrd.9;
-        Mon, 01 Nov 2021 23:38:21 -0700 (PDT)
+        Tue, 2 Nov 2021 02:55:13 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9B6C061714;
+        Mon,  1 Nov 2021 23:52:35 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id v20so14503848plo.7;
+        Mon, 01 Nov 2021 23:52:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2jT8pDp61cxxdq+1Y9Z8tKQBn7lQoXJDwBX8tFoB6Nc=;
-        b=intgKAHZdoCGHK4zPbNdwRzStRyx9vPQOP8AY+tkwZP4q1daAIoaK17BxZ4ntkkj3D
-         r96IIkA528o1GnKKrkbPtsdZ6R2pGDuiV3HiTWhMsojS6fALdOsnEP7lT11j4KNCneSf
-         Ct5WzHSa0FrZvQcoy85wRRYOBsqq+b4Tf+9/ZEds2mpRClIBw03lb++3sZm1bpBexfU1
-         OtjdTqLLaVPihFu8k8aVBeZxsfgE76UJ/04T4/Zxo3cI4aMevIMELDwmuCPj/pMBAQvN
-         Quc5qV3Cxj3h+V/3DSaoz+DX5zMBdDCjxq1ReJGG5qUVeFMfSdDrq+jPEGgbup7z3rGc
-         6//A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7pRVqNc+FppqVn66H2Dpc51B/il1e+yZxyBdV0UH4Zs=;
+        b=RG/BlteOYWXybOs02hqOHcpq1fDM5XeLjlj7Lu4ZkxFkDwW8CX7J8l3qvuYgvJFJJG
+         s55fLOC8sGbhISonZXtcVOr2sbr/C1bwRTbTScTxWNUBJGNcbfymaE+b+mz2N9XAA8V3
+         Dvyd01ZDuo5IhX811DX7j0TTNjbFRWEK/bkosoTw5fWHkF/l6xx8u3QgOMzOSfxdop36
+         J7kHx/k4VC0Sd4AsUvFJxQwhflQRQ88ooc/FDJUtquG4F58TVDnNwnXejr9PbJ4zdRPL
+         Mr6Inm/4FW13eitCQ1k2BDvZn1aKLXSLZDPO9xNC4Uchs1AheHl+b0Ne1dW4Gkxx1Vdb
+         KQcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2jT8pDp61cxxdq+1Y9Z8tKQBn7lQoXJDwBX8tFoB6Nc=;
-        b=VdlOOfABLVOBPg/67B6mFJSvHHYpUUhy5GFnmNR3ZWkeJ8M5yq6mTYiQNy3vUgE8FO
-         3DcTooiDe6hoLhDaNFt5COkQ69PRfTVMHztgnXpZwVyoHwBQis3nD+lUSzYmUCZh9kLQ
-         H209g4hx6pnsCWwBtn8S6GxUwf/BI5L/s2+IEyg7A/oCYnl1nJocEut+CZtiMIX/UdUa
-         oPVfh9S51gznd3DGxY4/dBljg4fB59hgH6bznOmc3pIh2IVUSvNdKkwKYwRnv3K0S7kb
-         RTbqIRMCyB2simiCBZ2ZwXbkaGKtJOzSJagVr9/0lPoDQI5+K8AxETZUc6Q6fQ/FyDDh
-         XL5w==
-X-Gm-Message-State: AOAM531dDcd3w4a97askLE1wffA6zBqjrpFuu3YpfqV3NkXxPvMDrIHS
-        Q540o98ujJu4t5d5KOUDqyMAEhyOLJc=
-X-Google-Smtp-Source: ABdhPJy5ENn/ELbYTpSsT2Xncb5YA+MGxveY/xFy5tJ+wIe6qfvxXs8znmsx/mQfXcQioHK7Xq96SQ==
-X-Received: by 2002:a5d:58ed:: with SMTP id f13mr34534675wrd.373.1635835100441;
-        Mon, 01 Nov 2021 23:38:20 -0700 (PDT)
-Received: from localhost.elektrobit.com (eth1-fw1-nbg6.eb.noris.de. [213.95.148.172])
-        by smtp.gmail.com with ESMTPSA id l5sm1402196wms.16.2021.11.01.23.38.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7pRVqNc+FppqVn66H2Dpc51B/il1e+yZxyBdV0UH4Zs=;
+        b=t4Nlb4jONteRWk2YEPK0GwrFeNP2uEQz4iHlvTDqUKhN/zXmNlwN7jTdBLZ7cvoEym
+         /uTORoV3kUqSRSaZHfmORHcRYFCFApPDW2ecSZPgN+PFP57SLDEwyfXIEN1ByFbor9PN
+         HomC/Hck+L5I8vGT7fu/RlG3K5xtMfscehJ2fJGggoR5diT+lxfZ/hQr07kJcG7MuRkN
+         yHKeIDTR3t99B/awPQAfNg62eR+xSMEAgWQ2k9/e+oLH7OQcC/DmFcQIJnPLQKcvNkdg
+         /Y1jS0GVyaqY376FQU059RXyIGWU4WZ0hJ7+jdMvYOT84DqAWI0uo8jmsM7mIh53mQkz
+         1kRQ==
+X-Gm-Message-State: AOAM532zPptV+KkGgbT2ybZu5X0gol6Hlv6Q4q488Ba6TMFaNjM5VASf
+        ql+PvmHLbey36Yh1Egr50EQ=
+X-Google-Smtp-Source: ABdhPJwutypiGSFCy4xX3wIj+HlbvMpiSRH8GieSPKc+6rONvCoHPF85T/iVkDEmMjNLS21M2iMSiw==
+X-Received: by 2002:a17:902:a70e:b0:141:a01d:9d6c with SMTP id w14-20020a170902a70e00b00141a01d9d6cmr26762033plq.84.1635835954807;
+        Mon, 01 Nov 2021 23:52:34 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id np17sm1461436pjb.7.2021.11.01.23.52.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Nov 2021 23:38:20 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] arm: remove zte zx platform left-over
-Date:   Tue,  2 Nov 2021 07:38:10 +0100
-Message-Id: <20211102063810.932-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        Mon, 01 Nov 2021 23:52:34 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: yao.jing2@zte.com.cn
+To:     joe@perches.com
+Cc:     andrew@aj.id.au, cgel.zte@gmail.com, fancer.lancer@gmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org, johan@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        macro@orcam.me.uk, pali@kernel.org, yao.jing2@zte.com.cn,
+        zealci@zte.com.cn
+Subject: [PATCH v2] drivers: tty: replace snprintf in show functions with sysfs_emit
+Date:   Tue,  2 Nov 2021 06:52:06 +0000
+Message-Id: <20211102065206.3368-1-yao.jing2@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <b42482be11d04963fed0903ce1bd983742efc5c6.camel@perches.com>
+References: <b42482be11d04963fed0903ce1bd983742efc5c6.camel@perches.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit 89d4f98ae90d ("ARM: remove zte zx platform") missed to remove some
-definitions for this platform's debug and serial, e.g., code dependent on
-the config DEBUG_ZTE_ZX.
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-Fortunately, ./scripts/checkkconfigsymbols.py detects this and warns:
+coccicheck complains about the use of snprintf() in sysfs show
+functions:
+WARNING use scnprintf or sprintf
 
-DEBUG_ZTE_ZX
-Referencing files: arch/arm/include/debug/pl01x.S
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-Further review by Arnd Bergmann identified even more dead code in the
-amba serial driver.
-
-Remove all this left-over from the zte zx platform.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
 ---
-this is a new patch after the discussion around:
+ drivers/tty/serial/8250/8250_port.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-https://lore.kernel.org/all/20211028141938.3530-2-lukas.bulwahn@gmail.com/
-
- arch/arm/include/debug/pl01x.S  |  7 -------
- drivers/tty/serial/amba-pl011.c | 37 ---------------------------------
- include/linux/amba/bus.h        |  6 ------
- 3 files changed, 50 deletions(-)
-
-diff --git a/arch/arm/include/debug/pl01x.S b/arch/arm/include/debug/pl01x.S
-index 0c7bfa4c10db..c7e02d0628bf 100644
---- a/arch/arm/include/debug/pl01x.S
-+++ b/arch/arm/include/debug/pl01x.S
-@@ -8,13 +8,6 @@
- */
- #include <linux/amba/serial.h>
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 5775cbff8f6e..3d58f383152e 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3099,7 +3099,7 @@ static ssize_t rx_trig_bytes_show(struct device *dev,
+ 	if (rxtrig_bytes < 0)
+ 		return rxtrig_bytes;
  
--#ifdef CONFIG_DEBUG_ZTE_ZX
--#undef UART01x_DR
--#undef UART01x_FR
--#define UART01x_DR     0x04
--#define UART01x_FR     0x14
--#endif
--
- #ifdef CONFIG_DEBUG_UART_PHYS
- 		.macro	addruart, rp, rv, tmp
- 		ldr	\rp, =CONFIG_DEBUG_UART_PHYS
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index d361cd84ff8c..c9534e229166 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -188,38 +188,6 @@ static struct vendor_data vendor_st = {
- 	.get_fifosize		= get_fifosize_st,
- };
+-	return snprintf(buf, PAGE_SIZE, "%d\n", rxtrig_bytes);
++	return sysfs_emit(buf, "%d\n", rxtrig_bytes);
+ }
  
--static const u16 pl011_zte_offsets[REG_ARRAY_SIZE] = {
--	[REG_DR] = ZX_UART011_DR,
--	[REG_FR] = ZX_UART011_FR,
--	[REG_LCRH_RX] = ZX_UART011_LCRH,
--	[REG_LCRH_TX] = ZX_UART011_LCRH,
--	[REG_IBRD] = ZX_UART011_IBRD,
--	[REG_FBRD] = ZX_UART011_FBRD,
--	[REG_CR] = ZX_UART011_CR,
--	[REG_IFLS] = ZX_UART011_IFLS,
--	[REG_IMSC] = ZX_UART011_IMSC,
--	[REG_RIS] = ZX_UART011_RIS,
--	[REG_MIS] = ZX_UART011_MIS,
--	[REG_ICR] = ZX_UART011_ICR,
--	[REG_DMACR] = ZX_UART011_DMACR,
--};
--
--static unsigned int get_fifosize_zte(struct amba_device *dev)
--{
--	return 16;
--}
--
--static struct vendor_data vendor_zte = {
--	.reg_offset		= pl011_zte_offsets,
--	.access_32b		= true,
--	.ifls			= UART011_IFLS_RX4_8|UART011_IFLS_TX4_8,
--	.fr_busy		= ZX_UART01x_FR_BUSY,
--	.fr_dsr			= ZX_UART01x_FR_DSR,
--	.fr_cts			= ZX_UART01x_FR_CTS,
--	.fr_ri			= ZX_UART011_FR_RI,
--	.get_fifosize		= get_fifosize_zte,
--};
--
- /* Deals with DMA transactions */
- 
- struct pl011_sgbuf {
-@@ -2974,11 +2942,6 @@ static const struct amba_id pl011_ids[] = {
- 		.mask	= 0x00ffffff,
- 		.data	= &vendor_st,
- 	},
--	{
--		.id	= AMBA_LINUX_ID(0x00, 0x1, 0xffe),
--		.mask	= 0x00ffffff,
--		.data	= &vendor_zte,
--	},
- 	{ 0, 0 },
- };
- 
-diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
-index edfcf7a14dcd..6c7f47846971 100644
---- a/include/linux/amba/bus.h
-+++ b/include/linux/amba/bus.h
-@@ -90,14 +90,8 @@ enum amba_vendor {
- 	AMBA_VENDOR_ST = 0x80,
- 	AMBA_VENDOR_QCOM = 0x51,
- 	AMBA_VENDOR_LSI = 0xb6,
--	AMBA_VENDOR_LINUX = 0xfe,	/* This value is not official */
- };
- 
--/* This is used to generate pseudo-ID for AMBA device */
--#define AMBA_LINUX_ID(conf, rev, part) \
--	(((conf) & 0xff) << 24 | ((rev) & 0xf) << 20 | \
--	AMBA_VENDOR_LINUX << 12 | ((part) & 0xfff))
--
- extern struct bus_type amba_bustype;
- 
- #define to_amba_device(d)	container_of(d, struct amba_device, dev)
+ static int do_set_rxtrig(struct tty_port *port, unsigned char bytes)
 -- 
-2.26.2
+2.25.1
 
