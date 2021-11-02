@@ -2,55 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC4BC43217
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9852CC433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:49:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CB8BF60EBB
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:49:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8318E60EB8
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235147AbhKBQwX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Nov 2021 12:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
+        id S235198AbhKBQwd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Nov 2021 12:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234917AbhKBQvw (ORCPT
+        with ESMTP id S235028AbhKBQv4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Nov 2021 12:51:52 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38864C06118B;
-        Tue,  2 Nov 2021 09:12:09 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id r12so78154513edt.6;
-        Tue, 02 Nov 2021 09:12:09 -0700 (PDT)
+        Tue, 2 Nov 2021 12:51:56 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35899C061234;
+        Tue,  2 Nov 2021 09:12:06 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id o8so5957038edc.3;
+        Tue, 02 Nov 2021 09:12:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0Ok82EnVbms3xaCc+k3GgiPbyL+Vn/MOKDOz/sHkYac=;
-        b=FpAga6kCi7RHSg2HVfSa8xBCK79uBAf4+rCMs7CO+M2Htf90WqGnE+R1S5cB4086kD
-         fvtNyduUeraji0GkaX2aWgyV4JEM0EyZ0BN975YDZtFd3sjcMBI8bmlCQFVlEfqkx/Tv
-         oVYJWCntPoQMmgvp0XwC2ko8tQiYT4VpoeLEZcspRpYcLgU25W7XiMxyj26iaUBJBmIG
-         5/gzUCaWnAiH4SuMy6m/hU+XtVOYlLcPCVcPO9Qsiv4YupUCQDapL2oPMtRda5P2N3bG
-         cjp0yRAPtAMIg55eVTxZ3BeFSf6y/XEbbsj0pirVczqY3oY5bL3VE3yWS8SNj8yMKmRS
-         aK6g==
+        bh=eESfjL+iaVjt21sHtGEVPwxEB8OqLbpv+keCGxcdIyU=;
+        b=IlWT9DwelKyx/I3jSjePAMMT+3JB2GrVrwnIAGdOk9hrBzHtziodtGkrUDM/u1/ID9
+         tprCOK6dDYnlSuKUXV0iMcgkkU4pQdVaTylJCkRs8H0ZsjkdYP1XxL1RGpmxcqATcXb2
+         8ozAZWW2Y0iebPUGc6k42EyJr4l7qW2UqMw7BswX2PmiWHECp4ABGnCv1z3K37u1mwoZ
+         3FU2yq7EIgbEFbFhtAcU6cPT2eZeLOJj5RA36psBuuXHduiHnswW1bM7FMDU1Z6DDNue
+         qst6+MxLFJWX3Pgsn+pOtWhx1WyLU+1rRIMIRl7GtkBKdtqsBwe5Emd3meHWZ7M3rnFD
+         kRdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=0Ok82EnVbms3xaCc+k3GgiPbyL+Vn/MOKDOz/sHkYac=;
-        b=uWaIz18+KnNx1JgQsSMsG7n7FCE+bqtAP+aoIsgsy7PjchpzWGoYnZ9IuN3j8Ht9bV
-         sTe/7B3coLnJqAxci0WZo3Im66mYxk8Dv3EE46mFN01mJ9HEfeBAistsoEd0wMSTcsXQ
-         Ddq23w/TDALhp3YXfnfwRI+H1o4mIdBMuv2EL0IAWPEJzh12IiMBF3KBq5haaAr4a8do
-         vYrr7bk2kCJPGQEeMiMD2+MKPl+qsTUCmrhNPDMt1KGncy78lCiOHF5KANsMi2GfDorJ
-         TQovnG3zD/dnXmMLmjiiARVkQ/uNMiQlTAGLCGIvnhtdcE3i5FBXngI3YVBEG9oyXw1v
-         d/uQ==
-X-Gm-Message-State: AOAM532XMKbzB0SlkbyK+NsZGN7zCiPRx67LULBJk92tI2bqSFtGaTR4
-        I2x5AHLvljdWKnX3rqFyD0M=
-X-Google-Smtp-Source: ABdhPJxnMiC7LtTwAPQ6kTTZeKyhxxR6MixNfrXy6ZIEnFS1jdBGaMKrd35Vxf19zFpFtTnXw+YUyA==
-X-Received: by 2002:a05:6402:1e8f:: with SMTP id f15mr51430884edf.212.1635869527685;
-        Tue, 02 Nov 2021 09:12:07 -0700 (PDT)
+        bh=eESfjL+iaVjt21sHtGEVPwxEB8OqLbpv+keCGxcdIyU=;
+        b=dBzHV/KAOqLmzkpkru5fS6X/RUcdPz2nkLA9xjFYJtEeSEMpIk9v2vUurgwsc7aBAp
+         Okrb+2Znm5Fl6UUTqXG4qiWHZpKtNjmZ4Umq8VT92rYwsp/DcyAIhZgb/as7IpiHszQt
+         dNojq3WnSvYYCyuen9GBv9gbU4KTnLlYzdWO6OMkQ16Aq11Fbyx/3OdJcd24OQcqprNK
+         dri782KemjvPZZgnmJgxJVzKQyyWqH2VTeLUgE2fzm6xGs6zig4cjTXj3B9252yRfRPs
+         /WveLSG9ODW5kOVTqp9vKpb2q5HO0linudfrHESIm0JpI2z9YxKLiXmykcJ9mf5GEFou
+         CJLQ==
+X-Gm-Message-State: AOAM533q3L4KnQClenuhSmI79qIa3q5nFuPMB9+jvX83y/v98u+oee6x
+        JFtHIpxIaSKEX8ICwhfIn9E=
+X-Google-Smtp-Source: ABdhPJzkbLNnfJXKIBGWGnhTUO/fKndK15BD8iMjIXWBbf/l6lYub1R9A4iNr7JgK9QCzISZhmDG5g==
+X-Received: by 2002:a17:906:1450:: with SMTP id q16mr48526979ejc.213.1635869524760;
+        Tue, 02 Nov 2021 09:12:04 -0700 (PDT)
 Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id c7sm8451374ejd.91.2021.11.02.09.12.06
+        by smtp.gmail.com with ESMTPSA id c7sm8451374ejd.91.2021.11.02.09.12.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Nov 2021 09:12:07 -0700 (PDT)
+        Tue, 02 Nov 2021 09:12:04 -0700 (PDT)
 Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
 From:   Emil Renner Berthing <kernel@esmil.dk>
 To:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
@@ -79,10 +79,10 @@ Cc:     Emil Renner Berthing <kernel@esmil.dk>,
         Anup Patel <anup.patel@wdc.com>,
         Atish Patra <atish.patra@wdc.com>,
         Matteo Croce <mcroce@microsoft.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 15/16] RISC-V: Add initial StarFive JH7100 device tree
-Date:   Tue,  2 Nov 2021 17:11:24 +0100
-Message-Id: <20211102161125.1144023-16-kernel@esmil.dk>
+        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 13/16] dt-bindings: serial: snps-dw-apb-uart: Add JH7100 uarts
+Date:   Tue,  2 Nov 2021 17:11:22 +0100
+Message-Id: <20211102161125.1144023-14-kernel@esmil.dk>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211102161125.1144023-1-kernel@esmil.dk>
 References: <20211102161125.1144023-1-kernel@esmil.dk>
@@ -92,254 +92,31 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add initial device tree for the JH7100 RISC-V SoC by StarFive Ltd. This
-is a test chip for their upcoming JH7110 SoC.
-
-The CPU and cache data is based on the device tree in the vendor u-boot
-port.
+Add compatibles for the StarFive JH7100 uarts.
 
 Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- arch/riscv/boot/dts/starfive/jh7100.dtsi | 230 +++++++++++++++++++++++
- 1 file changed, 230 insertions(+)
- create mode 100644 arch/riscv/boot/dts/starfive/jh7100.dtsi
+ .../devicetree/bindings/serial/snps-dw-apb-uart.yaml         | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/riscv/boot/dts/starfive/jh7100.dtsi b/arch/riscv/boot/dts/starfive/jh7100.dtsi
-new file mode 100644
-index 000000000000..69f22f9aad9d
---- /dev/null
-+++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
-@@ -0,0 +1,230 @@
-+// SPDX-License-Identifier: GPL-2.0 OR MIT
-+/*
-+ * Copyright (C) 2021 StarFive Technology Co., Ltd.
-+ * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
-+ */
-+
-+/dts-v1/;
-+#include <dt-bindings/clock/starfive-jh7100.h>
-+#include <dt-bindings/reset/starfive-jh7100.h>
-+
-+/ {
-+	compatible = "starfive,jh7100";
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu@0 {
-+			compatible = "sifive,u74-mc", "riscv";
-+			reg = <0>;
-+			d-cache-block-size = <64>;
-+			d-cache-sets = <64>;
-+			d-cache-size = <32768>;
-+			d-tlb-sets = <1>;
-+			d-tlb-size = <32>;
-+			device_type = "cpu";
-+			i-cache-block-size = <64>;
-+			i-cache-sets = <64>;
-+			i-cache-size = <32768>;
-+			i-tlb-sets = <1>;
-+			i-tlb-size = <32>;
-+			mmu-type = "riscv,sv39";
-+			riscv,isa = "rv64imafdc";
-+			tlb-split;
-+
-+			cpu0_intc: interrupt-controller {
-+				compatible = "riscv,cpu-intc";
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+			};
-+		};
-+
-+		cpu@1 {
-+			compatible = "sifive,u74-mc", "riscv";
-+			reg = <1>;
-+			d-cache-block-size = <64>;
-+			d-cache-sets = <64>;
-+			d-cache-size = <32768>;
-+			d-tlb-sets = <1>;
-+			d-tlb-size = <32>;
-+			device_type = "cpu";
-+			i-cache-block-size = <64>;
-+			i-cache-sets = <64>;
-+			i-cache-size = <32768>;
-+			i-tlb-sets = <1>;
-+			i-tlb-size = <32>;
-+			mmu-type = "riscv,sv39";
-+			riscv,isa = "rv64imafdc";
-+			tlb-split;
-+
-+			cpu1_intc: interrupt-controller {
-+				compatible = "riscv,cpu-intc";
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+			};
-+		};
-+	};
-+
-+	osc_sys: osc_sys {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		/* This value must be overridden by the board */
-+		clock-frequency = <0>;
-+	};
-+
-+	osc_aud: osc_aud {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		/* This value must be overridden by the board */
-+		clock-frequency = <0>;
-+	};
-+
-+	gmac_rmii_ref: gmac_rmii_ref {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		/* Should be overridden by the board when needed */
-+		clock-frequency = <0>;
-+	};
-+
-+	gmac_gr_mii_rxclk: gmac_gr_mii_rxclk {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		/* Should be overridden by the board when needed */
-+		clock-frequency = <0>;
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		interrupt-parent = <&plic>;
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		clint: clint@2000000 {
-+			compatible = "starfive,jh7100-clint", "sifive,clint0";
-+			reg = <0x0 0x2000000 0x0 0x10000>;
-+			interrupts-extended = <&cpu0_intc 3 &cpu0_intc 7
-+					       &cpu1_intc 3 &cpu1_intc 7>;
-+		};
-+
-+		plic: interrupt-controller@c000000 {
-+			compatible = "starfive,jh7100-plic", "sifive,plic-1.0.0";
-+			reg = <0x0 0xc000000 0x0 0x4000000>;
-+			interrupts-extended = <&cpu0_intc 11 &cpu0_intc 9
-+					       &cpu1_intc 11 &cpu1_intc 9>;
-+			interrupt-controller;
-+			#address-cells = <0>;
-+			#interrupt-cells = <1>;
-+			riscv,ndev = <127>;
-+		};
-+
-+		clkgen: clock-controller@11800000 {
-+			compatible = "starfive,jh7100-clkgen";
-+			reg = <0x0 0x11800000 0x0 0x10000>;
-+			clocks = <&osc_sys>, <&osc_aud>, <&gmac_rmii_ref>, <&gmac_gr_mii_rxclk>;
-+			clock-names = "osc_sys", "osc_aud", "gmac_rmii_ref", "gmac_gr_mii_rxclk";
-+			#clock-cells = <1>;
-+		};
-+
-+		rstgen: reset-controller@11840000 {
-+			compatible = "starfive,jh7100-reset";
-+			reg = <0x0 0x11840000 0x0 0x10000>;
-+			#reset-cells = <1>;
-+		};
-+
-+		i2c0: i2c@118b0000 {
-+			compatible = "snps,designware-i2c";
-+			reg = <0x0 0x118b0000 0x0 0x10000>;
-+			clocks = <&clkgen JH7100_CLK_I2C0_CORE>,
-+				 <&clkgen JH7100_CLK_I2C0_APB>;
-+			clock-names = "ref", "pclk";
-+			resets = <&rstgen JH7100_RSTN_I2C0_APB>;
-+			interrupts = <96>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c1: i2c@118c0000 {
-+			compatible = "snps,designware-i2c";
-+			reg = <0x0 0x118c0000 0x0 0x10000>;
-+			clocks = <&clkgen JH7100_CLK_I2C1_CORE>,
-+				 <&clkgen JH7100_CLK_I2C1_APB>;
-+			clock-names = "ref", "pclk";
-+			resets = <&rstgen JH7100_RSTN_I2C1_APB>;
-+			interrupts = <97>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		gpio: pinctrl@11910000 {
-+			compatible = "starfive,jh7100-pinctrl";
-+			reg = <0x0 0x11910000 0x0 0x10000>,
-+			      <0x0 0x11858000 0x0 0x1000>;
-+			reg-names = "gpio", "padctl";
-+			clocks = <&clkgen JH7100_CLK_GPIO_APB>;
-+			resets = <&rstgen JH7100_RSTN_GPIO_APB>;
-+			interrupts = <32>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+
-+		uart2: serial@12430000 {
-+			compatible = "starfive,jh7100-uart", "snps,dw-apb-uart";
-+			reg = <0x0 0x12430000 0x0 0x10000>;
-+			clocks = <&clkgen JH7100_CLK_UART2_CORE>,
-+				 <&clkgen JH7100_CLK_UART2_APB>;
-+			clock-names = "baudclk", "apb_pclk";
-+			resets = <&rstgen JH7100_RSTN_UART2_APB>;
-+			interrupts = <72>;
-+			reg-io-width = <4>;
-+			reg-shift = <2>;
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@12440000 {
-+			compatible = "starfive,jh7100-uart", "snps,dw-apb-uart";
-+			reg = <0x0 0x12440000 0x0 0x10000>;
-+			clocks = <&clkgen JH7100_CLK_UART3_CORE>,
-+				 <&clkgen JH7100_CLK_UART3_APB>;
-+			clock-names = "baudclk", "apb_pclk";
-+			resets = <&rstgen JH7100_RSTN_UART3_APB>;
-+			interrupts = <73>;
-+			reg-io-width = <4>;
-+			reg-shift = <2>;
-+			status = "disabled";
-+		};
-+
-+		i2c2: i2c@12450000 {
-+			compatible = "snps,designware-i2c";
-+			reg = <0x0 0x12450000 0x0 0x10000>;
-+			clocks = <&clkgen JH7100_CLK_I2C2_CORE>,
-+				 <&clkgen JH7100_CLK_I2C2_APB>;
-+			clock-names = "ref", "pclk";
-+			resets = <&rstgen JH7100_RSTN_I2C2_APB>;
-+			interrupts = <74>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c3: i2c@12460000 {
-+			compatible = "snps,designware-i2c";
-+			reg = <0x0 0x12460000 0x0 0x10000>;
-+			clocks = <&clkgen JH7100_CLK_I2C3_CORE>,
-+				 <&clkgen JH7100_CLK_I2C3_APB>;
-+			clock-names = "ref", "pclk";
-+			resets = <&rstgen JH7100_RSTN_I2C3_APB>;
-+			interrupts = <75>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+	};
-+};
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+index b49fda5e608f..12137fe80acf 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+@@ -40,6 +40,11 @@ properties:
+               - brcm,bcm11351-dw-apb-uart
+               - brcm,bcm21664-dw-apb-uart
+           - const: snps,dw-apb-uart
++      - items:
++          - enum:
++              - starfive,jh7100-hsuart
++              - starfive,jh7100-uart
++          - const: snps,dw-apb-uart
+       - const: snps,dw-apb-uart
+ 
+   reg:
 -- 
 2.33.1
 
