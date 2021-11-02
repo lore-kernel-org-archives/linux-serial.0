@@ -2,93 +2,124 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A38C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 07:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA699C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:44:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 76DB860F56
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 07:44:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D205360EB4
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbhKBHrI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Nov 2021 03:47:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39604 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230519AbhKBHq4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Nov 2021 03:46:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3936B60F56;
-        Tue,  2 Nov 2021 07:44:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635839060;
-        bh=K+5794DO0CyR1WowT7L3guGby6Lpr9bHzC6ZoG6dV/I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Vq9/XrwBdPx+SkNvMiK+xsGpRUUBOGlQGR4cdQ3SMXR7+sqxCmdN8gPeNmm31qtpn
-         hhQNVQveYd8Pz0qdYZwet6cfa2EyvDxAOTCuIwKrAhk+Tu2AvWIKQ8HyeVGBD9Vr7r
-         Jihkch6CkRqk/5t8wXAHl8SJpGWZk6bTAGBuUZXqMow0HmXaQBpzrfPcrRbG1/nBmL
-         q32n5vU5Gv2otj8+y6oaS2UZmR72sC49o/D66GectLPGoh/aJiBuzhTd/vUvZtB/kS
-         7nE1iobpde/jg3pEl65+3BvgYFgeRrfPui2jALpvoh/lmZ6KiP06hcicKdl9Du5+Pj
-         LdJpHCpNwfoIg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1mhoSx-00071v-FO; Tue, 02 Nov 2021 08:44:20 +0100
-Date:   Tue, 2 Nov 2021 08:44:19 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     joe@perches.com, andrew@aj.id.au, fancer.lancer@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        macro@orcam.me.uk, pali@kernel.org, yao.jing2@zte.com.cn,
-        zealci@zte.com.cn
-Subject: Re: [PATCH v2] drivers: tty: replace snprintf in show functions with
- sysfs_emit
-Message-ID: <YYDsU778y71byGdj@hovoldconsulting.com>
-References: <b42482be11d04963fed0903ce1bd983742efc5c6.camel@perches.com>
- <20211102065206.3368-1-yao.jing2@zte.com.cn>
+        id S234820AbhKBQqu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Nov 2021 12:46:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231725AbhKBQqs (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 2 Nov 2021 12:46:48 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6D4C06120E;
+        Tue,  2 Nov 2021 09:11:50 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id w15so77757457edc.9;
+        Tue, 02 Nov 2021 09:11:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=z3xrx/IjdMfQoBfwXaJgW39HMolJDiqcY4GCUL8qxe8=;
+        b=LXfIj2Z4WMpkea3nWTzGuHn0zasNZNcX6P8os0+i7/c8qIqUf70qkE7Sr9Q71TFqH0
+         9ALKQHimQY1zh4nvtz9/cS4r8YVjSqpSXxs7QgJLp62R4y3sOtwktYJcWvv6rf7cEJy+
+         cfd5nNe3YVCDpex4j3yvh+cn5FAU6Z7s+sZnUcBV8uuNRqeShzTEXw4o3dT4f0RJjJa3
+         IDrVpFek1tD7RqJljLFWlavIQO0YrcSKAdqumdtbq6bBLRR//0v1pypI9dgCP+RSt0CH
+         RSyeOuGxrnfyZFLAuzEO6lOyaKxLMIuKrQ+NLAK5YRddACJC/DfauhpxIRchJqU/Ma4B
+         D/9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=z3xrx/IjdMfQoBfwXaJgW39HMolJDiqcY4GCUL8qxe8=;
+        b=MJYz2Oz2igjCSdxfjTp+DuHCSZC/ELOcPu68rwa9oe8g9uYH49CeoI0KKMVYwbCEeK
+         76ykioMVxqcv1hwMg8OzZ8Nv2Hhp/VNiFL6vlUSvceJXuj0u92Wh0oD2YmjsrLkTdSoJ
+         3jSWASc8r0FoPT3UiKgsBl8pbS9qM24lDPmCqZnDGuBjalfFW9Q/Bu9pgVo1MyObbZ0P
+         Cn5oejreqVDK2EVDjBg5wBENW1qMaGQ0n+s0WvkKDGxTf99kb17HadCWBGiE5vN4AFoY
+         nwfcpQP0KuhlZOh9/UIs8reI8biBuE+Y5mWHqDQ+uHgCAEFcOXfMIUsiW0CEwGs0uQ6g
+         ecOQ==
+X-Gm-Message-State: AOAM532RxXTkrRchkgsY3mAgzzqhimjZMEpUVpDRqtQZPYbSBzIe2H0q
+        4vaaSSvE8rRGxkcjmly+sMU=
+X-Google-Smtp-Source: ABdhPJyovKza913KPMbj0Md2JTDAPXlRSDUZ9UAcHWnMSQ/TZMe5pgyFBG1YPDmyjHNj+AmITMpPPQ==
+X-Received: by 2002:a05:6402:da:: with SMTP id i26mr52392928edu.207.1635869507694;
+        Tue, 02 Nov 2021 09:11:47 -0700 (PDT)
+Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
+        by smtp.gmail.com with ESMTPSA id c7sm8451374ejd.91.2021.11.02.09.11.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 09:11:47 -0700 (PDT)
+Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+To:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 01/16] RISC-V: Add StarFive SoC Kconfig option
+Date:   Tue,  2 Nov 2021 17:11:10 +0100
+Message-Id: <20211102161125.1144023-2-kernel@esmil.dk>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211102161125.1144023-1-kernel@esmil.dk>
+References: <20211102161125.1144023-1-kernel@esmil.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211102065206.3368-1-yao.jing2@zte.com.cn>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 02, 2021 at 06:52:06AM +0000, cgel.zte@gmail.com wrote:
-> From: Jing Yao <yao.jing2@zte.com.cn>
-> 
-> coccicheck complains about the use of snprintf() in sysfs show
-> functions:
-> WARNING use scnprintf or sprintf
-> 
-> Use sysfs_emit instead of scnprintf or sprintf makes more sense.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-> ---
+Add StarFive Kconfig option to select SoC specific and common drivers
+required for these SoCs. Select subsystems required to boot so the
+required drivers gets enabled by default.
 
-What changed since v1? Always include a changelog here.
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+---
+ arch/riscv/Kconfig.socs | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Also you ignored my comment on the patch Subject. Including "drivers: "
-is never correct. You should also mention which driver you're changing
-since it's not done subtree-wide for tty. 
+diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+index 30676ebb16eb..6ec44a22278a 100644
+--- a/arch/riscv/Kconfig.socs
++++ b/arch/riscv/Kconfig.socs
+@@ -19,6 +19,14 @@ config SOC_SIFIVE
+ 	help
+ 	  This enables support for SiFive SoC platform hardware.
+ 
++config SOC_STARFIVE
++	bool "StarFive SoCs"
++	select PINCTRL
++	select RESET_CONTROLLER
++	select SIFIVE_PLIC
++	help
++	  This enables support for StarFive SoC platform hardware.
++
+ config SOC_VIRT
+ 	bool "QEMU Virt Machine"
+ 	select CLINT_TIMER if RISCV_M_MODE
+-- 
+2.33.1
 
-Again, look at the git log for the driver you're changing. In this case
-it should have been something like:
-
-	serial: 8250: use sysfs_emit...
-
->  drivers/tty/serial/8250/8250_port.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 5775cbff8f6e..3d58f383152e 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3099,7 +3099,7 @@ static ssize_t rx_trig_bytes_show(struct device *dev,
->  	if (rxtrig_bytes < 0)
->  		return rxtrig_bytes;
->  
-> -	return snprintf(buf, PAGE_SIZE, "%d\n", rxtrig_bytes);
-> +	return sysfs_emit(buf, "%d\n", rxtrig_bytes);
->  }
->  
->  static int do_set_rxtrig(struct tty_port *port, unsigned char bytes)
-
-Johan
