@@ -2,117 +2,66 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1ABFC43219
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E545C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 18:08:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BA7DB61177
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 16:50:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 071B060F24
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 18:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235247AbhKBQwg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Nov 2021 12:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235044AbhKBQv5 (ORCPT
+        id S234862AbhKBSKh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Nov 2021 14:10:37 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.24]:36018 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234823AbhKBSKh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Nov 2021 12:51:57 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3F1C06120D;
-        Tue,  2 Nov 2021 09:11:50 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id 5so76678658edw.7;
-        Tue, 02 Nov 2021 09:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CMB5icMsNI9B+HlHvOZ/rsWpb2j9DPNZlwQY5zjCx08=;
-        b=CMMVSV/17ZP/t0ZBRMEqWcOl9jcn9EdPRril8YLsjXXQ2q8NvoJjHJ57oTlhFh45V3
-         +ZOLem70FEuu1QiZh/Z1w1z2E6gYgboUv6mQltr6qS6vJ++TyWSIHKL6/MfV5WL4U+Ds
-         y/ANstadh3d4G8+mjG3SM/OaZJwZU26njMFC5d7xyCEJgGJvjmF+DQf+xjDYHQwLHwBc
-         BMMdUPomJAblZRysCg+B4xOsLGYcpi56j0TOj4IRnzCn5zmC7CPGu9M2x81mN8aXjkd3
-         9tNPV+vYKt2iRfzLaI78XilKWkYJJmvhRSlsHetuS1MAgy2XfVKpo2ID/KF80yZIMGVj
-         /ceA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=CMB5icMsNI9B+HlHvOZ/rsWpb2j9DPNZlwQY5zjCx08=;
-        b=5WMbvdC4bHaBIoLoryLBI22lDePYo/hi6BD5nCZgPAcdktJxjEmvwo9EyPnK5MbfKD
-         3i8UcGrWIbj9ZyZo/iDyMkF+ymiIIjnrTACwbyPNHmzw9tPBOQLEM4YU0q1hGBaSNExJ
-         C1pLyAvMAYqp6eBeaj7UB1g4o38w/PBpySx2IbDUpLg9RVHwNugUGy/XOuOUSmRdNHTk
-         TE4Jo4NTQdCHzZocBqj+cko2TN1vzrTRKnnEq/DFQIiAGSaK0Q1Am9+7yn1sqN2FuZwD
-         GJD0ergsf92xsowo/6ta7vkkjiucd13jYxm8GauNMrUKj9SPu1OmzCbVgJBn0bJEEjJL
-         OJ/Q==
-X-Gm-Message-State: AOAM533R9qQ4pDSXRDMvDBW9EkCjDGSSyscq0BRd/QzCHawrmq1SllUK
-        wgp3eAbaQdQN6wlRy+wSWOA=
-X-Google-Smtp-Source: ABdhPJyoAG8vEmS8dlIAtihH24GOCuPEV/1mht6fav6+Hnp4TnUGEtAeeO/iUfhnB8QhPY8fzmFSsg==
-X-Received: by 2002:a17:906:1683:: with SMTP id s3mr33340791ejd.331.1635869509118;
-        Tue, 02 Nov 2021 09:11:49 -0700 (PDT)
-Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id c7sm8451374ejd.91.2021.11.02.09.11.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Nov 2021 09:11:48 -0700 (PDT)
-Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-To:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 02/16] dt-bindings: timer: Add StarFive JH7100 clint
-Date:   Tue,  2 Nov 2021 17:11:11 +0100
-Message-Id: <20211102161125.1144023-3-kernel@esmil.dk>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211102161125.1144023-1-kernel@esmil.dk>
-References: <20211102161125.1144023-1-kernel@esmil.dk>
+        Tue, 2 Nov 2021 14:10:37 -0400
+X-Greylist: delayed 540 seconds by postgrey-1.27 at vger.kernel.org; Tue, 02 Nov 2021 14:10:37 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1635875757;
+    s=strato-dkim-0002; d=mades.net;
+    h=Subject:From:To:Date:Message-ID:Cc:Date:From:Subject:Sender;
+    bh=WFiiP4mZDwf8eUQXw19endczGOXcmmLu2bVNQhEO7sY=;
+    b=fSTNzWP7c55BolH66BoY5jCgUJo62BCwycqssAWw64ZNlJkOsVLgrhFzowv4emq/My
+    c5L5x7RnNpCeqnVAvUXB47+SP38PP10tbMUyiYwWMbO1YrjgsJ80jMULpkfF4dLPA78O
+    Ok7lsopFfzmI2xnDcnJkpGdLqnPbQijsuKOmnTxGCwfLx2QhbQ+f4qHv5oT1QEFj6d7/
+    mLJfcjVGqjD7RdDEhajXyXn09thSsH8XwvISw2ynjHr90p5sQkrNdXpa20XJZzugaLkk
+    sHp99MTo+5OLjjBig2LeQe3qRSDDLnLH3B0LpTaTj5BB1fBj94Bae+W9bt6vqB9KlAOG
+    FzZA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JmMHfUWmW/JCZ5q3rSbjoqaGiJoG2nOuw/9ZoJyEZEuoUXlOQl3ihigFESvedWagVA=="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.178.47]
+    by smtp.strato.de (RZmta 47.34.1 AUTH)
+    with ESMTPSA id f02274xA2HtvsAI
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate)
+    for <linux-serial@vger.kernel.org>;
+    Tue, 2 Nov 2021 18:55:57 +0100 (CET)
+Message-ID: <731e2516-9703-8c9a-7e56-e7e7b362de94@mades.net>
+Date:   Tue, 2 Nov 2021 18:55:56 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.2
+To:     linux-serial@vger.kernel.org
+Content-Language: en-US
+From:   Jochen <jochen@mades.net>
+Subject: Extending serial port linux driver to toggle RS485 direction pin
+ (GPIO)
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add compatible string for the StarFive JH7100 clint.
+Hello,
 
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/timer/sifive,clint.yaml | 1 +
- 1 file changed, 1 insertion(+)
+I have a RS485 hardware shield connected to the hardware uart of a raspberry PI3, where you have to toggle the RS485 driver DIRECTION-pin from within your software during write-commands. The DIR-Pin is connected to a GPIO pin of the PI.
 
-diff --git a/Documentation/devicetree/bindings/timer/sifive,clint.yaml b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
-index a35952f48742..8d5f4687add9 100644
---- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
-+++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
-@@ -25,6 +25,7 @@ properties:
-     items:
-       - enum:
-           - sifive,fu540-c000-clint
-+          - starfive,jh7100-clint
-           - canaan,k210-clint
-       - const: sifive,clint0
- 
--- 
-2.33.1
+As I do not want to do that in every application software, I thought it could be a good idea to enhance the serial-port driver (locally on my PI) with that functionality. Looking to the sources of amba-pl011.c I thought the "pl011_write"-function could be the right place to do so....but to be honest it seems not to work
+
+Could you please give me a hint where to do that best in the serial port driver? (or is there already a RS485 driver with configurable Dir-GPIO-pin).
+Is there a documentation of the serial-port architecture available which could help me to solve my problem?
+
+Bests
+Jochen
 
