@@ -2,151 +2,180 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17EF1C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 21:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7708C4167B
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 22:57:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EF85560D07
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 21:17:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D2CCD60041
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Nov 2021 22:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbhKBVTv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Nov 2021 17:19:51 -0400
-Received: from mail-pl1-f170.google.com ([209.85.214.170]:36364 "EHLO
-        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbhKBVTv (ORCPT
+        id S231201AbhKBW7m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Nov 2021 18:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229747AbhKBW7l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Nov 2021 17:19:51 -0400
-Received: by mail-pl1-f170.google.com with SMTP id u11so864484plf.3;
-        Tue, 02 Nov 2021 14:17:16 -0700 (PDT)
+        Tue, 2 Nov 2021 18:59:41 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0574C061714;
+        Tue,  2 Nov 2021 15:57:05 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id bq14so619517qkb.1;
+        Tue, 02 Nov 2021 15:57:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KIYisbZsaWO2J//hyz2WxZPwqBd239vjWte2s5yR2ys=;
+        b=LL2bPORTmHw5LJecj4U/ZA0GNrmoo7CQe0IRKm7B8NabGS0i4Zmp0WLIxzChPUQSgq
+         AeU4nFkaupYIQzpLkKphcy0RuzmbeMDUx/WuoBOWfIREIWo4U0JZ6Pm64KI7qQ+y7nLk
+         T4++3+zUDvm2qtP5zFRZGvLElcEzTfyt1MBCpvx2/+jSTFkdzQbezCl9+pPU1/+3u7G3
+         xcEs7R/s00fiiXVExSt6uBoUu5jIr0z9FyfEzIke42ETx3Vt6QDOTBj3u6lo5a4NqpHt
+         WdzG1aCWfdpxFqZX8Gk195mbhQTaar8LeuBmJv4Z6xUJPN0tGNh1333R7biHfaTBfRBH
+         BFFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q3y5UxeQSpLyKQPZY321rv/0ZITkGbCXJhzW/7YHXdo=;
-        b=x6QsW+aTrEmPDoDxf/ujFsmJrx7Y8vJFmcoz5NjjOnqjt58UqMhAwgwJMupWDfuae2
-         sySplTnaviF7XxdIrW68c7GdChwqFF/VzMtcEfrINSqiv2ZIAayA58lrO6Uy5NXV6ljb
-         pG5BGoLWTscbikhcSs5Z4HnyJqkhPrfhQvQBGv+c5oUTWHKPlzGaP361diy/IDoDYdf2
-         A3VK82vxtd1ZlTtSitXNLC4nVm2m+1oqElOE10T0Kf6JAZ3ZNVvm2Q4KMEHT1OJD/boO
-         raTMXAVzi1fka+bTNsGugF+oFrR+NU2tAp1xvFjGPltAXuk9PmMEykPL5B+rmHX5ofAU
-         8NLg==
-X-Gm-Message-State: AOAM533KVAY0FQYRRb8z0GznhOxU7FsdwmWDImg8Zyhb1umSQ4OgenAb
-        mdtA64RMpAucRfLyH/PvUhSkGod2WDwVdx4UoQc/AjhSjMc=
-X-Google-Smtp-Source: ABdhPJz8vya8Pc9vfyjBBnOdrocjtFOk+W75BUtZYClkn8GG2bJFYZJzRCxnG9uqRIRWqGnV1fANTmhWO6L01upvC1k=
-X-Received: by 2002:a17:90a:5b0c:: with SMTP id o12mr9978948pji.194.1635887835692;
- Tue, 02 Nov 2021 14:17:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KIYisbZsaWO2J//hyz2WxZPwqBd239vjWte2s5yR2ys=;
+        b=TjVURAReaeFzpJo+5LV2/eKJLZSdr6AyZLlad0nJdWe+lhxX8m3z2Vi1xHMkpDChAP
+         4weuO/5+tKuzyNRysTaICP71CTTmIwd1ru3n2vIWAagy/hq6frKLMPs6vJkx9o9YFaMW
+         Sudrval11jgI3zBi9+2Pii4EkUfHIvf4Ayr57Wmx98gOHlN5XwCidYviLhjtXZXPsKLi
+         u8Y7B7+yptBA8ze//bPufqD37HoMc52+GxUErDEob9Djg4wz1oEdnhuDac/ZeNja41Mz
+         +LoaUFqtJEWzqpuQNUT0Ka9ltJRptj4QsCFm1LAUoArsvXc9Ss8mB3KxnPRu8fxusCrZ
+         f2Cg==
+X-Gm-Message-State: AOAM532edoG564KhUgsX73dB3fh1VPme2QznttpqV8EDfSb2PE5QERsr
+        M68fMm2khAEjlISgIG7DFKU=
+X-Google-Smtp-Source: ABdhPJz6W+2d5SZUl1RkGSRUkSfqY9CHmb9HCjjkEoKiGlQNTqAyGyj8o91AAI6XjdcklmMMiXHbnQ==
+X-Received: by 2002:a05:620a:40c4:: with SMTP id g4mr25496206qko.14.1635893824295;
+        Tue, 02 Nov 2021 15:57:04 -0700 (PDT)
+Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
+        by smtp.gmail.com with ESMTPSA id v19sm351222qtk.6.2021.11.02.15.57.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 15:57:03 -0700 (PDT)
+From:   Jesse Taube <mr.bossman075@gmail.com>
+X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
+To:     linux-imx@nxp.com
+List-Id: <soc.lore.kernel.org>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, ulf.hansson@linaro.org, aisheng.dong@nxp.com,
+        stefan@agner.ch, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
+        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
+        adrian.hunter@intel.com, jirislaby@kernel.org,
+        giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, Mr.Bossman075@gmail.com,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v2 00/13] Add initial support for the i.MXRTxxxx SoC family starting from i.IMXRT1050 SoC.
+Date:   Tue,  2 Nov 2021 18:56:48 -0400
+Message-Id: <20211102225701.98944-1-Mr.Bossman075@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-10-kernel@esmil.dk>
- <CAHp75Ve-P8DR00mtRP_NkrXgB4nsZ+qBkgBen94iTcPqxQYUOg@mail.gmail.com>
- <CANBLGcyb=TAP0h2WuxBAjRvpN9n7Dt1Hvh5yE8NMOwm3ixZWuA@mail.gmail.com> <CAHp75Vcg3En=xH+kz0GgAMGUoo5FABo2HwGoHd=7QgGVrYkYXg@mail.gmail.com>
-In-Reply-To: <CAHp75Vcg3En=xH+kz0GgAMGUoo5FABo2HwGoHd=7QgGVrYkYXg@mail.gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Tue, 2 Nov 2021 22:17:04 +0100
-Message-ID: <CANBLGczrGwexRGvGxa9C+yzaSHZF_d5+AaebeLUX5BXFxipr=A@mail.gmail.com>
-Subject: Re: [PATCH v3 09/16] reset: starfive-jh7100: Add StarFive JH7100
- reset driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 2 Nov 2021 at 21:14, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> On Tue, Nov 2, 2021 at 9:59 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> > On Tue, 2 Nov 2021 at 20:43, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Tue, Nov 2, 2021 at 6:50 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
->
-> ...
->
-> > > > +/*
-> > > > + * the registers work like a 32bit bitmap, so writing a 1 to the m'th bit of
-> > > > + * the n'th ASSERT register asserts line 32n + m, and writing a 0 deasserts the
-> > > > + * same line.
-> > > > + * most reset lines have their status inverted so a 0 in the STATUS register
-> > > > + * means the line is asserted and a 1 means it's deasserted. a few lines don't
-> > > > + * though, so store the expected value of the status registers when all lines
-> > > > + * are asserted.
-> > > > + */
-> > >
-> > > Besides missing capitalization,
-> >
-> > I'm confused. it was you who wanted all comments to capitalized the same..
->
-> Yes and there are two types of the comments, one-liners and
-> multi-line. In multi-line you usually use proper English grammar,
-> where capitalization means what it means. For the one-liners just
-> choose either small letters or capital letters to start them with.
+This patchset contains:
+- i.MXRT10xx family infrastructure
+- i.MXRT1050 pinctrl driver adaption
+- i.MXRT1050 clock driver adaption
+- i.MXRT1050 sd-card driver adaption
+- i.MXRT1050 uart driver adaption
+- i.MXRT1050-evk basic support
 
-That sounds reasonable, it was just that you complained about
-inconsistent comments in the pinctrl driver that follows the above.
+The i.MXRTxxxx family that could have support by Linux actually spreads
+from i.MXRT1020 to i.MXRT1170 with the first one supporting 1 USB OTG &
+100M ethernet with a cortex-M7@500Mhz up to the latter with i.MXRT1170
+with cortex-M7@1Ghz and cortex-M4@400Mhz, 2MB of internal SRAM, 2D GPU,
+2x 1Gb and 1x 100Mb ENET. The i.MXRT family is NXP's answer to
+STM32F7XX, as it uses only simple SDRAM, it gives the chance of a 4 or
+less layer PCBs. Seeing that these chips are comparable to the
+STM32F7XXs which have linux ported to them it seems reasonable to add
+support for them.
 
-> > if it sounds like bitmap, use bitmap.
-> > > I have checked DT definitions and it seems you don't even need the
-> > > BIT_MASK() macro,
-> > >
-> > > > +static const u32 jh7100_reset_asserted[4] = {
-> > > > +       /* STATUS0 register */
-> > > > +       BIT_MASK32(JH7100_RST_U74) |
-> > > > +       BIT_MASK32(JH7100_RST_VP6_DRESET) |
-> > > > +       BIT_MASK32(JH7100_RST_VP6_BRESET),
-> > > > +       /* STATUS1 register */
-> > > > +       BIT_MASK32(JH7100_RST_HIFI4_DRESET) |
-> > > > +       BIT_MASK32(JH7100_RST_HIFI4_BRESET),
-> > > > +       /* STATUS2 register */
-> > > > +       BIT_MASK32(JH7100_RST_E24),
-> > > > +       /* STATUS3 register */
-> > > > +       0,
-> > > > +};
-> > >
-> > > Yury, do we have any clever (clean) way to initialize a bitmap with
-> > > particular bits so that it will be a constant from the beginning? If
-> > > no, any suggestion what we can provide to such users?
-> >
-> > The problem is, that even if we could initialize this without the
-> > monstrosity in our last conversation a 64bit bitmap would still
-> > produce worse code. As it is now it's simply a 32bit load and mask
-> > with index and mask already calculated for the registers. In the
-> > status callback the mask can even be folded into the register read
-> > mask. With a 64bit bitmap you'd need to calculate new 64bit index and
-> > masks, and then conditionally shift the bits into position.
->
-> Why? You may use 8 byte IO (writeq() / readq() or their relaxed versions), no?
->
-> ...
->
-> > If this reflection of the 32bit registers bothers you that much
->
-> What bothers me is hidden endianess issues (yeah, here it might be
-> theoretical, but consider that somebody will look at your code and use
-> it as the best example ever).
+Giving Linux support to this family should ease the development process,
+instead of using a RTOS they could use Embedded Linux allowing for more
+portability, ease of design and will broaden the scope of people using
+embedded linux.
 
-Wouldn't endian issues be a reason to make sure we read 32bit
-registers with 32bit reads? Or do you expect a hypothetical big-endian
-StarFive SoC to also change the order of the registers?
+The EVK has very little SDRAM, generally 32MB starting from
+i.MXRT1020(the lowest P/N), although the i.MXRT1160/70 provide instead
+64MB of SDRAM for more functionality.
+
+At the moment we do not support XIP for either u-boot or Linux but it
+should be done in the future. XIP will also save SDRAM.
+
+Another interesting fact is the amount of internal SRAM, as the P/N
+increases the SRAM will reach up to 2MB(some could be for cache and
+some would be for video).
+
+Also, some parts have embed flash of 4MB that can be used for
+u-boot/Linux, if both correctly sized it will leave the SDRAM free.
+
+External flash can be Quad SPI and HyperFlash, so throughput would be
+decent.
+
+The i.MXRT11xx series supports MIPI interface too.
+
+The family in general provide CAN bus, audio I/O, 1 or more
+USB(otg/host), 1 or more 100Mb/1Gb ethernet, camera interface, sd-card.
+
+All this can be used for simple GUIs, web-servers, point-of-sale
+stations, etc.
+
+Giulio Benetti (5):
+  ARM: imx: add initial support for i.MXRT10xx family
+  pinctrl: freescale: Add i.MXRT1050 pinctrl driver support
+  dt-bindings: imx: Add clock binding for i.MXRT1050
+  ARM: dts: imx: add i.MXRT1050-EVK support
+  ARM: imxrt_defconfig: add i.MXRT family defconfig
+
+Jesse Taube (8):
+  dt-bindings: pinctrl: add i.MXRT1050 pinctrl binding doc
+  ARM: dts: imxrt1050-pinfunc: Add pinctrl binding header
+  dt-bindings: clock: imx: Add documentation for i.MXRT clock
+  clk: imx: Add initial support for i.MXRT clock driver
+  dt-bindings: serial: fsl-lpuart: add i.MXRT compatible
+  tty: serial: fsl_lpuart: add i.MXRT support
+  dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT compatible string
+  mmc: sdhci-esdhc-imx: Add sdhc support for i.MXRT series
+
+ .../bindings/clock/imxrt-clock.yaml           |  70 ++
+ .../bindings/mmc/fsl-imx-esdhc.yaml           |   1 +
+ .../bindings/pinctrl/fsl,imxrt1050.yaml       |  83 ++
+ .../bindings/serial/fsl-lpuart.yaml           |   1 +
+ arch/arm/boot/dts/Makefile                    |   2 +
+ arch/arm/boot/dts/imxrt1050-evk.dts           |  89 ++
+ arch/arm/boot/dts/imxrt1050-pinfunc.h         | 993 ++++++++++++++++++
+ arch/arm/boot/dts/imxrt1050.dtsi              | 187 ++++
+ arch/arm/configs/imxrt_defconfig              | 157 +++
+ arch/arm/mach-imx/Kconfig                     |   7 +
+ arch/arm/mach-imx/Makefile                    |   2 +
+ arch/arm/mach-imx/mach-imxrt.c                |  19 +
+ drivers/clk/imx/Kconfig                       |   4 +
+ drivers/clk/imx/Makefile                      |   1 +
+ drivers/clk/imx/clk-imxrt.c                   | 149 +++
+ drivers/mmc/host/sdhci-esdhc-imx.c            |   7 +
+ drivers/pinctrl/freescale/Kconfig             |   7 +
+ drivers/pinctrl/freescale/Makefile            |   1 +
+ drivers/pinctrl/freescale/pinctrl-imxrt1050.c | 349 ++++++
+ drivers/tty/serial/fsl_lpuart.c               |   8 +
+ include/dt-bindings/clock/imxrt1050-clock.h   |  72 ++
+ 21 files changed, 2209 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/imxrt-clock.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/fsl,imxrt1050.yaml
+ create mode 100644 arch/arm/boot/dts/imxrt1050-evk.dts
+ create mode 100644 arch/arm/boot/dts/imxrt1050-pinfunc.h
+ create mode 100644 arch/arm/boot/dts/imxrt1050.dtsi
+ create mode 100644 arch/arm/configs/imxrt_defconfig
+ create mode 100644 arch/arm/mach-imx/mach-imxrt.c
+ create mode 100644 drivers/clk/imx/clk-imxrt.c
+ create mode 100644 drivers/pinctrl/freescale/pinctrl-imxrt1050.c
+ create mode 100644 include/dt-bindings/clock/imxrt1050-clock.h
+
+-- 
+2.33.1
+
