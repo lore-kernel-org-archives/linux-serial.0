@@ -2,165 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1EBC433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 17:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A701C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 17:51:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D22E361101
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 17:31:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0530E608FB
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 17:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231379AbhKCRe0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 3 Nov 2021 13:34:26 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:44272 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231381AbhKCReV (ORCPT
+        id S230326AbhKCRyB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 3 Nov 2021 13:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229697AbhKCRyA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 3 Nov 2021 13:34:21 -0400
-X-IronPort-AV: E=Sophos;i="5.87,206,1631545200"; 
-   d="scan'208";a="99097641"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 04 Nov 2021 02:31:43 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8A45B40B5157;
-        Thu,  4 Nov 2021 02:31:41 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 3 Nov 2021 13:54:00 -0400
+Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA77C061714;
+        Wed,  3 Nov 2021 10:51:23 -0700 (PDT)
+Received: by mail-ua1-x92e.google.com with SMTP id b17so6091629uas.0;
+        Wed, 03 Nov 2021 10:51:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y16TxmkBvfqZgNLIXU85g39fksG0Qn9oks7FAgvFiCM=;
+        b=fPXyM8mzP3xvv8wh3rn4V3uaO87BNrn0AJ9Qk+6md27hPqHI7elIBnRFfZrMbkrB8z
+         HMRAMWtnw0XtczVwAoKFJVJIdYOkvt8HQYEM8C6xTdZXiSzf4OZxmxoe6Y08fRhREPSJ
+         XIWi2Lh6dvIz44V28gaJTn+LjOAiatp6weuHgHr8HN783Bom+vt60CdU1nql8hJzFwAf
+         8xk0AzN3X2eOPziruIBW+zMsjC7zIG02FuAJFh5F++waTBxWkxxKZf6WCNIdprizOMbW
+         Xm+0CZZTDVOgSmjSd7lFoDAmPZFRD0BUunnY1+vhJaIeWPGb9aoKk/6xNIoKE9mP9EBy
+         QQOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y16TxmkBvfqZgNLIXU85g39fksG0Qn9oks7FAgvFiCM=;
+        b=6ed8Ak2NxFyuoGWkmmzeNtFP+9ujHdtv9ZDijobAHU4OlBvshZxm2U188Q9L5z5dK/
+         fmT/ex04l0kVE2zarxz6Gk/8lG7Elfd7l2NCv//B5gEChpJnmFfKPtdFfoqrVdAln8m4
+         Vdx1knm2xcNgXy7Ie0RYCeNGQa+ECDf+QyNhkWhDDtzdAl+8c5xuFWAZ0AYHNJk9BTQT
+         tCrJPQf0kyw2zxNfzg01+R5xXegX0poj4npcKcgJjwlm4Qgg8DyGl8Yl8Mxa4k89YgEV
+         dBiQH8zd+0AmJ+suvBt4VdJzBZ/TYADHMgH99ZORQq/Z5pVH8yItVNcCPamWLsS4mAIx
+         CISA==
+X-Gm-Message-State: AOAM532KKTYw+5sL9nIyLuKDlMc9GmQU6KRqXWs9JMN8H57Nx/BWTHb9
+        tx2NYG0H7boJX16/FijrcDVGygK40wCcgHTwII8=
+X-Google-Smtp-Source: ABdhPJx8cB1VYKTTJlveYA1FJ28sZ0zZeouC+gUZUYrWW2QvfiO2tYkKYYUUJqVe1q+ewdOqhm9/EvWuL40E8vwi7uo=
+X-Received: by 2002:ab0:6ca7:: with SMTP id j7mr39236673uaa.133.1635961882870;
+ Wed, 03 Nov 2021 10:51:22 -0700 (PDT)
+MIME-Version: 1.0
+References: <20211102225701.98944-1-Mr.Bossman075@gmail.com>
+ <20211102225701.98944-12-Mr.Bossman075@gmail.com> <CAOMZO5AxMXxDkNDqGJDhtepqSUxGRCWO+L=c67O==4fx66M7XQ@mail.gmail.com>
+ <c1610093-95ae-68d3-57ae-93b1bc9715d7@gmail.com> <5ebe48f5-7b9c-be99-d50c-65a056084b96@benettiengineering.com>
+In-Reply-To: <5ebe48f5-7b9c-be99-d50c-65a056084b96@benettiengineering.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Wed, 3 Nov 2021 14:51:12 -0300
+Message-ID: <CAOMZO5DHCYaxzSASKq6Bk8ALkiQeVjPOHOyk-pKYepJFJk6oFQ@mail.gmail.com>
+Subject: Re: [PATCH v2 11/13] mmc: sdhci-esdhc-imx: Add sdhc support for
+ i.MXRT series
+To:     Giulio Benetti <giulio.benetti@benettiengineering.com>
+List-Id: <soc.lore.kernel.org>
+Cc:     Jesse Taube <mr.bossman075@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Stefan Agner <stefan@agner.ch>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Abel Vesa <abel.vesa@nxp.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 3/3] serial: sh-sci: Add reset support for RZ/G2L SoC
-Date:   Wed,  3 Nov 2021 17:31:27 +0000
-Message-Id: <20211103173127.13701-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211103173127.13701-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211103173127.13701-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On RZ/G2L devices should be explicitly pulled out of reset for it
-to work. This patch adds support to read the "resets" property and
-performs deassert/assert when required.
+Hi Giulio,
 
-Also, propagate the error to the caller of sci_parse_dt() instead of
-returning NULL in case of failure.
+On Tue, Nov 2, 2021 at 8:30 PM Giulio Benetti
+<giulio.benetti@benettiengineering.com> wrote:
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-Hi Geert,
-For handling the resets I was in dual mind whether to perform
-reset based on compatible strings or soc-id, let me know your
-thoughts. Currently no SoC's use "renesas,sci" so using the same
-for performing the reset operation for SCI.
----
- drivers/tty/serial/sh-sci.c | 50 +++++++++++++++++++++++++++++++------
- 1 file changed, 43 insertions(+), 7 deletions(-)
+> If we add every SoC we will end up having a long list for every device
+> driver. At the moment it would be 7 parts:
+> 1) imxrt1020
+> 2) imxrt1024
+> .
+> .
+> .
+> 7) imxrt1170
+>
+> Is it ok anyway?
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 89ee43061d3a..a0f68b887e29 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -37,6 +37,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
-+#include <linux/reset.h>
- #include <linux/scatterlist.h>
- #include <linux/serial.h>
- #include <linux/serial_sci.h>
-@@ -3203,23 +3204,58 @@ static const struct of_device_id of_sci_match[] = {
- };
- MODULE_DEVICE_TABLE(of, of_sci_match);
- 
-+static void sci_reset_control_assert(void *data)
-+{
-+	reset_control_assert(data);
-+}
-+
- static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
- 					  unsigned int *dev_id)
- {
- 	struct device_node *np = pdev->dev.of_node;
-+	const struct of_device_id *of_id;
- 	struct plat_sci_port *p;
- 	struct sci_port *sp;
- 	const void *data;
- 	int id;
- 
- 	if (!IS_ENABLED(CONFIG_OF) || !np)
--		return NULL;
-+		return ERR_PTR(-EINVAL);
-+
-+	of_id = of_match_device(of_sci_match, &pdev->dev);
-+	if (!of_id)
-+		return ERR_PTR(-EINVAL);
- 
--	data = of_device_get_match_data(&pdev->dev);
-+	if (!strcmp(of_id->compatible, "renesas,scif-r9a07g044") ||
-+	    !strcmp(of_id->compatible, "renesas,sci")) {
-+		struct reset_control *rstc;
-+		int ret;
-+
-+		rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
-+		if (IS_ERR(rstc)) {
-+			dev_err(&pdev->dev, "Error: missing reset ctrl\n");
-+			return ERR_PTR(PTR_ERR(rstc));
-+		}
-+
-+		ret = reset_control_deassert(rstc);
-+		if (ret) {
-+			dev_err(&pdev->dev, "failed to deassert %d\n", ret);
-+			return ERR_PTR(ret);
-+		}
-+
-+		ret = devm_add_action_or_reset(&pdev->dev, sci_reset_control_assert, rstc);
-+		if (ret) {
-+			dev_err(&pdev->dev, "failed to register assert devm action, %d\n",
-+				ret);
-+			return ERR_PTR(ret);
-+		}
-+	}
-+
-+	data = of_id->data;
- 
- 	p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
- 	if (!p)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	/* Get the line number from the aliases node. */
- 	id = of_alias_get_id(np, "serial");
-@@ -3227,11 +3263,11 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
- 		id = ffz(sci_ports_in_use);
- 	if (id < 0) {
- 		dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
--		return NULL;
-+		return ERR_PTR(-EINVAL);
- 	}
- 	if (id >= ARRAY_SIZE(sci_ports)) {
- 		dev_err(&pdev->dev, "serial%d out of range\n", id);
--		return NULL;
-+		return ERR_PTR(-EINVAL);
- 	}
- 
- 	sp = &sci_ports[id];
-@@ -3318,8 +3354,8 @@ static int sci_probe(struct platform_device *dev)
- 
- 	if (dev->dev.of_node) {
- 		p = sci_parse_dt(dev, &dev_id);
--		if (p == NULL)
--			return -EINVAL;
-+		if (IS_ERR(p))
-+			return PTR_ERR(p);
- 	} else {
- 		p = dev->dev.platform_data;
- 		if (p == NULL) {
--- 
-2.17.1
-
+As this patch adds the support for imxrt1050, I would go with
+"fsl,imxrt1050-usdhc" for now.
