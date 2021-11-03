@@ -2,156 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40877C43217
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 02:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB4BC433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 07:23:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2290260F39
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 02:49:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BBF72603E9
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 07:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbhKCCvk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Nov 2021 22:51:40 -0400
-Received: from smtpcmd11117.aruba.it ([62.149.156.117]:35243 "EHLO
-        smtpcmd11117.aruba.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbhKCCvg (ORCPT
+        id S231983AbhKCH0T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 3 Nov 2021 03:26:19 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.221]:33674 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232033AbhKCH0T (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Nov 2021 22:51:36 -0400
-Received: from smtpclient.apple ([146.241.216.221])
-        by Aruba Outgoing Smtp  with ESMTPA
-        id i6KdmWeslumo4i6KdmXOCm; Wed, 03 Nov 2021 03:48:58 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
-        t=1635907738; bh=vn0en0EIlHgkPwPZZERx136vgq1/nmIMJ6ZT4dkZqag=;
-        h=Content-Type:From:Mime-Version:Subject:Date:To;
-        b=J9naTf+IAohR2xOuGFgEzMfooC6CT8nvH3rCcxEWgk4ynOkf9Na/5Aqb8CB1TYo6O
-         E72mOAH0K6Haxm+L3WXrEe/q9WMjDSlZd5pngARGRVwsq1+tUy5onszIqxfCDTHDSw
-         FJqY5awdjZXgfm/Z33r99rSTvYbfrSaei0yvkgo895UNDUgzzsfwvlsL4GZT5zf8g4
-         mlgBpKAQEB6xb/Nih89L56sQBD2benwgBCFHMJXdhbWd1w9XRNB2i+f+KJ5UaLAXax
-         xyAM63MAPZlAmH/xCTEiZZWeY0G7t6TrNo2hUg29dncGJPIvgBy6Z765r06VGFHqS3
-         /ZU34wbBbftfA==
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From:   Giulio Benetti <giulio.benetti@benettiengineering.com>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH 08/13] dt-bindings: serial: fsl-lpuart: add i.MXRT compatible
-Date:   Wed, 3 Nov 2021 03:48:54 +0100
-Message-Id: <D0A3E11F-FEDE-4B2D-90AB-63DFC245A935@benettiengineering.com>
-References: <CAL_JsqJR6EfDsmwPmXxgdaC1GB7CLGYpjmDnOkD_f53Frsq6LA@mail.gmail.com>
-List-Id: <soc.lore.kernel.org>
-Cc:     Jesse Taube <mr.bossman075@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Stefan Agner <stefan@agner.ch>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        SoC Team <soc@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Abel Vesa <abel.vesa@nxp.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Leonard Crestez <leonard.crestez@nxp.com>,
-        Anson Huang <b20788@freescale.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel@vger.kernel.org,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-In-Reply-To: <CAL_JsqJR6EfDsmwPmXxgdaC1GB7CLGYpjmDnOkD_f53Frsq6LA@mail.gmail.com>
-To:     Rob Herring <robh@kernel.org>
-X-Mailer: iPhone Mail (18H17)
-X-CMAE-Envelope: MS4wfATmIMv5GA3j34nA+iOgc1h+7L3tNW3abl9oCE6PZB8OMXI5H3mb85Frc03sGYy21FlO+oJkV4yTBbwgW5Rj/0du+RvtJQeN4d3pTWoUGmPhXXFYvLcV
- QNuPaJZ09aPj0+mshEem7c3H/dDtmBF6Js+GbUpl3X77ZVu54p7RysYHkjD72LZmj1H9nrKMau+2FU6gAH8OfwkJcqu+K/QuRnCIGQyGPr3XRSCMWIAeXcnh
- 14cBS5S+yv55Rx3kGkl8t/GASJe4FVaWXcwh2TmSlklGOJv0BnitVeN15pb+g3w02oFJrUgKwPJ60fOGTuEBSmuaWhDSUp0BnITKWVtU8NWjCdg22E/rK3ua
- UvuthcK4Gt+pMHdeNuelu7OQNeUa4osFW/xmS2SqnXAjQ/zXPIoKDZ9wYTW69+lVlUjcEQaQSIL5cDlAWhgyLYe58s0lVB+PUteYTjf5XPopnlNbF4BlhSUn
- 1703ZYebBfSnDYcMuwywTgcke/l6oZOuiSXUAER9Kw+NQDUTm6vTA1zd63V6/2mI8V6fIuErDfUgGhwidKoWGZgy8w0lMux5lnPF152l3b+t+PRXsgoo8Fup
- vyE5oPOG87RvxafyxS+PGYtiDRSgb5g6gBK+6HKCBnCITIepAP0MxaYELLdoZIxHd2jQNXlyEXbPoapsLfCN839NHGj5xtHTF+RdCX6xRJLv7QbeBGv2lxdk
- WQuMJJl1glCO71l/9HImQMgssA4qHKsCwrUS4eVH4UwdhuKJRRfzXYZJNepCANMb5jUUomkTVI3BMVMYPLFcPn2lylrtW6uuvCzwHaPbLJuHEchajyGi9mPy
- cNs/j1wljxUbrkXF2DSbjxuGxED1hrUDrV4auoDE5lUYgSroodiTneWziQtrRVB/JzYl4C6iYazCH18QbLDLZc0W24SBjADnoy2c3JaRoN05Me4ZYOFsc4Lp
- Rc/MtcuLY1/6kPE7+x4/Pu0oLxAPRi9gvMjOAn+TcU4p3/lAW2Cj8/Kzy9ZtRUlfltDpjFZJDqdxAgCh7oCj9sIreifIVrSwfCx6JcENijeCT6gpQ4OzTaxq
- mwcnYVUpvxOA21nMdUUvMEJlVoadyglqlr9tgcp/tZNlXbX2jPakmS1Bx/8Q/gOFJTP6kTQF5NkXBVxbUWxgSoRnllcDGy2LlCt2WmbbdKWGh7d8jt98gwJD
- czQA9XU4BZVnndLpD6YTF4YbKlfBqXsPIzN57bT3ahyvfyxxMEVyQ+no+RY503EiVcfZf3vMJa6jb/9lw3xxrA==
+        Wed, 3 Nov 2021 03:26:19 -0400
+X-Greylist: delayed 48465 seconds by postgrey-1.27 at vger.kernel.org; Wed, 03 Nov 2021 03:26:18 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1635924219;
+    s=strato-dkim-0002; d=mades.net;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=mgLDG833zDLeXeGtebw3f5XHKLLDcf03m74r2FIUXxg=;
+    b=PzKmUVtZPQJz/zTKiLxk8HsvnYg8ZFq7ohayQCtyc+sga9PVjonDrXB/NydTAe6n1A
+    AZNMb76/iRpiqKDbtQKYM8UcMPGrZSxyfyON6szJxvkDFE3yH+YVstwYpkktxtQJxSpU
+    YgZ53Mshq5CouHep2rJg5hfD68RcdKEliKgjrkUbZZZtKabM9rlLxBIuvuOI2dy+qvwY
+    ImsgOZFokgRlArzaEJFHUDSwTQAGSoaXfXpYP9BcGMIUNHabxLoW6Ceo8krkrfG1rzxp
+    D7OfcXbGEfmGokFcN1vnGIsG7w5y7CngByRIu0jX0FCYb+EW8tQPC9LxoFfEL20Xslsq
+    jhPg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JmMHfUWmW/JCZ5q3rSbjoqaGiJoG2nOuw/BEppjnAC9QlFFS7UbO3fgyYpMDJqZr"
+X-RZG-CLASS-ID: mo00
+Received: from oxapp04-01.back.ox.d0m.de
+    by smtp-ox.front (RZmta 47.34.1 AUTH)
+    with ESMTPSA id f02274xA37Ndtbj
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Wed, 3 Nov 2021 08:23:39 +0100 (CET)
+Date:   Wed, 3 Nov 2021 08:23:38 +0100 (CET)
+From:   Jochen Mades <jochen@mades.net>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Message-ID: <527160377.1225435.1635924219001@webmail.strato.com>
+In-Reply-To: <YYGKbfvFki8VN4HN@kroah.com>
+References: <731e2516-9703-8c9a-7e56-e7e7b362de94@mades.net>
+ <YYGKbfvFki8VN4HN@kroah.com>
+Subject: Re: Extending serial port linux driver to toggle RS485 direction
+ pin (GPIO)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.5-Rev26
+X-Originating-Client: open-xchange-appsuite
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Rob, Jesse, All,
+Hi Greg,
 
-> Il giorno 3 nov 2021, alle ore 01:49, Rob Herring <robh@kernel.org> ha scr=
-itto:
->=20
-> =EF=BB=BFOn Mon, Nov 1, 2021 at 6:34 PM Jesse Taube <mr.bossman075@gmail.c=
-om> wrote:
->>=20
->>=20
->>=20
->>> On 11/1/21 16:13, Rob Herring wrote:
->>> On Sun, Oct 24, 2021 at 11:40:22AM -0400, Jesse Taube wrote:
->>>> Add i.MXRT documentation for compatible string.
->>>>=20
->>>> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
->>>> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
->>>> ---
->>>> Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 1 +
->>>> 1 file changed, 1 insertion(+)
->>>>=20
->>>> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b=
-/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
->>>> index a90c971b4f1f..4b4340def2aa 100644
->>>> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
->>>> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
->>>> @@ -21,6 +21,7 @@ properties:
->>>>           - fsl,ls1028a-lpuart
->>>>           - fsl,imx7ulp-lpuart
->>>>           - fsl,imx8qm-lpuart
->>>> +          - fsl,imxrt-lpuart
->>>=20
->>> Actually, 'rt' is not a single part is it? If the variations are same
->>> die, but fused off then no need to distinguish. Otherwise, these should
->>> be SoC specific.
->>>=20
->> I don't exactly know what "but fused off" means I would assume
->> disconnected but on-die?
->=20
-> Right. Or not pinned out is another possibility.
->=20
->> The imxrtxxx is a series that has the same UART
->> controller across them. Should I add ACK?
->=20
-> Looking at the errata docs briefly, there's at least 2 die as some of
-> the errata docs give the mask id. So they aren't necessarily 'the
-> same'.
+thanks for your fast reply. I checked the sources you mentioned below, that helps a bit..
 
-Thank you for pointing, we=E2=80=99ve missed this particular.
+Could you please give me some more background what you mean with your question:
+> You could do much the same in the pl011_rs485_tx_start() function when
+> SER_RS485_RX_DURING_TX and SER_RS485_RTS_ON_SEND are checked, right?
 
-> You want the compatible strings to be specific enough to handle
-> any differences or errata. If you only care about the imxrt1050, then
-> I'd just use that and move on.
+Is there already a concept for RS485 drivers? ...or where to find "pl011_rs485_tx_start()"?
 
-We plan to add from imxrt1020 to imxrt1170 and eventual new SoC, so we defin=
-itely need separate
-.compatible strings.
+Bests
+Jochen
 
-@Jesse, can you please update with =E2=80=98fsl,imxrt1050=E2=80=9D?
 
-> Otherwise, maybe someone from NXP wants
-> to comment?
-
-Any NXP comment is welcome!
-
-Best regards
-Giulio Benetti
-Benetti engineering sas
-
->=20
-> Rob
-
+> On 02/11/2021 19:58 Greg KH <gregkh@linuxfoundation.org> wrote:
+> 
+>  
+> On Tue, Nov 02, 2021 at 06:55:56PM +0100, Jochen wrote:
+> > Hello,
+> > 
+> > I have a RS485 hardware shield connected to the hardware uart of a raspberry PI3, where you have to toggle the RS485 driver DIRECTION-pin from within your software during write-commands. The DIR-Pin is connected to a GPIO pin of the PI.
+> > 
+> > As I do not want to do that in every application software, I thought it could be a good idea to enhance the serial-port driver (locally on my PI) with that functionality. Looking to the sources of amba-pl011.c I thought the "pl011_write"-function could be the right place to do so....but to be honest it seems not to work
+> > 
+> > Could you please give me a hint where to do that best in the serial port driver? (or is there already a RS485 driver with configurable Dir-GPIO-pin).
+> > Is there a documentation of the serial-port architecture available which could help me to solve my problem?
+> 
+> Other drivers do this today, using gpio pins for this.  One example is
+> the drivers/tty/serial/ar933x_uart.c driver (look at the
+> ar933x_uart_tx_chars() function)
+> 
+> You could do much the same in the pl011_rs485_tx_start() function when
+> SER_RS485_RX_DURING_TX and SER_RS485_RTS_ON_SEND are checked, right?
+> 
+> As for making it "generic", I think there are other drivers that allow
+> the gpio pins to be selected as part of their device tree, look in the
+> drivers/tty/serial/ directory for the use of gpio values in lots of
+> different drivers.
+> 
+> hope this helps,
+> 
+> greg k-h
