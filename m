@@ -2,61 +2,48 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD83FC433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 09:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 917F8C4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 12:35:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9E6B061073
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 09:13:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 69F1761108
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 12:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231716AbhKCJPi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 3 Nov 2021 05:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbhKCJPi (ORCPT
+        id S231983AbhKCMi2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 3 Nov 2021 08:38:28 -0400
+Received: from mail-pf1-f171.google.com ([209.85.210.171]:39933 "EHLO
+        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231993AbhKCMiL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 3 Nov 2021 05:15:38 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB47C061714;
-        Wed,  3 Nov 2021 02:13:01 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id z20so6591730edc.13;
-        Wed, 03 Nov 2021 02:13:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xKAL9xp/+xMBb6SWWdbM18jjZhDpz2vLJFJj9z7WZW0=;
-        b=VhiZ4M005IQJVGme3IaI5C/e6/VHSTZ8OeA37oUhiPODQeRbZoBlkbOIt5dnzjkDP2
-         czOsVsaV0BcyFBGY5nAO0Ew8HOjcDbJ+dR0GK0Toncies9mF66baSnNp1HEESaeENdYm
-         kULAuvWCQmNHaimi1v+rmU5MSaqzxoPSSOcgII1Qv88sl8yH+NlRItTwPrPZI46ELr16
-         +v3Qvt0C4gxXRtKO69r6aZlTi5ln6jnv4aFlRmfo5LyNlr+RsWy6fxLT+MXBREXzWTmW
-         uuMZVQ5Kdnpuci8unVq50JyTTClXZFszh7yjqvafDmNja5cg4YWeaUKjlZLuUqkYcfTX
-         23qw==
+        Wed, 3 Nov 2021 08:38:11 -0400
+Received: by mail-pf1-f171.google.com with SMTP id x64so2161555pfd.6;
+        Wed, 03 Nov 2021 05:35:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xKAL9xp/+xMBb6SWWdbM18jjZhDpz2vLJFJj9z7WZW0=;
-        b=bJOsbl6PqJiNJANzdDJdiW7Tw9bvAlyUvKNJovgCErLl73UgibtwfWBoSgpNICSCBi
-         1y9AyDiv1zmsiTeYgyEWeMbSelY1OlXVui3c0HxxKfWPLUT7QrsMynVqWzyZZVsfmGjG
-         YUk3Q3dVRAYv2Q0ZH8Z8A35h7hibNlmBjpL/gwRIzX5GzIoQqRZrb02zt3M28uzjVzlK
-         sIWCbwLtu34ZVCrnzQWLJLAmkeWDhMmlfzr52ljJQ6g3LkaQt4y0LNyOC2OmzK0nU5qY
-         oEGmnXpKvWoq8w1YCB1QvTMNnL39lTCvhxfZHGKfsugbw9cYiIiTuhY3ZKDURnf5zLqI
-         LPpw==
-X-Gm-Message-State: AOAM531oxHSsOvQ9BJC9BsFSHj4vdEfHCURWSrS+0ULkkMLCvBghWOxn
-        NTpHD7qp6YlF6js8HHj4RhWL9MBW2aYPh/JXUaQ=
-X-Google-Smtp-Source: ABdhPJw3gEKvcXzWscXHSKOeQHEdUeowhKhWDUie0k1xHof3mJ6WZb1bBy0j4iaHfePYZ1ng5He8bLypLuGuXbzyj0A=
-X-Received: by 2002:a17:907:7601:: with SMTP id jx1mr52699100ejc.69.1635930780351;
- Wed, 03 Nov 2021 02:13:00 -0700 (PDT)
+        bh=JE/2edLy6usLclELy9HdQo+SFIip3f5Fv/danfH38Us=;
+        b=MqdddXuI5fFJnjftC8vLsoy2ixpIPYuFiM8V4oraxQUT2habCa1/OyVh9Or5gfhlsh
+         54/3R9jpxylyL59NOJYqx8AUw6mSbJYhw3biuhKm2adWmuVZACknH8ZNuHnUZ/0uG02b
+         OmCWlvN9TX3iMY7IGv/WKbv/v474vSrqB5kS2c3wn0ULhRtAyJOknq+t95nW0Lk3Zy95
+         LwBc1lj4j6oz9UtSbAf4l+osDv3bZAC0xQrNf+PSeygV8MS7manzlCFKNnK9bygpN0nV
+         urkvQwnd3LfAxkZ1ViFujKVTKGi7EUHwsYYGz9KDcDPuWp7eSZpDHhlHPFqipgi5r+y/
+         CwVA==
+X-Gm-Message-State: AOAM5311AHT7zBa2IzVqTifPUN7BErbjkrw5HebaKSMTVY+NoFg2980c
+        p0zTd45IlXYqMXRDyQCC7ZeMNrxMoUunQXhJGPU=
+X-Google-Smtp-Source: ABdhPJxYbn79vSJ2NRtioaA8LqjYkpfmXUk5eC68C/FQfgWNHpS1VH42PtOSnEicWrsOvNwI2un3ZgJ4IhQvUwx3oI0=
+X-Received: by 2002:a63:2d46:: with SMTP id t67mr32735713pgt.15.1635942934696;
+ Wed, 03 Nov 2021 05:35:34 -0700 (PDT)
 MIME-Version: 1.0
 References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-13-kernel@esmil.dk>
- <CAHp75VdmnnrisuP00W0KYta0KgmC+fu3WMxm959dt5X1kpiKTw@mail.gmail.com> <CANBLGczn8+po09wF_uEvvU8tLCn0ahY+Gkj9JJLxOcj1LC1aLA@mail.gmail.com>
-In-Reply-To: <CANBLGczn8+po09wF_uEvvU8tLCn0ahY+Gkj9JJLxOcj1LC1aLA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 3 Nov 2021 11:12:24 +0200
-Message-ID: <CAHp75VetDHt9G+PT77_py8N4Z06j7oytnXgQq8zss_xZBBeEng@mail.gmail.com>
+ <CAHp75VdmnnrisuP00W0KYta0KgmC+fu3WMxm959dt5X1kpiKTw@mail.gmail.com>
+ <CANBLGczn8+po09wF_uEvvU8tLCn0ahY+Gkj9JJLxOcj1LC1aLA@mail.gmail.com> <CAHp75VetDHt9G+PT77_py8N4Z06j7oytnXgQq8zss_xZBBeEng@mail.gmail.com>
+In-Reply-To: <CAHp75VetDHt9G+PT77_py8N4Z06j7oytnXgQq8zss_xZBBeEng@mail.gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+Date:   Wed, 3 Nov 2021 13:35:23 +0100
+Message-ID: <CANBLGczTnf1UrRt=d-czaG-CE=Rwb1x6MV4c97ia+P3u5Mt8Jg@mail.gmail.com>
 Subject: Re: [PATCH v3 12/16] pinctrl: starfive: Add pinctrl driver for
  StarFive SoCs
-To:     Emil Renner Berthing <kernel@esmil.dk>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
         devicetree <devicetree@vger.kernel.org>,
         linux-clk <linux-clk@vger.kernel.org>,
@@ -91,114 +78,71 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 2, 2021 at 10:35 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+On Wed, 3 Nov 2021 at 10:13, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> On Tue, Nov 2, 2021 at 10:35 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > On Tue, 2 Nov 2021 at 21:02, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > On Tue, Nov 2, 2021 at 6:50 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
 >
-> On Tue, 2 Nov 2021 at 21:02, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Tue, Nov 2, 2021 at 6:50 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-
-...
-
-> > > +static inline struct device *starfive_dev(const struct starfive_pinctrl *sfp)
-> > > +{
-> > > +       return sfp->gc.parent;
-> > > +}
-> > > +
-> >
-> > This seems useless helper. You may do what it's doing just in place.
-> > It will save 5 LOCs.
+> > > > +       switch (trigger) {
 >
-> I don't mind removing it, I just think it's easier to read when we're
-> explicit that all we want is a dev pointer, and we don't suddenly need
-> to know the parent of the gpio chip in all the pinmux/pinconf
-> callbacks.
-
-I don't really see the gain of it.
-
-...
-
-> > > +static int starfive_gpio_get_direction(struct gpio_chip *gc, unsigned int gpio)
-> > > +{
-> > > +       struct starfive_pinctrl *sfp = container_of(gc, struct starfive_pinctrl, gc);
-> > > +       void __iomem *doen = sfp->base + GPON_DOEN_CFG + 8 * gpio;
-> > > +
-> > > +       /* return GPIO_LINE_DIRECTION_OUT (0) only if doen == GPO_ENABLE (0) */
-> > > +       return readl_relaxed(doen) != GPO_ENABLE;
+> > > > +       default:
+> > >
+> > > > +               irq_set_handler_locked(d, handle_bad_irq);
+> > >
+> > > Why? You have it already in ->probe(), what's the point?
 > >
-> > I believe the idea was to return the predefined values for the direction.
+> > So last time you asked about this, I explained a situation where
+> > userspace first grabs a GPIO, set the interrupt to edge triggered, and
+> > then later loads a driver that requests an unsupported IRQ type.
 >
-> You mean this?
->   return readl_relaxed(doen) == GPO_ENABLE ? GPIO_LINE_DIRECTION_OUT :
-> GPIO_LINE_DIRECTION_IN;
+> I didn't get this scenario. Is it real?
 
-For example, or with if (...) return _OUT; return _IN;'
+No, it's totally made up, but I mean we even have tools like fuzzing
+to help us find bugs that would never happen in real use cases.
 
-> > > +}
-
-...
-
-> > > +       if (trigger & IRQ_TYPE_EDGE_BOTH)
-> > > +               irq_set_handler_locked(d, handle_edge_irq);
-> > > +       else if (trigger & IRQ_TYPE_LEVEL_MASK)
-> > > +               irq_set_handler_locked(d, handle_level_irq);
-> >
-> > Usually we don't assign this twice, so it should be after the switch.
-> >
-> > > +       switch (trigger) {
-
-> > > +       default:
-> >
-> > > +               irq_set_handler_locked(d, handle_bad_irq);
-> >
-> > Why? You have it already in ->probe(), what's the point?
+> > Then
+> > I'd like to set the handler back to handle_bad_irq so we don't get
+> > weird interrupts, but maybe now you know a reason why that doesn't
+> > matter or can't happen?
 >
-> So last time you asked about this, I explained a situation where
-> userspace first grabs a GPIO, set the interrupt to edge triggered, and
-> then later loads a driver that requests an unsupported IRQ type.
+> In ->probe() you set _default_ handler to bad(), what do you mean by
+> 'set the handler back to bad()'? How is it otherwise if you free an
+> interrupt?
 
-I didn't get this scenario. Is it real?
+It might not be, but when not sure I thought it better to error on the
+safe side.
 
-> Then
-> I'd like to set the handler back to handle_bad_irq so we don't get
-> weird interrupts, but maybe now you know a reason why that doesn't
-> matter or can't happen?
-
-In ->probe() you set _default_ handler to bad(), what do you mean by
-'set the handler back to bad()'? How is it otherwise if you free an
-interrupt?
-
-So, please elaborate with call traces what the scenario / use case you
-are talking about. If it's true what you are saying, we have a
-situation (plenty of GPIO drivers don't do what you are suggesting
-here).
-
-> > > +               return -EINVAL;
-> > > +       }
-
-...
-
-> > > +       ret = reset_control_deassert(rst);
-> > > +       if (ret)
-> > > +               return dev_err_probe(dev, ret, "could not deassert resetd\n");
-> >
-> > > +       ret = devm_pinctrl_register_and_init(dev, &starfive_desc, sfp, &sfp->pctl);
-> > > +       if (ret)
-> >
-> > I don't see who will assert reset here.
+> So, please elaborate with call traces what the scenario / use case you
+> are talking about. If it's true what you are saying, we have a
+> situation (plenty of GPIO drivers don't do what you are suggesting
+> here).
 >
-> No, so originally this driver would first assert and then deassert
-> reset. I decided against that because in all likelyhood earlier boot
-> stages would have set pinmux up for a serial port, and we don't want
-> to interrupt the serial debug output. The only reason I make sure the
-> reset line is deasserted is in case someone makes a really minimal
-> bootloader that just does the absolute minimal to load a Linux kernel
-> and doesn't even log any anything.
+> > > > +               return -EINVAL;
+> > > > +       }
 >
-> By the same token we also don't want to assert reset on error in case
-> it resets pin muxing for the the serial line that was supposed to log
-> the error.
+> ...
+>
+> > > > +       ret = reset_control_deassert(rst);
+> > > > +       if (ret)
+> > > > +               return dev_err_probe(dev, ret, "could not deassert resetd\n");
+> > >
+> > > > +       ret = devm_pinctrl_register_and_init(dev, &starfive_desc, sfp, &sfp->pctl);
+> > > > +       if (ret)
+> > >
+> > > I don't see who will assert reset here.
+> >
+> > No, so originally this driver would first assert and then deassert
+> > reset. I decided against that because in all likelyhood earlier boot
+> > stages would have set pinmux up for a serial port, and we don't want
+> > to interrupt the serial debug output. The only reason I make sure the
+> > reset line is deasserted is in case someone makes a really minimal
+> > bootloader that just does the absolute minimal to load a Linux kernel
+> > and doesn't even log any anything.
+> >
+> > By the same token we also don't want to assert reset on error in case
+> > it resets pin muxing for the the serial line that was supposed to log
+> > the error.
+>
+> Perhaps comment in the code explaining this?
 
-Perhaps comment in the code explaining this?
-
--- 
-With Best Regards,
-Andy Shevchenko
+Sure.
