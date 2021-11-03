@@ -2,76 +2,203 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFABC433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 08:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD83FC433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 09:13:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5EB81608FB
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 08:24:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E6B061073
+	for <linux-serial@archiver.kernel.org>; Wed,  3 Nov 2021 09:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbhKCI0i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 3 Nov 2021 04:26:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45876 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230463AbhKCI0i (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 3 Nov 2021 04:26:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A4BE760E9B;
-        Wed,  3 Nov 2021 08:24:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1635927842;
-        bh=d4q5/VSk1jcRA03Odg1sNBNtMM6Yokux3hJLliBMD9c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k3jvM3QovJHGd3Cmj4qVscpsc/JznHCxa2mnYUVkV5tBl/mxCDAG6k+Nh1ceD+Wnr
-         A7/UUNKfgTwNvQqi05sQLGlZz6vKYifOQ5NrkbWcbLlVE8G6D8s11w1iDAnVHqCaF2
-         HbkF5xQNTqAjqdRQUFAV9Zc5bw4o0LFpaQFjzWQ4=
-Date:   Wed, 3 Nov 2021 09:23:54 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jochen Mades <jochen@mades.net>
-Cc:     linux-serial@vger.kernel.org
-Subject: Re: Extending serial port linux driver to toggle RS485 direction pin
- (GPIO)
-Message-ID: <YYJHGhzdnwlu6y5k@kroah.com>
-References: <731e2516-9703-8c9a-7e56-e7e7b362de94@mades.net>
- <YYGKbfvFki8VN4HN@kroah.com>
- <527160377.1225435.1635924219001@webmail.strato.com>
+        id S231716AbhKCJPi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 3 Nov 2021 05:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230463AbhKCJPi (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 3 Nov 2021 05:15:38 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB47C061714;
+        Wed,  3 Nov 2021 02:13:01 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id z20so6591730edc.13;
+        Wed, 03 Nov 2021 02:13:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xKAL9xp/+xMBb6SWWdbM18jjZhDpz2vLJFJj9z7WZW0=;
+        b=VhiZ4M005IQJVGme3IaI5C/e6/VHSTZ8OeA37oUhiPODQeRbZoBlkbOIt5dnzjkDP2
+         czOsVsaV0BcyFBGY5nAO0Ew8HOjcDbJ+dR0GK0Toncies9mF66baSnNp1HEESaeENdYm
+         kULAuvWCQmNHaimi1v+rmU5MSaqzxoPSSOcgII1Qv88sl8yH+NlRItTwPrPZI46ELr16
+         +v3Qvt0C4gxXRtKO69r6aZlTi5ln6jnv4aFlRmfo5LyNlr+RsWy6fxLT+MXBREXzWTmW
+         uuMZVQ5Kdnpuci8unVq50JyTTClXZFszh7yjqvafDmNja5cg4YWeaUKjlZLuUqkYcfTX
+         23qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xKAL9xp/+xMBb6SWWdbM18jjZhDpz2vLJFJj9z7WZW0=;
+        b=bJOsbl6PqJiNJANzdDJdiW7Tw9bvAlyUvKNJovgCErLl73UgibtwfWBoSgpNICSCBi
+         1y9AyDiv1zmsiTeYgyEWeMbSelY1OlXVui3c0HxxKfWPLUT7QrsMynVqWzyZZVsfmGjG
+         YUk3Q3dVRAYv2Q0ZH8Z8A35h7hibNlmBjpL/gwRIzX5GzIoQqRZrb02zt3M28uzjVzlK
+         sIWCbwLtu34ZVCrnzQWLJLAmkeWDhMmlfzr52ljJQ6g3LkaQt4y0LNyOC2OmzK0nU5qY
+         oEGmnXpKvWoq8w1YCB1QvTMNnL39lTCvhxfZHGKfsugbw9cYiIiTuhY3ZKDURnf5zLqI
+         LPpw==
+X-Gm-Message-State: AOAM531oxHSsOvQ9BJC9BsFSHj4vdEfHCURWSrS+0ULkkMLCvBghWOxn
+        NTpHD7qp6YlF6js8HHj4RhWL9MBW2aYPh/JXUaQ=
+X-Google-Smtp-Source: ABdhPJw3gEKvcXzWscXHSKOeQHEdUeowhKhWDUie0k1xHof3mJ6WZb1bBy0j4iaHfePYZ1ng5He8bLypLuGuXbzyj0A=
+X-Received: by 2002:a17:907:7601:: with SMTP id jx1mr52699100ejc.69.1635930780351;
+ Wed, 03 Nov 2021 02:13:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <527160377.1225435.1635924219001@webmail.strato.com>
+References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-13-kernel@esmil.dk>
+ <CAHp75VdmnnrisuP00W0KYta0KgmC+fu3WMxm959dt5X1kpiKTw@mail.gmail.com> <CANBLGczn8+po09wF_uEvvU8tLCn0ahY+Gkj9JJLxOcj1LC1aLA@mail.gmail.com>
+In-Reply-To: <CANBLGczn8+po09wF_uEvvU8tLCn0ahY+Gkj9JJLxOcj1LC1aLA@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 3 Nov 2021 11:12:24 +0200
+Message-ID: <CAHp75VetDHt9G+PT77_py8N4Z06j7oytnXgQq8zss_xZBBeEng@mail.gmail.com>
+Subject: Re: [PATCH v3 12/16] pinctrl: starfive: Add pinctrl driver for
+ StarFive SoCs
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Huan Feng <huan.feng@starfivetech.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A: http://en.wikipedia.org/wiki/Top_post
-Q: Were do I find info about this thing called top-posting?
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+On Tue, Nov 2, 2021 at 10:35 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+>
+> On Tue, 2 Nov 2021 at 21:02, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Tue, Nov 2, 2021 at 6:50 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
 
-A: No.
-Q: Should I include quotations after my reply?
+...
 
-http://daringfireball.net/2007/07/on_top
+> > > +static inline struct device *starfive_dev(const struct starfive_pinctrl *sfp)
+> > > +{
+> > > +       return sfp->gc.parent;
+> > > +}
+> > > +
+> >
+> > This seems useless helper. You may do what it's doing just in place.
+> > It will save 5 LOCs.
+>
+> I don't mind removing it, I just think it's easier to read when we're
+> explicit that all we want is a dev pointer, and we don't suddenly need
+> to know the parent of the gpio chip in all the pinmux/pinconf
+> callbacks.
 
-On Wed, Nov 03, 2021 at 08:23:38AM +0100, Jochen Mades wrote:
-> Hi Greg,
-> 
-> thanks for your fast reply. I checked the sources you mentioned below, that helps a bit..
-> 
-> Could you please give me some more background what you mean with your question:
-> > You could do much the same in the pl011_rs485_tx_start() function when
-> > SER_RS485_RX_DURING_TX and SER_RS485_RTS_ON_SEND are checked, right?
-> 
-> Is there already a concept for RS485 drivers?
+I don't really see the gain of it.
 
-Yes, RS485 drivers control lines like you are looking for in order to
-properly handle the protocol requirements.
+...
 
-> ...or where to find "pl011_rs485_tx_start()"?
+> > > +static int starfive_gpio_get_direction(struct gpio_chip *gc, unsigned int gpio)
+> > > +{
+> > > +       struct starfive_pinctrl *sfp = container_of(gc, struct starfive_pinctrl, gc);
+> > > +       void __iomem *doen = sfp->base + GPON_DOEN_CFG + 8 * gpio;
+> > > +
+> > > +       /* return GPIO_LINE_DIRECTION_OUT (0) only if doen == GPO_ENABLE (0) */
+> > > +       return readl_relaxed(doen) != GPO_ENABLE;
+> >
+> > I believe the idea was to return the predefined values for the direction.
+>
+> You mean this?
+>   return readl_relaxed(doen) == GPO_ENABLE ? GPIO_LINE_DIRECTION_OUT :
+> GPIO_LINE_DIRECTION_IN;
 
-Look in the kernel source tree for that function, that's in the driver
-you were looking to modify, right?
+For example, or with if (...) return _OUT; return _IN;'
 
-thanks,
+> > > +}
 
-greg k-h
+...
+
+> > > +       if (trigger & IRQ_TYPE_EDGE_BOTH)
+> > > +               irq_set_handler_locked(d, handle_edge_irq);
+> > > +       else if (trigger & IRQ_TYPE_LEVEL_MASK)
+> > > +               irq_set_handler_locked(d, handle_level_irq);
+> >
+> > Usually we don't assign this twice, so it should be after the switch.
+> >
+> > > +       switch (trigger) {
+
+> > > +       default:
+> >
+> > > +               irq_set_handler_locked(d, handle_bad_irq);
+> >
+> > Why? You have it already in ->probe(), what's the point?
+>
+> So last time you asked about this, I explained a situation where
+> userspace first grabs a GPIO, set the interrupt to edge triggered, and
+> then later loads a driver that requests an unsupported IRQ type.
+
+I didn't get this scenario. Is it real?
+
+> Then
+> I'd like to set the handler back to handle_bad_irq so we don't get
+> weird interrupts, but maybe now you know a reason why that doesn't
+> matter or can't happen?
+
+In ->probe() you set _default_ handler to bad(), what do you mean by
+'set the handler back to bad()'? How is it otherwise if you free an
+interrupt?
+
+So, please elaborate with call traces what the scenario / use case you
+are talking about. If it's true what you are saying, we have a
+situation (plenty of GPIO drivers don't do what you are suggesting
+here).
+
+> > > +               return -EINVAL;
+> > > +       }
+
+...
+
+> > > +       ret = reset_control_deassert(rst);
+> > > +       if (ret)
+> > > +               return dev_err_probe(dev, ret, "could not deassert resetd\n");
+> >
+> > > +       ret = devm_pinctrl_register_and_init(dev, &starfive_desc, sfp, &sfp->pctl);
+> > > +       if (ret)
+> >
+> > I don't see who will assert reset here.
+>
+> No, so originally this driver would first assert and then deassert
+> reset. I decided against that because in all likelyhood earlier boot
+> stages would have set pinmux up for a serial port, and we don't want
+> to interrupt the serial debug output. The only reason I make sure the
+> reset line is deasserted is in case someone makes a really minimal
+> bootloader that just does the absolute minimal to load a Linux kernel
+> and doesn't even log any anything.
+>
+> By the same token we also don't want to assert reset on error in case
+> it resets pin muxing for the the serial line that was supposed to log
+> the error.
+
+Perhaps comment in the code explaining this?
+
+-- 
+With Best Regards,
+Andy Shevchenko
