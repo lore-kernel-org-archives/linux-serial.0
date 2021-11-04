@@ -2,107 +2,162 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC5DBC433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Nov 2021 11:48:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A36C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Nov 2021 12:15:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D426A61205
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Nov 2021 11:48:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4DC0D61215
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Nov 2021 12:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbhKDLum (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 Nov 2021 07:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbhKDLul (ORCPT
+        id S231508AbhKDMSg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 4 Nov 2021 08:18:36 -0400
+Received: from mail-pg1-f176.google.com ([209.85.215.176]:36458 "EHLO
+        mail-pg1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231312AbhKDMSf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 Nov 2021 07:50:41 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF74EC061714;
-        Thu,  4 Nov 2021 04:48:03 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id h14so3789417qtb.3;
-        Thu, 04 Nov 2021 04:48:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PdowUE+txHFKqxZ9G9alg9aKUaAkTecpGwT4qv6lwxw=;
-        b=WIDxbb6eQAjNWl4DFkHaw/n76DzT3eBXIwGKCuu8e8aTIDfxmL5SNS52BICHET/lAA
-         RnLfSKwidQPFryty2aV6MrLrO66zw0a5FB9cv3MGFfmH00Pd+UAliKs9X7Zw0coZBVTe
-         QON7+VnpSQBxgoUoeppC4YWJPNAb2cQIQA7/nPsSU12PnvzsKuSm1nqzpNXlzHPv9v+l
-         SdSufhSFnZ9h8g4B8lcPx+SEBvJBYfkG0G7zG/yDO0mL2ISmjL1DVT8y+M8XoefPLze/
-         TXQgf9q6P0NmVBusCHx5n3zLlO814rcjbl2f8m8r3m3tImb0mb1qZOP0+xkgdihfi/Qp
-         NWoQ==
+        Thu, 4 Nov 2021 08:18:35 -0400
+Received: by mail-pg1-f176.google.com with SMTP id 75so5255429pga.3;
+        Thu, 04 Nov 2021 05:15:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PdowUE+txHFKqxZ9G9alg9aKUaAkTecpGwT4qv6lwxw=;
-        b=WLkwRq6ETE6B/tubSxlRN2DKpc5kh9o1ti+2a9pmIduZAVzw00axqsuAq5XB1mno8U
-         7o9KjS6UvdUM59la8XEOOpUKSEraphWWFWpkWwzXR/ijMOX7uIpN5OkBO634bCeFyCc6
-         axX5EGqc+xz+iqRXdq1Z6HBt330ZSHAn+63UzUNAWpShWydOwgohgKnBR0TpcjOZgYi9
-         zcTHf3653QJJ6Xuj75wMfnP9EK157Vu0KXTnLKq5IaRHdtxSk4XLhRxMhgwV19mpJ3L7
-         GaiFVyTK8vrbLr+IaFQBBv6U4vKYmd7uul3ucCdySzwBuGMx/CYWHG0piq3rdTR12QhZ
-         T3qA==
-X-Gm-Message-State: AOAM530nzFS0zA2IB1gsU93BN+GsJppTYFEH/LGMswQkHFjBnGkpJQzr
-        eYB6/X9Kpi74oOVJJrHsQVU=
-X-Google-Smtp-Source: ABdhPJwXsegp2d+MOEYt0DIqyRkxSeuCvWKpyMlOGD2ks6X5oU6l7v+9mZjqMdmypPTkzG5F2i+lEQ==
-X-Received: by 2002:a05:622a:607:: with SMTP id z7mr17500336qta.237.1636026483078;
-        Thu, 04 Nov 2021 04:48:03 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id y8sm3794776qtx.0.2021.11.04.04.47.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Nov 2021 04:48:02 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: yao.jing2@zte.com.cn
-To:     johan@kernel.org
-Cc:     andrew@aj.id.au, cgel.zte@gmail.com, fancer.lancer@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org, joe@perches.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        macro@orcam.me.uk, pali@kernel.org, yao.jing2@zte.com.cn,
-        zealci@zte.com.cn
-Subject: [PATCH v3] serial: 8250: replace snprintf in show functions with sysfs_emit
-Date:   Thu,  4 Nov 2021 11:47:54 +0000
-Message-Id: <20211104114754.30983-1-yao.jing2@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <YYDsU778y71byGdj@hovoldconsulting.com>
-References: <YYDsU778y71byGdj@hovoldconsulting.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BbQxkXh1kRX5txg91IzBReR7Etxrh9MaaIL5VubC4mA=;
+        b=HwaDncFOGCkngqsx9mhphaCX9kCINHoPVkIt6zwRsCF/XLC2Stu1pMzkcI+laGuggx
+         WtNWzQUf2HtiwZIfpaYVa9QyDVnnPIR+Ky9MkxgDEmCIp82Kyo36261eV3WsG8iMsCKy
+         5TCL0XWo9yi+TVJKKbpqstz22CmCChIBximeJSIGh5vJ2FMkGGBINKHcxELqzVxdCTxI
+         zEKb9sIhDT5YogiZZx/SvRUSADQKYBn/5ScV7KhC7wTRifgwlxz9f4vpPGaCMew6adsC
+         ZpyYu7d+Op6oDiH2gPau7GmWP6DWUOtIC48kROCfF0V+ItWTtAmTfdPWBEK3Ime5eJWY
+         J06w==
+X-Gm-Message-State: AOAM531W3zX6vHHFbMupsQ67P1Kpvc/B/GyqSYBooLA22s889KpCBeeX
+        EG8YRrIrekcSgxqj3hSYml4CvAHE1xoEDZYPKWM=
+X-Google-Smtp-Source: ABdhPJyU1eOL96q9aeg27rCGRB1DzlV/CdmoIQADJWmiDt4mzuQNX51WDsHXaA6t5irbMhhl52dNgltzzdGXVDztegg=
+X-Received: by 2002:a05:6a00:1354:b0:494:5227:42c7 with SMTP id
+ k20-20020a056a00135400b00494522742c7mr5310054pfu.53.1636028156990; Thu, 04
+ Nov 2021 05:15:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-10-kernel@esmil.dk>
+ <CAHp75Ve-P8DR00mtRP_NkrXgB4nsZ+qBkgBen94iTcPqxQYUOg@mail.gmail.com>
+ <CANBLGcyb=TAP0h2WuxBAjRvpN9n7Dt1Hvh5yE8NMOwm3ixZWuA@mail.gmail.com>
+ <CAHp75Vcg3En=xH+kz0GgAMGUoo5FABo2HwGoHd=7QgGVrYkYXg@mail.gmail.com> <CANBLGczrGwexRGvGxa9C+yzaSHZF_d5+AaebeLUX5BXFxipr=A@mail.gmail.com>
+In-Reply-To: <CANBLGczrGwexRGvGxa9C+yzaSHZF_d5+AaebeLUX5BXFxipr=A@mail.gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+Date:   Thu, 4 Nov 2021 13:15:46 +0100
+Message-ID: <CANBLGcztx0DL=U06QPJ5XT4ra=kx2QAZxxP=0bjfgQ0skhv3Bg@mail.gmail.com>
+Subject: Re: [PATCH v3 09/16] reset: starfive-jh7100: Add StarFive JH7100
+ reset driver
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+On Tue, 2 Nov 2021 at 22:17, Emil Renner Berthing <kernel@esmil.dk> wrote:
+> On Tue, 2 Nov 2021 at 21:14, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Tue, Nov 2, 2021 at 9:59 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > > On Tue, 2 Nov 2021 at 20:43, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > > On Tue, Nov 2, 2021 at 6:50 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> >
+> > ...
+> >
+> > > > > +/*
+> > > > > + * the registers work like a 32bit bitmap, so writing a 1 to the m'th bit of
+> > > > > + * the n'th ASSERT register asserts line 32n + m, and writing a 0 deasserts the
+> > > > > + * same line.
+> > > > > + * most reset lines have their status inverted so a 0 in the STATUS register
+> > > > > + * means the line is asserted and a 1 means it's deasserted. a few lines don't
+> > > > > + * though, so store the expected value of the status registers when all lines
+> > > > > + * are asserted.
+> > > > > + */
+> > > >
+> > > > Besides missing capitalization,
+> > >
+> > > I'm confused. it was you who wanted all comments to capitalized the same..
+> >
+> > Yes and there are two types of the comments, one-liners and
+> > multi-line. In multi-line you usually use proper English grammar,
+> > where capitalization means what it means. For the one-liners just
+> > choose either small letters or capital letters to start them with.
+>
+> That sounds reasonable, it was just that you complained about
+> inconsistent comments in the pinctrl driver that follows the above.
+>
+> > > if it sounds like bitmap, use bitmap.
+> > > > I have checked DT definitions and it seems you don't even need the
+> > > > BIT_MASK() macro,
+> > > >
+> > > > > +static const u32 jh7100_reset_asserted[4] = {
+> > > > > +       /* STATUS0 register */
+> > > > > +       BIT_MASK32(JH7100_RST_U74) |
+> > > > > +       BIT_MASK32(JH7100_RST_VP6_DRESET) |
+> > > > > +       BIT_MASK32(JH7100_RST_VP6_BRESET),
+> > > > > +       /* STATUS1 register */
+> > > > > +       BIT_MASK32(JH7100_RST_HIFI4_DRESET) |
+> > > > > +       BIT_MASK32(JH7100_RST_HIFI4_BRESET),
+> > > > > +       /* STATUS2 register */
+> > > > > +       BIT_MASK32(JH7100_RST_E24),
+> > > > > +       /* STATUS3 register */
+> > > > > +       0,
+> > > > > +};
+> > > >
+> > > > Yury, do we have any clever (clean) way to initialize a bitmap with
+> > > > particular bits so that it will be a constant from the beginning? If
+> > > > no, any suggestion what we can provide to such users?
+> > >
+> > > The problem is, that even if we could initialize this without the
+> > > monstrosity in our last conversation a 64bit bitmap would still
+> > > produce worse code. As it is now it's simply a 32bit load and mask
+> > > with index and mask already calculated for the registers. In the
+> > > status callback the mask can even be folded into the register read
+> > > mask. With a 64bit bitmap you'd need to calculate new 64bit index and
+> > > masks, and then conditionally shift the bits into position.
+> >
+> > Why? You may use 8 byte IO (writeq() / readq() or their relaxed versions), no?
+> >
+> > > If this reflection of the 32bit registers bothers you that much
+> >
+> > What bothers me is hidden endianess issues (yeah, here it might be
+> > theoretical, but consider that somebody will look at your code and use
+> > it as the best example ever).
+>
+> Wouldn't endian issues be a reason to make sure we read 32bit
+> registers with 32bit reads? Or do you expect a hypothetical big-endian
+> StarFive SoC to also change the order of the registers?
 
-coccicheck complains about the use of snprintf() in sysfs show
-functions:
-WARNING use scnprintf or sprintf
+Hi Andy.
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+I'd really like to understand your reasoning here. As far as I can
+tell reading 2 adjacent 32bit registers with a 64bit read as you're
+proposing is exactly what would cause endian issues. Eg. on little
+endian you'd get reg0 | reg1 << 32 whereas on big-endian you'd get
+reg0 << 32 | reg1.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
----
-
-Changes since v1 & v2:
- - Remove excess and wrong parameter 'PAGE_SIZE' in sysfs_emit function.
- - Revise the wrong patch Subject.
-
- drivers/tty/serial/8250/8250_port.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 5775cbff8f6e..3d58f383152e 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3099,7 +3099,7 @@ static ssize_t rx_trig_bytes_show(struct device *dev,
- 	if (rxtrig_bytes < 0)
- 		return rxtrig_bytes;
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", rxtrig_bytes);
-+	return sysfs_emit(buf, "%d\n", rxtrig_bytes);
- }
- 
- static int do_set_rxtrig(struct tty_port *port, unsigned char bytes)
--- 
-2.25.1
-
+/Emil
