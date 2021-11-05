@@ -2,258 +2,295 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3AAC433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Nov 2021 17:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC43C433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Nov 2021 09:42:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8E4FF61076
-	for <linux-serial@archiver.kernel.org>; Thu,  4 Nov 2021 17:18:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E13AC61220
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Nov 2021 09:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233822AbhKDRVD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 Nov 2021 13:21:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47312 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233650AbhKDRVD (ORCPT
+        id S232840AbhKEJpQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Nov 2021 05:45:16 -0400
+Received: from smtpcmd0987.aruba.it ([62.149.156.87]:33619 "EHLO
+        smtpcmd0987.aruba.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232842AbhKEJpP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 Nov 2021 13:21:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1636046304;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=l89hx7/8/FrnaCKSeke77qbOyrO7Fe6LyIp+mc6FNKU=;
-        b=DgQB+Wdit/13m1+HuxzaqrP80p2jWK66GcsI1Qn8VVgkmXy0PeVLjvDphxUzHq7WlH3/aE
-        kZmZ8Ss6H9QWR6vjAOJJd6NDetOIbp+QH0N0WljjHIolBEbbDT7Fce7Eb36IvdnR7hvPHR
-        j+gYwWxnKNnYyqMNO9PDT2vJGF17Dx8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-520-CBrvaZyaMCuXIZIe2yKnxw-1; Thu, 04 Nov 2021 13:18:21 -0400
-X-MC-Unique: CBrvaZyaMCuXIZIe2yKnxw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EBD7C1018720;
-        Thu,  4 Nov 2021 17:18:19 +0000 (UTC)
-Received: from wcosta.com (ovpn-116-33.gru2.redhat.com [10.97.116.33])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CB52C19D9F;
-        Thu,  4 Nov 2021 17:18:14 +0000 (UTC)
-From:   wander@redhat.com
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Wander Lairson Costa <wander@redhat.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] tty: serial: Use fifo in 8250 console driver
-Date:   Thu,  4 Nov 2021 14:17:31 -0300
-Message-Id: <20211104171734.137707-1-wander@redhat.com>
+        Fri, 5 Nov 2021 05:45:15 -0400
+Received: from [192.168.153.129] ([146.241.216.221])
+        by Aruba Outgoing Smtp  with ESMTPSA
+        id ivjdmdpVVsfk3ivjfmPM8G; Fri, 05 Nov 2021 10:42:32 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
+        t=1636105352; bh=1GP6cpeDo31RshdJGVY27pg4jdAQLLhr1b3EHvlqG9U=;
+        h=Subject:To:From:Date:MIME-Version:Content-Type;
+        b=RdWsBvQOUh0y5sMKxC/8qFCZqAKgVNldIM4KBq+GnvYKRPU65iFvMatCxpaYtRjd1
+         dBO645DPZ7Gl9iIyVBiIkepIRRddD4/oy6U95t3jSBNjDgN2CR1cfelwJHV9ES9k/P
+         cBJWjEba0HW5ZGAqYREHOHLyt+JpPYyp5a9NErtbCOz6El3RU77PFBxSa3+vZ9tCvx
+         PjNADZNdF3CYI1xtdHOIawJ+45Zi4+KBs5joppbNdfbDqstBLAfSKapdHvrN+YDdG8
+         oH32WUPzflKxn21mjJM6NxBiccP0rzXximOAjhnBxly/9Xn58f9ViPAj16EA3s0/Oj
+         4GxF0yr1c0n5Q==
+Subject: Re: [PATCH v2 07/13] clk: imx: Add initial support for i.MXRT clock
+ driver
+To:     Jesse Taube <mr.bossman075@gmail.com>, linux-imx@nxp.com
+List-Id: <soc.lore.kernel.org>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, ulf.hansson@linaro.org, aisheng.dong@nxp.com,
+        stefan@agner.ch, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
+        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
+        adrian.hunter@intel.com, jirislaby@kernel.org,
+        nobuhiro1.iwamatsu@toshiba.co.jp, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20211102225701.98944-1-Mr.Bossman075@gmail.com>
+ <20211102225701.98944-8-Mr.Bossman075@gmail.com>
+From:   Giulio Benetti <giulio.benetti@benettiengineering.com>
+Message-ID: <01336852-e6fa-cfe6-21be-9c03cb567fde@benettiengineering.com>
+Date:   Fri, 5 Nov 2021 10:42:09 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20211102225701.98944-8-Mr.Bossman075@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CMAE-Envelope: MS4wfGHZCGviNtSTv00RKTlbWw4QzIQHqj2J0gHEQJVYrIkWDxivZ2LS7bPvRjwyVHcSDYfpVwJpkj+AGOcq6htQ3mirYuJdnMDtXLXWapvNehq92jrNsHUK
+ m7Kwml9wPX7+BzX9ImcYS+h5cfDTbUywzpUjtD0YLA2qq8DxB2CzpiQGi9ndy1awhC5+0syO378gLAtqjPFZCAfMYGWoOp8o6VALHQUGya3sgT+neZeYUxNQ
+ k7I5s9fOg7iZHJnHzyTCoABl1u8C6FazaKEIbWwsi0Zl8FFf64c3WqJkqhcMtEfNUrhZd1Kk19X+Ga2DyQeXVF6i9y2Lvx09wgPy5+Mmblmv7fG5ly2HdvG4
+ l1a4AhBKErOW1vFPstLToHlq5/hb0HpdyYK8EOL5BXg1K01KSTbJn34+u0PJGO2wp9Kq+/yHMzDM4GeAOIrBVyxc/RLt8P9rmgejkkHklHkriih7WK5iUOw7
+ j5N910PqyCbjyFauy4dRqMCgEM14bt8/uY9mONpQdQi6gJXQ+JGtMQYoL6BSE8wNW+HXDAwsoQBFY6txyGC0o0L8jk37LUC/mBLu7UxhR1/CJ148JLpr/h0p
+ dleOKGVAjijot+BarE3+s3cFROly7khgfHE2wZ0//tH2q3EMWAXceXAb3IRcUDK24cveUd8fZ7Na2xC3lgUTAjzvxNMLyD+TBZClsPA+sb9ZOZd4CAwJHfs4
+ nBuhoEefmCxTpYFYgtIXikl2RthZWX+ozCAN6LH3xpvWPCRXjpuuKmIxJpRO99ut+EgtcDwZN+zfFHE0iQoJx/DwjfenLmbxT52K1h0+haU8FBYe6fgkiwfp
+ dXLIcBlCLYdFIckrJjMWK5FVvngblxxZJrxJhm53696YB++iMmIQUJAysCRk2wtfM9GdXLEeozZ5H5bxn/ICkir1b4m1EESV81h1EZoithxsJLpYiTvTpjja
+ 1vEfRQ15G94yhSVV54KlyDg74O5s+D9aGG7F/4t/AI6mZDRj74uq5pZQOzFZw26V3IkuTiCGNBl5UK0sQFHeAyC0VkVpUN7fVbla1zBc1YwOv/vvwcs+J/SD
+ QICKnQtBGtmj8+KPkiCthtkKo5EYWwkGMuOfYKx/+fK72712NJuT9xb5v+7Qz9vcJOA/SM0WB6AJiri2Jm3xgCHd90oF9dQ32Dg=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Wander Lairson Costa <wander@redhat.com>
+Hi Jesse, All,
 
-Note: I am using a small test app + driver located at [0] for the
-problem description. serco is a driver whose write function dispatches
-to the serial controller. sertest is a user-mode app that writes n bytes
-to the serial console using the serco driver.
+this is a specific driver for imxrt1050, for example imxrt1020 is 
+totally different while imxrt1060 is similar, so commit log needs to 
+change to i.MXRT1050,
 
-Recently I got a report of a soft lockup while loading a bunch a
-scsi_debug devices (> 500).
+On 11/2/21 11:56 PM, Jesse Taube wrote:
+> From: Jesse Taube <mr.bossman075@gmail.com>
+> 
+> This patch adds initial clock driver support for the i.MXRT series.
 
-While investigating it, I noticed that the serial console throughput
-(called by the printk code) is way below the configured speed of 115200
-bps in a HP Proliant DL380 Gen9 server. I was expecting something above
-10KB/s, but I got 2.5KB/s. I then built a simple driver [0] to isolate
-the console from the printk code. Here it is:
+Here too ^^^
 
-$ time ./sertest -n 2500 /tmp/serco
+> 
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> Suggested-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> ---
+> V1->V2:
+> * Kconfig: Add new line
+> * clk-imxrt.c: Remove unused const
+> * clk-imxrt.c: Remove set parents
+> * clk-imxrt.c: Use fsl,imxrt-anatop for anatop base address
+> ---
+>   drivers/clk/imx/Kconfig     |   4 +
+>   drivers/clk/imx/Makefile    |   1 +
+>   drivers/clk/imx/clk-imxrt.c | 149 ++++++++++++++++++++++++++++++++++++
 
-real    0m0.997s
-user    0m0.000s
-sys     0m0.997s
+Here we need this file ^^^ to be clk-imxrt1050.c
 
-With the help of the function tracer, I then noticed the serial
-controller was taking around 410us seconds to dispatch one single byte:
+>   3 files changed, 154 insertions(+)
+>   create mode 100644 drivers/clk/imx/clk-imxrt.c
+> 
+> diff --git a/drivers/clk/imx/Kconfig b/drivers/clk/imx/Kconfig
+> index 47d9ec3abd2f..f83ba5fe8cd3 100644
+> --- a/drivers/clk/imx/Kconfig
+> +++ b/drivers/clk/imx/Kconfig
+> @@ -98,3 +98,7 @@ config CLK_IMX8QXP
+>   	select MXC_CLK_SCU
+>   	help
+>   	  Build the driver for IMX8QXP SCU based clocks.
+> +
+> +config CLK_IMXRT
 
-$ trace-cmd record -p function_graph -g serial8250_console_write \
-   ./sertest -n 1 /tmp/serco
+CLK_IMXRT1050
 
-$ trace-cmd report
+> +	def_bool SOC_IMXRT
+> +	select MXC_CLK
+> diff --git a/drivers/clk/imx/Makefile b/drivers/clk/imx/Makefile
+> index c24a2acbfa56..6a3fee6cd9af 100644
+> --- a/drivers/clk/imx/Makefile
+> +++ b/drivers/clk/imx/Makefile
+> @@ -45,3 +45,4 @@ obj-$(CONFIG_CLK_IMX6UL) += clk-imx6ul.o
+>   obj-$(CONFIG_CLK_IMX7D)  += clk-imx7d.o
+>   obj-$(CONFIG_CLK_IMX7ULP) += clk-imx7ulp.o
+>   obj-$(CONFIG_CLK_VF610)  += clk-vf610.o
+> +obj-$(CONFIG_CLK_IMXRT)  += clk-imxrt.o
 
-            |  serial8250_console_write() {
- 0.384 us   |    _raw_spin_lock_irqsave();
- 1.836 us   |    io_serial_in();
- 1.667 us   |    io_serial_out();
-            |    uart_console_write() {
-            |      serial8250_console_putchar() {
-            |        wait_for_xmitr() {
- 1.870 us   |          io_serial_in();
- 2.238 us   |        }
- 1.737 us   |        io_serial_out();
- 4.318 us   |      }
- 4.675 us   |    }
-            |    wait_for_xmitr() {
- 1.635 us   |      io_serial_in();
-            |      __const_udelay() {
- 1.125 us   |        delay_tsc();
- 1.429 us   |      }
-...
-...
-...
- 1.683 us   |      io_serial_in();
-            |      __const_udelay() {
- 1.248 us   |        delay_tsc();
- 1.486 us   |      }
- 1.671 us   |      io_serial_in();
- 411.342 us |    }
+CONFIG_CLK_IMXRT1050
 
-In another machine, I measured a throughput of 11.5KB/s, with the serial
-controller taking between 80-90us to send each byte. That matches the
-expected throughput for a configuration of 115200 bps.
+> diff --git a/drivers/clk/imx/clk-imxrt.c b/drivers/clk/imx/clk-imxrt.c
+> new file mode 100644
+> index 000000000000..8e235925cdb7
+> --- /dev/null
+> +++ b/drivers/clk/imx/clk-imxrt.c
+> @@ -0,0 +1,149 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+> +/*
+> + * Copyright (C) 2021
+> + * Author(s):
+> + * Jesse Taube <Mr.Bossman075@gmail.com>
+> + * Giulio Benetti <giulio.benetti@benettiengineering.com>
+> + */
+> +#include <linux/mm.h>
+> +#include <linux/delay.h>
+> +#include <linux/clk.h>
+> +#include <linux/io.h>
+> +#include <linux/clkdev.h>
+> +#include <linux/clk-provider.h>
+> +#include <linux/err.h>
+> +#include <linux/of.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/sizes.h>
+> +#include <soc/imx/revision.h>
+> +#include <dt-bindings/clock/imxrt1050-clock.h>
 
-This patch changes the serial8250_console_write to use the 16550 fifo
-if available. In my artificial benchmark I could get a throughput
-increase up to 100% in some cases, but in the real case described at the
-beginning the gain was of about 25%.
+Indeed here the include is imxrt1050-clock.h and every macro below 
+starts with IMXRT1050_ prefix
 
-[0] https://github.com/walac/serial-console-test
+> +
+> +#include "clk.h"
+> +#define ANATOP_BASE_ADDR	0x400d8000
+> +
+> +static const char * const pll_ref_sels[] = {"osc", "dummy", };
+> +static const char * const per_sels[] = {"ipg_pdof", "osc", };
+> +static const char * const pll1_bypass_sels[] = {"pll1_arm", "pll1_arm_ref_sel", };
+> +static const char * const pll2_bypass_sels[] = {"pll2_sys", "pll2_sys_ref_sel", };
+> +static const char * const pll3_bypass_sels[] = {"pll3_usb_otg", "pll3_usb_otg_ref_sel", };
+> +static const char * const pll5_bypass_sels[] = {"pll5_video", "pll5_video_ref_sel", };
+> +static const char *const pre_periph_sels[] = {
+> +	"pll2_sys", "pll2_pfd2_396m", "pll2_pfd0_352m", "arm_podf", };
+> +static const char *const periph_sels[] = { "pre_periph_sel", "todo", };
+> +static const char *const usdhc_sels[] = { "pll2_pfd2_396m", "pll2_pfd0_352m", };
+> +static const char *const lpuart_sels[] = { "pll3_80m", "osc", };
+> +static const char *const lcdif_sels[] = {
+> +	"pll2_sys", "pll3_pfd3_454_74m", "pll5_video", "pll2_pfd0_352m",
+> +	"pll2_pfd1_594m", "pll3_pfd1_664_62m", };
+> +
+> +static struct clk *clk[IMXRT1050_CLK_END];
+> +static struct clk_onecell_data clk_data;
+> +
+> +static void __init imxrt_clocks_common_init(void __iomem *base)
+> +{
+> +	/* Anatop clocks */
+> +	clk[IMXRT1050_CLK_DUMMY] = imx_clk_fixed("dummy", 0UL);
+> +
+> +	clk[IMXRT1050_CLK_PLL1_REF_SEL] = imx_clk_mux("pll1_arm_ref_sel",
+> +		base + 0x0, 14, 2, pll_ref_sels, ARRAY_SIZE(pll_ref_sels));
+> +	clk[IMXRT1050_CLK_PLL2_REF_SEL] = imx_clk_mux("pll2_sys_ref_sel",
+> +		base + 0x30, 14, 2, pll_ref_sels, ARRAY_SIZE(pll_ref_sels));
+> +	clk[IMXRT1050_CLK_PLL3_REF_SEL] = imx_clk_mux("pll3_usb_otg_ref_sel",
+> +		base + 0x10, 14, 2, pll_ref_sels, ARRAY_SIZE(pll_ref_sels));
+> +	clk[IMXRT1050_CLK_PLL5_REF_SEL] = imx_clk_mux("pll5_video_ref_sel",
+> +		base + 0xa0, 14, 2, pll_ref_sels, ARRAY_SIZE(pll_ref_sels));
+> +
+> +	clk[IMXRT1050_CLK_PLL1_ARM] = imx_clk_pllv3(IMX_PLLV3_SYS, "pll1_arm",
+> +		"pll1_arm_ref_sel", base + 0x0, 0x7f);
+> +	clk[IMXRT1050_CLK_PLL2_SYS] = imx_clk_pllv3(IMX_PLLV3_GENERIC, "pll2_sys",
+> +		"pll2_sys_ref_sel", base + 0x30, 0x1);
+> +	clk[IMXRT1050_CLK_PLL3_USB_OTG] = imx_clk_pllv3(IMX_PLLV3_USB, "pll3_usb_otg",
+> +		"pll3_usb_otg_ref_sel", base + 0x10, 0x1);
+> +	clk[IMXRT1050_CLK_PLL5_VIDEO] = imx_clk_pllv3(IMX_PLLV3_AV, "pll5_video",
+> +		"pll5_video_ref_sel", base + 0xa0, 0x7f);
+> +
+> +	/* PLL bypass out */
+> +	clk[IMXRT1050_CLK_PLL1_BYPASS] = imx_clk_mux_flags("pll1_bypass", base + 0x0, 16, 1,
+> +		pll1_bypass_sels, ARRAY_SIZE(pll1_bypass_sels), CLK_SET_RATE_PARENT);
+> +	clk[IMXRT1050_CLK_PLL2_BYPASS] = imx_clk_mux_flags("pll2_bypass", base + 0x30, 16, 1,
+> +		pll2_bypass_sels, ARRAY_SIZE(pll2_bypass_sels), CLK_SET_RATE_PARENT);
+> +	clk[IMXRT1050_CLK_PLL3_BYPASS] = imx_clk_mux_flags("pll3_bypass", base + 0x10, 16, 1,
+> +		pll3_bypass_sels, ARRAY_SIZE(pll3_bypass_sels), CLK_SET_RATE_PARENT);
+> +	clk[IMXRT1050_CLK_PLL5_BYPASS] = imx_clk_mux_flags("pll5_bypass", base + 0xa0, 16, 1,
+> +		pll5_bypass_sels, ARRAY_SIZE(pll5_bypass_sels), CLK_SET_RATE_PARENT);
+> +
+> +	clk[IMXRT1050_CLK_VIDEO_POST_DIV_SEL] = imx_clk_divider("video_post_div_sel",
+> +		"pll5_video", base + 0xa0, 19, 2);
+> +	clk[IMXRT1050_CLK_VIDEO_DIV] = imx_clk_divider("video_div",
+> +		"video_post_div_sel", base + 0x170, 30, 2);
+> +
+> +	clk[IMXRT1050_CLK_PLL3_80M] = imx_clk_fixed_factor("pll3_80m",  "pll3_usb_otg", 1, 6);
+> +
+> +	clk[IMXRT1050_CLK_PLL2_PFD0_352M] = imx_clk_pfd("pll2_pfd0_352m", "pll2_sys", base + 0x100, 0);
+> +	clk[IMXRT1050_CLK_PLL2_PFD1_594M] = imx_clk_pfd("pll2_pfd1_594m", "pll2_sys", base + 0x100, 1);
+> +	clk[IMXRT1050_CLK_PLL2_PFD2_396M] = imx_clk_pfd("pll2_pfd2_396m", "pll2_sys", base + 0x100, 2);
+> +	clk[IMXRT1050_CLK_PLL3_PFD1_664_62M] = imx_clk_pfd("pll3_pfd1_664_62m", "pll3_usb_otg", base + 0xf0, 1);
+> +	clk[IMXRT1050_CLK_PLL3_PFD3_454_74M] = imx_clk_pfd("pll3_pfd3_454_74m", "pll3_usb_otg", base + 0xf0, 3);
+> +}
+> +
+> +static void __init imxrt1050_clocks_init(struct device_node *np)
+> +{
+> +	void __iomem *ccm_base;
+> +	void __iomem *pll_base;
+> +	struct device_node *anp;
+> +
+> +	clk[IMXRT1050_CLK_OSC] = of_clk_get_by_name(np, "osc");
+> +
+> +	anp = of_find_compatible_node(NULL, NULL, "fsl,imxrt-anatop");
+> +	pll_base = of_iomap(anp, 0);
+> +	WARN_ON(!pll_base);
+> +	imxrt_clocks_common_init(pll_base);
+> +	/* CCM clocks */
+> +	ccm_base = of_iomap(np, 0);
+> +	WARN_ON(!ccm_base);
+> +
+> +	clk[IMXRT1050_CLK_ARM_PODF] = imx_clk_divider("arm_podf", "pll1_arm", ccm_base + 0x10, 0, 3);
+> +	clk[IMXRT1050_CLK_PRE_PERIPH_SEL] = imx_clk_mux("pre_periph_sel", ccm_base + 0x18, 18, 2,
+> +		pre_periph_sels, ARRAY_SIZE(pre_periph_sels));
+> +	clk[IMXRT1050_CLK_PERIPH_SEL] = imx_clk_mux("periph_sel", ccm_base + 0x14, 25, 1,
+> +		periph_sels, ARRAY_SIZE(periph_sels));
+> +	clk[IMXRT1050_CLK_USDHC1_SEL] = imx_clk_mux("usdhc1_sel", ccm_base + 0x1c, 16, 1,
+> +		usdhc_sels, ARRAY_SIZE(usdhc_sels));
+> +	clk[IMXRT1050_CLK_USDHC2_SEL] = imx_clk_mux("usdhc2_sel", ccm_base + 0x1c, 17, 1,
+> +		usdhc_sels, ARRAY_SIZE(usdhc_sels));
+> +	clk[IMXRT1050_CLK_LPUART_SEL] = imx_clk_mux("lpuart_sel", ccm_base + 0x24, 6, 1,
+> +		lpuart_sels, ARRAY_SIZE(lpuart_sels));
+> +	clk[IMXRT1050_CLK_LCDIF_SEL] = imx_clk_mux("lcdif_sel", ccm_base + 0x38, 15, 3,
+> +		lcdif_sels, ARRAY_SIZE(lcdif_sels));
+> +	clk[IMXRT1050_CLK_PER_CLK_SEL] = imx_clk_mux("per_sel", ccm_base + 0x1C, 6, 1,
+> +		per_sels, ARRAY_SIZE(per_sels));
+> +
+> +	clk[IMXRT1050_CLK_AHB_PODF] = imx_clk_divider("ahb", "periph_sel", ccm_base + 0x14, 10, 3);
+> +	clk[IMXRT1050_CLK_IPG_PDOF] = imx_clk_divider("ipg", "ahb", ccm_base + 0x14, 8, 2);
+> +	clk[IMXRT1050_CLK_PER_PDOF] = imx_clk_divider("per", "per_sel", ccm_base + 0x1C, 0, 5);
+> +
+> +	clk[IMXRT1050_CLK_USDHC1_PODF] = imx_clk_divider("usdhc1_podf", "usdhc1_sel", ccm_base + 0x24, 11, 3);
+> +	clk[IMXRT1050_CLK_USDHC2_PODF] = imx_clk_divider("usdhc2_podf", "usdhc2_sel", ccm_base + 0x24, 16, 3);
+> +	clk[IMXRT1050_CLK_LPUART_PODF] = imx_clk_divider("lpuart_podf", "lpuart_sel", ccm_base + 0x24, 0, 6);
+> +	clk[IMXRT1050_CLK_LCDIF_PRED] = imx_clk_divider("lcdif_pred", "lcdif_sel", ccm_base + 0x38, 12, 3);
+> +	clk[IMXRT1050_CLK_LCDIF_PODF] = imx_clk_divider("lcdif_podf", "lcdif_pred", ccm_base + 0x18, 23, 3);
+> +
+> +	clk[IMXRT1050_CLK_USDHC1] = imx_clk_gate2("usdhc1", "usdhc1_podf", ccm_base + 0x80, 2);
+> +	clk[IMXRT1050_CLK_USDHC2] = imx_clk_gate2("usdhc2", "usdhc2_podf", ccm_base + 0x80, 4);
+> +	clk[IMXRT1050_CLK_LPUART1] = imx_clk_gate2("lpuart1", "lpuart_podf", ccm_base + 0x7c, 24);
+> +	clk[IMXRT1050_CLK_LCDIF_APB] = imx_clk_gate2("lcdif", "lcdif_podf", ccm_base + 0x74, 10);
+> +	clk[IMXRT1050_CLK_DMA] = imx_clk_gate("dma", "ipg", ccm_base + 0x7C, 6);
+> +	clk[IMXRT1050_CLK_DMA_MUX] = imx_clk_gate("dmamux0", "ipg", ccm_base + 0x7C, 7);
+> +
+> +	imx_check_clocks(clk, ARRAY_SIZE(clk));
+> +	clk_data.clks = clk;
+> +	clk_data.clk_num = ARRAY_SIZE(clk);
+> +	of_clk_add_provider(np, of_clk_src_onecell_get, &clk_data);
+> +	clk_prepare_enable(clk[IMXRT1050_CLK_PLL1_ARM]);
+> +	clk_prepare_enable(clk[IMXRT1050_CLK_PLL2_SYS]);
+> +	clk_prepare_enable(clk[IMXRT1050_CLK_PLL3_USB_OTG]);
+> +	clk_prepare_enable(clk[IMXRT1050_CLK_PLL3_PFD1_664_62M]);
+> +	clk_prepare_enable(clk[IMXRT1050_CLK_PLL2_PFD2_396M]);
+> +}
+> +CLK_OF_DECLARE(imxrt_ccm, "fsl,imxrt1050-ccm", imxrt1050_clocks_init);
+> 
 
-Signed-off-by: Wander Lairson Costa <wander@redhat.com>
----
- drivers/tty/serial/8250/8250.h      |  3 ++
- drivers/tty/serial/8250/8250_port.c | 63 +++++++++++++++++++++++++----
- 2 files changed, 59 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 6473361525d1..c711bf118cc1 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -83,6 +83,9 @@ struct serial8250_config {
- #define UART_CAP_MINI	BIT(17)	/* Mini UART on BCM283X family lacks:
- 					 * STOP PARITY EPAR SPAR WLEN5 WLEN6
- 					 */
-+#define UART_CAP_CWFIFO BIT(18) /* Use the UART Fifo in
-+				 * serial8250_console_write
-+				 */
- 
- #define UART_BUG_QUOT	BIT(0)	/* UART has buggy quot LSB */
- #define UART_BUG_TXEN	BIT(1)	/* UART has buggy TX IIR status */
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 5775cbff8f6e..e58938c435c9 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -82,7 +82,7 @@ static const struct serial8250_config uart_config[] = {
- 		.tx_loadsz	= 16,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.rxtrig_bytes	= {1, 4, 8, 14},
--		.flags		= UART_CAP_FIFO,
-+		.flags		= UART_CAP_FIFO | UART_CAP_CWFIFO,
- 	},
- 	[PORT_CIRRUS] = {
- 		.name		= "Cirrus",
-@@ -2063,10 +2063,7 @@ static void serial8250_break_ctl(struct uart_port *port, int break_state)
- 	serial8250_rpm_put(up);
- }
- 
--/*
-- *	Wait for transmitter & holding register to empty
-- */
--static void wait_for_xmitr(struct uart_8250_port *up, int bits)
-+static void wait_for_lsr(struct uart_8250_port *up, int bits)
- {
- 	unsigned int status, tmout = 10000;
- 
-@@ -2083,6 +2080,16 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
- 		udelay(1);
- 		touch_nmi_watchdog();
- 	}
-+}
-+
-+/*
-+ *	Wait for transmitter & holding register to empty
-+ */
-+static void wait_for_xmitr(struct uart_8250_port *up, int bits)
-+{
-+	unsigned int tmout;
-+
-+	wait_for_lsr(up, bits);
- 
- 	/* Wait up to 1s for flow control if necessary */
- 	if (up->port.flags & UPF_CONS_FLOW) {
-@@ -3332,6 +3339,35 @@ static void serial8250_console_restore(struct uart_8250_port *up)
- 	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
- }
- 
-+/*
-+ * Print a string to the serial port using the device FIFO
-+ *
-+ * It sends fifosize bytes and then waits for the fifo
-+ * to get empty.
-+ */
-+static void serial8250_console_fifo_write(struct uart_8250_port *up,
-+		const char *s, unsigned int count)
-+{
-+	int i;
-+	const char *end = s + count;
-+	unsigned int fifosize = up->port.fifosize;
-+	bool cr_sent = false;
-+
-+	while (s != end) {
-+		wait_for_lsr(up, UART_LSR_THRE);
-+
-+		for (i = 0; i < fifosize && s != end; ++i) {
-+			if (*s == '\n' && !cr_sent) {
-+				serial_out(up, UART_TX, '\r');
-+				cr_sent = true;
-+			} else {
-+				serial_out(up, UART_TX, *s++);
-+				cr_sent = false;
-+			}
-+		}
-+	}
-+}
-+
- /*
-  *	Print a string to the serial port trying not to disturb
-  *	any possible real use of the port...
-@@ -3347,7 +3383,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	struct uart_8250_em485 *em485 = up->em485;
- 	struct uart_port *port = &up->port;
- 	unsigned long flags;
--	unsigned int ier;
-+	unsigned int ier, use_fifo;
- 	int locked = 1;
- 
- 	touch_nmi_watchdog();
-@@ -3379,7 +3415,20 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		mdelay(port->rs485.delay_rts_before_send);
- 	}
- 
--	uart_console_write(port, s, count, serial8250_console_putchar);
-+	use_fifo = (up->capabilities & UART_CAP_CWFIFO)
-+		&& port->fifosize > 1
-+		&& (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
-+		/*
-+		 * After we put a data in the fifo, the controller will send
-+		 * it regardless of the CTS state. Therefore, only use fifo
-+		 * if we don't use control flow.
-+		 */
-+		&& !(up->port.flags & UPF_CONS_FLOW);
-+
-+	if (use_fifo)
-+		serial8250_console_fifo_write(up, s, count);
-+	else
-+		uart_console_write(port, s, count, serial8250_console_putchar);
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
+Thank you
+and
+Best regards
 -- 
-2.27.0
-
+Giulio Benetti
+Benetti Engineering sas
