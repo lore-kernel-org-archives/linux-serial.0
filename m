@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E023CC433EF
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 09:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A9EC433F5
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 09:32:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B8122611C4
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 09:21:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6700A60EB4
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 09:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbhKFJXk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 Nov 2021 05:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
+        id S231337AbhKFJe4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 Nov 2021 05:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbhKFJXk (ORCPT
+        with ESMTP id S230081AbhKFJey (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 Nov 2021 05:23:40 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9AAC061570;
-        Sat,  6 Nov 2021 02:20:59 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id q17so483148plr.11;
-        Sat, 06 Nov 2021 02:20:59 -0700 (PDT)
+        Sat, 6 Nov 2021 05:34:54 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21022C061570;
+        Sat,  6 Nov 2021 02:32:14 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o6-20020a17090a0a0600b001a64b9a11aeso5083294pjo.3;
+        Sat, 06 Nov 2021 02:32:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=SjsiBBR4iQ9J6KRlh4zbj1SuSSwOxk/0qaq6CzZ2u1Q=;
-        b=UcGs2unyDElkJEfyMNWOyZf0PPJiDDvz1eMFIkcK3e/TCxcXtJYq62t1rdxbJwOibx
-         niJ4czW6AmA77yCNrAhHWqfAKvyQLl23RYYE2fSPd8J5WOG7NC3A01Gp2wqA5dNTzxeq
-         2vrXOVZ99pf8qhTgdBKdyWt3CAiulHo72QsKHd7cx0OGitbNXbT0A72yNubaPuH0wCD6
-         W9t2WMjigC9gtlmWs0D+c7Fkqx6frMQldXO90aN5n/ypJxsFUy1THD7Z/g8SqDNxvSI3
-         4uZDssIQntu2QCkJeoEv9unBk/W3QBRA4/8D8PPfo9lC29tMRzmP7v1JAuc51cGEq9zU
-         nqyg==
+        bh=TcaU65qRcXa83yubdN4O2QG/8/lJCd9hnha7LHqglvU=;
+        b=LYNwwIyAdsCF/QxhwxGB4Gn8hR4NP8Bd+tAsVnbAIKqgt3B7RwJ06few0jDXoj/ZUg
+         yRbY8rAasp2dJQfrJwTitPfrWzzLTZaGSxv3AKRzVGjV6KdgmqO5+g7sys8c9hhsRzVT
+         v4n0nCJk0XdMsOVrCBr6JgnafFcBC6D6uLntT3NwZ6YqEPa6SMIAhuH9VnpbA2EPq75e
+         hdWiqZiK284DacWRhwFlXkJBI8sG98j9Ufqs2A6jz8MCKUPQrIiOeghfZWbuxmvIdeXo
+         1fudBPmh8mewKdkKGCPkCDGTy4jiOQ32Y5xDDKga2944ZCpKrtEQWdf/ZrjuAwKSml+S
+         9zLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=SjsiBBR4iQ9J6KRlh4zbj1SuSSwOxk/0qaq6CzZ2u1Q=;
-        b=uZ7aXf97Ikd9WMPtejFrlrDsnEJqDJvocCxAWcJY+qh+zC3J+QS/svcPJ8nQ5ssmjp
-         O46lSPRiQyq0LvdDSag2mhtEyBuXUeQ/yFPaiVqUf380UztepWOl5HmxvTJ1BaALzpBE
-         bsvaPlsHCRqKo9bYCck772cqnSsL5Rfc4y6IJY1GlS4BZMO+jRqIWj11Ga6sV4SXHl8v
-         gCQaVY+o9cFt9DBjkH+p1H6r4gDGJc6VL/Kh0q4MlXbKgJXf04p7cPhsuNNzJn9Zli5O
-         E9u+k7YU1HyOVQCCHqOeopt7VBlQg/15qei2WRFg5dY40JOda4MTNsjeyVC4q9SxeBJZ
-         8ogQ==
-X-Gm-Message-State: AOAM533YPuaugI5Gi9PIjXKwEeLk27sPVCAdXjsLXsMNi+6bvXqLWTa0
-        2GAeGV8651Y31+90G0snzAqhYkM3ohk=
-X-Google-Smtp-Source: ABdhPJzjauw8zXCQjetliVqjsgRLmaICA2Xy8uvLlLUG58orP8B2/Pmn8z/nsmBwYdaV0/k9/gykAA==
-X-Received: by 2002:a17:90b:1812:: with SMTP id lw18mr19547891pjb.196.1636190458899;
-        Sat, 06 Nov 2021 02:20:58 -0700 (PDT)
+        bh=TcaU65qRcXa83yubdN4O2QG/8/lJCd9hnha7LHqglvU=;
+        b=pIzsKV0rD/3kWsYOg3yHJbrjUpVlcVJf5bGqLm01X0lDNDkOY11BAfW30gDe6UUIon
+         jbeQUa6U9uTNge2HQ5qt2lZmJxzr7IZ7z8yprSw/9C2Gw9RmqpWizHKurTeu7qx/p7kv
+         bGF1WXlGDXqdlZiFCPyK4691RL0cOSQ5ZvqGezaIwh9c9vctGAih76C9t4/fGIKU6GSI
+         fbCzpriOlflV/oLLxxxvddGrLxAfpHl9WeafzFm32JRl45BsTwAzGf3DTSK/a/eVvhmr
+         vY4VBM8/Nj/d911g5SJz+KbrwoU8vJgn/HAz58E1V1TWWX2zcfREu97R8J3UKtlifHpZ
+         FxnQ==
+X-Gm-Message-State: AOAM532XOiA7R/1qeP4Q3jJocTSXcvu04epxaqNmaVYICmnUe8vd/YKO
+        mgSb9UyRCf3cCTThgUgDSEFU00AOusI=
+X-Google-Smtp-Source: ABdhPJzJqgdoBJw7gWnsV6B7SnEqFonVqLpH9hhIK4rloFBwS7AtBJ0P2rZP+zghCrloBeKbhzqqHw==
+X-Received: by 2002:a17:90b:4a0f:: with SMTP id kk15mr19880553pjb.223.1636191133386;
+        Sat, 06 Nov 2021 02:32:13 -0700 (PDT)
 Received: from host-x86-64.. ([122.161.244.211])
-        by smtp.gmail.com with ESMTPSA id m10sm8871380pfk.152.2021.11.06.02.20.57
+        by smtp.gmail.com with ESMTPSA id w11sm7855242pge.48.2021.11.06.02.32.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Nov 2021 02:20:58 -0700 (PDT)
+        Sat, 06 Nov 2021 02:32:12 -0700 (PDT)
 From:   Ajay Garg <ajaygargnsit@gmail.com>
 To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Ajay Garg <ajaygargnsit@gmail.com>
-Subject: [PATCH] tty: vt: keyboard: do not copy an extra-byte in copy_to_user
-Date:   Sat,  6 Nov 2021 14:50:40 +0530
-Message-Id: <20211106092041.43745-1-ajaygargnsit@gmail.com>
+Subject: [PATCH] tty: vt: keyboard: Free dynamic-memory only if kmalloc'ed.
+Date:   Sat,  6 Nov 2021 15:02:02 +0530
+Message-Id: <20211106093202.44518-1-ajaygargnsit@gmail.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,28 +64,40 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Both (statically-allocated) "user_kdgkb->kb_string" and
-(dynamically-allocated) "kbs" are of length "len", so we must
-not copy more than "len" bytes.
+In "vt_do_kdgkb_ioctl", kbs is kmalloced, if cmd is one of
+KDGKBSENT or KDGSKBSENT.
+
+If cmd is none of the above, no kbs is kmalloced, and thus,
+kbs must only be kfreed if it is really kmalloced.
 
 Signed-off-by: Ajay Garg <ajaygargnsit@gmail.com>
 ---
- drivers/tty/vt/keyboard.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/vt/keyboard.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index c7fbbcdcc346..dfef7de8a057 100644
+index dfef7de8a057..95839987c79c 100644
 --- a/drivers/tty/vt/keyboard.c
 +++ b/drivers/tty/vt/keyboard.c
-@@ -2070,7 +2070,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 		len = strlcpy(kbs, func_table[kb_func] ? : "", len);
- 		spin_unlock_irqrestore(&func_buf_lock, flags);
+@@ -2049,7 +2049,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+ {
+ 	unsigned char kb_func;
+ 	unsigned long flags;
+-	char *kbs;
++	char *kbs = NULL;
+ 	int ret;
  
--		ret = copy_to_user(user_kdgkb->kb_string, kbs, len + 1) ?
-+		ret = copy_to_user(user_kdgkb->kb_string, kbs, len) ?
- 			-EFAULT : 0;
- 
+ 	if (get_user(kb_func, &user_kdgkb->kb_func))
+@@ -2092,7 +2092,8 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
  		break;
+ 	}
+ 
+-	kfree(kbs);
++        if(kbs)
++            kfree(kbs);
+ 
+ 	return ret;
+ }
 -- 
 2.30.2
 
