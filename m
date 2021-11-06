@@ -2,98 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C96EBC433F5
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 22:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C08C433EF
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 22:12:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A25726120A
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 22:06:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CC9E660E94
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 22:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234648AbhKFWJa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 Nov 2021 18:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
+        id S230261AbhKFWP3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 Nov 2021 18:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234600AbhKFWJ3 (ORCPT
+        with ESMTP id S230119AbhKFWP3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 Nov 2021 18:09:29 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AC83C061570;
-        Sat,  6 Nov 2021 15:06:48 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id g25-20020a9d5f99000000b0055af3d227e8so14492371oti.11;
-        Sat, 06 Nov 2021 15:06:48 -0700 (PDT)
+        Sat, 6 Nov 2021 18:15:29 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C26AC061570;
+        Sat,  6 Nov 2021 15:12:47 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id j2so26688598lfg.3;
+        Sat, 06 Nov 2021 15:12:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ZgnklXkGuSQOSxi3Q0vVQn+K+Oi7U4D51Q01YW0d9Rc=;
-        b=dUeIgp8c1Jt58DEjh4bg07kvJ6RUOaYY5woZse3NTGS/YDJfrxIxK36UTUhJqxFQK9
-         MTZbyq+M+ewYfZHYtJErKLABetMzGA09+/5PReAduUuf8eoUdq53mbfujqD8RpuBOF70
-         GzjT2eAypjWXC8qa/mD39SOWZe7i4kLYo7P4BjlYP4FirZHsgERD3Oc07XYMIcA+4iXQ
-         MU+noSSjrjiesWvJ8ooYJJfG29LzWNeqjQede76JzE4sS4+T+XFguK5spr+LYq29s+UJ
-         WRLb4GxPbxZDhHhG+vnjV8n+2I7kfhsKNhSWRuTW2N3vS78NziCxPSg3TCZoBH5IkDcp
-         XqrA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=NeiT0mSDoDVgb/7n1xYrK8xG03w6WQESwJe/usLnGKM=;
+        b=ZlTXxAPnbBPHW57L0y7QLsrOaosn3J8pBbhdZl5X83yqmODNh8txyGAQlQzvx5879x
+         4w5iCRjNrniPNZ9m/kxtaQe9Ti6O/VRzTSO8HtU1jouEGBcShJudSxAQ1fBK/rrQP5zH
+         L5ziLUjbvtlxsUuxXAmqU+vBNe4LU+lPUtbf06I/iEeTUWlmjyyYgRuFvnIuWi7+Z1AG
+         jsdXyjuope+/Hnumhy37+mms++Kox6y1/YZ7V+SQpF6rBE/vDd1wD7wLRVtq3FlJxyiA
+         YgT+3xmWjWZn7hJApJHo5QbWRkseL5CjNWrPvKdgZ8fExkpO2nNSQ/3IfF/OwMcY2Ye3
+         BZHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZgnklXkGuSQOSxi3Q0vVQn+K+Oi7U4D51Q01YW0d9Rc=;
-        b=ZM/VXAdf2Mr6ZfmVvdY1J/07Zu6C0q4KN5gyYVX25Cym+myxcB0yUBOKnnfItz2tXk
-         meLi4Snl2ys9tizi+L/ciBHuY4UMk6fhQa2AfN4qLHLtjRnGTwtad/ZBLFivhsnLc8pp
-         gFK+COkSR3Hm0TgmQVuhGiVrAxqVSXwR2yjfxr6TYfQiKe00P35soihTiMoiv4fm4CJT
-         BKfXnrdrYg0sXa9EOfN+1EdDcBlhuRVKZw/X0SZ7Ql+/koLQ6HpICzsc5XuttrLBbPas
-         mfLTVK49FMizBMmZzKubGEfpN0gYKu58LW1e1F/0/WDsZ/5VLb2m7a8ZJxdMsp6eleRx
-         JwrQ==
-X-Gm-Message-State: AOAM532RniwYaj2mXuYc7g/8lI1XES0JVm7hJk7rULxYx6MuKtPz7bpU
-        rIVAT3QPDuvkkChsvvhU5fx39jUQw2X/TokAkeo=
-X-Google-Smtp-Source: ABdhPJz2yKTAUTaAFA1mfOIFa1UyfCFR0PX6wl3o5hhS/gQbFLoxEEUVvcmdP0kXzXvTQs5Hitackz4PfCx5LW7Mpkg=
-X-Received: by 2002:a9d:7617:: with SMTP id k23mr37127394otl.351.1636236407692;
- Sat, 06 Nov 2021 15:06:47 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NeiT0mSDoDVgb/7n1xYrK8xG03w6WQESwJe/usLnGKM=;
+        b=S7Aea/7xGlhB/4B59gvyQNnMrVnSbXu8hFaUBGWmUo108Ydy2DHYYJ+sf2ZuJPbQR2
+         MFuP3E2WKazuwt0om2Yg4dSPVVmfMP4wac9Iy2XCruWy9xTb5QUote2P434wzF1p3vci
+         P8a4xLjCarQodnm5oPA4NLrsvlgaxChgmbfxJqtdoEXg/KSV31JDa+mWvL1vEoC/FuvN
+         jyh0i3uBDZ1ahu0Cm3o2JlXgMRXHUAB07X+NaNMVmV2f/9WULNXbkDGCRM56YNveBwPy
+         IwXkwTKCCBbeZgYJwO2JjfmalG2tsJpvfSNYN85aDs4JUjK/Q5bJPSLSin8v+edCfqe8
+         aPsg==
+X-Gm-Message-State: AOAM533wLIev4bGEnckZyQgrZeUi302SEWp78LcvVeOlxlv8tmt4U1c1
+        TClwCWKtxeocfO83zzfP+Xiq3Q2n5r4=
+X-Google-Smtp-Source: ABdhPJyx2OYWgFFJj7SbFvRCAdz6bnSvdmUikwcRJaBdSxuUHHjM4vfjvwcjKICXrz5mVdF0XKnfEw==
+X-Received: by 2002:a05:6512:c28:: with SMTP id z40mr3336166lfu.457.1636236765678;
+        Sat, 06 Nov 2021 15:12:45 -0700 (PDT)
+Received: from [192.168.1.11] ([217.117.245.207])
+        by smtp.gmail.com with ESMTPSA id p3sm160926lfg.273.2021.11.06.15.12.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 06 Nov 2021 15:12:45 -0700 (PDT)
+Message-ID: <8d0346ba-4819-c25e-f208-0b51116d9147@gmail.com>
+Date:   Sun, 7 Nov 2021 01:12:44 +0300
 MIME-Version: 1.0
-References: <20211106104053.98761-1-ajaygargnsit@gmail.com>
- <CAHp75VdY8aoF+dCm0j7EA-53BFaWdepvYYv7h5MVz2kVWagOOA@mail.gmail.com>
- <CAHP4M8Vdj4Eb8q773BeHvsW9n6t=3n1WznuXAR4fZCNi1J6rOg@mail.gmail.com> <CAHp75VcZArNXhY2T5RmSmrFrAvd4YGRfpByBb4hYLccNwGDyVA@mail.gmail.com>
-In-Reply-To: <CAHp75VcZArNXhY2T5RmSmrFrAvd4YGRfpByBb4hYLccNwGDyVA@mail.gmail.com>
-From:   Ajay Garg <ajaygargnsit@gmail.com>
-Date:   Sun, 7 Nov 2021 03:36:35 +0530
-Message-ID: <CAHP4M8WYR5QvEoc8PRQ8CYFa0C4hx=_Fy4PTiqmpqFkXc59jXA@mail.gmail.com>
-Subject: Re: [PATCH v2] tty: vt: keyboard: initialize "kbs" so that kfree(kbs)
- runs fine even if kbs is not kmalloced.
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Pavel Skripkin <paskripkin@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "kernel@esmil.dk" <kernel@esmil.dk>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH v3] tty: vt: keyboard: add default switch-case, to handle
+ smatch-warnings in method vt_do_kdgkb_ioctl
+Content-Language: en-US
+To:     Ajay Garg <ajaygargnsit@gmail.com>, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, andriy.shevchenko@linux.intel.com,
+        kernel@esmil.dk, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211106220315.392842-1-ajaygargnsit@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20211106220315.392842-1-ajaygargnsit@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thanks Andy, v3-patch has been posted at :
-https://lore.kernel.org/linux-serial/20211106220315.392842-1-ajaygargnsit@g=
-mail.com/T/#u
+On 11/7/21 01:03, Ajay Garg wrote:
+> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+> index c7fbbcdcc346..b83e7669658d 100644
+> --- a/drivers/tty/vt/keyboard.c
+> +++ b/drivers/tty/vt/keyboard.c
+> @@ -2090,6 +2090,12 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+>   
+>   		ret = 0;
+>   		break;
+> +	default: {
+> +		kbs = NULL;
+> +		ret = -ENOIOCTLCMD;
+> +
+> +		break;
+> +	}
 
-Many thanks to Pavel and Andy for the review/help throughout.
-Let's continue on the v3-patch thread-link.
+Are these brackets needed here? There are no local variables inside 
+default case.
 
->
-> It=E2=80=99s fine to add default case as I suggested. The problem with yo=
-ur contribution is in the commit message. Selling point would be (according=
- to the below) the smatch complain with the idea of having default case  in=
- general.
->
-> So something like:
-> =3D=3D=3D
-> The smatch tool gives a warning on the code in ...
->
-> warning: ...
->
-> This usually happens when switch has no default case and static analyzers=
- and even sometimes compilers can=E2=80=99t prove that all possible values =
-are covered.
->
-> ...
->
-> =3D=3D=3D
->
+
+just my 2c,
+
+With regards,
+Pavel Skripkin
