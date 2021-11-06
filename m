@@ -2,99 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ABD2C433EF
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 20:30:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 028D2C433EF
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 20:34:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E08FF6112D
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 20:30:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C07A161056
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 20:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235048AbhKFUdL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 Nov 2021 16:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
+        id S233920AbhKFUgq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 Nov 2021 16:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233034AbhKFUdK (ORCPT
+        with ESMTP id S230320AbhKFUgp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 Nov 2021 16:33:10 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37331C061570;
-        Sat,  6 Nov 2021 13:30:29 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id r10-20020a056830448a00b0055ac7767f5eso18676715otv.3;
-        Sat, 06 Nov 2021 13:30:29 -0700 (PDT)
+        Sat, 6 Nov 2021 16:36:45 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE65C061570;
+        Sat,  6 Nov 2021 13:34:04 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id v15so14075919ljc.0;
+        Sat, 06 Nov 2021 13:34:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kk4+sY4PyOZ0E6z5TupIgLPxMwCgecCXulMckUme6/4=;
-        b=QkmcBXdhcIDF8s5zpPDLFoZysnj7hb3iajTaIKuy+uDRFsqYmWogcqnCHWxSQsqaan
-         OIXnCJdMjgXBmRAj4kfB762rUmCn/FEVXYAmdN6d9ma+Kjt8b1KLhVLiG7uKuLylibG5
-         4ZoL4VQWOQAaqTom+bSCgVSy7+u6peKcGvLbFKiQV+SHy7lg0wfSOe9B8VytwzuzhsQh
-         IT+qN2MW/hNJB+GM5flZf7aAI7ndgGeMuSXx+7EUM9pMx+/my8yaDDFEp6AkabzXrttK
-         mwskVc/y7ue//Uqqnd/tieTFnZVCWFg2y9y+D4GNA18WzTP094/UDKqVDOf5fiXA8ark
-         eoLQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ivr2Awm9A6W/30hhTq73ud4rsNlqaBVMqxR8KOFQptk=;
+        b=AKtRUSajJsvlDyun9EJrnS9kuS+3JXDGuUXdpPiWdMu8EyHVghqDAhCIKvfd51b9cV
+         RwgAEMPDX9wBScMVLCEvlXaa+mXvkAIDyl5x1/DH0K48E7rTDieDAb5BS+IcrHVY7VFZ
+         uwWRfYmxRamBiS1z/MkR1nl19jU1ezCllWgVANSoqZcgRDc1Vrts6v225rpsdmRDwM8A
+         tRlF4tvjdzXFQliG7jEAA5+LOS/uOtJ7HBoVgoslk+eTi/LdAjF2UVO3ktOoiq402ZL1
+         OHc0cEuECX5EkWRACPXgejpcF+RX/hgoUKL7Vcq9lZQBhN5n1hd+CeqQrj0ca4OQXgRD
+         zsng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kk4+sY4PyOZ0E6z5TupIgLPxMwCgecCXulMckUme6/4=;
-        b=4W86NW1HsQhQu5clHPw9MJ/cm0hP7FHm+Bw952fqQRIVflyIQokwuWa5bZNY84Mrrw
-         AseAoDaYkaNhYVh29lyHQtEn9n579oHsxayHAXsOkpQ2rv7lr33i8/GQPDnHpwipzDPk
-         8YaygXCu5Zy+1QAxBn1i4lGLt72aY1kHJPyegxjwkKkE0oqGYy5+855F0DDf+BRmcTCT
-         2QoSoVIG2YOD8qZk9GUhfDinqBxWk2HbOqoINOEY+LCSHnSER/bh+o7mKmqEMPzbpR+O
-         2nBByM8UJSiG71KbGFyaRBOFp5HtHctQ7uqCEipoUeY/6GhN8WkE07zY/R/SQkryIkAc
-         lHow==
-X-Gm-Message-State: AOAM5336fCDN7XEfgwJGKjRwd9WaZcPeIx5AoyOHNlWMMBMEiTvoEw+9
-        tyrH2wpQ7vPjqMGw0HOIzKONXScu4PQPS6xxL2pWtShK7vk=
-X-Google-Smtp-Source: ABdhPJzp5CghRBI9cDFyyLn8eOpaZd6BpdWsiDtOjjfMHdYd989clkEMK1dbVvav7czOWVOK90CpY9CEf0OdAQx6v/M=
-X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr1749399otq.173.1636230628533;
- Sat, 06 Nov 2021 13:30:28 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ivr2Awm9A6W/30hhTq73ud4rsNlqaBVMqxR8KOFQptk=;
+        b=EfNxiReCt+qAa83Gszer2V9CzcgrdQzxdPfYn6KMl1B8/S9i4bsCtieF1rUzfNaffG
+         Fh9aeyrDl86rqAzmlRJJ0DRhh40qoyEx4RZkkc+n9SYWii74104vjUoUbfPMCesWZgj9
+         cZSIi8afgtlSuw8Bf1vLm76dtH1t+vtN81V+ADIRtUzVTyrShsg3/qjfZpdMoVdwgLpv
+         nQc9q1+jI3nHKIANWNyHK/22rSBZKx1DGSrimbyeOMtxTuQUEJCcncPIVRhGnOK2Yurr
+         ojrAkXgL0HUBgsM/4Numd9cjYsA5bMQJVSwf0UMckBIfvxRqz3vMnhGPqBiLe3j2hjCw
+         mThA==
+X-Gm-Message-State: AOAM532USi4UvX2Rh8JDb13OQ2/gs5mp5pnLuCOA041M21VDQma/Wb/x
+        9O9NlyPHSZN1botcuYrq7qI=
+X-Google-Smtp-Source: ABdhPJwskimdziV3Xu1QK80amoB8+QHyv3a+m9FFGKrtPPyCaYW0nEDZZy9A2WuOZtUnsShgAN+JTA==
+X-Received: by 2002:a2e:7c0c:: with SMTP id x12mr15443100ljc.210.1636230842507;
+        Sat, 06 Nov 2021 13:34:02 -0700 (PDT)
+Received: from [192.168.1.11] ([217.117.245.207])
+        by smtp.gmail.com with ESMTPSA id y1sm1248023lfd.204.2021.11.06.13.34.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 06 Nov 2021 13:34:02 -0700 (PDT)
+Message-ID: <9717b429-597f-7778-c880-94361bcdee7f@gmail.com>
+Date:   Sat, 6 Nov 2021 23:34:01 +0300
 MIME-Version: 1.0
-References: <20211106092041.43745-1-ajaygargnsit@gmail.com>
- <9eafae1f-d9f0-298d-cf20-212865d0becc@gmail.com> <868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com>
- <CAHP4M8Ww0-VqCBKX=iLd=zy1AcDoNdzTOqJuaqRxCGZsMhoX9w@mail.gmail.com>
- <CAHP4M8UcZ=ttB8jbN1yOY6YH8SiQ27NhdEKi9SDH1CWG-GY6eg@mail.gmail.com> <6b58a3e1-f2ea-cc4c-03b2-06334b559373@gmail.com>
-In-Reply-To: <6b58a3e1-f2ea-cc4c-03b2-06334b559373@gmail.com>
-From:   Ajay Garg <ajaygargnsit@gmail.com>
-Date:   Sun, 7 Nov 2021 02:00:16 +0530
-Message-ID: <CAHP4M8Vs8a8u98enuHXaBcC7D4fCZzCOtEq06VnvuPUqhqPK=Q@mail.gmail.com>
-Subject: Re: [PATCH] tty: vt: keyboard: do not copy an extra-byte in copy_to_user
-To:     Pavel Skripkin <paskripkin@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH] tty: vt: keyboard: do not copy an extra-byte in
+ copy_to_user
+Content-Language: en-US
+To:     Ajay Garg <ajaygargnsit@gmail.com>
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
         kernel@esmil.dk, David Laight <David.Laight@aculab.com>,
         "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+References: <20211106092041.43745-1-ajaygargnsit@gmail.com>
+ <9eafae1f-d9f0-298d-cf20-212865d0becc@gmail.com>
+ <868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com>
+ <CAHP4M8Ww0-VqCBKX=iLd=zy1AcDoNdzTOqJuaqRxCGZsMhoX9w@mail.gmail.com>
+ <CAHP4M8UcZ=ttB8jbN1yOY6YH8SiQ27NhdEKi9SDH1CWG-GY6eg@mail.gmail.com>
+ <6b58a3e1-f2ea-cc4c-03b2-06334b559373@gmail.com>
+ <CAHP4M8Vs8a8u98enuHXaBcC7D4fCZzCOtEq06VnvuPUqhqPK=Q@mail.gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <CAHP4M8Vs8a8u98enuHXaBcC7D4fCZzCOtEq06VnvuPUqhqPK=Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> > 2.
-> > == Calculate the actual length of kbs, add 1, and then copy those many
-> > bytes to user-buffer ==
-> >
-> > ret = copy_to_user(user_kdgkb->kb_string, kbs, len + 1) ?
-> >                          -EFAULT : 0;
-> > =>
-> > ret = copy_to_user(user_kdgkb->kb_string, kbs, strlen(kbs) + 1) ?
-> >                          -EFAULT : 0;
-> >
->
-> But isn't strlen(kbs) is guaranteed to be equal to strlcpy() return
-> value in this case? As I said in previous emails,
-> strlen(func_table[kb_func]) < sizeof(user_kdgkb->kb_string) by design of
-> this function.
+On 11/6/21 23:30, Ajay Garg wrote:
+>> > 2.
+>> > == Calculate the actual length of kbs, add 1, and then copy those many
+>> > bytes to user-buffer ==
+>> >
+>> > ret = copy_to_user(user_kdgkb->kb_string, kbs, len + 1) ?
+>> >                          -EFAULT : 0;
+>> > =>
+>> > ret = copy_to_user(user_kdgkb->kb_string, kbs, strlen(kbs) + 1) ?
+>> >                          -EFAULT : 0;
+>> >
+>>
+>> But isn't strlen(kbs) is guaranteed to be equal to strlcpy() return
+>> value in this case? As I said in previous emails,
+>> strlen(func_table[kb_func]) < sizeof(user_kdgkb->kb_string) by design of
+>> this function.
+> 
+> That's the whole point of the discussion :)
+> 
+> The method "vt_do_kdgkb_ioctl" does not manage "func_table[kb_func]".
+> Thus, the method does not know whether or not
+> strlen(func_table[kb_func]) < sizeof(user_kdgkb->kb_string).
+> 
 
-That's the whole point of the discussion :)
+It manages. The code under `case KDSKBSENT:` sets func_table[] entries 
+via vt_kdskbsent().
 
-The method "vt_do_kdgkb_ioctl" does not manage "func_table[kb_func]".
-Thus, the method does not know whether or not
-strlen(func_table[kb_func]) < sizeof(user_kdgkb->kb_string).
+kbs = strndup_user(..., sizeof(user_kdgkb->kb_string));
 
-The intention is to make the method itself robust, without relying on
-any external "chances" :)
+is used to allocate buffer for the func_table[] entry. That's my main 
+point :)
 
->
-> Do we need extra strlen() call here? Let's see what more experienced
-> people think about it :)
 
-Yep, let's wait for more feedback ..
+
+
+With regards,
+Pavel Skripkin
