@@ -2,127 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2120C433F5
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 18:59:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A0FC433EF
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 19:20:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 72B7761037
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 18:59:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8E70D610E9
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 19:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234558AbhKFTB4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 Nov 2021 15:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35172 "EHLO
+        id S232499AbhKFTXM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 Nov 2021 15:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234147AbhKFTBz (ORCPT
+        with ESMTP id S232498AbhKFTXL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 Nov 2021 15:01:55 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246D2C061570;
-        Sat,  6 Nov 2021 11:59:14 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id s19-20020a056830125300b0055ad9673606so17179048otp.0;
-        Sat, 06 Nov 2021 11:59:14 -0700 (PDT)
+        Sat, 6 Nov 2021 15:23:11 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D5CC061570;
+        Sat,  6 Nov 2021 12:20:30 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id v40-20020a056830092800b0055591caa9c6so18526994ott.4;
+        Sat, 06 Nov 2021 12:20:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=w/De7BpxXxHmTIkQQm3S5gIv0fyA+bSz7s084KVq+qk=;
-        b=ERp/KaRpAyloDuMsxxYmdvO51oNzew06YZxc7JwgzcXiErKvY0ThENJR16hxtRZPCg
-         IgsiruyCAyCUcfeCw6k6DM6KRSKDePpr5hUnSNTwXjTXU9ntOpZ9S9ZcIlnQrANJFjQL
-         5Gg0ygVx33VtNMwT7l4IyFLbZXfBKtbLv4AvfOqfrL4h8MPa19fYS+vXzL9F0N8MNv5a
-         rbs1JDe3ULkQHfJLwTxr2nu0oHCSia9ERpWPR92m+kwoQ4c6n4pPIa/FLFahDr+0Yv6T
-         +42lwk6SnWq/fBUmOG1aS+xt7Tqmj8wnJcD3nbLnq9b5Kr2M2o8jrJTY+rwtf/PIRsk1
-         1aVg==
+        bh=8ibHe0bg8yrjy+eEkaeet+vUrHDpvSYjM5LvxS0CthM=;
+        b=Dn0m554hhGaLvJaP2djE45v57NJ5EfYuTqyzaBxB9JKUktHBmbJLkPz52DVtGIldC3
+         luBRCa5d5Cft/L1ilAx9uP4TqmJe35+n/YBBM68qa/BebVBVvHOn49eIMKp7+igpkocd
+         bgd/0LKTU63N7zEv76mnyC9bdEJ4Jjpvl72a+ia5fWh4ffqVwznazvBnVsBfC8LO6FTZ
+         qADYaEp20T9it9x6E+UTguK8P7GmbmTxpvJtIqsg7QvLws8+cxHbmqjfTPrYW+f0oOWr
+         W/lqnF+V4W/mNSCohQfcJVlkcIXkWURIiq7LexCAzYb/588aM4YdO8C9/OD4FoH7R/u1
+         6eyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=w/De7BpxXxHmTIkQQm3S5gIv0fyA+bSz7s084KVq+qk=;
-        b=BayY93kJ8UxKbo1XbBYN5YFReUAJaLXarAuYN9jkXFKRWgdL1YslHECKSlMIeR+Xxz
-         eW7cdmv8BFxiY1HnYCKpvhKY3MCvD9+fVsM9gr9TgoQ0watG9rDfThWUoTXjSpj9J82J
-         E7E8eKPjKIpSgjjrE/G7k/5UUUVr/VbRrE8kJpMo6PC459QEcsPdeJ1tEJdCrPh/w3p6
-         EWzSs+14S1FZe3ZVeFIwUbaQNoHswna8IYkmrACXMYeAHUFG0HDieSvBmimxB8fLwNoY
-         bhHx9HLsnsGRZvKSg30sKDWI8WaruUSjcyeRHAZaYUsrX+7nXHet+5I+BXSfGPisqEVC
-         kjvQ==
-X-Gm-Message-State: AOAM533yctgtzOJslH8xcAvMEKaTInJxwP3RoHAxuQLKPHDt5DK7XxRi
-        sUPkIrJvyDu2hnQWfMvYzqMCtgoksBjDwtXZO6M=
-X-Google-Smtp-Source: ABdhPJx8IjEZ/STpiFs4brCB+WtH6ZG/2bsrAawNzpQrp6+wmclzRwBR5BAAKO0tkNm2b1wT6UaQbxCl40PUmbdrXhM=
-X-Received: by 2002:a9d:7617:: with SMTP id k23mr36426215otl.351.1636225153438;
- Sat, 06 Nov 2021 11:59:13 -0700 (PDT)
+        bh=8ibHe0bg8yrjy+eEkaeet+vUrHDpvSYjM5LvxS0CthM=;
+        b=UQNtDDcaemyYQmGzL2mhmouGLRXeLf8g/Wj4OIhvDjNmvcgeRJiMbxUeyU4XyKz8Il
+         nQmVnVYGbf73msTytmhiO/nGZ9xrLi/+Yc/CqpZV4f24e+uopPrsNxkSPQaY25JDVu7o
+         QJz8e+idOKHBS7DhULYi8UtbTwSMGsn2u8nXyrBnGwL7owa9gagUf6kUAEgNb6AcvMB5
+         Tphtl/DTr5lNbMyYcRusTlKzSjh+jXnyM6AJdvOu4WU9TIjRMfREDmPR+fkpKmdSGwkl
+         Kl7CTUtQ3WWCsvDclxjb7ll8wGpaNwAQ/rA1rCAK2a82g8hxiUHvFv+K45xxzroyJ+at
+         NToA==
+X-Gm-Message-State: AOAM532IMHf8rGQCk++m5ffpw8DgYNHRQQEHplc2z9TxSpIAYboqMGL1
+        4jPWN4zD0bdkXq+hOPS2arH1ZrdsyvyM9dsVf9U=
+X-Google-Smtp-Source: ABdhPJybSJ4nQFconpFtDlxaTBInuVnAjg5dmuCtJM5aIwH6eu0uM2NlsogsDxI7Hc4ROPBmmpnUyHhEX+ILZRwauA0=
+X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr1486634otq.173.1636226429641;
+ Sat, 06 Nov 2021 12:20:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211106104053.98761-1-ajaygargnsit@gmail.com> <CAHp75VdY8aoF+dCm0j7EA-53BFaWdepvYYv7h5MVz2kVWagOOA@mail.gmail.com>
-In-Reply-To: <CAHp75VdY8aoF+dCm0j7EA-53BFaWdepvYYv7h5MVz2kVWagOOA@mail.gmail.com>
+References: <20211106092041.43745-1-ajaygargnsit@gmail.com>
+ <9eafae1f-d9f0-298d-cf20-212865d0becc@gmail.com> <868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com>
+In-Reply-To: <868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com>
 From:   Ajay Garg <ajaygargnsit@gmail.com>
-Date:   Sun, 7 Nov 2021 00:29:01 +0530
-Message-ID: <CAHP4M8Vdj4Eb8q773BeHvsW9n6t=3n1WznuXAR4fZCNi1J6rOg@mail.gmail.com>
-Subject: Re: [PATCH v2] tty: vt: keyboard: initialize "kbs" so that kfree(kbs)
- runs fine even if kbs is not kmalloced.
+Date:   Sun, 7 Nov 2021 00:50:17 +0530
+Message-ID: <CAHP4M8Ww0-VqCBKX=iLd=zy1AcDoNdzTOqJuaqRxCGZsMhoX9w@mail.gmail.com>
+Subject: Re: [PATCH] tty: vt: keyboard: do not copy an extra-byte in copy_to_user
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Pavel Skripkin <paskripkin@gmail.com>,
         Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
-        kernel@esmil.dk
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        kernel@esmil.dk, David Laight <David.Laight@aculab.com>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-First of all, many thanks to Pavel for all the help and guidance,
-nature bless you.
-I will make it a point to keep all maintainers in loop, for all my
-future patches.
+Thanks Pavel, Andy, David for the help.
 
->
-> Everybody who is developing for kernel may check this easily, no need
-> to have this in the commit message.
->
-> As I told you, NAK.
-> This is no value in this patch according to the commit message.
->
-> If you have a compiler warning you need to provide the command line
-> for `make` that makes that warning appear.
+Andy,
 
-"make" as such runs fine, without any blocker (on my x86_64 machine).
+There is no compilation/runtime blocker.
+There were warnings reported by smatch.
 
-The "kbs not initialized" is seen, when the smatch static-analyzer is run.
-Thereafter, the patch was floated, to make the method
-"vt_do_kdgkb_ioctl" crash-proof by handling kbs properly, without
-depending upon external factors on whether a switch-case is hit or
-not.
+My intention is to make the method "vt_do_kdgkb_ioctl" bullet-proof in
+itself, without depending upon external clients.
 
-> In that case the better
-> solution would be to add default case because some compilers can make
-> (wrong) assumptions based on the absence of the default case.
->
-> Something like
->
-> default:
->    kbs = NULL;
->    break;
->
-> at the end of the switch.
->
-> But again, your current commit message does not sell.
+Pavel has explained that currently things are fine, as per :
+https://lore.kernel.org/linux-serial/868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com/T/#m740fffb7c6ee52fdc98b9ef0b4e32a060b6a3be3
 
-Hmm, am not sure what to make of this.
+but it seems that there is a big flaw - we are dependent on the length
+of "func_table[kb_func]" being ok. If func_table[kb_func] goes awry,
+the method will cause overflow.
 
-I guess, we could follow one of the following approaches :
-
-i)
-Leave things as it is, as there is no blocker in the make-compilation/runtime.
-
-ii)
-Put the "default: kbs = NULL; break;" case, as suggested, to ensure
-"vt_do_kdgkb_ioctl" does its work fine flawlessly, without depending
-upon external clients.
+Since func_table[kb_func]" is not managed by the method, so the method
+must not depend on func_table[kb_func]" length-correctness. Instead,
+"vt_do_kdgkb_ioctl" must ensure no overflow, without depending how
+external entities (func_table[kb_func] behave.
 
 
-Since there is no blocker in functionality, I am ok with whatever
-consensus is reached by the maintainers.
-If we wish to go with ii), please let me know, I will float next
-patch-version with the ii) change, along with a better commit-message.
 
-As of now, since Andy has voted for a NAK, I would not pursue this
-further as of now :)
+The issue with strlcpy, along with a potential "fix", has been explained in :
+https://lore.kernel.org/linux-serial/868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com/T/#m1c4aaa4347b02fd4c11ce611ff5029fcb71c37a1
+
+David has provided a simpler fix (usage of strscpy), as in :
+https://lore.kernel.org/linux-serial/868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com/T/#m63dab1137e593f2030920a53272f71866b442f40
+
+
+So, we could go with one of the above changes (mine/David's), or
+nothing at all (since there is no blocker).
+
+I vote for David's strscpy "fix", as it is simple, and does away with
+the dependency on the length of "func_table[kb_func]".
+
+
+Would like to know what the maintainers think.
+If there is a consensus that the method "vt_do_kdgkb_ioctl" be made
+bullet-proof in itself, please let me know, I will float the next
+version of patch.
+
+
+Thanks again Pavel, David, Andy.
 
 
 Thanks and Regards,
