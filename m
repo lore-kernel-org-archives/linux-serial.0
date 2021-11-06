@@ -2,119 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 028D2C433EF
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 20:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC30C433F5
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 20:44:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C07A161056
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 20:34:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 18C25610FD
+	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 20:44:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233920AbhKFUgq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 Nov 2021 16:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        id S230393AbhKFUrb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 Nov 2021 16:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230320AbhKFUgp (ORCPT
+        with ESMTP id S230035AbhKFUrb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 Nov 2021 16:36:45 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE65C061570;
-        Sat,  6 Nov 2021 13:34:04 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id v15so14075919ljc.0;
-        Sat, 06 Nov 2021 13:34:04 -0700 (PDT)
+        Sat, 6 Nov 2021 16:47:31 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0B2C061570;
+        Sat,  6 Nov 2021 13:44:49 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id u2so20599424oiu.12;
+        Sat, 06 Nov 2021 13:44:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ivr2Awm9A6W/30hhTq73ud4rsNlqaBVMqxR8KOFQptk=;
-        b=AKtRUSajJsvlDyun9EJrnS9kuS+3JXDGuUXdpPiWdMu8EyHVghqDAhCIKvfd51b9cV
-         RwgAEMPDX9wBScMVLCEvlXaa+mXvkAIDyl5x1/DH0K48E7rTDieDAb5BS+IcrHVY7VFZ
-         uwWRfYmxRamBiS1z/MkR1nl19jU1ezCllWgVANSoqZcgRDc1Vrts6v225rpsdmRDwM8A
-         tRlF4tvjdzXFQliG7jEAA5+LOS/uOtJ7HBoVgoslk+eTi/LdAjF2UVO3ktOoiq402ZL1
-         OHc0cEuECX5EkWRACPXgejpcF+RX/hgoUKL7Vcq9lZQBhN5n1hd+CeqQrj0ca4OQXgRD
-         zsng==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5Wwu2M5WHYhPnMcLZDitxKTSUEf/rrDMMpK5D1XcgpI=;
+        b=cxbc3sMI0xx6mOTKwBeoMKC5ALke1qGT8oAIHsPtlchEo3etwwXzdEKWR4+AEomfRj
+         Ja37C5fwTUPWjpdG2bS8dj/GXbx7Ym2FFqk8txP3EdcgxnZgT+a5yuO9SIxsVLET5FUb
+         5vgFRkhYAdMiJa7u9AfC0KsHx694cA26/BFuy5kZ48/2b2oyMIOQCYOf9sOTlDSYN5Fz
+         bxh+r6EYXZw0X58SE97VqbmYqUovJr6Da7QVpvUSrt0svJGHMxCwkol596rcJdF0mBxh
+         JMoDhiI3BzpllFk5MuadzlJlc4ARNmnMV9qvi8QqtDshfg/oq2FhA7zO0mmIDj7TSe4x
+         rKqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ivr2Awm9A6W/30hhTq73ud4rsNlqaBVMqxR8KOFQptk=;
-        b=EfNxiReCt+qAa83Gszer2V9CzcgrdQzxdPfYn6KMl1B8/S9i4bsCtieF1rUzfNaffG
-         Fh9aeyrDl86rqAzmlRJJ0DRhh40qoyEx4RZkkc+n9SYWii74104vjUoUbfPMCesWZgj9
-         cZSIi8afgtlSuw8Bf1vLm76dtH1t+vtN81V+ADIRtUzVTyrShsg3/qjfZpdMoVdwgLpv
-         nQc9q1+jI3nHKIANWNyHK/22rSBZKx1DGSrimbyeOMtxTuQUEJCcncPIVRhGnOK2Yurr
-         ojrAkXgL0HUBgsM/4Numd9cjYsA5bMQJVSwf0UMckBIfvxRqz3vMnhGPqBiLe3j2hjCw
-         mThA==
-X-Gm-Message-State: AOAM532USi4UvX2Rh8JDb13OQ2/gs5mp5pnLuCOA041M21VDQma/Wb/x
-        9O9NlyPHSZN1botcuYrq7qI=
-X-Google-Smtp-Source: ABdhPJwskimdziV3Xu1QK80amoB8+QHyv3a+m9FFGKrtPPyCaYW0nEDZZy9A2WuOZtUnsShgAN+JTA==
-X-Received: by 2002:a2e:7c0c:: with SMTP id x12mr15443100ljc.210.1636230842507;
-        Sat, 06 Nov 2021 13:34:02 -0700 (PDT)
-Received: from [192.168.1.11] ([217.117.245.207])
-        by smtp.gmail.com with ESMTPSA id y1sm1248023lfd.204.2021.11.06.13.34.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 06 Nov 2021 13:34:02 -0700 (PDT)
-Message-ID: <9717b429-597f-7778-c880-94361bcdee7f@gmail.com>
-Date:   Sat, 6 Nov 2021 23:34:01 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5Wwu2M5WHYhPnMcLZDitxKTSUEf/rrDMMpK5D1XcgpI=;
+        b=LJjTwHbfttJ58x8NW+lMtKJTPCy48LJuveREx7UEO9Jssfvlhe6Vczbt32RG60j9cH
+         muUbuXs8cXk0ksTnylAC8KDA5ANbRAP8a+9UxOgMy822IZOf9gwZ92iAkxZZCPt4Qux9
+         JzAIPpX1PA+FixmUCxqrB2YElkxjdkPT2/SNJylPu0YkTI0EurcZwWclJjSvp+Tc83Jt
+         ieK9R7tJJc15cDiNpbBxZ5Nj7zGeFN5zKfHBhJUVGvy25bJOiv6d9ic6JAJ3ihlgJeIG
+         JF/40ZrFsklnrW041+Z5JCzH6qfLKNYG0+e6A9fIcgJvVHCRyAaijcUzu/V2/inyolGT
+         /msA==
+X-Gm-Message-State: AOAM531gFkDl4GuLBkIUz10iOXK2WLtUamRvTUOxvn/5EZlSL0dOw9xx
+        mWu3MDxyDCwDw9NFtzcRJkn6tPIX3J+9sZQYESY=
+X-Google-Smtp-Source: ABdhPJy3MjSjOwvjLWHAZqZEWoiRqN9S/Iy8FIWcObZNfHtu7u8HAUPyiZZtyOPuL1GThL7OQHygczfUWT25FBbe04E=
+X-Received: by 2002:a05:6808:2108:: with SMTP id r8mr14746685oiw.118.1636231488597;
+ Sat, 06 Nov 2021 13:44:48 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH] tty: vt: keyboard: do not copy an extra-byte in
- copy_to_user
-Content-Language: en-US
-To:     Ajay Garg <ajaygargnsit@gmail.com>
+References: <20211106092041.43745-1-ajaygargnsit@gmail.com>
+ <9eafae1f-d9f0-298d-cf20-212865d0becc@gmail.com> <868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com>
+ <CAHP4M8Ww0-VqCBKX=iLd=zy1AcDoNdzTOqJuaqRxCGZsMhoX9w@mail.gmail.com>
+ <CAHP4M8UcZ=ttB8jbN1yOY6YH8SiQ27NhdEKi9SDH1CWG-GY6eg@mail.gmail.com>
+ <6b58a3e1-f2ea-cc4c-03b2-06334b559373@gmail.com> <CAHP4M8Vs8a8u98enuHXaBcC7D4fCZzCOtEq06VnvuPUqhqPK=Q@mail.gmail.com>
+ <9717b429-597f-7778-c880-94361bcdee7f@gmail.com>
+In-Reply-To: <9717b429-597f-7778-c880-94361bcdee7f@gmail.com>
+From:   Ajay Garg <ajaygargnsit@gmail.com>
+Date:   Sun, 7 Nov 2021 02:14:36 +0530
+Message-ID: <CAHP4M8XtFiAa1kF5A_rPbcui3DP8L6iyfP8GbwgLLzo0Bo+TNQ@mail.gmail.com>
+Subject: Re: [PATCH] tty: vt: keyboard: do not copy an extra-byte in copy_to_user
+To:     Pavel Skripkin <paskripkin@gmail.com>
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
         kernel@esmil.dk, David Laight <David.Laight@aculab.com>,
         "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20211106092041.43745-1-ajaygargnsit@gmail.com>
- <9eafae1f-d9f0-298d-cf20-212865d0becc@gmail.com>
- <868025b485b94480ad17d0ec971b3ee9@AcuMS.aculab.com>
- <CAHP4M8Ww0-VqCBKX=iLd=zy1AcDoNdzTOqJuaqRxCGZsMhoX9w@mail.gmail.com>
- <CAHP4M8UcZ=ttB8jbN1yOY6YH8SiQ27NhdEKi9SDH1CWG-GY6eg@mail.gmail.com>
- <6b58a3e1-f2ea-cc4c-03b2-06334b559373@gmail.com>
- <CAHP4M8Vs8a8u98enuHXaBcC7D4fCZzCOtEq06VnvuPUqhqPK=Q@mail.gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <CAHP4M8Vs8a8u98enuHXaBcC7D4fCZzCOtEq06VnvuPUqhqPK=Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/6/21 23:30, Ajay Garg wrote:
->> > 2.
->> > == Calculate the actual length of kbs, add 1, and then copy those many
->> > bytes to user-buffer ==
->> >
->> > ret = copy_to_user(user_kdgkb->kb_string, kbs, len + 1) ?
->> >                          -EFAULT : 0;
->> > =>
->> > ret = copy_to_user(user_kdgkb->kb_string, kbs, strlen(kbs) + 1) ?
->> >                          -EFAULT : 0;
->> >
->>
->> But isn't strlen(kbs) is guaranteed to be equal to strlcpy() return
->> value in this case? As I said in previous emails,
->> strlen(func_table[kb_func]) < sizeof(user_kdgkb->kb_string) by design of
->> this function.
-> 
-> That's the whole point of the discussion :)
-> 
-> The method "vt_do_kdgkb_ioctl" does not manage "func_table[kb_func]".
-> Thus, the method does not know whether or not
-> strlen(func_table[kb_func]) < sizeof(user_kdgkb->kb_string).
-> 
+> >
+> > That's the whole point of the discussion :)
+> >
+> > The method "vt_do_kdgkb_ioctl" does not manage "func_table[kb_func]".
+> > Thus, the method does not know whether or not
+> > strlen(func_table[kb_func]) < sizeof(user_kdgkb->kb_string).
+> >
+>
+> It manages. The code under `case KDSKBSENT:` sets func_table[] entries
+> via vt_kdskbsent().
+>
+> kbs = strndup_user(..., sizeof(user_kdgkb->kb_string));
+>
+> is used to allocate buffer for the func_table[] entry. That's my main
+> point :)
 
-It manages. The code under `case KDSKBSENT:` sets func_table[] entries 
-via vt_kdskbsent().
+func_table is set in vt_kdskbent, which itself is external.
 
-kbs = strndup_user(..., sizeof(user_kdgkb->kb_string));
+More importantly, vt_kdskbent is handled in case KDSKBSENT:, while the
+strlcpy issue we are dealing with is in case KDGKBSENT:
+In case KDGKBSENT, following are managed :
 
-is used to allocate buffer for the func_table[] entry. That's my main 
-point :)
+                ssize_t len = sizeof(user_kdgkb->kb_string);
+                kbs = kmalloc(len, GFP_KERNEL);
 
+while func_table[kb_func] is external entity here, so no assumption
+ought to be made for it, just my 2 cents though :)
 
+Anyhow, really, it is the maintainers' choice now :), since there
+isn't a burning (compilation/runtime) issue.
 
-
-With regards,
-Pavel Skripkin
+>
+>
+>
+>
+> With regards,
+> Pavel Skripkin
