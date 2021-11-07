@@ -2,149 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84851C433FE
-	for <linux-serial@archiver.kernel.org>; Sun,  7 Nov 2021 03:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF18BC433EF
+	for <linux-serial@archiver.kernel.org>; Sun,  7 Nov 2021 03:21:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5EE2D6137C
-	for <linux-serial@archiver.kernel.org>; Sun,  7 Nov 2021 03:17:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ACC99613A2
+	for <linux-serial@archiver.kernel.org>; Sun,  7 Nov 2021 03:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233942AbhKGDUQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 Nov 2021 23:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
+        id S232847AbhKGDYY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 Nov 2021 23:24:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230487AbhKGDUP (ORCPT
+        with ESMTP id S230487AbhKGDYY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 Nov 2021 23:20:15 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08164C061570;
-        Sat,  6 Nov 2021 20:17:34 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id a9so11915207pgg.7;
-        Sat, 06 Nov 2021 20:17:33 -0700 (PDT)
+        Sat, 6 Nov 2021 23:24:24 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B561C061570;
+        Sat,  6 Nov 2021 20:21:42 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id y11so21639778oih.7;
+        Sat, 06 Nov 2021 20:21:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PHmN3YW6/R/RxQnoPBZbOmRnvrA6AYrG3A+6cuRqvsw=;
-        b=jhIfCpxd+KMMLK68XTqrwgAfgtfJNoy20wx7Ie4u0fnkURMQHhoAVDdPkUi3PFD+IQ
-         MzN6recfvR1MvnukphiuWs3Iln9Y/fjVEv9GYNGryX2pascxhbt2FRf3e/XfyObsHmof
-         Tf1CwiaXvfGsJe2dRMT4gH8lDtfTMwB375Y4ER0FnxJeMf21R737dFylKo0dzwcnGgZz
-         /x1NFLvXa0DxCwUhKAiYFRitRq9R5a3SMgddukLDCBvcB/zxf9Tuaq46V3H2alnYJxcv
-         qT8Gsl4pQz3/JutY7ccJG351l18JD03V2/PZVIROCkRENxo3FR9ZCo1ey8FTb/YyWFud
-         x9fA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XJUFpExoWemk4FQi9OWmv4L9rgSOIELB05/UcaW0E6w=;
+        b=Xlv04d61JczZqYaCpoSsR6OEo5lBdreRY0cpWCv7wCFbZiFguAVQ6YPD+5Z89cAFVM
+         +Swpeyt/I/oVvcifDGH12potiupCL3IBslA5S5yfbGVBj+Kz3anjAz5Punxk60G+mnKF
+         AtM0kvctrsI4JMTZNu/Iodd/EQ2WeYo79gfyjSjvUwoyl+2coyby8lbw0EbGY6ntLLx3
+         zLg+9yu2ghcDrI4TgP6vKvEvqS4gN8OJgai2DeiPPPYGBsNWiIFoiYTUnMTZ4iS13I5j
+         axoO2cvwWVry7mlXECTrmlFIyiTt2+DogAHLIG00uukaq4YdhT0Uoo1I+hHY6sccHQFE
+         ma3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PHmN3YW6/R/RxQnoPBZbOmRnvrA6AYrG3A+6cuRqvsw=;
-        b=mpbI7hanedcCNGU5ROcmJGiSSjUWseVtQ0pFvh+1Bcptede3WubSaPPsz4C5HiFbAb
-         C80PIathmuKPzyYz8NZI1a504MwilW1Bws5fRkgRMYb8OKKh2hcHWyk8DkwSbbDiSrCv
-         rZbI4sb5/wsEch0JM4MtyR9p1s+ZlXcsh2t3UwqOvXHpZt6ot9CT9Pe1AvBPFg+mEM6f
-         uGME2hxi961fsQaxhDRveXFOGZEsNFgEAw1oSaEqMz7wAFcn8KRXC+yEatDtJcqRwznu
-         o3f8c3L9WBry7hv8iMn0Bn9phQVGmKMK3AkiFcv2ZsM/Ndu2dU+ZyEY8QB0sHxIgyA3q
-         RqmA==
-X-Gm-Message-State: AOAM532Pmp+evxv8msRo9jpir4rj8pKs7xwMOyA6ryEWAdfTqC/vzaMJ
-        AbkLusvcC/RDCgtG4ArZ2X0=
-X-Google-Smtp-Source: ABdhPJxO0o2pl2zpUBTWsGHqWPZ09aLVs218OumhfCTa7KlFEtTgwRC0rfcXOBPai0DM2maZA5jQig==
-X-Received: by 2002:a63:1d20:: with SMTP id d32mr9094714pgd.471.1636255053410;
-        Sat, 06 Nov 2021 20:17:33 -0700 (PDT)
-Received: from host-x86-64.. ([122.161.244.211])
-        by smtp.gmail.com with ESMTPSA id t4sm494535pfq.163.2021.11.06.20.17.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Nov 2021 20:17:32 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XJUFpExoWemk4FQi9OWmv4L9rgSOIELB05/UcaW0E6w=;
+        b=4J7Q2/DCFNEMa7oiCY68nu+syzkVxdMy3YtP1SwpZRwdKFEDuE87WyXZtFGynKJ8Vb
+         q9gsyWxVts44sJ/wuA9K0+M1lXVwy4wtyyqS+0wddWJZNnw9ZTn0AZ/LhxRxYCs+5JOw
+         04g3OC4/4HIFt/trsZ8TViCDlYpDtQ8FNvGSZoT/a2oHE82JTrhW+p4nJM5hAPCKeSvJ
+         30Ogvaw/V6ih6MJRvpZ+wp6Z8RDO9Kno3htrEzXKUqvgvFG7xDXS2jJmxcsM7C0+OhZT
+         jSTbKVt3j/pwyHDBphV+iZTiFZP1y4ms0ea7sJNK7++m2XjIsZEv7t+R+Usl4xZ35sPG
+         ZpYA==
+X-Gm-Message-State: AOAM5310cciGNMvtONy+wTu3mS1W2YSTQlFIHlrZhUtkrUKUdYPwVnzW
+        3oMBMqc7WJRXlpXWVgJ+Lgk5mNoQ78ulhBNRICQ=
+X-Google-Smtp-Source: ABdhPJzZan1GBV86zvVjmrxC/YLRToOnTONoGVor8xMFVTJQAJ1EGzjuG8FCvKgw3YLE7kloiRkrYns976fKfU+PgvU=
+X-Received: by 2002:a05:6808:2108:: with SMTP id r8mr15972082oiw.118.1636255301810;
+ Sat, 06 Nov 2021 20:21:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <20211106220315.392842-1-ajaygargnsit@gmail.com>
+ <8d0346ba-4819-c25e-f208-0b51116d9147@gmail.com> <CAHP4M8VmPTiWjVa_PEMs+XT0VzsoAw8BuO-KBo08Uwuf=T1WFw@mail.gmail.com>
+ <b7520698-44ef-55db-2b0f-ed47cd7d8b71@gmail.com>
+In-Reply-To: <b7520698-44ef-55db-2b0f-ed47cd7d8b71@gmail.com>
 From:   Ajay Garg <ajaygargnsit@gmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+Date:   Sun, 7 Nov 2021 08:51:29 +0530
+Message-ID: <CAHP4M8UXCb_6tAqDAZuKSUO=Y=U4wAk1C8v-MJbDCPOAV9+tFg@mail.gmail.com>
+Subject: Re: [PATCH v3] tty: vt: keyboard: add default switch-case, to handle
+ smatch-warnings in method vt_do_kdgkb_ioctl
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         andriy.shevchenko@linux.intel.com, kernel@esmil.dk,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     paskripkin@gmail.com, Ajay Garg <ajaygargnsit@gmail.com>
-Subject: [PATCH v4] tty: vt: keyboard: add default switch-case, to handle smatch-warnings in method vt_do_kdgkb_ioctl
-Date:   Sun,  7 Nov 2021 08:47:21 +0530
-Message-Id: <20211107031721.4734-1-ajaygargnsit@gmail.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-smatch-kchecker gives the following warnings when run on keyboard.c :
+> >
+>
+> I am not against these braces, but I, honestly, dislike them, because
+> `case : {` syntax looks ugly _to me_.
+>
+> KDGKBSENT uses it because of local variable `len` and not using them
+> will cause build error.
 
-vt_do_kdgkb_ioctl() error: uninitialized symbol 'kbs'.
-vt_do_kdgkb_ioctl() error: uninitialized symbol 'ret'.
+Ahh, that explains the difference.
 
-This usually happens when switch has no default case and static 
-analyzers and even sometimes compilers can’t prove that all possible 
-values are covered.
+Floated the v4 patch at :
+https://lore.kernel.org/linux-serial/20211107031721.4734-1-ajaygargnsit@gmail.com/T/#u
 
+so that consistency is maintained in the styling.
 
-Thus, the default switch-case has been added, which sets the values 
-for the two variables :
+Let's continue on the v4-patch link now.
 
-        * kbs as NULL, which also nicely fits in with kfree.
-
-        * ret as -ENOIOCTLCMD (on same lines if there is no cmd
-                               match in "vt_do_kdskled" method).
-
-
-Many thanks to the following for review of previous versions :
-
-	* Pavel Skripkin <paskripkin@gmail.com> 
-	* Andy Shevchenko <andy.shevchenko@gmail.com> 
+Thanks again Pavel.
 
 
-Signed-off-by: Ajay Garg <ajaygargnsit@gmail.com>
----
-
-
-There were discussions previously, and the current patch is the 
-result.
-
-v1 :
-https://lore.kernel.org/linux-serial/YYZN30qfaKMskVwE@kroah.com/T/#t
-
-v2 :
-https://lore.kernel.org/linux-serial/CAHP4M8Vdj4Eb8q773BeHvsW9n6t=3n1WznuXAR4fZCNi1J6rOg@mail.gmail.com/T/#m18f45676feaba6b1f01ddd5fe607997b190ef4b9
-
-v3 :
-https://lore.kernel.org/linux-serial/20211106220315.392842-1-ajaygargnsit@gmail.com/T/#u
-
-Changes in v2 :
-
-        * Changes as required by scripts/checkpatch.pl
-
-        * Checking whether kbs is not NULL before kfree is not required,
-          as kfree(NULL) is safe. So, dropped the check.
-
-Changes in v3 :
-
-        * Using default-switch case, and setting the variables 
-          when there is no matching cmd.
-
-Changes in v4 :
-
-        * Removed braces for the default switch-case.
-
-
- drivers/tty/vt/keyboard.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index c7fbbcdcc346..f66c32fe7ef1 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -2090,6 +2090,10 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 
- 		ret = 0;
- 		break;
-+	default:
-+		kbs = NULL;
-+		ret = -ENOIOCTLCMD;
-+		break;
- 	}
- 
- 	kfree(kbs);
-
--- 
-2.30.2
-
+>
+> I didn't find any strict requirements to not use brackets when there is
+> no local variable, so it's up to maintainers (again).
+>
+>
+> Anyway, thank for respinning :)
+>
+>
+>
+> With regards,
+> Pavel Skripkin
