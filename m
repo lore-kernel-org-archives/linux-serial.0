@@ -2,123 +2,149 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED26FC433F5
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 22:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84851C433FE
+	for <linux-serial@archiver.kernel.org>; Sun,  7 Nov 2021 03:17:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C27B3610FD
-	for <linux-serial@archiver.kernel.org>; Sat,  6 Nov 2021 22:25:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5EE2D6137C
+	for <linux-serial@archiver.kernel.org>; Sun,  7 Nov 2021 03:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234576AbhKFW2j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 Nov 2021 18:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
+        id S233942AbhKGDUQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 Nov 2021 23:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234571AbhKFW2j (ORCPT
+        with ESMTP id S230487AbhKGDUP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 Nov 2021 18:28:39 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346C3C061570;
-        Sat,  6 Nov 2021 15:25:57 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id bi35so26639972lfb.9;
-        Sat, 06 Nov 2021 15:25:57 -0700 (PDT)
+        Sat, 6 Nov 2021 23:20:15 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08164C061570;
+        Sat,  6 Nov 2021 20:17:34 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id a9so11915207pgg.7;
+        Sat, 06 Nov 2021 20:17:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ExOX3IowQ8INcZw1paGjxy/2n0XOkzYqt1pGuppdVYo=;
-        b=Is7uJO7TaD1cDlCjUSu4v0jPTk62J+yMaj+MD9c8qtNaXLbL7tA0jOn/SkeFYZhsS2
-         vvxt9sbTOKF2Kve8jdTvpTXJPa1HAwzYl1tDQbP8Z8/Q26qNx43lJ/TYaN/uqG9llv6e
-         CmZgJZtXuDvn2A4QUolg3/Rrgl9X5GgD4dU35qBz+TtJJwmT18P4refdbRZ9oBFN+1SN
-         cVYGliZ5aQG1NGx4tsv3iBz9ReecCRQmQCWm/dC7CviQwb7afYuWD95i5Wja28+2k5DG
-         dHoYg2Ke5/nLrmAr/efSb1Vz2nfW24y41G7kbAEzuAIXHVFxqgFhno5nz5Er3yYdVt/1
-         CJYw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PHmN3YW6/R/RxQnoPBZbOmRnvrA6AYrG3A+6cuRqvsw=;
+        b=jhIfCpxd+KMMLK68XTqrwgAfgtfJNoy20wx7Ie4u0fnkURMQHhoAVDdPkUi3PFD+IQ
+         MzN6recfvR1MvnukphiuWs3Iln9Y/fjVEv9GYNGryX2pascxhbt2FRf3e/XfyObsHmof
+         Tf1CwiaXvfGsJe2dRMT4gH8lDtfTMwB375Y4ER0FnxJeMf21R737dFylKo0dzwcnGgZz
+         /x1NFLvXa0DxCwUhKAiYFRitRq9R5a3SMgddukLDCBvcB/zxf9Tuaq46V3H2alnYJxcv
+         qT8Gsl4pQz3/JutY7ccJG351l18JD03V2/PZVIROCkRENxo3FR9ZCo1ey8FTb/YyWFud
+         x9fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ExOX3IowQ8INcZw1paGjxy/2n0XOkzYqt1pGuppdVYo=;
-        b=pIpP6YDc3829Qh1FAv3pEpAMvtYvQK/odYcx75aqYgs5DLs9WF1vHmtGLcc0HIi1Pz
-         LCIl9fqDjAZiqJ2G9vPgcmAztyEF5pNsrW7gLKae5o4uiMKh4f1X3KpOp1DAF+eypuT1
-         nOC0bHbgpTjOiMbO2OBL9fJhsRzpAQutqFW85mRIn+ehYYWrVNsPN4Q8i/kUtv6T5BQR
-         kT/fguOAJGLUdzZfbkvzjGV83eA28HKa5aQ+IXYX5dSkRd0des6FX6ZIsQ8+26xbBMF5
-         gZwq7+guYtOV+tE5x5ypXlzqor9Nx0RFce7H89A1+t7ciwyWYvMUMBngJr3yA79qzz8V
-         PYmg==
-X-Gm-Message-State: AOAM532aTnD9Zvvcpv4TsPMVLNKI1+CeLM7sR1HVeU6+N/MNhc6aRIdN
-        /ZveTbGopWELwsuOaOs5dVVK3YQeKxg=
-X-Google-Smtp-Source: ABdhPJz8Jupw9jWo/VPIIESTHwqdJmArD+CIBkZV7JxJcyHzLq9OSUNhvAUARnfBWn5VN1oB4r2tUw==
-X-Received: by 2002:ac2:4f03:: with SMTP id k3mr33043362lfr.231.1636237555427;
-        Sat, 06 Nov 2021 15:25:55 -0700 (PDT)
-Received: from [192.168.1.11] ([217.117.245.207])
-        by smtp.gmail.com with ESMTPSA id o23sm1163763ljg.70.2021.11.06.15.25.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 06 Nov 2021 15:25:55 -0700 (PDT)
-Message-ID: <b7520698-44ef-55db-2b0f-ed47cd7d8b71@gmail.com>
-Date:   Sun, 7 Nov 2021 01:25:54 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH v3] tty: vt: keyboard: add default switch-case, to handle
- smatch-warnings in method vt_do_kdgkb_ioctl
-Content-Language: en-US
-To:     Ajay Garg <ajaygargnsit@gmail.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        bh=PHmN3YW6/R/RxQnoPBZbOmRnvrA6AYrG3A+6cuRqvsw=;
+        b=mpbI7hanedcCNGU5ROcmJGiSSjUWseVtQ0pFvh+1Bcptede3WubSaPPsz4C5HiFbAb
+         C80PIathmuKPzyYz8NZI1a504MwilW1Bws5fRkgRMYb8OKKh2hcHWyk8DkwSbbDiSrCv
+         rZbI4sb5/wsEch0JM4MtyR9p1s+ZlXcsh2t3UwqOvXHpZt6ot9CT9Pe1AvBPFg+mEM6f
+         uGME2hxi961fsQaxhDRveXFOGZEsNFgEAw1oSaEqMz7wAFcn8KRXC+yEatDtJcqRwznu
+         o3f8c3L9WBry7hv8iMn0Bn9phQVGmKMK3AkiFcv2ZsM/Ndu2dU+ZyEY8QB0sHxIgyA3q
+         RqmA==
+X-Gm-Message-State: AOAM532Pmp+evxv8msRo9jpir4rj8pKs7xwMOyA6ryEWAdfTqC/vzaMJ
+        AbkLusvcC/RDCgtG4ArZ2X0=
+X-Google-Smtp-Source: ABdhPJxO0o2pl2zpUBTWsGHqWPZ09aLVs218OumhfCTa7KlFEtTgwRC0rfcXOBPai0DM2maZA5jQig==
+X-Received: by 2002:a63:1d20:: with SMTP id d32mr9094714pgd.471.1636255053410;
+        Sat, 06 Nov 2021 20:17:33 -0700 (PDT)
+Received: from host-x86-64.. ([122.161.244.211])
+        by smtp.gmail.com with ESMTPSA id t4sm494535pfq.163.2021.11.06.20.17.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Nov 2021 20:17:32 -0700 (PDT)
+From:   Ajay Garg <ajaygargnsit@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         andriy.shevchenko@linux.intel.com, kernel@esmil.dk,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211106220315.392842-1-ajaygargnsit@gmail.com>
- <8d0346ba-4819-c25e-f208-0b51116d9147@gmail.com>
- <CAHP4M8VmPTiWjVa_PEMs+XT0VzsoAw8BuO-KBo08Uwuf=T1WFw@mail.gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <CAHP4M8VmPTiWjVa_PEMs+XT0VzsoAw8BuO-KBo08Uwuf=T1WFw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Cc:     paskripkin@gmail.com, Ajay Garg <ajaygargnsit@gmail.com>
+Subject: [PATCH v4] tty: vt: keyboard: add default switch-case, to handle smatch-warnings in method vt_do_kdgkb_ioctl
+Date:   Sun,  7 Nov 2021 08:47:21 +0530
+Message-Id: <20211107031721.4734-1-ajaygargnsit@gmail.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/7/21 01:17, Ajay Garg wrote:
-> On Sun, Nov 7, 2021 at 3:42 AM Pavel Skripkin <paskripkin@gmail.com> wrote:
->>
->> On 11/7/21 01:03, Ajay Garg wrote:
->> > diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
->> > index c7fbbcdcc346..b83e7669658d 100644
->> > --- a/drivers/tty/vt/keyboard.c
->> > +++ b/drivers/tty/vt/keyboard.c
->> > @@ -2090,6 +2090,12 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
->> >
->> >               ret = 0;
->> >               break;
->> > +     default: {
->> > +             kbs = NULL;
->> > +             ret = -ENOIOCTLCMD;
->> > +
->> > +             break;
->> > +     }
->>
->> Are these brackets needed here? There are no local variables inside
->> default case.
-> 
-> Hmm,
-> 
-> * case KDGKBSENT: uses braces.
-> * case KDSKBSENT: does not use braces.
-> 
-> I based the layout for default-case on the same lines as case
-> KDGKBSENT: , as I prefer explicit braces :)
-> 
+smatch-kchecker gives the following warnings when run on keyboard.c :
 
-I am not against these braces, but I, honestly, dislike them, because 
-`case : {` syntax looks ugly _to me_.
+vt_do_kdgkb_ioctl() error: uninitialized symbol 'kbs'.
+vt_do_kdgkb_ioctl() error: uninitialized symbol 'ret'.
 
-KDGKBSENT uses it because of local variable `len` and not using them 
-will cause build error.
-
-I didn't find any strict requirements to not use brackets when there is 
-no local variable, so it's up to maintainers (again).
+This usually happens when switch has no default case and static 
+analyzers and even sometimes compilers can’t prove that all possible 
+values are covered.
 
 
-Anyway, thank for respinning :)
+Thus, the default switch-case has been added, which sets the values 
+for the two variables :
+
+        * kbs as NULL, which also nicely fits in with kfree.
+
+        * ret as -ENOIOCTLCMD (on same lines if there is no cmd
+                               match in "vt_do_kdskled" method).
 
 
+Many thanks to the following for review of previous versions :
 
-With regards,
-Pavel Skripkin
+	* Pavel Skripkin <paskripkin@gmail.com> 
+	* Andy Shevchenko <andy.shevchenko@gmail.com> 
+
+
+Signed-off-by: Ajay Garg <ajaygargnsit@gmail.com>
+---
+
+
+There were discussions previously, and the current patch is the 
+result.
+
+v1 :
+https://lore.kernel.org/linux-serial/YYZN30qfaKMskVwE@kroah.com/T/#t
+
+v2 :
+https://lore.kernel.org/linux-serial/CAHP4M8Vdj4Eb8q773BeHvsW9n6t=3n1WznuXAR4fZCNi1J6rOg@mail.gmail.com/T/#m18f45676feaba6b1f01ddd5fe607997b190ef4b9
+
+v3 :
+https://lore.kernel.org/linux-serial/20211106220315.392842-1-ajaygargnsit@gmail.com/T/#u
+
+Changes in v2 :
+
+        * Changes as required by scripts/checkpatch.pl
+
+        * Checking whether kbs is not NULL before kfree is not required,
+          as kfree(NULL) is safe. So, dropped the check.
+
+Changes in v3 :
+
+        * Using default-switch case, and setting the variables 
+          when there is no matching cmd.
+
+Changes in v4 :
+
+        * Removed braces for the default switch-case.
+
+
+ drivers/tty/vt/keyboard.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+
+diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+index c7fbbcdcc346..f66c32fe7ef1 100644
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -2090,6 +2090,10 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+ 
+ 		ret = 0;
+ 		break;
++	default:
++		kbs = NULL;
++		ret = -ENOIOCTLCMD;
++		break;
+ 	}
+ 
+ 	kfree(kbs);
+
+-- 
+2.30.2
+
