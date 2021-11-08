@@ -2,57 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C4AC433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 16:29:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C80EC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 16:40:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0700961378
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 16:29:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6D03261054
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 16:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239832AbhKHQcb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Nov 2021 11:32:31 -0500
-Received: from mail-ua1-f48.google.com ([209.85.222.48]:38701 "EHLO
-        mail-ua1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236934AbhKHQcb (ORCPT
+        id S241308AbhKHQmy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 Nov 2021 11:42:54 -0500
+Received: from mail-ua1-f41.google.com ([209.85.222.41]:37747 "EHLO
+        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236528AbhKHQmt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Nov 2021 11:32:31 -0500
-Received: by mail-ua1-f48.google.com with SMTP id o26so32629488uab.5;
-        Mon, 08 Nov 2021 08:29:46 -0800 (PST)
+        Mon, 8 Nov 2021 11:42:49 -0500
+Received: by mail-ua1-f41.google.com with SMTP id l43so32697295uad.4;
+        Mon, 08 Nov 2021 08:40:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=woZgaj6Mu44Tryh18+xnuY1/GMuhYHx753N+bB1veGY=;
-        b=n6pIS/9NTEG06oBdZ7vif1tjFt8xFQugM9QbjFgirdzfcGRmDC6Lc5vpEXXyckB6Hq
-         e53ke5mn6i5ve8WyueU14VBHoYV3bDEq6W4hEWF7b8TXP0PYvXn2/tP0G6CUIQkV2U5+
-         laIMRxMLTCnS5kWEujGQCf538y6DEfW5UlRFy2YkFmiQ5fPfgfgEBjhkSLe6osLj77+g
-         rdohj4VlF0wnYIJzA5sUOIoMPpu1Yo7mkGNwinbwKANnr0OYLAuK7RutcpavktZ8bcSx
-         KP51SwTg/UwSWL4io1idMzziYlYbNF8iRkPBwmLuipej0NRhuE6S1Apy6E9qJ5Tc4Hho
-         Aimg==
-X-Gm-Message-State: AOAM530xnSEJHK19Cr9JEfbq1p8uuUuZhABPIAqzH8Em7boe8k0a3E9L
-        CyTEWQ7iw6KeTHxXbc8uSOfpTrSt6GR6pt5n
-X-Google-Smtp-Source: ABdhPJzKVOZYGibPHG+h892i7OUGjYuFesWp37cMNDki40TQiZRr4hfUhCDQ/tcAqjanivAlJUtsgA==
-X-Received: by 2002:a05:6102:3f02:: with SMTP id k2mr437155vsv.26.1636388985966;
-        Mon, 08 Nov 2021 08:29:45 -0800 (PST)
-Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com. [209.85.222.42])
-        by smtp.gmail.com with ESMTPSA id r20sm1417594vkq.15.2021.11.08.08.29.45
+        bh=35vjIg1mcgYM3GxZvYXmrSJn5EeE32/H7G52/qXH9NU=;
+        b=YsSpXEH31wEVfYDIK1IB8WRpSq6hhCnSFYILejpBTgSwdRJkZdT3lteNnpJeCK7PQ1
+         yIgHRhK0gkh+ty9jf0OLeHCEVa3xqrzm4taAICXAAvLvykE4gnvPPonLsEI8TLeiQ84A
+         PKmxzQeGCXzVOeAVrKLXmHyY4rszg/v89lblDlWZ/tzGLZvS8g0CjaYq3dwoXS5iXKEU
+         Cg4zaMKfYaDWVGmdJ8EHJYHu6wOdRlyMf1V+d5g8fNJUasEQX7UYsbtZUQFBGAFkUsq3
+         U38jwCwxKJRrXLV/KxsOXrMo6EncikGqMiGv6+45mSydKQCpqfte9GEuE/U05qQKJkm5
+         l5wA==
+X-Gm-Message-State: AOAM532vPZ9owux/PE4qTZcIVxKMbewcNspfPymX1Ow3sGnKwH9S56oj
+        ijDbZCqMH8ILVvHBt76n0KFHa4z4QEImJu4g
+X-Google-Smtp-Source: ABdhPJyYcCtLXlqBT1W6LWUu8v7/V9jFu7KcZI/63c8qjfFtL0Yy/M2VhE6e37bImdgL01Pe7XKGTQ==
+X-Received: by 2002:a05:6102:b14:: with SMTP id b20mr6609990vst.17.1636389604377;
+        Mon, 08 Nov 2021 08:40:04 -0800 (PST)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id y24sm2986511uaq.17.2021.11.08.08.40.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Nov 2021 08:29:45 -0800 (PST)
-Received: by mail-ua1-f42.google.com with SMTP id t13so17309483uad.9;
-        Mon, 08 Nov 2021 08:29:45 -0800 (PST)
-X-Received: by 2002:a05:6102:3a07:: with SMTP id b7mr75736580vsu.35.1636388985293;
- Mon, 08 Nov 2021 08:29:45 -0800 (PST)
+        Mon, 08 Nov 2021 08:40:04 -0800 (PST)
+Received: by mail-ua1-f46.google.com with SMTP id az37so32694947uab.13;
+        Mon, 08 Nov 2021 08:40:04 -0800 (PST)
+X-Received: by 2002:a05:6102:e82:: with SMTP id l2mr991282vst.37.1636389603858;
+ Mon, 08 Nov 2021 08:40:03 -0800 (PST)
 MIME-Version: 1.0
-References: <20211103173127.13701-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20211103173127.13701-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20211103173127.13701-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211103173127.13701-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20211103173127.13701-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20211103173127.13701-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 8 Nov 2021 17:29:34 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUjp4WQgkVxaSFJ-ge071KZ_JFWOuBQKZMpSCUW4kG9Ug@mail.gmail.com>
-Message-ID: <CAMuHMdUjp4WQgkVxaSFJ-ge071KZ_JFWOuBQKZMpSCUW4kG9Ug@mail.gmail.com>
-Subject: Re: [PATCH 1/3] dt-bindings: serial: renesas,scif: Make resets as a
- required property
+Date:   Mon, 8 Nov 2021 17:39:52 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWLfUNh7PQWpARS6CNymqpGO_29tgy7NLtgmJ-BRgyUaA@mail.gmail.com>
+Message-ID: <CAMuHMdWLfUNh7PQWpARS6CNymqpGO_29tgy7NLtgmJ-BRgyUaA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] serial: sh-sci: Add reset support for RZ/G2L SoC
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
@@ -68,30 +66,95 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Prabhakar,
+
 On Wed, Nov 3, 2021 at 6:31 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Make "resets" as required property for RZ/G2L. On RZ/G2L the devices
-> should be explicitly pulled out of reset for this reason make "resets"
-> as required property.
+> On RZ/G2L devices should be explicitly pulled out of reset for it
+> to work. This patch adds support to read the "resets" property and
+> performs deassert/assert when required.
+>
+> Also, propagate the error to the caller of sci_parse_dt() instead of
+> returning NULL in case of failure.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Thanks for your patch!
 
-> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> @@ -151,6 +151,7 @@ if:
->      compatible:
->        contains:
->          enum:
-> +          - renesas,scif-r9a07g044
->            - renesas,rcar-gen2-scif
->            - renesas,rcar-gen3-scif
+> ---
+> Hi Geert,
+> For handling the resets I was in dual mind whether to perform
+> reset based on compatible strings or soc-id, let me know your
+> thoughts. Currently no SoC's use "renesas,sci" so using the same
+> for performing the reset operation for SCI.
 
-People might prefer alphabetical sort order...
+We do, on H8/300.
 
->  then:
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -3203,23 +3204,58 @@ static const struct of_device_id of_sci_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, of_sci_match);
+>
+> +static void sci_reset_control_assert(void *data)
+> +{
+> +       reset_control_assert(data);
+> +}
+> +
+>  static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+>                                           unsigned int *dev_id)
+>  {
+>         struct device_node *np = pdev->dev.of_node;
+> +       const struct of_device_id *of_id;
+>         struct plat_sci_port *p;
+>         struct sci_port *sp;
+>         const void *data;
+>         int id;
+>
+>         if (!IS_ENABLED(CONFIG_OF) || !np)
+> -               return NULL;
+> +               return ERR_PTR(-EINVAL);
+> +
+> +       of_id = of_match_device(of_sci_match, &pdev->dev);
+> +       if (!of_id)
+> +               return ERR_PTR(-EINVAL);
+>
+> -       data = of_device_get_match_data(&pdev->dev);
+> +       if (!strcmp(of_id->compatible, "renesas,scif-r9a07g044") ||
+> +           !strcmp(of_id->compatible, "renesas,sci")) {
+
+This will match on H8/300, too, which doesn't have resets.
+Please match against "renesas,sci-r9a07g044" instead.
+
+Please don't use explicit strcmp() calls here, but add a flag to
+of_sci_match[].data.
+
+> +               struct reset_control *rstc;
+> +               int ret;
+> +
+> +               rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
+> +               if (IS_ERR(rstc)) {
+> +                       dev_err(&pdev->dev, "Error: missing reset ctrl\n");
+> +                       return ERR_PTR(PTR_ERR(rstc));
+> +               }
+> +
+> +               ret = reset_control_deassert(rstc);
+> +               if (ret) {
+> +                       dev_err(&pdev->dev, "failed to deassert %d\n", ret);
+> +                       return ERR_PTR(ret);
+> +               }
+> +
+> +               ret = devm_add_action_or_reset(&pdev->dev, sci_reset_control_assert, rstc);
+> +               if (ret) {
+> +                       dev_err(&pdev->dev, "failed to register assert devm action, %d\n",
+> +                               ret);
+> +                       return ERR_PTR(ret);
+> +               }
+> +       }
+> +
+> +       data = of_id->data;
+>
 
 Gr{oetje,eeting}s,
 
