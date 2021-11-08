@@ -2,182 +2,138 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED26C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 13:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE13C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 13:52:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2ECA161178
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 13:49:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 732FE61074
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 13:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240112AbhKHNwF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Nov 2021 08:52:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60042 "EHLO
+        id S236528AbhKHNyr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 Nov 2021 08:54:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238804AbhKHNwD (ORCPT
+        with ESMTP id S235081AbhKHNyq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Nov 2021 08:52:03 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCFAC061570;
-        Mon,  8 Nov 2021 05:49:19 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id o4so2005710pfp.13;
-        Mon, 08 Nov 2021 05:49:19 -0800 (PST)
+        Mon, 8 Nov 2021 08:54:46 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8EDC061570;
+        Mon,  8 Nov 2021 05:52:02 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id u74so6478020oie.8;
+        Mon, 08 Nov 2021 05:52:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=u0pSRTw7ZC0+s4OzaQWGGWnVDXOfXxdQMKH6CCzPOw8=;
-        b=H+RJug8nrhgfdlsaokIuo+zjCpYA0hwpjmN4aCwxnO/x9rHtA7JeT6h0on4lAeenRf
-         j+AolIkV8rNhB1Ufo1p6LYB+wI9h7Ev4YfJrBzimsbcuC2ksbZAofVpho9TTPhRNvPZm
-         O+7jhould/HsIN186yVOO+oK5RCy5rbs/Coditkqau/MyutOW12+zE8RBSkiugndYamD
-         Q+C5bfzqk2YiB1agI10XVP8YlV24WQIk6Ag8VfDc4aKqm2y9uuOBZzwkz9ZepGC8PQIA
-         M8pqVg2RVfHre9xrgofRlG3tZEPXqX0h+0K28GGbdn/ZWP5xYP04aeFk26z77xDSBzwK
-         SgNw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S6x3SGq2T9+uPlHqILiB1mO6dm6KR4D4Uff3QjdZP+8=;
+        b=K2oS3Wvamq+l7laiwJA4ATRPsoSvszYUqyvHbR+SplxYF4I29CslKR4a1kqEhSNmCn
+         MjuJhdNqKY9+3cq1CntheyQnxtrWRwLn+TLKfvUDgBAQ1jilNhF/5cMZiFcpF+isQ6C5
+         9MUeg+YCyPN+fl8TY3hCr/YnRhrNysm7xfwphyJwu/Q4sV+2sG2dLueHdIB69A9kFu6h
+         Ilt+Ny6JrIyycKD63Nda1+x75sCEDqE/iFwBc+eNFcW+mOPmCU/hRzR5WGEuaaAB1s4h
+         A7JLKbn580Slrby0K4xLrhNGVCDVIt99XTb60zyxRw9rdGO9OML7ME2Maa0+9/z18mnM
+         /1Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=u0pSRTw7ZC0+s4OzaQWGGWnVDXOfXxdQMKH6CCzPOw8=;
-        b=G2mlHQR7Nfq0ZcrncFsl8mgrJ/shiYHh0jQPZ7m9y8+TjpVbTt3UxQs0xw6DCF0eIJ
-         nUXGtKlxMLT3B0spsnBcs6HcT+52ZUvaQ5YC64Z7oXOAWx06TcylmodJ201DsbnMN1Qg
-         JP/oEgt35NHb2HqT2Sc8e8K/ILOnWslwwiPBWtjHos+iarU3WX+c02PBIhdHsYpdut27
-         DpQSEMWysJ1cR6xQKWLtY2tzGY3l7/0isux3WpjOOoYo2yvBvGh1MpU8l/dBCK2filjI
-         eE9xIYtGcBX5cVkzn7xLOY9mg/EPmGqq+Nv6oqCVxpepEMl9RU5j29sl5d8WeaJZ3gs1
-         xyZQ==
-X-Gm-Message-State: AOAM530LFLRjfayu8NbnRKUa+BgXznbs6WBD8gzkTMpfVLJ6aUvO3aHh
-        uJ70KHw7+Bk/L4qUn6TucYQ=
-X-Google-Smtp-Source: ABdhPJxDFObt0FQYT2Iv0mXH2xKIKNjN8TCDBfvaRHjMigY30k85rupTkFf71SaR6ffEgg5rGey9vA==
-X-Received: by 2002:a63:5fc8:: with SMTP id t191mr46165273pgb.361.1636379358950;
-        Mon, 08 Nov 2021 05:49:18 -0800 (PST)
-Received: from host-x86-64.. ([122.161.243.27])
-        by smtp.gmail.com with ESMTPSA id t13sm10780466pfl.214.2021.11.08.05.49.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Nov 2021 05:49:18 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S6x3SGq2T9+uPlHqILiB1mO6dm6KR4D4Uff3QjdZP+8=;
+        b=2aZIDcmgEWsWyxJ8DKW8j2tmkFw5XEUESxrTlOKc9tloaVtXa7golum19CciRcciTf
+         wJ29nx0ofQAwRfTj3lL2VT1SwhPhKkMJXhQqzFEMoiFIzi7COA6kg51U5IqXTGTxMKjB
+         pIiFI0qCWPhoBuSCCkeZY4zxk9h0fd/BTujZm7ZKBwRcjRnm+tJvVzh0j8TekuZPb88p
+         ia2qeQvCfvbTFPGW/R+1nXrueV+5xURYkQ/lh9aQoMr6vkGPFeb7I5zl5dhwRbnQ1jWa
+         knUHGTrcYQTsm+u+nFdZeumyP3IHcH2HYOnObXsZFG7I7XdM5K5Vmh2zz2ZgKgbCLBvG
+         0awg==
+X-Gm-Message-State: AOAM533M3OEObwPpZvUn4h/0CuvMg6gttHp+N5oADqabP1itkBzoLm8e
+        u3/kOq9TAtdt9/L3D5Wikfs3+jKx6SPl4TqBhV0=
+X-Google-Smtp-Source: ABdhPJy7TbKcAo6kp6MYlICuPiXQoLkh8LBtRikmsPcsL6PTDah8RO+95uSiyNwux/96bx6mUWCjG0/kLZVKiTmrO8I=
+X-Received: by 2002:a05:6808:2108:: with SMTP id r8mr45338oiw.118.1636379521787;
+ Mon, 08 Nov 2021 05:52:01 -0800 (PST)
+MIME-Version: 1.0
+References: <20211107031721.4734-1-ajaygargnsit@gmail.com> <YYjw2mRIhy1SoIb+@hovoldconsulting.com>
+In-Reply-To: <YYjw2mRIhy1SoIb+@hovoldconsulting.com>
 From:   Ajay Garg <ajaygargnsit@gmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+Date:   Mon, 8 Nov 2021 19:21:50 +0530
+Message-ID: <CAHP4M8Va6BLY+RYPzZi=_o1M3jcxbywSHJ3FsXZkeDU2T3BphA@mail.gmail.com>
+Subject: Re: [PATCH v4] tty: vt: keyboard: add default switch-case, to handle
+ smatch-warnings in method vt_do_kdgkb_ioctl
+To:     Johan Hovold <johan@kernel.org>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         andriy.shevchenko@linux.intel.com, kernel@esmil.dk,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        paskripkin@gmail.com, johan@kernel.org
-Cc:     Ajay Garg <ajaygargnsit@gmail.com>
-Subject: [PATCH v5] vt: keyboard: suppress warnings in vt_do_kdgkb_ioctl
-Date:   Mon,  8 Nov 2021 19:19:01 +0530
-Message-Id: <20211108134901.7449-1-ajaygargnsit@gmail.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        paskripkin@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-smatch-kchecker gives the following warnings when run on keyboard.c :
+Hi Johan,
 
-vt_do_kdgkb_ioctl() error: uninitialized symbol 'kbs'.
-vt_do_kdgkb_ioctl() error: uninitialized symbol 'ret'.
+Thanks for your time.
 
-i)
-The 'kbs" warning was introduced by "07edff926520" :
-("vt: keyboard, reorder user buffer handling in vt_do_kdgkb_ioctl")
+On Mon, Nov 8, 2021 at 3:11 PM Johan Hovold <johan@kernel.org> wrote:
+>
+> First, please fix your patch Subject which is way too verbose. You
+> should aim at less than 72 chars including prefix. Something like
+>
+>         "vt: keyboard: suppress smatch warning in vt_do_kdgkb_ioctl"
+>
+> should do.
 
-* 
-prior 07edff926520, the scope of kbs (allocation/deallocation) was
+Thanks Johan, will keep this in mind in all my future patches.
+
+Taking the subject as suggested by you for the current patch, after
+removal of "smatch" keyword, as it otherwise produces :
+WARNING: A patch subject line should describe the change not the tool
+that found it
+when run through checkpatch.pl
+
+
+
+> >       kfree(kbs);
+>
+> Instead, move the kfree() into the two cases blocks
+
+So, if I understand correctly,
+
+* prior 07edff926520, the scope of kbs (allocation/deallocation) was
 external to switch-cases.
+* post 07edff926520, kbs is allocated internally for each case,
+however the deallocation remains external.
 
-*
-post 07edff926520, kbs is allocated internally for each case, however the
-deallocation remains external.
+Thanks for the much cleaner suggestion, will move kfree() into the two
+cases blocks.
 
-Thus, as the "fix", the scope of kbs deallocation is now made internal
-to each switch case.
 
-ii)
-The 'ret' warning is the result of "4e1404a5cd04" :
-("vt: keyboard, extract and simplify vt_kdskbsent")
 
-where the "ret = 0" (right at the end) was accidentally removed.
+> and initialise ret to 0
 
-Bringing back the above in a slightly different way, by initializing ret
-to 0 at the start.
+Got it, other functions (except vt_do_kdskled) initialize ret to 0.
+Thanks again.
 
-Many thanks to the following for review of previous versions :
 
-	* Pavel Skripkin <paskripkin@gmail.com> 
-	* Andy Shevchenko <andy.shevchenko@gmail.com> 
-	* Johan Hovold <johan@kernel.org>
+> as is done in several other vt helpers in case a driver bug ever
+> causes them to be called for the wrong cmds (e.g. instead of sprinkling
+> WARN_ON(1) in all those functions).
+>
+> You may want to mention that the kfree warning was introduced by
+>
+>         07edff926520 ("vt: keyboard, reorder user buffer handling in vt_do_kdgkb_ioctl")
+>
+> which moved the shared allocation into the switch statement, and perhaps
+> also mention
+>
+>         4e1404a5cd04 ("vt: keyboard, extract and simplify vt_kdskbsent")
+>
+> for the ret warning.
 
-Signed-off-by: Ajay Garg <ajaygargnsit@gmail.com>
----
+Thanks a ton Johan for your time in investigating the history.
+This has made things, in the current scenario, crystal clear.
 
-There were discussions previously, and the current patch is the 
-result.
 
-v1 :
-https://lore.kernel.org/linux-serial/YYZN30qfaKMskVwE@kroah.com/T/#t
+Have floated the v5 patch at :
+https://lore.kernel.org/linux-serial/20211108134901.7449-1-ajaygargnsit@gmail.com/T/#u
 
-v2 :
-https://lore.kernel.org/linux-serial/CAHP4M8Vdj4Eb8q773BeHvsW9n6t=3n1WznuXAR4fZCNi1J6rOg@mail.gmail.com/T/#m18f45676feaba6b1f01ddd5fe607997b190ef4b9
+Let's continue further discussion there.
 
-v3 :
-https://lore.kernel.org/linux-serial/20211106220315.392842-1-ajaygargnsit@gmail.com/T/#u
 
-v4 :
-https://lore.kernel.org/linux-serial/YYjw2mRIhy1SoIb+@hovoldconsulting.com/T/#mf25ca00a93e278bbb8f0382a4f7752dc35f4aa8b
-
-Changes in v2 :
-
-        * Changes as required by scripts/checkpatch.pl
-
-        * Checking whether kbs is not NULL before kfree is not required,
-          as kfree(NULL) is safe. So, dropped the check.
-
-Changes in v3 :
-
-        * Using default-switch case, and setting the variables 
-          when there is no matching cmd.
-
-Changes in v4 :
-
-        * Removed braces for the default switch-case.
-
-Changes in v5 :
-
-        * Incorporating changes as suggested by Johan Hovold
- 	  (please see v4 link).
-
- drivers/tty/vt/keyboard.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index c7fbbcdcc346..ea19671d5d0c 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -2050,7 +2050,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 	unsigned char kb_func;
- 	unsigned long flags;
- 	char *kbs;
--	int ret;
-+	int ret = 0;
- 
- 	if (get_user(kb_func, &user_kdgkb->kb_func))
- 		return -EFAULT;
-@@ -2073,6 +2073,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 		ret = copy_to_user(user_kdgkb->kb_string, kbs, len + 1) ?
- 			-EFAULT : 0;
- 
-+		kfree(kbs);
- 		break;
- 	}
- 	case KDSKBSENT:
-@@ -2088,11 +2089,11 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
- 		kbs = vt_kdskbsent(kbs, kb_func);
- 		spin_unlock_irqrestore(&func_buf_lock, flags);
- 
-+		kfree(kbs);
- 		ret = 0;
- 		break;
- 	}
- 
--	kfree(kbs);
- 
- 	return ret;
- }
--- 
-2.30.2
-
+Thanks and Regards,
+Ajay
