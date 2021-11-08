@@ -2,113 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A69C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 08:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46745C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 08:58:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6185B61279
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 08:57:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3001661029
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 08:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238250AbhKHJAc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Nov 2021 04:00:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46594 "EHLO mail.kernel.org"
+        id S238259AbhKHJAz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 Nov 2021 04:00:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46822 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238257AbhKHJAc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Nov 2021 04:00:32 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F09F261029;
-        Mon,  8 Nov 2021 08:57:47 +0000 (UTC)
+        id S238257AbhKHJAz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 8 Nov 2021 04:00:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8C82B61029;
+        Mon,  8 Nov 2021 08:58:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636361868;
-        bh=4wX+AII9Jyg6qEH+gRo7jIvJFABgSTjwEbhe7sn+sAA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=i1MGeUtUKVpbNlY0JBiAfnYuiX/FAlw/CfpbJ7ClhJTWXW/QaO6Cpl8dHS0npTjys
-         r9ZkRwTJRmJsh5Up0j1U4WXMT5Vhe4arYzH/jWPAVGqhnK5bM4s2Y6jX7eG00B4kjz
-         n9lL8yCxDNeTqwGzMxxABjYtWLuEzUVtvT1wrpvGgrEvf1G2i8Q39uVg19nvmqCVYp
-         xTdBbmpkXn70Dzl63LFjg2TIXXMpComAh3VJ35AXDl/EiKBB/eiGorFmIcyKsY4uI+
-         0rH5bqLYQed03vsRsro+wNQUgP5T7C2IO8XTVAWEdgiTliTTST+aKP+db1dPjoiTeG
-         hEQtMtFpoOGuA==
+        s=k20201202; t=1636361891;
+        bh=TrHEQ4sI9oo53xDElCIDPWsGAF8FQCriNFj66mwhsjM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sSAqY7cigCuQtLlmVjRn7PrjXEOvCRkVFCuw1kcuvI3Eq9z4q+rwU9PFwmpuZnwBY
+         lNh75+JZNrbWrpIy0LL9VjFVXhVn6J8BP36+yYGUonPyAcuVKWxomGu57RkKvyHc35
+         3vbfcJ7ePO6PdImIAPS3xzkSKLFtm8QoWag7bva5O2588ACd2tTT61eSTFBBA5/9Qf
+         Y2tGzDRc0feHDymJ/hEk7vY927Ca9mi4WdqBF+3ghd90cz7RwQeMEqLjfhgUnKXEjo
+         kKAWt7EL4ju+wzPxwFUgDcJO18t6NXMOyd73EeHSQ/QswFprfONI1S3tjR9fXjEK60
+         r1+IP3dZuHrPw==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1mk0TI-0003JJ-53; Mon, 08 Nov 2021 09:57:44 +0100
+        id 1mk0Tg-0003JZ-PC; Mon, 08 Nov 2021 09:58:08 +0100
+Date:   Mon, 8 Nov 2021 09:58:08 +0100
 From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Baruch Siach <baruch@tkos.co.il>, stable@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH] serial: core: fix transmit-buffer reset and memleak
-Date:   Mon,  8 Nov 2021 09:54:31 +0100
-Message-Id: <20211108085431.12637-1-johan@kernel.org>
-X-Mailer: git-send-email 2.32.0
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [RFC PATCH] tty: flush buffer on signal interrupted tty close
+Message-ID: <YYjmoNkCGysVaCFr@hovoldconsulting.com>
+References: <319321886d97c456203d5c6a576a5480d07c3478.1635781688.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <319321886d97c456203d5c6a576a5480d07c3478.1635781688.git.baruch@tkos.co.il>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit 761ed4a94582 ("tty: serial_core: convert uart_close to use
-tty_port_close") converted serial core to use tty_port_close() but
-failed to notice that the transmit buffer still needs to be freed on
-final close.
+On Mon, Nov 01, 2021 at 05:48:08PM +0200, Baruch Siach wrote:
+> When a signal interrupts tty_wait_until_sent() on a UART device, there
+> might be data left on the xmit buffer that the UART will never transmit.
+> This causes set_termios() to wait forever in tty_wait_until_sent().
+> 
+> The hang reproduces easily on my system that is equipped with DesignWare
+> 8250. Run
+> 
+>   while true; do echo -ne 0123456789abcdef01 > /dev/ttyS1; done
+> 
+> Hit Ctrl-C to interrupt the loop. When data is left in the struct
+> uart_state xmit buffer, the following command hangs:
+> 
+>   stty -F /dev/ttyS1 raw -echo
 
-Not freeing the transmit buffer means that the buffer is no longer
-cleared on next open so that any ioctl() waiting for the buffer to drain
-might wait indefinitely (e.g. on termios changes) or that stale data can
-end up being transmitted in case tx is restarted.
+Thanks for reporting this. It should not be possible for there to be
+data left in the buffer and indeed we do have a long-standing regression
+here since the serdev work five years ago. I'm a bit surprised no one
+has noticed and reported this for that long.
 
-Furthermore, the buffer of any port that has been opened would leak on
-driver unbind.
+> Call tty_driver_flush_buffer() on signal interrupted wait, to discard
+> data from the xmit buffer.
+>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+>  drivers/tty/tty_ioctl.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+> index 507a25d692bb..0bf6fad7ecb3 100644
+> --- a/drivers/tty/tty_ioctl.c
+> +++ b/drivers/tty/tty_ioctl.c
+> @@ -203,6 +203,8 @@ void tty_wait_until_sent(struct tty_struct *tty, long timeout)
+>  
+>  	timeout = wait_event_interruptible_timeout(tty->write_wait,
+>  			!tty_chars_in_buffer(tty), timeout);
+> +	if (timeout == -ERESTARTSYS && tty->closing)
+> +		tty_driver_flush_buffer(tty);
+>  	if (timeout <= 0)
+>  		return;
 
-Note that the port lock is held when clearing the buffer pointer due to
-the ldisc race worked around by commit a5ba1d95e46e ("uart: fix race
-between uart_put_char() and uart_shutdown()").
+This is however not the right fix since the problem isn't limited to
+interrupted waits and in any case should not be handled in
+tty_wait_until_sent().
 
-Also note that the tty-port shutdown() callback is not called for
-console ports so it is not strictly necessary to free the buffer page
-after releasing the lock (cf. d72402145ace ("tty/serial: do not free
-trasnmit buffer page under port lock")).
+I can reproduce the problem and have posted a fix here:
 
-Reported-by: Baruch Siach <baruch@tkos.co.il>
-Link: https://lore.kernel.org/r/319321886d97c456203d5c6a576a5480d07c3478.1635781688.git.baruch@tkos.co.il
-Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
-Cc: stable@vger.kernel.org      # 4.9
-Cc: Rob Herring <robh@kernel.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/serial/serial_core.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+	https://lore.kernel.org/r/20211108083856.5261-1-johan@kernel.org
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 0e2e35ab64c7..58834698739c 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1542,6 +1542,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- {
- 	struct uart_state *state = container_of(port, struct uart_state, port);
- 	struct uart_port *uport = uart_port_check(state);
-+	char *buf;
- 
- 	/*
- 	 * At this point, we stop accepting input.  To do this, we
-@@ -1563,8 +1564,18 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- 	 */
- 	tty_port_set_suspended(port, 0);
- 
--	uart_change_pm(state, UART_PM_STATE_OFF);
-+	/*
-+	 * Free the transmit buffer.
-+	 */
-+	spin_lock_irq(&uport->lock);
-+	buf = state->xmit.buf;
-+	state->xmit.buf = NULL;
-+	spin_unlock_irq(&uport->lock);
- 
-+	if (buf)
-+		free_page((unsigned long)buf);
-+
-+	uart_change_pm(state, UART_PM_STATE_OFF);
- }
- 
- static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
--- 
-2.32.0
-
+Johan
