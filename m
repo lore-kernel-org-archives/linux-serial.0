@@ -2,134 +2,154 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E07E9C4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 09:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F75CC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 09:41:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C63FF61215
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 09:32:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1199661244
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Nov 2021 09:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238448AbhKHJf2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Nov 2021 04:35:28 -0500
-Received: from mail-ua1-f50.google.com ([209.85.222.50]:40466 "EHLO
-        mail-ua1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbhKHJfU (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Nov 2021 04:35:20 -0500
-Received: by mail-ua1-f50.google.com with SMTP id e2so30156091uax.7;
-        Mon, 08 Nov 2021 01:32:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=natkUAgTheIcsUsHIOKrKwm02jUscvarcAWkR9vE/gg=;
-        b=Qz3RRymHzuJjJXHo4tG/uvcnlefVze6axCfx1mf6z1rseco3fjOXL5UGL2zh3EHqsv
-         dWtem89E1P35Zm9fTb1zRnULThgNfdDD6wf05SAAYTGGOSn77TgKurtD3Max0OAkM8H7
-         Qo9r59UgkQY+DLmRpdjnNS/WYzZII6htcg8xipl9MRhJ8iEVOLtxT9bqj81XmI+vluLw
-         CKC5FB5fCd+6+vbF2Q0+OqLTxAP8NcYZLkUcA4voUKgHISo5f8xnVvlhi5TgnNE9A1R9
-         FgWZGhTB/Fz56ztxNaPx9KQMAATZxRs3+Nu6YIk0BRVf3t+HAclEP6lICuqD4txoIert
-         fd1g==
-X-Gm-Message-State: AOAM532UKTNvZQGPI/FW+ZV+6h2J49iXaOIAwy+qANQpir93XYUpBpB1
-        GiLqs0BG+A9xjB8fay35g/xC1lW5rTynag==
-X-Google-Smtp-Source: ABdhPJxvihut3Hp2eJTF+Zk6V+XSNksCPaXvC2rKzD+WiMxZSgb4VBp6iqohFHuEGE3y/w7FEy9PeQ==
-X-Received: by 2002:a67:e18e:: with SMTP id e14mr11488790vsl.49.1636363955295;
-        Mon, 08 Nov 2021 01:32:35 -0800 (PST)
-Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com. [209.85.221.171])
-        by smtp.gmail.com with ESMTPSA id d128sm3095209vsd.20.2021.11.08.01.32.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Nov 2021 01:32:34 -0800 (PST)
-Received: by mail-vk1-f171.google.com with SMTP id p22so6149216vke.7;
-        Mon, 08 Nov 2021 01:32:34 -0800 (PST)
-X-Received: by 2002:a05:6122:1350:: with SMTP id f16mr18817472vkp.26.1636363954170;
- Mon, 08 Nov 2021 01:32:34 -0800 (PST)
+        id S237105AbhKHJoe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 Nov 2021 04:44:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33860 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236838AbhKHJod (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 8 Nov 2021 04:44:33 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D5B1961242;
+        Mon,  8 Nov 2021 09:41:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636364509;
+        bh=KubNRzNxhXVYig4fprNmbCEDI0o1MB2KC5bqwRxBdsI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tXiQvIp/aMZhEW+2/cYq+GecvOAMtof+uzLEZJPzHvylPVEA2Uqq9CHCHwGfWhi1k
+         Yk4NhLWGUbGlb/4uIrYpDtMsfdAqnfQedlb/bcfOIlIocFZFsG0RaY+ugq/FeMFVJm
+         EqsjmdFwO65Hw9kiSdYj6L+uutw+CNzd9ljGNT5J7n7BCY9waoQUPYzDwVH9robrpy
+         AcOnHMDijykttGdwyiSpR3R9fXGTINCP3fiyXr8fWPFY2YLCVyAe8rvLP0Hare3nlc
+         TAN+qUOflI3jZsILRsr0hIrJuYm91tQZwnpNfmQf9blfIzVBSDR2bCLgvzfW7wW/Rh
+         0KzhQAQDa72GA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mk19u-0003VH-7U; Mon, 08 Nov 2021 10:41:46 +0100
+Date:   Mon, 8 Nov 2021 10:41:46 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Ajay Garg <ajaygargnsit@gmail.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        andriy.shevchenko@linux.intel.com, kernel@esmil.dk,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        paskripkin@gmail.com
+Subject: Re: [PATCH v4] tty: vt: keyboard: add default switch-case, to handle
+ smatch-warnings in method vt_do_kdgkb_ioctl
+Message-ID: <YYjw2mRIhy1SoIb+@hovoldconsulting.com>
+References: <20211107031721.4734-1-ajaygargnsit@gmail.com>
 MIME-Version: 1.0
-References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-15-kernel@esmil.dk>
-In-Reply-To: <20211102161125.1144023-15-kernel@esmil.dk>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 8 Nov 2021 10:32:23 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVz1R_K7Zayj9LJBM1GpMVi2s8k9jFa8DZPhNWM6B2prA@mail.gmail.com>
-Message-ID: <CAMuHMdVz1R_K7Zayj9LJBM1GpMVi2s8k9jFa8DZPhNWM6B2prA@mail.gmail.com>
-Subject: Re: [PATCH v3 14/16] serial: 8250_dw: Add StarFive JH7100 quirk
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211107031721.4734-1-ajaygargnsit@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Esmil,
+First, please fix your patch Subject which is way too verbose. You
+should aim at less than 72 chars including prefix. Something like
 
-On Tue, Nov 2, 2021 at 5:12 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> On the StarFive JH7100 RISC-V SoC the UART core clocks can't be set to
-> exactly 16 * 115200Hz and many other common bitrates. Trying this will
-> only result in a higher input clock, but low enough that the UART's
-> internal divisor can't come close enough to the baud rate target.
-> So rather than try to set the input clock it's better to skip the
-> clk_set_rate call and rely solely on the UART's internal divisor.
+	"vt: keyboard: suppress smatch warning in vt_do_kdgkb_ioctl"
+
+should do.
+
+On Sun, Nov 07, 2021 at 08:47:21AM +0530, Ajay Garg wrote:
+> smatch-kchecker gives the following warnings when run on keyboard.c :
+> 
+> vt_do_kdgkb_ioctl() error: uninitialized symbol 'kbs'.
+> vt_do_kdgkb_ioctl() error: uninitialized symbol 'ret'.
+> 
+> This usually happens when switch has no default case and static 
+> analyzers and even sometimes compilers can’t prove that all possible 
+> values are covered.
 >
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+> Thus, the default switch-case has been added, which sets the values 
+> for the two variables :
+> 
+>         * kbs as NULL, which also nicely fits in with kfree.
+> 
+>         * ret as -ENOIOCTLCMD (on same lines if there is no cmd
+>                                match in "vt_do_kdskled" method).
 
-Thanks for your patch!
+Not sure how far we want to take the suppression of false-positive
+warnings but at least this isn't the right way to do it.
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Many thanks to the following for review of previous versions :
+> 
+> 	* Pavel Skripkin <paskripkin@gmail.com> 
+> 	* Andy Shevchenko <andy.shevchenko@gmail.com> 
+> 
+> 
+> Signed-off-by: Ajay Garg <ajaygargnsit@gmail.com>
+> ---
+> 
+> 
+> There were discussions previously, and the current patch is the 
+> result.
+> 
+> v1 :
+> https://lore.kernel.org/linux-serial/YYZN30qfaKMskVwE@kroah.com/T/#t
+> 
+> v2 :
+> https://lore.kernel.org/linux-serial/CAHP4M8Vdj4Eb8q773BeHvsW9n6t=3n1WznuXAR4fZCNi1J6rOg@mail.gmail.com/T/#m18f45676feaba6b1f01ddd5fe607997b190ef4b9
+> 
+> v3 :
+> https://lore.kernel.org/linux-serial/20211106220315.392842-1-ajaygargnsit@gmail.com/T/#u
+> 
+> Changes in v2 :
+> 
+>         * Changes as required by scripts/checkpatch.pl
+> 
+>         * Checking whether kbs is not NULL before kfree is not required,
+>           as kfree(NULL) is safe. So, dropped the check.
+> 
+> Changes in v3 :
+> 
+>         * Using default-switch case, and setting the variables 
+>           when there is no matching cmd.
+> 
+> Changes in v4 :
+> 
+>         * Removed braces for the default switch-case.
+> 
+> 
+>  drivers/tty/vt/keyboard.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> 
+> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+> index c7fbbcdcc346..f66c32fe7ef1 100644
+> --- a/drivers/tty/vt/keyboard.c
+> +++ b/drivers/tty/vt/keyboard.c
+> @@ -2090,6 +2090,10 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+>  
+>  		ret = 0;
+>  		break;
+> +	default:
+> +		kbs = NULL;
+> +		ret = -ENOIOCTLCMD;
+> +		break;
+>  	}
+>  
+>  	kfree(kbs);
 
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -414,6 +414,8 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
->
->                 if (of_device_is_compatible(np, "marvell,armada-38x-uart"))
->                         p->serial_out = dw8250_serial_out38x;
-> +               if (of_device_is_compatible(np, "starfive,jh7100-uart"))
-> +                       p->set_termios = dw8250_do_set_termios;
+Instead, move the kfree() into the two cases blocks and initialise ret
+to 0 as is done in several other vt helpers in case a driver bug ever
+causes them to be called for the wrong cmds (e.g. instead of sprinkling
+WARN_ON(1) in all those functions).
 
-BTW, it would be great for a follow-up patch to get rid of
-all these of_device_is_compatible() checks, and start using
-dw8250_of_match[...].data instead.
+You may want to mention that the kfree warning was introduced by 
 
->
->         } else if (acpi_dev_present("APMC0D08", NULL, -1)) {
->                 p->iotype = UPIO_MEM32;
-> @@ -696,6 +698,7 @@ static const struct of_device_id dw8250_of_match[] = {
->         { .compatible = "cavium,octeon-3860-uart" },
->         { .compatible = "marvell,armada-38x-uart" },
->         { .compatible = "renesas,rzn1-uart" },
-> +       { .compatible = "starfive,jh7100-uart" },
->         { /* Sentinel */ }
->  };
+	07edff926520 ("vt: keyboard, reorder user buffer handling in vt_do_kdgkb_ioctl")
 
-Gr{oetje,eeting}s,
+which moved the shared allocation into the switch statement, and perhaps
+also mention
 
-                        Geert
+	4e1404a5cd04 ("vt: keyboard, extract and simplify vt_kdskbsent")
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+for the ret warning.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Johan
