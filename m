@@ -2,65 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C845CC433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Nov 2021 20:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C61E0C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Nov 2021 21:04:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A42316112F
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Nov 2021 20:29:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A1E1061166
+	for <linux-serial@archiver.kernel.org>; Tue,  9 Nov 2021 21:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244347AbhKIUcZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 9 Nov 2021 15:32:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244336AbhKIUcV (ORCPT
+        id S244855AbhKIVHW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 9 Nov 2021 16:07:22 -0500
+Received: from mail-pf1-f182.google.com ([209.85.210.182]:37585 "EHLO
+        mail-pf1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244853AbhKIVHV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 9 Nov 2021 15:32:21 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D87C0613F5
-        for <linux-serial@vger.kernel.org>; Tue,  9 Nov 2021 12:29:35 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id h12-20020a056830034c00b0055c8458126fso592217ote.0
-        for <linux-serial@vger.kernel.org>; Tue, 09 Nov 2021 12:29:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mcjMHcwYzwBgvUlsJJw9+Jv9JVC62owaRPJ/yUM6y5U=;
-        b=OweV8gSNpr/wemLfT5r5RqLdeNQQkyD/5uhlgtWeguJV2kW4kusfjz5uEepsm35Uhz
-         zxR38DUI8/IDIgxkpQz0Tr9dwCnxanyqiqv/JOp8GMlFop+gP+rMEs9Mhbm8m9bOx212
-         6oyJhJb6BNDTip5qNk1mjb8MZbGv7koOtqGXg1JXtimY92OdEVIub6loTlg0f4f4g9Mp
-         U9khgkYKVjZK/5/igWUFPJBklDaIWAgtGhHPLcTG0hS0KLbmatF62yQe54EL0uzApfg7
-         x8JIp4TmUBJP4w/9BfWDl1KDTkR5EAu60nNT8PYwktSPJrYlp4yUEqClTkbZC2OlPz8j
-         yE9w==
+        Tue, 9 Nov 2021 16:07:21 -0500
+Received: by mail-pf1-f182.google.com with SMTP id y5so563779pfb.4;
+        Tue, 09 Nov 2021 13:04:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mcjMHcwYzwBgvUlsJJw9+Jv9JVC62owaRPJ/yUM6y5U=;
-        b=1N6yGtODrY7gSptvNcXIMXA9EjqXGDsvkJE0vQdT5FG4Qz/077b+iyhebaOmtGHut+
-         nambABqHj46SROjxNOrdntoOofGu93EPNhm8WttVdp27DgM+OKpkxhxvVVM2nKygJ/3S
-         H5+v8acshvqIeN5gLBf9Q+0RpFExe79ghGkOGcL0OmhMTLQ3njzEkzXtvUW6Hc2tcV7a
-         DCrt6K4JKALe/idnHwuG0nnM9HPxgdTQocjSnr6Yj1lTCiIf2SVLHJDOUUoU+xdOVtlC
-         mXwk784/iGTeF/mWax69dyfsFguAoN6lNaEkew4rnuGNh/jrxmU049V4Gbc6tRW3Ij+N
-         pPvA==
-X-Gm-Message-State: AOAM531bqZde1dZTCy9GhsbJVGpSGDRjCUOFLP1IweXH8v4rv3OwX5ZS
-        IsCn7M/NtBucerp37m8p1dTxW2+loqVbc7qPB3+icA==
-X-Google-Smtp-Source: ABdhPJx79vAz5xo21O8AcZjHZ2iz/cgsFzrU7PqDL77Snjbftb5loWoN2JiL02a01H3N9KzF4bFY81wiDaHO8sIEFIQ=
-X-Received: by 2002:a9d:ed6:: with SMTP id 80mr8156814otj.35.1636489774773;
- Tue, 09 Nov 2021 12:29:34 -0800 (PST)
+        bh=E8Y2jyNg7h9soMk4rEm6rzTo1BjlaELOxyIkvTVeIKc=;
+        b=qFzg41KmFXXKxf0e7AIwCA80Vj91V/b5yxTOjkUyLj5g3HujBNOJ7qrqd9N4Mwa/P6
+         Sfl4ATULDY2ywqS3ruJg80zTSHpWY+zb9UQJHt9dZcQYnLqvb0dXt2mclUIlsiLZQnaV
+         vpBioGPkcymA/Ri3sCrAlRn2ZtIKOWZLVgqHuXnDtZ00y1DKMg72Uea8lMEFLivX/r8r
+         skk6f/aqTmMGnO0XocjxfLvBrD26RTW9NVGyGIaXbx5VfqMHEQukO8CGEbBUeoprVB4B
+         6M8YuUDbHJK5Yc0SNtY0OQt/eMN8VvyubtqwmF3xoltLU/GBmcMOrJ2TjZLYqJvEYcgf
+         UCXg==
+X-Gm-Message-State: AOAM530BGgMaRBQAP2cGf2AjT2BkjSOVO9gELRy1PUJFVIlumTA8KId7
+        /ajj9eER+M1Szon1rqPIXnQN+ZeMNAy0fTh2z6g=
+X-Google-Smtp-Source: ABdhPJz1YJYHQflXJx0Bc84bAu1eZK8Iidi5ru1YEkbahK+1/iI8yZB/R/hQC6b2vi+cWBbhfBoFSTKZxNwGdzS5FHg=
+X-Received: by 2002:aa7:8883:0:b0:49f:f87a:95de with SMTP id
+ z3-20020aa78883000000b0049ff87a95demr9062124pfe.53.1636491875224; Tue, 09 Nov
+ 2021 13:04:35 -0800 (PST)
 MIME-Version: 1.0
 References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-13-kernel@esmil.dk>
  <CAHp75VdmnnrisuP00W0KYta0KgmC+fu3WMxm959dt5X1kpiKTw@mail.gmail.com>
  <CAHp75VcuGdaq_TjjRS0S8R5y-nryLABZSp7ehrXz-fUS2W3vfA@mail.gmail.com>
  <CACRpkdYe-tW2K2eOQa+FYb-ZXzrA95+pPc6kkLB8ZJLAT8G_eA@mail.gmail.com>
  <CANBLGcyo3YjygkjDmdjt4C_H=MZdHQwqumsxnatuObeP2LADAg@mail.gmail.com>
- <CAHp75VdBaKZVeA7dasHWP4E3c8F2phaGz-90FErj3bB8FJOS9w@mail.gmail.com> <CANBLGcw7X9SY3_=A7ZXW60646vconjCbYBsvb=D2a0BPcyn75A@mail.gmail.com>
-In-Reply-To: <CANBLGcw7X9SY3_=A7ZXW60646vconjCbYBsvb=D2a0BPcyn75A@mail.gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 9 Nov 2021 21:29:22 +0100
-Message-ID: <CACRpkda7b+j1=X9rUrqwEFhxvp2zVTvFkxanjh3hL7AksqCX1g@mail.gmail.com>
+ <CAHp75VdBaKZVeA7dasHWP4E3c8F2phaGz-90FErj3bB8FJOS9w@mail.gmail.com>
+ <CANBLGcw7X9SY3_=A7ZXW60646vconjCbYBsvb=D2a0BPcyn75A@mail.gmail.com> <CACRpkda7b+j1=X9rUrqwEFhxvp2zVTvFkxanjh3hL7AksqCX1g@mail.gmail.com>
+In-Reply-To: <CACRpkda7b+j1=X9rUrqwEFhxvp2zVTvFkxanjh3hL7AksqCX1g@mail.gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+Date:   Tue, 9 Nov 2021 22:04:24 +0100
+Message-ID: <CANBLGcxT_a3J+uaaKazRkfJQoBjGGGiz9agAZUzMEmfJiVXXbw@mail.gmail.com>
 Subject: Re: [PATCH v3 12/16] pinctrl: starfive: Add pinctrl driver for
  StarFive SoCs
-To:     Emil Renner Berthing <kernel@esmil.dk>
+To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         linux-riscv <linux-riscv@lists.infradead.org>,
         devicetree <devicetree@vger.kernel.org>,
@@ -95,32 +83,40 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 9, 2021 at 10:40 AM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> On Tue, 9 Nov 2021 at 10:34, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-
-> > > The order the different states are blinked depends entirely on
-> > > how the pinctrl framework parses the device tree. I still think it
-> > > would be more natural to cleanly go to the end result without this
-> > > blinking.
+On Tue, 9 Nov 2021 at 21:29, Linus Walleij <linus.walleij@linaro.org> wrote:
+> On Tue, Nov 9, 2021 at 10:40 AM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > On Tue, 9 Nov 2021 at 10:34, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 >
-> Hmm.. but if going through the different states is what you want, then
-> wouldn't you need the device tree to have an ordered list of the
-> states rather than just a single node and also a way to tune how long
-> time the different states are blinked?
+> > > > The order the different states are blinked depends entirely on
+> > > > how the pinctrl framework parses the device tree. I still think it
+> > > > would be more natural to cleanly go to the end result without this
+> > > > blinking.
+> >
+> > Hmm.. but if going through the different states is what you want, then
+> > wouldn't you need the device tree to have an ordered list of the
+> > states rather than just a single node and also a way to tune how long
+> > time the different states are blinked?
+>
+> In a way you are correct that the DT is a functional language and it's
+> a bit lite a style sheet or prolog or something in that the end reduction
+> is what counts.
+>
+> In this case, I would say something is weird if there are interim states,
+> the yaml validation should not allow you to set the same thing back
+> and forth in your DTS file.
 
-In a way you are correct that the DT is a functional language and it's
-a bit lite a style sheet or prolog or something in that the end reduction
-is what counts.
+Yes, exactly.
 
-In this case, I would say something is weird if there are interim states,
-the yaml validation should not allow you to set the same thing back
-and forth in your DTS file.
+> Alas we are not perfect as in yaml validation isn't perfect either.
+> I can't see what the problem is really, just write proper DTS files
+> and there will not be any interim states, right?
 
-Alas we are not perfect as in yaml validation isn't perfect either.
-I can't see what the problem is really, just write proper DTS files
-and there will not be any interim states, right? And if it is possible
-to write DTS files that have states and sequence requirements,
-these should be caught in validation. Should be.
+No, I agree. I think it's only that Andy wasn't sure if these interim
+states might be meaningful/useful.
 
-Yours,
-Linus Walleij
+> And if it is possible
+> to write DTS files that have states and sequence requirements,
+> these should be caught in validation. Should be.
+>
+> Yours,
+> Linus Walleij
