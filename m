@@ -2,133 +2,152 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7830EC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 12:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF7BC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 12:16:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5AF32611ED
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 12:10:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6761661247
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 12:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231759AbhKJMNc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 Nov 2021 07:13:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59292 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232040AbhKJMN1 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 Nov 2021 07:13:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1636546230;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rr36Cb2Y1cvFR41scNcUzd8wBnS/OAi/NVPg1Fb83xQ=;
-        b=TeqQ3UfuZQ1vLPkxqnQ0Zs1DmQ6qg4rue+zrOWh+GuO4pTUFhAHktXgQj/rCtxgEEbBwus
-        LC+FSSvcYXDcq22bPhuixOT4KQWfeaxQ8TFh+fFX4bGLGolQWLXSiHT+zKJVF+13UoimB9
-        d5tAOtRD7oJVaYv5KX/DrDNUKHkBYfo=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-107-3w8A-ggEOmOt3-yZr79bEQ-1; Wed, 10 Nov 2021 07:10:27 -0500
-X-MC-Unique: 3w8A-ggEOmOt3-yZr79bEQ-1
-Received: by mail-ed1-f69.google.com with SMTP id f20-20020a0564021e9400b003e2ad3eae74so2158873edf.5
-        for <linux-serial@vger.kernel.org>; Wed, 10 Nov 2021 04:10:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Rr36Cb2Y1cvFR41scNcUzd8wBnS/OAi/NVPg1Fb83xQ=;
-        b=BKllmWfPfw4zsym/L/pzVFoMiHiQ+O/fwHBJUZ+3IJuTYpCUY4089/wMbI3ZSIqHLr
-         WxLUfOXFQb5SeuPUbfJITBTaT+5S0j77cagywy17EviQ3cdWv2/tyv+omd2P3QgdXwqG
-         3VrfjpFDaDvGmZ8tDyLcWyaCrwihF6kJetRwPFOPDnfCsrLU50JUOw3vfAmhGmpdxfp4
-         2325degix2uis6wUJWYJEhc8DftOXoKbSaoRx+3i+Njiytwvvexh6uPBZMDzf4x2ASJ6
-         vZ6P4jquAYXRAxKRydYHAoahj32LC2riXovBMVmuEvBZW+MmA1qrojDcxl9yFnMZk4ko
-         4ZgA==
-X-Gm-Message-State: AOAM532VqbelI3i2E9OD/XSKYn1tr01+foyNPoR5tuXvwt81tkQDKGym
-        CAvz0ffoD/wK89U5Wend/dIUQwLxgOi9/lmJoAOWH87iruQ2mtg61mEeCHxk1CZVTagrYiMokoA
-        9tDKjjErmTzNyUQyl3ttgTOInikNFIMmTaWtfYEkw
-X-Received: by 2002:a17:906:ad89:: with SMTP id la9mr19787424ejb.178.1636546226125;
-        Wed, 10 Nov 2021 04:10:26 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwf4XP8fkeIWWNmHm7LmReGjzuQX86h1/sC+gmwglVaX4WVJuIk3uu0SgugELXK3xZxJVQ9JlvsL+t5QFcdnjo=
-X-Received: by 2002:a17:906:ad89:: with SMTP id la9mr19787400ejb.178.1636546225940;
- Wed, 10 Nov 2021 04:10:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20211029201402.428284-1-wander@redhat.com> <CAHp75VeZBp4gKvGBDzaD=EpGRDZ1-wTvD8K9Ui6Q59kDjmkXmQ@mail.gmail.com>
- <CAAq0SUmzHqEzNk3aw3SEgYVWRukQeHK1WtcJ3MjXcQKJrbC1Dw@mail.gmail.com> <CAHp75Vf6DjNcPWpE4Dh3SuzUMJbFQjq1UNCkrCa60uw35SpqKg@mail.gmail.com>
-In-Reply-To: <CAHp75Vf6DjNcPWpE4Dh3SuzUMJbFQjq1UNCkrCa60uw35SpqKg@mail.gmail.com>
-From:   Wander Costa <wcosta@redhat.com>
-Date:   Wed, 10 Nov 2021 09:10:14 -0300
-Message-ID: <CAAq0SU=wYZ9e9NJvwcLvEvxj-J7PhAPFjRAu2uFVYPprR7A_qQ@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     wander@redhat.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+        id S231336AbhKJMSy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 Nov 2021 07:18:54 -0500
+Received: from comms.puri.sm ([159.203.221.185]:47426 "EHLO comms.puri.sm"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231229AbhKJMSx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 10 Nov 2021 07:18:53 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id 01291DFD9F;
+        Wed, 10 Nov 2021 04:15:36 -0800 (PST)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id zz40ZZMGPKYC; Wed, 10 Nov 2021 04:15:35 -0800 (PST)
+Message-ID: <e9a3a64dcfec858e612037199df7627b77ececd9.camel@puri.sm>
+Subject: Re: [RFC 06/19] devfreq: imx8m-ddrc: Add late system sleep PM ops
+From:   Martin Kepplinger <martin.kepplinger@puri.sm>
+To:     Abel Vesa <abel.vesa@nxp.com>, Rob Herring <robh@kernel.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Georgi Djakov <djakov@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Date:   Wed, 10 Nov 2021 13:15:26 +0100
+In-Reply-To: <1631554694-9599-7-git-send-email-abel.vesa@nxp.com>
+References: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
+         <1631554694-9599-7-git-send-email-abel.vesa@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 1, 2021 at 12:33 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Mon, Nov 1, 2021 at 5:22 PM Wander Costa <wcosta@redhat.com> wrote:
-> > Em s=C3=A1b., 30 de out. de 2021 04:41, Andy Shevchenko
-> > <andy.shevchenko@gmail.com> escreveu:
-> > > On Friday, October 29, 2021, <wander@redhat.com> wrote:
->
-> ...
->
-> > > I don't see any links.
-> >
-> > Oops, sorry about that. I must have accidentally deleted it while
-> > editing the commit message.
-> > Here it is https://github.com/walac/serial-console-test.
-> > I will update the patch with the link.
->
-> Thanks!
->
-> ...
->
-> > > On how many different UARTs have you tested this? Have you tested oop=
-s and NMI contexts?
-> > >
-> > I only tested in a half dozen machines that I have available. I tried
-> > it in panic, warnings, IRQ contexts, etc. Theoretically, this change
-> > should not be affected by the context. Theoretically...
-> >
-> > > What I would like to say here is that the code is being used on zilli=
-ons of different 8250 implementations here and I would be rather skeptical =
-about enabling the feature for everyone.
-> > >
-> > I did my homework and studied the 16550 datasheets, but yes, there is
-> > always this risk. Maybe people more experienced with PC serial ports
-> > than me might think the patch is not worth the risk of breaking some
-> > unknown number of devices out there, and I am ok with that. It is a
-> > valid point.
->
-> Here is a translation of my comment to a roadmap.
->
-> 1. Introduce yet another UART quirk or capability (see corresponding
-> UART_CAP_* or UART_*_QUIRK definitions)
-> 2. Add your patch conditionally based on the above
-> 3. Enable it on UART(s) you _have tested_
->
-Thank you for the feedback, I submitted a v2 patch with your proposed chang=
-es,
+Am Montag, dem 13.09.2021 um 20:38 +0300 schrieb Abel Vesa:
+> Seems that, in order to be able to resume from suspend, the dram rate
+> needs to be the highest one available. Therefore, add the late system
+> suspend/resume PM ops which set the highest rate on suspend and the
+> latest one used before suspending on resume.
 
-Cheers,
-Wander
+Hi Abel, wouldn't this mean that s2idle / freeze would be kind of
+broken by this?
 
-> --
-> With Best Regards,
-> Andy Shevchenko
->
+Does is make sense to test the lowest rate? How would I force that
+here? (just for testing)
+
+Also, you could think about splitting this series up a bit and do this
+patch seperately onto mainline (before or after the other work).
+
+thank you
+                          martin
+
+
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> ---
+>  drivers/devfreq/imx8m-ddrc.c | 28 +++++++++++++++++++++++++++-
+>  1 file changed, 27 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/devfreq/imx8m-ddrc.c b/drivers/devfreq/imx8m-
+> ddrc.c
+> index f18a5c3c1c03..f39741b4a0b0 100644
+> --- a/drivers/devfreq/imx8m-ddrc.c
+> +++ b/drivers/devfreq/imx8m-ddrc.c
+> @@ -72,6 +72,8 @@ struct imx8m_ddrc {
+>         struct clk *dram_alt;
+>         struct clk *dram_apb;
+>  
+> +       unsigned long suspend_rate;
+> +       unsigned long resume_rate;
+>         int freq_count;
+>         struct imx8m_ddrc_freq freq_table[IMX8M_DDRC_MAX_FREQ_COUNT];
+>  };
+> @@ -271,6 +273,22 @@ static int imx8m_ddrc_target(struct device *dev,
+> unsigned long *freq, u32 flags)
+>         return ret;
+>  }
+>  
+> +static int imx8m_ddrc_suspend(struct device *dev)
+> +{
+> +       struct imx8m_ddrc *priv = dev_get_drvdata(dev);
+> +
+> +       priv->resume_rate = clk_get_rate(priv->dram_core);
+> +
+> +       return imx8m_ddrc_target(dev, &priv->suspend_rate, 0);
+> +}
+> +
+> +static int imx8m_ddrc_resume(struct device *dev)
+> +{
+> +       struct imx8m_ddrc *priv = dev_get_drvdata(dev);
+> +
+> +       return imx8m_ddrc_target(dev, &priv->resume_rate, 0);
+> +}
+> +
+>  static int imx8m_ddrc_get_cur_freq(struct device *dev, unsigned long
+> *freq)
+>  {
+>         struct imx8m_ddrc *priv = dev_get_drvdata(dev);
+> @@ -324,6 +342,9 @@ static int imx8m_ddrc_init_freq_info(struct
+> device *dev)
+>  
+>                 if (dev_pm_opp_add(dev, freq->rate * 250000, 0))
+>                         return -ENODEV;
+> +
+> +               if (index ==  0)
+> +                       priv->suspend_rate = freq->rate * 250000;
+>         }
+>  
+>         return 0;
+> @@ -399,11 +420,16 @@ static const struct of_device_id
+> imx8m_ddrc_of_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, imx8m_ddrc_of_match);
+>  
+> +static const struct dev_pm_ops imx8m_ddrc_pm_ops = {
+> +       SET_LATE_SYSTEM_SLEEP_PM_OPS(imx8m_ddrc_suspend,
+> imx8m_ddrc_resume)
+> +};
+> +
+>  static struct platform_driver imx8m_ddrc_platdrv = {
+>         .probe          = imx8m_ddrc_probe,
+>         .driver = {
+>                 .name   = "imx8m-ddrc-devfreq",
+> -               .of_match_table = imx8m_ddrc_of_match,
+> +               .pm = &imx8m_ddrc_pm_ops,
+> +               .of_match_table = of_match_ptr(imx8m_ddrc_of_match),
+>         },
+>  };
+>  module_platform_driver(imx8m_ddrc_platdrv);
+
 
