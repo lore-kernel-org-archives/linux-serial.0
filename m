@@ -2,116 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36AE6C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 11:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7830EC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 12:10:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 11512610CB
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 11:15:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5AF32611ED
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 12:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231311AbhKJLSL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 Nov 2021 06:18:11 -0500
-Received: from mail-pg1-f181.google.com ([209.85.215.181]:41734 "EHLO
-        mail-pg1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbhKJLSL (ORCPT
+        id S231759AbhKJMNc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 Nov 2021 07:13:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59292 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232040AbhKJMN1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 Nov 2021 06:18:11 -0500
-Received: by mail-pg1-f181.google.com with SMTP id n23so1947939pgh.8;
-        Wed, 10 Nov 2021 03:15:24 -0800 (PST)
+        Wed, 10 Nov 2021 07:13:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1636546230;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rr36Cb2Y1cvFR41scNcUzd8wBnS/OAi/NVPg1Fb83xQ=;
+        b=TeqQ3UfuZQ1vLPkxqnQ0Zs1DmQ6qg4rue+zrOWh+GuO4pTUFhAHktXgQj/rCtxgEEbBwus
+        LC+FSSvcYXDcq22bPhuixOT4KQWfeaxQ8TFh+fFX4bGLGolQWLXSiHT+zKJVF+13UoimB9
+        d5tAOtRD7oJVaYv5KX/DrDNUKHkBYfo=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-107-3w8A-ggEOmOt3-yZr79bEQ-1; Wed, 10 Nov 2021 07:10:27 -0500
+X-MC-Unique: 3w8A-ggEOmOt3-yZr79bEQ-1
+Received: by mail-ed1-f69.google.com with SMTP id f20-20020a0564021e9400b003e2ad3eae74so2158873edf.5
+        for <linux-serial@vger.kernel.org>; Wed, 10 Nov 2021 04:10:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ClY6fmDoOxt9WGtpyKfVteeYzW6rEuh6CcP1PbPjKLs=;
-        b=7KS+mc/zYzu8kWe1NUQc4jnk/Sy956byztMcWbM7RwvQFiOJVQl5fUoE9OjRatzH+A
-         xbuPCaaBeT7YGhm1j2Pu152V0l0D3FfYlqSizNg434clsmGbd8M2v05th5sdIYWANjGP
-         gDvr8dnVuLq9zfA+CwVlYL/Iwe9aLTR0XQpu+9RHFFvU11nNnjssGiPg7dqRLhcRsZYT
-         oVWmZG9ZSHZZJcHzrDGrWZc3TtShH0LkftqjxanVT3X6uD51vHCEylctf1e2tdauMj41
-         XoUt8seXiqi+IKvlSGy84rJ4iDlgmbz99QX6EnFgQMMXRKMWFAA2Ius+GttzVf3bML2g
-         31eg==
-X-Gm-Message-State: AOAM530IrVhFzYkUz0Itl9p+iN/zp2Ei/mRG9ppVE/UZua911IMQ6hYJ
-        gJpJhXOPTPMP6TSQL24Fqc6fZtJOhE5Tdvew5+E=
-X-Google-Smtp-Source: ABdhPJytXP1IZu85W3D1n2+CMyE8syz896fxWd4se2sx5oabHakMgfHn+iJX8mmbMFqlgMuJ/UaEDepThBex+/NV1Mg=
-X-Received: by 2002:aa7:91c5:0:b0:49f:a400:9771 with SMTP id
- z5-20020aa791c5000000b0049fa4009771mr15317197pfa.79.1636542923673; Wed, 10
- Nov 2021 03:15:23 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Rr36Cb2Y1cvFR41scNcUzd8wBnS/OAi/NVPg1Fb83xQ=;
+        b=BKllmWfPfw4zsym/L/pzVFoMiHiQ+O/fwHBJUZ+3IJuTYpCUY4089/wMbI3ZSIqHLr
+         WxLUfOXFQb5SeuPUbfJITBTaT+5S0j77cagywy17EviQ3cdWv2/tyv+omd2P3QgdXwqG
+         3VrfjpFDaDvGmZ8tDyLcWyaCrwihF6kJetRwPFOPDnfCsrLU50JUOw3vfAmhGmpdxfp4
+         2325degix2uis6wUJWYJEhc8DftOXoKbSaoRx+3i+Njiytwvvexh6uPBZMDzf4x2ASJ6
+         vZ6P4jquAYXRAxKRydYHAoahj32LC2riXovBMVmuEvBZW+MmA1qrojDcxl9yFnMZk4ko
+         4ZgA==
+X-Gm-Message-State: AOAM532VqbelI3i2E9OD/XSKYn1tr01+foyNPoR5tuXvwt81tkQDKGym
+        CAvz0ffoD/wK89U5Wend/dIUQwLxgOi9/lmJoAOWH87iruQ2mtg61mEeCHxk1CZVTagrYiMokoA
+        9tDKjjErmTzNyUQyl3ttgTOInikNFIMmTaWtfYEkw
+X-Received: by 2002:a17:906:ad89:: with SMTP id la9mr19787424ejb.178.1636546226125;
+        Wed, 10 Nov 2021 04:10:26 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwf4XP8fkeIWWNmHm7LmReGjzuQX86h1/sC+gmwglVaX4WVJuIk3uu0SgugELXK3xZxJVQ9JlvsL+t5QFcdnjo=
+X-Received: by 2002:a17:906:ad89:: with SMTP id la9mr19787400ejb.178.1636546225940;
+ Wed, 10 Nov 2021 04:10:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-13-kernel@esmil.dk>
- <CAHp75VdmnnrisuP00W0KYta0KgmC+fu3WMxm959dt5X1kpiKTw@mail.gmail.com>
- <CAHp75VcuGdaq_TjjRS0S8R5y-nryLABZSp7ehrXz-fUS2W3vfA@mail.gmail.com>
- <CACRpkdYe-tW2K2eOQa+FYb-ZXzrA95+pPc6kkLB8ZJLAT8G_eA@mail.gmail.com>
- <CANBLGcyo3YjygkjDmdjt4C_H=MZdHQwqumsxnatuObeP2LADAg@mail.gmail.com>
- <CAHp75VdBaKZVeA7dasHWP4E3c8F2phaGz-90FErj3bB8FJOS9w@mail.gmail.com>
- <CANBLGcw7X9SY3_=A7ZXW60646vconjCbYBsvb=D2a0BPcyn75A@mail.gmail.com>
- <CACRpkda7b+j1=X9rUrqwEFhxvp2zVTvFkxanjh3hL7AksqCX1g@mail.gmail.com>
- <CANBLGcxT_a3J+uaaKazRkfJQoBjGGGiz9agAZUzMEmfJiVXXbw@mail.gmail.com> <YYt9I7hfugtpeALs@smile.fi.intel.com>
-In-Reply-To: <YYt9I7hfugtpeALs@smile.fi.intel.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Wed, 10 Nov 2021 12:15:12 +0100
-Message-ID: <CANBLGcwA8q5JRizzaSQKyMAMLmC1eF8tL=z5EJ2PK89488NJFg@mail.gmail.com>
-Subject: Re: [PATCH v3 12/16] pinctrl: starfive: Add pinctrl driver for
- StarFive SoCs
+References: <20211029201402.428284-1-wander@redhat.com> <CAHp75VeZBp4gKvGBDzaD=EpGRDZ1-wTvD8K9Ui6Q59kDjmkXmQ@mail.gmail.com>
+ <CAAq0SUmzHqEzNk3aw3SEgYVWRukQeHK1WtcJ3MjXcQKJrbC1Dw@mail.gmail.com> <CAHp75Vf6DjNcPWpE4Dh3SuzUMJbFQjq1UNCkrCa60uw35SpqKg@mail.gmail.com>
+In-Reply-To: <CAHp75Vf6DjNcPWpE4Dh3SuzUMJbFQjq1UNCkrCa60uw35SpqKg@mail.gmail.com>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Wed, 10 Nov 2021 09:10:14 -0300
+Message-ID: <CAAq0SU=wYZ9e9NJvwcLvEvxj-J7PhAPFjRAu2uFVYPprR7A_qQ@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+Cc:     wander@redhat.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Huan Feng <huan.feng@starfivetech.com>
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 10 Nov 2021 at 09:05, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> On Tue, Nov 09, 2021 at 10:04:24PM +0100, Emil Renner Berthing wrote:
-> > On Tue, 9 Nov 2021 at 21:29, Linus Walleij <linus.walleij@linaro.org> wrote:
-> > > On Tue, Nov 9, 2021 at 10:40 AM Emil Renner Berthing <kernel@esmil.dk> wrote:
+On Mon, Nov 1, 2021 at 12:33 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Mon, Nov 1, 2021 at 5:22 PM Wander Costa <wcosta@redhat.com> wrote:
+> > Em s=C3=A1b., 30 de out. de 2021 04:41, Andy Shevchenko
+> > <andy.shevchenko@gmail.com> escreveu:
+> > > On Friday, October 29, 2021, <wander@redhat.com> wrote:
 >
 > ...
 >
-> > No, I agree. I think it's only that Andy wasn't sure if these interim
-> > states might be meaningful/useful.
+> > > I don't see any links.
+> >
+> > Oops, sorry about that. I must have accidentally deleted it while
+> > editing the commit message.
+> > Here it is https://github.com/walac/serial-console-test.
+> > I will update the patch with the link.
 >
-> Exactly. Because HW could behave differently.
-
-Right. But I think we've now established that what is described in the
-device tree is the state the pins should be in after the function has
-been called, eg. only the reduction matters, and any interim states
-would just be a byproduct of storing the state in the configs list.
-
-> > > And if it is possible
-> > > to write DTS files that have states and sequence requirements,
-> > > these should be caught in validation. Should be.
+> Thanks!
 >
+> ...
+>
+> > > On how many different UARTs have you tested this? Have you tested oop=
+s and NMI contexts?
+> > >
+> > I only tested in a half dozen machines that I have available. I tried
+> > it in panic, warnings, IRQ contexts, etc. Theoretically, this change
+> > should not be affected by the context. Theoretically...
+> >
+> > > What I would like to say here is that the code is being used on zilli=
+ons of different 8250 implementations here and I would be rather skeptical =
+about enabling the feature for everyone.
+> > >
+> > I did my homework and studied the 16550 datasheets, but yes, there is
+> > always this risk. Maybe people more experienced with PC serial ports
+> > than me might think the patch is not worth the risk of breaking some
+> > unknown number of devices out there, and I am ok with that. It is a
+> > valid point.
+>
+> Here is a translation of my comment to a roadmap.
+>
+> 1. Introduce yet another UART quirk or capability (see corresponding
+> UART_CAP_* or UART_*_QUIRK definitions)
+> 2. Add your patch conditionally based on the above
+> 3. Enable it on UART(s) you _have tested_
+>
+Thank you for the feedback, I submitted a v2 patch with your proposed chang=
+es,
+
+Cheers,
+Wander
+
 > --
 > With Best Regards,
 > Andy Shevchenko
 >
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+
