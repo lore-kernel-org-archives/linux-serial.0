@@ -2,191 +2,172 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F5BC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 15:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B289C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 16:35:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A01176103D
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 15:52:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 04FCA61241
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 16:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232475AbhKJPzN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 Nov 2021 10:55:13 -0500
-Received: from mail-eopbgr60063.outbound.protection.outlook.com ([40.107.6.63]:61239
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232483AbhKJPzL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 Nov 2021 10:55:11 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZO+9p+W3+HYueqABh3ZR4JVbmLdHmwVnE6/ERNJlM3nl5OCSHm/fgj7BlpIr6arEHug3Jkk2uqku5BWleZso+Kf4q5iCGD1Gskv01IpBD2pectxmjMafEw+PwCRYE0NzvJs9j7XvpsPqE94csbmHRfaa4/f0u4EJLs/tc2ZyVARiT/bq9ShYkHlUkMF/FA+MSNiZfU1FEgTr072KCFy1UN2NVcw+PbjXyhTlBjldifSx/xQLT8By1uHheK2TcwTUnPChaEpdpIBONgMOPsaogHILjFDgdVGHTJ3SL46NRBD4T05prWg+wWrIixZf8KXteokmQagH3+sDiooMjeF/wQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dmAS/dYJAlW/eR43yaZtZsorQr21y5X61frfyHAOpNI=;
- b=YsEf3jw1EaTbtVBeAz3x7HKHzrbMNrMGBAnlIyASGIFuOvokmHqxowpYjxd7pifg0RGPraaji6I5FliMeVwpiJbFm1Y1F+xB6tgYv+4zAwzfshcGJJg+Fd0jO/iGcwpbtsQznqmDqXkqEpfzrCoYaUmQpG7tGZdsjh8v057+kt7G//S2Y/q0JpXXj9Z/sWyZRsJDCSFoeHv1fjK+jIQQX+9jFusUN1LnpIl/6IEu/fdhLOxwaq9Yrh35g22ujHpRVceTGcR6jKprVpKalcNxMoDaAR1fR14E0EP5nIak2v4qXKLzXzrjw+2zo1xX3qjypyrUky3xpJ5vK9QW9HBvJQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dmAS/dYJAlW/eR43yaZtZsorQr21y5X61frfyHAOpNI=;
- b=GNRsHsB2RZ01b7p+pMV1zWyYM8SHkqhLtV2Srh8mclS/Mul//SiUBPN9P47duG6Ggr+bWftbKEJpx8spgJP9qNVCqe7OXPJ7BUuCX7wh0S2zhjoQ4A/x8uA4Ph9P1Q5rWz5W2hi1dP29YnzMk5IRw4XTVQMI5tTKW3XYWf1kipU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
- by VI1PR0401MB2304.eurprd04.prod.outlook.com (2603:10a6:800:29::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.15; Wed, 10 Nov
- 2021 15:52:21 +0000
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::885c:ddee:c614:9787]) by VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::885c:ddee:c614:9787%7]) with mapi id 15.20.4690.016; Wed, 10 Nov 2021
- 15:52:21 +0000
-Date:   Wed, 10 Nov 2021 17:52:19 +0200
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Dong Aisheng <aisheng.dong@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 09/11] dt-bindings: i2c: i2c-imx-lpi2c: Fix dtbs_check
- compatible oneOf error
-Message-ID: <YYvqswlk59lI0fqH@ryzen>
-References: <1633526764-30151-1-git-send-email-abel.vesa@nxp.com>
- <1633526764-30151-10-git-send-email-abel.vesa@nxp.com>
- <YWiMy5J/J/dxmkY4@robh.at.kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YWiMy5J/J/dxmkY4@robh.at.kernel.org>
-X-ClientProxiedBy: VE1PR03CA0012.eurprd03.prod.outlook.com
- (2603:10a6:802:a0::24) To VI1PR04MB4688.eurprd04.prod.outlook.com
- (2603:10a6:803:6a::30)
+        id S230487AbhKJQhr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 Nov 2021 11:37:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229682AbhKJQhq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 10 Nov 2021 11:37:46 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C34C061764;
+        Wed, 10 Nov 2021 08:34:59 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id n8so3488367plf.4;
+        Wed, 10 Nov 2021 08:34:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6DXVckl0RrIJ/A6i//8yhDMUzs3xEaGmxwAICuDmaY0=;
+        b=cOPRQjNEGKQEPMy7//mD6f0tLDX24Mm8d5rNJDt+2a1opUtQHC+gw5B4le5/lOGbn4
+         BCJj7Wk2BFBWQ1TDTxYCCRzi5Oh0r289EtA+Brubs1f5mk8MmqLpWcnGEPV19DZ0FPs2
+         9ehH94vXiWImscpTc6A9TXvfiE7RYihGjQwJa2OoG8XZzYfk7Fl5ii0TnRVkl8zaSCgD
+         1dNSJUK2cvCbOHV1B6Dl4EmipGaAJhnI4tJ1AV2LTe0BG6uBW/R8vGQBgDcdyzCV8PmG
+         ZjUc+qlVWqfBLU4x+rG4ukIxOHy7GbUxZPRIyhoTgcAKdfyX7gVywQQCakz1uYbseXc9
+         QNnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6DXVckl0RrIJ/A6i//8yhDMUzs3xEaGmxwAICuDmaY0=;
+        b=olcaMqZWMKXfJsQj9bu3rxp63XsQbVibgvWK92V5Tjb9LVOZ3CNYaEmk+W8GdZODgV
+         quaKnp7Sa4ZyBkOfJgxM1XkYT4dj9mz9siyl/rcvM5DjCTiGlPrFwlEAVISq0+WRa/UL
+         DL0wJ5OcAVBy3YIpyzA8KMfXEv2TLIqNo6BullDHDg8K6mdRmVIhK2hGT+k8Z4ond4+b
+         vNExpyILXtf6ZO/g5cJ27GBoNXN3ZpmVs5aPLRtgKEcTXBd/WCY0/3IkXP1RUq8dC7TH
+         WfBH1yLgxES+Ege+P7cb1GgwjUs8+9MJM6x/u1PsO7c6iLcN8ZiHQNP/7//AK/m5gFeu
+         s72Q==
+X-Gm-Message-State: AOAM531IZGeEMpZxs2PH7VayyUmUEB5NnAfQerTq0nWpJgTZA++OovoH
+        NLuWWdbb9ATY3cwaF4d/1EaTjg5ouyssZOIsQP2JuELK
+X-Google-Smtp-Source: ABdhPJzQElKEF1R8wngUwIrsIjZJx9wwapxQuwAsvGzxvSSMRC2g4PylICdvEBrOVH7f25UGO7UscPcqgvHGA3V9Js0=
+X-Received: by 2002:a17:902:bd98:b0:13f:9ae7:54d1 with SMTP id
+ q24-20020a170902bd9800b0013f9ae754d1mr407705pls.15.1636562098638; Wed, 10 Nov
+ 2021 08:34:58 -0800 (PST)
 MIME-Version: 1.0
-Received: from ryzen (5.12.226.136) by VE1PR03CA0012.eurprd03.prod.outlook.com (2603:10a6:802:a0::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15 via Frontend Transport; Wed, 10 Nov 2021 15:52:21 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 57de3ef6-85a2-4803-6b01-08d9a46214f4
-X-MS-TrafficTypeDiagnostic: VI1PR0401MB2304:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB23040DBFC736A1F3645A80D3F6939@VI1PR0401MB2304.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /d6gvUo+TVaOlMqnoHKzMf1hAyYCNFUQsuScSU4AYGhWD9KXJd5GxAfMJ2flMUrCmA2UPvT6/kt91AmvE70JMwzyb9LubIkB/t0YNIyDzwZ3LkPU2K4SJz2NO+lDtyBH6qlhnXUsA+BK8rvkDRp51W35HNCaN3RWJHqPWk8EBDPRZ0cTS56lssdOcWQI5R1Jl05u9r08b8RV9akd7DXmaoqbEUJi3B4pK1al+qga7/a/l4uH69qNJNrJ6cKNIe4EgRVE2s2bQ3W68r5qfek+Zl7ukSWMePKKxkOZVTg5k/86YT+91y1XsfLr1BeKkQG8d6px7uARblf71bad1tSUoLkPo12t/CLaabpV8zOwwe5OEYp2eXSdLUX1DXT14ahmPVPihV7h3VHGdbLf41tvkVMjBINZSoFFgVgyAIDCXXRnIB1MFKAgsIgpr6qpxkzeEY+ypYG+SuIX64Wq5WofVKzk4BskmbpAEsOs3y6PoSVjFsZMvZgdu5XsL/QypwebBvvfOl1+c0ileb8GR0dfiYDaO8gmD7isTqDKP1t4VQc5KF+wKeaDo8H9mu8/VmAEUDWDsJ//Dexlvg1S2Uca4OYWs1GHh9a+6mr7cFyDQExK9skYyacWcwjDqtX9l4qe6x2cBKR8aWCtUpf1jBuAPNrPcuXcYW93CzztkaYVOMJ46IxoOjwTsnipvi4K3t4eGNwiy0N6NplWWA8PcDfTnw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(508600001)(316002)(8676002)(66946007)(6916009)(33716001)(54906003)(4326008)(9576002)(8936002)(7416002)(956004)(83380400001)(2906002)(38100700002)(38350700002)(53546011)(55016002)(66556008)(9686003)(186003)(26005)(66476007)(52116002)(6496006)(44832011)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gdGP76ppxksbza41wRzG8snTWZ8CmB3wXpVfddAm7Gi76G41A8Gu0wwfOBHe?=
- =?us-ascii?Q?miQJ23I5b0gijJ74OYVNKDoRtHAMAeUADoIuCHyAfR90JWkZCNHCwsEaGG10?=
- =?us-ascii?Q?ahVhpYSzyCbjl7OHYYXPWPyJ3iMxGqk1rzrexsDfB/xfLnYGa9klYrAaqv7q?=
- =?us-ascii?Q?/ulcJ+9zTOlOt5t5KWiRbmgssFhnjqjg8LnLXMauB2CKRREyZpMlO30ROBiN?=
- =?us-ascii?Q?uNLdKK26CZrAmoiP3jLhlO1uB7jxitVVe7dVn/zsWUGqw1YheTUlQfNvWVu7?=
- =?us-ascii?Q?pbact509PG2e+ZOiV5wCAqaBqB89xVhjEgDFySfzvpXX/gYDcebUWSiXvgzD?=
- =?us-ascii?Q?rjhgghRuEnXDADoluiHbH+XJ/3yF+iaOx20J6KL8vNtEXDc4EjnzM9nEk1O1?=
- =?us-ascii?Q?X5U8wc14x+M47ngdnPWLWQZjttwA5piJKc2FQxZP5tSj+s7mcqCru4IdGNcF?=
- =?us-ascii?Q?5bzgHo5uxDuGFzlc8r1xAOPlBbNty7yVZzW3jMczyxv+RY70/LKF0x1eEYwR?=
- =?us-ascii?Q?wEkKG8kjhc1/QnmZJuQLd3Gt4Tz8io80AnVRWLqu6df+p01U5p/jxqx2bGBa?=
- =?us-ascii?Q?/mazOu6PLhYvqtJAl8dAa61yyWCuV/IFNbKUvHnlwIE924ZCjS7HTX0OvlDJ?=
- =?us-ascii?Q?dsZLgQm94U69IwIEjvsu+7JThX3OZZQhTzFFww/Gs8WtQMdlgo+YXMk3Fkl6?=
- =?us-ascii?Q?KPOQMYppcgaQVDwcos0fokmjq6MZgtWscmQS8j3Fol4+Oj+1ObhllllB8j0C?=
- =?us-ascii?Q?MDmYapNql0XJC6psht5kKFLhfvA26C0Fsl91e9DLEi0HkP2Q8ux0YLdz7shN?=
- =?us-ascii?Q?Ak/ANE6F7kCWlPU2ImqYyMKEFN8+Z3EPXOKVO3kvpIjqR87Lj15glGEci5vU?=
- =?us-ascii?Q?vbxkvIAoIisA2T7/rHfA/RKHoEiwRSihJt8m7CACNnJwYNkY3AnRQBRUskU9?=
- =?us-ascii?Q?KlGiwTg5bXyGRXXFaYEiyND9tInXl9uwp4AzGRhDQre9Pn6RLn2GFO7vHY+/?=
- =?us-ascii?Q?6UdFjsNor9ibJ4j+7Y3yzgOLagTkIfn3oG+U8a8IqLd1+GoRLGgbILphv/Xv?=
- =?us-ascii?Q?AaWdxaIKl634eih0C92D+3CclZhrhCTYdwCnlb3z/JFtoOayAexk/qosAu1+?=
- =?us-ascii?Q?TFnHaJ4iixXRtx2C834nEB/o1qzE4K13bNRb/hGsuOvxENGTyUFkGHESnP/G?=
- =?us-ascii?Q?R19ifay58FwZvxKTQve6HaTB8S9T4Ay0oPMIBt0sziZB73QF7w23cYc6TGrL?=
- =?us-ascii?Q?RQ+Nu+3WD8KGC3N9VQ0LAl8HYsJaz/p/u0JR3mlGiVQBh1DerRVycJATh9wU?=
- =?us-ascii?Q?fqFxxlv2nuh1yKVdE3o3c0Oz0hdYOt0D+tPt2alqJD2B33CBGfrj8NweHFkZ?=
- =?us-ascii?Q?BswXOJwt1Ev2n+EVNJYBddJgADP2hVKRrA7eFXVDV9l1vBduwPorD3vxZ8B3?=
- =?us-ascii?Q?E2d+PL3reL/DlGu6Z1nvsERbYhcctLX04vr0XAy2pQU+4f7aqWa8xw56ceBN?=
- =?us-ascii?Q?YOsd753GM11ff8B/pByZyPuUSlL6lRhmZuk+bQGeuvdAq7i7wbdHk/7AS09X?=
- =?us-ascii?Q?0E9YFl0RR8IzXwDD5DC3q4sipDSpn/tqHtBH6UGw+dt+/MLn8+PB0qOt+2sq?=
- =?us-ascii?Q?Y7Y56ZoRUwEcnLaZa9IFdFA=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57de3ef6-85a2-4803-6b01-08d9a46214f4
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2021 15:52:21.7866
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YmLacRCceOq7qO2/7XEh70l8oqqPunHPnMG9B0FPIL7TyqTFF8hFwNh2IPu4xMTTh/lgtiPUCgRInap5Rozt8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2304
+References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-10-kernel@esmil.dk>
+ <CAHp75Ve-P8DR00mtRP_NkrXgB4nsZ+qBkgBen94iTcPqxQYUOg@mail.gmail.com>
+ <CANBLGcyb=TAP0h2WuxBAjRvpN9n7Dt1Hvh5yE8NMOwm3ixZWuA@mail.gmail.com> <CAAH8bW-J6Ai+KZFkZ4ELOzD-u7BceZrBqwnCuPH6F-fNQNm3XQ@mail.gmail.com>
+In-Reply-To: <CAAH8bW-J6Ai+KZFkZ4ELOzD-u7BceZrBqwnCuPH6F-fNQNm3XQ@mail.gmail.com>
+From:   Yury Norov <yury.norov@gmail.com>
+Date:   Wed, 10 Nov 2021 08:34:39 -0800
+Message-ID: <CAAH8bW8=o2ZTWEL8NUHvPE5COZJJ7VnNBKp_rumyXOe6m2q1Jg@mail.gmail.com>
+Subject: Re: [PATCH v3 09/16] reset: starfive-jh7100: Add StarFive JH7100
+ reset driver
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21-10-14 15:02:19, Rob Herring wrote:
-> On Wed, Oct 06, 2021 at 04:26:02PM +0300, Abel Vesa wrote:
-> > Fix following dtbs_check error:
-> > 
-> > arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml:
-> > i2c@5a800000: compatible: 'oneOf' conditional failed, one must be fixed:
-> >         ['fsl,imx8qm-lpi2c', 'fsl,imx7ulp-lpi2c'] is too long
-> >         Additional items are not allowed ('fsl,imx7ulp-lpi2c' was
-> > unexpected)
-> >         'fsl,imx8qxp-lpi2c' was expected
-> >         From schema:
-> > Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
-> > 
-> > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> > ---
-> >  Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml b/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
-> > index 29b9447f3b84..acf2d5f45f4e 100644
-> > --- a/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
-> > +++ b/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
-> > @@ -18,8 +18,11 @@ properties:
-> >        - enum:
-> >            - fsl,imx7ulp-lpi2c
-> >            - fsl,imx8qm-lpi2c
-> > +          - fsl,imx8qxp-lpi2c
-> 
-> Both with and without a fallback should not be valid.
-> 
-> Why are you changing fsl,imx8qxp-lpi2c when the error was for 
-> fsl,imx8qm-lpi2c?
-> 
-
-Sorry for the late reply.
-
-I assume the correct way would be like:
-
-    oneOf:                                   
-      - enum:                                
-          - fsl,imx7ulp-lpi2c                
-      - items:                               
-	  - enum:                            
-	      - fsl,imx8dxl-lpi2c            
-	      - fsl,imx8qxp-lpi2c            
-	      - fsl,imx8qm-lpi2c             
-	  - const: fsl,imx7ulp-lpi2c         
-				
-Right ?
-
-Since all the possible combinations are:
-	compatible = "fsl,imx8dxl-lpi2c", "fsl,imx7ulp-lpi2c";
-	compatible = "fsl,imx8qm-lpi2c", "fsl,imx7ulp-lpi2c";
-	compatible = "fsl,imx8qxp-lpi2c", "fsl,imx7ulp-lpi2c";
-	compatible = "fsl,imx7ulp-lpi2c";
-
-
-> >        - items:
-> > -          - const: fsl,imx8qxp-lpi2c
-> > +          - enum:
-> > +              - fsl,imx8qm-lpi2c
-> > +              - fsl,imx8qxp-lpi2c
-> >            - const: fsl,imx7ulp-lpi2c
-> >  
-> >    reg:
-> > -- 
-> > 2.31.1
-> > 
+On Tue, Nov 2, 2021 at 1:55 PM Yury Norov <yury.norov@gmail.com> wrote:
+>
+> On Tue, Nov 2, 2021 at 12:59 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
 > >
+> > On Tue, 2 Nov 2021 at 20:43, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > +Cc: Yury (bitmap expert)
+> > >
+> > > On Tue, Nov 2, 2021 at 6:50 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> > > >
+> > > > Add a driver for the StarFive JH7100 reset controller.
+> > >
+> > > ...
+> > >
+> > > > +#define BIT_MASK32(x) BIT((x) % 32)
+> > >
+> > > Possible namespace collision.
+> > >
+> > > ...
+> > >
+> > > > +/*
+> > > > + * the registers work like a 32bit bitmap, so writing a 1 to the m'th bit of
+> > > > + * the n'th ASSERT register asserts line 32n + m, and writing a 0 deasserts the
+> > > > + * same line.
+>
+> We don't have 32-bit bitmaps. Bitmaps are always arrays of unsigned longs. On a
+> 64-bit system this '32-bit bitmap' may be broken due to endianness issues.
+>
+> > > > + * most reset lines have their status inverted so a 0 in the STATUS register
+> > > > + * means the line is asserted and a 1 means it's deasserted. a few lines don't
+> > > > + * though, so store the expected value of the status registers when all lines
+> > > > + * are asserted.
+> > > > + */
+> > >
+> > > Besides missing capitalization,
+> >
+> > I'm confused. it was you who wanted all comments to capitalized the same..
+> > 64bi
+> > if it sounds like bitmap, use bitmap.
+> > > I have checked DT definitions and it seems you don't even need the
+> > > BIT_MASK() macro,
+> > >
+> > > > +static const u32 jh7100_reset_asserted[4] = {
+> > > > +       /* STATUS0 register */
+> > > > +       BIT_MASK32(JH7100_RST_U74) |
+>
+> I think we have no BIT_MASK32() for a good reason. Natural alignment is
+> always preferable.
+>
+> > > > +       BIT_MASK32(JH7100_RST_VP6_DRESET) |
+> > > > +       BIT_MASK32(JH7100_RST_VP6_BRESET),
+> > > > +       /* STATUS1 register */
+> > > > +       BIT_MASK32(JH7100_RST_HIFI4_DRESET) |
+> > > > +       BIT_MASK32(JH7100_RST_HIFI4_BRESET),
+> > > > +       /* STATUS2 register */
+> > > > +       BIT_MASK32(JH7100_RST_E24),
+> > > > +       /* STATUS3 register */
+> > > > +       0,
+> > > > +};
+> > >
+> > > Yury, do we have any clever (clean) way to initialize a bitmap with
+> > > particular bits so that it will be a constant from the beginning? If
+> > > no, any suggestion what we can provide to such users?
+>
+> If you want your array to be a true bitmap, ie, all bitmap functions should
+> work with it correctly, you'd initialize it like this:
+>
+> static const unsigned long jh7100_reset_asserted[] = {
+>         BITMAP_FROM_U64(BIT_MASK(JH7100_RST_VP6_DRESET) |
+>                           BIT_MASK(JH7100_RST_VP6_BRESET) |
+>                           BIT_MASK(JH7100_RST_HIFI4_DRESET) |
+>                           BIT_MASK(JH7100_RST_HIFI4_BRESET)),
+>         BITMAP_FROM_U64(BIT_MASK(JH7100_RST_E24)),
+> }
+
+My bad, it should be BIT_ULL_MASK.
+
+Thanks,
+Yury
