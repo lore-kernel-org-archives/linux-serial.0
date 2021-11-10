@@ -2,346 +2,196 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF36CC2BB86
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 17:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60789C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 17:48:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9A1CC61353
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 17:47:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 41B7E61159
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 17:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232271AbhKJRuU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 Nov 2021 12:50:20 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:39840 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232541AbhKJRuE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 Nov 2021 12:50:04 -0500
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1A9172010A0;
-        Wed, 10 Nov 2021 18:47:15 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0D5EE201076;
-        Wed, 10 Nov 2021 18:47:15 +0100 (CET)
-Received: from fsr-ub1664-175.ea.freescale.net (fsr-ub1664-175.ea.freescale.net [10.171.82.40])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 76E7420399;
-        Wed, 10 Nov 2021 18:47:14 +0100 (CET)
+        id S231514AbhKJRvI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 Nov 2021 12:51:08 -0500
+Received: from mail-eopbgr60078.outbound.protection.outlook.com ([40.107.6.78]:48302
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232548AbhKJRur (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 10 Nov 2021 12:50:47 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hqzXg2S1boXv5IfgZMrP7Zbfb7OuAXF8PYZHIkzvOl8KNxk9OajZu/GPAXtpbQQ5MKy00lAm5SJFJZ+djTWW6+j+zPCMawK2El/IJ+FsOxd+44PE8pNba7HBxZOaNVfxaDmi1f9YIVa1NyT8pmSyaR81+ejZSyxnh/7wWR1/QGrek6zT8sgNjDdLnHRSiGbs8pA3hvQ9SEydFAm6ehNsQyuXYUAtP66TmyeNO6l1TsJ/9EzWr9DfilJUM4hbb81e/lHmDCrsEv4C9SmzUtSkf43KHHpFD6qv09ZyBZ98cci3b2NFZhYrce4quuhg+GRBuXoJoZ07tSWrABZSko5MRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NiYWJtChtPloMHnVm+/91oiLVPd5r7NjTkGfr8O4Hgw=;
+ b=Tk2wVQs1BEMUm5VvETfVzCgWcqa6MuXtwfK+1e4ENtAKKNIqqxvhkiwqzkkoty7DU09VNLsby+5StGcdxZxSHhwDkdl2utdka5JjSFih9zjRxn5SGHR/YCRn1IehZjfqtnPNxVsvjce+Adfd0piOcPJ1SsadrvnkfrbJWXCiBgXsQ4fzumMn3lr+oRSdGX3wVYf22fZEN3aSo4q41VQBnnzjPaQ9ShUUTbkU/bgThTg6Z0oRNOt2GA/Ti6qtudWyHAYQVVw/a6coWl8muF9wujGvyK0QmWLkCDCue0x4twoRcstA/3lZzM0+41e8Cg9/CCuWTKmWkANLdzUaDdgxUw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NiYWJtChtPloMHnVm+/91oiLVPd5r7NjTkGfr8O4Hgw=;
+ b=hGBPlWUjfCeL4GC7lOLYB+ZHMvFErqqY1PjHEuGdcCdgdjaXezErqc7EsNFaspqziTHlws0wYzgA0pwvGqENmvj+n/LYnH0GbnXFOWQYAP/L2AEBp03Kr+o/CalAHOrq2738cS8CLKgapkFDr9fuZwos7KbcxqA/c+6BhXRD2pE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
+ by VE1PR04MB6702.eurprd04.prod.outlook.com (2603:10a6:803:123::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.16; Wed, 10 Nov
+ 2021 17:47:57 +0000
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::885c:ddee:c614:9787]) by VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::885c:ddee:c614:9787%7]) with mapi id 15.20.4690.016; Wed, 10 Nov 2021
+ 17:47:57 +0000
+Date:   Wed, 10 Nov 2021 19:47:55 +0200
 From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
+To:     Rob Herring <robh@kernel.org>
+Cc:     Dong Aisheng <aisheng.dong@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Estevam <festevam@gmail.com>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
         linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Abel Vesa <abel.vesa@nxp.com>, Jacky Bai <ping.bai@nxp.com>
-Subject: [PATCH v4 09/12] arm64: dts: imx8dxl: Add i.MX8DXL evk board support
-Date:   Wed, 10 Nov 2021 19:46:52 +0200
-Message-Id: <1636566415-22750-10-git-send-email-abel.vesa@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1636566415-22750-1-git-send-email-abel.vesa@nxp.com>
-References: <1636566415-22750-1-git-send-email-abel.vesa@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 09/11] dt-bindings: i2c: i2c-imx-lpi2c: Fix dtbs_check
+ compatible oneOf error
+Message-ID: <YYwFy+aVrYEDls4x@ryzen>
+References: <1633526764-30151-1-git-send-email-abel.vesa@nxp.com>
+ <1633526764-30151-10-git-send-email-abel.vesa@nxp.com>
+ <YWiMy5J/J/dxmkY4@robh.at.kernel.org>
+ <YYvqswlk59lI0fqH@ryzen>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YYvqswlk59lI0fqH@ryzen>
+X-ClientProxiedBy: VI1PR04CA0084.eurprd04.prod.outlook.com
+ (2603:10a6:803:64::19) To VI1PR04MB4688.eurprd04.prod.outlook.com
+ (2603:10a6:803:6a::30)
+MIME-Version: 1.0
+Received: from ryzen (5.12.226.136) by VI1PR04CA0084.eurprd04.prod.outlook.com (2603:10a6:803:64::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.15 via Frontend Transport; Wed, 10 Nov 2021 17:47:56 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0d5c5107-ae72-4008-ef60-08d9a4723afd
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6702:
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6702360152AD112310F3029CF6939@VE1PR04MB6702.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iEaU5qVp/Tf/r9U3R/z0Lldx8RIgaQUuEELHN5EOk/DXxZSwM1APUTevbP5eozCrzecYIYuKqi0SgQxGYtliENLjd4uh1R0nH3APJf0rgZLSiGV2U/qsONTtJdKBdXT/g6xbLhC1FYPgytVKCfqXBgQo0CHcY0XRtF1zph8h8FdcmsoQQzVz0i67UwokL2tfkYAD+Au0YrQ0508qZWcyye+JXlK58RYxMX7WoKgu1fKK8ul/5oop7sciWSFsQ3mHyD0tPADHn6/Cqz1Hhkke8X0bwusRzyBS1dit6R9C9qE8/ZQEX9hCSQjJYP8HP13RlQNIqTQB8jg8nFwyED8/Uai7avJpb5dKOunHXp+8YpPJ3dnE7oVwYL5jAOuuaj2QJGjSMAK+TxaRrH7N+ihAd2vHK9WWelq/uyo0UWW/hRe5NVY1SIm1AanGOtgsiMQCi5Bp7hfVgvENspyDGjJKhg7hiDaeVJrzJ/UKx6lVJPrs2GMusQwEWlXtJ2JUnCc3PN86vwRPKzlvkL31MljV799KASAl71FA9ELSU2m5NZA0+Zx2cPlsXsTa5mitGFKk1JyKRXupwcYb2MswVWg7KZYJ93UF8wvBeJ4Edan4V5tSuRNXHFTnu7u56zJMFKvaXlYwLSUOqCTAB1nTlb0oVj/kb5GaJiagVnuBkWTpnU11Kb67Hgz/stLGdL2pLUoh9REHmBVAzIG6BNZL8yhKNjBh9nYmIhMZKEeE2VOzC2M=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(956004)(66946007)(8936002)(6496006)(316002)(26005)(508600001)(66476007)(2906002)(66556008)(83380400001)(86362001)(6916009)(53546011)(33716001)(9686003)(44832011)(38350700002)(54906003)(38100700002)(9576002)(8676002)(5660300002)(52116002)(4326008)(186003)(7416002)(55016002)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zBZU+j1ImOBG3ZLATf+AjTmvTMhsBc46eLqbCgOhPsxOslJAz/wNa1PZ9Xw6?=
+ =?us-ascii?Q?ArBXKF3kk2KbSSDraQg4J4wgDh9v99QW1/xmVIf+XXW5u76j4dKgdBYHlwJy?=
+ =?us-ascii?Q?yd2zuuNemXzpH1aTRNPoXvJje4zGB7WrMtjEdVW4e0DlFJKRS3NZRzCNqa/2?=
+ =?us-ascii?Q?c/2DZ3rHtBTJ8SE36qsPzuouE7f095nhU/pb7orDXpJEfidz6NQ0LAzfkQfY?=
+ =?us-ascii?Q?OGOCN03tT/PNddlrrXZuP2EfX1M5vNFan61qP+xkrOeMg5hOW4C+kD/G1gjP?=
+ =?us-ascii?Q?u1yRcLTRHgpCuqT3YNyc/ms8yo2aQQSu4ZqSBRFhczqrTjkr5v10Xv95shnL?=
+ =?us-ascii?Q?iZKwANxCYvL2PJJKr3vdMyenHRpdic1D6C0P3mDxv90qgFDM7IsctN14eSuA?=
+ =?us-ascii?Q?yOEjwtJ5J+JyoOiJcu1Rg4tZ+QjbIKax/cP9Nm5i7qJLD2QUZMFvCodXkV+I?=
+ =?us-ascii?Q?eHHgotShv3PujycOLeutSafDafgUU8ru5HWDhxxQZShkTiAzlP18omVb6739?=
+ =?us-ascii?Q?tJjkBJI0tGRmpvEBeDvOKOAnndLOahg0fgCLZUF4eHMDPiGyBAQjI9+YYfDC?=
+ =?us-ascii?Q?zNwnsaJ9sBb9mzKBaBPeBVZ75ngNy/CrnL3ByNf6qq9CwX+pU5Febr09MpH8?=
+ =?us-ascii?Q?zMzXtKoPkdUoaP5VkzwTCFwuJZQj038T2poLtcRc7IMxZ+vHIAOKFuSmwB/g?=
+ =?us-ascii?Q?VC6pQDkTrhX6h0J8wMqX1RzX3FsZyOLCcdhiqSXuFn0sOlmYcmo/RVobIkwZ?=
+ =?us-ascii?Q?6IbN1nRYFnnLjdM+Qhzvq8gzLAdYVuUDWwMXeUS1kqn50bj5Vmiqlnt2V86g?=
+ =?us-ascii?Q?zx0oSC1i5QCpnbv/nMvnMPD9shhnbv4MnS2DfI0L0HPNpRDqLKUSOPZkTaUg?=
+ =?us-ascii?Q?eigbVGTToJ7sxLQyujaKkrCQcooSGgrA72qZgu20/Ec2xZp4vz0BQeiHnls4?=
+ =?us-ascii?Q?l4qwcNHrdVwYye8rOb0IbLxNqf7RUreVs4cxJxor2l1eyHRTrxoNTI5hNGKu?=
+ =?us-ascii?Q?12XWQcx21JOFaM06WXyywz/kZ+pcRhOCpvfzuofZf3zaJKuunYqV55KGLKOk?=
+ =?us-ascii?Q?NsZxKSMi6TZgduxm/Z5EDXg9I2wz0yCQ16cscQB6IluZ92vGyRVn5No/T5IQ?=
+ =?us-ascii?Q?FH4y/lH31E0p9V2g6UFeEnHWYo17mKUV8MEW/K8kPizJJ1UjrsXjUvUfgIW5?=
+ =?us-ascii?Q?fKbC06SO+zAVrCQdTVeRb81PmQ7TRuFYWf4Xmzrk2VfQfR0C5GY+W7ubtxpa?=
+ =?us-ascii?Q?bO2dJ27KYTQNYIATA+QKdhSKuaWEEERYpwTydR+zKSqumBHLB1f6NfAysXav?=
+ =?us-ascii?Q?7bnHpKkW0jbmAhQ8lRa4fDa9PRLhecyG9zrYAt+KqEMS6MeT+WpjEPS8kh42?=
+ =?us-ascii?Q?aT72cWtGzmYLlpX+0J2qoDPB0wpaWrkhSxoyvCFzN6I637s1vrmeJhl+2k+d?=
+ =?us-ascii?Q?jgERa4uEYFC1TLOIXvIDfv9Z90VIf+5RLDMp/FenA5vy/eUXTSbwW+v0ledY?=
+ =?us-ascii?Q?nNL22W+LCGwWrWTVPyueYbV4WEyWJVJJFxDzAH0jfBs0/quI1SstpmuZ1Zr/?=
+ =?us-ascii?Q?+t+E9d33B2axjJj+/90q+pJzcknqxrAG5TFiOT+IInG68KeIJrh0NMMKqiYt?=
+ =?us-ascii?Q?nRia5d87cRCveDAZjqZE6vA=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d5c5107-ae72-4008-ef60-08d9a4723afd
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2021 17:47:57.3802
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UH8kpfkb0n13ulDSuGQENXCQMoe7wjNXtxUGkqkJO0Nwuv1BPN9F1c0r34IZRNzbiJ6Tx2od/eg0S/KKvu66Aw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6702
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jacky Bai <ping.bai@nxp.com>
+On 21-11-10 17:52:19, Abel Vesa wrote:
+> On 21-10-14 15:02:19, Rob Herring wrote:
+> > On Wed, Oct 06, 2021 at 04:26:02PM +0300, Abel Vesa wrote:
+> > > Fix following dtbs_check error:
+> > > 
+> > > arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml:
+> > > i2c@5a800000: compatible: 'oneOf' conditional failed, one must be fixed:
+> > >         ['fsl,imx8qm-lpi2c', 'fsl,imx7ulp-lpi2c'] is too long
+> > >         Additional items are not allowed ('fsl,imx7ulp-lpi2c' was
+> > > unexpected)
+> > >         'fsl,imx8qxp-lpi2c' was expected
+> > >         From schema:
+> > > Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
+> > > 
+> > > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml | 5 ++++-
+> > >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml b/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
+> > > index 29b9447f3b84..acf2d5f45f4e 100644
+> > > --- a/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
+> > > +++ b/Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml
+> > > @@ -18,8 +18,11 @@ properties:
+> > >        - enum:
+> > >            - fsl,imx7ulp-lpi2c
+> > >            - fsl,imx8qm-lpi2c
+> > > +          - fsl,imx8qxp-lpi2c
+> > 
+> > Both with and without a fallback should not be valid.
+> > 
+> > Why are you changing fsl,imx8qxp-lpi2c when the error was for 
+> > fsl,imx8qm-lpi2c?
+> > 
+> 
+> Sorry for the late reply.
+> 
+> I assume the correct way would be like:
+> 
+>     oneOf:                                   
+>       - enum:                                
+>           - fsl,imx7ulp-lpi2c                
+>       - items:                               
+> 	  - enum:                            
+> 	      - fsl,imx8dxl-lpi2c            
+> 	      - fsl,imx8qxp-lpi2c            
+> 	      - fsl,imx8qm-lpi2c             
+> 	  - const: fsl,imx7ulp-lpi2c         
+> 				
+> Right ?
+> 
+> Since all the possible combinations are:
+> 	compatible = "fsl,imx8dxl-lpi2c", "fsl,imx7ulp-lpi2c";
+> 	compatible = "fsl,imx8qm-lpi2c", "fsl,imx7ulp-lpi2c";
+> 	compatible = "fsl,imx8qxp-lpi2c", "fsl,imx7ulp-lpi2c";
+> 	compatible = "fsl,imx7ulp-lpi2c";
+> 
 
-Add i.MX8DXL EVK board support.
+Sent v4. Please have a look there.
 
-Signed-off-by: Jacky Bai <ping.bai@nxp.com>
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
----
- arch/arm64/boot/dts/freescale/Makefile        |   1 +
- arch/arm64/boot/dts/freescale/imx8dxl-evk.dts | 266 ++++++++++++++++++
- 2 files changed, 267 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-
-diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-index a14a6173b765..c350bbcc601d 100644
---- a/arch/arm64/boot/dts/freescale/Makefile
-+++ b/arch/arm64/boot/dts/freescale/Makefile
-@@ -67,6 +67,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mq-pico-pi.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mq-thor96.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mq-zii-ultra-rmb3.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mq-zii-ultra-zest.dtb
-+dtb-$(CONFIG_ARCH_MXC) += imx8dxl-evk.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8qm-mek.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8qxp-ai_ml.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8qxp-colibri-eval-v3.dtb
-diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-new file mode 100644
-index 000000000000..68dfe722af6d
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-@@ -0,0 +1,266 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright 2019-2021 NXP
-+ */
-+
-+/dts-v1/;
-+
-+#include "imx8dxl.dtsi"
-+
-+/ {
-+	model = "Freescale i.MX8DXL EVK";
-+	compatible = "fsl,imx8dxl-evk", "fsl,imx8dxl";
-+
-+	chosen {
-+		stdout-path = &lpuart0;
-+	};
-+
-+	memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x00000000 0x80000000 0 0x40000000>;
-+	};
-+
-+	reserved-memory {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		/*
-+		 * 0x8800_0000 ~ 0x8FFF_FFFF is reserved for M4
-+		 * Shouldn't be used at A core and Linux side.
-+		 *
-+		 */
-+		m4_reserved: m4@88000000 {
-+			no-map;
-+			reg = <0 0x88000000 0 0x8000000>;
-+		};
-+
-+		/* global autoconfigured region for contiguous allocations */
-+		linux,cma {
-+			compatible = "shared-dma-pool";
-+			reusable;
-+			size = <0 0x14000000>;
-+			alloc-ranges = <0 0x98000000 0 0x14000000>;
-+			linux,cma-default;
-+		};
-+	};
-+
-+	reg_usdhc2_vmmc: usdhc2-vmmc {
-+		compatible = "regulator-fixed";
-+		regulator-name = "SD1_SPWR";
-+		regulator-min-microvolt = <3000000>;
-+		regulator-max-microvolt = <3000000>;
-+		gpio = <&lsio_gpio4 30 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+		off-on-delay-us = <3480>;
-+	};
-+};
-+
-+&lpuart0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_lpuart0>;
-+	status = "okay";
-+};
-+
-+&lpuart1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_lpuart1>;
-+	status = "okay";
-+};
-+
-+&lsio_gpio4 {
-+	status = "okay";
-+};
-+
-+&lsio_gpio5 {
-+	status = "okay";
-+};
-+
-+&thermal_zones {
-+	pmic-thermal0 {
-+		polling-delay-passive = <250>;
-+		polling-delay = <2000>;
-+		thermal-sensors = <&tsens IMX_SC_R_PMIC_0>;
-+		trips {
-+			pmic_alert0: trip0 {
-+				temperature = <110000>;
-+				hysteresis = <2000>;
-+				type = "passive";
-+			};
-+			pmic_crit0: trip1 {
-+				temperature = <125000>;
-+				hysteresis = <2000>;
-+				type = "critical";
-+			};
-+		};
-+		cooling-maps {
-+			map0 {
-+				trip = <&pmic_alert0>;
-+				cooling-device =
-+					<&A35_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-+					<&A35_1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-+			};
-+		};
-+	};
-+};
-+
-+&usdhc1 {
-+		pinctrl-names = "default", "state_100mhz", "state_200mhz";
-+		pinctrl-0 = <&pinctrl_usdhc1>;
-+		pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
-+		pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
-+		bus-width = <8>;
-+		no-sd;
-+		no-sdio;
-+		non-removable;
-+		status = "okay";
-+};
-+
-+&usdhc2 {
-+		pinctrl-names = "default", "state_100mhz", "state_200mhz";
-+		pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
-+		pinctrl-1 = <&pinctrl_usdhc2_100mhz>, <&pinctrl_usdhc2_gpio>;
-+		pinctrl-2 = <&pinctrl_usdhc2_200mhz>, <&pinctrl_usdhc2_gpio>;
-+		bus-width = <4>;
-+		vmmc-supply = <&reg_usdhc2_vmmc>;
-+		cd-gpios = <&lsio_gpio5 1 GPIO_ACTIVE_LOW>;
-+		wp-gpios = <&lsio_gpio5 0 GPIO_ACTIVE_HIGH>;
-+		max-frequency = <100000000>;
-+		status = "okay";
-+};
-+
-+&iomuxc {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_hog>;
-+
-+	pinctrl_hog: hoggrp {
-+		fsl,pins = <
-+			IMX8DXL_COMP_CTL_GPIO_1V8_3V3_GPIORHB_PAD	0x000514a0
-+			IMX8DXL_COMP_CTL_GPIO_1V8_3V3_GPIORHK_PAD	0x000014a0
-+			IMX8DXL_SPI3_CS0_ADMA_ACM_MCLK_OUT1		0x0600004c
-+			IMX8DXL_SNVS_TAMPER_OUT1_LSIO_GPIO2_IO05_IN	0x0600004c
-+		>;
-+	};
-+
-+	pinctrl_i2c2: i2c2grp {
-+		fsl,pins = <
-+			IMX8DXL_SPI1_SCK_ADMA_I2C2_SDA		0x06000021
-+			IMX8DXL_SPI1_SDO_ADMA_I2C2_SCL		0x06000021
-+		>;
-+	};
-+
-+	pinctrl_i2c3: i2c3grp {
-+		fsl,pins = <
-+			IMX8DXL_SPI1_CS0_ADMA_I2C3_SDA		0x06000021
-+			IMX8DXL_SPI1_SDI_ADMA_I2C3_SCL		0x06000021
-+		>;
-+	};
-+
-+	pinctrl_lpuart0: lpuart0grp {
-+		fsl,pins = <
-+			IMX8DXL_UART0_RX_ADMA_UART0_RX		0x06000020
-+			IMX8DXL_UART0_TX_ADMA_UART0_TX		0x06000020
-+		>;
-+	};
-+
-+	pinctrl_lpuart1: lpuart1grp {
-+		fsl,pins = <
-+			IMX8DXL_UART1_TX_ADMA_UART1_TX          0x06000020
-+			IMX8DXL_UART1_RX_ADMA_UART1_RX          0x06000020
-+			IMX8DXL_UART1_RTS_B_ADMA_UART1_RTS_B    0x06000020
-+			IMX8DXL_UART1_CTS_B_ADMA_UART1_CTS_B    0x06000020
-+		>;
-+	};
-+
-+	pinctrl_usdhc1: usdhc1grp {
-+		fsl,pins = <
-+			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-+			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-+			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-+			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-+			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-+			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-+			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-+			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-+			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-+			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-+			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-+		>;
-+	};
-+
-+	pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
-+		fsl,pins = <
-+			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-+			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-+			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-+			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-+			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-+			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-+			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-+			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-+			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-+			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-+			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-+		>;
-+	};
-+
-+	pinctrl_usdhc1_200mhz: usdhc1grp200mhz {
-+		fsl,pins = <
-+			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-+			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-+			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-+			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-+			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-+			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-+			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-+			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-+			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-+			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-+			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-+		>;
-+	};
-+
-+	pinctrl_usdhc2_gpio: usdhc2gpiogrp {
-+		fsl,pins = <
-+			IMX8DXL_ENET0_RGMII_TX_CTL_LSIO_GPIO4_IO30	0x00000040 /* RESET_B */
-+			IMX8DXL_ENET0_RGMII_TXD1_LSIO_GPIO5_IO00	0x00000021 /* WP */
-+			IMX8DXL_ENET0_RGMII_TXD2_LSIO_GPIO5_IO01	0x00000021 /* CD */
-+		>;
-+	};
-+
-+	pinctrl_usdhc2: usdhc2grp {
-+		fsl,pins = <
-+			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-+			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-+			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-+		>;
-+	};
-+
-+	pinctrl_usdhc2_100mhz: usdhc2grp100mhz {
-+		fsl,pins = <
-+			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-+			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-+			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-+		>;
-+	};
-+
-+	pinctrl_usdhc2_200mhz: usdhc2grp200mhz {
-+		fsl,pins = <
-+			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-+			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-+			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-+			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-+		>;
-+	};
-+};
--- 
-2.31.1
-
+> 
+> > >        - items:
+> > > -          - const: fsl,imx8qxp-lpi2c
+> > > +          - enum:
+> > > +              - fsl,imx8qm-lpi2c
+> > > +              - fsl,imx8qxp-lpi2c
+> > >            - const: fsl,imx7ulp-lpi2c
+> > >  
+> > >    reg:
+> > > -- 
+> > > 2.31.1
+> > > 
+> > >
