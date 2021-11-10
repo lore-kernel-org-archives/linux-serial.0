@@ -2,27 +2,27 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8077C43219
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 17:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21202C4167E
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 17:47:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D9C286124C
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 17:47:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0F2ED61037
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Nov 2021 17:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232736AbhKJRuR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 Nov 2021 12:50:17 -0500
-Received: from inva020.nxp.com ([92.121.34.13]:47808 "EHLO inva020.nxp.com"
+        id S232754AbhKJRuT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 Nov 2021 12:50:19 -0500
+Received: from inva020.nxp.com ([92.121.34.13]:47860 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232528AbhKJRuC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 Nov 2021 12:50:02 -0500
+        id S232546AbhKJRuE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 10 Nov 2021 12:50:04 -0500
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CBDA11A10EA;
-        Wed, 10 Nov 2021 18:47:13 +0100 (CET)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B6A641A1957;
+        Wed, 10 Nov 2021 18:47:15 +0100 (CET)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id BE2701A10D0;
-        Wed, 10 Nov 2021 18:47:13 +0100 (CET)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A92BE1A110C;
+        Wed, 10 Nov 2021 18:47:15 +0100 (CET)
 Received: from fsr-ub1664-175.ea.freescale.net (fsr-ub1664-175.ea.freescale.net [10.171.82.40])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 34A0720399;
-        Wed, 10 Nov 2021 18:47:13 +0100 (CET)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 1E3C520399;
+        Wed, 10 Nov 2021 18:47:15 +0100 (CET)
 From:   Abel Vesa <abel.vesa@nxp.com>
 To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>,
@@ -34,10 +34,10 @@ Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
         NXP Linux Team <linux-imx@nxp.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Abel Vesa <abel.vesa@nxp.com>, Jacky Bai <ping.bai@nxp.com>
-Subject: [PATCH v4 07/12] arm64: dts: freescale: Add ddr subsys dtsi for imx8dxl
-Date:   Wed, 10 Nov 2021 19:46:50 +0200
-Message-Id: <1636566415-22750-8-git-send-email-abel.vesa@nxp.com>
+        Abel Vesa <abel.vesa@nxp.com>
+Subject: [PATCH v4 10/12] dt-bindings: fsl: scu: Add i.MX8DXL ocotp binding
+Date:   Wed, 10 Nov 2021 19:46:53 +0200
+Message-Id: <1636566415-22750-11-git-send-email-abel.vesa@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1636566415-22750-1-git-send-email-abel.vesa@nxp.com>
 References: <1636566415-22750-1-git-send-email-abel.vesa@nxp.com>
@@ -46,60 +46,28 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jacky Bai <ping.bai@nxp.com>
+Add i.MX8DXL ocotp compatible to the SCU bindings documentation.
 
-Add the ddr subsys dtsi for i.MX8DXL. Additional db pmu is added
-compared to i.MX8QXP.
-
-Signed-off-by: Jacky Bai <ping.bai@nxp.com>
 Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- .../boot/dts/freescale/imx8dxl-ss-ddr.dtsi    | 36 +++++++++++++++++++
- 1 file changed, 36 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-ddr.dtsi
+ Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-ss-ddr.dtsi b/arch/arm64/boot/dts/freescale/imx8dxl-ss-ddr.dtsi
-new file mode 100644
-index 000000000000..75b482966d94
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8dxl-ss-ddr.dtsi
-@@ -0,0 +1,36 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright 2021 NXP
-+ */
-+
-+&ddr_subsys {
-+	db_ipg_clk: clock-db-ipg {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <456000000>;
-+		clock-output-names = "db_ipg_clk";
-+	};
-+
-+	db_pmu0: db-pmu@5ca40000 {
-+		compatible = "fsl,imx8dxl-db-pmu";
-+		reg = <0x5ca40000 0x10000>;
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&db_pmu0_lpcg IMX_LPCG_CLK_0>,
-+			 <&db_pmu0_lpcg IMX_LPCG_CLK_1>;
-+		clock-names = "ipg", "cnt";
-+		power-domains = <&pd IMX_SC_R_PERF>;
-+	};
-+
-+	db_pmu0_lpcg: clock-controller@5cae0000 {
-+		compatible = "fsl,imx8qxp-lpcg";
-+		reg = <0x5cae0000 0x10000>;
-+		#clock-cells = <1>;
-+		clocks = <&db_ipg_clk>, <&db_ipg_clk>;
-+		clock-indices = <IMX_LPCG_CLK_0>,
-+				<IMX_LPCG_CLK_1>;
-+		clock-output-names = "perf_lpcg_cnt_clk",
-+				     "perf_lpcg_ipg_clk";
-+		power-domains = <&pd IMX_SC_R_PERF>;
-+	};
-+};
+diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt b/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
+index fd0061712443..f1470d562156 100644
+--- a/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
++++ b/Documentation/devicetree/bindings/arm/freescale/fsl,scu.txt
+@@ -141,7 +141,8 @@ OCOTP bindings based on SCU Message Protocol
+ Required properties:
+ - compatible:		Should be one of:
+ 			"fsl,imx8qm-scu-ocotp",
+-			"fsl,imx8qxp-scu-ocotp".
++			"fsl,imx8qxp-scu-ocotp",
++			"fsl,imx8dxl-scu-ocotp".
+ - #address-cells:	Must be 1. Contains byte index
+ - #size-cells:		Must be 1. Contains byte length
+ 
 -- 
 2.31.1
 
