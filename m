@@ -2,97 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7338C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 12 Nov 2021 19:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59604C433F5
+	for <linux-serial@archiver.kernel.org>; Sat, 13 Nov 2021 12:11:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9517E60EE9
-	for <linux-serial@archiver.kernel.org>; Fri, 12 Nov 2021 19:41:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3989C61051
+	for <linux-serial@archiver.kernel.org>; Sat, 13 Nov 2021 12:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235350AbhKLTor (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 12 Nov 2021 14:44:47 -0500
-Received: from mail-oi1-f182.google.com ([209.85.167.182]:46815 "EHLO
-        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbhKLTor (ORCPT
+        id S229699AbhKMMOn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 13 Nov 2021 07:14:43 -0500
+Received: from dvalin.narfation.org ([213.160.73.56]:60268 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232003AbhKMMOn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 12 Nov 2021 14:44:47 -0500
-Received: by mail-oi1-f182.google.com with SMTP id s139so19729252oie.13;
-        Fri, 12 Nov 2021 11:41:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=REnFA6XjBzbaJieuVI+3pKSNQf8y2uvx/eALnpSC2h8=;
-        b=zjkxNiibT3foDWBjcWPw4GeIVrsxVdutEzwhak0ltvEQTv0yGi7/S15wCKmVmIOfk4
-         HXQ42nF0eR5DyOGix6NyAURTbpbUBZL7HInWcng3vs4pSsNvOGcWwc+YwrlpX8/zdX7M
-         VBkH02Miwpr5PxFpc1M/iurcC83MHMFHwLyLlIrdtx3qM7JSm0I+vPTMjkJSAAG/9H/Z
-         KcA751ki1W9KUioRU0auJRYrOv5MXtfGR8DcrXjqdBvUduvS3Qn/E96LYesFFgay0V9j
-         sa9H2SzSp4d8VeQIa4jQOZdHJA99TCWozOBXJpcnHp8jciPw/CNz1gmuGU8+s0sW9/zW
-         8yYQ==
-X-Gm-Message-State: AOAM532XjR7/dQOcB6eWoV4/WxtotnjjulbYWpMu4NZDkF8pXbTStM2W
-        VFwqvAJW9LB0ApRaH9QXcw==
-X-Google-Smtp-Source: ABdhPJzcS2l/5MNH+2SzstpCYLnxRNd0oaOSeSF7EvZ53DH9N0wqYiTu9pw7lRw9oWf2KEUgJ3ArdQ==
-X-Received: by 2002:a54:4d89:: with SMTP id y9mr14782184oix.127.1636746115578;
-        Fri, 12 Nov 2021 11:41:55 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id a23sm1202937ool.3.2021.11.12.11.41.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Nov 2021 11:41:55 -0800 (PST)
-Received: (nullmailer pid 3243939 invoked by uid 1000);
-        Fri, 12 Nov 2021 19:41:53 -0000
-Date:   Fri, 12 Nov 2021 13:41:53 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     Michael Zhu <michael.zhu@starfivetech.com>,
-        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-clk@vger.kernel.org, Sagar Kadam <sagar.kadam@sifive.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-gpio@vger.kernel.org, Fu Wei <tekkamanninja@gmail.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-serial@vger.kernel.org, Anup Patel <anup.patel@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v3 11/16] dt-bindings: pinctrl: Add StarFive JH7100
- bindings
-Message-ID: <YY7DgSPChPpXzA9j@robh.at.kernel.org>
-References: <20211102161125.1144023-1-kernel@esmil.dk>
- <20211102161125.1144023-12-kernel@esmil.dk>
+        Sat, 13 Nov 2021 07:14:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1636805509;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FC64XGammN+oDjpCb8mJfMbTk4X85pGUPiwSl7lch/U=;
+        b=f+mFf6WgrqIAogY/f5cMfzhyXPzCL7FQOXLPG+gwuEpYMBOwyUpma7+kWJHS6WVw0XXkF9
+        VuMpyop8abVLR6YbhtnE6Db4dN25pkVRCS6CQykIiHasNgMs5E38yBWoS9d8sSPxXMQSds
+        I9qaO1rwDF3fmyZ++6WWFxiYHL/JH1I=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     linux-serial@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
+        stable@vger.kernel.org
+Subject: [PATCH] tty: serial: msm_serial: Deactivate RX DMA for polling support
+Date:   Sat, 13 Nov 2021 13:10:50 +0100
+Message-Id: <20211113121050.7266-1-sven@narfation.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211102161125.1144023-12-kernel@esmil.dk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 02 Nov 2021 17:11:20 +0100, Emil Renner Berthing wrote:
-> Add bindings for the GPIO/pin controller on the JH7100 RISC-V SoC by
-> StarFive Ltd. This is a test chip for their upcoming JH7110 SoC.
-> 
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-> ---
-> 
-> @Linus: I'm really struggling to find a good way to describe how pin
-> muxing works on the JH7100. As you can see I've now resorted to
-> ascii-art to try to explain it, but please let me know if it's still
-> unclear.
-> 
->  .../pinctrl/starfive,jh7100-pinctrl.yaml      | 307 ++++++++++++++++++
->  1 file changed, 307 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/starfive,jh7100-pinctrl.yaml
-> 
+The CONSOLE_POLLING mode is used for tools like k(g)db. In this kind of
+setup, it is often sharing a serial device with the normal system console.
+This is usually no problem because the polling helpers can consume input
+values directly (when in kgdb context) and the normal Linux handlers can
+only consume new input values after kgdb switched back.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+This is not true anymore when RX DMA is enabled for UARTDM controllers.
+Single input values can no longer be received correctly. Instead following
+seems to happen:
+
+* on 1. input, some old input is read (continuously)
+* on 2. input, two old inputs are read (continuously)
+* on 3. input, three old input values are read (continuously)
+* on 4. input, 4 previous inputs are received
+
+This repeats then for each group of 4 input values.
+
+This behavior changes slightly depending on what state the controller was
+when the first input was received. But this makes working with kgdb
+basically impossible because control messages are always corrupted when
+kgdboc tries to parse them.
+
+RX DMA should therefore be off when CONSOLE_POLLING is enabled to avoid
+these kind of problems. No such problem was noticed for TX DMA.
+
+Cc: stable@vger.kernel.org
+Fixes: 99693945013a ("tty: serial: msm: Add RX DMA support")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+---
+I've already described this problem in a mail two weeks ago
+https://lore.kernel.org/all/4119639.d4o71su6xY@sven-desktop/
+
+There was no feedback so I would like to propose the minimal version which
+was described in that mail.
+---
+ drivers/tty/serial/msm_serial.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index fcef7a961430..489d19274f9a 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -598,6 +598,9 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
+ 	u32 val;
+ 	int ret;
+ 
++	if (IS_ENABLED(CONFIG_CONSOLE_POLL))
++		return;
++
+ 	if (!dma->chan)
+ 		return;
+ 
+-- 
+2.30.2
+
