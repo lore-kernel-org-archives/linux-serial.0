@@ -2,93 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4857FC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 08:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 673B8C43219
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 08:54:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 31FBC61BF5
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 08:43:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 509AE63221
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 08:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237137AbhKOIpr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 03:45:47 -0500
-Received: from muru.com ([72.249.23.125]:56428 "EHLO muru.com"
+        id S230061AbhKOI5v (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 03:57:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55202 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236367AbhKOIpW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 03:45:22 -0500
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 4C3A4814C;
-        Mon, 15 Nov 2021 08:43:03 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH 5/7] serial: 8250_omap: Require a valid wakeirq for deeper idle states
-Date:   Mon, 15 Nov 2021 10:42:01 +0200
-Message-Id: <20211115084203.56478-6-tony@atomide.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211115084203.56478-1-tony@atomide.com>
-References: <20211115084203.56478-1-tony@atomide.com>
+        id S229919AbhKOI5o (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 03:57:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9880061BE2;
+        Mon, 15 Nov 2021 08:54:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636966486;
+        bh=1h0g2AYqXFphX4dDyELLl2t7YQIUXZ6UIHT7JYg2iMs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kv+C8zB0tbPMdXf3ORNkXrRH4MrGq92/hxOUWQ7rrNLjPwyN92rkebIKY8icgiOfU
+         pMdG65xZlUKOnr8NUOP6pmXxc3gZzuCmcsiwcDOb6St8hs6LkWB6n1ZZo98RlrnVvp
+         FkqOBIn33Yi9JZOuQ6miAmszWpYRosGKoEiu9hmpXWXS0VgUXakje0NXKySH0Rz+mZ
+         5B6hNND+tRm0kn91fmSGmzeWYTduFgTH0JLa1xNb8xKQOI2gwIYz/OsIEp39PngVMt
+         ez7HK1j37N1+6Gl5sR4/i/hvvdNCZ5Sdb+Rvh2P8BC4uYTPFd5lIc2Ou5i9m3hH8E0
+         48X4U7Q98MS4A==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hyun Kwon <hyun.kwon@xilinx.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Scott Branden <sbranden@broadcom.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH 00/11] dmaengine: kill off dma_slave_config->slave_id
+Date:   Mon, 15 Nov 2021 09:53:52 +0100
+Message-Id: <20211115085403.360194-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-For deeper idle states the 8250 device gets powered off. The wakeup is
-handled with a separate wakeirq controller monitoring the RX pin.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Let's check for a valid wakeirq before enabling deeper idle states.
+I recently came across some new uses of the 'slave_id' field that
+I had (almost) removed a few years ago. There are no legitimate
+uses of this field in the kernel, only a few stale references and
+two drivers that abuse the field as a side-channel between the
+dmaengine driver and its client.
 
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_omap.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Let's change the xilinx and qualcomm drivers to use the documented
+side-channel (peripheral_data) instead, and remove the remnants of
+it to prevent new users from coming in.
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -133,6 +133,7 @@ struct omap8250_priv {
- 	spinlock_t rx_dma_lock;
- 	bool rx_dma_broken;
- 	bool throttled;
-+	unsigned int allow_rpm:1;
- };
- 
- struct omap8250_dma_params {
-@@ -676,6 +677,7 @@ static int omap_8250_startup(struct uart_port *port)
- 		ret = dev_pm_set_dedicated_wake_irq(port->dev, priv->wakeirq);
- 		if (ret)
- 			return ret;
-+		priv->allow_rpm = 1;
- 	}
- 
- 	pm_runtime_get_sync(port->dev);
-@@ -722,6 +724,10 @@ static int omap_8250_startup(struct uart_port *port)
- 	if (up->dma && !(priv->habit & UART_HAS_EFR2))
- 		up->dma->rx_dma(up);
- 
-+	/* Block runtime PM if no wakeirq, paired with shutdown */
-+	if (!priv->allow_rpm)
-+		pm_runtime_get_noresume(port->dev);
-+
- 	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- 	return 0;
-@@ -760,6 +766,10 @@ static void omap_8250_shutdown(struct uart_port *port)
- 		serial_out(up, UART_LCR, up->lcr & ~UART_LCR_SBC);
- 	serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
- 
-+	/* Clear possible PM runtime block to pair with startup */
-+	if (!priv->allow_rpm)
-+		pm_runtime_put_noidle(port->dev);
-+
- 	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- 	free_irq(port->irq, port);
+As the last patch in the series depends on all the others, it would
+be nice have everything merged into the dmaengine tree for v5.17.
+
+       Arnd
+
+Arnd Bergmann (11):
+  ASoC: dai_dma: remove slave_id field
+  spi: pic32: stop setting dma_config->slave_id
+  mmc: bcm2835: stop setting chan_config->slave_id
+  dmaengine: shdma: remove legacy slave_id parsing
+  dmaengine: pxa/mmp: stop referencing config->slave_id
+  dmaengine: sprd: stop referencing config->slave_id
+  dmaengine: qcom-adm: stop abusing slave_id config
+  dmaengine: xilinx_dpdma: stop using slave_id field
+  dmaengine: tegra20-apb: stop checking config->slave_id
+  staging: ralink-gdma: stop using slave_id config
+  dmaengine: remove slave_id config field
+
+ drivers/dma/mmp_pdma.c                    |  6 ---
+ drivers/dma/pxa_dma.c                     |  7 ---
+ drivers/dma/qcom/qcom_adm.c               | 56 ++++++++++++++++++++---
+ drivers/dma/sh/shdma-base.c               |  8 ----
+ drivers/dma/sprd-dma.c                    |  3 --
+ drivers/dma/tegra20-apb-dma.c             |  6 ---
+ drivers/dma/xilinx/xilinx_dpdma.c         | 12 +++--
+ drivers/gpu/drm/xlnx/zynqmp_disp.c        |  9 +++-
+ drivers/mmc/host/bcm2835.c                |  2 -
+ drivers/mtd/nand/raw/qcom_nandc.c         | 14 +++++-
+ drivers/spi/spi-pic32.c                   |  2 -
+ drivers/staging/ralink-gdma/ralink-gdma.c | 12 ++---
+ drivers/tty/serial/msm_serial.c           | 15 +++++-
+ include/linux/dma/qcom_adm.h              | 12 +++++
+ include/linux/dma/xilinx_dpdma.h          | 11 +++++
+ include/linux/dmaengine.h                 |  4 --
+ include/sound/dmaengine_pcm.h             |  2 -
+ sound/core/pcm_dmaengine.c                |  5 +-
+ sound/soc/tegra/tegra20_spdif.c           |  1 -
+ 19 files changed, 119 insertions(+), 68 deletions(-)
+ create mode 100644 include/linux/dma/qcom_adm.h
+ create mode 100644 include/linux/dma/xilinx_dpdma.h
+
 -- 
-2.33.1
+2.30.2
+
+Cc: Andy Gross <agross@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Baolin Wang <baolin.wang7@gmail.com>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hyun Kwon <hyun.kwon@xilinx.com>
+Cc: Jaroslav Kysela <perex@perex.cz>
+Cc: Jon Hunter <jonathanh@nvidia.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Laxman Dewangan <ldewangan@nvidia.com>
+Cc: Manivannan Sadhasivam <mani@kernel.org>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Cc: Orson Zhai <orsonzhai@gmail.com>
+Cc: Robert Jarzmik <robert.jarzmik@free.fr>
+Cc: Scott Branden <sbranden@broadcom.com>
+Cc: Takashi Iwai <tiwai@suse.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: alsa-devel@alsa-project.org
+Cc: bcm-kernel-feedback-list@broadcom.com
+Cc: dmaengine@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-mmc@vger.kernel.org
+Cc: linux-mtd@lists.infradead.org
+Cc: linux-rpi-kernel@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-spi@vger.kernel.org
+Cc: linux-staging@lists.linux.dev
+Cc: linux-tegra@vger.kernel.org
