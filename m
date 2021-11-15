@@ -2,33 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9C7C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 08:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74756C43217
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:10:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 36D3863220
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 08:59:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 59A4063211
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236867AbhKOJBw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 04:01:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56190 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230376AbhKOI6r (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 03:58:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 97B2063227;
-        Mon, 15 Nov 2021 08:55:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636966551;
-        bh=t+sujmlGUVrYtWCA2Iqgm4qzwcVm4cE+7MUCYHiTmt8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E3hAwHAFBi1veWTZ9KC3LUqplVBzvhHkJdmHwzLmUaxHGxHQt/Uao9jUuL7+wYtM1
-         t5/KCd2DhDnIMvpS1fzLHld+q6AChRUElQMbmbJgDaTpHm5vW1Uyudi7cSpoV3wALW
-         3+TEcRqIWccqr7FIxw+On4njyPKMPuD/VUQ+uBZMxLJI2xjFiVqAFgV6Ym1M8MXblp
-         H3AtGfulWPCW1XQE3Nvr6vFEwAXxjhfbUBy3AmIdd5/EjenYc84yhK4dgbFVtzWJe/
-         uGxVZ0BY9bYvtABbO19Hw4xqxf+bkbhZDmO0g57I7eSW+8dnN8ZNhH3IrlxeCNnqJt
-         h19+P/ZGx52Ig==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
+        id S230383AbhKOJNU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 04:13:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230245AbhKOJNS (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 04:13:18 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631CBC061746;
+        Mon, 15 Nov 2021 01:10:21 -0800 (PST)
+Received: from pendragon.ideasonboard.com (117.145-247-81.adsl-dyn.isp.belgacom.be [81.247.145.117])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 2837F9CA;
+        Mon, 15 Nov 2021 10:10:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1636967417;
+        bh=bs5FwrGJKmZiUyJUhZtsFFkCbThCR2+MNX7sYGLdInI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dnjNnE+BxQubVBzyvt35tp9eSPunAc+NOuowzVjMVfnO6jqLw3nMEngEl53CjbMh0
+         UYxBQSy9hDC4AXM+j7bivGr1bDYL75caLR3Kpvgip4jQNeMxX1tvkF1//Xh3honHLn
+         XZyCAuT51XsudJZ+zXrp60OeLJ0gprUub8NgbGw0=
+Date:   Mon, 15 Nov 2021 11:09:54 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Vinod Koul <vkoul@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Andy Gross <agross@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Baolin Wang <baolin.wang7@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -38,7 +42,6 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
         Jaroslav Kysela <perex@perex.cz>,
         Jon Hunter <jonathanh@nvidia.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Laxman Dewangan <ldewangan@nvidia.com>,
         Manivannan Sadhasivam <mani@kernel.org>,
         Mark Brown <broonie@kernel.org>,
@@ -57,97 +60,61 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
         linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
         linux-tegra@vger.kernel.org
-Subject: [PATCH 10/11] staging: ralink-gdma: stop using slave_id config
-Date:   Mon, 15 Nov 2021 09:54:02 +0100
-Message-Id: <20211115085403.360194-11-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20211115085403.360194-1-arnd@kernel.org>
+Subject: Re: [PATCH 04/11] dmaengine: shdma: remove legacy slave_id parsing
+Message-ID: <YZIj4iKUsj/QQ+BH@pendragon.ideasonboard.com>
 References: <20211115085403.360194-1-arnd@kernel.org>
+ <20211115085403.360194-5-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20211115085403.360194-5-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Hi Arnd,
 
-Picking the connection between a DMA controller and its attached device
-is done through devicetree using the "dmas" property, which is implemented
-by the gdma driver, but it also allows overriding the "req" configuration
-with the slave_id field, as it was done in some linux-2.6 era drivers.
+Thank you for the patch.
 
-There is no driver in the tree that sets these values, so stop
-interpreting them before anything accidentally starts relying on it.
-Rename the field in the channel from "slave_id" to "req" to better match
-the purpose and the naming in the hardware.
+On Mon, Nov 15, 2021 at 09:53:56AM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The slave device is picked through either devicetree or a filter
+> function, and any remaining out-of-tree drivers would have warned
+> about this usage since 2015.
+> 
+> Stop interpreting the field finally so it can be removed from
+> the interface.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-If any driver actually starts using this DMA engine, it may be necessary
-to implement a .xlate callback that sets this field at probe time.
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/staging/ralink-gdma/ralink-gdma.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+> ---
+>  drivers/dma/sh/shdma-base.c | 8 --------
+>  1 file changed, 8 deletions(-)
+> 
+> diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
+> index 7f72b3f4cd1a..41c6bc650fa3 100644
+> --- a/drivers/dma/sh/shdma-base.c
+> +++ b/drivers/dma/sh/shdma-base.c
+> @@ -786,14 +786,6 @@ static int shdma_config(struct dma_chan *chan,
+>  	if (!config)
+>  		return -EINVAL;
+>  
+> -	/*
+> -	 * overriding the slave_id through dma_slave_config is deprecated,
+> -	 * but possibly some out-of-tree drivers still do it.
+> -	 */
+> -	if (WARN_ON_ONCE(config->slave_id &&
+> -			 config->slave_id != schan->real_slave_id))
+> -		schan->real_slave_id = config->slave_id;
+> -
+>  	/*
+>  	 * We could lock this, but you shouldn't be configuring the
+>  	 * channel, while using it...
 
-diff --git a/drivers/staging/ralink-gdma/ralink-gdma.c b/drivers/staging/ralink-gdma/ralink-gdma.c
-index b5229bc6eae5..f00240e62e1b 100644
---- a/drivers/staging/ralink-gdma/ralink-gdma.c
-+++ b/drivers/staging/ralink-gdma/ralink-gdma.c
-@@ -106,7 +106,7 @@ struct gdma_dma_desc {
- struct gdma_dmaengine_chan {
- 	struct virt_dma_chan vchan;
- 	unsigned int id;
--	unsigned int slave_id;
-+	unsigned int req;
- 
- 	dma_addr_t fifo_addr;
- 	enum gdma_dma_transfer_size burst_size;
-@@ -194,7 +194,6 @@ static int gdma_dma_config(struct dma_chan *c,
- 			dev_err(dma_dev->ddev.dev, "only support 4 byte buswidth\n");
- 			return -EINVAL;
- 		}
--		chan->slave_id = config->slave_id;
- 		chan->fifo_addr = config->dst_addr;
- 		chan->burst_size = gdma_dma_maxburst(config->dst_maxburst);
- 		break;
-@@ -203,7 +202,6 @@ static int gdma_dma_config(struct dma_chan *c,
- 			dev_err(dma_dev->ddev.dev, "only support 4 byte buswidth\n");
- 			return -EINVAL;
- 		}
--		chan->slave_id = config->slave_id;
- 		chan->fifo_addr = config->src_addr;
- 		chan->burst_size = gdma_dma_maxburst(config->src_maxburst);
- 		break;
-@@ -288,12 +286,12 @@ static int rt305x_gdma_start_transfer(struct gdma_dmaengine_chan *chan)
- 		dst_addr = chan->fifo_addr;
- 		ctrl0 = GDMA_REG_CTRL0_DST_ADDR_FIXED |
- 			(8 << GDMA_RT305X_CTRL0_SRC_REQ_SHIFT) |
--			(chan->slave_id << GDMA_RT305X_CTRL0_DST_REQ_SHIFT);
-+			(chan->req << GDMA_RT305X_CTRL0_DST_REQ_SHIFT);
- 	} else if (chan->desc->direction == DMA_DEV_TO_MEM) {
- 		src_addr = chan->fifo_addr;
- 		dst_addr = sg->dst_addr;
- 		ctrl0 = GDMA_REG_CTRL0_SRC_ADDR_FIXED |
--			(chan->slave_id << GDMA_RT305X_CTRL0_SRC_REQ_SHIFT) |
-+			(chan->req << GDMA_RT305X_CTRL0_SRC_REQ_SHIFT) |
- 			(8 << GDMA_RT305X_CTRL0_DST_REQ_SHIFT);
- 	} else if (chan->desc->direction == DMA_MEM_TO_MEM) {
- 		/*
-@@ -365,12 +363,12 @@ static int rt3883_gdma_start_transfer(struct gdma_dmaengine_chan *chan)
- 		dst_addr = chan->fifo_addr;
- 		ctrl0 = GDMA_REG_CTRL0_DST_ADDR_FIXED;
- 		ctrl1 = (32 << GDMA_REG_CTRL1_SRC_REQ_SHIFT) |
--			(chan->slave_id << GDMA_REG_CTRL1_DST_REQ_SHIFT);
-+			(chan->req << GDMA_REG_CTRL1_DST_REQ_SHIFT);
- 	} else if (chan->desc->direction == DMA_DEV_TO_MEM) {
- 		src_addr = chan->fifo_addr;
- 		dst_addr = sg->dst_addr;
- 		ctrl0 = GDMA_REG_CTRL0_SRC_ADDR_FIXED;
--		ctrl1 = (chan->slave_id << GDMA_REG_CTRL1_SRC_REQ_SHIFT) |
-+		ctrl1 = (chan->req << GDMA_REG_CTRL1_SRC_REQ_SHIFT) |
- 			(32 << GDMA_REG_CTRL1_DST_REQ_SHIFT) |
- 			GDMA_REG_CTRL1_COHERENT;
- 	} else if (chan->desc->direction == DMA_MEM_TO_MEM) {
 -- 
-2.30.2
+Regards,
 
+Laurent Pinchart
