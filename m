@@ -2,187 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8014CC43217
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B809C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 10:10:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5C55C615E1
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:56:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 10A8261C4F
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 10:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237132AbhKOJ7a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 04:59:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49376 "EHLO
+        id S237352AbhKOKNj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 05:13:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237514AbhKOJ7O (ORCPT
+        with ESMTP id S237605AbhKOKNb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 04:59:14 -0500
-Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A27AC061204;
-        Mon, 15 Nov 2021 01:56:09 -0800 (PST)
-Received: by mail-ua1-x92c.google.com with SMTP id l24so29295184uak.2;
-        Mon, 15 Nov 2021 01:56:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gsBk71NedBBsVpsWIk4ACHvjoj+bC3+VIVEUbcpO8IA=;
-        b=ehc21nRzLc8i1U+EqW4HnjY+RWjGWh14ZBLj7yNPUxl816A1Dbell6St7S/yW4X/vv
-         tt7qOOmMMY85WSc7GghoYpJGJ9xgEBBUokeqlapvAJX5EFUnaN1rvUlEUeE8epbheu5B
-         bWVKVRopMxxBfMWO9giRCidfYfZ56vuyGO7o4CSsyVdRcdOlFmosB/G0CBJUF76Dwi9T
-         Bi5dKD3S2Ixk/FkU0QqBfwiiGLH1DDHTmYGg0Ci2mql4cvEo0wmrzkz2B7tgBgY5liPS
-         E361qlo75lRj9Ddb/VA9aIMjLtX6LX3ck8/h22UNs9feaHP2NMM+vvRDoJtlPCwrDlmi
-         9GJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gsBk71NedBBsVpsWIk4ACHvjoj+bC3+VIVEUbcpO8IA=;
-        b=g9QRdlJYHhz/vngbCGzB5W2OuGxvOHghG2/0qcXbWTtnsLc39XX43Pf0ynqoCdDpj+
-         aINeAnK8NsK1TYTUG1rrXsLvVonXj0brbuIwjuQB7BupBnEV2F/YBHTMx4Yk0W1QG53u
-         szkng+m6XBdBycV8wxJBWzGcbyz1mrltM6vMf9L9f1HSVSOAgqEyi2C5d0c3xJ5trQ8j
-         5bD+6pZXYYhTKzeNqcs0uYAuAo8U4fcV61AHxJ9EhBnZowOCsQeSygjVW4JhCaquM9ms
-         OHt8uEEXZowB84W8QUd6OxQ8vnliqHpvWPnuO2PGLxXYHoeNMG6f3E2y1jubYN+xggh2
-         bZrg==
-X-Gm-Message-State: AOAM530uLdzZbHLDycS40695dYt8VMKUjQHA9AHo6d8uvlubUZrsCyJQ
-        SMWar6g7j9tEzW+w6uda6ISpWDJgAuhnQeTvemA=
-X-Google-Smtp-Source: ABdhPJz6ESqhwfmkhVT1QvVuW/9wYB2eiEui3t3htInxrDx0SkRrPjrQEm+aetErjkG15iM6y1caYpqVdHJBHexZMiA=
-X-Received: by 2002:ab0:6883:: with SMTP id t3mr56751869uar.66.1636970168537;
- Mon, 15 Nov 2021 01:56:08 -0800 (PST)
+        Mon, 15 Nov 2021 05:13:31 -0500
+X-Greylist: delayed 903 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Nov 2021 02:10:11 PST
+Received: from mailg210.ethz.ch (mailg210.ethz.ch [IPv6:2001:67c:10ec:5606::21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286ADC061207
+        for <linux-serial@vger.kernel.org>; Mon, 15 Nov 2021 02:10:04 -0800 (PST)
+Received: from mailm113.d.ethz.ch (2001:67c:10ec:5602::25) by mailg210.ethz.ch
+ (2001:67c:10ec:5606::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.12; Mon, 15 Nov
+ 2021 10:54:47 +0100
+Received: from dtkw (213.55.225.240) by mailm113.d.ethz.ch
+ (2001:67c:10ec:5602::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Mon, 15 Nov
+ 2021 10:54:59 +0100
+Date:   Mon, 15 Nov 2021 10:54:58 +0100
+From:   Ilia Sergachev <silia@ethz.ch>
+To:     <linux-serial@vger.kernel.org>
+CC:     Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Ilia Sergachev <silia@ethz.ch>
+Subject: [PATCH v2] serial: liteuart: fix missing drvdata
+Message-ID: <20211115105458.6407e1aa@dtkw>
+Organization: ETH Zurich
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20211115085403.360194-1-arnd@kernel.org> <20211115085403.360194-11-arnd@kernel.org>
-In-Reply-To: <20211115085403.360194-11-arnd@kernel.org>
-From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Date:   Mon, 15 Nov 2021 10:55:56 +0100
-Message-ID: <CAMhs-H98kPNqH491+X0Mp81Ng++v1aQ=97XSHEhs+vx3g8W_4A@mail.gmail.com>
-Subject: Re: [PATCH 10/11] staging: ralink-gdma: stop using slave_id config
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Vinod Koul <vkoul@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Andy Gross <agross@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hyun Kwon <hyun.kwon@xilinx.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Scott Branden <sbranden@broadcom.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-tegra@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.55.225.240]
+X-ClientProxiedBy: mailm116.d.ethz.ch (2001:67c:10ec:5602::28) To
+ mailm113.d.ethz.ch (2001:67c:10ec:5602::25)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Arnd,
+drvdata has to be set in _probe() - otherwise platform_get_drvdata()
+causes null pointer dereference BUG in _remove()
 
-On Mon, Nov 15, 2021 at 9:55 AM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> Picking the connection between a DMA controller and its attached device
-> is done through devicetree using the "dmas" property, which is implemented
-> by the gdma driver, but it also allows overriding the "req" configuration
-> with the slave_id field, as it was done in some linux-2.6 era drivers.
->
-> There is no driver in the tree that sets these values, so stop
-> interpreting them before anything accidentally starts relying on it.
-> Rename the field in the channel from "slave_id" to "req" to better match
-> the purpose and the naming in the hardware.
->
-> If any driver actually starts using this DMA engine, it may be necessary
-> to implement a .xlate callback that sets this field at probe time.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/staging/ralink-gdma/ralink-gdma.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
+Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
+Signed-off-by: Ilia Sergachev <silia@ethz.ch>
+---
+v1 -> v2: add Fixes:
 
-This driver has been already deleted from the staging tree. See [0].
+ drivers/tty/serial/liteuart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Best regards,
-    Sergio Paracuellos
-
-[0]: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git/commit/?h=staging-testing&id=5bfc10690c6c590a972be014ed8595e77e1e2dea
-
->
-> diff --git a/drivers/staging/ralink-gdma/ralink-gdma.c b/drivers/staging/ralink-gdma/ralink-gdma.c
-> index b5229bc6eae5..f00240e62e1b 100644
-> --- a/drivers/staging/ralink-gdma/ralink-gdma.c
-> +++ b/drivers/staging/ralink-gdma/ralink-gdma.c
-> @@ -106,7 +106,7 @@ struct gdma_dma_desc {
->  struct gdma_dmaengine_chan {
->         struct virt_dma_chan vchan;
->         unsigned int id;
-> -       unsigned int slave_id;
-> +       unsigned int req;
->
->         dma_addr_t fifo_addr;
->         enum gdma_dma_transfer_size burst_size;
-> @@ -194,7 +194,6 @@ static int gdma_dma_config(struct dma_chan *c,
->                         dev_err(dma_dev->ddev.dev, "only support 4 byte buswidth\n");
->                         return -EINVAL;
->                 }
-> -               chan->slave_id = config->slave_id;
->                 chan->fifo_addr = config->dst_addr;
->                 chan->burst_size = gdma_dma_maxburst(config->dst_maxburst);
->                 break;
-> @@ -203,7 +202,6 @@ static int gdma_dma_config(struct dma_chan *c,
->                         dev_err(dma_dev->ddev.dev, "only support 4 byte buswidth\n");
->                         return -EINVAL;
->                 }
-> -               chan->slave_id = config->slave_id;
->                 chan->fifo_addr = config->src_addr;
->                 chan->burst_size = gdma_dma_maxburst(config->src_maxburst);
->                 break;
-> @@ -288,12 +286,12 @@ static int rt305x_gdma_start_transfer(struct gdma_dmaengine_chan *chan)
->                 dst_addr = chan->fifo_addr;
->                 ctrl0 = GDMA_REG_CTRL0_DST_ADDR_FIXED |
->                         (8 << GDMA_RT305X_CTRL0_SRC_REQ_SHIFT) |
-> -                       (chan->slave_id << GDMA_RT305X_CTRL0_DST_REQ_SHIFT);
-> +                       (chan->req << GDMA_RT305X_CTRL0_DST_REQ_SHIFT);
->         } else if (chan->desc->direction == DMA_DEV_TO_MEM) {
->                 src_addr = chan->fifo_addr;
->                 dst_addr = sg->dst_addr;
->                 ctrl0 = GDMA_REG_CTRL0_SRC_ADDR_FIXED |
-> -                       (chan->slave_id << GDMA_RT305X_CTRL0_SRC_REQ_SHIFT) |
-> +                       (chan->req << GDMA_RT305X_CTRL0_SRC_REQ_SHIFT) |
->                         (8 << GDMA_RT305X_CTRL0_DST_REQ_SHIFT);
->         } else if (chan->desc->direction == DMA_MEM_TO_MEM) {
->                 /*
-> @@ -365,12 +363,12 @@ static int rt3883_gdma_start_transfer(struct gdma_dmaengine_chan *chan)
->                 dst_addr = chan->fifo_addr;
->                 ctrl0 = GDMA_REG_CTRL0_DST_ADDR_FIXED;
->                 ctrl1 = (32 << GDMA_REG_CTRL1_SRC_REQ_SHIFT) |
-> -                       (chan->slave_id << GDMA_REG_CTRL1_DST_REQ_SHIFT);
-> +                       (chan->req << GDMA_REG_CTRL1_DST_REQ_SHIFT);
->         } else if (chan->desc->direction == DMA_DEV_TO_MEM) {
->                 src_addr = chan->fifo_addr;
->                 dst_addr = sg->dst_addr;
->                 ctrl0 = GDMA_REG_CTRL0_SRC_ADDR_FIXED;
-> -               ctrl1 = (chan->slave_id << GDMA_REG_CTRL1_SRC_REQ_SHIFT) |
-> +               ctrl1 = (chan->req << GDMA_REG_CTRL1_SRC_REQ_SHIFT) |
->                         (32 << GDMA_REG_CTRL1_DST_REQ_SHIFT) |
->                         GDMA_REG_CTRL1_COHERENT;
->         } else if (chan->desc->direction == DMA_MEM_TO_MEM) {
-> --
-> 2.30.2
->
->
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index dbc0559a9157..f075f4ff5fcf 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -285,6 +285,8 @@ static int liteuart_probe(struct platform_device *pdev)
+ 	port->line = dev_id;
+ 	spin_lock_init(&port->lock);
+ 
++	platform_set_drvdata(pdev, port);
++
+ 	return uart_add_one_port(&liteuart_driver, &uart->port);
+ }
+ 
+-- 
+2.25.1
