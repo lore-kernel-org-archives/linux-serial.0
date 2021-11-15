@@ -2,78 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B93C4321E
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 22:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7D1C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 23:16:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 98BFA63215
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 22:51:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0771161A03
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 23:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241165AbhKOWyL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 17:54:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50486 "EHLO
+        id S1348850AbhKOXTn (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 18:19:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353395AbhKOWfi (ORCPT
+        with ESMTP id S1350129AbhKOVam (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 17:35:38 -0500
-Received: from mailg210.ethz.ch (mailg210.ethz.ch [IPv6:2001:67c:10ec:5606::21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E458AC04A4AF
-        for <linux-serial@vger.kernel.org>; Mon, 15 Nov 2021 13:49:49 -0800 (PST)
-Received: from mailm113.d.ethz.ch (2001:67c:10ec:5602::25) by mailg210.ethz.ch
- (2001:67c:10ec:5606::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.12; Mon, 15 Nov
- 2021 22:49:34 +0100
-Received: from dtkw (213.55.225.240) by mailm113.d.ethz.ch
- (2001:67c:10ec:5602::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Mon, 15 Nov
- 2021 22:49:45 +0100
-Date:   Mon, 15 Nov 2021 22:49:44 +0100
-From:   Ilia Sergachev <silia@ethz.ch>
-To:     <linux-serial@vger.kernel.org>
-CC:     Karol Gugala <kgugala@antmicro.com>,
+        Mon, 15 Nov 2021 16:30:42 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906DCC02C322;
+        Mon, 15 Nov 2021 13:15:31 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id y7so15655399plp.0;
+        Mon, 15 Nov 2021 13:15:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xHNx600LacDDvdaPgToGQdsVvGhdyIzYhehFyyrMX6Q=;
+        b=qZ34WRjn7XiYl6fhNEnFTnE+rB+hkm08jxb86pMdjIFxbsu5t+J8SE0qtnOiM5hztX
+         bKfFOe+J3NPxf7qpMUl1HGIDmMPb4UrdYPWXxugC/JvPwABoKr8ggYHnA4Xl3YUn5QXC
+         /m7vbQbiNizX0SLjzX+qui1HOl+NO7d/OleLVmGK5A3SVVUPJmEhDVihYQfE1U7oG0dA
+         YasMrdhTEEHNgYncm4QIRwWE0lW8O6G+2a7caNwNL8ZxZG//qgm5P7Eq11kh8dy5kI2h
+         zLBO90xK5GjEZjc/hAC9hAgD70Y1DcJ2EdWRDmh0eW4xx2L4SpO4md4sl376VPr/mBc2
+         t5dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xHNx600LacDDvdaPgToGQdsVvGhdyIzYhehFyyrMX6Q=;
+        b=DmKY1gGrhrRaLsqJxnGCzDgZWlH5mmMqBWeCUsCyc46rrqnxo/ZNPVD/aVMEnwfJn0
+         vnZwh6K2ZdqwOEKgDWET3TnMmm2nDc1DFNi4efDZZaGT7W6jMUHdBPmXsjhnmspyIXyO
+         S3s16kuBRypkkrwX2jqCU9d9CDwGuEayDRMtkoT1KjpRUsOGlOFIbdBHYR7JyHU+H70E
+         0A0n/2tHI/fq1zkCMFZhFBLccjPt+Hip3/ZahR5Kij9UKTnCnogYRAQqiJzeOndfivYK
+         4+NCv1nxZMfSyGrMYe7SipGuyRaF5ztKjpepq9Oxmat/tZ5EvojKW5VbfAqokXB5dYZc
+         gpxw==
+X-Gm-Message-State: AOAM531gkfW9gO+TW9adp5kqBURP/AqF/zVuUBlWDTYKOiP/Tyi5cwIt
+        jK582oxkuKPeEentW4pPj1qHMyzraeU=
+X-Google-Smtp-Source: ABdhPJzdQPNsx4eUXdWuRNDkDU3Xv2eXnXr7Dl74EDFbePrbJjVElqMtHHVIbmkHwGHe+falNL1ddQ==
+X-Received: by 2002:a17:902:c412:b0:141:f710:2a94 with SMTP id k18-20020a170902c41200b00141f7102a94mr39004528plk.1.1637010931030;
+        Mon, 15 Nov 2021 13:15:31 -0800 (PST)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id b21sm16229592pff.179.2021.11.15.13.15.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 13:15:30 -0800 (PST)
+Date:   Tue, 16 Nov 2021 06:15:28 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilia Sergachev <silia@ethz.ch>,
+        Karol Gugala <kgugala@antmicro.com>,
         Mateusz Holenko <mholenko@antmicro.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Ilia Sergachev <silia@ethz.ch>, Johan Hovold <johan@kernel.org>
-Subject: [PATCH v3] serial: liteuart: Fix NULL pointer dereference in
- ->remove()
-Message-ID: <20211115224944.23f8c12b@dtkw>
-Organization: ETH Zurich
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Filip Kokosinski <fkokosinski@antmicro.com>
+Subject: Re: [PATCH 1/3] serial: liteuart: fix compile testing
+Message-ID: <YZLN8LXHl9FURgsU@antec>
+References: <20211115133745.11445-1-johan@kernel.org>
+ <20211115133745.11445-2-johan@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [213.55.225.240]
-X-ClientProxiedBy: mailm210.d.ethz.ch (2001:67c:10ec:5603::24) To
- mailm113.d.ethz.ch (2001:67c:10ec:5602::25)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211115133745.11445-2-johan@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-drvdata has to be set in _probe() - otherwise platform_get_drvdata()
-causes null pointer dereference BUG in _remove().
+On Mon, Nov 15, 2021 at 02:37:43PM +0100, Johan Hovold wrote:
+> Allow the liteuart driver to be compile tested by fixing the broken
+> Kconfig dependencies.
+> 
+> Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
+> Cc: stable@vger.kernel.org	# 5.11
+> Cc: Filip Kokosinski <fkokosinski@antmicro.com>
+> Cc: Mateusz Holenko <mholenko@antmicro.com>
+> Cc: Stafford Horne <shorne@gmail.com>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
-Reviewed-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Ilia Sergachev <silia@ethz.ch>
----
-v2 -> v3: update subject and description
-v1 -> v2: add Fixes:
+Reviewed-by: Stafford Horne <shorne@gmail.com>
 
- drivers/tty/serial/liteuart.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-index dbc0559a9157..f075f4ff5fcf 100644
---- a/drivers/tty/serial/liteuart.c
-+++ b/drivers/tty/serial/liteuart.c
-@@ -285,6 +285,8 @@ static int liteuart_probe(struct platform_device *pdev)
- 	port->line = dev_id;
- 	spin_lock_init(&port->lock);
- 
-+	platform_set_drvdata(pdev, port);
-+
- 	return uart_add_one_port(&liteuart_driver, &uart->port);
- }
- 
--- 
-2.25.1
+> ---
+>  drivers/tty/serial/Kconfig | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 6ff94cfcd9db..67de892e0947 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1531,9 +1531,9 @@ config SERIAL_MILBEAUT_USIO_CONSOLE
+>  
+>  config SERIAL_LITEUART
+>  	tristate "LiteUART serial port support"
+> +	depends on LITEX || COMPILE_TEST
+>  	depends on HAS_IOMEM
+> -	depends on OF || COMPILE_TEST
+> -	depends on LITEX
+> +	depends on OF
+>  	select SERIAL_CORE
+>  	help
+>  	  This driver is for the FPGA-based LiteUART serial controller from LiteX
+> -- 
+> 2.32.0
+> 
