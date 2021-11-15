@@ -2,110 +2,72 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7D1C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 23:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C1F2C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 00:31:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0771161A03
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 23:16:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 668A6619E1
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 00:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348850AbhKOXTn (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 18:19:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350129AbhKOVam (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 16:30:42 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906DCC02C322;
-        Mon, 15 Nov 2021 13:15:31 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id y7so15655399plp.0;
-        Mon, 15 Nov 2021 13:15:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xHNx600LacDDvdaPgToGQdsVvGhdyIzYhehFyyrMX6Q=;
-        b=qZ34WRjn7XiYl6fhNEnFTnE+rB+hkm08jxb86pMdjIFxbsu5t+J8SE0qtnOiM5hztX
-         bKfFOe+J3NPxf7qpMUl1HGIDmMPb4UrdYPWXxugC/JvPwABoKr8ggYHnA4Xl3YUn5QXC
-         /m7vbQbiNizX0SLjzX+qui1HOl+NO7d/OleLVmGK5A3SVVUPJmEhDVihYQfE1U7oG0dA
-         YasMrdhTEEHNgYncm4QIRwWE0lW8O6G+2a7caNwNL8ZxZG//qgm5P7Eq11kh8dy5kI2h
-         zLBO90xK5GjEZjc/hAC9hAgD70Y1DcJ2EdWRDmh0eW4xx2L4SpO4md4sl376VPr/mBc2
-         t5dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xHNx600LacDDvdaPgToGQdsVvGhdyIzYhehFyyrMX6Q=;
-        b=DmKY1gGrhrRaLsqJxnGCzDgZWlH5mmMqBWeCUsCyc46rrqnxo/ZNPVD/aVMEnwfJn0
-         vnZwh6K2ZdqwOEKgDWET3TnMmm2nDc1DFNi4efDZZaGT7W6jMUHdBPmXsjhnmspyIXyO
-         S3s16kuBRypkkrwX2jqCU9d9CDwGuEayDRMtkoT1KjpRUsOGlOFIbdBHYR7JyHU+H70E
-         0A0n/2tHI/fq1zkCMFZhFBLccjPt+Hip3/ZahR5Kij9UKTnCnogYRAQqiJzeOndfivYK
-         4+NCv1nxZMfSyGrMYe7SipGuyRaF5ztKjpepq9Oxmat/tZ5EvojKW5VbfAqokXB5dYZc
-         gpxw==
-X-Gm-Message-State: AOAM531gkfW9gO+TW9adp5kqBURP/AqF/zVuUBlWDTYKOiP/Tyi5cwIt
-        jK582oxkuKPeEentW4pPj1qHMyzraeU=
-X-Google-Smtp-Source: ABdhPJzdQPNsx4eUXdWuRNDkDU3Xv2eXnXr7Dl74EDFbePrbJjVElqMtHHVIbmkHwGHe+falNL1ddQ==
-X-Received: by 2002:a17:902:c412:b0:141:f710:2a94 with SMTP id k18-20020a170902c41200b00141f7102a94mr39004528plk.1.1637010931030;
-        Mon, 15 Nov 2021 13:15:31 -0800 (PST)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id b21sm16229592pff.179.2021.11.15.13.15.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 13:15:30 -0800 (PST)
-Date:   Tue, 16 Nov 2021 06:15:28 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilia Sergachev <silia@ethz.ch>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Filip Kokosinski <fkokosinski@antmicro.com>
-Subject: Re: [PATCH 1/3] serial: liteuart: fix compile testing
-Message-ID: <YZLN8LXHl9FURgsU@antec>
-References: <20211115133745.11445-1-johan@kernel.org>
- <20211115133745.11445-2-johan@kernel.org>
+        id S245464AbhKPAeE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 19:34:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45220 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345108AbhKOT0c (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 14:26:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 76A766371B;
+        Mon, 15 Nov 2021 19:10:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1637003423;
+        bh=5vu5HaAvfYHHkoVBmv9FZtBdmtn8XzLUHZOXPsKguKU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GhxVQ5QrCFQLfoW10hgALnful7JIwpqNPg5woloYq2obpTp/BxNOA4SV2VBFSmjN0
+         lR5o+px44mTMc4GqdU1aayYEeyOkVO1gbMs6zPfoC28yUMbwZJZtXaF2pQGVuD0P6K
+         1RDIwGtEN8O+69qD2w8UzV6NKw7xaYfLb5uGlcac=
+Date:   Mon, 15 Nov 2021 19:42:32 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Sahil Patidar <sahilpatidar4051@gmail.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: serial:  jsm_tty: fixed a assignment in if condition
+Message-ID: <YZKqGGsRQtSbIQrg@kroah.com>
+References: <20211115182413.10861-1-sahilpatidar4051@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211115133745.11445-2-johan@kernel.org>
+In-Reply-To: <20211115182413.10861-1-sahilpatidar4051@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 02:37:43PM +0100, Johan Hovold wrote:
-> Allow the liteuart driver to be compile tested by fixing the broken
-> Kconfig dependencies.
+On Mon, Nov 15, 2021 at 11:54:13PM +0530, Sahil Patidar wrote:
+> Fixed assignment in if condition.
+
+What exactly is "fixed"?
+
+And why are there two spaces in your subject line?
+
 > 
-> Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
-> Cc: stable@vger.kernel.org	# 5.11
-> Cc: Filip Kokosinski <fkokosinski@antmicro.com>
-> Cc: Mateusz Holenko <mholenko@antmicro.com>
-> Cc: Stafford Horne <shorne@gmail.com>
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-
-Reviewed-by: Stafford Horne <shorne@gmail.com>
-
+> Signed-off-by: Sahil Patidar <sahilpatidar4051@gmail.com>
 > ---
->  drivers/tty/serial/Kconfig | 4 ++--
+>  drivers/tty/serial/jsm/jsm_tty.c | 4 ++--
 >  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 6ff94cfcd9db..67de892e0947 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1531,9 +1531,9 @@ config SERIAL_MILBEAUT_USIO_CONSOLE
+> diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+> index d74cbbbf33c6..44507b1ff93a 100644
+> --- a/drivers/tty/serial/jsm/jsm_tty.c
+> +++ b/drivers/tty/serial/jsm/jsm_tty.c
+> @@ -746,10 +746,10 @@ static void jsm_carrier(struct jsm_channel *ch)
+>  void jsm_check_queue_flow_control(struct jsm_channel *ch)
+>  {
+>  	struct board_ops *bd_ops = ch->ch_bd->bd_ops;
+> -	int qleft;
+> +	int qleft = ch->ch_r_tail - ch->ch_r_head - 1;
 >  
->  config SERIAL_LITEUART
->  	tristate "LiteUART serial port support"
-> +	depends on LITEX || COMPILE_TEST
->  	depends on HAS_IOMEM
-> -	depends on OF || COMPILE_TEST
-> -	depends on LITEX
-> +	depends on OF
->  	select SERIAL_CORE
->  	help
->  	  This driver is for the FPGA-based LiteUART serial controller from LiteX
-> -- 
-> 2.32.0
-> 
+>  	/* Store how much space we have left in the queue */
+> -	if ((qleft = ch->ch_r_tail - ch->ch_r_head - 1) < 0)
+> +	if (qleft < 0)
+
+What was wrong with the original code that required this change?
+
+thanks,
+
+greg k-h
