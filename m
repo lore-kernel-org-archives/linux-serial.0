@@ -2,104 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004BBC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 13:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6631BC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 13:43:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E046D6139F
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 13:29:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 511E661B27
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 13:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231627AbhKONca (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 08:32:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48888 "EHLO mail.kernel.org"
+        id S236464AbhKONqK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 08:46:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51294 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231805AbhKONcN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 08:32:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 01B2961C4F;
-        Mon, 15 Nov 2021 13:29:10 +0000 (UTC)
+        id S231938AbhKONlr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 08:41:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A4F9761AF0;
+        Mon, 15 Nov 2021 13:38:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636982957;
-        bh=d7tYqUsWDtoH/nl2BZKWt1Fg723w2autMfgUYEMNJag=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NxAtFPBbvP/6AMCR/771dj85JLwT9nMjXuRQW/p/vGkRcrzxY2dfXvwIZFnFfefwu
-         kvsKyiub8ajs3EgHPbs6+p59+0bA/wbHJl2rz7tgW3TeuyJq/UzZVAAAGhAdFi+CZW
-         Uw+2qQawe1sg1MzO5qZDCDpwqeQYNaR5EdOhc2COOEUfXCP0x7GGBQFYXF9J63TxGW
-         AwoXnh5gr7ftDkRGa/KmDw/s4JgpvjP7FcwtMuv6k/iKRgLccKlkjLmXo33ME7VFfJ
-         JbTTzrKQ/VAOfK2BvkUlHyAruho4/iLVVQdqlwG9oXsUX0VqxqKDDGf3cxU4kWKLOe
-         vGM3FZPU3/xnQ==
-Date:   Mon, 15 Nov 2021 13:29:07 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Vinod Koul <vkoul@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Andy Gross <agross@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hyun Kwon <hyun.kwon@xilinx.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Scott Branden <sbranden@broadcom.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH 02/11] spi: pic32: stop setting dma_config->slave_id
-Message-ID: <YZJgoxE15OYKYP2K@sirena.org.uk>
-References: <20211115085403.360194-1-arnd@kernel.org>
- <20211115085403.360194-3-arnd@kernel.org>
+        s=k20201202; t=1636983531;
+        bh=ly2sCGr9GxslTECmWWpOexhBh5/QS9xbKc6+ky/VYHM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YUFfjMDcZ75HMJvUHuXCOB8UToKmaLijZzALQ7HH3tyzYj+pV1CqX4j9WwU7IFjK5
+         +EosK9ap+xRivNOUkA2e1Atb/u4GsK9f7KouwJ8bMEZ2q0Ll8HwEVLlL9dxA8JKieq
+         Y3FSRl1hpCIUlXAsFulG9Y9hVTcAeeGrPnvSzzxnVAMUGa++ngmFUaqN6skiLVNYpK
+         8ZF/znPu9nmrgcvlmTMGpZmqCPjJpeki3G6YzVlKW2xw6Cke8OxyMbBTrJaZU3ttVM
+         QbUSe1FK5oNJha9UANaDwmcpC0qautAmLwyPdbPOeJzkIi+K5ltPVXLJTaaKyvLD77
+         A1/vT2foFlMtw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mmcBy-0002zb-Hz; Mon, 15 Nov 2021 14:38:38 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Ilia Sergachev <silia@ethz.ch>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>, stable@vger.kernel.org,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Stafford Horne <shorne@gmail.com>
+Subject: [PATCH 1/3] serial: liteuart: fix compile testing
+Date:   Mon, 15 Nov 2021 14:37:43 +0100
+Message-Id: <20211115133745.11445-2-johan@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20211115133745.11445-1-johan@kernel.org>
+References: <20211115133745.11445-1-johan@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="IMTM3OEYqWoLprto"
-Content-Disposition: inline
-In-Reply-To: <20211115085403.360194-3-arnd@kernel.org>
-X-Cookie: Custer committed Siouxicide.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Allow the liteuart driver to be compile tested by fixing the broken
+Kconfig dependencies.
 
---IMTM3OEYqWoLprto
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
+Cc: stable@vger.kernel.org	# 5.11
+Cc: Filip Kokosinski <fkokosinski@antmicro.com>
+Cc: Mateusz Holenko <mholenko@antmicro.com>
+Cc: Stafford Horne <shorne@gmail.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/serial/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Mon, Nov 15, 2021 at 09:53:54AM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->=20
-> Setting slave_id makes no sense with DT based probing, and
-> should eventually get removed entirely. Address this driver
-> by no longer setting the field here.
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 6ff94cfcd9db..67de892e0947 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1531,9 +1531,9 @@ config SERIAL_MILBEAUT_USIO_CONSOLE
+ 
+ config SERIAL_LITEUART
+ 	tristate "LiteUART serial port support"
++	depends on LITEX || COMPILE_TEST
+ 	depends on HAS_IOMEM
+-	depends on OF || COMPILE_TEST
+-	depends on LITEX
++	depends on OF
+ 	select SERIAL_CORE
+ 	help
+ 	  This driver is for the FPGA-based LiteUART serial controller from LiteX
+-- 
+2.32.0
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---IMTM3OEYqWoLprto
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmGSYKMACgkQJNaLcl1U
-h9BFJgf/fpBvGqcjOVPEzPWsUxd950Aql84mdfpVf7Q34yAtuAJMlorUf+ARZFeV
-RvrFCJ6tyeWZsZCKm+HMgfJFIp4GSOcn2asZ7p06z3lpAzDdX9Yn8aFW1bcIUOee
-EjiSLquSQyBmUy+upf3bbaVPV1YyDaj5IajH5PQCVwj1mfRcilnqGpBPEJgpEo99
-MNhpTEA3rcd6ESQQ0QyMAliW+T4BwAkXCtnWnSt4bVq1NfViOEbTGn/Nh7OaGwrI
-dNe0cE4t3/9Vo3mtQY6IgF2d7gcIiTePrXRq74w940zsn4Rh6RpX5mGPiwM+OYh3
-l7AvLSoqMeL1h9M5Yek/O6k8yVVJuQ==
-=RhAB
------END PGP SIGNATURE-----
-
---IMTM3OEYqWoLprto--
