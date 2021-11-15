@@ -2,71 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193F2C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 07:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1498CC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 08:42:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EF6F96321F
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 07:02:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EBFB661BE3
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 08:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230056AbhKOHFY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 02:05:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48406 "EHLO mail.kernel.org"
+        id S230268AbhKOIpN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 03:45:13 -0500
+Received: from muru.com ([72.249.23.125]:56354 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230111AbhKOHEz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 02:04:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CA61361C14;
-        Mon, 15 Nov 2021 07:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1636959720;
-        bh=tDHGMv9QNgNQzOclCW8qU+iwVjxwopfiqTR2s6WQL0c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HCLe6VkZDOXHcXwDrMhUwMdBOjZsZlpIoZRf7vhOEX5GQRdBqHoTPBL9y8yNokPk4
-         dt0zUlEaOwUwT3t14Z3tstZKej58I0UQc/66czvZqFUr3B0vbHrzvDq4aeJuHAHx/+
-         7/DRSFC2O97OrBli3fpjfZFTVTu3P5s/gFGU0vqE=
-Date:   Mon, 15 Nov 2021 08:01:55 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ilia Sergachev <silia@ethz.ch>
-Cc:     linux-serial@vger.kernel.org, Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] serial: liteuart: fix missing drvdata
-Message-ID: <YZIF48DPkfgBf5H9@kroah.com>
-References: <20211115031808.7ab632ef@dtkw>
+        id S230047AbhKOIpM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 03:45:12 -0500
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id CB324806C;
+        Mon, 15 Nov 2021 08:42:51 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCHv4 0/7] Serial port generic PM to fix 8250 PM
+Date:   Mon, 15 Nov 2021 10:41:56 +0200
+Message-Id: <20211115084203.56478-1-tony@atomide.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211115031808.7ab632ef@dtkw>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 03:18:08AM +0100, Ilia Sergachev wrote:
-> drvdata has to be set in _probe() - otherwise platform_get_drvdata()
-> causes null pointer dereference BUG in _remove()
-> 
-> Signed-off-by: Ilia Sergachev <silia@ethz.ch>
-> ---
->  drivers/tty/serial/liteuart.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index dbc0559a9157..f075f4ff5fcf 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -285,6 +285,8 @@ static int liteuart_probe(struct platform_device *pdev)
->  	port->line = dev_id;
->  	spin_lock_init(&port->lock);
->  
-> +	platform_set_drvdata(pdev, port);
-> +
->  	return uart_add_one_port(&liteuart_driver, &uart->port);
->  }
->  
-> -- 
-> 2.25.1
+Hi,
 
-What commit does this fix?
+Here are v4 patches for serial port generic PM. The scope has now expanded
+a bit from the earlier attempts to get rid of pm_runtime_irq_safe() for
+the 8250_omap driver. I've now picked up three patches from Andy's earlier
+generic serial port PM series.
 
-thanks,
+Regards,
 
-greg k-h
+Tony
+
+Changes since v3:
+- Pick three patches from Andy's earlier serial port PM series to handle
+  issues pointed out by Johan
+
+Chganges since v2:
+
+- Use locking instead of atomic_t as suggested by Greg
+
+Changes since v1:
+
+- Separated out line discipline patches, n_tty -EAGAIN change I still
+  need to retest
+
+- Changed prep_tx() to more generic wakeup() as also flow control needs it
+
+- Changed over to using wakeup() with device driver runtime PM instead
+  of write_room()
+
+- Added runtime_suspended flag for drivers and generic serial layer PM
+  to use
+
+Andy Shevchenko (3):
+  serial: core: Add support of runtime PM
+  serial: 8250_port: properly handle runtime PM in IRQ
+  serial: 8250_port: Remove calls to runtime PM
+
+Tony Lindgren (4):
+  serial: core: Add wakeup() and start_pending_tx() for asynchronous
+    wake
+  serial: 8250: Implement wakeup for TX and use it for 8250_omap
+  serial: 8250_omap: Require a valid wakeirq for deeper idle states
+  serial: 8250_omap: Drop the use of pm_runtime_irq_safe()
+
+ Documentation/driver-api/serial/driver.rst |   9 +
+ drivers/tty/serial/8250/8250.h             |   3 -
+ drivers/tty/serial/8250/8250_omap.c        |  44 +++--
+ drivers/tty/serial/8250/8250_port.c        | 151 ++++++++--------
+ drivers/tty/serial/serial_core.c           | 199 +++++++++++++++++++--
+ include/linux/serial_core.h                |   3 +
+ 6 files changed, 305 insertions(+), 104 deletions(-)
+
+-- 
+2.33.1
