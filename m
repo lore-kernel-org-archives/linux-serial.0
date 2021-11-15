@@ -2,80 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C79AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F66C43217
 	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 13:43:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3382B61B2A
+	by mail.kernel.org (Postfix) with ESMTP id 4827063227
 	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 13:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230253AbhKONqQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 08:46:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51308 "EHLO mail.kernel.org"
+        id S236523AbhKONqT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 08:46:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51804 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231953AbhKONlr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 08:41:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A624C63223;
-        Mon, 15 Nov 2021 13:38:51 +0000 (UTC)
+        id S236303AbhKONnM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 08:43:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 41D6263225;
+        Mon, 15 Nov 2021 13:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636983531;
-        bh=TWtUPpql8iSS/HErxqI/cqS6lf5/rUzZFgHdOFCpt0w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AibSsKbiwHSxnVgE22Z3v+iiFFUOhjG5/yy8rBslkLXG3D0K+PbViC6rFReGB+9Ah
-         5KDgSH+xUnf1gQ2b1KQ2IMDs6Bfro2Sg4rK+FCLeh6VbZL7cKzFm+XU+ZuoVwZSl9H
-         0cTd9RtU6BOSerYuX5XlGaKLQIimKDtbwMgyAfBT9n0n/qSg8ZoqKmcbgPvIx3K94f
-         bOmHlnpD+SgEG9vEd/+5NkzrNWvxeHxCLGvsFmyk6NmrFl8Ddl/8ZnugTFoVOEya5t
-         7gFUE20+LkmENgA11DCXfAnSt74dpDk337p5JvW2SYxGATEp5t9IR1+JNkhgALft3b
-         L8aQuvgUcjFGQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1mmcBy-0002zd-KH; Mon, 15 Nov 2021 14:38:38 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Ilia Sergachev <silia@ethz.ch>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan@kernel.org>, stable@vger.kernel.org,
-        Filip Kokosinski <fkokosinski@antmicro.com>,
-        Stafford Horne <shorne@gmail.com>
-Subject: [PATCH 2/3] serial: liteuart: fix use-after-free and memleak on unbind
-Date:   Mon, 15 Nov 2021 14:37:44 +0100
-Message-Id: <20211115133745.11445-3-johan@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211115133745.11445-1-johan@kernel.org>
-References: <20211115133745.11445-1-johan@kernel.org>
+        s=k20201202; t=1636983617;
+        bh=wWcBwOu3cL9+U+zjsSAWtUQyMjCz3CDgA4mV4eUmQEI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Q4vpjH0uJaOnwWSUMmOGk4RBT6eS8WH2rt9ntVsxRfGOv9U1AcRtQ11fRaF90BIV8
+         sqeJ0HBpuF+KPmzxxWjlJGgSJ1OjqCnX5IF3kDB9UyaLteVQzEs63BelRJSGp/MN27
+         rl3mqKgow43UyjRBZHGLKQ4QfjwptO5RKrADCb33Z2mbHzpBKSuGr6uGe5kRDEdiBG
+         HHrLzrj7SUybGgQXnJJsO7yrqVHV48pmOVUw23xSRWxB7Me79U0ZJtPK4hVpkgoTGX
+         utmi82G0Uxv9J6Q2ftbl+jiVLtnlcx62LHYmA20iHfeUpWAVrLzRRvgSwCTpk4pzn6
+         ofL6tkRYcgMKA==
+Received: by mail-wr1-f46.google.com with SMTP id c4so30714585wrd.9;
+        Mon, 15 Nov 2021 05:40:17 -0800 (PST)
+X-Gm-Message-State: AOAM531vvlRykWLO92Z09uDzfZtO+Fb+dA5ADjGDxATEsgevQtZfRLx7
+        qHnRukW4U5bU8Zx1GyLFIWD6DZ3FSiCQNz2Ea4A=
+X-Google-Smtp-Source: ABdhPJydx+lGNyCCL10Ss+u6AlrY7F7Dh3irA5L/rafXQwz2EG7YLwST7GsA7bIvQOTqpVGT64n5uQbouKk1WaS2cho=
+X-Received: by 2002:adf:f088:: with SMTP id n8mr7443019wro.411.1636983615679;
+ Mon, 15 Nov 2021 05:40:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211115085403.360194-1-arnd@kernel.org> <20211115085403.360194-9-arnd@kernel.org>
+ <YZIk6cVb7XibrMjf@pendragon.ideasonboard.com> <CAK8P3a1Fu11-e0CK2of8u3ebdjom84UKuXhBKi5FUs5ZPPdOVA@mail.gmail.com>
+ <YZJJVA/92KYH8hQL@pendragon.ideasonboard.com> <CAK8P3a27rPBVbU-PrYR0BE4KV2DyJk7FoXaeDS=FU1=_RSwoQQ@mail.gmail.com>
+ <YZJbLol1llm+puDT@pendragon.ideasonboard.com>
+In-Reply-To: <YZJbLol1llm+puDT@pendragon.ideasonboard.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 15 Nov 2021 14:39:59 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a16s6dwvb-7REjF-pmnKod2qQRq+mta-g8pDXbQpGQvHA@mail.gmail.com>
+Message-ID: <CAK8P3a16s6dwvb-7REjF-pmnKod2qQRq+mta-g8pDXbQpGQvHA@mail.gmail.com>
+Subject: Re: [PATCH 08/11] dmaengine: xilinx_dpdma: stop using slave_id field
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Vinod Koul <vkoul@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Andy Gross <agross@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hyun Kwon <hyun.kwon@xilinx.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Scott Branden <sbranden@broadcom.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        dmaengine@vger.kernel.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        "moderated list:BROADCOM BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        linux-staging@lists.linux.dev,
+        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Deregister the port when unbinding the driver to prevent it from being
-used after releasing the driver data and leaking memory allocated by
-serial core.
+On Mon, Nov 15, 2021 at 2:05 PM Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> On Mon, Nov 15, 2021 at 01:38:07PM +0100, Arnd Bergmann wrote:
+> > On Mon, Nov 15, 2021 at 12:49 PM Laurent Pinchart wrote:
+> >
+> > Right. I wonder if there is even a point in using the dmaengine API
+> > in that case, I think for other single-purpose drivers we tend to just
+> > integrate the functionality in the client driver. No point changing this
+> > now of course, but it does feel odd.
+>
+> I agree, and that's what I would have done as well, if it wasn't for the
+> fact that the DMA engine also supports a second client for audio. This
+> isn't supported in upstream yet. We could still have created an ad-hoc
+> solution, possibly based on the components framework, but the DMA engine
+> subsystem wasn't a bad fit.
 
-Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
-Cc: stable@vger.kernel.org      # 5.11
-Cc: Filip Kokosinski <fkokosinski@antmicro.com>
-Cc: Mateusz Holenko <mholenko@antmicro.com>
-Cc: Stafford Horne <shorne@gmail.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/serial/liteuart.c | 1 +
- 1 file changed, 1 insertion(+)
+Ah, makes sense. In this case, I guess the data could have been
+part of the DMA specifier after all, in a second cell after the
+channel number.
 
-diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-index f075f4ff5fcf..da792d0df790 100644
---- a/drivers/tty/serial/liteuart.c
-+++ b/drivers/tty/serial/liteuart.c
-@@ -295,6 +295,7 @@ static int liteuart_remove(struct platform_device *pdev)
- 	struct uart_port *port = platform_get_drvdata(pdev);
- 	struct liteuart_port *uart = to_liteuart_port(port);
- 
-+	uart_remove_one_port(&liteuart_driver, port);
- 	xa_erase(&liteuart_array, uart->id);
- 
- 	return 0;
--- 
-2.32.0
-
+        Arnd
