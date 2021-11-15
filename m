@@ -2,77 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9B9C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 15:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA67C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 21:38:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AFACA619E8
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 15:58:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 02B7A63220
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 21:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232154AbhKOQB3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 11:01:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59558 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232362AbhKOQBP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 11:01:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C8BA9619E8;
-        Mon, 15 Nov 2021 15:58:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1636991900;
-        bh=6ObChIFYaBXn4SrtM0fzLgR5LrUgX/Hu5OOpSd/gAxQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fhhI0RWAvBYQAGQKvKrKkCqPOFOB/go4eCNDSI2GqTkpqkSoXznmq5xf4lmLBqRaM
-         YYKG5fxg8iaAyyiTcMjlAz7v6WGbIGcfI9nnZ7I3GonmfzPCUHHRIHAdWUICgSd3TA
-         oc/xP77m+KUnuHo6yiNQb4ZnBYEg5WfyYbxpHfcM=
-Date:   Mon, 15 Nov 2021 16:58:17 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc:     richard.genoud@gmail.com, jirislaby@kernel.org,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: atmel: Check return code of
- dmaengine_submit()
-Message-ID: <YZKDmb/ZlYwtyX8j@kroah.com>
-References: <20211115143004.32743-1-tudor.ambarus@microchip.com>
+        id S243878AbhKOVlQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 16:41:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350123AbhKOVaW (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 16:30:22 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B710C03401D;
+        Mon, 15 Nov 2021 13:15:08 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id m24so5566807pls.10;
+        Mon, 15 Nov 2021 13:15:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xvg46sJvn19n9tEricC/NpG5AqoxAA/4TRI4qGnUVi8=;
+        b=W6ZNm/FA91vLxzlu6rYm80SOp1u48RrhiHYm5dB3RA1rvpzFsTCJDEeOgHcS2Abhgp
+         fCubB5cT72aujJ/zwlGfuOfSkr8s2ombGO2PID7QLJFxaINDBekfhmUf1r7fw2KfbPzd
+         JHRFMVrsD+/w/LQOtR5t1YYO6QU6shV4zXkzPEvkY8d8rDlKa5QSS9bWzFkKeexPIfTm
+         b9sjyiT/+AQG+6t4HDHvzUe4AK5I9RPay6GZlymwiuFJlKvZdsJgPD4AqUfds8B71Uhh
+         haLaDKF9IMzgW9gLTj6+mS9nK4VwSg9tcpsWa546R1k0JC7uC0YcKh1AhimUCYF87pTR
+         AWDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xvg46sJvn19n9tEricC/NpG5AqoxAA/4TRI4qGnUVi8=;
+        b=fs2Jr6QUEeL272kTLh0PSytRhJM2uuN9uGP+vRTwyHZcBkq2uoctPwhE7gySVXj0ho
+         qf1Wvjvah5vYuAGeupBhD2cwvH122KYg3ewz8uDR+U/LWoMtxFqwBZRKaFgl9DjKbTmL
+         ESrGqVoZy7d7jFlf+H3yPERkJ/kCBXOzXsZLTpnqKM6r8gxIw+o7ZUuc8gHyIpoWcacn
+         ZB3+Be8u3dHXVq4L4IbPBU31ZmTPSyLDOWQoHskMOHARc/Roe6sy0x4T9DfmVw3DFTsI
+         Mt9qHSoEbS51fXop2diSGAhoQfDFyBX9Nl0SGy2BAyTLhYnabErfSDFtrmratcvd+19Q
+         druw==
+X-Gm-Message-State: AOAM531QKr8uEtXSeckNv1dOoCvE6UShGUBtpmmlgICx7KZQZuOGPsvv
+        TmVXW/JtFBltzNctK/KPn/s=
+X-Google-Smtp-Source: ABdhPJzZVkYMm9Oc3FfzK8/CwhITC9FiGrcRGNwlXlo+hxVselXOw4goITPmf2HjqhTNCWBtPEAKnw==
+X-Received: by 2002:a17:90b:1c91:: with SMTP id oo17mr23728524pjb.193.1637010907713;
+        Mon, 15 Nov 2021 13:15:07 -0800 (PST)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id nn15sm234848pjb.11.2021.11.15.13.15.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Nov 2021 13:15:07 -0800 (PST)
+Date:   Tue, 16 Nov 2021 06:15:05 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilia Sergachev <silia@ethz.ch>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Filip Kokosinski <fkokosinski@antmicro.com>
+Subject: Re: [PATCH 2/3] serial: liteuart: fix use-after-free and memleak on
+ unbind
+Message-ID: <YZLN2d4jB9AuN4BV@antec>
+References: <20211115133745.11445-1-johan@kernel.org>
+ <20211115133745.11445-3-johan@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211115143004.32743-1-tudor.ambarus@microchip.com>
+In-Reply-To: <20211115133745.11445-3-johan@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 04:30:04PM +0200, Tudor Ambarus wrote:
-> dma_cookie_t < 0 indicates an error code, check for it.
+On Mon, Nov 15, 2021 at 02:37:44PM +0100, Johan Hovold wrote:
+> Deregister the port when unbinding the driver to prevent it from being
+> used after releasing the driver data and leaking memory allocated by
+> serial core.
 
-Very odd changelog text, please be more descriptive about what is
-happening here.
+This looks good to me.  Just curious did you test this on a Litex SoC/FPGA?
 
-> 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
+> Cc: stable@vger.kernel.org      # 5.11
+> Cc: Filip Kokosinski <fkokosinski@antmicro.com>
+> Cc: Mateusz Holenko <mholenko@antmicro.com>
+> Cc: Stafford Horne <shorne@gmail.com>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
+
+Reviewed-by: Stafford Horne <shorne@gmail.com>
+
 > ---
->  drivers/tty/serial/atmel_serial.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+>  drivers/tty/serial/liteuart.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 2c99a47a2535..376f7a9c2868 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -1004,6 +1004,11 @@ static void atmel_tx_dma(struct uart_port *port)
->  		desc->callback = atmel_complete_tx_dma;
->  		desc->callback_param = atmel_port;
->  		atmel_port->cookie_tx = dmaengine_submit(desc);
-> +		if (dma_submit_error(atmel_port->cookie_tx)) {
-> +			dev_err(port->dev, "dma_submit_error %d\n",
-> +				atmel_port->cookie_tx);
-> +			return;
-
-What can a user do with this error message?
-
-Have you seen this happen in real life?
-
-What commit does this "fix"?
-
-thanks,
-
-greg k-h
+> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> index f075f4ff5fcf..da792d0df790 100644
+> --- a/drivers/tty/serial/liteuart.c
+> +++ b/drivers/tty/serial/liteuart.c
+> @@ -295,6 +295,7 @@ static int liteuart_remove(struct platform_device *pdev)
+>  	struct uart_port *port = platform_get_drvdata(pdev);
+>  	struct liteuart_port *uart = to_liteuart_port(port);
+>  
+> +	uart_remove_one_port(&liteuart_driver, port);
+>  	xa_erase(&liteuart_array, uart->id);
+>  
+>  	return 0;
+> -- 
+> 2.32.0
+> 
