@@ -2,113 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98513C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 10:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D779C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 10:48:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7F3C963210
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 10:42:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 827956126A
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 10:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237630AbhKOKp1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 05:45:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58738 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237647AbhKOKpZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 05:45:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 605EE63232;
-        Mon, 15 Nov 2021 10:42:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1636972950;
-        bh=GF5ppKwJBGyzBz8YYmc0v0PuTfRZzEb8KsPYdX9kZys=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Ah/2tRgiVpL5fsi7FPpcL635JDhcln6l2ExZIWHTLBUbMjdBJtz0DoVh8A2lD2GeS
-         Vn5loajjfQVDFPQtLSRLZGgFOOu9gaKK3ygqoSrLlln9jWXCpaNqhh48lZ8c+k+4gu
-         sRf7wuCD69gIDwdqAcDKjxNp/YsEuFSMvDDDQT7VHpaJYuJxZPW/xofRGd5PidTsHa
-         kAWstx1aMCAeHyFhdJIprnubYysWs5QAKZBMy/vWApTOP0uD7D8phUBIQiY3lLQ5f/
-         +MVP+HB9F9xrWDthVsi8GxjjhUCyNhOn85FTRAs3rVEuGA/K5Upw6e+cpw5gK86TyV
-         zRQeafG4VMnqA==
-Received: by mail-wm1-f48.google.com with SMTP id i12so12630047wmq.4;
-        Mon, 15 Nov 2021 02:42:30 -0800 (PST)
-X-Gm-Message-State: AOAM533V71Zs+sw2dEBymXO02n62snMw7/lgyzhTvq1NziLMRdPVOwAr
-        Jwd8dWTGYB1PEaibVHYthPczN0VjzeXVDRxaY3I=
-X-Google-Smtp-Source: ABdhPJxXAexhirAvGW2LKyfe3zijMEf2dKYT5qfqRJ6eAMXzz6GR60sm0yXhnH6+pWfe4YG9EjpedQhiHwxXAXFjyDM=
-X-Received: by 2002:a1c:770e:: with SMTP id t14mr57234330wmi.173.1636972948695;
- Mon, 15 Nov 2021 02:42:28 -0800 (PST)
+        id S230507AbhKOKvT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 05:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231207AbhKOKvI (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 05:51:08 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF115C061746
+        for <linux-serial@vger.kernel.org>; Mon, 15 Nov 2021 02:48:10 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id z5so9920204edd.3
+        for <linux-serial@vger.kernel.org>; Mon, 15 Nov 2021 02:48:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yf714q2A5/MrMjZCA3gGUPqhlajmH/vPC1c+Bvnu9I4=;
+        b=iCVBuFnMPhYk+FMQq84QGCDsdbHTWOuu/BS1YH/vyRXceOWvA/C3HwtyI9ciqpT2Na
+         yzHxt7I3sMXp56f0lBYB+tlWLPg8r+GEmOAqoJfKXabiHA9ZLYHMl536C6b4IxaYA10L
+         jX1FoUUTA8Rk4jOLfNzdTTbyHZzFMQ5FBP/4xm5mHelUtK38iU66ldw7FhaZZC2mlUAu
+         IQSKkU5sm86eW3o5z/YOWhkQF79/1KK+uN5D9pbgvFrscpCm0JLEVV2IqW0skIY+7UCc
+         MBuISERwCIJHEWp/t3IAbuN3h4XrN3UTMnwyC8l5QWvV9e+vMnDh3RRVAFEb/ia5e8AZ
+         LtLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yf714q2A5/MrMjZCA3gGUPqhlajmH/vPC1c+Bvnu9I4=;
+        b=LNhwChqSvVKaz/iG+Vet9Rx9IyrbkU/Me9zBfgtVh6qBxnY+3PvwUB1EdMFvs9Ck3h
+         01xbW3h8U5GnkVVCEKgjOv8jYFIZahpuH0qscgSUKVE2TMLPF6rQxtPznYKx9hQxugG+
+         xl1qkFnx3/PiA77Ne4ajZz4XAcEWXniyTRa4hHkcoNrjhOqYkSvlOPXEuAH+zb8br+PU
+         ejUl/ntvgw4eTwH8PQL8Mev54BeHW2mxbUNcsIErBHAWdQwQPRCV12xQxskclQtGKJ7S
+         mVKoqz+512fH22byF1L50pispIWHV9oeZKmSIeCU7Z/CMoCsgT67eGG3uqP9elID7ixP
+         XS8A==
+X-Gm-Message-State: AOAM5307WFXMOo8kFboY/oCXyeT1oEsLImEeeI305uxuya6iKBkmPZw/
+        HP0DCQjwJgXPNoRVxIcPSprdcItwlFi9lDT7YsI=
+X-Google-Smtp-Source: ABdhPJyTuD4wi4PwIBSKwFuAE6ryKZbRDQCo6sW9PiMzo5mu0GylpaXX/c8VYDbhNwhbeqrstPbr0wY0kwMXNiVvLcM=
+X-Received: by 2002:a17:906:bccc:: with SMTP id lw12mr46590924ejb.128.1636973289346;
+ Mon, 15 Nov 2021 02:48:09 -0800 (PST)
 MIME-Version: 1.0
-References: <20211115085403.360194-1-arnd@kernel.org> <20211115085403.360194-2-arnd@kernel.org>
- <647b842d-76a1-7a96-3ea7-8a37b62bc18e@metafoo.de>
-In-Reply-To: <647b842d-76a1-7a96-3ea7-8a37b62bc18e@metafoo.de>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 15 Nov 2021 11:42:12 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2EVseM4t=e982fFhzBGSZxZ2_V-FHwr-fQPd-bkAKaJg@mail.gmail.com>
-Message-ID: <CAK8P3a2EVseM4t=e982fFhzBGSZxZ2_V-FHwr-fQPd-bkAKaJg@mail.gmail.com>
-Subject: Re: [PATCH 01/11] ASoC: dai_dma: remove slave_id field
-To:     Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Vinod Koul <vkoul@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Andy Gross <agross@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hyun Kwon <hyun.kwon@xilinx.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Scott Branden <sbranden@broadcom.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        dmaengine@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-staging@lists.linux.dev,
-        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>
+References: <20211115031808.7ab632ef@dtkw>
+In-Reply-To: <20211115031808.7ab632ef@dtkw>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 15 Nov 2021 12:47:27 +0200
+Message-ID: <CAHp75VdpEj3gdvRN+KCSEeTCjjo6tveYaB6uHisn6BYhCkR0SA@mail.gmail.com>
+Subject: Re: [PATCH] serial: liteuart: fix missing drvdata
+To:     Ilia Sergachev <silia@ethz.ch>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 11:14 AM Lars-Peter Clausen <lars@metafoo.de> wrote:
->
-> On 11/15/21 9:53 AM, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > This field is never set, and serves no purpose, so remove it.
->
-> I agree that we should remove it. Its been legacy support code for a
-> while, but the description that there is no user is not right.
->
-> The tegra20_spdif driver obviously uses it and that user is removed in
-> this patch. I think it makes sense to split that out into a separate
-> patch with a description why the driver will still work even with
-> slave_id removed. Maybe the best is to remove the whole tegra20_spdif
-> driver.
+On Mon, Nov 15, 2021 at 4:34 AM Ilia Sergachev <silia@ethz.ch> wrote:
 
-Ok, I'll split out the tegra patch and try to come up with a better
-description for it. What I saw in that driver is it just passes down the
-slave_id number from a 'struct resource', but there is nothing in
-the kernel that sets up this resource.
+Besides what Greg asked for, can you rephrase Subject to something like
+"serial: liteuart: Fix NULL pointer dereference in ->remove()"
 
-Do you or someone else have more information on the state of this
-driver? I can see that it does not contain any of_device_id based
-probing, so it seems that this is either dead code, the platform_device
-gets created by some other code that is no longer compatible with
-this driver.
+> drvdata has to be set in _probe() - otherwise platform_get_drvdata()
+> causes null pointer dereference BUG in _remove()
 
-      Arnd
+Don't forget the grammatical period.
+
+Code looks good to me, though.
+
+-- 
+With Best Regards,
+Andy Shevchenko
