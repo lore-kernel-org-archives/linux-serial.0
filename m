@@ -2,65 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4F2C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:34:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D9DC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:56:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B5AD861C14
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:34:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 639B261BCF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:56:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230494AbhKOJhg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 04:37:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42958 "EHLO mail.kernel.org"
+        id S236489AbhKOJ6z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 04:58:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46708 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237137AbhKOJhW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 04:37:22 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B290D61A89;
-        Mon, 15 Nov 2021 09:34:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1636968852;
-        bh=8sILmX26vLwhR5P/0vSCQzaOaXD0EJH8phQFBpukM+E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pfyI9m+pLFwNNhniWwezUPuY7MgHXDweijzQ3j+Wo/H2vmbMUjqL4rxUt5yrie04l
-         xXQdghzhfYL5BZxu8ngPOFHgDcjHwdxeQ8R3uWKregZPkZtfC3RMhYvkrjTDge6UIS
-         H/LwPGniscce77MuaQdYmIlZyLOSsBSAsNbf1mAA=
-Date:   Mon, 15 Nov 2021 10:34:10 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ilia Sergachev <silia@ethz.ch>
-Cc:     linux-serial@vger.kernel.org, Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] serial: liteuart: fix missing drvdata
-Message-ID: <YZIpkiYHm3GR34zo@kroah.com>
-References: <20211115031808.7ab632ef@dtkw>
- <YZIF48DPkfgBf5H9@kroah.com>
- <20211115102148.6c30dbf6@dtkw>
+        id S236975AbhKOJ6u (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 04:58:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 30E7861BF8;
+        Mon, 15 Nov 2021 09:55:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1636970151;
+        bh=zO8rrj1Vi14Uipx7unEIoASJvIGIajWvOMxp9QEDdrg=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=pS0ejTv+o5S0A78mbmJ7yuvuLRvB9d4xUmNuDZkoNE6OFFDakUf4rUvAzBprhdror
+         c/bShp5CLYeQozZylztfdFxkqVWVq+5ygYNbn+4A0s2ze6/IhIUKtVg/V7FX57xSK9
+         o+TBkdXts4C2lwVOyzZSJbu6XtvG/R75Me0SQNeR4Q87t1+Qhokvme1DEyAn+zBc7+
+         nJMjetgrrqNxHehwqI7KLrMF3IzGgf4PNgOkpTsytZe7548iWlWgbHxmlfyaqoC8CS
+         sUf/B2fdljsPIZbKzs7tinYeZ8/8ttY26uNUOwdT55UgKOo0wK/ocgfuCEg3N311BC
+         phUkTUj1HGMig==
+Message-ID: <b04bb9803d59d26e4f32adc9518d0ec1a9456273.camel@kernel.org>
+Subject: Re: [PATCH 03/11] mmc: bcm2835: stop setting chan_config->slave_id
+From:   nicolas saenz julienne <nsaenz@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>, Vinod Koul <vkoul@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hyun Kwon <hyun.kwon@xilinx.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Scott Branden <sbranden@broadcom.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-tegra@vger.kernel.org
+Date:   Mon, 15 Nov 2021 10:55:42 +0100
+In-Reply-To: <20211115085403.360194-4-arnd@kernel.org>
+References: <20211115085403.360194-1-arnd@kernel.org>
+         <20211115085403.360194-4-arnd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211115102148.6c30dbf6@dtkw>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A: http://en.wikipedia.org/wiki/Top_post
-Q: Were do I find info about this thing called top-posting?
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+On Mon, 2021-11-15 at 09:53 +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The field is not interpreted by the DMA engine driver, as all the data
+> is passed from devicetree instead. Remove the assignment so the field
+> can eventually be deleted.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
 
-A: No.
-Q: Should I include quotations after my reply?
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
 
-http://daringfireball.net/2007/07/on_top
+Regards,
+Nicolas
 
-On Mon, Nov 15, 2021 at 10:21:48AM +0100, Ilia Sergachev wrote:
-> I'd say 1da81e5562fac8286567422cc56a7fbd0dc646d4 - where 
-> liteuart_probe() and liteuart_remove() were initially implemented.
-
-Can you resend this with that information in the changelog as a "Fixes:"
-tag please?
-
-thanks,
-
-greg k-h
