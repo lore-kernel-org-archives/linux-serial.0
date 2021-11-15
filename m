@@ -2,122 +2,64 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAC8C4167E
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF7DC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:25:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8392363217
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:19:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 372DF61B95
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Nov 2021 09:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236505AbhKOJWR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 04:22:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        id S237626AbhKOJ2t (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 04:28:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235130AbhKOJWO (ORCPT
+        with ESMTP id S237573AbhKOJ0X (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 04:22:14 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1E6C061746;
-        Mon, 15 Nov 2021 01:19:11 -0800 (PST)
-Received: from pendragon.ideasonboard.com (117.145-247-81.adsl-dyn.isp.belgacom.be [81.247.145.117])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id C9F1E9CA;
-        Mon, 15 Nov 2021 10:19:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1636967950;
-        bh=DyMiGF8dYpIO7sFrfkTrEHyV1KL7y6BUoG/PpdzWVzI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IazgGZ0N2QKgbD2xiliOgSKM/Wh6Ku2e/ttwUbC+gF1dv3N9Q27dBA+K+YHkhhn3f
-         128fjkKnCXSOo6RM9eqPTMGb4Rdwc+4oI3NFochnUeHBJsqlLB6JXS7U5djKpnhGrr
-         6nHRXJmkdxcDwrNkgsOFzaGTd+Zdnc73MAIEaL64=
-Date:   Mon, 15 Nov 2021 11:18:47 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Vinod Koul <vkoul@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Andy Gross <agross@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hyun Kwon <hyun.kwon@xilinx.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Scott Branden <sbranden@broadcom.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH 11/11] dmaengine: remove slave_id config field
-Message-ID: <YZIl92Akt2QEqad9@pendragon.ideasonboard.com>
-References: <20211115085403.360194-1-arnd@kernel.org>
- <20211115085403.360194-12-arnd@kernel.org>
+        Mon, 15 Nov 2021 04:26:23 -0500
+Received: from mailg110.ethz.ch (mailg110.ethz.ch [IPv6:2001:67c:10ec:5605::21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7B2C0613B9
+        for <linux-serial@vger.kernel.org>; Mon, 15 Nov 2021 01:21:52 -0800 (PST)
+Received: from mailm113.d.ethz.ch (2001:67c:10ec:5602::25) by mailg110.ethz.ch
+ (2001:67c:10ec:5605::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Mon, 15 Nov
+ 2021 10:21:46 +0100
+Received: from dtkw (213.55.225.240) by mailm113.d.ethz.ch
+ (2001:67c:10ec:5602::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Mon, 15 Nov
+ 2021 10:21:49 +0100
+Date:   Mon, 15 Nov 2021 10:21:48 +0100
+From:   Ilia Sergachev <silia@ethz.ch>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     <linux-serial@vger.kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH] serial: liteuart: fix missing drvdata
+Message-ID: <20211115102148.6c30dbf6@dtkw>
+In-Reply-To: <YZIF48DPkfgBf5H9@kroah.com>
+References: <20211115031808.7ab632ef@dtkw>
+        <YZIF48DPkfgBf5H9@kroah.com>
+Organization: ETH Zurich
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211115085403.360194-12-arnd@kernel.org>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.55.225.240]
+X-ClientProxiedBy: mailm215.d.ethz.ch (2001:67c:10ec:5603::29) To
+ mailm113.d.ethz.ch (2001:67c:10ec:5602::25)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Arnd,
+I'd say 1da81e5562fac8286567422cc56a7fbd0dc646d4 - where 
+liteuart_probe() and liteuart_remove() were initially implemented.
 
-Thank you for the patch.
+Ilia
 
-On Mon, Nov 15, 2021 at 09:54:03AM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Mon, 15 Nov 2021 08:01:55 +0100
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+
+> What commit does this fix?
 > 
-> All references to the slave_id field have been removed, so
-> remove the field as well to prevent new references from
-> creeping in again.
-
-A rationale to explain why the slave_id field shouldn't be used would be
-nice.
-
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-> ---
->  include/linux/dmaengine.h | 4 ----
->  1 file changed, 4 deletions(-)
+> thanks,
 > 
-> diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
-> index 9000f3ffce8b..0349b35235e6 100644
-> --- a/include/linux/dmaengine.h
-> +++ b/include/linux/dmaengine.h
-> @@ -418,9 +418,6 @@ enum dma_slave_buswidth {
->   * @device_fc: Flow Controller Settings. Only valid for slave channels. Fill
->   * with 'true' if peripheral should be flow controller. Direction will be
->   * selected at Runtime.
-> - * @slave_id: Slave requester id. Only valid for slave channels. The dma
-> - * slave peripheral will have unique id as dma requester which need to be
-> - * pass as slave config.
->   * @peripheral_config: peripheral configuration for programming peripheral
->   * for dmaengine transfer
->   * @peripheral_size: peripheral configuration buffer size
-> @@ -448,7 +445,6 @@ struct dma_slave_config {
->  	u32 src_port_window_size;
->  	u32 dst_port_window_size;
->  	bool device_fc;
-> -	unsigned int slave_id;
->  	void *peripheral_config;
->  	size_t peripheral_size;
->  };
-
--- 
-Regards,
-
-Laurent Pinchart
+> greg k-h
