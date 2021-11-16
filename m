@@ -2,51 +2,51 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 753E5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B97E0C4332F
 	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:22:22 +0000 (UTC)
 Received: from vger.kernel.org (unknown [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 443A361055
+	by mail.kernel.org (Postfix) with ESMTP id 8BD2961994
 	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:22:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 443A361055
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8BD2961994
 Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=microchip.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234930AbhKPLYy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Nov 2021 06:24:54 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:8906 "EHLO
+        id S234972AbhKPLZC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Nov 2021 06:25:02 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:8935 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234879AbhKPLYZ (ORCPT
+        with ESMTP id S234894AbhKPLYa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Nov 2021 06:24:25 -0500
+        Tue, 16 Nov 2021 06:24:30 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1637061688; x=1668597688;
+  t=1637061693; x=1668597693;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=K/FEmA4LkPsJngFC8rtp+wxmQUsyLjyVWQASV+7XuoM=;
-  b=XUOEgZnN3uyBQmGHA5g0Ie0z5DXFuSqVfEcPAoCAEBsGswjp8e++zrKf
-   BLyJwTW1lrxZlUJLQAbN8vO61P9OaSUxDfD/hSyXq4TAmszkbsh+CdraM
-   cKHGGj5qbQ4TnHmD73mWpKh32ncgyqCeIaSzvb7Vl3opHc4hjwxxhw5vA
-   qC/Q21ammK4wlVlYQTua4O4Kxvc8/OhAP4NevUbZdNVusaRarmEfMdTUr
-   9ov5/gU4t043auwCEehX0GNVjwmJgEOvv0mJWcDGyLLbM5swRefES+eX8
-   0ip5xI37NZgcqvlE1y2Kp67acQTeBGNrmtx22vaS0+uI5D8AT73kOQiiP
+  bh=wxTxrAyDEObrB+6U2ISe3JfymaOVc1XxubqpmlFsG4s=;
+  b=kXYLc/l1Jw8i4Mc574yLMUEFhVX1EQ0lCcS81UBiOIiC7lOpBPaj9MwW
+   1ix/SZJ64CfIpM/uCY24MobeWlyiONcvGEumC/3pf64AfOPSXyT2SeIIf
+   rWiiLEUDRY8LhPhstuueJ4bNfDBy4YmLA4NvYkxVM5T6LfosaHqqp+Oxz
+   /HVxiR/YIsra051Q6AF8l4sRptnqU/XQcM25uOw2ngSOtHezCoo4xZFVF
+   jps+liwgDN9QxWNaSRzRy5Un3pb8OUrtNFUA28Qdq71I3HcCbqUR71nl4
+   G1QCVrDqwVVFJYo43Wbil2QIm7luVQKR2VVB4H76h+qz7ZInBjrGysM2h
    w==;
-IronPort-SDR: 5I2Vtcxo1XNNrl5JKRV9Iz2lWjTf+jEudImraPfg9kfTsmk9Gq7BpbHvQWy8Z76ZizoLZC3vZg
- BTGwli5YolnlP5P8j2XexhEXs6jh126hdPMjF/YfFzSBYv7O9/IYKm8QZhheb2mNtSo7qIzepI
- uGgKLlma30lWyEE+YiRlCY3Aj7rc0Z0V17CK3GDQBzM2niE0PCJkK6kq75eTlQsZo7rLEh8ZOI
- /Gr8YAacR+NXlJAbFzulHwa1LeroQuar2AXH6L9I4Bsy/tOMAubQSpE+HRiHi9X8q8NKuKtoNt
- R8xnXSG44ai+VvlgIeZKpKym
+IronPort-SDR: +klTsaNsJRHc5UsqIf+tQaaWFIm16NfFRFpzoUyBGO6O8OEvukF0O4L96+arZyMRX/SkdOQZJq
+ LmzV75PpBvQTEWYooZM4m0WhyAVvSX7ZNWmXmr+q4suV3MU1bCUE6nyt6yf64mgqT0KMHKxWwN
+ KKjQb/yrF8f9Zv+CJYrNPTvJX5DqlNaWCPgQV5qsRpQqGKRkcQyztyE8Gf7w75iPNXivAbFyWl
+ eE2xhg6sJAugeXUTCobhUPlR6mdTOoIXy788ooEG3NMAsQ7g25Bd7rCKCm61nnh08OHzlOBHzq
+ ASmeDMtMKdzp1PHkvTd4Ep7J
 X-IronPort-AV: E=Sophos;i="5.87,239,1631602800"; 
-   d="scan'208";a="144082911"
+   d="scan'208";a="144082954"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Nov 2021 04:21:14 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Nov 2021 04:21:31 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 16 Nov 2021 04:21:14 -0700
+ 15.1.2176.14; Tue, 16 Nov 2021 04:21:29 -0700
 Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 16 Nov 2021 04:21:11 -0700
+ 15.1.2176.14 via Frontend Transport; Tue, 16 Nov 2021 04:21:25 -0700
 From:   Tudor Ambarus <tudor.ambarus@microchip.com>
 To:     <ludovic.desroches@microchip.com>, <vkoul@kernel.org>,
         <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
@@ -56,9 +56,9 @@ CC:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-serial@vger.kernel.org>,
         Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH 09/13] dmaengine: at_xdmac: Fix concurrency over xfers_list
-Date:   Tue, 16 Nov 2021 13:20:32 +0200
-Message-ID: <20211116112036.96349-10-tudor.ambarus@microchip.com>
+Subject: [PATCH 13/13] dmaengine: at_xdmac: Fix race over irq_status
+Date:   Tue, 16 Nov 2021 13:20:36 +0200
+Message-ID: <20211116112036.96349-14-tudor.ambarus@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116112036.96349-1-tudor.ambarus@microchip.com>
 References: <20211116112036.96349-1-tudor.ambarus@microchip.com>
@@ -69,44 +69,141 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since tx_submit can be called from a hard irq, xfers_list must be
-protected with a lock to avoid concurency on the list's elements.
+Tasklets run with interrupts enabled, so we need to protect
+atchan->irq_status with spin_lock_irq() otherwise the tasklet can be
+interrupted by the IRQ that modifies irq_status. While at this, rewrite
+at_xdmac_tasklet() so that we get rid of a level of indentation.
 
 Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
 Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 ---
- drivers/dma/at_xdmac.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/dma/at_xdmac.c | 80 +++++++++++++++++++-----------------------
+ 1 file changed, 37 insertions(+), 43 deletions(-)
 
 diff --git a/drivers/dma/at_xdmac.c b/drivers/dma/at_xdmac.c
-index 8804a86a9bcc..81f6f1357dcb 100644
+index ccd6ddb12b83..082c18d45188 100644
 --- a/drivers/dma/at_xdmac.c
 +++ b/drivers/dma/at_xdmac.c
-@@ -1608,14 +1608,17 @@ static void at_xdmac_handle_cyclic(struct at_xdmac_chan *atchan)
- 	struct at_xdmac_desc		*desc;
- 	struct dma_async_tx_descriptor	*txd;
- 
--	if (!list_empty(&atchan->xfers_list)) {
--		desc = list_first_entry(&atchan->xfers_list,
--					struct at_xdmac_desc, xfer_node);
--		txd = &desc->tx_dma_desc;
--
--		if (txd->flags & DMA_PREP_INTERRUPT)
--			dmaengine_desc_get_callback_invoke(txd, NULL);
-+	spin_lock_irq(&atchan->lock);
-+	if (list_empty(&atchan->xfers_list)) {
-+		spin_unlock_irq(&atchan->lock);
-+		return;
- 	}
-+	desc = list_first_entry(&atchan->xfers_list, struct at_xdmac_desc,
-+				xfer_node);
-+	spin_unlock_irq(&atchan->lock);
-+	txd = &desc->tx_dma_desc;
-+	if (txd->flags & DMA_PREP_INTERRUPT)
-+		dmaengine_desc_get_callback_invoke(txd, NULL);
+@@ -1623,6 +1623,7 @@ static void at_xdmac_handle_cyclic(struct at_xdmac_chan *atchan)
+ 		dmaengine_desc_get_callback_invoke(txd, NULL);
  }
  
++/* Called with atchan->lock held. */
  static void at_xdmac_handle_error(struct at_xdmac_chan *atchan)
+ {
+ 	struct at_xdmac		*atxdmac = to_at_xdmac(atchan->chan.device);
+@@ -1641,8 +1642,6 @@ static void at_xdmac_handle_error(struct at_xdmac_chan *atchan)
+ 	if (atchan->irq_status & AT_XDMAC_CIS_ROIS)
+ 		dev_err(chan2dev(&atchan->chan), "request overflow error!!!");
+ 
+-	spin_lock_irq(&atchan->lock);
+-
+ 	/* Channel must be disabled first as it's not done automatically */
+ 	at_xdmac_write(atxdmac, AT_XDMAC_GD, atchan->mask);
+ 	while (at_xdmac_read(atxdmac, AT_XDMAC_GS) & atchan->mask)
+@@ -1652,10 +1651,8 @@ static void at_xdmac_handle_error(struct at_xdmac_chan *atchan)
+ 				    struct at_xdmac_desc,
+ 				    xfer_node);
+ 
+-	spin_unlock_irq(&atchan->lock);
+-
+ 	/* Print bad descriptor's details if needed */
+-	dev_dbg(chan2dev(&atchan->chan),
++	dev_err(chan2dev(&atchan->chan),
+ 		"%s: lld: mbr_sa=%pad, mbr_da=%pad, mbr_ubc=0x%08x\n",
+ 		__func__, &bad_desc->lld.mbr_sa, &bad_desc->lld.mbr_da,
+ 		bad_desc->lld.mbr_ubc);
+@@ -1665,55 +1662,52 @@ static void at_xdmac_handle_error(struct at_xdmac_chan *atchan)
+ 
+ static void at_xdmac_tasklet(struct tasklet_struct *t)
+ {
++	struct dma_async_tx_descriptor *txd;
+ 	struct at_xdmac_chan	*atchan = from_tasklet(atchan, t, tasklet);
+ 	struct at_xdmac_desc	*desc;
+ 	u32			error_mask;
+ 
++	if (at_xdmac_chan_is_cyclic(atchan))
++		return at_xdmac_handle_cyclic(atchan);
++
++	error_mask = AT_XDMAC_CIS_RBEIS | AT_XDMAC_CIS_WBEIS |
++		AT_XDMAC_CIS_ROIS;
++
++	spin_lock_irq(&atchan->lock);
+ 	dev_dbg(chan2dev(&atchan->chan), "%s: status=0x%08x\n",
+ 		__func__, atchan->irq_status);
++	if (!(atchan->irq_status & AT_XDMAC_CIS_LIS) &&
++	    !(atchan->irq_status & error_mask)) {
++		return spin_unlock_irq(&atchan->lock);
++	}
+ 
+-	error_mask = AT_XDMAC_CIS_RBEIS
+-		     | AT_XDMAC_CIS_WBEIS
+-		     | AT_XDMAC_CIS_ROIS;
+-
+-	if (at_xdmac_chan_is_cyclic(atchan)) {
+-		at_xdmac_handle_cyclic(atchan);
+-	} else if ((atchan->irq_status & AT_XDMAC_CIS_LIS)
+-		   || (atchan->irq_status & error_mask)) {
+-		struct dma_async_tx_descriptor  *txd;
+-
+-		if (atchan->irq_status & error_mask)
+-			at_xdmac_handle_error(atchan);
+-
+-		spin_lock_irq(&atchan->lock);
+-		desc = list_first_entry(&atchan->xfers_list,
+-					struct at_xdmac_desc,
+-					xfer_node);
+-		dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, desc);
+-		if (!desc->active_xfer) {
+-			dev_err(chan2dev(&atchan->chan), "Xfer not active: exiting");
+-			spin_unlock_irq(&atchan->lock);
+-			return;
+-		}
++	if (atchan->irq_status & error_mask)
++		at_xdmac_handle_error(atchan);
+ 
+-		txd = &desc->tx_dma_desc;
+-		dma_cookie_complete(txd);
+-		/* Remove the transfer from the transfer list. */
+-		list_del(&desc->xfer_node);
+-		spin_unlock_irq(&atchan->lock);
++	desc = list_first_entry(&atchan->xfers_list, struct at_xdmac_desc,
++				xfer_node);
++	dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, desc);
++	if (!desc->active_xfer) {
++		dev_err(chan2dev(&atchan->chan), "Xfer not active: exiting");
++		return spin_unlock_irq(&atchan->lock);
++	}
+ 
+-		if (txd->flags & DMA_PREP_INTERRUPT)
+-			dmaengine_desc_get_callback_invoke(txd, NULL);
++	txd = &desc->tx_dma_desc;
++	dma_cookie_complete(txd);
++	/* Remove the transfer from the transfer list. */
++	list_del(&desc->xfer_node);
++	spin_unlock_irq(&atchan->lock);
+ 
+-		dma_run_dependencies(txd);
++	if (txd->flags & DMA_PREP_INTERRUPT)
++		dmaengine_desc_get_callback_invoke(txd, NULL);
+ 
+-		spin_lock_irq(&atchan->lock);
+-		/* Move the xfer descriptors into the free descriptors list. */
+-		list_splice_tail_init(&desc->descs_list,
+-				      &atchan->free_descs_list);
+-		at_xdmac_advance_work(atchan);
+-		spin_unlock_irq(&atchan->lock);
+-	}
++	dma_run_dependencies(txd);
++
++	spin_lock_irq(&atchan->lock);
++	/* Move the xfer descriptors into the free descriptors list. */
++	list_splice_tail_init(&desc->descs_list, &atchan->free_descs_list);
++	at_xdmac_advance_work(atchan);
++	spin_unlock_irq(&atchan->lock);
+ }
+ 
+ static irqreturn_t at_xdmac_interrupt(int irq, void *dev_id)
 -- 
 2.25.1
 
