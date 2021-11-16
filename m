@@ -2,91 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2949C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 15:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A22C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 15:45:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9DB8561507
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 15:35:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EFC7561526
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 15:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238310AbhKPPic (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Nov 2021 10:38:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
+        id S238456AbhKPPsG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Nov 2021 10:48:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238287AbhKPPic (ORCPT
+        with ESMTP id S235140AbhKPPrz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Nov 2021 10:38:32 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32369C061570
-        for <linux-serial@vger.kernel.org>; Tue, 16 Nov 2021 07:35:35 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id x15so89696619edv.1
-        for <linux-serial@vger.kernel.org>; Tue, 16 Nov 2021 07:35:35 -0800 (PST)
+        Tue, 16 Nov 2021 10:47:55 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930B4C061570;
+        Tue, 16 Nov 2021 07:44:56 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id b15so89491674edd.7;
+        Tue, 16 Nov 2021 07:44:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jFJrT5zsmWLUN67uHoKU1n898NRoBPqcgc7DPTYa7FQ=;
-        b=DAishHXRqIr3nF09KUTjaeVA/13nUyBgfb5sgoiVTUDebCuTboRYDUNaSLGwoNhdSF
-         6grbbdwUYxjsxgJ/eTwqHnX+3SyQ9I6OkFJGdautJqm3NkxudNToouP4lupYrusVz8wf
-         FdmoLp20MpuSkBnRsEI3MigyqixePZ1TiMC1GDNM7iQpzHMJlAHPdU4CrZ9X8DbyNUlm
-         SnxHPHLUvwiWk0473SP51nVZaZRSYfwAf6wNKcnB4QEova6+VH8yTG618dXGrgG3iOV4
-         b2FFfCrYvLa/JJjK5zw8UvUR3uUqN7OrEiy2e8cjbMJ7I5TC8IXejgqNtTL/wcQlZbLG
-         H6qw==
+        bh=dPtLToE5cD5TDCZBnySfRMPwBDNfLu66tXoIIjjwJg0=;
+        b=jwgwFDbpsVXEPMwxwbCql8RXmlxwLVobB+ehZ4Qi3/nY6x9PNwpUWwYXLGAjxvFs7F
+         whBDitbMDMPaLHZkU9lVKti/6Obfyi+WpoW/gbImvr908RN8cfwX8BRrovmXeU/mcowq
+         WU7TjQB9W+pnUcTdFvTCoWQhHbEieEBPLWYQSrAWpvOFAGXHG7WadukIhPzHx6maVU/5
+         Zuvx2p54Z376AGE2zvOa1zJqAtY4PZL+NAedQtg3QKoz3bIJ2oDBim0FgXeLhAfF6p/S
+         IzK/k8MhGljJgaU0rErxOKTGTqtL/orYRdIZbRkvoSCfieC4sAwqAMhw2+C9HLGbhxbk
+         X0zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jFJrT5zsmWLUN67uHoKU1n898NRoBPqcgc7DPTYa7FQ=;
-        b=efw9A2Ke8UBDVXys2fkePdQiXcac0aV+u794ZAxW1bNDRMcPxrBKm4QuFszIiz2d0t
-         2bDX2AvvaR6RmFwU9vDV1P4dWJnZAv1YvmrucG7BSXBLu7CsCRmI/OnqSkKwjQzfvtM/
-         DPNbkXX9QpgEbQdfFh53GC3YrgQzYHveg11MrQfH+mtq+1t1xLuMRNLru1r48eGJQnrq
-         VroHElv5QaJZICywPEa1GtMfVqFnmFUtsy2ZhapgCi3Cevlji6PfK3eCmu6F7/oktthi
-         TRZ18sJu5unTf9vwUaHVTFNorouQLuaj4gMGP2bAMnmGJF1D+E14B8lb6iJqroICqYAu
-         SUuQ==
-X-Gm-Message-State: AOAM533Obf0uaExqm6uz1hJjB4r7rjOtWmPbO82KSaV9drVfOtSwB20C
-        Gw/vOI897avuHAB4YdEx3AUQ4ZmFc1gj5ciCxv/U2q8tfdqhag==
-X-Google-Smtp-Source: ABdhPJw+wgH4sMhjvp4D9DWP40Lu83zkyeF4awRez4UjQJUX73ChAVSAjOtrm0GOsvBqamADsRnhF/DMBKH4oy0ECcQ=
-X-Received: by 2002:a05:6402:84b:: with SMTP id b11mr11334978edz.107.1637076933747;
- Tue, 16 Nov 2021 07:35:33 -0800 (PST)
+        bh=dPtLToE5cD5TDCZBnySfRMPwBDNfLu66tXoIIjjwJg0=;
+        b=abs8mFvCs9WmiFDl3Niz6b84zlMUeL4BURPzLoC1xFAL/RCJFc0scqco8Rm0MlbQ/L
+         z4G9MCOUmHPAQ2H2cAfA9aNu0evQXu0M+7awtylJi+nzBgx1eSw+7K5C5KIGYgDaAmEl
+         L/U5yghHUe30Lt7Pt2hplWaPUqdVWzDEJBO/h3ajkoa1Pn4yDYebNF9oP1ZgtZPzSFJk
+         LTzz1h0Pj8AoEQreLl9xVs1glvTOR0ixHRZOqMc5cFw0Dz4YD+HfKyD9iI3oU75i0zsq
+         tCO9MwGClyRIL0ZdB4JF9XEJ06RDOvJd41SgrvhCXMcMfvZAtYM+XSCppsJG6BK2gKHT
+         1xUA==
+X-Gm-Message-State: AOAM5321+H74AEhJ5dkLsRT+vR2TokdRAEdwMBeJCd6rjrCdPRiFhBrt
+        CKhcpfwOZV2mfhnORfCgxPou3oSYEwh5gc3A9Zk=
+X-Google-Smtp-Source: ABdhPJxiHT47RdHiJkKx9zv8ZX+VcqnDh///cEECVDZ+1Ed5hCpns4qOt9B3FFUtYYGKkfJknz4KnkBIZhbKNYRBekY=
+X-Received: by 2002:a17:906:6a0a:: with SMTP id qw10mr11538826ejc.141.1637077495214;
+ Tue, 16 Nov 2021 07:44:55 -0800 (PST)
 MIME-Version: 1.0
-References: <20211114183908.444923-1-jay.dolan@accesio.com>
-In-Reply-To: <20211114183908.444923-1-jay.dolan@accesio.com>
+References: <20211115133745.11445-1-johan@kernel.org> <20211115133745.11445-2-johan@kernel.org>
+In-Reply-To: <20211115133745.11445-2-johan@kernel.org>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 16 Nov 2021 17:34:52 +0200
-Message-ID: <CAHp75VcLr8MDwQUMgeOWKLP5QwwxGzbso61xJOK7-S=UHfn11w@mail.gmail.com>
-Subject: Re: [PATCH 0/3] serial: 8250_pci patches to address issues with pericom_do_set_divisor()
-To:     Jay Dolan <jay.dolan@accesio.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Date:   Tue, 16 Nov 2021 17:44:14 +0200
+Message-ID: <CAHp75VeGinEWv0BuAsrHtif2b1p26uUEmSRqG4_y76vDdvNKAw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] serial: liteuart: fix compile testing
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilia Sergachev <silia@ethz.ch>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Stafford Horne <shorne@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Nov 14, 2021 at 8:40 PM Jay Dolan <jay.dolan@accesio.com> wrote:
+On Mon, Nov 15, 2021 at 3:44 PM Johan Hovold <johan@kernel.org> wrote:
 >
-> A series patches to address three issues one customer managed to hit all at once.
->
-> 1) Rewrite pericom_do_set_divisor() to always calc divisor and to use the
-> uartclk instead of a hard coded value. Always calculate divisor without passing
-> control to serial8250_do_set_divisor()
-> Tested with 14.7456 and 24 MHz crystals
->
-> 2) Re-enable higher baud rates on Pericom chips.
-> serial8250_get_baud_rate() added range checking, but Pericom chips have a wider
-> range than what is being enforced. Make use of UPF_MAGIC_MULTIPLIER.
-> Tested with 14.7456 and 24 MHz crystals
->
-> 3) Fourth port not being setup correctly on some Pericom chips.
-> Fix entries in pci_serial_quirks array
+> Allow the liteuart driver to be compile tested by fixing the broken
+> Kconfig dependencies.
 
-Can we start from splitting Pericom to its own file, please?
+...
 
-See my initial work here [1]. And I believe you may do a better job
-than me since you have access to many variants of the hardware.
+>  config SERIAL_LITEUART
+>         tristate "LiteUART serial port support"
+> +       depends on LITEX || COMPILE_TEST
+>         depends on HAS_IOMEM
+> -       depends on OF || COMPILE_TEST
+> -       depends on LITEX
 
-[1]: https://gitlab.com/andy-shev/next/-/commit/71fdb8b5d857691031f566daebb1e850b106f46a
+> +       depends on OF
 
-(As a side note:
-https://gitlab.com/andy-shev/next/-/commit/ac0dc993fa35b5e2fe67e967b6a687b2e47d0edd)
+AFAICS this is optional and prevents compile testing in some cases.
+
+>         select SERIAL_CORE
+>         help
+>           This driver is for the FPGA-based LiteUART serial controller from LiteX
+
 
 -- 
 With Best Regards,
