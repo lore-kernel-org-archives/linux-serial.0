@@ -2,51 +2,51 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA67C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51811C4321E
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:21:58 +0000 (UTC)
 Received: from vger.kernel.org (unknown [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C9F80619E3
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:21:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C9F80619E3
+	by mail.kernel.org (Postfix) with ESMTP id 196F561055
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:21:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 196F561055
 Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=microchip.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235002AbhKPLYm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Nov 2021 06:24:42 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:18384 "EHLO
+        id S235016AbhKPLYx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Nov 2021 06:24:53 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:9441 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234945AbhKPLYR (ORCPT
+        with ESMTP id S234876AbhKPLYY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Nov 2021 06:24:17 -0500
+        Tue, 16 Nov 2021 06:24:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1637061681; x=1668597681;
+  t=1637061687; x=1668597687;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4UJToV8z1d1CSnT1DHee/do0TBGgvnsbC5y36KVHVoA=;
-  b=beaHuCj4NPRolv7fmus05vMwvS9/ovhXI+GrWRIENdaFTPKVFLXo+cLT
-   pyjZh1jhvZ7z/A2tyKuWUfbm4P7smxgzfirkS1UofsfbRukQDjnDAHy0u
-   si71DZUnZl5xSur66eWCQKmV0KaCzMXxTJBnbaOnYDBChDxxb//tTorrj
-   aV5vSOZIsy0ymSmwCa/K9Ix7ythtg8ERwSjupo3e7pNp1fxYd3EhYpF6C
-   WcV4LbYFFODl+kA251am7O3WgYTgCYmSHlZEPHrBpY31/nZ02mNReAw67
-   qKofZrJvT1ItV6/wHoJTfTRNtSKdl5MHnVI4wLqoXMyPuJY9VyH82+FVQ
+  bh=9cKQ8DLE+KtiJG/oBAobTtHTIQZeH+YXTokO734xUTw=;
+  b=r9ucFM20OtXXrUpnO87TnNSGTxqx4IIju26qOpE5NHggrxnmen5Nr33u
+   5mpFVHUqvpYOhHrK2c9gvbNeJX8hQETuQa31SdKx56dur3eO9JwX8+AMT
+   d+2YqXq5SQXO7ebmIy9jv09w4qpWqPUoOnGrLs77/Kk1/bmc0a4jFHQl5
+   0WYXfdLiTCtkJMLewr/xPDG+62h0IFCPhhRkeRMIGUqGct79RBSs0fT78
+   h/BfQzHQd42Xfd9C2nsGMh97HmuGVg3JRi6T1+S8Yu6kukxsZWMi4PPaI
+   0Xw32Ag0WonmjFxO9f7Q7xfN7y0J7HVgsFLURcAAksi9TOpU4H2KVyaYp
    w==;
-IronPort-SDR: brqGcVkMu6p19txpv00wUnn71TVfCG/Ak3bOmAroJqg/zfSScjECH7yB/aGDZOqn11UT/OC+/Y
- ZjM9fxrvI+xa1qDd65NyoMUrh6YWfWdMAmOdRX1cwD0HWmGyKTZ2z2srUmjGY6ny/Ev1i80htW
- f0Xl/cmjWuPozpNSyhYy2tnnp92N7d2fuU05mZWpsnE8QpKQToEoA3YjoJs2oBpnZjvOONrd6R
- 6lfSaoibxWsFaXg7ycpXfs5u5XuqtiEB+NFA/e9Ziq6KXqKNp4SXVIDpJ99PWH89R5D96hS4E5
- QcnZftuxmykH0PAmGLSC8s0t
+IronPort-SDR: YbAApsWQeRxOCI3wgOMxDyDDfskDzjL/SsnFWmWm9ppDJ/xZkCCvkPmfIVqn1+bTDJaqQFaBux
+ Cu6f3YZwNmxcPHgqKzBQv/bA/Akz3pmi+Ky4MGP8NO7q0psMB+tJRC0vb/eIwey841NUsRgnGQ
+ vZGp57Oo+zj7bAngS96MK5GmNTW7oWFrj2h09yCjZECI5G/s1wNbWS9lGPvVLPP3az1GT/ufJa
+ HoSo/cHxJpNwPodask0Jr1F6VHo3R1H+OQKsb/vy8T68i4llqciAMQC5abkcGhV87Q1CgCr6nQ
+ efTizVsPZH1O8g0ubRO0nynR
 X-IronPort-AV: E=Sophos;i="5.87,239,1631602800"; 
-   d="scan'208";a="152085416"
+   d="scan'208";a="139278017"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Nov 2021 04:21:19 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Nov 2021 04:21:26 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 16 Nov 2021 04:21:18 -0700
+ 15.1.2176.14; Tue, 16 Nov 2021 04:21:25 -0700
 Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 16 Nov 2021 04:21:15 -0700
+ 15.1.2176.14 via Frontend Transport; Tue, 16 Nov 2021 04:21:22 -0700
 From:   Tudor Ambarus <tudor.ambarus@microchip.com>
 To:     <ludovic.desroches@microchip.com>, <vkoul@kernel.org>,
         <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
@@ -56,9 +56,9 @@ CC:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-serial@vger.kernel.org>,
         Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH 10/13] dmaengine: at_xdmac: Remove a level of indentation in at_xdmac_advance_work()
-Date:   Tue, 16 Nov 2021 13:20:33 +0200
-Message-ID: <20211116112036.96349-11-tudor.ambarus@microchip.com>
+Subject: [PATCH 12/13] dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
+Date:   Tue, 16 Nov 2021 13:20:35 +0200
+Message-ID: <20211116112036.96349-13-tudor.ambarus@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116112036.96349-1-tudor.ambarus@microchip.com>
 References: <20211116112036.96349-1-tudor.ambarus@microchip.com>
@@ -69,40 +69,46 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It's easier to read code with fewer levels of indentation.
+The hardware channel next descriptor view structure contains just
+fields of 32 bits, while dma_addr_t can be of type u64 or u32
+depending on CONFIG_ARCH_DMA_ADDR_T_64BIT. Force u32 to comply with
+what the hardware expects.
 
+Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
 Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 ---
- drivers/dma/at_xdmac.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/dma/at_xdmac.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/dma/at_xdmac.c b/drivers/dma/at_xdmac.c
-index 81f6f1357dcb..89d0fc229d68 100644
+index ba2fe383fa5e..ccd6ddb12b83 100644
 --- a/drivers/dma/at_xdmac.c
 +++ b/drivers/dma/at_xdmac.c
-@@ -1593,14 +1593,14 @@ static void at_xdmac_advance_work(struct at_xdmac_chan *atchan)
- 	 * If channel is enabled, do nothing, advance_work will be triggered
- 	 * after the interruption.
- 	 */
--	if (!at_xdmac_chan_is_enabled(atchan) && !list_empty(&atchan->xfers_list)) {
--		desc = list_first_entry(&atchan->xfers_list,
--					struct at_xdmac_desc,
--					xfer_node);
--		dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, desc);
--		if (!desc->active_xfer)
--			at_xdmac_start_xfer(atchan, desc);
--	}
-+	if (at_xdmac_chan_is_enabled(atchan) || list_empty(&atchan->xfers_list))
-+		return;
-+
-+	desc = list_first_entry(&atchan->xfers_list, struct at_xdmac_desc,
-+				xfer_node);
-+	dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, desc);
-+	if (!desc->active_xfer)
-+		at_xdmac_start_xfer(atchan, desc);
- }
+@@ -253,15 +253,15 @@ struct at_xdmac {
  
- static void at_xdmac_handle_cyclic(struct at_xdmac_chan *atchan)
+ /* Linked List Descriptor */
+ struct at_xdmac_lld {
+-	dma_addr_t	mbr_nda;	/* Next Descriptor Member */
+-	u32		mbr_ubc;	/* Microblock Control Member */
+-	dma_addr_t	mbr_sa;		/* Source Address Member */
+-	dma_addr_t	mbr_da;		/* Destination Address Member */
+-	u32		mbr_cfg;	/* Configuration Register */
+-	u32		mbr_bc;		/* Block Control Register */
+-	u32		mbr_ds;		/* Data Stride Register */
+-	u32		mbr_sus;	/* Source Microblock Stride Register */
+-	u32		mbr_dus;	/* Destination Microblock Stride Register */
++	u32 mbr_nda;	/* Next Descriptor Member */
++	u32 mbr_ubc;	/* Microblock Control Member */
++	u32 mbr_sa;	/* Source Address Member */
++	u32 mbr_da;	/* Destination Address Member */
++	u32 mbr_cfg;	/* Configuration Register */
++	u32 mbr_bc;	/* Block Control Register */
++	u32 mbr_ds;	/* Data Stride Register */
++	u32 mbr_sus;	/* Source Microblock Stride Register */
++	u32 mbr_dus;	/* Destination Microblock Stride Register */
+ };
+ 
+ /* 64-bit alignment needed to update CNDA and CUBC registers in an atomic way. */
 -- 
 2.25.1
 
