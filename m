@@ -2,57 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA98CC4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 09:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B07C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 10:34:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B139761B1B
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 09:01:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7500961C4F
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 10:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232705AbhKPJEY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Nov 2021 04:04:24 -0500
-Received: from mail.bizjoindeal.pl ([80.211.97.164]:56728 "EHLO
-        mail.bizjoindeal.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232719AbhKPJEW (ORCPT
+        id S234144AbhKPKhY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Nov 2021 05:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234103AbhKPKhV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Nov 2021 04:04:22 -0500
-Received: by mail.bizjoindeal.pl (Postfix, from userid 1001)
-        id 078E2A2106; Tue, 16 Nov 2021 08:51:30 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=bizjoindeal.pl;
-        s=mail; t=1637052708;
-        bh=JZuQ1fK7zFtz2oeUB7Xfid9vb7kUywdmDd2OluR8ywA=;
-        h=Date:From:To:Subject:From;
-        b=GJ6+13Rpd075SLcrnrfmqyxS1fN89BcJiVBkRiG1wLLe5eTR5i1ib46ZYt3O7Ncsd
-         XZBf+R6gNnR40xk31pGVbqfMNkp+C00ezdLU2yNr/X4VyRHpHJFQK3KG5J+P+icAsv
-         457AabJluQvvlAz4mIk5/0ZtUJzSDnz6RAzABVjpR8YUhOFrqdTHt9KjKQC1Mn/5ii
-         OMB0Y0X4GzZKYuK75e8ZCMBgRnw1Zbb6yW5EhmYe8T3FNl2y2xerSaZp7g5UviXs54
-         X4QCEj5ctthdK4IJ6G0ghLpO2M12JupZUv5DN+HrLa/spTlWKEXWBd7zGyYtpJm7ew
-         MeSNXoa+TwAtg==
-Received: by mail.bizjoindeal.pl for <linux-serial@vger.kernel.org>; Tue, 16 Nov 2021 08:51:12 GMT
-Message-ID: <20211116074500-0.1.60.f10p.0.gg4clrqaa8@bizjoindeal.pl>
-Date:   Tue, 16 Nov 2021 08:51:12 GMT
-From:   "Dorian Kwiatkowski" <dorian.kwiatkowski@bizjoindeal.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: Fotowoltaika dla firm
-X-Mailer: mail.bizjoindeal.pl
+        Tue, 16 Nov 2021 05:37:21 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C93C061570;
+        Tue, 16 Nov 2021 02:34:24 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id v23so15380157pjr.5;
+        Tue, 16 Nov 2021 02:34:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9sbnnlZw+9ULD6WGIrHh2ju30Rwtd48avD7994Ytg28=;
+        b=NRYpPIKC1HXpt0VN7zdUNuWrXbRE2Jwe/iQInn/3ItqXN0IW8LQRQ0CNujo2nfOIrc
+         TQdXxf9lESW9dkBWtYu/UUuijBtqZCZQu0xVjyM0IbJZ0CtHXOXeek0whBjwTM/CsJTJ
+         yeJhO+0W0xWJ0rlvJPqvNdlvI0agwdWXPzYJaW5oTc4QZH0o27nKry3M+UDNHvnfa185
+         R55ftwZDgEpijHF5TDOmzWZOq0gyp3X2mEaSs/fw82nSP8iXPCI0BnsXLCLEbMkKlEj7
+         5bTthjKORcMfKuVONDtu72gBbUzaRZZm5XwU4wbyTvzyAnga8UUfqQF04884vUH8gFWY
+         LFNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9sbnnlZw+9ULD6WGIrHh2ju30Rwtd48avD7994Ytg28=;
+        b=lZOP1lucxGmfiYeMshbcpleGS0oHphRfSL2NBCMuew3ZfuBQ1f+m5Q7fQc57BQ/ARc
+         VLTngQUcwUdT/v9/NP0LAvTwB9EpPVkm7zMUIJUhM1t+F+1AyL4Oi0I/NN4C6s9g+dFt
+         NUCl585HI4S+RZrXMe72Dyu76BdjQ12ZrJmiBve3bLEUrlBaJxvodsb8JHup9Ntfk9Px
+         zAH27Nr8Hr2gCccwUqOzyw3HXxw4T9kKnsdUhTWSgUm50N+Ezn0CghuuUVkdyes0h3mz
+         liII5hN17XAUNZt/OwY/1elFEpLqcatsjZ/kmu8pGy4v9a6MVjV4+q8KuNU2l6bH2ST6
+         IkRw==
+X-Gm-Message-State: AOAM532NQ5lEiRVXOlsUm7ITWV8+Li8EhFy0ad9CHP0scOQCtkmIU6+K
+        qNiBj6hJdZZkSl0xdIm6hkWzs1rRnnw=
+X-Google-Smtp-Source: ABdhPJzo+L7IMl9q9krDr5jLPHcBamRuFmBfCW8NSdiRVQ2inXGr+ShTGKTWo4Hu9Wc2JRVnkSQzDg==
+X-Received: by 2002:a17:90b:3ec2:: with SMTP id rm2mr73366796pjb.1.1637058864095;
+        Tue, 16 Nov 2021 02:34:24 -0800 (PST)
+Received: from fedora.. ([157.34.191.12])
+        by smtp.gmail.com with ESMTPSA id z7sm7407301pfe.77.2021.11.16.02.34.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Nov 2021 02:34:23 -0800 (PST)
+From:   Sahil Patidar <sahilpatidar4051@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sahil Patidar <sahilpatidar4051@gmail.com>
+Subject: [PATCH] tty: serial: jsm: jsm_neo: fixed a conditional statement coding style issue
+Date:   Tue, 16 Nov 2021 16:04:11 +0530
+Message-Id: <20211116103411.71987-1-sahilpatidar4051@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Fixed a coding style issue
 
-kontaktuj=C4=99 si=C4=99 z Pa=C5=84stwem, poniewa=C5=BC dostrzegam mo=C5=BC=
-liwo=C5=9B=C4=87 redukcji op=C5=82at za pr=C4=85d.
+Signed-off-by: Sahil Patidar <sahilpatidar4051@gmail.com>
+---
+ drivers/tty/serial/jsm/jsm_neo.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Odpowiednio dobrana instalacja fotowoltaiczna to rozwi=C4=85zanie, kt=C3=B3=
-re pozwala wygenerowa=C4=87 spore oszcz=C4=99dno=C5=9Bci w skali roku.
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index c6f927a76c3b..9b828989d13f 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -668,8 +668,7 @@ static void neo_flush_uart_read(struct jsm_channel *ch)
+ 			jsm_dbg(IOCTL, &ch->ch_bd->pci_dev,
+ 				"Still flushing RX UART... i: %d\n", i);
+ 			udelay(10);
+-		}
+-		else
++		} else
+ 			break;
+ 	}
+ }
+-- 
+2.33.1
 
-Chcia=C5=82bym porozmawia=C4=87 z Pa=C5=84stwem o tego typu rozwi=C4=85za=
-niu, a tak=C5=BCe przedstawi=C4=87 wst=C4=99pne kalkulacje.
-
-Czy s=C4=85 Pa=C5=84stwo zainteresowani?
-
-Pozdrawiam,
-Dorian Kwiatkowski
