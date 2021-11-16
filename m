@@ -2,94 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 496A7C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 00:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C29C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 04:29:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3260D613AD
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 00:42:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 56B1E6023D
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 04:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352891AbhKPApt (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Nov 2021 19:45:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343848AbhKOTWQ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Nov 2021 14:22:16 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB44C03D7B6;
-        Mon, 15 Nov 2021 10:24:25 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id z6so15792454pfe.7;
-        Mon, 15 Nov 2021 10:24:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QCxDFY+0bqD62b34/rFa5A2Juqua3/U3zvKTU3Kdu2Y=;
-        b=mhz5cBelKbmEs4wQkoGCaCWd9KJRdTx7OX8yzuL1by5+CQeFJUN0W8IoBLOiSsI/pD
-         zqeAqQRVaoGADveUoZR/SiN6ZFmasYGwBmqu/gMUT9nNwq7VGJ7FklhQ3f/ar1VHbAf1
-         IsCRhekikDVEkpyEcYGe6zG6hsPj6wT+vy8Q5oaUb7hzYj+p7dyEjp4e0EevHVPih7wj
-         BP6UXfENuL0htwhWaKL794aqbfRkwUkBT5fVT3Tsz44v7yh7KgZTyqjiIsGZfr1t2nJY
-         dv9uKeKw+Uod1+bsXuV0YNKX+TpJl9qoMGl6p4S9BPmK9Vdm/73nhY8tIoYfHnqNkzbt
-         +d+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QCxDFY+0bqD62b34/rFa5A2Juqua3/U3zvKTU3Kdu2Y=;
-        b=kX90QNK400L4jFKg1fQBA3DgOiKOTDFhxjBxvUqFB6uL+/GWaKO6KX7yyRu6lk9Epi
-         aLDOEduZz9sKHCZ1OgQ1y+L8qgAQuHLKwkWNZ2g7c5TAmOe4GuhRlSn+buEntFGSSvz5
-         GFR8si4qvXwi4h43bElALrpmf/siTHPccyFL2ReVVNUJkUvmKbXj3lTVXtmM1uHiNVmT
-         PVeVaK1S5wtdTNxN1guhTUbuR7fmFfru+QNW0hmBQ3hVQZxCfbOG2ZLUl1Kom62mkJ6j
-         G4+Q/dW+HvpR3lsY1gPmUt+LgUoKv0i+of+ADbncsBm1sWchl+TrXDEMAq2/Wk5gQVyA
-         nQdQ==
-X-Gm-Message-State: AOAM531xqCkLBZFol4cx/XzthWXhpGemu6QK4SDwN3Ft3kfW9wqzjzzA
-        LTeaSnpVSg4c+ZBTUatu/ClcmpAT0gc=
-X-Google-Smtp-Source: ABdhPJwdfvCve1AKJ6Nkk3X9unILjFXghJxIx9DyxHJEd1SibsjjzKl1dBtuB6EptC47lTRbQETh6w==
-X-Received: by 2002:a62:7e4c:0:b0:4a2:678e:8793 with SMTP id z73-20020a627e4c000000b004a2678e8793mr27744961pfc.75.1637000665584;
-        Mon, 15 Nov 2021 10:24:25 -0800 (PST)
-Received: from fedora.. ([157.34.150.230])
-        by smtp.gmail.com with ESMTPSA id x20sm41340pjp.48.2021.11.15.10.24.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Nov 2021 10:24:25 -0800 (PST)
-From:   Sahil Patidar <sahilpatidar4051@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sahil Patidar <sahilpatidar4051@gmail.com>
-Subject: [PATCH] tty: serial:  jsm_tty: fixed a assignment in if condition
-Date:   Mon, 15 Nov 2021 23:54:13 +0530
-Message-Id: <20211115182413.10861-1-sahilpatidar4051@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        id S240050AbhKPEcb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Nov 2021 23:32:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233013AbhKPEb4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 15 Nov 2021 23:31:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 66AA16023D;
+        Tue, 16 Nov 2021 04:28:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637036939;
+        bh=rcwRBlCKqfF/fOP7nToqyQtxiDrvbRwb9qhV9pcd3SE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WCkkYmiCsuCs6VTYyStyePuhjavoZznkD15Pfk4kfmFcnpOyhqwefXwCEerdsi5BB
+         gaxqtKh7IVnWz3O+cSAsdJUjs6zKFkagpHyNquC8O99klBS/lKo/7gFtT7CHdCC6ar
+         6K/pSsHI8+2FH3V1I1L7V2qq8dmjNebnK0MyEtDZ/hdrNv4x1IyseRUmNFq3EiZJ7c
+         1oiPRI0DMs2kje0Hvslatdsud/obFQMRW9uHW8NpKk4mIv94ytNZbHvJadN/Nn9YZY
+         tGLIxmhA6nCk6OcdFZAV34UHFuwVplf/2bcz9WsNFmm3THY7N2KypMCnwedbGoDGcy
+         AW5qdaBZVvhpQ==
+Date:   Tue, 16 Nov 2021 09:58:54 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hyun Kwon <hyun.kwon@xilinx.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Scott Branden <sbranden@broadcom.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        dmaengine@vger.kernel.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        "moderated list:BROADCOM BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        linux-staging@lists.linux.dev,
+        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH 08/11] dmaengine: xilinx_dpdma: stop using slave_id field
+Message-ID: <YZMzhoWX0S5oPI6j@matsya>
+References: <20211115085403.360194-1-arnd@kernel.org>
+ <20211115085403.360194-9-arnd@kernel.org>
+ <YZIk6cVb7XibrMjf@pendragon.ideasonboard.com>
+ <CAK8P3a1Fu11-e0CK2of8u3ebdjom84UKuXhBKi5FUs5ZPPdOVA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a1Fu11-e0CK2of8u3ebdjom84UKuXhBKi5FUs5ZPPdOVA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fixed assignment in if condition.
+On 15-11-21, 11:21, Arnd Bergmann wrote:
+> On Mon, Nov 15, 2021 at 10:14 AM Laurent Pinchart
+> <laurent.pinchart@ideasonboard.com> wrote:
+> > On Mon, Nov 15, 2021 at 09:54:00AM +0100, Arnd Bergmann wrote:
+> > > @@ -1285,11 +1287,13 @@ static int xilinx_dpdma_config(struct dma_chan *dchan,
+> > >       spin_lock_irqsave(&chan->lock, flags);
+> > >
+> > >       /*
+> > > -      * Abuse the slave_id to indicate that the channel is part of a video
+> > > -      * group.
+> > > +      * Abuse the peripheral_config to indicate that the channel is part
+> >
+> > Is it still an abuse, or is this now the right way to pass custom data
+> > to the DMA engine driver ?
+> 
+> It doesn't make the driver any more portable, but it's now being
+> more explicit about it. As far as I can tell, this is the best way
+> to pass data that cannot be expressed through the regular interfaces
+> in DT and the dmaengine API.
+> 
+> Ideally there would be a generic way to pass this flag, but I couldn't
+> figure out what this is actually doing, or whether there is a better
+> way. Maybe Vinod has an idea.
+> 
+> I'll change s/Abuse/Use/ for the moment until I get a definite answer.
 
-Signed-off-by: Sahil Patidar <sahilpatidar4051@gmail.com>
----
- drivers/tty/serial/jsm/jsm_tty.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I would feel this is still not use for the peripheral_config, but lets
+keep it to get rid of slave_id.
 
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index d74cbbbf33c6..44507b1ff93a 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -746,10 +746,10 @@ static void jsm_carrier(struct jsm_channel *ch)
- void jsm_check_queue_flow_control(struct jsm_channel *ch)
- {
- 	struct board_ops *bd_ops = ch->ch_bd->bd_ops;
--	int qleft;
-+	int qleft = ch->ch_r_tail - ch->ch_r_head - 1;
- 
- 	/* Store how much space we have left in the queue */
--	if ((qleft = ch->ch_r_tail - ch->ch_r_head - 1) < 0)
-+	if (qleft < 0)
- 		qleft += RQUEUEMASK + 1;
- 
- 	/*
+Also, I would be better if this was moved to DT as the next cell, don't
+recall why that was not done/feasible.
+
 -- 
-2.32.0
-
+~Vinod
