@@ -2,51 +2,51 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B1CC4167E
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA67C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:21:57 +0000 (UTC)
 Received: from vger.kernel.org (unknown [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 544C3619E8
+	by mail.kernel.org (Postfix) with ESMTP id C9F80619E3
 	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 11:21:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 544C3619E8
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C9F80619E3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=microchip.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234989AbhKPLYg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Nov 2021 06:24:36 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:9426 "EHLO
+        id S235002AbhKPLYm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Nov 2021 06:24:42 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:18384 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234935AbhKPLYJ (ORCPT
+        with ESMTP id S234945AbhKPLYR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Nov 2021 06:24:09 -0500
+        Tue, 16 Nov 2021 06:24:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1637061673; x=1668597673;
+  t=1637061681; x=1668597681;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nuxqXU7uniwAlyc6jwMoADsVym2af+0HTfirATPA/GM=;
-  b=YBFyF7yxYb3gVywzh2QsgfE++Xs8g2pofXks4p8HHDH5+pRDplN2xohu
-   xOINff+NSuOJSsrHTnyjTk8areoKYHUo9QO0FnRzjR4gNgAATYMnMjwHz
-   YR2kQUauIExV0XUxxzOD14TDu6Rb9LjuIjQ8TeYxudTBWcBN3xCjgXpK7
-   7Ibfo9MgSBY0ern1eIHMEBT5Mjh2dlqocxfOLWsUs6ebfFwWkNScXRU5z
-   S7KcQKEFj7waSCwzoyqykW9mUqy3C9KazLGdTGBJwIIUFc+9DdxoOBMU/
-   n9vIWXxeGlOaY9Sq7lCmMxUc4kyfCrTsIAYthmQEqH+r16cYdwFfQ7F4k
-   Q==;
-IronPort-SDR: nYmFBRiKC1haK3E1yCJFyEOWjdqELDKd7e+MEJJXZ11YKZTRoOv2116NmR9droqPzBC6kS0vy4
- TUHmh2jqVC5fWh2zFZoBUtOY3tg/4k4TxCX/5T+DuNIuYPpWHs4lCIgdNnnU5U8NVbM/7cVB2G
- BKNIeQD+nsIZ/nQjlSN/CFTCBGb41LhJUd43ZTcsSh2ARC0XPjgiCBBJx+4Pp1cPDi9Uelt23c
- 0xtLNwQojK4KSwLxh0CUXh+4WQYfPjnnt8WpN0QQY3SggjCpBTfMyGxsT39L8458KLAgHl4JnG
- orimeoQwmXIHKN9cwT9xvV/U
+  bh=4UJToV8z1d1CSnT1DHee/do0TBGgvnsbC5y36KVHVoA=;
+  b=beaHuCj4NPRolv7fmus05vMwvS9/ovhXI+GrWRIENdaFTPKVFLXo+cLT
+   pyjZh1jhvZ7z/A2tyKuWUfbm4P7smxgzfirkS1UofsfbRukQDjnDAHy0u
+   si71DZUnZl5xSur66eWCQKmV0KaCzMXxTJBnbaOnYDBChDxxb//tTorrj
+   aV5vSOZIsy0ymSmwCa/K9Ix7ythtg8ERwSjupo3e7pNp1fxYd3EhYpF6C
+   WcV4LbYFFODl+kA251am7O3WgYTgCYmSHlZEPHrBpY31/nZ02mNReAw67
+   qKofZrJvT1ItV6/wHoJTfTRNtSKdl5MHnVI4wLqoXMyPuJY9VyH82+FVQ
+   w==;
+IronPort-SDR: brqGcVkMu6p19txpv00wUnn71TVfCG/Ak3bOmAroJqg/zfSScjECH7yB/aGDZOqn11UT/OC+/Y
+ ZjM9fxrvI+xa1qDd65NyoMUrh6YWfWdMAmOdRX1cwD0HWmGyKTZ2z2srUmjGY6ny/Ev1i80htW
+ f0Xl/cmjWuPozpNSyhYy2tnnp92N7d2fuU05mZWpsnE8QpKQToEoA3YjoJs2oBpnZjvOONrd6R
+ 6lfSaoibxWsFaXg7ycpXfs5u5XuqtiEB+NFA/e9Ziq6KXqKNp4SXVIDpJ99PWH89R5D96hS4E5
+ QcnZftuxmykH0PAmGLSC8s0t
 X-IronPort-AV: E=Sophos;i="5.87,239,1631602800"; 
-   d="scan'208";a="139278003"
+   d="scan'208";a="152085416"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Nov 2021 04:21:11 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Nov 2021 04:21:19 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 16 Nov 2021 04:21:11 -0700
+ 15.1.2176.14; Tue, 16 Nov 2021 04:21:18 -0700
 Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 16 Nov 2021 04:21:07 -0700
+ 15.1.2176.14 via Frontend Transport; Tue, 16 Nov 2021 04:21:15 -0700
 From:   Tudor Ambarus <tudor.ambarus@microchip.com>
 To:     <ludovic.desroches@microchip.com>, <vkoul@kernel.org>,
         <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
@@ -56,9 +56,9 @@ CC:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-serial@vger.kernel.org>,
         Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH 08/13] dmaengine: at_xdmac: Move the free desc to the tail of the desc list
-Date:   Tue, 16 Nov 2021 13:20:31 +0200
-Message-ID: <20211116112036.96349-9-tudor.ambarus@microchip.com>
+Subject: [PATCH 10/13] dmaengine: at_xdmac: Remove a level of indentation in at_xdmac_advance_work()
+Date:   Tue, 16 Nov 2021 13:20:33 +0200
+Message-ID: <20211116112036.96349-11-tudor.ambarus@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116112036.96349-1-tudor.ambarus@microchip.com>
 References: <20211116112036.96349-1-tudor.ambarus@microchip.com>
@@ -69,89 +69,40 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-So that we don't use the same desc over and over again.
+It's easier to read code with fewer levels of indentation.
 
 Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 ---
- drivers/dma/at_xdmac.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/dma/at_xdmac.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/dma/at_xdmac.c b/drivers/dma/at_xdmac.c
-index 2cc9af222681..8804a86a9bcc 100644
+index 81f6f1357dcb..89d0fc229d68 100644
 --- a/drivers/dma/at_xdmac.c
 +++ b/drivers/dma/at_xdmac.c
-@@ -729,7 +729,8 @@ at_xdmac_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
- 		if (!desc) {
- 			dev_err(chan2dev(chan), "can't get descriptor\n");
- 			if (first)
--				list_splice_init(&first->descs_list, &atchan->free_descs_list);
-+				list_splice_tail_init(&first->descs_list,
-+						      &atchan->free_descs_list);
- 			goto spin_unlock;
- 		}
+@@ -1593,14 +1593,14 @@ static void at_xdmac_advance_work(struct at_xdmac_chan *atchan)
+ 	 * If channel is enabled, do nothing, advance_work will be triggered
+ 	 * after the interruption.
+ 	 */
+-	if (!at_xdmac_chan_is_enabled(atchan) && !list_empty(&atchan->xfers_list)) {
+-		desc = list_first_entry(&atchan->xfers_list,
+-					struct at_xdmac_desc,
+-					xfer_node);
+-		dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, desc);
+-		if (!desc->active_xfer)
+-			at_xdmac_start_xfer(atchan, desc);
+-	}
++	if (at_xdmac_chan_is_enabled(atchan) || list_empty(&atchan->xfers_list))
++		return;
++
++	desc = list_first_entry(&atchan->xfers_list, struct at_xdmac_desc,
++				xfer_node);
++	dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, desc);
++	if (!desc->active_xfer)
++		at_xdmac_start_xfer(atchan, desc);
+ }
  
-@@ -817,7 +818,8 @@ at_xdmac_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t buf_addr,
- 		if (!desc) {
- 			dev_err(chan2dev(chan), "can't get descriptor\n");
- 			if (first)
--				list_splice_init(&first->descs_list, &atchan->free_descs_list);
-+				list_splice_tail_init(&first->descs_list,
-+						      &atchan->free_descs_list);
- 			spin_unlock_irqrestore(&atchan->lock, irqflags);
- 			return NULL;
- 		}
-@@ -1051,8 +1053,8 @@ at_xdmac_prep_interleaved(struct dma_chan *chan,
- 							       src_addr, dst_addr,
- 							       xt, chunk);
- 			if (!desc) {
--				list_splice_init(&first->descs_list,
--						 &atchan->free_descs_list);
-+				list_splice_tail_init(&first->descs_list,
-+						      &atchan->free_descs_list);
- 				return NULL;
- 			}
- 
-@@ -1132,7 +1134,8 @@ at_xdmac_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest, dma_addr_t src,
- 		if (!desc) {
- 			dev_err(chan2dev(chan), "can't get descriptor\n");
- 			if (first)
--				list_splice_init(&first->descs_list, &atchan->free_descs_list);
-+				list_splice_tail_init(&first->descs_list,
-+						      &atchan->free_descs_list);
- 			return NULL;
- 		}
- 
-@@ -1308,8 +1311,8 @@ at_xdmac_prep_dma_memset_sg(struct dma_chan *chan, struct scatterlist *sgl,
- 						   sg_dma_len(sg),
- 						   value);
- 		if (!desc && first)
--			list_splice_init(&first->descs_list,
--					 &atchan->free_descs_list);
-+			list_splice_tail_init(&first->descs_list,
-+					      &atchan->free_descs_list);
- 
- 		if (!first)
- 			first = desc;
-@@ -1701,7 +1704,8 @@ static void at_xdmac_tasklet(struct tasklet_struct *t)
- 
- 		spin_lock_irq(&atchan->lock);
- 		/* Move the xfer descriptors into the free descriptors list. */
--		list_splice_init(&desc->descs_list, &atchan->free_descs_list);
-+		list_splice_tail_init(&desc->descs_list,
-+				      &atchan->free_descs_list);
- 		at_xdmac_advance_work(atchan);
- 		spin_unlock_irq(&atchan->lock);
- 	}
-@@ -1850,7 +1854,8 @@ static int at_xdmac_device_terminate_all(struct dma_chan *chan)
- 	/* Cancel all pending transfers. */
- 	list_for_each_entry_safe(desc, _desc, &atchan->xfers_list, xfer_node) {
- 		list_del(&desc->xfer_node);
--		list_splice_init(&desc->descs_list, &atchan->free_descs_list);
-+		list_splice_tail_init(&desc->descs_list,
-+				      &atchan->free_descs_list);
- 	}
- 
- 	clear_bit(AT_XDMAC_CHAN_IS_PAUSED, &atchan->status);
+ static void at_xdmac_handle_cyclic(struct at_xdmac_chan *atchan)
 -- 
 2.25.1
 
