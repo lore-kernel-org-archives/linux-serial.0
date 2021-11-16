@@ -2,25 +2,25 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E6EC28D13
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 07:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFB5C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 07:43:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A8DB3615E3
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 07:43:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 28B6D6323D
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 07:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231404AbhKPHqD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Nov 2021 02:46:03 -0500
-Received: from relmlor2.renesas.com ([210.160.252.172]:62354 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231272AbhKPHpr (ORCPT
+        id S231516AbhKPHqM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Nov 2021 02:46:12 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:39793 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231245AbhKPHps (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Nov 2021 02:45:47 -0500
+        Tue, 16 Nov 2021 02:45:48 -0500
 X-IronPort-AV: E=Sophos;i="5.87,238,1631545200"; 
-   d="scan'208";a="100767145"
+   d="scan'208";a="100433352"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 16 Nov 2021 16:42:38 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 16 Nov 2021 16:42:39 +0900
 Received: from localhost.localdomain (unknown [10.166.14.185])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 3D3FA40083D3;
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id DC36F40083D3;
         Tue, 16 Nov 2021 16:42:38 +0900 (JST)
 From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To:     geert+renesas@glider.be, magnus.damm@gmail.com, robh+dt@kernel.org,
@@ -28,9 +28,9 @@ To:     geert+renesas@glider.be, magnus.damm@gmail.com, robh+dt@kernel.org,
 Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org,
         Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH 09/16] soc: renesas: Identify R-Car S4-8
-Date:   Tue, 16 Nov 2021 16:41:23 +0900
-Message-Id: <20211116074130.107554-10-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH 16/16] arm64: defconfig: Enable R-Car S4-8
+Date:   Tue, 16 Nov 2021 16:41:30 +0900
+Message-Id: <20211116074130.107554-17-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com>
 References: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com>
@@ -40,70 +40,25 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add support for identifying the R-Car S4-8 (R8A779F0) SoC.
+Enable the Renesas R-Car S4-8 (R8A779F0) SoC in the ARM64 defconfig.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- drivers/soc/renesas/Kconfig       |  7 +++++++
- drivers/soc/renesas/renesas-soc.c | 13 +++++++++++++
- 2 files changed, 20 insertions(+)
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/soc/renesas/Kconfig b/drivers/soc/renesas/Kconfig
-index ce16ef5c939c..9915b953e9a0 100644
---- a/drivers/soc/renesas/Kconfig
-+++ b/drivers/soc/renesas/Kconfig
-@@ -256,6 +256,13 @@ config ARCH_R8A779A0
- 	help
- 	  This enables support for the Renesas R-Car V3U SoC.
- 
-+config ARCH_R8A779F0
-+	bool "ARM64 Platform support for R-Car S4-8"
-+	select ARCH_RCAR_GEN3
-+	select SYSC_R8A779F0
-+	help
-+	  This enables support for the Renesas R-Car S4-8 SoC.
-+
- config ARCH_R8A774C0
- 	bool "ARM64 Platform support for RZ/G2E"
- 	select ARCH_RCAR_GEN3
-diff --git a/drivers/soc/renesas/renesas-soc.c b/drivers/soc/renesas/renesas-soc.c
-index 7961b0be1850..857a42a82747 100644
---- a/drivers/soc/renesas/renesas-soc.c
-+++ b/drivers/soc/renesas/renesas-soc.c
-@@ -33,6 +33,11 @@ static const struct renesas_family fam_rcar_gen3 __initconst __maybe_unused = {
- 	.reg	= 0xfff00044,		/* PRR (Product Register) */
- };
- 
-+static const struct renesas_family fam_rcar_gen4 __initconst __maybe_unused = {
-+	.name	= "R-Car Gen4",
-+	.reg	= 0xfff00044,		/* PRR (Product Register) */
-+};
-+
- static const struct renesas_family fam_rmobile __initconst __maybe_unused = {
- 	.name	= "R-Mobile",
- 	.reg	= 0xe600101c,		/* CCCR (Common Chip Code Register) */
-@@ -214,6 +219,11 @@ static const struct renesas_soc soc_rcar_v3u __initconst __maybe_unused = {
- 	.id	= 0x59,
- };
- 
-+static const struct renesas_soc soc_rcar_s4 __initconst __maybe_unused = {
-+	.family	= &fam_rcar_gen4,
-+	.id	= 0x5a,
-+};
-+
- static const struct renesas_soc soc_shmobile_ag5 __initconst __maybe_unused = {
- 	.family	= &fam_shmobile,
- 	.id	= 0x37,
-@@ -319,6 +329,9 @@ static const struct of_device_id renesas_socs[] __initconst = {
- #ifdef CONFIG_ARCH_R8A779A0
- 	{ .compatible = "renesas,r8a779a0",	.data = &soc_rcar_v3u },
- #endif
-+#ifdef CONFIG_ARCH_R8A779F0
-+	{ .compatible = "renesas,r8a779f0",	.data = &soc_rcar_s4 },
-+#endif
- #if defined(CONFIG_ARCH_R9A07G044)
- 	{ .compatible = "renesas,r9a07g044",	.data = &soc_rz_g2l },
- #endif
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index f2e2b9bdd702..04db99bfbf9d 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -1069,6 +1069,7 @@ CONFIG_ARCH_R8A77980=y
+ CONFIG_ARCH_R8A77990=y
+ CONFIG_ARCH_R8A77995=y
+ CONFIG_ARCH_R8A779A0=y
++CONFIG_ARCH_R8A779F0=y
+ CONFIG_ARCH_R9A07G044=y
+ CONFIG_ROCKCHIP_PM_DOMAINS=y
+ CONFIG_ARCH_TEGRA_132_SOC=y
 -- 
 2.25.1
 
