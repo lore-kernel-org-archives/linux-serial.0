@@ -2,35 +2,35 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF0EC433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 07:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321F8C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 07:43:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4BB1A615E3
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 07:43:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1E785615E3
+	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 07:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbhKPHpv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Nov 2021 02:45:51 -0500
-Received: from relmlor2.renesas.com ([210.160.252.172]:3759 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231367AbhKPHpn (ORCPT
+        id S231491AbhKPHpy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Nov 2021 02:45:54 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:39793 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231389AbhKPHpq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Nov 2021 02:45:43 -0500
+        Tue, 16 Nov 2021 02:45:46 -0500
 X-IronPort-AV: E=Sophos;i="5.87,238,1631545200"; 
-   d="scan'208";a="100767136"
+   d="scan'208";a="100433343"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 16 Nov 2021 16:42:37 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 16 Nov 2021 16:42:38 +0900
 Received: from localhost.localdomain (unknown [10.166.14.185])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id C25A2400C4FD;
-        Tue, 16 Nov 2021 16:42:37 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 68EBF40083D3;
+        Tue, 16 Nov 2021 16:42:38 +0900 (JST)
 From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To:     geert+renesas@glider.be, magnus.damm@gmail.com, robh+dt@kernel.org,
         gregkh@linuxfoundation.org, jirislaby@kernel.org
 Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org,
         Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH 05/16] dt-bindings: power: Add r8a779f0 SYSC power domain definitions
-Date:   Tue, 16 Nov 2021 16:41:19 +0900
-Message-Id: <20211116074130.107554-6-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH 11/16] soc: renesas: rcar-rst: Add support for R-Car S4-8
+Date:   Tue, 16 Nov 2021 16:41:25 +0900
+Message-Id: <20211116074130.107554-12-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com>
 References: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com>
@@ -40,50 +40,63 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add power domain indices for R-Car S4-8 (r8a779f0).
+Add support for R-Car S4-8 (R8A779F0) to the R-Car RST driver.
+The register map of R-Car S4-8 is the same as R-Car V3U so that
+renames "V3U" and "r8a779a0" with "Gen4".
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- include/dt-bindings/power/r8a779f0-sysc.h | 30 +++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
- create mode 100644 include/dt-bindings/power/r8a779f0-sysc.h
+ drivers/soc/renesas/rcar-rst.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/include/dt-bindings/power/r8a779f0-sysc.h b/include/dt-bindings/power/r8a779f0-sysc.h
-new file mode 100644
-index 000000000000..97e6ed5c16d5
---- /dev/null
-+++ b/include/dt-bindings/power/r8a779f0-sysc.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: (GPL-2.0 or MIT) */
-+/*
-+ * Copyright (C) 2021 Renesas Electronics Corp.
-+ */
-+#ifndef __DT_BINDINGS_POWER_R8A779F0_SYSC_H__
-+#define __DT_BINDINGS_POWER_R8A779F0_SYSC_H__
-+
-+/*
-+ * These power domain indices match the Power Domain Register Numbers (PDR)
-+ */
-+
-+#define R8A779F0_PD_A1E0D0C0		0
-+#define R8A779F0_PD_A1E0D0C1		1
-+#define R8A779F0_PD_A1E0D1C0		2
-+#define R8A779F0_PD_A1E0D1C1		3
-+#define R8A779F0_PD_A1E1D0C0		4
-+#define R8A779F0_PD_A1E1D0C1		5
-+#define R8A779F0_PD_A1E1D1C0		6
-+#define R8A779F0_PD_A1E1D1C1		7
-+#define R8A779F0_PD_A2E0D0		16
-+#define R8A779F0_PD_A2E0D1		17
-+#define R8A779F0_PD_A2E1D0		18
-+#define R8A779F0_PD_A2E1D1		19
-+#define R8A779F0_PD_A3E0		20
-+#define R8A779F0_PD_A3E1		21
-+
-+/* Always-on power area */
-+#define R8A779F0_PD_ALWAYS_ON		22
-+
-+#endif /* __DT_BINDINGS_POWER_R8A779A0_SYSC_H__*/
+diff --git a/drivers/soc/renesas/rcar-rst.c b/drivers/soc/renesas/rcar-rst.c
+index 24c7466de9f2..c9f2232a1b42 100644
+--- a/drivers/soc/renesas/rcar-rst.c
++++ b/drivers/soc/renesas/rcar-rst.c
+@@ -12,7 +12,7 @@
+ 
+ #define WDTRSTCR_RESET		0xA55A0002
+ #define WDTRSTCR		0x0054
+-#define V3U_WDTRSTCR		0x0010
++#define GEN4_WDTRSTCR		0x0010
+ 
+ #define CR7BAR			0x0070
+ #define CR7BAREN		BIT(4)
+@@ -28,9 +28,9 @@ static int rcar_rst_enable_wdt_reset(void __iomem *base)
+ 	return 0;
+ }
+ 
+-static int v3u_rst_enable_wdt_reset(void __iomem *base)
++static int rcar_rst_gen4_enable_wdt_reset(void __iomem *base)
+ {
+-	iowrite32(WDTRSTCR_RESET, base + V3U_WDTRSTCR);
++	iowrite32(WDTRSTCR_RESET, base + GEN4_WDTRSTCR);
+ 	return 0;
+ }
+ 
+@@ -73,9 +73,9 @@ static const struct rst_config rcar_rst_gen3 __initconst = {
+ 	.set_rproc_boot_addr = rcar_rst_set_gen3_rproc_boot_addr,
+ };
+ 
+-static const struct rst_config rcar_rst_r8a779a0 __initconst = {
++static const struct rst_config rcar_rst_gen4 __initconst = {
+ 	.modemr = 0x00,		/* MODEMR0 and it has CPG related bits */
+-	.configure = v3u_rst_enable_wdt_reset,
++	.configure = rcar_rst_gen4_enable_wdt_reset,
+ };
+ 
+ static const struct of_device_id rcar_rst_matches[] __initconst = {
+@@ -109,7 +109,9 @@ static const struct of_device_id rcar_rst_matches[] __initconst = {
+ 	{ .compatible = "renesas,r8a77990-rst", .data = &rcar_rst_gen3 },
+ 	{ .compatible = "renesas,r8a77995-rst", .data = &rcar_rst_gen3 },
+ 	/* R-Car V3U */
+-	{ .compatible = "renesas,r8a779a0-rst", .data = &rcar_rst_r8a779a0 },
++	{ .compatible = "renesas,r8a779a0-rst", .data = &rcar_rst_gen4 },
++	/* R-Car Gen4 */
++	{ .compatible = "renesas,r8a779f0-rst", .data = &rcar_rst_gen4 },
+ 	{ /* sentinel */ }
+ };
+ 
 -- 
 2.25.1
 
