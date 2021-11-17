@@ -2,125 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D529C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 17:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 739ABC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 03:52:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4BA3F613DB
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Nov 2021 17:28:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 518A561B39
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 03:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238853AbhKPRbw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Nov 2021 12:31:52 -0500
-Received: from mail-pg1-f177.google.com ([209.85.215.177]:44904 "EHLO
-        mail-pg1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238725AbhKPRbu (ORCPT
+        id S231200AbhKQDzb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Nov 2021 22:55:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229614AbhKQDzb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Nov 2021 12:31:50 -0500
-Received: by mail-pg1-f177.google.com with SMTP id m15so14347847pgu.11;
-        Tue, 16 Nov 2021 09:28:53 -0800 (PST)
+        Tue, 16 Nov 2021 22:55:31 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1EDC061570
+        for <linux-serial@vger.kernel.org>; Tue, 16 Nov 2021 19:52:33 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id h24so1202853pjq.2
+        for <linux-serial@vger.kernel.org>; Tue, 16 Nov 2021 19:52:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=accesio-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kHkL29XgFNpySl5Yq3c7u4HrTQCfeOPmtsV2Kk8kwLM=;
+        b=1XTHTt8uLepNnbTg3e5Pu8g7ycS39Y9cDm9G+RcpdkZD4MEHKredXuhTIjBpa1RWFj
+         ISgi+zYpBo4c7cSJZn198/4liYRkUd8qFWvo0bzhtTJskR/xGwvWz/UG189Dnwbj8FVh
+         EX6jqNSd13VoFL3nhFG+PQ+WLlVQoPUCJdEGHi2V+kLfftlvv93QNo2rK/L+XoDyBtfV
+         q6GJ7arWgr0jNx0+QjiXGOyDg11cgRgCYeQtRxcdrM402ctF+ws/C75FyBtAs2/94EW3
+         MGbOVw58y4qoaidbIPQwCiu44DJSd4Mux5e6WiMuGqJ1GgQ/z7AqcjI8LeK2ZiBL22NS
+         IEKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FkA51tWxSsscDQ4OnDVF0gVKl+TpddKexu+rNB6rga4=;
-        b=SGPLW0Gs4GbGKkyxZ5mwFJQ8mK+cSYPURcI1lpwH9R0ikX9PnRvhqq3IhaMSw6cigF
-         wYInfhIxvua96lYrJWEGVASX2z5w7WkJfh9tcLr8aUE90WUlcsSJ9qNwENe5gaCVZeLL
-         Pe4AV/I+nAhOyb5dpeSlZraDc5Wjm4rvoTGnsxCg2SS4tgIA4v8GndMJNmRzF0lN5wJq
-         Ka2m5bbuBmh4MYKHbpmuPuMrhoGD2FCqqyhNjaienJvKNRLGG9vnzpWm/QyBBxyOXQun
-         PtH8yqSr0w0YQkPtZnUofhZ73TAuo2/K0dCgqA5XFNCxdaMA1Lr+0e+qWHoB15yUm5LQ
-         ZRJQ==
-X-Gm-Message-State: AOAM533MpTy5ZOd85TrYgGO4zWHPTqaD5RgKUoISRONCWE3xMX1dkX14
-        HGLHJXDF5ZbFa72HCmFZ/TWV7dmE8hKcb2aLAWc=
-X-Google-Smtp-Source: ABdhPJztWnQTEvyFBXk/EWoYZuOO/BsO/4j2XiqLi5dCPei8GORqCEcvrDQZtaHkVUqJCHntXdMP/Q0JwesAiwH1PXU=
-X-Received: by 2002:a63:3f44:: with SMTP id m65mr422498pga.15.1637083733060;
- Tue, 16 Nov 2021 09:28:53 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kHkL29XgFNpySl5Yq3c7u4HrTQCfeOPmtsV2Kk8kwLM=;
+        b=ps7zieBwv06Zv2CmrRRgxpphsn7IrfuQEWW1u1d4UhqopHHiLHBuvK35G/KPxxpwPO
+         tJ5lIhUeCg51w42Lkm/yPSnp8UT/iDeonfFrLyDjNXhFRYnatgXCbCGJLk5+rKvvDZLe
+         vvlxQFXmptln/NJt93QGdiX4qmhTgFotkfKKtNgl26VQWv+C5twFxHNcp7zP+YG52OSm
+         GQZNRMSS0J7k1DdVfWlYuW/MNqtXwO0VgJVcCUOmxjxWdi8CYhjaaNLzCueLMpof/DaF
+         LQjZ61i2hdK3YBAyyd4zGwJJZoME6P7Q+VrYbEw11m/GdK/xQGN8GzqIu+vjP5MFRqIq
+         CLmQ==
+X-Gm-Message-State: AOAM533H4dE9PwjNt0m2zVhVaKKm1xgugfDot3CBuolfrmOoGTVL073z
+        +OPhp0wjmadAtqlUhoJ0jp/euL7IrgzL0+HfxVGrt4NQoKcyYttoaSdnJllfbjRxVgvogfc7gH0
+        zLZJV10Gpj2Jllb/5btvaez9PHH6OURDRePw6J/uoT1Toiy1Hw7gc/yrM8IgQKEUl44nneAjJZT
+        PX9U4=
+X-Google-Smtp-Source: ABdhPJz6ECkHwdhWFN1FBSqtNXoEXuxOeuhYfvCU+734+4x8ONg3zvOBa+Y8m6ntVK5wJpiI8IoN8A==
+X-Received: by 2002:a17:90b:3ec2:: with SMTP id rm2mr5638332pjb.1.1637121152486;
+        Tue, 16 Nov 2021 19:52:32 -0800 (PST)
+Received: from [172.16.8.241] ([98.149.220.160])
+        by smtp.gmail.com with ESMTPSA id lr6sm4020959pjb.0.2021.11.16.19.52.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Nov 2021 19:52:32 -0800 (PST)
+Subject: Re: [PATCH 0/3] serial: 8250_pci patches to address issues with
+ pericom_do_set_divisor()
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+References: <20211114183908.444923-1-jay.dolan@accesio.com>
+ <CAHp75VcLr8MDwQUMgeOWKLP5QwwxGzbso61xJOK7-S=UHfn11w@mail.gmail.com>
+From:   Jay Dolan <jay.dolan@accesio.com>
+Message-ID: <401a1861-2716-04ec-ddd2-00010cc9c030@accesio.com>
+Date:   Tue, 16 Nov 2021 19:52:30 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20211116150119.2171-1-kernel@esmil.dk> <CAK8P3a38+Osmr7SjD42ZEQzOPwWXM7x+31a5E4bRWVp6JdMS_w@mail.gmail.com>
-In-Reply-To: <CAK8P3a38+Osmr7SjD42ZEQzOPwWXM7x+31a5E4bRWVp6JdMS_w@mail.gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-Date:   Tue, 16 Nov 2021 18:28:41 +0100
-Message-ID: <CANBLGcykFks+EF2m0bdD+j5w43Qy30LBgVnAYJWU+5-WVJH6PA@mail.gmail.com>
-Subject: Re: [PATCH v4 00/16] Basic StarFive JH7100 RISC-V SoC support
-To:     Arnd Bergmann <arnd@arndb.de>, Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAHp75VcLr8MDwQUMgeOWKLP5QwwxGzbso61xJOK7-S=UHfn11w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 16 Nov 2021 at 17:08, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Tue, Nov 16, 2021 at 4:01 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
-> >
-> > This series adds support for the StarFive JH7100 RISC-V SoC. The SoC has
-> > many devices that need non-coherent dma operations to work which isn't
-> > upstream yet[1], so this just adds basic support to boot up, get a
-> > serial console, blink an LED and reboot itself. Unlike the Allwinner D1
-> > this chip doesn't use any extra pagetable bits, but instead the DDR RAM
-> > appears twice in the memory map, with and without the cache.
-> >
-> > The JH7100 is a test chip for the upcoming JH7110 and about 300 BeagleV
-> > Starlight Beta boards were sent out with them as part of a now cancelled
-> > BeagleBoard.org project. However StarFive has produced more of the
-> > JH7100s and more boards will be available[2] to buy. I've seen pictures
-> > of the new boards now, so hopefully before the end of the year.
-> >
-> > This series is also available at
-> > https://github.com/esmil/linux/commits/starlight-minimal
-> > ..but a more complete kernel including drivers for non-coherent
-> > peripherals based on this series can be found at
-> > https://github.com/starfive-tech/linux/tree/visionfive
-> >
-> > [1]: https://lore.kernel.org/linux-riscv/20210723214031.3251801-2-atish.patra@wdc.com/
-> > [2]: https://www.linkedin.com/pulse/starfive-release-open-source-single-board-platform-q3-2021-starfive/
->
-> Thanks for adding me to Cc, I've had a look at the series and didn't
-> see anything
-> wrong with it, and I'm happy to merge it through the SoC tree for the
-> initial support
-> in 5.17, provided you get an Ack from the arch/riscv maintainers for it.
-
-Cool!
-
-@Palmer, do you mind looking through this? Probably patch 1, 15 and 16
-are the most relevant to you.
-
-> Regarding the coherency issue, it's a bit sad to see yet another hacky
-> workaround
-> in the hardware, but as you say this is unrelated to the driver
-> series. I'd actually
-> argue that this one isn't that different from the other hack you
-> describe, except
-> this steals the pagetable bits from the address instead of the reserved flags...
-
-Yeah, it's definitely a hack, but at least it's not using bits the
-spec said was reserved. Hopefully the JH7110 will be fully coherent or
-maybe implement the new Svpbmt extension.
-
-/Emil
 
 
-/Emil
+On 11/16/21 7:34 AM, Andy Shevchenko wrote:
+> On Sun, Nov 14, 2021 at 8:40 PM Jay Dolan <jay.dolan@accesio.com> wrote:
+>>
+>> A series patches to address three issues one customer managed to hit all at once.
+>>
+>> 1) Rewrite pericom_do_set_divisor() to always calc divisor and to use the
+>> uartclk instead of a hard coded value. Always calculate divisor without passing
+>> control to serial8250_do_set_divisor()
+>> Tested with 14.7456 and 24 MHz crystals
+>>
+>> 2) Re-enable higher baud rates on Pericom chips.
+>> serial8250_get_baud_rate() added range checking, but Pericom chips have a wider
+>> range than what is being enforced. Make use of UPF_MAGIC_MULTIPLIER.
+>> Tested with 14.7456 and 24 MHz crystals
+>>
+>> 3) Fourth port not being setup correctly on some Pericom chips.
+>> Fix entries in pci_serial_quirks array
+> 
+> Can we start from splitting Pericom to its own file, please?
+> 
+> See my initial work here [1]. And I believe you may do a better job
+> than me since you have access to many variants of the hardware.
+> 
+> [1]: https://gitlab.com/andy-shev/next/-/commit/71fdb8b5d857691031f566daebb1e850b106f46a
+That would be great. Breaking it out has been on my wish list for a 
+while, but I doubt I was ever going to have time. I'm not familiar with 
+GitLab. Is there a way for me to fetch this branch or should I just 
+apply the diff I downloaded?
+> 
+> (As a side note:
+> https://gitlab.com/andy-shev/next/-/commit/ac0dc993fa35b5e2fe67e967b6a687b2e47d0edd)
+> 
