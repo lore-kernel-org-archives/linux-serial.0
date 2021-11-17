@@ -2,81 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BDFC433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 09:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5283FC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 10:05:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CF54361BF5
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 09:07:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3263861BF4
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 10:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234818AbhKQJKH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 Nov 2021 04:10:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51870 "EHLO mail.kernel.org"
+        id S235972AbhKQKIn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 Nov 2021 05:08:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55196 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234800AbhKQJKD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 Nov 2021 04:10:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A9E261BF5;
-        Wed, 17 Nov 2021 09:07:05 +0000 (UTC)
+        id S233117AbhKQKIk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 17 Nov 2021 05:08:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0380161544;
+        Wed, 17 Nov 2021 10:05:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637140025;
-        bh=jSFeocSlc6IofAObidh4I1D1bgngavZHyAu2iZpsyoY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Jn4SfpFEs22vvlVgwGhLZ//4vz0X5kRnla9/eATJkG9nK4IO9dkdV8ljTXTjVbTAn
-         L86XZkse3ajqEpWtBzJwC/sYyczw3tyJGhInWqtHCGstuiUIxspWz3oVXnDWrqLnfZ
-         ocPhkfrUVvaIztlNKo1I/DzKb+EgZtbvIovegi6uOU6QMeiIxyLi30/mr2p+djUKCy
-         vzDVHKPf9hEd0RDvUTlMvpBSOJgv7oyaG7CsA7XHyjTpUu2MUjqTffSD0IAuCsvRK9
-         i6va3OVYU5uLgtx9IV9RelIlvCkmFqE7T+A1vIOeYKVV47yZDVQ4L4u9+5C6awNTpg
-         mNwrB3OGjSYNA==
+        s=k20201202; t=1637143542;
+        bh=WtEqVvnF6PYsfAPJLjI1r45NxQMfJMCjFvcdXXCzEgY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jipiOISPKxlz0WYAJnCrrQZUs/BpEjnctloVN9vemAxQB6jgCRCozGhLZ0PKB6kJT
+         2G50jnzON4dtEvJWd/pJAuB+8xO2L11h/wngdC1gcWsR5Gl3hUZIYDoa+x9s5JZJal
+         DdLpFWeOG56+pBULA4BTXV6JG6/VQL18ErpYTJ7Nsp7woYIneF4la1yuugfn6PQ02a
+         pxFE+ztOa8nAUdxjsJHs/Ysx2o59UbWV3d77pH73rCmwJb+J7yALihUjBbPcInd/ak
+         3orZVPYYyyZogwJPJuvP+5zld9Zw5eCkvLFDBwj98zW0nlYd7mh7JX8S8mK4wLX1sb
+         Y0W4xHQjraELQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1mnGtz-00075Z-Bb; Wed, 17 Nov 2021 10:06:47 +0100
-Date:   Wed, 17 Nov 2021 10:06:47 +0100
+        id 1mnHoi-0001KS-HR; Wed, 17 Nov 2021 11:05:24 +0100
 From:   Johan Hovold <johan@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilia Sergachev <silia@ethz.ch>,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Ilia Sergachev <silia@ethz.ch>,
         Karol Gugala <kgugala@antmicro.com>,
         Mateusz Holenko <mholenko@antmicro.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Filip Kokosinski <fkokosinski@antmicro.com>,
-        Stafford Horne <shorne@gmail.com>
-Subject: Re: [PATCH 1/3] serial: liteuart: fix compile testing
-Message-ID: <YZTGJzJcQ3oIEsGy@hovoldconsulting.com>
-References: <20211115133745.11445-1-johan@kernel.org>
- <20211115133745.11445-2-johan@kernel.org>
- <CAHp75VeGinEWv0BuAsrHtif2b1p26uUEmSRqG4_y76vDdvNKAw@mail.gmail.com>
+        Stafford Horne <shorne@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH v2 0/3] serial: liteuart: fix driver unbind
+Date:   Wed, 17 Nov 2021 11:05:09 +0100
+Message-Id: <20211117100512.5058-1-johan@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VeGinEWv0BuAsrHtif2b1p26uUEmSRqG4_y76vDdvNKAw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 05:44:14PM +0200, Andy Shevchenko wrote:
-> On Mon, Nov 15, 2021 at 3:44 PM Johan Hovold <johan@kernel.org> wrote:
-> >
-> > Allow the liteuart driver to be compile tested by fixing the broken
-> > Kconfig dependencies.
-> 
-> ...
-> 
-> >  config SERIAL_LITEUART
-> >         tristate "LiteUART serial port support"
-> > +       depends on LITEX || COMPILE_TEST
-> >         depends on HAS_IOMEM
-> > -       depends on OF || COMPILE_TEST
-> > -       depends on LITEX
-> 
-> > +       depends on OF
-> 
-> AFAICS this is optional and prevents compile testing in some cases.
+Ilia Sergachev noted that the liteuart remove() function would trigger a
+NULL-pointer dereference if it was ever called since the driver data
+pointer was never initialised.
 
-Yeah, you're right; that clause should stay. I'll send a v2. Thanks.
+Turns out there are more bugs in this part of the driver which clearly
+has never been tested.
 
-> >         select SERIAL_CORE
-> >         help
-> >           This driver is for the FPGA-based LiteUART serial controller from LiteX
+Also relax the Kconfig dependencies so that the driver can be
+compile-tested without first enabling a seemingly unrelated SoC
+controller driver.
+
+Note that this series depends on the fix by Ilia:
+
+        https://lore.kernel.org/r/20211115031808.7ab632ef@dtkw
 
 Johan
+
+
+Changes in v2
+ - allow compile testing without CONFIG_OF (Andy)
+ - reword commit message to clarify that LITEX is neither a build or
+   runtime dependency and that the change only makes it easier to
+   compile test the driver
+ - move the Kconfig patch last in the series
+ - add Stafford's reviewed by tags to the two unmodified patches
+
+
+Johan Hovold (3):
+  serial: liteuart: fix use-after-free and memleak on unbind
+  serial: liteuart: fix minor-number leak on probe errors
+  serial: liteuart: relax compile-test dependencies
+
+ drivers/tty/serial/Kconfig    |  2 +-
+ drivers/tty/serial/liteuart.c | 18 +++++++++++++++---
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+-- 
+2.32.0
+
