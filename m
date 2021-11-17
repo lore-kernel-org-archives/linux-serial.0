@@ -2,118 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 470DDC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 10:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA65C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 10:53:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2BF5963237
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 10:43:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE2C761545
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Nov 2021 10:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbhKQKqe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 Nov 2021 05:46:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234464AbhKQKqe (ORCPT
+        id S236590AbhKQK4M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 Nov 2021 05:56:12 -0500
+Received: from mailnode.rz.hs-mannheim.de ([141.19.1.96]:43090 "EHLO
+        hs-mannheim.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S231591AbhKQK4L (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 Nov 2021 05:46:34 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73986C061570;
-        Wed, 17 Nov 2021 02:43:35 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id w1so9002942edc.6;
-        Wed, 17 Nov 2021 02:43:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uDN1GsOnIo4V4ElqUrvWCtZve9NFoolkaMsk7vOONMc=;
-        b=Gm/D8C/h5/hiiov56d8uVRJ/UloKPbAgDbfQ2BiLzeB3h0Bmk/EbgUFppqrezlFsJb
-         aPt24m7oD0agtX+k7WUTkGiCXs9UT1bJnlKnhKfqtBFKDLbIll0X/9pD/CZegoDBMyzW
-         xYuTr2pfLAntlCNJvupanmwWpKKl9V9wSNB5r5G0aIKFqT6rL+dMqyWhaQhL5LgDLKjz
-         Is06RAyB22Z3RmrJAVFgF7sviPfSsgTtoU1HBi+1Ti8P7vLzPA+naLBi5FJJ0E/iTItY
-         ensYu4kgixXXCw1U6sV3hm8PnMVd88E9idQsGfBhvmuuNjvfOCKCwvnvooflSRDKjjDO
-         qgCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uDN1GsOnIo4V4ElqUrvWCtZve9NFoolkaMsk7vOONMc=;
-        b=H7CkcR6y6bQfo6cHXSVmUyUiKLHQOu2BVjRDuGjSAKA1ZGCuZdm4ABlwJqv+8YXTts
-         1H/JCFPIbZ/anBZobz1XHz1I1Q2tsgRTcSaHrEvSm/cBhKAWWwLNSWahDpiml2O3osgG
-         xDHFpllOrvnP1lEzRXG0d0BjSHh3abDfVevw+s6MKQQVfxHMLGG5vtjgXRWtw8YRWFLO
-         0QY6l7sKhSgRA+xjiLpkJyERxKBngQpYC2JN5bjbbRtDOzDprsGzbym5GPahrZ60ER4O
-         HPNNtHrdwL5SMYpJgP8GX+rsXefhxoJhYcjiVqUeVbH0OK82dzxkY2n/gCgwttwmSvqc
-         gCNA==
-X-Gm-Message-State: AOAM533BU23Lpd4ir8LnOifDcLQwB0wS5ojRHYW4n9RqHZcXZmCKo80C
-        aBEKQ7qffnW0DEPQUruurNxGmHynlgjx/l+Nz8w=
-X-Google-Smtp-Source: ABdhPJy0UZW10x7IeVGEKtr3DcWxCW3RECxfztJDi9a6POTS6H3CWw1nuNc/+bHx5mNtasnfykpuO6ePXi1yDfEoEoQ=
-X-Received: by 2002:a17:907:869e:: with SMTP id qa30mr19414299ejc.356.1637145814005;
- Wed, 17 Nov 2021 02:43:34 -0800 (PST)
+        Wed, 17 Nov 2021 05:56:11 -0500
+X-Greylist: delayed 3600 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Nov 2021 05:56:10 EST
+Received: from [176.199.209.39] (account willenberg@hs-mannheim.de HELO [192.168.0.240])
+  by hs-mannheim.de (CommuniGate Pro SMTP 6.2.14)
+  with ESMTPSA id 55606295; Wed, 17 Nov 2021 10:53:10 +0100
+Message-ID: <edf15265-548a-1315-9175-967dddb38d4b@hs-mannheim.de>
+Date:   Wed, 17 Nov 2021 10:53:09 +0100
 MIME-Version: 1.0
-References: <20211117100512.5058-1-johan@kernel.org>
-In-Reply-To: <20211117100512.5058-1-johan@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 17 Nov 2021 12:42:53 +0200
-Message-ID: <CAHp75Ve9MB4MW9KDPoNhnPa8TCabmMgLbt6H7qrGgwmA8CpdNg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/3] serial: liteuart: fix driver unbind
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilia Sergachev <silia@ethz.ch>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Stafford Horne <shorne@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v2] uartlite: Update the default for the
+ SERIAL_UARTLITE_NR_UARTS
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        linux-serial@vger.kernel.org
+Cc:     kernel.development@povil.us, michals@xilinx.com, git@xilinx.com,
+        gregkh@linuxfoundation.org, Michal Simek <michal.simek@xilinx.com>
+References: <20211117051635.1316958-1-shubhrajyoti.datta@xilinx.com>
+From:   Ruediger Willenberg <r.willenberg@hs-mannheim.de>
+In-Reply-To: <20211117051635.1316958-1-shubhrajyoti.datta@xilinx.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 17, 2021 at 12:05 PM Johan Hovold <johan@kernel.org> wrote:
->
-> Ilia Sergachev noted that the liteuart remove() function would trigger a
-> NULL-pointer dereference if it was ever called since the driver data
-> pointer was never initialised.
->
-> Turns out there are more bugs in this part of the driver which clearly
-> has never been tested.
->
-> Also relax the Kconfig dependencies so that the driver can be
-> compile-tested without first enabling a seemingly unrelated SoC
-> controller driver.
->
-> Note that this series depends on the fix by Ilia:
->
->         https://lore.kernel.org/r/20211115031808.7ab632ef@dtkw
+Am 17.11.2021 um 06:16 schrieb Shubhrajyoti Datta:
+> "The uartlite is used by FPGAs that support a basically unlimited number
+> of uarts so limiting it at 16 dosn't make sense as users might need more
+> than that."
+> the commit also said that number should be unlimited. However it set the
+> default to 1 instead of 16.The original 16 written in driver should be
+>   quite reasonable default to cover most of the cases.
+> 
+> So change the default number of uarts back to 16.
 
+Respectfully, this is an inadequate fix to a decade-old underlying issue
+in the Xilinx device tree generator. The DTG assigns consecutive
+"port-number" properties to UARTs handled by separate drivers (uartps,
+uartlite, uartns), which are then used in drivers/tty/serial/uartlite.c
+to index the struct uart_port[] array and set uart_port->line.
+The DTG should number devices for each driver separately from 0;
+serial_core.c checks for (0 <= uart_port->line < NR_UART_PORTS). As a
+consequence, when a Zynq system has both a PS-UART and a Uartlite,
+setting SERIAL_UARTLITE_NR_UARTS explicitly to 1 in Kconfig means
+probing the uartlite fails, which is confusing to the unsuspecting
+KConfig user. Setting the default to 16 just kicks the can down the
+road because it will fail for more than 15 Uartlites (or less, if there
+are more PS-UARTs or AXI 16550A UARTs).
+I've submitted a patch for the DTG numbering scheme to git@xilinx.com
+just yesterday. Will post a PATCH to this list later today or tomorrow
+to handle the issue from the other end (uartlite.c).
 
-FWIW,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-> Johan
->
->
-> Changes in v2
->  - allow compile testing without CONFIG_OF (Andy)
->  - reword commit message to clarify that LITEX is neither a build or
->    runtime dependency and that the change only makes it easier to
->    compile test the driver
->  - move the Kconfig patch last in the series
->  - add Stafford's reviewed by tags to the two unmodified patches
->
->
-> Johan Hovold (3):
->   serial: liteuart: fix use-after-free and memleak on unbind
->   serial: liteuart: fix minor-number leak on probe errors
->   serial: liteuart: relax compile-test dependencies
->
->  drivers/tty/serial/Kconfig    |  2 +-
->  drivers/tty/serial/liteuart.c | 18 +++++++++++++++---
->  2 files changed, 16 insertions(+), 4 deletions(-)
->
-> --
-> 2.32.0
->
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+Cheers,
+Ruediger
