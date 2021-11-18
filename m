@@ -2,52 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA92C43219
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 07:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABACCC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 07:31:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1A5FB61A62
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 07:31:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 94E2561BD4
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 07:31:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243881AbhKRHev (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Nov 2021 02:34:51 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:46422 "EHLO
+        id S243955AbhKRHew (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Nov 2021 02:34:52 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:46414 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243873AbhKRHeb (ORCPT
+        with ESMTP id S243872AbhKRHeb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 18 Nov 2021 02:34:31 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 714B8218E0;
+        by smtp-out1.suse.de (Postfix) with ESMTP id 43B0F218D5;
         Thu, 18 Nov 2021 07:31:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1637220690; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Yu0y74oMtF+lJUlNGiYgI7tMeVKHm6ikxOnBczy+TBI=;
-        b=cdidaUYUcos5XS+hXMBqr5Gp/qjFdtCs72oVUr/J3SKGmHlLSV4BV2I29cc+SDzNsukcrs
-        Yi6JE7WwqMxP8MTlJrMnSJlnk2ly4WLg3DrFAPmalLJD0Zy480iNaE9owifl1B4Nt8vUTG
-        EmjIgzk/vYmuNm+1ydcd+OzhyRs9DFA=
+        bh=ceeUZsEANBE1OI2itMTxNUsgiAvwJdrWPdj7FRW59Qk=;
+        b=YT7/5r0k5iNHAmyfkPyTEgW+QQYulHtCHUy8U9RMNqST9X7rWMEIdpH6jnr5vQCLPbI0FP
+        dpIIQZEJXyUJ4/9M5LIfapaXDuebxno6BJBHJ1cUielJJv+mbd5ETzJi/nToI9JJ3cSKpV
+        IAtEa4Cd/JwDaNuoftg8FdM/1pfBzCc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1637220690;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Yu0y74oMtF+lJUlNGiYgI7tMeVKHm6ikxOnBczy+TBI=;
-        b=7MwmCi+KrRmUhPrveuMefWK6Bbu45i+FCewzSfKFyVdFxmhnxRb2VcIaqHdCv+3AwwLRXn
-        wz4aaCp6IIN0UyAA==
+        bh=ceeUZsEANBE1OI2itMTxNUsgiAvwJdrWPdj7FRW59Qk=;
+        b=26YSBxG0ieL1E3D24jSfXaTZUDYoJ6uBd6hKTUUZ9Agt+4CxjI1E6T+varVjePjnAzG6hr
+        q675MvvlCmohdVDw==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 49500A3B84;
+        by relay2.suse.de (Postfix) with ESMTPS id 10CFCA3B83;
         Thu, 18 Nov 2021 07:31:30 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 19/19] mxser: use PCI_DEVICE_DATA
-Date:   Thu, 18 Nov 2021 08:31:25 +0100
-Message-Id: <20211118073125.12283-20-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org
+Subject: [PATCH 18/19] mxser: move ids from pci_ids.h here
+Date:   Thu, 18 Nov 2021 08:31:24 +0100
+Message-Id: <20211118073125.12283-19-jslaby@suse.cz>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211118073125.12283-1-jslaby@suse.cz>
 References: <20211118073125.12283-1-jslaby@suse.cz>
@@ -57,78 +58,84 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Now that we have all the PCI device IDs unified, we can use
-PCI_DEVICE_DATA() macro to simplify mxser's pci_device_id list, i.e.
-mxser_pcibrds.
+There is no point having MOXA PCI device IDs in include/linux/pci_ids.h.
+Move them to the driver and sort them all by the ID.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org
 ---
- drivers/tty/mxser.c | 52 ++++++++++++++++++++++-----------------------
- 1 file changed, 26 insertions(+), 26 deletions(-)
+ drivers/tty/mxser.c     | 20 +++++++++++++++++++-
+ include/linux/pci_ids.h | 18 ------------------
+ 2 files changed, 19 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index ba96ffed193a..c858aff721c4 100644
+index f6842089459a..ba96ffed193a 100644
 --- a/drivers/tty/mxser.c
 +++ b/drivers/tty/mxser.c
-@@ -212,32 +212,32 @@ static const struct {
- /* driver_data correspond to the lines in the structure above
-    see also ISA probe function before you change something */
- static const struct pci_device_id mxser_pcibrds[] = {
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_C168),	.driver_data = 8 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_C104),	.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132),	.driver_data = 2 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP114),	.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CT114),	.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102),	.driver_data = 2 | MXSER_HIGHBAUD },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP104U),	.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP168U),	.driver_data = 8 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132U),	.driver_data = 2 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP134U),	.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP104JU),.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_RC7000),	.driver_data = 8 }, /* RC7000 */
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP118U),	.driver_data = 8 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102UL),.driver_data = 2 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102U),	.driver_data = 2 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP118EL),.driver_data = 8 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP168EL),.driver_data = 8 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP104EL),.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CB108),	.driver_data = 8 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CB114),	.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CB134I),	.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP138U),	.driver_data = 8 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_POS104UL),.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP114UL),.driver_data = 4 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102UF),.driver_data = 2 },
--	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP112UL),.driver_data = 2 },
-+	{ PCI_DEVICE_DATA(MOXA, C168,		8) },
-+	{ PCI_DEVICE_DATA(MOXA, C104,		4) },
-+	{ PCI_DEVICE_DATA(MOXA, CP132,		2) },
-+	{ PCI_DEVICE_DATA(MOXA, CP114,		4) },
-+	{ PCI_DEVICE_DATA(MOXA, CT114,		4) },
-+	{ PCI_DEVICE_DATA(MOXA, CP102,		2 | MXSER_HIGHBAUD) },
-+	{ PCI_DEVICE_DATA(MOXA, CP104U,		4) },
-+	{ PCI_DEVICE_DATA(MOXA, CP168U,		8) },
-+	{ PCI_DEVICE_DATA(MOXA, CP132U,		2) },
-+	{ PCI_DEVICE_DATA(MOXA, CP134U,		4) },
-+	{ PCI_DEVICE_DATA(MOXA, CP104JU,	4) },
-+	{ PCI_DEVICE_DATA(MOXA, RC7000,		8) }, /* RC7000 */
-+	{ PCI_DEVICE_DATA(MOXA, CP118U,		8) },
-+	{ PCI_DEVICE_DATA(MOXA, CP102UL,	2) },
-+	{ PCI_DEVICE_DATA(MOXA, CP102U,		2) },
-+	{ PCI_DEVICE_DATA(MOXA, CP118EL,	8) },
-+	{ PCI_DEVICE_DATA(MOXA, CP168EL,	8) },
-+	{ PCI_DEVICE_DATA(MOXA, CP104EL,	4) },
-+	{ PCI_DEVICE_DATA(MOXA, CB108,		8) },
-+	{ PCI_DEVICE_DATA(MOXA, CB114,		4) },
-+	{ PCI_DEVICE_DATA(MOXA, CB134I,		4) },
-+	{ PCI_DEVICE_DATA(MOXA, CP138U,		8) },
-+	{ PCI_DEVICE_DATA(MOXA, POS104UL,	4) },
-+	{ PCI_DEVICE_DATA(MOXA, CP114UL,	4) },
-+	{ PCI_DEVICE_DATA(MOXA, CP102UF,	2) },
-+	{ PCI_DEVICE_DATA(MOXA, CP112UL,	2) },
- 	{ }
- };
- MODULE_DEVICE_TABLE(pci, mxser_pcibrds);
+@@ -159,14 +159,32 @@
+ #define MXSER_BAUD_BASE		921600
+ #define MXSER_CUSTOM_DIVISOR	(MXSER_BAUD_BASE * 16)
+ 
++#define PCI_DEVICE_ID_MOXA_RC7000	0x0001
++#define PCI_DEVICE_ID_MOXA_CP102	0x1020
++#define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
++#define PCI_DEVICE_ID_MOXA_CP102U	0x1022
++#define PCI_DEVICE_ID_MOXA_CP102UF	0x1023
++#define PCI_DEVICE_ID_MOXA_C104		0x1040
++#define PCI_DEVICE_ID_MOXA_CP104U	0x1041
++#define PCI_DEVICE_ID_MOXA_CP104JU	0x1042
++#define PCI_DEVICE_ID_MOXA_CP104EL	0x1043
+ #define PCI_DEVICE_ID_MOXA_POS104UL	0x1044
+ #define PCI_DEVICE_ID_MOXA_CB108	0x1080
+-#define PCI_DEVICE_ID_MOXA_CP102UF	0x1023
+ #define PCI_DEVICE_ID_MOXA_CP112UL	0x1120
++#define PCI_DEVICE_ID_MOXA_CT114	0x1140
++#define PCI_DEVICE_ID_MOXA_CP114	0x1141
+ #define PCI_DEVICE_ID_MOXA_CB114	0x1142
+ #define PCI_DEVICE_ID_MOXA_CP114UL	0x1143
++#define PCI_DEVICE_ID_MOXA_CP118U	0x1180
++#define PCI_DEVICE_ID_MOXA_CP118EL	0x1181
++#define PCI_DEVICE_ID_MOXA_CP132	0x1320
++#define PCI_DEVICE_ID_MOXA_CP132U	0x1321
++#define PCI_DEVICE_ID_MOXA_CP134U	0x1340
+ #define PCI_DEVICE_ID_MOXA_CB134I	0x1341
+ #define PCI_DEVICE_ID_MOXA_CP138U	0x1380
++#define PCI_DEVICE_ID_MOXA_C168		0x1680
++#define PCI_DEVICE_ID_MOXA_CP168U	0x1681
++#define PCI_DEVICE_ID_MOXA_CP168EL	0x1682
+ 
+ #define MXSER_NPORTS(ddata)		((ddata) & 0xffU)
+ #define MXSER_HIGHBAUD			0x0100
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index b5248f27910e..86678588d191 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -1965,24 +1965,6 @@
+ #define PCI_DEVICE_ID_APPLICOM_PCI2000PFB 0x0003
+ 
+ #define PCI_VENDOR_ID_MOXA		0x1393
+-#define PCI_DEVICE_ID_MOXA_RC7000	0x0001
+-#define PCI_DEVICE_ID_MOXA_CP102	0x1020
+-#define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
+-#define PCI_DEVICE_ID_MOXA_CP102U	0x1022
+-#define PCI_DEVICE_ID_MOXA_C104		0x1040
+-#define PCI_DEVICE_ID_MOXA_CP104U	0x1041
+-#define PCI_DEVICE_ID_MOXA_CP104JU	0x1042
+-#define PCI_DEVICE_ID_MOXA_CP104EL	0x1043
+-#define PCI_DEVICE_ID_MOXA_CT114	0x1140
+-#define PCI_DEVICE_ID_MOXA_CP114	0x1141
+-#define PCI_DEVICE_ID_MOXA_CP118U	0x1180
+-#define PCI_DEVICE_ID_MOXA_CP118EL	0x1181
+-#define PCI_DEVICE_ID_MOXA_CP132	0x1320
+-#define PCI_DEVICE_ID_MOXA_CP132U	0x1321
+-#define PCI_DEVICE_ID_MOXA_CP134U	0x1340
+-#define PCI_DEVICE_ID_MOXA_C168		0x1680
+-#define PCI_DEVICE_ID_MOXA_CP168U	0x1681
+-#define PCI_DEVICE_ID_MOXA_CP168EL	0x1682
+ #define PCI_DEVICE_ID_MOXA_CP204J	0x2040
+ #define PCI_DEVICE_ID_MOXA_C218		0x2180
+ #define PCI_DEVICE_ID_MOXA_C320		0x3200
 -- 
 2.33.1
 
