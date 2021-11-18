@@ -2,130 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D56C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 20:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F13F4C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 21:16:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D5D326137F
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 20:58:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D1CAA61A70
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 21:16:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbhKRVBT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Nov 2021 16:01:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229905AbhKRVBT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Nov 2021 16:01:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 58560613A3;
-        Thu, 18 Nov 2021 20:58:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637269098;
-        bh=/xt+uXa7glCQc4NoV8PVvEQVFQeQykCNInRgbr3iJxM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=W40RlW9A3DG5IR7234eCb49osgoPdyWqFY0IIxPdDFMWlZIidG8J98/0YJrQZ+3DM
-         2jI/eGwsASssjMFkMNTK5cmWfV83leADZtO48iF9IHxYLBvvwQVOQOIqJ5eiI7AV+P
-         /iPohx0AObaKf5rK26R9YXOnChBh/BV2+tKfEycdHo+tSPBxQ214A4IGmyr1qDTPeH
-         DqdF9/y/Bhs0xIktNREy61AZodRuHuvPAaAjsNWgOEr8Y5jI5PoNUp+S8/tDLz+QRq
-         RLXVHG2nVna4TYevQ2myx5tFc61sNOmXW45wa/pRSTB4tmKV9buFwqtJAjawhsaDUm
-         OTrzf7U4kjvPA==
-Date:   Thu, 18 Nov 2021 14:58:16 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH 18/19] mxser: move ids from pci_ids.h here
-Message-ID: <20211118205816.GA1883757@bhelgaas>
+        id S229921AbhKRVTZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Nov 2021 16:19:25 -0500
+Received: from mailnode.rz.hs-mannheim.de ([141.19.1.96]:46078 "EHLO
+        hs-mannheim.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229521AbhKRVTV (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 18 Nov 2021 16:19:21 -0500
+Received: from [176.199.209.39] (account willenberg@hs-mannheim.de HELO [192.168.0.240])
+  by hs-mannheim.de (CommuniGate Pro SMTP 6.2.14)
+  with ESMTPSA id 55641576; Thu, 18 Nov 2021 22:16:18 +0100
+Message-ID: <e93eeb46-8018-87f8-c753-cdb42f22a193@hs-mannheim.de>
+Date:   Thu, 18 Nov 2021 22:16:17 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211118073125.12283-19-jslaby@suse.cz>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] serial: uartlite: Move out-of-range port-numbers into
+ ULITE_NR_UARTS range
+To:     Michal Simek <michal.simek@xilinx.com>,
+        linux-serial@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, git@xilinx.com,
+        shubhrajyoti.datta@xilinx.com
+References: <20211117221510.11959-1-r.willenberg@hs-mannheim.de>
+ <01610e0c-998a-85b3-17b4-5a495c2974bf@xilinx.com>
+From:   Ruediger Willenberg <r.willenberg@hs-mannheim.de>
+In-Reply-To: <01610e0c-998a-85b3-17b4-5a495c2974bf@xilinx.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 18, 2021 at 08:31:24AM +0100, Jiri Slaby wrote:
-> There is no point having MOXA PCI device IDs in include/linux/pci_ids.h.
-> Move them to the driver and sort them all by the ID.
+Am 18.11.2021 um 09:34 schrieb Michal Simek:
 > 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: linux-pci@vger.kernel.org
-
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-
-I would capitalize "IDs" in the subject as you did in the commit log.
-
-> ---
->  drivers/tty/mxser.c     | 20 +++++++++++++++++++-
->  include/linux/pci_ids.h | 18 ------------------
->  2 files changed, 19 insertions(+), 19 deletions(-)
 > 
-> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-> index f6842089459a..ba96ffed193a 100644
-> --- a/drivers/tty/mxser.c
-> +++ b/drivers/tty/mxser.c
-> @@ -159,14 +159,32 @@
->  #define MXSER_BAUD_BASE		921600
->  #define MXSER_CUSTOM_DIVISOR	(MXSER_BAUD_BASE * 16)
->  
-> +#define PCI_DEVICE_ID_MOXA_RC7000	0x0001
-> +#define PCI_DEVICE_ID_MOXA_CP102	0x1020
-> +#define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
-> +#define PCI_DEVICE_ID_MOXA_CP102U	0x1022
-> +#define PCI_DEVICE_ID_MOXA_CP102UF	0x1023
-> +#define PCI_DEVICE_ID_MOXA_C104		0x1040
-> +#define PCI_DEVICE_ID_MOXA_CP104U	0x1041
-> +#define PCI_DEVICE_ID_MOXA_CP104JU	0x1042
-> +#define PCI_DEVICE_ID_MOXA_CP104EL	0x1043
->  #define PCI_DEVICE_ID_MOXA_POS104UL	0x1044
->  #define PCI_DEVICE_ID_MOXA_CB108	0x1080
-> -#define PCI_DEVICE_ID_MOXA_CP102UF	0x1023
->  #define PCI_DEVICE_ID_MOXA_CP112UL	0x1120
-> +#define PCI_DEVICE_ID_MOXA_CT114	0x1140
-> +#define PCI_DEVICE_ID_MOXA_CP114	0x1141
->  #define PCI_DEVICE_ID_MOXA_CB114	0x1142
->  #define PCI_DEVICE_ID_MOXA_CP114UL	0x1143
-> +#define PCI_DEVICE_ID_MOXA_CP118U	0x1180
-> +#define PCI_DEVICE_ID_MOXA_CP118EL	0x1181
-> +#define PCI_DEVICE_ID_MOXA_CP132	0x1320
-> +#define PCI_DEVICE_ID_MOXA_CP132U	0x1321
-> +#define PCI_DEVICE_ID_MOXA_CP134U	0x1340
->  #define PCI_DEVICE_ID_MOXA_CB134I	0x1341
->  #define PCI_DEVICE_ID_MOXA_CP138U	0x1380
-> +#define PCI_DEVICE_ID_MOXA_C168		0x1680
-> +#define PCI_DEVICE_ID_MOXA_CP168U	0x1681
-> +#define PCI_DEVICE_ID_MOXA_CP168EL	0x1682
->  
->  #define MXSER_NPORTS(ddata)		((ddata) & 0xffU)
->  #define MXSER_HIGHBAUD			0x0100
-> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-> index b5248f27910e..86678588d191 100644
-> --- a/include/linux/pci_ids.h
-> +++ b/include/linux/pci_ids.h
-> @@ -1965,24 +1965,6 @@
->  #define PCI_DEVICE_ID_APPLICOM_PCI2000PFB 0x0003
->  
->  #define PCI_VENDOR_ID_MOXA		0x1393
-> -#define PCI_DEVICE_ID_MOXA_RC7000	0x0001
-> -#define PCI_DEVICE_ID_MOXA_CP102	0x1020
-> -#define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
-> -#define PCI_DEVICE_ID_MOXA_CP102U	0x1022
-> -#define PCI_DEVICE_ID_MOXA_C104		0x1040
-> -#define PCI_DEVICE_ID_MOXA_CP104U	0x1041
-> -#define PCI_DEVICE_ID_MOXA_CP104JU	0x1042
-> -#define PCI_DEVICE_ID_MOXA_CP104EL	0x1043
-> -#define PCI_DEVICE_ID_MOXA_CT114	0x1140
-> -#define PCI_DEVICE_ID_MOXA_CP114	0x1141
-> -#define PCI_DEVICE_ID_MOXA_CP118U	0x1180
-> -#define PCI_DEVICE_ID_MOXA_CP118EL	0x1181
-> -#define PCI_DEVICE_ID_MOXA_CP132	0x1320
-> -#define PCI_DEVICE_ID_MOXA_CP132U	0x1321
-> -#define PCI_DEVICE_ID_MOXA_CP134U	0x1340
-> -#define PCI_DEVICE_ID_MOXA_C168		0x1680
-> -#define PCI_DEVICE_ID_MOXA_CP168U	0x1681
-> -#define PCI_DEVICE_ID_MOXA_CP168EL	0x1682
->  #define PCI_DEVICE_ID_MOXA_CP204J	0x2040
->  #define PCI_DEVICE_ID_MOXA_C218		0x2180
->  #define PCI_DEVICE_ID_MOXA_C320		0x3200
-> -- 
-> 2.33.1
+> On 11/17/21 23:15, Ruediger Willenberg wrote:
+>> Find free uart_port struct in range 0 <= id < ULITE_NR_UARTS when
+>> the device tree port-number property is outside that range. This
+>> can happen because the Xilinx device tree generator does not start
+>> enumerating Uartlites at 0 when there are PS-UARTs or AXI 16550A
+>> UARTs in the system; it then enumerates all UARTs consecutively
+>> despite them having separate drivers with separate structures.
+>> This has become more problematic since the Kconfig property
+>> SERIAL_UARTLITE_NR_UARTS enables precise allocation of uart_port
+>> structs, which can't be used if the port-number doesn't start at 0
+>>
+>> Signed-off-by: Ruediger Willenberg <r.willenberg@hs-mannheim.de>
+>> ---
+>>   drivers/tty/serial/uartlite.c | 8 ++++----
+>>   1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+>> index d3d9566e5dbd..546eecdb6033 100644
+>> --- a/drivers/tty/serial/uartlite.c
+>> +++ b/drivers/tty/serial/uartlite.c
+>> @@ -632,14 +632,14 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
+>>       struct uart_port *port;
+>>       int rc;
+>> -    /* if id = -1; then scan for a free id and use that */
+>> -    if (id < 0) {
+>> +    /* if id -1 or out of range; then scan for a free id and use that */
+>> +    if (id < 0 || id >= ULITE_NR_UARTS) {
+>>           for (id = 0; id < ULITE_NR_UARTS; id++)
+>>               if (ulite_ports[id].mapbase == 0)
+>>                   break;
+>>       }
+>> -    if (id < 0 || id >= ULITE_NR_UARTS) {
+>> -        dev_err(dev, "%s%i too large\n", ULITE_NAME, id);
+>> +    if (id == ULITE_NR_UARTS) {
+>> +        dev_err(dev, "maximum number of %s assigned\n", ULITE_NAME);
+>>           return -EINVAL;
+>>       }
+>>
 > 
+> Don't you want to also inform user about it? They can expect that serial10 is going to be ttyUL10 
+> but if ULITE_NR_UARTS is less you will get different number and user will have no idea why.
+> 
+> Thanks,
+> Michal
+
+Good catch, thanks! Will add a dev_notice() and repost.
+-Ruediger
