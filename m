@@ -2,92 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E7D2C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 21:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E20A2C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 21:21:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2AEDA61A81
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 21:17:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B24CE61A7D
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 21:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbhKRVUz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Nov 2021 16:20:55 -0500
-Received: from mailnode.rz.hs-mannheim.de ([141.19.1.96]:46736 "EHLO
+        id S229745AbhKRVYI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Nov 2021 16:24:08 -0500
+Received: from mailnode.rz.hs-mannheim.de ([141.19.1.96]:47998 "EHLO
         hs-mannheim.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229944AbhKRVUy (ORCPT
+        with ESMTP id S229633AbhKRVYG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Nov 2021 16:20:54 -0500
-Received: from [176.199.209.39] (account willenberg@hs-mannheim.de HELO localhost.localdomain)
+        Thu, 18 Nov 2021 16:24:06 -0500
+Received: from [176.199.209.39] (account willenberg@hs-mannheim.de HELO [192.168.0.240])
   by hs-mannheim.de (CommuniGate Pro SMTP 6.2.14)
-  with ESMTPSA id 55642082; Thu, 18 Nov 2021 22:17:52 +0100
-From:   Ruediger Willenberg <r.willenberg@hs-mannheim.de>
-To:     linux-serial@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, git@xilinx.com,
-        shubhrajyoti.datta@xilinx.com, michal.simek@xilinx.com,
-        Ruediger Willenberg <r.willenberg@hs-mannheim.de>
-Subject: [PATCH v2] serial: uartlite: Move out-of-range port-numbers into ULITE_NR_UARTS range
-Date:   Thu, 18 Nov 2021 22:17:45 +0100
-Message-Id: <20211118211745.133778-1-r.willenberg@hs-mannheim.de>
-X-Mailer: git-send-email 2.25.1
+  with ESMTPSA id 55642058; Thu, 18 Nov 2021 22:21:05 +0100
+Message-ID: <e01371cd-de45-cf9d-191a-c088df43566a@hs-mannheim.de>
+Date:   Thu, 18 Nov 2021 22:21:04 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v2] uartlite: Update the default for the
+ SERIAL_UARTLITE_NR_UARTS
+To:     Michal Simek <michal.simek@xilinx.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        linux-serial@vger.kernel.org
+Cc:     git@xilinx.com, gregkh@linuxfoundation.org
+References: <20211117051635.1316958-1-shubhrajyoti.datta@xilinx.com>
+ <edf15265-548a-1315-9175-967dddb38d4b@hs-mannheim.de>
+ <82ee1522-da4b-9fc6-bcf5-ceb94e307f96@xilinx.com>
+From:   Ruediger Willenberg <r.willenberg@hs-mannheim.de>
+In-Reply-To: <82ee1522-da4b-9fc6-bcf5-ceb94e307f96@xilinx.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Find free uart_port struct in range 0 <= id < ULITE_NR_UARTS when
-the device tree port-number property is outside that range. This
-happens when there are other UART types in the system because the
-Xilinx device tree generator numbers all UARTs consecutively;
-as a result, not as many Uartlites as specified by the
-SERIAL_UARTLITE_NR_UARTS parameter could be successfully added.
+Am 18.11.2021 um 09:45 schrieb Michal Simek:
+> On 11/17/21 10:53, Ruediger Willenberg wrote:
+>> Am 17.11.2021 um 06:16 schrieb Shubhrajyoti Datta:
+>>> "The uartlite is used by FPGAs that support a basically unlimited number
+>>> of uarts so limiting it at 16 dosn't make sense as users might need more
+>>> than that."
+>>> the commit also said that number should be unlimited. However it set the
+>>> default to 1 instead of 16.The original 16 written in driver should be
+>>>   quite reasonable default to cover most of the cases.
+>>>
+>>> So change the default number of uarts back to 16.
+>>
+>> The DTG should number devices for each driver separately from 0;
+>> serial_core.c checks for (0 <= uart_port->line < NR_UART_PORTS). As a
+>> consequence, when a Zynq system has both a PS-UART and a Uartlite,
+>> setting SERIAL_UARTLITE_NR_UARTS explicitly to 1 in Kconfig means
+>> probing the uartlite fails, which is confusing to the unsuspecting
+>> KConfig user. Setting the default to 16 just kicks the can down the
+>> road because it will fail for more than 15 Uartlites (or less, if there
+>> are more PS-UARTs or AXI 16550A UARTs).
+> 
+> I have no problem with your patch and it is correct (I would prefer a message to show for this 
+> option). But it doesn't mean that default 1 was correct value to setup especially when range was 
+> setup by Sam from 1-256. And originally number 16 was used.
 
-Signed-off-by: Ruediger Willenberg <r.willenberg@hs-mannheim.de>
----
-Changes in v2:
- - give KERN_NOTICE when changing the id,
-   with reference to the requested port-number 
+> That's why I think this patch is still valid. If you don't like description it can be changed 
+> because definitely people are using systems with more then one uartlite and 1 is not reasonable 
+> default.
+> We can also take a look at default for others serial drivers
+> and none of them is using 1 as default. IIRC discussion about UARTPS it was said if number is not 
 
- drivers/tty/serial/uartlite.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index d3d9566e5dbd..27c513c7350e 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -631,15 +631,17 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
- {
- 	struct uart_port *port;
- 	int rc;
-+	int oor_id = -1;
- 
--	/* if id = -1; then scan for a free id and use that */
--	if (id < 0) {
-+	/* if id -1 or out of range; then scan for a free id and use that */
-+	if (id < 0 || id >= ULITE_NR_UARTS) {
-+		oor_id = id;
- 		for (id = 0; id < ULITE_NR_UARTS; id++)
- 			if (ulite_ports[id].mapbase == 0)
- 				break;
- 	}
--	if (id < 0 || id >= ULITE_NR_UARTS) {
--		dev_err(dev, "%s%i too large\n", ULITE_NAME, id);
-+	if (id == ULITE_NR_UARTS) {
-+		dev_err(dev, "maximum number of %s assigned\n", ULITE_NAME);
- 		return -EINVAL;
- 	}
- 
-@@ -676,7 +678,11 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
- 		dev_set_drvdata(dev, NULL);
- 		return rc;
- 	}
--
-+	if (oor_id >= 0)
-+		dev_notice(dev,
-+			"assigned uartlite with device tree port-number=<%i> to %s%i\n",
-+			oor_id, ULITE_NAME, id);
-+
- 	return 0;
- }
- 
--- 
-2.25.1
+Clarification: I support changing the default up to 16. It will avoid problems for most cases where
+a) there are only a few Uartlites in the system
+AND
+b) the Kconfig user doesn't explictly specify SERIAL_UARTLITE_NR_UARTS
 
+I just wanted to point out that trouble ensues when
+a) somebody wants 16 Uartlites in a system when there is also a PS UART (basically any Zynq)
+OR
+b) somebody explicitly sets the SERIAL_UARTLITE_NR_UARTS to the number she built into a Zynq system
+(when the Uartlite driver is activated in menuconfig, the NR parameters pops right up, so it's 
+mighty tempting to actually set it to the accurate number)
+
+Moving the default up should just not be a band-aid for the cases where a single Uartlite can not be 
+assigned, when really there is a fundamental inconsistency between how serial_core.c has limited 
+line numbering since Kernel 2.6 (0 <= line_id < NR_UARTs) and what Xilinx DTG does with UARTs.
+
+
+ > And using aliases for serial id identification is around for a while and Xilinx DTG is aligned with
+ > it because via current dt you can't describe cases where you will have stable numbers for different
+ > tty names like
+ > ttyS0, ttyUL0, ttyPS0, ttyAMA0, etc.
+ > That's why DTG generates it per all serial IDs.
+
+Sincere apologies, I do not quite understand this explanation/argument. Would you be so kind to 
+rephrase?
+
+(As I'm a newbie to this list, I'm not sure how much back-and-forth is appropriate about a topic. 
+Since my issue here is about the Xilinx DTG, not Linux kernel code per se, I'd also be fine to 
+continue emailing off-list. There does not seem to be a similar list for device-tree-xlnx)
+
+Best wishes,
+Ruediger
