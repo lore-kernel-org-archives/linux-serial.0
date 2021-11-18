@@ -2,82 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94230C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 19:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D56C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 20:58:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7C23E6117A
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 19:12:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D5D326137F
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Nov 2021 20:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232969AbhKRTPB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Nov 2021 14:15:01 -0500
-Received: from mail-ua1-f43.google.com ([209.85.222.43]:42739 "EHLO
-        mail-ua1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbhKRTPB (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Nov 2021 14:15:01 -0500
-Received: by mail-ua1-f43.google.com with SMTP id t13so15984354uad.9;
-        Thu, 18 Nov 2021 11:12:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HdkMDs29UO263SyrrbBt9hoby4m3OB0fcbhQBysL57k=;
-        b=cWeYxFHN2EA8Ma3WQzBJ89jWym5P2tffpbxqYIubIxUHNZQUsm69QWZL4BZHQy/4O1
-         /7hHt4l8zS9z8YdbTsaNoaOUNs2CENr+65vzV6f0WMjamWm2a3qROfkqSoC9FJr5wMVv
-         0F1QKv2YI/rFupPe8aVpiPevt2MDI/VNYt7rGaLH1/finVJ/C42gulVcrgZ+TdwFOBjr
-         JQRuIwkBfVPHfC1IPaLvVnFeRZ8KwWg3AKEFWhBRVhtRlG5NLRVbycF5ysUz6hpVk6dv
-         r5o82tEUQTbkx6MELQnAEBdyaNwgZz3iBjb5khGmjBf7tkWbcttgWA/rWio8oqIXPqw6
-         ACqA==
-X-Gm-Message-State: AOAM5302uEFKHgZdPE+q7AAbtGPiWlx5OzvYz0bUmjEAEiaBpwliViQS
-        xznySt9nlMnCEB0/HcATvqn7owJsmZpNrg==
-X-Google-Smtp-Source: ABdhPJwXiaat/w1rIMAx32H2HEhGOMuz6GBWT5jC73WkaEFxTiceWFuR1K1yBK5aJaRDmUbakGZjNA==
-X-Received: by 2002:a67:ec10:: with SMTP id d16mr84227818vso.58.1637262719872;
-        Thu, 18 Nov 2021 11:11:59 -0800 (PST)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id 66sm452586uao.0.2021.11.18.11.11.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Nov 2021 11:11:59 -0800 (PST)
-Received: by mail-ua1-f44.google.com with SMTP id b17so16134392uas.0;
-        Thu, 18 Nov 2021 11:11:59 -0800 (PST)
-X-Received: by 2002:a67:af0a:: with SMTP id v10mr84874173vsl.35.1637262719162;
- Thu, 18 Nov 2021 11:11:59 -0800 (PST)
+        id S231575AbhKRVBT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Nov 2021 16:01:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37720 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229905AbhKRVBT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 18 Nov 2021 16:01:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 58560613A3;
+        Thu, 18 Nov 2021 20:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637269098;
+        bh=/xt+uXa7glCQc4NoV8PVvEQVFQeQykCNInRgbr3iJxM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=W40RlW9A3DG5IR7234eCb49osgoPdyWqFY0IIxPdDFMWlZIidG8J98/0YJrQZ+3DM
+         2jI/eGwsASssjMFkMNTK5cmWfV83leADZtO48iF9IHxYLBvvwQVOQOIqJ5eiI7AV+P
+         /iPohx0AObaKf5rK26R9YXOnChBh/BV2+tKfEycdHo+tSPBxQ214A4IGmyr1qDTPeH
+         DqdF9/y/Bhs0xIktNREy61AZodRuHuvPAaAjsNWgOEr8Y5jI5PoNUp+S8/tDLz+QRq
+         RLXVHG2nVna4TYevQ2myx5tFc61sNOmXW45wa/pRSTB4tmKV9buFwqtJAjawhsaDUm
+         OTrzf7U4kjvPA==
+Date:   Thu, 18 Nov 2021 14:58:16 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH 18/19] mxser: move ids from pci_ids.h here
+Message-ID: <20211118205816.GA1883757@bhelgaas>
 MIME-Version: 1.0
-References: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com> <20211116074130.107554-14-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20211116074130.107554-14-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 18 Nov 2021 20:11:47 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXqVTH=mAwK-z1sJq7HE2jS1vRySvZpZ57WpN1h18isBQ@mail.gmail.com>
-Message-ID: <CAMuHMdXqVTH=mAwK-z1sJq7HE2jS1vRySvZpZ57WpN1h18isBQ@mail.gmail.com>
-Subject: Re: [PATCH 13/16] tty: serial: sh-sci: Add support for R-Car Gen4
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211118073125.12283-19-jslaby@suse.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 8:42 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Add serial support for R-Car Gen4 SoC.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+On Thu, Nov 18, 2021 at 08:31:24AM +0100, Jiri Slaby wrote:
+> There is no point having MOXA PCI device IDs in include/linux/pci_ids.h.
+> Move them to the driver and sort them all by the ID.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: linux-pci@vger.kernel.org
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-Gr{oetje,eeting}s,
+I would capitalize "IDs" in the subject as you did in the commit log.
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> ---
+>  drivers/tty/mxser.c     | 20 +++++++++++++++++++-
+>  include/linux/pci_ids.h | 18 ------------------
+>  2 files changed, 19 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+> index f6842089459a..ba96ffed193a 100644
+> --- a/drivers/tty/mxser.c
+> +++ b/drivers/tty/mxser.c
+> @@ -159,14 +159,32 @@
+>  #define MXSER_BAUD_BASE		921600
+>  #define MXSER_CUSTOM_DIVISOR	(MXSER_BAUD_BASE * 16)
+>  
+> +#define PCI_DEVICE_ID_MOXA_RC7000	0x0001
+> +#define PCI_DEVICE_ID_MOXA_CP102	0x1020
+> +#define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
+> +#define PCI_DEVICE_ID_MOXA_CP102U	0x1022
+> +#define PCI_DEVICE_ID_MOXA_CP102UF	0x1023
+> +#define PCI_DEVICE_ID_MOXA_C104		0x1040
+> +#define PCI_DEVICE_ID_MOXA_CP104U	0x1041
+> +#define PCI_DEVICE_ID_MOXA_CP104JU	0x1042
+> +#define PCI_DEVICE_ID_MOXA_CP104EL	0x1043
+>  #define PCI_DEVICE_ID_MOXA_POS104UL	0x1044
+>  #define PCI_DEVICE_ID_MOXA_CB108	0x1080
+> -#define PCI_DEVICE_ID_MOXA_CP102UF	0x1023
+>  #define PCI_DEVICE_ID_MOXA_CP112UL	0x1120
+> +#define PCI_DEVICE_ID_MOXA_CT114	0x1140
+> +#define PCI_DEVICE_ID_MOXA_CP114	0x1141
+>  #define PCI_DEVICE_ID_MOXA_CB114	0x1142
+>  #define PCI_DEVICE_ID_MOXA_CP114UL	0x1143
+> +#define PCI_DEVICE_ID_MOXA_CP118U	0x1180
+> +#define PCI_DEVICE_ID_MOXA_CP118EL	0x1181
+> +#define PCI_DEVICE_ID_MOXA_CP132	0x1320
+> +#define PCI_DEVICE_ID_MOXA_CP132U	0x1321
+> +#define PCI_DEVICE_ID_MOXA_CP134U	0x1340
+>  #define PCI_DEVICE_ID_MOXA_CB134I	0x1341
+>  #define PCI_DEVICE_ID_MOXA_CP138U	0x1380
+> +#define PCI_DEVICE_ID_MOXA_C168		0x1680
+> +#define PCI_DEVICE_ID_MOXA_CP168U	0x1681
+> +#define PCI_DEVICE_ID_MOXA_CP168EL	0x1682
+>  
+>  #define MXSER_NPORTS(ddata)		((ddata) & 0xffU)
+>  #define MXSER_HIGHBAUD			0x0100
+> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+> index b5248f27910e..86678588d191 100644
+> --- a/include/linux/pci_ids.h
+> +++ b/include/linux/pci_ids.h
+> @@ -1965,24 +1965,6 @@
+>  #define PCI_DEVICE_ID_APPLICOM_PCI2000PFB 0x0003
+>  
+>  #define PCI_VENDOR_ID_MOXA		0x1393
+> -#define PCI_DEVICE_ID_MOXA_RC7000	0x0001
+> -#define PCI_DEVICE_ID_MOXA_CP102	0x1020
+> -#define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
+> -#define PCI_DEVICE_ID_MOXA_CP102U	0x1022
+> -#define PCI_DEVICE_ID_MOXA_C104		0x1040
+> -#define PCI_DEVICE_ID_MOXA_CP104U	0x1041
+> -#define PCI_DEVICE_ID_MOXA_CP104JU	0x1042
+> -#define PCI_DEVICE_ID_MOXA_CP104EL	0x1043
+> -#define PCI_DEVICE_ID_MOXA_CT114	0x1140
+> -#define PCI_DEVICE_ID_MOXA_CP114	0x1141
+> -#define PCI_DEVICE_ID_MOXA_CP118U	0x1180
+> -#define PCI_DEVICE_ID_MOXA_CP118EL	0x1181
+> -#define PCI_DEVICE_ID_MOXA_CP132	0x1320
+> -#define PCI_DEVICE_ID_MOXA_CP132U	0x1321
+> -#define PCI_DEVICE_ID_MOXA_CP134U	0x1340
+> -#define PCI_DEVICE_ID_MOXA_C168		0x1680
+> -#define PCI_DEVICE_ID_MOXA_CP168U	0x1681
+> -#define PCI_DEVICE_ID_MOXA_CP168EL	0x1682
+>  #define PCI_DEVICE_ID_MOXA_CP204J	0x2040
+>  #define PCI_DEVICE_ID_MOXA_C218		0x2180
+>  #define PCI_DEVICE_ID_MOXA_C320		0x3200
+> -- 
+> 2.33.1
+> 
