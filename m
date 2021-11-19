@@ -2,111 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D867C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 08:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5154C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 08:23:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7E3AB61A81
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 08:09:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C03C60E93
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 08:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233159AbhKSIMV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 Nov 2021 03:12:21 -0500
-Received: from goliath.siemens.de ([192.35.17.28]:33059 "EHLO
-        goliath.siemens.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229998AbhKSIMU (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 Nov 2021 03:12:20 -0500
-X-Greylist: delayed 530 seconds by postgrey-1.27 at vger.kernel.org; Fri, 19 Nov 2021 03:12:20 EST
-Received: from mail2.sbs.de (mail2.sbs.de [192.129.41.66])
-        by goliath.siemens.de (8.15.2/8.15.2) with ESMTPS id 1AJ80JUq007181
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 19 Nov 2021 09:00:19 +0100
-Received: from [167.87.1.34] ([167.87.1.34])
-        by mail2.sbs.de (8.15.2/8.15.2) with ESMTP id 1AJ80IiF025082;
-        Fri, 19 Nov 2021 09:00:18 +0100
-Subject: Re: [PATCH] Revert "serial: 8250: Don't touch RTS modem control while
- in rs485 mode"
-To:     Su Bao Cheng <baocheng_su@163.com>, Lukas Wunner <lukas@wunner.de>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, chao.zeng@siemens.com
-References: <20211027111644.1996921-1-baocheng.su@siemens.com>
- <20211027113938.GA9373@wunner.de>
- <e1a9b9bf-45a4-6e71-09f4-1ae730284778@163.com>
-From:   Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <61ace2ea-e0b3-599a-3098-8e8a2a4772fa@siemens.com>
-Date:   Fri, 19 Nov 2021 09:00:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S234295AbhKSI0j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 Nov 2021 03:26:39 -0500
+Received: from mga14.intel.com ([192.55.52.115]:65390 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234356AbhKSI0j (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 19 Nov 2021 03:26:39 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10172"; a="234616335"
+X-IronPort-AV: E=Sophos;i="5.87,246,1631602800"; 
+   d="scan'208";a="234616335"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2021 00:23:37 -0800
+X-IronPort-AV: E=Sophos;i="5.87,246,1631602800"; 
+   d="scan'208";a="673130433"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2021 00:23:35 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mnzBB-008TOl-Dh;
+        Fri, 19 Nov 2021 10:23:29 +0200
+Date:   Fri, 19 Nov 2021 10:23:29 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jay Dolan <jay.dolan@accesio.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 0/2] serial: 8250_pci: Split Pericom driver
+Message-ID: <YZdfAdOcH2Bn1K+W@smile.fi.intel.com>
+References: <20211117145750.43911-1-andriy.shevchenko@linux.intel.com>
+ <b99aabbe-add9-9c1e-ed4b-8850c69233de@accesio.com>
 MIME-Version: 1.0
-In-Reply-To: <e1a9b9bf-45a4-6e71-09f4-1ae730284778@163.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b99aabbe-add9-9c1e-ed4b-8850c69233de@accesio.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12.11.21 07:14, Su Bao Cheng wrote:
-> On 2021/10/27 下午7:39, Lukas Wunner wrote:
->> On Wed, Oct 27, 2021 at 07:16:44PM +0800, Su Bao Cheng wrote:
->>> This reverts commit f45709df7731ad36306a28a3e1af7309d55c35f5.
->>>
->>> The `serial8250_do_set_mctrl` not only used by userspace ioctl but
->>> also the kernel itself.
->>>
->>> During tty_open, the uart_port_startup sets the MCR to 0, and then use
->>> set_mctrl to restore the MCR, so at this time, the MCR read does not
->>> reflect the desired value.
->>
->> I don't quite follow.  Where is uart_port_startup() setting the MCR to 0?
->> Are you referring to the call to uart_port_dtr_rts()?  That function should
->> set RTS correctly according to RS485 state, so I don't see where any
->> breakage may occur.
->>
->> What is the user-visible issue that you seek to fix with the revert?
->>
-> 
-> Sorry for the late response, the company exchange server does not work
-> for me at this moment, so I have to use the private email instead.
-> 
-> The issue is observed on omap8250 hardware (CPU: AM6548). the use case
-> is RS485 half-duplex (2 wire mode), in this mode the RTS pin is used to
-> control the direction and is software controller via the MCR[1]
-> register. The problem is that the RS485 transmitting is OK, but the
-> receiving is not working. Similar issue also exists for the RS422, i.e.
-> the 4-wire full-duplex mode of RS485, but this time the TX does not
-> work, RX is fine.
-> 
-> The MCR is set to 0 at this line within uart_port_startup():
-> 	retval = uport->ops->startup(uport);
-> 
-> On omap8250, the startup() points to omap_8250_startup(), within it:
-> 	up->mcr = 0;
-> 
-> For software controlled RTS pin of RS485 half-duplex, when not in the
-> transmitting, the MCR[1] should be constant to indicate the current
-> direction is receiving. This is set in serial8250_em485_stop_tx().
-> 
-> So after this point of setting the MCR to 0, this up->mcr register
-> mirror does not reflect the actual desired value anymore. Further
-> checking against it leads to false result.
-> 
-> Another possible fix could be, instead of setting the mcr to 0 blindly,
-> one could check if the current operating mode is RS485 half-duplex, and
-> if so, mask the MCR[1], so that this bit is not changed. Because the
-> MCR[1] will be changed to the correct value before TX in
-> serial8250_em485_start_tx(), this change would not impact the transmitting.
-> 
+On Thu, Nov 18, 2021 at 10:32:51PM -0800, Jay Dolan wrote:
+> On 11/17/21 6:57 AM, Andy Shevchenko wrote:
+> > Split Pericom driver to a separate module.
+> > While at it, re-enable high baud rates.
+> > 
+> > Jay, can you, please, test this on as many hardware as you have?
+> > 
+> > The series depends on the fix-series: https://lore.kernel.org/linux-serial/20211117145502.43645-1-andriy.shevchenko@linux.intel.com/T/#u
 
-From this description, it seems like we have a rather fundamental
-regression here. Was RS485-half-duplex / RS422 tested after this change,
-Lukas?
+> I have my current state here: https://github.com/accesio/linux/blob/split-pericom-driver/drivers/tty/serial/8250/8250_pericom.c
+> 
+> * Change port type to UPIO_PORT
+> * Add in pericom_do_startup() because the UPF_MAGIC_MULTIPLIER doesn't
+> stick.
 
-A revert is just a workaround, I would say. But unless we have a quick
-idea for the proper fix, it may be the option for stable at least.
+Thanks, I have updated my local tree with these changes.
 
-Jan
+> When I'm testing baud rates greater than baud_base I'm seeing strange things
+> on the scope.
+
+Can you confirm that there are no issues with the first (fixes) series?
+I have slightly changed your set_divisor() refactoring, it may be that issue
+is there.
+
+> Maybe I'm just tired, and it's human error. I should be able
+> to get back to it and get it done on Saturday.
+
+Thank you.
 
 -- 
-Siemens AG, T RDA IOT
-Corporate Competence Center Embedded Linux
+With Best Regards,
+Andy Shevchenko
+
+
