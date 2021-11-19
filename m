@@ -2,109 +2,157 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A51D0C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 14:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73236C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 16:04:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 833FA61AD0
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 14:33:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 53FF761B1B
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 16:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235496AbhKSOgm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 Nov 2021 09:36:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60402 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234808AbhKSOgm (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 Nov 2021 09:36:42 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7050FC061574
-        for <linux-serial@vger.kernel.org>; Fri, 19 Nov 2021 06:33:40 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id m14so9529627pfc.9
-        for <linux-serial@vger.kernel.org>; Fri, 19 Nov 2021 06:33:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=accesio-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SuJeGi0xfxjRGp9PgOIOTr6ytZyWO3zrVNLiADusgH4=;
-        b=MjjVbXvV/o2y0KyYKYaiikhHMrL506+xXx/VzShePZezOBlvpWIQCQ6W9CNDJ5sQSv
-         +RuMCW5F9SQQi3EsW5POdSFzT22ATOf0bQrUbz+R9rjde03U0MdOnX8yO0wPV7XCE2Xz
-         eihXC1fFNS+prpvE29Zcq1mYkb+mTmaiK9V5dWYEzycv3XCW0gkUqmb9Ql1CoQ1xNfmL
-         vAI+za775EikxJZaJcOlFVRchbps/dzZS0qB5r6NvVKkGHtFpHeu+MM9+twKyk2NnSA4
-         izA90DLT+YdzYz7v2RVO0QDkT5Bbf5Ay/7nDtXjxTUTnM/8nY+VZRaqB90CRpe/vvrKF
-         iOsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SuJeGi0xfxjRGp9PgOIOTr6ytZyWO3zrVNLiADusgH4=;
-        b=LbkWE6Wf/42bNGrVfY83j2dOfEipY6vMKyNb/vSo+Z0YAChz2ngTiha5lqEJkNqsEQ
-         sEUw/BvRbt2zJ53TmU3AZ/QbjJB3bYhOEPrDCzVCv4y50GjW0W059wbvG9JHFNXl34ta
-         Gmf+OXyJnHfWCY9P/09z3lqiueqCdzTQTHJ7X1JtXML+pvArRmb5uKoqJOCxIBvOgIfx
-         74Jx4xwABgagU6hBDQ1GxSetJa7AGuKW1UZ//r1JhBPjVyjNJMmjnCezaVjh6EhWCt3T
-         UVhkDNpNGyHiZvTUUlDDrC7Ezjks4qvRTqSta/FiBAJwVVwygKLZQFf1ohucIfk1uTJL
-         BERw==
-X-Gm-Message-State: AOAM533dbP2JCB5v2rkowotkQl5VKbmIbWqTVCkwjnQew6CjuW1ETKJE
-        526y5o+vb1Ebs0BONzAUio8E
-X-Google-Smtp-Source: ABdhPJxsrhhw8g7eI1YVzBIznDgRMAmCClrJdNup9ERXc1Nr2x1uIlDg7Wv7InbVU/OHomu6doc/5w==
-X-Received: by 2002:a05:6a00:b49:b0:49f:bad2:bd7c with SMTP id p9-20020a056a000b4900b0049fbad2bd7cmr64370383pfo.64.1637332419941;
-        Fri, 19 Nov 2021 06:33:39 -0800 (PST)
-Received: from [172.16.8.241] ([98.149.220.160])
-        by smtp.gmail.com with ESMTPSA id a19sm27029pgv.42.2021.11.19.06.33.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Nov 2021 06:33:39 -0800 (PST)
-Subject: Re: [PATCH v1 0/2] serial: 8250_pci: Split Pericom driver
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>
-References: <20211117145750.43911-1-andriy.shevchenko@linux.intel.com>
- <b99aabbe-add9-9c1e-ed4b-8850c69233de@accesio.com>
- <YZdfAdOcH2Bn1K+W@smile.fi.intel.com>
-From:   Jay Dolan <jay.dolan@accesio.com>
-Message-ID: <633bbad1-7b13-7299-a570-2bf1a87c47a5@accesio.com>
-Date:   Fri, 19 Nov 2021 06:33:38 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S236209AbhKSQH5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 Nov 2021 11:07:57 -0500
+Received: from mout02.posteo.de ([185.67.36.66]:54593 "EHLO mout02.posteo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236205AbhKSQH5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 19 Nov 2021 11:07:57 -0500
+Received: from submission (posteo.de [89.146.220.130]) 
+        by mout02.posteo.de (Postfix) with ESMTPS id C04A324010E
+        for <linux-serial@vger.kernel.org>; Fri, 19 Nov 2021 17:04:53 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.net; s=2017;
+        t=1637337893; bh=ei4Pk91+TG41LS+YkQ10EcqKAyIbbtRGkKfMKOIYZ2M=;
+        h=Subject:To:Cc:From:Date:From;
+        b=m9IglhsjeQX7m+RVmH1faKP63vrgMJ2K5PGP2RQLWJPlRkuMzLzn7k8/VuvyODaqO
+         mc/UAgZ41rwKweXHivlXechl7F4Hdll+7K3xZupCn04/JgwI5gp3l8E3arQ1dJQsZa
+         c5hV2qTDI7aI9WOv3PW7aDHi6HBIpDi0NJq9jZNGZ8x7FWPXMm1b9eJs/bh79EIaSZ
+         eKIYxjP/AiSc7TFT5vZL8eB+AyM08OhsDQj/fOJ63NeiKoNXHQ54VnlyP3htmRAYG1
+         POKN4GW51xFTAyf9osFeIwVGRxFPrtj3GDloMZmmlSRe/WgZkfitE0/7pE6R67TWnB
+         qg+1cphB1tU+Q==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4HwhM649g7z9rwg;
+        Fri, 19 Nov 2021 17:04:50 +0100 (CET)
+Subject: Re: [PATCH 03/13] tty: serial: atmel: Call dma_async_issue_pending()
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        ludovic.desroches@microchip.com, vkoul@kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        Richard Genoud <richard.genoud@gmail.com>
+Cc:     nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        mripard@kernel.org, linux-arm-kernel@lists.infradead.org,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20211116112036.96349-1-tudor.ambarus@microchip.com>
+ <20211116112036.96349-4-tudor.ambarus@microchip.com>
+From:   Richard Genoud <richard.genoud@posteo.net>
+Message-ID: <6e29ab5d-070e-0407-96ad-129eb82afc88@posteo.net>
+Date:   Fri, 19 Nov 2021 16:04:49 +0000
 MIME-Version: 1.0
-In-Reply-To: <YZdfAdOcH2Bn1K+W@smile.fi.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20211116112036.96349-4-tudor.ambarus@microchip.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi,
+
+Le 16/11/2021 à 12:20, Tudor Ambarus a écrit :
+> The driver wrongly assummed that tx_submit() will start the transfer,
+> which is not the case, now that the at_xdmac driver is fixed. tx_submit
+> is supposed to push the current transaction descriptor to a pending queue,
+> waiting for issue_pending to be called. issue_pending must start the
+> transfer, not tx_submit. While touching atmel_prepare_rx_dma(), introduce
+> a local variable for the RX dma channel.
+> 
+> Fixes: 34df42f59a60 ("serial: at91: add rx dma support")
+> Fixes: 08f738be88bb ("serial: at91: add tx dma support")
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 20 +++++++++++++-------
+>  1 file changed, 13 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 376f7a9c2868..b3e593f3c17f 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -1009,6 +1009,8 @@ static void atmel_tx_dma(struct uart_port *port)
+>  				atmel_port->cookie_tx);
+>  			return;
+>  		}
+> +
+> +		dma_async_issue_pending(chan);
+>  	}
+>  
+>  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+
+From this hunk...
+> @@ -1191,6 +1193,7 @@ static void atmel_rx_from_dma(struct uart_port *port)
+>  static int atmel_prepare_rx_dma(struct uart_port *port)
+>  {
+>  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+> +	struct dma_chan *chan_rx;
+>  	struct device *mfd_dev = port->dev->parent;
+>  	struct dma_async_tx_descriptor *desc;
+>  	dma_cap_mask_t		mask;
+> @@ -1203,11 +1206,13 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+>  	dma_cap_zero(mask);
+>  	dma_cap_set(DMA_CYCLIC, mask);
+>  
+> -	atmel_port->chan_rx = dma_request_slave_channel(mfd_dev, "rx");
+> -	if (atmel_port->chan_rx == NULL)
+> +	chan_rx = dma_request_slave_channel(mfd_dev, "rx");
+> +	if (chan_rx == NULL)
+>  		goto chan_err;
+> +	atmel_port->chan_rx = chan_rx;
+> +
+>  	dev_info(port->dev, "using %s for rx DMA transfers\n",
+> -		dma_chan_name(atmel_port->chan_rx));
+> +		 dma_chan_name(chan_rx));
+>  
+>  	spin_lock_init(&atmel_port->lock_rx);
+>  	sg_init_table(&atmel_port->sg_rx, 1);
+> @@ -1239,8 +1244,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+>  	config.src_addr = port->mapbase + ATMEL_US_RHR;
+>  	config.src_maxburst = 1;
+>  
+> -	ret = dmaengine_slave_config(atmel_port->chan_rx,
+> -				     &config);
+> +	ret = dmaengine_slave_config(chan_rx, &config);
+>  	if (ret) {
+>  		dev_err(port->dev, "DMA rx slave configuration failed\n");
+>  		goto chan_err;
+> @@ -1249,7 +1253,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+>  	 * Prepare a cyclic dma transfer, assign 2 descriptors,
+>  	 * each one is half ring buffer size
+>  	 */
+> -	desc = dmaengine_prep_dma_cyclic(atmel_port->chan_rx,
+> +	desc = dmaengine_prep_dma_cyclic(chan_rx,
+>  					 sg_dma_address(&atmel_port->sg_rx),
+>  					 sg_dma_len(&atmel_port->sg_rx),
+>  					 sg_dma_len(&atmel_port->sg_rx)/2,
+...to here :
+I think this should go in another patch since these hunks only introduce "chan_rx".
+And in this other patch, maybe add a little note on why "atmel_port->chan_rx = chan_rx;"
+is after "chan_rx = dma_request_slave_channel(mfd_dev, "rx");"
 
 
-On 11/19/21 12:23 AM, Andy Shevchenko wrote:
-> On Thu, Nov 18, 2021 at 10:32:51PM -0800, Jay Dolan wrote:
->> On 11/17/21 6:57 AM, Andy Shevchenko wrote:
->>> Split Pericom driver to a separate module.
->>> While at it, re-enable high baud rates.
->>>
->>> Jay, can you, please, test this on as many hardware as you have?
->>>
->>> The series depends on the fix-series: https://lore.kernel.org/linux-serial/20211117145502.43645-1-andriy.shevchenko@linux.intel.com/T/#u
+> @@ -1269,12 +1273,14 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+>  		goto chan_err;
+>  	}
+>  
+> +	dma_async_issue_pending(chan_rx);
+> +
+>  	return 0;
+>  
+>  chan_err:
+>  	dev_err(port->dev, "RX channel not available, switch to pio\n");
+>  	atmel_port->use_dma_rx = false;
+> -	if (atmel_port->chan_rx)
+> +	if (chan_rx)
+>  		atmel_release_rx_dma(port);
+>  	return -EINVAL;
+>  }
 > 
->> I have my current state here: https://github.com/accesio/linux/blob/split-pericom-driver/drivers/tty/serial/8250/8250_pericom.c
->>
->> * Change port type to UPIO_PORT
->> * Add in pericom_do_startup() because the UPF_MAGIC_MULTIPLIER doesn't
->> stick.
-> 
-> Thanks, I have updated my local tree with these changes.
-> 
->> When I'm testing baud rates greater than baud_base I'm seeing strange things
->> on the scope.
-> 
-> Can you confirm that there are no issues with the first (fixes) series?
-Yes. The fixes series has no issues, and was tested up to baud_base for 
-both 14 and 24 MHz crystals.
-> I have slightly changed your set_divisor() refactoring, it may be that issue
-> is there.
-> 
->> Maybe I'm just tired, and it's human error. I should be able
->> to get back to it and get it done on Saturday.
-> 
-> Thank you.
-> 
+The rest seems ok.
+
+Thanks !
+
+Richard.
