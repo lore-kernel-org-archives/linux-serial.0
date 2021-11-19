@@ -2,131 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA29C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 16:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38DD0C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 16:54:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E9BDC61B1E
-	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 16:27:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0F24261213
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Nov 2021 16:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbhKSQar (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 Nov 2021 11:30:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236466AbhKSQar (ORCPT
+        id S229519AbhKSQ5e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 Nov 2021 11:57:34 -0500
+Received: from mail-oi1-f178.google.com ([209.85.167.178]:43941 "EHLO
+        mail-oi1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235718AbhKSQ5e (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 Nov 2021 11:30:47 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC69C061574;
-        Fri, 19 Nov 2021 08:27:45 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id b184-20020a1c1bc1000000b0033140bf8dd5so7916887wmb.5;
-        Fri, 19 Nov 2021 08:27:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jwyOhCiVlhmifA4bQDRHR85Pklwt1LGn8eLudMr/F2U=;
-        b=DXZJ3UxygHcwt/Ha22NnYjmjVvsTF2q5k2iQDCloE/XQtXoXu0gXs0MpgLg5nElxHX
-         92VQKPRfQ64AJB+Z3ucjT/elxJyDkna3rqIfo8QdHFSJPyOH3R4qsP/AtIetXse1ONYd
-         36iAFHEStgzGWkV4lC6x2SS4OIdDStB20P59n4sGblcn9oMkYRK1bM6HGJrIXen565+r
-         ZYDbOSN3kGL0SA1ajPS1Ra1LunjlpUiJYxia0ZuilYcr8qaZ6X2rgUhRGN59WIZMi9Z+
-         4nzqjnlJ4rw8bjjNa8cWGk+Ua7uV9O3opF84xIK1c6VEoDQoY7mnbtSdhvtW/3wtu62X
-         e31A==
+        Fri, 19 Nov 2021 11:57:34 -0500
+Received: by mail-oi1-f178.google.com with SMTP id o4so22877000oia.10;
+        Fri, 19 Nov 2021 08:54:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jwyOhCiVlhmifA4bQDRHR85Pklwt1LGn8eLudMr/F2U=;
-        b=1cwTSuEl6GKPLqw8o37W5/HSOhgjB28xny0q6V2FVY4uf0jbCNmuOJAWi7n6qdp7AQ
-         XnAwptGwkibwgP6nI9IBeoNxRVZPSGAvrXOOQnNGYFCxXfmdzegTCoRXvO9xd6lx0iMS
-         wx/aZXWOGMLcMeSyuiXaUwXcYXS6g7JuVbfG2X9scCBNeARGpFzFteOW3atAjFri89p7
-         7WH93TFkDiQsxfo//6zgb3AJe6bnq/o8uA/WX65AgFcyquAOOiMLXXAB4qmNPM66f8M5
-         8uF0Mel8l4qqRAg4ZmMRZJgNbJL6cuJLRB0wxs4MsAKbWsIHkW8hkpOSwOsmWmUtUKOy
-         Otxw==
-X-Gm-Message-State: AOAM533DA9dFHHghITz5LxlMJcLi/kPuURr321yQ7uCe5lsv7pxhgYKV
-        XQGS/ab/h7K6SLFeF3+j6che44j99N/aoA==
-X-Google-Smtp-Source: ABdhPJw89k7Fg4fI6tevke/MA4dVfBOQAF5PSa1qwrzPD2v2HDse9qwZJjlDBngFvFlQcTmuYn7KwQ==
-X-Received: by 2002:a05:600c:1d28:: with SMTP id l40mr1079389wms.192.1637339263651;
-        Fri, 19 Nov 2021 08:27:43 -0800 (PST)
-Received: from [192.168.2.41] ([46.227.18.67])
-        by smtp.gmail.com with ESMTPSA id c16sm179452wrx.96.2021.11.19.08.27.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Nov 2021 08:27:43 -0800 (PST)
-Subject: Re: [PATCH 02/13] tty: serial: atmel: Check return code of
- dmaengine_submit()
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        ludovic.desroches@microchip.com, vkoul@kernel.org,
-        richard.genoud@gmail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        mripard@kernel.org, linux-arm-kernel@lists.infradead.org,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20211116112036.96349-1-tudor.ambarus@microchip.com>
- <20211116112036.96349-3-tudor.ambarus@microchip.com>
-From:   Richard Genoud <richard.genoud@gmail.com>
-Message-ID: <e87ef826-1d03-e319-1d27-d876cf4fda5f@gmail.com>
-Date:   Fri, 19 Nov 2021 17:27:41 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dpil0WQAiM0KLIjHgqrrx0xNvdpK721S5oR0ahyldlA=;
+        b=5MCe2uQkIincUK5rOiLG4XX/kqi8CLEadDb4x7ubDStZQz2Kxhf5vgtOVNEJ/CmR9K
+         bajSAVbsikz9hBCXCSXmedpuaNH8H8MpDx8CQPRfQucCA0zYAL3tXDzkmh6iTWcTtrqe
+         92hUk7+GTXhqHExTgAMCW5xEzP60R1l/DcZHwi2nAHoeEPfxFpoIKV0ausqkrg03u0W6
+         QaVj0nbY3MBDtfvQIPAsjZHSJT8/g+geXVQZzZU3K/DN+ErLeKxp+V/yFT0WrZPI/M8b
+         hXhRyYsOEtDX4wir2H3wqEFBWkxaLF05Yj30ivkL2b9Ru2YCQd8oSs/7+yEhbhtluy3G
+         VptA==
+X-Gm-Message-State: AOAM532odGy09r/U1bOl27TjLlwOdutUtqtAlkneByonm6oqMk9jxTG+
+        9VvSjMjLnf8FsQME5ub4cg==
+X-Google-Smtp-Source: ABdhPJwALY+8FTU2ujmpgV6UCZDd1p24i+QI2OOr62sxlSHxWVBu57DThhHCtNC+BbWHjwSsC6J5uQ==
+X-Received: by 2002:aca:110e:: with SMTP id 14mr1080576oir.100.1637340872102;
+        Fri, 19 Nov 2021 08:54:32 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id b26sm64201oti.56.2021.11.19.08.54.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Nov 2021 08:54:31 -0800 (PST)
+Received: (nullmailer pid 4025438 invoked by uid 1000);
+        Fri, 19 Nov 2021 16:54:30 -0000
+Date:   Fri, 19 Nov 2021 10:54:30 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH v3 1/3] dt-bindings: serial: renesas,scif: Make resets as
+ a required property
+Message-ID: <YZfWxvUNiFbggQjI@robh.at.kernel.org>
+References: <20211110232920.19198-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20211110232920.19198-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-In-Reply-To: <20211116112036.96349-3-tudor.ambarus@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211110232920.19198-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-Le 16/11/2021 à 12:20, Tudor Ambarus a écrit :
-> The tx_submit() method of struct dma_async_tx_descriptor is entitled
-> to do sanity checks and return errors if encountered. It's not the
-> case for the DMA controller drivers that this client is using
-> (at_h/xdmac), because they currently don't do sanity checks and always
-> return a positive cookie at tx_submit() method. In case the controller
-> drivers will implement sanity checks and return errors, print a message
-> so that the client will be informed that something went wrong at
-> tx_submit() level.
+On Wed, 10 Nov 2021 23:29:18 +0000, Lad Prabhakar wrote:
+> Make "resets" as required property for RZ/G2L. On RZ/G2L the devices
+> should be explicitly pulled out of reset for this reason make "resets"
+> as required property.
 > 
-> Fixes: 08f738be88bb ("serial: at91: add tx dma support")
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
->  drivers/tty/serial/atmel_serial.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 2c99a47a2535..376f7a9c2868 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -1004,6 +1004,11 @@ static void atmel_tx_dma(struct uart_port *port)
->  		desc->callback = atmel_complete_tx_dma;
->  		desc->callback_param = atmel_port;
->  		atmel_port->cookie_tx = dmaengine_submit(desc);
-> +		if (dma_submit_error(atmel_port->cookie_tx)) {
-> +			dev_err(port->dev, "dma_submit_error %d\n",
-> +				atmel_port->cookie_tx);
-> +			return;
-> +		}
->  	}
->  
->  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> @@ -1258,6 +1263,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
->  	desc->callback_param = port;
->  	atmel_port->desc_rx = desc;
->  	atmel_port->cookie_rx = dmaengine_submit(desc);
-> +	if (dma_submit_error(atmel_port->cookie_rx)) {
-> +		dev_err(port->dev, "dma_submit_error %d\n",
-> +			atmel_port->cookie_rx);
-> +		goto chan_err;
-> +	}
->  
->  	return 0;
->  
+> v2->v3
+> * No Change
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
-
-
-Thanks !
+Acked-by: Rob Herring <robh@kernel.org>
