@@ -2,149 +2,170 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8237BC433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 21 Nov 2021 15:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E0AC433EF
+	for <linux-serial@archiver.kernel.org>; Sun, 21 Nov 2021 17:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238144AbhKUPjk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 21 Nov 2021 10:39:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237755AbhKUPjk (ORCPT
+        id S238562AbhKURqd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 21 Nov 2021 12:46:33 -0500
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:45085 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238482AbhKURqb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 21 Nov 2021 10:39:40 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34694C061574
-        for <linux-serial@vger.kernel.org>; Sun, 21 Nov 2021 07:36:35 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id q17so11951034plr.11
-        for <linux-serial@vger.kernel.org>; Sun, 21 Nov 2021 07:36:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=accesio-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OiGTTVWrlOnAEbHbsnOLTIV8tcQFzQvQYpLftDhlz/U=;
-        b=vM/kwTpc7E5c2sX6qx3wRqaK7lrWCwtwtZoHTXmLi1XULrVp/f9PNAZpn8w0+l9uYR
-         lz9rgytw5UlwKav79k74HeENMI7kazXKXS2f84rwC4zQQ0e1iAxQI/37aN4K95ZaEXqn
-         R8LDH2QPMYhuK/eB3Li3x37giUYxCUAXZz2Pm7NukoXfBUz2BfZcFrbBCJPz1GEdBqyD
-         aPn8UHNvRNQLnNsdQ74WEw06ycwDs9U/AYSQvG1HnhH02IfMznWTjmW11fSmz4AOiocA
-         5mArBx76QJr5XAURc7J+fZ8LgTGreAxQUsaa8uY4WjrRC7VRYE136qru6F1Bel3g8c7m
-         U/zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OiGTTVWrlOnAEbHbsnOLTIV8tcQFzQvQYpLftDhlz/U=;
-        b=kXK5MgWuNVtEWPZvtzQ4yf4M5Hghtairp2JH+ZQe2nzEqKajZd1DWqVJaNRVnHdy2y
-         0kZ7t+PRlHYeJvhNXpcbHPTi5hrLND5uuEbIgY9a1DImrF2S3iB7JM+YRXBryIQ7zykv
-         7TAuAzFTk5b6DDYz76vYDbZhbe0h+FSE+ouJFMPebq1xYQDfWqYpbymq3vnnGSbsPp3r
-         Vf8dXNQVchkTFZKn2mWJg8WPPzgefX5KOsHt2YRf1zsMvBONCzuFVprKKZDIbCkF2mL+
-         OtJD9rD6xFB4Y09I38BJ+ZkK9OyqvRKqWmd/GIgmG2ge8SP2Y+G7MJ1oDDTD7NDh/WJ4
-         Z/Zw==
-X-Gm-Message-State: AOAM532oMAiEWAWvUC0GKiqCQdudjPqyi6OKpbKP3/+66zLS1Tj5HRUX
-        ce8Bn3lN670WJW5svVGa5P9M
-X-Google-Smtp-Source: ABdhPJzEoSX8vxlqyAelsF/JM3xXRaMPwlSBjV62ZEw2obcX3UsHyhNeQf9VRh9SnHTI73cNzn9Afw==
-X-Received: by 2002:a17:90a:1b45:: with SMTP id q63mr22167642pjq.135.1637508994583;
-        Sun, 21 Nov 2021 07:36:34 -0800 (PST)
-Received: from [172.16.8.241] ([98.149.220.160])
-        by smtp.gmail.com with ESMTPSA id s19sm180741pfu.104.2021.11.21.07.36.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Nov 2021 07:36:34 -0800 (PST)
-Subject: Re: [PATCH v1 0/2] serial: 8250_pci: Split Pericom driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sun, 21 Nov 2021 12:46:31 -0500
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id B88D7300002AA;
+        Sun, 21 Nov 2021 18:43:24 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id A8DE832478; Sun, 21 Nov 2021 18:43:24 +0100 (CET)
+Date:   Sun, 21 Nov 2021 18:43:24 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Jan Kiszka <jan.kiszka@siemens.com>
+Cc:     Su Bao Cheng <baocheng_su@163.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-References: <20211117145750.43911-1-andriy.shevchenko@linux.intel.com>
- <b99aabbe-add9-9c1e-ed4b-8850c69233de@accesio.com>
- <YZdfAdOcH2Bn1K+W@smile.fi.intel.com>
- <633bbad1-7b13-7299-a570-2bf1a87c47a5@accesio.com>
- <7e83c01f-1aa4-56ef-e28f-9e7421864183@accesio.com>
- <CAHp75VedLLiB=Ujrymq9F1=SG2NRCeempUwqSbX9KHu1ND4x5g@mail.gmail.com>
-From:   Jay Dolan <jay.dolan@accesio.com>
-Message-ID: <063610ab-3416-d8fe-c05f-205382e0c5cd@accesio.com>
-Date:   Sun, 21 Nov 2021 07:36:32 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        linux-serial@vger.kernel.org, chao.zeng@siemens.com
+Subject: Re: [PATCH] Revert "serial: 8250: Don't touch RTS modem control
+ while in rs485 mode"
+Message-ID: <20211121174324.GA17258@wunner.de>
+References: <20211027111644.1996921-1-baocheng.su@siemens.com>
+ <20211027113938.GA9373@wunner.de>
+ <e1a9b9bf-45a4-6e71-09f4-1ae730284778@163.com>
+ <20211120171810.GA26621@wunner.de>
+ <62d4b8ac-b9a4-3f3a-a5e3-7a3c21ed16f0@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <CAHp75VedLLiB=Ujrymq9F1=SG2NRCeempUwqSbX9KHu1ND4x5g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62d4b8ac-b9a4-3f3a-a5e3-7a3c21ed16f0@siemens.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Sun, Nov 21, 2021 at 10:00:51AM +0100, Jan Kiszka wrote:
+> Meanwhile reproduced myself, and now I believe your patch is broken in
+> ignoring the internal call path to serial8250_set_mctrl, coming from
+> uart_port_dtr_rts:
+[...]
+> This case is not triggered by userspace setting a custom RTS value but
+> by the uart-internal machinery selecting it based on the rs485 mode,
+> among other things. That path must not be intercepted and made
+> conditional using the current MCR state but has to write the request
+> value *as is*.
 
+Thanks for the analysis and sorry for the breakage.  I'm proposing the
+fix below.  Let me know if that works for you.
 
-On 11/21/21 2:16 AM, Andy Shevchenko wrote:
-> On Sat, Nov 20, 2021 at 11:46 PM Jay Dolan <jay.dolan@accesio.com> wrote:
->> On 11/19/21 6:33 AM, Jay Dolan wrote:
->>> On 11/19/21 12:23 AM, Andy Shevchenko wrote:
->>>> On Thu, Nov 18, 2021 at 10:32:51PM -0800, Jay Dolan wrote:
->>>>> On 11/17/21 6:57 AM, Andy Shevchenko wrote:
-> 
->>>>>> Split Pericom driver to a separate module.
->>>>>> While at it, re-enable high baud rates.
->>>>>>
->>>>>> Jay, can you, please, test this on as many hardware as you have?
->>>>>>
->>>>>> The series depends on the fix-series:
->>>>>> https://lore.kernel.org/linux-serial/20211117145502.43645-1-andriy.shevchenko@linux.intel.com/T/#u
->>>>
->>>>> I have my current state here:
->>>>> https://github.com/accesio/linux/blob/split-pericom-driver/drivers/tty/serial/8250/8250_pericom.c
->>>>>
->>>>>
->>>>> * Change port type to UPIO_PORT
->>>>> * Add in pericom_do_startup() because the UPF_MAGIC_MULTIPLIER doesn't
->>>>> stick.
->>>>
->>>> Thanks, I have updated my local tree with these changes.
->>>>
->>>>> When I'm testing baud rates greater than baud_base I'm seeing strange
->>>>> things
->>>>> on the scope.
->>>>
->>>> Can you confirm that there are no issues with the first (fixes) series?
->>> Yes. The fixes series has no issues, and was tested up to baud_base for
->>> both 14 and 24 MHz crystals.
->>>> I have slightly changed your set_divisor() refactoring, it may be that
->>>> issue
->>>> is there.
->>>>
->>>>> Maybe I'm just tired, and it's human error. I should be able
->>>>> to get back to it and get it done on Saturday.
->>>>
->>>> Thank you.
->>
->> Latest code is still here
->> https://github.com/accesio/linux/blob/split-pericom-driver/drivers/tty/serial/8250/8250_pericom.c
->>
->> Changes from last update:
->> * Avoid divide by zero when initializing delta
-> 
-> Thanks for digging into it. But doesn't it mean that the issue is in
-> the fix series as I assumed before?
-Yes. It just happens to not get hit at any of the standard baud rates 
-that I found in the termbits.h files. So testing didn't find it until 
-testing rates greater than what is allowed without the magic multiplier 
-flag.
-I found it when doing the math on 3000000 because that causes it with 
-the 14 MHz crystal.
-> 
->> I retested and verified on the scope that speeds are now being set
->> correctly.
->>
->> I have also confirmed that all of the ACCES four port cards in the
->> driver do have the offset fourth port. The item I raised about PCI was a
->> misunderstanding that was all on my end.
-> 
-> Good to know that is not relevant.
-> 
->> Are there any other action items I should be handling?
-> 
-> I think I have to issue two new iterations of each series and collect
-> your formal Tested-by on the second one.
-> 
+However I believe that omap_8250_startup() should be amended to not set
+up->mcr = 0 unconditionally.  Rather, it should set the RTS bit if rs485
+is enabled and RTS polarity is inverted (as seems to be the case on your
+product).  Right now, even with the fix below you'll see a brief glitch
+wherein RTS is asserted (so the transceiver's driver is enabled) and
+immediately deasserted when opening the port.  This may disturb the
+communication of other devices on the bus.  Do you agree?  If so, I can
+prepare a separate fix for that.  Note that we may have never noticed
+that without f45709df7731, so... ;)
+
+Thanks,
+
+Lukas
+
+-- >8 --
+Subject: [PATCH] serial: 8250: Fix RTS modem control while in rs485 mode
+
+Commit f45709df7731 ("serial: 8250: Don't touch RTS modem control while
+in rs485 mode") sought to prevent user space from interfering with rs485
+communication by ignoring a TIOCMSET ioctl() which changes RTS polarity.
+
+It did so in serial8250_do_set_mctrl(), which turns out to be too deep
+in the call stack:  When a uart_port is opened, RTS polarity is set by
+the rs485-aware function uart_port_dtr_rts().  It calls down to
+serial8250_do_set_mctrl() and that particular RTS polarity change should
+*not* be ignored.
+
+The user-visible result is that on 8250_omap ports which use rs485 with
+inverse polarity (RTS bit in MCR register is 1 to receive, 0 to send),
+a newly opened port initially sets up RTS for sending instead of
+receiving.  That's because omap_8250_startup() sets the cached value
+up->mcr to 0 and omap_8250_restore_regs() subsequently writes it to the
+MCR register.  Due to the commit, serial8250_do_set_mctrl() preserves
+that incorrect register value:
+
+do_sys_openat2
+  do_filp_open
+    path_openat
+      vfs_open
+        do_dentry_open
+	  chrdev_open
+	    tty_open
+	      uart_open
+	        tty_port_open
+		  uart_port_activate
+		    uart_startup
+		      uart_port_startup
+		        serial8250_startup
+			  omap_8250_startup # up->mcr = 0
+			uart_change_speed
+			  serial8250_set_termios
+			    omap_8250_set_termios
+			      omap_8250_restore_regs
+			        serial8250_out_MCR # up->mcr written
+		  tty_port_block_til_ready
+		    uart_dtr_rts
+		      uart_port_dtr_rts
+		        serial8250_set_mctrl
+			  omap8250_set_mctrl
+			    serial8250_do_set_mctrl # mcr[1] = 1 ignored
+
+Fix by intercepting RTS changes from user space in uart_tiocmset()
+instead.
+
+Fixes: f45709df7731 ("serial: 8250: Don't touch RTS modem control while in rs485 mode")
+Reported-by: Su Bao Cheng <baocheng.su@siemens.com>
+Reported-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: Chao Zeng <chao.zeng@siemens.com>
+Cc: stable@vger.kernel.org # v5.7+
+---
+ drivers/tty/serial/8250/8250_port.c | 7 -------
+ drivers/tty/serial/serial_core.c    | 5 +++++
+ 2 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 5775cbff8f6e..46e2079ad1aa 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2024,13 +2024,6 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned char mcr;
+ 
+-	if (port->rs485.flags & SER_RS485_ENABLED) {
+-		if (serial8250_in_MCR(up) & UART_MCR_RTS)
+-			mctrl |= TIOCM_RTS;
+-		else
+-			mctrl &= ~TIOCM_RTS;
+-	}
+-
+ 	mcr = serial8250_TIOCM_to_MCR(mctrl);
+ 
+ 	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 1e738f265eea..6a38e9d7b87a 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1075,6 +1075,11 @@ uart_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
+ 		goto out;
+ 
+ 	if (!tty_io_error(tty)) {
++		if (uport->rs485.flags & SER_RS485_ENABLED) {
++			set &= ~TIOCM_RTS;
++			clear &= ~TIOCM_RTS;
++		}
++
+ 		uart_update_mctrl(uport, set, clear);
+ 		ret = 0;
+ 	}
+-- 
+2.33.0
+
