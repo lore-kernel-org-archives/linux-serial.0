@@ -2,170 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E0AC433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 21 Nov 2021 17:43:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 227ABC433FE
+	for <linux-serial@archiver.kernel.org>; Sun, 21 Nov 2021 23:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238562AbhKURqd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 21 Nov 2021 12:46:33 -0500
-Received: from bmailout1.hostsharing.net ([83.223.95.100]:45085 "EHLO
-        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238482AbhKURqb (ORCPT
+        id S229920AbhKUXWm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 21 Nov 2021 18:22:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231199AbhKUXWk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 21 Nov 2021 12:46:31 -0500
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id B88D7300002AA;
-        Sun, 21 Nov 2021 18:43:24 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id A8DE832478; Sun, 21 Nov 2021 18:43:24 +0100 (CET)
-Date:   Sun, 21 Nov 2021 18:43:24 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Jan Kiszka <jan.kiszka@siemens.com>
-Cc:     Su Bao Cheng <baocheng_su@163.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        linux-serial@vger.kernel.org, chao.zeng@siemens.com
-Subject: Re: [PATCH] Revert "serial: 8250: Don't touch RTS modem control
- while in rs485 mode"
-Message-ID: <20211121174324.GA17258@wunner.de>
-References: <20211027111644.1996921-1-baocheng.su@siemens.com>
- <20211027113938.GA9373@wunner.de>
- <e1a9b9bf-45a4-6e71-09f4-1ae730284778@163.com>
- <20211120171810.GA26621@wunner.de>
- <62d4b8ac-b9a4-3f3a-a5e3-7a3c21ed16f0@siemens.com>
+        Sun, 21 Nov 2021 18:22:40 -0500
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C02C061714
+        for <linux-serial@vger.kernel.org>; Sun, 21 Nov 2021 15:19:34 -0800 (PST)
+Received: by mail-ot1-x32f.google.com with SMTP id h12-20020a056830034c00b0055c8458126fso26253614ote.0
+        for <linux-serial@vger.kernel.org>; Sun, 21 Nov 2021 15:19:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=niG4LhykdMe2sCgAWkzlpTzAknhhfhfFKN7/kHVLdb8=;
+        b=wcakSBzJXl9BZALRNXqLiyhsCB+m6PdHwbi8HzqWYQSDqzOUzvEqpnvo21ThgDfiUG
+         YeyUYuOqKliWaPSXP/3LV4nTzhJ67sErjZ9XmD8vEyQ0pDW321Hx2roOzp9DvJ0BEA7J
+         2IWUMeWBcGigOgZN2CdXyeomJHmgrZ/hwlM+gUea3h48Ioa5ZpPo0L3VUny+fxgUQ0ks
+         /ZLvb22GhtsiEvG5gQXnXcMFBm5AfOhDm+50f7dWkr6nQIM/zeugbt4FCtIx6kcdwEIS
+         IWPVkQyjCfhxRQIYm1R2CrQsPeeRMtMsD9QvTBmJ8X3sG9ojs8/p/EM1lQ+VBLpDkc4q
+         TKDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=niG4LhykdMe2sCgAWkzlpTzAknhhfhfFKN7/kHVLdb8=;
+        b=6QZOzquEPzrVAWl88u+JU9NSpA8e7KndgKsfVODMbBe1uZ6TU2YaUyCAC3Wwp3GmWa
+         lKXwV2xSyOt/AWCZbqS9sgO4c2OpggK4D3Qf+LpWNHAQaSzK4nj7X7RxMSPhI7O8rOfy
+         jcLEEGbfEGrf0vONixDDu1cgOJUMvFuwOy4IYWCr/MnGVz5AhIA83s28sivR+kVFoCkW
+         E6xJiD5x+sp41g/M4jCNx4hDqEHhQMiMds3pwhpYCRqRKWGHyGtYWuQRAhGChbnGwf5g
+         N4U7s1Y0R2yYrFpEOlr0OJApNE8geTqZXyhkJrqp9UsHCoQrwuC7vRIWX+ZyjHrl7ZnT
+         qTjQ==
+X-Gm-Message-State: AOAM531jmNFRqpiQ4HuiVgjjd50rpw7HSQDMNZ6k9SVLCPYKJGkYC6nY
+        TyHM9MY0r9fBl80r4BBBkTvMgTgPWAT7+uqxKixbsQ==
+X-Google-Smtp-Source: ABdhPJyVdtjQUoLHr9GMlVhAVr/1N/sztecCcTj39EJlBe5nSjbyIi50Oo/ofoA+ROJrbzFktx9bDGshBDQgVsRlEgw=
+X-Received: by 2002:a9d:ed6:: with SMTP id 80mr20546619otj.35.1637536773648;
+ Sun, 21 Nov 2021 15:19:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62d4b8ac-b9a4-3f3a-a5e3-7a3c21ed16f0@siemens.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211102161125.1144023-1-kernel@esmil.dk> <20211102161125.1144023-12-kernel@esmil.dk>
+ <CACRpkdb0CrJ_uTbtfg-xGq8uu0AKoqfAB03mF2CA_G8ys_8Lzg@mail.gmail.com> <CANBLGcwvGptHxP5+JQEQV1Y7G=dNTt86QuVgfUuvQDDBfNrzOA@mail.gmail.com>
+In-Reply-To: <CANBLGcwvGptHxP5+JQEQV1Y7G=dNTt86QuVgfUuvQDDBfNrzOA@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 22 Nov 2021 00:19:22 +0100
+Message-ID: <CACRpkdbsP1zibFvg2yL67ndQJ1MxBRmH5j+cZ-giZkmrnGROdw@mail.gmail.com>
+Subject: Re: [PATCH v3 11/16] dt-bindings: pinctrl: Add StarFive JH7100 bindings
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        soc@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Nov 21, 2021 at 10:00:51AM +0100, Jan Kiszka wrote:
-> Meanwhile reproduced myself, and now I believe your patch is broken in
-> ignoring the internal call path to serial8250_set_mctrl, coming from
-> uart_port_dtr_rts:
-[...]
-> This case is not triggered by userspace setting a custom RTS value but
-> by the uart-internal machinery selecting it based on the rs485 mode,
-> among other things. That path must not be intercepted and made
-> conditional using the current MCR state but has to write the request
-> value *as is*.
+On Fri, Nov 12, 2021 at 12:04 AM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> On Tue, 9 Nov 2021 at 01:46, Linus Walleij <linus.walleij@linaro.org> wrote:
 
-Thanks for the analysis and sorry for the breakage.  I'm proposing the
-fix below.  Let me know if that works for you.
+> > As it appears to have some cross dependencies I assume
+> > it will be merged through the SoC tree?
+>
+> I don't know. I've never tried this before, so whatever is easiest I
+> guess. Do I do anything special other than cc'ing soc@kernel.org for
+> v4 to make that happen?
 
-However I believe that omap_8250_startup() should be amended to not set
-up->mcr = 0 unconditionally.  Rather, it should set the RTS bit if rs485
-is enabled and RTS polarity is inverted (as seems to be the case on your
-product).  Right now, even with the fix below you'll see a brief glitch
-wherein RTS is asserted (so the transceiver's driver is enabled) and
-immediately deasserted when opening the port.  This may disturb the
-communication of other devices on the bus.  Do you agree?  If so, I can
-prepare a separate fix for that.  Note that we may have never noticed
-that without f45709df7731, so... ;)
+You create a pull request with git request-pull and sent it to
+soc@vger.kernel.org and linux-arm-kernel on Cc that should
+work fine and it appears here:
+https://patchwork.kernel.org/project/linux-soc/list/
 
-Thanks,
-
-Lukas
-
--- >8 --
-Subject: [PATCH] serial: 8250: Fix RTS modem control while in rs485 mode
-
-Commit f45709df7731 ("serial: 8250: Don't touch RTS modem control while
-in rs485 mode") sought to prevent user space from interfering with rs485
-communication by ignoring a TIOCMSET ioctl() which changes RTS polarity.
-
-It did so in serial8250_do_set_mctrl(), which turns out to be too deep
-in the call stack:  When a uart_port is opened, RTS polarity is set by
-the rs485-aware function uart_port_dtr_rts().  It calls down to
-serial8250_do_set_mctrl() and that particular RTS polarity change should
-*not* be ignored.
-
-The user-visible result is that on 8250_omap ports which use rs485 with
-inverse polarity (RTS bit in MCR register is 1 to receive, 0 to send),
-a newly opened port initially sets up RTS for sending instead of
-receiving.  That's because omap_8250_startup() sets the cached value
-up->mcr to 0 and omap_8250_restore_regs() subsequently writes it to the
-MCR register.  Due to the commit, serial8250_do_set_mctrl() preserves
-that incorrect register value:
-
-do_sys_openat2
-  do_filp_open
-    path_openat
-      vfs_open
-        do_dentry_open
-	  chrdev_open
-	    tty_open
-	      uart_open
-	        tty_port_open
-		  uart_port_activate
-		    uart_startup
-		      uart_port_startup
-		        serial8250_startup
-			  omap_8250_startup # up->mcr = 0
-			uart_change_speed
-			  serial8250_set_termios
-			    omap_8250_set_termios
-			      omap_8250_restore_regs
-			        serial8250_out_MCR # up->mcr written
-		  tty_port_block_til_ready
-		    uart_dtr_rts
-		      uart_port_dtr_rts
-		        serial8250_set_mctrl
-			  omap8250_set_mctrl
-			    serial8250_do_set_mctrl # mcr[1] = 1 ignored
-
-Fix by intercepting RTS changes from user space in uart_tiocmset()
-instead.
-
-Fixes: f45709df7731 ("serial: 8250: Don't touch RTS modem control while in rs485 mode")
-Reported-by: Su Bao Cheng <baocheng.su@siemens.com>
-Reported-by: Jan Kiszka <jan.kiszka@siemens.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: Chao Zeng <chao.zeng@siemens.com>
-Cc: stable@vger.kernel.org # v5.7+
----
- drivers/tty/serial/8250/8250_port.c | 7 -------
- drivers/tty/serial/serial_core.c    | 5 +++++
- 2 files changed, 5 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 5775cbff8f6e..46e2079ad1aa 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2024,13 +2024,6 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned char mcr;
- 
--	if (port->rs485.flags & SER_RS485_ENABLED) {
--		if (serial8250_in_MCR(up) & UART_MCR_RTS)
--			mctrl |= TIOCM_RTS;
--		else
--			mctrl &= ~TIOCM_RTS;
--	}
--
- 	mcr = serial8250_TIOCM_to_MCR(mctrl);
- 
- 	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 1e738f265eea..6a38e9d7b87a 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1075,6 +1075,11 @@ uart_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
- 		goto out;
- 
- 	if (!tty_io_error(tty)) {
-+		if (uport->rs485.flags & SER_RS485_ENABLED) {
-+			set &= ~TIOCM_RTS;
-+			clear &= ~TIOCM_RTS;
-+		}
-+
- 		uart_update_mctrl(uport, set, clear);
- 		ret = 0;
- 	}
--- 
-2.33.0
-
+Yours,
+Linus Walleij
