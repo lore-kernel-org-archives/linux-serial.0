@@ -2,115 +2,187 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC47C433F5
-	for <linux-serial@archiver.kernel.org>; Sun, 21 Nov 2021 23:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8795C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 09:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbhKUXio (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 21 Nov 2021 18:38:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbhKUXio (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 21 Nov 2021 18:38:44 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B813EC061714
-        for <linux-serial@vger.kernel.org>; Sun, 21 Nov 2021 15:35:38 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id a23-20020a9d4717000000b0056c15d6d0caso26151372otf.12
-        for <linux-serial@vger.kernel.org>; Sun, 21 Nov 2021 15:35:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BaBwOZhHd4DxX6OyrXmhy1nl2ZJax3QUSfV+91vGF7M=;
-        b=K+j7e9qBhUAibBOZEuR3+OvgRRz5+9kXuJpfy7hOrCUUI5mVAVvfPjVaSaQWagEtmD
-         VaQjSDZvZCKKfl/PaO0UdwCeIlqMJ7eJooO6eT7GjoXW1uvDDryVqntBnxqhbhpAdjE3
-         CmxKLcWB9dGg5+uW12IGRoofHXHVRV9TegwAW6qUaX/HiDYCvGQYSP2/TGLWo1eJk41q
-         HLONx6bHVQumcQ5Vy4Z+6fD/ZgNYF7VwvELj9YticGsmN4Q2lcnFiWT5fPI5W1ugXnAY
-         wRaew207TxZ9kuepimcJjzsp7th6vntEkiki7IDzihCyEVwhCSWDlcpKyzXN5bcdu5J+
-         tDSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BaBwOZhHd4DxX6OyrXmhy1nl2ZJax3QUSfV+91vGF7M=;
-        b=leYTPJru7g/G751eNTlak8MKtZmP7Gjw91GVpm2izRJcGmUBKw+cFlySpto+w5gERM
-         SU3r+Z9hKZstxjyyQCL/ca6NLCbtClkzA3WKGgaMzSpAmVPQS5EFnROH+zC8Tu4KyoVt
-         yDw1iyAwdbej4thqh7pmaTCBrv7fY7ile6yzFBvOSMWtNNjOdZCR9tPAvdfy7lpD0CTQ
-         2Vbu7jPcjjSbaZ++TsA+ioW7t/oXokd+NBk06tlvyWPXfF04/8sBqzaRvZIblEA/gdjH
-         /eZqdOTR+rSan8dN1UBIr/DFrpqRPhqt4R+JmzO874PS0UqLBjb0sYNCxTS53QkLz5sE
-         H7Uw==
-X-Gm-Message-State: AOAM531+HgajnAiGFbVKv3296U0Gn+mx6ZB8rd4H74pTzfsJVB3q1Szn
-        wtoyar3dGV8rxlX6VYK+ZaMtVw2xKoBcPbTELbbszQ==
-X-Google-Smtp-Source: ABdhPJxP1hm4dAk3hP5iwxGTmVS5kCY5d1BVX1iWfJPo1f0KYbx3q9C2qhLGJ7JQjety/S6BZHEqWcsnr8krInQwy+4=
-X-Received: by 2002:a9d:a42:: with SMTP id 60mr21475101otg.179.1637537737964;
- Sun, 21 Nov 2021 15:35:37 -0800 (PST)
+        id S238922AbhKVJEi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Nov 2021 04:04:38 -0500
+Received: from m12-18.163.com ([220.181.12.18]:51443 "EHLO m12-18.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229716AbhKVJEe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 22 Nov 2021 04:04:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=H+3qu
+        oeBk2kg7UH2uIl9AADTVyeUv0ygwL0EvisFerI=; b=hIrnd77GoyAR9cZpZYmhC
+        k7ymyVrnjCyrlxyp6EtIWgRay+RO8vQljxo7dkjHTzJy/86Ln8m1FRkk/mUJKeJC
+        WeSzwGUhxZAV7Ewy6RfuXVYtWcoBuS/SqpsH812pcDLN1NI+AhDynEXsAIo3rH5N
+        tb6HmoQWugOF+fBjPTlzYs=
+Received: from [192.168.100.154] (unknown [117.61.11.102])
+        by smtp14 (Coremail) with SMTP id EsCowACnk8FUXJthFHXwMQ--.91S2;
+        Mon, 22 Nov 2021 17:01:14 +0800 (CST)
+Subject: Re: [PATCH] Revert "serial: 8250: Don't touch RTS modem control while
+ in rs485 mode"
+To:     Lukas Wunner <lukas@wunner.de>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        linux-serial@vger.kernel.org, chao.zeng@siemens.com
+References: <20211027111644.1996921-1-baocheng.su@siemens.com>
+ <20211027113938.GA9373@wunner.de>
+ <e1a9b9bf-45a4-6e71-09f4-1ae730284778@163.com>
+ <20211120171810.GA26621@wunner.de>
+ <62d4b8ac-b9a4-3f3a-a5e3-7a3c21ed16f0@siemens.com>
+ <20211121174324.GA17258@wunner.de>
+From:   Su Bao Cheng <baocheng_su@163.com>
+Message-ID: <10469f11-aefc-3b45-b7e1-516c918e4dc2@163.com>
+Date:   Mon, 22 Nov 2021 17:01:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20211116150119.2171-1-kernel@esmil.dk> <20211116150119.2171-13-kernel@esmil.dk>
-In-Reply-To: <20211116150119.2171-13-kernel@esmil.dk>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 22 Nov 2021 00:35:26 +0100
-Message-ID: <CACRpkdbsRg3KB=xvhUPF3gVjE92pTwsbV+1SOJ=DXSE7c9VNHw@mail.gmail.com>
-Subject: Re: [PATCH v4 12/16] pinctrl: starfive: Add pinctrl driver for
- StarFive SoCs
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Zhu <michael.zhu@starfivetech.com>,
-        Fu Wei <tekkamanninja@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        Huan Feng <huan.feng@starfivetech.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20211121174324.GA17258@wunner.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: EsCowACnk8FUXJthFHXwMQ--.91S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxGr4DXF43GryxAw4UZr1rCrg_yoW7Jr15pF
+        4qkrZ0yrWqgay8G3WkZFWjqFWFg3Zrtry2gF9rG3s0vrn09F1IvF1xKayYkrWUGryvkFy2
+        yr1Yvr1j9a4DAFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jZOzsUUUUU=
+X-Originating-IP: [117.61.11.102]
+X-CM-SenderInfo: pedrux5hqjs2rx6rljoofrz/1tbixhtTJ13bpaS6ogAAs2
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 4:02 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+On 11/22/21 1:43 AM, Lukas Wunner wrote:
+> On Sun, Nov 21, 2021 at 10:00:51AM +0100, Jan Kiszka wrote:
+>> Meanwhile reproduced myself, and now I believe your patch is broken in
+>> ignoring the internal call path to serial8250_set_mctrl, coming from
+>> uart_port_dtr_rts:
+> [...]
+>> This case is not triggered by userspace setting a custom RTS value but
+>> by the uart-internal machinery selecting it based on the rs485 mode,
+>> among other things. That path must not be intercepted and made
+>> conditional using the current MCR state but has to write the request
+>> value *as is*.
+> 
+> Thanks for the analysis and sorry for the breakage.  I'm proposing the
+> fix below.  Let me know if that works for you.
+> 
+> However I believe that omap_8250_startup() should be amended to not set
+> up->mcr = 0 unconditionally.  Rather, it should set the RTS bit if rs485
+> is enabled and RTS polarity is inverted (as seems to be the case on your
+> product).  Right now, even with the fix below you'll see a brief glitch
+> wherein RTS is asserted (so the transceiver's driver is enabled) and
+> immediately deasserted when opening the port.  This may disturb the
+> communication of other devices on the bus.  Do you agree?  If so, I can
+> prepare a separate fix for that.  Note that we may have never noticed
+> that without f45709df7731, so... ;)
+> 
+> Thanks,
+> 
+> Lukas
+> 
 
-> Add a combined pinctrl and GPIO driver for the JH7100 RISC-V SoC by
-> StarFive Ltd. This is a test chip for their upcoming JH7110 SoC, which
-> is said to feature only minor changes to these pinctrl/GPIO parts.
->
-> For each "GPIO" there are two registers for configuring the output and
-> output enable signals which may come from other peripherals. Among these
-> are two special signals that are constant 0 and constant 1 respectively.
-> Controlling the GPIOs from software is done by choosing one of these
-> signals. In other words the same registers are used for both pin muxing
-> and controlling the GPIOs, which makes it easier to combine the pinctrl
-> and GPIO driver in one.
->
-> I wrote the pinconf and pinmux parts, but the GPIO part of the code is
-> based on the GPIO driver in the vendor tree written by Huan Feng with
-> cleanups and fixes by Drew and me.
->
-> Datasheet: https://github.com/starfive-tech/JH7100_Docs/blob/main/JH7100%20Data%20Sheet%20V01.01.04-EN%20(4-21-2021).pdf
-> Co-developed-by: Huan Feng <huan.feng@starfivetech.com>
-> Signed-off-by: Huan Feng <huan.feng@starfivetech.com>
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-> Co-developed-by: Drew Fustini <drew@beagleboard.org>
-> Signed-off-by: Drew Fustini <drew@beagleboard.org>
+The new patch works on our setup.
 
-Overall there is nothing wrong with this, and it is in nice shape.
-Let's merge it:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Thanks,
 
-Yours,
-Linus Walleij
+Baocheng Su
+
+> -- >8 --
+> Subject: [PATCH] serial: 8250: Fix RTS modem control while in rs485 mode
+> 
+> Commit f45709df7731 ("serial: 8250: Don't touch RTS modem control while
+> in rs485 mode") sought to prevent user space from interfering with rs485
+> communication by ignoring a TIOCMSET ioctl() which changes RTS polarity.
+> 
+> It did so in serial8250_do_set_mctrl(), which turns out to be too deep
+> in the call stack:  When a uart_port is opened, RTS polarity is set by
+> the rs485-aware function uart_port_dtr_rts().  It calls down to
+> serial8250_do_set_mctrl() and that particular RTS polarity change should
+> *not* be ignored.
+> 
+> The user-visible result is that on 8250_omap ports which use rs485 with
+> inverse polarity (RTS bit in MCR register is 1 to receive, 0 to send),
+> a newly opened port initially sets up RTS for sending instead of
+> receiving.  That's because omap_8250_startup() sets the cached value
+> up->mcr to 0 and omap_8250_restore_regs() subsequently writes it to the
+> MCR register.  Due to the commit, serial8250_do_set_mctrl() preserves
+> that incorrect register value:
+> 
+> do_sys_openat2
+>   do_filp_open
+>     path_openat
+>       vfs_open
+>         do_dentry_open
+> 	  chrdev_open
+> 	    tty_open
+> 	      uart_open
+> 	        tty_port_open
+> 		  uart_port_activate
+> 		    uart_startup
+> 		      uart_port_startup
+> 		        serial8250_startup
+> 			  omap_8250_startup # up->mcr = 0
+> 			uart_change_speed
+> 			  serial8250_set_termios
+> 			    omap_8250_set_termios
+> 			      omap_8250_restore_regs
+> 			        serial8250_out_MCR # up->mcr written
+> 		  tty_port_block_til_ready
+> 		    uart_dtr_rts
+> 		      uart_port_dtr_rts
+> 		        serial8250_set_mctrl
+> 			  omap8250_set_mctrl
+> 			    serial8250_do_set_mctrl # mcr[1] = 1 ignored
+> 
+> Fix by intercepting RTS changes from user space in uart_tiocmset()
+> instead.
+> 
+> Fixes: f45709df7731 ("serial: 8250: Don't touch RTS modem control while in rs485 mode")
+> Reported-by: Su Bao Cheng <baocheng.su@siemens.com>
+> Reported-by: Jan Kiszka <jan.kiszka@siemens.com>
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> Cc: Chao Zeng <chao.zeng@siemens.com>
+> Cc: stable@vger.kernel.org # v5.7+
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 7 -------
+>  drivers/tty/serial/serial_core.c    | 5 +++++
+>  2 files changed, 5 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 5775cbff8f6e..46e2079ad1aa 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2024,13 +2024,6 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  	struct uart_8250_port *up = up_to_u8250p(port);
+>  	unsigned char mcr;
+>  
+> -	if (port->rs485.flags & SER_RS485_ENABLED) {
+> -		if (serial8250_in_MCR(up) & UART_MCR_RTS)
+> -			mctrl |= TIOCM_RTS;
+> -		else
+> -			mctrl &= ~TIOCM_RTS;
+> -	}
+> -
+>  	mcr = serial8250_TIOCM_to_MCR(mctrl);
+>  
+>  	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 1e738f265eea..6a38e9d7b87a 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1075,6 +1075,11 @@ uart_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
+>  		goto out;
+>  
+>  	if (!tty_io_error(tty)) {
+> +		if (uport->rs485.flags & SER_RS485_ENABLED) {
+> +			set &= ~TIOCM_RTS;
+> +			clear &= ~TIOCM_RTS;
+> +		}
+> +
+>  		uart_update_mctrl(uport, set, clear);
+>  		ret = 0;
+>  	}
+> 
+
