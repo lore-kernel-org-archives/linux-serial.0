@@ -2,91 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C047C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 13:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A3BC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 13:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231448AbhKVNE4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Nov 2021 08:04:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36060 "EHLO mail.kernel.org"
+        id S238838AbhKVNiT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Nov 2021 08:38:19 -0500
+Received: from mga04.intel.com ([192.55.52.120]:22860 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230058AbhKVNEz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Nov 2021 08:04:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CE7B060F5B;
-        Mon, 22 Nov 2021 13:01:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1637586107;
-        bh=cfIg/uCuc4p0nRwYuqPMNhFVEk2R7HhI93wi9j5XUh4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xY0t7XdeYDuvEgXTDk1mFWAOxEZwLc/VDUjeK/qujTUZvsMiXfjJWoJpgdxspvKyk
-         HzfWVPWB7NJ+Ulb3SuH9phY7p0Uz+YCb63mmrzHoLvDoE0NzwLHyzVhLiEY313cO+B
-         6trVaBHdpKbFDrx3kCOjISyorhYodLMe6te0jVr8=
-Date:   Mon, 22 Nov 2021 14:01:44 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Patrik John <patrik.john@u-blox.com>
-Cc:     linux-kernel@vger.kernel.org, ldewangan@nvidia.com,
-        thierry.reding@gmail.com, jonathan@nvidia.com,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH] serial: tegra: Fixes lower tolerance baud rate limit for
- older tegra chips introduced by d781ec21bae6
-Message-ID: <YZuUuNTCLS0yLH8A@kroah.com>
-References: <sig.096060f39c.20211122124425.74031-1-patrik.john@u-blox.com>
+        id S231935AbhKVNiT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 22 Nov 2021 08:38:19 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10175"; a="233504815"
+X-IronPort-AV: E=Sophos;i="5.87,254,1631602800"; 
+   d="scan'208";a="233504815"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2021 05:35:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,254,1631602800"; 
+   d="scan'208";a="570315801"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 22 Nov 2021 05:35:10 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 962DC2AC; Mon, 22 Nov 2021 15:35:14 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Jay Dolan <jay.dolan@accesio.com>
+Subject: [PATCH v2 0/3] serial: 8250_pci: Split Pericom driver
+Date:   Mon, 22 Nov 2021 15:35:09 +0200
+Message-Id: <20211122133512.8947-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <sig.096060f39c.20211122124425.74031-1-patrik.john@u-blox.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 01:44:26PM +0100, Patrik John wrote:
-> The current implementation uses 0 as lower limit for the baud rate tolerance which contradicts the initial commit description (https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git/commit/drivers/tty/serial/serial-tegra.c?h=for-next&id=d781ec21bae6ff8f9e07682e8947a654484611f5) of +4/-4% tolerance for older tegra chips other than Tegra186 and Tegra194.
-> This causes issues on UART initilization as soon as the actual baud rate clock is slightly lower than required which we have seen on the Tegra124-based Toradex Apalis TK1 which also uses tegra30-hsuart as compatible in the DT serial node (for reference line 1540ff https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git/tree/arch/arm/boot/dts/tegra124-apalis-v1.2.dtsi?h=for-next)
+Split Pericom driver to a separate module.
+While at it, re-enable high baud rates.
 
-All of these links will break in a few days.
+Jay, can you, please, test this on as many hardware as you have?
 
-And a line number is not "1540ff" :(
+The series depends on the fix-series:
+https://lore.kernel.org/linux-serial/20211122120604.3909-1-andriy.shevchenko@linux.intel.com/T/#u
 
-> 
-> The standard baud rate tolerance limits are also stated in the tegra20-hsuart driver description (https://www.kernel.org/doc/Documentation/devicetree/bindings/serial/nvidia%2Ctegra20-hsuart.txt).
+Changelog v2:
+- rebased on top of v3 of the fix-series (see above)
+- added new patch 3
 
-You can just reference a file in the kernel source tree directly, no
-need to go back to kernel.org
+Andy Shevchenko (2):
+  serial: 8250_pci: Split out Pericom driver
+  serial: 8250_pericom: Use serial_dl_write() instead of open coded
 
-> 
-> The previously introduced check_rate_in_range() always fails due to the lower limit set to 0 even if the actual baud rate is within the required -4% tolerance.
+Jay Dolan (1):
+  serial: 8250_pericom: Re-enable higher baud rates
 
-Can you please wrap your changelog text at 72 columns like git asked you
-to when you committed the change to your local tree?
+ drivers/tty/serial/8250/8250_pci.c     | 405 +------------------------
+ drivers/tty/serial/8250/8250_pericom.c | 214 +++++++++++++
+ drivers/tty/serial/8250/Kconfig        |   8 +
+ drivers/tty/serial/8250/Makefile       |   1 +
+ 4 files changed, 228 insertions(+), 400 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_pericom.c
 
-> 
-> static int tegra_check_rate_in_range(struct tegra_uart_port *tup)
-> {
->     long diff;
->     diff = ((long)(tup->configured_rate - tup->required_rate) * 10000)
->         / tup->required_rate;
->     if (diff < (tup->cdata->error_tolerance_low_range * 100) ||
->         diff > (tup->cdata->error_tolerance_high_range * 100)) {
->         dev_err(tup->uport.dev,
->             "configured baud rate is out of range by %ld", diff);
->         return -EIO;
->     }
->     return 0;
-> }
+-- 
+2.33.0
 
-I do not understand, why is this code in the changelog?
-
-> 
-> Changing the lower tolerance limit to the actual -4% resolved the issues for the Tegra124 and should resolve potential issues for other Tegra20/Tegra30 based platforms as well.
-> 
-> Signed-off-by: Patrik John <patrik.john@u-blox.com>
-
-What commit does this fix?  Should it have a "Fixes:" tag in it?
-
-And should it go to stable kernel(s)?
-
-Also, this is a v2 patch, please include below the --- line what changed
-from the previous version when you resend v3.
-
-thanks,
-
-greg k-h
