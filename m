@@ -2,60 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF4FC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 11:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 848DBC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 11:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237127AbhKVLT7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Nov 2021 06:19:59 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:54026 "EHLO
+        id S237280AbhKVLUA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Nov 2021 06:20:00 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:54040 "EHLO
         smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236808AbhKVLT6 (ORCPT
+        with ESMTP id S236936AbhKVLT6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 22 Nov 2021 06:19:58 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F19241FD5A;
-        Mon, 22 Nov 2021 11:16:50 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 299041FD5B;
+        Mon, 22 Nov 2021 11:16:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1637579811; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/DWuNaIPMkQ1S47xiwC1Kuqyh6zuMZbAnHtiMJroLvI=;
-        b=D1L41pJziZDGO90HUXzoWk/3mTzUnOWhzmRAGxqJpEvPvLMMT7zDsJMjmo63deaUhH042C
-        YWSC5G41ZbOiUjBWUVGK1Ysb+/zPQK2hv/BJyOiWEt81r+uu0hD63zc6TWE9HgOqZzVMUm
-        qo2eQrNPBlpk3cLAL1zE/UUIrbDo++w=
+        bh=lEm+8vA9TCtL9DYsnrtmbGRRDo10Kj7WKBTDoClpP9I=;
+        b=rCDnM0RwIv5qarsHL34rHo/R7eQYKGi4deMZB4/mDl8ENy5l6AtpDUji7JQaYWv9bnGadu
+        LFkIPA1auB4hFwSXOVCmD46HNMqYrD729vysCKlB1uncjmP0BVQnxiCzK21qRI5y1QPmlU
+        DDD7jCcZr31cWucqFhBdQdEKX8X1Np0=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1637579811;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/DWuNaIPMkQ1S47xiwC1Kuqyh6zuMZbAnHtiMJroLvI=;
-        b=xVZTZPMMVa2BhOESUct0fJNE1xNOmmvwtrlRXYT+SWBqnrGSJSfXG12PaKwIDkbqNnfEQu
-        LxAQGmPbBzSvDVDw==
+        bh=lEm+8vA9TCtL9DYsnrtmbGRRDo10Kj7WKBTDoClpP9I=;
+        b=8IyANcO6gqekMJKuEKeJK1xvikSQ+QI+yGakWkSD6hWT0tRr7W7Z39h3oQEIRnhwBTrAJ7
+        /RMYJQJ6pKMitQAQ==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 053FEA3B83;
+        by relay2.suse.de (Postfix) with ESMTPS id 01309A3B88;
         Mon, 22 Nov 2021 11:16:50 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        johan@kernel.org, Jiri Slaby <jslaby@suse.cz>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        William Hubbs <w.d.hubbs@gmail.com>,
-        Chris Brannon <chris@the-brannons.com>,
-        Kirk Reiser <kirk@reisers.ca>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>
-Subject: [PATCH v2 2/3] tty: the rest, stop using tty_schedule_flip()
-Date:   Mon, 22 Nov 2021 12:16:47 +0100
-Message-Id: <20211122111648.30379-3-jslaby@suse.cz>
+        johan@kernel.org, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH v2 3/3] tty: drop tty_schedule_flip()
+Date:   Mon, 22 Nov 2021 12:16:48 +0100
+Message-Id: <20211122111648.30379-4-jslaby@suse.cz>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211122111648.30379-1-jslaby@suse.cz>
 References: <20211122111648.30379-1-jslaby@suse.cz>
@@ -66,83 +55,81 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-going to remove the latter (as it is used less), so call the former in
-the rest of the users.
+tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). All
+users were converted in the previous patches, so remove
+tty_schedule_flip() completely while inlining its body into
+tty_flip_buffer_push().
+
+One less exported function.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: William Hubbs <w.d.hubbs@gmail.com>
-Cc: Chris Brannon <chris@the-brannons.com>
-Cc: Kirk Reiser <kirk@reisers.ca>
-Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>
 ---
- arch/alpha/kernel/srmcons.c               | 2 +-
- drivers/accessibility/speakup/spk_ttyio.c | 4 ++--
- drivers/s390/char/keyboard.h              | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+[v2] drop tty_schedule_flip (and not tty_flip_buffer_push)
 
-diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-index 90635ef5dafa..6dc952b0df4a 100644
---- a/arch/alpha/kernel/srmcons.c
-+++ b/arch/alpha/kernel/srmcons.c
-@@ -59,7 +59,7 @@ srmcons_do_receive_chars(struct tty_port *port)
- 	} while((result.bits.status & 1) && (++loops < 10));
- 
- 	if (count)
--		tty_schedule_flip(port);
-+		tty_flip_buffer_push(port);
- 
- 	return count;
+ drivers/tty/tty_buffer.c | 30 ++++++++----------------------
+ include/linux/tty_flip.h |  1 -
+ 2 files changed, 8 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 6c7e65b1d9a1..5b6875057ce2 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -401,27 +401,6 @@ int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag)
  }
-diff --git a/drivers/accessibility/speakup/spk_ttyio.c b/drivers/accessibility/speakup/spk_ttyio.c
-index 0d1f397cd896..08cf8a17754b 100644
---- a/drivers/accessibility/speakup/spk_ttyio.c
-+++ b/drivers/accessibility/speakup/spk_ttyio.c
-@@ -88,7 +88,7 @@ static int spk_ttyio_receive_buf2(struct tty_struct *tty,
- 	}
+ EXPORT_SYMBOL(__tty_insert_flip_char);
  
- 	if (!ldisc_data->buf_free)
--		/* ttyio_in will tty_schedule_flip */
-+		/* ttyio_in will tty_flip_buffer_push */
- 		return 0;
+-/**
+- *	tty_schedule_flip	-	push characters to ldisc
+- *	@port: tty port to push from
+- *
+- *	Takes any pending buffers and transfers their ownership to the
+- *	ldisc side of the queue. It then schedules those characters for
+- *	processing by the line discipline.
+- */
+-
+-void tty_schedule_flip(struct tty_port *port)
+-{
+-	struct tty_bufhead *buf = &port->buf;
+-
+-	/* paired w/ acquire in flush_to_ldisc(); ensures
+-	 * flush_to_ldisc() sees buffer data.
+-	 */
+-	smp_store_release(&buf->tail->commit, buf->tail->used);
+-	queue_work(system_unbound_wq, &buf->work);
+-}
+-EXPORT_SYMBOL(tty_schedule_flip);
+-
+ /**
+  *	tty_prepare_flip_string		-	make room for characters
+  *	@port: tty port
+@@ -566,7 +545,14 @@ static void flush_to_ldisc(struct work_struct *work)
  
- 	/* Make sure the consumer has read buf before we have seen
-@@ -312,7 +312,7 @@ static unsigned char ttyio_in(struct spk_synth *in_synth, int timeout)
- 	mb();
- 	ldisc_data->buf_free = true;
- 	/* Let TTY push more characters */
--	tty_schedule_flip(tty->port);
-+	tty_flip_buffer_push(tty->port);
- 
- 	return rv;
- }
-diff --git a/drivers/s390/char/keyboard.h b/drivers/s390/char/keyboard.h
-index c467589c7f45..c06d399b9b1f 100644
---- a/drivers/s390/char/keyboard.h
-+++ b/drivers/s390/char/keyboard.h
-@@ -56,7 +56,7 @@ static inline void
- kbd_put_queue(struct tty_port *port, int ch)
+ void tty_flip_buffer_push(struct tty_port *port)
  {
- 	tty_insert_flip_char(port, ch, 0);
 -	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
++	struct tty_bufhead *buf = &port->buf;
++
++	/*
++	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
++	 * buffer data.
++	 */
++	smp_store_release(&buf->tail->commit, buf->tail->used);
++	queue_work(system_unbound_wq, &buf->work);
  }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
  
- static inline void
-@@ -64,5 +64,5 @@ kbd_puts_queue(struct tty_port *port, char *cp)
- {
- 	while (*cp)
- 		tty_insert_flip_char(port, *cp++, 0);
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
- }
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index 9916acb5de49..483d41cbcbb7 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -17,7 +17,6 @@ int tty_insert_flip_string_fixed_flag(struct tty_port *port,
+ int tty_prepare_flip_string(struct tty_port *port, unsigned char **chars,
+ 		size_t size);
+ void tty_flip_buffer_push(struct tty_port *port);
+-void tty_schedule_flip(struct tty_port *port);
+ int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag);
+ 
+ static inline int tty_insert_flip_char(struct tty_port *port,
 -- 
 2.33.1
 
