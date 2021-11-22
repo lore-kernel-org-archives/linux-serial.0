@@ -2,131 +2,160 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1735C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 16:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB8FC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 16:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237800AbhKVQJU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Nov 2021 11:09:20 -0500
-Received: from bmailout2.hostsharing.net ([83.223.78.240]:42549 "EHLO
-        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231787AbhKVQJU (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Nov 2021 11:09:20 -0500
-X-Greylist: delayed 412 seconds by postgrey-1.27 at vger.kernel.org; Mon, 22 Nov 2021 11:09:20 EST
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 2188028026992;
-        Mon, 22 Nov 2021 16:59:20 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 15F1B2ED3B7; Mon, 22 Nov 2021 16:59:20 +0100 (CET)
-Message-Id: <21170e622a1aaf842a50b32146008b5374b3dd1d.1637596432.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Mon, 22 Nov 2021 16:58:24 +0100
-Subject: [PATCH] serial: 8250: Fix RTS modem control while in rs485 mode
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     "Su Bao Cheng" <baocheng.su@siemens.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Chao Zeng <chao.zeng@siemens.com>, linux-serial@vger.kernel.org
+        id S240249AbhKVQca (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Nov 2021 11:32:30 -0500
+Received: from mail-vi1eur05on2084.outbound.protection.outlook.com ([40.107.21.84]:37665
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239597AbhKVQc3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 22 Nov 2021 11:32:29 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f1DN9P70UuHxpKPfQbYndCrznoUDbLuQUoNBGeKjT6Xux6DXbnQUh1QKRDibbhbTHKqlqJcWWqwGR97jpbweW/MpCIFv2cEQZpjltLnsyorX+FIn+SbqXngh2IyIa0m75MeMXM7/IJwwP2eW7Y2TFLAjaUsQ6yBR79ZrsWg4OPyJv/CWCQJOi3PNN/wd1bf9NRhpv2RKmJ88n7mj8Ig85T5aelaaKpNNlZnXh4i6M1NM4/aw21+vzhQW46x21gk0u03xkTQ+0V501KZRSrgaQYrnWxIKMPsVIHPYpEydMQgSR9eUrLosW2UGy6BA1uhirEypyaRjZ/bazJqa7x9dKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eoL3CQJWTOcfVexwhtBZVMLUIsslue+cd2XrKW/mdfg=;
+ b=e8nBnFEm14qOfyF9Wq3GC/W/ya6nI5RWJrq2pEQ1hNzkLeF+7Fz6jdZ3qWYtZVP++rzgVV1XB0e/p1kWcUBlhzkctlpyPjSxshFFYRB4ogb4uqEjkBnX5PsTKK3A8K2NIZno38PnYDbWz6xmp5cY4F0K7kTl5tgIWVIFIsa27ItcQDgOauENv5AUbdDI8nMmXum0cg2xoEDlzKrJuTVL5t3GnA1D1KWRaIFxfmnHOrxlt6ZkdAqIRBKXuJ4c4NZWZbyQaudNxPDdAC0TT9BJw4t5Bjz5aCgELInvGcXcXv29Yk3oi25peHxKDBcL45FfPpIbGdnFtfEG+7Nzq8k21w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eoL3CQJWTOcfVexwhtBZVMLUIsslue+cd2XrKW/mdfg=;
+ b=LS03lNDi9hcfl28yI0EPWgcEjxikAaDVvySQCYw1KHBI+RbYGwxupnI1TuMLQb7kqwjyvcFqVWtCNHm9IXu2tUqFBQyNQq1b9KMPbO9/D546PmStA5UjAnGow99xC1gYrLNT39WqNwWONWr691wd5umjCLic0vJe0sZcT0/eF2I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
+ by VI1PR04MB4912.eurprd04.prod.outlook.com (2603:10a6:803:5b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Mon, 22 Nov
+ 2021 16:29:19 +0000
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::d0eb:49aa:2a9:9fc4]) by VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::d0eb:49aa:2a9:9fc4%4]) with mapi id 15.20.4713.025; Mon, 22 Nov 2021
+ 16:29:19 +0000
+Date:   Mon, 22 Nov 2021 18:29:16 +0200
+From:   Abel Vesa <abel.vesa@nxp.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 12/12] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL
+ compatible
+Message-ID: <YZvFXBhZT68Nj6Uj@ryzen>
+References: <1636566415-22750-1-git-send-email-abel.vesa@nxp.com>
+ <1636566415-22750-13-git-send-email-abel.vesa@nxp.com>
+ <YZb4BClv4fXU65yz@robh.at.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YZb4BClv4fXU65yz@robh.at.kernel.org>
+X-ClientProxiedBy: VI1PR04CA0108.eurprd04.prod.outlook.com
+ (2603:10a6:803:64::43) To VI1PR04MB4688.eurprd04.prod.outlook.com
+ (2603:10a6:803:6a::30)
+MIME-Version: 1.0
+Received: from ryzen (5.12.226.136) by VI1PR04CA0108.eurprd04.prod.outlook.com (2603:10a6:803:64::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19 via Frontend Transport; Mon, 22 Nov 2021 16:29:17 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 498298c2-d2e0-4399-fc1d-08d9add53b5f
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4912:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB4912D118A70962B2FD88A556F69F9@VI1PR04MB4912.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XYqUtOWjCwYyK/oQxegbEAIG+CSGpR208KkTqBL8UpUOOq1Aakt0M5GfMsp+K3KRVqhWhBwFPLvCA/Ge3xjpen7wLGZqhlOfOt7+RVQ86zx6TMe36Z4OzW1YTi7NRAlcyAfAmXbYLuHWK2mVJCqCnzBMsgfiQE1FfNX+HuCvbR8F5HS7DaQZATT2JelF1tJBGOrKhOiumMmfjwjjsPlJVkZlFylpTgGsMGqsDllL//GrDConBx+m3SNSOJEn1pXQtNv+jDNegSDbZ+KmTjYR0uUy7/HtswZnFghYUg5RqujsrGJxwprEDQo5OkX4vdVS8PAOiNS+l9gxBgPNSqiA6WClATdEXjJABfct5ccyeczvz0Q7VMbDsbJKJMhLwxXhboYWCerVjfciCMhgCTrh7bEfJF0UqRTSCWpdpyHXlSpd5IOWSeOdAFuZrA63O3cH1jSzcn4KtYDfJunQBX1NDirh+yAejY10nbEpLUYecQN+BYqLdZ9DsmaPs+aOU4zPp2TbryamgUQRY47hhx8lbJSVGeZoeSvNq+XE8HN9jaI8GCBofncTDd2yBZUZyCmFqwG2JOXqygMxlazOVrJjbZ5N7Fht/SzSvTv0KoUmVsmDPyySUNst6yywqglQej+IX/8Jsjys7Dlm2+bS41k6jW3ewVdI0/zdPWDsPjKCi/4vkkJy7J00JGAW725V8rgOvTM+B7TBQJ6sh30LLgqZtTZBYZ//x7UEc35kN5gGpM8hq9/7hJKjUxS8l7cKCbIKX3v0lCNL55fMd7XnOxNMCSyKoZkmF2Z5oLR++vx2eW4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(38100700002)(8676002)(66476007)(66556008)(33716001)(8936002)(5660300002)(966005)(54906003)(7416002)(53546011)(44832011)(66946007)(86362001)(6496006)(52116002)(956004)(26005)(83380400001)(9576002)(55016002)(186003)(316002)(4326008)(9686003)(38350700002)(6916009)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ah9GBOBL2UF41/01k1yo0+w5YNwp7EuIk0a5DCZchec7YD0pvEiJHxji/PHU?=
+ =?us-ascii?Q?c1/sFHzWq1MJ9vSokHM8ODBWpVw4EucwjlhxpgaWc5yiF40Kz2qDUEJYcjkn?=
+ =?us-ascii?Q?mAgL7c9bIGNfLEDeS/38v34sGy04j5EQk4AfPoJaLyRwfQiWRo4HXcTs4UJv?=
+ =?us-ascii?Q?6u7ZV/XMCB3ZQAaWfdwNZ57Frv3X0V2QZCtLgK2rjZaXilb2xJ43cBMTlh7B?=
+ =?us-ascii?Q?OE1jlIVM38fo8qGWG+N/n6DPmHD8UEZmzFiyEQUctqth8z8nt1Cnccb56ATl?=
+ =?us-ascii?Q?fWzyAkCb9vOd8qmBSFuG+GUOTNS6OvVjU7sLvJ1Gv+iYFraF59CbZZLl5R77?=
+ =?us-ascii?Q?KsfqxUxB7BVVPHfvbSVOUc5lf98AiVJG2atbc34xIPNI2QPGx8M8fy0HRICI?=
+ =?us-ascii?Q?GuLnmtm+/KfLXPbSp0FJ6ShkOwe8Wc+XICBT6U/tMwi8e3ZyQqGuwJqznSNz?=
+ =?us-ascii?Q?lY+dGKeM22EKcwckYVSkVWkcuBYEHgVYIYrakiSA2ni/nkKanJ1J1arU6tP5?=
+ =?us-ascii?Q?ushSFtcxWzh2gtMqwVooBBdsgZG5Pp45MNyyKzzes6zECUxkwHiVRnaJaCDx?=
+ =?us-ascii?Q?mdzYD7wp0dDLvJWRCYBqb0+VyzgYBq/jDl6C9C9X9XXDnth8gYE1l6HF6+FG?=
+ =?us-ascii?Q?d+ilT4XRt+M4W2RYZu0BGxO5VCo1BSXOZdAz/tzRa1SghzS7R37Jw2LshmTd?=
+ =?us-ascii?Q?onyndVn56QulI1CceDI6VajVu7PArHwuxuzN5Jy7kIJEfQ7sBz1xOA5gFJBv?=
+ =?us-ascii?Q?KMYZcHndkP9WkHDccJGNMcx/bSoNirC2Hqarg1rfP5k5PrXh2TOprlg73VCm?=
+ =?us-ascii?Q?/43SbmMp01NSGBAUq9llk+tH40/F42H7ugPSlyAPJE90MMV+a0TlWrWPZT14?=
+ =?us-ascii?Q?vSKYVKCXfE72XsON/4IZYbp8my5V+GOClJ9njhgGltXiMZ0ec2Zit3+pTh8Q?=
+ =?us-ascii?Q?Vc8tpblgj9vvPxlUy1CfLxl7qfN4CWU4pO5+yixAwdQGyiQiVYBl3Vk1S4fh?=
+ =?us-ascii?Q?/J/EhcjRmLFFTryWt3gdkyXF44N9OI0rhw4oXIhr2cwM1FjaMySt0oPwX4m0?=
+ =?us-ascii?Q?6wGnJ0Jnw4YipDrIFHRRl3SASHmi0qTo27Ke3JDWsL8vHy2TwEWAvyR15uH3?=
+ =?us-ascii?Q?JwhPOKb20deESBigmR0is3ebss29OrTVIxBgzVr1mRI2SLwx71MewBI6QtTE?=
+ =?us-ascii?Q?bMKtP/5VVcJQqVtp0Sp3pt1rvTOZ4xzwd5sQNkuYEHDSBWZ5K5W645t3g48t?=
+ =?us-ascii?Q?WgVDTnWoYN8WtmC0bqEukbBoGaGYHhSec9oqu0mAu3TMf3af+VCVzoj6Uv/3?=
+ =?us-ascii?Q?bweeNR/txzOdmuDglBT30ky6k0DOqfTPgiT28log8nziOE5MWWijlX3/NyRd?=
+ =?us-ascii?Q?KWZJAOYJ2mwnE+/Dji0mhLkyEJVt4LxjPTyN5UoCmBFE2/SC12sQKXdP4PbU?=
+ =?us-ascii?Q?dvchFU0nD4bBEPevptiT4IAPMIKxWqrmkzIvIqE0heSkXdwqQwD+HA8MGbR6?=
+ =?us-ascii?Q?liwEb4UpMo09FP/DCLl+YvHrfrrAlOa1IIO5mXIb2wY5SW5PS2Lg75F8kwc9?=
+ =?us-ascii?Q?Mnmojjl5nOYCG8Sva0nlR5oSTtstM6hEnyDS8r2TuUZv6n/2zJ2sd4tSP/e2?=
+ =?us-ascii?Q?23kHOt3r19in4j49uiH3z+U=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 498298c2-d2e0-4399-fc1d-08d9add53b5f
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2021 16:29:19.8044
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TDGxiT3g4UrIP29JfAKvVrH1LDXgYAfoJiGzUWfNeToJ2nkJTnBDVZqW7iwsTyWlDlOGAHCPnmWZ9Pg9jHc9Hg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4912
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit f45709df7731 ("serial: 8250: Don't touch RTS modem control while
-in rs485 mode") sought to prevent user space from interfering with rs485
-communication by ignoring a TIOCMSET ioctl() which changes RTS polarity.
+On 21-11-18 19:04:04, Rob Herring wrote:
+> On Wed, Nov 10, 2021 at 07:46:55PM +0200, Abel Vesa wrote:
+> > Add i.MX8DXL lpuart compatible to the bindings documentation.
+> > 
+> > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> > ---
+> >  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > index dc1f0e07cbd4..fa8a602ccb22 100644
+> > --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > @@ -27,6 +27,10 @@ properties:
+> >        - items:
+> >            - const: fsl,imx8qm-lpuart
+> >            - const: fsl,imx8qxp-lpuart
+> > +      - items:
+> > +          - const: fsl,imx8dxl-lpuart
+> > +          - const: fsl,imx8qxp-lpuart
+> > +          - const: fsl,imx7ulp-lpuart
+> 
+> I'm confused why 8dxl is compatible with 7ulp, but 8qm is not? From the 
+> driver, it looks like the difference is clocks.
+> 
 
-It did so in serial8250_do_set_mctrl(), which turns out to be too deep
-in the call stack:  When a uart_port is opened, RTS polarity is set by
-the rs485-aware function uart_port_dtr_rts().  It calls down to
-serial8250_do_set_mctrl() and that particular RTS polarity change should
-*not* be ignored.
+There are still things to be upstreamed for the fsl-lpuart driver.
+Looking at the NXP's tree, 7ulp has some specific fixup that the
+8qm doesn't need.
 
-The user-visible result is that on 8250_omap ports which use rs485 with
-inverse polarity (RTS bit in MCR register is 1 to receive, 0 to send),
-a newly opened port initially sets up RTS for sending instead of
-receiving.  That's because omap_8250_startup() sets the cached value
-up->mcr to 0 and omap_8250_restore_regs() subsequently writes it to the
-MCR register.  Due to the commit, serial8250_do_set_mctrl() preserves
-that incorrect register value:
+Have a look here:
 
-do_sys_openat2
-  do_filp_open
-    path_openat
-      vfs_open
-        do_dentry_open
-	  chrdev_open
-	    tty_open
-	      uart_open
-	        tty_port_open
-		  uart_port_activate
-		    uart_startup
-		      uart_port_startup
-		        serial8250_startup
-			  omap_8250_startup # up->mcr = 0
-			uart_change_speed
-			  serial8250_set_termios
-			    omap_8250_set_termios
-			      omap_8250_restore_regs
-			        serial8250_out_MCR # up->mcr written
-		  tty_port_block_til_ready
-		    uart_dtr_rts
-		      uart_port_dtr_rts
-		        serial8250_set_mctrl
-			  omap8250_set_mctrl
-			    serial8250_do_set_mctrl # mcr[1] = 1 ignored
+https://source.codeaurora.org/external/imx/linux-imx/tree/drivers/tty/serial/fsl_lpuart.c?h=lf-5.10.y#n3242
 
-Fix by intercepting RTS changes from user space in uart_tiocmset()
-instead.
-
-Fixes: f45709df7731 ("serial: 8250: Don't touch RTS modem control while in rs485 mode")
-Link: https://lore.kernel.org/linux-serial/20211027111644.1996921-1-baocheng.su@siemens.com/
-Reported-by: Su Bao Cheng <baocheng.su@siemens.com>
-Reported-by: Jan Kiszka <jan.kiszka@siemens.com>
-Tested-by: Su Bao Cheng <baocheng.su@siemens.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: Chao Zeng <chao.zeng@siemens.com>
-Cc: stable@vger.kernel.org # v5.7+
----
- drivers/tty/serial/8250/8250_port.c | 7 -------
- drivers/tty/serial/serial_core.c    | 5 +++++
- 2 files changed, 5 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 5775cbf..46e2079 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2024,13 +2024,6 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned char mcr;
- 
--	if (port->rs485.flags & SER_RS485_ENABLED) {
--		if (serial8250_in_MCR(up) & UART_MCR_RTS)
--			mctrl |= TIOCM_RTS;
--		else
--			mctrl &= ~TIOCM_RTS;
--	}
--
- 	mcr = serial8250_TIOCM_to_MCR(mctrl);
- 
- 	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 1e738f2..6a38e9d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1075,6 +1075,11 @@ static int uart_tiocmget(struct tty_struct *tty)
- 		goto out;
- 
- 	if (!tty_io_error(tty)) {
-+		if (uport->rs485.flags & SER_RS485_ENABLED) {
-+			set &= ~TIOCM_RTS;
-+			clear &= ~TIOCM_RTS;
-+		}
-+
- 		uart_update_mctrl(uport, set, clear);
- 		ret = 0;
- 	}
--- 
-2.33.0
-
+> >  
+> >    reg:
+> >      maxItems: 1
+> > -- 
+> > 2.31.1
+> > 
+> >
