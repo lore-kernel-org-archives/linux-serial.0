@@ -2,69 +2,61 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC346C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 12:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DE7C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 12:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237014AbhKVMvn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Nov 2021 07:51:43 -0500
-Received: from mga01.intel.com ([192.55.52.88]:26794 "EHLO mga01.intel.com"
+        id S236304AbhKVNBT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Nov 2021 08:01:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229797AbhKVMvm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Nov 2021 07:51:42 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10175"; a="258597079"
-X-IronPort-AV: E=Sophos;i="5.87,254,1631602800"; 
-   d="scan'208";a="258597079"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2021 04:48:36 -0800
-X-IronPort-AV: E=Sophos;i="5.87,254,1631602800"; 
-   d="scan'208";a="456626505"
-Received: from smile.fi.intel.com ([10.237.72.184])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2021 04:48:34 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mp8kI-009Qzu-2a;
-        Mon, 22 Nov 2021 14:48:30 +0200
-Date:   Mon, 22 Nov 2021 14:48:29 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jay Dolan <jay.dolan@accesio.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 0/2] serial: 8250_pci: Split Pericom driver
-Message-ID: <YZuRnSaZz04KJIDk@smile.fi.intel.com>
-References: <20211117145750.43911-1-andriy.shevchenko@linux.intel.com>
- <b99aabbe-add9-9c1e-ed4b-8850c69233de@accesio.com>
- <YZuRV8ipjcly26HB@smile.fi.intel.com>
+        id S231856AbhKVNBT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 22 Nov 2021 08:01:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 898B660F70;
+        Mon, 22 Nov 2021 12:58:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637585890;
+        bh=FyL6e1EMnnbM5ZD7KGNgpswjs0+cixjU2G7leVNLGPc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bCrGnd94JYhWSTCKxNYY45uXgskT0p9o4qy48FxcA5wWcaYgkKkkecw3NMFDFQiPH
+         Jn94wjOlzir3kyc8acEHkYtLt6BvKqf/7x3kCUwMvvdiGOY3xc5Y2INQK91ZP5WxZ7
+         BelJFEd8GxRd/crvQG1umMmJMCmXMpxERi4MRB6ZkmdCINLtn8LN0OG3CQlDSVVxST
+         JMG4eecLupuN6azjdFLbCO8kiAC9YZsajfK+zunc0ZvDO0bq7M2iA94YazpefKPUmT
+         CsoKKfRKGmAVm10C+I/Kr+no581A5vLtrOCiHDF5QUe4CtMLIHnV55E7rFsk/G9Dcw
+         tz7+dfnOLu17w==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mp8tL-0003l6-UN; Mon, 22 Nov 2021 13:57:52 +0100
+Date:   Mon, 22 Nov 2021 13:57:51 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] tty: drop tty_schedule_flip()
+Message-ID: <YZuTz/inB7RJq6gi@hovoldconsulting.com>
+References: <20211122111648.30379-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YZuRV8ipjcly26HB@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20211122111648.30379-1-jslaby@suse.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 02:47:20PM +0200, Andy Shevchenko wrote:
-> On Thu, Nov 18, 2021 at 10:32:51PM -0800, Jay Dolan wrote:
-> > On 11/17/21 6:57 AM, Andy Shevchenko wrote:
-> > > Split Pericom driver to a separate module.
-> > > While at it, re-enable high baud rates.
-> > > 
-> > > Jay, can you, please, test this on as many hardware as you have?
+On Mon, Nov 22, 2021 at 12:16:45PM +0100, Jiri Slaby wrote:
+> There are two identical functions: tty_schedule_flip and
+> tty_flip_buffer_push. Remove the former.
 > 
-> ...
-> 
-> > * Add in pericom_do_startup() because the UPF_MAGIC_MULTIPLIER doesn't
-> > stick.
-> 
-> Can't find an evidence that this is the case. Can you recheck this (reading
-> flags back via sysfs or so)? So, for v2 I'll leave my approach.
+> This is [v2] as [v1] was dropping tty_flip_buffer_push. And
+> tty_flip_buffer_push is spread wider, so remove the less used one as
+> proposed by Johan.
+>
+> Jiri Slaby (3):
+>   tty: drivers/tty/, stop using tty_schedule_flip()
+>   tty: the rest, stop using tty_schedule_flip()
+>   tty: drop tty_schedule_flip()
 
-Otherwise how the other drivers which are using that flag survive? If it's
-indeed an issue, it should be fixed on generic level.
+Thanks for the v2, looks good. For the series:
 
--- 
-With Best Regards,
-Andy Shevchenko
+Reviewed-by: Johan Hovold <johan@kernel.org>
 
-
+Johan
