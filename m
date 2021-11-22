@@ -2,187 +2,369 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8795C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 09:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A71BC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Nov 2021 09:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238922AbhKVJEi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Nov 2021 04:04:38 -0500
-Received: from m12-18.163.com ([220.181.12.18]:51443 "EHLO m12-18.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229716AbhKVJEe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Nov 2021 04:04:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=H+3qu
-        oeBk2kg7UH2uIl9AADTVyeUv0ygwL0EvisFerI=; b=hIrnd77GoyAR9cZpZYmhC
-        k7ymyVrnjCyrlxyp6EtIWgRay+RO8vQljxo7dkjHTzJy/86Ln8m1FRkk/mUJKeJC
-        WeSzwGUhxZAV7Ewy6RfuXVYtWcoBuS/SqpsH812pcDLN1NI+AhDynEXsAIo3rH5N
-        tb6HmoQWugOF+fBjPTlzYs=
-Received: from [192.168.100.154] (unknown [117.61.11.102])
-        by smtp14 (Coremail) with SMTP id EsCowACnk8FUXJthFHXwMQ--.91S2;
-        Mon, 22 Nov 2021 17:01:14 +0800 (CST)
-Subject: Re: [PATCH] Revert "serial: 8250: Don't touch RTS modem control while
- in rs485 mode"
-To:     Lukas Wunner <lukas@wunner.de>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        linux-serial@vger.kernel.org, chao.zeng@siemens.com
-References: <20211027111644.1996921-1-baocheng.su@siemens.com>
- <20211027113938.GA9373@wunner.de>
- <e1a9b9bf-45a4-6e71-09f4-1ae730284778@163.com>
- <20211120171810.GA26621@wunner.de>
- <62d4b8ac-b9a4-3f3a-a5e3-7a3c21ed16f0@siemens.com>
- <20211121174324.GA17258@wunner.de>
-From:   Su Bao Cheng <baocheng_su@163.com>
-Message-ID: <10469f11-aefc-3b45-b7e1-516c918e4dc2@163.com>
-Date:   Mon, 22 Nov 2021 17:01:07 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S233027AbhKVJsl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Nov 2021 04:48:41 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:39666 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229806AbhKVJsl (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 22 Nov 2021 04:48:41 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 91F37218CE;
+        Mon, 22 Nov 2021 09:45:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1637574333; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=RUgtGZEv8kFLAr6AGZeX30vZZtwVH1MnCIGjXREhNaw=;
+        b=F2zwfF2pOQhqXQRBTH1bRSrX68JoF1Lkx0OvXSLeBTUoRvyiL/OVuvAKRU6bKjsiMz227T
+        qALtb6cOTf9KmlfDBXYSxPFhsgUzh5pWJWzAqXUT0w4qkuVntrTuhie9CgTihNOu+Jid7S
+        gxcP2/ppMpPGe8oRPKReGD09qJnL7oY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1637574333;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=RUgtGZEv8kFLAr6AGZeX30vZZtwVH1MnCIGjXREhNaw=;
+        b=UUhzaEHlkdRucDXR8XDYagT7CKiDW8LFTvX9VBnVpMsxKR8k93nllAKHOdo+I2QIoTc6c1
+        udObPnmD0IYP7zDQ==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id EC1D5A3B83;
+        Mon, 22 Nov 2021 09:45:32 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andreas Koensgen <ajk@comnets.uni-bremen.de>,
+        Paul Mackerras <paulus@samba.org>
+Subject: [PATCH v2] tty: remove file from tty_ldisc_ops::ioctl and compat_ioctl
+Date:   Mon, 22 Nov 2021 10:45:29 +0100
+Message-Id: <20211122094529.24171-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-In-Reply-To: <20211121174324.GA17258@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: EsCowACnk8FUXJthFHXwMQ--.91S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxGr4DXF43GryxAw4UZr1rCrg_yoW7Jr15pF
-        4qkrZ0yrWqgay8G3WkZFWjqFWFg3Zrtry2gF9rG3s0vrn09F1IvF1xKayYkrWUGryvkFy2
-        yr1Yvr1j9a4DAFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jZOzsUUUUU=
-X-Originating-IP: [117.61.11.102]
-X-CM-SenderInfo: pedrux5hqjs2rx6rljoofrz/1tbixhtTJ13bpaS6ogAAs2
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/22/21 1:43 AM, Lukas Wunner wrote:
-> On Sun, Nov 21, 2021 at 10:00:51AM +0100, Jan Kiszka wrote:
->> Meanwhile reproduced myself, and now I believe your patch is broken in
->> ignoring the internal call path to serial8250_set_mctrl, coming from
->> uart_port_dtr_rts:
-> [...]
->> This case is not triggered by userspace setting a custom RTS value but
->> by the uart-internal machinery selecting it based on the rs485 mode,
->> among other things. That path must not be intercepted and made
->> conditional using the current MCR state but has to write the request
->> value *as is*.
-> 
-> Thanks for the analysis and sorry for the breakage.  I'm proposing the
-> fix below.  Let me know if that works for you.
-> 
-> However I believe that omap_8250_startup() should be amended to not set
-> up->mcr = 0 unconditionally.  Rather, it should set the RTS bit if rs485
-> is enabled and RTS polarity is inverted (as seems to be the case on your
-> product).  Right now, even with the fix below you'll see a brief glitch
-> wherein RTS is asserted (so the transceiver's driver is enabled) and
-> immediately deasserted when opening the port.  This may disturb the
-> communication of other devices on the bus.  Do you agree?  If so, I can
-> prepare a separate fix for that.  Note that we may have never noticed
-> that without f45709df7731, so... ;)
-> 
-> Thanks,
-> 
-> Lukas
-> 
+After the previous patches, noone needs 'file' parameter in neither
+ioctl hook from tty_ldisc_ops. So remove 'file' from both of them.
 
-The new patch works on our setup.
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> [NFC]
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Andreas Koensgen <ajk@comnets.uni-bremen.de>
+Cc: Paul Mackerras <paulus@samba.org>
+---
+[v2]
+ - keep arguments aligned as they were as noted by Dmitry.
 
-Thanks,
+ drivers/bluetooth/hci_ldisc.c |  5 ++---
+ drivers/input/serio/serport.c |  5 ++---
+ drivers/net/can/slcan.c       |  4 ++--
+ drivers/net/hamradio/6pack.c  |  4 ++--
+ drivers/net/hamradio/mkiss.c  |  4 ++--
+ drivers/net/ppp/ppp_async.c   |  3 +--
+ drivers/net/ppp/ppp_synctty.c |  3 +--
+ drivers/net/slip/slip.c       |  4 ++--
+ drivers/tty/n_gsm.c           |  4 ++--
+ drivers/tty/n_hdlc.c          |  5 ++---
+ drivers/tty/n_tty.c           |  4 ++--
+ drivers/tty/tty_io.c          |  8 ++++----
+ include/linux/tty_ldisc.h     | 15 +++++++--------
+ net/nfc/nci/uart.c            |  5 ++---
+ 14 files changed, 33 insertions(+), 40 deletions(-)
 
-Baocheng Su
-
-> -- >8 --
-> Subject: [PATCH] serial: 8250: Fix RTS modem control while in rs485 mode
-> 
-> Commit f45709df7731 ("serial: 8250: Don't touch RTS modem control while
-> in rs485 mode") sought to prevent user space from interfering with rs485
-> communication by ignoring a TIOCMSET ioctl() which changes RTS polarity.
-> 
-> It did so in serial8250_do_set_mctrl(), which turns out to be too deep
-> in the call stack:  When a uart_port is opened, RTS polarity is set by
-> the rs485-aware function uart_port_dtr_rts().  It calls down to
-> serial8250_do_set_mctrl() and that particular RTS polarity change should
-> *not* be ignored.
-> 
-> The user-visible result is that on 8250_omap ports which use rs485 with
-> inverse polarity (RTS bit in MCR register is 1 to receive, 0 to send),
-> a newly opened port initially sets up RTS for sending instead of
-> receiving.  That's because omap_8250_startup() sets the cached value
-> up->mcr to 0 and omap_8250_restore_regs() subsequently writes it to the
-> MCR register.  Due to the commit, serial8250_do_set_mctrl() preserves
-> that incorrect register value:
-> 
-> do_sys_openat2
->   do_filp_open
->     path_openat
->       vfs_open
->         do_dentry_open
-> 	  chrdev_open
-> 	    tty_open
-> 	      uart_open
-> 	        tty_port_open
-> 		  uart_port_activate
-> 		    uart_startup
-> 		      uart_port_startup
-> 		        serial8250_startup
-> 			  omap_8250_startup # up->mcr = 0
-> 			uart_change_speed
-> 			  serial8250_set_termios
-> 			    omap_8250_set_termios
-> 			      omap_8250_restore_regs
-> 			        serial8250_out_MCR # up->mcr written
-> 		  tty_port_block_til_ready
-> 		    uart_dtr_rts
-> 		      uart_port_dtr_rts
-> 		        serial8250_set_mctrl
-> 			  omap8250_set_mctrl
-> 			    serial8250_do_set_mctrl # mcr[1] = 1 ignored
-> 
-> Fix by intercepting RTS changes from user space in uart_tiocmset()
-> instead.
-> 
-> Fixes: f45709df7731 ("serial: 8250: Don't touch RTS modem control while in rs485 mode")
-> Reported-by: Su Bao Cheng <baocheng.su@siemens.com>
-> Reported-by: Jan Kiszka <jan.kiszka@siemens.com>
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> Cc: Chao Zeng <chao.zeng@siemens.com>
-> Cc: stable@vger.kernel.org # v5.7+
-> ---
->  drivers/tty/serial/8250/8250_port.c | 7 -------
->  drivers/tty/serial/serial_core.c    | 5 +++++
->  2 files changed, 5 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 5775cbff8f6e..46e2079ad1aa 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2024,13 +2024,6 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  	unsigned char mcr;
->  
-> -	if (port->rs485.flags & SER_RS485_ENABLED) {
-> -		if (serial8250_in_MCR(up) & UART_MCR_RTS)
-> -			mctrl |= TIOCM_RTS;
-> -		else
-> -			mctrl &= ~TIOCM_RTS;
-> -	}
-> -
->  	mcr = serial8250_TIOCM_to_MCR(mctrl);
->  
->  	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 1e738f265eea..6a38e9d7b87a 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1075,6 +1075,11 @@ uart_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
->  		goto out;
->  
->  	if (!tty_io_error(tty)) {
-> +		if (uport->rs485.flags & SER_RS485_ENABLED) {
-> +			set &= ~TIOCM_RTS;
-> +			clear &= ~TIOCM_RTS;
-> +		}
-> +
->  		uart_update_mctrl(uport, set, clear);
->  		ret = 0;
->  	}
-> 
+diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+index ecdf8e034351..f537673ede17 100644
+--- a/drivers/bluetooth/hci_ldisc.c
++++ b/drivers/bluetooth/hci_ldisc.c
+@@ -739,14 +739,13 @@ static int hci_uart_set_flags(struct hci_uart *hu, unsigned long flags)
+  * Arguments:
+  *
+  *    tty        pointer to tty instance data
+- *    file       pointer to open file object for device
+  *    cmd        IOCTL command code
+  *    arg        argument for IOCTL call (cmd dependent)
+  *
+  * Return Value:    Command dependent
+  */
+-static int hci_uart_tty_ioctl(struct tty_struct *tty, struct file *file,
+-			      unsigned int cmd, unsigned long arg)
++static int hci_uart_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
++			      unsigned long arg)
+ {
+ 	struct hci_uart *hu = tty->disc_data;
+ 	int err = 0;
+diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
+index 17eb8f2aa48d..669a728095b8 100644
+--- a/drivers/input/serio/serport.c
++++ b/drivers/input/serio/serport.c
+@@ -207,8 +207,8 @@ static void serport_set_type(struct tty_struct *tty, unsigned long type)
+  * serport_ldisc_ioctl() allows to set the port protocol, and device ID
+  */
+ 
+-static int serport_ldisc_ioctl(struct tty_struct *tty, struct file *file,
+-			       unsigned int cmd, unsigned long arg)
++static int serport_ldisc_ioctl(struct tty_struct *tty, unsigned int cmd,
++			       unsigned long arg)
+ {
+ 	if (cmd == SPIOCSTYPE) {
+ 		unsigned long type;
+@@ -226,7 +226,6 @@ static int serport_ldisc_ioctl(struct tty_struct *tty, struct file *file,
+ #ifdef CONFIG_COMPAT
+ #define COMPAT_SPIOCSTYPE	_IOW('q', 0x01, compat_ulong_t)
+ static int serport_ldisc_compat_ioctl(struct tty_struct *tty,
+-				       struct file *file,
+ 				       unsigned int cmd, unsigned long arg)
+ {
+ 	if (cmd == COMPAT_SPIOCSTYPE) {
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+index 9a4ebda30510..113763790ac9 100644
+--- a/drivers/net/can/slcan.c
++++ b/drivers/net/can/slcan.c
+@@ -670,8 +670,8 @@ static void slcan_hangup(struct tty_struct *tty)
+ }
+ 
+ /* Perform I/O control on an active SLCAN channel. */
+-static int slcan_ioctl(struct tty_struct *tty, struct file *file,
+-		       unsigned int cmd, unsigned long arg)
++static int slcan_ioctl(struct tty_struct *tty, unsigned int cmd,
++		       unsigned long arg)
+ {
+ 	struct slcan *sl = (struct slcan *) tty->disc_data;
+ 	unsigned int tmp;
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 8a19a06b505d..b1fc153125d9 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -681,8 +681,8 @@ static void sixpack_close(struct tty_struct *tty)
+ }
+ 
+ /* Perform I/O control on an active 6pack channel. */
+-static int sixpack_ioctl(struct tty_struct *tty, struct file *file,
+-	unsigned int cmd, unsigned long arg)
++static int sixpack_ioctl(struct tty_struct *tty, unsigned int cmd,
++		unsigned long arg)
+ {
+ 	struct sixpack *sp = sp_get(tty);
+ 	struct net_device *dev;
+diff --git a/drivers/net/hamradio/mkiss.c b/drivers/net/hamradio/mkiss.c
+index e2b332b54f06..894b5f92b85f 100644
+--- a/drivers/net/hamradio/mkiss.c
++++ b/drivers/net/hamradio/mkiss.c
+@@ -804,8 +804,8 @@ static void mkiss_close(struct tty_struct *tty)
+ }
+ 
+ /* Perform I/O control on an active ax25 channel. */
+-static int mkiss_ioctl(struct tty_struct *tty, struct file *file,
+-	unsigned int cmd, unsigned long arg)
++static int mkiss_ioctl(struct tty_struct *tty, unsigned int cmd,
++		unsigned long arg)
+ {
+ 	struct mkiss *ax = mkiss_get(tty);
+ 	struct net_device *dev;
+diff --git a/drivers/net/ppp/ppp_async.c b/drivers/net/ppp/ppp_async.c
+index f4429b93a9c8..15a179631903 100644
+--- a/drivers/net/ppp/ppp_async.c
++++ b/drivers/net/ppp/ppp_async.c
+@@ -281,8 +281,7 @@ ppp_asynctty_write(struct tty_struct *tty, struct file *file,
+  */
+ 
+ static int
+-ppp_asynctty_ioctl(struct tty_struct *tty, struct file *file,
+-		   unsigned int cmd, unsigned long arg)
++ppp_asynctty_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+ {
+ 	struct asyncppp *ap = ap_get(tty);
+ 	int err, val;
+diff --git a/drivers/net/ppp/ppp_synctty.c b/drivers/net/ppp/ppp_synctty.c
+index b3a71b409a80..18283b7b94bc 100644
+--- a/drivers/net/ppp/ppp_synctty.c
++++ b/drivers/net/ppp/ppp_synctty.c
+@@ -274,8 +274,7 @@ ppp_sync_write(struct tty_struct *tty, struct file *file,
+ }
+ 
+ static int
+-ppp_synctty_ioctl(struct tty_struct *tty, struct file *file,
+-		  unsigned int cmd, unsigned long arg)
++ppp_synctty_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+ {
+ 	struct syncppp *ap = sp_get(tty);
+ 	int __user *p = (int __user *)arg;
+diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
+index 9f3b4c1aa5ce..98f586f910fb 100644
+--- a/drivers/net/slip/slip.c
++++ b/drivers/net/slip/slip.c
+@@ -1072,8 +1072,8 @@ static void slip_unesc6(struct slip *sl, unsigned char s)
+ #endif /* CONFIG_SLIP_MODE_SLIP6 */
+ 
+ /* Perform I/O control on an active SLIP channel. */
+-static int slip_ioctl(struct tty_struct *tty, struct file *file,
+-					unsigned int cmd, unsigned long arg)
++static int slip_ioctl(struct tty_struct *tty, unsigned int cmd,
++		unsigned long arg)
+ {
+ 	struct slip *sl = tty->disc_data;
+ 	unsigned int tmp;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 68e6df27d2e3..ba27b274c967 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2687,8 +2687,8 @@ static __poll_t gsmld_poll(struct tty_struct *tty, struct file *file,
+ 	return mask;
+ }
+ 
+-static int gsmld_ioctl(struct tty_struct *tty, struct file *file,
+-		       unsigned int cmd, unsigned long arg)
++static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
++		       unsigned long arg)
+ {
+ 	struct gsm_config c;
+ 	struct gsm_mux *gsm = tty->disc_data;
+diff --git a/drivers/tty/n_hdlc.c b/drivers/tty/n_hdlc.c
+index 7e0884ecc74f..a66915032e7e 100644
+--- a/drivers/tty/n_hdlc.c
++++ b/drivers/tty/n_hdlc.c
+@@ -572,14 +572,13 @@ static ssize_t n_hdlc_tty_write(struct tty_struct *tty, struct file *file,
+ /**
+  * n_hdlc_tty_ioctl - process IOCTL system call for the tty device.
+  * @tty: pointer to tty instance data
+- * @file: pointer to open file object for device
+  * @cmd: IOCTL command code
+  * @arg: argument for IOCTL call (cmd dependent)
+  *
+  * Returns command dependent result.
+  */
+-static int n_hdlc_tty_ioctl(struct tty_struct *tty, struct file *file,
+-			    unsigned int cmd, unsigned long arg)
++static int n_hdlc_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
++			    unsigned long arg)
+ {
+ 	struct n_hdlc *n_hdlc = tty->disc_data;
+ 	int error = 0;
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 9fc2319a394d..2d64d93805af 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -2400,8 +2400,8 @@ static unsigned long inq_canon(struct n_tty_data *ldata)
+ 	return nr;
+ }
+ 
+-static int n_tty_ioctl(struct tty_struct *tty, struct file *file,
+-		       unsigned int cmd, unsigned long arg)
++static int n_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
++		       unsigned long arg)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	int retval;
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 99cad1560876..3c2349b2089c 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2811,7 +2811,7 @@ long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		return hung_up_tty_ioctl(file, cmd, arg);
+ 	retval = -EINVAL;
+ 	if (ld->ops->ioctl) {
+-		retval = ld->ops->ioctl(tty, file, cmd, arg);
++		retval = ld->ops->ioctl(tty, cmd, arg);
+ 		if (retval == -ENOIOCTLCMD)
+ 			retval = -ENOTTY;
+ 	}
+@@ -2990,10 +2990,10 @@ static long tty_compat_ioctl(struct file *file, unsigned int cmd,
+ 	if (!ld)
+ 		return hung_up_tty_compat_ioctl(file, cmd, arg);
+ 	if (ld->ops->compat_ioctl)
+-		retval = ld->ops->compat_ioctl(tty, file, cmd, arg);
++		retval = ld->ops->compat_ioctl(tty, cmd, arg);
+ 	if (retval == -ENOIOCTLCMD && ld->ops->ioctl)
+-		retval = ld->ops->ioctl(tty, file,
+-				(unsigned long)compat_ptr(cmd), arg);
++		retval = ld->ops->ioctl(tty, (unsigned long)compat_ptr(cmd),
++				arg);
+ 	tty_ldisc_deref(ld);
+ 
+ 	return retval;
+diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
+index b85d84fb5f49..25f07017bbad 100644
+--- a/include/linux/tty_ldisc.h
++++ b/include/linux/tty_ldisc.h
+@@ -45,8 +45,7 @@ struct tty_struct;
+  *	some processing on the characters first.  If this function is
+  *	not defined, the user will receive an EIO error.
+  *
+- * int	(*ioctl)(struct tty_struct * tty, struct file * file,
+- *		 unsigned int cmd, unsigned long arg);
++ * int	(*ioctl)(struct tty_struct *tty, unsigned int cmd, unsigned long arg);
+  *
+  *	This function is called when the user requests an ioctl which
+  *	is not handled by the tty layer or the low-level tty driver.
+@@ -56,8 +55,8 @@ struct tty_struct;
+  *	low-level driver can "grab" an ioctl request before the line
+  *	discpline has a chance to see it.
+  *
+- * int	(*compat_ioctl)(struct tty_struct * tty, struct file * file,
+- *		        unsigned int cmd, unsigned long arg);
++ * int	(*compat_ioctl)(struct tty_struct *tty, unsigned int cmd,
++ *			unsigned long arg);
+  *
+  *	Process ioctl calls from 32-bit process on 64-bit system
+  *
+@@ -192,10 +191,10 @@ struct tty_ldisc_ops {
+ 			void **cookie, unsigned long offset);
+ 	ssize_t	(*write)(struct tty_struct *tty, struct file *file,
+ 			 const unsigned char *buf, size_t nr);
+-	int	(*ioctl)(struct tty_struct *tty, struct file *file,
+-			 unsigned int cmd, unsigned long arg);
+-	int	(*compat_ioctl)(struct tty_struct *tty, struct file *file,
+-				unsigned int cmd, unsigned long arg);
++	int	(*ioctl)(struct tty_struct *tty, unsigned int cmd,
++			unsigned long arg);
++	int	(*compat_ioctl)(struct tty_struct *tty, unsigned int cmd,
++			unsigned long arg);
+ 	void	(*set_termios)(struct tty_struct *tty, struct ktermios *old);
+ 	__poll_t (*poll)(struct tty_struct *, struct file *,
+ 			     struct poll_table_struct *);
+diff --git a/net/nfc/nci/uart.c b/net/nfc/nci/uart.c
+index c027c76d493c..cc8fa9e36159 100644
+--- a/net/nfc/nci/uart.c
++++ b/net/nfc/nci/uart.c
+@@ -317,14 +317,13 @@ static void nci_uart_tty_receive(struct tty_struct *tty, const u8 *data,
+  * Arguments:
+  *
+  *    tty        pointer to tty instance data
+- *    file       pointer to open file object for device
+  *    cmd        IOCTL command code
+  *    arg        argument for IOCTL call (cmd dependent)
+  *
+  * Return Value:    Command dependent
+  */
+-static int nci_uart_tty_ioctl(struct tty_struct *tty, struct file *file,
+-			      unsigned int cmd, unsigned long arg)
++static int nci_uart_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
++			      unsigned long arg)
+ {
+ 	struct nci_uart *nu = (void *)tty->disc_data;
+ 	int err = 0;
+-- 
+2.33.1
 
