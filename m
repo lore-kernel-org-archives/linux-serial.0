@@ -2,139 +2,165 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BA4C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 13:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC26C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 13:43:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbhKWNRN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Nov 2021 08:17:13 -0500
-Received: from mail-mw2nam12on2042.outbound.protection.outlook.com ([40.107.244.42]:15739
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231240AbhKWNRN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Nov 2021 08:17:13 -0500
+        id S230197AbhKWNqw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Nov 2021 08:46:52 -0500
+Received: from buffalo.u-blox.com ([195.34.89.137]:48537 "EHLO
+        buffalo.u-blox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234969AbhKWNqw (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Nov 2021 08:46:52 -0500
+Received: from mail_filter (localhost [127.0.0.1])
+        by buffalo.u-blox.com (PF_LO_10026) with ESMTP id 97F4F3A224;
+        Tue, 23 Nov 2021 14:43:41 +0100 (CET)
+Received: from ASSP.nospam (localhost [127.0.0.1])
+        by buffalo.u-blox.com (Postfix) with ESMTP id 391C639E54;
+        Tue, 23 Nov 2021 14:43:41 +0100 (CET)
+Received: from unknown ([127.0.0.1] helo=anyhost.local) by ASSP.nospam with
+        SMTP (2.4.7); 23 Nov 2021 14:43:41 +0100
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VF6vFhps3q9T5ThjarJf6MsZ9X+0DLpShH1TP7okuBh6KSTBeNalZ4GvVoZO6n6Yfa8fIObtbhsTGAb3IP6N69dsqfg1Mi7Wh2F8wLgIJae1CbTd3KnDUG9jX70J+TynuuD1xxvRWMpd7kMGivcHUO2uvxdbf3759O7E/eyKHq4nQS0zUY9UltH1gUxJz9qhr6MAbU7I/a0UmXL29pDSwmdmERqejOVhRhtGz8+6y549JnpaMOsKKwlK0XYS3khY8d/YEXbA/rETWuRuxKUOJcU+7Nuh6dkPeaYvJzVPHBkj4RoFxjEpiJC9foAed6rsb7GuRGjJXdEj5nEXd+eKcw==
+ b=fifJj+0Jfg2I2pmyAyqC9msBPqVBV3NPVEWyNAs0tfgBi5g+YIYFRGtfEp1bziqeSNQHqRSQV5lJ/vll6q+VEuv9e2GUu0MRF1DIDriSTtwpoyTRz0PFE3Cq4iR2UW2zYhKKc5yWMz8dg3gJhSTQE94/L2RYIOIkmohXKFulw78L9IuSChi0cihWE25C7ygriGNyU5G+dEZe8YYNNMffGj85gO/2HVvp6SLEK3ZjhiHvO4tjUijvsfstkq8vT0z1SXHIVfT2NbQUfGV96cabjJbRG1gzBrGvsZ6m0wsoS2B0yDI23pO0yQ45ssCLRdxfmfiTii44c9m3mFZJyZzOYA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ojOmAuZ9FZ+FyoS7dJxIYvp7dxkDtMry1r9xuMG7gEk=;
- b=a3mzea4IzQyMfuP9YkncJgaWxouDVf9RgWLdsNpn5jatky8y+5EoqYlrfXV4iDmsEdIeY23hlO3KFZL6+Q4sDA5ev21Et+iLdvOHJpNN0oLMhZW/eBEteDJ5C10CpyePCFY7Q+kemX/vveP78HmDQ3Vfc22H2i3tXD7lzW10A/AM94iOAucgGQXu6BPeZoW72XqQxH7XbEk8wHkFGUkHlJYwYJT8ZohIKVyrzL/ha+Oa5wO9cTAQJ54IReyrdnuwdtiR5+8kS8DKlVEcsHeDjyMCHwxwqurQP0DJCRLZSyx2MBLXs8VST6ubBRfdrhclkUM/TDVVwrhXF7q+IKpr2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ bh=mrEHge+esParzzZc1AHn+32I0MVgvWpqqXJu2N10O1w=;
+ b=lszT3QB5tqjp2qjZTHu0yv+xy0UUzwG+zJm4jZr+LL6r72gdP5GgyByJlOWVQi8eO/GBOChhHdqxJuR1f//ZBD7E/7UtNI/AWTt2oTuylOlhgM/Cb2t5vxe1+mOjcDQj07NvhbQaStbwe05SdyTWQZ6Xvxvn5cdE4si1yPXA0MXiMSL8Wobh9dY8ScAx+VDx4VC6/3J0s/1ZTOimQ5gLR6/k6cXSC7MWmCpsZqfL0gpTuXKE5i3z2sxzrqmK7kNOcSU3GoHK5r8fGXsbN4TIzeoOCKVhzGIGoV4a7TRf1kkZLxpJaePKUgR4qMOrQzvKvP8pDr80jTdZBBhgZ5YpKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=u-blox.com; dmarc=pass action=none header.from=u-blox.com;
+ dkim=pass header.d=u-blox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=u-blox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ojOmAuZ9FZ+FyoS7dJxIYvp7dxkDtMry1r9xuMG7gEk=;
- b=nu/TZj74qo3hm7NMm4smbARFQFVUP+dELek2IVdB296jag+9PvQ4BNBPjOpXTlrk11bRhFjXseL6XMs5TqnwPOYy3zzMD0esoZl3DDJfTVjSqO+aY1w51A1QrsnDul1V2rXpU2xtY27dmSjsv3ZEiJixyvkQ2zz6JBgBfe8aCOw=
-Received: from BN9P220CA0023.NAMP220.PROD.OUTLOOK.COM (2603:10b6:408:13e::28)
- by CH2PR02MB6328.namprd02.prod.outlook.com (2603:10b6:610:5::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Tue, 23 Nov
- 2021 13:14:02 +0000
-Received: from BN1NAM02FT027.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:13e:cafe::7d) by BN9P220CA0023.outlook.office365.com
- (2603:10b6:408:13e::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend
- Transport; Tue, 23 Nov 2021 13:14:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT027.mail.protection.outlook.com (10.13.2.141) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4713.19 via Frontend Transport; Tue, 23 Nov 2021 13:14:01 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 23 Nov 2021 05:13:55 -0800
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 23 Nov 2021 05:13:55 -0800
-Envelope-to: git@xilinx.com,
- linux-serial@vger.kernel.org,
- jirislaby@kernel.org,
- gregkh@linuxfoundation.org,
- jacmet@sunsite.dk
-Received: from [10.140.6.18] (port=55080 helo=xhdlakshmis40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <shubhrajyoti.datta@xilinx.com>)
-        id 1mpVcP-0002IH-8f; Tue, 23 Nov 2021 05:13:54 -0800
-From:   Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-To:     <linux-serial@vger.kernel.org>
-CC:     <jirislaby@kernel.org>, <gregkh@linuxfoundation.org>,
-        <jacmet@sunsite.dk>, <git@xilinx.com>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Subject: [PATCH v2] serial-uartlite: Remove an un-necessary read of control register
-Date:   Tue, 23 Nov 2021 18:43:48 +0530
-Message-ID: <20211123131348.26295-1-shubhrajyoti.datta@xilinx.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
+ bh=mrEHge+esParzzZc1AHn+32I0MVgvWpqqXJu2N10O1w=;
+ b=WaQfcIb/k7yvuliE61kS3M6VjSxLeKKW8N865SMWtuLmSvHAXYYdUsRfHKeA+Fd3qQ9aistWzGLZNJXda+NFKZp/iSDmxQnGpkwLGjbRoudJSt78YIoPCC4CuLZTzZCaM6TCjnsZ+Q6WCBJxp6OV1O2K9I5sI8dc4oQ4B1se2DM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=u-blox.com;
+From:   Patrik John <patrik.john@u-blox.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <ldewangan@nvidia.com>,
+        <thierry.reding@gmail.com>, <jonathanh@nvidia.com>,
+        <linux-serial@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
+        Patrik John <patrik.john@u-blox.com>
+Subject: [PATCH v3] serial: tegra: Change lower tolerance baud rate limit for tegra20 and tegra30
+Date:   Tue, 23 Nov 2021 14:27:38 +0100
+Message-Id: <sig.19614244f8.20211123132737.88341-1-patrik.john@u-blox.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
+X-ClientProxiedBy: AS9PR06CA0031.eurprd06.prod.outlook.com
+ (2603:10a6:20b:463::7) To CWXP265MB2072.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:400:7c::7)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6778d44a-aeb8-4adf-ad7d-08d9ae831dfe
-X-MS-TrafficTypeDiagnostic: CH2PR02MB6328:
-X-Microsoft-Antispam-PRVS: <CH2PR02MB63280967DA7101791DC04DB4AA609@CH2PR02MB6328.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
+X-MS-Office365-Filtering-Correlation-Id: 09b4d5b7-493c-4fbc-30bc-08d9ae8528c0
+X-MS-TrafficTypeDiagnostic: CWLP265MB3619:
+X-Microsoft-Antispam-PRVS: <CWLP265MB3619AFEEBDD80E086B651F85CC609@CWLP265MB3619.GBRP265.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:639;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Opx7kA1okIRdKzbU8AMEK5YTaKRMxivjLYCpn/EOPwfBxdVj22ctJaT8O359AvMa/VmjjEqMi/XECmfCR0yuOFQB6OxwfltR63qlO/Zf0zH6WBdBUfjnPWLmjUmfet185njabfyUoJXamx8dbqfzD5UB3Ydiq0w3UnoHdEeQekWpMBwQrD2qHXOl/kdl+U/BMiO8bjRovCUqRDlhHelA9rUlvvMD5LhLJPrO+VlshAkKswyUK6JHfEpEFHSGX3dIfu1sNU9IUxP6PApPQjMIaX15L2I4dCnchnlP2/320xk4ula9mMgz2MaeScqJ0Ck7LLTuPkNwZSNdMx1/vCyNwwo36ZXAE1zn8Ent1D37p8LGbkUykzaiDdvpvFGEoA4xHwUUvN7lSxQyFxnJUBdnZtpmrRl3LHoL7pLQeYkfVia4BN1LCWIEWGrySUchxSdl+RHtUJ+1x2dlVt9qNjOEaK2Xb7YQ+cJpHi0CzxMD71CwKA2vdcS3R1zSruDiPPSzjFKeg2z7Ikcaq2az3rNh4e6a4w6gcW8usC0Bu6mlukdeJfKFz+WC43sDVEsNMoTfrW2sf4sZuo4RaHP+HplfcAC7rkkvzJHjui4T3ndnaV0EHY79oqdFKQ1JzVcsvfk4oHoYPCLIzNtYmEH2prIQXE6PtxW3jKENgdI21iwwlIwQTQFDI/dxtBjkh3lYFWUE8gGDTohdy1Ro0YsBf8pZuGwNPtYxaMigB0z8k2jMbSKWRxVA+d+q9z9inobXckIF35NrgUX2hUVWKvjjwRHslWL3p17fMms7OpJamjeO8dsLz5BGCPs9txAKMHxM8icU
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(46966006)(36840700001)(36756003)(47076005)(8936002)(107886003)(336012)(83380400001)(7696005)(426003)(6666004)(82310400004)(6916009)(44832011)(1076003)(508600001)(54906003)(356005)(7636003)(70586007)(186003)(8676002)(36860700001)(70206006)(316002)(2906002)(36906005)(966005)(2616005)(9786002)(4326008)(5660300002)(26005)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2021 13:14:01.5335
+X-Microsoft-Antispam-Message-Info: DN3MVPoJnKz11h7s2u9i6Mpe7mVGpQ0wrJr16nStB8glH7Q6KD6934VKcfaFkvdCJ067rLIbSV5VvXgVhiVrKHjDo1ZMrPEcIsxugNYUmSPqpnCkMTAv6qlzYmjrBcM45NcYgUkFV/R0khtaLbEo25uBT5R1lRxUPblVwDLoEjm4rBTMCeXyX9Xu7CKCv9vJ/oH7CgzQ0qUQJ68GSjnpUjhuzrHRL5A+ywTxEGaBxyvGMglRcCiLgBnEtBa+BBJ8mlTs/LCcYct36fJEKS1baFM4tMsLuLayNFBsHUxtWPIX7OA3JjuR9HDSHuL3t6TVptVCj3Z+AwCgps1op7e4Yc6pnDFy0iyG++qwlUNbdkLOYjK7l+PirS208FriX0fE5TeJs6cp3fXJdPwnaj1J8T1ZMfWBRRpz9JPvi907UpQ0t6HW90bHsjn5f/sCGmdB8n5Cu90ZvkaGkxSK648eLToUIMK8oNoWmHzUMLsUI7+wcVTsfiAxuSUQqIhrqruoDQ+EmKqY3IymoPm3txD2ZvYWmJaXFj8LzZDiKpYFBbMTO6Ipbxyi6ivBSpITNXq5CdTEe7QuIIKLF7f9WaYykz+g50IgKcfTN1vLYV3mtUb6TuL6xOkGIB5m4tSVRxV85WpShF6yP/e6BJNY/M7SY9+LokQar+KETOUkRGAwhPhCzMEdlrcGeJjlTdOn0vRfA48VWvqWXCR7slwziyou04wipbAgqvG4QnAEUF9T2FU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP265MB2072.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(6486002)(86362001)(8676002)(52116002)(956004)(107886003)(2906002)(2616005)(6916009)(1076003)(5660300002)(44832011)(38100700002)(38350700002)(8936002)(316002)(36756003)(4326008)(508600001)(186003)(83380400001)(26005)(6512007)(66556008)(66946007)(6506007)(66476007)(16453003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HMNcjuy8IrpHaHYvD+TR/YrM3h7aIWpx1EppvLR2W/OmQflDHTpacLqJxYtK?=
+ =?us-ascii?Q?lfT6be4EvoV9hDUOrUnCoWuXHwK0GBbRjrvO6xtdHDO77XECc4IWMvJSnUIO?=
+ =?us-ascii?Q?kFZl4F3WKxFOixm3t4OAJCD0gG56Ks8vkfTp1WzpxepUodCh8pKH5Vg2ZnJP?=
+ =?us-ascii?Q?aZczBntXC5Hor1jHRSSuyfZ81xU9xUujKMvtHvBHsrJ2qAvsZIrdyp01Y+jv?=
+ =?us-ascii?Q?qhJN1ZY3wNHzWaNsMbsVk3Jnln9EE9cNZ6IuHXkvjB6sQqTxmILJm1w7Lsfi?=
+ =?us-ascii?Q?qyCMUJMD0MTsRCUp/phXbS4yUsxJORW63MoHttybSqHG0c9VDuUXtE6M0cqB?=
+ =?us-ascii?Q?95F6+Ur5WCQDHW6jWNUEVlE2Pe5Faplc72mgfx9X/JVIF6cBdXY5hXiL8M1W?=
+ =?us-ascii?Q?0EFUj50/R96x3BltdcmOLhxHby7VYq39t30ZPiQZbaWFsgLrxvusmPV8TieQ?=
+ =?us-ascii?Q?asm32LdfU5CD3PjxTc2ap9YPKRkL8LbNCAg+tZp6N0D93nzpuM0wmGytY4vp?=
+ =?us-ascii?Q?AiEeoodpPiA6XnMl8Thm6CHzQQ6iLaMS4EjoBpAfq5fo+Iv3Ev+Mi2+QtwOu?=
+ =?us-ascii?Q?7xpPdCaxJm21YusJzKIzk7mCIyeNS2Bv4hTtxUooWELCBd+NNCPhyWJh3lzs?=
+ =?us-ascii?Q?oSZV1g6eOKIeA887WF/3b+S3lf+TamaknJ5neix2NQbbb1Q7i9ulgulu/YG7?=
+ =?us-ascii?Q?/Z+IEQ8k6tQRgs0sgOSbxCyNbWTGgA7nSOdwwE3bRn7sSSBvnldipoyUQ4xP?=
+ =?us-ascii?Q?NzvQ0DoF3tVwj7Js70vnoee+Yr5s59+aEee0iGz5aB0HgSQr3tut0X7U4z/X?=
+ =?us-ascii?Q?EsWrTecQ45L1PIFyBA79yfBRvZ5WPcPC7slfT38OjRSCP6O5412k5887dfxk?=
+ =?us-ascii?Q?0HG75NEYLWeLw/Rsnb1os9uM309KRRGjR7/hpdnuc/3nknK5lUDR6rlo0J5C?=
+ =?us-ascii?Q?C2LwzQSE1Y0M1grke4+bgqqaAqT7phK2gClVXTvl+9iNoUgM0riXV30YN0Sc?=
+ =?us-ascii?Q?xdrtEWFHjD9F/j0g+c4adIMl3MCMRpFWAMOOzn1uEvEvTg3F9IveFvuwHY29?=
+ =?us-ascii?Q?EFGxBF65ZQp6I/RPYfaZV5UJ6rvWesP1UC6pcw8SsFjccHZ7hyw4FGq/YsNn?=
+ =?us-ascii?Q?5InKoIrgMhC64n+2K61NBaeVduSuVKTIdtAul+3+RiO8o+MzsQ/Ygxh0Nt4J?=
+ =?us-ascii?Q?H5X1mrl2Xo8QHJWjVAOjyYp1J/UCMbWO8bYFkPFviQxHaS/UbDPffdtK2jKF?=
+ =?us-ascii?Q?FkFHJXY1o3EKzwvcVRxjwJvIOMKZuqB7rEcT6iPXtrxMm8id/ugzrPATGd9q?=
+ =?us-ascii?Q?w+xyXtYuz9Xs/mbqICKDkxjwcdVa4j/8gOVpg0psuxfDv9N+coWW2lnIz2jP?=
+ =?us-ascii?Q?YLaUFkCyWN4a175Xk1xlAhEyjgE0A8YsYMgVkAV8gBiRwRcPO6XJlMejFaYl?=
+ =?us-ascii?Q?vbCDkqf1cowrBJw4vTbpWuepWyR2JaPLOkyIzKL/LbszKEZS+tmZEk0iaN3e?=
+ =?us-ascii?Q?9z6qpZMK93l8gzORhMvnPTxFPBWIgY73JHV84FCNVmeNZG7cNJFYiDmXwPYG?=
+ =?us-ascii?Q?ie+BzcU+by22Nw3Pk3rqqs9LqFFRRC+maL+SqYDekW/mDkqeLSOy3+Kwg4m4?=
+ =?us-ascii?Q?pGwcXrcKaWcD5wmJ5NxG2y8=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09b4d5b7-493c-4fbc-30bc-08d9ae8528c0
+X-MS-Exchange-CrossTenant-AuthSource: CWXP265MB2072.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2021 13:28:38.7850
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6778d44a-aeb8-4adf-ad7d-08d9ae831dfe
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT027.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6328
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 80c4ffa6-7511-4bba-9f03-e5872a660c9b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4pB4zbZNoWFPGIdqjJCKudj0k5oCeZkgebMTTtFuONCDY1B19MuRoQzjjEf135ylt0TebksRAEkuX1nzbe/VyQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP265MB3619
+X-OriginatorOrg: u-blox.com
+X-Assp-Version: 2.4.7(16004) on ASSP.nospam
+X-Assp-ID: ASSP.nospam 75021-21789
+X-Assp-Session: 43F7A368 (mail 1)
+X-Assp-Original-Subject: [PATCH v3] serial: tegra: Change lower tolerance
+        baud rate limit for tegra20 and tegra30
+X-Virus-Scanned: clamav-milter 0.99.4 at buffalo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The control register is a writeonly register that's why reading it
-doesn't make any sense.
-The manual states "This is a write-only register. Issuing a read request
-to the control register generates the read acknowledgment with zero data."
+The current implementation uses 0 as lower limit for the baud rate
+tolerance for tegra20 and tegra30 chips which causes isses on UART
+initialization as soon as baud rate clock is lower than required even
+when within the standard UART tolerance of +/- 4%.
 
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+This fix aligns the implementation with the initial commit description
+of +/- 4% tolerance for tegra chips other than tegra186 and
+tegra194.
+
+Fixes: d781ec21bae6 ("serial: tegra: report clk rate errors")
+Signed-off-by: Patrik John <patrik.john@u-blox.com>
 ---
-v2:
-Update the description
-https://www.xilinx.com/support/documentation/ip_documentation/axi_uartlite/v2_0/pg142-axi-uartlite.pdf
+This issue has been present since 5.4-rc1 and is applicable
+to 5.4.y and 5.10.y longterm releases as well. 
 
- drivers/tty/serial/uartlite.c | 2 --
- 1 file changed, 2 deletions(-)
+Changes in v3:
+- Changed Subject to be more precise
+- Reworked commit message to meet guidelines
+- Added Patch versions
+Changes in v2:
+- Fixed errors reported by Greg's bot  
+ 
+ drivers/tty/serial/serial-tegra.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index dfc1ba4e1572..0df471eddb0e 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -297,7 +297,6 @@ static void ulite_shutdown(struct uart_port *port)
- 	struct uartlite_data *pdata = port->private_data;
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 45e2e4109acd..b6223fab0687 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -1506,7 +1506,7 @@ static struct tegra_uart_chip_data tegra20_uart_chip_data = {
+ 	.fifo_mode_enable_status	= false,
+ 	.uart_max_port			= 5,
+ 	.max_dma_burst_bytes		= 4,
+-	.error_tolerance_low_range	= 0,
++	.error_tolerance_low_range	= -4,
+ 	.error_tolerance_high_range	= 4,
+ };
  
- 	uart_out32(0, ULITE_CONTROL, port);
--	uart_in32(ULITE_CONTROL, port); /* dummy */
- 	free_irq(port->irq, port);
- 	clk_disable(pdata->clk);
- }
-@@ -368,7 +367,6 @@ static int ulite_request_port(struct uart_port *port)
- 	}
+@@ -1517,7 +1517,7 @@ static struct tegra_uart_chip_data tegra30_uart_chip_data = {
+ 	.fifo_mode_enable_status	= false,
+ 	.uart_max_port			= 5,
+ 	.max_dma_burst_bytes		= 4,
+-	.error_tolerance_low_range	= 0,
++	.error_tolerance_low_range	= -4,
+ 	.error_tolerance_high_range	= 4,
+ };
  
- 	pdata->reg_ops = &uartlite_be;
--	ret = uart_in32(ULITE_CONTROL, port);
- 	uart_out32(ULITE_CONTROL_RST_TX, ULITE_CONTROL, port);
- 	ret = uart_in32(ULITE_STATUS, port);
- 	/* Endianess detection */
 -- 
-2.17.1
+2.25.1
 
