@@ -2,115 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22018C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 09:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 702AFC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 09:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234692AbhKWJ3J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Nov 2021 04:29:09 -0500
-Received: from mga12.intel.com ([192.55.52.136]:55499 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233911AbhKWJ3I (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Nov 2021 04:29:08 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10176"; a="215016639"
-X-IronPort-AV: E=Sophos;i="5.87,257,1631602800"; 
-   d="scan'208";a="215016639"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 01:26:00 -0800
-X-IronPort-AV: E=Sophos;i="5.87,257,1631602800"; 
-   d="scan'208";a="508929417"
-Received: from smile.fi.intel.com ([10.237.72.184])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 01:25:56 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mpS3f-009jMP-NQ;
-        Tue, 23 Nov 2021 11:25:47 +0200
-Date:   Tue, 23 Nov 2021 11:25:47 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jay Dolan <jay.dolan@accesio.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 0/2] serial: 8250_pci: Split Pericom driver
-Message-ID: <YZyzmzjVH35U05Wj@smile.fi.intel.com>
-References: <20211117145750.43911-1-andriy.shevchenko@linux.intel.com>
- <b99aabbe-add9-9c1e-ed4b-8850c69233de@accesio.com>
- <YZuRV8ipjcly26HB@smile.fi.intel.com>
- <YZuRnSaZz04KJIDk@smile.fi.intel.com>
- <ede18fd7-266e-406d-0c9c-570d95ab3673@accesio.com>
+        id S234348AbhKWJyW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Nov 2021 04:54:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54658 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233987AbhKWJyW (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Nov 2021 04:54:22 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1937DC061574
+        for <linux-serial@vger.kernel.org>; Tue, 23 Nov 2021 01:51:14 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mpSSF-000874-UK; Tue, 23 Nov 2021 10:51:11 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mpSSF-000aeC-3T; Tue, 23 Nov 2021 10:51:10 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mpSSE-0005hS-1T; Tue, 23 Nov 2021 10:51:10 +0100
+Date:   Tue, 23 Nov 2021 10:51:06 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Sherry Sun <sherry.sun@nxp.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH] tty: serial: imx: clear RTSD status before suspend
+Message-ID: <20211123095106.dobqw2wfz2o2ofwc@pengutronix.de>
+References: <20211123070349.20099-1-sherry.sun@nxp.com>
+ <20211123074219.wn5jfjr6ph7uutyo@pengutronix.de>
+ <AS8PR04MB84047408AEC087EB16B6981F92609@AS8PR04MB8404.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="i3pqdc4chxqu3hq2"
 Content-Disposition: inline
-In-Reply-To: <ede18fd7-266e-406d-0c9c-570d95ab3673@accesio.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <AS8PR04MB84047408AEC087EB16B6981F92609@AS8PR04MB8404.eurprd04.prod.outlook.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 09:19:09PM -0800, Jay Dolan wrote:
-> On 11/22/21 4:48 AM, Andy Shevchenko wrote:
-> > On Mon, Nov 22, 2021 at 02:47:20PM +0200, Andy Shevchenko wrote:
-> > > On Thu, Nov 18, 2021 at 10:32:51PM -0800, Jay Dolan wrote:
-> > > > On 11/17/21 6:57 AM, Andy Shevchenko wrote:
-> > > > > Split Pericom driver to a separate module.
-> > > > > While at it, re-enable high baud rates.
-> > > > > 
-> > > > > Jay, can you, please, test this on as many hardware as you have?
-> > > 
-> > > ...
-> > > 
-> > > > * Add in pericom_do_startup() because the UPF_MAGIC_MULTIPLIER doesn't
-> > > > stick.
-> > > 
-> > > Can't find an evidence that this is the case. Can you recheck this (reading
-> > > flags back via sysfs or so)? So, for v2 I'll leave my approach.
-> > 
-> > Otherwise how the other drivers which are using that flag survive? If it's
-> > indeed an issue, it should be fixed on generic level.
-> > 
-> 
-> I modified pericom_do_startup to log when the UPF_MAGIC_MULTIPLIER flag was
-> present. Then tried to set the port to 3000000 a few times. The port
-> stayed at 9600. It looks like pericom_do_startup() is getting called twice
-> per port on boot, and the flag is gone with the second one.
-> 
-> [    4.925577] [J4D] flag present
-> [    4.926121] [J4D[ flag not present
-> [    4.926843] [J4D] flag present
-> [    4.927415] [J4D[ flag not present
-> [    4.928106] [J4D] flag present
-> [    4.928673] [J4D[ flag not present
-> [    4.929419] [J4D] flag present
-> [    4.930447] [J4D[ flag not present
-> 
-> [   49.528504] [J4D[ flag not present
-> [   51.675240] [J4D[ flag not present
-> [   59.617954] [J4D[ flag not present
-> 
-> Then I modified it to log when it was adding the flag in. The port was set
-> to 3000000. Also the flag only needed to be added in once. It sticks after
-> the first time.
-> 
-> [    4.647546] [J4D] flag present
-> [    4.648119] [J4D] flag not present(adding)
-> [    4.648778] [J4D] flag present
-> [    4.649330] [J4D] flag not present(adding)
-> [    4.650001] [J4D] flag present
-> [    4.650537] [J4D] flag not present(adding)
-> [    4.651192] [J4D] flag present
-> [    4.651718] [J4D] flag not present(adding)
-> 
-> [   96.025668] [J4D] flag present
-> [  100.130626] [J4D] flag present
-> [  116.435436] [J4D] flag present
-> 
-> I mostly just guessed at do_startup() being the place to set the magic
-> multiplier flag after it didn't stick in quirk in 8250_pci.c.
 
-Can you share `dmesg` and output of `lspci -nk -vv` on the machine with the
-kernel with patches applied and running?
+--i3pqdc4chxqu3hq2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-With Best Regards,
-Andy Shevchenko
+On Tue, Nov 23, 2021 at 08:41:18AM +0000, Sherry Sun wrote:
+> Hi Uwe,
+>=20
+> > -----Original Message-----
+> > From: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> > Sent: 2021=E5=B9=B411=E6=9C=8823=E6=97=A5 15:42
+> > To: Sherry Sun <sherry.sun@nxp.com>
+> > Cc: gregkh@linuxfoundation.org; jirislaby@kernel.org; linux-
+> > serial@vger.kernel.org; linux-kernel@vger.kernel.org; dl-linux-imx <lin=
+ux-
+> > imx@nxp.com>
+> > Subject: Re: [PATCH] tty: serial: imx: clear RTSD status before suspend
+> >=20
+> > On Tue, Nov 23, 2021 at 03:03:49PM +0800, Sherry Sun wrote:
+> > > From: Fugang Duan <fugang.duan@nxp.com>
+> > >
+> > > Clear RTSD status before suspend due to the port also use RTS pin as
+> > > wakeup source, need to clear the flag first.
+> >=20
+> > I'd write:
+> >=20
+> > 	Clear RTSD status before enabling the irq event for RTSD.
+>=20
+> Thanks for the suggestion, I will reorganize the commit message and send =
+V2.
+>=20
+> >=20
+> > That this happens in the context of suspend isn't that important.
+>=20
+> Sorry I didn't get the point here, can you please explain more?
+> Per my understanding, the wakeup source interrupt is handled in the
+> suspend context, so clear the flag in the suspend context is also
+> necessary.
 
+But the actual problem is that RTSD is enabled without first clearing it
+and not that RTSD isn't cleared in suspend.
 
+So my initial reaction after reading the commit log header "clear RTSD
+status before suspend" was: WTH, why do we need clearing RTSD before
+suspend. Shouldn't the RTSD state kept over suspend?
+
+In contrast clearing an event before the respecive irq is enabled is
+more obviously correct. And if the irq source is enabled as part of
+suspend or open isn't that relevant for the subject line.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
+   |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--i3pqdc4chxqu3hq2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGcuYcACgkQwfwUeK3K
+7AnmTAf/b6TPbm5kcRz4ofO0PVdeihImAUpfwnyxbtieM8iZRz133N/r/on9F306
+5EtrIerz+iv1i9bRExFBcPvl5jMnWO7rJ1UO9fj43bMq9jRxSPxGj9vlpZKPFycc
+BWePdCtq1pdLOF3mad9TN4a4+NRzfEj9Q9VFmi1g154xIxCMTSFqr/qjyGTO09fE
+Yt6Uffz3UDl8diCDcr9XtamiaxkDlR/h/iUzDEObIHOtoauWfVnWJ08/zdST2mRc
+wVU8a+gtGrzSIqwDE6YFy7MBLZ9Ae1XliKwM3mOB7OrxxgDSrkvKp2/y0GiR115L
+O7AEMKY500kRNgFXu/TUnIJSAhpOmA==
+=0a4M
+-----END PGP SIGNATURE-----
+
+--i3pqdc4chxqu3hq2--
