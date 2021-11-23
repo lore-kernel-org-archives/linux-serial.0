@@ -2,140 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106F9C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 08:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFE0C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 08:52:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234521AbhKWIqg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Nov 2021 03:46:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232024AbhKWIqe (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Nov 2021 03:46:34 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18DF1C061574
-        for <linux-serial@vger.kernel.org>; Tue, 23 Nov 2021 00:43:27 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mpROf-0007sO-28; Tue, 23 Nov 2021 09:43:25 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mpROe-000aYX-SB; Tue, 23 Nov 2021 09:43:24 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mpROd-0001qe-Us; Tue, 23 Nov 2021 09:43:23 +0100
-Date:   Tue, 23 Nov 2021 09:43:21 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: Re: [PATCH] tty: serial: imx: disable UCR4_OREN in .stop_rx()
-Message-ID: <20211123084321.gpblxmqddn3kl44y@pengutronix.de>
-References: <20211123070437.20153-1-sherry.sun@nxp.com>
- <20211123075122.2cwhrdwrsyjgebnk@pengutronix.de>
+        id S231689AbhKWIze (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Nov 2021 03:55:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52520 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229721AbhKWIzd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Nov 2021 03:55:33 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 588C460FC3;
+        Tue, 23 Nov 2021 08:52:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1637657546;
+        bh=T1Wu1HaiPk9IdEr03zo3RO4DOreDPwvBeTvHQ1EkLBo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=r2rd/M1ezUu0nUITmFLDdiVBweV+4CLPWrG+R6f6KVdNM+zJ94Ok0OBuun0sltQzl
+         AG49PR1Y/Xk6XLHT15Mq8HALSXsxWv7AUW4XHN6L3bxWXfWcUQYGmXU71V9T7+efh/
+         8J7FCF64xGmZQe2mxd4/IKt6l9mxjEGL/sCTPG3imWfcTluOaOKH4BFf2UHenS1CYv
+         MV7t3txxcAQiSAoNi/sQnX+5Vc++ttUkLtMjU+tKSRUrqtYse5jjx1ItrH2IIk7pQM
+         AgPVM/2TwBpXSgeJITGCojzo//QUrsJfOtw1TuPeVkUZ/A+yPSfqR/LbAejJWcO0EI
+         yB9PEDhKN+Hhw==
+Date:   Tue, 23 Nov 2021 09:52:22 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Abel Vesa <abel.vesa@nxp.com>
+Cc:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 01/12] dt-bindings: i2c: imx-lpi2c: Fix i.MX 8QM
+ compatible matching
+Message-ID: <YZyrxvzRUk3jPMnn@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Abel Vesa <abel.vesa@nxp.com>, Rob Herring <robh@kernel.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+References: <1636566415-22750-1-git-send-email-abel.vesa@nxp.com>
+ <1636566415-22750-2-git-send-email-abel.vesa@nxp.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="htaspexec67klvnz"
+        protocol="application/pgp-signature"; boundary="BTP02E+ulndgBnjX"
 Content-Disposition: inline
-In-Reply-To: <20211123075122.2cwhrdwrsyjgebnk@pengutronix.de>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <1636566415-22750-2-git-send-email-abel.vesa@nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---htaspexec67klvnz
-Content-Type: text/plain; charset=iso-8859-1
+--BTP02E+ulndgBnjX
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hello again,
-
-On Tue, Nov 23, 2021 at 08:51:22AM +0100, Uwe Kleine-K=F6nig wrote:
-> On Tue, Nov 23, 2021 at 03:04:37PM +0800, Sherry Sun wrote:
-> > From: Fugang Duan <fugang.duan@nxp.com>
-> >=20
-> > Disable UCR4_OREN bit in .stop_rx() to avoid endless
-> > interrupt happen while tty port is closing.
-> >=20
-> > Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-> > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> > ---
-> >  drivers/tty/serial/imx.c | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > index fb75e3e0d828..9ecaf051249d 100644
-> > --- a/drivers/tty/serial/imx.c
-> > +++ b/drivers/tty/serial/imx.c
-> > @@ -486,18 +486,21 @@ static void imx_uart_stop_tx(struct uart_port *po=
-rt)
-> >  static void imx_uart_stop_rx(struct uart_port *port)
-> >  {
-> >  	struct imx_port *sport =3D (struct imx_port *)port;
-> > -	u32 ucr1, ucr2;
-> > +	u32 ucr1, ucr2, ucr4;
-> > =20
-> >  	ucr1 =3D imx_uart_readl(sport, UCR1);
-> >  	ucr2 =3D imx_uart_readl(sport, UCR2);
-> > +	ucr4 =3D imx_uart_readl(sport, UCR4);
-> > =20
-> >  	if (sport->dma_is_enabled) {
-> >  		ucr1 &=3D ~(UCR1_RXDMAEN | UCR1_ATDMAEN);
-> >  	} else {
-> >  		ucr1 &=3D ~UCR1_RRDYEN;
-> >  		ucr2 &=3D ~UCR2_ATEN;
-> > +		ucr4 &=3D ~UCR4_OREN;
-> >  	}
-> >  	imx_uart_writel(sport, ucr1, UCR1);
-> > +	imx_uart_writel(sport, ucr4, UCR4);
+On Wed, Nov 10, 2021 at 07:46:44PM +0200, Abel Vesa wrote:
+> The i.MX 8QM DTS files use two compatibles, so update the binding to fix
+> dtbs_check warnings like:
 >=20
-> I don't understand this yet, but I guess this is just a matter of
-> improving the commit log. How does the endless irq happen?
+>   arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml: i2c@5a800000:
+>     compatible: ['fsl,imx8qm-lpi2c', 'fsl,imx7ulp-lpi2c'] is too long
 >=20
-> ... some time later after thinking and reading the driver source ...
->=20
-> Hmm, when the OR event is triggered the handler does
->=20
-> 	imx_uart_writel(sport, USR2_ORE, USR2);
->=20
-> and so clears the event. I would expect that this should be good enough
-> to prevent an irq storm even if the receiver is disabled. Doesn't acking
-> work with the receiver disabled?
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 
-One thing I forgot to mention:
+Applied to for-next, thanks!
 
-If imx_uart_stop_rx() now clears UCR4_OREN, clearing in
-imx_uart_shutdown() should probably be dropped.
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---htaspexec67klvnz
+--BTP02E+ulndgBnjX
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGcqaYACgkQwfwUeK3K
-7AnyRggAjPVE2oGVO6+Mju+sJmNwGsiBt73Tr9kixCSfdP+z/9Pmt1NLaOgNCCwT
-pqAHQP0GSiEfBosUIKpNCHVUn5uXkCnlXc7ri0KBGInCn5IJjHS9t5pjZtgKKqLL
-uR8ml+YQcLwRlJhbMadOaoQjWEJ23vHRp9MGty8ok6yYwFSG+uwyXKy+6C0XHB2Q
-setR+jgLKl8YFFVOYIyX3f9/AEXkDBwA/PexuAP+/J9sU0kbRoofEIQyCD7dlcTZ
-E5oul6qH2/g+uMEoa86ed9J6w4KyjuGug+Ev4QwiOO3H0ytBkNGPZmeUCEG0kPW8
-moDXyWwUONZNqgfzfwDPcwkZnvVClA==
-=+YlV
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmGcq8YACgkQFA3kzBSg
+KbZvFg/9ExrQHMe1OfU+rbUE7wWiNgJzLodPu1nWHSWQbWkWgaCFDcqFhUDbsXkK
+bGxb7f9/Z8jbJHzlYrlP0tWBwF6LlUkR5XLYmYKvP5WoWp+jufmnZvgYy8ELXMTF
+AbN7gStiC3bS/0lHOgykW3i9uZy7Arpl3lhG4AHBUBp1tw0I3uO9QXLUb7x5Xza7
+cvprVyewQyfddKJprv0bg4LE3XnhyHzPZsYXBtSVYb4QgH38C56xyLD8vKCSbWBA
+ZrS0Mhvfve1r18zZzo8XY/A8nKxzUFiex1UbkmBxI/c39xHz84VWv47b5ocx/6Ws
+n+iWKFJZlVOfjDnBNe+4v1a8QahhlUE5piIahrF1xJyB6rcNtxsQ2BA30VBXYNs0
+A0rs6niUK0RhoSzqjS/TLJ7AK5lOypZg+4rCbEB6hPjIKj49ZF+2UcVDR9/RkD9u
+5EbcB3Zr9i0GOuU9eyrOWaSkntD2lZA8NhjhFAx1BeAAExUFDbudpIEAlLipdiLE
+Npy5tShxgUKFk4Imz1KAuCpot3+U+Iee9Mq1vcg1IoQgcuOEO3vD3HQ1YFjHgN3C
+8hFX4t37r/sHlBHV8UUmOh31NufimYvi0gtOv2JHbUiOZeUWGygAxGu3RyEEsT3s
++V4isn9hx4x/7HKu9l4lO6HnSBS3B5mGAZxf7Tm5oRKg07HIHgs=
+=EjAu
 -----END PGP SIGNATURE-----
 
---htaspexec67klvnz--
+--BTP02E+ulndgBnjX--
