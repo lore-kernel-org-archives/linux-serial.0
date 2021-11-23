@@ -2,228 +2,225 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B78F0C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 15:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040D0C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 15:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236377AbhKWPIW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Nov 2021 10:08:22 -0500
-Received: from mail-dm6nam12on2057.outbound.protection.outlook.com ([40.107.243.57]:46784
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230510AbhKWPIV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Nov 2021 10:08:21 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GgDOedzgAohzNWf7LNil8SuVjF8/vJd7w1EkfDtHx6y+bYMBmXjkpuCIXx0JWT2U2gM7oRZW5SXRFWohbwrC2XcRF9KbKziJr2P94zTRRhyPgtRGa/5GREp4QNsa03PS5og3Cx50v+OAacGqMutpL/sMSmYEZA2kb8sMQ60Awi9+wlitcl+zcn/44mUIJA/nbMjeTpabeTnCwxNAuqkAUELTYgeII04V+slmXRH/7IHuSUXDM8X876D+32ODzRrYaw/vRNpIvSk/l6y9brmigRUlO69CCQxFlc56uq385DF8sUJBC1yGxn8r0nfSsASFSHA8mK0ewO5tt7QekQ3Bcg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZMNgVJdzzQ4xTG5Krti2ZFm9paxrJ73lTKtqfyyzMZs=;
- b=GQni1tJD/N8SCB8HwlM2hvVO57m8ESD6wiAy1q6WqilhfYPE7Cp3MHOlax7H1VZ1gU1oIJee+N5SBTcMTdyLiZ+fg0bmfLb2Jq71d1/Z5BFJZkoJcWwHyHR+lL0q+f8q2TD39cxt+BSPxdb8uljQVL3C/sKiLVv1On2cOzMlcBnaYejQmOMx6VaIFx7ETyOyWpxVlSySSjJcFBcy5H9Nly/ziWdIrQKge4shKVWKWuiWjxTrf8zYA9IGXaO+7NQRb21ZX6v7gJunmKCjSEEVCES1Wf9Af+5+skcI9GS36RSUgzHswxUjp/ma0hB6/j7+bUvCZvNkmRWHB0DBY22sjw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=hs-mannheim.de smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZMNgVJdzzQ4xTG5Krti2ZFm9paxrJ73lTKtqfyyzMZs=;
- b=CQoxYHJGd/JoeHpp9EVQhSkXQlJF7yHnTkw1zWf7lsqTqblvLeuxLppm2lmJObIRItJgaDSk4shwh9X3vHs0d9ii5eyihXXWkpZWQObGld3IBFMJ3lttxXc9VrqYJsmZu+zNGwmEKXjNrUGaB/YCMcN0CqKlQOTymObwbY7nEYY=
-Received: from DM6PR01CA0029.prod.exchangelabs.com (2603:10b6:5:296::34) by
- DM5PR02MB2409.namprd02.prod.outlook.com (2603:10b6:3:51::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4713.22; Tue, 23 Nov 2021 15:05:11 +0000
-Received: from DM3NAM02FT035.eop-nam02.prod.protection.outlook.com
- (2603:10b6:5:296:cafe::4f) by DM6PR01CA0029.outlook.office365.com
- (2603:10b6:5:296::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.19 via Frontend
- Transport; Tue, 23 Nov 2021 15:05:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT035.mail.protection.outlook.com (10.13.4.78) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4713.19 via Frontend Transport; Tue, 23 Nov 2021 15:05:10 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 23 Nov 2021 07:05:09 -0800
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 23 Nov 2021 07:05:09 -0800
-Envelope-to: git@xilinx.com,
- r.willenberg@hs-mannheim.de,
- linux-serial@vger.kernel.org,
- gregkh@linuxfoundation.org
-Received: from [10.254.241.49] (port=51970)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1mpXM4-000EVt-JO; Tue, 23 Nov 2021 07:05:08 -0800
-Message-ID: <e8ecbe6d-2696-ca05-693f-46609e84a43b@xilinx.com>
-Date:   Tue, 23 Nov 2021 16:05:06 +0100
+        id S238502AbhKWPmJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Nov 2021 10:42:09 -0500
+Received: from mga07.intel.com ([134.134.136.100]:54611 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238499AbhKWPmI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Nov 2021 10:42:08 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10176"; a="298452739"
+X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
+   d="scan'208";a="298452739"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 07:39:00 -0800
+X-IronPort-AV: E=Sophos;i="5.87,258,1631602800"; 
+   d="scan'208";a="674502303"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2021 07:38:58 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mpXsk-009ofI-V4;
+        Tue, 23 Nov 2021 17:38:54 +0200
+Date:   Tue, 23 Nov 2021 17:38:54 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jay Dolan <jay.dolan@accesio.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 0/2] serial: 8250_pci: Split Pericom driver
+Message-ID: <YZ0LDmSH9jfw8/Es@smile.fi.intel.com>
+References: <20211117145750.43911-1-andriy.shevchenko@linux.intel.com>
+ <b99aabbe-add9-9c1e-ed4b-8850c69233de@accesio.com>
+ <YZuRV8ipjcly26HB@smile.fi.intel.com>
+ <YZuRnSaZz04KJIDk@smile.fi.intel.com>
+ <ede18fd7-266e-406d-0c9c-570d95ab3673@accesio.com>
+ <YZyzmzjVH35U05Wj@smile.fi.intel.com>
+ <a4a34fb4-618b-0933-20a9-1e3d23327879@accesio.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v2] serial: uartlite: Move out-of-range port-numbers into
- ULITE_NR_UARTS range
-Content-Language: en-US
-To:     =?UTF-8?Q?R=c3=bcdiger_Willenberg?= <r.willenberg@hs-mannheim.de>,
-        "Michal Simek" <michal.simek@xilinx.com>,
-        <linux-serial@vger.kernel.org>
-CC:     <gregkh@linuxfoundation.org>, <git@xilinx.com>,
-        <shubhrajyoti.datta@xilinx.com>
-References: <20211118211745.133778-1-r.willenberg@hs-mannheim.de>
- <be268f13-7299-b701-55a9-0942d4aeb1e2@xilinx.com>
- <fd919b8b-4348-df1f-05cb-93405f947dba@hs-mannheim.de>
- <7d46faa1-9a89-907e-bbb4-a03b91be86d0@xilinx.com>
- <1eb4b718-dc7e-047f-1fa3-0ec1ab52e787@hs-mannheim.de>
-From:   Michal Simek <michal.simek@xilinx.com>
-In-Reply-To: <1eb4b718-dc7e-047f-1fa3-0ec1ab52e787@hs-mannheim.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1dac3b59-aa22-4004-3ffe-08d9ae92a4f0
-X-MS-TrafficTypeDiagnostic: DM5PR02MB2409:
-X-Microsoft-Antispam-PRVS: <DM5PR02MB24097E25BC1D968A3F967CF0C6609@DM5PR02MB2409.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: w8MC9W0QJt3EKpz8zbBqupXAv3MPQBGZbNEhTBG98pGSJPSRSJIRacqnkSG0OEluA4o8i5mVVeZjJyNA7SPa/oyt1ikGCj69sC6t70hA8SAM1CwcmkLu3bSm0/SA8C4igZwbmRu25EhjUXVyAyy/g5O7LLVSuFFU4YIVWF+W7e3/7Ysm5ItD5WarnNYaiztbgkINvXAzfjZdN1s7OC1LDY3aMEIvgwF3xyGGbMUq6ATK4UqtcvksAIE/r+3cb0hMlngfjye/0bjzYoNr0g3YOyQ5xJKiKuXEkWTJibKBi60PgpZjkDaRA1tKudzgctjJadibkrkwiAX31nQSK7kUjZyzCEXnHiEq2OlG6btXj2MpTAQyr/YJrCUluU53IC1ska7RXX3cCfT0lXg9sJvjrCivGrbrRsxgAmcM1vCiFJXVTVFKKntG8ahQOrgizJZQ1h4pkdEj3pVPr7rGdey4hTFhuKYSys7BeWWI6+bVais7UiHSXazDP8SWCB2ckyyYKO3AM0UsGgHWJaBKV6PLDv4SahVR/wSe4tgHZruQYXfzmJ3OG2AZ3cA0QpaXGEC9mMB9Qe/n7eKB6S3q2VRh23XBZki2ee9AwTkHz7xE1tQs71F7Wk17BKtm6ghaYqO8prYKMr4HU4sTSYU1/M3gRel3fPJmk4N4oZN8Qq4uhtCw/YN+V+B2A5b5m7rcCwZO5BLhx99CC3BXYIa0NkJJus0iHVD7wafQGktjVjZTZM8CdY0EcKeMeEvEj49e+cLCis9ryIydctTW18dtRSdJoQ==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(36840700001)(46966006)(2906002)(7636003)(8676002)(54906003)(107886003)(31696002)(36756003)(44832011)(36860700001)(2616005)(110136005)(426003)(53546011)(508600001)(356005)(83380400001)(336012)(9786002)(70206006)(66574015)(186003)(31686004)(82310400004)(4326008)(316002)(47076005)(5660300002)(70586007)(8936002)(26005)(36906005)(50156003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2021 15:05:10.4402
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1dac3b59-aa22-4004-3ffe-08d9ae92a4f0
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT035.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2409
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a4a34fb4-618b-0933-20a9-1e3d23327879@accesio.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, Nov 23, 2021 at 07:02:44AM -0800, Jay Dolan wrote:
+> On 11/23/21 1:25 AM, Andy Shevchenko wrote:
+> > On Mon, Nov 22, 2021 at 09:19:09PM -0800, Jay Dolan wrote:
+> > > On 11/22/21 4:48 AM, Andy Shevchenko wrote:
+> > > > On Mon, Nov 22, 2021 at 02:47:20PM +0200, Andy Shevchenko wrote:
+> > > > > On Thu, Nov 18, 2021 at 10:32:51PM -0800, Jay Dolan wrote:
+> > > > > > On 11/17/21 6:57 AM, Andy Shevchenko wrote:
+> > > > > > > Split Pericom driver to a separate module.
+> > > > > > > While at it, re-enable high baud rates.
+> > > > > > > 
+> > > > > > > Jay, can you, please, test this on as many hardware as you have?
+> > > > > 
+> > > > > ...
+> > > > > 
+> > > > > > * Add in pericom_do_startup() because the UPF_MAGIC_MULTIPLIER doesn't
+> > > > > > stick.
+> > > > > 
+> > > > > Can't find an evidence that this is the case. Can you recheck this (reading
+> > > > > flags back via sysfs or so)? So, for v2 I'll leave my approach.
+> > > > 
+> > > > Otherwise how the other drivers which are using that flag survive? If it's
+> > > > indeed an issue, it should be fixed on generic level.
+> > > > 
+> > > 
+> > > I modified pericom_do_startup to log when the UPF_MAGIC_MULTIPLIER flag was
+> > > present. Then tried to set the port to 3000000 a few times. The port
+> > > stayed at 9600. It looks like pericom_do_startup() is getting called twice
+> > > per port on boot, and the flag is gone with the second one.
+> > > 
+> > > [    4.925577] [J4D] flag present
+> > > [    4.926121] [J4D[ flag not present
+> > > [    4.926843] [J4D] flag present
+> > > [    4.927415] [J4D[ flag not present
+> > > [    4.928106] [J4D] flag present
+> > > [    4.928673] [J4D[ flag not present
+> > > [    4.929419] [J4D] flag present
+> > > [    4.930447] [J4D[ flag not present
+> > > 
+> > > [   49.528504] [J4D[ flag not present
+> > > [   51.675240] [J4D[ flag not present
+> > > [   59.617954] [J4D[ flag not present
+> > > 
+> > > Then I modified it to log when it was adding the flag in. The port was set
+> > > to 3000000. Also the flag only needed to be added in once. It sticks after
+> > > the first time.
+> > > 
+> > > [    4.647546] [J4D] flag present
+> > > [    4.648119] [J4D] flag not present(adding)
+> > > [    4.648778] [J4D] flag present
+> > > [    4.649330] [J4D] flag not present(adding)
+> > > [    4.650001] [J4D] flag present
+> > > [    4.650537] [J4D] flag not present(adding)
+> > > [    4.651192] [J4D] flag present
+> > > [    4.651718] [J4D] flag not present(adding)
+> > > 
+> > > [   96.025668] [J4D] flag present
+> > > [  100.130626] [J4D] flag present
+> > > [  116.435436] [J4D] flag present
+> > > 
+> > > I mostly just guessed at do_startup() being the place to set the magic
+> > > multiplier flag after it didn't stick in quirk in 8250_pci.c.
+> > 
+> > Can you share `dmesg` and output of `lspci -nk -vv` on the machine with the
+> > kernel with patches applied and running?
+
+> Provided below.
+
+Thanks!
+
+> Also, I am going to lose the place for my test station to
+> the  family Christmas tree after tomorrow. I'm not sure when or where I'm
+> going to get it set back up.
+
+Understood, in case you still have time to test one idea below. As far as I
+understand current state of affairs the problematic part is the magic
+multiplier.
+
+> 01:00.0 0700: 494f:10dc (prog-if 02 [16550])
+> 	Subsystem: 0001:0001
+> 	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx-
+> 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+> 	Latency: 0, Cache Line Size: 64 bytes
+> 	Interrupt: pin A routed to IRQ 16
+> 	Region 0: I/O ports at e000 [size=64]
+> 	Region 1: Memory at fe400000 (32-bit, non-prefetchable) [size=4K]
+
+Okay, we are interested so far in IO bar (which is BAR0).
+Do you know what is the BAR1 for?
+
+> 	Capabilities: [80] Power Management version 3
+> 		Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=375mA
+> PME(D0-,D1-,D2-,D3hot+,D3cold-)
+> 		Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+> 	Capabilities: [8c] MSI: Enable- Count=1/1 Maskable- 64bit+
+> 		Address: 0000000000000000  Data: 0000
+> 	Capabilities: [9c] Vital Product Data
+> 		Not readable
+> 	Capabilities: [a4] Vendor Specific Information: Len=28 <?>
+> 	Capabilities: [e0] Express (v1) Legacy Endpoint, MSI 00
+> 		DevCap:	MaxPayload 128 bytes, PhantFunc 0, Latency L0s <64ns, L1 <1us
+> 			ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset-
+> 		DevCtl:	Report errors: Correctable- Non-Fatal- Fatal- Unsupported-
+> 			RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+> 			MaxPayload 128 bytes, MaxReadReq 128 bytes
+> 		DevSta:	CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr+ TransPend-
+> 		LnkCap:	Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s
+> <512ns, L1 <1us
+> 			ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp-
+> 		LnkCtl:	ASPM Disabled; RCB 64 bytes Disabled- CommClk-
+> 			ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+> 		LnkSta:	Speed 2.5GT/s, Width x1, TrErr- Train- SlotClk- DLActive- BWMgmt-
+> ABWMgmt-
+> 	Capabilities: [100 v1] Advanced Error Reporting
+> 		UESta:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP-
+> ECRC- UnsupReq- ACSViol-
+> 		UEMsk:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP-
+> ECRC- UnsupReq- ACSViol-
+> 		UESvrt:	DLP+ SDES- TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+
+> ECRC- UnsupReq- ACSViol-
+> 		CESta:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- NonFatalErr-
+> 		CEMsk:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- NonFatalErr+
+> 		AERCap:	First Error Pointer: 00, GenCap- CGenEn- ChkCap- ChkEn-
+> 	Kernel driver in use: 8250_pericom
+> 	Kernel modules: 8250_pci, 8250_pericom
+
+Yep, two drivers matches and only 8250_pericom is in use. All good here.
+
+> [    0.062531] pci 0000:01:00.0: [494f:10dc] type 00 class 0x070002
+> [    0.062551] pci 0000:01:00.0: reg 0x10: [io  0xe000-0xe03f]
+> [    0.062562] pci 0000:01:00.0: reg 0x14: [mem 0xfe400000-0xfe400fff]
+> [    0.062670] pci 0000:01:00.0: supports D1 D2
+> [    0.062673] pci 0000:01:00.0: PME# supported from D3hot
+
+Yeah, this interesting layout with 64 bytes and gap in UARTs 3-6.
+
+> [    2.927496] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+> [    2.927703] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a
+> 16550A
+> [    2.979481] 0000:01:00.0: ttyS4 at I/O 0xe000 (irq = 16, base_baud =
+> 921600) is a 16550A
+> [    2.979487] 0000:01:00.0: ttyS4 extra baud rates supported: 1843200,
+> 3686400
+> [    2.979822] 0000:01:00.0: ttyS5 at I/O 0xe008 (irq = 16, base_baud =
+> 921600) is a 16550A
+> [    2.979825] 0000:01:00.0: ttyS5 extra baud rates supported: 1843200,
+> 3686400
+> [    2.982020] 0000:01:00.0: ttyS6 at I/O 0xe010 (irq = 16, base_baud =
+> 921600) is a 16550A
+> [    2.982025] 0000:01:00.0: ttyS6 extra baud rates supported: 1843200,
+> 3686400
+> [    2.982256] 0000:01:00.0: ttyS7 at I/O 0xe038 (irq = 16, base_baud =
+> 921600) is a 16550A
+> [    2.982259] 0000:01:00.0: ttyS7 extra baud rates supported: 1843200,
+> 3686400
+
+This is most important part. The code autodetects 16550A. Now I'm wondering
+if the following change will keep MAGIC multiplier untouched (instead of
+current patch):
+
+-   uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
++   uart.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SHARE_IRQ | UPF_MAGIC_MULTIPLIER;
++   uart.port.type = PORT_16550A;
+
+> [   42.730050] 8250_pericom 0000:01:00.0: VPD access failed.  This is likely
+> a firmware bug on this device.  Contact the card vendor for a firmware
+> update
+
+Not sure what is this and how it may affect anything.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-On 11/23/21 15:59, Rüdiger Willenberg wrote:
-> Am 23.11.2021 um 13:19 schrieb Michal Simek:
->>
->>
->> On 11/22/21 23:08, Ruediger Willenberg wrote:
->>> Am 19.11.2021 um 13:21 schrieb Michal Simek:
->>>> On 11/18/21 22:17, Ruediger Willenberg wrote:
->>>>> Find free uart_port struct in range 0 <= id < ULITE_NR_UARTS when
->>>>> the device tree port-number property is outside that range. This
->>>>> happens when there are other UART types in the system because the
->>>>> Xilinx device tree generator numbers all UARTs consecutively;
->>>>> as a result, not as many Uartlites as specified by the
->>>>> SERIAL_UARTLITE_NR_UARTS parameter could be successfully added.
->>>>>
->>>>> Signed-off-by: Ruediger Willenberg <r.willenberg@hs-mannheim.de>
->>>>> ---
->>>>> Changes in v2:
->>>>>   - give KERN_NOTICE when changing the id,
->>>>>     with reference to the requested port-number
->>>>>
->>>>> -    if (id < 0 || id >= ULITE_NR_UARTS) {
->>>>> -        dev_err(dev, "%s%i too large\n", ULITE_NAME, id);
->>>>> +    if (id == ULITE_NR_UARTS) {
->>>>> +        dev_err(dev, "maximum number of %s assigned\n", ULITE_NAME);
->>>>>           return -EINVAL;
->>>>>       }
->>>>> @@ -676,7 +678,11 @@ static int ulite_assign(struct device *dev, 
->>>>> int id, u32 base, int irq,
->>>>>           dev_set_drvdata(dev, NULL);
->>>>>           return rc;
->>>>>       }
->>>>
->>>> nit: please keep this newline here.
->>>>
->>>>> -
->>>>> +    if (oor_id >= 0)
->>>>> +        dev_notice(dev,
->>>>> +            "assigned uartlite with device tree port-number=<%i> 
->>>>> to %s%i\n",
->>>>> +            oor_id, ULITE_NAME, id);
->>>>> +
->>>>
->>>>
->>>>
->>>> [linux](master)$ ./scripts/checkpatch.pl --strict 
->>>> 0001-serial-uartlite-Move-out-of-range-port-numbers-into-.patch
->>>> CHECK: Alignment should match open parenthesis
->>>
->>> Thanks, I apparently didn't do "--strict" checking, sorry. Will fix 
->>> both in PATCH v3
->>>
->>>
->>>> And there is one more issue with this. If you start to mix serial 
->>>> IPs which are partially recorded in aliases. For example like this.
->>>>
->>>> aliases {
->>>>      serial0 = &uart1;
->>>> };
->>>>
->>>> uart0 {
->>>> ...
->>>> };
->>>> Uart0 is probed first. It is without alias and id 0 will be assigned 
->>>> to it. Then uart1 is probed. It looks at aliases you get id 0 but it 
->>>> is already taken and you end up with "cannot assign to %s%i; it is 
->>>> already in use"
->>>
->>> As I point out in the other thread
->>>   "[PATCH v2] uartlite: Update the default for the 
->>> SERIAL_UARTLITE_NR_UARTS"
->>> (I don't feel crossposting all of it here would be good practice)
->>>
->>> a) the Xilinx DTG gives "serial" aliases to _all_ Xilinx UARTs
->>> b) the Xilinx DTG gives "port-number" properties to _all_ Xilinx UARTs
->>> c) these two are not assigned in the same order by the Xilinx DTG, 
->>> which is problematic
->>
->> DTG/MSS logic should be solved in different mailing list that's why 
->> please move it there.
-> 
-> I agree in principle. Michal, since you have an @xilinx.com domain could 
-> you please share where that place to discuss is?
-> 
-> The Linux "devicetree" list doesn't not seem the right place either for 
-> a company-managed, separate repo. If this goes your suggested way 
-> (completely changing the uartlite driver to use the "serial" alias, the 
-> Xilinx DTG _needs_ to be improved, including respecting the serial0 
-> alias for the designated console. I'd be glad to contribute to the 
-> discussion there. Right not there's a mess that's not solved by throwing 
-> out the port-number property alone.
-> 
->>>
->>> uartlite.c currently looks at port-number properties, not aliases. So 
->>> unassigned aliases are not the issue. A similar-looking but more 
->>> complicated issue that COULD happen, to be transparent, is this:
->>
->> port-number is optional and as I said in the second thread I think 
->> that this should be deprecated and removed. Most of DT drivers take 
->> care about serial alias that's why we should go that route too.
->>
->> And I also remember that drivers shouldn't really use different names 
->> as ttyUL, ttyPS, ttyAMA, etc but all of them should use the same name 
->> as ttyUSB is doing.
-> 
-> Big improvements are good and well, but they tend to break things and 
-> again it does mean the Xilinx DTG needs to move with that.
-> I'd be immensely grateful if you could indicate _where_ to discuss those 
-> changes, and who has the authority to speak for Xilinx. Off-list, if you 
-> think that is more appropriate.
-
-Let's just figure it out how it should be done properly and then there 
-is no problem to update DTG based on it.
-
-Thanks,
-Michal
