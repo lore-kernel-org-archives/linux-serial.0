@@ -2,133 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F90C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 16:18:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 252A0C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Nov 2021 18:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238116AbhKWQVm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Nov 2021 11:21:42 -0500
-Received: from mail-vk1-f170.google.com ([209.85.221.170]:41647 "EHLO
-        mail-vk1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238824AbhKWQVj (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Nov 2021 11:21:39 -0500
-Received: by mail-vk1-f170.google.com with SMTP id 188so9773680vku.8;
-        Tue, 23 Nov 2021 08:18:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=esyW0OAzYg3/RWIR9cYT0r1LL6UkCXN7FUP4GXrGayk=;
-        b=XZUzDsnYJVNcrgneOIbznKsK362tY8/g9SfVU6frC40wpvu9oSRJKBEC0+rOyKuOeS
-         5H6csPMu6fTXMWXTrzwpQuauSJl5tkv7zWXBNNNHa4OxbSfrwF8M9OEg+88fPBb8duIo
-         zsu48DGvHGxNjaEISVi4S+tk92IClCNZlfs8vFzlIWWpVa0FQB51P7dMAVZ+JBwD7URO
-         iOSyLj2ze2LuXWOLcfEY2RHG1y33XW9G3uR7keoZhs1af49KWvgLdZIqIp4A9tbwHUoU
-         B1MaMCe4Bj72TMz2q43BtAjbHdpxu6KPBnW2YYR+A80bwtN92pXWyPpfLh0jWnG3PLgm
-         fSBw==
-X-Gm-Message-State: AOAM531hvm0gHdGNzKbi5qldGAHjvQR61tfd4TCcqEwNAk5n570Qe6BD
-        49hCHdVX5wDHjNoBTvGRSxRlz8jsY9oI0Q==
-X-Google-Smtp-Source: ABdhPJyttauTbJRNlJcCw1ZZ8ZAqRaYOoEUYSRCPT9BbCMn1tgD8ve+9YyUbR7LHKoc9HV8EBeNyrw==
-X-Received: by 2002:a05:6122:2227:: with SMTP id bb39mr12529373vkb.9.1637684310608;
-        Tue, 23 Nov 2021 08:18:30 -0800 (PST)
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
-        by smtp.gmail.com with ESMTPSA id i24sm6508017vkk.5.2021.11.23.08.18.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Nov 2021 08:18:30 -0800 (PST)
-Received: by mail-ua1-f48.google.com with SMTP id l24so44945915uak.2;
-        Tue, 23 Nov 2021 08:18:29 -0800 (PST)
-X-Received: by 2002:a05:6102:2910:: with SMTP id cz16mr10672924vsb.9.1637684309252;
- Tue, 23 Nov 2021 08:18:29 -0800 (PST)
+        id S235699AbhKWStA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Nov 2021 13:49:00 -0500
+Received: from mail-bn1nam07on2079.outbound.protection.outlook.com ([40.107.212.79]:43607
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234139AbhKWSs7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 23 Nov 2021 13:48:59 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ccNBicHlmftY5l6MHG2jIf/5sg2eFHMPzY2srHF4Ra7w+zsLSnykoC6fJt9h1fnJH2UYKOS07dF4NwlgpKaVknO3+/hCf6QkmQGF5abq6fKLyppZOcJT1wRYuPxX2bhLNiaheejZxJI3Y/A3LC8udxGwHLCdGQcS8CSL79OuDp2SysRoR5RRlGF19y8DGnMzeSQWv21p4iBF3SL5ssr4xWFPNRBifJDaTFsahoBhUMlax2XoZu+jYYFjjePKeZ2KsvU5VyOinArRt5o9QFq2DvP614Zy3vkftSOoX6VjXl0ZrRLBY9mg+dEK1FsJQVMUN4bl7DtAOmF8CUxHAUVgqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0fJvpXFNcOf/7SFtieQ68f2Uy2BxSvBVju2YztXWboM=;
+ b=LrCenmXN5GwTPrvxL3Rmw5+ky34UuYW14J1Y0oeuOh2eObiDoE9GyfMmmIC01jXB4g69bfV9kKfKlG0mBzsdB6B1rqJkFwvwT7pWdDfB70VzlEgQg3IfB6buFxc2+54v4k4BreDMDJLLhO+Gt6w/VQQHCxw6BsHzBy94dCnK4op+vDFRA25N4TVTz6TA2DkXtRXVV2KgK/l49L73SI/Bj80trXQnVi6h5t5FIdie3JWr1WmxOJ3zNhQ4uIve5kWS2fWV9AxHIkgLNycdBeH5MCa1DYJbh/Zj1vYcW8Tubw6Ki3JMK5EWQShMsqND5ebMvD8B/+R/tbA/uYDDXXXkFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=linuxfoundation.org
+ smtp.mailfrom=xilinx.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=xilinx.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0fJvpXFNcOf/7SFtieQ68f2Uy2BxSvBVju2YztXWboM=;
+ b=Z1kpi0E6jsaj7tJNtbMcow6CdtT3Yx48BYjWcZHexUZiFwaT1khGgZMGI9Sa82djdJ68j3ItLj6TMJpS33i7jZ0C4IO/BbYxInoMkocdg6+nYxzbLq0ael12QOqXcvBxMK/fqNSYTQ74WZU5eRByIdRiauXXw4xDIpjC3KqcOts=
+Received: from DM6PR06CA0092.namprd06.prod.outlook.com (2603:10b6:5:336::25)
+ by BYAPR02MB4982.namprd02.prod.outlook.com (2603:10b6:a03:72::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Tue, 23 Nov
+ 2021 18:45:48 +0000
+Received: from DM3NAM02FT054.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:336:cafe::b4) by DM6PR06CA0092.outlook.office365.com
+ (2603:10b6:5:336::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend
+ Transport; Tue, 23 Nov 2021 18:45:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT054.mail.protection.outlook.com (10.13.5.135) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4713.19 via Frontend Transport; Tue, 23 Nov 2021 18:45:48 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Tue, 23 Nov 2021 10:45:47 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Tue, 23 Nov 2021 10:45:47 -0800
+Envelope-to: gregkh@linuxfoundation.org,
+ jacmet@sunsite.dk,
+ linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Received: from [172.19.72.93] (port=43548 helo=xsj-xw9400.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <lizhi.hou@xilinx.com>)
+        id 1mpanb-000B2V-Ha; Tue, 23 Nov 2021 10:45:47 -0800
+Received: by xsj-xw9400.xilinx.com (Postfix, from userid 21952)
+        id 732E660010B; Tue, 23 Nov 2021 10:45:47 -0800 (PST)
+From:   Lizhi Hou <lizhi.hou@xilinx.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <jacmet@sunsite.dk>
+CC:     Lizhi Hou <lizhi.hou@xilinx.com>
+Subject: [PATCH 1/1] tty: serial: uartlite: allow 64 bit address
+Date:   Tue, 23 Nov 2021 10:45:06 -0800
+Message-ID: <20211123184506.1184561-1-lizhi.hou@xilinx.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com> <20211116074130.107554-11-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20211116074130.107554-11-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 23 Nov 2021 17:18:12 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWgDRAMp5nAK2S4QcBXYysupQj+iAdTUN0orxzBLKrOQA@mail.gmail.com>
-Message-ID: <CAMuHMdWgDRAMp5nAK2S4QcBXYysupQj+iAdTUN0orxzBLKrOQA@mail.gmail.com>
-Subject: Re: [PATCH 10/16] soc: renesas: r8a779f0-sysc: Add r8a779f0 support
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 696c8b5c-6762-48cb-a75a-08d9aeb1774a
+X-MS-TrafficTypeDiagnostic: BYAPR02MB4982:
+X-Microsoft-Antispam-PRVS: <BYAPR02MB4982C52A086DAA2BE639036EA1609@BYAPR02MB4982.namprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:972;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Lqi3+XXkYb+ayvF8fmFUGixwYGkW7PLBsi+kFHKcn0gzgSMTht4cyBC0sUH0DMkxDY5XCqB3aFi5eaHRZsAP0+Q2KAgRSkGq1uom6/OE35q2ouwWfWD6y3ltFqKSmqT+84OcNuGxlKKygQa21brSZtuiFwVNp5bIDcGQMzvL0dvIar7wGZHANZFxyJ1UZQZC1Ieg+yhIaTv6QfP7j5muj89B4HTBKJJsyOL3UqlCvUzojJkX8TNA6E4zYUv1gENIWevR6MkS/eCTJvOOxFsADu60hAV5rUpk3mvRbHCZ7OysE2hyE0LrNuiiR5EfJ3xCWsBG/kQUEkJ11quJVhqR78Qo2iNvR8G95J30BDKFFgVxcDRZSUt48LncWM2L8oBp9jQULU4f/Tz4L2DXBuaTCZDmRg08PA/xzAaUN6QKntL+ci4VncrP7WaP1oLnsPXVfG8qux9O2OOvVmcclHc1td1P9xh+yRTiBKUotJR2FCOgYp2lkC14/SaC3iLtoARmMDyDrV64RHAOeXgx/MkOFLPSSDgQ+3+7Gei2oGHXfNI75anZ3PiaKZBlT4LtXbQYTYWDEpynpvXfKt72JmyGPTVgdLLYdSUOM0EUtEo8QFf3PmUXPRRxaUz1V9C5QmBsZSLMFzjUZ1qFIUhlBw1dWFpmxL0PC7fGI4DIjxHCOGN8Unt0cxna3hG97MqgjqJX1KQkaM4Tmb9Z/gRMnGVqtg==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(46966006)(36840700001)(8676002)(1076003)(356005)(2616005)(5660300002)(6266002)(4744005)(186003)(426003)(70586007)(44832011)(2906002)(83380400001)(8936002)(7636003)(110136005)(42186006)(36756003)(107886003)(336012)(36860700001)(4326008)(508600001)(6666004)(70206006)(26005)(47076005)(316002)(82310400004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2021 18:45:48.2541
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 696c8b5c-6762-48cb-a75a-08d9aeb1774a
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT054.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4982
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Shimoda-san,
+Fix the uartlite probe failure when it is mapped to address above 4G.
 
-Thanks for your patch!
+Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
+---
+ drivers/tty/serial/uartlite.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Tue, Nov 16, 2021 at 8:42 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Add support for R-Car S4-8 (R8A779F0) SoC power areas and register
-> access. This register specification is similar with R-Car V3U.
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index d3d9566e5dbd..e1fa52d31474 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -626,7 +626,7 @@ static struct uart_driver ulite_uart_driver = {
+  *
+  * Returns: 0 on success, <0 otherwise
+  */
+-static int ulite_assign(struct device *dev, int id, u32 base, int irq,
++static int ulite_assign(struct device *dev, int id, phys_addr_t base, int irq,
+ 			struct uartlite_data *pdata)
+ {
+ 	struct uart_port *port;
+-- 
+2.27.0
 
-similar to
-
-> So, introduces rcar-gen4-sysc.c for both V3U and S4-8.
-
-introduce.
-
-That makes perfect sense, as "the R-Car V3U SoC is based on the R-Car
-Gen 4 architecture".
-(https://www.renesas.com/us/en/products/automotive-products/automotive-system-chips-socs/r-car-v3u-best-class-r-car-v3u-asil-d-system-chip-automated-driving)
-
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-
-> --- a/drivers/soc/renesas/Kconfig
-> +++ b/drivers/soc/renesas/Kconfig
-> @@ -359,6 +359,9 @@ config SYSC_R8A77970
->  config SYSC_R8A779A0
->         bool "System Controller support for R-Car V3U" if COMPILE_TEST
->
-> +config SYSC_R8A779F0
-> +       bool "System Controller support for R-Car S4-8" if COMPILE_TEST
-> +
-
-Please retain sort order (alphabetically).
-
->  config SYSC_RMOBILE
->         bool "System Controller support for R-Mobile" if COMPILE_TEST
->
-> diff --git a/drivers/soc/renesas/Makefile b/drivers/soc/renesas/Makefile
-> index 9b29bed2a597..f6c5f8c3818c 100644
-> --- a/drivers/soc/renesas/Makefile
-> +++ b/drivers/soc/renesas/Makefile
-> @@ -25,11 +25,12 @@ obj-$(CONFIG_SYSC_R8A77980) += r8a77980-sysc.o
->  obj-$(CONFIG_SYSC_R8A77990)    += r8a77990-sysc.o
->  obj-$(CONFIG_SYSC_R8A77995)    += r8a77995-sysc.o
->  obj-$(CONFIG_SYSC_R8A779A0)    += r8a779a0-sysc.o
-> +obj-$(CONFIG_SYSC_R8A779F0)    += r8a779f0-sysc.o
->  ifdef CONFIG_SMP
->  obj-$(CONFIG_ARCH_R9A06G032)   += r9a06g032-smp.o
->  endif
->
->  # Family
->  obj-$(CONFIG_RST_RCAR)         += rcar-rst.o
-> -obj-$(CONFIG_SYSC_RCAR)                += rcar-sysc.o
-> +obj-$(CONFIG_SYSC_RCAR)                += rcar-sysc.o rcar-gen4-sysc.o
-
-This means all R-Car kernels will always include support for both
-R-Car Gen1/2/3 and R-Car Gen4.
-I think this should be split.
-
-The rest looks good to me, but I think it wouldn't hurt to split this
-patch in two parts: one patch to generalize r8a779a0-sysc.c for R-Car
-Gen4, and a second patch to introduce support for R-Car S4-8.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
