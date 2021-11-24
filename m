@@ -2,265 +2,202 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B36C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 04:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 583E4C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 06:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233922AbhKXEcl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Nov 2021 23:32:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233687AbhKXEcl (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Nov 2021 23:32:41 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAE5C061714
-        for <linux-serial@vger.kernel.org>; Tue, 23 Nov 2021 20:29:32 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id n8so812395plf.4
-        for <linux-serial@vger.kernel.org>; Tue, 23 Nov 2021 20:29:32 -0800 (PST)
+        id S234973AbhKXGwU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Nov 2021 01:52:20 -0500
+Received: from mail-tycjpn01on2126.outbound.protection.outlook.com ([40.107.114.126]:8775
+        "EHLO JPN01-TYC-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234268AbhKXGwT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 24 Nov 2021 01:52:19 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hAjokyxjz+KJ+BJPJjnz9AvToBAviZIUsJJfWTkBCT9VfLmsETznZrPP7/RyrLgzoY4P0IFgdkytRBNVvxiat4dUQ0Ed1G6nEwY0HPSx0fE+0vLbx8iMzx1dahkK8RA1fvVxiuubV8yMPzY7OQj3ncts+LRLgXpiBaKE+Jql1S7UKls2cIIkaOYnDfegRrGKOQ4nW/EO3DvCBwucSODCAuMwjYDzwtIJR03ccdePHhhS145PV51pSkQojEg4yBuQ8P+IL3cu2By86obyb7b7cjFV0mk/J/lE2z+6NzNdGIp6KOJkLJhCaJ84KV7b+2LClz2mVJUVkO47w+Iz1/Cymw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yqi7IN1BZXZV0peNf6zJGEZnfmXupSeCVkX+oXJ/7GQ=;
+ b=hcEYSjDl2d/O+8T8Ye1K91eYuw89f9l5KXKKtPeGjQXSC8JphnbJeKwWiji0uvJRp6N96rF6dZC3+yD6MD15DSF8UYrjg87Tw8FaOG2CQnvDcs0dYBCaMWkmJJnHAaAotvvTRttkcr6gKAFMqL+wYIQGaMBT3orLk92Ob1A+sHKhePaqPA7UYbuhfL2bWSOQSGeWddyLaw0ifgZhW1VDul1xJb9rvZ3wiW9Cish4q7EcD6CbA1z3Y71RtyMBJYX4bn82uMEq+OWKuZ7SRnCPKJQJmK3snWXdj4kSsvKk8tZQe3B7VZ26ZwutZrJm+OPwDDGkyIJKEFd8iiAhvMechA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=accesio-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+CjmzWnkKG/xeFA4h9Xr6wtqVg9+gZmNqja1aQLNo7I=;
-        b=p685QcLarD4IqlJ0N2ZmhBJKqnMwQg8jmYpr9AKtzSTZl5jEvkt4bvbzWs0oyNWm75
-         2rZt1NViPytsdIQEgQ5mWZcze9LHMFD8YyoTSTEoRL+F7rMOlQjTaBeay56eikSwbo1Z
-         BSf32doR0wl5e4kTbXYTCIHZWffrZLA6P9SAb/XEr0+6y/Y0cRhf+i+bj9xifwrVm3l7
-         R0lOWiGTnMV0NQP6vVFJ2gf8OD2e5wGRjghl6yODp9URC2fYpJ3NkC6jJpfXOivUaQGF
-         4mfSIXWqrx3VeFlT6/4vZYKs4KjUDDB/D4YetFiMcKLOeX1x2vexcr/eVXTduWv3E3xa
-         XENw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+CjmzWnkKG/xeFA4h9Xr6wtqVg9+gZmNqja1aQLNo7I=;
-        b=k44P36TT9NARFcl+IihtHuZgXPdB0LR5nEPTuuSjmRwvT7EbmdRTy+V9XKzjMIM071
-         Eb9MWyTmuvDVpeP+/ynyaNsM9athQF+scS9pdkb8A0EpN2KYfv4nn7037ad6va6RF8yT
-         xGfvd3f+LkU048fjhy1chVgd7wJlM72KXtFEAZHrxFhujxDMwZWN16dvws5fOW/vP8jX
-         K0a8jIT4jzmJy++mPpFZahFdhcnVF5gjRe23iaHlBkzgEmK1Mo56Xs438IaC6rhPK+K1
-         pDEzpUcipNy34Miut6Ug2Y8/59JD+HaootqFCsjfdvizsjLD0Kj3vaJL7r4J8b0KL6VF
-         bHUg==
-X-Gm-Message-State: AOAM532JZlhYI7lufObbpwUWlQn8uU8s07dcxcMLcjIFBY2LulCY8brW
-        vllaN8eht3CZtLNhsOpeNLHdbn2iGodx
-X-Google-Smtp-Source: ABdhPJyvXqzYLefIYk61zMOQhhvVK4BC8WVpTZz3Oj7FgP4RHAtmpYaG3Dmixrd5zel+P1EnNAbS0g==
-X-Received: by 2002:a17:90b:1648:: with SMTP id il8mr10895301pjb.246.1637728171838;
-        Tue, 23 Nov 2021 20:29:31 -0800 (PST)
-Received: from [172.16.8.241] ([98.149.220.160])
-        by smtp.gmail.com with ESMTPSA id q30sm10117847pgl.46.2021.11.23.20.29.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Nov 2021 20:29:31 -0800 (PST)
-Subject: Re: [PATCH v1 0/2] serial: 8250_pci: Split Pericom driver
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>
-References: <20211117145750.43911-1-andriy.shevchenko@linux.intel.com>
- <b99aabbe-add9-9c1e-ed4b-8850c69233de@accesio.com>
- <YZuRV8ipjcly26HB@smile.fi.intel.com> <YZuRnSaZz04KJIDk@smile.fi.intel.com>
- <ede18fd7-266e-406d-0c9c-570d95ab3673@accesio.com>
- <YZyzmzjVH35U05Wj@smile.fi.intel.com>
- <a4a34fb4-618b-0933-20a9-1e3d23327879@accesio.com>
- <YZ0LDmSH9jfw8/Es@smile.fi.intel.com>
-From:   Jay Dolan <jay.dolan@accesio.com>
-Message-ID: <e9e9fe33-5341-f366-1b15-816892485fe1@accesio.com>
-Date:   Tue, 23 Nov 2021 20:29:30 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yqi7IN1BZXZV0peNf6zJGEZnfmXupSeCVkX+oXJ/7GQ=;
+ b=Pz3wmfFTUPtFMwoEqmm9vq10VY5rrFWa2W/dRAIwqIUyibqOxapRUlIuFQqiajhWk4Cr+uwMWnrkIPjNU3M8ciczTHU2vFuOW81YhSz8QBGCqt7ndgxPQZfMsHG51qaFCqp3kJG4f9V0uc7NB2mTTy2BPaqBc6u/OAFB3jMShdA=
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
+ by TYAPR01MB2959.jpnprd01.prod.outlook.com (2603:1096:404:80::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Wed, 24 Nov
+ 2021 06:49:07 +0000
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::b0dd:ed1e:5cfc:f408]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::b0dd:ed1e:5cfc:f408%3]) with mapi id 15.20.4734.020; Wed, 24 Nov 2021
+ 06:49:07 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Subject: RE: [PATCH 10/16] soc: renesas: r8a779f0-sysc: Add r8a779f0 support
+Thread-Topic: [PATCH 10/16] soc: renesas: r8a779f0-sysc: Add r8a779f0 support
+Thread-Index: AQHX2r2IjR6h950rWEiEWVEKCI66KKwRVfEAgADy4EA=
+Date:   Wed, 24 Nov 2021 06:49:07 +0000
+Message-ID: <TY2PR01MB3692234F2F5AB62AAC5F987DD8619@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+References: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com>
+ <20211116074130.107554-11-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdWgDRAMp5nAK2S4QcBXYysupQj+iAdTUN0orxzBLKrOQA@mail.gmail.com>
+In-Reply-To: <CAMuHMdWgDRAMp5nAK2S4QcBXYysupQj+iAdTUN0orxzBLKrOQA@mail.gmail.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c4a3a0f4-8e09-4881-0292-08d9af168359
+x-ms-traffictypediagnostic: TYAPR01MB2959:
+x-microsoft-antispam-prvs: <TYAPR01MB2959651F2BE4E31C025AF6EAD8619@TYAPR01MB2959.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VUDMBPYeLLiKZLaT18mkPte2W2r9Oq0Vml7rNZ0tckcFr7hciqwV9nbBR1dvuFyw37hk0EmnIN90bPq2bBCR3F58PtraoM3/X7NTf0wiagqotLwmkAjbO9qdrOlY2ZkbvxXiK3io4Uq/k976rfgfWbokLbJv0d5ObiWrwn2BeExUPGeZzh2ual0YVfPGJaPXq5hDHL5gdI7QSoywrKLPpz5/eaOSVuvQKSnmV47A2sHF9AEQ0nH0+GuZrSWHtztu5rEoiK/4QOCmDl7ofRkQcO0QDsBPckgQ+FCjYHToSsWbl2v/J9Iz4RpBtPav0oMtOOxzewIDZY/TBKwAN9Xpk4Ay44saJYWSCv/Fs+RZGNQpIHo1MjG/F06/RgR2XeWWVr7IIhfXLrEuc+jHARWyWVpW0KWqiLyIo80Z73P6AaQtPzHrCn0/MTb129bkVby5fn5WqIf/7jgoGpxC+aHrk0KM++jdp/3BkRxCzXv5Be3ZuL2szH52ETmHt0Im6vrlLivqRNuvW8bydo3E2c/nzMUIvQG8idB0gAJTBgts8XJAtTp+tWxfL10oACvPRdTCycPEsWza4NViYD8NJkbbyIu7fzB8qB0N2zXR6VzzakX4TUxheBZu640yHG+h06XApV705GcPxh64I+Vr1IDEvkHW8AZ4KRshHi4SwuKB+waVahauW4lggr5WG9GwquIlNKltMNY7ajw50Jzq07flRCwEOKf6hyvSNwpke59Ls2wT1hML7deaHBAbetTwVtoFRqF+ihX39TMx+nmNmWOXBE8UnFnkv9nTOo9W4gnu4SA=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38070700005)(71200400001)(122000001)(26005)(54906003)(33656002)(6506007)(8936002)(508600001)(53546011)(4326008)(55016003)(66946007)(316002)(66446008)(66556008)(66476007)(2906002)(83380400001)(186003)(86362001)(52536014)(5660300002)(64756008)(38100700002)(7696005)(8676002)(6916009)(76116006)(9686003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?UVBfNGeAHvdpLnMzrUVXI/nQ8MI9UGBSkY++RofVgUReucy5cnUY2/TmmAQS?=
+ =?us-ascii?Q?/FjZGJTPfh8cHqmzDSO0Rx9wq31nLh5HyyK3qgVHjpNrGNKGHMdWCC5e3JdT?=
+ =?us-ascii?Q?jFUZ1FWZ+FSUThd1j4PWwMUiKgrmD6sDRWpZuU97vBrezQ8BZLf/7WHmoWSq?=
+ =?us-ascii?Q?KGyEsWbAs1y3VA82BED29vLJM84Os2JFF2WhrI6gHcPpEaYnYtsZQq1yBI4B?=
+ =?us-ascii?Q?taDPQFtSkdvRAtSwMPdb3tqwNVdwOk0QzRJmbmREjPqeZ/K0WXzxpJ6+NWqC?=
+ =?us-ascii?Q?Ubbr8POr2mXlHMEePKeaVNZdhrY9nhrZj/rlwBHkC08ABTSUrpyH5RVQKx0K?=
+ =?us-ascii?Q?04rc4VyuJO+KxlOJ563zzJA78NG7hsYUsAtS1hyFH7oMKxd39BbTemDsWYH+?=
+ =?us-ascii?Q?nW2QsmaUu7c7T8W0EjyVnjFQa6rlclDQbPgtEt19u5taKReJWMnnKTACV1Um?=
+ =?us-ascii?Q?WmbNqftG9d19dXANJXtztgki63kBGHfRdFSWIDGXepbjWmYv4yBRVrneiRZp?=
+ =?us-ascii?Q?NXyC6nRRfhydI+m30XLr0M7CWCcFFOhCjxeh5MEzmxgDG3g44P7ESV/foOjP?=
+ =?us-ascii?Q?J9Sv4DHolzk55mtmn7tQ5xY7DRTvtXchAjywYv/PLyXsh36YoybsqC4Ha4/I?=
+ =?us-ascii?Q?stvtrxhqREaODkvWGghLAsF4g5L7a8ei2Fuic7QZ+idXCIi3nJtmstDZ7pNZ?=
+ =?us-ascii?Q?lRW4wM9irbJ5EySPp1stycNFLLydqQxFRv4y6HjLrQu+n8cCaquJiuDgtCGx?=
+ =?us-ascii?Q?1bCBxvT2cDlA2bvTRgimFylhRaiSSIh2nYJSWcMK/UYqVzaxmYjVtOBf0m6r?=
+ =?us-ascii?Q?HRGcbOvi+mA+Y0W/tEolU8D2iRFB8ThWKiZRsD355BOqcoJSmhwG+JACCYry?=
+ =?us-ascii?Q?0h22fvhRDCvomDhVVYL/QGNfW1Tbz9iMUjTJ0fhb4rTuu1J7Gyu1UEUMXE+c?=
+ =?us-ascii?Q?+/ePLP++7/lyswlh3VZmVL4t48AYNDXdE4jO+AeexqmNcy1nKG9eQJDJLP+q?=
+ =?us-ascii?Q?fCtsM21icbRzOVkShCPcvmvlDg5/Tz0EtII9xaWHKRdsQUBtjAU2H4obBTfT?=
+ =?us-ascii?Q?trkraKrMbQKrHGFxW+QUqGxTcOhK4zKk8wxZoQbeyQ8d3xrfCrylsjD5Yh6G?=
+ =?us-ascii?Q?z+wmUkwv+dI1mp8rI1e5ZhuPgm5Oy+F1yFzugQ2RBSlLmsBLSSQv61q12nIu?=
+ =?us-ascii?Q?xV2T4nHL/C7GMLmbBFgeWOdCN+SsZesO7pW+nncNRDzsXB+ucE+uxY+QsQrt?=
+ =?us-ascii?Q?YWmrpAGCAheCFNmM/bnOoM6vUVVaiwJGB7825vV9pdpSxaSuiXk6mzH3ntpk?=
+ =?us-ascii?Q?bqMk64JObLZ5W5oQnDBUqUZ/HRUWk4++UebwALgPhHq5VVfULd0QasflLbF3?=
+ =?us-ascii?Q?0jInCpqwpEchPELR8s5vBkzMf5xsX34rrYPkxdCV8vwsSgZBBVZDl6dyVbqm?=
+ =?us-ascii?Q?nxxW1aflKBxenqOH7hIVeZL8CK1Sv8XQOfFdqIFM94zMVg70c6aYaJnstc58?=
+ =?us-ascii?Q?A39/XZoUkzL/44xvSXNKCov1cPGDup1kylx57+rtp6XFWjCwOhNEhNvORrNA?=
+ =?us-ascii?Q?z/tG5RlJILGhYiPhwT2k+ETHeGPuB53bFUqjDY0H+Jh8muvxJDBYaJHnWpCB?=
+ =?us-ascii?Q?+JGsJNqfezb5dnc4bq16TfuBNjP94UuXP73q9amxGuTv32u9mbqyVTiobZvG?=
+ =?us-ascii?Q?uOKo76b47P8PDxfGBvowOcXCRHfl9LqDVg7dWuMtil3GpvjlF1ggQifGn4DE?=
+ =?us-ascii?Q?7uVbAF3x3Q=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <YZ0LDmSH9jfw8/Es@smile.fi.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4a3a0f4-8e09-4881-0292-08d9af168359
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 06:49:07.5716
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xgM1TZ8sgt+CmbrKXFNzy0BAc1QZlTh3lZQzG2XPv7Hqa6iBU9MrRHagglq/ZK0JoBNyuOfJ2LmtOw4gr04BzYglgHKh6hAdmfKh2kLRKMIY4bmN6hh09TeklouKXGr0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2959
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Geert-san,
 
+> From: Geert Uytterhoeven, Sent: Wednesday, November 24, 2021 1:18 AM
+>=20
+> Hi Shimoda-san,
+>=20
+> Thanks for your patch!
+>=20
+> On Tue, Nov 16, 2021 at 8:42 AM Yoshihiro Shimoda
+> <yoshihiro.shimoda.uh@renesas.com> wrote:
+> > Add support for R-Car S4-8 (R8A779F0) SoC power areas and register
+> > access. This register specification is similar with R-Car V3U.
+>=20
+> similar to
+>=20
+> > So, introduces rcar-gen4-sysc.c for both V3U and S4-8.
+>=20
+> introduce.
 
-On 11/23/21 7:38 AM, Andy Shevchenko wrote:
-> On Tue, Nov 23, 2021 at 07:02:44AM -0800, Jay Dolan wrote:
->> On 11/23/21 1:25 AM, Andy Shevchenko wrote:
->>> On Mon, Nov 22, 2021 at 09:19:09PM -0800, Jay Dolan wrote:
->>>> On 11/22/21 4:48 AM, Andy Shevchenko wrote:
->>>>> On Mon, Nov 22, 2021 at 02:47:20PM +0200, Andy Shevchenko wrote:
->>>>>> On Thu, Nov 18, 2021 at 10:32:51PM -0800, Jay Dolan wrote:
->>>>>>> On 11/17/21 6:57 AM, Andy Shevchenko wrote:
->>>>>>>> Split Pericom driver to a separate module.
->>>>>>>> While at it, re-enable high baud rates.
->>>>>>>>
->>>>>>>> Jay, can you, please, test this on as many hardware as you have?
->>>>>>
->>>>>> ...
->>>>>>
->>>>>>> * Add in pericom_do_startup() because the UPF_MAGIC_MULTIPLIER doesn't
->>>>>>> stick.
->>>>>>
->>>>>> Can't find an evidence that this is the case. Can you recheck this (reading
->>>>>> flags back via sysfs or so)? So, for v2 I'll leave my approach.
->>>>>
->>>>> Otherwise how the other drivers which are using that flag survive? If it's
->>>>> indeed an issue, it should be fixed on generic level.
->>>>>
->>>>
->>>> I modified pericom_do_startup to log when the UPF_MAGIC_MULTIPLIER flag was
->>>> present. Then tried to set the port to 3000000 a few times. The port
->>>> stayed at 9600. It looks like pericom_do_startup() is getting called twice
->>>> per port on boot, and the flag is gone with the second one.
->>>>
->>>> [    4.925577] [J4D] flag present
->>>> [    4.926121] [J4D[ flag not present
->>>> [    4.926843] [J4D] flag present
->>>> [    4.927415] [J4D[ flag not present
->>>> [    4.928106] [J4D] flag present
->>>> [    4.928673] [J4D[ flag not present
->>>> [    4.929419] [J4D] flag present
->>>> [    4.930447] [J4D[ flag not present
->>>>
->>>> [   49.528504] [J4D[ flag not present
->>>> [   51.675240] [J4D[ flag not present
->>>> [   59.617954] [J4D[ flag not present
->>>>
->>>> Then I modified it to log when it was adding the flag in. The port was set
->>>> to 3000000. Also the flag only needed to be added in once. It sticks after
->>>> the first time.
->>>>
->>>> [    4.647546] [J4D] flag present
->>>> [    4.648119] [J4D] flag not present(adding)
->>>> [    4.648778] [J4D] flag present
->>>> [    4.649330] [J4D] flag not present(adding)
->>>> [    4.650001] [J4D] flag present
->>>> [    4.650537] [J4D] flag not present(adding)
->>>> [    4.651192] [J4D] flag present
->>>> [    4.651718] [J4D] flag not present(adding)
->>>>
->>>> [   96.025668] [J4D] flag present
->>>> [  100.130626] [J4D] flag present
->>>> [  116.435436] [J4D] flag present
->>>>
->>>> I mostly just guessed at do_startup() being the place to set the magic
->>>> multiplier flag after it didn't stick in quirk in 8250_pci.c.
->>>
->>> Can you share `dmesg` and output of `lspci -nk -vv` on the machine with the
->>> kernel with patches applied and running?
-> 
->> Provided below.
-> 
-> Thanks!
-> 
->> Also, I am going to lose the place for my test station to
->> the  family Christmas tree after tomorrow. I'm not sure when or where I'm
->> going to get it set back up.
-> 
-> Understood, in case you still have time to test one idea below. As far as I
-> understand current state of affairs the problematic part is the magic
-> multiplier.
-> 
->> 01:00.0 0700: 494f:10dc (prog-if 02 [16550])
->> 	Subsystem: 0001:0001
->> 	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
->> Stepping- SERR- FastB2B- DisINTx-
->> 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
->> <MAbort- >SERR- <PERR- INTx-
->> 	Latency: 0, Cache Line Size: 64 bytes
->> 	Interrupt: pin A routed to IRQ 16
->> 	Region 0: I/O ports at e000 [size=64]
->> 	Region 1: Memory at fe400000 (32-bit, non-prefetchable) [size=4K]
-> 
-> Okay, we are interested so far in IO bar (which is BAR0).
-> Do you know what is the BAR1 for?
+I'll fix these works.
 
-I found a copy of the chip spec here. 
-https://www.diodes.com/assets/Datasheets/PI7C9X7958.pdf BARs are 
-described in chapter seven.
+> That makes perfect sense, as "the R-Car V3U SoC is based on the R-Car
+> Gen 4 architecture".
+> (https://www.renesas.com/us/en/products/automotive-products/automotive-sy=
+stem-chips-socs/r-car-v3u-best-class-r-car-
+> v3u-asil-d-system-chip-automated-driving)
 
-The other BAR is MMIO access to the UART registers. Pericom has an out 
-of tree driver for this. It doesn't build against current kernels, and I 
-have never gotten it stable.
+I got it.
 
+> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+>=20
+> > --- a/drivers/soc/renesas/Kconfig
+> > +++ b/drivers/soc/renesas/Kconfig
+> > @@ -359,6 +359,9 @@ config SYSC_R8A77970
+> >  config SYSC_R8A779A0
+> >         bool "System Controller support for R-Car V3U" if COMPILE_TEST
+> >
+> > +config SYSC_R8A779F0
+> > +       bool "System Controller support for R-Car S4-8" if COMPILE_TEST
+> > +
+>=20
+> Please retain sort order (alphabetically).
 
-> 
->> 	Capabilities: [80] Power Management version 3
->> 		Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=375mA
->> PME(D0-,D1-,D2-,D3hot+,D3cold-)
->> 		Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
->> 	Capabilities: [8c] MSI: Enable- Count=1/1 Maskable- 64bit+
->> 		Address: 0000000000000000  Data: 0000
->> 	Capabilities: [9c] Vital Product Data
->> 		Not readable
->> 	Capabilities: [a4] Vendor Specific Information: Len=28 <?>
->> 	Capabilities: [e0] Express (v1) Legacy Endpoint, MSI 00
->> 		DevCap:	MaxPayload 128 bytes, PhantFunc 0, Latency L0s <64ns, L1 <1us
->> 			ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset-
->> 		DevCtl:	Report errors: Correctable- Non-Fatal- Fatal- Unsupported-
->> 			RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
->> 			MaxPayload 128 bytes, MaxReadReq 128 bytes
->> 		DevSta:	CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr+ TransPend-
->> 		LnkCap:	Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s
->> <512ns, L1 <1us
->> 			ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp-
->> 		LnkCtl:	ASPM Disabled; RCB 64 bytes Disabled- CommClk-
->> 			ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
->> 		LnkSta:	Speed 2.5GT/s, Width x1, TrErr- Train- SlotClk- DLActive- BWMgmt-
->> ABWMgmt-
->> 	Capabilities: [100 v1] Advanced Error Reporting
->> 		UESta:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP-
->> ECRC- UnsupReq- ACSViol-
->> 		UEMsk:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP-
->> ECRC- UnsupReq- ACSViol-
->> 		UESvrt:	DLP+ SDES- TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+
->> ECRC- UnsupReq- ACSViol-
->> 		CESta:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- NonFatalErr-
->> 		CEMsk:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- NonFatalErr+
->> 		AERCap:	First Error Pointer: 00, GenCap- CGenEn- ChkCap- ChkEn-
->> 	Kernel driver in use: 8250_pericom
->> 	Kernel modules: 8250_pci, 8250_pericom
-> 
-> Yep, two drivers matches and only 8250_pericom is in use. All good here.
-> 
->> [    0.062531] pci 0000:01:00.0: [494f:10dc] type 00 class 0x070002
->> [    0.062551] pci 0000:01:00.0: reg 0x10: [io  0xe000-0xe03f]
->> [    0.062562] pci 0000:01:00.0: reg 0x14: [mem 0xfe400000-0xfe400fff]
->> [    0.062670] pci 0000:01:00.0: supports D1 D2
->> [    0.062673] pci 0000:01:00.0: PME# supported from D3hot
-> 
-> Yeah, this interesting layout with 64 bytes and gap in UARTs 3-6.
-> 
->> [    2.927496] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
->> [    2.927703] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a
->> 16550A
->> [    2.979481] 0000:01:00.0: ttyS4 at I/O 0xe000 (irq = 16, base_baud =
->> 921600) is a 16550A
->> [    2.979487] 0000:01:00.0: ttyS4 extra baud rates supported: 1843200,
->> 3686400
->> [    2.979822] 0000:01:00.0: ttyS5 at I/O 0xe008 (irq = 16, base_baud =
->> 921600) is a 16550A
->> [    2.979825] 0000:01:00.0: ttyS5 extra baud rates supported: 1843200,
->> 3686400
->> [    2.982020] 0000:01:00.0: ttyS6 at I/O 0xe010 (irq = 16, base_baud =
->> 921600) is a 16550A
->> [    2.982025] 0000:01:00.0: ttyS6 extra baud rates supported: 1843200,
->> 3686400
->> [    2.982256] 0000:01:00.0: ttyS7 at I/O 0xe038 (irq = 16, base_baud =
->> 921600) is a 16550A
->> [    2.982259] 0000:01:00.0: ttyS7 extra baud rates supported: 1843200,
->> 3686400
-> 
-> This is most important part. The code autodetects 16550A. Now I'm wondering
-> if the following change will keep MAGIC multiplier untouched (instead of
-> current patch):
-> 
-> -   uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
-> +   uart.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SHARE_IRQ | UPF_MAGIC_MULTIPLIER;
-> +   uart.port.type = PORT_16550A;
+Oops. I'll fix it on v2.
 
-No luck. The behavior of the multiplier flag is the same as before.
+> >  config SYSC_RMOBILE
+> >         bool "System Controller support for R-Mobile" if COMPILE_TEST
+> >
+> > diff --git a/drivers/soc/renesas/Makefile b/drivers/soc/renesas/Makefil=
+e
+> > index 9b29bed2a597..f6c5f8c3818c 100644
+> > --- a/drivers/soc/renesas/Makefile
+> > +++ b/drivers/soc/renesas/Makefile
+> > @@ -25,11 +25,12 @@ obj-$(CONFIG_SYSC_R8A77980) +=3D r8a77980-sysc.o
+> >  obj-$(CONFIG_SYSC_R8A77990)    +=3D r8a77990-sysc.o
+> >  obj-$(CONFIG_SYSC_R8A77995)    +=3D r8a77995-sysc.o
+> >  obj-$(CONFIG_SYSC_R8A779A0)    +=3D r8a779a0-sysc.o
+> > +obj-$(CONFIG_SYSC_R8A779F0)    +=3D r8a779f0-sysc.o
+> >  ifdef CONFIG_SMP
+> >  obj-$(CONFIG_ARCH_R9A06G032)   +=3D r9a06g032-smp.o
+> >  endif
+> >
+> >  # Family
+> >  obj-$(CONFIG_RST_RCAR)         +=3D rcar-rst.o
+> > -obj-$(CONFIG_SYSC_RCAR)                +=3D rcar-sysc.o
+> > +obj-$(CONFIG_SYSC_RCAR)                +=3D rcar-sysc.o rcar-gen4-sysc=
+.o
+>=20
+> This means all R-Car kernels will always include support for both
+> R-Car Gen1/2/3 and R-Car Gen4.
+> I think this should be split.
+>=20
+> The rest looks good to me, but I think it wouldn't hurt to split this
+> patch in two parts: one patch to generalize r8a779a0-sysc.c for R-Car
+> Gen4, and a second patch to introduce support for R-Car S4-8.
 
-> 
->> [   42.730050] 8250_pericom 0000:01:00.0: VPD access failed.  This is likely
->> a firmware bug on this device.  Contact the card vendor for a firmware
->> update
-> 
-> Not sure what is this and how it may affect anything.
-> 
+I got it. I'll split this patch in two parts in v2.
 
-This is produced when running lspci.
+Best regards,
+Yoshihiro Shimoda
+
