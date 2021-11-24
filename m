@@ -2,111 +2,70 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD64C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 07:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 323DDC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 08:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240589AbhKXHuX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Nov 2021 02:50:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240541AbhKXHuW (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Nov 2021 02:50:22 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D022C061574;
-        Tue, 23 Nov 2021 23:47:13 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id AE1E641F72;
-        Wed, 24 Nov 2021 07:47:06 +0000 (UTC)
-From:   Hector Martin <marcan@marcan.st>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Hector Martin <marcan@marcan.st>, Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Johan Hovold <johan@kernel.org>, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>
-Subject: [PATCH v3 11/11] arm64: dts: apple: t8103: Add UART2
-Date:   Wed, 24 Nov 2021 16:46:25 +0900
-Message-Id: <20211124074625.182815-12-marcan@marcan.st>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211124073419.181799-1-marcan@marcan.st>
-References: <20211124073419.181799-1-marcan@marcan.st>
+        id S238955AbhKXIQp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Nov 2021 03:16:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60918 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241286AbhKXIQp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 24 Nov 2021 03:16:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 43F006056B;
+        Wed, 24 Nov 2021 08:13:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1637741615;
+        bh=ar2oDTi0OeAcJvDVPxa+cwSMgc8Svaa/2Jgtk66tMSo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ELcH9qGaPFtJosOFrCg32RpY5g4WiTr1a+41n5a+ftU0Bc7NNneEd+9ZfRnv+cWpA
+         2Kn7+Hi8sF/j/21yOEOX1Sz3FmUyCbEVHdB+VwEPjc5fE1UEIl1kWj68XR0lYlPQuZ
+         fRp9eYfIbE5rqRYKL7hxVWa1cWGX7Gbuz2dfmWKA=
+Date:   Wed, 24 Nov 2021 09:13:33 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Lizhi Hou <lizhi.hou@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        jacmet@sunsite.dk
+Subject: Re: [PATCH 1/1] tty: serial: uartlite: allow 64 bit address
+Message-ID: <YZ30La8Z7oZEoXFF@kroah.com>
+References: <20211123184506.1184561-1-lizhi.hou@xilinx.com>
+ <YZ05/73+BhIANNGF@kroah.com>
+ <0e212384-396b-f765-be28-f9319c64b5f7@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0e212384-396b-f765-be28-f9319c64b5f7@xilinx.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This UART is connected to the debug port of the WLAN module. It is
-mostly useless, but makes for a good test case for runtime-pm without
-having to unbind the console from the main system UART.
+On Tue, Nov 23, 2021 at 12:12:06PM -0800, Lizhi Hou wrote:
+> 
+> On 11/23/21 10:59 AM, Greg KH wrote:
+> > 
+> > On Tue, Nov 23, 2021 at 10:45:06AM -0800, Lizhi Hou wrote:
+> > > Fix the uartlite probe failure when it is mapped to address above 4G.
+> > Fix it how?
+> 
+> Does this detail comment look ok to you?
+> 
+> The base address of uartlite registers could be 64 bit address which is from
+> device resource. When ulite_probe() calls ulite_assign(), this 64 bit
+> address is casted to 32-bit. The fix is to replace "u32" type with
+> "phys_addr_t" type for the base address in ulite_assign() argument list.
 
-Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
-Signed-off-by: Hector Martin <marcan@marcan.st>
----
- arch/arm64/boot/dts/apple/t8103-j274.dts |  5 +++++
- arch/arm64/boot/dts/apple/t8103.dtsi     | 12 ++++++++++++
- 2 files changed, 17 insertions(+)
+Much better.
 
-diff --git a/arch/arm64/boot/dts/apple/t8103-j274.dts b/arch/arm64/boot/dts/apple/t8103-j274.dts
-index 33a80f9501dc..86ea1b0a6cc8 100644
---- a/arch/arm64/boot/dts/apple/t8103-j274.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j274.dts
-@@ -17,6 +17,7 @@ / {
- 
- 	aliases {
- 		serial0 = &serial0;
-+		serial2 = &serial2;
- 		ethernet0 = &ethernet0;
- 	};
- 
-@@ -45,6 +46,10 @@ &serial0 {
- 	status = "okay";
- };
- 
-+&serial2 {
-+	status = "okay";
-+};
-+
- /*
-  * Force the bus number assignments so that we can declare some of the
-  * on-board devices and properties that are populated by the bootloader
-diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
-index 0487ac64fca3..26b5d68a5c7b 100644
---- a/arch/arm64/boot/dts/apple/t8103.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103.dtsi
-@@ -127,6 +127,18 @@ serial0: serial@235200000 {
- 			status = "disabled";
- 		};
- 
-+		serial2: serial@235208000 {
-+			compatible = "apple,s5l-uart";
-+			reg = <0x2 0x35208000 0x0 0x1000>;
-+			reg-io-width = <4>;
-+			interrupt-parent = <&aic>;
-+			interrupts = <AIC_IRQ 607 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk24>, <&clk24>;
-+			clock-names = "uart", "clk_uart_baud0";
-+			power-domains = <&ps_uart2>;
-+			status = "disabled";
-+		};
-+
- 		aic: interrupt-controller@23b100000 {
- 			compatible = "apple,t8103-aic", "apple,aic";
- 			#interrupt-cells = <3>;
--- 
-2.33.0
+> > 
+> > > Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
+> > What commit caused this problem?  What commit does this fix?  Should it
+> > go to stable kernels?
+> 
+> I searched the history. This problem was introduced by https://github.com/torvalds/linux/commit/8fa7b6100693e0b648ffd34564f6f41226502a19
+> 
+> And yes, I agree this should go to stable kernels. I will add
+> stable@vger.kernel.org to cc list.
 
+Thank you, please add a Fixes: tag to the patch as well when you
+resubmit it.
+
+greg k-h
