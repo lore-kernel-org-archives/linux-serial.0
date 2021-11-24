@@ -2,82 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1EE2C43219
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 14:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF16C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 14:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354602AbhKXOKV (ORCPT
+        id S1354787AbhKXOLP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Nov 2021 09:10:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55242 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354590AbhKXOI0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Nov 2021 09:08:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A7B761880;
-        Wed, 24 Nov 2021 13:14:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1637759661;
-        bh=HUZjbZ07z+J96RzxS4xQNPBqLVI2Wp8Kk6ALtMXb0i0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IxbsJIEbsw8/PVCHOx4qPxmhfxv6joedRMHAlwltIqbS0/rqR84sd/PHeWs+qpfwX
-         3VFkMiNwl6L2mwWUvwmskzDB5KVgzDa/DLrsDgGceeMbUQjnhpXDNRKfjE0fkHcbpH
-         MAEJ6UT7+WucOZtiHBX7END2mtqgliGuyLk/BcI4=
-Date:   Wed, 24 Nov 2021 13:45:37 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Shubhrajyoti Datta <shubhraj@xilinx.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "jacmet@sunsite.dk" <jacmet@sunsite.dk>, git <git@xilinx.com>
-Subject: Re: [PATCH v2] serial-uartlite: Remove an un-necessary read of
- control register
-Message-ID: <YZ4z8Z1yjvJVgw9z@kroah.com>
-References: <20211123131348.26295-1-shubhrajyoti.datta@xilinx.com>
- <YZ4O+qnkVyhGzuDy@kroah.com>
- <MN2PR02MB664063C64EA9C8BC59C3E566AA619@MN2PR02MB6640.namprd02.prod.outlook.com>
+        Wed, 24 Nov 2021 09:11:15 -0500
+Received: from mail-ua1-f48.google.com ([209.85.222.48]:46976 "EHLO
+        mail-ua1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348765AbhKXOKB (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 24 Nov 2021 09:10:01 -0500
+Received: by mail-ua1-f48.google.com with SMTP id az37so5282155uab.13;
+        Wed, 24 Nov 2021 06:06:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/j+S/w29WKZ9bb0B5ofHCpksCQABsDjQUWjoU+wjeDw=;
+        b=HgD9R3xy68SMVbOXWGSFrLXP5WW6Rc6OyTqPZhrsNSvONImCbymuiWZqyGJm081Yz9
+         +mJLBe1cZ6sHm6RwPJH+hMZ6Qux9MJTed7Db2Az2sFgD+E96+R+r9js4xjRWc4oUeq00
+         pp/pk3Hqq0JW9UUWPMsoIKS/tuggwGb4nS6Lv4ykxCmXEStQPXiYIR191gYzVz8AOr3B
+         IqvV8IWtuFHkvLzdXttBlQuMlkwRMj8rS3zdGJgrxUDFYXaHxs68gj3xw9ZuH3orLUSj
+         SxKYknM2kpFL3uECKWaQqerVv/L6745j0JT5t30hwoDJ3kSeC5p5voe5urjt3o38v4Q4
+         rY/w==
+X-Gm-Message-State: AOAM530vdcmLlY31S6O9cTvWXpN8X/mR0Pa63Zmayn6tcaeuSJGXS9A5
+        9yac7L904SLpw7gmZ29atBnkg86V1sBZEA==
+X-Google-Smtp-Source: ABdhPJwalXpWYVFoqYniEDAmayMBzpJszx/K3lyHqagctFXoA81iydKgC56QWssItVJY2yoiRE8J9g==
+X-Received: by 2002:ab0:614c:: with SMTP id w12mr10823559uan.45.1637762811466;
+        Wed, 24 Nov 2021 06:06:51 -0800 (PST)
+Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com. [209.85.221.173])
+        by smtp.gmail.com with ESMTPSA id y22sm8330836vsy.33.2021.11.24.06.06.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Nov 2021 06:06:51 -0800 (PST)
+Received: by mail-vk1-f173.google.com with SMTP id 188so1559348vku.8;
+        Wed, 24 Nov 2021 06:06:50 -0800 (PST)
+X-Received: by 2002:a05:6122:d9d:: with SMTP id bc29mr28391500vkb.14.1637762810685;
+ Wed, 24 Nov 2021 06:06:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MN2PR02MB664063C64EA9C8BC59C3E566AA619@MN2PR02MB6640.namprd02.prod.outlook.com>
+References: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com> <20211116074130.107554-16-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20211116074130.107554-16-yoshihiro.shimoda.uh@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 24 Nov 2021 15:06:39 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVZrGdwKnN=VKTiGp_Vj6CXgE=G_1OfDf29wHGd22q=Tg@mail.gmail.com>
+Message-ID: <CAMuHMdVZrGdwKnN=VKTiGp_Vj6CXgE=G_1OfDf29wHGd22q=Tg@mail.gmail.com>
+Subject: Re: [PATCH 15/16] arm64: dts: renesas: Add Renesas Spider boards support
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Takehito Nakamura <takehito.nakamura.nx@renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 24, 2021 at 12:37:00PM +0000, Shubhrajyoti Datta wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Sent: Wednesday, November 24, 2021 3:38 PM
-> > To: Shubhrajyoti Datta <shubhraj@xilinx.com>
-> > Cc: linux-serial@vger.kernel.org; jirislaby@kernel.org; jacmet@sunsite.dk; git
-> > <git@xilinx.com>
-> > Subject: Re: [PATCH v2] serial-uartlite: Remove an un-necessary read of control
-> > register
-> > 
-> > On Tue, Nov 23, 2021 at 06:43:48PM +0530, Shubhrajyoti Datta wrote:
-> > > The control register is a writeonly register that's why reading it
-> > > doesn't make any sense.
-> > > The manual states "This is a write-only register. Issuing a read
-> > > request to the control register generates the read acknowledgment with zero
-> > data."
-> > 
-> > Are you sure this is ok to remove?  Usually you have to do a read after a write to
-> > ensure that the write succeeded.
-> > 
-> > What ensures that the write succeeded now if you remove this read?
-> 
-> I do not find the mention of a read requirement in the manual. 
+On Tue, Nov 16, 2021 at 8:42 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> Initial support for the Renesas Spider CPU and BreakOut boards
+> support.
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Tested-by: Takehito Nakamura <takehito.nakamura.nx@renesas.com>
 
-Look at your hardware bus documentation.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+(assuming memory size, extal clock frequency, and serial console port
+ are correct)
 
-> Also in the current code in ulite_console_write and in ulite_startup we are writing without a 
-> read. 
+Gr{oetje,eeting}s,
 
-So is that a bug there?
+                        Geert
 
-I am _very_ loath to remove reads like until you can guarantee that it
-will not break anything.  Please work with your hardware designers to
-ensure this.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-thanks,
-
-greg k-h
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
