@@ -2,85 +2,177 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF16C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 14:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B73A1C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 16:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354787AbhKXOLP (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Nov 2021 09:11:15 -0500
-Received: from mail-ua1-f48.google.com ([209.85.222.48]:46976 "EHLO
-        mail-ua1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348765AbhKXOKB (ORCPT
+        id S238281AbhKXQgD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Nov 2021 11:36:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233433AbhKXQgD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Nov 2021 09:10:01 -0500
-Received: by mail-ua1-f48.google.com with SMTP id az37so5282155uab.13;
-        Wed, 24 Nov 2021 06:06:51 -0800 (PST)
+        Wed, 24 Nov 2021 11:36:03 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6915C061574;
+        Wed, 24 Nov 2021 08:32:52 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id z8so6639219ljz.9;
+        Wed, 24 Nov 2021 08:32:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hWdL3+sC7Y3WgMzxQgq49FXg8O3lrY2U4JGqRbZI6tg=;
+        b=gujWqpLYZ0ok4buE3cVMLWfC5uFpJyuXa42ARhUlnN4O23+qlO+EmYtRvyX/8c+8Cd
+         T5a1dyyYrYP3SiqkVxU+nFVwtXCc1qsYP3l3IZjhohQlobFIZT7KVzpd/uD0tmpe0CvO
+         aeCfiRXxliyhrHPinovV+UTXQVe/RaMFEMYjCu0hyn3k5BUgAGEZ29zDCOQVjlqJOFhL
+         TZBbWI9gTerbMrFWXfehbYHCPQb+K2zUVIW0lpbY8uZKY04odxTxEAVckbrorzsLNVGk
+         sCA4pYJSO2cZ60LDY064M6AwjoFewiMlf4tsmpailAug/kWALkfi3+l95LwEP1w10SMT
+         n/NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/j+S/w29WKZ9bb0B5ofHCpksCQABsDjQUWjoU+wjeDw=;
-        b=HgD9R3xy68SMVbOXWGSFrLXP5WW6Rc6OyTqPZhrsNSvONImCbymuiWZqyGJm081Yz9
-         +mJLBe1cZ6sHm6RwPJH+hMZ6Qux9MJTed7Db2Az2sFgD+E96+R+r9js4xjRWc4oUeq00
-         pp/pk3Hqq0JW9UUWPMsoIKS/tuggwGb4nS6Lv4ykxCmXEStQPXiYIR191gYzVz8AOr3B
-         IqvV8IWtuFHkvLzdXttBlQuMlkwRMj8rS3zdGJgrxUDFYXaHxs68gj3xw9ZuH3orLUSj
-         SxKYknM2kpFL3uECKWaQqerVv/L6745j0JT5t30hwoDJ3kSeC5p5voe5urjt3o38v4Q4
-         rY/w==
-X-Gm-Message-State: AOAM530vdcmLlY31S6O9cTvWXpN8X/mR0Pa63Zmayn6tcaeuSJGXS9A5
-        9yac7L904SLpw7gmZ29atBnkg86V1sBZEA==
-X-Google-Smtp-Source: ABdhPJwalXpWYVFoqYniEDAmayMBzpJszx/K3lyHqagctFXoA81iydKgC56QWssItVJY2yoiRE8J9g==
-X-Received: by 2002:ab0:614c:: with SMTP id w12mr10823559uan.45.1637762811466;
-        Wed, 24 Nov 2021 06:06:51 -0800 (PST)
-Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com. [209.85.221.173])
-        by smtp.gmail.com with ESMTPSA id y22sm8330836vsy.33.2021.11.24.06.06.50
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hWdL3+sC7Y3WgMzxQgq49FXg8O3lrY2U4JGqRbZI6tg=;
+        b=fipxd/uz398YZdkpw4O+SS+yHayRaMRrULaIWRHtxQwOSBRL1BF4m6a4Q8cbC9bYZ1
+         RFQrAJzAiZR5x9GifNrlQq0whLDtnKoIG6ztNFXp3IQNGR4pX1s9vb9PkZZo3PaiWYxu
+         rqD7d9IvgMWURXMEH81xcClIn04tbjpTMzLaqIKp0vP9W7gN6Y6yRQef9ropRTSW0YFP
+         1/8GtVs+BiaF6AJCrRzpVUq27gxv16Kadf9JJOeZCK5QMbvwUpJhR/8bIn8OF4q79X8/
+         luQbF7RBnZcKg9Za+cScUhLoqnD1HLzrZ8AZFJQO3WC6440t0QDWJvkm8c0vUWRkjAhl
+         G0Zg==
+X-Gm-Message-State: AOAM532bE9Gd3EdlbEqf+xZArj4r/9RRulwp1IgwY2x7pjOB3VObWBHb
+        uPW2/SnM2Ptz5q/RQBr09JGsKzRdEmU=
+X-Google-Smtp-Source: ABdhPJzQ2dc3wLXSWKQBFY+mHq5x3ddsPjsCSkkhRryLlNJ0eKxp2Ar8mZbKuizWCxiSq5j6WRb8tw==
+X-Received: by 2002:a2e:2a43:: with SMTP id q64mr17358890ljq.102.1637771570838;
+        Wed, 24 Nov 2021 08:32:50 -0800 (PST)
+Received: from [192.168.2.145] (94-29-48-99.dynamic.spd-mgts.ru. [94.29.48.99])
+        by smtp.googlemail.com with ESMTPSA id m14sm31645ljg.2.2021.11.24.08.32.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Nov 2021 06:06:51 -0800 (PST)
-Received: by mail-vk1-f173.google.com with SMTP id 188so1559348vku.8;
-        Wed, 24 Nov 2021 06:06:50 -0800 (PST)
-X-Received: by 2002:a05:6122:d9d:: with SMTP id bc29mr28391500vkb.14.1637762810685;
- Wed, 24 Nov 2021 06:06:50 -0800 (PST)
+        Wed, 24 Nov 2021 08:32:50 -0800 (PST)
+Subject: Re: [PATCH v2 01/11] ASoC: tegra20-spdif: stop setting slave_id
+To:     Arnd Bergmann <arnd@kernel.org>, Vinod Koul <vkoul@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hyun Kwon <hyun.kwon@xilinx.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Scott Branden <sbranden@broadcom.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-tegra@vger.kernel.org
+References: <20211122222203.4103644-1-arnd@kernel.org>
+ <20211122222203.4103644-2-arnd@kernel.org>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <1dbe0c9f-e209-49e1-f05c-765d9f9b91eb@gmail.com>
+Date:   Wed, 24 Nov 2021 19:32:48 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com> <20211116074130.107554-16-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20211116074130.107554-16-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 24 Nov 2021 15:06:39 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVZrGdwKnN=VKTiGp_Vj6CXgE=G_1OfDf29wHGd22q=Tg@mail.gmail.com>
-Message-ID: <CAMuHMdVZrGdwKnN=VKTiGp_Vj6CXgE=G_1OfDf29wHGd22q=Tg@mail.gmail.com>
-Subject: Re: [PATCH 15/16] arm64: dts: renesas: Add Renesas Spider boards support
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Takehito Nakamura <takehito.nakamura.nx@renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20211122222203.4103644-2-arnd@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 8:42 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Initial support for the Renesas Spider CPU and BreakOut boards
-> support.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Tested-by: Takehito Nakamura <takehito.nakamura.nx@renesas.com>
+23.11.2021 01:21, Arnd Bergmann пишет:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The DMA resource is never set up anywhere, and passing this as slave_id
+> has not been the proper procedure in a long time.
+> 
+> As a preparation for removing all slave_id references from the ALSA code,
+> remove this one.
+> 
+> According to Dmitry Osipenko, this driver has never been used and
+> the mechanism for configuring DMA would not work as it is implemented,
+> so this part will get rewritten when the driver gets put into use
+> again in the future.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  sound/soc/tegra/tegra20_spdif.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/sound/soc/tegra/tegra20_spdif.c b/sound/soc/tegra/tegra20_spdif.c
+> index 9fdc82d58db3..1c3385da6f82 100644
+> --- a/sound/soc/tegra/tegra20_spdif.c
+> +++ b/sound/soc/tegra/tegra20_spdif.c
+> @@ -284,7 +284,6 @@ static int tegra20_spdif_platform_probe(struct platform_device *pdev)
+>  	spdif->playback_dma_data.addr = mem->start + TEGRA20_SPDIF_DATA_OUT;
+>  	spdif->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+>  	spdif->playback_dma_data.maxburst = 4;
+> -	spdif->playback_dma_data.slave_id = dmareq->start;
+>  
+>  	pm_runtime_enable(&pdev->dev);
+>  
+> 
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-(assuming memory size, extal clock frequency, and serial console port
- are correct)
+Thanks, Arnd!
 
-Gr{oetje,eeting}s,
+The commit message is correct, however you could remove even more code
+here. But there is no need to make a v3 just because this patch because
+I already prepared patchset that revives this S/PDIF driver and enables
+HDMI audio on Tegra20. I'll take care of cleaning up the whole code of
+this driver.
 
-                        Geert
+diff --git a/sound/soc/tegra/tegra20_spdif.c
+b/sound/soc/tegra/tegra20_spdif.c
+index 7751575cd6d6..1c3385da6f82 100644
+--- a/sound/soc/tegra/tegra20_spdif.c
++++ b/sound/soc/tegra/tegra20_spdif.c
+@@ -251,7 +251,7 @@ static const struct regmap_config
+tegra20_spdif_regmap_config = {
+ static int tegra20_spdif_platform_probe(struct platform_device *pdev)
+ {
+ 	struct tegra20_spdif *spdif;
+-	struct resource *mem, *dmareq;
++	struct resource *mem;
+ 	void __iomem *regs;
+ 	int ret;
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+@@ -273,12 +273,6 @@ static int tegra20_spdif_platform_probe(struct
+platform_device *pdev)
+ 	if (IS_ERR(regs))
+ 		return PTR_ERR(regs);
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-	dmareq = platform_get_resource(pdev, IORESOURCE_DMA, 0);
+-	if (!dmareq) {
+-		dev_err(&pdev->dev, "No DMA resource\n");
+-		return -ENODEV;
+-	}
+-
+ 	spdif->regmap = devm_regmap_init_mmio(&pdev->dev, regs,
+ 					    &tegra20_spdif_regmap_config);
+ 	if (IS_ERR(spdif->regmap)) {
+@@ -290,7 +284,6 @@ static int tegra20_spdif_platform_probe(struct
+platform_device *pdev)
+ 	spdif->playback_dma_data.addr = mem->start + TEGRA20_SPDIF_DATA_OUT;
+ 	spdif->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+ 	spdif->playback_dma_data.maxburst = 4;
+-	spdif->playback_dma_data.slave_id = dmareq->start;
+
+ 	pm_runtime_enable(&pdev->dev);
+
+
