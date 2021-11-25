@@ -2,131 +2,159 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCEBC433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Nov 2021 17:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A72FC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Nov 2021 01:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242688AbhKXRmw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Nov 2021 12:42:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbhKXRmv (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Nov 2021 12:42:51 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7935C061574;
-        Wed, 24 Nov 2021 09:39:41 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id c32so9302002lfv.4;
-        Wed, 24 Nov 2021 09:39:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6KwYnqzzoTeuVNxhHsajzRe6liKfZ7vCZOdko2MKcYY=;
-        b=lvNbpNKcqOAj74UHrS6XpdHcUjOf2sCIzeJURasqmwDotEWhqg+OtI1hIqfxXw53rO
-         z4tIfWJ15SJPCQPQEYpaz/zmC2AtWtLFdcPfiSvbidZ8Exl9V8VhaqU9R2npHpy4tYc0
-         yoAFhsyR/tm1sxMO7gFsD63QuHkm+jfTl/BAb0mYaTiKTxDGqN4kFZjH9jZeyYnQTnDY
-         +iO2QczJQHUVcBKOsIBMpcFVHI8R1BvISIqundwfmbO8Omwr++T3KiO2VqAHQJyXOIWo
-         3aZgsvReXTiUAJF/ECnq/pwPQIvxcyAQtmtfpSjrZuVeY4POAqNgnpvX5T/RJZH9Gntm
-         5JVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6KwYnqzzoTeuVNxhHsajzRe6liKfZ7vCZOdko2MKcYY=;
-        b=2XJD9GYe9hHnmKvNFuhTMENH7Fskzbl+0c0Q9mpX7FHCCkqpD9/lsrJl6Z3tbnD2D6
-         tNuAp3Cz2ctAkXxSbwVyfEVLuA+aczy97bAPagyqHl+oPN85ZZduqFSIy+KKT6NBNBVf
-         vKlOc+SXUjvRo6Dt37YRfS/vqEb/oNMAcRWU8o3wOaAcgodfhWAAn8jtQlmgyoVRYH2O
-         XqMRhBXbXgUCWX5+865lg1rmmhMlVlpxo3e9SeKxFuto0JauS6AHHob/TvP2JEt3PDFc
-         BCywUAXrY6C4Ek1nLvP7lFx8cC70M/z3kY7jj+WaKEGje0Ei2Elnx/AmMH0gQSzzcjCn
-         UDIg==
-X-Gm-Message-State: AOAM533AsgWYcLN+Uio0Mp23dqbIHj2eUzXTM9eYwK6UZryMihhq2jeP
-        rkWWq3U3jTHFtpIiYzV0gjfq5yFK63s=
-X-Google-Smtp-Source: ABdhPJzMAN6+EU9Pjecu2Hl3ZC50CFEhc3UzlNKlYPHJ5/rwKJi/3grC00PRL2kx8I9BrVZVbuLcvw==
-X-Received: by 2002:a19:c350:: with SMTP id t77mr16616753lff.152.1637775579976;
-        Wed, 24 Nov 2021 09:39:39 -0800 (PST)
-Received: from [192.168.2.145] (94-29-48-99.dynamic.spd-mgts.ru. [94.29.48.99])
-        by smtp.googlemail.com with ESMTPSA id q5sm44228lfu.18.2021.11.24.09.39.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Nov 2021 09:39:39 -0800 (PST)
-Subject: Re: [PATCH v2 01/11] ASoC: tegra20-spdif: stop setting slave_id
-To:     Arnd Bergmann <arnd@kernel.org>, Vinod Koul <vkoul@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hyun Kwon <hyun.kwon@xilinx.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Scott Branden <sbranden@broadcom.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-tegra@vger.kernel.org
-References: <20211122222203.4103644-1-arnd@kernel.org>
- <20211122222203.4103644-2-arnd@kernel.org>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <b5c9ece3-c702-26b8-347a-f6d9bed2c5db@gmail.com>
-Date:   Wed, 24 Nov 2021 20:39:38 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20211122222203.4103644-2-arnd@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S243640AbhKYBvq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 Nov 2021 20:51:46 -0500
+Received: from mail-am6eur05on2046.outbound.protection.outlook.com ([40.107.22.46]:64161
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234909AbhKYBtq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 24 Nov 2021 20:49:46 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=b6Z1mAGJnCtCL5N0hCN/rk9mPgkoR1s2h3tfX3O2kVXGXFGdcBGwlbYeWowTpILq13NPnZGMoYn68akLdaAXvvw4kjdlI8xU1jyOTabXMnAu0subHpyXrWGbd9K22b2AvqsKKo/gMhQWTR1gMM2QwiCNifcaN9cMMdWyPKNPuuz4aLuCgkzSGP0f7k1QoqSo5OFEMfxnrAmuSxyFZIZGIFfW/rO3MBbpayENxHQmaoh2Bjop9DY/UbabWDKZ1//FDeOX8jiVyWM7xcbhskyXOXD2Xns6ldGkscT+XAM+TPp54YNht8Sz3vV4EliAafLKH6mhvXteyGL43p0DRUpZYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wEalQ5A7RDT4gjet5e16eHxrhOTAbXaZWZ7XLFriI4g=;
+ b=m959e1mTzX114YJuOrf1Y7KKBvr0Tfv17NhwCVVnsI+MkCpcP3dA2doS9Rip2ZDQJrXaLbUekZ+S4mmWsAFQbStWdIRKNAnfVqALbK2LN6HXi4teJ+PwTy2DXcneGB/54dOScldgL6IXUpbINpVz8jJJep2H41EoZYf4d5kvNuCLskwfjSAYMnVlw0uHV+1CWb06PmwrNuaj/UgwtYa69pomqVHDJzkNfhvBDHAF2BuzOSNmc2JjWG3jZKNvtC1YpDHX8dLDAzWDvDaF1Ismuy7ijmmqQpfUGLcVAAxPbB2cPfIfABC0YeARj9flpGx3ZnGl+WCOAXdd+60p3Th+EQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wEalQ5A7RDT4gjet5e16eHxrhOTAbXaZWZ7XLFriI4g=;
+ b=ceKs5unZCcO0/GghIP5v9FYYc0NAru1ywVs9WQsMEJ3mF1F+zq1WEortdoGoN7tS9M6uJGitJ39oN6U8C4J9/xf0I9DFKa3pdrCxLPKTGj85eExlZApMGhyUMrRSLrvp4I7B3wDh+WnSLydGlslkbxFeUqBlknGp01QvnhO9naU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8411.eurprd04.prod.outlook.com (2603:10a6:10:24c::9)
+ by DBBPR04MB7739.eurprd04.prod.outlook.com (2603:10a6:10:1eb::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22; Thu, 25 Nov
+ 2021 01:46:33 +0000
+Received: from DB9PR04MB8411.eurprd04.prod.outlook.com
+ ([fe80::199a:adba:b7de:cf8d]) by DB9PR04MB8411.eurprd04.prod.outlook.com
+ ([fe80::199a:adba:b7de:cf8d%5]) with mapi id 15.20.4713.027; Thu, 25 Nov 2021
+ 01:46:33 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        u.kleine-koenig@pengutronix.de
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH V3] tty: serial: imx: clear the RTSD status before enable the RTSD irq
+Date:   Thu, 25 Nov 2021 09:43:06 +0800
+Message-Id: <20211125014306.4432-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SI2PR06CA0015.apcprd06.prod.outlook.com
+ (2603:1096:4:186::7) To DB9PR04MB8411.eurprd04.prod.outlook.com
+ (2603:10a6:10:24c::9)
+MIME-Version: 1.0
+Received: from localhost.localdomain (119.31.174.71) by SI2PR06CA0015.apcprd06.prod.outlook.com (2603:1096:4:186::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.22 via Frontend Transport; Thu, 25 Nov 2021 01:46:31 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c5db142-f312-41b6-7318-08d9afb568dd
+X-MS-TrafficTypeDiagnostic: DBBPR04MB7739:
+X-Microsoft-Antispam-PRVS: <DBBPR04MB7739BCF2A3535BAAED01235792629@DBBPR04MB7739.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:513;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QF+TmjcGmXZ43/U/cyOTnfbZviG6Tki80sn0kg5UnLet6mPGjo8YF7NqAbTwZXMov3Rta78ggxoH3K3EN6zG7jwVadIPcYWVMW1kj1SEYPUbSvCJ7MCWOE81rreB3G4BLwSRO+utxwAUbxqLzPZlwVjwueLh7jL+K4AqPmgUsn/xWYCtuXrIPx0m0jM097HNjDjFzsdaI4G57s0VCWa/Iom5TXkTAVQi6Nru7EzDBi3PkMVgx1T09bta2t7zUP31Xu/TqiFZ1lcAMuU3exh16AFErMQ22lH7JfLTWBuUCX8ywK3I6hFKG2l8CGg9mrOsNWDnLChovv6iN16V+9bZG2yvDcKYQUTBqmZWRgYPShE0isTzBdHZunJ27j74Wxl7B0Uu9QW8dFc8HJMampMaOE88VZUDYmE3x1K4QeX4woQOuhs0PWMgJbrDLfAvlDkzXrCSsZOBaIykDbJbuQznrqDsBQD8qDRYplNAE/zJwWgx2VYuY6aXLi/KZYLDAfRe5rrbnVNZ2OlPAdgeQwmCXZqJq1kKX6OAVs3Iqael9nXXPjDfnRVkH8yOkTcvsrsTBTFQ5RsOqt7M/8gvVw70p5rdkhIoW9GSBNrUwLCRcdySiX7L2s9LekU5dGs0lzS7LPrLiRNkPHb9OvjnfaYyzcVYDzQZc/N33zS8dgxDpb0jOZ8hAmkui5+SNS0aCHIxSTFvSOzPah7rORjlvx4hTg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8411.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38350700002)(36756003)(38100700002)(66476007)(66556008)(186003)(66946007)(66574015)(4326008)(44832011)(956004)(83380400001)(8936002)(6486002)(6666004)(2616005)(316002)(5660300002)(6506007)(52116002)(26005)(8676002)(86362001)(1076003)(2906002)(6512007)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QW5QK0JkK3RucFpUNU5WU3k2UVNTU090djQ1R0JmbERlbm04Qmd4cG8xaUgw?=
+ =?utf-8?B?MXpBQjJNUXljMjk3VW5lTjlJU05KakhGTmUzUXVTeHJRUTIwVk5UVlJha1Fm?=
+ =?utf-8?B?TVpRUVFYcy9PNnFPR3lZVEdzdkRXNmtseWRRV3M1L29iaW1FRlJUcUpLNlZW?=
+ =?utf-8?B?YS9UaXVqT2hNRnFxSUdxSUFFOGk5Z09zWkhsNytiMEhhVytZY29hdUg5T3dk?=
+ =?utf-8?B?MGFobW1sMVJGOHpPR1Q1WWREMVdYOUFrYlpNWmhSMWZQcFRjcTd2SG9BdTc5?=
+ =?utf-8?B?YWdsalFwMElNVGtYV1IwR2FYR0hPbWE1blJybTlTOVVzOHJvQm5aRVliOUlF?=
+ =?utf-8?B?SkNrQVpyaTlmcEFGNHZhdkFyR0hyZkV4ekdXT2tGeTdMdkRTVnp3Q2E5REFz?=
+ =?utf-8?B?dE1VakJCQnQyMHFMbFpQRHR5b0QvcG5aclBhNmltL3BnWjFwSEZrN3lJMGlZ?=
+ =?utf-8?B?WG9XSGZ5eDJJMHFnN09pcVlBTzcxalE0U1VycVZ6VXlVc2ZyVHZDVXU5ZmlI?=
+ =?utf-8?B?U2hmaEYyUjNOTFNjQjhZRHRMcE1iYkliUU1SbWtsTjBvblViODAwMms2TUpN?=
+ =?utf-8?B?WmwwcnJudmM2QjJXUnNxWXlIMThaK0FBU013WUVabFpuVjNzYmlXTXkvNEJ5?=
+ =?utf-8?B?UGxRY1MvWjBQZ0cwclVJT3hHMWZOeXVZYkpwd0NheGFiNUl5QmxiYW1JWFRH?=
+ =?utf-8?B?VENYQzdxR0EyZTNrRmlib0tKbkxvNi9oUWFPQTFUVlQ4cXVlZFBGYWFlUUJk?=
+ =?utf-8?B?dTdYMVU2c1JUK1pVYWY5UWU1TktPZkFEWXRGZGVZRERJZzR1QTlTMEtSQzJ4?=
+ =?utf-8?B?VUhWejBQYWZmdHZXQ0JXNjZxaG81dTlXYWtNYkw1am01V2p4dVJJOStJMWU1?=
+ =?utf-8?B?NnJIV2tKa29YT2JFUk10eE05WnlUYlBXdTVaK2l5UngyOUJQWlluOFFBK2M0?=
+ =?utf-8?B?TjhtN2tNbFpKMmdvVnhKNDNDZjM1b0JlZENIRWNoUGN5NnVNTkhOVENQT3RN?=
+ =?utf-8?B?YnRHUkpMRWFBQmFlYXpHNmJsdGdUcE4rZEJNNUVDZ3BENEgwS28xL2pnSysv?=
+ =?utf-8?B?MkRURm1LZnBWSE00L0VOZklrWlhkRlFKVEl0bm9vNkdWR1RnRVVTeEVyc0kw?=
+ =?utf-8?B?RnN0STBiREVsUXNZV0lUWldrems5Nlg4cmlqNmM2K1FiTDBSc3dsU2NvOHlS?=
+ =?utf-8?B?NzR5ZFJ1ekNHNldiOFVWYlNnRkhLWFBLT2gwbzRWZHRSUHBlL3B2enBZVEpH?=
+ =?utf-8?B?cEl0ck9CVVU5K2ZNdy9yMnVQK2Nid3dpR1JHdGNVdG5QN1VLZkx5RW5RSGpu?=
+ =?utf-8?B?SUJBUEQ3cUF5YmdzSGRPRCs4V3cySVpjOFBtUTVoK2lISExKR0g4dUwrV29K?=
+ =?utf-8?B?RzlpNVJhZEVVUFVRa0ppWm9vRFNLZnZjUFlaYjNoalo4UWpMSENNYy9HNG05?=
+ =?utf-8?B?ajNQdzYyR1o1OXBOb1dZbVVMOG1GS0R0WVUrTW1JSHdSbXI0aUxkc0NuMTZW?=
+ =?utf-8?B?VHB6cFlFUjVlbVlIT1crTDBGdnYxR3B0NllsSHFLeStKdS9yNS9qL0RLaVRw?=
+ =?utf-8?B?Q0l5V0ZKYS9vN0RFYklWVEkrcVVSYmh0QTVlOFh0QzE4VFAweVBtRW5sdVA5?=
+ =?utf-8?B?dW9kNGZKSnpFWVNGYW8xUFFwUU85TUtxVGFtZDJRMmJWN1NxN29GWmhZV1M2?=
+ =?utf-8?B?Q0s2eE02T3ZSdGgzMy9PNkR3V1pWbTBXWE5tNkp6bFJmbjRtbUtGanp0bmFE?=
+ =?utf-8?B?cno2VWpUVytVc3FvTU1CcFhqdG9JVWUrQWVIZERlbUJmcTBaaWk0WXRmdG1B?=
+ =?utf-8?B?cDVjcXcxdkxpNnF4amlZcDZwV2huWHQ2NXlSQjNXcjVCR0JSWDJVRUp0Z1VI?=
+ =?utf-8?B?MllFVWpXN3JwZUZSSWwxOXJGbk9UTng0MVFDNmdYWWorZDRUcUtYZ011Um9P?=
+ =?utf-8?B?K0F1U0pUT2YyaDlmbXhmV2V0b1NUWDF0Zm0zQVdMSlVlSzcwQmxuUnFTei9B?=
+ =?utf-8?B?MnNTbzZpdDBOMDZnNUEySzM3WGx0SzBNSmlQQzRQUW5Lck1BUlBNY1BsWldK?=
+ =?utf-8?B?TXVkVktwRWtEM2s5QUtLd3JiK3I1Q1lETzE3em93aG1wVGRlSC9MbkpNTXB5?=
+ =?utf-8?B?MEZoSXI5cm84WklhTHFNenFvR1dDWHYzWlo3aDlUQlJDQ0dHK1hrbEoxeEoz?=
+ =?utf-8?Q?j+Sfre5ptHYQi+kEpiQxMD4=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c5db142-f312-41b6-7318-08d9afb568dd
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8411.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2021 01:46:33.6952
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UNLdP4s+xxItYbhWESUVOdjMoz+Xm9BuDzjqYkMieyMkiaKujiJ77m4Pza4koi7VwVhuYY2uGQiXLp1r3A2ObQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7739
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-23.11.2021 01:21, Arnd Bergmann пишет:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> The DMA resource is never set up anywhere, and passing this as slave_id
-> has not been the proper procedure in a long time.
-> 
-> As a preparation for removing all slave_id references from the ALSA code,
-> remove this one.
-> 
-> According to Dmitry Osipenko, this driver has never been used and
-> the mechanism for configuring DMA would not work as it is implemented,
-> so this part will get rewritten when the driver gets put into use
-> again in the future.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  sound/soc/tegra/tegra20_spdif.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/sound/soc/tegra/tegra20_spdif.c b/sound/soc/tegra/tegra20_spdif.c
-> index 9fdc82d58db3..1c3385da6f82 100644
-> --- a/sound/soc/tegra/tegra20_spdif.c
-> +++ b/sound/soc/tegra/tegra20_spdif.c
-> @@ -284,7 +284,6 @@ static int tegra20_spdif_platform_probe(struct platform_device *pdev)
->  	spdif->playback_dma_data.addr = mem->start + TEGRA20_SPDIF_DATA_OUT;
->  	spdif->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
->  	spdif->playback_dma_data.maxburst = 4;
-> -	spdif->playback_dma_data.slave_id = dmareq->start;
->  
->  	pm_runtime_enable(&pdev->dev);
->  
-> 
+From: Fugang Duan <fugang.duan@nxp.com>
 
-Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
+Clear RTSD status before enabling the irq event for RTSD in
+imx_uart_enable_wakeup function.
+Since RTSD can be set as the wakeup source, this can avoid any risk of
+false triggering of a wake-up interrupts.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+changes in V3:
+ - Add the Acked-by tag.
+
+changes in V2:
+ - Change the subject and the commit message as suggested by Uwe.
+---
+ drivers/tty/serial/imx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 90f82e6c54e4..fb75e3e0d828 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2482,10 +2482,12 @@ static void imx_uart_enable_wakeup(struct imx_port *sport, bool on)
+ 
+ 	if (sport->have_rtscts) {
+ 		u32 ucr1 = imx_uart_readl(sport, UCR1);
+-		if (on)
++		if (on) {
++			imx_uart_writel(sport, USR1_RTSD, USR1);
+ 			ucr1 |= UCR1_RTSDEN;
+-		else
++		} else {
+ 			ucr1 &= ~UCR1_RTSDEN;
++		}
+ 		imx_uart_writel(sport, ucr1, UCR1);
+ 	}
+ }
+-- 
+2.17.1
+
