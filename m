@@ -2,46 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67752C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Nov 2021 09:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E20D9C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Nov 2021 09:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353952AbhKYJGQ (ORCPT
+        id S1354018AbhKYJG2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Nov 2021 04:06:16 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:35782 "EHLO
+        Thu, 25 Nov 2021 04:06:28 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:62178 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353583AbhKYJEP (ORCPT
+        with ESMTP id S1344142AbhKYJE1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Nov 2021 04:04:15 -0500
+        Thu, 25 Nov 2021 04:04:27 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1637830864; x=1669366864;
+  t=1637830876; x=1669366876;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=K/FEmA4LkPsJngFC8rtp+wxmQUsyLjyVWQASV+7XuoM=;
-  b=cDRP4N1sn5iKMldWHv1Uu+lxhB9TBX02uAfYnDWju0QfYUcKaT+yacia
-   iQQtsTOO3mUj8mh4UvllMsh81Frc8DOUNhT+mAkmC+uhhyAYY114+9T4k
-   FsAVzXHeQ62k5S5GyS9sLu4W+utfIiQ6gRHAMmRLvUrgIH+6MznTLw4Iz
-   9+i51F92TjAlfvsYpbb1zKGZyWA4h8AadyIrOYfOQQOI165ooCuNvhXYQ
-   Yf0LG7givg7fuw51voTYfelMxHXdxx48a6+RA6lBhuq9ngP82l9vE9vz/
-   lL2rjRYHskDESb7HS3QdM7/XZexejkRXPJLjQp7IKZEnm0pyrlQNR6oJp
-   g==;
-IronPort-SDR: /+Gs0Dgw9sHQuGHVwu3hC6fRTgebf3/L3vAinrlLIXXexeY7pTImM19FOcI7TjxTtCqdewv+lp
- 7C0hKLW5Zr1XR/7tHfhqHY9aGW0CmZYYfzdeWlsXiaX13gxp3FflOwlwsIXcNcXWtXvRPd4CWF
- pxaVYUvf84C1JjoI3IzNr5/eAtO9uZrNRrZHLHK7xGRpiMOf/LpxlK1gRy3VMcvV9J7U/8s8OV
- lIx7420ve58kKdQ4DhcOyzuaX7x6UpQtvowWNjzRVNp0O3XbweGAD2/j7Czo1vqUyRlTQZJE/f
- qKceAEhpQ2MZGFvE7lzp6JcZ
+  bh=WIpbBPu+LDILnDfRZxv4mO7fUQqnAghfChRhfJnCk4s=;
+  b=iPiRmHIgft2ri8SLuK3BrKZCbxAUW4zNGBfNfRcwJ00x4CErLzrI5cCP
+   NM/nnpyxdcgxqa69b/an5y8fG6O8r3rr+EklnTbPZP/JwGy+w/JCpvm4B
+   Xp5x+Rx3+lIcGI+viNpGXVC9NCSC6GqyiO7qaEnOGHpE/hKXtdSMx4YAl
+   y70wafsT3P1Wyi24Su96JeE++1sBeBlN9qT40xWTx3V9j7Bag7YsrLXZF
+   9zR8P9T+PYzrd949eNFs+4zjSxZJTSMBz7QY91Jq6iySTtbA35FmTDBa8
+   0aQIe4hLUngnOQFttu4B0OQQugZERVsvqSrTEqPKfqBA2tu9NMlJUkAgN
+   A==;
+IronPort-SDR: //kzR0pxn4N+VaD4Z8z0EdlDuYPhJSoF+S51vq0dm61RulaDTUFU4DZ2M3n6uwUkjBLxkuQvrf
+ /SFK4yBtSs9DmwvBjTOk3+iWlDTFnWGmqWqIjxPJ/102XWMRWen4iT2MwGKyGKKGaRKVOYLten
+ kBagW/bMEoQHSPD2oGoHAm3NtEPZSFJ6zFeM4f4a+R8SwiZBasovecpAqyG42HljyaxdgF+Hlm
+ oCWw22YhU98WeUncsC9t6fd/LJOG8UJWNh1Gf+UOg8u8DLwXyhRKRt3aJsPsUQGgeJREEqRILc
+ wS1DPhpoYz/mbhftS3cK6oTc
 X-IronPort-AV: E=Sophos;i="5.87,262,1631602800"; 
-   d="scan'208";a="145121934"
+   d="scan'208";a="144534284"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Nov 2021 02:01:03 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Nov 2021 02:01:16 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 25 Nov 2021 02:01:02 -0700
+ 15.1.2176.14; Thu, 25 Nov 2021 02:01:09 -0700
 Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 25 Nov 2021 02:00:59 -0700
+ 15.1.2176.14 via Frontend Transport; Thu, 25 Nov 2021 02:01:06 -0700
 From:   Tudor Ambarus <tudor.ambarus@microchip.com>
 To:     <ludovic.desroches@microchip.com>, <vkoul@kernel.org>,
         <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
@@ -51,9 +51,9 @@ CC:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-serial@vger.kernel.org>,
         Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH v2 09/13] dmaengine: at_xdmac: Fix concurrency over xfers_list
-Date:   Thu, 25 Nov 2021 11:00:24 +0200
-Message-ID: <20211125090028.786832-10-tudor.ambarus@microchip.com>
+Subject: [PATCH v2 11/13] dmaengine: at_xdmac: Fix lld view setting
+Date:   Thu, 25 Nov 2021 11:00:26 +0200
+Message-ID: <20211125090028.786832-12-tudor.ambarus@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211125090028.786832-1-tudor.ambarus@microchip.com>
 References: <20211125090028.786832-1-tudor.ambarus@microchip.com>
@@ -64,44 +64,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since tx_submit can be called from a hard irq, xfers_list must be
-protected with a lock to avoid concurency on the list's elements.
+AT_XDMAC_CNDC_NDVIEW_NDV3 was set even for AT_XDMAC_MBR_UBC_NDV2,
+because of the wrong bit handling. Fix it.
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Fixes: ee0fe35c8dcd ("dmaengine: xdmac: Handle descriptor's view 3 registers")
 Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 ---
- drivers/dma/at_xdmac.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/dma/at_xdmac.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/dma/at_xdmac.c b/drivers/dma/at_xdmac.c
-index 8804a86a9bcc..81f6f1357dcb 100644
+index 89d0fc229d68..ba2fe383fa5e 100644
 --- a/drivers/dma/at_xdmac.c
 +++ b/drivers/dma/at_xdmac.c
-@@ -1608,14 +1608,17 @@ static void at_xdmac_handle_cyclic(struct at_xdmac_chan *atchan)
- 	struct at_xdmac_desc		*desc;
- 	struct dma_async_tx_descriptor	*txd;
- 
--	if (!list_empty(&atchan->xfers_list)) {
--		desc = list_first_entry(&atchan->xfers_list,
--					struct at_xdmac_desc, xfer_node);
--		txd = &desc->tx_dma_desc;
--
--		if (txd->flags & DMA_PREP_INTERRUPT)
--			dmaengine_desc_get_callback_invoke(txd, NULL);
-+	spin_lock_irq(&atchan->lock);
-+	if (list_empty(&atchan->xfers_list)) {
-+		spin_unlock_irq(&atchan->lock);
-+		return;
- 	}
-+	desc = list_first_entry(&atchan->xfers_list, struct at_xdmac_desc,
-+				xfer_node);
-+	spin_unlock_irq(&atchan->lock);
-+	txd = &desc->tx_dma_desc;
-+	if (txd->flags & DMA_PREP_INTERRUPT)
-+		dmaengine_desc_get_callback_invoke(txd, NULL);
- }
- 
- static void at_xdmac_handle_error(struct at_xdmac_chan *atchan)
+@@ -99,6 +99,7 @@
+ #define		AT_XDMAC_CNDC_NDE		(0x1 << 0)		/* Channel x Next Descriptor Enable */
+ #define		AT_XDMAC_CNDC_NDSUP		(0x1 << 1)		/* Channel x Next Descriptor Source Update */
+ #define		AT_XDMAC_CNDC_NDDUP		(0x1 << 2)		/* Channel x Next Descriptor Destination Update */
++#define		AT_XDMAC_CNDC_NDVIEW_MASK	GENMASK(28, 27)
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV0	(0x0 << 3)		/* Channel x Next Descriptor View 0 */
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV1	(0x1 << 3)		/* Channel x Next Descriptor View 1 */
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV2	(0x2 << 3)		/* Channel x Next Descriptor View 2 */
+@@ -402,7 +403,8 @@ static void at_xdmac_start_xfer(struct at_xdmac_chan *atchan,
+ 	 */
+ 	if (at_xdmac_chan_is_cyclic(atchan))
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV1;
+-	else if (first->lld.mbr_ubc & AT_XDMAC_MBR_UBC_NDV3)
++	else if ((first->lld.mbr_ubc &
++		  AT_XDMAC_CNDC_NDVIEW_MASK) == AT_XDMAC_MBR_UBC_NDV3)
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV3;
+ 	else
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV2;
 -- 
 2.25.1
 
