@@ -2,46 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 097E8C4321E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Nov 2021 09:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B803C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Nov 2021 09:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353719AbhKYJFw (ORCPT
+        id S1353768AbhKYJF6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Nov 2021 04:05:52 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:24985 "EHLO
+        Thu, 25 Nov 2021 04:05:58 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:17363 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353523AbhKYJDu (ORCPT
+        with ESMTP id S1353515AbhKYJD5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Nov 2021 04:03:50 -0500
+        Thu, 25 Nov 2021 04:03:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1637830839; x=1669366839;
+  t=1637830846; x=1669366846;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wegADxIWSHuMAOObITo7ccUCJ8XjO9VrO3nutuF9azU=;
-  b=kUw4UQT+kAjL0XlCti/RBnMQViqfgFPNPdcfhDngUacVBnOljnWRm8co
-   h+ogLziO5++0V5l8Nh8q3K0zTJOnvfhn/Dq4A8yZjuoQbfbjQsptle7Kd
-   UllATOq9hB+/GZAdMWK+BQneMCaKujut44EiEm4SAzpXamtlp/2pIBRJH
-   tD1zSktqENbB/kQBI0xrNi07RahD3iUJUX9yMeiAlLGbp06SHC/bE7Eb6
-   xatO4r/MaAbr24Jq36qXsn9EP4oIAeohJB2EPVefHxAWe785ePdQ0/3hP
-   l01EcEhWngADWvExlfIt4YifmX5oQitOtqMwSdVziNbGjTNqiD1Xj2kkm
-   A==;
-IronPort-SDR: coeHxv+G7dVW9oV0lE43DmnhXnDqzzmr3cmn6ZJEif15+SwtjIVT1I/ffKpmx0Hn4wQr0+Saum
- 5vZ+6ddqNasZQEcLslbMBhfWgP5uUPeUNyql89chGXWPDvjl7VUV36XGcDWBPT736MOQjmEhTm
- f8txXdQkRpTvrC+kSQ0JTV9o0NUOU8VJR5OyVym1JXWET8CB0aTSHHEgrtGdpF9FzMI2tocviK
- xoKmMIJQHsORMORxZQ95xH6X030N29DvWaGHLno+XH990LXVWatlyd5Z9m1cGp2RJiuxvvl7lR
- MwX9O8yFJuvWD4vR5fXBjAK/
+  bh=CIM45Syj4kYFKQaSN/c1s5pHZ3uPQK0krZOBDew05DM=;
+  b=O46lbanNL958YrKfYF02PQzb2lk7fKRNVprYEyl9RgTQbPvinn/0Sxbf
+   Pqgc7+kqANVnBlDspz8j124LUzNXXT9NZ+V96bSpbVkRnYXfptr9rH6Qv
+   FtVcoOHc87Z7pep5GEwPmwUKAYkKRAFp7vVEUKzltY3CxJ8ZsBqIkyWuD
+   1s8zzvyFSLF50KRVSP8PoU6zWgELUFEZeo1msUuE965cvQUWF/FnoZAN0
+   q40VxvYKPvhl4Q6P5horMXuHgl1pCEAImYZ/FsAivUA81I+o0etxRB37D
+   0w9t5qw16iGyiTzZprE8SJRFaF25vsx4xg58btLm3HVMZ547KEejfeWow
+   g==;
+IronPort-SDR: Nxij3NzZqEF/71SN6wh8X6Zq5Wz54ngQptptk6TV745XvJ67XxLVRSGtoMWyEBrhn9zO+UKsTj
+ MDXQ5xUbIPhz692e5yi3NGOtFMkEWv66y7S15mqsKUJxciYmusrFm6P0tP9DhA4lzP3EBq6PYP
+ FgKmtAgo5atTQJQy66FuaBli7sTX7sIZL3dvVgTFChBcP6b1xdz/ORMMhzMGqhYVZk2LTX/aqR
+ gTUvpU+Su7wfGrcHT9jB5O8oqyrxV92OKOrlUrQOmWcEYd/JkjdQM/16vGz08zOWL3uO1P1u4x
+ sQBArGZkb8DjD+rZvOTsZCXA
 X-IronPort-AV: E=Sophos;i="5.87,262,1631602800"; 
-   d="scan'208";a="77555990"
+   d="scan'208";a="137700238"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Nov 2021 02:00:36 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Nov 2021 02:00:45 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 25 Nov 2021 02:00:36 -0700
+ 15.1.2176.14; Thu, 25 Nov 2021 02:00:43 -0700
 Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 25 Nov 2021 02:00:33 -0700
+ 15.1.2176.14 via Frontend Transport; Thu, 25 Nov 2021 02:00:40 -0700
 From:   Tudor Ambarus <tudor.ambarus@microchip.com>
 To:     <ludovic.desroches@microchip.com>, <vkoul@kernel.org>,
         <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
@@ -51,9 +51,9 @@ CC:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-serial@vger.kernel.org>,
         Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH v2 01/13] dmaengine: at_xdmac: Don't start transactions at tx_submit level
-Date:   Thu, 25 Nov 2021 11:00:16 +0200
-Message-ID: <20211125090028.786832-2-tudor.ambarus@microchip.com>
+Subject: [PATCH v2 03/13] tty: serial: atmel: Call dma_async_issue_pending()
+Date:   Thu, 25 Nov 2021 11:00:18 +0200
+Message-ID: <20211125090028.786832-4-tudor.ambarus@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211125090028.786832-1-tudor.ambarus@microchip.com>
 References: <20211125090028.786832-1-tudor.ambarus@microchip.com>
@@ -64,48 +64,41 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tx_submit is supposed to push the current transaction descriptor
-to a pending queue, waiting for issue_pending() to be called.
-issue_pending() must start the transfer, not tx_submit().
-As the at_xdmac_start_xfer() is now called only from
-at_xdmac_advance_work() when !at_xdmac_chan_is_enabled(),
-the at_xdmac_chan_is_enabled() check is no longer needed in
-at_xdmac_start_xfer(), thus remove it.
+The driver wrongly assummed that tx_submit() will start the transfer,
+which is not the case, now that the at_xdmac driver is fixed. tx_submit
+is supposed to push the current transaction descriptor to a pending queue,
+waiting for issue_pending to be called. issue_pending must start the
+transfer, not tx_submit.
 
-Clients of at_xdmac that assume that tx_submit() starts the transfer
-must be updated and call dma_async_issue_pending() if they miss to
-call it (one example is atmel_serial).
-
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Fixes: 34df42f59a60 ("serial: at91: add rx dma support")
+Fixes: 08f738be88bb ("serial: at91: add tx dma support")
 Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 ---
- drivers/dma/at_xdmac.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/dma/at_xdmac.c b/drivers/dma/at_xdmac.c
-index 275a76f188ae..ccf796a3b9f3 100644
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -385,9 +385,6 @@ static void at_xdmac_start_xfer(struct at_xdmac_chan *atchan,
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 376f7a9c2868..269b4500e9e7 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1009,6 +1009,8 @@ static void atmel_tx_dma(struct uart_port *port)
+ 				atmel_port->cookie_tx);
+ 			return;
+ 		}
++
++		dma_async_issue_pending(chan);
+ 	}
  
- 	dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, first);
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+@@ -1269,6 +1271,8 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 		goto chan_err;
+ 	}
  
--	if (at_xdmac_chan_is_enabled(atchan))
--		return;
--
- 	/* Set transfer as active to not try to start it again. */
- 	first->active_xfer = true;
++	dma_async_issue_pending(atmel_port->chan_rx);
++
+ 	return 0;
  
-@@ -479,9 +476,6 @@ static dma_cookie_t at_xdmac_tx_submit(struct dma_async_tx_descriptor *tx)
- 	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
- 		 __func__, atchan, desc);
- 	list_add_tail(&desc->xfer_node, &atchan->xfers_list);
--	if (list_is_singular(&atchan->xfers_list))
--		at_xdmac_start_xfer(atchan, desc);
--
- 	spin_unlock_irqrestore(&atchan->lock, irqflags);
- 	return cookie;
- }
+ chan_err:
 -- 
 2.25.1
 
