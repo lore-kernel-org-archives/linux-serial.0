@@ -2,51 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1160C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 17:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34704C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 21:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235781AbhKZRNL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Nov 2021 12:13:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238015AbhKZRLK (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Nov 2021 12:11:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3DEC0613A1
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2021 08:41:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2695622F2
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2021 16:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4F26C93056;
-        Fri, 26 Nov 2021 16:41:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1637944887;
-        bh=Ru0gtAEBYGVOt4VIH/S87WMZ5RjlQI9ZG9Lt8KmFBY8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AyY3z4W+9RoV08oUnzZ8FyxaFM3fJEt3aiGboZFWqBFwhYM7wypRKT/GR7B2X0Dzj
-         qbaLuWHcBBgkW7hjfMoFuF200ab/85yRlhny6snmsFLi8Gi20xjW3rFbWpZFU4s7vh
-         6G7jo0eskvwbnXMUa9LJVZ7FrUwViq1QnBtrkYnQ=
-Date:   Fri, 26 Nov 2021 17:41:24 +0100
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     wigin zeng <wigin.zeng@dji.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        id S239971AbhKZVSk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Nov 2021 16:18:40 -0500
+Received: from mail.djicorp.com ([14.21.64.4]:34095 "EHLO mail.djicorp.com"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241052AbhKZVQk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 26 Nov 2021 16:16:40 -0500
+IronPort-SDR: Ko89vYmAnkPW+Ptudaf0+kcEQzPgmpgNZLVfvaIvDj9JhZEBU0m47UjlBO8HDv1yY7Brh7q1EV
+ 11SEntg3nSvA==
+X-IronPort-AV: E=Sophos;i="5.87,266,1631548800"; 
+   d="scan'208";a="11109430"
+From:   wigin zeng <wigin.zeng@dji.com>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "jslaby@suse.com" <jslaby@suse.com>
 Subject: Re: Serial_DMA issue discussion
-Message-ID: <YaEONCTJStvkg5KS@kroah.com>
-References: <0e1b6299f9a247e4801cb47d64fd0710@MAIL-MBX-cwP11.dji.com>
+Thread-Topic: Serial_DMA issue discussion
+Thread-Index: AdfilDeun9v41n66R6iv69G0Lzg0TQADS0kAABpDX6Q=
+Date:   Fri, 26 Nov 2021 21:13:23 +0000
+Message-ID: <31CE3298-6ACD-43A2-8511-F6D9129B71FE@dji.com>
+References: <0e1b6299f9a247e4801cb47d64fd0710@MAIL-MBX-cwP11.dji.com>,<YaEONCTJStvkg5KS@kroah.com>
+In-Reply-To: <YaEONCTJStvkg5KS@kroah.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e1b6299f9a247e4801cb47d64fd0710@MAIL-MBX-cwP11.dji.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 26, 2021 at 07:42:10AM +0000, wigin zeng wrote:
-> This email and any attachments thereto may contain private, confidential, and privileged material for the sole use of the intended recipient. Any review, copying, or distribution of this email (or any attachments thereto) by others is strictly prohibited. If you are not the intended recipient, please contact the sender immediately and permanently delete the original and any copies of this email and any attachments thereto.
-
-Now deleted.
-
+RG8geW91IG1lYW4gcnhfcnVubmluZyBmbGFnIGRlbGV0ZWQgaW4gbGF0ZXN0IHZlcnNpb24ga2Vy
+bmVsIO+8nw0KDQpCUnMNCldlaWp1bg0KDQo+IOWcqCAyMDIx5bm0MTHmnIgyN+aXpe+8jDAwOjQx
+77yMZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmcg5YaZ6YGT77yaDQo+IA0KPiDvu7/jgJBFWFRF
+Uk5BTCBFTUFJTOOAkSBETyBOT1QgQ0xJQ0sgYW55IGxpbmtzIG9yIGF0dGFjaG1lbnRzIHVubGVz
+cyB5b3UgY2FuIG1ha2Ugc3VyZSBib3RoIHRoZSBzZW5kZXIgYW5kIHRoZSBjb250ZW50IGFyZSB0
+cnVzdHdvcnRoeS4NCj4gDQo+IA0KPiDjgJDlpJbpg6jpgq7ku7bmj5DphpLjgJHku6XkuIvpgq7k
+u7bmnaXmupDkuo7lhazlj7jlpJbpg6jvvIzor7fli7/ngrnlh7vpk77mjqXmiJbpmYTku7bvvIzp
+maTpnZ7mgqjnoa7orqTpgq7ku7blj5Hku7bkurrlkozlhoXlrrnlj6/kv6HjgIINCj4gDQo+IA0K
+PiANCj4+IE9uIEZyaSwgTm92IDI2LCAyMDIxIGF0IDA3OjQyOjEwQU0gKzAwMDAsIHdpZ2luIHpl
+bmcgd3JvdGU6DQo+PiBUaGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0byBtYXkg
+Y29udGFpbiBwcml2YXRlLCBjb25maWRlbnRpYWwsIGFuZCBwcml2aWxlZ2VkIG1hdGVyaWFsIGZv
+ciB0aGUgc29sZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudC4gQW55IHJldmlldywgY29w
+eWluZywgb3IgZGlzdHJpYnV0aW9uIG9mIHRoaXMgZW1haWwgKG9yIGFueSBhdHRhY2htZW50cyB0
+aGVyZXRvKSBieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3Qg
+dGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBpbW1lZGlh
+dGVseSBhbmQgcGVybWFuZW50bHkgZGVsZXRlIHRoZSBvcmlnaW5hbCBhbmQgYW55IGNvcGllcyBv
+ZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0by4NCj4gDQo+IE5vdyBkZWxl
+dGVkLg0KPiANCg==
