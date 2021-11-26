@@ -2,50 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF651C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 08:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6543C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 08:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359456AbhKZIVh (ORCPT
+        id S1352699AbhKZIVj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Nov 2021 03:21:37 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:50456 "EHLO
+        Fri, 26 Nov 2021 03:21:39 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:50448 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359413AbhKZIT0 (ORCPT
+        with ESMTP id S1359412AbhKZIT0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 26 Nov 2021 03:19:26 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 6BA9121B43;
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3F0D521B42;
         Fri, 26 Nov 2021 08:16:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1637914573; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yaK979RUL9XwNkH4RDDG3bl8tGdO9gm/Rtz4fJCATqY=;
-        b=eofYZ+DmsS0h4c6HEWTEdzBv6dTJCQB/iA/AUzmoV4doP5ZOKCaXS6mREdYSbYIPAjcr82
-        aCwcVWlBnS1LKCaO0GwO9HvcmpRktzpN/dVRPOFMKFY0hlrGeJxT6EVSZMQkZEpxYVOaXN
-        RHE2ZURAfxrEHD1OxLUTcH2V9fAxMB4=
+        bh=6aCW34+sQ46sNHhntzkah/BM0GW8xeDK76hDCD5DDIU=;
+        b=GDqhow7VKeoDjvvOADYHJGg7NO7FSoP3TLi2p7/66v51vEJX3fayY10pRd01eLtI44b4XG
+        ZkSFsHnlTOOGG8Ub/0TM2/eHOz2weuZ4epM42EnxExCgo5oD95JFrbWI+RXM0lV8JcEcT3
+        jTsX1SWFceDmcrGjBU0pf+OkEjnXFg8=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1637914573;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yaK979RUL9XwNkH4RDDG3bl8tGdO9gm/Rtz4fJCATqY=;
-        b=g7GTMWBGhD+BlNQ1vtgrOGtonT8mWS01pAaJfeWfgErTn1m3+C8ZgksdvF3lGnlBi1NrkV
-        y/+hLHe87Q3CDLAQ==
+        bh=6aCW34+sQ46sNHhntzkah/BM0GW8xeDK76hDCD5DDIU=;
+        b=Yvf30yOe5G1JcEyA7QQ26LEkyzF0ErZCPgZXDgQGqHJMBJifjL3t8EbWdkE2BD2Y90YfJC
+        AuRMpsgiRDiaUaCA==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 48292A3B83;
+        by relay2.suse.de (Postfix) with ESMTPS id 16A68A3B81;
         Fri, 26 Nov 2021 08:16:13 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 06/23] tty: add kernel-doc for tty_ldisc_ops
-Date:   Fri, 26 Nov 2021 09:15:54 +0100
-Message-Id: <20211126081611.11001-7-jslaby@suse.cz>
+Subject: [PATCH 05/23] tty: add kernel-doc for tty_port_operations
+Date:   Fri, 26 Nov 2021 09:15:53 +0100
+Message-Id: <20211126081611.11001-6-jslaby@suse.cz>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211126081611.11001-1-jslaby@suse.cz>
 References: <20211126081611.11001-1-jslaby@suse.cz>
@@ -55,317 +55,58 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tty_ldisc_ops structure was already partially documented in a standalone
-comment in the header beginning.
-
-Move it right before the structure and reformat it so it complies to
-kernel-doc. That way, we can include it in Documentation/ later in this
-series.
-
-And add the documentation for the members where missing too.
+tty_port_operations used to have only comments along its members.
+Convert them into proper kernel-doc comments in front of the structure.
+And add some more explanation to them where needed.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- include/linux/tty_ldisc.h | 259 +++++++++++++++++++-------------------
- 1 file changed, 130 insertions(+), 129 deletions(-)
+ include/linux/tty_port.h | 27 +++++++++++++++++----------
+ 1 file changed, 17 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index 25f07017bbad..e0da0ba02de9 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -4,126 +4,6 @@
- 
+diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+index 9091e1c8de4c..d3ea9ed0b98e 100644
+--- a/include/linux/tty_port.h
++++ b/include/linux/tty_port.h
+@@ -12,21 +12,28 @@ struct tty_driver;
+ struct tty_port;
  struct tty_struct;
  
--/*
-- * This structure defines the interface between the tty line discipline
-- * implementation and the tty routines.  The following routines can be
-- * defined; unless noted otherwise, they are optional, and can be
-- * filled in with a null pointer.
-- *
-- * int	(*open)(struct tty_struct *);
-- *
-- *	This function is called when the line discipline is associated
-- *	with the tty.  The line discipline can use this as an
-- *	opportunity to initialize any state needed by the ldisc routines.
-- *
-- * void	(*close)(struct tty_struct *);
-- *
-- *	This function is called when the line discipline is being
-- *	shutdown, either because the tty is being closed or because
-- *	the tty is being changed to use a new line discipline
-- *
-- * void	(*flush_buffer)(struct tty_struct *tty);
-- *
-- *	This function instructs the line discipline to clear its
-- *	buffers of any input characters it may have queued to be
-- *	delivered to the user mode process.
-- *
-- * ssize_t (*read)(struct tty_struct * tty, struct file * file,
-- *		   unsigned char * buf, size_t nr);
-- *
-- *	This function is called when the user requests to read from
-- *	the tty.  The line discipline will return whatever characters
-- *	it has buffered up for the user.  If this function is not
-- *	defined, the user will receive an EIO error.
-- *
-- * ssize_t (*write)(struct tty_struct * tty, struct file * file,
-- *		    const unsigned char * buf, size_t nr);
-- *
-- *	This function is called when the user requests to write to the
-- *	tty.  The line discipline will deliver the characters to the
-- *	low-level tty device for transmission, optionally performing
-- *	some processing on the characters first.  If this function is
-- *	not defined, the user will receive an EIO error.
-- *
-- * int	(*ioctl)(struct tty_struct *tty, unsigned int cmd, unsigned long arg);
-- *
-- *	This function is called when the user requests an ioctl which
-- *	is not handled by the tty layer or the low-level tty driver.
-- *	It is intended for ioctls which affect line discpline
-- *	operation.  Note that the search order for ioctls is (1) tty
-- *	layer, (2) tty low-level driver, (3) line discpline.  So a
-- *	low-level driver can "grab" an ioctl request before the line
-- *	discpline has a chance to see it.
-- *
-- * int	(*compat_ioctl)(struct tty_struct *tty, unsigned int cmd,
-- *			unsigned long arg);
-- *
-- *	Process ioctl calls from 32-bit process on 64-bit system
-- *
-- *	NOTE: only ioctls that are neither "pointer to compatible
-- *	structure" nor tty-generic.  Something private that takes
-- *	an integer or a pointer to wordsize-sensitive structure
-- *	belongs here, but most of ldiscs will happily leave
-- *	it NULL.
-- *
-- * void	(*set_termios)(struct tty_struct *tty, struct ktermios * old);
-- *
-- *	This function notifies the line discpline that a change has
-- *	been made to the termios structure.
-- *
-- * int	(*poll)(struct tty_struct * tty, struct file * file,
-- *		  poll_table *wait);
-- *
-- *	This function is called when a user attempts to select/poll on a
-- *	tty device.  It is solely the responsibility of the line
-- *	discipline to handle poll requests.
-- *
-- * void	(*receive_buf)(struct tty_struct *, const unsigned char *cp,
-- *		       char *fp, int count);
-- *
-- *	This function is called by the low-level tty driver to send
-- *	characters received by the hardware to the line discpline for
-- *	processing.  <cp> is a pointer to the buffer of input
-- *	character received by the device.  <fp> is a pointer to a
-- *	pointer of flag bytes which indicate whether a character was
-- *	received with a parity error, etc. <fp> may be NULL to indicate
-- *	all data received is TTY_NORMAL.
-- *
-- * void	(*write_wakeup)(struct tty_struct *);
-- *
-- *	This function is called by the low-level tty driver to signal
-- *	that line discpline should try to send more characters to the
-- *	low-level driver for transmission.  If the line discpline does
-- *	not have any more data to send, it can just return. If the line
-- *	discipline does have some data to send, please arise a tasklet
-- *	or workqueue to do the real data transfer. Do not send data in
-- *	this hook, it may leads to a deadlock.
-- *
-- * int (*hangup)(struct tty_struct *)
-- *
-- *	Called on a hangup. Tells the discipline that it should
-- *	cease I/O to the tty driver. Can sleep. The driver should
-- *	seek to perform this action quickly but should wait until
-- *	any pending driver I/O is completed.
-- *
-- * void (*dcd_change)(struct tty_struct *tty, unsigned int status)
-- *
-- *	Tells the discipline that the DCD pin has changed its status.
-- *	Used exclusively by the N_PPS (Pulse-Per-Second) line discipline.
-- *
-- * int	(*receive_buf2)(struct tty_struct *, const unsigned char *cp,
-- *			char *fp, int count);
-- *
-- *	This function is called by the low-level tty driver to send
-- *	characters received by the hardware to the line discpline for
-- *	processing.  <cp> is a pointer to the buffer of input
-- *	character received by the device.  <fp> is a pointer to a
-- *	pointer of flag bytes which indicate whether a character was
-- *	received with a parity error, etc. <fp> may be NULL to indicate
-- *	all data received is TTY_NORMAL.
-- *	If assigned, prefer this function for automatic flow control.
-- */
--
- #include <linux/fs.h>
- #include <linux/wait.h>
- #include <linux/atomic.h>
-@@ -175,7 +55,128 @@ int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
- 		ldsem_down_write(sem, timeout)
- #endif
- 
--
 +/**
-+ * struct tty_ldisc_ops - ldisc operations
++ * struct tty_port_operations -- operations on tty_port
++ * @carrier_raised: return 1 if the carrier is raised on @port
++ * @dtr_rts: raise the DTR line if @raise is nonzero, otherwise lower DTR
++ * @shutdown: called when the last close completes or a hangup finishes IFF the
++ *	port was initialized. Do not use to free resources. Turn off the device
++ *	only. Called under the port mutex to serialize against @activate and
++ *	@shutdown.
++ * @activate: called under the port mutex from tty_port_open(), serialized using
++ *	the port mutex. Supposed to turn on the device.
 + *
-+ * @name: name of this ldisc rendered in /proc/tty/ldiscs
-+ * @num: ``N_*`` number (%N_TTY, %N_HDLC, ...) reserved to this ldisc
++ *	FIXME: long term getting the tty argument *out* of this would be good
++ *	for consoles.
 + *
-+ * @open: ``int ()(struct tty_struct *tty)``
-+ *
-+ *	This function is called when the line discipline is associated with the
-+ *	@tty. The line discipline can use this as an opportunity to initialize
-+ *	any state needed by the ldisc routines.
-+ *
-+ * @close: ``void ()(struct tty_struct *tty)``
-+ *
-+ *	This function is called when the line discipline is being shutdown,
-+ *	either because the @tty is being closed or because the @tty is being
-+ *	changed to use a new line discipline
-+ *
-+ * @flush_buffer: ``void ()(struct tty_struct *tty)``
-+ *
-+ *	This function instructs the line discipline to clear its buffers of any
-+ *	input characters it may have queued to be delivered to the user mode
-+ *	process.
-+ *
-+ * @read: ``ssize_t ()(struct tty_struct *tty, struct file *file,
-+ *		unsigned char *buf, size_t nr)``
-+ *
-+ *	This function is called when the user requests to read from the @tty.
-+ *	The line discipline will return whatever characters it has buffered up
-+ *	for the user. If this function is not defined, the user will receive
-+ *	an %EIO error.
-+ *
-+ * @write: ``ssize_t ()(struct tty_struct *tty, struct file *file,
-+ *		const unsigned char *buf, size_t nr)``
-+ *
-+ *	This function is called when the user requests to write to the @tty.
-+ *	The line discipline will deliver the characters to the low-level tty
-+ *	device for transmission, optionally performing some processing on the
-+ *	characters first. If this function is not defined, the user will
-+ *	receive an %EIO error.
-+ *
-+ * @ioctl: ``int ()(struct tty_struct *tty, unsigned int cmd,
-+ *		unsigned long arg)``
-+ *
-+ *	This function is called when the user requests an ioctl which is not
-+ *	handled by the tty layer or the low-level tty driver. It is intended
-+ *	for ioctls which affect line discpline operation.  Note that the search
-+ *	order for ioctls is (1) tty layer, (2) tty low-level driver, (3) line
-+ *	discpline. So a low-level driver can "grab" an ioctl request before
-+ *	the line discpline has a chance to see it.
-+ *
-+ * @compat_ioctl: ``int ()(struct tty_struct *tty, unsigned int cmd,
-+ *		unsigned long arg)``
-+ *
-+ *	Process ioctl calls from 32-bit process on 64-bit system.
-+ *
-+ *	Note that only ioctls that are neither "pointer to compatible
-+ *	structure" nor tty-generic.  Something private that takes an integer or
-+ *	a pointer to wordsize-sensitive structure belongs here, but most of
-+ *	ldiscs will happily leave it %NULL.
-+ *
-+ * @set_termios: ``void ()(struct tty_struct *tty, struct ktermios *old)``
-+ *
-+ *	This function notifies the line discpline that a change has been made
-+ *	to the termios structure.
-+ *
-+ * @poll: ``int ()(struct tty_struct *tty, struct file *file,
-+ *		  struct poll_table_struct *wait)``
-+ *
-+ *	This function is called when a user attempts to select/poll on a @tty
-+ *	device. It is solely the responsibility of the line discipline to
-+ *	handle poll requests.
-+ *
-+ * @hangup: ``void ()(struct tty_struct *tty)``
-+ *
-+ *	Called on a hangup. Tells the discipline that it should cease I/O to
-+ *	the tty driver. Can sleep. The driver should seek to perform this
-+ *	action quickly but should wait until any pending driver I/O is
-+ *	completed.
-+ *
-+ * @receive_buf: ``void ()(struct tty_struct *tty, const unsigned char *cp,
-+ *		       const char *fp, int count)``
-+ *
-+ *	This function is called by the low-level tty driver to send characters
-+ *	received by the hardware to the line discpline for processing. @cp is
-+ *	a pointer to the buffer of input character received by the device. @fp
-+ *	is a pointer to an array of flag bytes which indicate whether a
-+ *	character was received with a parity error, etc. @fp may be %NULL to
-+ *	indicate all data received is %TTY_NORMAL.
-+ *
-+ * @write_wakeup: ``void ()(struct tty_struct *tty)``
-+ *
-+ *	This function is called by the low-level tty driver to signal that line
-+ *	discpline should try to send more characters to the low-level driver
-+ *	for transmission. If the line discpline does not have any more data to
-+ *	send, it can just return. If the line discipline does have some data to
-+ *	send, please arise a tasklet or workqueue to do the real data transfer.
-+ *	Do not send data in this hook, it may lead to a deadlock.
-+ *
-+ * @dcd_change: ``void ()(struct tty_struct *tty, unsigned int status)``
-+ *
-+ *	Tells the discipline that the DCD pin has changed its status. Used
-+ *	exclusively by the %N_PPS (Pulse-Per-Second) line discipline.
-+ *
-+ * @receive_buf2: ``int ()(struct tty_struct *tty, const unsigned char *cp,
-+ *			const char *fp, int count)``
-+ *
-+ *	This function is called by the low-level tty driver to send characters
-+ *	received by the hardware to the line discpline for processing. @cp is a
-+ *	pointer to the buffer of input character received by the device.  @fp
-+ *	is a pointer to an array of flag bytes which indicate whether a
-+ *	character was received with a parity error, etc. @fp may be %NULL to
-+ *	indicate all data received is %TTY_NORMAL. If assigned, prefer this
-+ *	function for automatic flow control.
-+ *
-+ * @owner: module containting this ldisc (for reference counting)
-+ *
-+ * This structure defines the interface between the tty line discipline
-+ * implementation and the tty routines. The above routines can be defined.
-+ * Unless noted otherwise, they are optional, and can be filled in with a %NULL
-+ * pointer.
++ * @destruct: called on the final put of a port. Free resources, possibly incl.
++ *	the port itself.
 + */
- struct tty_ldisc_ops {
- 	char	*name;
- 	int	num;
-@@ -183,8 +184,8 @@ struct tty_ldisc_ops {
- 	/*
- 	 * The following routines are called from above.
- 	 */
--	int	(*open)(struct tty_struct *);
--	void	(*close)(struct tty_struct *);
-+	int	(*open)(struct tty_struct *tty);
-+	void	(*close)(struct tty_struct *tty);
- 	void	(*flush_buffer)(struct tty_struct *tty);
- 	ssize_t	(*read)(struct tty_struct *tty, struct file *file,
- 			unsigned char *buf, size_t nr,
-@@ -196,18 +197,18 @@ struct tty_ldisc_ops {
- 	int	(*compat_ioctl)(struct tty_struct *tty, unsigned int cmd,
- 			unsigned long arg);
- 	void	(*set_termios)(struct tty_struct *tty, struct ktermios *old);
--	__poll_t (*poll)(struct tty_struct *, struct file *,
--			     struct poll_table_struct *);
-+	__poll_t (*poll)(struct tty_struct *tty, struct file *file,
-+			     struct poll_table_struct *wait);
- 	void	(*hangup)(struct tty_struct *tty);
+ struct tty_port_operations {
+-	/* Return 1 if the carrier is raised */
+ 	int (*carrier_raised)(struct tty_port *port);
+-	/* Control the DTR line */
+ 	void (*dtr_rts)(struct tty_port *port, int raise);
+-	/* Called when the last close completes or a hangup finishes
+-	   IFF the port was initialized. Do not use to free resources. Called
+-	   under the port mutex to serialize against activate/shutdowns */
+ 	void (*shutdown)(struct tty_port *port);
+-	/* Called under the port mutex from tty_port_open, serialized using
+-	   the port mutex */
+-        /* FIXME: long term getting the tty argument *out* of this would be
+-           good for consoles */
+ 	int (*activate)(struct tty_port *port, struct tty_struct *tty);
+-	/* Called on the final put of a port */
+ 	void (*destruct)(struct tty_port *port);
+ };
  
- 	/*
- 	 * The following routines are called from below.
- 	 */
--	void	(*receive_buf)(struct tty_struct *, const unsigned char *cp,
-+	void	(*receive_buf)(struct tty_struct *tty, const unsigned char *cp,
- 			       const char *fp, int count);
--	void	(*write_wakeup)(struct tty_struct *);
--	void	(*dcd_change)(struct tty_struct *, unsigned int);
--	int	(*receive_buf2)(struct tty_struct *, const unsigned char *cp,
-+	void	(*write_wakeup)(struct tty_struct *tty);
-+	void	(*dcd_change)(struct tty_struct *tty, unsigned int status);
-+	int	(*receive_buf2)(struct tty_struct *tty, const unsigned char *cp,
- 				const char *fp, int count);
- 
- 	struct  module *owner;
 -- 
 2.34.0
 
