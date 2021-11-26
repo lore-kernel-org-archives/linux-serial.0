@@ -2,50 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70595C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 08:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB105C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 08:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359662AbhKZIXb (ORCPT
+        id S1359665AbhKZIXc (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Nov 2021 03:23:31 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:50588 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359342AbhKZIV1 (ORCPT
+        Fri, 26 Nov 2021 03:23:32 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:33060 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359336AbhKZIV1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 26 Nov 2021 03:21:27 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 55B7321B46;
-        Fri, 26 Nov 2021 08:16:15 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 650D41FE01;
+        Fri, 26 Nov 2021 08:16:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1637914575; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1637914574; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xWIUifQzmUVkKLOyDHBRWxkbnjGtJbDbv63GA+nOpYc=;
-        b=WHmCySgsgyfOSeim54KnQ2P57hErVonMXW/AoYv7eABXgtYd0dEf1RLSa8gQqQ6wECAtO4
-        8KUZlgeXVUGiuvElLD4CeQSQwEZEADHtTXuLZVIC0wYmL11CV15K72r0m5CwOmvNgx1fKh
-        6/THrNaRlD1+6p+FiQ4gHL0+B8gT00A=
+        bh=bKFsA8aTHyyZ5APZQVLJwo5qT13eN12hLC5ddPWGH8w=;
+        b=zdOD8Z3Prigm59WoLV12Q5RC4yHdwYPPugfRwkv7j8hlZwhoZtL0VXi5M/m4iAoBqggY6U
+        aQseOyTMW4eqT2dsC44xspDeEXjCeI02mZ6FG/oA7dTlRKviXDzydRWFyuXNH0jVUArdBD
+        Ah3o4A+xooEUHYZwvDfbnF6NWhU25MU=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1637914575;
+        s=susede2_ed25519; t=1637914574;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xWIUifQzmUVkKLOyDHBRWxkbnjGtJbDbv63GA+nOpYc=;
-        b=vyky0hkaKMPJ7W8AlFOXf4JOf/gxoOGIJXAtXnaM2jzM9e/jOMMKu1G4zdIsDxHoy3O11D
-        IBGss8Y01+EJJQCg==
+        bh=bKFsA8aTHyyZ5APZQVLJwo5qT13eN12hLC5ddPWGH8w=;
+        b=LQz05hvL3eIoWzTw93JeDj8K6tNyikaiKvnTbU6yFxW7WfHdXfzZEXT5o+zGSkY81450FC
+        eG62qhpbiFRQBJCg==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 28858A3B81;
-        Fri, 26 Nov 2021 08:16:15 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 4A268A3B81;
+        Fri, 26 Nov 2021 08:16:14 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 15/23] tty: fix kernel-doc in n_tty.c
-Date:   Fri, 26 Nov 2021 09:16:03 +0100
-Message-Id: <20211126081611.11001-16-jslaby@suse.cz>
+Subject: [PATCH 11/23] tty: reformat kernel-doc in tty_port.c
+Date:   Fri, 26 Nov 2021 09:15:59 +0100
+Message-Id: <20211126081611.11001-12-jslaby@suse.cz>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211126081611.11001-1-jslaby@suse.cz>
 References: <20211126081611.11001-1-jslaby@suse.cz>
@@ -55,135 +55,321 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* process_echoes doc was a misnomer
-* isig and n_tty_receive_char docs were misplaced
-* n_tty_read parameters were incorrect (from pre-cookie times)
+Kernel-doc is a bit strict about some formatting. So fix these:
+1) When there is a tab in comments, it thinks the line is a continuation
+   one. So the description of the functions end up as descriptions of
+   the last parameter described. Remove the tabs.
 
-So fix all the warnings at once:
-624: warning: expecting prototype for process_echoes(). Prototype was for __process_echoes() instead
-1110: warning: expecting prototype for isig(). Prototype was for __isig() instead
-1264: warning: expecting prototype for n_tty_receive_char(). Prototype was for n_tty_receive_char_special() instead
-2067: warning: Excess function parameter 'buf' description in 'n_tty_read'
-624: warning: expecting prototype for process_echoes(). Prototype was for __process_echoes() instead
-1110: warning: expecting prototype for isig(). Prototype was for __isig() instead
-1264: warning: expecting prototype for n_tty_receive_char(). Prototype was for n_tty_receive_char_special() instead
-2067: warning: Function parameter or member 'kbuf' not described in 'n_tty_read'
-2067: warning: Function parameter or member 'cookie' not described in 'n_tty_read'
-2067: warning: Function parameter or member 'offset' not described in 'n_tty_read'
-2067: warning: Excess function parameter 'buf' description in 'n_tty_read'
+2) Remove newlines before parameters description. This was not wrong per
+   se, only inconsistent with the rest of the file.
+
+3) Add periods to the end of sentences where appropriate.
+
+4) Use recognized "Note" instead of "NB" (nota bene).
+
+5) Add "()" to function names and "%" to constants, so that they are
+   properly highlighted.
+
+By the above, this patch also unifies these docs with the other
+kernel-doc's in this file.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/n_tty.c | 53 +++++++++++++++++++++++----------------------
- 1 file changed, 27 insertions(+), 26 deletions(-)
+ drivers/tty/tty_port.c | 161 ++++++++++++++++++++++-------------------
+ 1 file changed, 88 insertions(+), 73 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 2d64d93805af..538bd968a23d 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -596,7 +596,7 @@ static ssize_t process_output_block(struct tty_struct *tty,
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 2f1061a9d926..ebb441ee92d5 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -82,9 +82,9 @@ EXPORT_SYMBOL(tty_port_init);
+  * @index: index of the tty
+  *
+  * Provide the tty layer with a link from a tty (specified by @index) to a
+- * tty_port (@port). Use this only if neither tty_port_register_device nor
+- * tty_port_install is used in the driver. If used, this has to be called before
+- * tty_register_driver.
++ * tty_port (@port). Use this only if neither tty_port_register_device() nor
++ * tty_port_install() is used in the driver. If used, this has to be called
++ * before tty_register_driver().
+  */
+ void tty_port_link_device(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index)
+@@ -102,9 +102,9 @@ EXPORT_SYMBOL_GPL(tty_port_link_device);
+  * @index: index of the tty
+  * @device: parent if exists, otherwise NULL
+  *
+- * It is the same as tty_register_device except the provided @port is linked to
+- * a concrete tty specified by @index. Use this or tty_port_install (or both).
+- * Call tty_port_link_device as a last resort.
++ * It is the same as tty_register_device() except the provided @port is linked
++ * to a concrete tty specified by @index. Use this or tty_port_install() (or
++ * both). Call tty_port_link_device() as a last resort.
+  */
+ struct device *tty_port_register_device(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index,
+@@ -123,9 +123,9 @@ EXPORT_SYMBOL_GPL(tty_port_register_device);
+  * @drvdata: Driver data to be set to device.
+  * @attr_grp: Attribute group to be set on device.
+  *
+- * It is the same as tty_register_device_attr except the provided @port is
+- * linked to a concrete tty specified by @index. Use this or tty_port_install
+- * (or both). Call tty_port_link_device as a last resort.
++ * It is the same as tty_register_device_attr() except the provided @port is
++ * linked to a concrete tty specified by @index. Use this or tty_port_install()
++ * (or both). Call tty_port_link_device() as a last resort.
+  */
+ struct device *tty_port_register_device_attr(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index,
+@@ -240,9 +240,9 @@ EXPORT_SYMBOL(tty_port_free_xmit_buf);
+  * tty_port_destroy -- destroy inited port
+  * @port: tty port to be destroyed
+  *
+- * When a port was initialized using tty_port_init, one has to destroy the
+- * port by this function. Either indirectly by using tty_port refcounting
+- * (tty_port_put) or directly if refcounting is not used.
++ * When a port was initialized using tty_port_init(), one has to destroy the
++ * port by this function. Either indirectly by using &tty_port refcounting
++ * (tty_port_put()) or directly if refcounting is not used.
+  */
+ void tty_port_destroy(struct tty_port *port)
+ {
+@@ -275,11 +275,11 @@ void tty_port_put(struct tty_port *port)
+ EXPORT_SYMBOL(tty_port_put);
+ 
+ /**
+- *	tty_port_tty_get	-	get a tty reference
+- *	@port: tty port
++ * tty_port_tty_get	-	get a tty reference
++ * @port: tty port
+  *
+- *	Return a refcount protected tty instance or NULL if the port is not
+- *	associated with a tty (eg due to close or hangup)
++ * Return a refcount protected tty instance or %NULL if the port is not
++ * associated with a tty (eg due to close or hangup).
+  */
+ struct tty_struct *tty_port_tty_get(struct tty_port *port)
+ {
+@@ -294,12 +294,12 @@ struct tty_struct *tty_port_tty_get(struct tty_port *port)
+ EXPORT_SYMBOL(tty_port_tty_get);
+ 
+ /**
+- *	tty_port_tty_set	-	set the tty of a port
+- *	@port: tty port
+- *	@tty: the tty
++ * tty_port_tty_set	-	set the tty of a port
++ * @port: tty port
++ * @tty: the tty
+  *
+- *	Associate the port and tty pair. Manages any internal refcounts.
+- *	Pass NULL to deassociate a port
++ * Associate the port and tty pair. Manages any internal refcounts. Pass %NULL
++ * to deassociate a port.
+  */
+ void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty)
+ {
+@@ -335,13 +335,13 @@ static void tty_port_shutdown(struct tty_port *port, struct tty_struct *tty)
  }
  
  /**
-- *	process_echoes	-	write pending echo characters
-+ *	__process_echoes	-	write pending echo characters
-  *	@tty: terminal device
+- *	tty_port_hangup		-	hangup helper
+- *	@port: tty port
++ * tty_port_hangup		-	hangup helper
++ * @port: tty port
   *
-  *	Write previously buffered echo (and other ldisc-generated)
-@@ -619,7 +619,6 @@ static ssize_t process_output_block(struct tty_struct *tty,
+- *	Perform port level tty hangup flag and count changes. Drop the tty
+- *	reference.
++ * Perform port level tty hangup flag and count changes. Drop the tty
++ * reference.
   *
-  *	Locking: callers must hold output_lock
+- *	Caller holds tty lock.
++ * Caller holds tty lock.
   */
--
- static size_t __process_echoes(struct tty_struct *tty)
+ void tty_port_hangup(struct tty_port *port)
  {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1091,6 +1090,16 @@ static void eraser(unsigned char c, struct tty_struct *tty)
- 		finish_erasing(ldata);
- }
+@@ -365,9 +365,8 @@ EXPORT_SYMBOL(tty_port_hangup);
  
-+
-+static void __isig(int sig, struct tty_struct *tty)
-+{
-+	struct pid *tty_pgrp = tty_get_pgrp(tty);
-+	if (tty_pgrp) {
-+		kill_pgrp(tty_pgrp, sig, 1);
-+		put_pid(tty_pgrp);
-+	}
-+}
-+
  /**
-  *	isig		-	handle the ISIG optio
-  *	@sig: signal
-@@ -1105,16 +1114,6 @@ static void eraser(unsigned char c, struct tty_struct *tty)
-  *
-  *	Locking: ctrl.lock
+  * tty_port_tty_hangup - helper to hang up a tty
+- *
+  * @port: tty port
+- * @check_clocal: hang only ttys with CLOCAL unset?
++ * @check_clocal: hang only ttys with %CLOCAL unset?
   */
--
--static void __isig(int sig, struct tty_struct *tty)
--{
--	struct pid *tty_pgrp = tty_get_pgrp(tty);
--	if (tty_pgrp) {
--		kill_pgrp(tty_pgrp, sig, 1);
--		put_pid(tty_pgrp);
--	}
--}
--
- static void isig(int sig, struct tty_struct *tty)
+ void tty_port_tty_hangup(struct tty_port *port, bool check_clocal)
  {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1247,19 +1246,6 @@ n_tty_receive_signal_char(struct tty_struct *tty, int signal, unsigned char c)
- 		process_echoes(tty);
- }
+@@ -381,7 +380,6 @@ EXPORT_SYMBOL_GPL(tty_port_tty_hangup);
  
--/**
-- *	n_tty_receive_char	-	perform processing
-- *	@tty: terminal device
-- *	@c: character
+ /**
+  * tty_port_tty_wakeup - helper to wake up a tty
 - *
-- *	Process an individual character of input received from the driver.
-- *	This is serialized with respect to itself by the rules for the
-- *	driver above.
-- *
-- *	n_tty_receive_buf()/producer path:
-- *		caller holds non-exclusive termios_rwsem
-- *		publishes canon_head if canonical mode is active
-- */
- static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
+  * @port: tty port
+  */
+ void tty_port_tty_wakeup(struct tty_port *port)
+@@ -391,12 +389,12 @@ void tty_port_tty_wakeup(struct tty_port *port)
+ EXPORT_SYMBOL_GPL(tty_port_tty_wakeup);
+ 
+ /**
+- *	tty_port_carrier_raised	-	carrier raised check
+- *	@port: tty port
++ * tty_port_carrier_raised	-	carrier raised check
++ * @port: tty port
+  *
+- *	Wrapper for the carrier detect logic. For the moment this is used
+- *	to hide some internal details. This will eventually become entirely
+- *	internal to the tty port.
++ * Wrapper for the carrier detect logic. For the moment this is used
++ * to hide some internal details. This will eventually become entirely
++ * internal to the tty port.
+  */
+ int tty_port_carrier_raised(struct tty_port *port)
  {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1394,6 +1380,19 @@ static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
- 	put_tty_queue(c, ldata);
- }
+@@ -407,12 +405,12 @@ int tty_port_carrier_raised(struct tty_port *port)
+ EXPORT_SYMBOL(tty_port_carrier_raised);
  
+ /**
+- *	tty_port_raise_dtr_rts	-	Raise DTR/RTS
+- *	@port: tty port
++ * tty_port_raise_dtr_rts	-	Raise DTR/RTS
++ * @port: tty port
+  *
+- *	Wrapper for the DTR/RTS raise logic. For the moment this is used
+- *	to hide some internal details. This will eventually become entirely
+- *	internal to the tty port.
++ * Wrapper for the DTR/RTS raise logic. For the moment this is used to hide
++ * some internal details. This will eventually become entirely internal to the
++ * tty port.
+  */
+ void tty_port_raise_dtr_rts(struct tty_port *port)
+ {
+@@ -422,12 +420,12 @@ void tty_port_raise_dtr_rts(struct tty_port *port)
+ EXPORT_SYMBOL(tty_port_raise_dtr_rts);
+ 
+ /**
+- *	tty_port_lower_dtr_rts	-	Lower DTR/RTS
+- *	@port: tty port
++ * tty_port_lower_dtr_rts	-	Lower DTR/RTS
++ * @port: tty port
+  *
+- *	Wrapper for the DTR/RTS raise logic. For the moment this is used
+- *	to hide some internal details. This will eventually become entirely
+- *	internal to the tty port.
++ * Wrapper for the DTR/RTS raise logic. For the moment this is used to hide
++ * some internal details. This will eventually become entirely internal to the
++ * tty port.
+  */
+ void tty_port_lower_dtr_rts(struct tty_port *port)
+ {
+@@ -437,28 +435,29 @@ void tty_port_lower_dtr_rts(struct tty_port *port)
+ EXPORT_SYMBOL(tty_port_lower_dtr_rts);
+ 
+ /**
+- *	tty_port_block_til_ready	-	Waiting logic for tty open
+- *	@port: the tty port being opened
+- *	@tty: the tty device being bound
+- *	@filp: the file pointer of the opener or NULL
++ * tty_port_block_til_ready	-	Waiting logic for tty open
++ * @port: the tty port being opened
++ * @tty: the tty device being bound
++ * @filp: the file pointer of the opener or %NULL
++ *
++ * Implement the core POSIX/SuS tty behaviour when opening a tty device.
++ * Handles:
+  *
+- *	Implement the core POSIX/SuS tty behaviour when opening a tty device.
+- *	Handles:
+- *		- hangup (both before and during)
+- *		- non blocking open
+- *		- rts/dtr/dcd
+- *		- signals
+- *		- port flags and counts
++ *	- hangup (both before and during)
++ *	- non blocking open
++ *	- rts/dtr/dcd
++ *	- signals
++ *	- port flags and counts
+  *
+- *	The passed tty_port must implement the carrier_raised method if it can
+- *	do carrier detect and the dtr_rts method if it supports software
+- *	management of these lines. Note that the dtr/rts raise is done each
+- *	iteration as a hangup may have previously dropped them while we wait.
++ * The passed @port must implement the @port->ops->carrier_raised method if it
++ * can do carrier detect and the @port->ops->dtr_rts method if it supports
++ * software management of these lines. Note that the dtr/rts raise is done each
++ * iteration as a hangup may have previously dropped them while we wait.
+  *
+- *	Caller holds tty lock.
++ * Caller holds tty lock.
+  *
+- *      NB: May drop and reacquire tty lock when blocking, so tty and tty_port
+- *      may have changed state (eg., may have been hung up).
++ * Note: May drop and reacquire tty lock when blocking, so @tty and @port may
++ * have changed state (eg., may have been hung up).
+  */
+ int tty_port_block_til_ready(struct tty_port *port,
+ 				struct tty_struct *tty, struct file *filp)
+@@ -628,10 +627,18 @@ void tty_port_close_end(struct tty_port *port, struct tty_struct *tty)
+ }
+ EXPORT_SYMBOL(tty_port_close_end);
+ 
+-/*
+- * tty_port_close
 +/**
-+ *	n_tty_receive_char	-	perform processing
-+ *	@tty: terminal device
-+ *	@c: character
++ * tty_port_close - generic tty->ops->close handler
++ * @port: tty_port of the device
++ * @tty: tty being closed
++ * @filp: passed file pointer
 + *
-+ *	Process an individual character of input received from the driver.
-+ *	This is serialized with respect to itself by the rules for the
-+ *	driver above.
-+ *
-+ *	n_tty_receive_buf()/producer path:
-+ *		caller holds non-exclusive termios_rwsem
-+ *		publishes canon_head if canonical mode is active
-+ */
- static void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -2046,8 +2045,10 @@ static int job_control(struct tty_struct *tty, struct file *file)
-  *	n_tty_read		-	read function for tty
-  *	@tty: tty device
-  *	@file: file object
-- *	@buf: userspace buffer pointer
-+ *	@kbuf: kernelspace buffer pointer
-  *	@nr: size of I/O
-+ *	@cookie: if non-%NULL, this is a continuation read
-+ *	@offset: where to continue reading from (unused in n_tty)
++ * It is a generic helper to be used in driver's @tty->ops->close. It wraps a
++ * sequence of tty_port_close_start(), tty_port_shutdown(), and
++ * tty_port_close_end(). The latter two are called only if this is the last
++ * close. See the respective functions for the details.
   *
-  *	Perform reads for the line discipline. We are guaranteed that the
-  *	line discipline will not be closed under us but we may get multiple
+- * Caller holds tty lock
++ * Locking: Caller holds tty lock
+  */
+ void tty_port_close(struct tty_port *port, struct tty_struct *tty,
+ 							struct file *filp)
+@@ -652,9 +659,9 @@ EXPORT_SYMBOL(tty_port_close);
+  * @driver: tty_driver for this device
+  * @tty: tty to be installed
+  *
+- * It is the same as tty_standard_install except the provided @port is linked
+- * to a concrete tty specified by @tty. Use this or tty_port_register_device
+- * (or both). Call tty_port_link_device as a last resort.
++ * It is the same as tty_standard_install() except the provided @port is linked
++ * to a concrete tty specified by @tty. Use this or tty_port_register_device()
++ * (or both). Call tty_port_link_device() as a last resort.
+  */
+ int tty_port_install(struct tty_port *port, struct tty_driver *driver,
+ 		struct tty_struct *tty)
+@@ -664,13 +671,21 @@ int tty_port_install(struct tty_port *port, struct tty_driver *driver,
+ }
+ EXPORT_SYMBOL_GPL(tty_port_install);
+ 
+-/*
+- * tty_port_open
++/**
++ * tty_port_open - generic tty->ops->open handler
++ * @port: tty_port of the device
++ * @tty: tty to be opened
++ * @filp: passed file pointer
+  *
+- * Caller holds tty lock.
++ * It is a generic helper to be used in driver's @tty->ops->open. It activates
++ * the devices using @port->ops->activate if not active already. And waits for
++ * the device to be ready using tty_port_block_til_ready() (e.g.  raises
++ * DTR/CTS and waits for carrier).
++ *
++ * Locking: Caller holds tty lock.
+  *
+- * NB: may drop and reacquire tty lock (in tty_port_block_til_ready()) so
+- * tty and tty_port may have changed state (eg., may be hung up now)
++ * Note: may drop and reacquire tty lock (in tty_port_block_til_ready()) so
++ * @tty and @port may have changed state (eg., may be hung up now).
+  */
+ int tty_port_open(struct tty_port *port, struct tty_struct *tty,
+ 							struct file *filp)
 -- 
 2.34.0
 
