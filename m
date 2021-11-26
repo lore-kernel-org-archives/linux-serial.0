@@ -2,85 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BDF7C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 16:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA096C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 16:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378323AbhKZQPn (ORCPT
+        id S1378412AbhKZQQf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Nov 2021 11:15:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378134AbhKZQNm (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Nov 2021 11:13:42 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C0BC061397;
-        Fri, 26 Nov 2021 08:02:21 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id g14so40776436edb.8;
-        Fri, 26 Nov 2021 08:02:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=myqzowoy6VgYIDOrHd/LfS2qrNQNfPA8OZoTCY9iRLs=;
-        b=eWMa8/Zz/lsgGtgQQJRo+PL2P/cdc+hDYyB1vW32kPmybARSeE8xncVLmPmf0huuhP
-         yo5zRaqiI2ynENTTxf+JF1ZL/Y/MeWSakDo8r8MyUl1+eNG/YbFDnOzgwmXF3wFHG1Zu
-         JJJa8zwrknLq0gdu3vHmyR9yhJbu1pESUyvkBnxDZAX1WGU3imGiUQizhU265kv8WQX7
-         +RDzzmlr92dQwuS12mSMPoS3iuBNXTZfyhiLcFmhvJRDhdJy9SebJ0wDdSrET/9Jw2G3
-         lmai8hpaoYCx+E70EsdueCyEMhWYS5ejuyuhcsA3ZeXirnH4Fx4IR/icc/dGSQD9c8Xd
-         pcNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=myqzowoy6VgYIDOrHd/LfS2qrNQNfPA8OZoTCY9iRLs=;
-        b=T7Rxcpl4PReio3hxbkNAntwmi19Ovhip3eJlOiqXmCUgdzDyUvvPNDlbuE07b/abj/
-         yzv0epCP3WTOSNv7dRCNfcbETaiuckoTiFl3LQrlDuuEcti8CF/iQDNSZPcJpLZTjSX4
-         +qPLMshk8sfxU8ICmWfWQUhkon24TOsYhg8ovUNYbLvee2uG2X7Uw2hPs/CzsNXr49TH
-         fXMecHvd+WbjNfGxhF9EeNOPNMgBmTY0MCBFc1TtirPaug9oICnnG67NlBQQB5MfDT53
-         erfAFUhLaDQjZYRAhOeTvin1XSPUd07N1VxxaWXQUbEfRUzXBy5VnUn1v4D0nSsimclR
-         JhzA==
-X-Gm-Message-State: AOAM5303aT/8vq264E9GIMBLl1z3+P89qUf7pxvDxU3ouwH+Z0LgtqtN
-        6RfXfoYtFdkqn1AIVLmqoOqT7zDhPks7xv/47C8=
-X-Google-Smtp-Source: ABdhPJxMFKzU0ZBFiuPaG5N/Xdix8OJOg9d03E2V2yUqffNnXenZz8yRtGFjZPojSKTDG6nnP4wBszblacn7FSeYifY=
-X-Received: by 2002:a05:6402:291:: with SMTP id l17mr49109749edv.242.1637942539875;
- Fri, 26 Nov 2021 08:02:19 -0800 (PST)
+        Fri, 26 Nov 2021 11:16:35 -0500
+Received: from mout.gmx.net ([212.227.17.22]:48219 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1378268AbhKZQOd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 26 Nov 2021 11:14:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1637943072;
+        bh=b4YFw+0lviZ5gjiIocUIVpjVYRhRWpQwEvX2hIhIf7k=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=JRvrh9XAnD9jpITcRyzRr8++6PNAC0kYVstKmzJBrGHGWI/QJSFckPLPSEoWktDkK
+         ubtI/Yw87PzIU+xYMHP56YpRqytQ5isfcLZZeA/zCkLHYAvhwfVJEaaZxP9lAEMTHQ
+         o/+hzI/6WBOfd1sO2zSr+EUU4ieP7OctFzVjs+yA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.59] ([46.223.119.124]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MTRQq-1n2qdg081E-00TjdX; Fri, 26
+ Nov 2021 17:11:12 +0100
+Subject: Re: [PATCH] serial: amba-pl011: do not request memory region twice
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux@armlinux.org.uk, jirislaby@kernel.org,
+        p.rosenberger@kunbus.com, lukas@wunner.de,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211126143925.18758-1-LinoSanfilippo@gmx.de>
+ <YaD9JW8i9vxmWWhk@kroah.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <8bad0596-c983-6915-67d0-0cda9ac70e5c@gmx.de>
+Date:   Fri, 26 Nov 2021 17:11:11 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20211115084203.56478-1-tony@atomide.com>
-In-Reply-To: <20211115084203.56478-1-tony@atomide.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 26 Nov 2021 18:01:43 +0200
-Message-ID: <CAHp75VfzqvHY53hfKqub3WoT1Zm7vhXbwDTrbHOTMGnU7gcNEA@mail.gmail.com>
-Subject: Re: [PATCHv4 0/7] Serial port generic PM to fix 8250 PM
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YaD9JW8i9vxmWWhk@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:oM+crlb5dF2zfFGXu0GtJ3xrshNlL0SNK2p6Up4bDM9CRQovALK
+ UF6I0hcHX1V73vymxHGsKMnHf75hxCfOHFZywwaZmDJ63I1t00Qq/YBWa7XKIO5Pme0LYsg
+ PkjH3WLw00CqkRm4+4DUK6tWT+saxe0F2Gltyq4N/vBEH5NgHxokI/3VJG6UqUNvRgWmDHH
+ Qb1nA4i2YOcchGU9NaVnA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:u2u7o5Q1nI4=:FmcdA61A25nRlPd3EznTFu
+ XwSJiEhhcNuWegrmNiI+yb40O9nfNeKyrBtcHYsvgBoHhBxxhBYvfP+h3/CyhE4Aaxzy0cyf3
+ wrJXc8UoOLpHze30hjiWxzFCfx36DvCOpQ+sV1SoVqs7irgdf04LnNV/TRr60J/NeZc66Cq60
+ 11U13/ysvgT11YNcSARrVRaBIUtDIuLoDUjAZqV9AZOFmhWzq/zSRQfKvDB+hrTXcJJScD2Ht
+ vZWZsdvH218k0Wpc9Z816Wg5s3X0g7XcXLi6dgaTj+A6ATP9t/EL1rzropSeu1+Veu7e1xuMI
+ IRw+JrGFsbkNdpR6+JwA7eFAUrNIFHQrdhQ/+udMb9BkSyzVAxvyCdUchUH++EVtchYniu3xI
+ JmD9VZ7s7eE5/Al9Taep7wImJ5Z9zbm7l3YivsEtkAOu0H4x/CQU/YLroPyNYJwnrjUNMlIh+
+ MguoTh5EEDcCnY/68YqjChDVm23YZ0NWxkT66oAWAXZKV2cvDYEtBHtBrvD4zqJ3nIi7hM7DA
+ jI6f0nFU/WcPV13jQfDWu7O8c+HjBHwiHHi6gL6NbHJHc2/TWGt/SiFn/81KBgPQQux7Xyfeh
+ iZLhHymgC2iMYsXNCm/31yk+ikkN4BJfiHJBfrGGcmcFPyLOpEe5iyeb0Aj1pQlek8/q4MLTd
+ 1DgsKPLmKIV0s/UHo2uK6EQrmNUjiQ/U/JsUjPGT3tD1T7pznuMKkV2bl0yVRXcWI1mKDIYzQ
+ /EUbwoFQYyKbNfDNySNpldCNjwcKkSsqUTjy7dcMXr0f1X9HEjFHswsV+f8/tyVGN5mZ2QIfX
+ z5CP0m1D8g0/ZOzrKx4RQh5J6TFQPfpPB3q6XmVpHiJu9ZP0c8SLkifnPRgYUihE1K7mf+DV4
+ mbL7/uX+GiBLiqmnPfDIMPSONyFsWoUnbBsXdnp+8sNG2VT4al4k0v94qjif/1WrYeyR+5uK6
+ hc5L8hVp9SYrE/EypMSOuspYxziVEZzWLNR0xNKtlQU4x8MC0GlHgaCMehf6+1kWIJsKkbEJ/
+ CHAQwSA0ji66EAYgHso4BZkfNH+UPLiV6C5W5wfROaaH6cjZ5h/UzM0xoWcIk9ukbjmLtdqJ/
+ wiWU5aurTlqj00=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 10:43 AM Tony Lindgren <tony@atomide.com> wrote:
->
-> Hi,
->
-> Here are v4 patches for serial port generic PM. The scope has now expanded
-> a bit from the earlier attempts to get rid of pm_runtime_irq_safe() for
-> the 8250_omap driver. I've now picked up three patches from Andy's earlier
-> generic serial port PM series.
 
-Johan, do you have any objections / comments on the series? Otherwise
-I think it's good to go next week next revision (as kbuild bot
-complained about minor warning).
+Hi,
 
--- 
-With Best Regards,
-Andy Shevchenko
+On 26.11.21 at 16:28, Greg KH wrote:
+> On Fri, Nov 26, 2021 at 03:39:25PM +0100, Lino Sanfilippo wrote:
+>> The driver attempts to request and release the IO memory region for a u=
+art
+>> port twice:
+>>
+>> First during the probe() function devm_ioremap_resource() is used to
+>> allocate and map the ports memory.
+>> Then a combo of pl011_config_port() and pl011_release_port() is used to
+>> request/release the same memory area. These functions are called by the
+>> serial core as soon as the uart is registered/unregistered.
+>>
+>> However since the allocation request via devm_ioremap_resource() alread=
+y
+>> succeeds, the attempt to claim the memory again via pl011_config_port()
+>> fails. This failure remains unnoticed, since the concerning return valu=
+e is
+>> not evaluated.
+>> Later at module unload also the attempt to release the unclaimed memory
+>> in pl011_release_port() fails. This time the failure results in a =E2=
+=80=9CTrying
+>> to free nonexistent resource" warning printed by the serial core.
+>>
+>> Fix these issues by removing the callbacks that implement the redundant
+>> memory allocation/release.
+>>
+>> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+>> ---
+>>
+>> This patch was tested on a 5.10 Raspberry Pi kernel with a CM3.
+>
+> What commit id does this change fix?
+>
+> thanks,
+>
+> greg k-h
+>
+
+AFAICS its commit 3873e2d7f63a ("drivers: PL011: refactor pl011_probe()") =
+which
+changed  devm_ioremap() in pl011_setup_port() to  devm_ioremap_resource().
+Since the latter not only remaps but also requests the memory region it
+collides with the memory request in pl011_config_port(). I will add an app=
+ropriate
+Fixes tag for this.
+
+Regards,
+Lino
