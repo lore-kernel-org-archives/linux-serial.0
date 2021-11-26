@@ -2,50 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51139C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 08:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8246C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Nov 2021 08:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359400AbhKZIXe (ORCPT
+        id S1359684AbhKZIXg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Nov 2021 03:23:34 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:50586 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359335AbhKZIV1 (ORCPT
+        Fri, 26 Nov 2021 03:23:36 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:33064 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359349AbhKZIV1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 26 Nov 2021 03:21:27 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 98C6921B47;
-        Fri, 26 Nov 2021 08:16:15 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id DA6811FE02;
+        Fri, 26 Nov 2021 08:16:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1637914575; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1637914574; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ol2+pDhVwPGBw0SMtw3vPSaiWmFBfA0wG/MYHsaDc9k=;
-        b=ynwYzuiE6JmHOYVerJc2RB/aGXVSQw6Zb+taphmL5BRvsQHvzMQekIaGtPyVishfJW7rNs
-        2G3yCbE47oBia7pTHLmEITgTqFQlk0PiKbLncPnHRK52pGKmK/dI2ivkfPE6ybX8nvuVHa
-        M2oyP3Ef16uu7WpoEqdu15zWYMCaKJg=
+        bh=/ZA4TBupCC8UMnNo/P/APYTyOqXkB94D9R2KQO3yypo=;
+        b=RntoN/B2+tbl3wzh1+Z06s7PNhrtVOZsKOdf+qVUBQSsi2O86cx3tiXfh5O3fsqA1VMzYX
+        68n80f6umCuozXmLKfw/9oDiQFLPScH+QJqCB2xV0Y7JGfuQcLUZJOUxTkBi27wADZRmKt
+        7lHzv9sFs1/1a0FFwN4+X7sv9r3z48g=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1637914575;
+        s=susede2_ed25519; t=1637914574;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ol2+pDhVwPGBw0SMtw3vPSaiWmFBfA0wG/MYHsaDc9k=;
-        b=3BjwRVkS0UqRHEMkKG90dFUz6eQrAmjBHMnl8XvkmLVfZ/kZ73xNfErqZVdRqdh9smD44c
-        vQf29NeGrR8205Ag==
+        bh=/ZA4TBupCC8UMnNo/P/APYTyOqXkB94D9R2KQO3yypo=;
+        b=7gYXdTrY+cPoCGBuJzw6iOO5nYjsjg9JT4WefGMTJsr5IvANCsTGDE2Y2hUA/H3Ji/mdgE
+        OOXZ4iCpiICz6SDg==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 61A90A3B83;
-        Fri, 26 Nov 2021 08:16:15 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id B08D9A3B81;
+        Fri, 26 Nov 2021 08:16:14 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 16/23] tty: reformat kernel-doc in n_tty.c
-Date:   Fri, 26 Nov 2021 09:16:04 +0100
-Message-Id: <20211126081611.11001-17-jslaby@suse.cz>
+Subject: [PATCH 13/23] tty: reformat kernel-doc in tty_ldisc.c
+Date:   Fri, 26 Nov 2021 09:16:01 +0100
+Message-Id: <20211126081611.11001-14-jslaby@suse.cz>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211126081611.11001-1-jslaby@suse.cz>
 References: <20211126081611.11001-1-jslaby@suse.cz>
@@ -71,1001 +71,508 @@ Kernel-doc is a bit strict about some formatting. So fix these:
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/n_tty.c | 671 +++++++++++++++++++++-----------------------
- 1 file changed, 316 insertions(+), 355 deletions(-)
+ drivers/tty/tty_ldisc.c | 292 ++++++++++++++++++----------------------
+ 1 file changed, 132 insertions(+), 160 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 538bd968a23d..8933ef1f83c0 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -186,17 +186,16 @@ static void tty_copy(struct tty_struct *tty, void *to, size_t tail, size_t n)
- }
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 3e4e0b20b4bb..776d8a62f77c 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -47,17 +47,14 @@ static DEFINE_RAW_SPINLOCK(tty_ldiscs_lock);
+ static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
  
  /**
-- *	n_tty_kick_worker - start input worker (if required)
-- *	@tty: terminal
-+ * n_tty_kick_worker - start input worker (if required)
-+ * @tty: terminal
+- *	tty_register_ldisc	-	install a line discipline
+- *	@new_ldisc: pointer to the ldisc object
++ * tty_register_ldisc	-	install a line discipline
++ * @new_ldisc: pointer to the ldisc object
   *
-- *	Re-schedules the flip buffer work if it may have stopped
-+ * Re-schedules the flip buffer work if it may have stopped.
+- *	Installs a new line discipline into the kernel. The discipline
+- *	is set up as unreferenced and then made available to the kernel
+- *	from this point onwards.
++ * Installs a new line discipline into the kernel. The discipline is set up as
++ * unreferenced and then made available to the kernel from this point onwards.
   *
-- *	Caller holds exclusive termios_rwsem
-- *	   or
-- *	n_tty_read()/consumer path:
-- *		holds non-exclusive termios_rwsem
-+ * Locking:
-+ *  * Caller holds exclusive %termios_rwsem, or
-+ *  * n_tty_read()/consumer path:
-+ *	holds non-exclusive %termios_rwsem
+- *	Locking:
+- *		takes tty_ldiscs_lock to guard against ldisc races
++ * Locking: takes %tty_ldiscs_lock to guard against ldisc races
   */
 -
- static void n_tty_kick_worker(struct tty_struct *tty)
+ int tty_register_ldisc(struct tty_ldisc_ops *new_ldisc)
  {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -230,14 +229,12 @@ static ssize_t chars_in_buffer(struct tty_struct *tty)
- }
+ 	unsigned long flags;
+@@ -75,14 +72,13 @@ int tty_register_ldisc(struct tty_ldisc_ops *new_ldisc)
+ EXPORT_SYMBOL(tty_register_ldisc);
  
  /**
-- *	n_tty_write_wakeup	-	asynchronous I/O notifier
+- *	tty_unregister_ldisc	-	unload a line discipline
+- *	@ldisc: ldisc number
++ * tty_unregister_ldisc	-	unload a line discipline
++ * @ldisc: ldisc number
+  *
+- *	Remove a line discipline from the kernel providing it is not
+- *	currently in use.
++ * Remove a line discipline from the kernel providing it is not currently in
++ * use.
+  *
+- *	Locking:
+- *		takes tty_ldiscs_lock to guard against ldisc races
++ * Locking: takes %tty_ldiscs_lock to guard against ldisc races
+  */
+ 
+ void tty_unregister_ldisc(struct tty_ldisc_ops *ldisc)
+@@ -122,27 +118,25 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
+ }
+ 
+ static int tty_ldisc_autoload = IS_BUILTIN(CONFIG_LDISC_AUTOLOAD);
++
+ /**
+- *	tty_ldisc_get		-	take a reference to an ldisc
 - *	@tty: tty device
-+ * n_tty_write_wakeup	-	asynchronous I/O notifier
+- *	@disc: ldisc number
+- *
+- *	Takes a reference to a line discipline. Deals with refcounts and
+- *	module locking counts.
+- *
+- *	Returns: -EINVAL if the discipline index is not [N_TTY..NR_LDISCS] or
+- *			 if the discipline is not registered
+- *		 -EAGAIN if request_module() failed to load or register the
+- *			 discipline
+- *		 -ENOMEM if allocation failure
+- *
+- *		 Otherwise, returns a pointer to the discipline and bumps the
+- *		 ref count
+- *
+- *	Locking:
+- *		takes tty_ldiscs_lock to guard against ldisc races
++ * tty_ldisc_get	-	take a reference to an ldisc
++ * @tty: tty device
++ * @disc: ldisc number
++ *
++ * Takes a reference to a line discipline. Deals with refcounts and module
++ * locking counts. If the discipline is not available, its module loaded, if
++ * possible.
++ *
++ * Returns:
++ * * -%EINVAL if the discipline index is not [%N_TTY .. %NR_LDISCS] or if the
++ *   discipline is not registered
++ * * -%EAGAIN if request_module() failed to load or register the discipline
++ * * -%ENOMEM if allocation failure
++ * * Otherwise, returns a pointer to the discipline and bumps the ref count
++ *
++ * Locking: takes %tty_ldiscs_lock to guard against ldisc races
+  */
+-
+ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+ {
+ 	struct tty_ldisc *ld;
+@@ -176,10 +170,11 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+ 	return ld;
+ }
+ 
+-/*
+- *	tty_ldisc_put		-	release the ldisc
++/**
++ * tty_ldisc_put	-	release the ldisc
++ * @ld: lisdsc to release
+  *
+- *	Complement of tty_ldisc_get().
++ * Complement of tty_ldisc_get().
+  */
+ static void tty_ldisc_put(struct tty_ldisc *ld)
+ {
+@@ -226,25 +221,22 @@ const struct seq_operations tty_ldiscs_seq_ops = {
+ };
+ 
+ /**
+- *	tty_ldisc_ref_wait	-	wait for the tty ldisc
+- *	@tty: tty device
++ * tty_ldisc_ref_wait	-	wait for the tty ldisc
 + * @tty: tty device
   *
-- *	Required for the ptys, serial driver etc. since processes
-- *	that attach themselves to the master and rely on ASYNC
-- *	IO must be woken up
-+ * Required for the ptys, serial driver etc. since processes that attach
-+ * themselves to the master and rely on ASYNC IO must be woken up.
+- *	Dereference the line discipline for the terminal and take a
+- *	reference to it. If the line discipline is in flux then
+- *	wait patiently until it changes.
++ * Dereference the line discipline for the terminal and take a reference to it.
++ * If the line discipline is in flux then wait patiently until it changes.
+  *
+- *	Returns: NULL if the tty has been hungup and not re-opened with
+- *		 a new file descriptor, otherwise valid ldisc reference
++ * Returns: %NULL if the tty has been hungup and not re-opened with a new file
++ * descriptor, otherwise valid ldisc reference
+  *
+- *	Note 1: Must not be called from an IRQ/timer context. The caller
+- *	must also be careful not to hold other locks that will deadlock
+- *	against a discipline change, such as an existing ldisc reference
+- *	(which we check for)
++ * Note 1: Must not be called from an IRQ/timer context. The caller must also
++ * be careful not to hold other locks that will deadlock against a discipline
++ * change, such as an existing ldisc reference (which we check for).
+  *
+- *	Note 2: a file_operations routine (read/poll/write) should use this
+- *	function to wait for any ldisc lifetime events to finish.
++ * Note 2: a file_operations routine (read/poll/write) should use this function
++ * to wait for any ldisc lifetime events to finish.
   */
 -
- static void n_tty_write_wakeup(struct tty_struct *tty)
+ struct tty_ldisc *tty_ldisc_ref_wait(struct tty_struct *tty)
  {
- 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-@@ -300,16 +297,16 @@ static void n_tty_check_unthrottle(struct tty_struct *tty)
+ 	struct tty_ldisc *ld;
+@@ -258,14 +250,13 @@ struct tty_ldisc *tty_ldisc_ref_wait(struct tty_struct *tty)
+ EXPORT_SYMBOL_GPL(tty_ldisc_ref_wait);
+ 
+ /**
+- *	tty_ldisc_ref		-	get the tty ldisc
+- *	@tty: tty device
++ * tty_ldisc_ref	-	get the tty ldisc
++ * @tty: tty device
+  *
+- *	Dereference the line discipline for the terminal and take a
+- *	reference to it. If the line discipline is in flux then
+- *	return NULL. Can be called from IRQ and timer functions.
++ * Dereference the line discipline for the terminal and take a reference to it.
++ * If the line discipline is in flux then return %NULL. Can be called from IRQ
++ * and timer functions.
+  */
+-
+ struct tty_ldisc *tty_ldisc_ref(struct tty_struct *tty)
+ {
+ 	struct tty_ldisc *ld = NULL;
+@@ -280,13 +271,12 @@ struct tty_ldisc *tty_ldisc_ref(struct tty_struct *tty)
+ EXPORT_SYMBOL_GPL(tty_ldisc_ref);
+ 
+ /**
+- *	tty_ldisc_deref		-	free a tty ldisc reference
+- *	@ld: reference to free up
++ * tty_ldisc_deref	-	free a tty ldisc reference
++ * @ld: reference to free up
+  *
+- *	Undoes the effect of tty_ldisc_ref or tty_ldisc_ref_wait. May
+- *	be called in IRQ context.
++ * Undoes the effect of tty_ldisc_ref() or tty_ldisc_ref_wait(). May be called
++ * in IRQ context.
+  */
+-
+ void tty_ldisc_deref(struct tty_ldisc *ld)
+ {
+ 	ldsem_up_read(&ld->tty->ldisc_sem);
+@@ -386,13 +376,12 @@ static void tty_ldisc_unlock_pair(struct tty_struct *tty,
  }
  
  /**
-- *	put_tty_queue		-	add character to tty
-- *	@c: character
-- *	@ldata: n_tty data
-+ * put_tty_queue		-	add character to tty
-+ * @c: character
-+ * @ldata: n_tty data
+- *	tty_ldisc_flush	-	flush line discipline queue
+- *	@tty: tty
++ * tty_ldisc_flush		-	flush line discipline queue
++ * @tty: tty to flush ldisc for
   *
-- *	Add a character to the tty read_buf queue.
-+ * Add a character to the tty read_buf queue.
-  *
-- *	n_tty_receive_buf()/producer path:
-- *		caller holds non-exclusive termios_rwsem
-+ * Locking:
-+ *  * n_tty_receive_buf()/producer path:
-+ *	caller holds non-exclusive %termios_rwsem
+- *	Flush the line discipline queue (if any) and the tty flip buffers
+- *	for this tty.
++ * Flush the line discipline queue (if any) and the tty flip buffers for this
++ * @tty.
   */
 -
- static inline void put_tty_queue(unsigned char c, struct n_tty_data *ldata)
+ void tty_ldisc_flush(struct tty_struct *tty)
  {
- 	*read_buf_addr(ldata, ldata->read_head) = c;
-@@ -317,16 +314,16 @@ static inline void put_tty_queue(unsigned char c, struct n_tty_data *ldata)
- }
+ 	struct tty_ldisc *ld = tty_ldisc_ref(tty);
+@@ -404,21 +393,18 @@ void tty_ldisc_flush(struct tty_struct *tty)
+ EXPORT_SYMBOL_GPL(tty_ldisc_flush);
  
  /**
-- *	reset_buffer_flags	-	reset buffer state
-- *	@ldata: line disc data to reset
-+ * reset_buffer_flags	-	reset buffer state
-+ * @ldata: line disc data to reset
+- *	tty_set_termios_ldisc		-	set ldisc field
+- *	@tty: tty structure
+- *	@disc: line discipline number
++ * tty_set_termios_ldisc	-	set ldisc field
++ * @tty: tty structure
++ * @disc: line discipline number
   *
-- *	Reset the read buffer counters and clear the flags.
-- *	Called from n_tty_open() and n_tty_flush_buffer().
-+ * Reset the read buffer counters and clear the flags. Called from
-+ * n_tty_open() and n_tty_flush_buffer().
+- *	This is probably overkill for real world processors but
+- *	they are not on hot paths so a little discipline won't do
+- *	any harm.
++ * This is probably overkill for real world processors but they are not on hot
++ * paths so a little discipline won't do any harm.
   *
-- *	Locking: caller holds exclusive termios_rwsem
-- *		 (or locking is not required)
-+ * Locking:
-+ *  * caller holds exclusive %termios_rwsem, or
-+ *  * (locking is not required)
+- *	The line discipline-related tty_struct fields are reset to
+- *	prevent the ldisc driver from re-using stale information for
+- *	the new ldisc instance.
++ * The line discipline-related tty_struct fields are reset to prevent the ldisc
++ * driver from re-using stale information for the new ldisc instance.
+  *
+- *	Locking: takes termios_rwsem
++ * Locking: takes termios_rwsem
   */
 -
- static void reset_buffer_flags(struct n_tty_data *ldata)
- {
- 	ldata->read_head = ldata->canon_head = ldata->read_tail = 0;
-@@ -351,19 +348,18 @@ static void n_tty_packet_mode_flush(struct tty_struct *tty)
- }
- 
- /**
-- *	n_tty_flush_buffer	-	clean input queue
-- *	@tty:	terminal device
-+ * n_tty_flush_buffer	-	clean input queue
-+ * @tty: terminal device
-  *
-- *	Flush the input buffer. Called when the tty layer wants the
-- *	buffer flushed (eg at hangup) or when the N_TTY line discipline
-- *	internally has to clean the pending queue (for example some signals).
-+ * Flush the input buffer. Called when the tty layer wants the buffer flushed
-+ * (eg at hangup) or when the %N_TTY line discipline internally has to clean
-+ * the pending queue (for example some signals).
-  *
-- *	Holds termios_rwsem to exclude producer/consumer while
-- *	buffer indices are reset.
-+ * Holds %termios_rwsem to exclude producer/consumer while buffer indices are
-+ * reset.
-  *
-- *	Locking: ctrl.lock, exclusive termios_rwsem
-+ * Locking: %ctrl.lock, exclusive %termios_rwsem
-  */
--
- static void n_tty_flush_buffer(struct tty_struct *tty)
+ static void tty_set_termios_ldisc(struct tty_struct *tty, int disc)
  {
  	down_write(&tty->termios_rwsem);
-@@ -376,55 +372,50 @@ static void n_tty_flush_buffer(struct tty_struct *tty)
+@@ -430,16 +416,14 @@ static void tty_set_termios_ldisc(struct tty_struct *tty, int disc)
  }
  
  /**
-- *	is_utf8_continuation	-	utf8 multibyte check
-- *	@c: byte to check
-+ * is_utf8_continuation	-	utf8 multibyte check
-+ * @c: byte to check
+- *	tty_ldisc_open		-	open a line discipline
+- *	@tty: tty we are opening the ldisc on
+- *	@ld: discipline to open
++ * tty_ldisc_open		-	open a line discipline
++ * @tty: tty we are opening the ldisc on
++ * @ld: discipline to open
   *
-- *	Returns true if the utf8 character 'c' is a multibyte continuation
-- *	character. We use this to correctly compute the on screen size
-- *	of the character when printing
-+ * Returns: true if the utf8 character @c is a multibyte continuation
-+ * character. We use this to correctly compute the on-screen size of the
-+ * character when printing.
+- *	A helper opening method. Also a convenient debugging and check
+- *	point.
++ * A helper opening method. Also a convenient debugging and check point.
+  *
+- *	Locking: always called with BTM already held.
++ * Locking: always called with BTM already held.
   */
 -
- static inline int is_utf8_continuation(unsigned char c)
+ static int tty_ldisc_open(struct tty_struct *tty, struct tty_ldisc *ld)
  {
- 	return (c & 0xc0) == 0x80;
+ 	WARN_ON(test_and_set_bit(TTY_LDISC_OPEN, &tty->flags));
+@@ -457,14 +441,12 @@ static int tty_ldisc_open(struct tty_struct *tty, struct tty_ldisc *ld)
  }
  
  /**
-- *	is_continuation		-	multibyte check
-- *	@c: byte to check
-- *	@tty: terminal device
-+ * is_continuation	-	multibyte check
-+ * @c: byte to check
-+ * @tty: terminal device
+- *	tty_ldisc_close		-	close a line discipline
+- *	@tty: tty we are opening the ldisc on
+- *	@ld: discipline to close
++ * tty_ldisc_close		-	close a line discipline
++ * @tty: tty we are opening the ldisc on
++ * @ld: discipline to close
   *
-- *	Returns true if the utf8 character 'c' is a multibyte continuation
-- *	character and the terminal is in unicode mode.
-+ * Returns: true if the utf8 character @c is a multibyte continuation character
-+ * and the terminal is in unicode mode.
+- *	A helper close method. Also a convenient debugging and check
+- *	point.
++ * A helper close method. Also a convenient debugging and check point.
   */
 -
- static inline int is_continuation(unsigned char c, struct tty_struct *tty)
+ static void tty_ldisc_close(struct tty_struct *tty, struct tty_ldisc *ld)
  {
- 	return I_IUTF8(tty) && is_utf8_continuation(c);
+ 	lockdep_assert_held_write(&tty->ldisc_sem);
+@@ -476,14 +458,13 @@ static void tty_ldisc_close(struct tty_struct *tty, struct tty_ldisc *ld)
  }
  
  /**
-- *	do_output_char			-	output one character
-- *	@c: character (or partial unicode symbol)
-- *	@tty: terminal device
-- *	@space: space available in tty driver write buffer
-+ * do_output_char	-	output one character
-+ * @c: character (or partial unicode symbol)
-+ * @tty: terminal device
-+ * @space: space available in tty driver write buffer
+- *	tty_ldisc_failto	-	helper for ldisc failback
+- *	@tty: tty to open the ldisc on
+- *	@ld: ldisc we are trying to fail back to
++ * tty_ldisc_failto	-	helper for ldisc failback
++ * @tty: tty to open the ldisc on
++ * @ld: ldisc we are trying to fail back to
   *
-- *	This is a helper function that handles one output character
-- *	(including special characters like TAB, CR, LF, etc.),
-- *	doing OPOST processing and putting the results in the
-- *	tty driver's write buffer.
-+ * This is a helper function that handles one output character (including
-+ * special characters like TAB, CR, LF, etc.), doing OPOST processing and
-+ * putting the results in the tty driver's write buffer.
-  *
-- *	Note that Linux currently ignores TABDLY, CRDLY, VTDLY, FFDLY
-- *	and NLDLY.  They simply aren't relevant in the world today.
-- *	If you ever need them, add them here.
-+ * Note that Linux currently ignores TABDLY, CRDLY, VTDLY, FFDLY and NLDLY.
-+ * They simply aren't relevant in the world today. If you ever need them, add
-+ * them here.
-  *
-- *	Returns the number of bytes of buffer space used or -1 if
-- *	no space left.
-+ * Returns: the number of bytes of buffer space used or -1 if no space left.
-  *
-- *	Locking: should be called under the output_lock to protect
-- *		 the column state and space left in the buffer
-+ * Locking: should be called under the %output_lock to protect the column state
-+ * and space left in the buffer.
+- *	Helper to try and recover a tty when switching back to the old
+- *	ldisc fails and we need something attached.
++ * Helper to try and recover a tty when switching back to the old ldisc fails
++ * and we need something attached.
   */
 -
- static int do_output_char(unsigned char c, struct tty_struct *tty, int space)
+ static int tty_ldisc_failto(struct tty_struct *tty, int ld)
  {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -487,19 +478,18 @@ static int do_output_char(unsigned char c, struct tty_struct *tty, int space)
+ 	struct tty_ldisc *disc = tty_ldisc_get(tty, ld);
+@@ -501,14 +482,13 @@ static int tty_ldisc_failto(struct tty_struct *tty, int ld)
  }
  
  /**
-- *	process_output			-	output post processor
-- *	@c: character (or partial unicode symbol)
-- *	@tty: terminal device
-+ * process_output	-	output post processor
-+ * @c: character (or partial unicode symbol)
-+ * @tty: terminal device
-+ *
-+ * Output one character with OPOST processing.
+- *	tty_ldisc_restore	-	helper for tty ldisc change
+- *	@tty: tty to recover
+- *	@old: previous ldisc
++ * tty_ldisc_restore	-	helper for tty ldisc change
++ * @tty: tty to recover
++ * @old: previous ldisc
   *
-- *	Output one character with OPOST processing.
-- *	Returns -1 when the output device is full and the character
-- *	must be retried.
-+ * Returns: -1 when the output device is full and the character must be
-+ * retried.
-  *
-- *	Locking: output_lock to protect column state and space left
-- *		 (also, this is called from n_tty_write under the
-- *		  tty layer write lock)
-+ * Locking: %output_lock to protect column state and space left (also, this is
-+ *called from n_tty_write() under the tty layer write lock).
+- *	Restore the previous line discipline or N_TTY when a line discipline
+- *	change fails due to an open error
++ * Restore the previous line discipline or %N_TTY when a line discipline change
++ * fails due to an open error
   */
 -
- static int process_output(unsigned char c, struct tty_struct *tty)
+ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
  {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -518,24 +508,23 @@ static int process_output(unsigned char c, struct tty_struct *tty)
+ 	/* There is an outstanding reference here so this is safe */
+@@ -528,16 +508,15 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
  }
  
  /**
-- *	process_output_block		-	block post processor
-- *	@tty: terminal device
-- *	@buf: character buffer
-- *	@nr: number of bytes to output
+- *	tty_set_ldisc		-	set line discipline
+- *	@tty: the terminal to set
+- *	@disc: the line discipline number
 - *
-- *	Output a block of characters with OPOST processing.
-- *	Returns the number of characters output.
-- *
-- *	This path is used to speed up block console writes, among other
-- *	things when processing blocks of output data. It handles only
-- *	the simple cases normally found and helps to generate blocks of
-- *	symbols for the console driver and thus improve performance.
-- *
-- *	Locking: output_lock to protect column state and space left
-- *		 (also, this is called from n_tty_write under the
-- *		  tty layer write lock)
-+ * process_output_block	-	block post processor
-+ * @tty: terminal device
-+ * @buf: character buffer
-+ * @nr: number of bytes to output
+- *	Set the discipline of a tty line. Must be called from a process
+- *	context. The ldisc change logic has to protect itself against any
+- *	overlapping ldisc change (including on the other end of pty pairs),
+- *	the close of one side of a tty/pty pair, and eventually hangup.
++ * tty_set_ldisc		-	set line discipline
++ * @tty: the terminal to set
++ * @disc: the line discipline number
 + *
-+ * Output a block of characters with OPOST processing.
-+ *
-+ * This path is used to speed up block console writes, among other things when
-+ * processing blocks of output data. It handles only the simple cases normally
-+ * found and helps to generate blocks of symbols for the console driver and
-+ * thus improve performance.
-+ *
-+ * Returns: the number of characters output.
-+ *
-+ * Locking: %output_lock to protect column state and space left (also, this is
-+ * called from n_tty_write() under the tty layer write lock).
++ * Set the discipline of a tty line. Must be called from a process context. The
++ * ldisc change logic has to protect itself against any overlapping ldisc
++ * change (including on the other end of pty pairs), the close of one side of a
++ * tty/pty pair, and eventually hangup.
   */
 -
- static ssize_t process_output_block(struct tty_struct *tty,
- 				    const unsigned char *buf, unsigned int nr)
+ int tty_set_ldisc(struct tty_struct *tty, int disc)
  {
-@@ -596,28 +585,26 @@ static ssize_t process_output_block(struct tty_struct *tty,
- }
+ 	int retval;
+@@ -613,10 +592,10 @@ int tty_set_ldisc(struct tty_struct *tty, int disc)
+ EXPORT_SYMBOL_GPL(tty_set_ldisc);
  
  /**
-- *	__process_echoes	-	write pending echo characters
-- *	@tty: terminal device
-+ * __process_echoes	-	write pending echo characters
-+ * @tty: terminal device
+- *	tty_ldisc_kill	-	teardown ldisc
+- *	@tty: tty being released
++ * tty_ldisc_kill	-	teardown ldisc
++ * @tty: tty being released
   *
-- *	Write previously buffered echo (and other ldisc-generated)
-- *	characters to the tty.
-+ * Write previously buffered echo (and other ldisc-generated) characters to the
-+ * tty.
-  *
-- *	Characters generated by the ldisc (including echoes) need to
-- *	be buffered because the driver's write buffer can fill during
-- *	heavy program output.  Echoing straight to the driver will
-- *	often fail under these conditions, causing lost characters and
-- *	resulting mismatches of ldisc state information.
-+ * Characters generated by the ldisc (including echoes) need to be buffered
-+ * because the driver's write buffer can fill during heavy program output.
-+ * Echoing straight to the driver will often fail under these conditions,
-+ * causing lost characters and resulting mismatches of ldisc state information.
-  *
-- *	Since the ldisc state must represent the characters actually sent
-- *	to the driver at the time of the write, operations like certain
-- *	changes in column state are also saved in the buffer and executed
-- *	here.
-+ * Since the ldisc state must represent the characters actually sent to the
-+ * driver at the time of the write, operations like certain changes in column
-+ * state are also saved in the buffer and executed here.
-  *
-- *	A circular fifo buffer is used so that the most recent characters
-- *	are prioritized.  Also, when control characters are echoed with a
-- *	prefixed "^", the pair is treated atomically and thus not separated.
-+ * A circular fifo buffer is used so that the most recent characters are
-+ * prioritized. Also, when control characters are echoed with a prefixed "^",
-+ * the pair is treated atomically and thus not separated.
-  *
-- *	Locking: callers must hold output_lock
-+ * Locking: callers must hold %output_lock.
+- *	Perform final close of the ldisc and reset tty->ldisc
++ * Perform final close of the ldisc and reset @tty->ldisc
   */
- static size_t __process_echoes(struct tty_struct *tty)
+ static void tty_ldisc_kill(struct tty_struct *tty)
  {
-@@ -827,13 +814,12 @@ static void flush_echoes(struct tty_struct *tty)
+@@ -633,12 +612,11 @@ static void tty_ldisc_kill(struct tty_struct *tty)
  }
  
  /**
-- *	add_echo_byte	-	add a byte to the echo buffer
-- *	@c: unicode byte to echo
-- *	@ldata: n_tty data
-+ * add_echo_byte	-	add a byte to the echo buffer
-+ * @c: unicode byte to echo
-+ * @ldata: n_tty data
+- *	tty_reset_termios	-	reset terminal state
+- *	@tty: tty to reset
++ * tty_reset_termios	-	reset terminal state
++ * @tty: tty to reset
   *
-- *	Add a character or operation byte to the echo buffer.
-+ * Add a character or operation byte to the echo buffer.
+- *	Restore a terminal to the driver default state.
++ * Restore a terminal to the driver default state.
   */
 -
- static inline void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
+ static void tty_reset_termios(struct tty_struct *tty)
  {
- 	*echo_buf_addr(ldata, ldata->echo_head) = c;
-@@ -842,12 +828,11 @@ static inline void add_echo_byte(unsigned char c, struct n_tty_data *ldata)
- }
+ 	down_write(&tty->termios_rwsem);
+@@ -650,19 +628,17 @@ static void tty_reset_termios(struct tty_struct *tty)
+ 
  
  /**
-- *	echo_move_back_col	-	add operation to move back a column
-- *	@ldata: n_tty data
-+ * echo_move_back_col	-	add operation to move back a column
-+ * @ldata: n_tty data
+- *	tty_ldisc_reinit	-	reinitialise the tty ldisc
+- *	@tty: tty to reinit
+- *	@disc: line discipline to reinitialize
++ * tty_ldisc_reinit	-	reinitialise the tty ldisc
++ * @tty: tty to reinit
++ * @disc: line discipline to reinitialize
   *
-- *	Add an operation to the echo buffer to move back one column.
-+ * Add an operation to the echo buffer to move back one column.
+- *	Completely reinitialize the line discipline state, by closing the
+- *	current instance, if there is one, and opening a new instance. If
+- *	an error occurs opening the new non-N_TTY instance, the instance
+- *	is dropped and tty->ldisc reset to NULL. The caller can then retry
+- *	with N_TTY instead.
++ * Completely reinitialize the line discipline state, by closing the current
++ * instance, if there is one, and opening a new instance. If an error occurs
++ * opening the new non-%N_TTY instance, the instance is dropped and @tty->ldisc
++ * reset to %NULL. The caller can then retry with %N_TTY instead.
+  *
+- *	Returns 0 if successful, otherwise error code < 0
++ * Returns: 0 if successful, otherwise error code < 0
   */
 -
- static void echo_move_back_col(struct n_tty_data *ldata)
+ int tty_ldisc_reinit(struct tty_struct *tty, int disc)
  {
- 	add_echo_byte(ECHO_OP_START, ldata);
-@@ -855,13 +840,12 @@ static void echo_move_back_col(struct n_tty_data *ldata)
+ 	struct tty_ldisc *ld;
+@@ -692,21 +668,20 @@ int tty_ldisc_reinit(struct tty_struct *tty, int disc)
  }
  
  /**
-- *	echo_set_canon_col	-	add operation to set the canon column
-- *	@ldata: n_tty data
-+ * echo_set_canon_col	-	add operation to set the canon column
-+ * @ldata: n_tty data
+- *	tty_ldisc_hangup		-	hangup ldisc reset
+- *	@tty: tty being hung up
+- *	@reinit: whether to re-initialise the tty
++ * tty_ldisc_hangup	-	hangup ldisc reset
++ * @tty: tty being hung up
++ * @reinit: whether to re-initialise the tty
   *
-- *	Add an operation to the echo buffer to set the canon column
-- *	to the current column.
-+ * Add an operation to the echo buffer to set the canon column to the current
-+ * column.
+- *	Some tty devices reset their termios when they receive a hangup
+- *	event. In that situation we must also switch back to N_TTY properly
+- *	before we reset the termios data.
++ * Some tty devices reset their termios when they receive a hangup event. In
++ * that situation we must also switch back to %N_TTY properly before we reset
++ * the termios data.
+  *
+- *	Locking: We can take the ldisc mutex as the rest of the code is
+- *	careful to allow for this.
++ * Locking: We can take the ldisc mutex as the rest of the code is careful to
++ * allow for this.
+  *
+- *	In the pty pair case this occurs in the close() path of the
+- *	tty itself so we must be careful about locking rules.
++ * In the pty pair case this occurs in the close() path of the tty itself so we
++ * must be careful about locking rules.
   */
 -
- static void echo_set_canon_col(struct n_tty_data *ldata)
+ void tty_ldisc_hangup(struct tty_struct *tty, bool reinit)
  {
- 	add_echo_byte(ECHO_OP_START, ldata);
-@@ -869,20 +853,18 @@ static void echo_set_canon_col(struct n_tty_data *ldata)
+ 	struct tty_ldisc *ld;
+@@ -752,15 +727,14 @@ void tty_ldisc_hangup(struct tty_struct *tty, bool reinit)
  }
  
  /**
-- *	echo_erase_tab	-	add operation to erase a tab
-- *	@num_chars: number of character columns already used
-- *	@after_tab: true if num_chars starts after a previous tab
-- *	@ldata: n_tty data
-- *
-- *	Add an operation to the echo buffer to erase a tab.
-- *
-- *	Called by the eraser function, which knows how many character
-- *	columns have been used since either a previous tab or the start
-- *	of input.  This information will be used later, along with
-- *	canon column (if applicable), to go back the correct number
-- *	of columns.
-+ * echo_erase_tab	-	add operation to erase a tab
-+ * @num_chars: number of character columns already used
-+ * @after_tab: true if num_chars starts after a previous tab
-+ * @ldata: n_tty data
-+ *
-+ * Add an operation to the echo buffer to erase a tab.
-+ *
-+ * Called by the eraser function, which knows how many character columns have
-+ * been used since either a previous tab or the start of input. This
-+ * information will be used later, along with canon column (if applicable), to
-+ * go back the correct number of columns.
+- *	tty_ldisc_setup			-	open line discipline
+- *	@tty: tty being shut down
+- *	@o_tty: pair tty for pty/tty pairs
++ * tty_ldisc_setup	-	open line discipline
++ * @tty: tty being shut down
++ * @o_tty: pair tty for pty/tty pairs
+  *
+- *	Called during the initial open of a tty/pty pair in order to set up the
+- *	line disciplines and bind them to the tty. This has no locking issues
+- *	as the device isn't yet active.
++ * Called during the initial open of a tty/pty pair in order to set up the line
++ * disciplines and bind them to the @tty. This has no locking issues as the
++ * device isn't yet active.
   */
 -
- static void echo_erase_tab(unsigned int num_chars, int after_tab,
- 			   struct n_tty_data *ldata)
+ int tty_ldisc_setup(struct tty_struct *tty, struct tty_struct *o_tty)
  {
-@@ -900,16 +882,15 @@ static void echo_erase_tab(unsigned int num_chars, int after_tab,
+ 	int retval = tty_ldisc_open(tty, tty->ldisc);
+@@ -783,13 +757,12 @@ int tty_ldisc_setup(struct tty_struct *tty, struct tty_struct *o_tty)
  }
  
  /**
-- *	echo_char_raw	-	echo a character raw
-- *	@c: unicode byte to echo
-- *	@ldata: line disc data
-+ * echo_char_raw	-	echo a character raw
-+ * @c: unicode byte to echo
-+ * @ldata: line disc data
+- *	tty_ldisc_release		-	release line discipline
+- *	@tty: tty being shut down (or one end of pty pair)
++ * tty_ldisc_release	-	release line discipline
++ * @tty: tty being shut down (or one end of pty pair)
   *
-- *	Echo user input back onto the screen. This must be called only when
-- *	L_ECHO(tty) is true. Called from the driver receive_buf path.
-+ * Echo user input back onto the screen. This must be called only when
-+ * L_ECHO(tty) is true. Called from the &tty_driver.receive_buf() path.
-  *
-- *	This variant does not treat control characters specially.
-+ * This variant does not treat control characters specially.
+- *	Called during the final close of a tty or a pty pair in order to shut
+- *	down the line discpline layer. On exit, each tty's ldisc is NULL.
++ * Called during the final close of a tty or a pty pair in order to shut down
++ * the line discpline layer. On exit, each tty's ldisc is %NULL.
   */
 -
- static void echo_char_raw(unsigned char c, struct n_tty_data *ldata)
+ void tty_ldisc_release(struct tty_struct *tty)
  {
- 	if (c == ECHO_OP_START) {
-@@ -921,17 +902,16 @@ static void echo_char_raw(unsigned char c, struct n_tty_data *ldata)
+ 	struct tty_struct *o_tty = tty->link;
+@@ -814,13 +787,12 @@ void tty_ldisc_release(struct tty_struct *tty)
  }
  
  /**
-- *	echo_char	-	echo a character
-- *	@c: unicode byte to echo
-- *	@tty: terminal device
-+ * echo_char		-	echo a character
-+ * @c: unicode byte to echo
-+ * @tty: terminal device
+- *	tty_ldisc_init		-	ldisc setup for new tty
+- *	@tty: tty being allocated
++ * tty_ldisc_init	-	ldisc setup for new tty
++ * @tty: tty being allocated
   *
-- *	Echo user input back onto the screen. This must be called only when
-- *	L_ECHO(tty) is true. Called from the driver receive_buf path.
-+ * Echo user input back onto the screen. This must be called only when
-+ * L_ECHO(tty) is true. Called from the &tty_driver.receive_buf() path.
-  *
-- *	This variant tags control characters to be echoed as "^X"
-- *	(where X is the letter representing the control char).
-+ * This variant tags control characters to be echoed as "^X" (where X is the
-+ * letter representing the control char).
+- *	Set up the line discipline objects for a newly allocated tty. Note that
+- *	the tty structure is not completely set up when this call is made.
++ * Set up the line discipline objects for a newly allocated tty. Note that the
++ * tty structure is not completely set up when this call is made.
   */
 -
- static void echo_char(unsigned char c, struct tty_struct *tty)
+ int tty_ldisc_init(struct tty_struct *tty)
  {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -947,10 +927,9 @@ static void echo_char(unsigned char c, struct tty_struct *tty)
+ 	struct tty_ldisc *ld = tty_ldisc_get(tty, N_TTY);
+@@ -832,11 +804,11 @@ int tty_ldisc_init(struct tty_struct *tty)
  }
  
  /**
-- *	finish_erasing		-	complete erase
-- *	@ldata: n_tty data
-+ * finish_erasing	-	complete erase
-+ * @ldata: n_tty data
+- *	tty_ldisc_deinit	-	ldisc cleanup for new tty
+- *	@tty: tty that was allocated recently
++ * tty_ldisc_deinit	-	ldisc cleanup for new tty
++ * @tty: tty that was allocated recently
+  *
+- *	The tty structure must not becompletely set up (tty_ldisc_setup) when
+- *      this call is made.
++ * The tty structure must not be completely set up (tty_ldisc_setup()) when
++ * this call is made.
   */
--
- static inline void finish_erasing(struct n_tty_data *ldata)
- {
- 	if (ldata->erasing) {
-@@ -960,18 +939,17 @@ static inline void finish_erasing(struct n_tty_data *ldata)
- }
- 
- /**
-- *	eraser		-	handle erase function
-- *	@c: character input
-- *	@tty: terminal device
-+ * eraser		-	handle erase function
-+ * @c: character input
-+ * @tty: terminal device
-  *
-- *	Perform erase and necessary output when an erase character is
-- *	present in the stream from the driver layer. Handles the complexities
-- *	of UTF-8 multibyte symbols.
-+ * Perform erase and necessary output when an erase character is present in the
-+ * stream from the driver layer. Handles the complexities of UTF-8 multibyte
-+ * symbols.
-  *
-- *	n_tty_receive_buf()/producer path:
-- *		caller holds non-exclusive termios_rwsem
-+ * Locking: n_tty_receive_buf()/producer path:
-+ *	caller holds non-exclusive %termios_rwsem
-  */
--
- static void eraser(unsigned char c, struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1101,18 +1079,18 @@ static void __isig(int sig, struct tty_struct *tty)
- }
- 
- /**
-- *	isig		-	handle the ISIG optio
-- *	@sig: signal
-- *	@tty: terminal
-+ * isig			-	handle the ISIG optio
-+ * @sig: signal
-+ * @tty: terminal
-  *
-- *	Called when a signal is being sent due to terminal input.
-- *	Called from the driver receive_buf path so serialized.
-+ * Called when a signal is being sent due to terminal input. Called from the
-+ * &tty_driver.receive_buf() path, so serialized.
-  *
-- *	Performs input and output flush if !NOFLSH. In this context, the echo
-- *	buffer is 'output'. The signal is processed first to alert any current
-- *	readers or writers to discontinue and exit their i/o loops.
-+ * Performs input and output flush if !NOFLSH. In this context, the echo
-+ * buffer is 'output'. The signal is processed first to alert any current
-+ * readers or writers to discontinue and exit their i/o loops.
-  *
-- *	Locking: ctrl.lock
-+ * Locking: %ctrl.lock
-  */
- static void isig(int sig, struct tty_struct *tty)
- {
-@@ -1150,18 +1128,17 @@ static void isig(int sig, struct tty_struct *tty)
- }
- 
- /**
-- *	n_tty_receive_break	-	handle break
-- *	@tty: terminal
-+ * n_tty_receive_break	-	handle break
-+ * @tty: terminal
-  *
-- *	An RS232 break event has been hit in the incoming bitstream. This
-- *	can cause a variety of events depending upon the termios settings.
-+ * An RS232 break event has been hit in the incoming bitstream. This can cause
-+ * a variety of events depending upon the termios settings.
-  *
-- *	n_tty_receive_buf()/producer path:
-- *		caller holds non-exclusive termios_rwsem
-+ * Locking: n_tty_receive_buf()/producer path:
-+ *	caller holds non-exclusive termios_rwsem
-  *
-- *	Note: may get exclusive termios_rwsem if flushing input buffer
-+ * Note: may get exclusive %termios_rwsem if flushing input buffer
-  */
--
- static void n_tty_receive_break(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1180,18 +1157,15 @@ static void n_tty_receive_break(struct tty_struct *tty)
- }
- 
- /**
-- *	n_tty_receive_overrun	-	handle overrun reporting
-- *	@tty: terminal
-+ * n_tty_receive_overrun	-	handle overrun reporting
-+ * @tty: terminal
-  *
-- *	Data arrived faster than we could process it. While the tty
-- *	driver has flagged this the bits that were missed are gone
-- *	forever.
-+ * Data arrived faster than we could process it. While the tty driver has
-+ * flagged this the bits that were missed are gone forever.
-  *
-- *	Called from the receive_buf path so single threaded. Does not
-- *	need locking as num_overrun and overrun_time are function
-- *	private.
-+ * Called from the receive_buf path so single threaded. Does not need locking
-+ * as num_overrun and overrun_time are function private.
-  */
--
- static void n_tty_receive_overrun(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1206,15 +1180,15 @@ static void n_tty_receive_overrun(struct tty_struct *tty)
- }
- 
- /**
-- *	n_tty_receive_parity_error	-	error notifier
-- *	@tty: terminal device
-- *	@c: character
-+ * n_tty_receive_parity_error	-	error notifier
-+ * @tty: terminal device
-+ * @c: character
-  *
-- *	Process a parity error and queue the right data to indicate
-- *	the error case if necessary.
-+ * Process a parity error and queue the right data to indicate the error case
-+ * if necessary.
-  *
-- *	n_tty_receive_buf()/producer path:
-- *		caller holds non-exclusive termios_rwsem
-+ * Locking: n_tty_receive_buf()/producer path:
-+ * 	caller holds non-exclusive %termios_rwsem
-  */
- static void n_tty_receive_parity_error(struct tty_struct *tty, unsigned char c)
- {
-@@ -1381,17 +1355,16 @@ static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
- }
- 
- /**
-- *	n_tty_receive_char	-	perform processing
-- *	@tty: terminal device
-- *	@c: character
-+ * n_tty_receive_char	-	perform processing
-+ * @tty: terminal device
-+ * @c: character
-  *
-- *	Process an individual character of input received from the driver.
-- *	This is serialized with respect to itself by the rules for the
-- *	driver above.
-+ * Process an individual character of input received from the driver.  This is
-+ * serialized with respect to itself by the rules for the driver above.
-  *
-- *	n_tty_receive_buf()/producer path:
-- *		caller holds non-exclusive termios_rwsem
-- *		publishes canon_head if canonical mode is active
-+ * Locking: n_tty_receive_buf()/producer path:
-+ *	caller holds non-exclusive %termios_rwsem
-+ *	publishes canon_head if canonical mode is active
-  */
- static void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
- {
-@@ -1593,38 +1566,37 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
- }
- 
- /**
-- *	n_tty_receive_buf_common	-	process input
-- *	@tty: device to receive input
-- *	@cp: input chars
-- *	@fp: flags for each char (if NULL, all chars are TTY_NORMAL)
-- *	@count: number of input chars in @cp
-- *	@flow: enable flow control
-- *
-- *	Called by the terminal driver when a block of characters has
-- *	been received. This function must be called from soft contexts
-- *	not from interrupt context. The driver is responsible for making
-- *	calls one at a time and in order (or using flush_to_ldisc)
-- *
-- *	Returns the # of input chars from @cp which were processed.
-- *
-- *	In canonical mode, the maximum line length is 4096 chars (including
-- *	the line termination char); lines longer than 4096 chars are
-- *	truncated. After 4095 chars, input data is still processed but
-- *	not stored. Overflow processing ensures the tty can always
-- *	receive more input until at least one line can be read.
-- *
-- *	In non-canonical mode, the read buffer will only accept 4095 chars;
-- *	this provides the necessary space for a newline char if the input
-- *	mode is switched to canonical.
-- *
-- *	Note it is possible for the read buffer to _contain_ 4096 chars
-- *	in non-canonical mode: the read buffer could already contain the
-- *	maximum canon line of 4096 chars when the mode is switched to
-- *	non-canonical.
-- *
-- *	n_tty_receive_buf()/producer path:
-- *		claims non-exclusive termios_rwsem
-- *		publishes commit_head or canon_head
-+ * n_tty_receive_buf_common	-	process input
-+ * @tty: device to receive input
-+ * @cp: input chars
-+ * @fp: flags for each char (if %NULL, all chars are %TTY_NORMAL)
-+ * @count: number of input chars in @cp
-+ * @flow: enable flow control
-+ *
-+ * Called by the terminal driver when a block of characters has been received.
-+ * This function must be called from soft contexts not from interrupt context.
-+ * The driver is responsible for making calls one at a time and in order (or
-+ * using flush_to_ldisc()).
-+ *
-+ * Returns: the # of input chars from @cp which were processed.
-+ *
-+ * In canonical mode, the maximum line length is 4096 chars (including the line
-+ * termination char); lines longer than 4096 chars are truncated. After 4095
-+ * chars, input data is still processed but not stored. Overflow processing
-+ * ensures the tty can always receive more input until at least one line can be
-+ * read.
-+ *
-+ * In non-canonical mode, the read buffer will only accept 4095 chars; this
-+ * provides the necessary space for a newline char if the input mode is
-+ * switched to canonical.
-+ *
-+ * Note it is possible for the read buffer to _contain_ 4096 chars in
-+ * non-canonical mode: the read buffer could already contain the maximum canon
-+ * line of 4096 chars when the mode is switched to non-canonical.
-+ *
-+ * Locking: n_tty_receive_buf()/producer path:
-+ *	claims non-exclusive %termios_rwsem
-+ *	publishes commit_head or canon_head
-  */
- static int
- n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
-@@ -1709,19 +1681,17 @@ static int n_tty_receive_buf2(struct tty_struct *tty, const unsigned char *cp,
- }
- 
- /**
-- *	n_tty_set_termios	-	termios data changed
-- *	@tty: terminal
-- *	@old: previous data
-+ * n_tty_set_termios	-	termios data changed
-+ * @tty: terminal
-+ * @old: previous data
-  *
-- *	Called by the tty layer when the user changes termios flags so
-- *	that the line discipline can plan ahead. This function cannot sleep
-- *	and is protected from re-entry by the tty layer. The user is
-- *	guaranteed that this function will not be re-entered or in progress
-- *	when the ldisc is closed.
-+ * Called by the tty layer when the user changes termios flags so that the line
-+ * discipline can plan ahead. This function cannot sleep and is protected from
-+ * re-entry by the tty layer. The user is guaranteed that this function will
-+ * not be re-entered or in progress when the ldisc is closed.
-  *
-- *	Locking: Caller holds tty->termios_rwsem
-+ * Locking: Caller holds @tty->termios_rwsem
-  */
--
- static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1807,15 +1777,13 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
- }
- 
- /**
-- *	n_tty_close		-	close the ldisc for this tty
-- *	@tty: device
-+ * n_tty_close		-	close the ldisc for this tty
-+ * @tty: device
-  *
-- *	Called from the terminal layer when this line discipline is
-- *	being shut down, either because of a close or becsuse of a
-- *	discipline change. The function will not be called while other
-- *	ldisc methods are in progress.
-+ * Called from the terminal layer when this line discipline is being shut down,
-+ * either because of a close or becsuse of a discipline change. The function
-+ * will not be called while other ldisc methods are in progress.
-  */
--
- static void n_tty_close(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1830,15 +1798,13 @@ static void n_tty_close(struct tty_struct *tty)
- }
- 
- /**
-- *	n_tty_open		-	open an ldisc
-- *	@tty: terminal to open
-+ * n_tty_open		-	open an ldisc
-+ * @tty: terminal to open
-  *
-- *	Called when this line discipline is being attached to the
-- *	terminal device. Can sleep. Called serialized so that no
-- *	other events will occur in parallel. No further open will occur
-- *	until a close.
-+ * Called when this line discipline is being attached to the terminal device.
-+ * Can sleep. Called serialized so that no other events will occur in parallel.
-+ * No further open will occur until a close.
-  */
--
- static int n_tty_open(struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata;
-@@ -1873,24 +1839,23 @@ static inline int input_available_p(struct tty_struct *tty, int poll)
- }
- 
- /**
-- *	copy_from_read_buf	-	copy read data directly
-- *	@tty: terminal device
-- *	@kbp: data
-- *	@nr: size of data
-- *
-- *	Helper function to speed up n_tty_read.  It is only called when
-- *	ICANON is off; it copies characters straight from the tty queue.
-+ * copy_from_read_buf	-	copy read data directly
-+ * @tty: terminal device
-+ * @kbp: data
-+ * @nr: size of data
-  *
-- *	Called under the ldata->atomic_read_lock sem
-+ * Helper function to speed up n_tty_read(). It is only called when %ICANON is
-+ * off; it copies characters straight from the tty queue.
-  *
-- *	Returns true if it successfully copied data, but there is still
-- *	more data to be had.
-+ * Returns: true if it successfully copied data, but there is still more data
-+ * to be had.
-  *
-- *	n_tty_read()/consumer path:
-- *		caller holds non-exclusive termios_rwsem
-+ * Locking:
-+ *  * called under the @ldata->atomic_read_lock sem
-+ *  * n_tty_read()/consumer path:
-+ *		caller holds non-exclusive %termios_rwsem;
-  *		read_tail published
-  */
--
- static bool copy_from_read_buf(struct tty_struct *tty,
- 				      unsigned char **kbp,
- 				      size_t *nr)
-@@ -1925,28 +1890,27 @@ static bool copy_from_read_buf(struct tty_struct *tty,
- }
- 
- /**
-- *	canon_copy_from_read_buf	-	copy read data in canonical mode
-- *	@tty: terminal device
-- *	@kbp: data
-- *	@nr: size of data
-- *
-- *	Helper function for n_tty_read.  It is only called when ICANON is on;
-- *	it copies one line of input up to and including the line-delimiting
-- *	character into the result buffer.
-- *
-- *	NB: When termios is changed from non-canonical to canonical mode and
-- *	the read buffer contains data, n_tty_set_termios() simulates an EOF
-- *	push (as if C-d were input) _without_ the DISABLED_CHAR in the buffer.
-- *	This causes data already processed as input to be immediately available
-- *	as input although a newline has not been received.
-- *
-- *	Called under the atomic_read_lock mutex
-- *
-- *	n_tty_read()/consumer path:
-- *		caller holds non-exclusive termios_rwsem
-- *		read_tail published
-+ * canon_copy_from_read_buf	-	copy read data in canonical mode
-+ * @tty: terminal device
-+ * @kbp: data
-+ * @nr: size of data
-+ *
-+ * Helper function for n_tty_read(). It is only called when %ICANON is on; it
-+ * copies one line of input up to and including the line-delimiting character
-+ * into the result buffer.
-+ *
-+ * Note: When termios is changed from non-canonical to canonical mode and the
-+ * read buffer contains data, n_tty_set_termios() simulates an EOF push (as if
-+ * C-d were input) _without_ the %DISABLED_CHAR in the buffer. This causes data
-+ * already processed as input to be immediately available as input although a
-+ * newline has not been received.
-+ *
-+ * Locking:
-+ *  * called under the %atomic_read_lock mutex
-+ *  * n_tty_read()/consumer path:
-+ *	caller holds non-exclusive %termios_rwsem;
-+ *	read_tail published
-  */
--
- static bool canon_copy_from_read_buf(struct tty_struct *tty,
- 				     unsigned char **kbp,
- 				     size_t *nr)
-@@ -2014,19 +1978,19 @@ static bool canon_copy_from_read_buf(struct tty_struct *tty,
- }
- 
- /**
-- *	job_control		-	check job control
-- *	@tty: tty
-- *	@file: file handle
-- *
-- *	Perform job control management checks on this file/tty descriptor
-- *	and if appropriate send any needed signals and return a negative
-- *	error code if action should be taken.
-- *
-- *	Locking: redirected write test is safe
-- *		 current->signal->tty check is safe
-- *		 ctrl.lock to safely reference tty->ctrl.pgrp
-+ * job_control		-	check job control
-+ * @tty: tty
-+ * @file: file handle
-+ *
-+ * Perform job control management checks on this @file/@tty descriptor and if
-+ * appropriate send any needed signals and return a negative error code if
-+ * action should be taken.
-+ *
-+ * Locking:
-+ *  * redirected write test is safe
-+ *  * current->signal->tty check is safe
-+ *  * ctrl.lock to safely reference @tty->ctrl.pgrp
-  */
--
- static int job_control(struct tty_struct *tty, struct file *file)
- {
- 	/* Job control check -- must be done at start and after
-@@ -2042,26 +2006,25 @@ static int job_control(struct tty_struct *tty, struct file *file)
- 
- 
- /**
-- *	n_tty_read		-	read function for tty
-- *	@tty: tty device
-- *	@file: file object
-- *	@kbuf: kernelspace buffer pointer
-- *	@nr: size of I/O
-- *	@cookie: if non-%NULL, this is a continuation read
-- *	@offset: where to continue reading from (unused in n_tty)
-- *
-- *	Perform reads for the line discipline. We are guaranteed that the
-- *	line discipline will not be closed under us but we may get multiple
-- *	parallel readers and must handle this ourselves. We may also get
-- *	a hangup. Always called in user context, may sleep.
-- *
-- *	This code must be sure never to sleep through a hangup.
-- *
-- *	n_tty_read()/consumer path:
-- *		claims non-exclusive termios_rwsem
-- *		publishes read_tail
-+ * n_tty_read		-	read function for tty
-+ * @tty: tty device
-+ * @file: file object
-+ * @kbuf: kernelspace buffer pointer
-+ * @nr: size of I/O
-+ * @cookie: if non-%NULL, this is a continuation read
-+ * @offset: where to continue reading from (unused in n_tty)
-+ *
-+ * Perform reads for the line discipline. We are guaranteed that the line
-+ * discipline will not be closed under us but we may get multiple parallel
-+ * readers and must handle this ourselves. We may also get a hangup. Always
-+ * called in user context, may sleep.
-+ *
-+ * This code must be sure never to sleep through a hangup.
-+ *
-+ * Locking: n_tty_read()/consumer path:
-+ *	claims non-exclusive termios_rwsem;
-+ *	publishes read_tail
-  */
--
- static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 			  unsigned char *kbuf, size_t nr,
- 			  void **cookie, unsigned long offset)
-@@ -2233,25 +2196,23 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- }
- 
- /**
-- *	n_tty_write		-	write function for tty
-- *	@tty: tty device
-- *	@file: file object
-- *	@buf: userspace buffer pointer
-- *	@nr: size of I/O
-- *
-- *	Write function of the terminal device.  This is serialized with
-- *	respect to other write callers but not to termios changes, reads
-- *	and other such events.  Since the receive code will echo characters,
-- *	thus calling driver write methods, the output_lock is used in
-- *	the output processing functions called here as well as in the
-- *	echo processing function to protect the column state and space
-- *	left in the buffer.
-- *
-- *	This code must be sure never to sleep through a hangup.
-- *
-- *	Locking: output_lock to protect column state and space left
-- *		 (note that the process_output*() functions take this
-- *		  lock themselves)
-+ * n_tty_write		-	write function for tty
-+ * @tty: tty device
-+ * @file: file object
-+ * @buf: userspace buffer pointer
-+ * @nr: size of I/O
-+ *
-+ * Write function of the terminal device. This is serialized with respect to
-+ * other write callers but not to termios changes, reads and other such events.
-+ * Since the receive code will echo characters, thus calling driver write
-+ * methods, the %output_lock is used in the output processing functions called
-+ * here as well as in the echo processing function to protect the column state
-+ * and space left in the buffer.
-+ *
-+ * This code must be sure never to sleep through a hangup.
-+ *
-+ * Locking: output_lock to protect column state and space left
-+ *	 (note that the process_output*() functions take this lock themselves)
-  */
- 
- static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
-@@ -2342,19 +2303,19 @@ static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
- }
- 
- /**
-- *	n_tty_poll		-	poll method for N_TTY
-- *	@tty: terminal device
-- *	@file: file accessing it
-- *	@wait: poll table
-+ * n_tty_poll		-	poll method for N_TTY
-+ * @tty: terminal device
-+ * @file: file accessing it
-+ * @wait: poll table
-  *
-- *	Called when the line discipline is asked to poll() for data or
-- *	for special events. This code is not serialized with respect to
-- *	other events save open/close.
-+ * Called when the line discipline is asked to poll() for data or for special
-+ * events. This code is not serialized with respect to other events save
-+ * open/close.
-  *
-- *	This code must be sure never to sleep through a hangup.
-- *	Called without the kernel lock held - fine
-+ * This code must be sure never to sleep through a hangup.
-+ *
-+ * Locking: called without the kernel lock held -- fine.
-  */
--
- static __poll_t n_tty_poll(struct tty_struct *tty, struct file *file,
- 							poll_table *wait)
+ void tty_ldisc_deinit(struct tty_struct *tty)
  {
 -- 
 2.34.0
