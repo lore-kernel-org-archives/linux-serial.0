@@ -2,89 +2,175 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A4FDC433F5
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Nov 2021 02:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3C3C433F5
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Nov 2021 05:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239129AbhK0CsH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Nov 2021 21:48:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241048AbhK0CqH (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Nov 2021 21:46:07 -0500
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A32C061D79
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2021 17:43:57 -0800 (PST)
-Received: by mail-ot1-x32b.google.com with SMTP id n17-20020a9d64d1000000b00579cf677301so16307878otl.8
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2021 17:43:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GeK4HqT/e1fsu13zkPU3IkJgtVeOhkfl5fSuGo1DHZQ=;
-        b=qjLR5eTJSJaMo0ZSTUaBFBSGHI8nrLplXVuWtlCvohacrdV5/VJanyfb6He9KQ9pob
-         k3CiZkYVdqEnxPQ/9mk3fScPbrwJJ7UNhePze4FuVXq2XBnOMgOQixfV+6Gz0Q+b16hW
-         5aAM5CecwMN3xGteRRD6GOLbLe/X8bh9vGAMYQ2Vl5fKDrmHfFmsLi0N8FwwHW0YG0HM
-         SKL5xqf1GWiWTCVyQMwm1gX/GD2Kp00RI2WXFporHY04CsZ2HdH1o1BN1xd7i+WLvz5T
-         ZTUqJ16/Yue3RT05FTsStDTQu8lr+P48rNfr4cK8L/zrgv5tAni8VwPwK4/C4bNTgzyC
-         +Kqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GeK4HqT/e1fsu13zkPU3IkJgtVeOhkfl5fSuGo1DHZQ=;
-        b=P2kglwXM23jKy67SRVTJW0+8VQxYiNv8PQMWcKflg4rkEF98F9+oN7yutCFrxn69d9
-         9okMnLUtnWB8588wWbpUhP1i3Id7/KXu5l4tWYDldzgDtT6jioNxv0WQNQm5b90Qz1Z9
-         70ZWBZDjyVKzdRaWolheDrWmO3ZYSpZ1A/467miARz14VOH7Um6zSrvG0mAXy3FCAvMs
-         DL3QL05m+pIXfmM+71Gkm4u3GNjgKKqiXToihwcRAgnh/rXKXN0FQGEGnLdFf8M2FuqV
-         tIE7ZvGQ1iJrxbryA08EDkwew0JYt3xI/5bK9gGWHcvx/FGWfwO2sE53ModIZioSU91A
-         WadA==
-X-Gm-Message-State: AOAM533JOW1Js6qeaSarKavGFyG/2lrDOOr4sd/okW63EVmGzeqHqgX/
-        P5+4lp3LZeQZfujuWvzetKXuwKysqs18WIQwRbf6SA==
-X-Google-Smtp-Source: ABdhPJyTlLOzBIZDBtBqbPekB83he0Wo6ZiqdSb7UFzeK3WWORy7nuj2f1/Qlo8XTqr792YAu5+oqYOGKdxlpC0Ganw=
-X-Received: by 2002:a9d:74d0:: with SMTP id a16mr30467451otl.237.1637977436884;
- Fri, 26 Nov 2021 17:43:56 -0800 (PST)
+        id S235229AbhK0F2x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 27 Nov 2021 00:28:53 -0500
+Received: from mga06.intel.com ([134.134.136.31]:3620 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229980AbhK0F0x (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 27 Nov 2021 00:26:53 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10180"; a="296542679"
+X-IronPort-AV: E=Sophos;i="5.87,268,1631602800"; 
+   d="scan'208";a="296542679"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2021 21:23:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,268,1631602800"; 
+   d="scan'208";a="742508789"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 26 Nov 2021 21:23:37 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mqqBV-00096a-7i; Sat, 27 Nov 2021 05:23:37 +0000
+Date:   Sat, 27 Nov 2021 13:23:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 3f19fed8d0daed6e0e04b130d203d4333b757901
+Message-ID: <61a1c0ce.y/prFtoMvJ1WfFdN%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20211125211443.1150135-1-Mr.Bossman075@gmail.com> <20211125211443.1150135-5-Mr.Bossman075@gmail.com>
-In-Reply-To: <20211125211443.1150135-5-Mr.Bossman075@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 27 Nov 2021 02:43:45 +0100
-Message-ID: <CACRpkdaf9EoR15fOMXipr-z0zqwdDNtS_j9n7_M0QvxGYi2Gdg@mail.gmail.com>
-Subject: Re: [PATCH v3 04/13] pinctrl: freescale: Add i.MXRT1050 pinctrl
- driver support
-To:     Jesse Taube <mr.bossman075@gmail.com>
-Cc:     linux-imx@nxp.com, mturquette@baylibre.com, sboyd@kernel.org,
-        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, ulf.hansson@linaro.org,
-        aisheng.dong@nxp.com, stefan@agner.ch, gregkh@linuxfoundation.org,
-        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
-        linux@armlinux.org.uk, abel.vesa@nxp.com, adrian.hunter@intel.com,
-        jirislaby@kernel.org, giulio.benetti@benettiengineering.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 10:14 PM Jesse Taube <mr.bossman075@gmail.com> wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 3f19fed8d0daed6e0e04b130d203d4333b757901  Documentation: add TTY chapter
 
-> From: Giulio Benetti <giulio.benetti@benettiengineering.com>
->
-> Add the pinctrl driver support for i.MXRT1050.
->
-> Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-> ---
-> V1->V2:
-> * Nothing done
-> V2->V3:
-> * Nothing done
+elapsed time: 722m
 
-I need a review from one of the Freescale pinctrl driver maintainers for this
-patch.
+configs tested: 117
+configs skipped: 3
 
-Yours,
-Linus Walleij
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20211126
+powerpc              randconfig-c003-20211126
+mips                 randconfig-c004-20211126
+powerpc                   bluestone_defconfig
+powerpc                     pq2fads_defconfig
+xtensa                    xip_kc705_defconfig
+powerpc                 canyonlands_defconfig
+sh                              ul2_defconfig
+sh                        edosk7760_defconfig
+powerpc                 mpc8560_ads_defconfig
+m68k                          sun3x_defconfig
+parisc                generic-32bit_defconfig
+arm                          ep93xx_defconfig
+arm                          simpad_defconfig
+powerpc                 xes_mpc85xx_defconfig
+powerpc                     tqm8540_defconfig
+sh                               j2_defconfig
+arm64                            alldefconfig
+powerpc                     rainier_defconfig
+xtensa                  audio_kc705_defconfig
+powerpc                     mpc5200_defconfig
+sh                           se7722_defconfig
+sh                          sdk7780_defconfig
+arm                          pcm027_defconfig
+powerpc                    gamecube_defconfig
+sh                          kfr2r09_defconfig
+m68k                         apollo_defconfig
+m68k                        m5407c3_defconfig
+arm                            pleb_defconfig
+sh                            titan_defconfig
+xtensa                    smp_lx200_defconfig
+sh                 kfr2r09-romimage_defconfig
+arm                     eseries_pxa_defconfig
+arc                 nsimosci_hs_smp_defconfig
+sh                           sh2007_defconfig
+arm                  randconfig-c002-20211126
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+mips                             allmodconfig
+mips                             allyesconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a014-20211126
+x86_64               randconfig-a011-20211126
+x86_64               randconfig-a012-20211126
+x86_64               randconfig-a016-20211126
+x86_64               randconfig-a013-20211126
+x86_64               randconfig-a015-20211126
+i386                 randconfig-a016-20211126
+i386                 randconfig-a015-20211126
+i386                 randconfig-a012-20211126
+i386                 randconfig-a013-20211126
+i386                 randconfig-a014-20211126
+i386                 randconfig-a011-20211126
+arc                  randconfig-r043-20211126
+s390                 randconfig-r044-20211126
+riscv                randconfig-r042-20211126
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+
+clang tested configs:
+i386                 randconfig-a002-20211126
+i386                 randconfig-a001-20211126
+i386                 randconfig-a005-20211126
+i386                 randconfig-a006-20211126
+i386                 randconfig-a004-20211126
+i386                 randconfig-a003-20211126
+x86_64               randconfig-a001-20211126
+x86_64               randconfig-a003-20211126
+x86_64               randconfig-a006-20211126
+x86_64               randconfig-a004-20211126
+x86_64               randconfig-a005-20211126
+x86_64               randconfig-a002-20211126
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
