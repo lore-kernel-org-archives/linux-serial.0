@@ -2,101 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95EBAC4167E
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Nov 2021 22:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C0FAC433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Nov 2021 23:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356666AbhK0WoM (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 27 Nov 2021 17:44:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356572AbhK0WmM (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 27 Nov 2021 17:42:12 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDF1C061397
-        for <linux-serial@vger.kernel.org>; Sat, 27 Nov 2021 14:33:09 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id o19-20020a1c7513000000b0033a93202467so9400681wmc.2
-        for <linux-serial@vger.kernel.org>; Sat, 27 Nov 2021 14:33:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LJ8LcarI7xqEtvO5iVdRS56QktsqqAOlLhc5CcWcfZQ=;
-        b=r/qaO9nQajEHTbRAiXJq5PBzELxh5SYcoGDHjkN5FwgvsS/VnF/bAOJx+7tp53JVEF
-         i/t/XIzQCEyV+pEoUklfZrciszvg94BS/pQNz2A3MeVo01sPBNRVRbaCye70p75cV+t9
-         2oGmdCE46DQUSKfznDj4vh4OXQcT07HJryqQcYO4iYmdkQ/1tVg3+0Bz7ZKCVenrVQZg
-         vIfZzm/thV8mBebncIzTNzu9qDfvmdD2lo9EjUEneA0fuKw8zj2ExbnSqJ6jRQaStZoS
-         yKcNUcq0cYJ4y0FKW61tt2FFcZ/imS6ZDC8X4XwoOYa1SAb+cLLcZsFVTzXL0GcdSW3g
-         Y7JQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LJ8LcarI7xqEtvO5iVdRS56QktsqqAOlLhc5CcWcfZQ=;
-        b=t/q4ga7LxkwXJnmJDxDrxtpcbhl+2da51CQDyDEdylz+LeQqGCaporajwSqbw0kXlu
-         pLyRz5wQROfGceUZJuC14batMHYWVjKrnnq7lUk/W1SUbCgu8YpGKv8udd5jl2eMj5bg
-         Py3jn0nHqw4reOvhgCWpasKUDk1uMAf8YYU9nkderOu4OekJ+m0L02nLgPgtHbheQbQ8
-         +C5OeulCGqEBXeYLPFMaZ4MsvR/U4vUJm3IB8jthNOP7tO47oFZ5B+x0Hmla2lGh8k7e
-         ekJqvy+vytnIdv2786QFsj+m2MzEtNpHy3QGKXGGc86J5FJPsutz0DEOVhqgd7jvKOgQ
-         8+Wg==
-X-Gm-Message-State: AOAM533e/PcPgnKqCe7Cap2C65iLCVqOaQ7Eg0Rr/9aiqiKeTsFiY0BR
-        4It2sfMJCfI8Vsr5x48BB2W4ng==
-X-Google-Smtp-Source: ABdhPJybLPuiYuY26o40e1ovZYC7Flhu8vSAfHRGwdZ9hn+tl2NYlm7OSVmgTPh6Mb5T6RqHSb/bIA==
-X-Received: by 2002:a1c:770e:: with SMTP id t14mr24560888wmi.173.1638052388201;
-        Sat, 27 Nov 2021 14:33:08 -0800 (PST)
-Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id g13sm13152129wrd.57.2021.11.27.14.33.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Nov 2021 14:33:07 -0800 (PST)
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jaewon Kim <jaewon02.kim@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        devicetree@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-i2c@vger.kernel.org
-Subject: [PATCH 8/8] spi: Make SPI_S3C64XX=y impossible when EXYNOS_USI_V2=m
-Date:   Sun, 28 Nov 2021 00:32:53 +0200
-Message-Id: <20211127223253.19098-9-semen.protsenko@linaro.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211127223253.19098-1-semen.protsenko@linaro.org>
-References: <20211127223253.19098-1-semen.protsenko@linaro.org>
+        id S235571AbhK0XZE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 27 Nov 2021 18:25:04 -0500
+Received: from rere.qmqm.pl ([91.227.64.183]:36626 "EHLO rere.qmqm.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1356509AbhK0XXD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 27 Nov 2021 18:23:03 -0500
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4J1ndG31SVz9Y;
+        Sun, 28 Nov 2021 00:19:46 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1638055187; bh=3IuV4KHyseUP25B0hUamJUw90nzzT3r2kSgbvRYgE4s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JK3pRYOLYNeG1VcAGugry8zKUgI8IWUX2uFGnlwLGpXc8D3CmoN3u8y9Tr0anjhA5
+         0A8Qy/LOhaD8VxlEdNWsqrCEdfoL4kLYajCPHahkwjsSyh1fyNTpAP7OaIv8Cd41Fp
+         bC/yFHHpqOVfJETijNRp4vh1CboVefrHEBTckwxDI2L7pXNeWUcUoW/R8bYvSvqtcd
+         qLfLXpsIzFQ+14JZRfK6vjf3MeRyOWzB//m+Uj9hi+ZCRg9j8osGTQF3afK6drcmvx
+         vuBpRT8IcEeEOSwUYU3B9S385dK47IOQYa8zaMoD9LKBYMCCBgQnmNvnJAHjHmkz26
+         Mypbfh7tLnFGg==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.3 at mail
+Date:   Sun, 28 Nov 2021 00:19:43 +0100
+From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+To:     Patrik John <patrik.john@u-blox.com>
+Cc:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        ldewangan@nvidia.com, thierry.reding@gmail.com,
+        jonathan@nvidia.com, linux-serial@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: Re: [PATCH] serial: tegra: Fixes lower tolerance baud rate limit for
+ older tegra chips introduced by d781ec21bae6
+Message-ID: <YaK9DwsgGr8eaMuX@qmqm.qmqm.pl>
+References: <sig.096060f39c.20211122124425.74031-1-patrik.john@u-blox.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-2
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <sig.096060f39c.20211122124425.74031-1-patrik.john@u-blox.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When S3C64XX SPI is encapsulated in USIv2 block (e.g. in Exynos850),
-USIv2 driver must be loaded first, as it's preparing USI hardware for
-particular protocol use. Make it impossible for spi-s3c64xx driver to be
-built-in when USIv2 driver is built as a module, to prevent incorrect
-booting order for those drivers.
+On Mon, Nov 22, 2021 at 01:44:26PM +0100, Patrik John wrote:
+> The current implementation uses 0 as lower limit for the baud rate tolerance which contradicts the initial commit description (https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git/commit/drivers/tty/serial/serial-tegra.c?h=for-next&id=d781ec21bae6ff8f9e07682e8947a654484611f5) of +4/-4% tolerance for older tegra chips other than Tegra186 and Tegra194.
+> This causes issues on UART initilization as soon as the actual baud rate clock is slightly lower than required which we have seen on the Tegra124-based Toradex Apalis TK1 which also uses tegra30-hsuart as compatible in the DT serial node (for reference line 1540ff https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git/tree/arch/arm/boot/dts/tegra124-apalis-v1.2.dtsi?h=for-next)
+> 
+> The standard baud rate tolerance limits are also stated in the tegra20-hsuart driver description (https://www.kernel.org/doc/Documentation/devicetree/bindings/serial/nvidia%2Ctegra20-hsuart.txt).
+> 
+> The previously introduced check_rate_in_range() always fails due to the lower limit set to 0 even if the actual baud rate is within the required -4% tolerance.
+> 
+[...]
 
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
----
- drivers/spi/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+I have a same patch waiting in my tree [1]. Feel free to use the commit
+message and to add:
 
-diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index b2a8821971e1..fbdf901248be 100644
---- a/drivers/spi/Kconfig
-+++ b/drivers/spi/Kconfig
-@@ -761,6 +761,7 @@ config SPI_S3C24XX_FIQ
- config SPI_S3C64XX
- 	tristate "Samsung S3C64XX/Exynos SoC series type SPI"
- 	depends on (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST)
-+	depends on EXYNOS_USI_V2 || !EXYNOS_USI_V2
- 	help
- 	  SPI driver for Samsung S3C64XX, S5Pv210 and Exynos SoCs.
- 	  Choose Y/M here only if you build for such Samsung SoC.
--- 
-2.30.2
+Reviewed-and-tested-by: Micha³ Miros³aw <mirq-linux@rere.qmqm.pl>
 
+[1] https://rere.qmqm.pl/git/?p=linux;a=commitdiff;h=b658dcd83d0db777410fe960721193d35a38115a
+
+Best Regards
+Micha³ Miros³aw
