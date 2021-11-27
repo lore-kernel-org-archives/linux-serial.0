@@ -2,53 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E59C4332F
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Nov 2021 22:38:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABA5C4332F
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Nov 2021 22:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356446AbhK0Wla (ORCPT
+        id S1356579AbhK0WmM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 27 Nov 2021 17:41:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
+        Sat, 27 Nov 2021 17:42:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356380AbhK0Wja (ORCPT
+        with ESMTP id S1344468AbhK0WkL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 27 Nov 2021 17:39:30 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8D2C0613E0
-        for <linux-serial@vger.kernel.org>; Sat, 27 Nov 2021 14:32:59 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id l16so27257519wrp.11
-        for <linux-serial@vger.kernel.org>; Sat, 27 Nov 2021 14:32:59 -0800 (PST)
+        Sat, 27 Nov 2021 17:40:11 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B88C0613F7
+        for <linux-serial@vger.kernel.org>; Sat, 27 Nov 2021 14:33:02 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id a18so27278177wrn.6
+        for <linux-serial@vger.kernel.org>; Sat, 27 Nov 2021 14:33:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6M4A/tb5uMp/41DxndVqEzSE2hGblNz4wYiEfFPyfnc=;
-        b=hwCAOxXXwF6ism7IqxUqUx5YEWM699I2gzxWPjLbsuhqAxeANw0tyg2ZkoEsmxQhBM
-         0b9iSdg7x66rGyWrLH6auVrWWQH3b6wJHVYutnVJGMcpWtEWhVcKQ1KljEf74zibFqOA
-         puBg08DDqOC3z87KQ50CkrfgL9gPq+6CAqIoKygr48PdbKBFJNjqnbNo9WATYhpe3bE6
-         lrMKH8RO+IdMTR+m3qWxiP/CFKtgNSdTXcw64hF/0TC4NwQcnOBcaPDVhH5ypKx//uqa
-         PgaLKZK70je7WrCZ+0G55F2vKk1OFzLy2L7p1Vxi9s3gVQz9W14deADmTszNCUGxKFMJ
-         Viow==
+        bh=Gy/+9Ap7B7a6ofg9Xo33DIKIIPnt1f9QgfnSCCN5Jwc=;
+        b=qkhowHREvrRZHY0+mq5T1R32ESs6o0PuHWsxIqhsCZTLUpCiUPyrHQSG/2alUwrDSe
+         imo2LsLgwZspsZY2XMnOJA+phhTp8EZDPtHuv0ddE03YuQ8QHl3GUCQnggEsa1cJSh6a
+         foAKgsMdebwAvE43u0kSeic6WjuEiZSEGaEAwHkh+SZtD0hhynbGW3g/rMdFT/7zPVLd
+         OCjUaRyZzMTXc0J8A5dpwvl1UQNHdCeJ5pkpFJbds0X39lXc/15Q0zWbyyzs8zfxQakg
+         u7G51A7NpmB86rFxtsNnb4xGQSnlbq76tVDHMw7E7ErFV2acwAyrISkLJsCNxNou+U1G
+         4GcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6M4A/tb5uMp/41DxndVqEzSE2hGblNz4wYiEfFPyfnc=;
-        b=VMr7VinB0eSX+j79ER9wp6bF7s2925XbUDsOCy2F2mpP7CwwuvPg9+D8fZb8jFqzyG
-         7YkD1yukF5AL41tq022AOGlztceX/qFewd6fCgu/v6Wy1FpruQTMHGyQxZg4ZS5DZCge
-         NQ0+CHr3QPOPV6/xsVhZegl3Zxva5+RLYZy8dDtApElWiNis4+9NXc7GHFfIdey/Z12E
-         Tr/fGgu/8M9CdFDII67dkSuXWAlR85oy/zywfvudJYhWrZ23Xke6VbKPlsR4bUmsQT57
-         yzhRtFJXpRoD73LHM2wtaffsiqUFSX+GAUHLNEGteEpYeJl+inx6Q1Szc1PpjtgiCz9X
-         M6yw==
-X-Gm-Message-State: AOAM531rUgs4N0K5/rGX+cILobbbcMoXXJZdA6DAjKf0Yz1XLIX7hV6f
-        sr6qPo06jdVwhZF67gaKBnLx6g==
-X-Google-Smtp-Source: ABdhPJwdbLpH8JwPS05Q7nu7RvXbREcA2Cct0x3S38Z74xtvi6I8L2Y3D4yJGspddD2iZgy5JeAMBw==
-X-Received: by 2002:a5d:6091:: with SMTP id w17mr23285781wrt.65.1638052378118;
-        Sat, 27 Nov 2021 14:32:58 -0800 (PST)
+        bh=Gy/+9Ap7B7a6ofg9Xo33DIKIIPnt1f9QgfnSCCN5Jwc=;
+        b=xczJSF8LRwaXH2sfyONaLeeNyNEK9JBn35MZU1cYa4aTXQrgcCXHAKDuiX8k0nwH2c
+         NlQJbsn9sSYhGdfr1ZPa20zvxN03krwEeVfGBhsOa4M5ZKm0Ix6p5uk+WT3cS4uA0Mu/
+         sPnDVBfj/2grvYd5Tq82wpnua8QnwK4lqoPyIAthFxDHmJ+Wo8BCdjS9DTamZ0OzzUTa
+         lKvhcHd9uGmww56P8veXdPMRVEYiDGifgTpTYHmIcDRq90jcR6abvNIDM/QFKeuskc0c
+         Sjq1WuLx/kb8VwiYPtqA63T7pzkK43junmlTcHxHaEQUFSlGEwzVdQvxCTMvSS5bqLDK
+         uDuQ==
+X-Gm-Message-State: AOAM533AvyJ7vQbNZCCRPkN84rFONH03JGTlpmpCHc3pGHI3ZRR3otCy
+        4pjMWr6wunvJeOSXKyxZZ4YOXQ==
+X-Google-Smtp-Source: ABdhPJygkLORZGJoecoCFIe4i9zkk8SG3qflYMozTYJVZLFFCWQrQUA9jnW6PWrwpX+FLxdGhSagfg==
+X-Received: by 2002:a5d:64eb:: with SMTP id g11mr23701900wri.438.1638052381363;
+        Sat, 27 Nov 2021 14:33:01 -0800 (PST)
 Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id v6sm14801124wmh.8.2021.11.27.14.32.57
+        by smtp.gmail.com with ESMTPSA id l4sm9314966wrv.94.2021.11.27.14.33.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Nov 2021 14:32:57 -0800 (PST)
+        Sat, 27 Nov 2021 14:33:01 -0800 (PST)
 From:   Sam Protsenko <semen.protsenko@linaro.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -62,9 +62,9 @@ Cc:     Jaewon Kim <jaewon02.kim@samsung.com>,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-i2c@vger.kernel.org
-Subject: [PATCH 2/8] dt-bindings: soc: samsung: Add Exynos USIv2 bindings doc
-Date:   Sun, 28 Nov 2021 00:32:47 +0200
-Message-Id: <20211127223253.19098-3-semen.protsenko@linaro.org>
+Subject: [PATCH 4/8] tty: serial: samsung: Remove USI initialization
+Date:   Sun, 28 Nov 2021 00:32:49 +0200
+Message-Id: <20211127223253.19098-5-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211127223253.19098-1-semen.protsenko@linaro.org>
 References: <20211127223253.19098-1-semen.protsenko@linaro.org>
@@ -74,144 +74,128 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Document USIv2 IP-core bindings.
+USI control is now extracted to dedicated USIv2 driver. Remove USI
+related code from serial driver to avoid conflicts and code duplication.
 
 Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 ---
- .../bindings/soc/samsung/exynos-usi-v2.yaml   | 124 ++++++++++++++++++
- 1 file changed, 124 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/soc/samsung/exynos-usi-v2.yaml
+ drivers/tty/serial/samsung_tty.c | 36 ++++----------------------------
+ include/linux/serial_s3c.h       |  9 --------
+ 2 files changed, 4 insertions(+), 41 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-usi-v2.yaml b/Documentation/devicetree/bindings/soc/samsung/exynos-usi-v2.yaml
-new file mode 100644
-index 000000000000..d7466aa463dc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi-v2.yaml
-@@ -0,0 +1,124 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/soc/samsung/exynos-usi-v2.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Samsung's Exynos USIv2 (Universal Serial Interface) binding
-+
-+maintainers:
-+  - Sam Protsenko <semen.protsenko@linaro.org>
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-+
-+description: |
-+  USIv2 IP-core provides selectable serial protocol (UART, SPI or High-Speed
-+  I2C); only one can be chosen at a time. It is modeled as a node with zero or
-+  more child nodes, each representing a serial sub-node device. The mode setting
-+  selects which particular function will be used.
-+
-+  Refer to next bindings documentation for information on protocol subnodes that
-+  can exist under USI node:
-+
-+  [1] Documentation/devicetree/bindings/serial/samsung_uart.yaml
-+  [2] Documentation/devicetree/bindings/i2c/i2c-exynos5.txt
-+  [3] Documentation/devicetree/bindings/spi/spi-samsung.txt
-+
-+properties:
-+  $nodename:
-+    pattern: "^usi@[0-9a-f]+$"
-+
-+  compatible:
-+    const: samsung,exynos-usi-v2
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: Bus (APB) clock
-+      - description: Operating clock for UART/SPI/I2C protocol
-+
-+  clock-names:
-+    items:
-+      - const: pclk
-+      - const: ipclk
-+
-+  ranges: true
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 1
-+
-+  samsung,sysreg:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description:
-+      Should be phandle/offset pair. The phandle to System Register syscon node
-+      (for the same domain where this USIv2 controller resides) and the offset
-+      of SW_CONF register for this USIv2 controller.
-+
-+  samsung,mode:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Selects USIv2 function (which serial protocol to use). Refer to
-+      <include/dt-bindings/soc/samsung,exynos-usi-v2.h> for valid USI mode
-+      values.
-+
-+  samsung,clkreq-on:
-+    type: boolean
-+    description:
-+      Enable this property if underlying protocol requires the clock to be
-+      continuously provided without automatic gating. As suggested by SoC
-+      manual, it should be set in case of SPI/I2C slave, UART Rx and I2C
-+      multi-master mode. Usually this property is needed if USI mode is set
-+      to "UART".
-+
-+      This property is optional.
-+
-+patternProperties:
-+  # All other properties should be child nodes
-+  "^.*@[0-9a-f]+$":
-+    type: object
-+    description: Child node describing underlying USIv2 serial protocol
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - ranges
-+  - "#address-cells"
-+  - "#size-cells"
-+  - samsung,sysreg
-+  - samsung,mode
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/soc/samsung,exynos-usi-v2.h>
-+
-+    usi_uart: usi@138200c0 {
-+        compatible = "samsung,exynos-usi-v2";
-+        reg = <0x138200c0 0x20>;
-+        samsung,sysreg = <&sysreg_peri 0x1010>;
-+        samsung,mode = <USI_V2_UART>;
-+        samsung,clkreq-on; /* needed for UART mode */
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+        ranges;
-+        clocks = <&cmu_peri 32>, <&cmu_peri 31>;
-+        clock-names = "pclk", "ipclk";
-+        status = "disabled";
-+
-+        serial_0: serial@13820000 {
-+            compatible = "samsung,exynos850-uart";
-+            reg = <0x13820000 0xc0>;
-+            interrupts = <GIC_SPI 227 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&cmu_peri 32>, <&cmu_peri 31>;
-+            clock-names = "uart", "clk_uart_baud0";
-+            status = "disabled";
-+        };
-+    };
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index ca084c10d0bb..f986a9253dc8 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -65,7 +65,6 @@ enum s3c24xx_port_type {
+ struct s3c24xx_uart_info {
+ 	char			*name;
+ 	enum s3c24xx_port_type	type;
+-	bool			has_usi;
+ 	unsigned int		port_type;
+ 	unsigned int		fifosize;
+ 	unsigned long		rx_fifomask;
+@@ -1357,28 +1356,6 @@ static int apple_s5l_serial_startup(struct uart_port *port)
+ 	return ret;
+ }
+ 
+-static void exynos_usi_init(struct uart_port *port)
+-{
+-	struct s3c24xx_uart_port *ourport = to_ourport(port);
+-	struct s3c24xx_uart_info *info = ourport->info;
+-	unsigned int val;
+-
+-	if (!info->has_usi)
+-		return;
+-
+-	/* Clear the software reset of USI block (it's set at startup) */
+-	val = rd_regl(port, USI_CON);
+-	val &= ~USI_CON_RESET_MASK;
+-	wr_regl(port, USI_CON, val);
+-	udelay(1);
+-
+-	/* Continuously provide the clock to USI IP w/o gating (for Rx mode) */
+-	val = rd_regl(port, USI_OPTION);
+-	val &= ~USI_OPTION_HWACG_MASK;
+-	val |= USI_OPTION_HWACG_CLKREQ_ON;
+-	wr_regl(port, USI_OPTION, val);
+-}
+-
+ /* power power management control */
+ 
+ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+@@ -1405,8 +1382,6 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+ 
+ 		if (!IS_ERR(ourport->baudclk))
+ 			clk_prepare_enable(ourport->baudclk);
+-
+-		exynos_usi_init(port);
+ 		break;
+ 	default:
+ 		dev_err(port->dev, "s3c24xx_serial: unknown pm %d\n", level);
+@@ -2130,8 +2105,6 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 	if (ret)
+ 		pr_warn("uart: failed to enable baudclk\n");
+ 
+-	exynos_usi_init(port);
+-
+ 	/* Keep all interrupts masked and cleared */
+ 	switch (ourport->info->type) {
+ 	case TYPE_S3C6400:
+@@ -2780,11 +2753,10 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ #endif
+ 
+ #if defined(CONFIG_ARCH_EXYNOS)
+-#define EXYNOS_COMMON_SERIAL_DRV_DATA(_has_usi)			\
++#define EXYNOS_COMMON_SERIAL_DRV_DATA()				\
+ 	.info = &(struct s3c24xx_uart_info) {			\
+ 		.name		= "Samsung Exynos UART",	\
+ 		.type		= TYPE_S3C6400,			\
+-		.has_usi	= _has_usi,			\
+ 		.port_type	= PORT_S3C6400,			\
+ 		.has_divslot	= 1,				\
+ 		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
+@@ -2805,17 +2777,17 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ 	}							\
+ 
+ static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
+-	EXYNOS_COMMON_SERIAL_DRV_DATA(false),
++	EXYNOS_COMMON_SERIAL_DRV_DATA(),
+ 	.fifosize = { 256, 64, 16, 16 },
+ };
+ 
+ static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
+-	EXYNOS_COMMON_SERIAL_DRV_DATA(false),
++	EXYNOS_COMMON_SERIAL_DRV_DATA(),
+ 	.fifosize = { 64, 256, 16, 256 },
+ };
+ 
+ static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
+-	EXYNOS_COMMON_SERIAL_DRV_DATA(true),
++	EXYNOS_COMMON_SERIAL_DRV_DATA(),
+ 	.fifosize = { 256, 64, 64, 64 },
+ };
+ 
+diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
+index cf0de4a86640..f6c3323fc4c5 100644
+--- a/include/linux/serial_s3c.h
++++ b/include/linux/serial_s3c.h
+@@ -27,15 +27,6 @@
+ #define S3C2410_UERSTAT	  (0x14)
+ #define S3C2410_UFSTAT	  (0x18)
+ #define S3C2410_UMSTAT	  (0x1C)
+-#define USI_CON		  (0xC4)
+-#define USI_OPTION	  (0xC8)
+-
+-#define USI_CON_RESET			(1<<0)
+-#define USI_CON_RESET_MASK		(1<<0)
+-
+-#define USI_OPTION_HWACG_CLKREQ_ON	(1<<1)
+-#define USI_OPTION_HWACG_CLKSTOP_ON	(1<<2)
+-#define USI_OPTION_HWACG_MASK		(3<<1)
+ 
+ #define S3C2410_LCON_CFGMASK	  ((0xF<<3)|(0x3))
+ 
 -- 
 2.30.2
 
