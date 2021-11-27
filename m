@@ -2,153 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB58C433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Nov 2021 02:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A4FDC433F5
+	for <linux-serial@archiver.kernel.org>; Sat, 27 Nov 2021 02:44:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231145AbhK0CQF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Nov 2021 21:16:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46972 "EHLO
+        id S239129AbhK0CsH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Nov 2021 21:48:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242112AbhK0COE (ORCPT
+        with ESMTP id S241048AbhK0CqH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Nov 2021 21:14:04 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA36BC08EB2E
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2021 17:30:50 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id n85so10396131pfd.10
-        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2021 17:30:50 -0800 (PST)
+        Fri, 26 Nov 2021 21:46:07 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A32C061D79
+        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2021 17:43:57 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id n17-20020a9d64d1000000b00579cf677301so16307878otl.8
+        for <linux-serial@vger.kernel.org>; Fri, 26 Nov 2021 17:43:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id;
-        bh=krSaf44qZp+SCzZWx5eYR1WPcnM46IU0SbFLswTGNpo=;
-        b=vSyg2+OCv8NNr+GVnFx5ZptQI1QqpvWnbX1+2QNgsjhPTPlSwtiSrNJOPJ+G56jO/J
-         KCGi5oyjJdQHyPu+CZOB+JNmbmI7GLFV4SG409bZKm953le3grK8u7ikp8hYkOFCYmdw
-         EXoxTYjm4n3xgtCITEVFU/Zuj+TgGjcGtQDzG7Lt5/E4G1oBWm1XgXMGvDupTa6ALbNL
-         VmKKwbZiC14Qe21ALTq+JFLO9k0N+UOkJHZE8hrle0dYk5psWba7TaZbi19WL95UPoBz
-         zuc5c8AFHwueJIaPxJaMHQM1O4eQiHDmkI1kuAX3Jp4W8yRv9scPgT/OskSri7skMJzp
-         ThBA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GeK4HqT/e1fsu13zkPU3IkJgtVeOhkfl5fSuGo1DHZQ=;
+        b=qjLR5eTJSJaMo0ZSTUaBFBSGHI8nrLplXVuWtlCvohacrdV5/VJanyfb6He9KQ9pob
+         k3CiZkYVdqEnxPQ/9mk3fScPbrwJJ7UNhePze4FuVXq2XBnOMgOQixfV+6Gz0Q+b16hW
+         5aAM5CecwMN3xGteRRD6GOLbLe/X8bh9vGAMYQ2Vl5fKDrmHfFmsLi0N8FwwHW0YG0HM
+         SKL5xqf1GWiWTCVyQMwm1gX/GD2Kp00RI2WXFporHY04CsZ2HdH1o1BN1xd7i+WLvz5T
+         ZTUqJ16/Yue3RT05FTsStDTQu8lr+P48rNfr4cK8L/zrgv5tAni8VwPwK4/C4bNTgzyC
+         +Kqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id;
-        bh=krSaf44qZp+SCzZWx5eYR1WPcnM46IU0SbFLswTGNpo=;
-        b=aoJx9VYKLa1O+w4fv1PZG7e4OClnoHdURvmw500y3JB7jtkEhf8J9unkPZ/7FXu94T
-         CMwz078Yl4CsWFU1pbeJ9/k6TK+8LD59mFBQZQwH0/kqXktRDnUeARBk/ulZiXZR9XpH
-         KiWC3kOhrbHeMaTyQUT/qL6A4qfPBai/IXsM99CFikhgpoBWvNJ/F0MN5HE8gCiT2Siq
-         6ThtP8TIf29BD1106X96hbqNUcpXykV+jVXmz2C/ksQvWMxEzdUmkVIzN0Ac+mxwr+Cw
-         OExdWdiWWIEHeuoTymKsu/DAeOtW+mFsN3JwVkkzjUsUyq2vy8NgXeZaR3AVmt45cFo6
-         9nhA==
-X-Gm-Message-State: AOAM5328+OJVu8v1Euac0HN8pSvjr6l5DmwgohMgmEYfzKp0mbfkrrJ8
-        l66cFUf+cA0x+y9LszZ4Qzpxrg==
-X-Google-Smtp-Source: ABdhPJwibnGbqlrciJIlnX43p0ErqmwW6+We/evbbZWxmT1e1YwNNbZ0GMqRZhi/jRB7rXFCr+ZtjA==
-X-Received: by 2002:a05:6a00:1305:b0:4a2:75cd:883b with SMTP id j5-20020a056a00130500b004a275cd883bmr24729294pfu.44.1637976650262;
-        Fri, 26 Nov 2021 17:30:50 -0800 (PST)
-Received: from localhost (c-73-53-62-83.hsd1.wa.comcast.net. [73.53.62.83])
-        by smtp.gmail.com with ESMTPSA id e29sm2129630pge.17.2021.11.26.17.30.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Nov 2021 17:30:49 -0800 (PST)
-Date:   Fri, 26 Nov 2021 17:30:49 -0800 (PST)
-X-Google-Original-Date: Fri, 26 Nov 2021 17:29:57 PST (-0800)
-Subject:     Re: [PATCH v4 00/16] Basic StarFive JH7100 RISC-V SoC support
-In-Reply-To: <CANBLGcykFks+EF2m0bdD+j5w43Qy30LBgVnAYJWU+5-WVJH6PA@mail.gmail.com>
-CC:     Arnd Bergmann <arnd@arndb.de>, linux-riscv@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>, robh+dt@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, tglx@linutronix.de,
-        Marc Zyngier <maz@kernel.org>, p.zabel@pengutronix.de,
-        linus.walleij@linaro.org, Greg KH <gregkh@linuxfoundation.org>,
-        daniel.lezcano@linaro.org, andriy.shevchenko@linux.intel.com,
-        jirislaby@kernel.org, luzmaximilian@gmail.com,
-        sagar.kadam@sifive.com, drew@beagleboard.org, geert@linux-m68k.org,
-        michael.zhu@starfivetech.com, tekkamanninja@gmail.com,
-        anup.patel@wdc.com, mcroce@microsoft.com,
-        linux-kernel@vger.kernel.org
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     kernel@esmil.dk
-Message-ID: <mhng-5fc3ff6b-1f6e-4efb-8578-20759733887a@palmer-ri-x1c9>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GeK4HqT/e1fsu13zkPU3IkJgtVeOhkfl5fSuGo1DHZQ=;
+        b=P2kglwXM23jKy67SRVTJW0+8VQxYiNv8PQMWcKflg4rkEF98F9+oN7yutCFrxn69d9
+         9okMnLUtnWB8588wWbpUhP1i3Id7/KXu5l4tWYDldzgDtT6jioNxv0WQNQm5b90Qz1Z9
+         70ZWBZDjyVKzdRaWolheDrWmO3ZYSpZ1A/467miARz14VOH7Um6zSrvG0mAXy3FCAvMs
+         DL3QL05m+pIXfmM+71Gkm4u3GNjgKKqiXToihwcRAgnh/rXKXN0FQGEGnLdFf8M2FuqV
+         tIE7ZvGQ1iJrxbryA08EDkwew0JYt3xI/5bK9gGWHcvx/FGWfwO2sE53ModIZioSU91A
+         WadA==
+X-Gm-Message-State: AOAM533JOW1Js6qeaSarKavGFyG/2lrDOOr4sd/okW63EVmGzeqHqgX/
+        P5+4lp3LZeQZfujuWvzetKXuwKysqs18WIQwRbf6SA==
+X-Google-Smtp-Source: ABdhPJyTlLOzBIZDBtBqbPekB83he0Wo6ZiqdSb7UFzeK3WWORy7nuj2f1/Qlo8XTqr792YAu5+oqYOGKdxlpC0Ganw=
+X-Received: by 2002:a9d:74d0:: with SMTP id a16mr30467451otl.237.1637977436884;
+ Fri, 26 Nov 2021 17:43:56 -0800 (PST)
+MIME-Version: 1.0
+References: <20211125211443.1150135-1-Mr.Bossman075@gmail.com> <20211125211443.1150135-5-Mr.Bossman075@gmail.com>
+In-Reply-To: <20211125211443.1150135-5-Mr.Bossman075@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 27 Nov 2021 02:43:45 +0100
+Message-ID: <CACRpkdaf9EoR15fOMXipr-z0zqwdDNtS_j9n7_M0QvxGYi2Gdg@mail.gmail.com>
+Subject: Re: [PATCH v3 04/13] pinctrl: freescale: Add i.MXRT1050 pinctrl
+ driver support
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     linux-imx@nxp.com, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, ulf.hansson@linaro.org,
+        aisheng.dong@nxp.com, stefan@agner.ch, gregkh@linuxfoundation.org,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux@armlinux.org.uk, abel.vesa@nxp.com, adrian.hunter@intel.com,
+        jirislaby@kernel.org, giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 16 Nov 2021 09:28:41 PST (-0800), kernel@esmil.dk wrote:
-> On Tue, 16 Nov 2021 at 17:08, Arnd Bergmann <arnd@arndb.de> wrote:
->> On Tue, Nov 16, 2021 at 4:01 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
->> >
->> > This series adds support for the StarFive JH7100 RISC-V SoC. The SoC has
->> > many devices that need non-coherent dma operations to work which isn't
->> > upstream yet[1], so this just adds basic support to boot up, get a
->> > serial console, blink an LED and reboot itself. Unlike the Allwinner D1
->> > this chip doesn't use any extra pagetable bits, but instead the DDR RAM
->> > appears twice in the memory map, with and without the cache.
->> >
->> > The JH7100 is a test chip for the upcoming JH7110 and about 300 BeagleV
->> > Starlight Beta boards were sent out with them as part of a now cancelled
->> > BeagleBoard.org project. However StarFive has produced more of the
->> > JH7100s and more boards will be available[2] to buy. I've seen pictures
->> > of the new boards now, so hopefully before the end of the year.
->> >
->> > This series is also available at
->> > https://github.com/esmil/linux/commits/starlight-minimal
->> > ..but a more complete kernel including drivers for non-coherent
->> > peripherals based on this series can be found at
->> > https://github.com/starfive-tech/linux/tree/visionfive
->> >
->> > [1]: https://lore.kernel.org/linux-riscv/20210723214031.3251801-2-atish.patra@wdc.com/
->> > [2]: https://www.linkedin.com/pulse/starfive-release-open-source-single-board-platform-q3-2021-starfive/
->>
->> Thanks for adding me to Cc, I've had a look at the series and didn't
->> see anything
->> wrong with it, and I'm happy to merge it through the SoC tree for the
->> initial support
->> in 5.17, provided you get an Ack from the arch/riscv maintainers for it.
+On Thu, Nov 25, 2021 at 10:14 PM Jesse Taube <mr.bossman075@gmail.com> wrote:
+
+> From: Giulio Benetti <giulio.benetti@benettiengineering.com>
 >
-> Cool!
+> Add the pinctrl driver support for i.MXRT1050.
 >
-> @Palmer, do you mind looking through this? Probably patch 1, 15 and 16
-> are the most relevant to you.
->
->> Regarding the coherency issue, it's a bit sad to see yet another hacky
->> workaround
->> in the hardware, but as you say this is unrelated to the driver
->> series. I'd actually
->> argue that this one isn't that different from the other hack you
->> describe, except
->> this steals the pagetable bits from the address instead of the reserved flags...
->
-> Yeah, it's definitely a hack, but at least it's not using bits the
-> spec said was reserved. Hopefully the JH7110 will be fully coherent or
-> maybe implement the new Svpbmt extension.
+> Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> ---
+> V1->V2:
+> * Nothing done
+> V2->V3:
+> * Nothing done
 
-Sorry, this had been sitting on top of my inbox because I hadn't had a 
-chance to figure this stuff out.  Emil poked me on IRC about it, but I 
-figured I'd just write it here so everyone can see:
+I need a review from one of the Freescale pinctrl driver maintainers for this
+patch.
 
-IMO there's a huge difference between the StarFive-flavored non-coherent 
-stuff (which relies on physical aliasing) and the T-Head-flavored stuff 
-(which uses page table bits): the PA-aliasing approach is allowed by the 
-ISA, while the page table bits aren't (they're marked as reserved).  IMO 
-we should still figure out a way to take the T-Head stuff, as it's the 
-real-ist hardware we have, but that's a whole different can of worms.
-
-My worry with this is I've yet to actually be convinced that either of 
-these approaches work.  Specifically, neither of them prevents M-mode 
-from performing (either directly or as a side effect of something like 
-speculation) accesses that violate the attributes we're ascribing to 
-regions in Linux.  IIRC I pointed that out in the Svpmbt patch set, 
-which has exactly the same set of problems.
-
-That said, I don't really care all that much -- having something here is 
-better than nothing, and we've always relied on the HW vendors just 
-producing HW that works when it comes to any of the IO stuff (ie, even 
-on coherent systems).  These are all drivers so it's really up to those 
-folks where the bar is, so as long as everyone's on the page about that 
-you're not going to get any objections from me so
-
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-
-The SOC tree works for me.  It'd be great to have a shared tag I where I 
-can pull in at least the Kconfig.socs stuff, but if that's not easy then 
-it's no big deal -- what's in flight there is pretty trivial on my end, 
-so we can just deal with the merge conflicts.
-
-Thanks!
+Yours,
+Linus Walleij
