@@ -2,107 +2,166 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027F3C433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Nov 2021 17:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09590C433F5
+	for <linux-serial@archiver.kernel.org>; Sun, 28 Nov 2021 18:21:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358619AbhK1RJS (ORCPT
+        id S1359688AbhK1SYv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 28 Nov 2021 12:09:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358704AbhK1RHS (ORCPT
+        Sun, 28 Nov 2021 13:24:51 -0500
+Received: from mail-pj1-f46.google.com ([209.85.216.46]:35535 "EHLO
+        mail-pj1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359174AbhK1SWp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 28 Nov 2021 12:07:18 -0500
-Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7A1C0613F6
-        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 09:03:17 -0800 (PST)
-Received: by mail-vk1-xa29.google.com with SMTP id h1so2171377vkh.0
-        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 09:03:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BY3oht+y8HrGDIiA0mto2rflEOHEoMX+CLpzHXZf2nA=;
-        b=isEtZ0KqXs7KwQiyrUe6920AusXIYyZ3lAycqrX8wlYMxZzrktdUryhup02VI1Fc9m
-         6RbwZfK5VEwmxi4UjWRmZWbt303aROEHrxkJJaNuODRMse9Ohe1/XfcUA2kKvpqE/UhR
-         RbvvxfS7z6qb3X5YjlkfRE/T60Xju+cO7p9YyQj6EXdMEqvWjpSSGjY7+8CraHpfL2aA
-         ffanPd/1CCgvM5Qlb7yHtQ4jsRvgFbvogD1YtoQrtwx8TwfczmVqEphgtQg/Mw4op13n
-         xhf2K4LG1zddQ8cTqaUD7GGqrYRoeY6Irx5UZc4QfFAbdWaoCrgQ8/GT2dQ3C6PBrKqL
-         g4bw==
+        Sun, 28 Nov 2021 13:22:45 -0500
+Received: by mail-pj1-f46.google.com with SMTP id j6-20020a17090a588600b001a78a5ce46aso13603590pji.0;
+        Sun, 28 Nov 2021 10:19:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BY3oht+y8HrGDIiA0mto2rflEOHEoMX+CLpzHXZf2nA=;
-        b=UqJhGpz+BvSxfLEIgl0K9zbSR6T5D/havdAkqt4wjT32wL772EcyZBrGL6YEOeynFP
-         lyfkpma2VMU4IaK3wfo329+aCowekY/ST5zuqucTTqfLqL7aFe7tjORWYVMAHHBGF47r
-         vY+8pmiycCNRML9Kixw0HLo3qzFJeI4NJMp+gXD3vBs9a2orE2QjttaPxj6KNYWTINt1
-         o5toYBJOzeFgZvuFPwpGNZYQLB0hIAC9hsfalxThE/1dIoAS4aZuHrmX3NED1vyY6izL
-         bxty1kEsND0TQwNfrC111/cJSIn628HeBWnPC+kLumMlA6p2BG09zEnE6uHD/Be9MAiv
-         HtxQ==
-X-Gm-Message-State: AOAM531TP+5RuU1jZg8LIM5BWL+SRBqIJgVUKB5ZpL+oK0m9qUzi/yMU
-        clCOmOV3MbwAK1EGChQ3n12WDRfnffJNS100pqbImQ==
-X-Google-Smtp-Source: ABdhPJzWijuBwUQuP+Vndk1T+sepX2T8/WmWaWQfnWsOR0CMc9FuYs9zuujxjQxRb2Guzz9nNOvUpGArHq0GRwbXUxw=
-X-Received: by 2002:a1f:2849:: with SMTP id o70mr25716022vko.35.1638118996213;
- Sun, 28 Nov 2021 09:03:16 -0800 (PST)
+        bh=m5E/2VsB22bAL9LsiGHm8OGiUiuEPFzEndEXLPhvONc=;
+        b=VIPNbJuLtIxw9xbbUcd2dJfN4QTP5hvTEdV1P8cTHWXg9nvc6hyA5zoStDaopyXFLB
+         NsItm3THS9ekC2gIQUzFXeH/GKVqsxCF/hFbRrTRQQ9Al11b7dukYdDjctcd6F1vavmj
+         tiHhEwlOGWhDEUR2MItfPafhL8o8IicHlusQuB3PkdO9LIxuKRAcmNg/QbWteSVaY5aA
+         3qojtRLG9BGL+EU6UeCUf41wFFLme2vU/iTb4YaDj2SrjwGAPOvJ2iSImEQjqik4I32O
+         kl/RBVzf/hH0s1yDTiu6VpQx/SCPAFr862Tfzrm938TqrAqewOUkYDI/oX9PysURM+bY
+         1mlA==
+X-Gm-Message-State: AOAM533MOlPW1I3zuETpSk9/wPkh5ykNzj9p6HJzl1ySqTXnGAu9baLi
+        pTSh3bFn7MeA4bIUNKcTMCzXbPgtEOj37uC6uFc=
+X-Google-Smtp-Source: ABdhPJw/UaRYaYPP7u790TiVEuw+cyKoBT+gz3jjS8ginoOsoo9UsRoKWx6F0Mfo8gbL4qUKLo356lQhYmgTHirR8sQ=
+X-Received: by 2002:a17:90a:ab17:: with SMTP id m23mr32269991pjq.194.1638123569367;
+ Sun, 28 Nov 2021 10:19:29 -0800 (PST)
 MIME-Version: 1.0
-References: <20211127223253.19098-1-semen.protsenko@linaro.org>
- <20211127223253.19098-5-semen.protsenko@linaro.org> <YaOR+TbcR1V4ovf/@kroah.com>
- <CAPLW+4mG8AMPCXGWYwURVJhCw0Cv=mYYzNAZf0i7akVcqc384w@mail.gmail.com>
-In-Reply-To: <CAPLW+4mG8AMPCXGWYwURVJhCw0Cv=mYYzNAZf0i7akVcqc384w@mail.gmail.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Sun, 28 Nov 2021 19:03:05 +0200
-Message-ID: <CAPLW+4k9OAdcg8XcTbazV_470mFw3x61_UakoR-qNHo5C8et_g@mail.gmail.com>
-Subject: Re: [PATCH 4/8] tty: serial: samsung: Remove USI initialization
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+References: <CANBLGcykFks+EF2m0bdD+j5w43Qy30LBgVnAYJWU+5-WVJH6PA@mail.gmail.com>
+ <mhng-5fc3ff6b-1f6e-4efb-8578-20759733887a@palmer-ri-x1c9>
+In-Reply-To: <mhng-5fc3ff6b-1f6e-4efb-8578-20759733887a@palmer-ri-x1c9>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+Date:   Sun, 28 Nov 2021 19:19:18 +0100
+Message-ID: <CANBLGcxdvztD+WBCA4jCBBzPRHC0v7RiVgG_p8RdVpXxCWnHig@mail.gmail.com>
+Subject: Re: [PATCH v4 00/16] Basic StarFive JH7100 RISC-V SoC support
+To:     Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        devicetree@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-i2c@vger.kernel.org
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 28 Nov 2021 at 18:26, Sam Protsenko <semen.protsenko@linaro.org> wrote:
->
-> On Sun, 28 Nov 2021 at 16:28, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
+On Sat, 27 Nov 2021 at 02:30, Palmer Dabbelt <palmer@rivosinc.com> wrote:
+> On Tue, 16 Nov 2021 09:28:41 PST (-0800), kernel@esmil.dk wrote:
+> > On Tue, 16 Nov 2021 at 17:08, Arnd Bergmann <arnd@arndb.de> wrote:
+> >> On Tue, Nov 16, 2021 at 4:01 PM Emil Renner Berthing <kernel@esmil.dk> wrote:
+> >> >
+> >> > This series adds support for the StarFive JH7100 RISC-V SoC. The SoC has
+> >> > many devices that need non-coherent dma operations to work which isn't
+> >> > upstream yet[1], so this just adds basic support to boot up, get a
+> >> > serial console, blink an LED and reboot itself. Unlike the Allwinner D1
+> >> > this chip doesn't use any extra pagetable bits, but instead the DDR RAM
+> >> > appears twice in the memory map, with and without the cache.
+> >> >
+> >> > The JH7100 is a test chip for the upcoming JH7110 and about 300 BeagleV
+> >> > Starlight Beta boards were sent out with them as part of a now cancelled
+> >> > BeagleBoard.org project. However StarFive has produced more of the
+> >> > JH7100s and more boards will be available[2] to buy. I've seen pictures
+> >> > of the new boards now, so hopefully before the end of the year.
+> >> >
+> >> > This series is also available at
+> >> > https://github.com/esmil/linux/commits/starlight-minimal
+> >> > ..but a more complete kernel including drivers for non-coherent
+> >> > peripherals based on this series can be found at
+> >> > https://github.com/starfive-tech/linux/tree/visionfive
+> >> >
+> >> > [1]: https://lore.kernel.org/linux-riscv/20210723214031.3251801-2-atish.patra@wdc.com/
+> >> > [2]: https://www.linkedin.com/pulse/starfive-release-open-source-single-board-platform-q3-2021-starfive/
+> >>
+> >> Thanks for adding me to Cc, I've had a look at the series and didn't
+> >> see anything
+> >> wrong with it, and I'm happy to merge it through the SoC tree for the
+> >> initial support
+> >> in 5.17, provided you get an Ack from the arch/riscv maintainers for it.
 > >
-> > On Sun, Nov 28, 2021 at 12:32:49AM +0200, Sam Protsenko wrote:
-> > > USI control is now extracted to dedicated USIv2 driver. Remove USI
-> > > related code from serial driver to avoid conflicts and code duplication.
+> > Cool!
 > >
-> > What conflicts?
+> > @Palmer, do you mind looking through this? Probably patch 1, 15 and 16
+> > are the most relevant to you.
 > >
->
-> There might be possible conflicts when accessing the same USI register
-> from both serial driver and USIv2 driver. Also there will be conflicts
-> when trying to access the same I/O address space in those both
-> drivers.
->
-> > What duplication?  All you did here was delete code.
+> >> Regarding the coherency issue, it's a bit sad to see yet another hacky
+> >> workaround
+> >> in the hardware, but as you say this is unrelated to the driver
+> >> series. I'd actually
+> >> argue that this one isn't that different from the other hack you
+> >> describe, except
+> >> this steals the pagetable bits from the address instead of the reserved flags...
 > >
+> > Yeah, it's definitely a hack, but at least it's not using bits the
+> > spec said was reserved. Hopefully the JH7110 will be fully coherent or
+> > maybe implement the new Svpbmt extension.
 >
-> It's all explained in [PATCH 0/8], but long story short, I've added
-> USIv2 driver (in this series) which handles the code that's removed
-> from serial driver in this patch.
+> Sorry, this had been sitting on top of my inbox because I hadn't had a
+> chance to figure this stuff out.  Emil poked me on IRC about it, but I
+> figured I'd just write it here so everyone can see:
 >
+> IMO there's a huge difference between the StarFive-flavored non-coherent
+> stuff (which relies on physical aliasing) and the T-Head-flavored stuff
+> (which uses page table bits): the PA-aliasing approach is allowed by the
+> ISA, while the page table bits aren't (they're marked as reserved).  IMO
+> we should still figure out a way to take the T-Head stuff, as it's the
+> real-ist hardware we have, but that's a whole different can of worms.
+>
+> My worry with this is I've yet to actually be convinced that either of
+> these approaches work.  Specifically, neither of them prevents M-mode
+> from performing (either directly or as a side effect of something like
+> speculation) accesses that violate the attributes we're ascribing to
+> regions in Linux.  IIRC I pointed that out in the Svpmbt patch set,
+> which has exactly the same set of problems.
+>
+> That said, I don't really care all that much -- having something here is
+> better than nothing, and we've always relied on the HW vendors just
+> producing HW that works when it comes to any of the IO stuff (ie, even
+> on coherent systems).  These are all drivers so it's really up to those
+> folks where the bar is, so as long as everyone's on the page about that
+> you're not going to get any objections from me so
+>
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
 
-In other words, this code is now present here: [1]. But of course
-USIv2 driver must be applied first, and then this patch (removing the
-same code from serial driver). That's why it's in the same series and
-it's placed after USIv2 driver ([PATCH 3/8]).
+Thanks! Yeah, as you say something is better than nothing. I'd think
+it's helpful to have something to build and test the non-coherent dma
+functionality on, and the nice thing about the Starfive-flavour is
+that it will actually boot into an initramfs root and have a working
+serial console even without the non-coherent dmas working.
 
-[1] https://patchwork.kernel.org/project/linux-samsung-soc/patch/20211127223253.19098-4-semen.protsenko@linaro.org/
+> The SOC tree works for me.  It'd be great to have a shared tag I where I
+> can pull in at least the Kconfig.socs stuff, but if that's not easy then
+> it's no big deal -- what's in flight there is pretty trivial on my end,
+> so we can just deal with the merge conflicts.
 
-> > confused,
-> >
-> > greg k-h
+I guess this is for the SoC maintainers to consider. Let me know if
+that's wrong and I need to do anything.
+
+/Emil
