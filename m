@@ -2,96 +2,172 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B41C4332F
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Nov 2021 16:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDDEC4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 28 Nov 2021 16:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353606AbhK1Qbx (ORCPT
+        id S1347157AbhK1Qdb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 28 Nov 2021 11:31:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358262AbhK1Q3x (ORCPT
+        Sun, 28 Nov 2021 11:33:31 -0500
+Received: from mail-oi1-f176.google.com ([209.85.167.176]:39687 "EHLO
+        mail-oi1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346525AbhK1Qb0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 28 Nov 2021 11:29:53 -0500
-Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F52FC0613E0
-        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 08:26:37 -0800 (PST)
-Received: by mail-ua1-x934.google.com with SMTP id az37so28905513uab.13
-        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 08:26:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/ccB47tdeti47CvDM6R5rYXfeqjwA3nH7VkbP1EBuzs=;
-        b=bb8iROMPL4xY9YKCKh0LcMj6ctNvNaAZS+EVGTP+2em16DnWvURJFBwKiZgQ14kpFx
-         Nk0yod58G1GSRAXhbEmJSlcSr5H+7E+VRw2oFQ49OQGFlI0NaPsYM76X/VH5tGjQ6CYh
-         WoFk8Gn8q0COPBUli/NDsEWR6bc+iXAJ019W+PmGTj4jAV8rJApYX0PUUsYpzjqrLwrj
-         Gu7/GiaJ0CKIqr+7VglKPoUwlrTg9rFOnRoOgI70LWhYsailfiQ4Cqkz2G0dLY83lvMz
-         8sS5BykmV2FyfWNqpRXjubhzLMPxPi1RfEDwJU0dc9fs5dv57ePDFc/y2awY/aQP9Fja
-         ZJmA==
+        Sun, 28 Nov 2021 11:31:26 -0500
+Received: by mail-oi1-f176.google.com with SMTP id bf8so29701586oib.6;
+        Sun, 28 Nov 2021 08:28:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/ccB47tdeti47CvDM6R5rYXfeqjwA3nH7VkbP1EBuzs=;
-        b=hWnnKi9nJjdy5wdgGWynhp8+2uifconToBxUqwhzDftnKujkNgGWcrhsQt+bW3H+cl
-         OfRBnyZDXR1ygAyBdKi4kdH3TdYC60G1Rw/3j5z9MW+4H5b6PoBPp94x4mEkghVEcfIW
-         pyfzsOEWEpo7h5x6Tegq3CH3mBFrugSwK7+GacWIobxTTMHjWntnX3ZzntzzCuwnH98H
-         DEZdA0IVCy6eoDmUD+bUcgLQ1kp1PUHbKWx68fHqwK6oE4+8R4inGYuU7nHTCTQaGrgg
-         yIP/bWWyCjOhnxZbb24J0Ln5CBQ6dWr6zF4sM/lu3jVGPvfEY0fURhu7G7i099Z3K+LF
-         qW5Q==
-X-Gm-Message-State: AOAM533rnbBiGigyXt0S61xt7ruJNGg9DCxp9gUv/192Dl0ocsX32FCP
-        IM5/CIoI12BdU/Gw8j+svjq6b+o2FIdOVu3XPlE7+w==
-X-Google-Smtp-Source: ABdhPJzu4Sg8mGJhx58EsQjBE9m8h7oKRpTbBEmqiNm24rO+Vi7sjel3oyR2vWLi6046pK/x0t8RLwwXmEN3LNKN6pg=
-X-Received: by 2002:a9f:2431:: with SMTP id 46mr44679918uaq.114.1638116796127;
- Sun, 28 Nov 2021 08:26:36 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=79L1FhRS5XEOX5R5nEMf/lvv08mrxVNOpVcZgr1MEfY=;
+        b=FLtqHrBqF71U5AVhiWzVHt1xCnv2mtvTXGJbcx+ZMbgt6/Xw2Z4k1Nyo1qfdPdI6m/
+         Td9+filksV5HmSHlApbZ1+3bvU0FjQQqtCWQYZUDOPCalYCaZ0Jobkn8VSdkKx1PUMtP
+         f7/9jpf1ebk/kSQF+Pe95hR4SXkcZpixOxhzrySV8n7EAy9jNiMpDF7zRwvrYO8hCbpb
+         8NDyovT4uhvaBVT0/PZCvPSdoKPXbEtQeDN3KjVIKkR9oyls6EHSi1bsSe4xFkzcS3y6
+         yTOLT6Jvp+PY/b+8gd9hWM873DXM4RS2bSgYpsIJeIgzB5sKDJ333sszo6FrpRbe9xB5
+         sZFw==
+X-Gm-Message-State: AOAM531VP42sIHt4FaQ88sPgoZpSUUAHMncZC0G1qEb0ci/+VM8cpfbA
+        55dfY+sgFAwhwfr1ggzpvA==
+X-Google-Smtp-Source: ABdhPJwJSNQgSXnyMASxwUktIvTauJ3kBkmHFKXq+CmvAOIDEc4lsBMGmPRvMOed7vH4kEIKhzkZyg==
+X-Received: by 2002:a54:4e0c:: with SMTP id a12mr35498823oiy.12.1638116889487;
+        Sun, 28 Nov 2021 08:28:09 -0800 (PST)
+Received: from robh.at.kernel.org ([2607:fb90:20d6:afc8:f6e9:d57a:3e26:ee41])
+        by smtp.gmail.com with ESMTPSA id b1sm2193901otj.5.2021.11.28.08.28.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Nov 2021 08:28:08 -0800 (PST)
+Received: (nullmailer pid 2669481 invoked by uid 1000);
+        Sun, 28 Nov 2021 16:28:04 -0000
+Date:   Sun, 28 Nov 2021 10:28:04 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     linux-imx@nxp.com, mturquette@baylibre.com, sboyd@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, ulf.hansson@linaro.org, aisheng.dong@nxp.com,
+        stefan@agner.ch, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
+        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
+        adrian.hunter@intel.com, jirislaby@kernel.org,
+        giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 05/13] dt-bindings: imx: Add clock binding for
+ i.MXRT1050
+Message-ID: <YaOuFGhNzGVxdF03@robh.at.kernel.org>
+References: <20211125211443.1150135-1-Mr.Bossman075@gmail.com>
+ <20211125211443.1150135-6-Mr.Bossman075@gmail.com>
 MIME-Version: 1.0
-References: <20211127223253.19098-1-semen.protsenko@linaro.org>
- <20211127223253.19098-5-semen.protsenko@linaro.org> <YaOR+TbcR1V4ovf/@kroah.com>
-In-Reply-To: <YaOR+TbcR1V4ovf/@kroah.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Sun, 28 Nov 2021 18:26:24 +0200
-Message-ID: <CAPLW+4mG8AMPCXGWYwURVJhCw0Cv=mYYzNAZf0i7akVcqc384w@mail.gmail.com>
-Subject: Re: [PATCH 4/8] tty: serial: samsung: Remove USI initialization
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        devicetree@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-i2c@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211125211443.1150135-6-Mr.Bossman075@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 28 Nov 2021 at 16:28, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Sun, Nov 28, 2021 at 12:32:49AM +0200, Sam Protsenko wrote:
-> > USI control is now extracted to dedicated USIv2 driver. Remove USI
-> > related code from serial driver to avoid conflicts and code duplication.
->
-> What conflicts?
->
+On Thu, Nov 25, 2021 at 04:14:35PM -0500, Jesse Taube wrote:
+> From: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> 
+> Add the clock binding doc for i.MXRT1050.
+> 
+> Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> [Giulio: added all clocks up to IMXRT1050_CLK_USBOH3]
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> [Jesse: added clocks from IMXRT1050_CLK_IPG_PDOF to
+> IMXRT1050_CLK_DMA_MUX and moved IMXRT1050_CLK_END on]
+> ---
+> V1->V2:
+> * Nothing done
+> V2->V3:
+> * Added GPT binding
+> ---
+>  include/dt-bindings/clock/imxrt1050-clock.h | 73 +++++++++++++++++++++
+>  1 file changed, 73 insertions(+)
+>  create mode 100644 include/dt-bindings/clock/imxrt1050-clock.h
+> 
+> diff --git a/include/dt-bindings/clock/imxrt1050-clock.h b/include/dt-bindings/clock/imxrt1050-clock.h
+> new file mode 100644
+> index 000000000000..9811676d100b
+> --- /dev/null
+> +++ b/include/dt-bindings/clock/imxrt1050-clock.h
+> @@ -0,0 +1,73 @@
+> +/* SPDX-License-Identifier: GPL-2.0+ */
 
-There might be possible conflicts when accessing the same USI register
-from both serial driver and USIv2 driver. Also there will be conflicts
-when trying to access the same I/O address space in those both
-drivers.
+Dual license matching the rest of i.MX.
 
-> What duplication?  All you did here was delete code.
->
-
-It's all explained in [PATCH 0/8], but long story short, I've added
-USIv2 driver (in this series) which handles the code that's removed
-from serial driver in this patch.
-
-> confused,
->
-> greg k-h
+> +/*
+> + * Copyright(C) 2019
+> + * Author(s): Giulio Benetti <giulio.benetti@benettiengineering.com>
+> + */
+> +
+> +#ifndef __DT_BINDINGS_CLOCK_IMXRT1050_H
+> +#define __DT_BINDINGS_CLOCK_IMXRT1050_H
+> +
+> +#define IMXRT1050_CLK_DUMMY			0
+> +#define IMXRT1050_CLK_CKIL			1
+> +#define IMXRT1050_CLK_CKIH			2
+> +#define IMXRT1050_CLK_OSC			3
+> +#define IMXRT1050_CLK_PLL2_PFD0_352M		4
+> +#define IMXRT1050_CLK_PLL2_PFD1_594M		5
+> +#define IMXRT1050_CLK_PLL2_PFD2_396M		6
+> +#define IMXRT1050_CLK_PLL3_PFD0_720M		7
+> +#define IMXRT1050_CLK_PLL3_PFD1_664_62M		8
+> +#define IMXRT1050_CLK_PLL3_PFD2_508_24M		9
+> +#define IMXRT1050_CLK_PLL3_PFD3_454_74M		10
+> +#define IMXRT1050_CLK_PLL2_198M			11
+> +#define IMXRT1050_CLK_PLL3_120M			12
+> +#define IMXRT1050_CLK_PLL3_80M			13
+> +#define IMXRT1050_CLK_PLL3_60M			14
+> +#define IMXRT1050_CLK_PLL1_BYPASS		15
+> +#define IMXRT1050_CLK_PLL2_BYPASS		16
+> +#define IMXRT1050_CLK_PLL3_BYPASS		17
+> +#define IMXRT1050_CLK_PLL5_BYPASS		19
+> +#define IMXRT1050_CLK_PLL1_REF_SEL		20
+> +#define IMXRT1050_CLK_PLL2_REF_SEL		21
+> +#define IMXRT1050_CLK_PLL3_REF_SEL		22
+> +#define IMXRT1050_CLK_PLL5_REF_SEL		23
+> +#define IMXRT1050_CLK_PRE_PERIPH_SEL		24
+> +#define IMXRT1050_CLK_PERIPH_SEL		25
+> +#define IMXRT1050_CLK_SEMC_ALT_SEL		26
+> +#define IMXRT1050_CLK_SEMC_SEL			27
+> +#define IMXRT1050_CLK_USDHC1_SEL		28
+> +#define IMXRT1050_CLK_USDHC2_SEL		29
+> +#define IMXRT1050_CLK_LPUART_SEL		30
+> +#define IMXRT1050_CLK_LCDIF_SEL			31
+> +#define IMXRT1050_CLK_VIDEO_POST_DIV_SEL	32
+> +#define IMXRT1050_CLK_VIDEO_DIV			33
+> +#define IMXRT1050_CLK_ARM_PODF			34
+> +#define IMXRT1050_CLK_LPUART_PODF		35
+> +#define IMXRT1050_CLK_USDHC1_PODF		36
+> +#define IMXRT1050_CLK_USDHC2_PODF		37
+> +#define IMXRT1050_CLK_SEMC_PODF			38
+> +#define IMXRT1050_CLK_AHB_PODF			39
+> +#define IMXRT1050_CLK_LCDIF_PRED		40
+> +#define IMXRT1050_CLK_LCDIF_PODF		41
+> +#define IMXRT1050_CLK_USDHC1			42
+> +#define IMXRT1050_CLK_USDHC2			43
+> +#define IMXRT1050_CLK_LPUART1			44
+> +#define IMXRT1050_CLK_SEMC			45
+> +#define IMXRT1050_CLK_LCDIF_APB			46
+> +#define IMXRT1050_CLK_PLL1_ARM			47
+> +#define IMXRT1050_CLK_PLL2_SYS			48
+> +#define IMXRT1050_CLK_PLL3_USB_OTG		49
+> +#define IMXRT1050_CLK_PLL4_AUDIO		50
+> +#define IMXRT1050_CLK_PLL5_VIDEO		51
+> +#define IMXRT1050_CLK_PLL6_ENET			52
+> +#define IMXRT1050_CLK_PLL7_USB_HOST		53
+> +#define IMXRT1050_CLK_LCDIF_PIX			54
+> +#define IMXRT1050_CLK_USBOH3			55
+> +#define IMXRT1050_CLK_IPG_PDOF			56
+> +#define IMXRT1050_CLK_PER_CLK_SEL		57
+> +#define IMXRT1050_CLK_PER_PDOF			58
+> +#define IMXRT1050_CLK_DMA			59
+> +#define IMXRT1050_CLK_DMA_MUX			60
+> +#define IMXRT1050_CLK_GPT			70
+> +#define IMXRT1050_CLK_END			71
+> +
+> +#endif /* __DT_BINDINGS_CLOCK_IMXRT1050_H */
+> -- 
+> 2.34.0
+> 
+> 
