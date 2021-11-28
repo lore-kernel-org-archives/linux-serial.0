@@ -2,88 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DF1C433F5
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Nov 2021 16:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B41C4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 28 Nov 2021 16:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358338AbhK1Q31 (ORCPT
+        id S1353606AbhK1Qbx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 28 Nov 2021 11:29:27 -0500
-Received: from mail-ot1-f46.google.com ([209.85.210.46]:41910 "EHLO
-        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238588AbhK1Q11 (ORCPT
+        Sun, 28 Nov 2021 11:31:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358262AbhK1Q3x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 28 Nov 2021 11:27:27 -0500
-Received: by mail-ot1-f46.google.com with SMTP id n17-20020a9d64d1000000b00579cf677301so21987014otl.8;
-        Sun, 28 Nov 2021 08:24:10 -0800 (PST)
+        Sun, 28 Nov 2021 11:29:53 -0500
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F52FC0613E0
+        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 08:26:37 -0800 (PST)
+Received: by mail-ua1-x934.google.com with SMTP id az37so28905513uab.13
+        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 08:26:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/ccB47tdeti47CvDM6R5rYXfeqjwA3nH7VkbP1EBuzs=;
+        b=bb8iROMPL4xY9YKCKh0LcMj6ctNvNaAZS+EVGTP+2em16DnWvURJFBwKiZgQ14kpFx
+         Nk0yod58G1GSRAXhbEmJSlcSr5H+7E+VRw2oFQ49OQGFlI0NaPsYM76X/VH5tGjQ6CYh
+         WoFk8Gn8q0COPBUli/NDsEWR6bc+iXAJ019W+PmGTj4jAV8rJApYX0PUUsYpzjqrLwrj
+         Gu7/GiaJ0CKIqr+7VglKPoUwlrTg9rFOnRoOgI70LWhYsailfiQ4Cqkz2G0dLY83lvMz
+         8sS5BykmV2FyfWNqpRXjubhzLMPxPi1RfEDwJU0dc9fs5dv57ePDFc/y2awY/aQP9Fja
+         ZJmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cG1qxa/rrWWVkdtvrfpLEg36+/zmkNfWQBfrO1J/AJ0=;
-        b=Y4R8HUxR4nPF66pwl+Rso9ofnZW8T8ipbwELKDPcJoHJYVsm6UrMgEviUEhBjEEbaE
-         yAirSGnTyVwDncf63FK+HV9o2kgdvTbwvNUu9xzYw+6To27ZTTYZE8Yo4QTPjDbZ4EdZ
-         rO3zwzjRYfXz4BjCsAigO9l42O4RzfkzGeNwVYC/CPGIYJotOGiTB8Lt8Hj6CCdI2UA5
-         vCYwH7jvcbfPWXHinC1FwRPhE9Zc6wAJs+h7ij8/AI/rQarSA+rFCuRdL29a8vz4/ICi
-         FfoKabVxr3uvmvRr9KqxHQurF3cTCk1uqzKX3CoWPsdQQe58ILn+CyWlmZ3YNSpI366z
-         PoIQ==
-X-Gm-Message-State: AOAM530L4teBbE53bhcSYmaxXKKIOnnbYVHIyU89xXKqPuc/gMpGjg2g
-        IKtXS/7dul5newc5mY8qQA==
-X-Google-Smtp-Source: ABdhPJyWZF1O9whdWrlsXv2WYoE8bZeLc/P4hZdeAVDksjHc648kjfISaZc4QX6fv/dSf1HH3LVmTQ==
-X-Received: by 2002:a05:6830:22d8:: with SMTP id q24mr38568389otc.170.1638116650419;
-        Sun, 28 Nov 2021 08:24:10 -0800 (PST)
-Received: from robh.at.kernel.org ([2607:fb90:20d6:afc8:f6e9:d57a:3e26:ee41])
-        by smtp.gmail.com with ESMTPSA id h3sm1933422ooe.13.2021.11.28.08.24.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Nov 2021 08:24:09 -0800 (PST)
-Received: (nullmailer pid 2660694 invoked by uid 1000);
-        Sun, 28 Nov 2021 16:24:04 -0000
-Date:   Sun, 28 Nov 2021 10:24:04 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        linux-arm-kernel@lists.infradead.org,
-        Marc Zyngier <maz@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v3 07/11] dt-bindings: arm: apple: Add apple,pmgr binding
-Message-ID: <YaOtJPF+3ie2WyPB@robh.at.kernel.org>
-References: <20211124073419.181799-1-marcan@marcan.st>
- <20211124073419.181799-8-marcan@marcan.st>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/ccB47tdeti47CvDM6R5rYXfeqjwA3nH7VkbP1EBuzs=;
+        b=hWnnKi9nJjdy5wdgGWynhp8+2uifconToBxUqwhzDftnKujkNgGWcrhsQt+bW3H+cl
+         OfRBnyZDXR1ygAyBdKi4kdH3TdYC60G1Rw/3j5z9MW+4H5b6PoBPp94x4mEkghVEcfIW
+         pyfzsOEWEpo7h5x6Tegq3CH3mBFrugSwK7+GacWIobxTTMHjWntnX3ZzntzzCuwnH98H
+         DEZdA0IVCy6eoDmUD+bUcgLQ1kp1PUHbKWx68fHqwK6oE4+8R4inGYuU7nHTCTQaGrgg
+         yIP/bWWyCjOhnxZbb24J0Ln5CBQ6dWr6zF4sM/lu3jVGPvfEY0fURhu7G7i099Z3K+LF
+         qW5Q==
+X-Gm-Message-State: AOAM533rnbBiGigyXt0S61xt7ruJNGg9DCxp9gUv/192Dl0ocsX32FCP
+        IM5/CIoI12BdU/Gw8j+svjq6b+o2FIdOVu3XPlE7+w==
+X-Google-Smtp-Source: ABdhPJzu4Sg8mGJhx58EsQjBE9m8h7oKRpTbBEmqiNm24rO+Vi7sjel3oyR2vWLi6046pK/x0t8RLwwXmEN3LNKN6pg=
+X-Received: by 2002:a9f:2431:: with SMTP id 46mr44679918uaq.114.1638116796127;
+ Sun, 28 Nov 2021 08:26:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211124073419.181799-8-marcan@marcan.st>
+References: <20211127223253.19098-1-semen.protsenko@linaro.org>
+ <20211127223253.19098-5-semen.protsenko@linaro.org> <YaOR+TbcR1V4ovf/@kroah.com>
+In-Reply-To: <YaOR+TbcR1V4ovf/@kroah.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Sun, 28 Nov 2021 18:26:24 +0200
+Message-ID: <CAPLW+4mG8AMPCXGWYwURVJhCw0Cv=mYYzNAZf0i7akVcqc384w@mail.gmail.com>
+Subject: Re: [PATCH 4/8] tty: serial: samsung: Remove USI initialization
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Chanho Park <chanho61.park@samsung.com>,
+        David Virag <virag.david003@gmail.com>,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        devicetree@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-i2c@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 24 Nov 2021 16:34:17 +0900, Hector Martin wrote:
-> The PMGR block in Apple Silicon SoCs is responsible for SoC power
-> management. There are two PMGRs in T8103, with different register
-> layouts but compatible registers. In order to support this as well
-> as future SoC generations with backwards-compatible registers, we
-> declare these blocks as syscons and bind to individual registers
-> in child nodes. Each register controls one SoC device.
-> 
-> The respective apple compatibles are defined in case device-specific
-> quirks are necessary in the future, but currently these nodes are
-> expected to be bound by the generic syscon driver.
-> 
-> Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  .../bindings/arm/apple/apple,pmgr.yaml        | 134 ++++++++++++++++++
->  1 file changed, 134 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
-> 
+On Sun, 28 Nov 2021 at 16:28, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Sun, Nov 28, 2021 at 12:32:49AM +0200, Sam Protsenko wrote:
+> > USI control is now extracted to dedicated USIv2 driver. Remove USI
+> > related code from serial driver to avoid conflicts and code duplication.
+>
+> What conflicts?
+>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+There might be possible conflicts when accessing the same USI register
+from both serial driver and USIv2 driver. Also there will be conflicts
+when trying to access the same I/O address space in those both
+drivers.
+
+> What duplication?  All you did here was delete code.
+>
+
+It's all explained in [PATCH 0/8], but long story short, I've added
+USIv2 driver (in this series) which handles the code that's removed
+from serial driver in this patch.
+
+> confused,
+>
+> greg k-h
