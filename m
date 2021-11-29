@@ -2,160 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F9EC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 17:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26507C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 17:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349636AbhK2RlT (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Nov 2021 12:41:19 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:52208
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349265AbhK2RjT (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Nov 2021 12:39:19 -0500
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com [209.85.167.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3ACF340016
-        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 17:35:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1638207354;
-        bh=iK3riauy7r4LiWngeJOokJxhZZPLu5etYNKqwE1epw0=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=LS2LaSBCKz4bkvVqvJ8ua7GA5+5R6U4AFL6HSLOeIRXkn7OM5VZXwB+hg0HpFPqQT
-         Gw3XUSBBJ83GLJqlwtXFZzKGA6+eFRLuilhAQdoYKacUNzfa0lHl1joOvMeiB/J1ce
-         PbCLo6nhr0TwjNcyLwydZovdN8vrcAFPBVXBhukajvFwH21N8LK9hyVmSWiYnAliNq
-         tRE1JeRx0gb2o+6lQlI4VKlVCNYjoGZBWb4yEhPTEdzBxQbrGK2Hzn46ogluwDRDS6
-         qFYTraome7P99+Fw5NVX9U9nfv1aRGOBR88vNyxC7WFwfmXdPWM28TVn2E2DTGKlxH
-         f/9FgDSsluHbA==
-Received: by mail-lf1-f71.google.com with SMTP id bi30-20020a0565120e9e00b00415d0e471e0so6341766lfb.19
-        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 09:35:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iK3riauy7r4LiWngeJOokJxhZZPLu5etYNKqwE1epw0=;
-        b=ZljTNxKlHoOUN+C+EMmtyhb+ocjjyqWQUUbJ81aom6pVuIQN9d4UNmr1tp3sZ1xk+d
-         51sk5j+4oQZWShl3Bqn1FOtD0Tf80jH6+zYv9u0k67lxCJZs9LpkYBZrJ3JxVSBRAXCD
-         K8SAWZfDZcL6IDoK8KV6d3ssUSurqUn4FSPum0N83XsxBnJLoOJy6npQdf/ZFXzahHIP
-         iC/psXz0UJUz2l8se4hbna6AKkyLglcuD4Bjx9z2C1cBnahuZbovXoTEkg2Jsdq9+H2G
-         foXLeQ3Ie9n8DN/H/De5rad2+xA2NpkAsMf3Vo6j/fMiK6u4xM4Hf4w6A80lzs8ACtqR
-         X91A==
-X-Gm-Message-State: AOAM5339toDQh6zemyNZa/+fWq8neWgAdJbofSAYNU81AUUwW1kCBrMF
-        SIUJ3SPBTCIFZtwS4UGjIDUBuxfcSTkrsAuJiPs1v0zVWvWSqqp6z9PfzkwYvkD5btcnkz7/vYM
-        E2hYuLP/CQbx/fwan6y5W8Y9XtJzqAOn7+4k8aDSKEQ==
-X-Received: by 2002:a05:651c:545:: with SMTP id q5mr48531719ljp.202.1638207353500;
-        Mon, 29 Nov 2021 09:35:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwCdgVQtvrXN9pR82hH5Jlf+5Oj6LFpV+QeH8GC4DH4X/4Agtjois4piKytzHJd5SDX416Alg==
-X-Received: by 2002:a05:651c:545:: with SMTP id q5mr48531704ljp.202.1638207353283;
-        Mon, 29 Nov 2021 09:35:53 -0800 (PST)
-Received: from [192.168.3.67] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
-        by smtp.gmail.com with ESMTPSA id w14sm1339120ljj.7.2021.11.29.09.35.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Nov 2021 09:35:52 -0800 (PST)
-Message-ID: <5687bb27-973e-b774-b876-46c8dffc1176@canonical.com>
-Date:   Mon, 29 Nov 2021 18:35:51 +0100
+        id S240179AbhK2Rsm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Nov 2021 12:48:42 -0500
+Received: from mout.gmx.net ([212.227.17.22]:41917 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1348352AbhK2Rqm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 29 Nov 2021 12:46:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1638207789;
+        bh=17zgiDXDq3UcSUuPCRNhT7DaQshJRnZDLVC0K9ZmqjE=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=JSbEyBNDiQaypk8SgE1LFX4xGKBHWYJnQ0PA3xu61Nlq5R0FlP1f5ldPM1MwiSsY6
+         KjLL281hfRB2rlpQA85CqQp29PDZ+Gdaxd5UJJWu4dlMLxEZBt1+xzteDchGBps6JL
+         V2lvAIv6JHNE+GKoWL5MARxDpVfIJcEL+RDGWXUs=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([46.223.119.124]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MfYLQ-1mPHcb1uyu-00g2WM; Mon, 29
+ Nov 2021 18:43:09 +0100
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     gregkh@linuxfoundation.org
+Cc:     linux@armlinux.org.uk, jirislaby@kernel.org,
+        andre.przywara@arm.com, p.rosenberger@kunbus.com, lukas@wunner.de,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: [PATCH v2] serial: amba-pl011: do not request memory region twice
+Date:   Mon, 29 Nov 2021 18:42:38 +0100
+Message-Id: <20211129174238.8333-1-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH 0/8] soc: samsung: Add USIv2 driver
-Content-Language: en-US
-To:     Sam Protsenko <semen.protsenko@linaro.org>,
-        David Virag <virag.david003@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        devicetree@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-i2c@vger.kernel.org
-References: <20211127223253.19098-1-semen.protsenko@linaro.org>
- <b9807fcc69713fb016838958a3df1c4e54309fc4.camel@gmail.com>
- <CAPLW+4kkVNSvEQjVnSWA2BjkWJXzV-4n1i+10a9FCNL0sD0n3A@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <CAPLW+4kkVNSvEQjVnSWA2BjkWJXzV-4n1i+10a9FCNL0sD0n3A@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:vhsAkv3IJRjj+N3cP1XhD5UefnXX/MszVGn4CT6Tc+YNrPvE47i
+ rDIw9kbit1MYyZLRaq73bKg9Idyz0SzHhWz3n2gqnNllgjW6gftMGRd0hsyJiBSXCG6K6UZ
+ Tx3sPut4WiPpzL0vkYj23Ehc7mP0vzkfnpx8Stnk6gEZgi7zakYt6OScQQ/D+VvAVEXAQRs
+ 0a2gbnK8V6fu6dH1rTWzA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pDUyDeJNWfQ=:lWnr8Ii7JUW5F49dHyf1tt
+ o5uSOV2C0g568SEMnouo8sds1GgdXzYtrRjiXUdsqNfGTfTc2nAig5xYIv8bN+oaAk+lwcHXC
+ qBdQFJkajZJKkAyGOPHReph+JR3pmp+uuXZvkPQCx3Q0mXVfKpQDT0WGi93bDPADw+tPOOEz8
+ EOliiM3WfKwm6mfFobm8SKOG2c29JR5PdvLVYEnpP9kupq6FKDEs/tiyszVr6flg2ZgWxFnhV
+ vKQGPzcGGED2DUz4qJoW+eNIPPVax8cf/eo5YM/hGmfb4yE0Rl+tnwvFU5JHZkN7rxN+irf87
+ 0cPfcPBziDMGtlB28a+tQrAImSQUmd0P/QIzDECN26/wy0JM4hgwDKDqYZeEDbEv1Ga4lsy1/
+ Xj6H+ERbImTVrJDfYl9quDkygxLjvhWYP63r06ikk2zI8HPEX6Es4xHKHSnAPYC0bo9t6QC+o
+ KdeFvs4vpcu2eHzXGszPp3Q0uoPTe7n797SqMxKoHjF0TPQCACunZ6c76MQ0yuFXc3efYbew9
+ 3dNWgURR29ZrkUMuOYYRHQA20/vAXlJSBqFR0ETASPUMpUkDN2zig2UNe7A/ikLSvTCVduFvU
+ x4ojzKOGbC2lPfTa4DYxCvjMNdJOukrHbv+6it5TgJRLUevy4DMtoWBkISu6fZz198SOmrmJd
+ L5h8q39byDM8x9tsj5wuyWYnC7nTzpIHAgiPkEmfICYYAuboz39LT0hSH4n0PfLpOdiriwa7J
+ +dDPuRcVyHPHEhz4Q0VK44WjwLcUsxuzlzhDKO7NhRMqg6SMuw/CIPqoENUdSk7YuvVR56twz
+ MXqFhJ23uNomx62tmNLQZl5r+LXi7wRGpMJRWP1I4rYP26NrywtuJQV+VRrJx+Agwg0fq2MW8
+ MBoPmpiBcpcxQNquKvoCpOrhQAk6IlrTuGru8DiV602vQRuO7iF23TpzxxjJMSMhhFP0Fs0yc
+ pBCY/qdROZEKtzqTFhfECqXls+FXmJniGt33MwMtLmHeGZ4yJM38vh2k0dQsX2W8OcKyaStOn
+ xWRROWmvk1OhB3VXd1A3N3MDbJlG/OR1MXCVRJso3WvMuYC0SGz5a4VR/tBQCM4DxBk35rlOo
+ je7WrE96sIr+cU=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 29/11/2021 14:56, Sam Protsenko wrote:
-> On Sun, 28 Nov 2021 at 05:15, David Virag <virag.david003@gmail.com> wrote:
->>
->> Also this way is pretty USIv2 centric. Adding USIv1 support to this
->> driver is difficult this way because of the the lack of USI_CON and
->> USI_OPTION registers as a whole (so having nowhere to actually set the
->> reg of the USI node to, as the only thing USIv1 has is the SW_CONF
->> register). In my opinion being able to use the same driver and same
->> device tree layout for USIv1 and USIv2 is a definite plus
->>
-> 
-> Well, it's USIv2 driver after all. I never expected it can be extended
-> for USIv1 support. If you think it can be reused for USIv1, it's fine
-> by me. But we need to consider next things:
->   - rename the driver to just "usi.c" (and also its configuration symbol)
->   - provide different compatible for USIv1 (and maybe corresponding driver data)
->   - rework bindings (header and doc); make sure existing bindings are
-> intact (we shouldn't change already introduced interfaces)
->   - in case of USIv1 compatible; don't try to tinker with USIv2 registers
->   - samsung,clkreq-on won't be available in case of USIv1 compatible
-
-I expect this driver to be in future extended for USIv1 and I do not see
-any problems in doing that for current Sam's approach. Most of our
-drivers support several devices, sometimes with differences, and we
-already have patterns solving it, e.g. ops structure or quirks bitmap.
-Driver for new USIv1 compatible would skip setting USI_CON (or any other
-unrelated register). Modification of SW_CONF could be shared or could be
-also split, depending on complexity.
-
-> 
-> Because I don't have USIv1 SoC TRM (and neither do I possess some
-> USIv1 board which I can use for test), I don't think it's my place to
-> add USIv1 support. But I think it's possible to do so, using my input
-> above.
-> 
-> I can see how it might be frustrating having to do some extra work
-> (comparing to just using the code existing in downstream). But I guess
-> that's the difference: vendor is mostly concerned about competitive
-> advantage and getting to market fast, while upstream is more concerned
-> about quality, considering all use cases, and having proper design.
-> Anyway, we can work together to make it right, and to have both
-> IP-cores support. In the worst case, if those are too different, we
-> can have two separate drivers for those.
-> 
->> The only real drawback of that way is having to add code for USIv2
->> inside the UART, HSI2C, and SPI drivers but in my opinion the benefits
->> overweigh the drawbacks greatly. We could even make the uart/spi/hsi2c
->> drivers call a helper function in the USI driver to set their USI_CON
->> and USI_OPTION registers up so that code would be shared and not
->> duplicated. Wether this patch gets applied like this is not my choice
->> though, I'll let the people responsible decide
->> :-)
->>
-> 
-> I'd argue that there are a lot of real drawbacks of using downstream
-> driver as is. That's why I completely re-designed and re-implemented
-> it. Downstream driver can't be built and function as a module, it
-> doesn't respect System Register sharing between consumers, it leads to
-> USI reset code duplication scattered across protocol drivers (that
-> arguably shouldn't even be aware of that), it doesn't reflect HW
-> structure clearly, it's not holding clocks needed for registers access
-> (btw, sysreg clock can be provided in syscon node, exactly for that
-> reason). As Krzysztof said, it also can't handle correct probe order
-> and deferred probes. Downstream driver might work fine for some
-> particular use-cases the vendor has, but in upstream it's better to
-> cover more cases we can expect, as upstream kernel is used on more
-> platforms, with more user space variants, etc.
-
-Implementing USI in each of I2C/SPI/UART drivers is a big minus. Current
-approach nicely encapsulates USI in dedicated driver without polluting
-the other drivers with unrelated bus/protocol stuff.
-
-Best regards,
-Krzysztof
+V2l0aCBjb21taXQgMzg3M2UyZDdmNjNhICgiZHJpdmVyczogUEwwMTE6IHJlZmFjdG9yIHBsMDEx
+X3Byb2JlKCkiKSB0aGUKZnVuY3Rpb24gZGV2bV9pb3JlbWFwKCkgY2FsbGVkIGZyb20gcGwwMTFf
+c2V0dXBfcG9ydCgpIHdhcyByZXBsYWNlZCB3aXRoCmRldm1faW9yZW1hcF9yZXNvdXJjZSgpLiBT
+aW5jZSB0aGlzIGZ1bmN0aW9uIG5vdCBvbmx5IHJlbWFwcyBidXQgYWxzbwpyZXF1ZXN0cyB0aGUg
+cG9ydHMgaW8gbWVtb3J5IHJlZ2lvbiBpdCBub3cgY29sbGlkZXMgd2l0aCB0aGUgLmNvbmZpZ19w
+b3J0KCkKY2FsbGJhY2sgd2hpY2ggcmVxdWVzdHMgdGhlIHNhbWUgcmVnaW9uIGF0IHVhcnQgcG9y
+dCByZWdpc3RyYXRpb24uCgpTaW5jZSBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoKSBhbHJlYWR5IGNs
+YWltcyB0aGUgbWVtb3J5IHN1Y2Nlc3NmdWxseSwgdGhlCnJlcXVlc3QgaW4gLmNvbmZpZ19wb3J0
+KCkgZmFpbHMuCgpMYXRlciBhdCB1YXJ0IHBvcnQgZGVyZWdpc3RyYXRpb24gdGhlIGF0dGVtcHQg
+dG8gcmVsZWFzZSB0aGUgdW5jbGFpbWVkCm1lbW9yeSBhbHNvIGZhaWxzLiBUaGUgZmFpbHVyZSBy
+ZXN1bHRzIGluIGEg4oCcVHJ5aW5nIHRvIGZyZWUgbm9uZXhpc3RlbnQKcmVzb3VyY2UiIHdhcm5p
+bmcuCgpGaXggdGhlc2UgaXNzdWVzIGJ5IHJlbW92aW5nIHRoZSBjYWxsYmFja3MgdGhhdCBpbXBs
+ZW1lbnQgdGhlIHJlZHVuZGFudAptZW1vcnkgYWxsb2NhdGlvbi9yZWxlYXNlLiBBbHNvIG1ha2Ug
+c3VyZSB0aGF0IGNoYW5naW5nIHRoZSBkcml2ZXJzIGlvCm1lbW9yeSBiYXNlIGFkZHJlc3Mgdmlh
+IFRJT0NTU0VSSUFMIGlzIG5vdCBhbGxvd2VkIGFueSBtb3JlLgoKRml4ZXM6IDM4NzNlMmQ3ZjYz
+YSAoImRyaXZlcnM6IFBMMDExOiByZWZhY3RvciBwbDAxMV9wcm9iZSgpIikKU2lnbmVkLW9mZi1i
+eTogTGlubyBTYW5maWxpcHBvIDxMaW5vU2FuZmlsaXBwb0BnbXguZGU+Ci0tLQoKQ2hhbmdlcyBp
+biB2MjoKLSBhZGQgZml4ZXMgdGFnIChhcyBzdWdnZXN0ZWQgYnkgR3JlZykKLSBhZGp1c3QgcGww
+MTFfdmVyaWZ5X3BvcnQgdG8gYXZvaWQgY2hhbmdpbmcgdGhlIG1taW8gYWRkcmVzcyB2aWEKICBU
+SU9DU1NFUklBTCAoYXMgcmVxdWVzdGVkIGJ5IFJ1c3NlbCkKLSByZXBocmFzZSB0aGUgY29tbWl0
+IG1lc3NhZ2UKCgogZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyB8IDI3ICsrKy0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMjQg
+ZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEu
+YyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKaW5kZXggZDM2MWNkODRmZjhjLi5l
+MGU0MWNlOGJiMWYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMK
+KysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYwpAQCAtMjE4MywzMiArMjE4Mywx
+MyBAQCBzdGF0aWMgY29uc3QgY2hhciAqcGwwMTFfdHlwZShzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0
+KQogCXJldHVybiB1YXAtPnBvcnQudHlwZSA9PSBQT1JUX0FNQkEgPyB1YXAtPnR5cGUgOiBOVUxM
+OwogfQogCi0vKgotICogUmVsZWFzZSB0aGUgbWVtb3J5IHJlZ2lvbihzKSBiZWluZyB1c2VkIGJ5
+ICdwb3J0JwotICovCi1zdGF0aWMgdm9pZCBwbDAxMV9yZWxlYXNlX3BvcnQoc3RydWN0IHVhcnRf
+cG9ydCAqcG9ydCkKLXsKLQlyZWxlYXNlX21lbV9yZWdpb24ocG9ydC0+bWFwYmFzZSwgU1pfNEsp
+OwotfQotCi0vKgotICogUmVxdWVzdCB0aGUgbWVtb3J5IHJlZ2lvbihzKSBiZWluZyB1c2VkIGJ5
+ICdwb3J0JwotICovCi1zdGF0aWMgaW50IHBsMDExX3JlcXVlc3RfcG9ydChzdHJ1Y3QgdWFydF9w
+b3J0ICpwb3J0KQotewotCXJldHVybiByZXF1ZXN0X21lbV9yZWdpb24ocG9ydC0+bWFwYmFzZSwg
+U1pfNEssICJ1YXJ0LXBsMDExIikKLQkJCSE9IE5VTEwgPyAwIDogLUVCVVNZOwotfQotCiAvKgog
+ICogQ29uZmlndXJlL2F1dG9jb25maWd1cmUgdGhlIHBvcnQuCiAgKi8KIHN0YXRpYyB2b2lkIHBs
+MDExX2NvbmZpZ19wb3J0KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIGludCBmbGFncykKIHsKLQlp
+ZiAoZmxhZ3MgJiBVQVJUX0NPTkZJR19UWVBFKSB7CisJaWYgKGZsYWdzICYgVUFSVF9DT05GSUdf
+VFlQRSkKIAkJcG9ydC0+dHlwZSA9IFBPUlRfQU1CQTsKLQkJcGwwMTFfcmVxdWVzdF9wb3J0KHBv
+cnQpOwotCX0KIH0KIAogLyoKQEAgLTIyMjMsNiArMjIwNCw4IEBAIHN0YXRpYyBpbnQgcGwwMTFf
+dmVyaWZ5X3BvcnQoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IHNlcmlhbF9zdHJ1Y3Qg
+KnNlcikKIAkJcmV0ID0gLUVJTlZBTDsKIAlpZiAoc2VyLT5iYXVkX2Jhc2UgPCA5NjAwKQogCQly
+ZXQgPSAtRUlOVkFMOworCWlmIChwb3J0LT5tYXBiYXNlICE9ICh1bnNpZ25lZCBsb25nKSBzZXIt
+PmlvbWVtX2Jhc2UpCisJCXJldCA9IC1FSU5WQUw7CiAJcmV0dXJuIHJldDsKIH0KIApAQCAtMjI3
+NSw4ICsyMjU4LDYgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCB1YXJ0X29wcyBhbWJhX3BsMDExX3Bv
+cHMgPSB7CiAJLmZsdXNoX2J1ZmZlcgk9IHBsMDExX2RtYV9mbHVzaF9idWZmZXIsCiAJLnNldF90
+ZXJtaW9zCT0gcGwwMTFfc2V0X3Rlcm1pb3MsCiAJLnR5cGUJCT0gcGwwMTFfdHlwZSwKLQkucmVs
+ZWFzZV9wb3J0CT0gcGwwMTFfcmVsZWFzZV9wb3J0LAotCS5yZXF1ZXN0X3BvcnQJPSBwbDAxMV9y
+ZXF1ZXN0X3BvcnQsCiAJLmNvbmZpZ19wb3J0CT0gcGwwMTFfY29uZmlnX3BvcnQsCiAJLnZlcmlm
+eV9wb3J0CT0gcGwwMTFfdmVyaWZ5X3BvcnQsCiAjaWZkZWYgQ09ORklHX0NPTlNPTEVfUE9MTApA
+QCAtMjMwNiw4ICsyMjg3LDYgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCB1YXJ0X29wcyBzYnNhX3Vh
+cnRfcG9wcyA9IHsKIAkuc2h1dGRvd24JPSBzYnNhX3VhcnRfc2h1dGRvd24sCiAJLnNldF90ZXJt
+aW9zCT0gc2JzYV91YXJ0X3NldF90ZXJtaW9zLAogCS50eXBlCQk9IHBsMDExX3R5cGUsCi0JLnJl
+bGVhc2VfcG9ydAk9IHBsMDExX3JlbGVhc2VfcG9ydCwKLQkucmVxdWVzdF9wb3J0CT0gcGwwMTFf
+cmVxdWVzdF9wb3J0LAogCS5jb25maWdfcG9ydAk9IHBsMDExX2NvbmZpZ19wb3J0LAogCS52ZXJp
+ZnlfcG9ydAk9IHBsMDExX3ZlcmlmeV9wb3J0LAogI2lmZGVmIENPTkZJR19DT05TT0xFX1BPTEwK
+CmJhc2UtY29tbWl0OiBkNTgwNzFhOGE3NmQ3NzllZWRhYjM4MDMzYWU0YzgyMWMzMDI5NWE1Ci0t
+IAoyLjMzLjEKCg==
