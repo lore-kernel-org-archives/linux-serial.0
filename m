@@ -2,119 +2,131 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26507C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 17:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A91C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 20:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240179AbhK2Rsm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Nov 2021 12:48:42 -0500
-Received: from mout.gmx.net ([212.227.17.22]:41917 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348352AbhK2Rqm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Nov 2021 12:46:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1638207789;
-        bh=17zgiDXDq3UcSUuPCRNhT7DaQshJRnZDLVC0K9ZmqjE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=JSbEyBNDiQaypk8SgE1LFX4xGKBHWYJnQ0PA3xu61Nlq5R0FlP1f5ldPM1MwiSsY6
-         KjLL281hfRB2rlpQA85CqQp29PDZ+Gdaxd5UJJWu4dlMLxEZBt1+xzteDchGBps6JL
-         V2lvAIv6JHNE+GKoWL5MARxDpVfIJcEL+RDGWXUs=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([46.223.119.124]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MfYLQ-1mPHcb1uyu-00g2WM; Mon, 29
- Nov 2021 18:43:09 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org
-Cc:     linux@armlinux.org.uk, jirislaby@kernel.org,
-        andre.przywara@arm.com, p.rosenberger@kunbus.com, lukas@wunner.de,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v2] serial: amba-pl011: do not request memory region twice
-Date:   Mon, 29 Nov 2021 18:42:38 +0100
-Message-Id: <20211129174238.8333-1-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.33.1
+        id S233900AbhK2UaN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Nov 2021 15:30:13 -0500
+Received: from mail-dm6nam11on2078.outbound.protection.outlook.com ([40.107.223.78]:17865
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235604AbhK2U0i (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 29 Nov 2021 15:26:38 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z1u+UxyE/5Vgkgk1OTGpTNpGYY0u7tNrr2OiND2ooYL1yOtyKb1ka9kpVe0GHnB68PEJQuHmQjh6Kpt5F5htKIDZOWTpfWvGTqT6xJ2YgxB6vL7itXchVHqaOY47Y5eWadjAarMUj8VirsH8FKlc1rfW4R1dBdtJWt4jwInymjNvcxnwq8bVRMLLFTAQavs5RIxLmWJWvOGBcDLhsQnMzfSZ3CYRxM2nJr5cCdmKlb+ZhG+iME474T5Fhrwpc+Hn8pcAPq263O7cyD53+M6LV8jSVUCiFFEGt0Z0s93Ext0v/e+SuTLCNd/kh0vkiLv8LjVPzezfFw0So4TXaQi6hw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=O4KpTwdMijh6Yv2VmyXXOVKy1RdwztxNfksgrK594vk=;
+ b=mINsfiVRgGEIp75M5NZDGSjX91BrMllOitcrKwwcaKk8XG+cvvBZYCxXG2AckVL6bo8hU8iT7W7TGRt2ceN/fYH5DuFZi74M8wCLgOHX2hMiRMF/mBCSE+jTMByGv+k9t8Lf71u73oru2+NzJnq4nThEhPT/EAYPfAfB+oaLyoCNEqkYjb9GSUuJbJkOCRrmUTe05VW7YxCn03R+HiZjcnujjbSvbklX+Oa8gqaOx1mqRQZ5pGeWDbkYUcIIBBuX3xoqDVMu9CRXara7wx/404Oj27sSRDIUiQxsZnPRqTW/NSDtV1gXXxiQz9xjJyzyCH5Jvg3zhM4npyaAyM8WUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=linuxfoundation.org
+ smtp.mailfrom=xilinx.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=xilinx.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=O4KpTwdMijh6Yv2VmyXXOVKy1RdwztxNfksgrK594vk=;
+ b=HkJqW2/z7W8IloQUgCM+Iw4MZOf5AAPBzk4ckJxJ2wvkdsm1tLqG5qnYy4klG1sASL5fQCT/MSBnCTkwvK4t7TSgT7j5QAZytE2GeIZ96uDP0AVRUdSK1j15P+asosinPuiZQPZ3Il+XcI2ezFKDssVYWJbpM8QjB32GMJo+5OI=
+Received: from BN9PR03CA0031.namprd03.prod.outlook.com (2603:10b6:408:fb::6)
+ by BL0PR02MB5635.namprd02.prod.outlook.com (2603:10b6:208:82::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.22; Mon, 29 Nov
+ 2021 20:23:18 +0000
+Received: from BN1NAM02FT064.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:fb:cafe::19) by BN9PR03CA0031.outlook.office365.com
+ (2603:10b6:408:fb::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.22 via Frontend
+ Transport; Mon, 29 Nov 2021 20:23:18 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT064.mail.protection.outlook.com (10.13.2.170) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4734.20 via Frontend Transport; Mon, 29 Nov 2021 20:23:18 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Mon, 29 Nov 2021 12:23:14 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Mon, 29 Nov 2021 12:23:14 -0800
+Envelope-to: gregkh@linuxfoundation.org,
+ jacmet@sunsite.dk,
+ linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org,
+ stable@vger.kernel.org
+Received: from [172.19.72.93] (port=50376 helo=xsj-xw9400.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <lizhi.hou@xilinx.com>)
+        id 1mrnBC-00047h-4c; Mon, 29 Nov 2021 12:23:14 -0800
+Received: by xsj-xw9400.xilinx.com (Postfix, from userid 21952)
+        id 0F675600ACD; Mon, 29 Nov 2021 12:23:14 -0800 (PST)
+From:   Lizhi Hou <lizhi.hou@xilinx.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <jacmet@sunsite.dk>
+CC:     Lizhi Hou <lizhi.hou@xilinx.com>, <stable@vger.kernel.org>
+Subject: [PATCH 1/1] tty: serial: uartlite: allow 64 bit address
+Date:   Mon, 29 Nov 2021 12:23:02 -0800
+Message-ID: <20211129202302.1319033-1-lizhi.hou@xilinx.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:vhsAkv3IJRjj+N3cP1XhD5UefnXX/MszVGn4CT6Tc+YNrPvE47i
- rDIw9kbit1MYyZLRaq73bKg9Idyz0SzHhWz3n2gqnNllgjW6gftMGRd0hsyJiBSXCG6K6UZ
- Tx3sPut4WiPpzL0vkYj23Ehc7mP0vzkfnpx8Stnk6gEZgi7zakYt6OScQQ/D+VvAVEXAQRs
- 0a2gbnK8V6fu6dH1rTWzA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:pDUyDeJNWfQ=:lWnr8Ii7JUW5F49dHyf1tt
- o5uSOV2C0g568SEMnouo8sds1GgdXzYtrRjiXUdsqNfGTfTc2nAig5xYIv8bN+oaAk+lwcHXC
- qBdQFJkajZJKkAyGOPHReph+JR3pmp+uuXZvkPQCx3Q0mXVfKpQDT0WGi93bDPADw+tPOOEz8
- EOliiM3WfKwm6mfFobm8SKOG2c29JR5PdvLVYEnpP9kupq6FKDEs/tiyszVr6flg2ZgWxFnhV
- vKQGPzcGGED2DUz4qJoW+eNIPPVax8cf/eo5YM/hGmfb4yE0Rl+tnwvFU5JHZkN7rxN+irf87
- 0cPfcPBziDMGtlB28a+tQrAImSQUmd0P/QIzDECN26/wy0JM4hgwDKDqYZeEDbEv1Ga4lsy1/
- Xj6H+ERbImTVrJDfYl9quDkygxLjvhWYP63r06ikk2zI8HPEX6Es4xHKHSnAPYC0bo9t6QC+o
- KdeFvs4vpcu2eHzXGszPp3Q0uoPTe7n797SqMxKoHjF0TPQCACunZ6c76MQ0yuFXc3efYbew9
- 3dNWgURR29ZrkUMuOYYRHQA20/vAXlJSBqFR0ETASPUMpUkDN2zig2UNe7A/ikLSvTCVduFvU
- x4ojzKOGbC2lPfTa4DYxCvjMNdJOukrHbv+6it5TgJRLUevy4DMtoWBkISu6fZz198SOmrmJd
- L5h8q39byDM8x9tsj5wuyWYnC7nTzpIHAgiPkEmfICYYAuboz39LT0hSH4n0PfLpOdiriwa7J
- +dDPuRcVyHPHEhz4Q0VK44WjwLcUsxuzlzhDKO7NhRMqg6SMuw/CIPqoENUdSk7YuvVR56twz
- MXqFhJ23uNomx62tmNLQZl5r+LXi7wRGpMJRWP1I4rYP26NrywtuJQV+VRrJx+Agwg0fq2MW8
- MBoPmpiBcpcxQNquKvoCpOrhQAk6IlrTuGru8DiV602vQRuO7iF23TpzxxjJMSMhhFP0Fs0yc
- pBCY/qdROZEKtzqTFhfECqXls+FXmJniGt33MwMtLmHeGZ4yJM38vh2k0dQsX2W8OcKyaStOn
- xWRROWmvk1OhB3VXd1A3N3MDbJlG/OR1MXCVRJso3WvMuYC0SGz5a4VR/tBQCM4DxBk35rlOo
- je7WrE96sIr+cU=
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0020cc3f-8520-42d8-9e8a-08d9b37614ed
+X-MS-TrafficTypeDiagnostic: BL0PR02MB5635:
+X-Microsoft-Antispam-PRVS: <BL0PR02MB5635F7E89E943CB9302C2003A1669@BL0PR02MB5635.namprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lI1rt1qXD5ba/C167cdKKGHY2KUJf4yAVKadudfB/+NdcPhV3lbU+6+ijHkhZW+38RUnRVMH1o7nRN3xn/q9NFR2QgIMDq6hzcoy3V49xIrTYWfOchjh5Zmxr0nE2/2lHBc2DYL0bzdgF/ndGaVGo6q3cwhiAqnzQb7iV0Y8lLFAnZVw2GmPP2Vz3wdgjh4oUYrt4S+fZ+O+8pFDe0pqOFwWansWqr9EeDTdRMKLVevq4P4GPc7Gh5tJ8yElD4OR50KtyAJ2NCTCQOu74st65NYUYW/nyjt7fOtQGN3ZLN05VBFMZYnmAfXFEATMDH1ytmxqEsnRZ7H3zV2uBmoaC0AxqpKxUm2cWVK51vPQDDO06BA9xCQVlhKq8bcFHFSxkH3McpbPSJIrmtXdqeeDVEFNds6FpDMgIN2ab9RBVVolaCLftc51kD5dNehOsNkTFHasNgJG6m/m92PdaLo5C6+htQJUCdNyKnYjY2qul89oSkdIGJzwkFKgRClkprwQlgcKsrn+JZ3elv3HPl25Empv4f+ZzVH/sStVyfJyKH0C+le/z3Go8ow7czQNOOVqyGGeIKQCwU7EXBZBl3myD7FMlUWjX7VMQ81H4lIrUUYbvnMZDGHDNyhjjSuJyOPHrXj5f9JJSJA3zfgCLYeW5+0BPyKsjttEb31m/rIjaIoSSWOmcrefaBBt67WD0O/zQgofNVQAzDEjVJc65EpCZw==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(46966006)(36840700001)(42186006)(316002)(5660300002)(356005)(8936002)(70206006)(83380400001)(8676002)(7636003)(47076005)(54906003)(1076003)(26005)(4326008)(2616005)(336012)(426003)(6266002)(70586007)(508600001)(2906002)(36756003)(186003)(6666004)(82310400004)(44832011)(110136005)(36860700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2021 20:23:18.6776
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0020cc3f-8520-42d8-9e8a-08d9b37614ed
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT064.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR02MB5635
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-V2l0aCBjb21taXQgMzg3M2UyZDdmNjNhICgiZHJpdmVyczogUEwwMTE6IHJlZmFjdG9yIHBsMDEx
-X3Byb2JlKCkiKSB0aGUKZnVuY3Rpb24gZGV2bV9pb3JlbWFwKCkgY2FsbGVkIGZyb20gcGwwMTFf
-c2V0dXBfcG9ydCgpIHdhcyByZXBsYWNlZCB3aXRoCmRldm1faW9yZW1hcF9yZXNvdXJjZSgpLiBT
-aW5jZSB0aGlzIGZ1bmN0aW9uIG5vdCBvbmx5IHJlbWFwcyBidXQgYWxzbwpyZXF1ZXN0cyB0aGUg
-cG9ydHMgaW8gbWVtb3J5IHJlZ2lvbiBpdCBub3cgY29sbGlkZXMgd2l0aCB0aGUgLmNvbmZpZ19w
-b3J0KCkKY2FsbGJhY2sgd2hpY2ggcmVxdWVzdHMgdGhlIHNhbWUgcmVnaW9uIGF0IHVhcnQgcG9y
-dCByZWdpc3RyYXRpb24uCgpTaW5jZSBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoKSBhbHJlYWR5IGNs
-YWltcyB0aGUgbWVtb3J5IHN1Y2Nlc3NmdWxseSwgdGhlCnJlcXVlc3QgaW4gLmNvbmZpZ19wb3J0
-KCkgZmFpbHMuCgpMYXRlciBhdCB1YXJ0IHBvcnQgZGVyZWdpc3RyYXRpb24gdGhlIGF0dGVtcHQg
-dG8gcmVsZWFzZSB0aGUgdW5jbGFpbWVkCm1lbW9yeSBhbHNvIGZhaWxzLiBUaGUgZmFpbHVyZSBy
-ZXN1bHRzIGluIGEg4oCcVHJ5aW5nIHRvIGZyZWUgbm9uZXhpc3RlbnQKcmVzb3VyY2UiIHdhcm5p
-bmcuCgpGaXggdGhlc2UgaXNzdWVzIGJ5IHJlbW92aW5nIHRoZSBjYWxsYmFja3MgdGhhdCBpbXBs
-ZW1lbnQgdGhlIHJlZHVuZGFudAptZW1vcnkgYWxsb2NhdGlvbi9yZWxlYXNlLiBBbHNvIG1ha2Ug
-c3VyZSB0aGF0IGNoYW5naW5nIHRoZSBkcml2ZXJzIGlvCm1lbW9yeSBiYXNlIGFkZHJlc3Mgdmlh
-IFRJT0NTU0VSSUFMIGlzIG5vdCBhbGxvd2VkIGFueSBtb3JlLgoKRml4ZXM6IDM4NzNlMmQ3ZjYz
-YSAoImRyaXZlcnM6IFBMMDExOiByZWZhY3RvciBwbDAxMV9wcm9iZSgpIikKU2lnbmVkLW9mZi1i
-eTogTGlubyBTYW5maWxpcHBvIDxMaW5vU2FuZmlsaXBwb0BnbXguZGU+Ci0tLQoKQ2hhbmdlcyBp
-biB2MjoKLSBhZGQgZml4ZXMgdGFnIChhcyBzdWdnZXN0ZWQgYnkgR3JlZykKLSBhZGp1c3QgcGww
-MTFfdmVyaWZ5X3BvcnQgdG8gYXZvaWQgY2hhbmdpbmcgdGhlIG1taW8gYWRkcmVzcyB2aWEKICBU
-SU9DU1NFUklBTCAoYXMgcmVxdWVzdGVkIGJ5IFJ1c3NlbCkKLSByZXBocmFzZSB0aGUgY29tbWl0
-IG1lc3NhZ2UKCgogZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyB8IDI3ICsrKy0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMjQg
-ZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEu
-YyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKaW5kZXggZDM2MWNkODRmZjhjLi5l
-MGU0MWNlOGJiMWYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMK
-KysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYwpAQCAtMjE4MywzMiArMjE4Mywx
-MyBAQCBzdGF0aWMgY29uc3QgY2hhciAqcGwwMTFfdHlwZShzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0
-KQogCXJldHVybiB1YXAtPnBvcnQudHlwZSA9PSBQT1JUX0FNQkEgPyB1YXAtPnR5cGUgOiBOVUxM
-OwogfQogCi0vKgotICogUmVsZWFzZSB0aGUgbWVtb3J5IHJlZ2lvbihzKSBiZWluZyB1c2VkIGJ5
-ICdwb3J0JwotICovCi1zdGF0aWMgdm9pZCBwbDAxMV9yZWxlYXNlX3BvcnQoc3RydWN0IHVhcnRf
-cG9ydCAqcG9ydCkKLXsKLQlyZWxlYXNlX21lbV9yZWdpb24ocG9ydC0+bWFwYmFzZSwgU1pfNEsp
-OwotfQotCi0vKgotICogUmVxdWVzdCB0aGUgbWVtb3J5IHJlZ2lvbihzKSBiZWluZyB1c2VkIGJ5
-ICdwb3J0JwotICovCi1zdGF0aWMgaW50IHBsMDExX3JlcXVlc3RfcG9ydChzdHJ1Y3QgdWFydF9w
-b3J0ICpwb3J0KQotewotCXJldHVybiByZXF1ZXN0X21lbV9yZWdpb24ocG9ydC0+bWFwYmFzZSwg
-U1pfNEssICJ1YXJ0LXBsMDExIikKLQkJCSE9IE5VTEwgPyAwIDogLUVCVVNZOwotfQotCiAvKgog
-ICogQ29uZmlndXJlL2F1dG9jb25maWd1cmUgdGhlIHBvcnQuCiAgKi8KIHN0YXRpYyB2b2lkIHBs
-MDExX2NvbmZpZ19wb3J0KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIGludCBmbGFncykKIHsKLQlp
-ZiAoZmxhZ3MgJiBVQVJUX0NPTkZJR19UWVBFKSB7CisJaWYgKGZsYWdzICYgVUFSVF9DT05GSUdf
-VFlQRSkKIAkJcG9ydC0+dHlwZSA9IFBPUlRfQU1CQTsKLQkJcGwwMTFfcmVxdWVzdF9wb3J0KHBv
-cnQpOwotCX0KIH0KIAogLyoKQEAgLTIyMjMsNiArMjIwNCw4IEBAIHN0YXRpYyBpbnQgcGwwMTFf
-dmVyaWZ5X3BvcnQoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IHNlcmlhbF9zdHJ1Y3Qg
-KnNlcikKIAkJcmV0ID0gLUVJTlZBTDsKIAlpZiAoc2VyLT5iYXVkX2Jhc2UgPCA5NjAwKQogCQly
-ZXQgPSAtRUlOVkFMOworCWlmIChwb3J0LT5tYXBiYXNlICE9ICh1bnNpZ25lZCBsb25nKSBzZXIt
-PmlvbWVtX2Jhc2UpCisJCXJldCA9IC1FSU5WQUw7CiAJcmV0dXJuIHJldDsKIH0KIApAQCAtMjI3
-NSw4ICsyMjU4LDYgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCB1YXJ0X29wcyBhbWJhX3BsMDExX3Bv
-cHMgPSB7CiAJLmZsdXNoX2J1ZmZlcgk9IHBsMDExX2RtYV9mbHVzaF9idWZmZXIsCiAJLnNldF90
-ZXJtaW9zCT0gcGwwMTFfc2V0X3Rlcm1pb3MsCiAJLnR5cGUJCT0gcGwwMTFfdHlwZSwKLQkucmVs
-ZWFzZV9wb3J0CT0gcGwwMTFfcmVsZWFzZV9wb3J0LAotCS5yZXF1ZXN0X3BvcnQJPSBwbDAxMV9y
-ZXF1ZXN0X3BvcnQsCiAJLmNvbmZpZ19wb3J0CT0gcGwwMTFfY29uZmlnX3BvcnQsCiAJLnZlcmlm
-eV9wb3J0CT0gcGwwMTFfdmVyaWZ5X3BvcnQsCiAjaWZkZWYgQ09ORklHX0NPTlNPTEVfUE9MTApA
-QCAtMjMwNiw4ICsyMjg3LDYgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCB1YXJ0X29wcyBzYnNhX3Vh
-cnRfcG9wcyA9IHsKIAkuc2h1dGRvd24JPSBzYnNhX3VhcnRfc2h1dGRvd24sCiAJLnNldF90ZXJt
-aW9zCT0gc2JzYV91YXJ0X3NldF90ZXJtaW9zLAogCS50eXBlCQk9IHBsMDExX3R5cGUsCi0JLnJl
-bGVhc2VfcG9ydAk9IHBsMDExX3JlbGVhc2VfcG9ydCwKLQkucmVxdWVzdF9wb3J0CT0gcGwwMTFf
-cmVxdWVzdF9wb3J0LAogCS5jb25maWdfcG9ydAk9IHBsMDExX2NvbmZpZ19wb3J0LAogCS52ZXJp
-ZnlfcG9ydAk9IHBsMDExX3ZlcmlmeV9wb3J0LAogI2lmZGVmIENPTkZJR19DT05TT0xFX1BPTEwK
-CmJhc2UtY29tbWl0OiBkNTgwNzFhOGE3NmQ3NzllZWRhYjM4MDMzYWU0YzgyMWMzMDI5NWE1Ci0t
-IAoyLjMzLjEKCg==
+The base address of uartlite registers could be 64 bit address which is from
+device resource. When ulite_probe() calls ulite_assign(), this 64 bit
+address is casted to 32-bit. The fix is to replace "u32" type with
+"phys_addr_t" type for the base address in ulite_assign() argument list.
+
+Fixes: 8fa7b6100693 ("[POWERPC] Uartlite: Separate the bus binding from the driver proper")
+
+Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
+---
+ drivers/tty/serial/uartlite.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index d3d9566e5dbd..e1fa52d31474 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -626,7 +626,7 @@ static struct uart_driver ulite_uart_driver = {
+  *
+  * Returns: 0 on success, <0 otherwise
+  */
+-static int ulite_assign(struct device *dev, int id, u32 base, int irq,
++static int ulite_assign(struct device *dev, int id, phys_addr_t base, int irq,
+ 			struct uartlite_data *pdata)
+ {
+ 	struct uart_port *port;
+-- 
+2.27.0
+
