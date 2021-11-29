@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BD8C433FE
-	for <linux-serial@archiver.kernel.org>; Sun, 28 Nov 2021 23:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA402C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 00:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235189AbhK1X7s (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 28 Nov 2021 18:59:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        id S1359666AbhK2AIB (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 28 Nov 2021 19:08:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbhK1X5s (ORCPT
+        with ESMTP id S1359723AbhK2AGB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 28 Nov 2021 18:57:48 -0500
-Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4766DC061574
-        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 15:54:31 -0800 (PST)
-Received: by mail-vk1-xa30.google.com with SMTP id m19so9777644vko.12
-        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 15:54:31 -0800 (PST)
+        Sun, 28 Nov 2021 19:06:01 -0500
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FC5C0613E0
+        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 16:02:12 -0800 (PST)
+Received: by mail-ua1-x92c.google.com with SMTP id ay21so30323172uab.12
+        for <linux-serial@vger.kernel.org>; Sun, 28 Nov 2021 16:02:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=W6GUPGDBtJn+odYJ5HX9HLZbUxWJ488arHtw5A2QE5I=;
-        b=mAP+xUXoJdAGw+3jgnscKZG1chXc/PKkk929pxX1NBvMUcqxq416PnF1Q9LV+y3IAH
-         12zWR5H/rkQUsU4Ij9XRDMWaJAXtvb8ARK8LY9wX0jSohw630SZ1bmXfflhCNq8dzyXe
-         jHyXLwDdLEFdHXLFa/Zs8bysH52SDcnXQ62X3lUeIGMr3f4NR5dmQh59b79ucjYIrz+6
-         3DOZQwQRfdgU6lZU9gGDWNWh6ssUZAIL4/qevnIc0rZSZGCLS7ePw8Y4ozoKybFD2S2I
-         zx07pvwbYJJvK9oVwWtY6Yst+A2bwCJWTn+2z6N4tfCN6ZpFbmIXWUC6R+4GXH383tS8
-         wH6Q==
+        bh=iX/liG3cogM7y6xTjLVTRJ7br8H2lhulk0j4IZZdOaQ=;
+        b=uGe8zOrAcFrS6z7QKGo9xMOZg9CRr8M4izeUnePF88hPW3IOU4O47zaGY3ehLTJ7ad
+         jjp/QfHp82CjKI63WwBE9dITiRQtKezFFSOrSjz5ClIRSE3QGYDg+XCo+0Ms4r+/kbSu
+         glgbX/zxa/WBlsB16AuTRQs2FQqadz+FldsS42Q4F/qDUyBfI5bzByZwN+90bzGM+ITS
+         cpdZU3TcFgVt6NApgJa2NVB6pVumAWqrHlkE/4ehl1V3jjQAGwTg+/O5YPrNoQZvB9Z4
+         fPLH38w79wmmzGLT4vmMkeZLhvPNIc86Xdyp5fIhurOrDWbBRwgR7fHa0iRIDL1OJWaD
+         lJOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=W6GUPGDBtJn+odYJ5HX9HLZbUxWJ488arHtw5A2QE5I=;
-        b=uUQggpfrYNfTP1+v3Hbt2Gr3dkYFFQqIvhwTdLm13AiLFJkOTJZvNgyfqpuhsNxg8G
-         3YHNfk++ZY85YeVlYoAbvqTfJXQfIypJS2nbv+1TeqBXPPw15hzvGL2IUAF8gGTIKj7H
-         x4ejglx3eq2bkdkrRvo8dJeuxArGqTDSAwmykKvzFV5+nsz92gf/Yp+KXQvK+4hq3v7X
-         KvTDq955CQPrtLnDg3ZEHB0QnTV19VLmtIhfDqxj5fcnRt3Q2efd732H79F8bw8aH80u
-         sfXwEbJyySR0IrSBwvtmnUSIngr6qhgu0s/9HzL2z/u7wDNIXYNDoG8jb/9Z/Vcj9mZW
-         MvEQ==
-X-Gm-Message-State: AOAM533OsegSgWr7LvSFUtt3I1jR+hwUvCqoqXefOgr9aLHd4QxKNoBm
-        rqRiveL0doVOiP01YzqWajiTpL4diSfvF9P10/QpSA==
-X-Google-Smtp-Source: ABdhPJwpbsu1iP889kCFOoQxvKA0CIJwmiMq5+VFnpzr9X3v6KVdGvWK3BRzk6bWKvLGWCwFUfT3lgvPVfWQ4zhRTEY=
-X-Received: by 2002:a05:6122:2158:: with SMTP id m24mr33410783vkd.1.1638143670173;
- Sun, 28 Nov 2021 15:54:30 -0800 (PST)
+        bh=iX/liG3cogM7y6xTjLVTRJ7br8H2lhulk0j4IZZdOaQ=;
+        b=1cqEMjCjhFartKoVeXZuCyY7+RH3Q5Y/ISeWEjX2HwqnuHWGEk78kLzpI+q/ratAuF
+         sNc44D9l1hePietcu5XmJZ9XHgP+5q92pIqyctzhW+WYr4k96C+BaL7kvhMR18mNIcbU
+         eTzFdFh01OGYtqERVIY84Ftpt+omIlFtzC4Ehu1gUY3V7jWWXj/ntaKG6Y7YhYCVcgvF
+         kwBhSTx7lZTEIWFvN5SuUU67R6c401GKSnr0F9x9jwTBUko52FdY04ehHA9Iq79E6HJD
+         QqbrF7QtGP2LULNh9mkNhoAAOHSNw2JrE0IIIyrjQKOaOjeoiXR9UAzRtoY5TiRN5K3r
+         MF0A==
+X-Gm-Message-State: AOAM533kJ7dr+xSFv4xd+A1XZtE+0yoY1AqDk4qf9f4zC68QF8RSdfIT
+        D7uuRaqhkZLvvM1s3iU7lBCpDvYLcnIdzv2HY4DsqA==
+X-Google-Smtp-Source: ABdhPJyCQS9jji7xzd9RwMMKE908k3zhD5Kc+fdoA3RuOXkWpCn93jL0JO8s9A/cdRM25JVC4dSxIq/pH3Ao+owxJYo=
+X-Received: by 2002:a67:7247:: with SMTP id n68mr27587295vsc.6.1638144131510;
+ Sun, 28 Nov 2021 16:02:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20211127223253.19098-1-semen.protsenko@linaro.org>
- <20211127223253.19098-7-semen.protsenko@linaro.org> <YaORtBO4b9AyFYyd@kroah.com>
-In-Reply-To: <YaORtBO4b9AyFYyd@kroah.com>
+References: <20211127223253.19098-1-semen.protsenko@linaro.org> <20211127223253.19098-8-semen.protsenko@linaro.org>
+In-Reply-To: <20211127223253.19098-8-semen.protsenko@linaro.org>
 From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Mon, 29 Nov 2021 01:54:18 +0200
-Message-ID: <CAPLW+4=mL6ZV73zY+AoF6mo8Tka0cO8pst2mBYOoEHpX4nrRbA@mail.gmail.com>
-Subject: Re: [PATCH 6/8] tty: serial: Make SERIAL_SAMSUNG=y impossible when EXYNOS_USI_V2=m
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+Date:   Mon, 29 Nov 2021 02:02:00 +0200
+Message-ID: <CAPLW+4nf7Y6HQW-XmgB93Lyie=FwZMAG2rA+S5=KcKpEn_4mjA@mail.gmail.com>
+Subject: Re: [PATCH 7/8] i2c: Make I2C_EXYNOS5=y impossible when EXYNOS_USI_V2=m
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Brown <broonie@kernel.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jaewon Kim <jaewon02.kim@samsung.com>,
         Chanho Park <chanho61.park@samsung.com>,
         David Virag <virag.david003@gmail.com>,
         Youngmin Nam <youngmin.nam@samsung.com>,
@@ -69,63 +69,34 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 28 Nov 2021 at 16:27, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Sun, 28 Nov 2021 at 00:33, Sam Protsenko <semen.protsenko@linaro.org> wrote:
 >
-> On Sun, Nov 28, 2021 at 12:32:51AM +0200, Sam Protsenko wrote:
-> > When UART is encapsulated in USIv2 block (e.g. in Exynos850), USIv2
-> > driver must be loaded first, as it's preparing USI hardware for
-> > particular protocol use. Make it impossible for Samsung serial driver to
-> > be built-in when USIv2 driver is built as a module, to prevent incorrect
-> > booting order for those drivers.
-> >
-> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > ---
-> >  drivers/tty/serial/Kconfig | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> > index 0e5ccb25bdb1..47bc24e74041 100644
-> > --- a/drivers/tty/serial/Kconfig
-> > +++ b/drivers/tty/serial/Kconfig
-> > @@ -237,6 +237,7 @@ config SERIAL_CLPS711X_CONSOLE
-> >  config SERIAL_SAMSUNG
-> >       tristate "Samsung SoC serial support"
-> >       depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || ARCH_APPLE || COMPILE_TEST
-> > +     depends on EXYNOS_USI_V2 || !EXYNOS_USI_V2
+> When HSI2C is encapsulated in USIv2 block (e.g. in Exynos850), USIv2
+> driver must be loaded first, as it's preparing USI hardware for
+> particular protocol use. Make it impossible for i2c-exynos5 driver to be
+> built-in when USIv2 driver is built as a module, to prevent incorrect
+> booting order for those drivers.
 >
-> That's odd, and is not going to help if everything is built as a module
-> and loaded that way.
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> ---
+
+This patch is not needed, please ignore it.
+
+>  drivers/i2c/busses/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> This needs to be done properly in code to handle the issues if the
-> "wrong" code is loaded first.  Please trigger off of the hardware type
-> correctly so you don't have to worry about this at all.
+> diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+> index df89cb809330..e815a9dffb2c 100644
+> --- a/drivers/i2c/busses/Kconfig
+> +++ b/drivers/i2c/busses/Kconfig
+> @@ -613,6 +613,7 @@ config I2C_EXYNOS5
+>         tristate "Exynos high-speed I2C driver"
+>         depends on OF
+>         depends on ARCH_EXYNOS || COMPILE_TEST
+> +       depends on EXYNOS_USI_V2 || !EXYNOS_USI_V2
+>         default y if ARCH_EXYNOS
+>         help
+>           High-speed I2C controller on Samsung Exynos5 and newer Samsung SoCs:
+> --
+> 2.30.2
 >
-
-You are right. The only thing that should be done is "__init" should
-be removed from s3c24xx_serial_console_setup() and
-s3c24xx_serial_get_options() functions. Because in case when USIv2
-driver instantiates the serial driver via of_platform_populate(), when
-USI_V2=m and SERIAL_SAMSUNG=y, those symbols will be thrown away
-already. And of course "[PATCH 5/8] tty: serial: samsung: Enable
-console as module" is needed as well. Correct init order (USI vs
-serial) is already ensured by embedding serial node in USI node (as a
-child node).
-
-We'll still have some weird init order in that case (USI_V2=m and
-SERIAL_SAMSUNG=y), like doing serial console init first (and
-earlycon), then registering USI driver as a module (reconfiguring USI
-IP-core), and then doing serial probe. But at least that doesn't crash
-and works fine (only causing some delay once, in the middle of dmesg
-output). But I guess that would be a problem of people who decided to
-go with such weird config.
-
-Bottom line is, this patch is not needed. I'll re-send v2 soon,
-excluding it from there, and will also add that mentioned "__init"
-removal.
-
-Thanks for review!
-
-> thanks,
->
-> greg k-h
