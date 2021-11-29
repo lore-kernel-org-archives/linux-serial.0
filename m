@@ -2,97 +2,169 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E46DDC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 22:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD44C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 22:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbhK2WNy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Nov 2021 17:13:54 -0500
-Received: from mail-oo1-f50.google.com ([209.85.161.50]:36483 "EHLO
-        mail-oo1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbhK2WLy (ORCPT
+        id S230500AbhK2WYh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Nov 2021 17:24:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230120AbhK2WWw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Nov 2021 17:11:54 -0500
-Received: by mail-oo1-f50.google.com with SMTP id g11-20020a4a754b000000b002c679a02b18so6104959oof.3;
-        Mon, 29 Nov 2021 14:08:36 -0800 (PST)
+        Mon, 29 Nov 2021 17:22:52 -0500
+Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018A1C218861
+        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 12:18:43 -0800 (PST)
+Received: by mail-ua1-x935.google.com with SMTP id l24so36760723uak.2
+        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 12:18:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cz2iwfg2ztgnowgU1B6ZR7M9U+ZkilyzOeAnpqC8M6s=;
+        b=NytNeHa+6RJcZNYN053R/r2YI/ZFEb8SkpnqAP9REtbH7Rd/PeSAagIqiMzf8/Pocb
+         yoKVzuudana6pc9xP5iMPGeN9lMO0BqQgd2FF5wsyARHuepmM4gHTYGfeF8LTR9EWm83
+         3fWHANF0Ho1uIvNX5eaSqQXAgHp0mTvLWlw8p0gfBA/RIqyvUtBeNNP+aRsGCJ/iToPf
+         5HRdV/kWRjq8rAWxZhhanHFr8UfgbkO36cm8jPIc9Q7vVDPlK1ADyX728oaWakr9KfYM
+         TRws7HNOQ2Pdx71/vG7KFwl+wluEAouzGAkcQ3i+Yi2iPN/xsALyXJvtK8FNlrKEGuIc
+         GOnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zrZI1RxVftFt86udeFk7JFpDYtzfxae1gOe0KIZTJGQ=;
-        b=YAmmu1Vl95XHJ/Pd6DZ3CZgNoiJG06LxOEXTPS0SUHmRxylzSls9lry/AIiyyOMahJ
-         kUQHKqLQsX11534YXQZXHEc2jHvgyS+ZVy4nPmSMleGSHlDucBkEphs/I66jQpPq9Ov3
-         jt/H5HwAtPt4vE7GmRZY9XeQxek4D7B3sTPridrNVW4yh8sSqMsZLQOJZ9vUjAPJuPqu
-         CAM2xMpMCV+be84gBKEIB4ZivRa0hgJ7yepOsvmvLlf9/KQLDcSjTzT3lo9hAGVDpGsU
-         J+NLS7Oau5wHPqfYsdJXwkpxOQB65TUMUSXh0HzKsAoAuUobZfTq+ilZT9Sl+J/PPd+Z
-         AAfw==
-X-Gm-Message-State: AOAM531Pfyiq3RAChEqpVOl2qphHpUV3AsgzpqEnJ/71/+QHk5GLdYpr
-        BWZAsfnPsxJSwDm/YVWG2UdvakybXA==
-X-Google-Smtp-Source: ABdhPJzBzGKiVSoZ7Y8cgfynXD74tpTljRY+rlC5loLefamus3owYDtj5zm3wxc0bxAsfCBil8+9gA==
-X-Received: by 2002:a4a:dd93:: with SMTP id h19mr32771210oov.73.1638223715613;
-        Mon, 29 Nov 2021 14:08:35 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bb8sm3320633oib.9.2021.11.29.14.08.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 14:08:35 -0800 (PST)
-Received: (nullmailer pid 697929 invoked by uid 1000);
-        Mon, 29 Nov 2021 22:08:34 -0000
-Date:   Mon, 29 Nov 2021 16:08:34 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        gregkh@linuxfoundation.org,
-        Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: pl011: Add 'arm,xlnx-uart'
-Message-ID: <YaVPYiGmDsqY+1at@robh.at.kernel.org>
-References: <cover.1637061057.git.shubhrajyoti.datta@xilinx.com>
- <e1d6913bfe5ce023d7f6ea106d0359142063e694.1637061057.git.shubhrajyoti.datta@xilinx.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cz2iwfg2ztgnowgU1B6ZR7M9U+ZkilyzOeAnpqC8M6s=;
+        b=ALUowdsOUeAwK//mglnFQc0ch8yqoxpjavldFLIkHEGIhtJ3iN0YVUnxESgB7JVTGi
+         WSP5n3KmgFvxHSf1L1WAxBVfpOSLSg9Zy81aNbnUf2RC09D3eAphMgi+EqT+Y1aCJVWa
+         d4C9LjluMl4ZhyhweMibaHlbG0wg/7PIfIYnl1uCimCpONWAOwe8sYR5OSuzS8f0l6kl
+         6pyqd2NioN79GIm7HCz9s5/tftPWNyOTm0Gf0SKfSFLAYIEXbK/3k6/o0Rm/g7276aim
+         gflrTSGKp65Y2zKpXBBnKTqLVL1guulJ0p7vWTOdUX5XW52cl4HLf1FiRpKrlMQoQd9q
+         Kiog==
+X-Gm-Message-State: AOAM533SYMK0V703zCDFy6J9pgqIdpxjk+HPNVa0/Lg3UoOS4as0ev7n
+        Me/TWuucemfX/GkcuH85Sr9S5/97xJlIQ2tspNWiwg==
+X-Google-Smtp-Source: ABdhPJyCOQTZhSGaCcpZ0/hUdcFpLljvbTaQOZS4xaxIyN3ah63+FfKwiR4wNEeGhavO+EuY/hCie2K40l4vKcV0CG0=
+X-Received: by 2002:a67:3382:: with SMTP id z124mr35921705vsz.57.1638217122958;
+ Mon, 29 Nov 2021 12:18:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e1d6913bfe5ce023d7f6ea106d0359142063e694.1637061057.git.shubhrajyoti.datta@xilinx.com>
+References: <20211127223253.19098-1-semen.protsenko@linaro.org>
+ <20211127223253.19098-6-semen.protsenko@linaro.org> <9a51b37b-d2c4-fb73-bd3f-447c94a66c82@canonical.com>
+In-Reply-To: <9a51b37b-d2c4-fb73-bd3f-447c94a66c82@canonical.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Mon, 29 Nov 2021 22:18:31 +0200
+Message-ID: <CAPLW+4=Xp0m3ycm5c1WSJGtr6vRxx1fsW0MOo65fXMfaB1sR+w@mail.gmail.com>
+Subject: Re: [PATCH 5/8] tty: serial: samsung: Enable console as module
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Chanho Park <chanho61.park@samsung.com>,
+        David Virag <virag.david003@gmail.com>,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        devicetree@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-i2c@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 16, 2021 at 04:47:45PM +0530, Shubhrajyoti Datta wrote:
-> Add support for Uart used in Xilinx Versal SOCs as a platform
-> device.
+On Mon, 29 Nov 2021 at 10:52, Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
+>
+> On 27/11/2021 23:32, Sam Protsenko wrote:
+> > Enable serial driver to be built as a module. To do so, init the console
+> > support on driver/module load instead of using console_initcall().
+> >
+> > This is needed for proper support of USIv2 driver (which can be built as
+> > a module, which in turn makes SERIAL_SAMSUNG be a module too). It also
+> > might be useful for Android GKI modularization efforts.
+> >
+> > Inspired by commit 87a0b9f98ac5 ("tty: serial: meson: enable console as
+> > module").
+> >
+> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > ---
+> >  drivers/tty/serial/Kconfig       |  2 +-
+> >  drivers/tty/serial/samsung_tty.c | 21 +++++++++++++++++++--
+> >  2 files changed, 20 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> > index fc543ac97c13..0e5ccb25bdb1 100644
+> > --- a/drivers/tty/serial/Kconfig
+> > +++ b/drivers/tty/serial/Kconfig
+> > @@ -263,7 +263,7 @@ config SERIAL_SAMSUNG_UARTS
+> >
+> >  config SERIAL_SAMSUNG_CONSOLE
+> >       bool "Support for console on Samsung SoC serial port"
+> > -     depends on SERIAL_SAMSUNG=y
+> > +     depends on SERIAL_SAMSUNG
+> >       select SERIAL_CORE_CONSOLE
+> >       select SERIAL_EARLYCON
+> >       help
+> > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> > index f986a9253dc8..92a63e9392ed 100644
+> > --- a/drivers/tty/serial/samsung_tty.c
+> > +++ b/drivers/tty/serial/samsung_tty.c
+> > @@ -1720,10 +1720,10 @@ static int __init s3c24xx_serial_console_init(void)
+> >       register_console(&s3c24xx_serial_console);
+> >       return 0;
+> >  }
+> > -console_initcall(s3c24xx_serial_console_init);
+> >
+> >  #define S3C24XX_SERIAL_CONSOLE &s3c24xx_serial_console
+> >  #else
+> > +static inline int s3c24xx_serial_console_init(void) { return 0; }
+> >  #define S3C24XX_SERIAL_CONSOLE NULL
+> >  #endif
+> >
+> > @@ -2898,7 +2898,24 @@ static struct platform_driver samsung_serial_driver = {
+> >       },
+> >  };
+> >
+> > -module_platform_driver(samsung_serial_driver);
+> > +static int __init samsung_serial_init(void)
+> > +{
+> > +     int ret;
+> > +
+> > +     ret = s3c24xx_serial_console_init();
+> > +     if (ret)
+> > +             return ret;
+>
+> This will trigger warns on module re-loading, won't it? Either suppress
+> unbind or cleanup in module exit.
+>
 
-No. Why would we want to do that?
+I guess that's already taken care of in  samsung_serial_remove(): it's
+doing uart_remove_one_port(), which in turn does unregister_console().
+So I don't think anything extra should be done on module exit. Or I'm
+missing something?
 
-> 
-> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-> ---
->  Documentation/devicetree/bindings/serial/pl011.yaml | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/pl011.yaml b/Documentation/devicetree/bindings/serial/pl011.yaml
-> index 5ea00f8a283d..6c73923dd15e 100644
-> --- a/Documentation/devicetree/bindings/serial/pl011.yaml
-> +++ b/Documentation/devicetree/bindings/serial/pl011.yaml
-> @@ -24,9 +24,13 @@ select:
->  
->  properties:
->    compatible:
-> -    items:
-> -      - const: arm,pl011
-> -      - const: arm,primecell
-> +    oneOf:
-> +      - items:
-> +          - const: arm,pl011
-> +          - const: arm,primecell
-> +      - items:
-> +          - const: arm,pl011
-> +          - const: arm,xlnx-uart # xilinx uart as platform device
+That case (unload/load) actually doesn't work well in my case: serial
+console doesn't work after doing "modprobe -r samsung_tty; modprobe
+samsung_tty" (but it works fine e.g. in case of i2c_exynos5 driver).
+Not sure what is wrong, but I can see that my board keeps running
+(heartbeat LED is still blinking). Not even sure if that use case
+(unload/load) was ever functional before.
 
-'arm,primecell' means the block has ID registers. Are you saying this 
-implementation doesn't?
+Anyway, please let me know if you think something should be done about
+this particular patch. Right now I don't see anything missing.
 
->  
->    reg:
->      maxItems: 1
-> -- 
-> 2.25.1
-> 
-> 
+> > +
+> > +     return platform_driver_register(&samsung_serial_driver);
+> > +}
+> > +
+> > +static void __exit samsung_serial_exit(void)
+> > +{
+> > +     platform_driver_unregister(&samsung_serial_driver);
+> > +}
+> > +
+> > +module_init(samsung_serial_init);
+> > +module_exit(samsung_serial_exit);
+> >
+> >  #ifdef CONFIG_SERIAL_SAMSUNG_CONSOLE
+> >  /*
+> >
+>
+>
+> Best regards,
+> Krzysztof
