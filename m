@@ -2,112 +2,330 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA376C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 08:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77819C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Nov 2021 08:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243570AbhK2Ix0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Nov 2021 03:53:26 -0500
-Received: from mail-vk1-f181.google.com ([209.85.221.181]:34528 "EHLO
-        mail-vk1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245462AbhK2IvW (ORCPT
+        id S242489AbhK2Iyt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Nov 2021 03:54:49 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:40912
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243583AbhK2Iwt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Nov 2021 03:51:22 -0500
-Received: by mail-vk1-f181.google.com with SMTP id j1so10519951vkr.1;
-        Mon, 29 Nov 2021 00:48:05 -0800 (PST)
+        Mon, 29 Nov 2021 03:52:49 -0500
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 05BFD40742
+        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 08:49:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1638175771;
+        bh=7nEjPvTDQEfY5mZYJtglfa59N8Yj/omdJxmTIOTreCo=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=gd8KbijmgpQ27ieVsvKIBRZX0ryUH8cauaC6CFQF53C2z6vC4x8u350oWJM0xiRep
+         EAfEaVHIeFcQ6+BlOxRxI4rVK5Fj+QfBax+KODTIyvzu+57Wbra0MkwgUpNHo976hD
+         1Ybog+9bu6Bl1RWqzSrg5RMSooodIqz68GmXOBfzVqyh0t2esvM7/iTVfQwgQl3JPW
+         WcUfqG887bYOFQ+mT70qrF2tmyrmiWSI7s12+frTxD6BoUADz+nd1Rdejtz7m6cWay
+         qmo0DzfInrdctgoaAJjDgS/qDD1wUsD4rQ3jFUzKX88zzNw6sq21HJ+UQaD+syK4+I
+         J1HECUGcrKXqQ==
+Received: by mail-lj1-f199.google.com with SMTP id y11-20020a2e978b000000b00218df7f76feso6555887lji.11
+        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 00:49:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rqKpMJ4OcC+ncR21cmEvU7b+QmBhZIqAS+TwK/7omqs=;
-        b=mIsBF2Q7Ji43TwLxrR3Ug8nBR7eKylbTmrNkvOBxDjRyY5s4ZHeDO46BFV+OYGAaik
-         CSLrNaU4kqZPcJHreS41zkoWic8D/EZYyPco1ScyYI0+vXXf8BnBZuzM7Ongw4GdsGcT
-         UAau6LgtyhN8ujr4uKGFqtNa7JepJXWOkoR4liTZiDe1Ps7xeCa/RhSL053cHndz99i1
-         wYBTGqa9Garh4iPUVkEYPjC2T0MJEmHr5ab0Pcqm4ZTygOdjGM8sQJlJQ+3Wot7Q/MrP
-         XWTylmcVzqn7GjrWN4uSD5l4OwdbM8sjE4JUZM6w3ZkZJYgM+tLW2Y2HnoI/qRWaclSz
-         gwzw==
-X-Gm-Message-State: AOAM530nKiUrmhWiz6JTcA6axIAvUBxK41MIa5ALZU+aXgz02d8Pf6/U
-        +CF0zlb81qIqrbS5eEsMwYUEdRwuP0vreA==
-X-Google-Smtp-Source: ABdhPJwmhAPsIfuROaXPIS7QidXV7GhgWJELh3k+ED0k7O7ZV60rFvRCEQ1GpfDKoZ5LXclnRb1qCQ==
-X-Received: by 2002:a1f:d903:: with SMTP id q3mr29642285vkg.37.1638175684422;
-        Mon, 29 Nov 2021 00:48:04 -0800 (PST)
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
-        by smtp.gmail.com with ESMTPSA id p3sm8198259vsr.3.2021.11.29.00.48.03
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7nEjPvTDQEfY5mZYJtglfa59N8Yj/omdJxmTIOTreCo=;
+        b=UQNjftuiu/vTsYEqtlko9Z6iJnA1zTMBVoBqt6qOSjmuR58A/ujUXQPhLM/ijLCjRE
+         mynjyc7W4/3rZb4JDPW3qzmjMHC8kHv2WpBpz/S6LpBh3i3T8y7AmWqzPG2GraQPQSmO
+         zXjcmSKLfaUvTTYO1wfzML+2+ITztqZgNkcBqUChMZwbyuha83GrS4cIFUL4mJ79vApp
+         8XdQG3hz/bC3+sOmPUcZzcPup17zlgG9EcIMRa/PUmULEeMVJ22VdDywCzmxGeaBm7AM
+         g8YyT4UsBwEcCSuSzxviHGSiK8f/Ek8QGY/rPvc7OmUjFKkhHkWnHPhKVzjmKpuiP8yy
+         twqA==
+X-Gm-Message-State: AOAM530tW4QSlhRwyGSSrBrUakCdnr/yHq210jWIPEV/4O/Cja8NO+ml
+        wfjLEZ37Bk0EZVdV6KUJpONPIaSMkqlqWL4L4ugq+anBCqu/pJFhgf8s7TETsBVKb1a1m4+IOef
+        yrl7ig8YyGoWJrYSE5yzWfVlNa6+q1a1KN59gWxDQgw==
+X-Received: by 2002:ac2:4d29:: with SMTP id h9mr46682475lfk.633.1638175770233;
+        Mon, 29 Nov 2021 00:49:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzE9LyxbljzEGBzL+EObwvtjS/b3x08ndNZWzdeUwxrzt8gLR4oaIc/qAMnlM9Cjzkai3+MCg==
+X-Received: by 2002:ac2:4d29:: with SMTP id h9mr46682452lfk.633.1638175770012;
+        Mon, 29 Nov 2021 00:49:30 -0800 (PST)
+Received: from [192.168.3.67] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
+        by smtp.gmail.com with ESMTPSA id x199sm1264377lff.284.2021.11.29.00.49.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Nov 2021 00:48:04 -0800 (PST)
-Received: by mail-ua1-f51.google.com with SMTP id l24so32489770uak.2;
-        Mon, 29 Nov 2021 00:48:03 -0800 (PST)
-X-Received: by 2002:a05:6102:c89:: with SMTP id f9mr30586811vst.68.1638175683565;
- Mon, 29 Nov 2021 00:48:03 -0800 (PST)
+        Mon, 29 Nov 2021 00:49:29 -0800 (PST)
+Message-ID: <26fffd4f-4d40-1cdd-0210-1ae02146d50c@canonical.com>
+Date:   Mon, 29 Nov 2021 09:49:28 +0100
 MIME-Version: 1.0
-References: <20211116074130.107554-1-yoshihiro.shimoda.uh@renesas.com>
- <20211116074130.107554-13-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdUc4PTbo7Fi962qp3RZStR+04S1trhVcnfdynocpQWvBQ@mail.gmail.com> <TY2PR01MB3692AC815601F9C83E4AA3F3D8669@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-In-Reply-To: <TY2PR01MB3692AC815601F9C83E4AA3F3D8669@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 29 Nov 2021 09:47:52 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUja-0A3Hh0k+tccdU4f5=uw4eeP3TSWDJYzbLKadA-zQ@mail.gmail.com>
-Message-ID: <CAMuHMdUja-0A3Hh0k+tccdU4f5=uw4eeP3TSWDJYzbLKadA-zQ@mail.gmail.com>
-Subject: Re: [PATCH 12/16] clk: renesas: cpg-mssr: Add support for R-Car S4-8
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH 3/8] soc: samsung: Add USIv2 driver
+Content-Language: en-US
+To:     Sam Protsenko <semen.protsenko@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jaewon Kim <jaewon02.kim@samsung.com>,
+        Chanho Park <chanho61.park@samsung.com>,
+        David Virag <virag.david003@gmail.com>,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        devicetree@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-i2c@vger.kernel.org
+References: <20211127223253.19098-1-semen.protsenko@linaro.org>
+ <20211127223253.19098-4-semen.protsenko@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20211127223253.19098-4-semen.protsenko@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Shimoda-san,
+On 27/11/2021 23:32, Sam Protsenko wrote:
+> USIv2 IP-core is found on modern ARM64 Exynos SoCs (like Exynos850) and
+> provides selectable serial protocol (one of: UART, SPI, I2C). USIv2
+> registers usually reside in the same register map as a particular
+> underlying protocol it implements, but have some particular offset. E.g.
+> on Exynos850 the USI_UART has 0x13820000 base address, where UART
+> registers have 0x00..0x40 offsets, and USI registers have 0xc0..0xdc
+> offsets. Desired protocol can be chosen via SW_CONF register from System
+> Register block of the same domain as USI.
+> 
+> Before starting to use a particular protocol, USIv2 must be configured
+> properly:
+>   1. Select protocol to be used via System Register
+>   2. Clear "reset" flag in USI_CON
+>   3. Configure HWACG behavior (e.g. for UART Rx the HWACG must be
+>      disabled, so that the IP clock is not gated automatically); this is
+>      done using USI_OPTION register
+>   4. Keep both USI clocks (PCLK and IPCLK) running during USI registers
+>      modification
+> 
+> This driver implements above behavior. Of course, USIv2 driver should be
+> probed before UART/I2C/SPI drivers. It can be achived by embedding
+> UART/I2C/SPI nodes inside of USI node (in Device Tree); driver then
+> walks underlying nodes and instantiates those. Driver also handles USI
+> configuration on PM resume, as register contents can be lost during CPU
+> suspend.
+> 
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> ---
+>  drivers/soc/samsung/Kconfig         |  14 ++
+>  drivers/soc/samsung/Makefile        |   2 +
+>  drivers/soc/samsung/exynos-usi-v2.c | 242 ++++++++++++++++++++++++++++
 
-On Mon, Nov 29, 2021 at 9:36 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> > From: Geert Uytterhoeven, Sent: Wednesday, November 24, 2021 10:48 PM
-> > On Tue, Nov 16, 2021 at 8:42 AM Yoshihiro Shimoda
-> > <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > > Initial support for R-Car S4-8 (r8a779f0), including core, module
-> > > clocks, resets, and register access, because register specification
-> > > differs from R-Car Gen2/3. The register layout of V3U is a similar
-> > > with R-Car S4-8 so that renames CLK_REG_LAYOUT_RCAR_V3U as
-> > > CLK_REG_LAYOUT_RCAR_GEN4. However, PLL names differ between V3U
-> > > and S4-8.
-> > >
-> > > Inspired by patches in the BSP by LUU HOAI.
-> > >
-> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+You used everywhere v2 naming, but I actually hope this driver will be
+able to support also v1 and vx of USI. IOW, I expect to have only one
+USI driver, so please drop everywhere v2 (bindings, symbols, Kconfig,
+functions) except the compatible.
 
-> > > +
-> > > +       DEF_FIXED(".pll1_div2", CLK_PLL1_DIV2,  CLK_PLL1,       2, 1),
-> > > +       DEF_FIXED(".pll2_div2", CLK_PLL2_DIV2,  CLK_PLL2,       2, 1),
-> > > +       DEF_FIXED(".pll3_div2", CLK_PLL3_DIV2,  CLK_PLL3,       2, 1),
-> > > +       DEF_FIXED(".pll5_div2", CLK_PLL5_DIV2,  CLK_PLL5,       2, 1),
-> > > +       DEF_FIXED(".pll5_div4", CLK_PLL5_DIV4,  CLK_PLL5_DIV2,  2, 1),
-> > > +       DEF_FIXED(".pll6_div2", CLK_PLL6_DIV2,  CLK_PLL6,       2, 1),
-> > > +       DEF_FIXED(".s0",        CLK_S0,         CLK_PLL1_DIV2,  2, 1),
-> > > +       DEF_FIXED(".sdsrc",     CLK_SDSRC,      CLK_PLL5_DIV2,  2, 1),
-> >
-> > This relies on the default setting of the SD-IF0 Clock Frequency
-> > Control Register 1 (SD0CKCR1)?
->
-> You're correct. So, we should not use DEF_FIXED for SDSRC...
+>  3 files changed, 258 insertions(+)
+>  create mode 100644 drivers/soc/samsung/exynos-usi-v2.c
+> 
+> diff --git a/drivers/soc/samsung/Kconfig b/drivers/soc/samsung/Kconfig
+> index e2cedef1e8d1..b168973c887f 100644
+> --- a/drivers/soc/samsung/Kconfig
+> +++ b/drivers/soc/samsung/Kconfig
+> @@ -23,6 +23,20 @@ config EXYNOS_CHIPID
+>  	  Support for Samsung Exynos SoC ChipID and Adaptive Supply Voltage.
+>  	  This driver can also be built as module (exynos_chipid).
+>  
+> +config EXYNOS_USI_V2
+> +	tristate "Exynos USIv2 (Universal Serial Interface) driver"
+> +	default ARCH_EXYNOS && ARM64
+> +	depends on ARCH_EXYNOS || COMPILE_TEST
+> +	select MFD_SYSCON
+> +	help
+> +	  Enable support for USIv2 block. USI (Universal Serial Interface) is an
+> +	  IP-core found in modern Samsung Exynos SoCs, like Exynos850 and
+> +	  ExynosAutoV0. USI block can be configured to provide one of the
+> +	  following serial protocols: UART, SPI or High Speed I2C.
+> +
+> +	  This driver allows one to configure USI for desired protocol, which
+> +	  is usually done in USI node in Device Tree.
+> +
+>  config EXYNOS_PMU
+>  	bool "Exynos PMU controller driver" if COMPILE_TEST
+>  	depends on ARCH_EXYNOS || ((ARM || ARM64) && COMPILE_TEST)
+> diff --git a/drivers/soc/samsung/Makefile b/drivers/soc/samsung/Makefile
+> index 2ae4bea804cf..0b746b2fd78f 100644
+> --- a/drivers/soc/samsung/Makefile
+> +++ b/drivers/soc/samsung/Makefile
+> @@ -4,6 +4,8 @@ obj-$(CONFIG_EXYNOS_ASV_ARM)	+= exynos5422-asv.o
+>  obj-$(CONFIG_EXYNOS_CHIPID)	+= exynos_chipid.o
+>  exynos_chipid-y			+= exynos-chipid.o exynos-asv.o
+>  
+> +obj-$(CONFIG_EXYNOS_USI_V2)	+= exynos-usi-v2.o
+> +
+>  obj-$(CONFIG_EXYNOS_PMU)	+= exynos-pmu.o
+>  
+>  obj-$(CONFIG_EXYNOS_PMU_ARM_DRIVERS)	+= exynos3250-pmu.o exynos4-pmu.o \
+> diff --git a/drivers/soc/samsung/exynos-usi-v2.c b/drivers/soc/samsung/exynos-usi-v2.c
+> new file mode 100644
+> index 000000000000..5a315890e4ec
+> --- /dev/null
+> +++ b/drivers/soc/samsung/exynos-usi-v2.c
+> @@ -0,0 +1,242 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (c) 2021 Linaro Ltd.
+> + * Author: Sam Protsenko <semen.protsenko@linaro.org>
+> + *
+> + * Samsung Exynos USI v2 driver (Universal Serial Interface).
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/mfd/syscon.h>
+> +
+> +#include <dt-bindings/soc/samsung,exynos-usi-v2.h>
+> +
+> +/* System Register: SW_CONF register bits */
+> +#define SW_CONF_UART		BIT(0)
+> +#define SW_CONF_SPI		BIT(1)
+> +#define SW_CONF_I2C		BIT(2)
+> +#define SW_CONF_MASK		(SW_CONF_UART | SW_CONF_SPI | SW_CONF_I2C)
+> +
+> +/* USI register offsets */
+> +#define USI_CON			0x04
+> +#define USI_OPTION		0x08
+> +
+> +/* USI register bits */
+> +#define USI_CON_RESET		BIT(0)
+> +#define USI_OPTION_CLKREQ_ON	BIT(1)
+> +#define USI_OPTION_CLKSTOP_ON	BIT(2)
+> +
+> +struct usi_v2_mode {
 
-You can use DEF_FIXED in the initial version, and add proper SD0CKCR1
-support later.
-This is similar to the handling of the various PLLs: currently they're
-treated as fixed ratio clocks, later they can become programmable by
-adding support for the PLLnCR1 registers.
+Everywhere here:
+s/usi_v2/exynos_usi/
 
-Gr{oetje,eeting}s,
+> +	const char *name;		/* mode name */
+> +	unsigned int val;		/* mode register value */
+> +};
+> +
+> +struct usi_v2 {
+> +	struct device *dev;> +	void __iomem *regs;		/* USI register map */
+> +	struct clk *pclk;		/* USI bus clock */
+> +	struct clk *ipclk;		/* USI operating clock */
+> +
+> +	size_t mode;			/* current USI SW_CONF mode index */
+> +	bool clkreq_on;			/* always provide clock to IP */
+> +
+> +	/* System Register */
+> +	struct regmap *sysreg;		/* System Register map */
+> +	unsigned int sw_conf;		/* SW_CONF register offset in sysreg */
+> +};
+> +
+> +static const struct usi_v2_mode usi_v2_modes[] = {
+> +	[USI_V2_UART] =	{ .name = "uart", .val = SW_CONF_UART },
+> +	[USI_V2_SPI] =	{ .name = "spi",  .val = SW_CONF_SPI },
+> +	[USI_V2_I2C] =	{ .name = "i2c",  .val = SW_CONF_I2C },
+> +};
+> +
+> +/**
+> + * usi_v2_set_sw_conf - Set USI block configuration mode
+> + * @usi: USI driver object
+> + * @mode: Mode index
+> + *
+> + * Select underlying serial protocol (UART/SPI/I2C) in USI IP-core.
+> + *
+> + * Return: 0 on success, or negative error code on failure.
+> + */
+> +static int usi_v2_set_sw_conf(struct usi_v2 *usi, size_t mode)
+> +{
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	if (mode >= ARRAY_SIZE(usi_v2_modes))
+> +		return -EINVAL;
+> +
+> +	val = usi_v2_modes[mode].val;
+> +	ret = regmap_update_bits(usi->sysreg, usi->sw_conf, SW_CONF_MASK, val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	usi->mode = mode;
+> +	dev_dbg(usi->dev, "USIv2 protocol: %s\n", usi_v2_modes[usi->mode].name);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * usi_v2_enable - Initialize USI block
+> + * @usi: USI driver object
+> + *
+> + * USI IP-core start state is "reset" (on startup and after CPU resume). This
+> + * routine enables USI block by clearing the reset flag. It also configures
+> + * HWACG behavior (needed e.g. for UART Rx). It should be performed before
+> + * underlying protocol becomes functional.
+> + *
+> + * Both 'pclk' and 'ipclk' clocks should be enabled when running this function.
+> + */
+> +static void usi_v2_enable(const struct usi_v2 *usi)
+> +{
+> +	u32 val;
+> +
+> +	/* Enable USI block */
+> +	val = readl(usi->regs + USI_CON);
+> +	val &= ~USI_CON_RESET;
+> +	writel(val, usi->regs + USI_CON);
+> +	udelay(1);
+> +
+> +	/* Continuously provide the clock to USI IP w/o gating */
+> +	if (usi->clkreq_on) {
+> +		val = readl(usi->regs + USI_OPTION);
+> +		val &= ~USI_OPTION_CLKSTOP_ON;
+> +		val |= USI_OPTION_CLKREQ_ON;
+> +		writel(val, usi->regs + USI_OPTION);
+> +	}
+> +}
+> +
+> +static int usi_v2_configure(struct usi_v2 *usi)
+> +{
+> +	int ret;
+> +
+> +	ret = clk_prepare_enable(usi->pclk);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = clk_prepare_enable(usi->ipclk);
+> +	if (ret)
+> +		goto err_pclk;
+> +
+> +	ret = usi_v2_set_sw_conf(usi, usi->mode);
+> +	if (ret)
+> +		goto err_ipclk;
+> +
+> +	usi_v2_enable(usi);
+> +
+> +err_ipclk:
+> +	clk_disable_unprepare(usi->ipclk);
+> +err_pclk:
+> +	clk_disable_unprepare(usi->pclk);
+> +	return ret;
+> +}
+> +
+> +static int usi_v2_parse_dt(struct device_node *np, struct usi_v2 *usi)
+> +{
+> +	int ret;
+> +	u32 mode;
+> +
+> +	ret = of_property_read_u32(np, "samsung,mode", &mode);
+> +	if (ret)
+> +		return ret;
+> +	usi->mode = mode;
 
-                        Geert
+Parse and validate mode here, instead of usi_v2_set_sw_conf(). We expect
+DT to be correct, so if it is not, then there is no point to probe the
+device.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Best regards,
+Krzysztof
