@@ -2,149 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6385AC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 11:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0ABC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 12:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238518AbhK3LRF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Nov 2021 06:17:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
+        id S240512AbhK3MUe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Nov 2021 07:20:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237950AbhK3LQ5 (ORCPT
+        with ESMTP id S234237AbhK3MUd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Nov 2021 06:16:57 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D32C06175E
-        for <linux-serial@vger.kernel.org>; Tue, 30 Nov 2021 03:13:36 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id u3so52836497lfl.2
-        for <linux-serial@vger.kernel.org>; Tue, 30 Nov 2021 03:13:36 -0800 (PST)
+        Tue, 30 Nov 2021 07:20:33 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69105C061574;
+        Tue, 30 Nov 2021 04:17:14 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id bi37so53226053lfb.5;
+        Tue, 30 Nov 2021 04:17:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Sw2B10ZabkZdmPrt9wGzMiX2Z/pOJb9hGFk18ZvN3TQ=;
-        b=KyQMaENJy/y9ufWjeUtozEDTjYQDfgjJ/84QCGlkPy8EDG1tSFROm5+nnIOverfwwl
-         DdldrQB6r+hLkqulPqffzTt8mYrayukNi+gOo86hTUg61GGbRlXMqpPLP18kgVr4B6qC
-         se5EYcpoF8AzAFKlmtXyELufXHGw8wgTD6wi7ral3bOxLBgOell2JWUM3VzvcqTgLY2Z
-         6aD2R4UYc6HlD+ga4w6EVkGxIhYKK5ujr5sRlvNq+CUGEBDpAEC0SUvfhzGAIKpoQgMV
-         D9xRZZPmYXsr/ACwNDo+QT52Esxr54rY3wI1EFpifeGU3VIL4uqDic7t5q4k73lQg7pg
-         SPGQ==
+        d=gmail.com; s=20210112;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=trRzexDm92sVJlThyj/04+7SN11dBJi8qOdq95CaO5g=;
+        b=VzMywNNj2yxWLL2z9DxwtUGbmUnA8iIr6NjgbGU0BU9wo16PrbqrOBttuCtLYiQZai
+         X+logj3jzyHag+GMsJF4KQdBhQD3+3jB7QDDAma0ktWI+bf/ktIfuuEnGeoLSuUJZAZx
+         tjU2bXEV65OCbmjlAZMLxwS8vITLUaNz+WJ5dPsUgUsMcWPhvZcVjZsmib+HuHOqrmhR
+         pZ+OnM2u7Wycjl06k9VcvBZ/H5jk+IeKppVz4NFng/diLaWdERct8E2mmukQYPNkKLIP
+         1zCPwhmSG74DXdpH3jJlCJvUDkYOioGXD941Ri+Mi1eHc/ZLnWx0fWDEb20f7EbPXc9o
+         19oQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Sw2B10ZabkZdmPrt9wGzMiX2Z/pOJb9hGFk18ZvN3TQ=;
-        b=A03HO/Zp0J5I0hPIM1Upj/zIoDkSyrzQPUjvWUoR0Fga/lnXHJGhMBKBSL5wakCQfJ
-         nLSLf+Um8unuDhC5146Ck1/84PkdV+Kt9XVGTaoFh0N/rzJDyJGCfd005YwZ86eUHleF
-         nZqo4S5lsrL/G6wcwQJfAcxQ7tMROnbL1FwbQRa7oh3BLeRn1XSidOmlz6NUVGvdJSXP
-         nsofbGiRoou9LarMypf2Ypih95T6JlSi87cM4HQi0qadRPhwXVbmMaL8kViSTPtLJZOR
-         rs0FnB62uQPdIHHDBqk2yhqMe4B3g2yrZINKyncyku78gI+BQ7FmyLog+Lb1PHRnkhvc
-         7Ylg==
-X-Gm-Message-State: AOAM533BGKeRfReb9goLbvNxx1Z2oBUD66KjH1qHiZtGZmlveyYHDbdm
-        Mt6Nhmlxg61Q/pdOzfqa6Hht3g==
-X-Google-Smtp-Source: ABdhPJwSJTHwzr6Ih07eZr4IZE7hEJcEmFr6lYjOOM69O7BbJUiCHOOLbYNE1SiwRIixP/tjCrzb5Q==
-X-Received: by 2002:a05:6512:310e:: with SMTP id n14mr55417635lfb.475.1638270815283;
-        Tue, 30 Nov 2021 03:13:35 -0800 (PST)
-Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id m24sm1678428lfc.208.2021.11.30.03.13.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 03:13:34 -0800 (PST)
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v2 RESEND 5/5] tty: serial: samsung: Fix console registration from module
-Date:   Tue, 30 Nov 2021 13:13:25 +0200
-Message-Id: <20211130111325.29328-6-semen.protsenko@linaro.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211130111325.29328-1-semen.protsenko@linaro.org>
-References: <20211130111325.29328-1-semen.protsenko@linaro.org>
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=trRzexDm92sVJlThyj/04+7SN11dBJi8qOdq95CaO5g=;
+        b=obaj7A4coCxUJDQyRHD59vwnou8hCIyRVOcWpQv1SjsK1xZBGproLrzzw5+w9scGq/
+         whf87xoJnh065bpzmb2KPOFExTLX8oh7WMvAfIF5+WqhWT1n02p7I6OxR40gHj2T78Ng
+         sYb0R3yFgn6BFIpVkpcyxpNT6DekQHHoGClR+mdsP/7ivdDGDFpvlvA7CZCK2AbjEQFr
+         WVITL2Sv9FqKKCx/OM9ZSRpp5LuWT21XIqFRZReKtslYd1rcjYO+4ox5WGCp6XTNg1cr
+         DTJiD4HpuYdP1Zfso/EQJNR2VDFQc0raUKxXi8tr2XzHpEc+GOT7eefTSaAvdsKsJsWP
+         T+jQ==
+X-Gm-Message-State: AOAM531jYx9qATmV9PufGQ/cZjI/d/CQbTYOgR0heSIm21DB/rPtLRIq
+        7/d8KDfeyFBYBQ49Si/ayk5WP+PIfjc=
+X-Google-Smtp-Source: ABdhPJyeb69zs1klG9kPMwoTkQRV81S9ZqywFuLxMLusvHux/rRMMtdRtxrotgsIHc3R8AfBdeyY8A==
+X-Received: by 2002:a05:6512:3b2b:: with SMTP id f43mr55139476lfv.629.1638274632435;
+        Tue, 30 Nov 2021 04:17:12 -0800 (PST)
+Received: from [192.168.2.145] (94-29-46-111.dynamic.spd-mgts.ru. [94.29.46.111])
+        by smtp.googlemail.com with ESMTPSA id f23sm1708689ljg.90.2021.11.30.04.17.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Nov 2021 04:17:11 -0800 (PST)
+Subject: Re: [PATCH] serial: tegra: Fixes lower tolerance baud rate limit for
+ older tegra chips introduced by d781ec21bae6
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Patrik John <patrik.john@u-blox.com>, linux-kernel@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, ldewangan@nvidia.com,
+        thierry.reding@gmail.com, jonathan@nvidia.com,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
+References: <sig.096060f39c.20211122124425.74031-1-patrik.john@u-blox.com>
+ <0165046b-c8bc-ec8e-05c7-bf9aea14339b@gmail.com>
+ <727044f2-12d4-0de4-f6b8-ef3ee75d3630@gmail.com>
+Message-ID: <d906ed7f-c507-e5b0-3d46-2750d62414a4@gmail.com>
+Date:   Tue, 30 Nov 2021 15:17:10 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <727044f2-12d4-0de4-f6b8-ef3ee75d3630@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On modern Exynos SoCs (like Exynos850) the UART can be implemented as a
-part of USI IP-core. In such case, USI driver is used to initialize USI
-registers, and it also calls of_platform_populate() to instantiate all
-sub-nodes (e.g. serial node) of USI node. When serial driver is
-built-in, but USI driver is a module, and CONFIG_SERIAL_SAMSUNG_CONSOLE
-is enabled, next call chain will happen when loading USI module from
-user space:
+29.11.2021 15:36, Dmitry Osipenko пишет:
+> 29.11.2021 15:32, Dmitry Osipenko пишет:
+>> 3. Use "Link" tag and put all http links here, before the Signed-off-by
+>> tag, like this:
+>>
+>> Link:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git/commit/drivers/tty/serial/serial-tegra.c?h=for-next&id=d781ec21bae6ff8f9e07682e8947a654484611f5
+>> Link:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git/tree/arch/arm/boot/dts/tegra124-apalis-v1.2.dtsi?h=for-next
+>> Link:
+>> https://www.kernel.org/doc/Documentation/devicetree/bindings/serial/nvidia%2Ctegra20-hsuart.txt
+> 
+> Actually, it should be like this:
+> 
+> Link: https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git/commit/drivers/tty/serial/serial-tegra.c?h=for-next&id=d781ec21bae6ff8f9e07682e8947a654484611f5
+> Link: https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git/tree/arch/arm/boot/dts/tegra124-apalis-v1.2.dtsi?h=for-next
+> Link: https://www.kernel.org/doc/Documentation/devicetree/bindings/serial/nvidia%2Ctegra20-hsuart.txt
+> 
+> I turned off line wrapping for this email.
+> 
 
-    usi_init
-      v
-    usi_probe
-      v
-    of_platform_populate
-      v
-    s3c24xx_serial_probe
-      v
-    uart_add_one_port
-      v
-    uart_configure_port
-      v
-    register_console
-      v
-    try_enable_new_console
-      v
-    s3c24xx_serial_console_setup
+For the reference, I just found that there was v3 already on the list:
 
-But because the serial driver is built-in, and
-s3c24xx_serial_console_setup() is marked with __init keyword, that
-symbol will discarded and long gone by that time already, causing failed
-paging request.
-
-That happens during the next config combination:
-
-    EXYNOS_USI=m
-    SERIAL_SAMSUNG=y
-    SERIAL_SAMSUNG_CONSOLE=y
-
-That config should be completely possible, so rather than limiting
-SERIAL_SAMSUNG choice to "m" only when USI=m, remove __init keyword for
-all affected functions.
-
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
----
-Changes in v2:
-  - This patch is added in v2
-
- drivers/tty/serial/samsung_tty.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 61ccb359620a..d002a4e48ed9 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2500,7 +2500,8 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
- 	uart_console_write(cons_uart, s, count, s3c24xx_serial_console_putchar);
- }
- 
--static void __init
-+/* Shouldn't be __init, as it can be instantiated from other module */
-+static void
- s3c24xx_serial_get_options(struct uart_port *port, int *baud,
- 			   int *parity, int *bits)
- {
-@@ -2563,7 +2564,8 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
- 	}
- }
- 
--static int __init
-+/* Shouldn't be __init, as it can be instantiated from other module */
-+static int
- s3c24xx_serial_console_setup(struct console *co, char *options)
- {
- 	struct uart_port *port;
--- 
-2.30.2
-
+https://patchwork.ozlabs.org/project/linux-tegra/patch/sig.19614244f8.20211123132737.88341-1-patrik.john@u-blox.com/
