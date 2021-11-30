@@ -2,121 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F45C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 15:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F87CC4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 17:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243306AbhK3PqX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Nov 2021 10:46:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243108AbhK3PqB (ORCPT
+        id S245042AbhK3Rq0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Nov 2021 12:46:26 -0500
+Received: from mail-oi1-f175.google.com ([209.85.167.175]:41704 "EHLO
+        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238847AbhK3RqZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Nov 2021 10:46:01 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A8A7C06175F
-        for <linux-serial@vger.kernel.org>; Tue, 30 Nov 2021 07:42:31 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id u3so54905366lfl.2
-        for <linux-serial@vger.kernel.org>; Tue, 30 Nov 2021 07:42:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3BR7hOfrZU5BLrILn7SjH/zgKfBPjj6UDPHMgMpgom8=;
-        b=DUc0FOzRm7dRuC+cBWtQBMgfNccTuyOlgJIqfMMbxXXplx1F7UCPr9b3UsEK+HAlQ/
-         JkLZRCjIqOWfztTcXX7hzZ3G25gsx2Kvptl7oKXvrfywJzlURRqLg7a3Rw1wPnjB52lu
-         x69YeunIj95F13hsHjMlJoB6LE5H/46MrWRcukUMwn9Zq3HhrDG32SKQ55KK9GJ1cIaf
-         X88TKNsTSwCPqohes+XxWyCgFGfC5SWzd4BPDIVxMMWhSnVWD4JYCI6M+eTOx+q2NeDJ
-         BtEpxIOksIK79Ls6ThbOWsQ7LGGv13XjcxlI6JNzyo/fKPm6Cdz9g/mmjPX6owYkyBPq
-         +ivQ==
+        Tue, 30 Nov 2021 12:46:25 -0500
+Received: by mail-oi1-f175.google.com with SMTP id u74so42743562oie.8;
+        Tue, 30 Nov 2021 09:43:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3BR7hOfrZU5BLrILn7SjH/zgKfBPjj6UDPHMgMpgom8=;
-        b=AxCqug1By+Yh6lSYhg+ZKDFaxj+R4vwHsbIjs9GXDV5E0svNYr8fuXXGSfc1GYxA9M
-         AJ+KzSk34cBr804FHWudv0QRU2zwp0iS1VH5gJfs2evVzUhusfP+mIuGyn1Kc7/q7jHR
-         EnLwBYXXy1kMtFhzRpao2ZAjygIKMeWo5OhZS4xJYtZOSVS1tYIk5WZAT7iY55DQwE23
-         HARP1I1Ejiy8FUl7hUve4vQ7dFCGxbPcl6gjN0hhkGeD+SN6zNexag4MRsJ49mprnCCU
-         e5JMQsCrqrWB3JykBI5Xnmltop44OaLmmgMdlh+U03YoLcJWXoro0xQ+R/umcTQbioWN
-         TiFw==
-X-Gm-Message-State: AOAM533Wnzu4Pdoy7d8stivRnjx5CaBIfVIQ9fdPu+TAsnngl4H5OmAi
-        sabMHiXdCbKb0Gvge7P1d/VFLthJsb64hvamXAGZLw==
-X-Google-Smtp-Source: ABdhPJxC4zWXmedOcmpEm0bfpRKItjopzS1RjY1QxCV3VEacaM6KDFcN4qGG64b0icX1eQf5MVEa6XMx1dC4FSgRIL0=
-X-Received: by 2002:a05:6512:10c4:: with SMTP id k4mr55168022lfg.373.1638286949602;
- Tue, 30 Nov 2021 07:42:29 -0800 (PST)
-MIME-Version: 1.0
-References: <20211125211443.1150135-1-Mr.Bossman075@gmail.com> <20211125211443.1150135-12-Mr.Bossman075@gmail.com>
-In-Reply-To: <20211125211443.1150135-12-Mr.Bossman075@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 30 Nov 2021 16:41:53 +0100
-Message-ID: <CAPDyKFqNghVZYdtR8dACGvqAyy9xC8LWnbg6Sq+EGRmv2g5P+A@mail.gmail.com>
-Subject: Re: [PATCH v3 11/13] mmc: sdhci-esdhc-imx: Add sdhc support for
- i.MXRT series
-To:     Jesse Taube <mr.bossman075@gmail.com>
-Cc:     linux-imx@nxp.com, mturquette@baylibre.com, sboyd@kernel.org,
-        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        Kernel@pengutronix.de, festevam@gmail.com, aisheng.dong@nxp.com,
-        stefan@agner.ch, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
-        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
-        adrian.hunter@intel.com, jirislaby@kernel.org,
-        giulio.benetti@benettiengineering.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=ybArtp5NAo1h9pHzQHYt4+Qs6w6iIvokhHnIINTzz0I=;
+        b=qftcKr4sOsBIREMtVai33g8u791raNbou+On9oUBMNdjgb19mw06ybGKdw8ACaqm+T
+         sdvFJ+Tc0bcU4cdMgPyGc7ZQjQ5wU0r2UGkkaKFt/4eo67cLCYJHz7akQq4NfzoAHXOo
+         lGame3nv6g49nxTuOz3peByCEgcK6GtFuOi/IMsoSbu+V87kQK35k68TSWpzqb4eGDdm
+         REKGlhfilQMygH0bR5dgz/DCeR1aKVUItplASTrq4yGZDmacq163qN9cIFp6tv479djs
+         npceBK6Ks9sta4jmdVZ+SnrXU5vsR3Ohzlpny3BJ4+soxDGU2cPm+E0e+xcG2IcKdXGa
+         7LMw==
+X-Gm-Message-State: AOAM533AaRDR2LJ4Om1NeR3MROi/pFId4cvt50wrb77Ts/uFlGZv/P9v
+        gPaOrTcYxHyPanj/IqW1Qg==
+X-Google-Smtp-Source: ABdhPJxpfwZHaJJsQJrxxxdGKQhKNwmK7qoAn5Ox2tfeIPsdhQ8/yFLYB/VG+xooU2jW+OEAPMZFqg==
+X-Received: by 2002:a05:6808:144f:: with SMTP id x15mr329339oiv.157.1638294185979;
+        Tue, 30 Nov 2021 09:43:05 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id v19sm3208026ott.13.2021.11.30.09.43.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Nov 2021 09:43:05 -0800 (PST)
+Received: (nullmailer pid 2713643 invoked by uid 1000);
+        Tue, 30 Nov 2021 17:43:04 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Sam Protsenko <semen.protsenko@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-samsung-soc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Chanho Park <chanho61.park@samsung.com>,
+        linux-serial@vger.kernel.org,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        David Virag <virag.david003@gmail.com>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
+In-Reply-To: <20211130111325.29328-2-semen.protsenko@linaro.org>
+References: <20211130111325.29328-1-semen.protsenko@linaro.org> <20211130111325.29328-2-semen.protsenko@linaro.org>
+Subject: Re: [PATCH v2 RESEND 1/5] dt-bindings: soc: samsung: Add Exynos USI bindings
+Date:   Tue, 30 Nov 2021 11:43:04 -0600
+Message-Id: <1638294184.179325.2713642.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 25 Nov 2021 at 22:15, Jesse Taube <mr.bossman075@gmail.com> wrote:
->
-> From: Jesse Taube <mr.bossman075@gmail.com>
->
-> Add support for i.MXRT1050's sdhc.
->
-> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-
-Applied for next, thanks!
-
-Kind regards
-Uffe
-
-
+On Tue, 30 Nov 2021 13:13:21 +0200, Sam Protsenko wrote:
+> Add constants for choosing USIv2 configuration mode in device tree.
+> Those are further used in USI driver to figure out which value to write
+> into SW_CONF register. Also document USIv2 IP-core bindings.
+> 
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 > ---
-> V1->V2:
-> * Nothing done
-> V2->V3:
-> * Rename imxrt to imxrt1050
-> * Remove BROKEN_AUTO_CMD23 and MAN_TUNING flags
-> ---
->  drivers/mmc/host/sdhci-esdhc-imx.c | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/drivers/mmc/host/sdhci-esdhc-imx.c b/drivers/mmc/host/sdhci-esdhc-imx.c
-> index 764ee1b761d9..55981b0f0b10 100644
-> --- a/drivers/mmc/host/sdhci-esdhc-imx.c
-> +++ b/drivers/mmc/host/sdhci-esdhc-imx.c
-> @@ -305,6 +305,9 @@ static struct esdhc_soc_data usdhc_imx7ulp_data = {
->                         | ESDHC_FLAG_PMQOS | ESDHC_FLAG_HS400
->                         | ESDHC_FLAG_STATE_LOST_IN_LPMODE,
->  };
-> +static struct esdhc_soc_data usdhc_imxrt1050_data = {
-> +       .flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_HS200 | ESDHC_FLAG_ERR004536,
-> +};
->
->  static struct esdhc_soc_data usdhc_imx8qxp_data = {
->         .flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING
-> @@ -355,6 +358,7 @@ static const struct of_device_id imx_esdhc_dt_ids[] = {
->         { .compatible = "fsl,imx7ulp-usdhc", .data = &usdhc_imx7ulp_data, },
->         { .compatible = "fsl,imx8qxp-usdhc", .data = &usdhc_imx8qxp_data, },
->         { .compatible = "fsl,imx8mm-usdhc", .data = &usdhc_imx8mm_data, },
-> +       { .compatible = "fsl,imxrt1050-usdhc", .data = &usdhc_imxrt1050_data, },
->         { .compatible = "nxp,s32g2-usdhc", .data = &usdhc_s32g2_data, },
->         { /* sentinel */ }
->  };
-> --
-> 2.34.0
->
+> Changes in v2:
+>   - Combined dt-bindings doc and dt-bindings header patches
+>   - Added i2c node to example in bindings doc
+>   - Added mentioning of shared internal circuits
+>   - Added USI_V2_NONE value to bindings header
+> 
+>  .../bindings/soc/samsung/exynos-usi.yaml      | 135 ++++++++++++++++++
+>  include/dt-bindings/soc/samsung,exynos-usi.h  |  17 +++
+>  2 files changed, 152 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+>  create mode 100644 include/dt-bindings/soc/samsung,exynos-usi.h
+> 
+
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/soc/samsung/exynos-usi.example.dts:35.39-42.15: Warning (unique_unit_address): /example-0/usi@138200c0/serial@13820000: duplicate unit-address (also used in node /example-0/usi@138200c0/i2c@13820000)
+Documentation/devicetree/bindings/soc/samsung/exynos-usi.example.dt.yaml:0:0: /example-0/usi@138200c0/i2c@13820000: failed to match any schema with compatible: ['samsung,exynosautov9-hsi2c']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1561571
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
