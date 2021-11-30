@@ -2,138 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F5CC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 08:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D22DFC433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 10:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234897AbhK3IuN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Nov 2021 03:50:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234760AbhK3IuN (ORCPT
+        id S236258AbhK3KFs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Nov 2021 05:05:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43002 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235524AbhK3KFr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Nov 2021 03:50:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9DEC061574
-        for <linux-serial@vger.kernel.org>; Tue, 30 Nov 2021 00:46:54 -0800 (PST)
+        Tue, 30 Nov 2021 05:05:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24106B817D6
-        for <linux-serial@vger.kernel.org>; Tue, 30 Nov 2021 08:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23BCDC53FC1;
-        Tue, 30 Nov 2021 08:46:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1638262010;
-        bh=jc5QfOTukUGA/iOzJruLW2gakZ723ExBHmzJN6wafA4=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FCC9B817EB;
+        Tue, 30 Nov 2021 10:02:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 178A1C53FC1;
+        Tue, 30 Nov 2021 10:02:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638266545;
+        bh=uvfhP3wDsqp2sLZLzqwLmrkaZ/VK2MfBZFqJU936Qv0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d3cqK+48d+PkR9JFU+mqwrx7YBqR6DxnjYG2dPFewJaj07MjPHBhP4PRRioadAoNp
-         CpD0w6TQJDotZ+fLIrrw+TV856HANHhq9sPOu9qmH2MT1BVmddePeBNRHevWC6l2eX
-         a+/XSEVIKIifOiHBYBxuPnEnvaqWg3y752leH6z4=
-Date:   Tue, 30 Nov 2021 08:47:22 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     chaozeng <chaochao2021666@163.com>
-Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        baocheng.su@siemens.com, jan.kiszka@siemens.com,
-        le.jin@siemens.com, chao.zeng@siemens.com
-Subject: Re: Question: how to handle tty output buffer
-Message-ID: <YaXXCtfVmsiMnvQA@kroah.com>
-References: <07b4850d-eb6b-5b24-3796-a6c2dce8596a@163.com>
+        b=Mh2hfS6Gw67B48wTiqhi0UiqGeJhIoaRNt8K7v9Mg7lhHotZ2KWMk+gJhD389rOfp
+         Ire0MgGCbIGSiOl3vEKEEti/fEvbOypcINfAQarVEEdFXOyG5FuhAgAnKLCIxM+i4X
+         WcUxEHKSYNx7ZGuFMFzwfveaUpcO2hYxUV6LrpLx6JXgDSQ4ipzILen6pPizHD6VrR
+         EGMW1nGS03CDjDqtqCSEKY8leolcZsEFkUWsOxl3kDPFEKk/80mJkfZIzKmiGttKLL
+         TZ8UrxP/G6t4dVv9RMBuA5F7WbavuGvXzQFtCXYIem7VByocKeWRSOWYVUhPMA2CXM
+         s1Qn2jP41qcRw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mrzxZ-0006Mo-9O; Tue, 30 Nov 2021 11:02:02 +0100
+Date:   Tue, 30 Nov 2021 11:02:01 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCHv4 0/7] Serial port generic PM to fix 8250 PM
+Message-ID: <YaX2mbUv9Yv3icl4@hovoldconsulting.com>
+References: <20211115084203.56478-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <07b4850d-eb6b-5b24-3796-a6c2dce8596a@163.com>
+In-Reply-To: <20211115084203.56478-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 03:19:54PM +0800, chaozeng wrote:
+On Mon, Nov 15, 2021 at 10:41:56AM +0200, Tony Lindgren wrote:
+> Hi,
 > 
-> 
-> Dear all
-> 
-> I have a question about the output buffer, it just related hardware
-> flow-control enabled.
-> 
-> 
-> Question Description:
-> 
-> When the flow control works, rts works. At this time, the sender stops data
-> transmission and exits the sender with interrupt.
-> 
-> We observed that the output buffer was not empty.
-> 
-> But
-> 
-> 1. When the serial port device is used again, it will hang when modifying
-> the properties.(We think the buffer is not empty, change termios property is
-> not OK).
-> 
-> 2. the receive side could receive these output buffer(before) next
-> time.(seems strange)
-> 
-> Reproduce steps:
-> 
->  1. Connect the send and receive side. enable hardware flow-control for
->     both Send side and recv side. (start recv.py then send.py)(refer
->     attachments)
->  2. Waiting for RTS desseart.
->  3. Close the send side using CTRL+C
->  4. Using stty to show or set the uart attributes(it would hang).  and
->     start the second round, the receive side would receive the data last
-> sent.
-> 
-> I found FTDI usb-serial device would sent the data out when flow-control is
-> enabled when closing the port ,but the ti omap_8250 device could not sent
-> the data out and keep the buffer.
-> 
-> the behavior is not the same between several serial ports.
+> Here are v4 patches for serial port generic PM. The scope has now expanded
+> a bit from the earlier attempts to get rid of pm_runtime_irq_safe() for
+> the 8250_omap driver. I've now picked up three patches from Andy's earlier
+> generic serial port PM series.
 
-What hardware are you testing for all of this and what drivers for these
-devices?  And what kernel version?
+So this looks like another step in the right direction but there are
+still some missing pieces.
 
-Note that usb-serial devices are very odd and cheap and do strange
-things because they are so cheap.  They also have the uart hardware off
-at the end of a usb connection and so are not able to be fully
-controlled by the operating system for some devices (while others are,
-but those are usually more expensive devices.)
+First, you need to provide an overview of the design decisions made here
+in cover letter. It's currently spread out over several patches and
+those commit messages still do not hold all the details.
 
-Also there are many "fake" usb-serial devices out there that sometimes
-work differently than the real ones, so watch out as well.
+Specifically, it looks like tx can still stall indefinitely if the
+autosuspend timer fires. This can happen at low baud rates and also when
+using flow control.
 
-And further, when using stty for some usb-serial devices, they used to
-reset their settings when stty closed, making the tool pretty useless.
-Depending on your kernel version and device, you need to watch out for
-this and not rely on stty, but rather the program when you start it up
-needs to set the proper line settings that you need for the device and
-never rely on a previous program getting the state set up properly.
+It also looks like the expected calls to update the last busy timestamp
+might be missing from the interrupt handlers or related helpers.
 
-Also note that when closing a port (you are aborting a program while it
-is running), the state of the uart/tty device is not always in a known
-state to userspace anymore.
+Please also describe how this interacts with the console. Is a console
+port now never suspended? Where is that enforced? The final patch
+appears to rely on this when it drops PM calls from for example some
+console poll callbacks.
 
-So what exactly is the problem that you are trying to solve here and
-what normal workflow has programs being aborted while running?
+> Changes since v3:
+> - Pick three patches from Andy's earlier serial port PM series to handle
+>   issues pointed out by Johan
 
-> Questions:
-> 
-> I'd like to know the common handle logic about the output buffer.
-> 
-> When closing the port, should the output buffer to be sent out or be cleared
-> no matter flow-control is enabled?
+Please also be more specific here when sending an updated series. I
+can't really tell what has changed from just this one sentence.
 
-Depends on the hardware :)
-
-> Who should be response for these output buffer. kernel or userspace
-> application?
-
-If the data is already sent to the kernel from userspace, how can
-userspace be responsible anymore?
-
-> If we keep the output buffer after closing the port, what's thex intend of
-> this?
-
-I do not understand this question, sorry.
-
-thanks,
-
-greg k-h
+Johan
