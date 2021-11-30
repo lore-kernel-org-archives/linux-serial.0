@@ -2,141 +2,224 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38FDCC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 10:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D180C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 10:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232956AbhK3Kge (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Nov 2021 05:36:34 -0500
-Received: from mail-eopbgr70087.outbound.protection.outlook.com ([40.107.7.87]:37443
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232938AbhK3Kge (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Nov 2021 05:36:34 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OjTtQ4CPntvd9R2GbnPZ0MB0ytxgjXJcA8wwnqZNXbQcvUciOag8H4qcHh1RwBBw8YRVxhiXjjEqYDqk6pej1kDcvHWhN4jrer9vcNDiX7/HnLbfe8FsEDievX2IBnU/ldLRUWAF0se8aRU0cn9qg4VBhDhBIDoeo7ZlnjOWo8bIDwzRa/Ns6WYtcmeAwVJNVGxiLZn17/pwPf3NleSGPnNyYkamO4PQOJVVD4vo84Wm78KQeR4xCFBKtyaJJvrZtxZCgLBgjPVNd6lGj0TWLJGlAs46UOannZKY282TrOEZ5FAHFmV0AFgzkMRahkhyYkPdRF/iDklVILqmhE+zug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MOWTkGPxGh+czDbrDfiVif4eO7hIxiqDeBakR2vIPu8=;
- b=HMCYK9kgr542hmi4SdDi3UnecTmYeI/amKYCSfweZNEpC7k3+p9s340tMKp4bC5EJQb556UlUguheMT1tsJ+L1mIhKkmF3Wm/pBRRcfSO3faPjJZ03CglS6cDFos9+Th41eK51Ov4cZ9fbpF+swFLgVGS6b9+nY/+A45+b49RzZ7UNeCGk7EmRFEDFvcdh9lAY52xnDCupyT6WkVXv9JUnu/WNZeedxfeHcqzMfVYp3hIApfJCV7cDAKmcNQzlMZjeFkA5xoQ/lU1X95Wxey4CBbmy+Qcfz/JBDdkHrmxDbnBjHIKBX9sbj3do3DTiyQF3XwqSBzNskazjhfYbkfDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MOWTkGPxGh+czDbrDfiVif4eO7hIxiqDeBakR2vIPu8=;
- b=heFfEg1Bc7E0fthEFG3oeLKrWAHT61yY9gQQDYrDKKJ1v1WYkZ3T762vE146p+1jAGLyYh/0+2ylHgTB0NrjnBrcBEoSfEQMzm+GlX/4R+s6RViNH96hrLWsnPbepHingLjrntAJsAWOJRExbqoFdalJKHyhYwcdNGL3D0AX0/Y=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB8411.eurprd04.prod.outlook.com (2603:10a6:10:24c::9)
- by DB8PR04MB5593.eurprd04.prod.outlook.com (2603:10a6:10:ae::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.23; Tue, 30 Nov
- 2021 10:33:12 +0000
-Received: from DB9PR04MB8411.eurprd04.prod.outlook.com
- ([fe80::b82d:5b87:e781:4f6f]) by DB9PR04MB8411.eurprd04.prod.outlook.com
- ([fe80::b82d:5b87:e781:4f6f%7]) with mapi id 15.20.4734.024; Tue, 30 Nov 2021
- 10:33:12 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH V1] tty: serial: fsl_lpuart: add timeout for wait_event_interruptible in .shutdown()
-Date:   Tue, 30 Nov 2021 18:30:02 +0800
-Message-Id: <20211130103002.28332-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0004.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::22) To DB9PR04MB8411.eurprd04.prod.outlook.com
- (2603:10a6:10:24c::9)
+        id S233630AbhK3KiR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Nov 2021 05:38:17 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:34256 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234136AbhK3KiM (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 30 Nov 2021 05:38:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 24AFDCE1377;
+        Tue, 30 Nov 2021 10:34:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 537DEC53FCB;
+        Tue, 30 Nov 2021 10:34:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638268490;
+        bh=u2hYKHt9PlXYet32YOt4WQRn6PDJ/dkWaMmvbt/OdR0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=r2IpvI9FaW5ebXdfnrETflZYG36K/FnxRkelBmlJvmEiZID+lJSffXcMwmsiSo5ne
+         lKkN3mcu8vNuNsrcr0eO4O8oua44wq6KcaQJEd0iVASJYL0upIhn0rLByYbez4AnSs
+         6zSCIW374rikSf72lvWANXwEb6WvvhY3LUBVfpLMfflVyOBzNf7rYwrRSllTKNW0o4
+         ZWhOKwDPr1v+fpn/Gj+PI3vS9bquVKjiRCFyKAYy5VHa3Wi1FXnVgiS+s+owAfLnI9
+         c3ZvQVQbaNH9DMbbpbsEcEY2T+A1U0GLpEHkcEPxe0AnXYqcpVNf3kLR/iOpGvaatY
+         LyKMrQfSHMPNg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1ms0Sx-0006ZF-3n; Tue, 30 Nov 2021 11:34:27 +0100
+Date:   Tue, 30 Nov 2021 11:34:27 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 2/7] serial: core: Add wakeup() and start_pending_tx()
+ for asynchronous wake
+Message-ID: <YaX+M/913at1+wfg@hovoldconsulting.com>
+References: <20211115084203.56478-1-tony@atomide.com>
+ <20211115084203.56478-3-tony@atomide.com>
 MIME-Version: 1.0
-Received: from localhost.localdomain (119.31.174.71) by SI2PR01CA0004.apcprd01.prod.exchangelabs.com (2603:1096:4:191::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend Transport; Tue, 30 Nov 2021 10:33:10 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 98218cb5-e310-469b-dee5-08d9b3eccf3e
-X-MS-TrafficTypeDiagnostic: DB8PR04MB5593:
-X-Microsoft-Antispam-PRVS: <DB8PR04MB559339B24097BE16EB1D3A0292679@DB8PR04MB5593.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SyZmPHCoAITgTInqMYG0Bb/EUxWHJbnXIaZq1KJ6XAlUpvG/zOP4QNneZYgpYwXWK78fg02eCaeTLnW+6f7bJPPyHRJsEOHl8eG5kFMnIxQRNkn3J4x/VTZtqLCacbIY+o1hp7BwOUy3IgmZD0/NaF62y6059gWM9OWE1UWvel+8xtWQCcX1/iMWxjejgh8tm/w0KoZcWebbZ1EBTJUxz1j2jtRU7uSOaRe0fMLqTzJMUi7Wu+QY46nzIIuJDQpopjTGG9fUEolo8uN0e6pSdrlANEfGyhzAPauf4/cBd1/YZmI0oirBYAgfWodxRXx7WNIgRNy9XrlQXp8dFji9fbCzV696k3+qK/qLgpSTeC8MNetEPQ1zp9Um28bfFHCaaTKUsVafMNLvjd4JF9wecY6aqVByY/Xje2TTGBNgbJBr8N+cpIntuPIY8tB3V2URC+fVeh7CAD5rnI1zqqQt2HEWjYne88URvf5sCVQZhysRx9IWZPneeDE0b0geMsormpOZTzZmThCHJbL2TqOyoPmi32lnFWItDK45qoBhXOwOAMQacCuyBd5hFxNCMcZ3ye4gYTEaNujcr/3ByTcDZDtqgH0NzOZ23QjWKHhFQ1LyNa4B+nXL+NAkySyga8uJimVhslUtaclRNY8a/3rOdjelnIu+tF9xK+h+tr+BODEvRTR0OjmaWSy1wWoE9y4fzGug2oH1/fbNQx5SGqs4WhgcrJmFdfjMd94pY4bz/Nc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8411.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8676002)(956004)(8936002)(86362001)(5660300002)(66556008)(186003)(83380400001)(6486002)(2906002)(6506007)(6512007)(38100700002)(316002)(66476007)(508600001)(1076003)(4326008)(52116002)(26005)(44832011)(2616005)(36756003)(38350700002)(6666004)(66946007)(142923001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NH7q2+iEHzuLq2lU5XpoxSiOCunESh/pV0AAj/V4yciy9pXxa4Jgfu5vtA9y?=
- =?us-ascii?Q?GPlsRB3bZCdDZnBZCgGtRoNCN+eyYffVRFxA3nfys+yrYf+plQxcDRP9CFsy?=
- =?us-ascii?Q?1Mq8zDS/BG35fuEuwAcubu3DizOfblXPpRGL3mjXzvPSnC6Gz0AOK4/V7owX?=
- =?us-ascii?Q?cqBd+5jEeZ4kaczVRpntXxHWKjoajIpGeCotkG2POIweQhjm1TmC/pU+ZpnL?=
- =?us-ascii?Q?HiYoD2kh92SpLtmpFFKjEDDOKCJJdhvld6ulk6zI+JTjl7B9ebDtGs9599iQ?=
- =?us-ascii?Q?0MXfqVzJ5pJMbzHslNcA3cy+aar0SC9XkHFkm2af17EXMU0t+1ZE0c1ruI9J?=
- =?us-ascii?Q?yo3kjafH6aeYPCiMyR33KBFqvu8Oe6IjDAcC9CCvikvm+ef4fUu8Vm39Ge0I?=
- =?us-ascii?Q?PUQN4wbld/YRCtJzG/fN3ZZGggUmECWMguSrQI3rez4Q5b4CL1rCikD7HESa?=
- =?us-ascii?Q?Xi31wy53slA+pljIOUBgxHUxtN/Q2GXBmMbtsTFlNCkaJv2kCKyjmjYqrlgt?=
- =?us-ascii?Q?9TCxnHmC4DdsGaxP+c7oU98zLKCbCUY4b7/bP1hS61ITIMjhJg/45r8er+T1?=
- =?us-ascii?Q?Q11viBapcAdPHJRn2lIy59FKyIfz3ypGHLEFX+O4n5g8MtwGRBu3rrj61ls3?=
- =?us-ascii?Q?KfVm2cr2MXukuZzLW6KU0ZTNrAzuVOBP7FKt/dPscFWk+YPIMVO0ysjlLpf/?=
- =?us-ascii?Q?WV17y0eyJiSSGWLVzdace+A/nb9xHmYr4KZqSF46wMEUpUJSZiWxGbyiVvWZ?=
- =?us-ascii?Q?17KU3Zo26lSTmJv+9inIqZn8sDsldTdyRJDFxgR5yTxKkVDgZeZSAHa5J/aL?=
- =?us-ascii?Q?OQUeVzp2wKVQbLdR+sQVxj7/Hwbkl4QpRXLdmyRsZJJWc/99a+o24C56PpQb?=
- =?us-ascii?Q?kgiT9pLFpg7dqv/imuEFSC9jp4QfFVqLLp0l/8B8/AjND1rd8bKi0ra8+lhQ?=
- =?us-ascii?Q?NX/7e2niPZmQMJJen2gSjpIJMNjXQdC2q8jOy9OLXJwATVNLQL9Vd4Lf1B+O?=
- =?us-ascii?Q?kB+pTf15kRsvjSgK6B7xQGJPI6/sdQpzURtFQ6h+ge5dc8+OAAsNcgR/0yU/?=
- =?us-ascii?Q?cllOE8mb5Ffmt49XzGmCRxgXnJeKl2QpthdZDk977FQmRpUDrniNGG7oUppc?=
- =?us-ascii?Q?cUG1z+eLkXRhrD1BVjkfZXSSfOHimPGtovyjkid2mmSGojDSMZflFQTiGYAx?=
- =?us-ascii?Q?sSlsFDpz34Tk/J6Iot2CnEtByb4J76Vw3G199v3R93BFmd8zUv0WW2HJf//f?=
- =?us-ascii?Q?+XCWvLVsgfQZRYaGg32C3LCzpZmbjOZPSme6cukq1CnklsdN53+iW0oKI84Q?=
- =?us-ascii?Q?Da1HhLbRHmfC3W8cdI1SywvFE/+yw9z0/4fGSXF/iZfC5931A/GL2xg7kzzS?=
- =?us-ascii?Q?JCYsSbkv0hwNgIzkwVueSxON9Bhoxnt2Z0saDDLnxKKrhRKBcIJGSpegY0km?=
- =?us-ascii?Q?aVcpE7bP862myaphPLYdgaFAaIKQ2F4nHtwb7/MOjk6jgME1CzMaDxIyoebt?=
- =?us-ascii?Q?nBMwYLv8eUCBNDAjRUKBRTJUmEJvuuOZfC5G9uGsAjpt8RLpjR1Vpqf5Kmaw?=
- =?us-ascii?Q?2ZV7YX4qvsBtaR8/hG/9ZCH8ryrMvcMOA1WxrAaF20EZ76FhIDYoIXDnBVHL?=
- =?us-ascii?Q?01onPVgpPIKHRgkbyUg/5m0=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98218cb5-e310-469b-dee5-08d9b3eccf3e
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8411.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2021 10:33:12.2842
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: E3vfXx+4frFIqS67WltpB/6bHX5JrxStSZxf0vw8JUzg5M/d5KSGilF7XCctLxrbDHCdnvWn15leSHwKpIeGwA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB5593
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211115084203.56478-3-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use wait_event_interruptible in lpuart_dma_shutdown isn't a reasonable
-behavior, since it may cause the system hang here if the condition
-!sport->dma_tx_in_progress never to be true in some corner case, such as
-when enable the flow control, the dma tx request may never be completed
-due to the peer's CTS setting when run .shutdown().
+On Mon, Nov 15, 2021 at 10:41:58AM +0200, Tony Lindgren wrote:
+> If the serial driver implements PM runtime with autosuspend, the port may
+> be powered down on TX. To wake up the port, let's add new wakeup() call
+> for serial drivers to implement as needed. We can call wakeup() from
+> __uart_start() before attempting to write to the serial port registers.
 
-So here change to use wait_event_interruptible_timeout instead of
-wait_event_interruptible, the tx dma will be forcibly terminated if the
-tx dma request cannot be completed within 30ms.
-The 30ms here is same as the time waiting for the transmitter to empty
-in uart_suspend_port().
+This needs more detail on the approach taken to handle tx and the issues
+involved (e.g. stalled ports etc).
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- drivers/tty/serial/fsl_lpuart.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Let's keep track of the serial port with a new runtime_suspended flag
+> that the device driver runtime PM suspend and resume can manage with
+> port->lock held. This is because only the device driver knows what the
+> device runtime PM state as in Documentation/power/runtime_pm.rst
+> under "9. Autosuspend, or automatically-delayed suspend" for locking.
+> 
+> To allow the serial port drivers to send out pending tx on runtime PM
+> resume, let's add start_pending_tx() as suggested by Johan Hovold
+> <johan@kernel.org>.
+> 
+> Suggested-by: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  Documentation/driver-api/serial/driver.rst |  9 ++++
+>  drivers/tty/serial/serial_core.c           | 49 +++++++++++++++++++++-
+>  include/linux/serial_core.h                |  3 ++
+>  3 files changed, 59 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
+> --- a/Documentation/driver-api/serial/driver.rst
+> +++ b/Documentation/driver-api/serial/driver.rst
+> @@ -234,6 +234,15 @@ hardware.
+>  
+>  	Interrupts: caller dependent.
+>  
+> +  wakeup(port)
+> +	Wake up port if it has been runtime PM suspended.
+> +
+> +	Locking: port->lock taken.
+> +
+> +	Interrupts: locally disabled.
+> +
+> +	This call must not sleep
+> +
+>    flush_buffer(port)
+>  	Flush any write buffers, reset any DMA state and stop any
+>  	ongoing DMA transfers.
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -107,12 +107,35 @@ static int serial_pm_resume_and_get(struct device *dev)
+>  	return pm_runtime_resume_and_get(dev);
+>  }
+>  
+> +/* Only increments the runtime PM usage count */
+> +static void serial_pm_get_noresume(struct device *dev)
+> +{
+> +	pm_runtime_get_noresume(dev);
+> +}
+> +
+>  static void serial_pm_autosuspend(struct device *dev)
+>  {
+>  	pm_runtime_mark_last_busy(dev);
+>  	pm_runtime_put_autosuspend(dev);
+>  }
+>  
+> +/*
+> + * This routine can be used before register access to wake up a serial
+> + * port that has been runtime PM suspended by the serial port driver.
+> + * Note that the runtime_suspended flag is managed by the serial port
+> + * device driver runtime PM.
+> + */
+> +static int __uart_port_wakeup(struct uart_port *port)
+> +{
+> +	if (!port->runtime_suspended)
+> +		return 0;
+> +
+> +	if (port->ops->wakeup)
+> +		return port->ops->wakeup(port);
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index ac5112def40d..78b2730e43d3 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1793,8 +1793,8 @@ static void lpuart_dma_shutdown(struct lpuart_port *sport)
- 	}
- 
- 	if (sport->lpuart_dma_tx_use) {
--		if (wait_event_interruptible(sport->dma_wait,
--			!sport->dma_tx_in_progress) != false) {
-+		if (wait_event_interruptible_timeout(sport->dma_wait,
-+			!sport->dma_tx_in_progress, msecs_to_jiffies(30)) <= 0) {
- 			sport->dma_tx_in_progress = false;
- 			dmaengine_terminate_all(sport->dma_tx_chan);
- 		}
--- 
-2.17.1
+Why do you need a subdriver callback for this? Why no schedule a resume
+in core rather than spreading the logic out over core and subdrivers?
 
+> +
+> +	return 0;
+> +}
+> +
+>  /*
+>   * This routine is used by the interrupt handler to schedule processing in
+>   * the software interrupt portion of the driver.
+> @@ -145,8 +168,15 @@ static void __uart_start(struct tty_struct *tty)
+>  	struct uart_state *state = tty->driver_data;
+>  	struct uart_port *port = state->uart_port;
+>  
+> -	if (port && !uart_tx_stopped(port))
+> -		port->ops->start_tx(port);
+> +	if (!port || uart_tx_stopped(port))
+> +		return;
+> +
+> +	if (__uart_port_wakeup(port) < 0)
+> +		return;
+> +
+
+This is racy since nothing prevents the device from being suspended
+right here.
+
+> +	serial_pm_get_noresume(port->dev);
+> +	port->ops->start_tx(port);
+> +	serial_pm_autosuspend(port->dev);
+>  }
+>  
+>  static void uart_start(struct tty_struct *tty)
+> @@ -160,6 +190,21 @@ static void uart_start(struct tty_struct *tty)
+>  	uart_port_unlock(port, flags);
+>  }
+>  
+> +/*
+> + * This routine can be called from the serial driver runtime PM resume function
+> + * to transmit buffered data if the serial port was not active on uart_write().
+> + */
+> +void uart_start_pending_tx(struct uart_port *port)
+> +{
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&port->lock, flags);
+> +	if (!uart_tx_stopped(port) && uart_circ_chars_pending(&port->state->xmit))
+> +		port->ops->start_tx(port);
+> +	spin_unlock_irqrestore(&port->lock, flags);
+> +}
+> +EXPORT_SYMBOL(uart_start_pending_tx);
+
+Perhaps as an intermediate step, but this looks like another argument
+for handling everything runtime PM related in core (i.e. enabling
+runtime pm and generic suspend/resume ops) and adding callbacks to do
+subdriver specific bits instead.
+
+> +
+>  static void
+>  uart_update_mctrl(struct uart_port *port, unsigned int set, unsigned int clear)
+>  {
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -40,6 +40,7 @@ struct uart_ops {
+>  	void		(*set_mctrl)(struct uart_port *, unsigned int mctrl);
+>  	unsigned int	(*get_mctrl)(struct uart_port *);
+>  	void		(*stop_tx)(struct uart_port *);
+> +	int		(*wakeup)(struct uart_port *);
+>  	void		(*start_tx)(struct uart_port *);
+>  	void		(*throttle)(struct uart_port *);
+>  	void		(*unthrottle)(struct uart_port *);
+> @@ -250,6 +251,7 @@ struct uart_port {
+>  	unsigned char		suspended;
+>  	unsigned char		console_reinit;
+>  	const char		*name;			/* port name */
+> +	unsigned int		runtime_suspended:1;	/* port runtime state set by port driver */
+>  	struct attribute_group	*attr_group;		/* port specific attributes */
+>  	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
+>  	struct serial_rs485     rs485;
+> @@ -414,6 +416,7 @@ bool uart_match_port(const struct uart_port *port1,
+>  /*
+>   * Power Management
+>   */
+> +void uart_start_pending_tx(struct uart_port *port);
+>  int uart_suspend_port(struct uart_driver *reg, struct uart_port *port);
+>  int uart_resume_port(struct uart_driver *reg, struct uart_port *port);
+
+Johan
