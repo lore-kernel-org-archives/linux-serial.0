@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0AFDC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 02:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF06CC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 02:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235819AbhK3CbE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Nov 2021 21:31:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
+        id S237533AbhK3CbG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Nov 2021 21:31:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237497AbhK3CbD (ORCPT
+        with ESMTP id S237518AbhK3CbF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Nov 2021 21:31:03 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D1FC061574
-        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 18:27:45 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id c32so49808844lfv.4
-        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 18:27:44 -0800 (PST)
+        Mon, 29 Nov 2021 21:31:05 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69415C061574
+        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 18:27:46 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id b1so49584105lfs.13
+        for <linux-serial@vger.kernel.org>; Mon, 29 Nov 2021 18:27:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DjrKmm2WgaX87gIsGbMuz72ppQb8wewAQBmcfjqw3Gs=;
-        b=XGILT3CfcE4kMyANq7bSTdH0QFSDL/+tG5w+aovYWrSS4otjinc/EsS9TlLwk5cl+t
-         VFnMbpdVAO7wD+86m/f1wYIvqsy/a8PECHUAdvUcDJ76oCA/ftNSF4DeRTTt0E3Jx9x9
-         MRn8p/ZRLeeWMx6zmw8InMcAGJDDYrxoARd22ioEktvQIxrfOZP+qCE8DvOQjKpOO2X9
-         JAIEzphDwYqvi8j1eRXAcUjGKGEOKmMwlF992uml4GC8bO1gLu0yMj6V4uXmg6+KEphl
-         XB0AFHGTMLIGf4XwkEDY99GE3xyk6t+6/LWB3FVjVg+5og/6zgmuRdahlWqJP1tyMgKo
-         guEg==
+        bh=Sw2B10ZabkZdmPrt9wGzMiX2Z/pOJb9hGFk18ZvN3TQ=;
+        b=uRRTnpkmJRovj4VGeoOzMQOMFnOY81vWLi0/mNmNtunh+im+Uz0dayEunYo1fCe2ld
+         bM40bIqqEg4vMN5NXV6yloNgcjgguQq4GqW6o6JqGg6sgEagOlVKxdAt/ONGKUI0s+Ck
+         JOsabDC3E0AgueQbyOpH/3bKJv2k5WgfBCqbkVjPj3BRO54gdIwbk1oxvyxxO7OiNP9t
+         47zZ1Ft56KoaxyD+K2d0qwOsAPCnLxFBFKMAiDQNZoKg/JAt1m26GPlOuZ75wlhnNqET
+         TnzFwlKSinO9ACD7KS2vVyzNSdvW4X5P6qKO6VzbGfuogOgN6MNwcTgoV2aLitc9mCc+
+         NNFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DjrKmm2WgaX87gIsGbMuz72ppQb8wewAQBmcfjqw3Gs=;
-        b=BcsRf7lMOzAi4EORx4DrHf8TgZzecKWPlAE/WZaAeX0dHRg151gpS3UiDje/e/5drj
-         fGLrZBOLLhT0oMzHoLt9tH1gb+iz+JjuwHYCig8IYikW2V7DkUdUhkM8ufwyCOMe2PKQ
-         LMJdXrC8s/q7U86Fk/ygfkJeJ1wOv3TcJcOVdf1A1SpYt0fbJckFvUF+39mnXGe/zk8I
-         boXjgoW7Hnw2jgXQxpq0D7Ll/hCenQZB9lwTbfeVC49kdZ9euRC3Zsi4tqGKVsGARuZX
-         7hn9/uX+FJfqTB56qKLJSlhr9bfBLc5x2w+zdhYGmllmykHslNpxX3wh6d+NI0uJXJ6j
-         mEyg==
-X-Gm-Message-State: AOAM530znAXrX039DItDU0oGPPU9sv27klBj90V/u42uL7f/xglprDlT
-        FGjSAnemJ6EmYVGrEC4b8EaR5A==
-X-Google-Smtp-Source: ABdhPJy9w4OSiM/X9hJPqQvt6CKdaqi12cJt/JRDPlUUHCZMcMVlsYVIHiyuZTcMJKqMeoqst+bNYg==
-X-Received: by 2002:a05:6512:2350:: with SMTP id p16mr52129668lfu.117.1638239263333;
-        Mon, 29 Nov 2021 18:27:43 -0800 (PST)
+        bh=Sw2B10ZabkZdmPrt9wGzMiX2Z/pOJb9hGFk18ZvN3TQ=;
+        b=X2pUMtILUQwU4b72j4T9bqDF3tFYaJeeGTLaYErRgldHORBctwhHfRNYLQm6yoEz3x
+         HV6quY8OoHZopwbsUHrXdHBQbrII6/3kpmOipdlDxGszEmBBoUBFf+V7Rtnz9bcRp4C0
+         nwwYiAHsyvFMaUu6e7+RO0C63nVPtaPoeFNSqeA2nEW8AsP+CA/fdmCRHQxyQ/D8f51+
+         fs9BqYaCXyya4PsMYgJLaylGtxMT5+cmBGfZryePa+5DHfT/+U3tEtyUxbx5uXPbvUoi
+         cIxi0bwNbo7N3eRO+aDNG57+QZp6/NoKPfQ+aQ+9t7prAQvFBXvt6Ps61W55eK0rHjpZ
+         lgdQ==
+X-Gm-Message-State: AOAM5325q/ZGQKUcEmkZB8j34MLk+sjIQnsOnPLF53k8NV93JFqrTxBC
+        unxcbsPDaJUW2SJBlF1e8J9H9Q==
+X-Google-Smtp-Source: ABdhPJzaKLAxg0ubI311l+8aBbMJGAYwd17eXVXKm69X/tqVUamxhV/v6ZUDEhxuMQ8udSKC8hDRAQ==
+X-Received: by 2002:a19:6717:: with SMTP id b23mr51152485lfc.659.1638239264749;
+        Mon, 29 Nov 2021 18:27:44 -0800 (PST)
 Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id i10sm1543136lfv.22.2021.11.29.18.27.42
+        by smtp.gmail.com with ESMTPSA id f10sm1537494lfu.122.2021.11.29.18.27.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Nov 2021 18:27:42 -0800 (PST)
+        Mon, 29 Nov 2021 18:27:44 -0800 (PST)
 From:   Sam Protsenko <semen.protsenko@linaro.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -60,9 +60,9 @@ Cc:     Jiri Slaby <jirislaby@kernel.org>,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v2 4/5] tty: serial: samsung: Enable console as module
-Date:   Tue, 30 Nov 2021 04:27:39 +0200
-Message-Id: <20211130022740.28784-2-semen.protsenko@linaro.org>
+Subject: [PATCH v2 5/5] tty: serial: samsung: Fix console registration from module
+Date:   Tue, 30 Nov 2021 04:27:40 +0200
+Message-Id: <20211130022740.28784-3-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211130022740.28784-1-semen.protsenko@linaro.org>
 References: <20211130022740.28784-1-semen.protsenko@linaro.org>
@@ -72,99 +72,79 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Enable serial driver to be built as a module. To do so, init the console
-support on driver/module load instead of using console_initcall().
+On modern Exynos SoCs (like Exynos850) the UART can be implemented as a
+part of USI IP-core. In such case, USI driver is used to initialize USI
+registers, and it also calls of_platform_populate() to instantiate all
+sub-nodes (e.g. serial node) of USI node. When serial driver is
+built-in, but USI driver is a module, and CONFIG_SERIAL_SAMSUNG_CONSOLE
+is enabled, next call chain will happen when loading USI module from
+user space:
 
-This is needed for proper support of USI driver (which can be built as
-a module, which in turn makes SERIAL_SAMSUNG be a module too). It also
-might be useful for Android GKI modularization efforts.
+    usi_init
+      v
+    usi_probe
+      v
+    of_platform_populate
+      v
+    s3c24xx_serial_probe
+      v
+    uart_add_one_port
+      v
+    uart_configure_port
+      v
+    register_console
+      v
+    try_enable_new_console
+      v
+    s3c24xx_serial_console_setup
 
-Inspired by commit 87a0b9f98ac5 ("tty: serial: meson: enable console as
-module").
+But because the serial driver is built-in, and
+s3c24xx_serial_console_setup() is marked with __init keyword, that
+symbol will discarded and long gone by that time already, causing failed
+paging request.
+
+That happens during the next config combination:
+
+    EXYNOS_USI=m
+    SERIAL_SAMSUNG=y
+    SERIAL_SAMSUNG_CONSOLE=y
+
+That config should be completely possible, so rather than limiting
+SERIAL_SAMSUNG choice to "m" only when USI=m, remove __init keyword for
+all affected functions.
 
 Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 ---
 Changes in v2:
-  - Added error path handling in samsung_serial_init()
-  - Added console unregister in samsung_serial_exit()
+  - This patch is added in v2
 
- drivers/tty/serial/Kconfig       |  2 +-
- drivers/tty/serial/samsung_tty.c | 36 ++++++++++++++++++++++++++++----
- 2 files changed, 33 insertions(+), 5 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index fc543ac97c13..0e5ccb25bdb1 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -263,7 +263,7 @@ config SERIAL_SAMSUNG_UARTS
- 
- config SERIAL_SAMSUNG_CONSOLE
- 	bool "Support for console on Samsung SoC serial port"
--	depends on SERIAL_SAMSUNG=y
-+	depends on SERIAL_SAMSUNG
- 	select SERIAL_CORE_CONSOLE
- 	select SERIAL_EARLYCON
- 	help
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index f986a9253dc8..61ccb359620a 100644
+index 61ccb359620a..d002a4e48ed9 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -1715,15 +1715,21 @@ s3c24xx_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
- 
- static struct console s3c24xx_serial_console;
- 
--static int __init s3c24xx_serial_console_init(void)
-+static void __init s3c24xx_serial_register_console(void)
- {
- 	register_console(&s3c24xx_serial_console);
--	return 0;
+@@ -2500,7 +2500,8 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
+ 	uart_console_write(cons_uart, s, count, s3c24xx_serial_console_putchar);
  }
--console_initcall(s3c24xx_serial_console_init);
-+
-+static void s3c24xx_serial_unregister_console(void)
-+{
-+	if (s3c24xx_serial_console.flags & CON_ENABLED)
-+		unregister_console(&s3c24xx_serial_console);
-+}
  
- #define S3C24XX_SERIAL_CONSOLE &s3c24xx_serial_console
- #else
-+static inline void s3c24xx_serial_register_console(void) { }
-+static inline void s3c24xx_serial_unregister_console(void) { }
- #define S3C24XX_SERIAL_CONSOLE NULL
- #endif
+-static void __init
++/* Shouldn't be __init, as it can be instantiated from other module */
++static void
+ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
+ 			   int *parity, int *bits)
+ {
+@@ -2563,7 +2564,8 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
+ 	}
+ }
  
-@@ -2898,7 +2904,29 @@ static struct platform_driver samsung_serial_driver = {
- 	},
- };
- 
--module_platform_driver(samsung_serial_driver);
-+static int __init samsung_serial_init(void)
-+{
-+	int ret;
-+
-+	s3c24xx_serial_register_console();
-+
-+	ret = platform_driver_register(&samsung_serial_driver);
-+	if (ret) {
-+		s3c24xx_serial_unregister_console();
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void __exit samsung_serial_exit(void)
-+{
-+	platform_driver_unregister(&samsung_serial_driver);
-+	s3c24xx_serial_unregister_console();
-+}
-+
-+module_init(samsung_serial_init);
-+module_exit(samsung_serial_exit);
- 
- #ifdef CONFIG_SERIAL_SAMSUNG_CONSOLE
- /*
+-static int __init
++/* Shouldn't be __init, as it can be instantiated from other module */
++static int
+ s3c24xx_serial_console_setup(struct console *co, char *options)
+ {
+ 	struct uart_port *port;
 -- 
 2.30.2
 
