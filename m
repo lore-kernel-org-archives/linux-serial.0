@@ -2,141 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9E9C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 10:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A80C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Nov 2021 11:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236153AbhK3KvC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Nov 2021 05:51:02 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:38588 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236112AbhK3KvB (ORCPT
+        id S237552AbhK3LQt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Nov 2021 06:16:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237394AbhK3LQs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Nov 2021 05:51:01 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 52B68CE189B;
-        Tue, 30 Nov 2021 10:47:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C51AC53FC1;
-        Tue, 30 Nov 2021 10:47:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638269259;
-        bh=Iz+w3i4CcMBGzfiS3z5i9lV9fdtABytE0ZRUKvT6d90=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V0NMU0/JMdqWxjxpv0W7Ryf1hQ836qBt7Ny1ypT9hSr9sOKqhCcEwExAUftvAjHPL
-         6p/cSec3sjBwjdOOotLXEoOsd0RQFKSMJn5U4CcmW57kX7CgABZXAMhyj5lzORgK1c
-         oSHTB0MQ06m/rvpQp5L/rkZ7kM8kK2ZhQvTFX/p8IdMDWhtwxq1+d2+R66QRrtqSyz
-         kd2wz8BXW9dBePQdTqHmyxW3u5rluFDCP6lZq7OfcSGa24UUOVFu+/jqMLc1BNw0L0
-         ovfM4IYbJBybMAejgG4c/4fLIbyF5OPEewlKHphiy9yCcazUAk08uLjPacN7FBAQgf
-         waTAatYRcmTUw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1ms0fM-0006f6-Hk; Tue, 30 Nov 2021 11:47:16 +0100
-Date:   Tue, 30 Nov 2021 11:47:16 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 7/7] serial: 8250_port: Remove calls to runtime PM
-Message-ID: <YaYBNIGwOkHts6wn@hovoldconsulting.com>
-References: <20211115084203.56478-1-tony@atomide.com>
- <20211115084203.56478-8-tony@atomide.com>
+        Tue, 30 Nov 2021 06:16:48 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2519FC061748
+        for <linux-serial@vger.kernel.org>; Tue, 30 Nov 2021 03:13:29 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id r26so52777378lfn.8
+        for <linux-serial@vger.kernel.org>; Tue, 30 Nov 2021 03:13:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=skodrfetI6sQYeMS84TqmzdXMiAWMy4xHtCAByWVHFI=;
+        b=NN1gLQ6ZhDhSiyAh6hHxZjFFbU+o0aZMHv0WdzvXxzujKnmjbroGcnNEYvup4NVhvO
+         zyHF49SMxTWzu+MDfYNdIqoMonEtgXLYfHmm/Hmo6038EqrL2w6wlfQVsWfEkX6fAN+I
+         vuJpKn4n5vq22jHEIQezZN65K81Gqq/qNONPAUd7hOQ6Dz+Yoj23cNh3H00kv789YBm9
+         RqU3EuEn/NdRjgukedVz/yjXwHU/4+AvMUnwsDKJIvBqjWmiUHVjfYu05qxwiJh8dxeh
+         I/bbgVvF1S+LlGpb0M11cwgYLBcVFBlATV8hSV8l77FTGw3wm7UlMfni/nm8GDRTno+2
+         6BPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=skodrfetI6sQYeMS84TqmzdXMiAWMy4xHtCAByWVHFI=;
+        b=JhdV3zrlX0fytl/J2BtwJWoWu3/zfTnmYnNfoxsTwzQxjpKYKllQqZKLsFsGUuYN7W
+         Ph4h/znjroc8HtdYJLQLUDkNzdWIuWRG0JZ32m13Zo35vIIFBwUkAScyg+BGS0WPBlbz
+         brPNDNL/K4gdPqo+/7G1byccUn/G3v7qlC0tXOc6/hS2+dlFniH8HAtT4hznfl8kf4mR
+         4ZmGaD3j0x082d4kkCMwO7y/m6qDl5mSYBDFO+5I0Du4W6AktRBEOpKPmXofkTJUcu41
+         DlQxcPOgIBRoZj/PO3DrdqIj/2yVCFV7RGoTMldGOES5E7kHHjn6Y4kj91Izjrik4Cu7
+         Rq9g==
+X-Gm-Message-State: AOAM530EfSU2FKxFPwR4smprn3ld7rodbm8c2qASLXj495NkZ0TLzeMW
+        vGbN+FjYjwIu21Gt8vqSusKG7g==
+X-Google-Smtp-Source: ABdhPJxi5miZzbt8q+GI/aVfntdWzDkTcjLze8k3gHSi7jFuDn7DNzNHUChiiCmEdpxUddEvmIHGrA==
+X-Received: by 2002:a05:6512:1094:: with SMTP id j20mr51460255lfg.237.1638270807395;
+        Tue, 30 Nov 2021 03:13:27 -0800 (PST)
+Received: from localhost ([31.134.121.151])
+        by smtp.gmail.com with ESMTPSA id b13sm1903706lfv.200.2021.11.30.03.13.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Nov 2021 03:13:26 -0800 (PST)
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Chanho Park <chanho61.park@samsung.com>,
+        David Virag <virag.david003@gmail.com>,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH v2 RESEND 0/5] soc: samsung: Add USI driver
+Date:   Tue, 30 Nov 2021 13:13:20 +0200
+Message-Id: <20211130111325.29328-1-semen.protsenko@linaro.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211115084203.56478-8-tony@atomide.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 10:42:03AM +0200, Tony Lindgren wrote:
-> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Since we now have runtime PM calls in serial_core.c the individual
-> drivers do not need them anymore for the struct uart_ops related
-> functions.
-> 
-> Remove runtime PM calls in 8250 driver. This still leaves the flag for
-> UART_CAP_RPM for serial8250_rpm_get_tx(), serial8250_rpm_put_tx() and
-> serial8250_wakeup() to manage the reference count for serial TX.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> [tony@atomide.com: updated to remove the exported functions too]
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
+USIv2 IP-core provides selectable serial protocol (UART, SPI or
+High-Speed I2C); only one can be chosen at a time. This series
+implements USIv2 driver, which allows one to select particular USI
+function in device tree, and also performs USI block initialization.
 
-> @@ -1477,8 +1459,11 @@ static enum hrtimer_restart serial8250_em485_handle_stop_tx(struct hrtimer *t)
->  			stop_tx_timer);
->  	struct uart_8250_port *p = em485->port;
->  	unsigned long flags;
-> +	int err;
->  
-> -	serial8250_rpm_get(p);
-> +	err = pm_runtime_resume_and_get(p->port.dev);
+With that driver implemented, it's not needed to do USI initialization
+in protocol drivers anymore, so that code is removed from the serial
+driver.
 
-This also won't work as this function is called on timer expiry; you
-cannot do a synchronous resume here.
+Because USI driver is tristate (can be built as a module), serial driver
+was reworked so it's possible to use its console part as a module too.
+This way we can load serial driver module from user space and still have
+serial console functional.
 
-> +	if (err < 0)
-> +		goto out_rpm_err;
->  	spin_lock_irqsave(&p->port.lock, flags);
->  	if (em485->active_timer == &em485->stop_tx_timer) {
->  		p->rs485_stop_tx(p);
-> @@ -1486,8 +1471,9 @@ static enum hrtimer_restart serial8250_em485_handle_stop_tx(struct hrtimer *t)
->  		em485->tx_stopped = true;
->  	}
->  	spin_unlock_irqrestore(&p->port.lock, flags);
-> -	serial8250_rpm_put(p);
-> -
-> +	pm_runtime_mark_last_busy(p->port.dev);
-> +	pm_runtime_put_autosuspend(p->port.dev);
-> +out_rpm_err:
->  	return HRTIMER_NORESTART;
->  }
-  
->  void serial8250_read_char(struct uart_8250_port *up, unsigned char lsr)
-> @@ -1984,15 +1966,11 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
->  	unsigned long flags;
->  	unsigned int lsr;
->  
-> -	serial8250_rpm_get(up);
-> -
->  	spin_lock_irqsave(&port->lock, flags);
->  	lsr = serial_port_in(port, UART_LSR);
->  	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
->  	spin_unlock_irqrestore(&port->lock, flags);
->  
-> -	serial8250_rpm_put(up);
-> -
->  	return (lsr & BOTH_EMPTY) == BOTH_EMPTY ? TIOCSER_TEMT : 0;
->  }
+Make it impossible to build UART/SPI/I2C driver as a built-in when USIv2
+driver built as a module: USIv2 configuration must be always done before
+tinkering with particular protocol it implements.
 
-As I mentioned elsewhere, the corresponding get+put is missing in serial
-core now.
+Design features:
+  - "reg" property contains USI registers start address (0xc0 offset);
+    it's used in the driver to access USI_CON and USI_OPTION registers.
+    This way all USI initialization (reset, HWACG, etc) can be done in
+    USIv2 driver separately, rather than duplicating that code over
+    UART/SPI/I2C drivers
+  - System Register (system controller node) and its SW_CONF register
+    offset are provided in "samsung,sysreg" property; it's used to
+    select USI function (protocol to be used)
+  - USI function is specified in "samsung,mode" property; integer value
+    is used to simplify parsing
+  - there is "samsung,clkreq-on" bool property, which makes driver
+    disable HWACG control (needed for UART to work properly)
+  - PCLK and IPCLK clocks are both provided to USI node; apparently both
+    need to be enabled to access USI registers
+  - protocol nodes are embedded (as a child nodes) in USI node; it
+    allows correct init order, and reflects HW properly
+  - USIv2 driver is a tristate: can be also useful from Android GKI
+    requirements point of view
+  - driver functions are implemented with further development in mind:
+    we might want to add some SysFS interface later for example, or
+    provide some functions to serial drivers with EXPORT_SYMBOL(), etc;
+    also another USI revisions could be added (like USIv1)
 
->  static void serial8250_put_poll_char(struct uart_port *port,
->  			 unsigned char c)
->  {
->  	unsigned int ier;
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  
-> -	serial8250_rpm_get(up);
->  	/*
->  	 *	First save the IER then disable the interrupts
->  	 */
-> @@ -2155,7 +2117,6 @@ static void serial8250_put_poll_char(struct uart_port *port,
->  	 */
->  	wait_for_xmitr(up, BOTH_EMPTY);
->  	serial_port_out(port, UART_IER, ier);
-> -	serial8250_rpm_put(up);
->  }
+Changes in v2:
+  - Renamed all 'usi_v2' wording to just 'usi' everywhere
+  - Removed patches adding dependency on EXYNOS_USI for UART/I2C/SPI
+    drivers
+  - Added patch: "tty: serial: samsung: Fix console registration from
+    module"
+  - Combined dt-bindings doc and dt-bindings header patches
+  - Reworked USI driver to be ready for USIv1 addition
+  - Improved dt-bindings
+  - Added USI_V2_NONE mode value
 
-And this is a console callback; where is it guaranteed that the console
-is never suspended?
+Sam Protsenko (5):
+  dt-bindings: soc: samsung: Add Exynos USI bindings
+  soc: samsung: Add USI driver
+  tty: serial: samsung: Remove USI initialization
+  tty: serial: samsung: Enable console as module
+  tty: serial: samsung: Fix console registration from module
 
-Johan
+ .../bindings/soc/samsung/exynos-usi.yaml      | 135 +++++++++
+ drivers/soc/samsung/Kconfig                   |  14 +
+ drivers/soc/samsung/Makefile                  |   2 +
+ drivers/soc/samsung/exynos-usi.c              | 274 ++++++++++++++++++
+ drivers/tty/serial/Kconfig                    |   2 +-
+ drivers/tty/serial/samsung_tty.c              |  78 ++---
+ include/dt-bindings/soc/samsung,exynos-usi.h  |  17 ++
+ include/linux/serial_s3c.h                    |   9 -
+ 8 files changed, 483 insertions(+), 48 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+ create mode 100644 drivers/soc/samsung/exynos-usi.c
+ create mode 100644 include/dt-bindings/soc/samsung,exynos-usi.h
+
+-- 
+2.30.2
+
