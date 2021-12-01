@@ -2,88 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B000DC433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Dec 2021 10:54:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D62C0C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Dec 2021 16:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348834AbhLAK6S (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Dec 2021 05:58:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbhLAK6R (ORCPT
+        id S232207AbhLAQX1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Dec 2021 11:23:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45418 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349782AbhLAQX0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Dec 2021 05:58:17 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F93C061574;
-        Wed,  1 Dec 2021 02:54:56 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id t5so100233644edd.0;
-        Wed, 01 Dec 2021 02:54:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OvJoAjsiwp/bIqgJqHb/Ct3NhVVdCidlBQIJ1jfhjxs=;
-        b=Ta5UwXQvxUApA7IqpY3NDy68+xmL0+wr28tsdHISkNUFTGtfo7ptrUvzPoouoG4Nx2
-         osPBXDez94IdJ/Ji8qVLfg69ULnlL2GEWjuFInCCKrQbi65AUPgw6NbEIRVdzbIEYR7c
-         x0Kx4WQK+IbDaVrUC13ojGgd4ckfNAl8tl3vooROqTe/KKn31IOCSbXfp8NcdnqCbwNZ
-         HhRk+c3bxQxbAaQ1j+L9xwtBKR1zEm0vc9H1nR8oDadA8hNUjk7SQDDuOCI+SFCINZda
-         zEvhNiVGZOXCBPwzExF5WQL8TDmt6z++I6hoKF3dxWZ9NbfFynMR8FEXS5ipoSL6ZrI0
-         vZCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OvJoAjsiwp/bIqgJqHb/Ct3NhVVdCidlBQIJ1jfhjxs=;
-        b=yqd5SbaBrEzWwBTYSkqe+cZsDB/Xunii04SG5bulXfXrMS2nYz564EbCKjuaumqD6k
-         n6796NcGaKfKpnUVxsR2hsAgifMIcvl0jpdEqAkG5mWwn2a6GyNZ299xSZwDtD1FsBz3
-         SthpDFng+T66beaxVaqGNEK4aVOOxwi7WPzrcjGH3Z7DmzDWl4/vNyS7lvf+tjryGQTF
-         ZkQp9U9MNvX4CBYdvmeieW/qDP3vr84wCVDBopp0iQ41HxLN5uyfrTmISHvG3F/MvmYD
-         eBQt3d0S7EbPd3zCiRAwz5N7kZIqG60wycopw7yn+8bvmqa0INXr2IjQUtqaMU/OFJ/s
-         D1hg==
-X-Gm-Message-State: AOAM533zJeUFcbcLubPTxb5VDJt1v/84cyNf4gxYOQ7feuhFCylWUL2T
-        b8kMm92cdWlcZXAZYEi2NH+iTtKHd5y/FbioYc0=
-X-Google-Smtp-Source: ABdhPJyMWHVjrLETt3XzlgtJwBoFDiG2sOhLr7LzkkX2v2atvCCOmIF8fnH8GGIVBIfk+JoF72F7zcD7q9iN3fMwxgw=
-X-Received: by 2002:aa7:db8d:: with SMTP id u13mr7199099edt.111.1638356095305;
- Wed, 01 Dec 2021 02:54:55 -0800 (PST)
+        Wed, 1 Dec 2021 11:23:26 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90F00B82029;
+        Wed,  1 Dec 2021 16:20:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C7CC53FD3;
+        Wed,  1 Dec 2021 16:20:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638375601;
+        bh=chsce8M78mn7kNe7wC0N7oHoRMbGOLek3debSSI71+U=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=cOHW0jivGD0sfUuHQrNLVKjiJehBs8ZawhYoqnMartRIDeDkWgV74ilz7OXDlVCkN
+         +F0ifWgvBBNNuAq5MPgxaSbi8Vle1M4cJJq7s+e8f8qdRC+CummIDpIYL+EQ13rO+o
+         3TqlCrkrtINshCtdxo1+qycfrp6K25s/uZ8ltNjv2/1H5x2ARqIof1dw7YJNEuCjmj
+         bEdC9jgx0i2b2PqMRUzDoSGktdmu+xzt0Bt3Cc2qFJuqAdDFfMGBxUnpA0YhLG4jEN
+         2zikKuE6iMcOTjWICvatacH9slk7rtuWYMJCVlhaiqYW9fs1itREqj6w/KjqoTap5i
+         Xno431a5VIOrA==
+Received: by mail-ed1-f48.google.com with SMTP id g14so104034017edb.8;
+        Wed, 01 Dec 2021 08:20:01 -0800 (PST)
+X-Gm-Message-State: AOAM530XBdkTiFZIdxAn2liuwr6EUuHRVV3CGC8WCVTAMg+hvqdD/VlT
+        WkvfV6mm8C+TEAhU7drq5Si30BjD1kwr8TkFdA==
+X-Google-Smtp-Source: ABdhPJwKFJXoFi/lkb4UGy5sVWQhcLaVrvx8NVkmo+iI+WLXt6vMQKMq3z2rVrv63RjM2MV7aMTzUWqe4fCNNlPByts=
+X-Received: by 2002:a05:6402:35ce:: with SMTP id z14mr9697479edc.197.1638375599265;
+ Wed, 01 Dec 2021 08:19:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20211130111325.29328-1-semen.protsenko@linaro.org> <20211130111325.29328-4-semen.protsenko@linaro.org>
-In-Reply-To: <20211130111325.29328-4-semen.protsenko@linaro.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 1 Dec 2021 12:54:19 +0200
-Message-ID: <CAHp75Vd8PFhs8_Ji5x1X2Ph5ey+8JrRuneWCrG=5a+52Lh-ptQ@mail.gmail.com>
-Subject: Re: [PATCH v2 RESEND 3/5] tty: serial: samsung: Remove USI initialization
-To:     Sam Protsenko <semen.protsenko@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+References: <20211130111325.29328-1-semen.protsenko@linaro.org>
+ <20211130111325.29328-2-semen.protsenko@linaro.org> <1638294184.179325.2713642.nullmailer@robh.at.kernel.org>
+ <4b5bebb0-ed74-8132-1e6b-cb7cbc21439c@canonical.com>
+In-Reply-To: <4b5bebb0-ed74-8132-1e6b-cb7cbc21439c@canonical.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 1 Dec 2021 10:19:47 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJb4nMBoGLcf-bKpi5kEE+zXQ=dfo5JSBhrqPFeLnCsHw@mail.gmail.com>
+Message-ID: <CAL_JsqJb4nMBoGLcf-bKpi5kEE+zXQ=dfo5JSBhrqPFeLnCsHw@mail.gmail.com>
+Subject: Re: [PATCH v2 RESEND 1/5] dt-bindings: soc: samsung: Add Exynos USI bindings
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
+        linux-samsung-soc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Chanho Park <chanho61.park@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
+        linux-serial@vger.kernel.org,
         Youngmin Nam <youngmin.nam@samsung.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        David Virag <virag.david003@gmail.com>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 12:42 AM Sam Protsenko
-<semen.protsenko@linaro.org> wrote:
+On Tue, Nov 30, 2021 at 2:04 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
 >
-> USI control is now extracted to dedicated USI driver. Remove USI related
+> On 30/11/2021 18:43, Rob Herring wrote:
+> > On Tue, 30 Nov 2021 13:13:21 +0200, Sam Protsenko wrote:
+> >> Add constants for choosing USIv2 configuration mode in device tree.
+> >> Those are further used in USI driver to figure out which value to write
+> >> into SW_CONF register. Also document USIv2 IP-core bindings.
+> >>
+> >> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> >> ---
+> >> Changes in v2:
+> >>   - Combined dt-bindings doc and dt-bindings header patches
+> >>   - Added i2c node to example in bindings doc
+> >>   - Added mentioning of shared internal circuits
+> >>   - Added USI_V2_NONE value to bindings header
+> >>
+> >>  .../bindings/soc/samsung/exynos-usi.yaml      | 135 ++++++++++++++++++
+> >>  include/dt-bindings/soc/samsung,exynos-usi.h  |  17 +++
+> >>  2 files changed, 152 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+> >>  create mode 100644 include/dt-bindings/soc/samsung,exynos-usi.h
+> >>
+> >
+> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> >
+> > yamllint warnings/errors:
+> >
+> > dtschema/dtc warnings/errors:
+> > Documentation/devicetree/bindings/soc/samsung/exynos-usi.example.dts:35.39-42.15: Warning (unique_unit_address): /example-0/usi@138200c0/serial@13820000: duplicate unit-address (also used in node /example-0/usi@138200c0/i2c@13820000)
+>
+> Rob,
+>
+> The checker complains about two nodes with same unit-address, even
+> though the node name is different. Does it mean that our idea of
+> embedding two children in USI and having enabled only one (used one) is
+> wrong?
 
-the dedicated
+IIRC, we allow for this exact scenario, and there was a change in dtc
+for it. So I'm not sure why this triggered.
 
-> code from serial driver to avoid conflicts and code duplication.
-
-Would it break run-time bisectability?
-If so, why is it not a problem?
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+Rob
