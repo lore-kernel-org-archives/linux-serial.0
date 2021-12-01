@@ -2,107 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D62C0C433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Dec 2021 16:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C899DC433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Dec 2021 20:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232207AbhLAQX1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Dec 2021 11:23:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45418 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349782AbhLAQX0 (ORCPT
+        id S1352828AbhLAUTf (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Dec 2021 15:19:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352784AbhLAUR4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Dec 2021 11:23:26 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90F00B82029;
-        Wed,  1 Dec 2021 16:20:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C7CC53FD3;
-        Wed,  1 Dec 2021 16:20:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638375601;
-        bh=chsce8M78mn7kNe7wC0N7oHoRMbGOLek3debSSI71+U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cOHW0jivGD0sfUuHQrNLVKjiJehBs8ZawhYoqnMartRIDeDkWgV74ilz7OXDlVCkN
-         +F0ifWgvBBNNuAq5MPgxaSbi8Vle1M4cJJq7s+e8f8qdRC+CummIDpIYL+EQ13rO+o
-         3TqlCrkrtINshCtdxo1+qycfrp6K25s/uZ8ltNjv2/1H5x2ARqIof1dw7YJNEuCjmj
-         bEdC9jgx0i2b2PqMRUzDoSGktdmu+xzt0Bt3Cc2qFJuqAdDFfMGBxUnpA0YhLG4jEN
-         2zikKuE6iMcOTjWICvatacH9slk7rtuWYMJCVlhaiqYW9fs1itREqj6w/KjqoTap5i
-         Xno431a5VIOrA==
-Received: by mail-ed1-f48.google.com with SMTP id g14so104034017edb.8;
-        Wed, 01 Dec 2021 08:20:01 -0800 (PST)
-X-Gm-Message-State: AOAM530XBdkTiFZIdxAn2liuwr6EUuHRVV3CGC8WCVTAMg+hvqdD/VlT
-        WkvfV6mm8C+TEAhU7drq5Si30BjD1kwr8TkFdA==
-X-Google-Smtp-Source: ABdhPJwKFJXoFi/lkb4UGy5sVWQhcLaVrvx8NVkmo+iI+WLXt6vMQKMq3z2rVrv63RjM2MV7aMTzUWqe4fCNNlPByts=
-X-Received: by 2002:a05:6402:35ce:: with SMTP id z14mr9697479edc.197.1638375599265;
- Wed, 01 Dec 2021 08:19:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20211130111325.29328-1-semen.protsenko@linaro.org>
- <20211130111325.29328-2-semen.protsenko@linaro.org> <1638294184.179325.2713642.nullmailer@robh.at.kernel.org>
- <4b5bebb0-ed74-8132-1e6b-cb7cbc21439c@canonical.com>
-In-Reply-To: <4b5bebb0-ed74-8132-1e6b-cb7cbc21439c@canonical.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 1 Dec 2021 10:19:47 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJb4nMBoGLcf-bKpi5kEE+zXQ=dfo5JSBhrqPFeLnCsHw@mail.gmail.com>
-Message-ID: <CAL_JsqJb4nMBoGLcf-bKpi5kEE+zXQ=dfo5JSBhrqPFeLnCsHw@mail.gmail.com>
-Subject: Re: [PATCH v2 RESEND 1/5] dt-bindings: soc: samsung: Add Exynos USI bindings
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-samsung-soc@vger.kernel.org,
+        Wed, 1 Dec 2021 15:17:56 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B27C061759;
+        Wed,  1 Dec 2021 12:14:34 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so2645530pjb.1;
+        Wed, 01 Dec 2021 12:14:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=9Lo2A1Ul89gn2S8E5V5+SdXZxQLnnxOuUt3GsgTEvpQ=;
+        b=pNBn5/tp8/NtIWCvs36HBTf+sUUpLVP3TTtCZKxBtZm7Vqa8+9Q2l4YFZjtsltxB2X
+         8Ti3C32iPuZzfcpMQqN/JhxnQjt4WvKMh9D4T79URDTFFp8YTRMyDzIWfKfLhj/9eE6k
+         uc0LUeApR9CyBm9SwBjQUOZLSSEZYX7kj/b6K+3EsKH4/doQPpS9DAEFVwJYvqvMFvVC
+         yeNfMEdHmbztnk9Nwu/WB6NkOzS2elwWpABr8EZ5VCoOw3VAtT3TFAX52VL4FNA18t8Q
+         FpAISBn8Hr7Ie+/IlSwe8DR+wR74jDc46ij/o30aDGFLbLelgI9ZJAhpywmYphoLU/DU
+         euGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=9Lo2A1Ul89gn2S8E5V5+SdXZxQLnnxOuUt3GsgTEvpQ=;
+        b=XgxXTedTuyze+//I5s+uNtvqShiCyhPZbz4rI+YZB6ZuMsvgWPxDLgNtFIrrm1BL7z
+         Y/Hy3UuC4OtSa/FOOaGmUscW+Kbic4Jpi835DVXM/t9eodYnEM1AR4kw+EFp9XMPHpXX
+         dkWKxOvUclpSEESrzaPpzdr5z5Y09o1c78xLyrpUkx5FsHVgOWmw5CmthX1g2PGWhDqy
+         0wzrkLCGr/ZZcW5qdhsVzuReSlAsBZY44Av/+6NpmYv2aof+iGEq7yFanNR6jWLigGfk
+         khkrdYdqtnRAfFp+xMGIFoluvjhO8AtN+y+O7pkN/R/Db282Ee4pVTecNZArgaBiATEB
+         0pFQ==
+X-Gm-Message-State: AOAM531lUtZ+n9f0hxr9PnNGRMULPVrxMYgcBk9p1bWXJIGWi+yZ1Lm6
+        3smT1H/+euvIbC+GqY3mWZns6g9suFdLUg==
+X-Google-Smtp-Source: ABdhPJx6jJyy6FiASq43/D4ckzF5pfdHigWSUu5U0eRdxj9GgxRdL1+CT/IDNPzHBzNRios22CJe3A==
+X-Received: by 2002:a17:902:7797:b0:143:88c3:7ff1 with SMTP id o23-20020a170902779700b0014388c37ff1mr10025356pll.22.1638389673912;
+        Wed, 01 Dec 2021 12:14:33 -0800 (PST)
+Received: from stbsrv-and-01.and.broadcom.net ([192.19.11.250])
+        by smtp.gmail.com with ESMTPSA id ls14sm147648pjb.49.2021.12.01.12.14.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Dec 2021 12:14:33 -0800 (PST)
+From:   Al Cooper <alcooperx@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Al Cooper <alcooperx@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chanho Park <chanho61.park@samsung.com>,
-        linux-serial@vger.kernel.org,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        David Virag <virag.david003@gmail.com>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH] serial: 8250_bcm7271: UART errors after resuming from S2
+Date:   Wed,  1 Dec 2021 15:14:02 -0500
+Message-Id: <20211201201402.47446-1-alcooperx@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 2:04 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> On 30/11/2021 18:43, Rob Herring wrote:
-> > On Tue, 30 Nov 2021 13:13:21 +0200, Sam Protsenko wrote:
-> >> Add constants for choosing USIv2 configuration mode in device tree.
-> >> Those are further used in USI driver to figure out which value to write
-> >> into SW_CONF register. Also document USIv2 IP-core bindings.
-> >>
-> >> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> >> ---
-> >> Changes in v2:
-> >>   - Combined dt-bindings doc and dt-bindings header patches
-> >>   - Added i2c node to example in bindings doc
-> >>   - Added mentioning of shared internal circuits
-> >>   - Added USI_V2_NONE value to bindings header
-> >>
-> >>  .../bindings/soc/samsung/exynos-usi.yaml      | 135 ++++++++++++++++++
-> >>  include/dt-bindings/soc/samsung,exynos-usi.h  |  17 +++
-> >>  2 files changed, 152 insertions(+)
-> >>  create mode 100644 Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> >>  create mode 100644 include/dt-bindings/soc/samsung,exynos-usi.h
-> >>
-> >
-> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> >
-> > yamllint warnings/errors:
-> >
-> > dtschema/dtc warnings/errors:
-> > Documentation/devicetree/bindings/soc/samsung/exynos-usi.example.dts:35.39-42.15: Warning (unique_unit_address): /example-0/usi@138200c0/serial@13820000: duplicate unit-address (also used in node /example-0/usi@138200c0/i2c@13820000)
->
-> Rob,
->
-> The checker complains about two nodes with same unit-address, even
-> though the node name is different. Does it mean that our idea of
-> embedding two children in USI and having enabled only one (used one) is
-> wrong?
+There is a small window in time during resume where the hardware
+flow control signal RTS can be asserted (which allows a sender to
+resume sending data to the UART) but the baud rate has not yet
+been restored. This will cause corrupted data and FRAMING, OVERRUN
+and BREAK errors. This is happening because the MCTRL register is
+shadowed in uart_port struct and is later used during resume to set
+the MCTRL register during both serial8250_do_startup() and
+uart_resume_port(). Unfortunately, serial8250_do_startup()
+happens before the UART baud rate is restored. The fix is to clear
+the shadowed mctrl value at the end of suspend and restore it at the
+end of resume.
 
-IIRC, we allow for this exact scenario, and there was a change in dtc
-for it. So I'm not sure why this triggered.
+Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
+Signed-off-by: Al Cooper <alcooperx@gmail.com>
+---
+ drivers/tty/serial/8250/8250_bcm7271.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Rob
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 7f656fac503f..5163d60756b7 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -237,6 +237,7 @@ struct brcmuart_priv {
+ 	u32		rx_err;
+ 	u32		rx_timeout;
+ 	u32		rx_abort;
++	u32		saved_mctrl;
+ };
+ 
+ static struct dentry *brcmuart_debugfs_root;
+@@ -1133,16 +1134,27 @@ static int brcmuart_remove(struct platform_device *pdev)
+ static int __maybe_unused brcmuart_suspend(struct device *dev)
+ {
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
++	struct uart_8250_port *up = serial8250_get_port(priv->line);
++	struct uart_port *port = &up->port;
+ 
+ 	serial8250_suspend_port(priv->line);
+ 	clk_disable_unprepare(priv->baud_mux_clk);
+ 
++	/*
++	 * This will prevent resume from enabling RTS before the
++	 *  baud rate has been resored.
++	 */
++	priv->saved_mctrl = port->mctrl;
++	port->mctrl = 0;
++
+ 	return 0;
+ }
+ 
+ static int __maybe_unused brcmuart_resume(struct device *dev)
+ {
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
++	struct uart_8250_port *up = serial8250_get_port(priv->line);
++	struct uart_port *port = &up->port;
+ 	int ret;
+ 
+ 	ret = clk_prepare_enable(priv->baud_mux_clk);
+@@ -1165,6 +1177,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 		start_rx_dma(serial8250_get_port(priv->line));
+ 	}
+ 	serial8250_resume_port(priv->line);
++	port->mctrl = priv->saved_mctrl;
+ 	return 0;
+ }
+ 
+
+base-commit: 58e1100fdc5990b0cc0d4beaf2562a92e621ac7d
+-- 
+2.17.1
+
