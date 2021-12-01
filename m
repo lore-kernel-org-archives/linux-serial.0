@@ -2,199 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE06C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Dec 2021 09:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E504BC433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Dec 2021 10:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242448AbhLAJjv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Dec 2021 04:39:51 -0500
-Received: from comms.puri.sm ([159.203.221.185]:38332 "EHLO comms.puri.sm"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237675AbhLAJju (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Dec 2021 04:39:50 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 06F3FE1252;
-        Wed,  1 Dec 2021 01:36:00 -0800 (PST)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id u2HVHb4u-Iec; Wed,  1 Dec 2021 01:35:59 -0800 (PST)
-Message-ID: <f18b5b0329e8963f277014e38aaf887245f0e1a7.camel@puri.sm>
-Subject: Re: [RFC 06/19] devfreq: imx8m-ddrc: Add late system sleep PM ops
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Georgi Djakov <djakov@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Date:   Wed, 01 Dec 2021 10:35:51 +0100
-In-Reply-To: <YaaENEqlQbW8W6PI@ryzen>
-References: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
-         <1631554694-9599-7-git-send-email-abel.vesa@nxp.com>
-         <e9a3a64dcfec858e612037199df7627b77ececd9.camel@puri.sm>
-         <YaaENEqlQbW8W6PI@ryzen>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1348320AbhLAKuJ (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Dec 2021 05:50:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348765AbhLAKuI (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 1 Dec 2021 05:50:08 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3606AC061574;
+        Wed,  1 Dec 2021 02:46:48 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id u11so17368637plf.3;
+        Wed, 01 Dec 2021 02:46:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=QgI8xfOKbtqJvm3pifM8iV6LJY7gb3a9XtF8BRLsjus=;
+        b=ix8S9kprhXYll66e5bza/ClsATBsMxTY00mtPqwtjQb69tlbPV/zss/b7p6jeGUEqX
+         GHuZAA/IxBu1qAIyYRC2aceIo3IqdLkSMeRl0huJjN/j1vN1NqVTqwJc/JI6Y38JS9Xh
+         pjXh8J8tnahIZRFb9snFsOhpljsnlT3J0bMeJCZ6d4EODmuXzOaIhTj5KaTTt0YFQ+O6
+         ee8Pk7ytgxybwgTA6eLIZtUXEVCVuwivedIopApbSEh6p/Cht0wcLgsbpB9ggIW5HI+O
+         NoR+d5WScTrrD3FJ8tw1dIaMJiFeZPz6V5GHUXkwibUuJRxqAKbQgLcra2+Tg5BCe9c9
+         yyCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=QgI8xfOKbtqJvm3pifM8iV6LJY7gb3a9XtF8BRLsjus=;
+        b=4UvM6zC0FeU5JMHNlYsXkPfDhg/uuqpm6r0mbR1OJ0iiCIP9lqGRic82mZxerORSwb
+         2VRRZDcQedNN0UhndhZYSJsuVM7GORpi0Fus1mqeNV/d0lw9rSb6b4OdsN96f1CuB8J7
+         CcgEtXo1shz/iFOelikRqDKESJ5v8fkH4hsaEkEv+m1fjIQQF3+RktKmGPs/4Oxnlx6I
+         RfzVOv39s1EMMDePwQnLs3oqsY/mAT6DDq4hqhoe2u7rp6jkqKzxX5Q1+IUB1WkQy2CT
+         +Kvahzddk3hJL1zyrBwo0+MUg8O/vu9tGHxH8eXHkxb3USdd/bXbFxw7+mAGTuwpk6Ss
+         EqDw==
+X-Gm-Message-State: AOAM533rEqMMczOT1Cyf1U9foRbrNJh/juoTTjRQkt83OsZ+h9YKN9jp
+        5U4Odw9Qrm7JgX2Yni+rlwA=
+X-Google-Smtp-Source: ABdhPJwPfbK12znXFavPJ3yqk3Xt9XK8n+hr6qdOJR2JiO0LaP3Paje4qQq1UqINPE1Qtd1NOmBcsQ==
+X-Received: by 2002:a17:902:d505:b0:141:f5f7:848e with SMTP id b5-20020a170902d50500b00141f5f7848emr6454307plg.72.1638355607514;
+        Wed, 01 Dec 2021 02:46:47 -0800 (PST)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id f22sm26395318pfj.49.2021.12.01.02.46.45
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 01 Dec 2021 02:46:47 -0800 (PST)
+From:   Hammer Hsieh <hammerh0314@gmail.com>
+X-Google-Original-From: Hammer Hsieh <hammer.hsieh@sunplus.com>
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+        p.zabel@pengutronix.de
+Cc:     tony.huang@sunplus.com, wells.lu@sunplus.com,
+        Hammer Hsieh <hammer.hsieh@sunplus.com>
+Subject: [PATCH v4 0/2] Add UART driver for Suplus SP7021 SoC
+Date:   Wed,  1 Dec 2021 18:46:42 +0800
+Message-Id: <1638355604-24002-1-git-send-email-hammer.hsieh@sunplus.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am Dienstag, dem 30.11.2021 um 22:06 +0200 schrieb Abel Vesa:
-> On 21-11-10 13:15:26, Martin Kepplinger wrote:
-> > Am Montag, dem 13.09.2021 um 20:38 +0300 schrieb Abel Vesa:
-> > > Seems that, in order to be able to resume from suspend, the dram
-> > > rate
-> > > needs to be the highest one available. Therefore, add the late
-> > > system
-> > > suspend/resume PM ops which set the highest rate on suspend and
-> > > the
-> > > latest one used before suspending on resume.
-> > 
-> > Hi Abel, wouldn't this mean that s2idle / freeze would be kind of
-> > broken by this?
-> > 
-> 
-> Nope. Only the DDR rate needs to be raised at 800M before suspending.
-> Everything else stays the same.
+This is a patch series for UART driver for Suplus SP7021 SoC.
 
-well, for s2idle, linux stays running, so no calling out to atf (dram
-retention...) is happening, so it'll stay at 800M *during* being
-suspended.
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART. I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
 
-I tested that by observing power consumption of the system - although
-for now without the cpu-sleep state (via your workaround) due to
-https://lore.kernel.org/linux-arm-kernel/6ca0bcabfa3b6643f9ab7e311cd8697df223c5cb.camel@puri.sm/
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
+Hammer Hsieh (2):
+  dt-bindings:serial:Add bindings doc for Sunplus SoC UART Driver
+  serial:sunplus-uart:Add Sunplus SoC UART Driver
 
-> 
-> > Does is make sense to test the lowest rate? How would I force that
-> > here? (just for testing)
-> 
-> You can try, but it will surely freeze. See [1] what you need to
-> change
-> for testing.
+ .../bindings/serial/sunplus,sp7021-uart.yaml       |  58 ++
+ MAINTAINERS                                        |   6 +
+ drivers/tty/serial/Kconfig                         |  23 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/sunplus-uart.c                  | 848 +++++++++++++++++++++
+ 5 files changed, 936 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+ create mode 100644 drivers/tty/serial/sunplus-uart.c
 
-thanks, that looks nicer than forcing 50M.
-
-> > 
-> > Also, you could think about splitting this series up a bit and do
-> > this
-> > patch seperately onto mainline (before or after the other work).
-> > 
-> 
-> Well, I sent as RFC until now. Seems there are no big issues with the
-> approach. So I'll split the patches between subsystems on the next
-> iteration.
-
-great, looking forward to it!
-
-> 
-> > thank you
-> >                           martin
-> > 
-> > 
-> > > 
-> > > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> > > ---
-> > >  drivers/devfreq/imx8m-ddrc.c | 28 +++++++++++++++++++++++++++-
-> > >  1 file changed, 27 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/devfreq/imx8m-ddrc.c
-> > > b/drivers/devfreq/imx8m-
-> > > ddrc.c
-> > > index f18a5c3c1c03..f39741b4a0b0 100644
-> > > --- a/drivers/devfreq/imx8m-ddrc.c
-> > > +++ b/drivers/devfreq/imx8m-ddrc.c
-> > > @@ -72,6 +72,8 @@ struct imx8m_ddrc {
-> > >         struct clk *dram_alt;
-> > >         struct clk *dram_apb;
-> > >  
-> > > +       unsigned long suspend_rate;
-> > > +       unsigned long resume_rate;
-> > >         int freq_count;
-> > >         struct imx8m_ddrc_freq
-> > > freq_table[IMX8M_DDRC_MAX_FREQ_COUNT];
-> > >  };
-> > > @@ -271,6 +273,22 @@ static int imx8m_ddrc_target(struct device
-> > > *dev,
-> > > unsigned long *freq, u32 flags)
-> > >         return ret;
-> > >  }
-> > >  
-> > > +static int imx8m_ddrc_suspend(struct device *dev)
-> > > +{
-> > > +       struct imx8m_ddrc *priv = dev_get_drvdata(dev);
-> > > +
-> > > +       priv->resume_rate = clk_get_rate(priv->dram_core);
-> > > +
-> > > +       return imx8m_ddrc_target(dev, &priv->suspend_rate, 0);
-> > > +}
-> > > +
-> > > +static int imx8m_ddrc_resume(struct device *dev)
-> > > +{
-> > > +       struct imx8m_ddrc *priv = dev_get_drvdata(dev);
-> > > +
-> > > +       return imx8m_ddrc_target(dev, &priv->resume_rate, 0);
-> > > +}
-> > > +
-> > >  static int imx8m_ddrc_get_cur_freq(struct device *dev, unsigned
-> > > long
-> > > *freq)
-> > >  {
-> > >         struct imx8m_ddrc *priv = dev_get_drvdata(dev);
-> > > @@ -324,6 +342,9 @@ static int imx8m_ddrc_init_freq_info(struct
-> > > device *dev)
-> > >  
-> > >                 if (dev_pm_opp_add(dev, freq->rate * 250000, 0))
-> > >                         return -ENODEV;
-> > > +
-> > > +               if (index ==  0)
-> 
-> [1] Change this line to:
->                     if (index == 1)
-> 
-> It will select the 166935483 freq for suspending.
-> 
-> > > +                       priv->suspend_rate = freq->rate * 250000;
-> > >         }
-> > >  
-> > >         return 0;
-> > > @@ -399,11 +420,16 @@ static const struct of_device_id
-> > > imx8m_ddrc_of_match[] = {
-> > >  };
-> > >  MODULE_DEVICE_TABLE(of, imx8m_ddrc_of_match);
-> > >  
-> > > +static const struct dev_pm_ops imx8m_ddrc_pm_ops = {
-> > > +       SET_LATE_SYSTEM_SLEEP_PM_OPS(imx8m_ddrc_suspend,
-> > > imx8m_ddrc_resume)
-> > > +};
-> > > +
-> > >  static struct platform_driver imx8m_ddrc_platdrv = {
-> > >         .probe          = imx8m_ddrc_probe,
-> > >         .driver = {
-> > >                 .name   = "imx8m-ddrc-devfreq",
-> > > -               .of_match_table = imx8m_ddrc_of_match,
-> > > +               .pm = &imx8m_ddrc_pm_ops,
-> > > +               .of_match_table =
-> > > of_match_ptr(imx8m_ddrc_of_match),
-> > >         },
-> > >  };
-> > >  module_platform_driver(imx8m_ddrc_platdrv);
-> > 
-> > 
-
+-- 
+2.7.4
 
