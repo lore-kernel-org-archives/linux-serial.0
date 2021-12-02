@@ -2,149 +2,415 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A560C433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Dec 2021 18:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68081C433FE
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Dec 2021 20:05:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376505AbhLBSDn (ORCPT
+        id S1348648AbhLBUId (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Dec 2021 13:03:43 -0500
-Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:49977 "EHLO
-        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231154AbhLBSDl (ORCPT
+        Thu, 2 Dec 2021 15:08:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348354AbhLBUIZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Dec 2021 13:03:41 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id C2E1B2B0059C;
-        Thu,  2 Dec 2021 13:00:14 -0500 (EST)
-Received: from imap47 ([10.202.2.97])
-  by compute3.internal (MEProxy); Thu, 02 Dec 2021 13:00:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=mime-version:message-id:in-reply-to:references:date:from:to
-        :cc:subject:content-type; s=fm3; bh=WqXxaA56k/cauFGBfgNPZ3hCAT2Z
-        ZqG8MOqqw2pzOQo=; b=Q7SgWEGzLoSyIq6xy710syOyNYRzSY70ii+4tWyaz/6X
-        hOMAwaxeyQ2+bPY0DqPlFI0lPIKMXqRF1xnIU1vfUfvGN/tyXPMLCjyVxLDmqRoF
-        CfCSBW5PZO/l9p6h/tZP7vFeQ4MzaSGGKXxPELhobN0Yp1ZCNah5rqfSGJ/q+TH+
-        j8fXt0l5/IsvL0J5lv8uVftN6LwBqPmmzo1644ihuvqcB85TXXY/S6cqyEbJk0hB
-        lFdlwkJEPNTZxx9jJOhrDZaMXZNsUUT4m3riAIJlfFqzjNcE6ot6W+bmtOCwDXtz
-        4sCazQ/XqqZpunqm6udU8wF08Cpj7aLXroF1fZnfCw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=WqXxaA
-        56k/cauFGBfgNPZ3hCAT2ZZqG8MOqqw2pzOQo=; b=UYYZt731oJ+nbG7EH3+d9z
-        PzahR1GOPDOYXgJwUFC/aWYhrvid9ZRx1y3edS+4B0vm8HDDLWDL8ErggL/0GIUR
-        reHaxnx/PURLqBHGgOnvFle7uS70vH6qai6ENM7By/vlbTxTxFrgnL8Zh3ax8SOP
-        UPYeyCk72YCubUt3ii+XuXud1EuyTuW7ne4Dx6i2i1I3iJ7L+a4Ymu72Zp3MtJ9B
-        3oekRDnmdEj8dNhPwe0qgXMjSf/CLA2f0q5xVGBb+Drchr84pnH4Cuc+zFCkJqrV
-        EPSi11YbY9h8BWgIg5zsAB3Ie+rHmWqyeyJO6CiLefL/dOsowIpn+ooxupAmyFCA
-        ==
-X-ME-Sender: <xms:rAmpYVDNsZ4OMuM83jX22uCU1x1Bl02DtvgN-fzwzhTWNXA2YAqMNw>
-    <xme:rAmpYThn4D1Z82MLiQney_E6S-esg3jL2rurkUfFibIyqtsIk-FKSSmAcw5fhY_HG
-    AfuHVZq3gXJX2J-Lr8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrieehgddutdejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
-    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
-    htthgvrhhnpefgieegieffuefhtedtjefgteejteefleefgfefgfdvvddtgffhffduhedv
-    feekffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:rAmpYQmbSKSf5hhg5tkr0ORujfI76t9xU3Iox92ENediIqyyvSn3mA>
-    <xmx:rAmpYfyEYy1vx0Ve0donjTChqT08Ntz1ZrWqgcltWTq8pnjLN7hi9g>
-    <xmx:rAmpYaTLbRkJzRLKa0-d50N-kFNRRkbYt6LCK3KhONfRUuSAJ58Otw>
-    <xmx:rgmpYfg187so2lmfmXDBqxodtwj-8q5aCp5Q2I4WCMvXE3iaTOk8XND9ZMM>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id CAC5F27407D4; Thu,  2 Dec 2021 13:00:12 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4458-g51a91c06b2-fm-20211130.004-g51a91c06
-Mime-Version: 1.0
-Message-Id: <1954b7b6-abb8-4a73-9d90-6b2342f73bb8@www.fastmail.com>
-In-Reply-To: <20211124073419.181799-10-marcan@marcan.st>
-References: <20211124073419.181799-1-marcan@marcan.st>
- <20211124073419.181799-10-marcan@marcan.st>
-Date:   Thu, 02 Dec 2021 18:59:51 +0100
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     "Hector Martin" <marcan@marcan.st>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     "Marc Zyngier" <maz@kernel.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Arnd Bergmann" <arnd@kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Krzysztof Kozlowski" <krzk@kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Mark Kettenis" <mark.kettenis@xs4all.nl>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Johan Hovold" <johan@kernel.org>, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 09/11] arm64: dts: apple: t8103: Add PMGR nodes
-Content-Type: text/plain
+        Thu, 2 Dec 2021 15:08:25 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AADC06174A;
+        Thu,  2 Dec 2021 12:05:02 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id w1so2580263edc.6;
+        Thu, 02 Dec 2021 12:05:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kll/FcC5dw2T57BuF9qgheNiW8//IfAQCFYPnU8fXnk=;
+        b=lcTQaX3zFWsnFUPCv2/i7IglUBYgO5ojuvtBrQ/J7LozFbtYYZ6QJXvj5SKz8uZ8VT
+         fIjXJzIPyjeSm9VrTUd8+xqoq5jJXWqof1sszItMAcOc6/D34qTZdNa/jodb9o2VHjES
+         tWE5G3fXr8DLle5piIeUF9KKlTXXaQelfRATwXY9DToDTMSnUknmgTABXkbHLvkaSMWn
+         O8RYhBJLqmk+K9/H1mjDmrDoUZ0zirJVuIhidbPy5bMllbWAT9+ZIcAkQ9yr3ANU/zPV
+         GL7k2ABZMa0d6LOo706nzEYHeTyuGJU2diLM8yHiKe5wVmYkOCRgzg8e84RdHjbNPBRk
+         ne9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kll/FcC5dw2T57BuF9qgheNiW8//IfAQCFYPnU8fXnk=;
+        b=H6wuZCXwwY8ED5xRStWmSraj0K0iNrCbRk7VthZKLUB0FcTaE7JixQ1zVVFOzCaLSe
+         HPILNt+W2+Hvmj1KncXLlCbs0q0I6t33Kea8AMW+N/40ymPpZTRP/SjBZYdV6iHLBgzW
+         yLcQ87RO3MzrZ6SG3SfwwSBGE3fP8WU2HcpHBJYtpKVFPBsvoUGJdzx1BgH4F9wshxtD
+         oQ6xypofJ1MSZiixbau2CJXsNX15scaFYoQr7JMQXveBMIQKMYdmqP/L7g71FJVeqf2u
+         nboTNQhkpm9XDlkEWPHgSFGjSAU+F45SlpzkGWbD5BUOWeH0dHBQQ4ZFHiG+FyBj+qt3
+         /nqQ==
+X-Gm-Message-State: AOAM532Ex7+DJ5fvFfGw5IVEzyUs8DGnVrtoeV0LXmZVjiMh+E+nd3fg
+        6tKwjjAfH7JOzk/FwpHePZDnZKJy4Mmpic/XBD4=
+X-Google-Smtp-Source: ABdhPJwD0S+RQajQEVk91EijHu9MsSQiYyktQdtMq/NEVwE2hqeG6bAqz5/y5D3mRhZFz8tgyNhoIN1l9Xj/qscn8Jc=
+X-Received: by 2002:a05:6402:270c:: with SMTP id y12mr20317491edd.258.1638475500420;
+ Thu, 02 Dec 2021 12:05:00 -0800 (PST)
+MIME-Version: 1.0
+References: <1638355604-24002-1-git-send-email-hammer.hsieh@sunplus.com> <1638355604-24002-3-git-send-email-hammer.hsieh@sunplus.com>
+In-Reply-To: <1638355604-24002-3-git-send-email-hammer.hsieh@sunplus.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 2 Dec 2021 22:03:24 +0200
+Message-ID: <CAHp75VdQYvbDR7kpBF4pJFr-o8WoUADcBpfn6vk2j3zh-KvHdg@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+To:     Hammer Hsieh <hammerh0314@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>, tony.huang@sunplus.com,
+        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        Hammer Hsieh <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On Wed, Nov 24, 2021, at 08:34, Hector Martin wrote:
-> This adds the two PMGR nodes and all known power state subnodes. Since
-> there are a large number of them, let's put them in a separate file to
-> include.
+On Thu, Dec 2, 2021 at 9:35 PM Hammer Hsieh <hammerh0314@gmail.com> wrote:
 >
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  arch/arm64/boot/dts/apple/t8103-pmgr.dtsi | 1136 +++++++++++++++++++++
->  arch/arm64/boot/dts/apple/t8103.dtsi      |   24 +
->  2 files changed, 1160 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
->
-> diff --git a/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi 
-> b/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
-> new file mode 100644
-> index 000000000000..1310be74df1d
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
-> @@ -0,0 +1,1136 @@
-> +// SPDX-License-Identifier: GPL-2.0+ OR MIT
+> Add Sunplus SoC UART Driver
+
+...
+
+> +config SERIAL_SUNPLUS
+> +       tristate "Sunplus UART support"
+> +       depends on OF || COMPILE_TEST
+> +       select SERIAL_CORE
+> +       help
+> +         Select this option if you would like to use Sunplus serial port on
+> +         Sunplus SoC SP7021.
+> +         If you enable this option, Sunplus serial ports in the system will
+> +         be registered as ttySUPx.
+
+What will be the module name in case of module build?
+
+...
+
 > +/*
-> + * PMGR Power domains for the Apple T8103 "M1" SoC
+> + * Sunplus SoC UART driver
 > + *
-> + * Copyright The Asahi Linux Contributors
+> + * Author: Hammer Hsieh <hammer.hsieh@sunplus.com>
+
+Authors:
+
+> + * Tony Huang <tony.huang@sunplus.com>
+> + * Wells Lu <wells.lu@sunplus.com>
+
+And please indent names to be on the same column.
+
 > + */
+
+...
+
+> +#define UART_AUTOSUSPEND_TIMEOUT       3000
+
+Add units to the name.
+
+...
+
+> +static inline u32 sunplus_tx_buf_not_full(struct uart_port *port)
+> +{
+> +       unsigned int lsr = readl(port->membase + SUP_UART_LSR);
 > +
+> +       return ((lsr & SUP_UART_LSR_TX) ? SUP_UART_LSR_TX_NOT_FULL : 0);
+
+Too many parentheses. Ditto for all similar cases.
+
+> +}
+
+...
+
+> +       do {
+> +               sp_uart_put_char(port, xmit->buf[xmit->tail]);
+> +               xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+
+"% UART_XMIT_SIZE" is more accurate since it doesn't require a value
+to be a power of 2. In case of power of 2 it will be properly
+optimized by a compiler.
+
+> +               port->icount.tx++;
+> +
+> +               if (uart_circ_empty(xmit))
+> +                       break;
+> +       } while (sunplus_tx_buf_not_full(port));
+
+...
+
+> +       spin_lock_irqsave(&port->lock, flags);
+
+Why irqsave here?
+
+...
+
+> +       if (readl(port->membase + SUP_UART_ISC) & SUP_UART_ISC_RX)
+> +               receive_chars(port);
+> +
+> +       if (readl(port->membase + SUP_UART_ISC) & SUP_UART_ISC_TX)
+> +               transmit_chars(port);
+
+Do you really need to perform two I/O against the very same register?
+
+...
+
+> +static int sunplus_startup(struct uart_port *port)
+> +{
+> +       unsigned int isc;
+> +       int ret;
+
+> +#ifdef CONFIG_PM
+
+Why is this ifdeffery around the driver?
+
+> +       if (!uart_console(port)) {
+> +               ret = pm_runtime_get_sync(port->dev);
+> +               if (ret < 0)
+> +                       goto out;
+> +       }
+> +#endif
+> +       ret = request_irq(port->irq, sunplus_uart_irq, 0, "sunplus_uart", port);
+> +       if (ret)
+> +               return ret;
+> +
+> +       spin_lock_irq(&port->lock);
+> +
+> +       isc |= SUP_UART_ISC_RXM;
+> +       writel(isc, port->membase + SUP_UART_ISC);
+> +
+> +       spin_unlock_irq(&port->lock);
+
+> +#ifdef CONFIG_PM
+> +       if (!uart_console(port))
+> +               pm_runtime_put(port->dev);
+
+Why doesn't it set autosuspend, i.o.w. Why is it different from an error case?
+
+> +       return 0;
+> +out:
+> +       if (!uart_console(port)) {
+> +               pm_runtime_mark_last_busy(port->dev);
+> +               pm_runtime_put_autosuspend(port->dev);
+> +       }
+> +#endif
+> +       return 0;
+> +}
+
+...
+
+> +static void sunplus_set_termios(struct uart_port *port,
+> +                               struct ktermios *termios,
+> +                               struct ktermios *oldtermios)
+> +{
+> +       u32 clk, ext, div, div_l, div_h, baud;
+> +       u32 lcr, val;
+> +       unsigned long flags;
+
+> +       clk = port->uartclk;
+
+This can be done in the definition block above.
+
+> +       baud = uart_get_baud_rate(port, termios, oldtermios, 0, port->uartclk / 16);
+> +
+> +       readl_poll_timeout_atomic(port->membase + SUP_UART_LSR, val,
+> +                                 (val & SUP_UART_LSR_TXE), 1, 10000);
+
+No error check?
+
+> +       /*
+> +        * baud rate = uartclk / ((16 * div[15:0] + 1) + div_ext[3:0])
+> +        * get target baud rate and uartclk
+> +        * auto calculate div and div_ext
+> +        * div_h = (div[15:8] >> 8); div_l = (div_ext[3:0] << 12) + div[7:0]
+
+There is no need to explain the code, please add excerpts from the
+data sheet on how the divisors and baud rate are calculated, use
+mathematical language, and not programming in the comment.
+
+> +        */
+> +       clk += baud >> 1;
+> +       div = clk / baud;
+> +       ext = div & 0x0F;
+> +       div = (div >> 4) - 1;
+> +       div_l = (div & 0xFF) | (ext << 12);
+> +       div_h = div >> 8;
+
+...
+
+> +static const char *sunplus_type(struct uart_port *port)
+> +{
+> +       struct sunplus_uart_port *sup = to_sunplus_uart(port);
+> +
+> +       return sup->port.type == PORT_SUNPLUS ? "sunplus_uart" : NULL;
+> +}
+
+
+What do we achieve with this? Who and how will see this information?
+Under which circumstances the port type is not SUNPLUS?
+
+...
+
+> +static void sunplus_release_port(struct uart_port *port)
+> +{
+> +}
+> +
+> +static int sunplus_request_port(struct uart_port *port)
+> +{
+> +       return 0;
+> +}
+
+Are these stubs mandatory?
+
+...
+
+> +static void sunplus_config_port(struct uart_port *port, int type)
+> +{
+
+> +       if (type & UART_CONFIG_TYPE) {
+> +               port->type = PORT_SUNPLUS;
+> +               sunplus_request_port(port);
+> +       }
+
+if (!(type & ...))
+  return;
+
+?
+
+> +}
+
+...
+
+> +static int sunplus_poll_init(struct uart_port *port)
+> +{
+> +       return 0;
+> +}
+
+Why is this stub needed?
+
+...
+
+> +static inline void wait_for_xmitr(struct uart_port *port)
+> +{
+> +       unsigned int val;
+> +
+> +       readl_poll_timeout_atomic(port->membase + SUP_UART_LSR, val,
+> +                                 (val & SUP_UART_LSR_TX), 1, 10000);
+
+Error handling?
+Or explain why it's not needed.
+
+> +}
+
+...
+
+> +       sup->clk = devm_clk_get(&pdev->dev, NULL);
+> +       if (!IS_ERR(sup->clk)) {
+
+Instead use devm_clk_get_optional().
+
+> +               ret = clk_prepare_enable(sup->clk);
+> +               if (ret)
+> +                       return ret;
+
+> +               ret = devm_add_action_or_reset(&pdev->dev,
+> +                                              (void(*)(void *))clk_disable_unprepare,
+> +                                              sup->clk);
+
+Look at the examples of how other drivers do this (that were submitted
+more or less recently).
+
+> +               if (ret)
+> +                       return ret;
+> +       } else {
+
+> +               if (PTR_ERR(sup->clk) == -EPROBE_DEFER)
+> +                       return -EPROBE_DEFER;
+
+Why?!
+
+> +               return dev_err_probe(&pdev->dev, PTR_ERR(sup->clk), "clk not found\n");
+> +       }
+
+...
+
+> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +       port->membase = devm_ioremap_resource(&pdev->dev, res);
+
+We have an API that does both at once. Use it.
+
+> +       if (IS_ERR(port->membase))
+> +               return dev_err_probe(&pdev->dev, PTR_ERR(port->membase), "membase not found\n");
+
+...
+
+> +       ret = reset_control_deassert(sup->rstc);
+> +       if (ret)
+> +               return ret;
+
+From here no reset assertion on error? Why?
+
+...
+
+> +#ifdef CONFIG_SERIAL_SUNPLUS_CONSOLE
+> +       if (pdev->id == 0)
+> +               port->cons = &sunplus_uart_console;
+> +       sunplus_console_ports[sup->port.line] = sup;
+> +#endif
+
+Actually why don't you use register_console() ?
+
+...
+
+> +static struct platform_driver sunplus_uart_platform_driver = {
+> +       .probe          = sunplus_uart_probe,
+> +       .remove         = sunplus_uart_remove,
+> +       .driver = {
+> +               .name   = "sunplus_uart",
+
+> +               .of_match_table = of_match_ptr(sp_uart_of_match),
+
+How did you test this when OF=n and COMPILE_TEST=y?
+Hint: Compiler will warn about unused variables (you need W=1).
+
+> +               .pm     = &sunplus_uart_pm_ops,
+> +       }
+> +};
+
+...
+
+> +static void __exit sunplus_uart_exit(void)
+> +{
+> +       platform_driver_unregister(&sunplus_uart_platform_driver);
+> +       uart_unregister_driver(&sunplus_uart_driver);
+> +}
+
 > +
 
-[...]
+Dtop this blank line...
 
-> +	ps_atc0_usb_aon: power-controller@88 {
-> +		compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-> +		reg = <0x88 4>;
-> +		#power-domain-cells = <0>;
-> +		#reset-cells = <0>;
-> +		label = "atc0_usb_aon";
-> +	};
+> +module_init(sunplus_uart_init);
+> +module_exit(sunplus_uart_exit);
+
+...and attach each of the calls to the implemented function.
+
+...
+
+> +static int __init
+> +sunplus_uart_early_setup(struct earlycon_device *dev, const char *opt)
+> +{
+> +       if (!(dev->port.membase || dev->port.iobase))
+> +               return -ENODEV;
 > +
-> +	ps_atc1_usb_aon: power-controller@90 {
-> +		compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
-> +		reg = <0x90 4>;
-> +		#power-domain-cells = <0>;
-> +		#reset-cells = <0>;
-> +		label = "atc1_usb_aon";
-> +	};
+> +       dev->con->write = sunplus_uart_early_write;
+> +
+> +       return 0;
+> +}
 
-These two nodes have AON in their name but can be powered off.
-Is this intentional and Apple just labels things a bit weird in the ADT
-again?
+> +
 
+No blank line.
 
-With that confirmed:
+> +OF_EARLYCON_DECLARE(sunplus_uart, "sunplus,sp7021-uart", sunplus_uart_early_setup);
 
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-
-
-
-
-Best,
-
-Sven
+-- 
+With Best Regards,
+Andy Shevchenko
