@@ -2,138 +2,149 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0893DC433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Dec 2021 11:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A560C433F5
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Dec 2021 18:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357114AbhLBLEa (ORCPT
+        id S1376505AbhLBSDn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Dec 2021 06:04:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346182AbhLBLE3 (ORCPT
+        Thu, 2 Dec 2021 13:03:43 -0500
+Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:49977 "EHLO
+        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231154AbhLBSDl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Dec 2021 06:04:29 -0500
-Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D6FC061757
-        for <linux-serial@vger.kernel.org>; Thu,  2 Dec 2021 03:01:07 -0800 (PST)
-Received: by mail-ua1-x92d.google.com with SMTP id i6so54909936uae.6
-        for <linux-serial@vger.kernel.org>; Thu, 02 Dec 2021 03:01:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pk9D0BkgKy2MkHQjOsND26zq44gMYDCnDDc5CGOG3Eo=;
-        b=MQzwMbtX3OEq3xFhbvNV9fwEHoed0BB6w8bpPjpAnSKvxey0w7jr842wcnlTfvUu6S
-         cPvjz+MuNSnBKEyKITaKbLtK3qhcHMKkOEL3TahZ3cY3Id64C34xaAEtURku7txrqTZP
-         TEwzb8URr+IVTqCc78y2Cubsmy4cpXUIop6Si1LFZ8LKATTmVpTz1DqnbTXTm78cmLla
-         JFq0oK5fhC4CXugex+FXNY91Oq1Byoi6ik7eWr7Cq0n3Up3qRQqgxz+Menrr/elTmYWh
-         3rLbGd7mZmQx/ap6gV64cLo0CenIJ5oz3BJaFmcbCq2rsURgqYh9KLdIOeE8/jE/iO4N
-         oD5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pk9D0BkgKy2MkHQjOsND26zq44gMYDCnDDc5CGOG3Eo=;
-        b=i2btCbCiWhAPWoQAHQ346Mr7ySuLXTHE2RNKXjff6GlIroCV62WCzQWPa2d+kmB86H
-         DTuSMZshtN1LNYJxqqv/ZT2uWS5p8NknhFC+EvJKsAyjIIe3keO6/SXlDfw0rA7Vbv8f
-         //dEdewdo9WiLO7kHaiGiuLN6daEFLuVESip2mb817PNtUIuC7LmLwu525UeURuCF99Z
-         XdzMExRtM37egZ1dGVoBahQLI6tD1JC0YNj0zmCvPy9gH0/w4d1b1zSnOVxd/vVmbNFO
-         BJITmOg3vzZk+9AlSTpyQY9hukbz4EarzWSM53erulZfTiPY80z69m+SqFMonXXvhmfw
-         F4XA==
-X-Gm-Message-State: AOAM5308q6ET9hamKzPm7cmXQLzOrlWom7lnchz5/Lp4YHIKf89cZD3A
-        6uXNoa0uBlrl2fs9EJGDt0YD3S2zHHveZfSf+fDpqg==
-X-Google-Smtp-Source: ABdhPJxakVPbeV3zYAuA0ClGNGeLE4yam1HSOcyPA7SQE2XyjCmXcnqQqxD6K9GyotZiEP2pJrwvkeSJ6r0RxEK755w=
-X-Received: by 2002:a67:be0f:: with SMTP id x15mr13744954vsq.86.1638442866176;
- Thu, 02 Dec 2021 03:01:06 -0800 (PST)
-MIME-Version: 1.0
-References: <20211130111325.29328-1-semen.protsenko@linaro.org>
- <20211130111325.29328-2-semen.protsenko@linaro.org> <1638294184.179325.2713642.nullmailer@robh.at.kernel.org>
- <4b5bebb0-ed74-8132-1e6b-cb7cbc21439c@canonical.com> <CAL_JsqJb4nMBoGLcf-bKpi5kEE+zXQ=dfo5JSBhrqPFeLnCsHw@mail.gmail.com>
-In-Reply-To: <CAL_JsqJb4nMBoGLcf-bKpi5kEE+zXQ=dfo5JSBhrqPFeLnCsHw@mail.gmail.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Thu, 2 Dec 2021 13:00:54 +0200
-Message-ID: <CAPLW+4=Zdvf4HRNUeVMR9URLSdA867hdXVLYy+k47yLH82uTnA@mail.gmail.com>
-Subject: Re: [PATCH v2 RESEND 1/5] dt-bindings: soc: samsung: Add Exynos USI bindings
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-samsung-soc@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chanho Park <chanho61.park@samsung.com>,
-        linux-serial@vger.kernel.org,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        David Virag <virag.david003@gmail.com>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 2 Dec 2021 13:03:41 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id C2E1B2B0059C;
+        Thu,  2 Dec 2021 13:00:14 -0500 (EST)
+Received: from imap47 ([10.202.2.97])
+  by compute3.internal (MEProxy); Thu, 02 Dec 2021 13:00:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=mime-version:message-id:in-reply-to:references:date:from:to
+        :cc:subject:content-type; s=fm3; bh=WqXxaA56k/cauFGBfgNPZ3hCAT2Z
+        ZqG8MOqqw2pzOQo=; b=Q7SgWEGzLoSyIq6xy710syOyNYRzSY70ii+4tWyaz/6X
+        hOMAwaxeyQ2+bPY0DqPlFI0lPIKMXqRF1xnIU1vfUfvGN/tyXPMLCjyVxLDmqRoF
+        CfCSBW5PZO/l9p6h/tZP7vFeQ4MzaSGGKXxPELhobN0Yp1ZCNah5rqfSGJ/q+TH+
+        j8fXt0l5/IsvL0J5lv8uVftN6LwBqPmmzo1644ihuvqcB85TXXY/S6cqyEbJk0hB
+        lFdlwkJEPNTZxx9jJOhrDZaMXZNsUUT4m3riAIJlfFqzjNcE6ot6W+bmtOCwDXtz
+        4sCazQ/XqqZpunqm6udU8wF08Cpj7aLXroF1fZnfCw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=WqXxaA
+        56k/cauFGBfgNPZ3hCAT2ZZqG8MOqqw2pzOQo=; b=UYYZt731oJ+nbG7EH3+d9z
+        PzahR1GOPDOYXgJwUFC/aWYhrvid9ZRx1y3edS+4B0vm8HDDLWDL8ErggL/0GIUR
+        reHaxnx/PURLqBHGgOnvFle7uS70vH6qai6ENM7By/vlbTxTxFrgnL8Zh3ax8SOP
+        UPYeyCk72YCubUt3ii+XuXud1EuyTuW7ne4Dx6i2i1I3iJ7L+a4Ymu72Zp3MtJ9B
+        3oekRDnmdEj8dNhPwe0qgXMjSf/CLA2f0q5xVGBb+Drchr84pnH4Cuc+zFCkJqrV
+        EPSi11YbY9h8BWgIg5zsAB3Ie+rHmWqyeyJO6CiLefL/dOsowIpn+ooxupAmyFCA
+        ==
+X-ME-Sender: <xms:rAmpYVDNsZ4OMuM83jX22uCU1x1Bl02DtvgN-fzwzhTWNXA2YAqMNw>
+    <xme:rAmpYThn4D1Z82MLiQney_E6S-esg3jL2rurkUfFibIyqtsIk-FKSSmAcw5fhY_HG
+    AfuHVZq3gXJX2J-Lr8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrieehgddutdejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
+    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
+    htthgvrhhnpefgieegieffuefhtedtjefgteejteefleefgfefgfdvvddtgffhffduhedv
+    feekffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:rAmpYQmbSKSf5hhg5tkr0ORujfI76t9xU3Iox92ENediIqyyvSn3mA>
+    <xmx:rAmpYfyEYy1vx0Ve0donjTChqT08Ntz1ZrWqgcltWTq8pnjLN7hi9g>
+    <xmx:rAmpYaTLbRkJzRLKa0-d50N-kFNRRkbYt6LCK3KhONfRUuSAJ58Otw>
+    <xmx:rgmpYfg187so2lmfmXDBqxodtwj-8q5aCp5Q2I4WCMvXE3iaTOk8XND9ZMM>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id CAC5F27407D4; Thu,  2 Dec 2021 13:00:12 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4458-g51a91c06b2-fm-20211130.004-g51a91c06
+Mime-Version: 1.0
+Message-Id: <1954b7b6-abb8-4a73-9d90-6b2342f73bb8@www.fastmail.com>
+In-Reply-To: <20211124073419.181799-10-marcan@marcan.st>
+References: <20211124073419.181799-1-marcan@marcan.st>
+ <20211124073419.181799-10-marcan@marcan.st>
+Date:   Thu, 02 Dec 2021 18:59:51 +0100
+From:   "Sven Peter" <sven@svenpeter.dev>
+To:     "Hector Martin" <marcan@marcan.st>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     "Marc Zyngier" <maz@kernel.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        "Arnd Bergmann" <arnd@kernel.org>,
+        "Linus Walleij" <linus.walleij@linaro.org>,
+        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
+        "Krzysztof Kozlowski" <krzk@kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Mark Kettenis" <mark.kettenis@xs4all.nl>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Johan Hovold" <johan@kernel.org>, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 09/11] arm64: dts: apple: t8103: Add PMGR nodes
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 1 Dec 2021 at 18:20, Rob Herring <robh@kernel.org> wrote:
+
+
+On Wed, Nov 24, 2021, at 08:34, Hector Martin wrote:
+> This adds the two PMGR nodes and all known power state subnodes. Since
+> there are a large number of them, let's put them in a separate file to
+> include.
 >
-> On Tue, Nov 30, 2021 at 2:04 PM Krzysztof Kozlowski
-> <krzysztof.kozlowski@canonical.com> wrote:
-> >
-> > On 30/11/2021 18:43, Rob Herring wrote:
-> > > On Tue, 30 Nov 2021 13:13:21 +0200, Sam Protsenko wrote:
-> > >> Add constants for choosing USIv2 configuration mode in device tree.
-> > >> Those are further used in USI driver to figure out which value to write
-> > >> into SW_CONF register. Also document USIv2 IP-core bindings.
-> > >>
-> > >> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > >> ---
-> > >> Changes in v2:
-> > >>   - Combined dt-bindings doc and dt-bindings header patches
-> > >>   - Added i2c node to example in bindings doc
-> > >>   - Added mentioning of shared internal circuits
-> > >>   - Added USI_V2_NONE value to bindings header
-> > >>
-> > >>  .../bindings/soc/samsung/exynos-usi.yaml      | 135 ++++++++++++++++++
-> > >>  include/dt-bindings/soc/samsung,exynos-usi.h  |  17 +++
-> > >>  2 files changed, 152 insertions(+)
-> > >>  create mode 100644 Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> > >>  create mode 100644 include/dt-bindings/soc/samsung,exynos-usi.h
-> > >>
-> > >
-> > > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> > > on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> > >
-> > > yamllint warnings/errors:
-> > >
-> > > dtschema/dtc warnings/errors:
-> > > Documentation/devicetree/bindings/soc/samsung/exynos-usi.example.dts:35.39-42.15: Warning (unique_unit_address): /example-0/usi@138200c0/serial@13820000: duplicate unit-address (also used in node /example-0/usi@138200c0/i2c@13820000)
-> >
-> > Rob,
-> >
-> > The checker complains about two nodes with same unit-address, even
-> > though the node name is different. Does it mean that our idea of
-> > embedding two children in USI and having enabled only one (used one) is
-> > wrong?
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>  arch/arm64/boot/dts/apple/t8103-pmgr.dtsi | 1136 +++++++++++++++++++++
+>  arch/arm64/boot/dts/apple/t8103.dtsi      |   24 +
+>  2 files changed, 1160 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
 >
-> IIRC, we allow for this exact scenario, and there was a change in dtc
-> for it. So I'm not sure why this triggered.
->
+> diff --git a/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi 
+> b/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
+> new file mode 100644
+> index 000000000000..1310be74df1d
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
+> @@ -0,0 +1,1136 @@
+> +// SPDX-License-Identifier: GPL-2.0+ OR MIT
+> +/*
+> + * PMGR Power domains for the Apple T8103 "M1" SoC
+> + *
+> + * Copyright The Asahi Linux Contributors
+> + */
+> +
+> +
 
-It's triggered from WARNING(unique_unit_address, ...), because it
-calls static void check_unique_unit_address_common() function with
-disable_check=false. I guess we should interpret that this way: the
-warning makes sense in regular case, when having the same unit address
-for two nodes is wrong. So the warning is reasonable, it's just not
-relevant in this particular case. What can be done:
+[...]
 
-  1. We can introduce some specific property to mark nodes with
-duplicated address as intentional. check_unique_unit_address_common()
-can be extended then to omit checking the nodes if that property is
-present.
-  2. We can just ignore that warning in this particular case (and
-similar cases).
-  3. We can add some disambiguation note to that warning message, like
-"if it's intentional -- please ignore this message"
+> +	ps_atc0_usb_aon: power-controller@88 {
+> +		compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
+> +		reg = <0x88 4>;
+> +		#power-domain-cells = <0>;
+> +		#reset-cells = <0>;
+> +		label = "atc0_usb_aon";
+> +	};
+> +
+> +	ps_atc1_usb_aon: power-controller@90 {
+> +		compatible = "apple,t8103-pmgr-pwrstate", "apple,pmgr-pwrstate";
+> +		reg = <0x90 4>;
+> +		#power-domain-cells = <0>;
+> +		#reset-cells = <0>;
+> +		label = "atc1_usb_aon";
+> +	};
 
-I'm all for option (3), as it's the easiest one, and still reasonable.
-Rob, what do you think? Can we just ignore that warning in further
-versions of this patch series?
+These two nodes have AON in their name but can be powered off.
+Is this intentional and Apple just labels things a bit weird in the ADT
+again?
 
-> Rob
+
+With that confirmed:
+
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
+
+
+
+
+Best,
+
+Sven
