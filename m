@@ -2,90 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 084E4C433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Dec 2021 20:41:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4260C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Dec 2021 01:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352979AbhLAUom (ORCPT
+        id S1345071AbhLBBcL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Dec 2021 15:44:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47778 "EHLO
+        Wed, 1 Dec 2021 20:32:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352976AbhLAUm7 (ORCPT
+        with ESMTP id S1345357AbhLBBcK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Dec 2021 15:42:59 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C725C061756;
-        Wed,  1 Dec 2021 12:39:33 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id z6so25749951pfe.7;
-        Wed, 01 Dec 2021 12:39:33 -0800 (PST)
+        Wed, 1 Dec 2021 20:32:10 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EDDC061756
+        for <linux-serial@vger.kernel.org>; Wed,  1 Dec 2021 17:28:49 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id bf8so52427240oib.6
+        for <linux-serial@vger.kernel.org>; Wed, 01 Dec 2021 17:28:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mCS7DhZJVCTwjtJYd4FYNKX3PCW+VVYxovDq0WixHo4=;
-        b=cNF4mXIpVXWzwhC/EoG9eUp3RHxUuadKqD6/vD95CgIlrj3pqDrfoil4g0BnozBFH0
-         ZvzH5RHhm0zVgzdxA6JYY531g8iMgd0z0ARv0ecAjMdllt/f1GBZlS79DOp11LtJJdMJ
-         uwcLHN3uS8BLRBXPrBucuqFJCO25m1/vucJcqzWvifM375jRMncJoNJL4o4RfoIgZDxS
-         Jc++SxPu0wgYp2sdIisowMBGqU7EaQsEERxAtfWuGJ42WFLJXSmf2NN8Hj7swKd53FeL
-         5lIeNEMZ+0pqi7n2ZO5uWdyq6EOZ6BMPE6UzY/Glh8WBr2G58joMwDSPJA4cRSc+5wNx
-         L3sA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5gpy4sVMzHHpUlsImi5kl58Gd1L0IEwpwxD1YdQQvBQ=;
+        b=PmllECeJTsKVQzyq3fs24scpkhBsQYtimCCEBzVdvfA1Vp9wzh8BEfZW4KAnmXv2VY
+         T/o/CapcXTv2Q5kS4pEiq39mMfppHLCKrsrH6K2aqiWkXz9ln9yB8y/Hb/3hmroHDLjd
+         sJO7VapIW0v8YX5L8y0iCmtalDl4R7tj9LZlFbPYLsvApLlKcuG74fm25mQWhTV9myXk
+         TrKo7k1TWmd0ljc6nvEnXwompmZbt7kaSIQ1aHCUzVbbeXn7MHhX4U7MzhxnspWm1hc6
+         Qn3l8m7qVwVKIPPn5ZimiS38UuR576O3Iigl14HOx6MIRhq1Hz8+1XZju1zBR+1cZyOO
+         eldA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mCS7DhZJVCTwjtJYd4FYNKX3PCW+VVYxovDq0WixHo4=;
-        b=X3BoenHle/H7ww4Jb0I0tIbcnx+NCFK7RDNq8mrhuEe2iahLitbG3hTFQOkLGBBxWe
-         jp7iG2cOwwZphgf/PrwxYhOTdEr2N0BNqrnmF9OiMalPAgy3x8yHTxhYlwaRIK1GKfGj
-         In3KjvrmdXy5Uoea5tpESfcG0TtzKxmxBLx1i9T4clPz7lg/mJo6ytkfOnQC0yoG7v9H
-         ka/72KAzqgcKd4cqprc2Iqg6M6rkfWOWqdXQr+P13PPnRvGHd99lVv3G03zw/Ozaq6+J
-         kuR9vl24t7lTe6LSGDS2niTyqX3xDAYpQ2s8lNegwaOvNO+di7H4pNAo5T7T2g7NOC0k
-         NBvg==
-X-Gm-Message-State: AOAM532a9my/5hGUKrPbOiz3gXIM+eRC0kPyuIWXeDmGk79iavAZH7DN
-        4HNfT6FdGvF9whtdtTFxSb69adl0W7M=
-X-Google-Smtp-Source: ABdhPJxgP8XbXSYplVdFYpxH8S6f4JuuJ6c0U105XPRj4j86VvEmcg4CgXNt+blV3CEcQeT7Mg4ZlA==
-X-Received: by 2002:a05:6a00:a23:b0:4a4:e9f5:d890 with SMTP id p35-20020a056a000a2300b004a4e9f5d890mr8725695pfh.82.1638391172653;
-        Wed, 01 Dec 2021 12:39:32 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id z4sm684027pfg.101.2021.12.01.12.39.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Dec 2021 12:39:32 -0800 (PST)
-Subject: Re: [PATCH] serial: 8250_bcm7271: UART errors after resuming from S2
-To:     Al Cooper <alcooperx@gmail.com>, linux-kernel@vger.kernel.org
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-References: <20211201201402.47446-1-alcooperx@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <847997ca-1a24-485e-010b-9cba35ff2b0c@gmail.com>
-Date:   Wed, 1 Dec 2021 12:39:31 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5gpy4sVMzHHpUlsImi5kl58Gd1L0IEwpwxD1YdQQvBQ=;
+        b=H10KtjcCDkbnEsbeouBK+U1PgXYw64fE6oiJc5gdrts8HpTgtlh2hOLb7pT1ItBLHG
+         kTQLfgt1sMkghrYrKTi/9wUnH2RdsMtB4JhrhrTTlwJ2vfbEQec8JkFF8778ipGS2YaE
+         UIMCUZs0PBV4PcjkCA7d5xx8eJ7If5EPk2EbyBmk/c73UjLzeL9xlbpH6MYkM5RtI0ED
+         BMS8l0+V1LVdkaw22e8H7WaLqs0QA0WBLeSUg4O1xKlLJjTBqDVClob4aEHxAMWrL7YO
+         GXi17nXvGyOB7p49bmSAGmBFL1O5Ts+ksyUl7v47aC9EHXb3orOgaaMwIhqWx9Y8KkFN
+         LJ5w==
+X-Gm-Message-State: AOAM533fcPcOssBVshRML2wirYuysAxIjLG/CWfxSaMMsAjJC80NSVkE
+        XB6ollKqy3ckGHYD8HhaHr1KeM5KTcZXFR1p8/5neA==
+X-Google-Smtp-Source: ABdhPJxecnz1NO0fgLf1UE399iXCnEzQsG+UsmsEG6gIeEhXW9yYIQzCp0kbjcc193owkf4Og+b8awgaUPwSMZC0LNE=
+X-Received: by 2002:a05:6808:60e:: with SMTP id y14mr1921269oih.162.1638408528758;
+ Wed, 01 Dec 2021 17:28:48 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20211201201402.47446-1-alcooperx@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20211125211443.1150135-1-Mr.Bossman075@gmail.com> <20211125211443.1150135-3-Mr.Bossman075@gmail.com>
+In-Reply-To: <20211125211443.1150135-3-Mr.Bossman075@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 2 Dec 2021 02:28:36 +0100
+Message-ID: <CACRpkdZ_o=L8t8wysy_wOaUydR-ptEkg07-mOjA32OWzEea8=A@mail.gmail.com>
+Subject: Re: [PATCH v3 02/13] dt-bindings: pinctrl: add i.MXRT1050 pinctrl
+ binding doc
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     linux-imx@nxp.com, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, ulf.hansson@linaro.org,
+        aisheng.dong@nxp.com, stefan@agner.ch, gregkh@linuxfoundation.org,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux@armlinux.org.uk, abel.vesa@nxp.com, adrian.hunter@intel.com,
+        jirislaby@kernel.org, giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12/1/21 12:14 PM, Al Cooper wrote:
-> There is a small window in time during resume where the hardware
-> flow control signal RTS can be asserted (which allows a sender to
-> resume sending data to the UART) but the baud rate has not yet
-> been restored. This will cause corrupted data and FRAMING, OVERRUN
-> and BREAK errors. This is happening because the MCTRL register is
-> shadowed in uart_port struct and is later used during resume to set
-> the MCTRL register during both serial8250_do_startup() and
-> uart_resume_port(). Unfortunately, serial8250_do_startup()
-> happens before the UART baud rate is restored. The fix is to clear
-> the shadowed mctrl value at the end of suspend and restore it at the
-> end of resume.
-> 
-> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-> Signed-off-by: Al Cooper <alcooperx@gmail.com>
+On Thu, Nov 25, 2021 at 10:14 PM Jesse Taube <mr.bossman075@gmail.com> wrote:
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> From: Jesse Taube <mr.bossman075@gmail.com>
+>
+> Add i.MXRT1050 pinctrl binding doc
+>
+> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> ---
+> V1->V2:
+> * Replace macros with values
+> * Add tab for last pinctrl value
+
+Patch applied to the pinctrl tree.
+
+Yours,
+Linus Walleij
