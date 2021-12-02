@@ -2,415 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68081C433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Dec 2021 20:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B01C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Dec 2021 20:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348648AbhLBUId (ORCPT
+        id S1348963AbhLBUsD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Dec 2021 15:08:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348354AbhLBUIZ (ORCPT
+        Thu, 2 Dec 2021 15:48:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51170 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348866AbhLBUsC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Dec 2021 15:08:25 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AADC06174A;
-        Thu,  2 Dec 2021 12:05:02 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id w1so2580263edc.6;
-        Thu, 02 Dec 2021 12:05:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kll/FcC5dw2T57BuF9qgheNiW8//IfAQCFYPnU8fXnk=;
-        b=lcTQaX3zFWsnFUPCv2/i7IglUBYgO5ojuvtBrQ/J7LozFbtYYZ6QJXvj5SKz8uZ8VT
-         fIjXJzIPyjeSm9VrTUd8+xqoq5jJXWqof1sszItMAcOc6/D34qTZdNa/jodb9o2VHjES
-         tWE5G3fXr8DLle5piIeUF9KKlTXXaQelfRATwXY9DToDTMSnUknmgTABXkbHLvkaSMWn
-         O8RYhBJLqmk+K9/H1mjDmrDoUZ0zirJVuIhidbPy5bMllbWAT9+ZIcAkQ9yr3ANU/zPV
-         GL7k2ABZMa0d6LOo706nzEYHeTyuGJU2diLM8yHiKe5wVmYkOCRgzg8e84RdHjbNPBRk
-         ne9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kll/FcC5dw2T57BuF9qgheNiW8//IfAQCFYPnU8fXnk=;
-        b=H6wuZCXwwY8ED5xRStWmSraj0K0iNrCbRk7VthZKLUB0FcTaE7JixQ1zVVFOzCaLSe
-         HPILNt+W2+Hvmj1KncXLlCbs0q0I6t33Kea8AMW+N/40ymPpZTRP/SjBZYdV6iHLBgzW
-         yLcQ87RO3MzrZ6SG3SfwwSBGE3fP8WU2HcpHBJYtpKVFPBsvoUGJdzx1BgH4F9wshxtD
-         oQ6xypofJ1MSZiixbau2CJXsNX15scaFYoQr7JMQXveBMIQKMYdmqP/L7g71FJVeqf2u
-         nboTNQhkpm9XDlkEWPHgSFGjSAU+F45SlpzkGWbD5BUOWeH0dHBQQ4ZFHiG+FyBj+qt3
-         /nqQ==
-X-Gm-Message-State: AOAM532Ex7+DJ5fvFfGw5IVEzyUs8DGnVrtoeV0LXmZVjiMh+E+nd3fg
-        6tKwjjAfH7JOzk/FwpHePZDnZKJy4Mmpic/XBD4=
-X-Google-Smtp-Source: ABdhPJwD0S+RQajQEVk91EijHu9MsSQiYyktQdtMq/NEVwE2hqeG6bAqz5/y5D3mRhZFz8tgyNhoIN1l9Xj/qscn8Jc=
-X-Received: by 2002:a05:6402:270c:: with SMTP id y12mr20317491edd.258.1638475500420;
- Thu, 02 Dec 2021 12:05:00 -0800 (PST)
+        Thu, 2 Dec 2021 15:48:02 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE617B82478;
+        Thu,  2 Dec 2021 20:44:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75BB8C53FD1;
+        Thu,  2 Dec 2021 20:44:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638477877;
+        bh=D+XIVtJBMJs6vJlJVkfubqTw2gl+Mh7CJ9ZRrFKA0R4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hiHyCQ1237rTv8Tp6276FGKCYm3JCk6Ml5zsrxqfAXeGJnuDaKMDQnVTeCNEZ7870
+         Gnkgx7FG3lxMdmu+ndqjYmhw5GJRY/M8Kr3T3qMnfHXQUR+m8iiXdpsIF1YI2sQjve
+         pjTNZziNRSNXti7JgKMutTGlyeSc+6yUHZl9FL/5LiZltOny0oZxUflB1oAYjGQesb
+         D4uH6VXNWpDsWNLnfddncksvWOXxSh7i8KLfeh+GmVm3hjK8KFs5BuhaTjhFeEbFYs
+         rCIn5SDcCqJ+tYLV0ZPDXMGe0RsiQQ9UNry92rgEmnFPMuWCP36JHaujE2C6ICdHuk
+         Z7h4AY8tDFmJA==
+Received: by mail-ed1-f53.google.com with SMTP id z5so3045942edd.3;
+        Thu, 02 Dec 2021 12:44:37 -0800 (PST)
+X-Gm-Message-State: AOAM533hw/+V4v5uQJuCV3SfYj/oj73STwuhiwRQRedFD6g/uHknPjDX
+        Nb5edHdNLU5vcZE0AMwlDi+9mAEmaXllYcaWLA==
+X-Google-Smtp-Source: ABdhPJyzThOhhiZuR6ye1HIiOYkJBH+7pZpAES4RrvIAKS54c2WOOBHFZcf0F8jp2b9OzH5zBx/GUv/DYwgH126mvgg=
+X-Received: by 2002:a17:906:bccc:: with SMTP id lw12mr17641007ejb.128.1638477875718;
+ Thu, 02 Dec 2021 12:44:35 -0800 (PST)
 MIME-Version: 1.0
-References: <1638355604-24002-1-git-send-email-hammer.hsieh@sunplus.com> <1638355604-24002-3-git-send-email-hammer.hsieh@sunplus.com>
-In-Reply-To: <1638355604-24002-3-git-send-email-hammer.hsieh@sunplus.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 2 Dec 2021 22:03:24 +0200
-Message-ID: <CAHp75VdQYvbDR7kpBF4pJFr-o8WoUADcBpfn6vk2j3zh-KvHdg@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-To:     Hammer Hsieh <hammerh0314@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+References: <20211130111325.29328-1-semen.protsenko@linaro.org>
+ <20211130111325.29328-2-semen.protsenko@linaro.org> <1638294184.179325.2713642.nullmailer@robh.at.kernel.org>
+ <4b5bebb0-ed74-8132-1e6b-cb7cbc21439c@canonical.com> <CAL_JsqJb4nMBoGLcf-bKpi5kEE+zXQ=dfo5JSBhrqPFeLnCsHw@mail.gmail.com>
+ <CAPLW+4=Zdvf4HRNUeVMR9URLSdA867hdXVLYy+k47yLH82uTnA@mail.gmail.com>
+In-Reply-To: <CAPLW+4=Zdvf4HRNUeVMR9URLSdA867hdXVLYy+k47yLH82uTnA@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 2 Dec 2021 14:44:24 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+FTB+mWOyCBwLFifk8obpMh1ysJ6pqpUzSoW7jzo5FAg@mail.gmail.com>
+Message-ID: <CAL_Jsq+FTB+mWOyCBwLFifk8obpMh1ysJ6pqpUzSoW7jzo5FAg@mail.gmail.com>
+Subject: Re: [PATCH v2 RESEND 1/5] dt-bindings: soc: samsung: Add Exynos USI bindings
+To:     Sam Protsenko <semen.protsenko@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>, tony.huang@sunplus.com,
-        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
-        Hammer Hsieh <hammer.hsieh@sunplus.com>
+        linux-samsung-soc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Chanho Park <chanho61.park@samsung.com>,
+        linux-serial@vger.kernel.org,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        David Virag <virag.david003@gmail.com>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 2, 2021 at 9:35 PM Hammer Hsieh <hammerh0314@gmail.com> wrote:
+On Thu, Dec 2, 2021 at 5:01 AM Sam Protsenko <semen.protsenko@linaro.org> wrote:
 >
-> Add Sunplus SoC UART Driver
-
-...
-
-> +config SERIAL_SUNPLUS
-> +       tristate "Sunplus UART support"
-> +       depends on OF || COMPILE_TEST
-> +       select SERIAL_CORE
-> +       help
-> +         Select this option if you would like to use Sunplus serial port on
-> +         Sunplus SoC SP7021.
-> +         If you enable this option, Sunplus serial ports in the system will
-> +         be registered as ttySUPx.
-
-What will be the module name in case of module build?
-
-...
-
-> +/*
-> + * Sunplus SoC UART driver
-> + *
-> + * Author: Hammer Hsieh <hammer.hsieh@sunplus.com>
-
-Authors:
-
-> + * Tony Huang <tony.huang@sunplus.com>
-> + * Wells Lu <wells.lu@sunplus.com>
-
-And please indent names to be on the same column.
-
-> + */
-
-...
-
-> +#define UART_AUTOSUSPEND_TIMEOUT       3000
-
-Add units to the name.
-
-...
-
-> +static inline u32 sunplus_tx_buf_not_full(struct uart_port *port)
-> +{
-> +       unsigned int lsr = readl(port->membase + SUP_UART_LSR);
-> +
-> +       return ((lsr & SUP_UART_LSR_TX) ? SUP_UART_LSR_TX_NOT_FULL : 0);
-
-Too many parentheses. Ditto for all similar cases.
-
-> +}
-
-...
-
-> +       do {
-> +               sp_uart_put_char(port, xmit->buf[xmit->tail]);
-> +               xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-
-"% UART_XMIT_SIZE" is more accurate since it doesn't require a value
-to be a power of 2. In case of power of 2 it will be properly
-optimized by a compiler.
-
-> +               port->icount.tx++;
-> +
-> +               if (uart_circ_empty(xmit))
-> +                       break;
-> +       } while (sunplus_tx_buf_not_full(port));
-
-...
-
-> +       spin_lock_irqsave(&port->lock, flags);
-
-Why irqsave here?
-
-...
-
-> +       if (readl(port->membase + SUP_UART_ISC) & SUP_UART_ISC_RX)
-> +               receive_chars(port);
-> +
-> +       if (readl(port->membase + SUP_UART_ISC) & SUP_UART_ISC_TX)
-> +               transmit_chars(port);
-
-Do you really need to perform two I/O against the very same register?
-
-...
-
-> +static int sunplus_startup(struct uart_port *port)
-> +{
-> +       unsigned int isc;
-> +       int ret;
-
-> +#ifdef CONFIG_PM
-
-Why is this ifdeffery around the driver?
-
-> +       if (!uart_console(port)) {
-> +               ret = pm_runtime_get_sync(port->dev);
-> +               if (ret < 0)
-> +                       goto out;
-> +       }
-> +#endif
-> +       ret = request_irq(port->irq, sunplus_uart_irq, 0, "sunplus_uart", port);
-> +       if (ret)
-> +               return ret;
-> +
-> +       spin_lock_irq(&port->lock);
-> +
-> +       isc |= SUP_UART_ISC_RXM;
-> +       writel(isc, port->membase + SUP_UART_ISC);
-> +
-> +       spin_unlock_irq(&port->lock);
-
-> +#ifdef CONFIG_PM
-> +       if (!uart_console(port))
-> +               pm_runtime_put(port->dev);
-
-Why doesn't it set autosuspend, i.o.w. Why is it different from an error case?
-
-> +       return 0;
-> +out:
-> +       if (!uart_console(port)) {
-> +               pm_runtime_mark_last_busy(port->dev);
-> +               pm_runtime_put_autosuspend(port->dev);
-> +       }
-> +#endif
-> +       return 0;
-> +}
-
-...
-
-> +static void sunplus_set_termios(struct uart_port *port,
-> +                               struct ktermios *termios,
-> +                               struct ktermios *oldtermios)
-> +{
-> +       u32 clk, ext, div, div_l, div_h, baud;
-> +       u32 lcr, val;
-> +       unsigned long flags;
-
-> +       clk = port->uartclk;
-
-This can be done in the definition block above.
-
-> +       baud = uart_get_baud_rate(port, termios, oldtermios, 0, port->uartclk / 16);
-> +
-> +       readl_poll_timeout_atomic(port->membase + SUP_UART_LSR, val,
-> +                                 (val & SUP_UART_LSR_TXE), 1, 10000);
-
-No error check?
-
-> +       /*
-> +        * baud rate = uartclk / ((16 * div[15:0] + 1) + div_ext[3:0])
-> +        * get target baud rate and uartclk
-> +        * auto calculate div and div_ext
-> +        * div_h = (div[15:8] >> 8); div_l = (div_ext[3:0] << 12) + div[7:0]
-
-There is no need to explain the code, please add excerpts from the
-data sheet on how the divisors and baud rate are calculated, use
-mathematical language, and not programming in the comment.
-
-> +        */
-> +       clk += baud >> 1;
-> +       div = clk / baud;
-> +       ext = div & 0x0F;
-> +       div = (div >> 4) - 1;
-> +       div_l = (div & 0xFF) | (ext << 12);
-> +       div_h = div >> 8;
-
-...
-
-> +static const char *sunplus_type(struct uart_port *port)
-> +{
-> +       struct sunplus_uart_port *sup = to_sunplus_uart(port);
-> +
-> +       return sup->port.type == PORT_SUNPLUS ? "sunplus_uart" : NULL;
-> +}
-
-
-What do we achieve with this? Who and how will see this information?
-Under which circumstances the port type is not SUNPLUS?
-
-...
-
-> +static void sunplus_release_port(struct uart_port *port)
-> +{
-> +}
-> +
-> +static int sunplus_request_port(struct uart_port *port)
-> +{
-> +       return 0;
-> +}
-
-Are these stubs mandatory?
-
-...
-
-> +static void sunplus_config_port(struct uart_port *port, int type)
-> +{
-
-> +       if (type & UART_CONFIG_TYPE) {
-> +               port->type = PORT_SUNPLUS;
-> +               sunplus_request_port(port);
-> +       }
-
-if (!(type & ...))
-  return;
-
-?
-
-> +}
-
-...
-
-> +static int sunplus_poll_init(struct uart_port *port)
-> +{
-> +       return 0;
-> +}
-
-Why is this stub needed?
-
-...
-
-> +static inline void wait_for_xmitr(struct uart_port *port)
-> +{
-> +       unsigned int val;
-> +
-> +       readl_poll_timeout_atomic(port->membase + SUP_UART_LSR, val,
-> +                                 (val & SUP_UART_LSR_TX), 1, 10000);
-
-Error handling?
-Or explain why it's not needed.
-
-> +}
-
-...
-
-> +       sup->clk = devm_clk_get(&pdev->dev, NULL);
-> +       if (!IS_ERR(sup->clk)) {
-
-Instead use devm_clk_get_optional().
-
-> +               ret = clk_prepare_enable(sup->clk);
-> +               if (ret)
-> +                       return ret;
-
-> +               ret = devm_add_action_or_reset(&pdev->dev,
-> +                                              (void(*)(void *))clk_disable_unprepare,
-> +                                              sup->clk);
-
-Look at the examples of how other drivers do this (that were submitted
-more or less recently).
-
-> +               if (ret)
-> +                       return ret;
-> +       } else {
-
-> +               if (PTR_ERR(sup->clk) == -EPROBE_DEFER)
-> +                       return -EPROBE_DEFER;
-
-Why?!
-
-> +               return dev_err_probe(&pdev->dev, PTR_ERR(sup->clk), "clk not found\n");
-> +       }
-
-...
-
-> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +       port->membase = devm_ioremap_resource(&pdev->dev, res);
-
-We have an API that does both at once. Use it.
-
-> +       if (IS_ERR(port->membase))
-> +               return dev_err_probe(&pdev->dev, PTR_ERR(port->membase), "membase not found\n");
-
-...
-
-> +       ret = reset_control_deassert(sup->rstc);
-> +       if (ret)
-> +               return ret;
-
-From here no reset assertion on error? Why?
-
-...
-
-> +#ifdef CONFIG_SERIAL_SUNPLUS_CONSOLE
-> +       if (pdev->id == 0)
-> +               port->cons = &sunplus_uart_console;
-> +       sunplus_console_ports[sup->port.line] = sup;
-> +#endif
-
-Actually why don't you use register_console() ?
-
-...
-
-> +static struct platform_driver sunplus_uart_platform_driver = {
-> +       .probe          = sunplus_uart_probe,
-> +       .remove         = sunplus_uart_remove,
-> +       .driver = {
-> +               .name   = "sunplus_uart",
-
-> +               .of_match_table = of_match_ptr(sp_uart_of_match),
-
-How did you test this when OF=n and COMPILE_TEST=y?
-Hint: Compiler will warn about unused variables (you need W=1).
-
-> +               .pm     = &sunplus_uart_pm_ops,
-> +       }
-> +};
-
-...
-
-> +static void __exit sunplus_uart_exit(void)
-> +{
-> +       platform_driver_unregister(&sunplus_uart_platform_driver);
-> +       uart_unregister_driver(&sunplus_uart_driver);
-> +}
-
-> +
-
-Dtop this blank line...
-
-> +module_init(sunplus_uart_init);
-> +module_exit(sunplus_uart_exit);
-
-...and attach each of the calls to the implemented function.
-
-...
-
-> +static int __init
-> +sunplus_uart_early_setup(struct earlycon_device *dev, const char *opt)
-> +{
-> +       if (!(dev->port.membase || dev->port.iobase))
-> +               return -ENODEV;
-> +
-> +       dev->con->write = sunplus_uart_early_write;
-> +
-> +       return 0;
-> +}
-
-> +
-
-No blank line.
-
-> +OF_EARLYCON_DECLARE(sunplus_uart, "sunplus,sp7021-uart", sunplus_uart_early_setup);
-
--- 
-With Best Regards,
-Andy Shevchenko
+> On Wed, 1 Dec 2021 at 18:20, Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Tue, Nov 30, 2021 at 2:04 PM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@canonical.com> wrote:
+> > >
+> > > On 30/11/2021 18:43, Rob Herring wrote:
+> > > > On Tue, 30 Nov 2021 13:13:21 +0200, Sam Protsenko wrote:
+> > > >> Add constants for choosing USIv2 configuration mode in device tree.
+> > > >> Those are further used in USI driver to figure out which value to write
+> > > >> into SW_CONF register. Also document USIv2 IP-core bindings.
+> > > >>
+> > > >> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > > >> ---
+> > > >> Changes in v2:
+> > > >>   - Combined dt-bindings doc and dt-bindings header patches
+> > > >>   - Added i2c node to example in bindings doc
+> > > >>   - Added mentioning of shared internal circuits
+> > > >>   - Added USI_V2_NONE value to bindings header
+> > > >>
+> > > >>  .../bindings/soc/samsung/exynos-usi.yaml      | 135 ++++++++++++++++++
+> > > >>  include/dt-bindings/soc/samsung,exynos-usi.h  |  17 +++
+> > > >>  2 files changed, 152 insertions(+)
+> > > >>  create mode 100644 Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+> > > >>  create mode 100644 include/dt-bindings/soc/samsung,exynos-usi.h
+> > > >>
+> > > >
+> > > > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > > > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > > >
+> > > > yamllint warnings/errors:
+> > > >
+> > > > dtschema/dtc warnings/errors:
+> > > > Documentation/devicetree/bindings/soc/samsung/exynos-usi.example.dts:35.39-42.15: Warning (unique_unit_address): /example-0/usi@138200c0/serial@13820000: duplicate unit-address (also used in node /example-0/usi@138200c0/i2c@13820000)
+> > >
+> > > Rob,
+> > >
+> > > The checker complains about two nodes with same unit-address, even
+> > > though the node name is different. Does it mean that our idea of
+> > > embedding two children in USI and having enabled only one (used one) is
+> > > wrong?
+> >
+> > IIRC, we allow for this exact scenario, and there was a change in dtc
+> > for it. So I'm not sure why this triggered.
+> >
+>
+> It's triggered from WARNING(unique_unit_address, ...), because it
+> calls static void check_unique_unit_address_common() function with
+> disable_check=false. I guess we should interpret that this way: the
+> warning makes sense in regular case, when having the same unit address
+> for two nodes is wrong. So the warning is reasonable, it's just not
+> relevant in this particular case. What can be done:
+>
+>   1. We can introduce some specific property to mark nodes with
+> duplicated address as intentional. check_unique_unit_address_common()
+> can be extended then to omit checking the nodes if that property is
+> present.
+>   2. We can just ignore that warning in this particular case (and
+> similar cases).
+>   3. We can add some disambiguation note to that warning message, like
+> "if it's intentional -- please ignore this message"
+>
+> I'm all for option (3), as it's the easiest one, and still reasonable.
+> Rob, what do you think? Can we just ignore that warning in further
+> versions of this patch series?
+
+Just change the dtc flags to '-Wno-unique_unit_address
+-Wunique_unit_address_if_enabled' for both examples and dtbs.
+
+Rob
