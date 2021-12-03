@@ -2,309 +2,487 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B42C433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Dec 2021 14:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E08C433FE
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Dec 2021 15:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352843AbhLCOGa (ORCPT
+        id S1352848AbhLCPfA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Dec 2021 09:06:30 -0500
-Received: from mswedge2.sunplus.com ([60.248.182.106]:58942 "EHLO
-        mg.sunplus.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S237277AbhLCOG3 (ORCPT
+        Fri, 3 Dec 2021 10:35:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232333AbhLCPfA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Dec 2021 09:06:29 -0500
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.202
-        by mg02.sunplus.com with MailGates ESMTP Server V5.0(31412:0:AUTH_RELAY)
-        (envelope-from <hammer.hsieh@sunplus.com>); Fri, 03 Dec 2021 22:02:57 +0800 (CST)
-Received: from sphcmbx01.sunplus.com.tw (172.17.9.202) by
- sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Fri, 3 Dec 2021 22:02:52 +0800
-Received: from sphcmbx01.sunplus.com.tw ([fe80::5077:217f:c3ee:d1b5]) by
- sphcmbx01.sunplus.com.tw ([fe80::5077:217f:c3ee:d1b5%14]) with mapi id
- 15.00.1497.023; Fri, 3 Dec 2021 22:02:52 +0800
-From:   =?utf-8?B?SGFtbWVyIEhzaWVoIOisneWuj+Wtnw==?= 
-        <hammer.hsieh@sunplus.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Hammer Hsieh <hammerh0314@gmail.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        =?utf-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>,
-        =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Subject: RE: [PATCH v4 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-Thread-Topic: [PATCH v4 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-Thread-Index: AQHX5qDOoI88TrLJnUmrDTRxkcb5IqwfG/UAgAGf6+A=
-Date:   Fri, 3 Dec 2021 14:02:51 +0000
-Message-ID: <1cd5f0b5deba4a9ea37d9611d9b8fdcb@sphcmbx01.sunplus.com.tw>
-References: <1638355604-24002-1-git-send-email-hammer.hsieh@sunplus.com>
- <1638355604-24002-3-git-send-email-hammer.hsieh@sunplus.com>
- <CAHp75VdQYvbDR7kpBF4pJFr-o8WoUADcBpfn6vk2j3zh-KvHdg@mail.gmail.com>
-In-Reply-To: <CAHp75VdQYvbDR7kpBF4pJFr-o8WoUADcBpfn6vk2j3zh-KvHdg@mail.gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.55]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 3 Dec 2021 10:35:00 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F652C061353
+        for <linux-serial@vger.kernel.org>; Fri,  3 Dec 2021 07:31:36 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id ay21so6112092uab.12
+        for <linux-serial@vger.kernel.org>; Fri, 03 Dec 2021 07:31:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EQ27M79gvF7dnkAUsdIgCaiKS0wckYqD5oGh8dK+9bw=;
+        b=GLvVjcSOFfPgkzwNu2mltc166gx5T8rBv2pvu2l+ovpLTgnqQROTM+imlMszjtI0iE
+         qkmmcRy8AEng8EfjopdFaoNhPp1OSOCZz9aOhNNWdD8Eh55jR/2bgiaggIngu6z8XLDS
+         tlXrP+6E7ReJy1fb4hTsxsIIqBchCp1ROOGPxXbLnt86hU9R2AwA4xcOgCLa/IF+JqAJ
+         ByTuzgfhqDG96sL4BMsEfKQKW4W/i8lKFqsY5S+c9ebGXVmDuGhwSE+AQh1H29vCdh2i
+         nudkNFS2/WjZvEqCxiwqKpFdWt9DdwDcNnMKNvp1+Ty/GaHW/ZVQwF/HTOyLwfST/1w+
+         GDGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EQ27M79gvF7dnkAUsdIgCaiKS0wckYqD5oGh8dK+9bw=;
+        b=hdiG3rU6xqgLyeKmbmxrRAgRQwZwlBE4YgrPfIRU3NyY5BxbGDQIXauP+xku1qk8ja
+         uuxtssN2bZUIaHBh3Epui7mPtvNkL+kSz72i+RUg+nMB6UeA1Rt2vS93IqcjBwiCAn4p
+         zNlDQ4ZJ+UFdyOdgaYnn1i0vOnNkCDWEXMmviOYHHv4AXgJLk37m9fB4JXxOesv0eonw
+         +d9VNWhcAQU9JB4rnUAgjKZ0ag1/TgSjfiaJ6I4v9Ih83PgmB38sGrdC6IO2xSqqorkk
+         VPgmOCnU/noes5HfMm2a3pOOt8rg8jCvLdDWRn6M82iLOQbCCNOuouw7GWi+aUVobYYi
+         O94w==
+X-Gm-Message-State: AOAM531wEDiRczh59bnaJQV47TJOYPlXCxAbTxB1Bsn9UhheM8mT/9AR
+        rgOCb+Ggonl5DrDdQsaHkOsmswcR1oHUYDqKPeeTYQ==
+X-Google-Smtp-Source: ABdhPJw+eVxMt7J9GdjN5u+eBil5uZyRgAN57TZbst1SjiaUzOx+F+x/N7K7dP3fJAeZ2Gy+kdSq+d6dv6myYlX4lzs=
+X-Received: by 2002:a67:be0f:: with SMTP id x15mr21340383vsq.86.1638545495134;
+ Fri, 03 Dec 2021 07:31:35 -0800 (PST)
 MIME-Version: 1.0
+References: <20211130111325.29328-1-semen.protsenko@linaro.org>
+ <20211130111325.29328-3-semen.protsenko@linaro.org> <CAHp75Vet9avpGHey45JT9pQajrcX71OPizJ+eTGs6g08OAENQg@mail.gmail.com>
+In-Reply-To: <CAHp75Vet9avpGHey45JT9pQajrcX71OPizJ+eTGs6g08OAENQg@mail.gmail.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Fri, 3 Dec 2021 17:31:23 +0200
+Message-ID: <CAPLW+4kKO7FoyiJbs4=wQajnUtDjSARNmxqhFHVo67-5c-VLiw@mail.gmail.com>
+Subject: Re: [PATCH v2 RESEND 2/5] soc: samsung: Add USI driver
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Chanho Park <chanho61.park@samsung.com>,
+        David Virag <virag.david003@gmail.com>,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGksIEFuZHkgU2hldmNoZW5rbyA6DQoNClRoYW5rcyBmb3IgeW91ciByZXZpZXcuDQpQbGVhc2Ug
-c2VlIG15IHJlc3BvbnNlIGluIGJlbG93IG1haWwuDQoNClJlZ2FyZHMsDQpIYW1tZXIgSHNpZWgN
-Cg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmR5IFNoZXZjaGVua28g
-PGFuZHkuc2hldmNoZW5rb0BnbWFpbC5jb20+DQo+IFNlbnQ6IEZyaWRheSwgRGVjZW1iZXIgMywg
-MjAyMSA0OjAzIEFNDQo+IFRvOiBIYW1tZXIgSHNpZWggPGhhbW1lcmgwMzE0QGdtYWlsLmNvbT4N
-Cj4gQ2M6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+OyBS
-b2IgSGVycmluZw0KPiA8cm9iaCtkdEBrZXJuZWwub3JnPjsgb3BlbiBsaXN0OlNFUklBTCBEUklW
-RVJTDQo+IDxsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnPjsgZGV2aWNldHJlZSA8ZGV2aWNl
-dHJlZUB2Z2VyLmtlcm5lbC5vcmc+Ow0KPiBMaW51eCBLZXJuZWwgTWFpbGluZyBMaXN0IDxsaW51
-eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnPjsgSmlyaSBTbGFieQ0KPiA8amlyaXNsYWJ5QGtlcm5l
-bC5vcmc+OyBQaGlsaXBwIFphYmVsIDxwLnphYmVsQHBlbmd1dHJvbml4LmRlPjsgVG9ueSBIdWFu
-Zw0KPiDpu4Pmh7fljpogPHRvbnkuaHVhbmdAc3VucGx1cy5jb20+OyBXZWxscyBMdSDlkYLoirPp
-qLANCj4gPHdlbGxzLmx1QHN1bnBsdXMuY29tPjsgSGFtbWVyIEhzaWVoIOisneWuj+Wtnw0KPiA8
-aGFtbWVyLmhzaWVoQHN1bnBsdXMuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHY0IDIvMl0g
-c2VyaWFsOnN1bnBsdXMtdWFydDpBZGQgU3VucGx1cyBTb0MgVUFSVCBEcml2ZXINCj4gDQo+IE9u
-IFRodSwgRGVjIDIsIDIwMjEgYXQgOTozNSBQTSBIYW1tZXIgSHNpZWggPGhhbW1lcmgwMzE0QGdt
-YWlsLmNvbT4NCj4gd3JvdGU6DQo+ID4NCj4gPiBBZGQgU3VucGx1cyBTb0MgVUFSVCBEcml2ZXIN
-Cj4gDQo+IC4uLg0KPiANCj4gPiArY29uZmlnIFNFUklBTF9TVU5QTFVTDQo+ID4gKyAgICAgICB0
-cmlzdGF0ZSAiU3VucGx1cyBVQVJUIHN1cHBvcnQiDQo+ID4gKyAgICAgICBkZXBlbmRzIG9uIE9G
-IHx8IENPTVBJTEVfVEVTVA0KPiA+ICsgICAgICAgc2VsZWN0IFNFUklBTF9DT1JFDQo+ID4gKyAg
-ICAgICBoZWxwDQo+ID4gKyAgICAgICAgIFNlbGVjdCB0aGlzIG9wdGlvbiBpZiB5b3Ugd291bGQg
-bGlrZSB0byB1c2UgU3VucGx1cyBzZXJpYWwgcG9ydCBvbg0KPiA+ICsgICAgICAgICBTdW5wbHVz
-IFNvQyBTUDcwMjEuDQo+ID4gKyAgICAgICAgIElmIHlvdSBlbmFibGUgdGhpcyBvcHRpb24sIFN1
-bnBsdXMgc2VyaWFsIHBvcnRzIGluIHRoZSBzeXN0ZW0gd2lsbA0KPiA+ICsgICAgICAgICBiZSBy
-ZWdpc3RlcmVkIGFzIHR0eVNVUHguDQo+IA0KPiBXaGF0IHdpbGwgYmUgdGhlIG1vZHVsZSBuYW1l
-IGluIGNhc2Ugb2YgbW9kdWxlIGJ1aWxkPw0KPiANCg0Kd2lsbCBhZGQgaW5mbyBhcyBiZWxvdyBz
-aG93cyBpbiBLY29uZmlnOg0KIlRoaXMgZHJpdmVyIGNhbiBhbHNvIGJlIGJ1aWx0IGFzIGEgbW9k
-dWxlLiBJZiBzbywgdGhlIG1vZHVsZSB3aWxsIGJlIGNhbGxlZCBzdW5wbHVzLXVhcnQuIg0KDQo+
-IC4uLg0KPiANCj4gPiArLyoNCj4gPiArICogU3VucGx1cyBTb0MgVUFSVCBkcml2ZXINCj4gPiAr
-ICoNCj4gPiArICogQXV0aG9yOiBIYW1tZXIgSHNpZWggPGhhbW1lci5oc2llaEBzdW5wbHVzLmNv
-bT4NCj4gDQo+IEF1dGhvcnM6DQo+IA0KPiA+ICsgKiBUb255IEh1YW5nIDx0b255Lmh1YW5nQHN1
-bnBsdXMuY29tPg0KPiA+ICsgKiBXZWxscyBMdSA8d2VsbHMubHVAc3VucGx1cy5jb20+DQo+IA0K
-PiBBbmQgcGxlYXNlIGluZGVudCBuYW1lcyB0byBiZSBvbiB0aGUgc2FtZSBjb2x1bW4uDQo+IA0K
-DQpJIHJld3JpdGUgYWxtb3N0IGFsbCB1YXJ0IGRyaXZlci4NClRoZSBvdGhlciBhdXRob3JzIGFz
-ayBtZSB0byByZW1vdmUgdGhlaXIgbmFtZXMgb24gdGhpcyBkcml2ZXIuDQpXaWxsIG1vZGlmeSBp
-dC4NCg0KPiA+ICsgKi8NCj4gDQo+IC4uLg0KPiANCj4gPiArI2RlZmluZSBVQVJUX0FVVE9TVVNQ
-RU5EX1RJTUVPVVQgICAgICAgMzAwMA0KPiANCj4gQWRkIHVuaXRzIHRvIHRoZSBuYW1lLg0KPiAN
-Cg0KV2lsbCBhZGQgaXQuIC8qIHVuaXRzOiBtcyAqLw0KDQo+IC4uLg0KPiANCj4gPiArc3RhdGlj
-IGlubGluZSB1MzIgc3VucGx1c190eF9idWZfbm90X2Z1bGwoc3RydWN0IHVhcnRfcG9ydCAqcG9y
-dCkgew0KPiA+ICsgICAgICAgdW5zaWduZWQgaW50IGxzciA9IHJlYWRsKHBvcnQtPm1lbWJhc2Ug
-KyBTVVBfVUFSVF9MU1IpOw0KPiA+ICsNCj4gPiArICAgICAgIHJldHVybiAoKGxzciAmIFNVUF9V
-QVJUX0xTUl9UWCkgPyBTVVBfVUFSVF9MU1JfVFhfTk9UX0ZVTEwgOg0KPiA+ICsgMCk7DQo+IA0K
-PiBUb28gbWFueSBwYXJlbnRoZXNlcy4gRGl0dG8gZm9yIGFsbCBzaW1pbGFyIGNhc2VzLg0KPiAN
-Cj4gPiArfQ0KPiANCg0Kb2ssIEkgaGF2ZSBmb3VuZCBzaW1pbGFyIGNhc2UuIEkgd2lsbCBtb2Rp
-ZnkgaXQuDQoNCj4gLi4uDQo+IA0KPiA+ICsgICAgICAgZG8gew0KPiA+ICsgICAgICAgICAgICAg
-ICBzcF91YXJ0X3B1dF9jaGFyKHBvcnQsIHhtaXQtPmJ1Zlt4bWl0LT50YWlsXSk7DQo+ID4gKyAg
-ICAgICAgICAgICAgIHhtaXQtPnRhaWwgPSAoeG1pdC0+dGFpbCArIDEpICYgKFVBUlRfWE1JVF9T
-SVpFIC0gMSk7DQo+IA0KPiAiJSBVQVJUX1hNSVRfU0laRSIgaXMgbW9yZSBhY2N1cmF0ZSBzaW5j
-ZSBpdCBkb2Vzbid0IHJlcXVpcmUgYSB2YWx1ZSB0byBiZSBhDQo+IHBvd2VyIG9mIDIuIEluIGNh
-c2Ugb2YgcG93ZXIgb2YgMiBpdCB3aWxsIGJlIHByb3Blcmx5IG9wdGltaXplZCBieSBhIGNvbXBp
-bGVyLg0KPiANCg0KQ3VycmVudGx5LCBJIGhhdmUgZm91bmQgZHJpdmVycy90dHkvc2VyaWFsL21w
-czItdWFydC5jIHVzZSBpdCBvbmx5Lg0Kb2ssIHdpbGwgbW9kaWZ5IGl0Lg0KDQo+ID4gKyAgICAg
-ICAgICAgICAgIHBvcnQtPmljb3VudC50eCsrOw0KPiA+ICsNCj4gPiArICAgICAgICAgICAgICAg
-aWYgKHVhcnRfY2lyY19lbXB0eSh4bWl0KSkNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBi
-cmVhazsNCj4gPiArICAgICAgIH0gd2hpbGUgKHN1bnBsdXNfdHhfYnVmX25vdF9mdWxsKHBvcnQp
-KTsNCj4gDQo+IC4uLg0KPiANCj4gPiArICAgICAgIHNwaW5fbG9ja19pcnFzYXZlKCZwb3J0LT5s
-b2NrLCBmbGFncyk7DQo+IA0KPiBXaHkgaXJxc2F2ZSBoZXJlPw0KPiANCj4gLi4uDQo+IA0KPiA+
-ICsgICAgICAgaWYgKHJlYWRsKHBvcnQtPm1lbWJhc2UgKyBTVVBfVUFSVF9JU0MpICYgU1VQX1VB
-UlRfSVNDX1JYKQ0KPiA+ICsgICAgICAgICAgICAgICByZWNlaXZlX2NoYXJzKHBvcnQpOw0KPiA+
-ICsNCj4gPiArICAgICAgIGlmIChyZWFkbChwb3J0LT5tZW1iYXNlICsgU1VQX1VBUlRfSVNDKSAm
-IFNVUF9VQVJUX0lTQ19UWCkNCj4gPiArICAgICAgICAgICAgICAgdHJhbnNtaXRfY2hhcnMocG9y
-dCk7DQo+IA0KPiBEbyB5b3UgcmVhbGx5IG5lZWQgdG8gcGVyZm9ybSB0d28gSS9PIGFnYWluc3Qg
-dGhlIHZlcnkgc2FtZSByZWdpc3Rlcj8NCj4gDQoNCkkgd2lsbCByZXdyaXRlIGFzIGJlbG93LCBo
-b3cgZG8geW91IHRoaW5rPw0KU3RhdGljIGlycXJldHVybl90IHN1bnBsdXNfdWFydF9pcnEoaW50
-IGlycSwgdm9pZCAqYXJncykNCnsNCiBTdHJ1Y3QgdWFydF9wb3J0ICpwb3J0ID0gKHN0cnVjdCB1
-YXJ0X3BvcnQgKilhcmdzOw0KIHVuc2lnbmVkIGludCBpc2MgPSByZWFkbChwb3J0LT5tZW1iYXNl
-ICsgU1VQX1VBUlRfSVNDKTsNCiBpZiAoaXNjICYgU1VQX1VBUlRfSVNDX1JYKQ0KICAgcmVjZWl2
-ZV9jaGFycyhwb3J0KTsNCiBpZiAoaXNjICYgU1VQX1VBUlRfSVNDX1RYKQ0KICAgdHJhbnNtaXRf
-Y2hhcnMocG9ydCk7DQogcmV0dXJuIElSUV9IQU5ETEVEOw0KfQ0KDQo+IC4uLg0KPiANCj4gPiAr
-c3RhdGljIGludCBzdW5wbHVzX3N0YXJ0dXAoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkgew0KPiA+
-ICsgICAgICAgdW5zaWduZWQgaW50IGlzYzsNCj4gPiArICAgICAgIGludCByZXQ7DQo+IA0KPiA+
-ICsjaWZkZWYgQ09ORklHX1BNDQo+IA0KPiBXaHkgaXMgdGhpcyBpZmRlZmZlcnkgYXJvdW5kIHRo
-ZSBkcml2ZXI/DQo+IA0KPiA+ICsgICAgICAgaWYgKCF1YXJ0X2NvbnNvbGUocG9ydCkpIHsNCj4g
-PiArICAgICAgICAgICAgICAgcmV0ID0gcG1fcnVudGltZV9nZXRfc3luYyhwb3J0LT5kZXYpOw0K
-PiA+ICsgICAgICAgICAgICAgICBpZiAocmV0IDwgMCkNCj4gPiArICAgICAgICAgICAgICAgICAg
-ICAgICBnb3RvIG91dDsNCj4gPiArICAgICAgIH0NCj4gPiArI2VuZGlmDQo+ID4gKyAgICAgICBy
-ZXQgPSByZXF1ZXN0X2lycShwb3J0LT5pcnEsIHN1bnBsdXNfdWFydF9pcnEsIDAsICJzdW5wbHVz
-X3VhcnQiLA0KPiBwb3J0KTsNCj4gPiArICAgICAgIGlmIChyZXQpDQo+ID4gKyAgICAgICAgICAg
-ICAgIHJldHVybiByZXQ7DQo+ID4gKw0KPiA+ICsgICAgICAgc3Bpbl9sb2NrX2lycSgmcG9ydC0+
-bG9jayk7DQo+ID4gKw0KPiA+ICsgICAgICAgaXNjIHw9IFNVUF9VQVJUX0lTQ19SWE07DQo+ID4g
-KyAgICAgICB3cml0ZWwoaXNjLCBwb3J0LT5tZW1iYXNlICsgU1VQX1VBUlRfSVNDKTsNCj4gPiAr
-DQo+ID4gKyAgICAgICBzcGluX3VubG9ja19pcnEoJnBvcnQtPmxvY2spOw0KPiANCj4gPiArI2lm
-ZGVmIENPTkZJR19QTQ0KPiA+ICsgICAgICAgaWYgKCF1YXJ0X2NvbnNvbGUocG9ydCkpDQo+ID4g
-KyAgICAgICAgICAgICAgIHBtX3J1bnRpbWVfcHV0KHBvcnQtPmRldik7DQo+IA0KPiBXaHkgZG9l
-c24ndCBpdCBzZXQgYXV0b3N1c3BlbmQsIGkuby53LiBXaHkgaXMgaXQgZGlmZmVyZW50IGZyb20g
-YW4gZXJyb3IgY2FzZT8NCj4gDQoNCkF1dG9zdXNwZW5kIGFscmVhZHkgaW5pdCBhdCBwcm9iZS4N
-CkkgcmVtb3ZlICNpZmRlZiBDT05GSUdfUE0gY29kZSBpbiBzdW5wbHVzX3N0YXJ0dXAoKSBhbmQg
-dGVzdCBydW50aW1lIGZ1bmN0aW9uLg0KbGludXgtc2VyaWFsLXRlc3QgLXkgMHg1NSAteiAweDMw
-IC1wIC9kZXYvdHR5U1VQMSAtYiAxMTUyMDANCnJ1bnRpbWVfcmVzdW1lIGFuZCBydW50aW1lX3N1
-c3BlbmQgc3RpbGwgd29yay4NCkkgd2lsbCByZW1vdmUgaXQuDQoNCj4gPiArICAgICAgIHJldHVy
-biAwOw0KPiA+ICtvdXQ6DQo+ID4gKyAgICAgICBpZiAoIXVhcnRfY29uc29sZShwb3J0KSkgew0K
-PiA+ICsgICAgICAgICAgICAgICBwbV9ydW50aW1lX21hcmtfbGFzdF9idXN5KHBvcnQtPmRldik7
-DQo+ID4gKyAgICAgICAgICAgICAgIHBtX3J1bnRpbWVfcHV0X2F1dG9zdXNwZW5kKHBvcnQtPmRl
-dik7DQo+ID4gKyAgICAgICB9DQo+ID4gKyNlbmRpZg0KPiA+ICsgICAgICAgcmV0dXJuIDA7DQo+
-ID4gK30NCj4gDQo+IC4uLg0KPiANCj4gPiArc3RhdGljIHZvaWQgc3VucGx1c19zZXRfdGVybWlv
-cyhzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgc3RydWN0IGt0ZXJtaW9zICp0ZXJtaW9zLA0KPiA+ICsgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgc3RydWN0IGt0ZXJtaW9zICpvbGR0ZXJtaW9zKSB7DQo+ID4gKyAgICAgICB1
-MzIgY2xrLCBleHQsIGRpdiwgZGl2X2wsIGRpdl9oLCBiYXVkOw0KPiA+ICsgICAgICAgdTMyIGxj
-ciwgdmFsOw0KPiA+ICsgICAgICAgdW5zaWduZWQgbG9uZyBmbGFnczsNCj4gDQo+ID4gKyAgICAg
-ICBjbGsgPSBwb3J0LT51YXJ0Y2xrOw0KPiANCj4gVGhpcyBjYW4gYmUgZG9uZSBpbiB0aGUgZGVm
-aW5pdGlvbiBibG9jayBhYm92ZS4NCj4gDQoNCkkgdGhpbmsgeW91IHdhbnQgdGhlIGNvZGUgbGlr
-ZSBiZWxvdywgcmlnaHQgPw0KdTMyIGV4dCwgZGl2LCBkaXZfbCwgZGl2X2gsIGJhdWQsIGxjcjsN
-CnUzMiBjbGsgPSBwb3J0LT51YXJ0Y2xrOw0KdW5zaWduZWQgbG9uZyBmbGFnczsNCg0KPiA+ICsg
-ICAgICAgYmF1ZCA9IHVhcnRfZ2V0X2JhdWRfcmF0ZShwb3J0LCB0ZXJtaW9zLCBvbGR0ZXJtaW9z
-LCAwLA0KPiA+ICsgcG9ydC0+dWFydGNsayAvIDE2KTsNCj4gPiArDQo+ID4gKyAgICAgICByZWFk
-bF9wb2xsX3RpbWVvdXRfYXRvbWljKHBvcnQtPm1lbWJhc2UgKyBTVVBfVUFSVF9MU1IsIHZhbCwN
-Cj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKHZhbCAmIFNVUF9VQVJUX0xT
-Ul9UWEUpLCAxLA0KPiAxMDAwMCk7DQo+IA0KPiBObyBlcnJvciBjaGVjaz8NCj4gDQoNCnJlbW92
-ZSB0aGlzIGNvZGUgaW4gc2V0X3Rlcm1pb3MoICkuDQpJIHRoaW5rIGl0IGlzIG5vdCBuZWNlc3Nh
-cnkgdG8gY2hlY2sgdHggZW1wdHkgaGVyZS4NCg0KPiA+ICsgICAgICAgLyoNCj4gPiArICAgICAg
-ICAqIGJhdWQgcmF0ZSA9IHVhcnRjbGsgLyAoKDE2ICogZGl2WzE1OjBdICsgMSkgKyBkaXZfZXh0
-WzM6MF0pDQo+ID4gKyAgICAgICAgKiBnZXQgdGFyZ2V0IGJhdWQgcmF0ZSBhbmQgdWFydGNsaw0K
-PiA+ICsgICAgICAgICogYXV0byBjYWxjdWxhdGUgZGl2IGFuZCBkaXZfZXh0DQo+ID4gKyAgICAg
-ICAgKiBkaXZfaCA9IChkaXZbMTU6OF0gPj4gOCk7IGRpdl9sID0gKGRpdl9leHRbMzowXSA8PCAx
-MikgKw0KPiA+ICsgZGl2Wzc6MF0NCj4gDQo+IFRoZXJlIGlzIG5vIG5lZWQgdG8gZXhwbGFpbiB0
-aGUgY29kZSwgcGxlYXNlIGFkZCBleGNlcnB0cyBmcm9tIHRoZSBkYXRhIHNoZWV0DQo+IG9uIGhv
-dyB0aGUgZGl2aXNvcnMgYW5kIGJhdWQgcmF0ZSBhcmUgY2FsY3VsYXRlZCwgdXNlIG1hdGhlbWF0
-aWNhbCBsYW5ndWFnZSwNCj4gYW5kIG5vdCBwcm9ncmFtbWluZyBpbiB0aGUgY29tbWVudC4NCj4g
-DQoNCk9rLCB3aWxsIG1vZGlmeSBpdC4gV2hpY2ggb25lIGlzIGJldHRlcj8NCi8qIGJhdWQgcmF0
-ZSA9IHVhcnRjbGsgLyAoKDE2ICogZGl2aXNvciArIDEpICsgZGl2aXNvcl9leHQpICovDQpPciAN
-Ci8qICAgICAgICAgICAgICAgICAgIHVhcnRjbGsNCiAqIGJhdWQgcmF0ZSA9IC0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiAqICAgICAgICAgICAoMTYgKiBkaXZp
-c29yICsgMSkgKyBkaXZpc29yX2V4dA0KICovDQoNCj4gPiArICAgICAgICAqLw0KPiA+ICsgICAg
-ICAgY2xrICs9IGJhdWQgPj4gMTsNCj4gPiArICAgICAgIGRpdiA9IGNsayAvIGJhdWQ7DQo+ID4g
-KyAgICAgICBleHQgPSBkaXYgJiAweDBGOw0KPiA+ICsgICAgICAgZGl2ID0gKGRpdiA+PiA0KSAt
-IDE7DQo+ID4gKyAgICAgICBkaXZfbCA9IChkaXYgJiAweEZGKSB8IChleHQgPDwgMTIpOw0KPiA+
-ICsgICAgICAgZGl2X2ggPSBkaXYgPj4gODsNCj4gDQo+IC4uLg0KPiANCj4gPiArc3RhdGljIGNv
-bnN0IGNoYXIgKnN1bnBsdXNfdHlwZShzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KSB7DQo+ID4gKyAg
-ICAgICBzdHJ1Y3Qgc3VucGx1c191YXJ0X3BvcnQgKnN1cCA9IHRvX3N1bnBsdXNfdWFydChwb3J0
-KTsNCj4gPiArDQo+ID4gKyAgICAgICByZXR1cm4gc3VwLT5wb3J0LnR5cGUgPT0gUE9SVF9TVU5Q
-TFVTID8gInN1bnBsdXNfdWFydCIgOiBOVUxMOw0KPiA+ICt9DQo+IA0KPiANCj4gV2hhdCBkbyB3
-ZSBhY2hpZXZlIHdpdGggdGhpcz8gV2hvIGFuZCBob3cgd2lsbCBzZWUgdGhpcyBpbmZvcm1hdGlv
-bj8NCj4gVW5kZXIgd2hpY2ggY2lyY3Vtc3RhbmNlcyB0aGUgcG9ydCB0eXBlIGlzIG5vdCBTVU5Q
-TFVTPw0KPiANCj4gLi4uDQo+IA0KPiA+ICtzdGF0aWMgdm9pZCBzdW5wbHVzX3JlbGVhc2VfcG9y
-dChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KSB7IH0NCj4gPiArDQo+ID4gK3N0YXRpYyBpbnQgc3Vu
-cGx1c19yZXF1ZXN0X3BvcnQoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkgew0KPiA+ICsgICAgICAg
-cmV0dXJuIDA7DQo+ID4gK30NCj4gDQo+IEFyZSB0aGVzZSBzdHVicyBtYW5kYXRvcnk/DQo+IA0K
-PiAuLi4NCj4gDQo+ID4gK3N0YXRpYyB2b2lkIHN1bnBsdXNfY29uZmlnX3BvcnQoc3RydWN0IHVh
-cnRfcG9ydCAqcG9ydCwgaW50IHR5cGUpIHsNCj4gDQo+ID4gKyAgICAgICBpZiAodHlwZSAmIFVB
-UlRfQ09ORklHX1RZUEUpIHsNCj4gPiArICAgICAgICAgICAgICAgcG9ydC0+dHlwZSA9IFBPUlRf
-U1VOUExVUzsNCj4gPiArICAgICAgICAgICAgICAgc3VucGx1c19yZXF1ZXN0X3BvcnQocG9ydCk7
-DQo+ID4gKyAgICAgICB9DQo+IA0KPiBpZiAoISh0eXBlICYgLi4uKSkNCj4gICByZXR1cm47DQo+
-IA0KPiA/DQo+IA0KDQpBYm91dCB0aGVzZSBmdW5jdGlvbnMNCnN1bnBsdXNfdHlwZSAvIHN1bnBs
-dXNfcmVsZWFzZV9wb3J0IC8gc3VucGx1c19yZXF1ZXN0X3BvcnQgLyBzdW5wbHVzX2NvbmZpZ19w
-b3J0DQoNCkFsbW9zdCBhbGwgdWFydCBkcml2ZXIgaGF2ZSB0aGVzZSBmdW5jdGlvbiwgYnV0IGFj
-dHVhbGx5IEkgZG9uJ3Qga25vdyB3aGVuL2hvdyB0byB1c2UgaXQuDQpJIHdpbGwgc3R1ZHkgaXQu
-DQpJZiB5b3UgaGF2ZSBtb3JlIGluZm9ybWF0aW9uLCBwbGVhc2Ugc2hhcmUgaXQgdG8gbWUuDQoN
-Cj4gPiArfQ0KPiANCj4gLi4uDQo+IA0KPiA+ICtzdGF0aWMgaW50IHN1bnBsdXNfcG9sbF9pbml0
-KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpIHsNCj4gPiArICAgICAgIHJldHVybiAwOw0KPiA+ICt9
-DQo+IA0KPiBXaHkgaXMgdGhpcyBzdHViIG5lZWRlZD8NCj4gDQoNCldpbGwgcmVtb3ZlIGl0Lg0K
-DQo+IC4uLg0KPiANCj4gPiArc3RhdGljIGlubGluZSB2b2lkIHdhaXRfZm9yX3htaXRyKHN0cnVj
-dCB1YXJ0X3BvcnQgKnBvcnQpIHsNCj4gPiArICAgICAgIHVuc2lnbmVkIGludCB2YWw7DQo+ID4g
-Kw0KPiA+ICsgICAgICAgcmVhZGxfcG9sbF90aW1lb3V0X2F0b21pYyhwb3J0LT5tZW1iYXNlICsg
-U1VQX1VBUlRfTFNSLCB2YWwsDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICh2YWwgJiBTVVBfVUFSVF9MU1JfVFgpLCAxLA0KPiAxMDAwMCk7DQo+IA0KPiBFcnJvciBoYW5k
-bGluZz8NCj4gT3IgZXhwbGFpbiB3aHkgaXQncyBub3QgbmVlZGVkLg0KPiANCj4gPiArfQ0KPiAN
-Cg0KSSByZWZlciB0byAvZHJpdmVycy90dHkvc2VyaWFsL293bC11YXJ0LmMNCldpbGwgYWRkIGVy
-cm9yIGhhbmRsaW5nIGZvciBpdCBhcyBiZWxvdyAsIGlzIHRoYXQgT0s/DQoNCnN0YXRpYyBpbmxp
-bmUgdm9pZCB3YWl0X2Zvcl94bWl0cihzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KSB7DQogIHVuc2ln
-bmVkIGludCB2YWw7DQogIGludCByZXQ7DQogIC8qV2FpdCBmb3IgRklGTyBpcyBmdWxsIG9yIHRp
-bWVvdXQgKi8NCiAgcmV0ID0gcmVhZGxfcG9sbF90aW1lb3V0X2F0b21pYyhwb3J0LT5tZW1iYXNl
-ICsgU1VQX1VBUlRfTFNSLCB2YWwsDQogICAgICAgICAgICAgICAgICAgICAgKHZhbCAmIFNVUF9V
-QVJUX0xTUl9UWCksIDEsIDEwMDAwKTsNCiAgSWYgKHJldCA9PSAtRVRJTUVPVVQpIHsNCiAgICBk
-ZXZfZXJyKHBvcnQtPmRldiwgIlRpbWVvdXQgd2FpdGluZyB3aGlsZSBVQVJUIFRYIEZVTEwpOw0K
-ICAgIHJldHVybjsNCiAgIH0NCn0NCg0KPiAuLi4NCj4gDQo+ID4gKyAgICAgICBzdXAtPmNsayA9
-IGRldm1fY2xrX2dldCgmcGRldi0+ZGV2LCBOVUxMKTsNCj4gPiArICAgICAgIGlmICghSVNfRVJS
-KHN1cC0+Y2xrKSkgew0KPiANCj4gSW5zdGVhZCB1c2UgZGV2bV9jbGtfZ2V0X29wdGlvbmFsKCku
-DQo+IA0KPiA+ICsgICAgICAgICAgICAgICByZXQgPSBjbGtfcHJlcGFyZV9lbmFibGUoc3VwLT5j
-bGspOw0KPiA+ICsgICAgICAgICAgICAgICBpZiAocmV0KQ0KPiA+ICsgICAgICAgICAgICAgICAg
-ICAgICAgIHJldHVybiByZXQ7DQo+IA0KPiA+ICsgICAgICAgICAgICAgICByZXQgPSBkZXZtX2Fk
-ZF9hY3Rpb25fb3JfcmVzZXQoJnBkZXYtPmRldiwNCj4gPiArICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICh2b2lkKCopKHZvaWQNCj4gKikpY2xrX2Rpc2FibGVf
-dW5wcmVwYXJlLA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgc3VwLT5jbGspOw0KPiANCj4gTG9vayBhdCB0aGUgZXhhbXBsZXMgb2YgaG93IG90aGVy
-IGRyaXZlcnMgZG8gdGhpcyAodGhhdCB3ZXJlIHN1Ym1pdHRlZCBtb3JlDQo+IG9yIGxlc3MgcmVj
-ZW50bHkpLg0KPiANCj4gPiArICAgICAgICAgICAgICAgaWYgKHJldCkNCj4gPiArICAgICAgICAg
-ICAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPiA+ICsgICAgICAgfSBlbHNlIHsNCj4gDQo+ID4g
-KyAgICAgICAgICAgICAgIGlmIChQVFJfRVJSKHN1cC0+Y2xrKSA9PSAtRVBST0JFX0RFRkVSKQ0K
-PiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiAtRVBST0JFX0RFRkVSOw0KPiANCj4g
-V2h5PyENCj4gDQo+ID4gKyAgICAgICAgICAgICAgIHJldHVybiBkZXZfZXJyX3Byb2JlKCZwZGV2
-LT5kZXYsIFBUUl9FUlIoc3VwLT5jbGspLA0KPiAiY2xrIG5vdCBmb3VuZFxuIik7DQo+ID4gKyAg
-ICAgICB9DQo+IA0KPiAuLi4NCg0KSW4gY2FzZSBvZiB3aXRob3V0IGRlZmVycmVkIHByb2JlLg0K
-SSByZWZlciB0byAvZHJpdmVycy90dHkvc2VyaWFsL21lc29uX3VhcnQuYw0KQW5kIEkgd2lsbCBt
-b2RpZnkgYXMgYmVsb3csIGlzIHRoYXQgb2s/DQogICBzdXAtPmNsayA9IGRldm1fY2xrX2dldF9v
-cHRpb25hbCgmcGRldi0+ZGV2LCBOVUxMKTsNCiAgIGlmIChJU19FUlIoc3VwLT5jbGspKQ0KICAg
-ICByZXR1cm4gZGV2X2Vycl9wcm9iZSgmcGRldi0+ZGV2LCBQVFJfRVJSKHN1cC0+Y2xrKSwgImNs
-ayBub3QgZm91bmRcbiIpOw0KDQogICByZXQgPSBjbGtfcHJlcGFyZV9lbmFibGUoc3VwLT5jbGsp
-Ow0KICAgaWYgKHJldCkNCiAgICAgcmV0dXJuIHJldDsNCiAgIHJldCA9IGRldm1fYWRkX2FjdGlv
-bl9vcl9yZXNldCgmcGRldi0+ZGV2LCAodm9pZCgqKSh2b2lkKikpY2xrX2Rpc2FibGVfdW5wcmVw
-YXJlLA0KICAgICAgICAgc3VwLT5jbGspOw0KICAgaWYgKHJldCkNCiAgICAgcmV0dXJuIHJldDsN
-Cg0KQXMgeW91ciBjb21tZW50IGxhc3QgcGF0Y2ggdjMgLCB5b3Ugc2FpZCAidGhpbmsgb2YgZGVm
-ZXJyZWQiLg0KU28gSSByZWZlciB0byAvZHJpdmVycy90dHkvc2VyaWFsL3NjY254cC5jDQpNYXli
-ZSBJIGp1c3QgbmVlZCB0byBkbyBpdCB3aXRob3V0IGRlZmVycmVkIHByb2JlLg0KDQo+IA0KPiA+
-ICsgICAgICAgcmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVN
-LCAwKTsNCj4gPiArICAgICAgIHBvcnQtPm1lbWJhc2UgPSBkZXZtX2lvcmVtYXBfcmVzb3VyY2Uo
-JnBkZXYtPmRldiwgcmVzKTsNCj4gDQo+IFdlIGhhdmUgYW4gQVBJIHRoYXQgZG9lcyBib3RoIGF0
-IG9uY2UuIFVzZSBpdC4NCj4gDQoNCm9rLCB3aWxsIG1vZGlmeSBmb3IgaXQuDQpkZXZtX3BsYXRm
-b3JtX2dldF9hbmRfaW9yZW1hcF9yZXNvdXJjZShwZGV2LCAwLCAmcmVzKTsNCg0KPiA+ICsgICAg
-ICAgaWYgKElTX0VSUihwb3J0LT5tZW1iYXNlKSkNCj4gPiArICAgICAgICAgICAgICAgcmV0dXJu
-IGRldl9lcnJfcHJvYmUoJnBkZXYtPmRldiwNCj4gPiArIFBUUl9FUlIocG9ydC0+bWVtYmFzZSks
-ICJtZW1iYXNlIG5vdCBmb3VuZFxuIik7DQo+IA0KPiAuLi4NCj4gDQo+ID4gKyAgICAgICByZXQg
-PSByZXNldF9jb250cm9sX2RlYXNzZXJ0KHN1cC0+cnN0Yyk7DQo+ID4gKyAgICAgICBpZiAocmV0
-KQ0KPiA+ICsgICAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPiANCj4gRnJvbSBoZXJlIG5vIHJl
-c2V0IGFzc2VydGlvbiBvbiBlcnJvcj8gV2h5Pw0KPiANCg0KSSBmb3VuZCBJIGRpZG4ndCBhZGQg
-ZGV2bV9hZGRfYWN0aW9uX29yX3Jlc2V0KCApIHRvIHJ1biByZXNldF9jb250cm9sX2Fzc2VydCgg
-KSBmb3IgaXQuDQpJIHdpbGwgYWRkIGl0IGFzIGJsZW93Lg0KDQogICByZXQgPSBkZXZtX2FkZF9h
-Y3Rpb25fb3JfcmVzZXQoJnBkZXYtPmRldiwgKHZvaWQoKikodm9pZCopKXJlc2V0X2NvbnRyb2xf
-YXNzZXJ0LA0KICAgICAgICAgc3VwLT5yc3RjKTsNCiAgIGlmIChyZXQpDQogICAgIHJldHVybiBy
-ZXQ7DQoNCj4gLi4uDQo+IA0KPiA+ICsjaWZkZWYgQ09ORklHX1NFUklBTF9TVU5QTFVTX0NPTlNP
-TEUNCj4gPiArICAgICAgIGlmIChwZGV2LT5pZCA9PSAwKQ0KPiA+ICsgICAgICAgICAgICAgICBw
-b3J0LT5jb25zID0gJnN1bnBsdXNfdWFydF9jb25zb2xlOw0KPiA+ICsgICAgICAgc3VucGx1c19j
-b25zb2xlX3BvcnRzW3N1cC0+cG9ydC5saW5lXSA9IHN1cDsgI2VuZGlmDQo+IA0KPiBBY3R1YWxs
-eSB3aHkgZG9uJ3QgeW91IHVzZSByZWdpc3Rlcl9jb25zb2xlKCkgPw0KPiANCg0KSSB3aWxsIHRo
-aW5rIGhvdyB0byBkbyBpdC4NCg0KPiAuLi4NCj4gDQo+ID4gK3N0YXRpYyBzdHJ1Y3QgcGxhdGZv
-cm1fZHJpdmVyIHN1bnBsdXNfdWFydF9wbGF0Zm9ybV9kcml2ZXIgPSB7DQo+ID4gKyAgICAgICAu
-cHJvYmUgICAgICAgICAgPSBzdW5wbHVzX3VhcnRfcHJvYmUsDQo+ID4gKyAgICAgICAucmVtb3Zl
-ICAgICAgICAgPSBzdW5wbHVzX3VhcnRfcmVtb3ZlLA0KPiA+ICsgICAgICAgLmRyaXZlciA9IHsN
-Cj4gPiArICAgICAgICAgICAgICAgLm5hbWUgICA9ICJzdW5wbHVzX3VhcnQiLA0KPiANCj4gPiAr
-ICAgICAgICAgICAgICAgLm9mX21hdGNoX3RhYmxlID0gb2ZfbWF0Y2hfcHRyKHNwX3VhcnRfb2Zf
-bWF0Y2gpLA0KPiANCj4gSG93IGRpZCB5b3UgdGVzdCB0aGlzIHdoZW4gT0Y9biBhbmQgQ09NUElM
-RV9URVNUPXk/DQo+IEhpbnQ6IENvbXBpbGVyIHdpbGwgd2FybiBhYm91dCB1bnVzZWQgdmFyaWFi
-bGVzICh5b3UgbmVlZCBXPTEpLg0KPiANCj4gPiArICAgICAgICAgICAgICAgLnBtICAgICA9ICZz
-dW5wbHVzX3VhcnRfcG1fb3BzLA0KPiA+ICsgICAgICAgfQ0KPiA+ICt9Ow0KPiANCg0KSSBoYXZl
-IGZvdW5kIG1hbnkgcGF0Y2ggZHJvcCBvZl9tYXRjaF9wdHIoICkgY2F1c2Ugd2FybmluZyB1bnVz
-ZWQgdmFyaWFibGUuDQpOb3cgSSBrbm93IHdoYXQgeW91IG1lYW5zIGF0IGxhc3QgUEFUQ0ggdjMg
-Y29tbWVudC4NCkkgc2V0IE9GPW4gYW5kIENPTVBJTEVfVEVTVD15LCBidXQgb3RoZXIgZXJyb3Ig
-Y29tZSBvdXQgZmlyc3QuDQpJIGRpZG4ndCBjb25maXJtIGl0IGZ1cnRoZXIuDQpXaWxsIHJlbW92
-ZSBvZl9tYXRjaF9wdHIoICkuDQoNCj4gLi4uDQo+IA0KPiA+ICtzdGF0aWMgdm9pZCBfX2V4aXQg
-c3VucGx1c191YXJ0X2V4aXQodm9pZCkgew0KPiA+ICsgICAgICAgcGxhdGZvcm1fZHJpdmVyX3Vu
-cmVnaXN0ZXIoJnN1bnBsdXNfdWFydF9wbGF0Zm9ybV9kcml2ZXIpOw0KPiA+ICsgICAgICAgdWFy
-dF91bnJlZ2lzdGVyX2RyaXZlcigmc3VucGx1c191YXJ0X2RyaXZlcik7DQo+ID4gK30NCj4gDQo+
-ID4gKw0KPiANCj4gRHRvcCB0aGlzIGJsYW5rIGxpbmUuLi4NCj4gDQo+ID4gK21vZHVsZV9pbml0
-KHN1bnBsdXNfdWFydF9pbml0KTsNCj4gPiArbW9kdWxlX2V4aXQoc3VucGx1c191YXJ0X2V4aXQp
-Ow0KPiANCj4gLi4uYW5kIGF0dGFjaCBlYWNoIG9mIHRoZSBjYWxscyB0byB0aGUgaW1wbGVtZW50
-ZWQgZnVuY3Rpb24uDQo+IA0KDQpPayAsIHdpbGwgbW9kaWZ5IGl0Lg0KDQo+IC4uLg0KPiANCj4g
-PiArc3RhdGljIGludCBfX2luaXQNCj4gPiArc3VucGx1c191YXJ0X2Vhcmx5X3NldHVwKHN0cnVj
-dCBlYXJseWNvbl9kZXZpY2UgKmRldiwgY29uc3QgY2hhcg0KPiA+ICsqb3B0KSB7DQo+ID4gKyAg
-ICAgICBpZiAoIShkZXYtPnBvcnQubWVtYmFzZSB8fCBkZXYtPnBvcnQuaW9iYXNlKSkNCj4gPiAr
-ICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9ERVY7DQo+ID4gKw0KPiA+ICsgICAgICAgZGV2LT5j
-b24tPndyaXRlID0gc3VucGx1c191YXJ0X2Vhcmx5X3dyaXRlOw0KPiA+ICsNCj4gPiArICAgICAg
-IHJldHVybiAwOw0KPiA+ICt9DQo+IA0KPiA+ICsNCj4gDQo+IE5vIGJsYW5rIGxpbmUuDQo+IA0K
-DQpVc2Ugc2NyaXB0cy9jaGVja3BhdGNoLnBsIC0tc3RyaWN0IC1mIGRyaXZlcnMvdHR5L3Nlcmlh
-bC9zdW5wbHVzLXVhcnQuYw0KSXQgd2lsbCBzaG93ICJDSEVDSzogUGxlYXNlIHVzZSBhIGJsYW5r
-IGxpbmUgYWZ0ZXIgZnVuY3Rpb24vc3RydWN0L3VuaW9uL2VudW0gZGVjbGFyYXRpb25zIi4NClRo
-YXQncyB3aHkgSSBjb25mdXNlIGl0IGFuZCBhZGQgYSBibGFuayBmb3IgaXQuDQpvaywgd2lsbCBy
-ZW1vdmUgdGhlIGJsYW5rLg0KDQo+ID4gK09GX0VBUkxZQ09OX0RFQ0xBUkUoc3VucGx1c191YXJ0
-LCAic3VucGx1cyxzcDcwMjEtdWFydCIsDQo+ID4gK3N1bnBsdXNfdWFydF9lYXJseV9zZXR1cCk7
-DQo+IA0KPiAtLQ0KPiBXaXRoIEJlc3QgUmVnYXJkcywNCj4gQW5keSBTaGV2Y2hlbmtvDQo=
+On Wed, 1 Dec 2021 at 12:53, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+>
+> On Wed, Dec 1, 2021 at 12:42 AM Sam Protsenko
+> <semen.protsenko@linaro.org> wrote:
+> >
+> > USIv2 IP-core is found on modern ARM64 Exynos SoCs (like Exynos850) and
+> > provides selectable serial protocol (one of: UART, SPI, I2C). USIv2
+> > registers usually reside in the same register map as a particular
+> > underlying protocol it implements, but have some particular offset. E.g.
+> > on Exynos850 the USI_UART has 0x13820000 base address, where UART
+> > registers have 0x00..0x40 offsets, and USI registers have 0xc0..0xdc
+> > offsets. Desired protocol can be chosen via SW_CONF register from System
+> > Register block of the same domain as USI.
+> >
+> > Before starting to use a particular protocol, USIv2 must be configured
+> > properly:
+> >   1. Select protocol to be used via System Register
+> >   2. Clear "reset" flag in USI_CON
+> >   3. Configure HWACG behavior (e.g. for UART Rx the HWACG must be
+> >      disabled, so that the IP clock is not gated automatically); this is
+> >      done using USI_OPTION register
+> >   4. Keep both USI clocks (PCLK and IPCLK) running during USI registers
+> >      modification
+> >
+> > This driver implements above behavior. Of course, USIv2 driver should be
+>
+> the above
+>
+> > probed before UART/I2C/SPI drivers. It can be achived by embedding
+>
+> achieved
+>
+> > UART/I2C/SPI nodes inside of USI node (in Device Tree); driver then
+>
+> the USI node
+>
+> > walks underlying nodes and instantiates those. Driver also handles USI
+> > configuration on PM resume, as register contents can be lost during CPU
+> > suspend.
+> >
+> > This driver is designed with different USI versions in mind. So it
+> > should be relatively easy to add new USI revisions to it later.
+> >
+> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > ---
+> > Changes in v2:
+> >   - Replaced arch_initcall() with module_platform_driver()
+> >   - Reworked the whole driver for the easy adoption of other USI
+> >     revisions
+> >   - Added "mode" validation right after reading it from device tree
+> >   - Handled new USI_V2_NONE value
+> >
+> >  drivers/soc/samsung/Kconfig      |  14 ++
+> >  drivers/soc/samsung/Makefile     |   2 +
+> >  drivers/soc/samsung/exynos-usi.c | 274 +++++++++++++++++++++++++++++++
+> >  3 files changed, 290 insertions(+)
+> >  create mode 100644 drivers/soc/samsung/exynos-usi.c
+> >
+> > diff --git a/drivers/soc/samsung/Kconfig b/drivers/soc/samsung/Kconfig
+> > index e2cedef1e8d1..a9f8b224322e 100644
+> > --- a/drivers/soc/samsung/Kconfig
+> > +++ b/drivers/soc/samsung/Kconfig
+> > @@ -23,6 +23,20 @@ config EXYNOS_CHIPID
+> >           Support for Samsung Exynos SoC ChipID and Adaptive Supply Voltage.
+> >           This driver can also be built as module (exynos_chipid).
+> >
+> > +config EXYNOS_USI
+> > +       tristate "Exynos USI (Universal Serial Interface) driver"
+> > +       default ARCH_EXYNOS && ARM64
+> > +       depends on ARCH_EXYNOS || COMPILE_TEST
+> > +       select MFD_SYSCON
+> > +       help
+> > +         Enable support for USI block. USI (Universal Serial Interface) is an
+> > +         IP-core found in modern Samsung Exynos SoCs, like Exynos850 and
+> > +         ExynosAutoV0. USI block can be configured to provide one of the
+> > +         following serial protocols: UART, SPI or High Speed I2C.
+> > +
+> > +         This driver allows one to configure USI for desired protocol, which
+> > +         is usually done in USI node in Device Tree.
+> > +
+> >  config EXYNOS_PMU
+> >         bool "Exynos PMU controller driver" if COMPILE_TEST
+> >         depends on ARCH_EXYNOS || ((ARM || ARM64) && COMPILE_TEST)
+> > diff --git a/drivers/soc/samsung/Makefile b/drivers/soc/samsung/Makefile
+> > index 2ae4bea804cf..9f59d1905ab0 100644
+> > --- a/drivers/soc/samsung/Makefile
+> > +++ b/drivers/soc/samsung/Makefile
+> > @@ -4,6 +4,8 @@ obj-$(CONFIG_EXYNOS_ASV_ARM)    += exynos5422-asv.o
+> >  obj-$(CONFIG_EXYNOS_CHIPID)    += exynos_chipid.o
+> >  exynos_chipid-y                        += exynos-chipid.o exynos-asv.o
+> >
+> > +obj-$(CONFIG_EXYNOS_USI)       += exynos-usi.o
+> > +
+> >  obj-$(CONFIG_EXYNOS_PMU)       += exynos-pmu.o
+> >
+> >  obj-$(CONFIG_EXYNOS_PMU_ARM_DRIVERS)   += exynos3250-pmu.o exynos4-pmu.o \
+> > diff --git a/drivers/soc/samsung/exynos-usi.c b/drivers/soc/samsung/exynos-usi.c
+> > new file mode 100644
+> > index 000000000000..6e4112696f49
+> > --- /dev/null
+> > +++ b/drivers/soc/samsung/exynos-usi.c
+> > @@ -0,0 +1,274 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Copyright (c) 2021 Linaro Ltd.
+> > + * Author: Sam Protsenko <semen.protsenko@linaro.org>
+> > + *
+> > + * Samsung Exynos USI driver (Universal Serial Interface).
+> > + */
+> > +
+> > +#include <linux/clk.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_platform.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/regmap.h>
+> > +#include <linux/mfd/syscon.h>
+>
+> Sorted?
+>
+
+Sort of :)
+
+> > +#include <dt-bindings/soc/samsung,exynos-usi.h>
+> > +
+> > +/* USIv2: System Register: SW_CONF register bits */
+> > +#define USI_V2_SW_CONF_NONE    0x0
+> > +#define USI_V2_SW_CONF_UART    BIT(0)
+> > +#define USI_V2_SW_CONF_SPI     BIT(1)
+> > +#define USI_V2_SW_CONF_I2C     BIT(2)
+> > +#define USI_V2_SW_CONF_MASK    (USI_V2_SW_CONF_UART | USI_V2_SW_CONF_SPI | \
+> > +                                USI_V2_SW_CONF_I2C)
+> > +
+> > +/* USIv2: USI register offsets */
+> > +#define USI_CON                        0x04
+> > +#define USI_OPTION             0x08
+> > +
+> > +/* USIv2: USI register bits */
+> > +#define USI_CON_RESET          BIT(0)
+> > +#define USI_OPTION_CLKREQ_ON   BIT(1)
+> > +#define USI_OPTION_CLKSTOP_ON  BIT(2)
+> > +
+> > +enum exynos_usi_ver {
+> > +       USI_VER2 = 2,
+> > +};
+> > +
+> > +struct exynos_usi_variant {
+> > +       enum exynos_usi_ver ver;        /* USI IP-core version */
+> > +       unsigned int sw_conf_mask;      /* SW_CONF mask for all protocols */
+> > +       size_t min_mode;                /* first index in exynos_usi_modes[] */
+> > +       size_t max_mode;                /* last index in exynos_usi_modes[] */
+> > +};
+> > +
+> > +struct exynos_usi {
+> > +       struct device *dev;
+> > +       void __iomem *regs;             /* USI register map */
+> > +       struct clk *pclk;               /* USI bus clock */
+> > +       struct clk *ipclk;              /* USI operating clock */
+> > +
+> > +       size_t mode;                    /* current USI SW_CONF mode index */
+> > +       bool clkreq_on;                 /* always provide clock to IP */
+> > +
+> > +       /* System Register */
+> > +       struct regmap *sysreg;          /* System Register map */
+> > +       unsigned int sw_conf;           /* SW_CONF register offset in sysreg */
+> > +
+> > +       const struct exynos_usi_variant *data;
+> > +};
+> > +
+> > +struct exynos_usi_mode {
+> > +       const char *name;               /* mode name */
+> > +       unsigned int val;               /* mode register value */
+> > +};
+> > +
+> > +static const struct exynos_usi_mode exynos_usi_modes[] = {
+> > +       [USI_V2_NONE] = { .name = "none", .val = USI_V2_SW_CONF_NONE },
+> > +       [USI_V2_UART] = { .name = "uart", .val = USI_V2_SW_CONF_UART },
+> > +       [USI_V2_SPI] =  { .name = "spi",  .val = USI_V2_SW_CONF_SPI },
+> > +       [USI_V2_I2C] =  { .name = "i2c",  .val = USI_V2_SW_CONF_I2C },
+> > +};
+> > +
+> > +static const struct exynos_usi_variant exynos_usi_v2_data = {
+> > +       .ver            = USI_VER2,
+> > +       .sw_conf_mask   = USI_V2_SW_CONF_MASK,
+> > +       .min_mode       = USI_V2_NONE,
+> > +       .max_mode       = USI_V2_I2C,
+> > +};
+> > +
+> > +static const struct of_device_id exynos_usi_dt_match[] = {
+> > +       {
+> > +               .compatible = "samsung,exynos-usi-v2",
+> > +               .data = &exynos_usi_v2_data,
+> > +       },
+>
+> > +       { }, /* sentinel */
+>
+> Comma is not needed.
+>
+> > +};
+> > +MODULE_DEVICE_TABLE(of, exynos_usi_dt_match);
+> > +
+> > +/**
+> > + * exynos_usi_set_sw_conf - Set USI block configuration mode
+> > + * @usi: USI driver object
+> > + * @mode: Mode index
+> > + *
+> > + * Select underlying serial protocol (UART/SPI/I2C) in USI IP-core.
+> > + *
+> > + * Return: 0 on success, or negative error code on failure.
+> > + */
+> > +static int exynos_usi_set_sw_conf(struct exynos_usi *usi, size_t mode)
+> > +{
+> > +       unsigned int val;
+> > +       int ret;
+> > +
+> > +       if (mode < usi->data->min_mode || mode > usi->data->max_mode)
+> > +               return -EINVAL;
+> > +
+> > +       val = exynos_usi_modes[mode].val;
+> > +       ret = regmap_update_bits(usi->sysreg, usi->sw_conf,
+> > +                                usi->data->sw_conf_mask, val);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       usi->mode = mode;
+> > +       dev_dbg(usi->dev, "protocol: %s\n", exynos_usi_modes[usi->mode].name);
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +/**
+> > + * exynos_usi_enable - Initialize USI block
+> > + * @usi: USI driver object
+> > + *
+> > + * USI IP-core start state is "reset" (on startup and after CPU resume). This
+> > + * routine enables USI block by clearing the reset flag. It also configures
+>
+> the USI block
+>
+> > + * HWACG behavior (needed e.g. for UART Rx). It should be performed before
+> > + * underlying protocol becomes functional.
+> > + *
+> > + * Return: 0 on success, or negative error code on failure.
+> > + */
+> > +static int exynos_usi_enable(const struct exynos_usi *usi)
+> > +{
+> > +       u32 val;
+> > +       int ret;
+> > +
+> > +       ret = clk_prepare_enable(usi->pclk);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       ret = clk_prepare_enable(usi->ipclk);
+> > +       if (ret)
+> > +               goto err_pclk;
+>
+> Wondering if these clocks may be operated as a bulk.
+>
+> > +       /* Enable USI block */
+> > +       val = readl(usi->regs + USI_CON);
+> > +       val &= ~USI_CON_RESET;
+> > +       writel(val, usi->regs + USI_CON);
+> > +       udelay(1);
+> > +
+> > +       /* Continuously provide the clock to USI IP w/o gating */
+> > +       if (usi->clkreq_on) {
+> > +               val = readl(usi->regs + USI_OPTION);
+> > +               val &= ~USI_OPTION_CLKSTOP_ON;
+> > +               val |= USI_OPTION_CLKREQ_ON;
+> > +               writel(val, usi->regs + USI_OPTION);
+> > +       }
+> > +
+> > +       clk_disable_unprepare(usi->ipclk);
+> > +err_pclk:
+> > +       clk_disable_unprepare(usi->pclk);
+> > +       return ret;
+> > +}
+> > +
+> > +static int exynos_usi_configure(struct exynos_usi *usi)
+> > +{
+> > +       int ret;
+> > +
+> > +       ret = exynos_usi_set_sw_conf(usi, usi->mode);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       if (usi->data->ver == USI_VER2)
+> > +               return exynos_usi_enable(usi);
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int exynos_usi_parse_dt(struct device_node *np, struct exynos_usi *usi)
+> > +{
+> > +       int ret;
+> > +       u32 mode;
+> > +
+> > +       ret = of_property_read_u32(np, "samsung,mode", &mode);
+> > +       if (ret)
+> > +               return ret;
+> > +       if (mode < usi->data->min_mode || mode > usi->data->max_mode)
+> > +               return -EINVAL;
+> > +       usi->mode = mode;
+> > +
+> > +       usi->sysreg = syscon_regmap_lookup_by_phandle(np, "samsung,sysreg");
+> > +       if (IS_ERR(usi->sysreg))
+> > +               return PTR_ERR(usi->sysreg);
+> > +
+> > +       ret = of_property_read_u32_index(np, "samsung,sysreg", 1,
+> > +                                        &usi->sw_conf);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       usi->clkreq_on = of_property_read_bool(np, "samsung,clkreq-on");
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int exynos_usi_probe(struct platform_device *pdev)
+> > +{
+> > +       struct device *dev = &pdev->dev;
+> > +       struct device_node *np = dev->of_node;
+> > +       struct exynos_usi *usi;
+> > +       int ret;
+> > +
+> > +       usi = devm_kzalloc(dev, sizeof(*usi), GFP_KERNEL);
+> > +       if (!usi)
+> > +               return -ENOMEM;
+> > +
+> > +       usi->dev = dev;
+> > +       platform_set_drvdata(pdev, usi);
+> > +
+> > +       usi->data = of_device_get_match_data(dev);
+> > +       if (!usi->data)
+> > +               return -EINVAL;
+> > +
+> > +       ret = exynos_usi_parse_dt(np, usi);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       if (usi->data->ver == USI_VER2) {
+> > +               usi->regs = devm_platform_ioremap_resource(pdev, 0);
+> > +               if (IS_ERR(usi->regs))
+> > +                       return PTR_ERR(usi->regs);
+> > +
+> > +               usi->pclk = devm_clk_get(dev, "pclk");
+> > +               if (IS_ERR(usi->pclk))
+> > +                       return PTR_ERR(usi->pclk);
+> > +
+> > +               usi->ipclk = devm_clk_get(dev, "ipclk");
+> > +               if (IS_ERR(usi->ipclk))
+> > +                       return PTR_ERR(usi->ipclk);
+>
+> Sounds like a bulk clock.
+>
+
+Thanks, didn't know about that API.
+
+> > +       }
+> > +
+> > +       ret = exynos_usi_configure(usi);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       /* Make it possible to embed protocol nodes into USI np */
+> > +       return of_platform_populate(np, NULL, NULL, dev);
+> > +}
+>
+> > +#ifdef CONFIG_PM_SLEEP
+>
+> __maybe_unused?
+>
+> > +static int exynos_usi_resume_noirq(struct device *dev)
+> > +{
+> > +       struct exynos_usi *usi = dev_get_drvdata(dev);
+> > +
+> > +       return exynos_usi_configure(usi);
+> > +}
+> > +#endif
+> > +
+> > +static const struct dev_pm_ops exynos_usi_pm = {
+> > +       SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, exynos_usi_resume_noirq)
+> > +};
+> > +
+> > +static struct platform_driver exynos_usi_driver = {
+> > +       .driver = {
+> > +               .name           = "exynos-usi",
+> > +               .pm             = &exynos_usi_pm,
+> > +               .of_match_table = exynos_usi_dt_match,
+> > +       },
+> > +       .probe = exynos_usi_probe,
+> > +};
+>
+> > +
+>
+> No need for a blank line here.
+>
+
+Thanks for the review! All comments will be addressed in v3.
+
+> > +module_platform_driver(exynos_usi_driver);
+> > +
+> > +MODULE_DESCRIPTION("Samsung USI driver");
+> > +MODULE_AUTHOR("Sam Protsenko <semen.protsenko@linaro.org>");
+> > +MODULE_LICENSE("GPL");
+> > --
+> > 2.30.2
+> >
+>
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
