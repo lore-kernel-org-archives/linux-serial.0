@@ -2,115 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD58C433FE
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Dec 2021 16:22:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6EBC433FE
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Dec 2021 16:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352749AbhLCQ0B (ORCPT
+        id S1352880AbhLCQ1j (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Dec 2021 11:26:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352580AbhLCQ0A (ORCPT
+        Fri, 3 Dec 2021 11:27:39 -0500
+Received: from mail-ua1-f42.google.com ([209.85.222.42]:41898 "EHLO
+        mail-ua1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352811AbhLCQ1i (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Dec 2021 11:26:00 -0500
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC93AC061354
-        for <linux-serial@vger.kernel.org>; Fri,  3 Dec 2021 08:22:36 -0800 (PST)
-Received: by mail-ua1-x935.google.com with SMTP id n6so6545161uak.1
-        for <linux-serial@vger.kernel.org>; Fri, 03 Dec 2021 08:22:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NHuewE/Veei0UDZqBdq/IodL9Sy5sNU/wV+cHqy20h4=;
-        b=ZXVR2vMEL+7SlbGxyhg+0gI4ac97562jI/VhZM2Vi9fNRW628RJwHeXLuPIGQ3AQo8
-         eiKAjskuJEosDtGGtLNIQSnN1Nsbq93ExGOFr4SHi5jWeH51tAnMlTwzkuBE8p0+NJ1J
-         9+g2pTEu4TioFPo6mnmYzSTpu2GR7l2+ZjvyykmbQ9iiS099yHHis+lD/gxtHVdWsJ6u
-         DB3AjVFdhOjBYsRIrv+ry6fYFnrdRRdtdGK7aNZUI4879dd+ZZV3t+4S8jAfuEh557oa
-         YlNTUzD5GeazfVVjABVeV0Xy4cSC+Hr8B5hC5DZn9E7F81t9wc4XDCySvi6vqskl9mYM
-         IipQ==
+        Fri, 3 Dec 2021 11:27:38 -0500
+Received: by mail-ua1-f42.google.com with SMTP id p37so6456875uae.8;
+        Fri, 03 Dec 2021 08:24:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=NHuewE/Veei0UDZqBdq/IodL9Sy5sNU/wV+cHqy20h4=;
-        b=mz3FjfcSr3/CBBLrxMX5q6ZnjaErUap32Gdu6g9f91rAvqPBbkRFT+WWb2BpmrVN62
-         128jrJaLLNPS4BSo9coW2pzqKfFN8AfFl2Y327h4Y1hbSoQHDjYp4a+nR72/dIuO32lD
-         62KZhMaEUOFMukugueb3Z/aN1kSeXwZKTfBISS+cGuwGy+S7fbZI7SgvHwXjdSd0N9lq
-         w/okFglvLJaevxd7Gc+veIqGv6M1o/RiohxagPgbH3aBU/wDc9XLM/uRaigw/3tglHx1
-         zKyKlCj/6DymsI57IRieruhIcA1a3aOmEe6TutHAi2J+UB8Q1lzWZZCfCKpwb/xSi8YL
-         dD1g==
-X-Gm-Message-State: AOAM533Sr5GWHpsFmKb+PsuvekVr30VFgG24wCEjtXXTXDR+S/eTwOGS
-        1gYAmji1LdUXhC6wqq8xcbeUysIdDmZ1mCRft5ITLw==
-X-Google-Smtp-Source: ABdhPJyZ6EdGq6MVye5nYtnAwXKa3h8vHs+Y4vl7S/236hZNbkcPThWPDTg6QHNVkyE8sxPzbA36EIpvAwud/gmgGrs=
-X-Received: by 2002:a67:d31c:: with SMTP id a28mr22061114vsj.20.1638548555813;
- Fri, 03 Dec 2021 08:22:35 -0800 (PST)
+        bh=5VAfX84ij/HdA62GWjwqXOlA2DHUK0jO7Ib3am7Oo1A=;
+        b=eZaFruGLA89xDfzB561y48SlHNiZNl7HV1Y7hWLtCwYJEbdEsKc6Kbv922oILgiodg
+         PAPmhm/kKHWhHVXP6jyj90Ll6klbFAt4gNg/Mvh/m7bggSxE8Yd4QlwYZraq0a3ltwrs
+         VNNdwGZYbK08TnKuqy3TGCIAxC3+kLuaC+X2Qbyg4TJweUT0RMneD25MpaMIPmR7i1gt
+         f2Wcxh0D2rkAcsiLhr/9gk5v2eDoLXHDia562T3PlNcMJME+8ZqhDjFkkhvsXIubL3bM
+         v4n6T9DFoC9amM1jOc2mA65NnjipY6r/flXPf0th4nTjslzCcc7+nrNdaWKxz1kmSA1o
+         upXw==
+X-Gm-Message-State: AOAM531dP8uST0rAoYFsRUAIxMHYpFtBlA1WDWwLU5G9kkHsm6czzu0l
+        YmHUmYWCnjkLpxcGAlbn0pmwnpbaFZaq9zkO
+X-Google-Smtp-Source: ABdhPJzsDt3nVPRvhpY3mPwKSIuEGRWmNOAUydF2UmyRh6YLj/mVveb06aG6nAHWtZBMhWcPDyJZQg==
+X-Received: by 2002:ab0:164d:: with SMTP id l13mr22915073uae.34.1638548654079;
+        Fri, 03 Dec 2021 08:24:14 -0800 (PST)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id c24sm526919vkn.30.2021.12.03.08.24.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Dec 2021 08:24:13 -0800 (PST)
+Received: by mail-ua1-f49.google.com with SMTP id n6so6554981uak.1;
+        Fri, 03 Dec 2021 08:24:13 -0800 (PST)
+X-Received: by 2002:ab0:7354:: with SMTP id k20mr22766819uap.78.1638548653631;
+ Fri, 03 Dec 2021 08:24:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20211130111325.29328-1-semen.protsenko@linaro.org>
- <20211130111325.29328-4-semen.protsenko@linaro.org> <CAHp75Vd8PFhs8_Ji5x1X2Ph5ey+8JrRuneWCrG=5a+52Lh-ptQ@mail.gmail.com>
-In-Reply-To: <CAHp75Vd8PFhs8_Ji5x1X2Ph5ey+8JrRuneWCrG=5a+52Lh-ptQ@mail.gmail.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Fri, 3 Dec 2021 18:22:24 +0200
-Message-ID: <CAPLW+4mEw0x_rZ19h+rbz4qm=6OVgQvvbEJWL0wWQguMiWB7-g@mail.gmail.com>
-Subject: Re: [PATCH v2 RESEND 3/5] tty: serial: samsung: Remove USI initialization
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+References: <20211201073308.1003945-1-yoshihiro.shimoda.uh@renesas.com> <20211201073308.1003945-5-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20211201073308.1003945-5-yoshihiro.shimoda.uh@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 3 Dec 2021 17:24:02 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVHD05pLkdyBKfz-OCLqtPU+GKk6U68fscT8OMnXRzRPQ@mail.gmail.com>
+Message-ID: <CAMuHMdVHD05pLkdyBKfz-OCLqtPU+GKk6U68fscT8OMnXRzRPQ@mail.gmail.com>
+Subject: Re: [PATCH v2 04/14] dt-bindings: serial: renesas,scif: Document
+ r8a779f0 bindings
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 1 Dec 2021 at 12:54, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
->
-> On Wed, Dec 1, 2021 at 12:42 AM Sam Protsenko
-> <semen.protsenko@linaro.org> wrote:
-> >
-> > USI control is now extracted to dedicated USI driver. Remove USI related
->
-> the dedicated
->
-> > code from serial driver to avoid conflicts and code duplication.
->
-> Would it break run-time bisectability?
-> If so, why is it not a problem?
->
+Hi Shimoda-san,
 
-It shouldn't. This patch is [3/5], and USI driver (which takes the
-control over the USI registers) is [2/5]. As for Device Tree, the only
-platform using "samsung,exynos850-uart" right now is Exynos Auto V9
-SADK (serial node is declared in exynosautov9.dtsi). I don't have
-Exynos Auto V9 datasheet, so I can't really add the USI node properly
-there, nor I can test that. I guess it should be done separately from
-this patch series.
-
-Chanho, Krzysztof:
-
-Guys, what are your thoughts on this? Basically with this patch series
-applied, Exynos Auto V9 serial might become not functional. New USI
-node should be added for UART case in Exynos Auto V9 dtsi (providing
-correct sysreg, SW_CONF offset, clocks, etc), and serial node should
-be encapsulated inside of that USI node. Also, USI node should be
-referenced and enabled in SADK dts, providing also "clkreq-on"
-property. More details can be found in [PATCH 1/5]. Do you think it's
-ok to take this series as is, and add that later? Because otherwise we
-might need to collaborate to add that Exynos Auto V9 enablement into
-this patch series, which might take more time...
-
-Thanks!
-
+On Wed, Dec 1, 2021 at 8:33 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> R-Car S4-8 (R8A779F0) SoC has the R-Car Gen4 compatible SCIF ports,
+> so document the SoC specific bindings.
 >
-> --
-> With Best Regards,
-> Andy Shevchenko
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Note that this no longer applies cleanly to tty/tty-next, due to
+commit 0836150c26c4028b ("dt-bindings: serial: renesas,scif: Make
+resets as a required property").
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
