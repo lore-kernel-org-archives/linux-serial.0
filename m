@@ -2,53 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B40FDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CCEC433FE
 	for <linux-serial@archiver.kernel.org>; Sat,  4 Dec 2021 19:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355507AbhLDUBe (ORCPT
+        id S1377409AbhLDUBg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 4 Dec 2021 15:01:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49452 "EHLO
+        Sat, 4 Dec 2021 15:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355510AbhLDUBd (ORCPT
+        with ESMTP id S1355599AbhLDUBd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Sat, 4 Dec 2021 15:01:33 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31440C061D5E
-        for <linux-serial@vger.kernel.org>; Sat,  4 Dec 2021 11:58:05 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id j3so13393596wrp.1
-        for <linux-serial@vger.kernel.org>; Sat, 04 Dec 2021 11:58:05 -0800 (PST)
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61F4C061D7F
+        for <linux-serial@vger.kernel.org>; Sat,  4 Dec 2021 11:58:06 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id k37-20020a05600c1ca500b00330cb84834fso7461051wms.2
+        for <linux-serial@vger.kernel.org>; Sat, 04 Dec 2021 11:58:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=E7NC5rxk5DlOvx/zxP8o5vuakyOw7kVWIeMVbE81m5w=;
-        b=G+/MPNAhAVSeXtvf1yjcsCIDcAKBLuH4j0/54WPvVanXFw5dnz8eP4eOjrxNg88Obd
-         2iPassLr0nW073SvV+Z4Y22USC7pYEoJe60vQxvUO7IY22OfdFOuOmggOsdS4QoXB6GA
-         pAQPimys0iFxVuZBpc4iSaa4ujkcDGTmVax6FT9xWhAWtOaBZu0HNymjGM8odiDhcRbg
-         Lj/UFO7nORUqPmjpvcSsclApb5lf6hJbtMBPSr9tGu1JVwPjhmGGWEA7kjFLxKnf1fq6
-         dLh+RPi383qLXryShJmcylWb2tL+l1ZwxGDGrucFZHLBGZ2CGtjH4E9eODfXn0JnBCqn
-         Hhzg==
+        bh=HbHXvXbJFpt3uJhKceFknK3GdQKOcc4a0UIjA9jf6ws=;
+        b=AC+gymsXevz7KzoeuWxQeclVpImljNlWqdijMtoi5LfEKFMnv/VZKzkhIJ0DnHHbIr
+         hl5Gc2ciT9Dg/wcamfjAYhKyUSAdmJ49S62AerArZ+dBWDnRY4jHSgn2IR+hgqfVhY45
+         VOxZMooHX7hGTfMV8wCi+r92Cf3yONE8zQbePc7T4PKv8oXRhGxr4RHchHaraDUX8afZ
+         2wtJ5MxhoaVNEq6D/VoCtRJAsBZJh8hW1c55+TPod0LE9OZFZEJWNOWUdZRpl/eModmg
+         fmf8VjlRhHAZF/xRl42J1ojNTgfoAYg2C3qKdkDusxy0EPW6d8tPl+VHDDQ3frlO0XEh
+         4RGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=E7NC5rxk5DlOvx/zxP8o5vuakyOw7kVWIeMVbE81m5w=;
-        b=YZI2UXmRt+k4RHUDd+Ggs1bWlgjpVj4egW7xcQq+ghfSmKnyEIeG+kAhR8lXP5MHI6
-         Chlad3GpAzxJIyFgljw+3UTRnEIScsP6pIKb9boT7A6mxojKzAhQ/VgnWY4lIMmfCjvb
-         hoF/TLnfzdYDUN7shh5mOu0q2ulL/sD8gjWeetkvkzq0GOXn9Pk2rh+7SqGLgsHm/NlQ
-         GYJxD2iW3pv+08wwZhd8cCo2vggBnCOAPH/2MqmG/pGhNPV+TXkFGHWzYo02IjO5TJfR
-         7/GgWIovlm+G3gRJfW/y14rJiCwE+bqyibHGdUAQOrrdR6r1X4vpPSXPh709g0cwoPl/
-         yw7A==
-X-Gm-Message-State: AOAM5336KnPE2UF5DxSseyFSEftVhncafF0w1KVpATBENX7ZvQd9DwHJ
-        6nz7NDvJxJuDLG+DIzGGGlGd3A==
-X-Google-Smtp-Source: ABdhPJya5K8Zgr3TUaXpVf2rPWA4ORLjqmYrdOMIL4M+NBSyiJn+kuCh/bjCmjp0n75ylo11psr+pg==
-X-Received: by 2002:a5d:456e:: with SMTP id a14mr30352834wrc.256.1638647883782;
-        Sat, 04 Dec 2021 11:58:03 -0800 (PST)
+        bh=HbHXvXbJFpt3uJhKceFknK3GdQKOcc4a0UIjA9jf6ws=;
+        b=m5OO9HLW6mh2Atu5PuEo/OK+RLSlmkIMZzAwmdu6W3oYB+GCD6LO3EoKQjZD+/mayH
+         KJGh8XvexGdBxqeO52Ekp1mQdRVNPiYdlwHaLLutsChL08NZGm+vok/olwZm/qrFzq1c
+         sWFbhV4uC6K478FYjXN33CZyuTpTMBQdgVuWY/M6rV5v0W1bxaLs30u12SVVwDvKtdzN
+         LwaZEGctgP/e/s0CM7n5G999SqRVI2s6qFonYToTSgct1xwz+RV4/Puny7NnPcmnRdDl
+         BVaqGcXo5FsphVFTeljrVoT8p4/E3itW0Z1ZwgRuuOr0GjTYDQOMx4FeyQ+Avamwa8aJ
+         gz0g==
+X-Gm-Message-State: AOAM530MzoGZgBVM5s4UwOMKPa3xP0mKIa0hjBRGO59AvrbohNZ0ZqDi
+        2IZb6xe98vcqFxPQYUxuK3XfDg==
+X-Google-Smtp-Source: ABdhPJyi9w6bVaeVo8QNdkjq0qyMoWP8FGierDullgzMXBvH7kDq2VovUQG2k16H1F3vgjNQerbmUQ==
+X-Received: by 2002:a05:600c:104b:: with SMTP id 11mr26116957wmx.54.1638647885257;
+        Sat, 04 Dec 2021 11:58:05 -0800 (PST)
 Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id u15sm5741150wmq.13.2021.12.04.11.58.03
+        by smtp.gmail.com with ESMTPSA id c10sm7162328wrb.81.2021.12.04.11.58.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Dec 2021 11:58:03 -0800 (PST)
+        Sat, 04 Dec 2021 11:58:04 -0800 (PST)
 From:   Sam Protsenko <semen.protsenko@linaro.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -60,9 +60,9 @@ Cc:     Jaewon Kim <jaewon02.kim@samsung.com>,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v3 3/5] tty: serial: samsung: Remove USI initialization
-Date:   Sat,  4 Dec 2021 21:57:55 +0200
-Message-Id: <20211204195757.8600-4-semen.protsenko@linaro.org>
+Subject: [PATCH v3 4/5] tty: serial: samsung: Enable console as module
+Date:   Sat,  4 Dec 2021 21:57:56 +0200
+Message-Id: <20211204195757.8600-5-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211204195757.8600-1-semen.protsenko@linaro.org>
 References: <20211204195757.8600-1-semen.protsenko@linaro.org>
@@ -72,134 +72,98 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-USI control is now extracted to the dedicated USI driver. Remove USI
-related code from serial driver to avoid conflicts and code duplication.
+Enable serial driver to be built as a module. To do so, init the console
+support on driver/module load instead of using console_initcall().
+
+Inspired by commit 87a0b9f98ac5 ("tty: serial: meson: enable console as
+module").
 
 Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 ---
 Changes in v3:
-  - Spell check fixes in commit message
+  - Removed the USI mentioning from commit message
 
 Changes in v2:
-  - (none)
+  - Added error path handling in samsung_serial_init()
+  - Added console unregister in samsung_serial_exit()
 
- drivers/tty/serial/samsung_tty.c | 36 ++++----------------------------
- include/linux/serial_s3c.h       |  9 --------
- 2 files changed, 4 insertions(+), 41 deletions(-)
+ drivers/tty/serial/Kconfig       |  2 +-
+ drivers/tty/serial/samsung_tty.c | 36 ++++++++++++++++++++++++++++----
+ 2 files changed, 33 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index fc543ac97c13..0e5ccb25bdb1 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -263,7 +263,7 @@ config SERIAL_SAMSUNG_UARTS
+ 
+ config SERIAL_SAMSUNG_CONSOLE
+ 	bool "Support for console on Samsung SoC serial port"
+-	depends on SERIAL_SAMSUNG=y
++	depends on SERIAL_SAMSUNG
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+ 	help
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index ca084c10d0bb..f986a9253dc8 100644
+index f986a9253dc8..61ccb359620a 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -65,7 +65,6 @@ enum s3c24xx_port_type {
- struct s3c24xx_uart_info {
- 	char			*name;
- 	enum s3c24xx_port_type	type;
--	bool			has_usi;
- 	unsigned int		port_type;
- 	unsigned int		fifosize;
- 	unsigned long		rx_fifomask;
-@@ -1357,28 +1356,6 @@ static int apple_s5l_serial_startup(struct uart_port *port)
- 	return ret;
+@@ -1715,15 +1715,21 @@ s3c24xx_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 
+ static struct console s3c24xx_serial_console;
+ 
+-static int __init s3c24xx_serial_console_init(void)
++static void __init s3c24xx_serial_register_console(void)
+ {
+ 	register_console(&s3c24xx_serial_console);
+-	return 0;
  }
+-console_initcall(s3c24xx_serial_console_init);
++
++static void s3c24xx_serial_unregister_console(void)
++{
++	if (s3c24xx_serial_console.flags & CON_ENABLED)
++		unregister_console(&s3c24xx_serial_console);
++}
  
--static void exynos_usi_init(struct uart_port *port)
--{
--	struct s3c24xx_uart_port *ourport = to_ourport(port);
--	struct s3c24xx_uart_info *info = ourport->info;
--	unsigned int val;
--
--	if (!info->has_usi)
--		return;
--
--	/* Clear the software reset of USI block (it's set at startup) */
--	val = rd_regl(port, USI_CON);
--	val &= ~USI_CON_RESET_MASK;
--	wr_regl(port, USI_CON, val);
--	udelay(1);
--
--	/* Continuously provide the clock to USI IP w/o gating (for Rx mode) */
--	val = rd_regl(port, USI_OPTION);
--	val &= ~USI_OPTION_HWACG_MASK;
--	val |= USI_OPTION_HWACG_CLKREQ_ON;
--	wr_regl(port, USI_OPTION, val);
--}
--
- /* power power management control */
- 
- static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
-@@ -1405,8 +1382,6 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
- 
- 		if (!IS_ERR(ourport->baudclk))
- 			clk_prepare_enable(ourport->baudclk);
--
--		exynos_usi_init(port);
- 		break;
- 	default:
- 		dev_err(port->dev, "s3c24xx_serial: unknown pm %d\n", level);
-@@ -2130,8 +2105,6 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 	if (ret)
- 		pr_warn("uart: failed to enable baudclk\n");
- 
--	exynos_usi_init(port);
--
- 	/* Keep all interrupts masked and cleared */
- 	switch (ourport->info->type) {
- 	case TYPE_S3C6400:
-@@ -2780,11 +2753,10 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ #define S3C24XX_SERIAL_CONSOLE &s3c24xx_serial_console
+ #else
++static inline void s3c24xx_serial_register_console(void) { }
++static inline void s3c24xx_serial_unregister_console(void) { }
+ #define S3C24XX_SERIAL_CONSOLE NULL
  #endif
  
- #if defined(CONFIG_ARCH_EXYNOS)
--#define EXYNOS_COMMON_SERIAL_DRV_DATA(_has_usi)			\
-+#define EXYNOS_COMMON_SERIAL_DRV_DATA()				\
- 	.info = &(struct s3c24xx_uart_info) {			\
- 		.name		= "Samsung Exynos UART",	\
- 		.type		= TYPE_S3C6400,			\
--		.has_usi	= _has_usi,			\
- 		.port_type	= PORT_S3C6400,			\
- 		.has_divslot	= 1,				\
- 		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
-@@ -2805,17 +2777,17 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 	}							\
- 
- static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA(false),
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(),
- 	.fifosize = { 256, 64, 16, 16 },
+@@ -2898,7 +2904,29 @@ static struct platform_driver samsung_serial_driver = {
+ 	},
  };
  
- static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA(false),
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(),
- 	.fifosize = { 64, 256, 16, 256 },
- };
+-module_platform_driver(samsung_serial_driver);
++static int __init samsung_serial_init(void)
++{
++	int ret;
++
++	s3c24xx_serial_register_console();
++
++	ret = platform_driver_register(&samsung_serial_driver);
++	if (ret) {
++		s3c24xx_serial_unregister_console();
++		return ret;
++	}
++
++	return 0;
++}
++
++static void __exit samsung_serial_exit(void)
++{
++	platform_driver_unregister(&samsung_serial_driver);
++	s3c24xx_serial_unregister_console();
++}
++
++module_init(samsung_serial_init);
++module_exit(samsung_serial_exit);
  
- static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA(true),
-+	EXYNOS_COMMON_SERIAL_DRV_DATA(),
- 	.fifosize = { 256, 64, 64, 64 },
- };
- 
-diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
-index cf0de4a86640..f6c3323fc4c5 100644
---- a/include/linux/serial_s3c.h
-+++ b/include/linux/serial_s3c.h
-@@ -27,15 +27,6 @@
- #define S3C2410_UERSTAT	  (0x14)
- #define S3C2410_UFSTAT	  (0x18)
- #define S3C2410_UMSTAT	  (0x1C)
--#define USI_CON		  (0xC4)
--#define USI_OPTION	  (0xC8)
--
--#define USI_CON_RESET			(1<<0)
--#define USI_CON_RESET_MASK		(1<<0)
--
--#define USI_OPTION_HWACG_CLKREQ_ON	(1<<1)
--#define USI_OPTION_HWACG_CLKSTOP_ON	(1<<2)
--#define USI_OPTION_HWACG_MASK		(3<<1)
- 
- #define S3C2410_LCON_CFGMASK	  ((0xF<<3)|(0x3))
- 
+ #ifdef CONFIG_SERIAL_SAMSUNG_CONSOLE
+ /*
 -- 
 2.30.2
 
