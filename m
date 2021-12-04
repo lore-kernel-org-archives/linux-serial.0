@@ -2,217 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB1EC433F5
-	for <linux-serial@archiver.kernel.org>; Sat,  4 Dec 2021 03:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1488C433EF
+	for <linux-serial@archiver.kernel.org>; Sat,  4 Dec 2021 06:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347399AbhLDDp4 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Dec 2021 22:45:56 -0500
-Received: from mga03.intel.com ([134.134.136.65]:45395 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347077AbhLDDp4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Dec 2021 22:45:56 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10187"; a="237031964"
-X-IronPort-AV: E=Sophos;i="5.87,286,1631602800"; 
-   d="scan'208";a="237031964"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 19:42:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,286,1631602800"; 
-   d="scan'208";a="513973265"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 03 Dec 2021 19:42:30 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mtLwT-000IPs-Kc; Sat, 04 Dec 2021 03:42:29 +0000
-Date:   Sat, 04 Dec 2021 11:41:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 13a5fad39a7b781c21d9528bcf52a5f5babafe99
-Message-ID: <61aae377.ppfWEv6BrIR8fuwo%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S238976AbhLDGOM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 4 Dec 2021 01:14:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233865AbhLDGOK (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 4 Dec 2021 01:14:10 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACCAC061751;
+        Fri,  3 Dec 2021 22:10:45 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id n15so5718314qta.0;
+        Fri, 03 Dec 2021 22:10:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2y+NRJ7svIZ+rgMQarZRA08rcjgtgtlNK005rFTBnO8=;
+        b=oCW5h9YbVD3xWTwD/r6FDGB6pVZSXrsNXcDZ4vToSs318kVcBqr+5LzUuE7h56xI/c
+         mHULahNy/eanaoCEOKfH6xl8snMIGR2ucioL3GrL3SiBuh+RpE9rm7l9m23p2Cyn5Bxn
+         IeVhTKyS9ykH27GJizJLOYIg8BEYdqllpsaSYFnlGtJFq7va+Iho7KK4jqBKtsu/525f
+         cgxAwG2YFVKgDMLlcQMySH7Nsm5sfhXA6GzxMR2pmE2NjiblDcuK4qrypThhf9bG6NAV
+         Igag/JHukF8iwV0d2fRZTFUq9J8WkVTsLcpmNWedogWDVD5QSkYaKeqowVHO3y5GWIhC
+         FvSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2y+NRJ7svIZ+rgMQarZRA08rcjgtgtlNK005rFTBnO8=;
+        b=KJ+KPfFq2C9XC6TF+oTUWl+hZeDYBgDNW3IpysVaBoThWa+ODHgXfhqZEpd+c4bMRS
+         h7wJe42VzD9PzOOEP6N5VZtjoiCV++vyl0zVA12MBDRsA4A8cd2QxE7PfOO3FulQxCaP
+         1ktuf0scIZpEd9oXO40M7f+O4dj7+ttMLLicZykLbhHnuegoDHKtHP3liuEZRm6NAX/M
+         zcBcqfpPSPdJUg/VzXiP6KRy5SeYuWCRsubq2HUCYrLjSKoclK5/UuLALEdN8BC0DCuO
+         gpadJpOG9FHnChEHq7DjGpuj+XhWWnRbQl/FaXosPqux/zva+yhhaHNruZ4I00XXbQy8
+         L9ag==
+X-Gm-Message-State: AOAM532Q55TY6WuOznVN6jpOgqP20rrGXz2zDRCfsUFvTUit2JIcCidg
+        cEp0vwhxfirbYoacC+P2y3k=
+X-Google-Smtp-Source: ABdhPJzbdfO1SVtq8ihUjdqgA3IO6zUvebShhKS4AAh4E8/m5BHSo6LWcukk6nx/eXMq14zfFDvwzQ==
+X-Received: by 2002:ac8:5fc5:: with SMTP id k5mr25847656qta.502.1638598244298;
+        Fri, 03 Dec 2021 22:10:44 -0800 (PST)
+Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
+        by smtp.gmail.com with ESMTPSA id l1sm3500913qkp.125.2021.12.03.22.10.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Dec 2021 22:10:43 -0800 (PST)
+From:   Jesse Taube <mr.bossman075@gmail.com>
+X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
+To:     linux-imx@nxp.com
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, ulf.hansson@linaro.org, aisheng.dong@nxp.com,
+        stefan@agner.ch, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
+        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
+        adrian.hunter@intel.com, jirislaby@kernel.org,
+        giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, Mr.Bossman075@gmail.com,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v4 00/13] Add initial support for the i.MXRTxxxx SoC family starting from i.IMXRT1050 SoC.
+Date:   Sat,  4 Dec 2021 01:10:29 -0500
+Message-Id: <20211204061042.1248028-1-Mr.Bossman075@gmail.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 13a5fad39a7b781c21d9528bcf52a5f5babafe99  tty: mips_ejtag_fdc: Make use of the helper function kthread_run_on_cpu()
+This patchset contains:
+- i.MXRT10xx family infrastructure
+- i.MXRT1050 pinctrl driver adaption
+- i.MXRT1050 clock driver adaption
+- i.MXRT1050 sd-card driver adaption
+- i.MXRT1050 uart driver adaption
+- i.MXRT1050-evk basic support
 
-elapsed time: 728m
+The i.MXRTxxxx family that could have support by Linux actually spreads
+from i.MXRT1020 to i.MXRT1170 with the first one supporting 1 USB OTG &
+100M ethernet with a cortex-M7@500Mhz up to the latter with i.MXRT1170
+with cortex-M7@1Ghz and cortex-M4@400Mhz, 2MB of internal SRAM, 2D GPU,
+2x 1Gb and 1x 100Mb ENET. The i.MXRT family is NXP's answer to
+STM32F7XX, as it uses only simple SDRAM, it gives the chance of a 4 or
+less layer PCBs. Seeing that these chips are comparable to the
+STM32F7XXs which have linux ported to them it seems reasonable to add
+support for them.
 
-configs tested: 155
-configs skipped: 3
+Giving Linux support to this family should ease the development process,
+instead of using a RTOS they could use Embedded Linux allowing for more
+portability, ease of design and will broaden the scope of people using
+embedded linux.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+The EVK has very little SDRAM, generally 32MB starting from
+i.MXRT1020(the lowest P/N), although the i.MXRT1160/70 provide instead
+64MB of SDRAM for more functionality.
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm                              allyesconfig
-arm                              allmodconfig
-arm64                               defconfig
-mips                 randconfig-c004-20211203
-i386                 randconfig-c001-20211203
-xtensa                generic_kc705_defconfig
-nds32                               defconfig
-mips                      pic32mzda_defconfig
-arm64                            alldefconfig
-powerpc                          g5_defconfig
-powerpc                    adder875_defconfig
-m68k                       m5208evb_defconfig
-powerpc                      arches_defconfig
-arm                         shannon_defconfig
-powerpc                 mpc8540_ads_defconfig
-mips                      fuloong2e_defconfig
-sh                        edosk7760_defconfig
-powerpc                     tqm8555_defconfig
-openrisc                    or1ksim_defconfig
-powerpc                  mpc866_ads_defconfig
-sh                          kfr2r09_defconfig
-mips                           mtx1_defconfig
-nios2                               defconfig
-mips                     cu1830-neo_defconfig
-powerpc                 mpc834x_itx_defconfig
-sh                          rsk7269_defconfig
-mips                        jmr3927_defconfig
-arc                        nsim_700_defconfig
-arm                         s5pv210_defconfig
-um                           x86_64_defconfig
-mips                           xway_defconfig
-arm                            xcep_defconfig
-powerpc                       holly_defconfig
-powerpc                      ppc40x_defconfig
-h8300                            allyesconfig
-arm                         axm55xx_defconfig
-arm                          gemini_defconfig
-mips                       bmips_be_defconfig
-powerpc                     mpc83xx_defconfig
-powerpc                 mpc836x_rdk_defconfig
-arm                         at91_dt_defconfig
-powerpc                     powernv_defconfig
-powerpc                      cm5200_defconfig
-sh                         microdev_defconfig
-powerpc                 canyonlands_defconfig
-arm                      jornada720_defconfig
-mips                         tb0226_defconfig
-arm                       multi_v4t_defconfig
-sh                            migor_defconfig
-arm                          simpad_defconfig
-arm                         bcm2835_defconfig
-powerpc                 mpc8272_ads_defconfig
-arc                      axs103_smp_defconfig
-arm                         palmz72_defconfig
-xtensa                       common_defconfig
-sh                         ap325rxa_defconfig
-arm                         socfpga_defconfig
-mips                          rm200_defconfig
-mips                            gpr_defconfig
-h8300                               defconfig
-mips                         rt305x_defconfig
-sh                           se7712_defconfig
-arm                        mvebu_v5_defconfig
-sparc                       sparc32_defconfig
-sh                           se7751_defconfig
-nios2                            allyesconfig
-arm                          ep93xx_defconfig
-powerpc                       eiger_defconfig
-arm                       aspeed_g4_defconfig
-sparc                            alldefconfig
-mips                          malta_defconfig
-powerpc                        warp_defconfig
-microblaze                          defconfig
-arm                  randconfig-c002-20211203
-arm                  randconfig-c002-20211204
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a006-20211203
-x86_64               randconfig-a005-20211203
-x86_64               randconfig-a001-20211203
-x86_64               randconfig-a002-20211203
-x86_64               randconfig-a004-20211203
-x86_64               randconfig-a003-20211203
-i386                 randconfig-a001-20211203
-i386                 randconfig-a005-20211203
-i386                 randconfig-a002-20211203
-i386                 randconfig-a003-20211203
-i386                 randconfig-a006-20211203
-i386                 randconfig-a004-20211203
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
+At the moment we do not support XIP for either u-boot or Linux but it
+should be done in the future. XIP will also save SDRAM.
 
-clang tested configs:
-arm                  randconfig-c002-20211203
-x86_64               randconfig-c007-20211203
-riscv                randconfig-c006-20211203
-mips                 randconfig-c004-20211203
-i386                 randconfig-c001-20211203
-powerpc              randconfig-c003-20211203
-s390                 randconfig-c005-20211203
-x86_64               randconfig-a016-20211203
-x86_64               randconfig-a011-20211203
-x86_64               randconfig-a013-20211203
-x86_64               randconfig-a014-20211203
-x86_64               randconfig-a015-20211203
-x86_64               randconfig-a012-20211203
-i386                 randconfig-a016-20211203
-i386                 randconfig-a013-20211203
-i386                 randconfig-a011-20211203
-i386                 randconfig-a014-20211203
-i386                 randconfig-a012-20211203
-i386                 randconfig-a015-20211203
-hexagon              randconfig-r045-20211204
-hexagon              randconfig-r041-20211204
-hexagon              randconfig-r045-20211203
-s390                 randconfig-r044-20211203
-hexagon              randconfig-r041-20211203
-riscv                randconfig-r042-20211203
+Another interesting fact is the amount of internal SRAM, as the P/N
+increases the SRAM will reach up to 2MB(some could be for cache and
+some would be for video).
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Also, some parts have embed flash of 4MB that can be used for
+u-boot/Linux, if both correctly sized it will leave the SDRAM free.
+
+External flash can be Quad SPI and HyperFlash, so throughput would be
+decent.
+
+The i.MXRT11xx series supports MIPI interface too.
+
+The family in general provide CAN bus, audio I/O, 1 or more
+USB(otg/host), 1 or more 100Mb/1Gb ethernet, camera interface, sd-card.
+
+All this can be used for simple GUIs, web-servers, point-of-sale
+stations, etc.
+
+Giulio Benetti (5):
+  ARM: imx: add initial support for i.MXRT10xx family
+  pinctrl: freescale: Add i.MXRT1050 pinctrl driver support
+  dt-bindings: imx: Add clock binding for i.MXRT1050
+  ARM: dts: imx: add i.MXRT1050-EVK support
+  ARM: imxrt1050_defconfig: add i.MXRT1050 defconfig
+
+Jesse Taube (8):
+  dt-bindings: pinctrl: add i.MXRT1050 pinctrl binding doc
+  ARM: dts: imxrt1050-pinfunc: Add pinctrl binding header
+  dt-bindings: clock: imx: Add documentation for i.MXRT clock
+  clk: imx: Add initial support for i.MXRT clock driver
+  dt-bindings: serial: fsl-lpuart: add i.MXRT compatible
+  tty: serial: fsl_lpuart: add i.MXRT support
+  dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT compatible string
+  mmc: sdhci-esdhc-imx: Add sdhc support for i.MXRT series
+
+ .../bindings/clock/imxrt-clock.yaml           |  67 ++
+ .../bindings/mmc/fsl-imx-esdhc.yaml           |   1 +
+ .../bindings/pinctrl/fsl,imxrt1050.yaml       |  79 ++
+ .../bindings/serial/fsl-lpuart.yaml           |   1 +
+ arch/arm/boot/dts/Makefile                    |   2 +
+ arch/arm/boot/dts/imxrt1050-evk.dts           |  72 ++
+ arch/arm/boot/dts/imxrt1050-pinfunc.h         | 993 ++++++++++++++++++
+ arch/arm/boot/dts/imxrt1050.dtsi              | 154 +++
+ arch/arm/configs/imxrt_defconfig              |  35 +
+ arch/arm/mach-imx/Kconfig                     |   7 +
+ arch/arm/mach-imx/Makefile                    |   2 +
+ arch/arm/mach-imx/mach-imxrt.c                |  19 +
+ drivers/clk/imx/Kconfig                       |   5 +
+ drivers/clk/imx/Makefile                      |   1 +
+ drivers/clk/imx/clk-imxrt1050.c               | 156 +++
+ drivers/mmc/host/sdhci-esdhc-imx.c            |   4 +
+ drivers/pinctrl/freescale/Kconfig             |   7 +
+ drivers/pinctrl/freescale/Makefile            |   1 +
+ drivers/pinctrl/freescale/pinctrl-imxrt1050.c | 349 ++++++
+ drivers/tty/serial/fsl_lpuart.c               |   8 +
+ include/dt-bindings/clock/imxrt1050-clock.h   |  73 ++
+ 21 files changed, 2036 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/imxrt-clock.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/fsl,imxrt1050.yaml
+ create mode 100644 arch/arm/boot/dts/imxrt1050-evk.dts
+ create mode 100644 arch/arm/boot/dts/imxrt1050-pinfunc.h
+ create mode 100644 arch/arm/boot/dts/imxrt1050.dtsi
+ create mode 100644 arch/arm/configs/imxrt_defconfig
+ create mode 100644 arch/arm/mach-imx/mach-imxrt.c
+ create mode 100644 drivers/clk/imx/clk-imxrt1050.c
+ create mode 100644 drivers/pinctrl/freescale/pinctrl-imxrt1050.c
+ create mode 100644 include/dt-bindings/clock/imxrt1050-clock.h
+
+-- 
+2.34.0
+
