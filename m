@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1488C433EF
-	for <linux-serial@archiver.kernel.org>; Sat,  4 Dec 2021 06:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C96BC4321E
+	for <linux-serial@archiver.kernel.org>; Sat,  4 Dec 2021 06:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238976AbhLDGOM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 4 Dec 2021 01:14:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
+        id S240857AbhLDGOQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 4 Dec 2021 01:14:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233865AbhLDGOK (ORCPT
+        with ESMTP id S239814AbhLDGON (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 4 Dec 2021 01:14:10 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACCAC061751;
-        Fri,  3 Dec 2021 22:10:45 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id n15so5718314qta.0;
-        Fri, 03 Dec 2021 22:10:45 -0800 (PST)
+        Sat, 4 Dec 2021 01:14:13 -0500
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B70C061751;
+        Fri,  3 Dec 2021 22:10:48 -0800 (PST)
+Received: by mail-qt1-x829.google.com with SMTP id n15so5718404qta.0;
+        Fri, 03 Dec 2021 22:10:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2y+NRJ7svIZ+rgMQarZRA08rcjgtgtlNK005rFTBnO8=;
-        b=oCW5h9YbVD3xWTwD/r6FDGB6pVZSXrsNXcDZ4vToSs318kVcBqr+5LzUuE7h56xI/c
-         mHULahNy/eanaoCEOKfH6xl8snMIGR2ucioL3GrL3SiBuh+RpE9rm7l9m23p2Cyn5Bxn
-         IeVhTKyS9ykH27GJizJLOYIg8BEYdqllpsaSYFnlGtJFq7va+Iho7KK4jqBKtsu/525f
-         cgxAwG2YFVKgDMLlcQMySH7Nsm5sfhXA6GzxMR2pmE2NjiblDcuK4qrypThhf9bG6NAV
-         Igag/JHukF8iwV0d2fRZTFUq9J8WkVTsLcpmNWedogWDVD5QSkYaKeqowVHO3y5GWIhC
-         FvSA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZZzll1NvlYUi9tw5UeTEbg0jqNcXl/cAUbiZhgavzag=;
+        b=Q4nSugKwo/e7P4oirQJWNn4CEBMcQvnIKD3q5wttbN1uHG/J7kPCIVzzAyy83R4Jj2
+         N8gARBqv5ZKnu3lepAX9Imp+Wx92Ljy5m/UK4AAmT7dsc63k6AJZa+4WgIDPlr1Y0slG
+         qjT/tTVlLTWRqu/egqfgBzmIEdkyL0d894FV2lytfLMel3CoIq3xuT0dub1kNCT9Bja3
+         Q7AVrRg4D00jKL4+6HbCpgmcQMdFD/Huc4c7RwQj65Uj8jd3CgaWcTSNZ8vuGO7rX0Jt
+         av6Ebu2FjQL3E6K1kmDmPxO3Oil/moKaRxY3u5ZgIOQDpZkWUvQxrtmVuE5Gy6KzfXYu
+         auTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2y+NRJ7svIZ+rgMQarZRA08rcjgtgtlNK005rFTBnO8=;
-        b=KJ+KPfFq2C9XC6TF+oTUWl+hZeDYBgDNW3IpysVaBoThWa+ODHgXfhqZEpd+c4bMRS
-         h7wJe42VzD9PzOOEP6N5VZtjoiCV++vyl0zVA12MBDRsA4A8cd2QxE7PfOO3FulQxCaP
-         1ktuf0scIZpEd9oXO40M7f+O4dj7+ttMLLicZykLbhHnuegoDHKtHP3liuEZRm6NAX/M
-         zcBcqfpPSPdJUg/VzXiP6KRy5SeYuWCRsubq2HUCYrLjSKoclK5/UuLALEdN8BC0DCuO
-         gpadJpOG9FHnChEHq7DjGpuj+XhWWnRbQl/FaXosPqux/zva+yhhaHNruZ4I00XXbQy8
-         L9ag==
-X-Gm-Message-State: AOAM532Q55TY6WuOznVN6jpOgqP20rrGXz2zDRCfsUFvTUit2JIcCidg
-        cEp0vwhxfirbYoacC+P2y3k=
-X-Google-Smtp-Source: ABdhPJzbdfO1SVtq8ihUjdqgA3IO6zUvebShhKS4AAh4E8/m5BHSo6LWcukk6nx/eXMq14zfFDvwzQ==
-X-Received: by 2002:ac8:5fc5:: with SMTP id k5mr25847656qta.502.1638598244298;
-        Fri, 03 Dec 2021 22:10:44 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZZzll1NvlYUi9tw5UeTEbg0jqNcXl/cAUbiZhgavzag=;
+        b=e/OEMxaNv0AcNUZOfx/+hqead2q5t2TwDaenbIgvZ0fTpQQkGwtd6LFGbSAjRVFdf3
+         owPFDcF770eG7kJb178xBWwXgA1VeXEvirzXdTz9g9DPfMfpaKGrvCo5sgbWg+1E+WiP
+         uFxldgaI8Qm27r1CSMquzGjhij61N+S8S2ArHg5ge7Wo6RFItISGWda8o/tws6MSd3G5
+         +JyizPOQYE1M2CUkFdr5ukSFrldYiS7wXh1KWO8ZTsNUpI6Uk5+b5NZ748EJVpRZlbVU
+         yFe+pRQXnvmgNJF/G7oh+tc9t541EsSKOld2gI+uYiv4YzANL7twkllIDes9Mbah56Ok
+         ulKA==
+X-Gm-Message-State: AOAM532/mdbWUAp/gzezRvd3gazOvKfsYU9Bh9O+1ZjwgoGaWbGUhwyc
+        2z38B3ql1GuxHX81EkAYldE=
+X-Google-Smtp-Source: ABdhPJwBe+Bo01JmYoEZJB0UR+he5xjzJib62CqZBZJG4oBKSdY6RlYb5BGngvmTZF7xMc1zlMWRlw==
+X-Received: by 2002:a05:622a:148:: with SMTP id v8mr25636973qtw.459.1638598247653;
+        Fri, 03 Dec 2021 22:10:47 -0800 (PST)
 Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
-        by smtp.gmail.com with ESMTPSA id l1sm3500913qkp.125.2021.12.03.22.10.42
+        by smtp.gmail.com with ESMTPSA id l1sm3500913qkp.125.2021.12.03.22.10.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Dec 2021 22:10:43 -0800 (PST)
+        Fri, 03 Dec 2021 22:10:47 -0800 (PST)
 From:   Jesse Taube <mr.bossman075@gmail.com>
 X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
 To:     linux-imx@nxp.com
@@ -63,115 +63,128 @@ Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
         linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v4 00/13] Add initial support for the i.MXRTxxxx SoC family starting from i.IMXRT1050 SoC.
-Date:   Sat,  4 Dec 2021 01:10:29 -0500
-Message-Id: <20211204061042.1248028-1-Mr.Bossman075@gmail.com>
+        linux-serial@vger.kernel.org,
+        Jesse Taube <mr.bossman075@gmail.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 02/13] dt-bindings: pinctrl: add i.MXRT1050 pinctrl binding doc
+Date:   Sat,  4 Dec 2021 01:10:31 -0500
+Message-Id: <20211204061042.1248028-3-Mr.Bossman075@gmail.com>
 X-Mailer: git-send-email 2.34.0
+In-Reply-To: <20211204061042.1248028-1-Mr.Bossman075@gmail.com>
+References: <20211204061042.1248028-1-Mr.Bossman075@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patchset contains:
-- i.MXRT10xx family infrastructure
-- i.MXRT1050 pinctrl driver adaption
-- i.MXRT1050 clock driver adaption
-- i.MXRT1050 sd-card driver adaption
-- i.MXRT1050 uart driver adaption
-- i.MXRT1050-evk basic support
+From: Jesse Taube <mr.bossman075@gmail.com>
 
-The i.MXRTxxxx family that could have support by Linux actually spreads
-from i.MXRT1020 to i.MXRT1170 with the first one supporting 1 USB OTG &
-100M ethernet with a cortex-M7@500Mhz up to the latter with i.MXRT1170
-with cortex-M7@1Ghz and cortex-M4@400Mhz, 2MB of internal SRAM, 2D GPU,
-2x 1Gb and 1x 100Mb ENET. The i.MXRT family is NXP's answer to
-STM32F7XX, as it uses only simple SDRAM, it gives the chance of a 4 or
-less layer PCBs. Seeing that these chips are comparable to the
-STM32F7XXs which have linux ported to them it seems reasonable to add
-support for them.
+Add i.MXRT1050 pinctrl binding doc
 
-Giving Linux support to this family should ease the development process,
-instead of using a RTOS they could use Embedded Linux allowing for more
-portability, ease of design and will broaden the scope of people using
-embedded linux.
-
-The EVK has very little SDRAM, generally 32MB starting from
-i.MXRT1020(the lowest P/N), although the i.MXRT1160/70 provide instead
-64MB of SDRAM for more functionality.
-
-At the moment we do not support XIP for either u-boot or Linux but it
-should be done in the future. XIP will also save SDRAM.
-
-Another interesting fact is the amount of internal SRAM, as the P/N
-increases the SRAM will reach up to 2MB(some could be for cache and
-some would be for video).
-
-Also, some parts have embed flash of 4MB that can be used for
-u-boot/Linux, if both correctly sized it will leave the SDRAM free.
-
-External flash can be Quad SPI and HyperFlash, so throughput would be
-decent.
-
-The i.MXRT11xx series supports MIPI interface too.
-
-The family in general provide CAN bus, audio I/O, 1 or more
-USB(otg/host), 1 or more 100Mb/1Gb ethernet, camera interface, sd-card.
-
-All this can be used for simple GUIs, web-servers, point-of-sale
-stations, etc.
-
-Giulio Benetti (5):
-  ARM: imx: add initial support for i.MXRT10xx family
-  pinctrl: freescale: Add i.MXRT1050 pinctrl driver support
-  dt-bindings: imx: Add clock binding for i.MXRT1050
-  ARM: dts: imx: add i.MXRT1050-EVK support
-  ARM: imxrt1050_defconfig: add i.MXRT1050 defconfig
-
-Jesse Taube (8):
-  dt-bindings: pinctrl: add i.MXRT1050 pinctrl binding doc
-  ARM: dts: imxrt1050-pinfunc: Add pinctrl binding header
-  dt-bindings: clock: imx: Add documentation for i.MXRT clock
-  clk: imx: Add initial support for i.MXRT clock driver
-  dt-bindings: serial: fsl-lpuart: add i.MXRT compatible
-  tty: serial: fsl_lpuart: add i.MXRT support
-  dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT compatible string
-  mmc: sdhci-esdhc-imx: Add sdhc support for i.MXRT series
-
- .../bindings/clock/imxrt-clock.yaml           |  67 ++
- .../bindings/mmc/fsl-imx-esdhc.yaml           |   1 +
- .../bindings/pinctrl/fsl,imxrt1050.yaml       |  79 ++
- .../bindings/serial/fsl-lpuart.yaml           |   1 +
- arch/arm/boot/dts/Makefile                    |   2 +
- arch/arm/boot/dts/imxrt1050-evk.dts           |  72 ++
- arch/arm/boot/dts/imxrt1050-pinfunc.h         | 993 ++++++++++++++++++
- arch/arm/boot/dts/imxrt1050.dtsi              | 154 +++
- arch/arm/configs/imxrt_defconfig              |  35 +
- arch/arm/mach-imx/Kconfig                     |   7 +
- arch/arm/mach-imx/Makefile                    |   2 +
- arch/arm/mach-imx/mach-imxrt.c                |  19 +
- drivers/clk/imx/Kconfig                       |   5 +
- drivers/clk/imx/Makefile                      |   1 +
- drivers/clk/imx/clk-imxrt1050.c               | 156 +++
- drivers/mmc/host/sdhci-esdhc-imx.c            |   4 +
- drivers/pinctrl/freescale/Kconfig             |   7 +
- drivers/pinctrl/freescale/Makefile            |   1 +
- drivers/pinctrl/freescale/pinctrl-imxrt1050.c | 349 ++++++
- drivers/tty/serial/fsl_lpuart.c               |   8 +
- include/dt-bindings/clock/imxrt1050-clock.h   |  73 ++
- 21 files changed, 2036 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/imxrt-clock.yaml
+Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+V1->V2:
+* Replace macros with values
+* Add tab for last pinctrl value
+V2->V3:
+* Remove imxrt1050-evk container
+* Remove unnecessary handles
+* 2 space tabs to 4
+V3->V4:
+* Nothing done
+---
+ .../bindings/pinctrl/fsl,imxrt1050.yaml       | 79 +++++++++++++++++++
+ 1 file changed, 79 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pinctrl/fsl,imxrt1050.yaml
- create mode 100644 arch/arm/boot/dts/imxrt1050-evk.dts
- create mode 100644 arch/arm/boot/dts/imxrt1050-pinfunc.h
- create mode 100644 arch/arm/boot/dts/imxrt1050.dtsi
- create mode 100644 arch/arm/configs/imxrt_defconfig
- create mode 100644 arch/arm/mach-imx/mach-imxrt.c
- create mode 100644 drivers/clk/imx/clk-imxrt1050.c
- create mode 100644 drivers/pinctrl/freescale/pinctrl-imxrt1050.c
- create mode 100644 include/dt-bindings/clock/imxrt1050-clock.h
 
+diff --git a/Documentation/devicetree/bindings/pinctrl/fsl,imxrt1050.yaml b/Documentation/devicetree/bindings/pinctrl/fsl,imxrt1050.yaml
+new file mode 100644
+index 000000000000..1278f7293560
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pinctrl/fsl,imxrt1050.yaml
+@@ -0,0 +1,79 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pinctrl/fsl,imxrt1050.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Freescale IMXRT1050 IOMUX Controller
++
++maintainers:
++  - Giulio Benetti <giulio.benetti@benettiengineering.com>
++  - Jesse Taube <Mr.Bossman075@gmail.com>
++
++description:
++  Please refer to fsl,imx-pinctrl.txt and pinctrl-bindings.txt in this directory
++  for common binding part and usage.
++
++properties:
++  compatible:
++    const: fsl,imxrt1050-iomuxc
++
++  reg:
++    maxItems: 1
++
++# Client device subnode's properties
++patternProperties:
++  'grp$':
++    type: object
++    description:
++      Pinctrl node's client devices use subnodes for desired pin configuration.
++      Client device subnodes use below standard properties.
++
++    properties:
++      fsl,pins:
++        description:
++          each entry consists of 6 integers and represents the mux and config
++          setting for one pin. The first 5 integers <mux_reg conf_reg input_reg
++          mux_val input_val> are specified using a PIN_FUNC_ID macro, which can
++          be found in <include/dt-bindings/pinctrl/pins-imxrt1050.h>. The last
++          integer CONFIG is the pad setting value like pull-up on this pin. Please
++          refer to i.MXRT1050 Reference Manual for detailed CONFIG settings.
++        $ref: /schemas/types.yaml#/definitions/uint32-matrix
++        items:
++          items:
++            - description: |
++                "mux_reg" indicates the offset of mux register.
++            - description: |
++                "conf_reg" indicates the offset of pad configuration register.
++            - description: |
++                "input_reg" indicates the offset of select input register.
++            - description: |
++                "mux_val" indicates the mux value to be applied.
++            - description: |
++                "input_val" indicates the select input value to be applied.
++            - description: |
++                "pad_setting" indicates the pad configuration value to be applied.
++
++    required:
++      - fsl,pins
++
++    additionalProperties: false
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    iomuxc: iomuxc@401f8000 {
++        compatible = "fsl,imxrt1050-iomuxc";
++        reg = <0x401f8000 0x4000>;
++
++        pinctrl_lpuart1: lpuart1grp {
++            fsl,pins =
++              <0x0EC 0x2DC 0x000 0x2 0x0	0xf1>,
++              <0x0F0 0x2E0 0x000 0x2 0x0	0xf1>;
++        };
++    };
 -- 
 2.34.0
 
