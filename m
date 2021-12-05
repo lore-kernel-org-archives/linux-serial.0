@@ -2,132 +2,158 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C990C433F5
-	for <linux-serial@archiver.kernel.org>; Sun,  5 Dec 2021 12:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FFC5C4332F
+	for <linux-serial@archiver.kernel.org>; Sun,  5 Dec 2021 16:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233533AbhLEMIS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 5 Dec 2021 07:08:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49812 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233481AbhLEMIS (ORCPT
+        id S235876AbhLEQ1u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 5 Dec 2021 11:27:50 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:56296
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230143AbhLEQ1u (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 5 Dec 2021 07:08:18 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 5 Dec 2021 11:27:50 -0500
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC61D60FC5;
-        Sun,  5 Dec 2021 12:04:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8792BC341C1;
-        Sun,  5 Dec 2021 12:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1638705890;
-        bh=f7p5QXBOBHZzxvdGaceLzRNg7RlFFCrBhaw23iIZBro=;
-        h=Date:From:To:Cc:Subject:From;
-        b=aK4xzM0r6t8Ujnl2sz4jfkg60AQNvSZEgzZYEEI8TTjx1utjDGdP3A6AOG4Ie7+V/
-         VeYEu+yOp+kN2owXVhIDrf1I3z0+Ke7qL4CWOmIUmtcJOdzsUWabw3K2yiJc/R4YaB
-         gSZzEoio76ALbGqCMNwh3uGuG2wW3wnqpm4qI3N4=
-Date:   Sun, 5 Dec 2021 13:04:46 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 5.16-rc4
-Message-ID: <Yayq3iB/M3SJjvXK@kroah.com>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 092BD3F1EF
+        for <linux-serial@vger.kernel.org>; Sun,  5 Dec 2021 16:24:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1638721461;
+        bh=nbJ6HUZTiIpY2dLLhX4P5MU4lthn/nI4dze09TvpBwY=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=FrDbT8zY0mOFyOHsL8w0TZ5pRkPNLG8TTZ+bj4cDbsFgLWK7uno29d4JV3gnc6xyV
+         NoJXELsJuWLGni5DBIYvs7eErG7jKoAoisZ3H2xXhgSoGpU7v5PN25amCNS6JwBHEd
+         mxmF8JfRQAq1zYgTyUpWtrUzjgABTbUYIJUF8VUgFGxQOIZTNXtA30kIos0pc3Rsfe
+         RqFfNfdYJWl5OhRn+D7RE5/t8H00nTDOnqPog1LuXqSmezUHpHiOG/eisFw1NTU6Sp
+         WfQsvVfDywo4/wnnIzBgwJDO6OL9FHs57f3pA3Xn71/motLTuCp1kQA4RqaB+ouqeT
+         v72jFX2JFYXvw==
+Received: by mail-lf1-f72.google.com with SMTP id d26-20020ac244da000000b00417e1d212a2so2678754lfm.0
+        for <linux-serial@vger.kernel.org>; Sun, 05 Dec 2021 08:24:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nbJ6HUZTiIpY2dLLhX4P5MU4lthn/nI4dze09TvpBwY=;
+        b=i/Qg0OqgVUIGwFDuQEVFhyjs1ZPmP/nGLlab+KGUNUfHGjipnJJ8QwfIWhCpSSiypz
+         RUbxhVrEWsKOt0BfLNJkH4Byj69kE4FfzicdQP+XzvwB/S0L+GyChGOyyCs1xxwS+A6M
+         RW3J/zE1BxaNwRiFWLQYyjVmMKH5GPW25O+Bc+zBFv2dPQ3b3VaDJujEcnDIuXE6D30Z
+         6QrlJc9I8PJXrImPQCLl8IftZFscrbSMBiuCv+TQazDGgYrnFQmA55S+23lU03kW8uDr
+         DQE7wpyI6rCFItcFApSHin425JhvfK7/t+2NM3mYMx4jvebhy9wT8M5A8DyBq1iRoJYl
+         +Www==
+X-Gm-Message-State: AOAM532PZVcE+OKi32t6pZutNKPnc7GOnTlXXGZ8M8ntEg5bKGP9UElB
+        22wF1F1hIwWlBrvvdULz09Ig7iOB/jnU15DSsKMTtslem18cjaxcpiNYFzZ3GOzzEPwzcvGhoAL
+        JKvyqm54rwocR8G3QexDw4FxfBrgW4prmj91obtxb+A==
+X-Received: by 2002:a05:6512:1510:: with SMTP id bq16mr28585911lfb.628.1638721460392;
+        Sun, 05 Dec 2021 08:24:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzR/xCJPwKB2U8RdTOYNbXSPYhS9ES4jpT5RpBqrBntCiLjZSPJ+9rYbwp9ILjuquAir6a5Hw==
+X-Received: by 2002:a05:6512:1510:: with SMTP id bq16mr28585885lfb.628.1638721460121;
+        Sun, 05 Dec 2021 08:24:20 -0800 (PST)
+Received: from [192.168.3.67] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
+        by smtp.gmail.com with ESMTPSA id l5sm1102009ljh.66.2021.12.05.08.24.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Dec 2021 08:24:19 -0800 (PST)
+Message-ID: <fb31a159-6d2e-6c9a-439f-f19ef4fd4732@canonical.com>
+Date:   Sun, 5 Dec 2021 17:24:18 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v3 0/5] soc: samsung: Add USI driver
+Content-Language: en-US
+To:     Sam Protsenko <semen.protsenko@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jaewon Kim <jaewon02.kim@samsung.com>,
+        Chanho Park <chanho61.park@samsung.com>,
+        David Virag <virag.david003@gmail.com>,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org
+References: <20211204195757.8600-1-semen.protsenko@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20211204195757.8600-1-semen.protsenko@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 136057256686de39cc3a07c2e39ef6bc43003ff6:
+On 04/12/2021 20:57, Sam Protsenko wrote:
+> USIv2 IP-core provides selectable serial protocol (UART, SPI or
+> High-Speed I2C); only one can be chosen at a time. This series
+> implements USIv2 driver, which allows one to select particular USI
+> function in device tree, and also performs USI block initialization.
+> 
+> With that driver implemented, it's not needed to do USI initialization
+> in protocol drivers anymore, so that code is removed from the serial
+> driver.
+> 
+> Because USI driver is tristate (can be built as a module), serial driver
+> was reworked so it's possible to use its console part as a module too.
+> This way we can load serial driver module from user space and still have
+> serial console functional.
+> 
+> Design features:
+>   - "reg" property contains USI registers start address (0xc0 offset);
+>     it's used in the driver to access USI_CON and USI_OPTION registers.
+>     This way all USI initialization (reset, HWACG, etc) can be done in
+>     USIv2 driver separately, rather than duplicating that code over
+>     UART/SPI/I2C drivers
+>   - System Register (system controller node) and its SW_CONF register
+>     offset are provided in "samsung,sysreg" property; it's used to
+>     select USI function (protocol to be used)
+>   - USI function is specified in "samsung,mode" property; integer value
+>     is used to simplify parsing
+>   - there is "samsung,clkreq-on" bool property, which makes driver
+>     disable HWACG control (needed for UART to work properly)
+>   - PCLK and IPCLK clocks are both provided to USI node; apparently both
+>     need to be enabled to access USI registers
+>   - protocol nodes are embedded (as a child nodes) in USI node; it
+>     allows correct init order, and reflects HW properly
+>   - USI driver is a tristate: can be also useful from Android GKI
+>     requirements point of view
+>   - driver functions are implemented with further development in mind:
+>     - we might want to add some DebugFs interface later
+>     - some functions might need to be revealed to serial drivers with
+>       EXPORT_SYMBOL(), and provide somehow pointer to needed USI driver
+>       instance
+>     - another USI revisions could be added (like USIv1)
+> 
+> Changes in v3:
+>   - Renamed compatible from samsung,exynos-usi-v2 to samsung,exynos850-usi
+>   - Used clk_bulk API instead of handling each clock separately
+>   - Spell check fixes and coding style fixes
+>   - Improved dt-bindings doc
+> 
+> Changes in v2:
+>   - Renamed all 'usi_v2' wording to just 'usi' everywhere
+>   - Removed patches adding dependency on EXYNOS_USI for UART/I2C/SPI
+>     drivers
+>   - Added patch: "tty: serial: samsung: Fix console registration from
+>     module"
+>   - Combined dt-bindings doc and dt-bindings header patches
+>   - Reworked USI driver to be ready for USIv1 addition
+>   - Improved dt-bindings
+>   - Added USI_V2_NONE mode value
+> 
+> Sam Protsenko (5):
+>   dt-bindings: soc: samsung: Add Exynos USI bindings
+>   soc: samsung: Add USI driver
+>   tty: serial: samsung: Remove USI initialization
+>   tty: serial: samsung: Enable console as module
+>   tty: serial: samsung: Fix console registration from module
+> 
 
-  Linux 5.16-rc2 (2021-11-21 13:47:39 -0800)
+All this looks good to me. The serial driver changes should come
+together with this one (usi driver is now a dependency for them). If I
+am correct, mention this please in future cover letter (if there is such).
 
-are available in the Git repository at:
+I will still need DTSI changes for Exynos Auto v9 and confirmation that
+is not being used downstream and breaking DTB ABI is okay. Because this
+will be a non-bisctable and also a DTB ABI break.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.16-rc4
-
-for you to fetch changes up to 9cabe26e65a893afd5846908aa393bd283ab6609:
-
-  serial: 8250_bcm7271: UART errors after resuming from S2 (2021-12-03 14:14:49 +0100)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 5.16-rc4
-
-Here are some small TTY and Serial driver fixes for 5.16-rc4 to resolve
-a number of reported problems.
-
-They include:
-	- liteuart serial driver fixes
-	- 8250_pci serial driver fixes for pericom devices
-	- 8250 RTS line control fix while in RS-485 mode
-	- tegra serial driver fix
-	- msm_serial driver fix
-	- pl011 serial driver new id
-	- fsl_lpuart revert of broken change
-	- 8250_bcm7271 serial driver fix
-	- MAINTAINERS file update for rpmsg tty driver that came in
-	  5.16-rc1
-	- vgacon fix for reported problem
-
-All of these, except for the 8250_bcm7271 fix have been in linux-next
-with no reported problem.  The 8250_bcm7271 fix was added to the tree on
-Friday so no chance to be linux-next yet.  But it should be fine as the
-affected developers submitted it.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Al Cooper (1):
-      serial: 8250_bcm7271: UART errors after resuming from S2
-
-Alexander Stein (1):
-      Revert "tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP"
-
-Arnaud Pouliquen (1):
-      MAINTAINERS: Add rpmsg tty driver maintainer
-
-Ilia Sergachev (1):
-      serial: liteuart: Fix NULL pointer dereference in ->remove()
-
-Jay Dolan (2):
-      serial: 8250_pci: Fix ACCES entries in pci_serial_quirks array
-      serial: 8250_pci: rewrite pericom_do_set_divisor()
-
-Johan Hovold (4):
-      serial: core: fix transmit-buffer reset and memleak
-      serial: liteuart: fix use-after-free and memleak on unbind
-      serial: liteuart: fix minor-number leak on probe errors
-      serial: liteuart: relax compile-test dependencies
-
-Lukas Wunner (1):
-      serial: 8250: Fix RTS modem control while in rs485 mode
-
-Maciej W. Rozycki (1):
-      vgacon: Propagate console boot parameters before calling `vc_resize'
-
-Patrik John (1):
-      serial: tegra: Change lower tolerance baud rate limit for tegra20 and tegra30
-
-Pierre Gondois (1):
-      serial: pl011: Add ACPI SBSA UART match id
-
-Sven Eckelmann (1):
-      tty: serial: msm_serial: Deactivate RX DMA for polling support
-
- MAINTAINERS                            |  6 ++++++
- drivers/tty/serial/8250/8250_bcm7271.c | 13 ++++++++++++
- drivers/tty/serial/8250/8250_pci.c     | 39 ++++++++++++++++++++++------------
- drivers/tty/serial/8250/8250_port.c    |  7 ------
- drivers/tty/serial/Kconfig             |  2 +-
- drivers/tty/serial/amba-pl011.c        |  1 +
- drivers/tty/serial/fsl_lpuart.c        |  1 +
- drivers/tty/serial/liteuart.c          | 20 ++++++++++++++---
- drivers/tty/serial/msm_serial.c        |  3 +++
- drivers/tty/serial/serial-tegra.c      |  4 ++--
- drivers/tty/serial/serial_core.c       | 18 +++++++++++++++-
- drivers/video/console/vgacon.c         | 14 +++++++-----
- 12 files changed, 95 insertions(+), 33 deletions(-)
+Best regards,
+Krzysztof
