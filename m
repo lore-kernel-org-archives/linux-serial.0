@@ -2,88 +2,132 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C338C433FE
-	for <linux-serial@archiver.kernel.org>; Sun,  5 Dec 2021 07:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C990C433F5
+	for <linux-serial@archiver.kernel.org>; Sun,  5 Dec 2021 12:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbhLEHUU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 5 Dec 2021 02:20:20 -0500
-Received: from www.zeus03.de ([194.117.254.33]:45878 "EHLO mail.zeus03.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232066AbhLEHUU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 5 Dec 2021 02:20:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=HtsW4E+/ajnnVW4bbcq/TTkm7C7V
-        pYt4J63kkT4Uhqo=; b=OPlFCNfR9tcFGv9+G+yOL0PAe7bIXGZdrhP/B6+fBAQn
-        kfpsXWKRCzP4V9Yy79anVtSoI7QTnxWL5qc51trB/bOZDvz4Mj1Klih4pAViH2WK
-        KyXPBrEP9bFaMYU9YO77sQhRbdP9IjDHM/PsYBsmUEzHO/fdm9wBqs9KmvY8irg=
-Received: (qmail 1396915 invoked from network); 5 Dec 2021 08:16:51 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 5 Dec 2021 08:16:51 +0100
-X-UD-Smtp-Session: l3s3148p1@estp7GDSJt4gAwDPXzGeAHQi3f7V+bw6
-Date:   Sun, 5 Dec 2021 08:16:48 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Magnus Damm <magnus.damm@gmail.com>
-Cc:     Magnus Damm <damm@opensource.se>, linux-serial@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        jirislaby@kernel.org
-Subject: Re: [PATCH] serial: sh-sci: Use dev_dbg() for frame and parity errors
-Message-ID: <YaxnYDO0IS1uAm6Q@kunai>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Magnus Damm <damm@opensource.se>, linux-serial@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        jirislaby@kernel.org
-References: <163862557847.23421.1243156045279776895.sendpatchset@octo>
- <YauJlvC7CbCxAhU2@kunai>
- <CANqRtoQ1et2TRHc9GhWEn3D-Bf8U6wWZ+qWbHPRTe30qTsmvDA@mail.gmail.com>
+        id S233533AbhLEMIS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 5 Dec 2021 07:08:18 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49812 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233481AbhLEMIS (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 5 Dec 2021 07:08:18 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC61D60FC5;
+        Sun,  5 Dec 2021 12:04:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8792BC341C1;
+        Sun,  5 Dec 2021 12:04:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1638705890;
+        bh=f7p5QXBOBHZzxvdGaceLzRNg7RlFFCrBhaw23iIZBro=;
+        h=Date:From:To:Cc:Subject:From;
+        b=aK4xzM0r6t8Ujnl2sz4jfkg60AQNvSZEgzZYEEI8TTjx1utjDGdP3A6AOG4Ie7+V/
+         VeYEu+yOp+kN2owXVhIDrf1I3z0+Ke7qL4CWOmIUmtcJOdzsUWabw3K2yiJc/R4YaB
+         gSZzEoio76ALbGqCMNwh3uGuG2wW3wnqpm4qI3N4=
+Date:   Sun, 5 Dec 2021 13:04:46 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.16-rc4
+Message-ID: <Yayq3iB/M3SJjvXK@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lETtYqfypwtFSWLn"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANqRtoQ1et2TRHc9GhWEn3D-Bf8U6wWZ+qWbHPRTe30qTsmvDA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+The following changes since commit 136057256686de39cc3a07c2e39ef6bc43003ff6:
 
---lETtYqfypwtFSWLn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+  Linux 5.16-rc2 (2021-11-21 13:47:39 -0800)
 
-Hi Magnus,
+are available in the Git repository at:
 
-> Sure, overrun and break also have counters so I'll prepare a patch
-> removing all four if you don't mind.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.16-rc4
 
-Good idea!
+for you to fetch changes up to 9cabe26e65a893afd5846908aa393bd283ab6609:
 
-All the best,
+  serial: 8250_bcm7271: UART errors after resuming from S2 (2021-12-03 14:14:49 +0100)
 
-   Wolfram
+----------------------------------------------------------------
+TTY/Serial fixes for 5.16-rc4
 
+Here are some small TTY and Serial driver fixes for 5.16-rc4 to resolve
+a number of reported problems.
 
---lETtYqfypwtFSWLn
-Content-Type: application/pgp-signature; name="signature.asc"
+They include:
+	- liteuart serial driver fixes
+	- 8250_pci serial driver fixes for pericom devices
+	- 8250 RTS line control fix while in RS-485 mode
+	- tegra serial driver fix
+	- msm_serial driver fix
+	- pl011 serial driver new id
+	- fsl_lpuart revert of broken change
+	- 8250_bcm7271 serial driver fix
+	- MAINTAINERS file update for rpmsg tty driver that came in
+	  5.16-rc1
+	- vgacon fix for reported problem
 
------BEGIN PGP SIGNATURE-----
+All of these, except for the 8250_bcm7271 fix have been in linux-next
+with no reported problem.  The 8250_bcm7271 fix was added to the tree on
+Friday so no chance to be linux-next yet.  But it should be fine as the
+affected developers submitted it.
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmGsZ1wACgkQFA3kzBSg
-KbaG2xAAh8oQd9d10wf8aS+LpAC/2CU5FEbGqVgi/A8c11XRifqDgnLFt8XmuIUU
-vY+LHsV+N26XRJUKWxCFI5hhK5y7H1RAo5tqlyZlBL3JPdj6NDpY2J4QEwUBmvyf
-QGplD+dN3KyVqHYvCZC6iKaOOMjrBFOEcIzCbocrQDcsHbD0mfEIusNrd4hdvkft
-w2/ZfzmC8eGQCNglCcd2TDo4cp2UTokIWDQdV0WfTx4UWYnLHXM1VNNreAsqqQ8z
-PWvZu5ZmnN8tihG9i/D+1ZjiuFb4ZSO1TTbXjQ6ex1WIs4eYl8LIY6mdy/Em6IZP
-4/uzSq/zTAP333DdVOLzXENs+HReFCUs7rasG+GlNiNveCZ8A9OVyD0LlT3x4mzZ
-IpbV60oC7HOjjmtYAAqvlMacjDkwcJ/M003jSzi4Y9+ld5Ox0hQ1xcm/UqzkMi3v
-iHzFbpTuqQfXR132BmbF6hDgeQMk8EyufasNHLtc6bO2t80PV3EADTxVR+gpwEAt
-pKJOPX/1k8ctVAyk7DGD9nB+U0gTQ0B6VUG4QktNWWbtnwnITJFLSjmWWk4prMVl
-MFiuyZYWmAuVFGKr39q2f4i57tEJntMCxWMUD8iT3oB+0SOYwOtelPeYwoWd/nBT
-qhUpbeZqWaZ7B+ZIXxBxW+c25VY3w7WfanlN5H1MryESyM0sFXI=
-=5Ddt
------END PGP SIGNATURE-----
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
---lETtYqfypwtFSWLn--
+----------------------------------------------------------------
+Al Cooper (1):
+      serial: 8250_bcm7271: UART errors after resuming from S2
+
+Alexander Stein (1):
+      Revert "tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP"
+
+Arnaud Pouliquen (1):
+      MAINTAINERS: Add rpmsg tty driver maintainer
+
+Ilia Sergachev (1):
+      serial: liteuart: Fix NULL pointer dereference in ->remove()
+
+Jay Dolan (2):
+      serial: 8250_pci: Fix ACCES entries in pci_serial_quirks array
+      serial: 8250_pci: rewrite pericom_do_set_divisor()
+
+Johan Hovold (4):
+      serial: core: fix transmit-buffer reset and memleak
+      serial: liteuart: fix use-after-free and memleak on unbind
+      serial: liteuart: fix minor-number leak on probe errors
+      serial: liteuart: relax compile-test dependencies
+
+Lukas Wunner (1):
+      serial: 8250: Fix RTS modem control while in rs485 mode
+
+Maciej W. Rozycki (1):
+      vgacon: Propagate console boot parameters before calling `vc_resize'
+
+Patrik John (1):
+      serial: tegra: Change lower tolerance baud rate limit for tegra20 and tegra30
+
+Pierre Gondois (1):
+      serial: pl011: Add ACPI SBSA UART match id
+
+Sven Eckelmann (1):
+      tty: serial: msm_serial: Deactivate RX DMA for polling support
+
+ MAINTAINERS                            |  6 ++++++
+ drivers/tty/serial/8250/8250_bcm7271.c | 13 ++++++++++++
+ drivers/tty/serial/8250/8250_pci.c     | 39 ++++++++++++++++++++++------------
+ drivers/tty/serial/8250/8250_port.c    |  7 ------
+ drivers/tty/serial/Kconfig             |  2 +-
+ drivers/tty/serial/amba-pl011.c        |  1 +
+ drivers/tty/serial/fsl_lpuart.c        |  1 +
+ drivers/tty/serial/liteuart.c          | 20 ++++++++++++++---
+ drivers/tty/serial/msm_serial.c        |  3 +++
+ drivers/tty/serial/serial-tegra.c      |  4 ++--
+ drivers/tty/serial/serial_core.c       | 18 +++++++++++++++-
+ drivers/video/console/vgacon.c         | 14 +++++++-----
+ 12 files changed, 95 insertions(+), 33 deletions(-)
