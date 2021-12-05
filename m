@@ -2,68 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B18A6C433EF
-	for <linux-serial@archiver.kernel.org>; Sun,  5 Dec 2021 17:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF85EC433F5
+	for <linux-serial@archiver.kernel.org>; Sun,  5 Dec 2021 23:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236724AbhLERng (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 5 Dec 2021 12:43:36 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:55276 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236445AbhLERnf (ORCPT
+        id S236839AbhLEXbx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 5 Dec 2021 18:31:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235176AbhLEXbx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 5 Dec 2021 12:43:35 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3673ECE126A;
-        Sun,  5 Dec 2021 17:40:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 651BBC00446;
-        Sun,  5 Dec 2021 17:40:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638726005;
-        bh=jESj7+iFKq2eQ5seT68cGFN+t2ljxE0qvSATBTGsVSo=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=XKV3VrVAcZrckOvNsgDaGpKhg/V7Tyuk4G20wDBBQEMXh3wao9QqUV7165Fnz44cl
-         hqX3nlhcw9Gb/Cy38wmyfQLyskJzow696LfDa2JTdJXEQLm/tBrhXjcAYjgRo2Dm/3
-         uzHY60jY1U0wbVwSilYPRKiWRrM75wIpOQw/zCLEXa0IfEnk/rU1HPRT61lwJc/jaM
-         u2cEzmHsvmSsKyOG2FVa5Zn47mN3c71TovXWa3ZbQmBhdMGRpU6NO4/ofJYHkLiygQ
-         m1CxHZuq+RBmvSNoC9beoPTmPXUrtSm9EKjS8KmO7B+RKgA8QyKDBJ3CIfURPcuBvC
-         z2i32Ix9CFvIw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3CBE0609B9;
-        Sun,  5 Dec 2021 17:40:05 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.16-rc4
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yayq3iB/M3SJjvXK@kroah.com>
-References: <Yayq3iB/M3SJjvXK@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yayq3iB/M3SJjvXK@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.16-rc4
-X-PR-Tracked-Commit-Id: 9cabe26e65a893afd5846908aa393bd283ab6609
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 5163953950ab63ce296398b013d9d16bf2b40940
-Message-Id: <163872600517.1003.1739339072610695059.pr-tracker-bot@kernel.org>
-Date:   Sun, 05 Dec 2021 17:40:05 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Sun, 5 Dec 2021 18:31:53 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977BEC061751;
+        Sun,  5 Dec 2021 15:28:25 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id y196so6818943wmc.3;
+        Sun, 05 Dec 2021 15:28:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MYHt7ZQzY4yWVSIqfF5+ilzaoRCdpYyTUSLoTpW95ig=;
+        b=RS7mn8P3TrwLllhL8Vg3BlzAkzTGLOs+GN/jJAgZ00EMnfLTibUCwfdMN1IVZ7Wcyp
+         NV1Owj8g5jvVDwBxo/tI21NCnCnOY4bqS6kaxOtTAyVAb+JxiMxAzPMAWNOCliHtK1JU
+         xF13sICtRnk6YAiUisIPudeQ5PV872swJRfo5ZAhi6OL55hM4TjYEAfrUHcERgFFl639
+         EPOdVuiPaVMzcDZus/S0T6Ze5WZ5w3cuPysS3fL36zZ+YwBu2Xp5/hmCyiWk3aCN2n5L
+         Xt6uvZJfOoa/lstbm1k1EY/OpmV4QvqKc+25GGOQh812+Qy0Sig0F7ZL2d4/UCe3lvya
+         tlnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MYHt7ZQzY4yWVSIqfF5+ilzaoRCdpYyTUSLoTpW95ig=;
+        b=Y0MFTsAEXidKpEw+aNkHfwjnV0Z3OLkPD0iYwn65jneUEd84x5HUg+MB/8tBJwpI5B
+         1kp2sFpQCSP+fAlvUbJ7joAlqcLelBsNaX0U0iwcHQuaNT1X+GzVw/3qLlZojXAYmAuV
+         5HmW+GAeEHjdxqo7dxjhi4oYqIKbUcgPqY5hYr8jw9cq9X9dxI/TGWQ9VXulUUUAxUxL
+         Pde84hiAK5OXN6mFPbOkZ06lMnoA6XZIgCgnvHb+xMFoqENwVf9eI+oZyuOB4QMWX2GN
+         8XAjqQGuNwI14mFOm9CMP7pZA19UK0lqWjtt6bAHAuPKpzu/0BZxBqud4KCtw814Xoov
+         l9cA==
+X-Gm-Message-State: AOAM530pXCupQqYhvNf8d+ZxjVlhK1/yH+LG3cPflpJQGdusMCNUUvrL
+        vhvpmuo9l9d2aeVt8fACSke18x8GiL0/pA==
+X-Google-Smtp-Source: ABdhPJw+Mc0XuHPaYMPfdfLL2D4qzyV574s0zmfji3g/HDr5siecHX6Q8rJIYEWdr0WZ7dUAFjtREg==
+X-Received: by 2002:a1c:8002:: with SMTP id b2mr34867358wmd.2.1638746904107;
+        Sun, 05 Dec 2021 15:28:24 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id y15sm11600091wry.72.2021.12.05.15.28.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Dec 2021 15:28:23 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250_pci: remove redundant assignment to tmp after the mask operation
+Date:   Sun,  5 Dec 2021 23:28:22 +0000
+Message-Id: <20211205232822.110099-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.33.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Sun, 5 Dec 2021 13:04:46 +0100:
+The variable tmp is being masked with a bitmask and the value is being
+written to port base + 0x3c.  However, the masked value is being written
+back to tmp and tmp is never used after this. The assignmentment is
+redundant, replace the &= operator with just &.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.16-rc4
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/5163953950ab63ce296398b013d9d16bf2b40940
-
-Thank you!
-
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 60f8fffdfd77..81aac3c25ead 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1278,7 +1278,7 @@ static int pci_quatech_init(struct pci_dev *dev)
+ 			outl(inl(base + 0x38) | 0x00002000, base + 0x38);
+ 			tmp = inl(base + 0x3c);
+ 			outl(tmp | 0x01000000, base + 0x3c);
+-			outl(tmp &= ~0x01000000, base + 0x3c);
++			outl(tmp & ~0x01000000, base + 0x3c);
+ 		}
+ 	}
+ 	return 0;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.33.1
+
