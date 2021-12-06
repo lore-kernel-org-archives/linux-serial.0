@@ -2,92 +2,199 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E10C9C4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 21:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F3AC433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 21:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237134AbhLFVFy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Dec 2021 16:05:54 -0500
-Received: from mail-oi1-f182.google.com ([209.85.167.182]:46054 "EHLO
-        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbhLFVFy (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Dec 2021 16:05:54 -0500
-Received: by mail-oi1-f182.google.com with SMTP id 7so23722247oip.12;
-        Mon, 06 Dec 2021 13:02:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2oyty0xsfvWrj6OhLFZNGZUWW1B8YFU5eRdWHSgy7PU=;
-        b=4F5gAx53T53CjEiED9+rus1WqRh8/wbVtz4FnltunhTiKC0fbbSk0xN1XaexLP6IYH
-         3HMyT3Cwll1P3x/QImftg6amol/NvaUgWM0fastEB+j6/d3Vx7rJ/5wiid1RMJ/yy8oo
-         iWK3BAEutBCF4ghR/ak1e+MSb5JSnOFd3au/axspXKfYW6D0PezeAQt9KB3Ngsgtvdju
-         Bnkk6hyJUYkAfC8tYxSH0+TiNEybfIQCzYI1i5S2yuRSIZa93HjtXBZj33gO7kEj+jYI
-         orhMOkdNmsE1LcqXGxN97BZyDxyEPaJST3AosGV5TUP/NHqBhF3aNGjOqw05xDvGzH/T
-         vY6w==
-X-Gm-Message-State: AOAM530NODCEf2yjIsrM9cTNZ8gDxN4VNsjH0BmJPW8qDCgTxoy3R3Tk
-        Ibr7hl+fpqsomCQ8YgjK6g==
-X-Google-Smtp-Source: ABdhPJyfMRSShzT8CkbeQSkFjn7ORJQDpLrQTHZobuuL2O9psekoj85E7ZUONGsrgCATLaREROS/5A==
-X-Received: by 2002:a05:6808:209b:: with SMTP id s27mr1079807oiw.43.1638824544805;
-        Mon, 06 Dec 2021 13:02:24 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 3sm2825327oif.12.2021.12.06.13.02.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 13:02:24 -0800 (PST)
-Received: (nullmailer pid 2578233 invoked by uid 1000);
-        Mon, 06 Dec 2021 21:02:23 -0000
-Date:   Mon, 6 Dec 2021 15:02:23 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Sam Protsenko <semen.protsenko@linaro.org>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chanho Park <chanho61.park@samsung.com>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3 1/5] dt-bindings: soc: samsung: Add Exynos USI bindings
-Message-ID: <Ya56X9CJrXWw8rm3@robh.at.kernel.org>
-References: <20211204195757.8600-1-semen.protsenko@linaro.org>
- <20211204195757.8600-2-semen.protsenko@linaro.org>
+        id S1350200AbhLFVOR (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Dec 2021 16:14:17 -0500
+Received: from mga12.intel.com ([192.55.52.136]:45040 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1350185AbhLFVOR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Dec 2021 16:14:17 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="217432075"
+X-IronPort-AV: E=Sophos;i="5.87,292,1631602800"; 
+   d="scan'208";a="217432075"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 13:10:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,292,1631602800"; 
+   d="scan'208";a="579524016"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 06 Dec 2021 13:10:19 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1muLFb-000Lkj-9d; Mon, 06 Dec 2021 21:10:19 +0000
+Date:   Tue, 07 Dec 2021 05:09:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ f5bced9f34355d2b12779eebdf2634cb27c18cff
+Message-ID: <61ae7c26.HDUeLVycAup0slhI%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211204195757.8600-2-semen.protsenko@linaro.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 04 Dec 2021 21:57:53 +0200, Sam Protsenko wrote:
-> Add constants for choosing USIv2 configuration mode in device tree.
-> Those are further used in USI driver to figure out which value to write
-> into SW_CONF register. Also document USIv2 IP-core bindings.
-> 
-> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> ---
-> Changes in v3:
->   - Removed usi0 "status" property from the example
->   - Made child nodes pattern allow only serial/spi/i2c node names
->   - Moved all USIv2 specific properties under corresponding "if:"
->   - Renamed compatible from samsung,exynos-usi-v2 to samsung,exynos850-usi
->   - Related: submitted separate patch removing warning on
->     "make dt_binding_check" for USI bindings
-> 
-> Changes in v2:
->   - Combined dt-bindings doc and dt-bindings header patches
->   - Added i2c node to example in bindings doc
->   - Added mentioning of shared internal circuits
->   - Added USI_V2_NONE value to bindings header
-> 
->  .../bindings/soc/samsung/exynos-usi.yaml      | 159 ++++++++++++++++++
->  include/dt-bindings/soc/samsung,exynos-usi.h  |  17 ++
->  2 files changed, 176 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
->  create mode 100644 include/dt-bindings/soc/samsung,exynos-usi.h
-> 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: f5bced9f34355d2b12779eebdf2634cb27c18cff  Merge 5.16-rc4 into tty-next
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+elapsed time: 722m
+
+configs tested: 140
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                              allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+i386                 randconfig-c001-20211206
+mips                           ip27_defconfig
+powerpc                     asp8347_defconfig
+arm                            xcep_defconfig
+sh                          r7780mp_defconfig
+powerpc                     tqm5200_defconfig
+sh                           se7750_defconfig
+powerpc                      chrp32_defconfig
+sh                          urquell_defconfig
+sh                           se7751_defconfig
+um                             i386_defconfig
+mips                            gpr_defconfig
+arm                       cns3420vb_defconfig
+sparc64                             defconfig
+m68k                            mac_defconfig
+arm                        multi_v5_defconfig
+arm                          ixp4xx_defconfig
+arm                       aspeed_g5_defconfig
+x86_64                           alldefconfig
+powerpc                   microwatt_defconfig
+sh                           se7721_defconfig
+powerpc                  storcenter_defconfig
+arm                        keystone_defconfig
+ia64                      gensparse_defconfig
+arm                            mps2_defconfig
+powerpc                         ps3_defconfig
+sh                        edosk7760_defconfig
+arm                       imx_v4_v5_defconfig
+arm                           sama7_defconfig
+arm                            zeus_defconfig
+arm                         vf610m4_defconfig
+arm                      integrator_defconfig
+arm                        multi_v7_defconfig
+sh                               alldefconfig
+arm                           corgi_defconfig
+sh                   sh7724_generic_defconfig
+powerpc               mpc834x_itxgp_defconfig
+arm                           sama5_defconfig
+h8300                    h8300h-sim_defconfig
+arm                         lpc32xx_defconfig
+powerpc                   currituck_defconfig
+powerpc                 mpc85xx_cds_defconfig
+sh                      rts7751r2d1_defconfig
+arm                         orion5x_defconfig
+i386                                defconfig
+sh                   secureedge5410_defconfig
+sh                           se7705_defconfig
+um                           x86_64_defconfig
+openrisc                  or1klitex_defconfig
+powerpc                      ep88xc_defconfig
+arm                         bcm2835_defconfig
+powerpc                      pasemi_defconfig
+powerpc                 mpc8560_ads_defconfig
+mips                        qi_lb60_defconfig
+arc                     haps_hs_smp_defconfig
+m68k                       m5275evb_defconfig
+powerpc                     mpc512x_defconfig
+sh                  sh7785lcr_32bit_defconfig
+powerpc                 xes_mpc85xx_defconfig
+arm                  randconfig-c002-20211206
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nds32                             allnoconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                               defconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allmodconfig
+mips                             allyesconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a016-20211206
+x86_64               randconfig-a011-20211206
+x86_64               randconfig-a013-20211206
+x86_64               randconfig-a014-20211206
+x86_64               randconfig-a012-20211206
+x86_64               randconfig-a015-20211206
+i386                 randconfig-a016-20211206
+i386                 randconfig-a013-20211206
+i386                 randconfig-a011-20211206
+i386                 randconfig-a014-20211206
+i386                 randconfig-a012-20211206
+i386                 randconfig-a015-20211206
+arc                  randconfig-r043-20211206
+s390                 randconfig-r044-20211206
+riscv                randconfig-r042-20211206
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+
+clang tested configs:
+x86_64               randconfig-a006-20211206
+x86_64               randconfig-a005-20211206
+x86_64               randconfig-a001-20211206
+x86_64               randconfig-a002-20211206
+x86_64               randconfig-a004-20211206
+x86_64               randconfig-a003-20211206
+i386                 randconfig-a001-20211206
+i386                 randconfig-a005-20211206
+i386                 randconfig-a002-20211206
+i386                 randconfig-a003-20211206
+i386                 randconfig-a006-20211206
+i386                 randconfig-a004-20211206
+hexagon              randconfig-r045-20211206
+hexagon              randconfig-r041-20211206
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
