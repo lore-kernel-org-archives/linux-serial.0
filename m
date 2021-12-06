@@ -2,199 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F3AC433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 21:10:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A32C3C43217
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 21:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350200AbhLFVOR (ORCPT
+        id S1350381AbhLFVRB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Dec 2021 16:14:17 -0500
-Received: from mga12.intel.com ([192.55.52.136]:45040 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350185AbhLFVOR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Dec 2021 16:14:17 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="217432075"
-X-IronPort-AV: E=Sophos;i="5.87,292,1631602800"; 
-   d="scan'208";a="217432075"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 13:10:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,292,1631602800"; 
-   d="scan'208";a="579524016"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 06 Dec 2021 13:10:19 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1muLFb-000Lkj-9d; Mon, 06 Dec 2021 21:10:19 +0000
-Date:   Tue, 07 Dec 2021 05:09:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- f5bced9f34355d2b12779eebdf2634cb27c18cff
-Message-ID: <61ae7c26.HDUeLVycAup0slhI%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Mon, 6 Dec 2021 16:17:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350352AbhLFVQ6 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Dec 2021 16:16:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3622EC0611F7;
+        Mon,  6 Dec 2021 13:13:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F05F7B812A5;
+        Mon,  6 Dec 2021 21:13:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF760C341C8;
+        Mon,  6 Dec 2021 21:13:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638825206;
+        bh=1kNzIlA7OK/d4j0WjBCGRmP3H3raho0VDYTDXBHSWCw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RVdlcnhxD3Jh/MxuMuLzzDcIooNeszRxs7rAKavmyJ2IXbKQ+Y/tan1gx/76y5CVy
+         k1iGO7gQnEfNJ24mFqCwfGXvCl3FlHEAZleNx1Mgx+pv0XyAE09I3GE6av/X7vDOMW
+         gL8x/xqCEq4f1AWZbolTfO6NdLeAggc5VPRu1An4tcUALr2fxlY6QUgT/7rYjAE4bX
+         2DObqAThYJ9ILJJtt+l71wvJIHTDMasxMmq2oGUnqefpW9Aqlg37wScBfM3bQS4gEF
+         NsrFyPgpT+gfSXJpFl5rj7nMvgpPt0AdPY+jiX7PJuBbewWRSC8pyyrB91mgp6Olkr
+         j4NpYbPPFbfXw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 07/24] Revert "tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP"
+Date:   Mon,  6 Dec 2021 16:12:12 -0500
+Message-Id: <20211206211230.1660072-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211206211230.1660072-1-sashal@kernel.org>
+References: <20211206211230.1660072-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: f5bced9f34355d2b12779eebdf2634cb27c18cff  Merge 5.16-rc4 into tty-next
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-elapsed time: 722m
+[ Upstream commit 4e9679738a918d8a482ac6a2cb2bb871f094bb84 ]
 
-configs tested: 140
-configs skipped: 3
+Revert commit b4b844930f27 ("tty: serial: fsl_lpuart: drop earlycon entry
+for i.MX8QXP"), because this breaks earlycon support on imx8qm/imx8qxp.
+While it is true that for earlycon there is no difference between
+i.MX8QXP and i.MX7ULP (for now at least), there are differences
+regarding clocks and fixups for wakeup support. For that reason it was
+deemed unacceptable to add the imx7ulp compatible to device tree in
+order to get earlycon working again.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                              allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-i386                 randconfig-c001-20211206
-mips                           ip27_defconfig
-powerpc                     asp8347_defconfig
-arm                            xcep_defconfig
-sh                          r7780mp_defconfig
-powerpc                     tqm5200_defconfig
-sh                           se7750_defconfig
-powerpc                      chrp32_defconfig
-sh                          urquell_defconfig
-sh                           se7751_defconfig
-um                             i386_defconfig
-mips                            gpr_defconfig
-arm                       cns3420vb_defconfig
-sparc64                             defconfig
-m68k                            mac_defconfig
-arm                        multi_v5_defconfig
-arm                          ixp4xx_defconfig
-arm                       aspeed_g5_defconfig
-x86_64                           alldefconfig
-powerpc                   microwatt_defconfig
-sh                           se7721_defconfig
-powerpc                  storcenter_defconfig
-arm                        keystone_defconfig
-ia64                      gensparse_defconfig
-arm                            mps2_defconfig
-powerpc                         ps3_defconfig
-sh                        edosk7760_defconfig
-arm                       imx_v4_v5_defconfig
-arm                           sama7_defconfig
-arm                            zeus_defconfig
-arm                         vf610m4_defconfig
-arm                      integrator_defconfig
-arm                        multi_v7_defconfig
-sh                               alldefconfig
-arm                           corgi_defconfig
-sh                   sh7724_generic_defconfig
-powerpc               mpc834x_itxgp_defconfig
-arm                           sama5_defconfig
-h8300                    h8300h-sim_defconfig
-arm                         lpc32xx_defconfig
-powerpc                   currituck_defconfig
-powerpc                 mpc85xx_cds_defconfig
-sh                      rts7751r2d1_defconfig
-arm                         orion5x_defconfig
-i386                                defconfig
-sh                   secureedge5410_defconfig
-sh                           se7705_defconfig
-um                           x86_64_defconfig
-openrisc                  or1klitex_defconfig
-powerpc                      ep88xc_defconfig
-arm                         bcm2835_defconfig
-powerpc                      pasemi_defconfig
-powerpc                 mpc8560_ads_defconfig
-mips                        qi_lb60_defconfig
-arc                     haps_hs_smp_defconfig
-m68k                       m5275evb_defconfig
-powerpc                     mpc512x_defconfig
-sh                  sh7785lcr_32bit_defconfig
-powerpc                 xes_mpc85xx_defconfig
-arm                  randconfig-c002-20211206
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nds32                             allnoconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                               defconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-nios2                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allmodconfig
-mips                             allyesconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a016-20211206
-x86_64               randconfig-a011-20211206
-x86_64               randconfig-a013-20211206
-x86_64               randconfig-a014-20211206
-x86_64               randconfig-a012-20211206
-x86_64               randconfig-a015-20211206
-i386                 randconfig-a016-20211206
-i386                 randconfig-a013-20211206
-i386                 randconfig-a011-20211206
-i386                 randconfig-a014-20211206
-i386                 randconfig-a012-20211206
-i386                 randconfig-a015-20211206
-arc                  randconfig-r043-20211206
-s390                 randconfig-r044-20211206
-riscv                randconfig-r042-20211206
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-
-clang tested configs:
-x86_64               randconfig-a006-20211206
-x86_64               randconfig-a005-20211206
-x86_64               randconfig-a001-20211206
-x86_64               randconfig-a002-20211206
-x86_64               randconfig-a004-20211206
-x86_64               randconfig-a003-20211206
-i386                 randconfig-a001-20211206
-i386                 randconfig-a005-20211206
-i386                 randconfig-a002-20211206
-i386                 randconfig-a003-20211206
-i386                 randconfig-a006-20211206
-i386                 randconfig-a004-20211206
-hexagon              randconfig-r045-20211206
-hexagon              randconfig-r041-20211206
-
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Link: https://lore.kernel.org/r/20211124073109.805088-1-alexander.stein@ew.tq-group.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/tty/serial/fsl_lpuart.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index b1e7190ae4836..ac5112def40d1 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2625,6 +2625,7 @@ OF_EARLYCON_DECLARE(lpuart, "fsl,vf610-lpuart", lpuart_early_console_setup);
+ OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1021a-lpuart", lpuart32_early_console_setup);
+ OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1028a-lpuart", ls1028a_early_console_setup);
+ OF_EARLYCON_DECLARE(lpuart32, "fsl,imx7ulp-lpuart", lpuart32_imx_early_console_setup);
++OF_EARLYCON_DECLARE(lpuart32, "fsl,imx8qxp-lpuart", lpuart32_imx_early_console_setup);
+ EARLYCON_DECLARE(lpuart, lpuart_early_console_setup);
+ EARLYCON_DECLARE(lpuart32, lpuart32_early_console_setup);
+ 
+-- 
+2.33.0
+
