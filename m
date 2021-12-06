@@ -2,91 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AB8C433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 21:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD5DC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 21:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350887AbhLFVTm (ORCPT
+        id S1351760AbhLFVfE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Dec 2021 16:19:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
+        Mon, 6 Dec 2021 16:35:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350916AbhLFVTY (ORCPT
+        with ESMTP id S1351778AbhLFVe6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Dec 2021 16:19:24 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448C6C0698D1;
-        Mon,  6 Dec 2021 13:15:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8CC77CE1864;
-        Mon,  6 Dec 2021 21:15:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95B6DC341C8;
-        Mon,  6 Dec 2021 21:15:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638825351;
-        bh=ELH+il2Mf3EsnMMFH+0Rbjv4Z0olnhBGcL9NmlJwzNY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jjr9Jv5nxDVIdYkaDZOyqk7i1XXMqrTAc9r5woNX8K74SZo+I0DgvupDOnW3qkkon
-         KnBex+eU7LdoMnO1xZ8vIJtMfaWzi5BkhWvrDLGtsvcG8myy8qc8Js6WUL2XD7SXJT
-         kIK2cM+mUpl2w1Ezr2y/82oben6fxnro6RUZvgB1JqAOUC7JLDXS8cuMk7FW8lUOmy
-         COoain1vguuI8bH4Vl9HmzhG7Z9WhHXS/nilAavUb4Kse7g+5zU2THRmpn5VAym4+P
-         vGkTk2v02rfSJP/1tAQxqG7KdZZms1dbEMtXpBbD6hnN8iFoUNYRRztH6FVX92afGj
-         lLXfduzbBAnkg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 04/15] Revert "tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP"
-Date:   Mon,  6 Dec 2021 16:15:04 -0500
-Message-Id: <20211206211520.1660478-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211206211520.1660478-1-sashal@kernel.org>
-References: <20211206211520.1660478-1-sashal@kernel.org>
+        Mon, 6 Dec 2021 16:34:58 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A65C061746;
+        Mon,  6 Dec 2021 13:31:28 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id t5so48548941edd.0;
+        Mon, 06 Dec 2021 13:31:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HGGJ/0Da454drz8o7P1nv4jVOxoCQJvdP5iy7oytDZ4=;
+        b=K0ChTKtCkttJcpgJlZGR09ZMimEXXDr5JXRo98CPQe926UQKVnaKkQyIpRzw0SW2Vg
+         t6eHzqLL63OAzoE8gVOr78Brz3nDOvj4lJ9LXhOBXFYiEkariFZud5so108iAy/egNPa
+         NbELHHQM1V3dj4Fb+DwVTEICQagSJ3zB6KhtDauKLgoZBgno40IA1xdeeLbDSDAciNxu
+         PRdyvm31IHlecuQTs2ZJMuHunZlbOXMMF5N/XgL6txEeFUftWtlW4DlcD1sP3DsDQP8R
+         BLLRDFg1Yb6CUyeWd6DZcSPFEvkDRCJJoW4DxhHe8hya1UdGhZzvCOMjGAJDYxeHSQc4
+         8FRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HGGJ/0Da454drz8o7P1nv4jVOxoCQJvdP5iy7oytDZ4=;
+        b=74mZW2afpzWlIWw/w89518gfxpJ5Egs8SrjBbAjGPgTKsnAWTAN5aUXfPbeDKL10cA
+         u9Hns8eKTH4qB7tLSD+kJIapeRi9xQexlCjaUIicfXhNuPSweGLzNc1X+sYuKc0cYLWh
+         nnD7u7xZIIDqIGcbIz9HR6mNKzqpVQzkjgBKoN4jq9Ix6kc9fVfhp59r0JgyjEHLkOrt
+         /BiC+mjYE5qL0NH8DZYe88KiRiOBzglBgxGS/zdUQtuckYhWBSwYI1S0yhBWPI6YEBNm
+         PyzqVNmnmOjEFEfh8gu0H7crhO1NUjfu7lxh8BZvc1Gca+cis6F7lyODrglxDcb6p+sL
+         5oWA==
+X-Gm-Message-State: AOAM532kPm37wBp5nYWEPneeDGjXGkvYjCuOeqrC/fNXxC6yEZxCtk1M
+        AYOkZ/mWicaVINYURFYd0X5vmMqZtIqOgVfKRqE=
+X-Google-Smtp-Source: ABdhPJygraTF13+5Ta4kUTyDW17cbvSWjq1QANG+bwG/TFPN2n5D+bBOLN/c2NiwEQZDBBVWZEW6PykAfRfEd/XmMcc=
+X-Received: by 2002:a05:6402:354c:: with SMTP id f12mr2590207edd.256.1638826287556;
+ Mon, 06 Dec 2021 13:31:27 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20211206100200.31914-1-xianwei.zhao@amlogic.com>
+In-Reply-To: <20211206100200.31914-1-xianwei.zhao@amlogic.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 6 Dec 2021 22:31:16 +0100
+Message-ID: <CAFBinCDbWtFuWP9h8sYR4LabFwkT9moKBvxX-uOTWN21uuC1gQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: meson: make the current driver compatible with S4
+To:     "xianwei.zhao" <xianwei.zhao@amlogic.com>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+Hi,
 
-[ Upstream commit 4e9679738a918d8a482ac6a2cb2bb871f094bb84 ]
+On Mon, Dec 6, 2021 at 11:02 AM xianwei.zhao <xianwei.zhao@amlogic.com> wrote:
+>
+> Because S4 UART use a different clock source, the baud rate calculation need to be updated.
+> Reset the UART during initialization to clear previous status.
+Could you please explain why it is needed (is the divide-by-three
+divider broken, does this patch decrease clock jitter, ...)?
+Think of it like this: if I add another Amlogic board.dts tomorrow,
+then how do I know when the "xtal_tick_en" property needs to be set?
 
-Revert commit b4b844930f27 ("tty: serial: fsl_lpuart: drop earlycon entry
-for i.MX8QXP"), because this breaks earlycon support on imx8qm/imx8qxp.
-While it is true that for earlycon there is no difference between
-i.MX8QXP and i.MX7ULP (for now at least), there are differences
-regarding clocks and fixups for wakeup support. For that reason it was
-deemed unacceptable to add the imx7ulp compatible to device tree in
-order to get earlycon working again.
+I found that the public datasheet for the A311D SoC already mentions
+AML_UART_BAUD_XTAL_TICK and AML_UART_BAUD_XTAL_DIV2 but so far UART is
+working fine on that SoC even without this patch.
 
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Link: https://lore.kernel.org/r/20211124073109.805088-1-alexander.stein@ew.tq-group.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/fsl_lpuart.c | 1 +
- 1 file changed, 1 insertion(+)
+[...]
+> +       val = readl_relaxed(port->membase + AML_UART_REG5);
+The old logic worked like this:
+- calculate the new register values
+- write "val" to the register
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index a70911a227a84..b9f8add284e33 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2559,6 +2559,7 @@ OF_EARLYCON_DECLARE(lpuart, "fsl,vf610-lpuart", lpuart_early_console_setup);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1021a-lpuart", lpuart32_early_console_setup);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1028a-lpuart", ls1028a_early_console_setup);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,imx7ulp-lpuart", lpuart32_imx_early_console_setup);
-+OF_EARLYCON_DECLARE(lpuart32, "fsl,imx8qxp-lpuart", lpuart32_imx_early_console_setup);
- EARLYCON_DECLARE(lpuart, lpuart_early_console_setup);
- EARLYCON_DECLARE(lpuart32, lpuart32_early_console_setup);
- 
--- 
-2.33.0
+The new logic uses many extra steps:
+- read the existing register value
+- mask off some bits in the "val" variable
+- update some bits in the "val" variable based on the calculations below
+- write "val" to the register
 
+Is there any reason why we need to change this logic to set AML_UART_REG5?
+
+
+Best regards,
+Martin
