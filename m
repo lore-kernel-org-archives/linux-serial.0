@@ -2,82 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D6BC433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 12:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8452C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 13:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243312AbhLFMrW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Dec 2021 07:47:22 -0500
-Received: from mail-ua1-f42.google.com ([209.85.222.42]:38548 "EHLO
-        mail-ua1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243297AbhLFMrV (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Dec 2021 07:47:21 -0500
-Received: by mail-ua1-f42.google.com with SMTP id w23so19197567uao.5;
-        Mon, 06 Dec 2021 04:43:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=diTFsItQxsjlWEXrD9HKHMo7eDvHbW5sddSfozLs0bY=;
-        b=0xfpd5gDO1e1iCiPxmQJK6YfNzBl9kE3xzHtWPQDM2KiiTb5KTT1kvK+8t7mtLe06j
-         eGaDUyCX+/RgSv0jY+e4R5sjN+XlNN0e3kS9H19Mr1R36LwF/JRiGcbMZCnrq6j4EFLc
-         Fr+HSAEh9ftXrtatP5wH8vp9W3yZy9iRnvq9mEjl70mHvUZfEbWSBJsdBgDAZFb8tXT3
-         safkNO7ZxdvKeFsDsSwdF2QEajAVc/zkkciVGo/9xnMldWVEPJxC17RMckLJwDvVnKzN
-         BX/x6pANtw+tQHrtR0FGf+9HwvD14UrYEZjR7lWNi1ObSqzqcognbKpZE+EGYO6hsnYi
-         gSIw==
-X-Gm-Message-State: AOAM530gikKoLZY+YIQqb5ozqL30jto0I4WN0Q+4plIIB4QTgKOayeXe
-        DAI118zj3XHssvrF6Ysx86P9Z+VqbPCUxA==
-X-Google-Smtp-Source: ABdhPJzl8vb4F9/DBncbNNN0L0/+LmmA8Bd348cKYUiTebxrsT93eWlfk/xwhFEaF9fGvRGHBe7Z5A==
-X-Received: by 2002:ab0:22d6:: with SMTP id z22mr39607552uam.65.1638794632414;
-        Mon, 06 Dec 2021 04:43:52 -0800 (PST)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id 186sm3934633vsd.30.2021.12.06.04.43.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Dec 2021 04:43:52 -0800 (PST)
-Received: by mail-ua1-f41.google.com with SMTP id t13so19161730uad.9;
-        Mon, 06 Dec 2021 04:43:52 -0800 (PST)
-X-Received: by 2002:ab0:7354:: with SMTP id k20mr39571944uap.78.1638794631869;
- Mon, 06 Dec 2021 04:43:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20211201073308.1003945-1-yoshihiro.shimoda.uh@renesas.com> <20211201073308.1003945-10-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20211201073308.1003945-10-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 6 Dec 2021 13:43:40 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWx4fxjHrQn-7qbFkZwa31W_D-5zGnxRQqb+VRezjzs+w@mail.gmail.com>
-Message-ID: <CAMuHMdWx4fxjHrQn-7qbFkZwa31W_D-5zGnxRQqb+VRezjzs+w@mail.gmail.com>
-Subject: Re: [PATCH v2 09/14] clk: renesas: cpg-mssr: Add support for R-Car S4-8
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
+        id S244762AbhLFNvU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Dec 2021 08:51:20 -0500
+Received: from mga02.intel.com ([134.134.136.20]:31137 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244021AbhLFNvU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Dec 2021 08:51:20 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10189"; a="224566255"
+X-IronPort-AV: E=Sophos;i="5.87,291,1631602800"; 
+   d="scan'208";a="224566255"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 05:47:51 -0800
+X-IronPort-AV: E=Sophos;i="5.87,291,1631602800"; 
+   d="scan'208";a="542393944"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 05:47:40 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1muEKG-002nTh-2c;
+        Mon, 06 Dec 2021 15:46:40 +0200
+Date:   Mon, 6 Dec 2021 15:46:39 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_pci: remove redundant assignment to tmp
+ after the mask operation
+Message-ID: <Ya4UP5ceA8jINvVT@smile.fi.intel.com>
+References: <20211205232822.110099-1-colin.i.king@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211205232822.110099-1-colin.i.king@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 8:33 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Initial CPG support for R-Car S4-8 (r8a779f0).
->
-> Inspired by patches in the BSP by LUU HOAI.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+On Sun, Dec 05, 2021 at 11:28:22PM +0000, Colin Ian King wrote:
+> The variable tmp is being masked with a bitmask and the value is being
+> written to port base + 0x3c.  However, the masked value is being written
+> back to tmp and tmp is never used after this. The assignmentment is
+> redundant, replace the &= operator with just &.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-clk-for-v5.17.
+Make sense (maybe you can replace all those 0x00...BIT...00 by BIT()
+and GENMASK() later on).
 
-Gr{oetje,eeting}s,
+Reviewesd-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-                        Geert
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_pci.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 60f8fffdfd77..81aac3c25ead 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1278,7 +1278,7 @@ static int pci_quatech_init(struct pci_dev *dev)
+>  			outl(inl(base + 0x38) | 0x00002000, base + 0x38);
+>  			tmp = inl(base + 0x3c);
+>  			outl(tmp | 0x01000000, base + 0x3c);
+> -			outl(tmp &= ~0x01000000, base + 0x3c);
+> +			outl(tmp & ~0x01000000, base + 0x3c);
+>  		}
+>  	}
+>  	return 0;
+> -- 
+> 2.33.1
+> 
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+-- 
+With Best Regards,
+Andy Shevchenko
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
