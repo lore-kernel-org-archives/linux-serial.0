@@ -2,258 +2,159 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7207AC433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 10:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA43C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 12:13:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241380AbhLFKyO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Dec 2021 05:54:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241364AbhLFKyN (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Dec 2021 05:54:13 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36271C0613F8
-        for <linux-serial@vger.kernel.org>; Mon,  6 Dec 2021 02:50:45 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id 137so7786093wma.1
-        for <linux-serial@vger.kernel.org>; Mon, 06 Dec 2021 02:50:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2oNbuF190awal+660ONrj+d8q2JGo3YTgD7d1EpaHqk=;
-        b=i89RiwQhlq3M3FfqGuw9GmPJf8RHv+JeWr+tvb4jpFpDFXE2UOTV6j4WbScDjqPA+B
-         OBIj9z0RPChvKMfVvQLrlfB+t8RIZMlEQulBBJKLT5sf3W0yIkrcx1yknQV3ljszZXa2
-         BUvs5FZXCnxZmi7eDRjg1sfvl/agI90MjTmOfp1FxPyTC1q5P0EUTK9OP8JbFFQ6u8AE
-         /P6+GuE3f63BfpXaS4j9AmskAKim8FFCyuDSFhui6hWiJcvSLUgKy5jj/4y8gINK5pXO
-         KkawozG1tMWPyFHS6B1cvgWbWXAMs/Rp0dl37RxfxAuL134Z3waUi0kqR2GYkFO8gu0G
-         92Tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=2oNbuF190awal+660ONrj+d8q2JGo3YTgD7d1EpaHqk=;
-        b=ymXJyNFR0iNBVJpHbqdDGsAYPm5KdW+H8/VhGn4B2yzsUwFaZ7nWr98yT2gOBf4aJ1
-         d6pzETRAybJDvfgPi2MbznnHtu7wKC3i6DVi+CEaUBz5LPb0CE18yKCNiZb9vAkTwiRc
-         6SCo5VRuILdFL2vOSw670HjL0kDjxozbIwl3eJ5/lFRRTCbluWjaH8UVuL5OfRnl64bY
-         hnLXOuXOYHqP5bAOOGKwPVD3QTCY9rRoUZHeuQxpOaXsdPvwjoow3tYENWailo2ElLUt
-         ypeFIupIBIQH+hs3xtt8ROtguqI+gsWPFm692/PUj0wg2Vv3lwI2Io3Z8/67Xp88bSTh
-         vGyQ==
-X-Gm-Message-State: AOAM531zetEKT3xSsEXZiN2KbH6GRuPdoWpciVx87iZHKdQhdCf62nJ4
-        IQ1aLnNvVrqxciT1LIRf2nVPaw==
-X-Google-Smtp-Source: ABdhPJzjgIxXGz1rRBspyqg6QUOKotxqaGgwdPATY0T4gaZw2DgV1Omn5/eBhdD3I5da5Q5lbhdUgA==
-X-Received: by 2002:a05:600c:154f:: with SMTP id f15mr37494357wmg.86.1638787843591;
-        Mon, 06 Dec 2021 02:50:43 -0800 (PST)
-Received: from ?IPv6:2001:861:44c0:66c0:70c1:5ce3:e1aa:1275? ([2001:861:44c0:66c0:70c1:5ce3:e1aa:1275])
-        by smtp.gmail.com with ESMTPSA id y7sm10771027wrw.55.2021.12.06.02.50.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Dec 2021 02:50:43 -0800 (PST)
-Subject: Re: [PATCH] serial: meson: make the current driver compatible with S4
-To:     "xianwei.zhao" <xianwei.zhao@amlogic.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S242896AbhLFMRQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Dec 2021 07:17:16 -0500
+Received: from mail-os0jpn01on2106.outbound.protection.outlook.com ([40.107.113.106]:59384
+        "EHLO JPN01-OS0-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S242106AbhLFMRQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Dec 2021 07:17:16 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Dp0FWKlIbi3NhshF5fUKF1JBFotSH3rm3GQR5qKEStLTlqIfzrgOD30yQMyoUNY7bQ/oYYnzpuCQcuMZDPMxXOWXa5gKRxU9tG8IPFj8J3D66ZzB5/8y6Ab07tmrL4HvaGjKWN+34gIF/oSqZsGC0AGuXyTKEfrIuvGrcDUQ+z2jrSIG/s2YvAhbHGrFfIXqiXgM3DgbpziTLA7CXVvhIbbdI1at24lHQMF5Du1+50717zJcQw9Bs5lIjZZoa9GX2Sbje3zY2aM26diL8SgcyXBkAnUfk8S3Ro1Mr/fkY+f2ZePY3gA+Uku0QC253B9WEvSwP/t0He5tbrGDHgbK5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UbsSpJULhdlTx3qtRPGN9TmZmZpf0atoZr//PNlJkvk=;
+ b=Y44pl3moTAtuEmo9IwPto+j1jjLwi1ZXtGnRYL9Uj7sdpBoKcyK8VoD59hcVBB7zE26KJbqZUdCSXDocBj8rTzUgBg6At7B1s+qAsq2BbGG3Mc3i//ILv9AlAyftQna4IOKzARdBV5PJlQIhP3zQHifEFbBexP4XWeLYmpbw/ZHcOkWE6y69TkbZupO5QkdKosendK1Rgmu+tIsvUS4qne4wwIiqq1M1A33ta+rLZwJpQBK5fbKPVcX1bjsPCDSQs7Fzp//4xviJ1GmDwoI/TnA9k5QgAXN3583sTd89mlQ3kJSD/pGeb1HvZIt2n24+T2Rje+EuHjIrvt6cGLme6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UbsSpJULhdlTx3qtRPGN9TmZmZpf0atoZr//PNlJkvk=;
+ b=VQV4s3dZn9u3oePUNtcQwG7BIXULFWOjhNw432DM3JM7sHLL0fIYp6/moampEJbF7GpLCmEXqpObXs7HmPRE636k/sUtDLQJDJhPLyfV/jBx5lhOxkp+ZVOt3Xf8MrceXgeFh4jEHkL4mhT17SbPHK6gWQDOwvGuDoI871VrzZ0=
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
+ by TYYPR01MB7005.jpnprd01.prod.outlook.com (2603:1096:400:d9::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.11; Mon, 6 Dec
+ 2021 12:13:44 +0000
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::b0dd:ed1e:5cfc:f408]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::b0dd:ed1e:5cfc:f408%3]) with mapi id 15.20.4755.021; Mon, 6 Dec 2021
+ 12:13:44 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20211206100200.31914-1-xianwei.zhao@amlogic.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-Message-ID: <4d07d6c0-e320-60cf-740f-c39bfed19c0d@baylibre.com>
-Date:   Mon, 6 Dec 2021 11:50:42 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Subject: RE: [PATCH v2 01/14] dt-bindings: arm: renesas: Document Renesas
+ Spider boards
+Thread-Topic: [PATCH v2 01/14] dt-bindings: arm: renesas: Document Renesas
+ Spider boards
+Thread-Index: AQHX5oW2JWqNeNLS50CyU45ArWRY5awg9FOAgARPIlA=
+Date:   Mon, 6 Dec 2021 12:13:44 +0000
+Message-ID: <TY2PR01MB3692D6C55A9B7B453FC49848D86D9@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+References: <20211201073308.1003945-1-yoshihiro.shimoda.uh@renesas.com>
+ <20211201073308.1003945-2-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdV1Ri-yCeJSp6Gdw5ocAgXj4Yyc57ucN2DY=muj+dQV9A@mail.gmail.com>
+In-Reply-To: <CAMuHMdV1Ri-yCeJSp6Gdw5ocAgXj4Yyc57ucN2DY=muj+dQV9A@mail.gmail.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b7427488-16ad-4ab3-1b6f-08d9b8b1d974
+x-ms-traffictypediagnostic: TYYPR01MB7005:EE_
+x-microsoft-antispam-prvs: <TYYPR01MB7005B8281C87CCE0F581E823D86D9@TYYPR01MB7005.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6UWhWa71tWVaaDdVZBguwFh+KUpXcPMOAf0h85BDJuD6x2R/ZSvqxV8NmhkbwmvL2YpZqGtDdbHyNz1s5rvCh62hXVdF9Pe72ZpfF5zhp38wTfDA0vp8K8tPIt6k7/OVzLv7cIVi1JuE0qZDPp9eQBPgTkNd3iWp1+5k9vvyY5XiOLq+385g16BjNOYLEpjAmQUEghfXIPprmvTVhWbSWnJGtOkl4vyEQYR7XWL6Xu+owKJ8TicQIX6QKK8psgpLbryGxZVftD6uvIEgOdoMaGrAkEsFDAryMClUnGObQjkIyJJAQa/vZryfEh/n1EmRnNo3fOC5uhcxyvsKYQK+GMXDjqGt+sp4hlVL8slI0YA9+vQwOGr/jSqBfFq6bwni/gwlmDJzxsSwBFe+e9vJuAs3Tme2REZITRzUuWkMSiWqsGfTYlz192OwhnxJUXi4A6S7/fqJmrpSGtjydn9v48DbQopsHcd0NEGGtr8Lg/ddhM+mAeyet46AkGcpyICmfYNYpgjO5ljqgHd8sk2shhrjuD7xELlUwiRrWQtT4xjTVnKalFEmu1XVdAP1AIMZdlGUcwo/WLNinh+iIOInWQJ+pA5tBP0/yty8UItSrPcHXoyJt/KTTFVZ3WMV1W/oV6KtpZCBqjonKYQLoumemLQXvvRiLYrlBwIDAEWVDE1afXwriE2UgNtc/43Ov3LbRhf4eZfpGgBtytsitbdrbw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(54906003)(4326008)(86362001)(8676002)(38070700005)(66476007)(2906002)(316002)(52536014)(66556008)(6916009)(64756008)(66446008)(9686003)(55016003)(186003)(71200400001)(122000001)(508600001)(8936002)(7696005)(33656002)(26005)(53546011)(6506007)(5660300002)(76116006)(38100700002)(66946007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cnpRc01vWE1BUWFicjRLb1R6Umo2T3dibVU3eDd4czdZS09WWFZNZjFNOExr?=
+ =?utf-8?B?NEFVa1lBSFU4V3cvVU5RVU5pbGkxMldhdUFGYWdZemtEVTVvUzZQbG5SMXpJ?=
+ =?utf-8?B?UThPY0tYNTVDZ3NzcDZFd2pmZnMrU2tRckM3ZThzbkNVQzdILzBpTmI5UHA0?=
+ =?utf-8?B?LzV4cUtoWFkvV0N5ZmRHcTV0c25Tc2NVbkQ3QUcvTENEc0VNWW9CS3JQL0xn?=
+ =?utf-8?B?eWFEMTRRdzRoQ1BadUJkcjVNc0FRbE5xazhmUnFHUklJaG82R0dna0xHM1B6?=
+ =?utf-8?B?c1JkTGhzTGwvZWprSHpGWlBEZ0dBSUdBcUk5d21ZcVBSdHBOT1lLVFR1d2Iz?=
+ =?utf-8?B?c1hqYkFWN09FV1lMcWJkekxyQzBWaWJic2pMeGlSRFBXOFZzOWJseVBLaUlF?=
+ =?utf-8?B?azZNcE9DQnFZelVuT0ptSFJ6dUwwQW1lMkNwV00ralJDWjhjaDRvYW9MV2Rq?=
+ =?utf-8?B?RDRDOEhhZHdVZjdtSnpxTlV0WTRNMlRLMytJU3gzQ3IwaEhMamdwd1NhRnNK?=
+ =?utf-8?B?QndFNDM1UVRoSEppUEJReWNKN3RuQWFVSE5Ma3NkaFRwdno2aWthb001UjVP?=
+ =?utf-8?B?S2t2dzRWRnFQWHZ4amsyckYvVnlHeFBUWEdWcUdld0thczlQZHdYWGRhak84?=
+ =?utf-8?B?MnJTT1c1SU4xWU9UZXI1bFllcVNNdFk2d1UxZkt1SVY1K0ZrZGRHd0Z1Qk12?=
+ =?utf-8?B?WExvcThaK3RKbmRKL3JUdGgvaVR6WkpaZGYrUE1IVk1ZQktEdndIT2ladW13?=
+ =?utf-8?B?cWhxeFJua242aTAwRlFkaDJNbm1hTTRmbWsvZVFXYkRrQm9XMWNIbUo0Mkpv?=
+ =?utf-8?B?bndjRmJ5S1RPN3FuMm04Qi9laHFPWlFMWXpyWjlIWEtKVXpjYnp6eGFrR0tS?=
+ =?utf-8?B?QktOYjhMTVFuVnlnRGJIVmFyckNqdVA5eEpGK0pNdFZ2Wm55eGEyN1V6b2Uw?=
+ =?utf-8?B?SHlHdGNJaUZSYXFVTDM0ZHRrR0J2Nk04N0FTcjZCK2Mzd0ZZcURwYlo3M3lH?=
+ =?utf-8?B?cVprdVpqbC9LT2pFWFg0bzJZNWdZYWVPWUt4ci9PbnZkZnhjV09LTUVvenYy?=
+ =?utf-8?B?YlluNGlPbEY1T0pLNlpXNmJrR3FINFBmR0VuVGZENTRmN3V3L1FBZkpmZnlF?=
+ =?utf-8?B?U2VVWlRmMG5mMUUxejA4aExDSW1WcDduSk9qMkEyYUZYQ3BYTlpyMkFGaE5r?=
+ =?utf-8?B?cC9lTHRYV2NUdEdLbjNESDQvb1ZjMjJ1c1ZOOEgzMHMyWGJ5cXIwaXJFNENI?=
+ =?utf-8?B?SUkycTl5R3hmWkVLajl2WEJvejBaQzREYVFlMzBpUlZJdzVLckU1dlRlcHpB?=
+ =?utf-8?B?UVE3dnNpdVVWYzdkV2ZHS0plZmU0TnBib2d1R0ZuRzJBc2ZTaHBxckRDWisx?=
+ =?utf-8?B?NW9LOWhaK2ZtYnNad1dJWGlsa1VjWmlNcW1VY3Nmd3FLT2ZEZy9EZmNPc3pG?=
+ =?utf-8?B?SWF0Mm85M0xaeWM5RU9QSzNSVVhVMVQyQkJhUGhjRG5qcXllc0lvVlE4TTRj?=
+ =?utf-8?B?QzNoWkRKRlc3U1pVR2J4WXV5S2VZaDRoOXhjd1hnSlVJV2JBMi9yTm5qVlA4?=
+ =?utf-8?B?anZpUFFvQ052Q3ROR2RvUGZ0TVJDMTZHaEFjeWhKQkxTM2daNHdWaXRONUpw?=
+ =?utf-8?B?L01sczc0Rlh5QkZmaWNwTEw5VVNla0ZRam1Tbmo2UjBqZFFFMjdKK2NVMEkr?=
+ =?utf-8?B?UjdWSWtMck5ReVVVZ3oyUmUrSkRvZFF0QlZnakZDejZiWEVRQm5aajZZQ0pI?=
+ =?utf-8?B?OGZKRjYzWWlwTjlSWnVnUndyYk1ydVp0a1F3RDMxL1BQQ1J6bHllc1dwaDJs?=
+ =?utf-8?B?MktPQ0c4MEtJKzFjbzhxZDNWV1krSGY4by9od1dNTGk0WUJDZ25LV0xneTQ0?=
+ =?utf-8?B?TG1IbDZpMEJqaUhDNEhBUHQzUi8vbnBzNWxCWnBvVDZjYmhBRUtEcncwZmRZ?=
+ =?utf-8?B?OHNCMXB2ellWSk5sMnFhTDdKZG9Bd1piWUk5MDBrNjRKNG02SU0rbFhTZHZI?=
+ =?utf-8?B?eE5lMFlCTkRVNmVvMldGMUVyRGtUdzB5bWdqRXR3NVBvanJKaVZSK1pSeDNG?=
+ =?utf-8?B?ZEpyMDRpM1lQOGlmTVBMQnpaQ1JhZ0dxRVoxelhIVkxCcHQwKytHVEpVYUlt?=
+ =?utf-8?B?STg2UTBJZXdlWVJtalU5Q3ZrZjVXUjh3S2ZDQ0NzOWFqNlZTL2ZTZ2pjWG8w?=
+ =?utf-8?B?bVRVVTJ5SWpZWUFLNmsxRUZuTER5Q05ZbFJ4cDJxa2ZzT1hZLzkxTUhIeTVa?=
+ =?utf-8?B?YUFCNHZEaCtkVDE4ZTAxckFkUDhickNhNytXQ2VNN0x3bTlHMWpNUVVSTEZh?=
+ =?utf-8?B?TW41MHpIdmxWZkNTTlQvYzBQUjdyYUdKNFV4bnhTVHpGMVd2MmtLZz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20211206100200.31914-1-xianwei.zhao@amlogic.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7427488-16ad-4ab3-1b6f-08d9b8b1d974
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2021 12:13:44.4744
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ab7rmQzl9wfKtqgANJ/VK0gZ2u2HqtQo055LzoHk93fSrHrzIY82mdNti8WfCNqhr+V6xS8H0qMF8VElv5s2HhT//fm33mHz0F3H6SCXhMGE/4s0xu07sgkR/DKFt9lU
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYYPR01MB7005
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On 06/12/2021 11:02, xianwei.zhao wrote:
-> Because S4 UART use a different clock source, the baud rate calculation need to be updated.
-> Reset the UART during initialization to clear previous status.
-> 
-> Signed-off-by: xianwei.zhao <xianwei.zhao@amlogic.com>
-> ---
->  drivers/tty/serial/meson_uart.c | 50 +++++++++++++++++++++++++++------
->  1 file changed, 42 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index efee3935917f..15a992ee6a28 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -65,9 +65,11 @@
->  #define AML_UART_RECV_IRQ(c)		((c) & 0xff)
->  
->  /* AML_UART_REG5 bits */
-> -#define AML_UART_BAUD_MASK		0x7fffff
-> +#define AML_UART_BAUD_MASK		GENMASK(22, 0)
->  #define AML_UART_BAUD_USE		BIT(23)
->  #define AML_UART_BAUD_XTAL		BIT(24)
-> +#define AML_UART_BAUD_XTAL_TICK		BIT(26)
-> +#define AML_UART_BAUD_XTAL_DIV2		BIT(27)
->  
->  #define AML_UART_PORT_NUM		12
->  #define AML_UART_PORT_OFFSET		6
-> @@ -80,6 +82,14 @@ static struct uart_driver meson_uart_driver;
->  
->  static struct uart_port *meson_ports[AML_UART_PORT_NUM];
->  
-> +/*
-> + * struct aml_uart - device data
-> + * @xtal_tick_en: A clock source that calculates baud rates
-> + */
-> +struct aml_uart {
-
-please change to a better name like meson_uart_data and pass it as data of meson_uart_dt_match
-
-> +	unsigned int xtal_tick_en;
-> +};
-> +
->  static void meson_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
->  {
->  }
-> @@ -103,7 +113,7 @@ static void meson_uart_stop_tx(struct uart_port *port)
->  	u32 val;
->  
->  	val = readl(port->membase + AML_UART_CONTROL);
-> -	val &= ~AML_UART_TX_INT_EN;
-> +	val &= ~AML_UART_TX_EN;
-
-Seems to be a cosmetic change, please split this in a separate patch.
-
->  	writel(val, port->membase + AML_UART_CONTROL);
->  }
->  
-> @@ -121,12 +131,12 @@ static void meson_uart_shutdown(struct uart_port *port)
->  	unsigned long flags;
->  	u32 val;
->  
-> -	free_irq(port->irq, port);
-> +	devm_free_irq(port->dev, port->irq, port);
-
-Please split this in a separate patch
-
->  
->  	spin_lock_irqsave(&port->lock, flags);
->  
->  	val = readl(port->membase + AML_UART_CONTROL);
-> -	val &= ~AML_UART_RX_EN;
-> +	val &= ~(AML_UART_RX_EN | AML_UART_TX_EN);
-
-Seems it fixes a bug, split in a separate patch.
-
->  	val &= ~(AML_UART_RX_INT_EN | AML_UART_TX_INT_EN);
->  	writel(val, port->membase + AML_UART_CONTROL);
->  
-> @@ -270,6 +280,7 @@ static int meson_uart_startup(struct uart_port *port)
->  	u32 val;
->  	int ret = 0;
->  
-> +	meson_uart_reset(port);
-
-Same, split in a separate patch
-
->  	val = readl(port->membase + AML_UART_CONTROL);
->  	val |= AML_UART_CLEAR_ERR;
->  	writel(val, port->membase + AML_UART_CONTROL);
-> @@ -285,24 +296,37 @@ static int meson_uart_startup(struct uart_port *port)
->  	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
->  	writel(val, port->membase + AML_UART_MISC);
->  
-> -	ret = request_irq(port->irq, meson_uart_interrupt, 0,
-> -			  port->name, port);
-> +	ret = devm_request_irq(port->dev, port->irq, meson_uart_interrupt,
-> +			       IRQF_SHARED, port->name, port);
-
-Same, split in a separate patch
-
->  
->  	return ret;
->  }
->  
->  static void meson_uart_change_speed(struct uart_port *port, unsigned long baud)
->  {
-> +	struct aml_uart *aml_uart_data = port->private_data;
->  	u32 val;
->  
->  	while (!meson_uart_tx_empty(port))
->  		cpu_relax();
->  
-> +	val = readl_relaxed(port->membase + AML_UART_REG5);
-> +	val &= ~AML_UART_BAUD_MASK;
-> +
->  	if (port->uartclk == 24000000) {
-> -		val = ((port->uartclk / 3) / baud) - 1;
-> -		val |= AML_UART_BAUD_XTAL;
-> +		if (aml_uart_data->xtal_tick_en) {
-> +			val = (port->uartclk / 2 + baud / 2) / baud  - 1;
-> +			val |= (AML_UART_BAUD_XTAL | AML_UART_BAUD_XTAL_DIV2);
-
-This should be triggered by a value in match data with a new compatible.
-
-> +		} else {
-> +			val = ((port->uartclk / 3) + baud / 2) / baud  - 1;
-> +			val &= (~(AML_UART_BAUD_XTAL_TICK |
-> +				AML_UART_BAUD_XTAL_DIV2));
-> +			val |= AML_UART_BAUD_XTAL;
-> +		}
->  	} else {
->  		val = ((port->uartclk * 10 / (baud * 4) + 5) / 10) - 1;
-> +		val &= (~(AML_UART_BAUD_XTAL | AML_UART_BAUD_XTAL_TICK |
-> +			AML_UART_BAUD_XTAL_DIV2));
->  	}
->  	val |= AML_UART_BAUD_USE;
->  	writel(val, port->membase + AML_UART_REG5);
-> @@ -715,6 +739,7 @@ static int meson_uart_probe(struct platform_device *pdev)
->  {
->  	struct resource *res_mem, *res_irq;
->  	struct uart_port *port;
-> +	struct aml_uart *aml_uart_data;
->  	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
->  	int ret = 0;
->  
-> @@ -754,6 +779,14 @@ static int meson_uart_probe(struct platform_device *pdev)
->  	if (!port)
->  		return -ENOMEM;
->  
-> +	aml_uart_data = devm_kzalloc(&pdev->dev, sizeof(struct aml_uart),
-> +				     GFP_KERNEL);
-> +	if (!aml_uart_data)
-> +		return -ENOMEM;
-> +
-> +	of_property_read_u32(pdev->dev.of_node, "xtal_tick_en",
-> +			     &aml_uart_data->xtal_tick_en);
-
-This property is not documented in the bindings, instead introduce
-a new compatible for the S4 and pass the "aml_uart" as the meson_uart_dt_match
-data pointer.
-
-And don't forget to submit the bindings change in another separate patch.
-
-> +
->  	/* Use legacy way until all platforms switch to new bindings */
->  	if (of_device_is_compatible(pdev->dev.of_node, "amlogic,meson-uart"))
->  		ret = meson_uart_probe_clocks_legacy(pdev, port);
-> @@ -775,6 +808,7 @@ static int meson_uart_probe(struct platform_device *pdev)
->  	port->x_char = 0;
->  	port->ops = &meson_uart_ops;
->  	port->fifosize = fifosize;
-> +	port->private_data = aml_uart_data;
->  
->  	meson_ports[pdev->id] = port;
->  	platform_set_drvdata(pdev, port);
-> 
-> base-commit: 3f19fed8d0daed6e0e04b130d203d4333b757901
-> 
-
-Thanks,
-Neil
+SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogU2F0dXJk
+YXksIERlY2VtYmVyIDQsIDIwMjEgMToxMyBBTQ0KPiANCj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0K
+PiBPbiBXZWQsIERlYyAxLCAyMDIxIGF0IDg6MzMgQU0gWW9zaGloaXJvIFNoaW1vZGENCj4gPHlv
+c2hpaGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPiB3cm90ZToNCj4gPiBBZGQgZGV2aWNlIHRy
+ZWUgYmluZGluZ3MgZG9jdW1lbnRhdGlvbiBmb3IgUmVuZXNhcyBSLUNhciBTNC04DQo+ID4gU3Bp
+ZGVyIENQVSBhbmQgQnJlYWtPdXQgYm9hcmRzLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogWW9z
+aGloaXJvIFNoaW1vZGEgPHlvc2hpaGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPg0KPiANCj4g
+VGhhbmtzIGZvciB5b3VyIHBhdGNoIQ0KPiANCj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvYXJtL3JlbmVzYXMueWFtbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24v
+ZGV2aWNldHJlZS9iaW5kaW5ncy9hcm0vcmVuZXNhcy55YW1sDQo+ID4gQEAgLTMxNyw2ICszMTcs
+MTQgQEAgcHJvcGVydGllczoNCj4gPg0KPiA+ICAgICAgICAtIGRlc2NyaXB0aW9uOiBSLUNhciBT
+NC04IChSOEE3NzlGMCkNCj4gPiAgICAgICAgICBpdGVtczoNCj4gPiArICAgICAgICAgIC0gZW51
+bToNCj4gPiArICAgICAgICAgICAgICAtIHJlbmVzYXMsc3BpZGVyLWNwdSAjIFNwaWRlciBDUFUg
+Ym9hcmQgKFJUUDhBNzc5RkFTS0IwU0MyUykNCj4gDQo+IEluIHlvdXIgcmVwbHkgdG8gdjEsIHlv
+dSBzYWlkIHRoYXQgdGhlIHBhcnQgbnVtYmVyIHNob3VsZCBiZQ0KPiBSVFA4QTc3OUYwQVNLQjBT
+QzJTPw0KDQpPb3BzISBJJ20gc29ycnkgSSBmb3Jnb3QgdG8gZml4IHRoaXMuDQoNCj4gPiArICAg
+ICAgICAgIC0gY29uc3Q6IHJlbmVzYXMscjhhNzc5ZjANCj4gPiArDQo+ID4gKyAgICAgIC0gaXRl
+bXM6DQo+ID4gKyAgICAgICAgICAtIGVudW06DQo+ID4gKyAgICAgICAgICAgICAgLSByZW5lc2Fz
+LHNwaWRlci1icmVha291dCAjIFNwaWRlciBCcmVha091dCBib2FyZCAoUlRQOEE3NzlGMEFTS0Iw
+U0IwUykNCj4gPiArICAgICAgICAgIC0gY29uc3Q6IHJlbmVzYXMsc3BpZGVyLWNwdQ0KPiA+ICAg
+ICAgICAgICAgLSBjb25zdDogcmVuZXNhcyxyOGE3NzlmMA0KPiA+DQo+ID4gICAgICAgIC0gZGVz
+Y3JpcHRpb246IFItQ2FyIEgzZSAoUjhBNzc5TTApDQo+IA0KPiBJIGNhbiBmaXh1cCB0aGUgYWJv
+dmUgd2hpbGUgYXBwbHlpbmcsIHNvDQo+IFJldmlld2VkLWJ5OiBHZWVydCBVeXR0ZXJob2V2ZW4g
+PGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPg0KPiBpLmUuIHdpbGwgcXVldWUgaW4gcmVuZXNhcy1k
+ZXZlbCBmb3IgdjUuMTcuDQoNCkknbSBoYXBweSBpZiB5b3UgZml4dXAgdGhlIGFib3ZlIHdoaWxl
+IGFwcGx5aW5nLg0KVGhhbmsgeW91IHZlcnkgbXVjaCBmb3IgeW91ciBoZWxwIQ0KDQpCZXN0IHJl
+Z2FyZHMsDQpZb3NoaWhpcm8gU2hpbW9kYQ0KDQo=
