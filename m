@@ -2,191 +2,179 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D84C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 12:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B13C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 12:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243201AbhLFMiA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Dec 2021 07:38:00 -0500
-Received: from comms.puri.sm ([159.203.221.185]:46758 "EHLO comms.puri.sm"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243141AbhLFMiA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Dec 2021 07:38:00 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 73221DFE86;
-        Mon,  6 Dec 2021 04:34:01 -0800 (PST)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id qeknyWjfx8Rb; Mon,  6 Dec 2021 04:34:00 -0800 (PST)
-Message-ID: <f9537e3b0019677a8e73ab59a215094262f84dd6.camel@puri.sm>
-Subject: Re: [RFC 06/19] devfreq: imx8m-ddrc: Add late system sleep PM ops
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Georgi Djakov <djakov@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Date:   Mon, 06 Dec 2021 13:33:52 +0100
-In-Reply-To: <YaaENEqlQbW8W6PI@ryzen>
-References: <1631554694-9599-1-git-send-email-abel.vesa@nxp.com>
-         <1631554694-9599-7-git-send-email-abel.vesa@nxp.com>
-         <e9a3a64dcfec858e612037199df7627b77ececd9.camel@puri.sm>
-         <YaaENEqlQbW8W6PI@ryzen>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        id S243249AbhLFMqS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Dec 2021 07:46:18 -0500
+Received: from mail-ua1-f51.google.com ([209.85.222.51]:34322 "EHLO
+        mail-ua1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243223AbhLFMqQ (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Dec 2021 07:46:16 -0500
+Received: by mail-ua1-f51.google.com with SMTP id n6so19274474uak.1;
+        Mon, 06 Dec 2021 04:42:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6ZinrwU3GhnnnOlksQsuvBgeRa1fK5jzAPrFF7INP8Y=;
+        b=2a3iLE3yNDC9W9BYnUDVeb2i3mY6aP+E9ZXXeOJ/6D0BgpV3LZm8AawVxhpoQ8PV/B
+         H0sxch3Lj/5LAlI9NnhXCDVtNkT9zbIOLJXIPFtGByxMrbF/ltTnI4Awoi2hCJPEEUCS
+         KFssu3Ec+4HrFIu356KyhvDQnJJOk+szML8eDrgKPc7+z7IeqCNAdrPpknyFQIx+FCC7
+         M7rKzFHkFXEUaJ8N8ML+v6IOaUstgq/XUeIzPmFBWNoyJorPEQJ4Y+Tb50Jbrrg4pc4a
+         h2ivR3zYj4LBR7SI2urYFJeF2G1FblGWiFaJ06xYBOi1J/qOUEXy9MaYPA58hemEtoge
+         AUXQ==
+X-Gm-Message-State: AOAM532b/zMmpOfiKbtTiIjyA139hHJp6ZtwO9x3eC7N9o5sJYwI+xK5
+        UY80vyao0yDujRx+ErHYpChH0/0Y2Hss3g==
+X-Google-Smtp-Source: ABdhPJw7bLYxeSgnIlpLcBMb5ky5s4/7KUAs0AXcBVdn/UDhwZuutLMpGmhJv6h/NRLGEyq8Yt0NQg==
+X-Received: by 2002:ab0:1566:: with SMTP id p35mr39787579uae.20.1638794566698;
+        Mon, 06 Dec 2021 04:42:46 -0800 (PST)
+Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
+        by smtp.gmail.com with ESMTPSA id i24sm4094170vkk.5.2021.12.06.04.42.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Dec 2021 04:42:46 -0800 (PST)
+Received: by mail-ua1-f53.google.com with SMTP id n6so19274337uak.1;
+        Mon, 06 Dec 2021 04:42:46 -0800 (PST)
+X-Received: by 2002:a9f:3e01:: with SMTP id o1mr39302663uai.89.1638794566075;
+ Mon, 06 Dec 2021 04:42:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211201073308.1003945-1-yoshihiro.shimoda.uh@renesas.com> <20211201073308.1003945-9-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20211201073308.1003945-9-yoshihiro.shimoda.uh@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 6 Dec 2021 13:42:34 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXwYqDO2q=SYC=r299QB0TRgga4-ijDCdA7tordBw1OUg@mail.gmail.com>
+Message-ID: <CAMuHMdXwYqDO2q=SYC=r299QB0TRgga4-ijDCdA7tordBw1OUg@mail.gmail.com>
+Subject: Re: [PATCH v2 08/14] clk: renesas: rcar-gen4-cpg: Introduce R-Car
+ Gen4 CPG driver
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am Dienstag, dem 30.11.2021 um 22:06 +0200 schrieb Abel Vesa:
-> On 21-11-10 13:15:26, Martin Kepplinger wrote:
-> > Am Montag, dem 13.09.2021 um 20:38 +0300 schrieb Abel Vesa:
-> > > Seems that, in order to be able to resume from suspend, the dram
-> > > rate
-> > > needs to be the highest one available. Therefore, add the late
-> > > system
-> > > suspend/resume PM ops which set the highest rate on suspend and
-> > > the
-> > > latest one used before suspending on resume.
-> > 
-> > Hi Abel, wouldn't this mean that s2idle / freeze would be kind of
-> > broken by this?
-> > 
-> 
-> Nope. Only the DDR rate needs to be raised at 800M before suspending.
-> Everything else stays the same.
+Hi Shimoda-san,
 
-fyi I just tested this and you're right. freezes when not at 800M. So
-for this patchset, I think this is fine as it enables and fixes stuff.
+On Wed, Dec 1, 2021 at 8:33 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> According to the official website [1], the R-Car V3U SoC is based
+> on the R-Car Gen4 architecture. So, introduce R-Car Gen4 CPG
+> driver.
+>
+> [1]
+> https://www.renesas.com/us/en/products/automotive-products/automotive-system-chips-socs/r-car-v3u-best-class-r-car-v3u-asil-d-system-chip-automated-driving
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-It would not hurt to mention s2idle at least, where of course 800M
-should not be selected, as no userspace is running at all. But I'd be
-fine with looking at that later.
+Thanks for your patch!
 
-> 
-> > Does is make sense to test the lowest rate? How would I force that
-> > here? (just for testing)
-> 
-> You can try, but it will surely freeze. See [1] what you need to
-> change
-> for testing.
-> > 
-> > Also, you could think about splitting this series up a bit and do
-> > this
-> > patch seperately onto mainline (before or after the other work).
-> > 
-> 
-> Well, I sent as RFC until now. Seems there are no big issues with the
-> approach. So I'll split the patches between subsystems on the next
-> iteration.
-> 
-> > thank you
-> >                           martin
-> > 
-> > 
-> > > 
-> > > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> > > ---
-> > >  drivers/devfreq/imx8m-ddrc.c | 28 +++++++++++++++++++++++++++-
-> > >  1 file changed, 27 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/devfreq/imx8m-ddrc.c
-> > > b/drivers/devfreq/imx8m-
-> > > ddrc.c
-> > > index f18a5c3c1c03..f39741b4a0b0 100644
-> > > --- a/drivers/devfreq/imx8m-ddrc.c
-> > > +++ b/drivers/devfreq/imx8m-ddrc.c
-> > > @@ -72,6 +72,8 @@ struct imx8m_ddrc {
-> > >         struct clk *dram_alt;
-> > >         struct clk *dram_apb;
-> > >  
-> > > +       unsigned long suspend_rate;
-> > > +       unsigned long resume_rate;
-> > >         int freq_count;
-> > >         struct imx8m_ddrc_freq
-> > > freq_table[IMX8M_DDRC_MAX_FREQ_COUNT];
-> > >  };
-> > > @@ -271,6 +273,22 @@ static int imx8m_ddrc_target(struct device
-> > > *dev,
-> > > unsigned long *freq, u32 flags)
-> > >         return ret;
-> > >  }
-> > >  
-> > > +static int imx8m_ddrc_suspend(struct device *dev)
-> > > +{
-> > > +       struct imx8m_ddrc *priv = dev_get_drvdata(dev);
-> > > +
-> > > +       priv->resume_rate = clk_get_rate(priv->dram_core);
-> > > +
-> > > +       return imx8m_ddrc_target(dev, &priv->suspend_rate, 0);
-> > > +}
-> > > +
-> > > +static int imx8m_ddrc_resume(struct device *dev)
-> > > +{
-> > > +       struct imx8m_ddrc *priv = dev_get_drvdata(dev);
-> > > +
-> > > +       return imx8m_ddrc_target(dev, &priv->resume_rate, 0);
-> > > +}
-> > > +
-> > >  static int imx8m_ddrc_get_cur_freq(struct device *dev, unsigned
-> > > long
-> > > *freq)
-> > >  {
-> > >         struct imx8m_ddrc *priv = dev_get_drvdata(dev);
-> > > @@ -324,6 +342,9 @@ static int imx8m_ddrc_init_freq_info(struct
-> > > device *dev)
-> > >  
-> > >                 if (dev_pm_opp_add(dev, freq->rate * 250000, 0))
-> > >                         return -ENODEV;
-> > > +
-> > > +               if (index ==  0)
-> 
-> [1] Change this line to:
->                     if (index == 1)
-> 
-> It will select the 166935483 freq for suspending.
-> 
-> > > +                       priv->suspend_rate = freq->rate * 250000;
-> > >         }
-> > >  
-> > >         return 0;
-> > > @@ -399,11 +420,16 @@ static const struct of_device_id
-> > > imx8m_ddrc_of_match[] = {
-> > >  };
-> > >  MODULE_DEVICE_TABLE(of, imx8m_ddrc_of_match);
-> > >  
-> > > +static const struct dev_pm_ops imx8m_ddrc_pm_ops = {
-> > > +       SET_LATE_SYSTEM_SLEEP_PM_OPS(imx8m_ddrc_suspend,
-> > > imx8m_ddrc_resume)
-> > > +};
-> > > +
-> > >  static struct platform_driver imx8m_ddrc_platdrv = {
-> > >         .probe          = imx8m_ddrc_probe,
-> > >         .driver = {
-> > >                 .name   = "imx8m-ddrc-devfreq",
-> > > -               .of_match_table = imx8m_ddrc_of_match,
-> > > +               .pm = &imx8m_ddrc_pm_ops,
-> > > +               .of_match_table =
-> > > of_match_ptr(imx8m_ddrc_of_match),
-> > >         },
-> > >  };
-> > >  module_platform_driver(imx8m_ddrc_platdrv);
-> > 
-> > 
+> --- /dev/null
+> +++ b/drivers/clk/renesas/rcar-gen4-cpg.c
 
+> +/*
+> + * RPC Clocks
+> + */
+> +#define CPG_RPCCKCR 0x874
 
+This is also defined in rcar-gen4-cpg.h, so I will drop it while applying.
+
+> +
+
+> --- /dev/null
+> +++ b/drivers/clk/renesas/rcar-gen4-cpg.h
+> @@ -0,0 +1,76 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * R-Car Gen4 Clock Pulse Generator
+> + *
+> + * Copyright (C) 2021 Renesas Electronics Corp.
+> + *
+> + */
+> +
+> +#ifndef __CLK_RENESAS_RCAR_GEN4_CPG_H__
+> +#define __CLK_RENESAS_RCAR_GEN4_CPG_H__
+> +
+> +enum rcar_gen4_clk_types {
+> +       CLK_TYPE_GEN4_MAIN = CLK_TYPE_CUSTOM,
+> +       CLK_TYPE_GEN4_PLL1,
+> +       CLK_TYPE_GEN4_PLL2,
+> +       CLK_TYPE_GEN4_PLL2X_3X, /* r8a779a0 only */
+> +       CLK_TYPE_GEN4_PLL3,
+> +       CLK_TYPE_GEN4_PLL5,
+> +       CLK_TYPE_GEN4_PLL6,
+> +       CLK_TYPE_GEN4_SDSRC,
+> +       CLK_TYPE_GEN4_SDH,
+> +       CLK_TYPE_GEN4_SD,
+> +       CLK_TYPE_GEN4_MDSEL,    /* Select parent/divider using mode pin */
+> +       CLK_TYPE_GEN4_Z,
+> +       CLK_TYPE_GEN4_OSC,      /* OSC EXTAL predivider and fixed divider */
+> +       CLK_TYPE_GEN4_RPCSRC,
+> +       CLK_TYPE_GEN4_RPC,
+> +       CLK_TYPE_GEN4_RPCD2,
+> +
+> +       /* SoC specific definitions start here */
+> +       CLK_TYPE_GEN4_SOC_BASE,
+> +};
+> +
+> +#define DEF_GEN4_SDH(_name, _id, _parent, _offset)     \
+> +       DEF_BASE(_name, _id, CLK_TYPE_GEN4_SDH, _parent, .offset = _offset)
+> +
+> +#define DEF_GEN4_SD(_name, _id, _parent, _offset)      \
+> +       DEF_BASE(_name, _id, CLK_TYPE_GEN4_SD, _parent, .offset = _offset)
+> +
+> +#define DEF_GEN4_MDSEL(_name, _id, _md, _parent0, _div0, _parent1, _div1) \
+> +       DEF_BASE(_name, _id, CLK_TYPE_GEN4_MDSEL,       \
+> +                (_parent0) << 16 | (_parent1),         \
+> +                .div = (_div0) << 16 | (_div1), .offset = _md)
+> +
+> +#define DEF_GEN4_OSC(_name, _id, _parent, _div)                \
+> +       DEF_BASE(_name, _id, CLK_TYPE_GEN4_OSC, _parent, .div = _div)
+> +
+> +#define DEF_GEN4_Z(_name, _id, _type, _parent, _div, _offset)  \
+> +       DEF_BASE(_name, _id, _type, _parent, .div = _div, .offset = _offset)
+
+Is there any specific reason _type is not fixed to CLK_TYPE_GEN4_Z,
+like before? Perhaps you have a future use-case in mind?
+
+> +
+> +struct rcar_gen4_cpg_pll_config {
+> +       u8 extal_div;
+> +       u8 pll1_mult;
+> +       u8 pll1_div;
+> +       u8 pll2_mult;
+> +       u8 pll2_div;
+> +       u8 pll3_mult;
+> +       u8 pll3_div;
+> +       u8 pll5_mult;
+> +       u8 pll5_div;
+> +       u8 pll6_mult;
+> +       u8 pll6_div;
+> +       u8 osc_prediv;
+> +};
+> +
+> +#define CPG_RPCCKCR    0x874
+> +#define SD0CKCR1       0x8a4
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-clk-for-v5.17 when the above has been sorted
+out.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
