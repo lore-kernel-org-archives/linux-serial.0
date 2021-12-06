@@ -2,81 +2,258 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31617C433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 10:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7207AC433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 10:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238274AbhLFKpr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Dec 2021 05:45:47 -0500
-Received: from mail-vk1-f179.google.com ([209.85.221.179]:46725 "EHLO
-        mail-vk1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237524AbhLFKpq (ORCPT
+        id S241380AbhLFKyO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Dec 2021 05:54:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241364AbhLFKyN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Dec 2021 05:45:46 -0500
-Received: by mail-vk1-f179.google.com with SMTP id m16so6357348vkl.13;
-        Mon, 06 Dec 2021 02:42:18 -0800 (PST)
+        Mon, 6 Dec 2021 05:54:13 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36271C0613F8
+        for <linux-serial@vger.kernel.org>; Mon,  6 Dec 2021 02:50:45 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id 137so7786093wma.1
+        for <linux-serial@vger.kernel.org>; Mon, 06 Dec 2021 02:50:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2oNbuF190awal+660ONrj+d8q2JGo3YTgD7d1EpaHqk=;
+        b=i89RiwQhlq3M3FfqGuw9GmPJf8RHv+JeWr+tvb4jpFpDFXE2UOTV6j4WbScDjqPA+B
+         OBIj9z0RPChvKMfVvQLrlfB+t8RIZMlEQulBBJKLT5sf3W0yIkrcx1yknQV3ljszZXa2
+         BUvs5FZXCnxZmi7eDRjg1sfvl/agI90MjTmOfp1FxPyTC1q5P0EUTK9OP8JbFFQ6u8AE
+         /P6+GuE3f63BfpXaS4j9AmskAKim8FFCyuDSFhui6hWiJcvSLUgKy5jj/4y8gINK5pXO
+         KkawozG1tMWPyFHS6B1cvgWbWXAMs/Rp0dl37RxfxAuL134Z3waUi0kqR2GYkFO8gu0G
+         92Tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+zCCWmhtbmFNgNFX1WhKzLOjZMyBbv+PDKFoPCAd0cw=;
-        b=0Wp15ZOc1HY7wgMkas+exwy5aR4gRw/Bzeze56EWupMv9qGupGphNLdxY1twhedukq
-         KS0/9kTH0q5vwZad2HMwjxUafTBa46qRtd8v/CjWmuKXOJg3b9yXieD7xlj5x4Zr9d72
-         G0CLIPGXiFS4M9WcErHIQ0VZjI0SC19SKMOZb6Yj5pRlSaNA1S06DW5hq9ghp11HHiiR
-         kS9fEHejJ/dSKj8wD4tdbY1MPv7HvHj/T7YpsNGwwbFVIRXuD5EenRL0d6c/KlHuf7JT
-         Ay6w0Fc9ZPUdaS6SbpceWCWYzV/vj7ZEDnieVzbqVnqj9uu/zGhKrr20U2gNUd1eSx8O
-         C+SQ==
-X-Gm-Message-State: AOAM532VyMWipOp1tK1yfeBwyek7Auil2hkPSa3t0UUfGMidNX7vZttZ
-        Iufbgedvv3Ab9zPTdcRLb7J4i9fzQQrDVA==
-X-Google-Smtp-Source: ABdhPJzJoNKxgxhPwO4T963Z7jfkxq/HNgr23EAtRZww4zsC641AXaKkZWZBhosHrIqLKh9k+cRlJQ==
-X-Received: by 2002:a1f:a857:: with SMTP id r84mr40297970vke.0.1638787337806;
-        Mon, 06 Dec 2021 02:42:17 -0800 (PST)
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com. [209.85.221.170])
-        by smtp.gmail.com with ESMTPSA id o7sm3871480vkl.41.2021.12.06.02.42.17
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=2oNbuF190awal+660ONrj+d8q2JGo3YTgD7d1EpaHqk=;
+        b=ymXJyNFR0iNBVJpHbqdDGsAYPm5KdW+H8/VhGn4B2yzsUwFaZ7nWr98yT2gOBf4aJ1
+         d6pzETRAybJDvfgPi2MbznnHtu7wKC3i6DVi+CEaUBz5LPb0CE18yKCNiZb9vAkTwiRc
+         6SCo5VRuILdFL2vOSw670HjL0kDjxozbIwl3eJ5/lFRRTCbluWjaH8UVuL5OfRnl64bY
+         hnLXOuXOYHqP5bAOOGKwPVD3QTCY9rRoUZHeuQxpOaXsdPvwjoow3tYENWailo2ElLUt
+         ypeFIupIBIQH+hs3xtt8ROtguqI+gsWPFm692/PUj0wg2Vv3lwI2Io3Z8/67Xp88bSTh
+         vGyQ==
+X-Gm-Message-State: AOAM531zetEKT3xSsEXZiN2KbH6GRuPdoWpciVx87iZHKdQhdCf62nJ4
+        IQ1aLnNvVrqxciT1LIRf2nVPaw==
+X-Google-Smtp-Source: ABdhPJzjgIxXGz1rRBspyqg6QUOKotxqaGgwdPATY0T4gaZw2DgV1Omn5/eBhdD3I5da5Q5lbhdUgA==
+X-Received: by 2002:a05:600c:154f:: with SMTP id f15mr37494357wmg.86.1638787843591;
+        Mon, 06 Dec 2021 02:50:43 -0800 (PST)
+Received: from ?IPv6:2001:861:44c0:66c0:70c1:5ce3:e1aa:1275? ([2001:861:44c0:66c0:70c1:5ce3:e1aa:1275])
+        by smtp.gmail.com with ESMTPSA id y7sm10771027wrw.55.2021.12.06.02.50.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Dec 2021 02:42:17 -0800 (PST)
-Received: by mail-vk1-f170.google.com with SMTP id q21so6440148vkn.2;
-        Mon, 06 Dec 2021 02:42:17 -0800 (PST)
-X-Received: by 2002:a05:6122:2193:: with SMTP id j19mr40312371vkd.7.1638787337326;
- Mon, 06 Dec 2021 02:42:17 -0800 (PST)
-MIME-Version: 1.0
-References: <20211201073308.1003945-1-yoshihiro.shimoda.uh@renesas.com> <20211201073308.1003945-7-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20211201073308.1003945-7-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 6 Dec 2021 11:42:06 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW+0goQmmWs_Jv2GbCCyv2eYKK_TaQ+5V7t8-46eL6eqg@mail.gmail.com>
-Message-ID: <CAMuHMdW+0goQmmWs_Jv2GbCCyv2eYKK_TaQ+5V7t8-46eL6eqg@mail.gmail.com>
-Subject: Re: [PATCH v2 06/14] soc: renesas: r8a779f0-sysc: Add r8a779f0 support
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
+        Mon, 06 Dec 2021 02:50:43 -0800 (PST)
+Subject: Re: [PATCH] serial: meson: make the current driver compatible with S4
+To:     "xianwei.zhao" <xianwei.zhao@amlogic.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20211206100200.31914-1-xianwei.zhao@amlogic.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <4d07d6c0-e320-60cf-740f-c39bfed19c0d@baylibre.com>
+Date:   Mon, 6 Dec 2021 11:50:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <20211206100200.31914-1-xianwei.zhao@amlogic.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 8:33 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Add support for R-Car S4-8 (R8A779F0) SoC power areas and register
-> access.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Hi,
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.17.
+On 06/12/2021 11:02, xianwei.zhao wrote:
+> Because S4 UART use a different clock source, the baud rate calculation need to be updated.
+> Reset the UART during initialization to clear previous status.
+> 
+> Signed-off-by: xianwei.zhao <xianwei.zhao@amlogic.com>
+> ---
+>  drivers/tty/serial/meson_uart.c | 50 +++++++++++++++++++++++++++------
+>  1 file changed, 42 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index efee3935917f..15a992ee6a28 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -65,9 +65,11 @@
+>  #define AML_UART_RECV_IRQ(c)		((c) & 0xff)
+>  
+>  /* AML_UART_REG5 bits */
+> -#define AML_UART_BAUD_MASK		0x7fffff
+> +#define AML_UART_BAUD_MASK		GENMASK(22, 0)
+>  #define AML_UART_BAUD_USE		BIT(23)
+>  #define AML_UART_BAUD_XTAL		BIT(24)
+> +#define AML_UART_BAUD_XTAL_TICK		BIT(26)
+> +#define AML_UART_BAUD_XTAL_DIV2		BIT(27)
+>  
+>  #define AML_UART_PORT_NUM		12
+>  #define AML_UART_PORT_OFFSET		6
+> @@ -80,6 +82,14 @@ static struct uart_driver meson_uart_driver;
+>  
+>  static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+>  
+> +/*
+> + * struct aml_uart - device data
+> + * @xtal_tick_en: A clock source that calculates baud rates
+> + */
+> +struct aml_uart {
 
-Gr{oetje,eeting}s,
+please change to a better name like meson_uart_data and pass it as data of meson_uart_dt_match
 
-                        Geert
+> +	unsigned int xtal_tick_en;
+> +};
+> +
+>  static void meson_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  {
+>  }
+> @@ -103,7 +113,7 @@ static void meson_uart_stop_tx(struct uart_port *port)
+>  	u32 val;
+>  
+>  	val = readl(port->membase + AML_UART_CONTROL);
+> -	val &= ~AML_UART_TX_INT_EN;
+> +	val &= ~AML_UART_TX_EN;
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Seems to be a cosmetic change, please split this in a separate patch.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>  	writel(val, port->membase + AML_UART_CONTROL);
+>  }
+>  
+> @@ -121,12 +131,12 @@ static void meson_uart_shutdown(struct uart_port *port)
+>  	unsigned long flags;
+>  	u32 val;
+>  
+> -	free_irq(port->irq, port);
+> +	devm_free_irq(port->dev, port->irq, port);
+
+Please split this in a separate patch
+
+>  
+>  	spin_lock_irqsave(&port->lock, flags);
+>  
+>  	val = readl(port->membase + AML_UART_CONTROL);
+> -	val &= ~AML_UART_RX_EN;
+> +	val &= ~(AML_UART_RX_EN | AML_UART_TX_EN);
+
+Seems it fixes a bug, split in a separate patch.
+
+>  	val &= ~(AML_UART_RX_INT_EN | AML_UART_TX_INT_EN);
+>  	writel(val, port->membase + AML_UART_CONTROL);
+>  
+> @@ -270,6 +280,7 @@ static int meson_uart_startup(struct uart_port *port)
+>  	u32 val;
+>  	int ret = 0;
+>  
+> +	meson_uart_reset(port);
+
+Same, split in a separate patch
+
+>  	val = readl(port->membase + AML_UART_CONTROL);
+>  	val |= AML_UART_CLEAR_ERR;
+>  	writel(val, port->membase + AML_UART_CONTROL);
+> @@ -285,24 +296,37 @@ static int meson_uart_startup(struct uart_port *port)
+>  	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
+>  	writel(val, port->membase + AML_UART_MISC);
+>  
+> -	ret = request_irq(port->irq, meson_uart_interrupt, 0,
+> -			  port->name, port);
+> +	ret = devm_request_irq(port->dev, port->irq, meson_uart_interrupt,
+> +			       IRQF_SHARED, port->name, port);
+
+Same, split in a separate patch
+
+>  
+>  	return ret;
+>  }
+>  
+>  static void meson_uart_change_speed(struct uart_port *port, unsigned long baud)
+>  {
+> +	struct aml_uart *aml_uart_data = port->private_data;
+>  	u32 val;
+>  
+>  	while (!meson_uart_tx_empty(port))
+>  		cpu_relax();
+>  
+> +	val = readl_relaxed(port->membase + AML_UART_REG5);
+> +	val &= ~AML_UART_BAUD_MASK;
+> +
+>  	if (port->uartclk == 24000000) {
+> -		val = ((port->uartclk / 3) / baud) - 1;
+> -		val |= AML_UART_BAUD_XTAL;
+> +		if (aml_uart_data->xtal_tick_en) {
+> +			val = (port->uartclk / 2 + baud / 2) / baud  - 1;
+> +			val |= (AML_UART_BAUD_XTAL | AML_UART_BAUD_XTAL_DIV2);
+
+This should be triggered by a value in match data with a new compatible.
+
+> +		} else {
+> +			val = ((port->uartclk / 3) + baud / 2) / baud  - 1;
+> +			val &= (~(AML_UART_BAUD_XTAL_TICK |
+> +				AML_UART_BAUD_XTAL_DIV2));
+> +			val |= AML_UART_BAUD_XTAL;
+> +		}
+>  	} else {
+>  		val = ((port->uartclk * 10 / (baud * 4) + 5) / 10) - 1;
+> +		val &= (~(AML_UART_BAUD_XTAL | AML_UART_BAUD_XTAL_TICK |
+> +			AML_UART_BAUD_XTAL_DIV2));
+>  	}
+>  	val |= AML_UART_BAUD_USE;
+>  	writel(val, port->membase + AML_UART_REG5);
+> @@ -715,6 +739,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>  {
+>  	struct resource *res_mem, *res_irq;
+>  	struct uart_port *port;
+> +	struct aml_uart *aml_uart_data;
+>  	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+>  	int ret = 0;
+>  
+> @@ -754,6 +779,14 @@ static int meson_uart_probe(struct platform_device *pdev)
+>  	if (!port)
+>  		return -ENOMEM;
+>  
+> +	aml_uart_data = devm_kzalloc(&pdev->dev, sizeof(struct aml_uart),
+> +				     GFP_KERNEL);
+> +	if (!aml_uart_data)
+> +		return -ENOMEM;
+> +
+> +	of_property_read_u32(pdev->dev.of_node, "xtal_tick_en",
+> +			     &aml_uart_data->xtal_tick_en);
+
+This property is not documented in the bindings, instead introduce
+a new compatible for the S4 and pass the "aml_uart" as the meson_uart_dt_match
+data pointer.
+
+And don't forget to submit the bindings change in another separate patch.
+
+> +
+>  	/* Use legacy way until all platforms switch to new bindings */
+>  	if (of_device_is_compatible(pdev->dev.of_node, "amlogic,meson-uart"))
+>  		ret = meson_uart_probe_clocks_legacy(pdev, port);
+> @@ -775,6 +808,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>  	port->x_char = 0;
+>  	port->ops = &meson_uart_ops;
+>  	port->fifosize = fifosize;
+> +	port->private_data = aml_uart_data;
+>  
+>  	meson_ports[pdev->id] = port;
+>  	platform_set_drvdata(pdev, port);
+> 
+> base-commit: 3f19fed8d0daed6e0e04b130d203d4333b757901
+> 
+
+Thanks,
+Neil
