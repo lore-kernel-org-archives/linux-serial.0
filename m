@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A32C3C43217
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 21:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AB8C433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Dec 2021 21:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350381AbhLFVRB (ORCPT
+        id S1350887AbhLFVTm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Dec 2021 16:17:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
+        Mon, 6 Dec 2021 16:19:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350352AbhLFVQ6 (ORCPT
+        with ESMTP id S1350916AbhLFVTY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Dec 2021 16:16:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3622EC0611F7;
-        Mon,  6 Dec 2021 13:13:29 -0800 (PST)
+        Mon, 6 Dec 2021 16:19:24 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448C6C0698D1;
+        Mon,  6 Dec 2021 13:15:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F05F7B812A5;
-        Mon,  6 Dec 2021 21:13:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF760C341C8;
-        Mon,  6 Dec 2021 21:13:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8CC77CE1864;
+        Mon,  6 Dec 2021 21:15:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95B6DC341C8;
+        Mon,  6 Dec 2021 21:15:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638825206;
-        bh=1kNzIlA7OK/d4j0WjBCGRmP3H3raho0VDYTDXBHSWCw=;
+        s=k20201202; t=1638825351;
+        bh=ELH+il2Mf3EsnMMFH+0Rbjv4Z0olnhBGcL9NmlJwzNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RVdlcnhxD3Jh/MxuMuLzzDcIooNeszRxs7rAKavmyJ2IXbKQ+Y/tan1gx/76y5CVy
-         k1iGO7gQnEfNJ24mFqCwfGXvCl3FlHEAZleNx1Mgx+pv0XyAE09I3GE6av/X7vDOMW
-         gL8x/xqCEq4f1AWZbolTfO6NdLeAggc5VPRu1An4tcUALr2fxlY6QUgT/7rYjAE4bX
-         2DObqAThYJ9ILJJtt+l71wvJIHTDMasxMmq2oGUnqefpW9Aqlg37wScBfM3bQS4gEF
-         NsrFyPgpT+gfSXJpFl5rj7nMvgpPt0AdPY+jiX7PJuBbewWRSC8pyyrB91mgp6Olkr
-         j4NpYbPPFbfXw==
+        b=Jjr9Jv5nxDVIdYkaDZOyqk7i1XXMqrTAc9r5woNX8K74SZo+I0DgvupDOnW3qkkon
+         KnBex+eU7LdoMnO1xZ8vIJtMfaWzi5BkhWvrDLGtsvcG8myy8qc8Js6WUL2XD7SXJT
+         kIK2cM+mUpl2w1Ezr2y/82oben6fxnro6RUZvgB1JqAOUC7JLDXS8cuMk7FW8lUOmy
+         COoain1vguuI8bH4Vl9HmzhG7Z9WhHXS/nilAavUb4Kse7g+5zU2THRmpn5VAym4+P
+         vGkTk2v02rfSJP/1tAQxqG7KdZZms1dbEMtXpBbD6hnN8iFoUNYRRztH6FVX92afGj
+         lLXfduzbBAnkg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
@@ -40,12 +40,12 @@ Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 07/24] Revert "tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP"
-Date:   Mon,  6 Dec 2021 16:12:12 -0500
-Message-Id: <20211206211230.1660072-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 04/15] Revert "tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP"
+Date:   Mon,  6 Dec 2021 16:15:04 -0500
+Message-Id: <20211206211520.1660478-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211206211230.1660072-1-sashal@kernel.org>
-References: <20211206211230.1660072-1-sashal@kernel.org>
+In-Reply-To: <20211206211520.1660478-1-sashal@kernel.org>
+References: <20211206211520.1660478-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -76,10 +76,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index b1e7190ae4836..ac5112def40d1 100644
+index a70911a227a84..b9f8add284e33 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2625,6 +2625,7 @@ OF_EARLYCON_DECLARE(lpuart, "fsl,vf610-lpuart", lpuart_early_console_setup);
+@@ -2559,6 +2559,7 @@ OF_EARLYCON_DECLARE(lpuart, "fsl,vf610-lpuart", lpuart_early_console_setup);
  OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1021a-lpuart", lpuart32_early_console_setup);
  OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1028a-lpuart", ls1028a_early_console_setup);
  OF_EARLYCON_DECLARE(lpuart32, "fsl,imx7ulp-lpuart", lpuart32_imx_early_console_setup);
