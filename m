@@ -2,87 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84314C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Dec 2021 08:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4163C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Dec 2021 09:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232739AbhLGI3B (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Dec 2021 03:29:01 -0500
-Received: from www.zeus03.de ([194.117.254.33]:35102 "EHLO mail.zeus03.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232723AbhLGI2u (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Dec 2021 03:28:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=092SULqdAQJccKnq4YxK7WEc3ff7
-        mBMwVj8zR8DWZpM=; b=MU4UVYUS/3yl/wCsEJlIyODFG5CRklUcz91C6XywSpXd
-        G17xG9fvjnZPLsrHnS3Fl8C0y0AFGB9e9Yb2IeSFmEeSX8KXFrr4teD5uoNnLwO8
-        tFaBwacZGB0PNUyEjvnADwqDyivEIaBk+3tZqTUXe6w2AxGJYwc+50vihoAm7oA=
-Received: (qmail 137329 invoked from network); 7 Dec 2021 09:25:17 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 7 Dec 2021 09:25:17 +0100
-X-UD-Smtp-Session: l3s3148p1@kszCHIrSpKggAwDPXwjfAHtMsMWgaLw5
-Date:   Tue, 7 Dec 2021 09:25:13 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Magnus Damm <damm@opensource.se>
-Cc:     linux-serial@vger.kernel.org, geert+renesas@glider.be,
-        gregkh@linuxfoundation.org, linux-renesas-soc@vger.kernel.org,
-        jirislaby@kernel.org
-Subject: Re: [PATCH] serial: sh-sci: Remove BREAK/FRAME/PARITY/OVERRUN
- printouts
-Message-ID: <Ya8aaej5BidMemRL@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Magnus Damm <damm@opensource.se>, linux-serial@vger.kernel.org,
-        geert+renesas@glider.be, gregkh@linuxfoundation.org,
-        linux-renesas-soc@vger.kernel.org, jirislaby@kernel.org
-References: <163884254093.18109.2982470198301927679.sendpatchset@octo>
+        id S233734AbhLGJWP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Dec 2021 04:22:15 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:59436
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232973AbhLGJWP (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 7 Dec 2021 04:22:15 -0500
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 4F5903F203
+        for <linux-serial@vger.kernel.org>; Tue,  7 Dec 2021 09:18:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1638868724;
+        bh=mbVZsPIKFmlo4NdLQ32VSh3peIplR0eL3tdmg/4c8Qc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=U6gu73HkHd2dN3Qeu+fI9ZHS1qrwFpu4j1sYz6S/nkjZKRCcgp1oWuoWxJ6qGbdW8
+         FziQ64OYfT3Q7qCjvchem2rjosCAFQt4B1URQOpbsdfSbwmr867bnpLIINMjw4lh+K
+         Z1iq0dbxlFHJIu+OEcbmg+leZVk15YLa6KOcUdLfygdk5PqQdStHOcSevksDDlP9TQ
+         OGaZH4MCrULpJNM9eHFbriEYirgtI7DBr1GaTdVCEU71/5mxTRMixqqXU9DSjhadcf
+         QyZKe6AsanRL+69smh3UaIRKGZe8Q8ndhbgww7r6bpKdduquQ874VtWRTcEjl3Wa+A
+         in31+sPzOE+Gg==
+Received: by mail-lf1-f69.google.com with SMTP id n18-20020a0565120ad200b004036c43a0ddso5061221lfu.2
+        for <linux-serial@vger.kernel.org>; Tue, 07 Dec 2021 01:18:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mbVZsPIKFmlo4NdLQ32VSh3peIplR0eL3tdmg/4c8Qc=;
+        b=urZ1pigJDG2H/Mnw2DJd9iLu2XmU+USVFwDK2jJfze0jFDnsrvza6TH/YAD58gFb8L
+         1Ity4DjhPp8p5tzQoa2C/71vFpNRUVPIfXg0O5jvFTCejqvbeBd6on3MqiY3WrRfYs2D
+         PzgWbE+BDfphw5qTkgs97UafehDA2avGqlA47WtNXsWsWauWr3ZSGbAfahK4A/r2EI8t
+         3v07n4AE2NEVwN4L2nda6C/UxwVKzFUA9tk63WhHHxaaigYMLzq1IYuYp6/uhpuV9XjU
+         bNXPk7auw+AbUDU9GsH4HDJo0ToTjGiyTQK6lcYqlrXjIJ8uC0sAE/ZuzVtMlUBGw7tu
+         kBTw==
+X-Gm-Message-State: AOAM5336HzbjBzdqt7Utgm+p5sgZ4e4UYMnJvtldGI3Ca19ALzOaSDgh
+        HtZhgWpq6G/iF/DYdXcsoRjInahhAVYNWbzPELgGGL8BFmOSqhQb62VYP1yxYmY5VyOdLE9ih1y
+        fVcAXhowiee/tTsoqGo6z51yXhOwPQRhMnZUIWey+2A==
+X-Received: by 2002:ac2:46c8:: with SMTP id p8mr40346930lfo.174.1638868723789;
+        Tue, 07 Dec 2021 01:18:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwE/X3GbUfZYbh0b1cJH+6HgAy41W8jeJ0LU1fZHzlDTEz3mdy4mHHqcZGQE/cHscY2fRtLzA==
+X-Received: by 2002:ac2:46c8:: with SMTP id p8mr40346902lfo.174.1638868723556;
+        Tue, 07 Dec 2021 01:18:43 -0800 (PST)
+Received: from [192.168.3.67] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
+        by smtp.gmail.com with ESMTPSA id b12sm1621027lfb.146.2021.12.07.01.18.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Dec 2021 01:18:42 -0800 (PST)
+Message-ID: <78ce61a9-b345-437a-df02-49951eb3f31e@canonical.com>
+Date:   Tue, 7 Dec 2021 10:18:41 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="v3LurCebDLnXVtzP"
-Content-Disposition: inline
-In-Reply-To: <163884254093.18109.2982470198301927679.sendpatchset@octo>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v3 10/11] tty: serial: samsung_tty: Support runtime PM
+Content-Language: en-US
+To:     Hector Martin <marcan@marcan.st>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Johan Hovold <johan@kernel.org>, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20211124073419.181799-1-marcan@marcan.st>
+ <20211124074625.182815-11-marcan@marcan.st>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20211124074625.182815-11-marcan@marcan.st>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 24/11/2021 08:46, Hector Martin wrote:
+> This allows idle UART devices to be suspended using the standard
+> runtime-PM framework. The logic is modeled after stm32-usart.
+> 
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>  drivers/tty/serial/samsung_tty.c | 93 ++++++++++++++++++++------------
+>  1 file changed, 59 insertions(+), 34 deletions(-)
+> 
 
---v3LurCebDLnXVtzP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Looks good.
 
-On Tue, Dec 07, 2021 at 11:02:20AM +0900, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
->=20
-> Update the SCIF serial driver to remove printouts for break, frame, parity
-> and overrun errors. This reduces the amount of console printouts generated
-> by the defconfig kernel on R-Car Gen3 for certain use cases. To retrieve
-> more information about such errors the user may inspect counters. Also th=
-ese
-> errors are fed into the TTY layer for further application specific handli=
-ng.
->=20
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
 
---v3LurCebDLnXVtzP
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmGvGmUACgkQFA3kzBSg
-KbbiEg//deeHC324Nzp1umJ03u9Jk7z5Yw091lWzHcLqItDClMl1qznwTDAMMWLW
-CBXicny7TbP/Zw0nGN5o4Ox4oL70znOb1OwhXFkBB50OyubIGvX4IgDyHbTGgprc
-BrLOYO6WNl5IaoFNyVg2d+2juyHh+bfrmd5Dt07BTbM46gXA2y6Mbio2XxVfvo+1
-1f1EPMnSRoGAezrknxSLHrYK2pahNLNjmyM+IeoIvCTrmnsRtibbvymwfOT5OtpS
-Nh4bYnSHyfFU8ZLkCOmtAgViae5xpVt79v1RO4Mudq6o+4KiziokbgbOm6qS+wSN
-LDl4qKex7V1t/dVEdPaFNSsxetXXbPfWIiFMC7KpKivMoIvL6ONQVRRZ8oBuoVmG
-TpjIdq7aRpsoZRIaQ7yDyMT/uE2Xx8V9VgW9jhTco7s9rLvct3towgIOkiaJE9JL
-FS0g19St0D6TSYl70tP5prAbXp7Ab0viwTGtcG0P4+63bum5GlHsFhIXDC6s6NJi
-AvADLsKFmjx+WYierErouNtaACadAmKnn44uA4SOSJCAu5/QCcibl94DHL4UO/+B
-4KLS6yshUKPV9suLyxoVhT1lWT4+rdnKoFmSM1tdexbbLDMqwSW3+NVjuTzJxdfS
-ed8iRFGZHUBRWLIpVIDScZRgZkJktQM2AXA/SkEsfGO2P1zV+xg=
-=f1IL
------END PGP SIGNATURE-----
-
---v3LurCebDLnXVtzP--
+Best regards,
+Krzysztof
