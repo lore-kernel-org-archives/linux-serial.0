@@ -2,111 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F9CC4332F
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Dec 2021 08:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84314C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Dec 2021 08:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232307AbhLGISL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Dec 2021 03:18:11 -0500
-Received: from mail-ua1-f53.google.com ([209.85.222.53]:35781 "EHLO
-        mail-ua1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232151AbhLGISL (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Dec 2021 03:18:11 -0500
-Received: by mail-ua1-f53.google.com with SMTP id l24so24991714uak.2;
-        Tue, 07 Dec 2021 00:14:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Im/95wWBcL00BOGyJ9v1SQD2hiUfJwtvdeae0rhshHE=;
-        b=pdQyizk0M/y/OG+6k3bfvao53q+vf8Asj5c/VBknCclJ9Rdz/9OsZF9GuLteauXjxg
-         KELcOkB/ucQJ5Nl0g6sxVD/+ZIPc3hLrjK95URsBYXIfMeTtZ9ZWUdb7c/p3BwSCj/JZ
-         aHhHboYEUuvh55B5sbOVaEnEMk2X8d7FjHfExm2gzyyp8GKxfaliWWOYf0vaQXaNoc70
-         5q4HROZcXAJuzTH7pXQfb30RTguTNm61UxmDsKUqq/1mFMZndYm+dLeXEN5hSSlahVq5
-         fk1refeI+x/OGEcOkw41wmj9BTmpMEh+EOqgXbsaIJ1NwVqWXBeXIJh+tEPimR2yFhi1
-         pWtw==
-X-Gm-Message-State: AOAM530/25EkD7ev4YbG1c8/Skv5S2Jo5F77mNmRS3Oc42JC/kqCMqu5
-        XXzWBO6lV2w77Hr2kKoIp5Xsy2JACOzFeg==
-X-Google-Smtp-Source: ABdhPJwfhqaEVZSPptMLitDEQsKZKPeQ3X58rJg8Lc8+M9BdyHZvSgFjPf6GCOyyCGD0jjrHHBGcQQ==
-X-Received: by 2002:a67:efd5:: with SMTP id s21mr43500967vsp.73.1638864880601;
-        Tue, 07 Dec 2021 00:14:40 -0800 (PST)
-Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com. [209.85.221.171])
-        by smtp.gmail.com with ESMTPSA id t5sm5946298vsk.24.2021.12.07.00.14.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Dec 2021 00:14:40 -0800 (PST)
-Received: by mail-vk1-f171.google.com with SMTP id b192so8716974vkf.3;
-        Tue, 07 Dec 2021 00:14:40 -0800 (PST)
-X-Received: by 2002:a05:6122:2193:: with SMTP id j19mr49838152vkd.7.1638864880073;
- Tue, 07 Dec 2021 00:14:40 -0800 (PST)
+        id S232739AbhLGI3B (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Dec 2021 03:29:01 -0500
+Received: from www.zeus03.de ([194.117.254.33]:35102 "EHLO mail.zeus03.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232723AbhLGI2u (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 7 Dec 2021 03:28:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=092SULqdAQJccKnq4YxK7WEc3ff7
+        mBMwVj8zR8DWZpM=; b=MU4UVYUS/3yl/wCsEJlIyODFG5CRklUcz91C6XywSpXd
+        G17xG9fvjnZPLsrHnS3Fl8C0y0AFGB9e9Yb2IeSFmEeSX8KXFrr4teD5uoNnLwO8
+        tFaBwacZGB0PNUyEjvnADwqDyivEIaBk+3tZqTUXe6w2AxGJYwc+50vihoAm7oA=
+Received: (qmail 137329 invoked from network); 7 Dec 2021 09:25:17 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 7 Dec 2021 09:25:17 +0100
+X-UD-Smtp-Session: l3s3148p1@kszCHIrSpKggAwDPXwjfAHtMsMWgaLw5
+Date:   Tue, 7 Dec 2021 09:25:13 +0100
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Magnus Damm <damm@opensource.se>
+Cc:     linux-serial@vger.kernel.org, geert+renesas@glider.be,
+        gregkh@linuxfoundation.org, linux-renesas-soc@vger.kernel.org,
+        jirislaby@kernel.org
+Subject: Re: [PATCH] serial: sh-sci: Remove BREAK/FRAME/PARITY/OVERRUN
+ printouts
+Message-ID: <Ya8aaej5BidMemRL@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Magnus Damm <damm@opensource.se>, linux-serial@vger.kernel.org,
+        geert+renesas@glider.be, gregkh@linuxfoundation.org,
+        linux-renesas-soc@vger.kernel.org, jirislaby@kernel.org
+References: <163884254093.18109.2982470198301927679.sendpatchset@octo>
 MIME-Version: 1.0
-References: <20211201073308.1003945-1-yoshihiro.shimoda.uh@renesas.com>
- <20211201073308.1003945-9-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdXwYqDO2q=SYC=r299QB0TRgga4-ijDCdA7tordBw1OUg@mail.gmail.com> <TY2PR01MB36922481D5C75272BA7B7D9ED86E9@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-In-Reply-To: <TY2PR01MB36922481D5C75272BA7B7D9ED86E9@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 7 Dec 2021 09:14:28 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVBNrWaXNLgA6q+19QQ5nSSnuM2r+VrsVMprM80heQm4A@mail.gmail.com>
-Message-ID: <CAMuHMdVBNrWaXNLgA6q+19QQ5nSSnuM2r+VrsVMprM80heQm4A@mail.gmail.com>
-Subject: Re: [PATCH v2 08/14] clk: renesas: rcar-gen4-cpg: Introduce R-Car
- Gen4 CPG driver
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="v3LurCebDLnXVtzP"
+Content-Disposition: inline
+In-Reply-To: <163884254093.18109.2982470198301927679.sendpatchset@octo>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Shimoda-san,
 
-On Tue, Dec 7, 2021 at 2:51 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> > From: Geert Uytterhoeven, Sent: Monday, December 6, 2021 9:43 PM
-> > On Wed, Dec 1, 2021 at 8:33 AM Yoshihiro Shimoda
-> > <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > > According to the official website [1], the R-Car V3U SoC is based
-> > > on the R-Car Gen4 architecture. So, introduce R-Car Gen4 CPG
-> > > driver.
-> > >
-> > > [1]
-> > >
-> > https://www.renesas.com/us/en/products/automotive-products/automotive-system-chips-socs/r-car-v3u-best-class-r-car-v
-> > 3u-asil-d-system-chip-automated-driving
-> > >
-> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+--v3LurCebDLnXVtzP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > > +#define DEF_GEN4_Z(_name, _id, _type, _parent, _div, _offset)  \
-> > > +       DEF_BASE(_name, _id, _type, _parent, .div = _div, .offset = _offset)
-> >
-> > Is there any specific reason _type is not fixed to CLK_TYPE_GEN4_Z,
-> > like before? Perhaps you have a future use-case in mind?
->
-> This is a similar definition with DEF_GEN3_Z. And, there is not
+On Tue, Dec 07, 2021 at 11:02:20AM +0900, Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas@opensource.se>
+>=20
+> Update the SCIF serial driver to remove printouts for break, frame, parity
+> and overrun errors. This reduces the amount of console printouts generated
+> by the defconfig kernel on R-Car Gen3 for certain use cases. To retrieve
+> more information about such errors the user may inspect counters. Also th=
+ese
+> errors are fed into the TTY layer for further application specific handli=
+ng.
+>=20
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 
-Right. And we never finished ZG clock support upstream, due to issues
-with upstream GPU support.
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-> upstream use-case though, if we support ZG clock, we have to use
-> _type for ZG like Gen3 BSP. In Gen4, we will support ZG clock
-> on other SoCs in the future, the _type is not fixed.
 
-OK, will keep.
+--v3LurCebDLnXVtzP
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks!
+-----BEGIN PGP SIGNATURE-----
 
-Gr{oetje,eeting}s,
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmGvGmUACgkQFA3kzBSg
+KbbiEg//deeHC324Nzp1umJ03u9Jk7z5Yw091lWzHcLqItDClMl1qznwTDAMMWLW
+CBXicny7TbP/Zw0nGN5o4Ox4oL70znOb1OwhXFkBB50OyubIGvX4IgDyHbTGgprc
+BrLOYO6WNl5IaoFNyVg2d+2juyHh+bfrmd5Dt07BTbM46gXA2y6Mbio2XxVfvo+1
+1f1EPMnSRoGAezrknxSLHrYK2pahNLNjmyM+IeoIvCTrmnsRtibbvymwfOT5OtpS
+Nh4bYnSHyfFU8ZLkCOmtAgViae5xpVt79v1RO4Mudq6o+4KiziokbgbOm6qS+wSN
+LDl4qKex7V1t/dVEdPaFNSsxetXXbPfWIiFMC7KpKivMoIvL6ONQVRRZ8oBuoVmG
+TpjIdq7aRpsoZRIaQ7yDyMT/uE2Xx8V9VgW9jhTco7s9rLvct3towgIOkiaJE9JL
+FS0g19St0D6TSYl70tP5prAbXp7Ab0viwTGtcG0P4+63bum5GlHsFhIXDC6s6NJi
+AvADLsKFmjx+WYierErouNtaACadAmKnn44uA4SOSJCAu5/QCcibl94DHL4UO/+B
+4KLS6yshUKPV9suLyxoVhT1lWT4+rdnKoFmSM1tdexbbLDMqwSW3+NVjuTzJxdfS
+ed8iRFGZHUBRWLIpVIDScZRgZkJktQM2AXA/SkEsfGO2P1zV+xg=
+=f1IL
+-----END PGP SIGNATURE-----
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--v3LurCebDLnXVtzP--
