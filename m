@@ -2,104 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4163C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Dec 2021 09:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BEEC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Dec 2021 22:18:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233734AbhLGJWP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Dec 2021 04:22:15 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:59436
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232973AbhLGJWP (ORCPT
+        id S232922AbhLGWVu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Dec 2021 17:21:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232056AbhLGWVt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Dec 2021 04:22:15 -0500
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 4F5903F203
-        for <linux-serial@vger.kernel.org>; Tue,  7 Dec 2021 09:18:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1638868724;
-        bh=mbVZsPIKFmlo4NdLQ32VSh3peIplR0eL3tdmg/4c8Qc=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=U6gu73HkHd2dN3Qeu+fI9ZHS1qrwFpu4j1sYz6S/nkjZKRCcgp1oWuoWxJ6qGbdW8
-         FziQ64OYfT3Q7qCjvchem2rjosCAFQt4B1URQOpbsdfSbwmr867bnpLIINMjw4lh+K
-         Z1iq0dbxlFHJIu+OEcbmg+leZVk15YLa6KOcUdLfygdk5PqQdStHOcSevksDDlP9TQ
-         OGaZH4MCrULpJNM9eHFbriEYirgtI7DBr1GaTdVCEU71/5mxTRMixqqXU9DSjhadcf
-         QyZKe6AsanRL+69smh3UaIRKGZe8Q8ndhbgww7r6bpKdduquQ874VtWRTcEjl3Wa+A
-         in31+sPzOE+Gg==
-Received: by mail-lf1-f69.google.com with SMTP id n18-20020a0565120ad200b004036c43a0ddso5061221lfu.2
-        for <linux-serial@vger.kernel.org>; Tue, 07 Dec 2021 01:18:44 -0800 (PST)
+        Tue, 7 Dec 2021 17:21:49 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4440AC061574;
+        Tue,  7 Dec 2021 14:18:19 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id j11so346495pgs.2;
+        Tue, 07 Dec 2021 14:18:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+OLslRKYs3DoB0QbfX4PRYRIKyCinBx1NgHO/uw8ZVw=;
+        b=dymXRFQ6A00bVEIuvR7GYzuvZs4/X2covxGGnHpmuyqb5eJ/pj7rJlfj3lv3O5xhBJ
+         VfZmrdTtuUIpdOJbhquxnVVGLUqE5IwJtfpwUz3ybZRx5slp+FRFfGuwX4dvj2zqVxpA
+         zWGBRYC4z50ZcCpKYEE6cWvvT9uadqwuJ35/fKjiPlu480rKNg6yuZLXl0JANr1s8yVH
+         zm2eIR1BldsFMYqECF7Ayo/uhJec+6KbcYMsQmaLFhNwzaC10ChWXYQr6rAM22fCMdXT
+         kqBhx2qRUx8wkQtwwU4jzHA44a4ngFyroMFjfq/6mh3pdCQhi67Ok3U4iyViKWX96ahY
+         eD3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mbVZsPIKFmlo4NdLQ32VSh3peIplR0eL3tdmg/4c8Qc=;
-        b=urZ1pigJDG2H/Mnw2DJd9iLu2XmU+USVFwDK2jJfze0jFDnsrvza6TH/YAD58gFb8L
-         1Ity4DjhPp8p5tzQoa2C/71vFpNRUVPIfXg0O5jvFTCejqvbeBd6on3MqiY3WrRfYs2D
-         PzgWbE+BDfphw5qTkgs97UafehDA2avGqlA47WtNXsWsWauWr3ZSGbAfahK4A/r2EI8t
-         3v07n4AE2NEVwN4L2nda6C/UxwVKzFUA9tk63WhHHxaaigYMLzq1IYuYp6/uhpuV9XjU
-         bNXPk7auw+AbUDU9GsH4HDJo0ToTjGiyTQK6lcYqlrXjIJ8uC0sAE/ZuzVtMlUBGw7tu
-         kBTw==
-X-Gm-Message-State: AOAM5336HzbjBzdqt7Utgm+p5sgZ4e4UYMnJvtldGI3Ca19ALzOaSDgh
-        HtZhgWpq6G/iF/DYdXcsoRjInahhAVYNWbzPELgGGL8BFmOSqhQb62VYP1yxYmY5VyOdLE9ih1y
-        fVcAXhowiee/tTsoqGo6z51yXhOwPQRhMnZUIWey+2A==
-X-Received: by 2002:ac2:46c8:: with SMTP id p8mr40346930lfo.174.1638868723789;
-        Tue, 07 Dec 2021 01:18:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwE/X3GbUfZYbh0b1cJH+6HgAy41W8jeJ0LU1fZHzlDTEz3mdy4mHHqcZGQE/cHscY2fRtLzA==
-X-Received: by 2002:ac2:46c8:: with SMTP id p8mr40346902lfo.174.1638868723556;
-        Tue, 07 Dec 2021 01:18:43 -0800 (PST)
-Received: from [192.168.3.67] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
-        by smtp.gmail.com with ESMTPSA id b12sm1621027lfb.146.2021.12.07.01.18.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Dec 2021 01:18:42 -0800 (PST)
-Message-ID: <78ce61a9-b345-437a-df02-49951eb3f31e@canonical.com>
-Date:   Tue, 7 Dec 2021 10:18:41 +0100
+        bh=+OLslRKYs3DoB0QbfX4PRYRIKyCinBx1NgHO/uw8ZVw=;
+        b=W2Oj18b/dijhUHd0TwcfPi0ysYezcaQTdQ7cibmQhpkywsPV5/vY0V8QQvdIgodetF
+         YtHx4NyetJg+EBk0DUbRP23eItoWjM2y1kMVLwlbq8aX5GcbiM8SqIU/gsuDDYt1ZUE7
+         TMleQqiVXMybzhyt4AevjDa9wFA5blK8aT3M0w+kkJ5/L7E2u/QJ5IKquH7dy/kuQyJp
+         0xWCq5Emn5no+pffltaR2zzqUopWAeWVetlou8mBDwCw6FUbMKGEeDR47q71wQH1aQxx
+         Y3OJcl9AzqjMvxTX3OJ+C79wbl/fOmId+h+jB02qrFm4OOMFshvu6ltZa7JjdNaS9qhG
+         XVkg==
+X-Gm-Message-State: AOAM533554Ux3FEf0BwfWIIlX5QwVWzxf/yqIn3JCb8F1YxnX42k3dk4
+        Aqtz1wM9haRm2OhZBrOLO7M=
+X-Google-Smtp-Source: ABdhPJy8pEh7udQe8vFhOWAhI8Wo0P7fZi40t67T4notOuuNlQ6quLbxfQZB7FouKWrILssSlMQlwQ==
+X-Received: by 2002:a05:6a00:b83:b0:49f:b555:1183 with SMTP id g3-20020a056a000b8300b0049fb5551183mr2042539pfj.32.1638915498838;
+        Tue, 07 Dec 2021 14:18:18 -0800 (PST)
+Received: from localhost.localdomain ([103.85.9.78])
+        by smtp.gmail.com with ESMTPSA id y130sm697832pfg.202.2021.12.07.14.18.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 14:18:17 -0800 (PST)
+From:   Vihas Mak <makvihas@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vihas Mak <makvihas@gmail.com>
+Subject: [PATCH] tty: serial: return appropriate error on failure
+Date:   Wed,  8 Dec 2021 03:47:41 +0530
+Message-Id: <20211207221741.50422-1-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH v3 10/11] tty: serial: samsung_tty: Support runtime PM
-Content-Language: en-US
-To:     Hector Martin <marcan@marcan.st>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Johan Hovold <johan@kernel.org>, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20211124073419.181799-1-marcan@marcan.st>
- <20211124074625.182815-11-marcan@marcan.st>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20211124074625.182815-11-marcan@marcan.st>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 24/11/2021 08:46, Hector Martin wrote:
-> This allows idle UART devices to be suspended using the standard
-> runtime-PM framework. The logic is modeled after stm32-usart.
-> 
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  drivers/tty/serial/samsung_tty.c | 93 ++++++++++++++++++++------------
->  1 file changed, 59 insertions(+), 34 deletions(-)
-> 
+when a user with CAP_SYS_ADMIN disabled calls ioctl (TIOCSSERIAL),
+uart_set_info() returns 0 instead of -EPERM and the user remains unware
+about what went wrong. Fix this.
 
-Looks good.
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215205
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Vihas Mak <makvihas@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 61e3dd022..c204bdecc 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -960,7 +960,7 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 		uport->fifosize = new_info->xmit_fifo_size;
+ 
+  check_and_exit:
+-	retval = 0;
++	retval = retval < 0 ? retval : 0;
+ 	if (uport->type == PORT_UNKNOWN)
+ 		goto exit;
+ 	if (tty_port_initialized(port)) {
+-- 
+2.30.2
 
-
-Best regards,
-Krzysztof
