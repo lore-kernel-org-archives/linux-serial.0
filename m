@@ -2,125 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C5BC43219
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Dec 2021 10:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABE8C433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Dec 2021 14:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231947AbhLHKvy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Dec 2021 05:51:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45742 "EHLO
+        id S230420AbhLHOPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Dec 2021 09:15:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231924AbhLHKvy (ORCPT
+        with ESMTP id S229550AbhLHOPs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Dec 2021 05:51:54 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A4EC061746
-        for <linux-serial@vger.kernel.org>; Wed,  8 Dec 2021 02:48:22 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id k23so3262165lje.1
-        for <linux-serial@vger.kernel.org>; Wed, 08 Dec 2021 02:48:22 -0800 (PST)
+        Wed, 8 Dec 2021 09:15:48 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621F6C061746;
+        Wed,  8 Dec 2021 06:12:16 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id m6so4316587oim.2;
+        Wed, 08 Dec 2021 06:12:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=b+SdIraKU1h/VTJU366bK+146L0b2CZSCkrC1RqcLiI=;
-        b=fhXHxYwOAsjpDT7PFmr/Ay2Bpv6Q52w7gzhLvGp3vi03x0kgJwC1mR2nR1tEBwpntR
-         5BIgAfnWN19+UstNXJU4S3pPdsYuWBgNebk4d3ZIyHcMtWi3YzAF0eZIz8zZvhekOaoN
-         dpXhu+rLaGYfNU3wPEK81pcn5RGWC+TYP50YKir8VfeN5bYZl1TC19FCevLctaRQ7GbS
-         gPCsf9ihaBJkTM0mvs/9FwV0KyzdDAXiEqb7QKxeQwaG8ND1MHBq/EpD6AasS8g7Ta3l
-         bXpZYLOXalhq5nbUEDXeIJBRG84NeR6F77adUrF6zH9WKGEaVG6SVgZm6ihC4RzUHLYr
-         VlWQ==
+        bh=YZ4a2Q2JGh9XlSO7M5O7EIwFUgTCzOJasXHkco99Bw4=;
+        b=YuWPWAqeweg8HTH2XkmDa4rMIIEJdjBPBCFso+zEH0Om7eRZcAmJj+TDx+mPnt3HHO
+         ipYQ9VL9Ey620DQ4xgJHasnrL6DTe0wncd3Zcv1rMvgME4JZWNSKbmv9OriEK8B33fXf
+         y0c7W36DsJn9wYUv3rnnSH+uxs367RbSzOs6bLcpUK2AyryaVIIJRGqZYfzZyp84ioUD
+         bv/aWB0O2JRO5GZHmFeoApovpTFbotaoAKtYlWD9MSjp1GpDcLCrcSFfI2iMFGdrcWPZ
+         rBNHggLU9SpqDSjR79RXGvzfx9h/EFFJzUKtO4zDYXZrL+b9l6FA6QjCHVWN1aw33Scq
+         yWvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=b+SdIraKU1h/VTJU366bK+146L0b2CZSCkrC1RqcLiI=;
-        b=uPr1hBvGNZOrU9Ubclzz9sXfyoImVeib25w+IlFxaz9JFPUqT/JQHdR2KVMSE500qj
-         U8e5NM4yhre/IlTCZkrxdF15I0Qx60kgBZby3U5/fBWSkFRoN3Te9newdUEfbTriN0F8
-         jJoQRRxmZZbXvjbQ5oxvwYBEzLYs/Ae7LHBs0kPxBAkvkw/1DD9b14MxMHqnHkmr3sc3
-         Dy49q17qG9u+6voW+JzOZJ0R0+OXiLp50Gq1yAgFP/U1VvYtSlOgoawJPok2tr63sJgh
-         ACk6DANvFG0MCQII0vwRv7fUAGL59VL8dmEOpmw2vMZRE9z0TKDXzPUZacvsCWvbxCIl
-         T/zA==
-X-Gm-Message-State: AOAM533RVZJCIFdM/FW/6CKYUDnupzdgzqrnrxpw+mDO8bP4gNsM5U/N
-        /GJ4r+6u6y0MDOU31hnFk01GcoP6swdEuK2gINulmw==
-X-Google-Smtp-Source: ABdhPJwVpthnKSrDF/C2HexBrqNAjJ6E3HCFUU7MoAlXVzpyAbLD4i9B/Oo9exkRlkxfOdIXnrTziCam6tJi8meqZow=
-X-Received: by 2002:a2e:a22a:: with SMTP id i10mr48977767ljm.16.1638960500425;
- Wed, 08 Dec 2021 02:48:20 -0800 (PST)
+        bh=YZ4a2Q2JGh9XlSO7M5O7EIwFUgTCzOJasXHkco99Bw4=;
+        b=rpELA4g8lD0tdOYFWrJXc7RGkTbw4qK56qmoYBeoELxRJ30jSFgfL9LSrv5DjRWFqB
+         plXMUk5KqRGXlfrUu9WrStDU1rsqY39yPAM6zbF6S4V+d8ggi3VS4RzmXy6XeHb+WHir
+         U51fXaFJJSG0m7/f3veTz4rxeqMrn7vrnhJKEnMKNaLx53elvrD/GL+2ZZvkPcBaQtji
+         TNjrH5z31tiPr+8WgW0DCvq3iuql/uQV02KUbTdGLtM0iw6pTJGkobgortDgUuyg4seM
+         TYy9MZ9+ziJQftzrwzqFVw5xzdpHNK0mWn9IWtSe4/IvAV2896XB9K9RbLdJ0CCd13fx
+         heHg==
+X-Gm-Message-State: AOAM531oMZk1PNO69ncaXlbzr6gbzO2+SI9eajulYZRJig/iYsJFSVEX
+        7iaA/kgGxseHF/dHFZnRDi9YemuyLj+u1RkqF+k=
+X-Google-Smtp-Source: ABdhPJw7LPO7mfLxF4VV98Z4T/LGrfzmkd5il9GPK8oLAHj7mQpK5n6HFvXG2xLcIfVjF9EaUOC0R8VWwoFtkq9pq68=
+X-Received: by 2002:a54:4486:: with SMTP id v6mr12060509oiv.90.1638972735722;
+ Wed, 08 Dec 2021 06:12:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20211204061042.1248028-1-Mr.Bossman075@gmail.com> <20211204061042.1248028-12-Mr.Bossman075@gmail.com>
-In-Reply-To: <20211204061042.1248028-12-Mr.Bossman075@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 8 Dec 2021 11:47:44 +0100
-Message-ID: <CAPDyKFohGQ9M08sJmM5eo2jNhrvFSHA2bnb31AEgiFCFfV78ng@mail.gmail.com>
-Subject: Re: [PATCH v4 11/13] mmc: sdhci-esdhc-imx: Add sdhc support for
- i.MXRT series
-To:     Jesse Taube <mr.bossman075@gmail.com>
-Cc:     linux-imx@nxp.com, mturquette@baylibre.com, sboyd@kernel.org,
-        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        Kernel@pengutronix.de, festevam@gmail.com, aisheng.dong@nxp.com,
-        stefan@agner.ch, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
-        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
-        adrian.hunter@intel.com, jirislaby@kernel.org,
-        giulio.benetti@benettiengineering.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20211207221741.50422-1-makvihas@gmail.com> <YbBGWH0lPs3NBLQr@kroah.com>
+In-Reply-To: <YbBGWH0lPs3NBLQr@kroah.com>
+From:   Vihas Mak <makvihas@gmail.com>
+Date:   Wed, 8 Dec 2021 19:42:04 +0530
+Message-ID: <CAH1kMwThQARAoxoxP__fv+f2ep5ndutnxUbQXPEyqn410oL1mA@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: return appropriate error on failure
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 4 Dec 2021 at 07:11, Jesse Taube <mr.bossman075@gmail.com> wrote:
->
-> From: Jesse Taube <mr.bossman075@gmail.com>
->
-> Add support for i.MXRT1050's sdhc.
->
-> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-> Reviewed-by: Fabio Estevam <festevam@gmail.com>
+>> Please no, do not use ? : unless you have to.  Spell it out and use a
+>> real if statement.
 
-No need to resend this, it's already been applied.
+Okay. But I don't think it's required anymore, as Jiri pointed out in
+https://bugzilla.kernel.org/show_bug.cgi?id=215205#c1
 
-Kind regards
-Uffe
-
-
-
-> ---
-> V1->V2:
-> * Nothing done
-> V2->V3:
-> * Rename imxrt to imxrt1050
-> * Remove BROKEN_AUTO_CMD23 and MAN_TUNING flags
-> V3->V4:
-> * Nothing done
-> ---
->  drivers/mmc/host/sdhci-esdhc-imx.c | 4 ++++
->  1 file changed, 4 insertions(+)
+On Wed, Dec 8, 2021 at 11:15 AM Greg KH <gregkh@linuxfoundation.org> wrote:
 >
-> diff --git a/drivers/mmc/host/sdhci-esdhc-imx.c b/drivers/mmc/host/sdhci-esdhc-imx.c
-> index 764ee1b761d9..55981b0f0b10 100644
-> --- a/drivers/mmc/host/sdhci-esdhc-imx.c
-> +++ b/drivers/mmc/host/sdhci-esdhc-imx.c
-> @@ -305,6 +305,9 @@ static struct esdhc_soc_data usdhc_imx7ulp_data = {
->                         | ESDHC_FLAG_PMQOS | ESDHC_FLAG_HS400
->                         | ESDHC_FLAG_STATE_LOST_IN_LPMODE,
->  };
-> +static struct esdhc_soc_data usdhc_imxrt1050_data = {
-> +       .flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_HS200 | ESDHC_FLAG_ERR004536,
-> +};
+> On Wed, Dec 08, 2021 at 03:47:41AM +0530, Vihas Mak wrote:
+> > when a user with CAP_SYS_ADMIN disabled calls ioctl (TIOCSSERIAL),
+> > uart_set_info() returns 0 instead of -EPERM and the user remains unware
+> > about what went wrong. Fix this.
+> >
+> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215205
+> >
+> > Signed-off-by: Vihas Mak <makvihas@gmail.com>
+> > ---
+> >  drivers/tty/serial/serial_core.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> > index 61e3dd022..c204bdecc 100644
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -960,7 +960,7 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+> >               uport->fifosize = new_info->xmit_fifo_size;
+> >
+> >   check_and_exit:
+> > -     retval = 0;
+> > +     retval = retval < 0 ? retval : 0;
 >
->  static struct esdhc_soc_data usdhc_imx8qxp_data = {
->         .flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING
-> @@ -355,6 +358,7 @@ static const struct of_device_id imx_esdhc_dt_ids[] = {
->         { .compatible = "fsl,imx7ulp-usdhc", .data = &usdhc_imx7ulp_data, },
->         { .compatible = "fsl,imx8qxp-usdhc", .data = &usdhc_imx8qxp_data, },
->         { .compatible = "fsl,imx8mm-usdhc", .data = &usdhc_imx8mm_data, },
-> +       { .compatible = "fsl,imxrt1050-usdhc", .data = &usdhc_imxrt1050_data, },
->         { .compatible = "nxp,s32g2-usdhc", .data = &usdhc_s32g2_data, },
->         { /* sentinel */ }
->  };
-> --
-> 2.34.0
+> Please no, do not use ? : unless you have to.  Spell it out and use a
+> real if statement.
 >
+> thanks,
+>
+> greg k-h
+
+
+
+-- 
+Thanks,
+Vihas
