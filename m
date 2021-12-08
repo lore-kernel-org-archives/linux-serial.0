@@ -2,72 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12927C433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Dec 2021 05:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8964C433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Dec 2021 07:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229745AbhLHFsk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Dec 2021 00:48:40 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:36138 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235658AbhLHFsj (ORCPT
+        id S240586AbhLHHY4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Dec 2021 02:24:56 -0500
+Received: from mail-ed1-f41.google.com ([209.85.208.41]:43661 "EHLO
+        mail-ed1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240199AbhLHHY4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Dec 2021 00:48:39 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 01C47CE1FE7;
-        Wed,  8 Dec 2021 05:45:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 029C7C00446;
-        Wed,  8 Dec 2021 05:45:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1638942305;
-        bh=z3jrqMaA7Ll8zNGj+CAEiv+2JfaV3Q780Qlq87qhtys=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XRExbGqR1C7x0NVnB4255G25OiR9paoWQRc/CbnDT+nDNY1QAH938iMYvmEHh7Uup
-         Qd1OnyCrG7Ak3igrLz/Xi+pL6MScHCeLBXL9gpg8E+xskaglvnLYivS7NDlhTfImiY
-         XaehQogPOXGPFFh9Prfzfk/395hAJNgnLmpyDnSM=
-Date:   Wed, 8 Dec 2021 06:44:56 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Vihas Mak <makvihas@gmail.com>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: return appropriate error on failure
-Message-ID: <YbBGWH0lPs3NBLQr@kroah.com>
-References: <20211207221741.50422-1-makvihas@gmail.com>
+        Wed, 8 Dec 2021 02:24:56 -0500
+Received: by mail-ed1-f41.google.com with SMTP id o20so5112025eds.10;
+        Tue, 07 Dec 2021 23:21:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IVmLYGB580r43pIj6dV5gG4FJJTbCh6v3cE+UdalM8g=;
+        b=V+ZuzsKZEYay3290CLvbE8E3DPhw3suzxYOxk8yY8+cQ+YEvMkJcVfEkns/CGnjTsL
+         mymMtJtpCL9wcgJzwJ+a4Hl5NFr0jfeXSZMCMA9c8YGF/HAWYf1bYY7JKBLP25iGcxM7
+         6R6kBXpRR8qe5k8l7BThhfLYUkx0N8BHWjXdpKG3a/+w0K50s4gEyb1+31BFVVNsq5cL
+         aEBF07xBtUmx42xsgjDbtHbXyQ33CoZLr2v3Is+wvzXlD8cZueolVLm8rmcF9GjWzp9f
+         vAAEiXhA7orjE398jDemG/dHrpYTfLHjcwZCDdEiK4u9L4j4sJsW/Vf4WRMlb9UCHKht
+         0r/g==
+X-Gm-Message-State: AOAM5322OeBmdoLIhZ9zu0o/6+MXjpb3nLAuG9BLvkMyzeiIXF2mRFkz
+        UihkfMxia1z9IlB6dNyzN38zSCR3fXA=
+X-Google-Smtp-Source: ABdhPJwrsPsBiVxoQtOIxXjMD4bQl982DZszilVOz/NRX5HWAILpBe4AQyF1a14sEt/I/MGnQKZqZA==
+X-Received: by 2002:a17:907:ea5:: with SMTP id ho37mr5703164ejc.133.1638948083697;
+        Tue, 07 Dec 2021 23:21:23 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id jg32sm1056775ejc.43.2021.12.07.23.21.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Dec 2021 23:21:23 -0800 (PST)
+Message-ID: <7fd033ff-d1a5-9f1c-d8b9-5f51d63697fd@kernel.org>
+Date:   Wed, 8 Dec 2021 08:21:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211207221741.50422-1-makvihas@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH V2] tty: serial: fsl_lpuart: add timeout for
+ wait_event_interruptible in .shutdown()
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+References: <20211203030441.22873-1-sherry.sun@nxp.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20211203030441.22873-1-sherry.sun@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Dec 08, 2021 at 03:47:41AM +0530, Vihas Mak wrote:
-> when a user with CAP_SYS_ADMIN disabled calls ioctl (TIOCSSERIAL),
-> uart_set_info() returns 0 instead of -EPERM and the user remains unware
-> about what went wrong. Fix this.
+Hi,
+
+On 03. 12. 21, 4:04, Sherry Sun wrote:
+> Use wait_event_interruptible in lpuart_dma_shutdown isn't a reasonable
+> behavior, since it may cause the system hang here if the condition
+
+Wait, _interruptible causes hangs? Under what circumstances?
+
+> !sport->dma_tx_in_progress never to be true in some corner case, such as
+> when enable the flow control, the dma tx request may never be completed
+> due to the peer's CTS setting when run .shutdown().
 > 
-> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215205
-> 
-> Signed-off-by: Vihas Mak <makvihas@gmail.com>
+> So here change to use wait_event_interruptible_timeout instead of
+> wait_event_interruptible, the tx dma will be forcibly terminated if the
+> tx dma request cannot be completed within 300ms.
+> Considering the worst tx dma case is to have a 4K bytes tx buffer, which
+> would require about 300ms to complete when the baudrate is 115200.
+
+300 looks like a magic number -- what if the rate is < 115200? Why not 
+using port->timeout?
+
+Anyway, in what scenario is this a problem? Both lpuart*_tx_empty() do:
+if (sport->dma_tx_in_progress)
+         return 0;
+
+So wait_until_sent() should have waited for long enough already.
+
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 > ---
->  drivers/tty/serial/serial_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> changes in V2
+> 1. Increase the timeout to 300ms, need to consider the worst tx dma case.
+> ---
+>   drivers/tty/serial/fsl_lpuart.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 61e3dd022..c204bdecc 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -960,7 +960,7 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
->  		uport->fifosize = new_info->xmit_fifo_size;
->  
->   check_and_exit:
-> -	retval = 0;
-> +	retval = retval < 0 ? retval : 0;
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index ac5112def40d..3affe52a364d 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1793,8 +1793,8 @@ static void lpuart_dma_shutdown(struct lpuart_port *sport)
+>   	}
+>   
+>   	if (sport->lpuart_dma_tx_use) {
+> -		if (wait_event_interruptible(sport->dma_wait,
+> -			!sport->dma_tx_in_progress) != false) {
+> +		if (wait_event_interruptible_timeout(sport->dma_wait,
+> +			!sport->dma_tx_in_progress, msecs_to_jiffies(300)) <= 0) {
+>   			sport->dma_tx_in_progress = false;
+>   			dmaengine_terminate_all(sport->dma_tx_chan);
+>   		}
+> 
 
-Please no, do not use ? : unless you have to.  Spell it out and use a
-real if statement.
 
-thanks,
-
-greg k-h
+-- 
+js
+suse labs
