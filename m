@@ -2,128 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC629C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Dec 2021 07:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E05C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Dec 2021 08:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234079AbhLIHmZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Dec 2021 02:42:25 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:34154 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233993AbhLIHmV (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Dec 2021 02:42:21 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C03C9CE1FD9;
-        Thu,  9 Dec 2021 07:38:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BAFC004DD;
-        Thu,  9 Dec 2021 07:38:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1639035523;
-        bh=QyCFo4sEPt8ckkvZYpCfF4KeiGBmMnelIdnnz6gFQbQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QxXthkSVQWnJi/DSEkmbQsOtVhNm4+bE4ifvfbXI6SRh2VB9lb1DUYdGGDA+O/jwo
-         doUercz6uvgEg43T059XW6R5mvSlMjR6Z+Do9iaZ+52vXmpP73x28wh1++amFFONl3
-         5g/t+v+UT1AhYDIbTTU1otZfGBK6Qr9rJp+213yQ=
-Date:   Thu, 9 Dec 2021 08:38:40 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "wigin.zeng" <wigin.zeng@dji.com>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250: add lock for dma rx
-Message-ID: <YbGygPtkz6ihyW51@kroah.com>
+        id S230093AbhLIIZq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Dec 2021 03:25:46 -0500
+Received: from mail.djicorp.com ([14.21.64.4]:57494 "EHLO mail.djicorp.com"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229689AbhLIIZq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Dec 2021 03:25:46 -0500
+X-Greylist: delayed 429 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 Dec 2021 03:25:45 EST
+IronPort-SDR: 3IXqrvnP4bfn0C/5179SKw0ukaSpUlJqA7SPEJGdViKEIJInjJGJcCKd6xKtlYTTbSXQxqSH8A
+ 8W6N/AewaTBg==
+X-IronPort-AV: E=Sophos;i="5.88,191,1635177600"; 
+   d="scan'208";a="11814614"
+From:   wigin zeng <wigin.zeng@dji.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIHNlcmlhbDogODI1MDogYWRkIGxvY2sgZm9yIGRt?=
+ =?utf-8?Q?a_rx?=
+Thread-Topic: [PATCH] serial: 8250: add lock for dma rx
+Thread-Index: AQHX7M8cgUf9QibCHEeycmxSNUOEd6wpP9YAgACLx/A=
+Date:   Thu, 9 Dec 2021 08:15:00 +0000
+Message-ID: <674707a0388c4a3a9bb25676c61e1737@MAIL-MBX-cwP12.dji.com>
 References: <20211209073339.21694-1-wigin.zeng@dji.com>
+ <YbGygPtkz6ihyW51@kroah.com>
+In-Reply-To: <YbGygPtkz6ihyW51@kroah.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [58.34.188.114]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211209073339.21694-1-wigin.zeng@dji.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 09, 2021 at 03:33:39PM +0800, wigin.zeng wrote:
-> Need to add lock to protect the tty buffer in dma rx handler and serial
-> interrupt handler, there is chance that serial handler and dma handler
-> executing in same time in multi cores and RT enabled scenario.
-
-Are you sure?  Why has this not been a problem before now?  What
-changed?
-
-> Signed-off-by: wigin.zeng <wigin.zeng@dji.com>
-
-I do not think you have a "." in the name you use to sign documents,
-right?  Please use your real name here.
-
-
-> ---
->  drivers/tty/serial/8250/8250_dma.c  | 2 ++
->  drivers/tty/serial/8250/8250_port.c | 3 +++
->  include/linux/serial_core.h         | 1 +
->  3 files changed, 6 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-> index 890fa7ddaa7f..592b9906e276 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
-> @@ -48,6 +48,7 @@ static void __dma_rx_complete(void *param)
->         struct dma_tx_state     state;
->         int                     count;
-> 
-> +       spin_lock(&p->port.rx_lock);
->         dma->rx_running = 0;
->         dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
-> 
-> @@ -55,6 +56,7 @@ static void __dma_rx_complete(void *param)
-> 
->         tty_insert_flip_string(tty_port, dma->rx_buf, count);
->         p->port.icount.rx += count;
-> +       spin_unlock(&p->port.rx_lock);
-> 
->         tty_flip_buffer_push(tty_port);
->  }
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 5775cbff8f6e..4d8662df8d61 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1780,6 +1780,7 @@ unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr)
->         struct uart_port *port = &up->port;
->         int max_count = 256;
-> 
-> +       spin_lock(&port->rx_lock);
->         do {
->                 serial8250_read_char(up, lsr);
->                 if (--max_count == 0)
-> @@ -1787,6 +1788,7 @@ unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr)
->                 lsr = serial_in(up, UART_LSR);
->         } while (lsr & (UART_LSR_DR | UART_LSR_BI));
-> 
-> +       spin_unlock(&port->rx_lock);
->         tty_flip_buffer_push(&port->state->port);
->         return lsr;
->  }
-> @@ -3267,6 +3269,7 @@ void serial8250_init_port(struct uart_8250_port *up)
->         struct uart_port *port = &up->port;
-> 
->         spin_lock_init(&port->lock);
-> +       spin_lock_init(&port->rx_lock);
->         port->ops = &serial8250_pops;
->         port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
-> 
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index c58cc142d23f..77980b6f0c27 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -105,6 +105,7 @@ typedef unsigned int __bitwise upstat_t;
-> 
->  struct uart_port {
->         spinlock_t              lock;                   /* port lock */
-> +       spinlock_t              rx_lock;                /* port rx lock */
-
-Why can you not just use 'lock' here instead if this is really an issue?
-
-And doesn't this slow things down?
-
-thanks,
-
-greg k-h
+V2UgZW5jb3VudGVyZWQgdGhpcyBpc3N1ZSB3aGVuIFVBUlQgdHJhbnNmZXIgdmVyeSBpbnRlbnNp
+dmUuDQpETUEgaXJxLXRocmVhZCBwcm9jZXNzZWQgb24gQ1BVMCBhbmQgc2VyaWFsIGlycS10aHJl
+YWQgZXhlY3V0aW5nIG9uIENQVTEsIA0KSW4gRE1BIGlycS10aHJlYWQgd2lsbCBpbnZva2UgInR0
+eV9pbnNlcnRfZmlscF9zdHJpbmciIGZ1bmN0aW9uIHRvIGFkZCB0aGUgcnhfYnVmIGludG8gdHR5
+X2J1ZmZlci4NCkluIHNlcmlhbCBpcnEtdGhyZWFkIGFsc28gaGFzIGNoYW5jZSB0byBhY2Nlc3Mg
+dHR5X2luc2VydF9mbGlwX2NoYXIoaW4gc2VyaWFsODI1MF9yeF9jaGFycyApIHRvIGFjY2VzcyB0
+dHlfYnVmZmVyLg0KdGhlcmUgaXMgcmFjZSBjb25kaXRpb24sIHNvbWV0aW1lcyB3aWxsIGNhdXNl
+IHBhbmljLg0KV2UgYWRkIHRoZSBzcGluX2xvY2sgdG8gc3luYyB0aGUgdHR5X2J1ZmZlciBvcGVy
+YXRpb24sIGFuZCB0aGUgaXNzdWUgZ29uZSBhZnRlciBhcHBsaWVkIHRoZSBwYXRjaC4NCg0KQlJz
+DQpXZWlqdW4NCg0KLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0K5Y+R5Lu25Lq6OiBHcmVnIEtIIFtt
+YWlsdG86Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmddIA0K5Y+R6YCB5pe26Ze0OiAyMDIx5bm0
+MTLmnIg55pelIDE1OjM5DQrmlLbku7bkuro6IHdpZ2luIHplbmcgPHdpZ2luLnplbmdAZGppLmNv
+bT4NCuaKhOmAgTogamlyaXNsYWJ5QGtlcm5lbC5vcmc7IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5l
+bC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCuS4u+mimDogUmU6IFtQQVRDSF0g
+c2VyaWFsOiA4MjUwOiBhZGQgbG9jayBmb3IgZG1hIHJ4DQoNCuOAkEVYVEVSTkFMIEVNQUlM44CR
+IERPIE5PVCBDTElDSyBhbnkgbGlua3Mgb3IgYXR0YWNobWVudHMgdW5sZXNzIHlvdSBjYW4gbWFr
+ZSBzdXJlIGJvdGggdGhlIHNlbmRlciBhbmQgdGhlIGNvbnRlbnQgYXJlIHRydXN0d29ydGh5Lg0K
+DQoNCuOAkOWklumDqOmCruS7tuaPkOmGkuOAkeS7peS4i+mCruS7tuadpea6kOS6juWFrOWPuOWk
+lumDqO+8jOivt+WLv+eCueWHu+mTvuaOpeaIlumZhOS7tu+8jOmZpOmdnuaCqOehruiupOmCruS7
+tuWPkeS7tuS6uuWSjOWGheWuueWPr+S/oeOAgg0KDQoNCg0KT24gVGh1LCBEZWMgMDksIDIwMjEg
+YXQgMDM6MzM6MzlQTSArMDgwMCwgd2lnaW4uemVuZyB3cm90ZToNCj4gTmVlZCB0byBhZGQgbG9j
+ayB0byBwcm90ZWN0IHRoZSB0dHkgYnVmZmVyIGluIGRtYSByeCBoYW5kbGVyIGFuZCANCj4gc2Vy
+aWFsIGludGVycnVwdCBoYW5kbGVyLCB0aGVyZSBpcyBjaGFuY2UgdGhhdCBzZXJpYWwgaGFuZGxl
+ciBhbmQgZG1hIA0KPiBoYW5kbGVyIGV4ZWN1dGluZyBpbiBzYW1lIHRpbWUgaW4gbXVsdGkgY29y
+ZXMgYW5kIFJUIGVuYWJsZWQgc2NlbmFyaW8uDQoNCkFyZSB5b3Ugc3VyZT8gIFdoeSBoYXMgdGhp
+cyBub3QgYmVlbiBhIHByb2JsZW0gYmVmb3JlIG5vdz8gIFdoYXQgY2hhbmdlZD8NCg0KPiBTaWdu
+ZWQtb2ZmLWJ5OiB3aWdpbi56ZW5nIDx3aWdpbi56ZW5nQGRqaS5jb20+DQoNCkkgZG8gbm90IHRo
+aW5rIHlvdSBoYXZlIGEgIi4iIGluIHRoZSBuYW1lIHlvdSB1c2UgdG8gc2lnbiBkb2N1bWVudHMs
+IHJpZ2h0PyAgUGxlYXNlIHVzZSB5b3VyIHJlYWwgbmFtZSBoZXJlLg0KDQoNCj4gLS0tDQo+ICBk
+cml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2RtYS5jICB8IDIgKysgIA0KPiBkcml2ZXJzL3R0
+eS9zZXJpYWwvODI1MC84MjUwX3BvcnQuYyB8IDMgKysrDQo+ICBpbmNsdWRlL2xpbnV4L3Nlcmlh
+bF9jb3JlLmggICAgICAgICB8IDEgKw0KPiAgMyBmaWxlcyBjaGFuZ2VkLCA2IGluc2VydGlvbnMo
+KykNCj4NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZG1hLmMg
+DQo+IGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9kbWEuYw0KPiBpbmRleCA4OTBmYTdk
+ZGFhN2YuLjU5MmI5OTA2ZTI3NiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgy
+NTAvODI1MF9kbWEuYw0KPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2RtYS5j
+DQo+IEBAIC00OCw2ICs0OCw3IEBAIHN0YXRpYyB2b2lkIF9fZG1hX3J4X2NvbXBsZXRlKHZvaWQg
+KnBhcmFtKQ0KPiAgICAgICAgIHN0cnVjdCBkbWFfdHhfc3RhdGUgICAgIHN0YXRlOw0KPiAgICAg
+ICAgIGludCAgICAgICAgICAgICAgICAgICAgIGNvdW50Ow0KPg0KPiArICAgICAgIHNwaW5fbG9j
+aygmcC0+cG9ydC5yeF9sb2NrKTsNCj4gICAgICAgICBkbWEtPnJ4X3J1bm5pbmcgPSAwOw0KPiAg
+ICAgICAgIGRtYWVuZ2luZV90eF9zdGF0dXMoZG1hLT5yeGNoYW4sIGRtYS0+cnhfY29va2llLCAm
+c3RhdGUpOw0KPg0KPiBAQCAtNTUsNiArNTYsNyBAQCBzdGF0aWMgdm9pZCBfX2RtYV9yeF9jb21w
+bGV0ZSh2b2lkICpwYXJhbSkNCj4NCj4gICAgICAgICB0dHlfaW5zZXJ0X2ZsaXBfc3RyaW5nKHR0
+eV9wb3J0LCBkbWEtPnJ4X2J1ZiwgY291bnQpOw0KPiAgICAgICAgIHAtPnBvcnQuaWNvdW50LnJ4
+ICs9IGNvdW50Ow0KPiArICAgICAgIHNwaW5fdW5sb2NrKCZwLT5wb3J0LnJ4X2xvY2spOw0KPg0K
+PiAgICAgICAgIHR0eV9mbGlwX2J1ZmZlcl9wdXNoKHR0eV9wb3J0KTsgIH0gZGlmZiAtLWdpdCAN
+Cj4gYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX3BvcnQuYyANCj4gYi9kcml2ZXJzL3R0
+eS9zZXJpYWwvODI1MC84MjUwX3BvcnQuYw0KPiBpbmRleCA1Nzc1Y2JmZjhmNmUuLjRkODY2MmRm
+OGQ2MSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMN
+Cj4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMNCj4gQEAgLTE3ODAs
+NiArMTc4MCw3IEBAIHVuc2lnbmVkIGNoYXIgc2VyaWFsODI1MF9yeF9jaGFycyhzdHJ1Y3QgdWFy
+dF84MjUwX3BvcnQgKnVwLCB1bnNpZ25lZCBjaGFyIGxzcikNCj4gICAgICAgICBzdHJ1Y3QgdWFy
+dF9wb3J0ICpwb3J0ID0gJnVwLT5wb3J0Ow0KPiAgICAgICAgIGludCBtYXhfY291bnQgPSAyNTY7
+DQo+DQo+ICsgICAgICAgc3Bpbl9sb2NrKCZwb3J0LT5yeF9sb2NrKTsNCj4gICAgICAgICBkbyB7
+DQo+ICAgICAgICAgICAgICAgICBzZXJpYWw4MjUwX3JlYWRfY2hhcih1cCwgbHNyKTsNCj4gICAg
+ICAgICAgICAgICAgIGlmICgtLW1heF9jb3VudCA9PSAwKQ0KPiBAQCAtMTc4Nyw2ICsxNzg4LDcg
+QEAgdW5zaWduZWQgY2hhciBzZXJpYWw4MjUwX3J4X2NoYXJzKHN0cnVjdCB1YXJ0XzgyNTBfcG9y
+dCAqdXAsIHVuc2lnbmVkIGNoYXIgbHNyKQ0KPiAgICAgICAgICAgICAgICAgbHNyID0gc2VyaWFs
+X2luKHVwLCBVQVJUX0xTUik7DQo+ICAgICAgICAgfSB3aGlsZSAobHNyICYgKFVBUlRfTFNSX0RS
+IHwgVUFSVF9MU1JfQkkpKTsNCj4NCj4gKyAgICAgICBzcGluX3VubG9jaygmcG9ydC0+cnhfbG9j
+ayk7DQo+ICAgICAgICAgdHR5X2ZsaXBfYnVmZmVyX3B1c2goJnBvcnQtPnN0YXRlLT5wb3J0KTsN
+Cj4gICAgICAgICByZXR1cm4gbHNyOw0KPiAgfQ0KPiBAQCAtMzI2Nyw2ICszMjY5LDcgQEAgdm9p
+ZCBzZXJpYWw4MjUwX2luaXRfcG9ydChzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnVwKQ0KPiAgICAg
+ICAgIHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQgPSAmdXAtPnBvcnQ7DQo+DQo+ICAgICAgICAgc3Bp
+bl9sb2NrX2luaXQoJnBvcnQtPmxvY2spOw0KPiArICAgICAgIHNwaW5fbG9ja19pbml0KCZwb3J0
+LT5yeF9sb2NrKTsNCj4gICAgICAgICBwb3J0LT5vcHMgPSAmc2VyaWFsODI1MF9wb3BzOw0KPiAg
+ICAgICAgIHBvcnQtPmhhc19zeXNycSA9IElTX0VOQUJMRUQoQ09ORklHX1NFUklBTF84MjUwX0NP
+TlNPTEUpOw0KPg0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9zZXJpYWxfY29yZS5oIGIv
+aW5jbHVkZS9saW51eC9zZXJpYWxfY29yZS5oIA0KPiBpbmRleCBjNThjYzE0MmQyM2YuLjc3OTgw
+YjZmMGMyNyAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9zZXJpYWxfY29yZS5oDQo+ICsr
+KyBiL2luY2x1ZGUvbGludXgvc2VyaWFsX2NvcmUuaA0KPiBAQCAtMTA1LDYgKzEwNSw3IEBAIHR5
+cGVkZWYgdW5zaWduZWQgaW50IF9fYml0d2lzZSB1cHN0YXRfdDsNCj4NCj4gIHN0cnVjdCB1YXJ0
+X3BvcnQgew0KPiAgICAgICAgIHNwaW5sb2NrX3QgICAgICAgICAgICAgIGxvY2s7ICAgICAgICAg
+ICAgICAgICAgIC8qIHBvcnQgbG9jayAqLw0KPiArICAgICAgIHNwaW5sb2NrX3QgICAgICAgICAg
+ICAgIHJ4X2xvY2s7ICAgICAgICAgICAgICAgIC8qIHBvcnQgcnggbG9jayAqLw0KDQpXaHkgY2Fu
+IHlvdSBub3QganVzdCB1c2UgJ2xvY2snIGhlcmUgaW5zdGVhZCBpZiB0aGlzIGlzIHJlYWxseSBh
+biBpc3N1ZT8NCg0KQW5kIGRvZXNuJ3QgdGhpcyBzbG93IHRoaW5ncyBkb3duPw0KDQp0aGFua3Ms
+DQoNCmdyZWcgay1oDQpUaGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0byBtYXkg
+Y29udGFpbiBwcml2YXRlLCBjb25maWRlbnRpYWwsIGFuZCBwcml2aWxlZ2VkIG1hdGVyaWFsIGZv
+ciB0aGUgc29sZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudC4gQW55IHJldmlldywgY29w
+eWluZywgb3IgZGlzdHJpYnV0aW9uIG9mIHRoaXMgZW1haWwgKG9yIGFueSBhdHRhY2htZW50cyB0
+aGVyZXRvKSBieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3Qg
+dGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBpbW1lZGlh
+dGVseSBhbmQgcGVybWFuZW50bHkgZGVsZXRlIHRoZSBvcmlnaW5hbCBhbmQgYW55IGNvcGllcyBv
+ZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0by4NCg0K5q2k55S15a2Q6YKu
+5Lu25Y+K6ZmE5Lu25omA5YyF5ZCr5YaF5a655YW35pyJ5py65a+G5oCn77yM5LiU5LuF6ZmQ5LqO
+5o6l5pS25Lq65L2/55So44CC5pyq57uP5YWB6K6477yM56aB5q2i56ys5LiJ5Lq66ZiF6K+744CB
+5aSN5Yi25oiW5Lyg5pKt6K+l55S15a2Q6YKu5Lu25Lit55qE5Lu75L2V5L+h5oGv44CC5aaC5p6c
+5oKo5LiN5bGe5LqO5Lul5LiK55S15a2Q6YKu5Lu255qE55uu5qCH5o6l5pS26ICF77yM6K+35oKo
+56uL5Y2z6YCa55+l5Y+R6YCB5Lq65bm25Yig6Zmk5Y6f55S15a2Q6YKu5Lu25Y+K5YW255u45YWz
+55qE6ZmE5Lu244CCDQo=
