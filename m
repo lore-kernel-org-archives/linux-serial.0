@@ -2,59 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D87C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Dec 2021 07:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC629C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Dec 2021 07:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbhLIHlB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Dec 2021 02:41:01 -0500
-Received: from muru.com ([72.249.23.125]:36364 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229787AbhLIHlA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Dec 2021 02:41:00 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id A167F80A3;
-        Thu,  9 Dec 2021 07:38:08 +0000 (UTC)
-Date:   Thu, 9 Dec 2021 09:37:25 +0200
-From:   Tony Lindgren <tony@atomide.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCHv4 0/7] Serial port generic PM to fix 8250 PM
-Message-ID: <YbGyNW2EQlA/+VIg@atomide.com>
-References: <20211115084203.56478-1-tony@atomide.com>
- <YaX2mbUv9Yv3icl4@hovoldconsulting.com>
+        id S234079AbhLIHmZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Dec 2021 02:42:25 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:34154 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233993AbhLIHmV (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Dec 2021 02:42:21 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C03C9CE1FD9;
+        Thu,  9 Dec 2021 07:38:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BAFC004DD;
+        Thu,  9 Dec 2021 07:38:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1639035523;
+        bh=QyCFo4sEPt8ckkvZYpCfF4KeiGBmMnelIdnnz6gFQbQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QxXthkSVQWnJi/DSEkmbQsOtVhNm4+bE4ifvfbXI6SRh2VB9lb1DUYdGGDA+O/jwo
+         doUercz6uvgEg43T059XW6R5mvSlMjR6Z+Do9iaZ+52vXmpP73x28wh1++amFFONl3
+         5g/t+v+UT1AhYDIbTTU1otZfGBK6Qr9rJp+213yQ=
+Date:   Thu, 9 Dec 2021 08:38:40 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "wigin.zeng" <wigin.zeng@dji.com>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250: add lock for dma rx
+Message-ID: <YbGygPtkz6ihyW51@kroah.com>
+References: <20211209073339.21694-1-wigin.zeng@dji.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YaX2mbUv9Yv3icl4@hovoldconsulting.com>
+In-Reply-To: <20211209073339.21694-1-wigin.zeng@dji.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Johan Hovold <johan@kernel.org> [211130 10:03]:
-> Specifically, it looks like tx can still stall indefinitely if the
-> autosuspend timer fires. This can happen at low baud rates and also when
-> using flow control.
+On Thu, Dec 09, 2021 at 03:33:39PM +0800, wigin.zeng wrote:
+> Need to add lock to protect the tty buffer in dma rx handler and serial
+> interrupt handler, there is chance that serial handler and dma handler
+> executing in same time in multi cores and RT enabled scenario.
 
-Yeah the TX part is still problematic. Note that this is purely because
-of current Linux serial layers implementation, and not because of any
-hardware reasons.
+Are you sure?  Why has this not been a problem before now?  What
+changed?
 
-Even after this series we still rely on serial8250_rpm_get_tx() and
-serial8250_rpm_put_tx() to decipher if we can idle the port..
+> Signed-off-by: wigin.zeng <wigin.zeng@dji.com>
 
-If anybody has good ideas where we can add the serial core TX related
-paired runtime PM calls please let me know :)
+I do not think you have a "." in the name you use to sign documents,
+right?  Please use your real name here.
 
-For TX DMA, we should not do runtime PM put until at the DMA callback
-function when completed.
 
-Regards,
+> ---
+>  drivers/tty/serial/8250/8250_dma.c  | 2 ++
+>  drivers/tty/serial/8250/8250_port.c | 3 +++
+>  include/linux/serial_core.h         | 1 +
+>  3 files changed, 6 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+> index 890fa7ddaa7f..592b9906e276 100644
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
+> @@ -48,6 +48,7 @@ static void __dma_rx_complete(void *param)
+>         struct dma_tx_state     state;
+>         int                     count;
+> 
+> +       spin_lock(&p->port.rx_lock);
+>         dma->rx_running = 0;
+>         dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+> 
+> @@ -55,6 +56,7 @@ static void __dma_rx_complete(void *param)
+> 
+>         tty_insert_flip_string(tty_port, dma->rx_buf, count);
+>         p->port.icount.rx += count;
+> +       spin_unlock(&p->port.rx_lock);
+> 
+>         tty_flip_buffer_push(tty_port);
+>  }
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 5775cbff8f6e..4d8662df8d61 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1780,6 +1780,7 @@ unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr)
+>         struct uart_port *port = &up->port;
+>         int max_count = 256;
+> 
+> +       spin_lock(&port->rx_lock);
+>         do {
+>                 serial8250_read_char(up, lsr);
+>                 if (--max_count == 0)
+> @@ -1787,6 +1788,7 @@ unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr)
+>                 lsr = serial_in(up, UART_LSR);
+>         } while (lsr & (UART_LSR_DR | UART_LSR_BI));
+> 
+> +       spin_unlock(&port->rx_lock);
+>         tty_flip_buffer_push(&port->state->port);
+>         return lsr;
+>  }
+> @@ -3267,6 +3269,7 @@ void serial8250_init_port(struct uart_8250_port *up)
+>         struct uart_port *port = &up->port;
+> 
+>         spin_lock_init(&port->lock);
+> +       spin_lock_init(&port->rx_lock);
+>         port->ops = &serial8250_pops;
+>         port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
+> 
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index c58cc142d23f..77980b6f0c27 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -105,6 +105,7 @@ typedef unsigned int __bitwise upstat_t;
+> 
+>  struct uart_port {
+>         spinlock_t              lock;                   /* port lock */
+> +       spinlock_t              rx_lock;                /* port rx lock */
 
-Tony
+Why can you not just use 'lock' here instead if this is really an issue?
+
+And doesn't this slow things down?
+
+thanks,
+
+greg k-h
