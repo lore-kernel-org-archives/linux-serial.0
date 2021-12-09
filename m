@@ -2,135 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E05C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Dec 2021 08:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC9CC433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Dec 2021 08:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbhLIIZq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Dec 2021 03:25:46 -0500
-Received: from mail.djicorp.com ([14.21.64.4]:57494 "EHLO mail.djicorp.com"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229689AbhLIIZq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Dec 2021 03:25:46 -0500
-X-Greylist: delayed 429 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 Dec 2021 03:25:45 EST
-IronPort-SDR: 3IXqrvnP4bfn0C/5179SKw0ukaSpUlJqA7SPEJGdViKEIJInjJGJcCKd6xKtlYTTbSXQxqSH8A
- 8W6N/AewaTBg==
-X-IronPort-AV: E=Sophos;i="5.88,191,1635177600"; 
-   d="scan'208";a="11814614"
-From:   wigin zeng <wigin.zeng@dji.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        id S231501AbhLIIqD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Dec 2021 03:46:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235036AbhLIIqD (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Dec 2021 03:46:03 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E04C061746;
+        Thu,  9 Dec 2021 00:42:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 77DCECE2503;
+        Thu,  9 Dec 2021 08:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6EAC004DD;
+        Thu,  9 Dec 2021 08:42:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1639039346;
+        bh=qLJoD7xP6d6dBia73//xCvgafN7Nw2WpM96EQ0LwyS8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lIve7QK79VRVUICM+OtiZeEvfmGUzxzsqIIBbz2m0hQ8ZW/FfLBGYeXm4M+MRMUMY
+         cuhhLdftqQdf2QmMTbLPZUeDrv8kvU4K/FYEUox1kHW+kneWwehxbHnlXRVtPRETKw
+         s+CTkMwYKB0Qks7qLVspa9TymzxSusX628rpK1HM=
+Date:   Thu, 9 Dec 2021 09:42:23 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     wigin zeng <wigin.zeng@dji.com>
+Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
         "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIHNlcmlhbDogODI1MDogYWRkIGxvY2sgZm9yIGRt?=
- =?utf-8?Q?a_rx?=
-Thread-Topic: [PATCH] serial: 8250: add lock for dma rx
-Thread-Index: AQHX7M8cgUf9QibCHEeycmxSNUOEd6wpP9YAgACLx/A=
-Date:   Thu, 9 Dec 2021 08:15:00 +0000
-Message-ID: <674707a0388c4a3a9bb25676c61e1737@MAIL-MBX-cwP12.dji.com>
+Subject: Re: =?utf-8?B?562U5aSN?= =?utf-8?Q?=3A?= [PATCH] serial: 8250: add
+ lock for dma rx
+Message-ID: <YbHBb2uB9JRP0tWc@kroah.com>
 References: <20211209073339.21694-1-wigin.zeng@dji.com>
  <YbGygPtkz6ihyW51@kroah.com>
-In-Reply-To: <YbGygPtkz6ihyW51@kroah.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [58.34.188.114]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <674707a0388c4a3a9bb25676c61e1737@MAIL-MBX-cwP12.dji.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <674707a0388c4a3a9bb25676c61e1737@MAIL-MBX-cwP12.dji.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-V2UgZW5jb3VudGVyZWQgdGhpcyBpc3N1ZSB3aGVuIFVBUlQgdHJhbnNmZXIgdmVyeSBpbnRlbnNp
-dmUuDQpETUEgaXJxLXRocmVhZCBwcm9jZXNzZWQgb24gQ1BVMCBhbmQgc2VyaWFsIGlycS10aHJl
-YWQgZXhlY3V0aW5nIG9uIENQVTEsIA0KSW4gRE1BIGlycS10aHJlYWQgd2lsbCBpbnZva2UgInR0
-eV9pbnNlcnRfZmlscF9zdHJpbmciIGZ1bmN0aW9uIHRvIGFkZCB0aGUgcnhfYnVmIGludG8gdHR5
-X2J1ZmZlci4NCkluIHNlcmlhbCBpcnEtdGhyZWFkIGFsc28gaGFzIGNoYW5jZSB0byBhY2Nlc3Mg
-dHR5X2luc2VydF9mbGlwX2NoYXIoaW4gc2VyaWFsODI1MF9yeF9jaGFycyApIHRvIGFjY2VzcyB0
-dHlfYnVmZmVyLg0KdGhlcmUgaXMgcmFjZSBjb25kaXRpb24sIHNvbWV0aW1lcyB3aWxsIGNhdXNl
-IHBhbmljLg0KV2UgYWRkIHRoZSBzcGluX2xvY2sgdG8gc3luYyB0aGUgdHR5X2J1ZmZlciBvcGVy
-YXRpb24sIGFuZCB0aGUgaXNzdWUgZ29uZSBhZnRlciBhcHBsaWVkIHRoZSBwYXRjaC4NCg0KQlJz
-DQpXZWlqdW4NCg0KLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0K5Y+R5Lu25Lq6OiBHcmVnIEtIIFtt
-YWlsdG86Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmddIA0K5Y+R6YCB5pe26Ze0OiAyMDIx5bm0
-MTLmnIg55pelIDE1OjM5DQrmlLbku7bkuro6IHdpZ2luIHplbmcgPHdpZ2luLnplbmdAZGppLmNv
-bT4NCuaKhOmAgTogamlyaXNsYWJ5QGtlcm5lbC5vcmc7IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5l
-bC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCuS4u+mimDogUmU6IFtQQVRDSF0g
-c2VyaWFsOiA4MjUwOiBhZGQgbG9jayBmb3IgZG1hIHJ4DQoNCuOAkEVYVEVSTkFMIEVNQUlM44CR
-IERPIE5PVCBDTElDSyBhbnkgbGlua3Mgb3IgYXR0YWNobWVudHMgdW5sZXNzIHlvdSBjYW4gbWFr
-ZSBzdXJlIGJvdGggdGhlIHNlbmRlciBhbmQgdGhlIGNvbnRlbnQgYXJlIHRydXN0d29ydGh5Lg0K
-DQoNCuOAkOWklumDqOmCruS7tuaPkOmGkuOAkeS7peS4i+mCruS7tuadpea6kOS6juWFrOWPuOWk
-lumDqO+8jOivt+WLv+eCueWHu+mTvuaOpeaIlumZhOS7tu+8jOmZpOmdnuaCqOehruiupOmCruS7
-tuWPkeS7tuS6uuWSjOWGheWuueWPr+S/oeOAgg0KDQoNCg0KT24gVGh1LCBEZWMgMDksIDIwMjEg
-YXQgMDM6MzM6MzlQTSArMDgwMCwgd2lnaW4uemVuZyB3cm90ZToNCj4gTmVlZCB0byBhZGQgbG9j
-ayB0byBwcm90ZWN0IHRoZSB0dHkgYnVmZmVyIGluIGRtYSByeCBoYW5kbGVyIGFuZCANCj4gc2Vy
-aWFsIGludGVycnVwdCBoYW5kbGVyLCB0aGVyZSBpcyBjaGFuY2UgdGhhdCBzZXJpYWwgaGFuZGxl
-ciBhbmQgZG1hIA0KPiBoYW5kbGVyIGV4ZWN1dGluZyBpbiBzYW1lIHRpbWUgaW4gbXVsdGkgY29y
-ZXMgYW5kIFJUIGVuYWJsZWQgc2NlbmFyaW8uDQoNCkFyZSB5b3Ugc3VyZT8gIFdoeSBoYXMgdGhp
-cyBub3QgYmVlbiBhIHByb2JsZW0gYmVmb3JlIG5vdz8gIFdoYXQgY2hhbmdlZD8NCg0KPiBTaWdu
-ZWQtb2ZmLWJ5OiB3aWdpbi56ZW5nIDx3aWdpbi56ZW5nQGRqaS5jb20+DQoNCkkgZG8gbm90IHRo
-aW5rIHlvdSBoYXZlIGEgIi4iIGluIHRoZSBuYW1lIHlvdSB1c2UgdG8gc2lnbiBkb2N1bWVudHMs
-IHJpZ2h0PyAgUGxlYXNlIHVzZSB5b3VyIHJlYWwgbmFtZSBoZXJlLg0KDQoNCj4gLS0tDQo+ICBk
-cml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2RtYS5jICB8IDIgKysgIA0KPiBkcml2ZXJzL3R0
-eS9zZXJpYWwvODI1MC84MjUwX3BvcnQuYyB8IDMgKysrDQo+ICBpbmNsdWRlL2xpbnV4L3Nlcmlh
-bF9jb3JlLmggICAgICAgICB8IDEgKw0KPiAgMyBmaWxlcyBjaGFuZ2VkLCA2IGluc2VydGlvbnMo
-KykNCj4NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZG1hLmMg
-DQo+IGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9kbWEuYw0KPiBpbmRleCA4OTBmYTdk
-ZGFhN2YuLjU5MmI5OTA2ZTI3NiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgy
-NTAvODI1MF9kbWEuYw0KPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2RtYS5j
-DQo+IEBAIC00OCw2ICs0OCw3IEBAIHN0YXRpYyB2b2lkIF9fZG1hX3J4X2NvbXBsZXRlKHZvaWQg
-KnBhcmFtKQ0KPiAgICAgICAgIHN0cnVjdCBkbWFfdHhfc3RhdGUgICAgIHN0YXRlOw0KPiAgICAg
-ICAgIGludCAgICAgICAgICAgICAgICAgICAgIGNvdW50Ow0KPg0KPiArICAgICAgIHNwaW5fbG9j
-aygmcC0+cG9ydC5yeF9sb2NrKTsNCj4gICAgICAgICBkbWEtPnJ4X3J1bm5pbmcgPSAwOw0KPiAg
-ICAgICAgIGRtYWVuZ2luZV90eF9zdGF0dXMoZG1hLT5yeGNoYW4sIGRtYS0+cnhfY29va2llLCAm
-c3RhdGUpOw0KPg0KPiBAQCAtNTUsNiArNTYsNyBAQCBzdGF0aWMgdm9pZCBfX2RtYV9yeF9jb21w
-bGV0ZSh2b2lkICpwYXJhbSkNCj4NCj4gICAgICAgICB0dHlfaW5zZXJ0X2ZsaXBfc3RyaW5nKHR0
-eV9wb3J0LCBkbWEtPnJ4X2J1ZiwgY291bnQpOw0KPiAgICAgICAgIHAtPnBvcnQuaWNvdW50LnJ4
-ICs9IGNvdW50Ow0KPiArICAgICAgIHNwaW5fdW5sb2NrKCZwLT5wb3J0LnJ4X2xvY2spOw0KPg0K
-PiAgICAgICAgIHR0eV9mbGlwX2J1ZmZlcl9wdXNoKHR0eV9wb3J0KTsgIH0gZGlmZiAtLWdpdCAN
-Cj4gYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX3BvcnQuYyANCj4gYi9kcml2ZXJzL3R0
-eS9zZXJpYWwvODI1MC84MjUwX3BvcnQuYw0KPiBpbmRleCA1Nzc1Y2JmZjhmNmUuLjRkODY2MmRm
-OGQ2MSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMN
-Cj4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMNCj4gQEAgLTE3ODAs
-NiArMTc4MCw3IEBAIHVuc2lnbmVkIGNoYXIgc2VyaWFsODI1MF9yeF9jaGFycyhzdHJ1Y3QgdWFy
-dF84MjUwX3BvcnQgKnVwLCB1bnNpZ25lZCBjaGFyIGxzcikNCj4gICAgICAgICBzdHJ1Y3QgdWFy
-dF9wb3J0ICpwb3J0ID0gJnVwLT5wb3J0Ow0KPiAgICAgICAgIGludCBtYXhfY291bnQgPSAyNTY7
-DQo+DQo+ICsgICAgICAgc3Bpbl9sb2NrKCZwb3J0LT5yeF9sb2NrKTsNCj4gICAgICAgICBkbyB7
-DQo+ICAgICAgICAgICAgICAgICBzZXJpYWw4MjUwX3JlYWRfY2hhcih1cCwgbHNyKTsNCj4gICAg
-ICAgICAgICAgICAgIGlmICgtLW1heF9jb3VudCA9PSAwKQ0KPiBAQCAtMTc4Nyw2ICsxNzg4LDcg
-QEAgdW5zaWduZWQgY2hhciBzZXJpYWw4MjUwX3J4X2NoYXJzKHN0cnVjdCB1YXJ0XzgyNTBfcG9y
-dCAqdXAsIHVuc2lnbmVkIGNoYXIgbHNyKQ0KPiAgICAgICAgICAgICAgICAgbHNyID0gc2VyaWFs
-X2luKHVwLCBVQVJUX0xTUik7DQo+ICAgICAgICAgfSB3aGlsZSAobHNyICYgKFVBUlRfTFNSX0RS
-IHwgVUFSVF9MU1JfQkkpKTsNCj4NCj4gKyAgICAgICBzcGluX3VubG9jaygmcG9ydC0+cnhfbG9j
-ayk7DQo+ICAgICAgICAgdHR5X2ZsaXBfYnVmZmVyX3B1c2goJnBvcnQtPnN0YXRlLT5wb3J0KTsN
-Cj4gICAgICAgICByZXR1cm4gbHNyOw0KPiAgfQ0KPiBAQCAtMzI2Nyw2ICszMjY5LDcgQEAgdm9p
-ZCBzZXJpYWw4MjUwX2luaXRfcG9ydChzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnVwKQ0KPiAgICAg
-ICAgIHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQgPSAmdXAtPnBvcnQ7DQo+DQo+ICAgICAgICAgc3Bp
-bl9sb2NrX2luaXQoJnBvcnQtPmxvY2spOw0KPiArICAgICAgIHNwaW5fbG9ja19pbml0KCZwb3J0
-LT5yeF9sb2NrKTsNCj4gICAgICAgICBwb3J0LT5vcHMgPSAmc2VyaWFsODI1MF9wb3BzOw0KPiAg
-ICAgICAgIHBvcnQtPmhhc19zeXNycSA9IElTX0VOQUJMRUQoQ09ORklHX1NFUklBTF84MjUwX0NP
-TlNPTEUpOw0KPg0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9zZXJpYWxfY29yZS5oIGIv
-aW5jbHVkZS9saW51eC9zZXJpYWxfY29yZS5oIA0KPiBpbmRleCBjNThjYzE0MmQyM2YuLjc3OTgw
-YjZmMGMyNyAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9zZXJpYWxfY29yZS5oDQo+ICsr
-KyBiL2luY2x1ZGUvbGludXgvc2VyaWFsX2NvcmUuaA0KPiBAQCAtMTA1LDYgKzEwNSw3IEBAIHR5
-cGVkZWYgdW5zaWduZWQgaW50IF9fYml0d2lzZSB1cHN0YXRfdDsNCj4NCj4gIHN0cnVjdCB1YXJ0
-X3BvcnQgew0KPiAgICAgICAgIHNwaW5sb2NrX3QgICAgICAgICAgICAgIGxvY2s7ICAgICAgICAg
-ICAgICAgICAgIC8qIHBvcnQgbG9jayAqLw0KPiArICAgICAgIHNwaW5sb2NrX3QgICAgICAgICAg
-ICAgIHJ4X2xvY2s7ICAgICAgICAgICAgICAgIC8qIHBvcnQgcnggbG9jayAqLw0KDQpXaHkgY2Fu
-IHlvdSBub3QganVzdCB1c2UgJ2xvY2snIGhlcmUgaW5zdGVhZCBpZiB0aGlzIGlzIHJlYWxseSBh
-biBpc3N1ZT8NCg0KQW5kIGRvZXNuJ3QgdGhpcyBzbG93IHRoaW5ncyBkb3duPw0KDQp0aGFua3Ms
-DQoNCmdyZWcgay1oDQpUaGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0byBtYXkg
-Y29udGFpbiBwcml2YXRlLCBjb25maWRlbnRpYWwsIGFuZCBwcml2aWxlZ2VkIG1hdGVyaWFsIGZv
-ciB0aGUgc29sZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudC4gQW55IHJldmlldywgY29w
-eWluZywgb3IgZGlzdHJpYnV0aW9uIG9mIHRoaXMgZW1haWwgKG9yIGFueSBhdHRhY2htZW50cyB0
-aGVyZXRvKSBieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3Qg
-dGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBpbW1lZGlh
-dGVseSBhbmQgcGVybWFuZW50bHkgZGVsZXRlIHRoZSBvcmlnaW5hbCBhbmQgYW55IGNvcGllcyBv
-ZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0by4NCg0K5q2k55S15a2Q6YKu
-5Lu25Y+K6ZmE5Lu25omA5YyF5ZCr5YaF5a655YW35pyJ5py65a+G5oCn77yM5LiU5LuF6ZmQ5LqO
-5o6l5pS25Lq65L2/55So44CC5pyq57uP5YWB6K6477yM56aB5q2i56ys5LiJ5Lq66ZiF6K+744CB
-5aSN5Yi25oiW5Lyg5pKt6K+l55S15a2Q6YKu5Lu25Lit55qE5Lu75L2V5L+h5oGv44CC5aaC5p6c
-5oKo5LiN5bGe5LqO5Lul5LiK55S15a2Q6YKu5Lu255qE55uu5qCH5o6l5pS26ICF77yM6K+35oKo
-56uL5Y2z6YCa55+l5Y+R6YCB5Lq65bm25Yig6Zmk5Y6f55S15a2Q6YKu5Lu25Y+K5YW255u45YWz
-55qE6ZmE5Lu244CCDQo=
+A: http://en.wikipedia.org/wiki/Top_post
+Q: Were do I find info about this thing called top-posting?
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
+
+A: No.
+Q: Should I include quotations after my reply?
+
+http://daringfireball.net/2007/07/on_top
+
+On Thu, Dec 09, 2021 at 08:15:00AM +0000, wigin zeng wrote:
+> We encountered this issue when UART transfer very intensive.
+
+What issue exactly?
+
+> DMA irq-thread processed on CPU0 and serial irq-thread executing on CPU1, 
+> In DMA irq-thread will invoke "tty_insert_filp_string" function to add the rx_buf into tty_buffer.
+> In serial irq-thread also has chance to access tty_insert_flip_char(in serial8250_rx_chars ) to access tty_buffer.
+> there is race condition, sometimes will cause panic.
+
+But what data is being accessed at the same time to cause a crash?
+How is data being added into the buffer at the same time in two
+different places into the same queue?  What userspace programs are
+causing this?
+
+> We add the spin_lock to sync the tty_buffer operation, and the issue gone after applied the patch.
+
+So all tty buffer accesses need to be protected by your new lock?
+
+thanks,
+
+greg k-h
