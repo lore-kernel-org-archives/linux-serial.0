@@ -2,103 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABE8C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Dec 2021 14:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92AC0C43219
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Dec 2021 07:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbhLHOPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Dec 2021 09:15:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbhLHOPs (ORCPT
+        id S231572AbhLIHL6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Dec 2021 02:11:58 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:54429 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S233510AbhLIHL5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Dec 2021 09:15:48 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621F6C061746;
-        Wed,  8 Dec 2021 06:12:16 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id m6so4316587oim.2;
-        Wed, 08 Dec 2021 06:12:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YZ4a2Q2JGh9XlSO7M5O7EIwFUgTCzOJasXHkco99Bw4=;
-        b=YuWPWAqeweg8HTH2XkmDa4rMIIEJdjBPBCFso+zEH0Om7eRZcAmJj+TDx+mPnt3HHO
-         ipYQ9VL9Ey620DQ4xgJHasnrL6DTe0wncd3Zcv1rMvgME4JZWNSKbmv9OriEK8B33fXf
-         y0c7W36DsJn9wYUv3rnnSH+uxs367RbSzOs6bLcpUK2AyryaVIIJRGqZYfzZyp84ioUD
-         bv/aWB0O2JRO5GZHmFeoApovpTFbotaoAKtYlWD9MSjp1GpDcLCrcSFfI2iMFGdrcWPZ
-         rBNHggLU9SpqDSjR79RXGvzfx9h/EFFJzUKtO4zDYXZrL+b9l6FA6QjCHVWN1aw33Scq
-         yWvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YZ4a2Q2JGh9XlSO7M5O7EIwFUgTCzOJasXHkco99Bw4=;
-        b=rpELA4g8lD0tdOYFWrJXc7RGkTbw4qK56qmoYBeoELxRJ30jSFgfL9LSrv5DjRWFqB
-         plXMUk5KqRGXlfrUu9WrStDU1rsqY39yPAM6zbF6S4V+d8ggi3VS4RzmXy6XeHb+WHir
-         U51fXaFJJSG0m7/f3veTz4rxeqMrn7vrnhJKEnMKNaLx53elvrD/GL+2ZZvkPcBaQtji
-         TNjrH5z31tiPr+8WgW0DCvq3iuql/uQV02KUbTdGLtM0iw6pTJGkobgortDgUuyg4seM
-         TYy9MZ9+ziJQftzrwzqFVw5xzdpHNK0mWn9IWtSe4/IvAV2896XB9K9RbLdJ0CCd13fx
-         heHg==
-X-Gm-Message-State: AOAM531oMZk1PNO69ncaXlbzr6gbzO2+SI9eajulYZRJig/iYsJFSVEX
-        7iaA/kgGxseHF/dHFZnRDi9YemuyLj+u1RkqF+k=
-X-Google-Smtp-Source: ABdhPJw7LPO7mfLxF4VV98Z4T/LGrfzmkd5il9GPK8oLAHj7mQpK5n6HFvXG2xLcIfVjF9EaUOC0R8VWwoFtkq9pq68=
-X-Received: by 2002:a54:4486:: with SMTP id v6mr12060509oiv.90.1638972735722;
- Wed, 08 Dec 2021 06:12:15 -0800 (PST)
+        Thu, 9 Dec 2021 02:11:57 -0500
+X-IronPort-AV: E=Sophos;i="5.88,191,1635174000"; 
+   d="scan'208";a="102895988"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 09 Dec 2021 16:08:23 +0900
+Received: from localhost.localdomain (unknown [10.166.14.185])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id E9AC641F8153;
+        Thu,  9 Dec 2021 16:08:22 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org
+Cc:     geert+renesas@glider.be, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v3 0/2] tty: serial: sh-sci: Add support for R-Car S4
+Date:   Thu,  9 Dec 2021 16:08:15 +0900
+Message-Id: <20211209070817.1223888-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211207221741.50422-1-makvihas@gmail.com> <YbBGWH0lPs3NBLQr@kroah.com>
-In-Reply-To: <YbBGWH0lPs3NBLQr@kroah.com>
-From:   Vihas Mak <makvihas@gmail.com>
-Date:   Wed, 8 Dec 2021 19:42:04 +0530
-Message-ID: <CAH1kMwThQARAoxoxP__fv+f2ep5ndutnxUbQXPEyqn410oL1mA@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: return appropriate error on failure
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
->> Please no, do not use ? : unless you have to.  Spell it out and use a
->> real if statement.
+This patch series is based on the latest tty/tty-next branch.
 
-Okay. But I don't think it's required anymore, as Jiri pointed out in
-https://bugzilla.kernel.org/show_bug.cgi?id=215205#c1
+Changes from v2:
+ - Rebase this patch series on the latest tty/tty-next.
+ - Submitted sh-sci related patches only.
+ - Add Reviewed-by in the dt-bindings patch.
 
-On Wed, Dec 8, 2021 at 11:15 AM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Dec 08, 2021 at 03:47:41AM +0530, Vihas Mak wrote:
-> > when a user with CAP_SYS_ADMIN disabled calls ioctl (TIOCSSERIAL),
-> > uart_set_info() returns 0 instead of -EPERM and the user remains unware
-> > about what went wrong. Fix this.
-> >
-> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215205
-> >
-> > Signed-off-by: Vihas Mak <makvihas@gmail.com>
-> > ---
-> >  drivers/tty/serial/serial_core.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > index 61e3dd022..c204bdecc 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -960,7 +960,7 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
-> >               uport->fifosize = new_info->xmit_fifo_size;
-> >
-> >   check_and_exit:
-> > -     retval = 0;
-> > +     retval = retval < 0 ? retval : 0;
->
-> Please no, do not use ? : unless you have to.  Spell it out and use a
-> real if statement.
->
-> thanks,
->
-> greg k-h
+Yoshihiro Shimoda (2):
+  dt-bindings: serial: renesas,scif: Document r8a779f0 bindings
+  tty: serial: sh-sci: Add support for R-Car Gen4
 
-
+ Documentation/devicetree/bindings/serial/renesas,scif.yaml | 7 +++++++
+ drivers/tty/serial/sh-sci.c                                | 3 +++
+ 2 files changed, 10 insertions(+)
 
 -- 
-Thanks,
-Vihas
+2.25.1
+
