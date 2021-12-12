@@ -2,91 +2,254 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A591C43219
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Dec 2021 21:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C36C433EF
+	for <linux-serial@archiver.kernel.org>; Sun, 12 Dec 2021 14:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344269AbhLJV2e (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Dec 2021 16:28:34 -0500
-Received: from mail-ot1-f41.google.com ([209.85.210.41]:46043 "EHLO
-        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237368AbhLJV2d (ORCPT
+        id S231360AbhLLON6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 12 Dec 2021 09:13:58 -0500
+Received: from lists.levonline.com ([217.70.32.42]:48111 "EHLO
+        lists.levonline.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230338AbhLLON6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Dec 2021 16:28:33 -0500
-Received: by mail-ot1-f41.google.com with SMTP id a23-20020a9d4717000000b0056c15d6d0caso10878251otf.12;
-        Fri, 10 Dec 2021 13:24:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8MM7Mqy4LVhqQo1WtAnEZHBAScofrOdZmMSPjQZ2muY=;
-        b=bAIXQgEUZfBMhYHPkSr7Q+ptZx62u/N9xYlsNjmMTxN4aYBx5bJyStVMA9wp3YmJ3H
-         y7+sZGVmw5DuhsCxvomRrFdncZvN/W5Uz1rwMU4UhNhyE51jPtU/tHIHPynIIJtOaeUq
-         omsQ59dMc97gf4Mf00E4VeDQ5gejHU4EBo1sYjmUqyjkAFHzxq3kEghCxLMs55Vzn0ys
-         3RO8PlBNSg0vMQSgGliy2ynLII1IMfzmbYMoSH7r9GgfpK1HsnhTHwLUq9cJpXRO4wUP
-         3vzgsqZHEfqAaCfXrqK7rfhWevrK2zaNjBlVXaG2nHVaaloICaQmnOoz18nYiWAG9qM3
-         BBNg==
-X-Gm-Message-State: AOAM532DYrdeo92ahRVbizoPb1WBJ8ckYvDsO9uxzgu4tFiMN7ZxzkiD
-        6AGcL+TC9hO9rN7po6RpLw==
-X-Google-Smtp-Source: ABdhPJyTn5sR0JkqUstumnB93RnMCqtBd+uULYV15dK0CVTcCdcT8gfqCXalGgl6VqPsJd0DE5LuYQ==
-X-Received: by 2002:a05:6830:1216:: with SMTP id r22mr13577934otp.10.1639171496337;
-        Fri, 10 Dec 2021 13:24:56 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id r25sm722169ote.73.2021.12.10.13.24.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 13:24:55 -0800 (PST)
-Received: (nullmailer pid 1925851 invoked by uid 1000);
-        Fri, 10 Dec 2021 21:24:54 -0000
-Date:   Fri, 10 Dec 2021 15:24:54 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jesse Taube <mr.bossman075@gmail.com>
-Cc:     olof@lixom.net, s.hauer@pengutronix.de, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp, ulf.hansson@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org,
-        linux-gpio@vger.kernel.org, linus.walleij@linaro.org,
-        adrian.hunter@intel.com, linux-kernel@vger.kernel.org,
-        jirislaby@kernel.org, stefan@agner.ch,
-        linux-serial@vger.kernel.org, arnd@arndb.de,
-        giulio.benetti@benettiengineering.com, gregkh@linuxfoundation.org,
-        linux-mmc@vger.kernel.org, Mr.Bossman075@gmail.com,
-        festevam@gmail.com, shawnguo@kernel.org, kernel@pengutronix.de,
-        abel.vesa@nxp.com, linux@armlinux.org.uk, aisheng.dong@nxp.com,
-        devicetree@vger.kernel.org, soc@kernel.org, robh+dt@kernel.org
-Subject: Re: [PATCH v4 05/13] dt-bindings: imx: Add clock binding for
- i.MXRT1050
-Message-ID: <YbPFpt/EXjSBVBib@robh.at.kernel.org>
-References: <20211204061042.1248028-1-Mr.Bossman075@gmail.com>
- <20211204061042.1248028-6-Mr.Bossman075@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211204061042.1248028-6-Mr.Bossman075@gmail.com>
+        Sun, 12 Dec 2021 09:13:58 -0500
+Received: from exc-halon1.levonline.com (exc-halon1.levonline.com [217.70.32.123])
+        by lists.levonline.com (Postfix) with ESMTP id 34E363A0D2D
+        for <linux-serial@vger.kernel.org>; Sun, 12 Dec 2021 15:07:51 +0100 (CET)
+X-SA-score: -1
+X-Halon-ID: bd67e635-5b55-11ec-a618-0050568168d4
+Received: from ormen2.djurnet.levonline.com (ormen2.djurnet.levonline.com [192.168.17.32])
+        by exc-halon1.levonline.com (Halon) with ESMTPS
+        id bd67e635-5b55-11ec-a618-0050568168d4;
+        Sun, 12 Dec 2021 15:13:55 +0100 (CET)
+Received: from [127.0.0.1] (g1-27-253-251-243.bmobile.ne.jp [27.253.251.243])
+        (authenticated bits=0)
+        by ormen2.djurnet.levonline.com (8.13.8/8.13.8) with ESMTP id 1BCEDmVE031405;
+        Sun, 12 Dec 2021 15:13:50 +0100
+X-Origin-Levonline: b0359001
+From:   Magnus Damm <damm@opensource.se>
+To:     linux-serial@vger.kernel.org
+Cc:     robh@kernel.org, Magnus Damm <damm@opensource.se>,
+        geert+renesas@glider.be, gregkh@linuxfoundation.org,
+        linux-renesas-soc@vger.kernel.org,
+        wsa+renesas@sang-engineering.com, jirislaby@kernel.org
+Date:   Sun, 12 Dec 2021 22:21:28 +0900
+Message-Id: <163931528842.27756.3665040315954968747.sendpatchset@octo>
+Subject: [PATCH] serdev: BREAK/FRAME/PARITY/OVERRUN notification prototype V2
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 04 Dec 2021 01:10:34 -0500, Jesse Taube wrote:
-> From: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> 
-> Add the clock binding doc for i.MXRT1050.
-> 
-> Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> [Giulio: added all clocks up to IMXRT1050_CLK_USBOH3]
-> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-> [Jesse: added clocks from IMXRT1050_CLK_IPG_PDOF to
-> IMXRT1050_CLK_DMA_MUX and moved IMXRT1050_CLK_END on]
-> ---
-> V1->V2:
-> * Nothing done
-> V2->V3:
-> * Added GPT binding
-> V3->V4:
-> * Change License to MIT or GPL-2
-> ---
->  include/dt-bindings/clock/imxrt1050-clock.h | 73 +++++++++++++++++++++
->  1 file changed, 73 insertions(+)
->  create mode 100644 include/dt-bindings/clock/imxrt1050-clock.h
-> 
+From: Magnus Damm <damm+renesas@opensource.se>
 
-Acked-by: Rob Herring <robh@kernel.org>
+Allow serdev device drivers get notified by hardware errors such as BREAK,
+FRAME, PARITY and OVERRUN.
+
+With this patch, in the event of an error detected in the UART device driver
+the serdev_device_driver will get the newly introduced ->error() callback
+invoked if serdev_device_set_error_mask() has previously been used to enable
+the type of error. The errors are taken straight from the TTY layer and fed
+into the serdev_device_driver after filtering out only enabled errors.
+
+Without this patch the hardware errors never reach the serdev_device_driver.
+
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+---
+
+ Applies to linux-5.16-rc4
+
+ Change since V1:
+ - Use __set_bit() instead of set_bit() in ttyport_receive_buf()
+ - Switch to assign_bit() in ttyport_set_error_mask()
+
+ Thanks to Geert for feedback!
+
+ The following prototype patch is using serdev error notifications:
+ [PATCH] r8a77995 Draak SCIF0 LED and KEY Serdev prototype V2
+
+ drivers/tty/serdev/core.c           |   11 +++++++
+ drivers/tty/serdev/serdev-ttyport.c |   49 +++++++++++++++++++++++++++++++++++
+ include/linux/serdev.h              |   22 +++++++++++++++
+ 3 files changed, 82 insertions(+)
+
+--- 0001/drivers/tty/serdev/core.c
++++ work/drivers/tty/serdev/core.c	2021-12-12 21:36:51.756818597 +0900
+@@ -349,6 +349,17 @@ unsigned int serdev_device_set_baudrate(
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_set_baudrate);
+ 
++void serdev_device_set_error_mask(struct serdev_device *serdev, unsigned long mask)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
++
++	if (!ctrl || !ctrl->ops->set_error_mask)
++		return;
++
++	ctrl->ops->set_error_mask(ctrl, mask);
++}
++EXPORT_SYMBOL_GPL(serdev_device_set_error_mask);
++
+ void serdev_device_set_flow_control(struct serdev_device *serdev, bool enable)
+ {
+ 	struct serdev_controller *ctrl = serdev->ctrl;
+--- 0001/drivers/tty/serdev/serdev-ttyport.c
++++ work/drivers/tty/serdev/serdev-ttyport.c	2021-12-12 21:53:42.698882261 +0900
+@@ -2,6 +2,7 @@
+ /*
+  * Copyright (C) 2016-2017 Linaro Ltd., Rob Herring <robh@kernel.org>
+  */
++#include <linux/bits.h>
+ #include <linux/kernel.h>
+ #include <linux/serdev.h>
+ #include <linux/tty.h>
+@@ -9,6 +10,10 @@
+ #include <linux/poll.h>
+ 
+ #define SERPORT_ACTIVE		1
++#define SERPORT_NOTIFY_BREAK	2
++#define SERPORT_NOTIFY_FRAME	3
++#define SERPORT_NOTIFY_PARITY	4
++#define SERPORT_NOTIFY_OVERRUN	5
+ 
+ struct serport {
+ 	struct tty_port *port;
+@@ -27,11 +32,39 @@ static int ttyport_receive_buf(struct tt
+ {
+ 	struct serdev_controller *ctrl = port->client_data;
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	unsigned long errors = 0;
++	unsigned int i;
+ 	int ret;
+ 
+ 	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+ 		return 0;
+ 
++	for (i = 0; fp && i < count; i++) {
++		switch (fp[i]) {
++		case TTY_BREAK:
++			if (test_bit(SERPORT_NOTIFY_BREAK, &serport->flags))
++				__set_bit(SERDEV_ERROR_BREAK, &errors);
++			break;
++
++		case TTY_FRAME:
++			if (test_bit(SERPORT_NOTIFY_FRAME, &serport->flags))
++				__set_bit(SERDEV_ERROR_FRAME, &errors);
++			break;
++
++		case TTY_PARITY:
++			if (test_bit(SERPORT_NOTIFY_PARITY, &serport->flags))
++				__set_bit(SERDEV_ERROR_PARITY, &errors);
++			break;
++
++		case TTY_OVERRUN:
++			if (test_bit(SERPORT_NOTIFY_OVERRUN, &serport->flags))
++				__set_bit(SERDEV_ERROR_OVERRUN, &errors);
++			break;
++		}
++	}
++	if (errors)
++		serdev_controller_error(ctrl, errors);
++
+ 	ret = serdev_controller_receive_buf(ctrl, cp, count);
+ 
+ 	dev_WARN_ONCE(&ctrl->dev, ret < 0 || ret > count,
+@@ -180,6 +213,21 @@ static unsigned int ttyport_set_baudrate
+ 	return ktermios.c_ospeed;
+ }
+ 
++static void ttyport_set_error_mask(struct serdev_controller *ctrl,
++				   unsigned long m)
++{
++	struct serport *sp = serdev_controller_get_drvdata(ctrl);
++
++	assign_bit(SERPORT_NOTIFY_BREAK, &sp->flags,
++		   m & BIT(SERDEV_ERROR_BREAK));
++	assign_bit(SERPORT_NOTIFY_FRAME, &sp->flags,
++		   m & BIT(SERDEV_ERROR_FRAME));
++	assign_bit(SERPORT_NOTIFY_PARITY, &sp->flags,
++		   m & BIT(SERDEV_ERROR_PARITY));
++	assign_bit(SERPORT_NOTIFY_OVERRUN, &sp->flags,
++		   m & BIT(SERDEV_ERROR_OVERRUN));
++}
++
+ static void ttyport_set_flow_control(struct serdev_controller *ctrl, bool enable)
+ {
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+@@ -253,6 +301,7 @@ static const struct serdev_controller_op
+ 	.write_room = ttyport_write_room,
+ 	.open = ttyport_open,
+ 	.close = ttyport_close,
++	.set_error_mask = ttyport_set_error_mask,
+ 	.set_flow_control = ttyport_set_flow_control,
+ 	.set_parity = ttyport_set_parity,
+ 	.set_baudrate = ttyport_set_baudrate,
+--- 0001/include/linux/serdev.h
++++ work/include/linux/serdev.h	2021-12-12 21:36:51.757818597 +0900
+@@ -19,12 +19,15 @@ struct serdev_device;
+ 
+ /**
+  * struct serdev_device_ops - Callback operations for a serdev device
++ * @error:		Function called with errors received from device;
++ *			may sleep.
+  * @receive_buf:	Function called with data received from device;
+  *			returns number of bytes accepted; may sleep.
+  * @write_wakeup:	Function called when ready to transmit more data; must
+  *			not sleep.
+  */
+ struct serdev_device_ops {
++	void (*error)(struct serdev_device *, unsigned long);
+ 	int (*receive_buf)(struct serdev_device *, const unsigned char *, size_t);
+ 	void (*write_wakeup)(struct serdev_device *);
+ };
+@@ -76,6 +79,11 @@ enum serdev_parity {
+ 	SERDEV_PARITY_ODD,
+ };
+ 
++#define SERDEV_ERROR_BREAK 0
++#define SERDEV_ERROR_FRAME 1
++#define SERDEV_ERROR_PARITY 2
++#define SERDEV_ERROR_OVERRUN 3
++
+ /*
+  * serdev controller structures
+  */
+@@ -85,6 +93,7 @@ struct serdev_controller_ops {
+ 	int (*write_room)(struct serdev_controller *);
+ 	int (*open)(struct serdev_controller *);
+ 	void (*close)(struct serdev_controller *);
++	void (*set_error_mask)(struct serdev_controller *, unsigned long);
+ 	void (*set_flow_control)(struct serdev_controller *, bool);
+ 	int (*set_parity)(struct serdev_controller *, enum serdev_parity);
+ 	unsigned int (*set_baudrate)(struct serdev_controller *, unsigned int);
+@@ -190,12 +199,24 @@ static inline int serdev_controller_rece
+ 	return serdev->ops->receive_buf(serdev, data, count);
+ }
+ 
++static inline void serdev_controller_error(struct serdev_controller *ctrl,
++					   unsigned long errors)
++{
++	struct serdev_device *serdev = ctrl->serdev;
++
++	if (!serdev || !serdev->ops->error)
++		return;
++
++	serdev->ops->error(serdev, errors);
++}
++
+ #if IS_ENABLED(CONFIG_SERIAL_DEV_BUS)
+ 
+ int serdev_device_open(struct serdev_device *);
+ void serdev_device_close(struct serdev_device *);
+ int devm_serdev_device_open(struct device *, struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
++void serdev_device_set_error_mask(struct serdev_device *, unsigned long);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
+ int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+ void serdev_device_wait_until_sent(struct serdev_device *, long);
+@@ -238,6 +259,7 @@ static inline unsigned int serdev_device
+ {
+ 	return 0;
+ }
++static inline void serdev_device_set_error_mask(struct serdev_device *sdev, unsigned long mask) {}
+ static inline void serdev_device_set_flow_control(struct serdev_device *sdev, bool enable) {}
+ static inline int serdev_device_write_buf(struct serdev_device *serdev,
+ 					  const unsigned char *buf,
