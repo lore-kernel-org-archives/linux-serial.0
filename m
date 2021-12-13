@@ -2,98 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2780C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Dec 2021 04:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF677C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Dec 2021 07:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbhLME7S (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 12 Dec 2021 23:59:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        id S232374AbhLMHKI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Dec 2021 02:10:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbhLME7S (ORCPT
+        with ESMTP id S230516AbhLMHKH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 12 Dec 2021 23:59:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B5CC06173F;
-        Sun, 12 Dec 2021 20:59:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15254B80D7C;
-        Mon, 13 Dec 2021 04:59:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7897CC00446;
-        Mon, 13 Dec 2021 04:59:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639371554;
-        bh=uqDkjyi1DAG2WVFI7Iu0TC2w+GaDC3EmWkInyLpcGtE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mVDRCny15VHJlA+o7pFyvRO+fGTVY2J3x91BIqcOwy4cryBFjZQyaHtyPhgW6KO28
-         HCKopx8WXOVlRdPjhEOrjN2VBJ1zFB8NRnGb5EUdfofWdRrki7ZlorlrhKm0n81/la
-         3mN9IpyIgfzc1/r0ZuBokeJT/zwaGH17foE/YzWMrXovh2MCpsiNQwWNaKLY5YRyFy
-         blW8ncTTX15Q1zUIMmgSzOFg2mWmU6KWhkXrs65ZUlMvc/lyG3K8k5h5nInsBLDfjW
-         SlpMqgTcrrDN8iKQSo2q7ad2+NbXTwlELLLoqff2K0DHg43fpfYsWOz0ibzpD4QupX
-         V/h6/iJ4bdVAQ==
-Date:   Mon, 13 Dec 2021 10:29:10 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hyun Kwon <hyun.kwon@xilinx.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Scott Branden <sbranden@broadcom.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v2 00/11] dmaengine: kill off dma_slave_config->slave_id
-Message-ID: <YbbTHo+Wfpl30ZUH@matsya>
-References: <20211122222203.4103644-1-arnd@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211122222203.4103644-1-arnd@kernel.org>
+        Mon, 13 Dec 2021 02:10:07 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC32CC06173F;
+        Sun, 12 Dec 2021 23:10:06 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id u80so14102686pfc.9;
+        Sun, 12 Dec 2021 23:10:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=DbYjXsVsDnXf9MOGkA15Ub6YmWn6ZhOqh6fUQBEWTkQ=;
+        b=dgM5jZrmjTluHCJALfo6f+Q76t7Hnuy6KZIe7jIfPmOeOKzh0NDYXXBl2Zd/UXobqZ
+         kSZWkrrhVOQAHM6hRxceuvj4BnYy6xGbiXTqZ7kmRLumGx5fO+8fdMx9i+25X5s66Ngf
+         RJ0jOLYsLQD0oJziodsCalG0sHfEqfHnXrbieg6GRMpe+oWwR3v36smznQ+v+ltuJMdp
+         zf6sgO5xLCT69y/bOv6tPbPp++YvS7qCfBwcb+k56a6+MTKhLhU8U7Sve6T/qgJBnjU7
+         Z7a0tdwSxejSAV144xTTQzS1gdjGg5hqJYrUzvuFVXgCPLKPY3+geZB834raPZLwT83x
+         o/SA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DbYjXsVsDnXf9MOGkA15Ub6YmWn6ZhOqh6fUQBEWTkQ=;
+        b=lFCY1z582tr2oaOkTm8LqnJss/bRO+5QcWK2iHUcQFPJVoZ0AbUwnfGPaYy5JRLTnU
+         Vr684IGaFmxJLTvKBdwk9xwO/hCArNX6mKIUgiGE7N1IbPkq/FKMY94izyhTnfzhW5+9
+         eI8GyAKTuiy5+rouBRjWh9skwu11T004M5NXhKzlQ9fkMfXwgyzhA4Qzf9NXHuYBLRRs
+         tNeZ20nkPHT2+aj4Ij8+CqX0v5NLd4yr/HrubbjYpxvNZJ1yv1dDjMSURBLIj6hCyh7r
+         XLpPcf8GnyRbueQEp8V8UP2nS8SgjVKwvcmpg3qcMcMg1LB/cl6qDpUsV1p0nB4lOT+G
+         L4JA==
+X-Gm-Message-State: AOAM532zYSn/hQ9eZ977f37Yib1qclBIsCUHghATejs2XCHn7nbRj+UM
+        2nESwuwicnpA7EyoCY8aX5E=
+X-Google-Smtp-Source: ABdhPJzpwBBJFZunMdShxanDdF5UXtKTmueKU4k5E3tKqH/2iBGT0C+ZdprB0EwtWC/2MbgmYGZURQ==
+X-Received: by 2002:a63:a50c:: with SMTP id n12mr18393607pgf.558.1639379406513;
+        Sun, 12 Dec 2021 23:10:06 -0800 (PST)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id x16sm10601848pfo.165.2021.12.12.23.10.04
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 12 Dec 2021 23:10:06 -0800 (PST)
+From:   Hammer Hsieh <hammerh0314@gmail.com>
+X-Google-Original-From: Hammer Hsieh <hammer.hsieh@sunplus.com>
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+        p.zabel@pengutronix.de
+Cc:     wells.lu@sunplus.com, Hammer Hsieh <hammer.hsieh@sunplus.com>
+Subject: [PATCH v5 0/2] Add UART driver for Suplus SP7021 SoC
+Date:   Mon, 13 Dec 2021 15:10:05 +0800
+Message-Id: <1639379407-28607-1-git-send-email-hammer.hsieh@sunplus.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22-11-21, 23:21, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> I recently came across some new uses of the 'slave_id' field that
-> I had (almost) removed a few years ago. There are no legitimate
-> uses of this field in the kernel, only a few stale references and
-> two drivers that abuse the field as a side-channel between the
-> dmaengine driver and its client.
-> 
-> Let's change the xilinx and qualcomm drivers to use the documented
-> side-channel (peripheral_data) instead, and remove the remnants of
-> it to prevent new users from coming in.
-> 
-> I think I got all the necessary Acks on v1 already, so if there are
-> no further concerns, please merge this through the dmaengine tree
-> for v5.17, or pull from
+This is a patch series for UART driver for Suplus SP7021 SoC.
 
-Arnd, Thanks for the cleanup. I have applied and folder the fix you sent
-in this
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART. I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
+
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
+
+Hammer Hsieh (2):
+  dt-bindings:serial:Add bindings doc for Sunplus SoC UART Driver
+  serial:sunplus-uart:Add Sunplus SoC UART Driver
+
+ .../bindings/serial/sunplus,sp7021-uart.yaml       |  56 ++
+ MAINTAINERS                                        |   6 +
+ drivers/tty/serial/Kconfig                         |  25 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/sunplus-uart.c                  | 782 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 6 files changed, 873 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+ create mode 100644 drivers/tty/serial/sunplus-uart.c
 
 -- 
-~Vinod
+2.7.4
+
