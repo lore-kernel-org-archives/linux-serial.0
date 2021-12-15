@@ -2,68 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA72C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Dec 2021 19:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6303C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Dec 2021 07:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237284AbhLNT00 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Dec 2021 14:26:26 -0500
-Received: from mail-ot1-f54.google.com ([209.85.210.54]:39833 "EHLO
-        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234275AbhLNT0Z (ORCPT
+        id S235928AbhLOH6k (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Dec 2021 02:58:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45240 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235592AbhLOH6k (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Dec 2021 14:26:25 -0500
-Received: by mail-ot1-f54.google.com with SMTP id r10-20020a056830080a00b0055c8fd2cebdso22039876ots.6;
-        Tue, 14 Dec 2021 11:26:25 -0800 (PST)
+        Wed, 15 Dec 2021 02:58:40 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1102C061574;
+        Tue, 14 Dec 2021 23:58:39 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id o4so19958438pfp.13;
+        Tue, 14 Dec 2021 23:58:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=t5evHBPBS2G9SDCjwG+itx/1b630mANVexHP2C5AUCQ=;
+        b=b2qVwXOZEQSL+rnJrA2ylV/bzDUKbSX8bGookqJg0BNLKPb8ueySgHRoz8KhdsO96H
+         urWMEx7TLNcbln0b5RdcUPG0ecn44CO7vl+6KwG5OFf9GDDS3QylhMt1f+6Z9DsHUwEq
+         YiSq0hzpQJaoMUutf4LsnyHTmln9uOu8O9qhW8+5ZGxofIfLKvTwbEyU+7Db2l+0XkQ0
+         fz0LdKF0Lso7IgaHoFzYEnb59wlVh9Rosx9D4TrVN+0Anv3D6Vjh71gW/sfmm+T7Hayo
+         KquHCKJjlNWKE4bFt6rGSO7BgHArPwF0j3YE9zUuQFcRzTJkp86kIy9d/ndoRVA2FJqr
+         m5Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qTRoKLwpsPcurb4Q7IWi+UV/GfZcwevGrfMu6Co1pL4=;
-        b=qD7idvaggy90nIe1tpL03KKmvCa8NSnn2ux2E16opaZKvkU0Jr2jiRZYxqtqNCNckv
-         vwDygAppV8yn678n4DdmIFnoQe3H43UUEmUl8oJBn/ICvVEXZp8MVp8cKkuWRCg0Od05
-         48sgbG2A3hKTfqaNdI/usUyAiTY0sxBtxs1PZubyp//qLqtwm0R5bKeJaaMNurEMB3sF
-         U0aQjdZrFpV7WDfsOXZh2VLXIZq1uqLosFYRVlQGJxMhOQ6Bu3GRUeIYnfc5XfwPrBgn
-         Y0kKhS9KBqY6uCdXm0HZyfs2iyUhQhh7DQrzew9AZsxE3fS5zJwAfDXfOyiLOC9+jmXj
-         vmXw==
-X-Gm-Message-State: AOAM531crjwGyCuvtMjphNY9jhX9zcs4UhG4vcGMx7+7ch2zLUdh5/S5
-        Imne6tYn4OhCWr7Et8/I8A==
-X-Google-Smtp-Source: ABdhPJwYzMB3WYjXdf7UFyS9xOz3fwtXmVXkWZl/YweXiVsY+ZZz7T0OCGruf+bIhOoh5miygt/yPA==
-X-Received: by 2002:a05:6830:1514:: with SMTP id k20mr5729321otp.147.1639509984577;
-        Tue, 14 Dec 2021 11:26:24 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id m23sm141600otj.39.2021.12.14.11.26.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 11:26:23 -0800 (PST)
-Received: (nullmailer pid 3765294 invoked by uid 1000);
-        Tue, 14 Dec 2021 19:26:23 -0000
-Date:   Tue, 14 Dec 2021 13:26:23 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     linux-renesas-soc@vger.kernel.org, robh+dt@kernel.org,
-        geert+renesas@glider.be, gregkh@linuxfoundation.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: renesas,scif: Document
- r8a779f0 bindings
-Message-ID: <Ybjv36sAIQS0oUzM@robh.at.kernel.org>
-References: <20211209070817.1223888-1-yoshihiro.shimoda.uh@renesas.com>
- <20211209070817.1223888-2-yoshihiro.shimoda.uh@renesas.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211209070817.1223888-2-yoshihiro.shimoda.uh@renesas.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=t5evHBPBS2G9SDCjwG+itx/1b630mANVexHP2C5AUCQ=;
+        b=cHwdn+sPXfrgEYOlvhYF/5x3zNeop/OW9EdCVp9cSZfiBhCTuEooZfUlovBaJl0MrL
+         KUd7V1TBdNTJumon7MwybFtAKydWpFnVuBg3yF7tLnCv3pxDt/QikpZahE/McdGdX8xf
+         pwSsEiRq/kyaCY7PcCRFHEauxZXPHm9t7SGHiI5yTWW566xIhAgL4PgR7J9z4DDSlxoY
+         0hkvClg0lWl6C+uVEW+7JEnzBHHTWYAaie7Uop6ce+ncgZ37dFWPNsulDqj28WBQX1GB
+         9a73RwEQrBum8S40TXw5q8wE4S0RFreLG6zcK4V1dFQgVBy2Sx/XarV8SuFzYPaugFqR
+         tmDQ==
+X-Gm-Message-State: AOAM531ZhE6HhxMHg2/gXTcX9bxH62L/dEeznr3+moW5LiCr8UEDBE2T
+        e+r5HxhXP/bpUhXsGixdDR0=
+X-Google-Smtp-Source: ABdhPJwzT8g/dTl6M8Jf/DL+idNTs5kKFkBZClo6StaKK/pyVU/yin8yPI5D3ghiQKQih9zi6V2ioQ==
+X-Received: by 2002:a65:5bce:: with SMTP id o14mr6950781pgr.347.1639555119329;
+        Tue, 14 Dec 2021 23:58:39 -0800 (PST)
+Received: from localhost (59-120-186-245.hinet-ip.hinet.net. [59.120.186.245])
+        by smtp.gmail.com with ESMTPSA id hk18sm4935266pjb.20.2021.12.14.23.58.38
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 14 Dec 2021 23:58:38 -0800 (PST)
+From:   "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+X-Google-Original-From: "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        peter_hong@fintek.com.tw
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rel+kernel@agilox.net,
+        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+Subject: [PATCH V1 1/1] serial: 8250_fintek: Fix garbled text for console
+Date:   Wed, 15 Dec 2021 15:58:35 +0800
+Message-Id: <20211215075835.2072-1-hpeter+linux_kernel@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 09 Dec 2021 16:08:16 +0900, Yoshihiro Shimoda wrote:
-> R-Car S4-8 (R8A779F0) SoC has the R-Car Gen4 compatible SCIF ports,
-> so document the SoC specific bindings.
-> 
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  Documentation/devicetree/bindings/serial/renesas,scif.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
+Commit fab8a02b73eb ("serial: 8250_fintek: Enable high speed mode on Fintek F81866")
+introduced support to use high baudrate with Fintek SuperIO UARTs. It'll
+change clocksources when the UART probed.
 
-Acked-by: Rob Herring <robh@kernel.org>
+But when user add kernel parameter "console=ttyS0,115200 console=tty0" to make
+the UART as console output, the console will output garbled text after the
+following kernel message.
+
+[    3.681188] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+
+The issue is occurs in following step:
+	probe_setup_port() -> fintek_8250_goto_highspeed()
+
+It change clocksource from 115200 to 921600 with wrong time, it should change
+clocksource in set_termios() not in probed. The following 3 patches are
+implemented change clocksource in fintek_8250_set_termios().
+
+Commit 58178914ae5b ("serial: 8250_fintek: UART dynamic clocksource on Fintek F81216H")
+Commit 195638b6d44f ("serial: 8250_fintek: UART dynamic clocksource on Fintek F81866")
+Commit 423d9118c624 ("serial: 8250_fintek: Add F81966 Support")
+
+Due to the high baud rate had implemented above 3 patches and the patch
+Commit fab8a02b73eb ("serial: 8250_fintek: Enable high speed mode on Fintek F81866")
+is bugged, So this patch will remove it.
+
+Fixes: fab8a02b73eb ("serial: 8250_fintek: Enable high speed mode on Fintek F81866")
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 20 --------------------
+ 1 file changed, 20 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 31c9e83ea3cb..251f0018ae8c 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -290,25 +290,6 @@ static void fintek_8250_set_max_fifo(struct fintek_8250 *pdata)
+ 	}
+ }
+ 
+-static void fintek_8250_goto_highspeed(struct uart_8250_port *uart,
+-			      struct fintek_8250 *pdata)
+-{
+-	sio_write_reg(pdata, LDN, pdata->index);
+-
+-	switch (pdata->pid) {
+-	case CHIP_ID_F81966:
+-	case CHIP_ID_F81866: /* set uart clock for high speed serial mode */
+-		sio_write_mask_reg(pdata, F81866_UART_CLK,
+-			F81866_UART_CLK_MASK,
+-			F81866_UART_CLK_14_769MHZ);
+-
+-		uart->port.uartclk = 921600 * 16;
+-		break;
+-	default: /* leave clock speed untouched */
+-		break;
+-	}
+-}
+-
+ static void fintek_8250_set_termios(struct uart_port *port,
+ 				    struct ktermios *termios,
+ 				    struct ktermios *old)
+@@ -430,7 +411,6 @@ static int probe_setup_port(struct fintek_8250 *pdata,
+ 
+ 				fintek_8250_set_irq_mode(pdata, level_mode);
+ 				fintek_8250_set_max_fifo(pdata);
+-				fintek_8250_goto_highspeed(uart, pdata);
+ 
+ 				fintek_8250_exit_key(addr[i]);
+ 
+-- 
+2.17.1
+
