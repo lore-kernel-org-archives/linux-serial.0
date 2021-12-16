@@ -2,160 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8E9C43217
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 21:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD50C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 21:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232070AbhLPVOT convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 16:14:19 -0500
-Received: from mout.kundenserver.de ([212.227.126.133]:54953 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229818AbhLPVOS (ORCPT
+        id S236291AbhLPVTE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 16:19:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234877AbhLPVTD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 16:14:18 -0500
-Received: from mail-wr1-f51.google.com ([209.85.221.51]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MpUIW-1mAIuo1K1s-00pt2F; Thu, 16 Dec 2021 22:14:14 +0100
-Received: by mail-wr1-f51.google.com with SMTP id u17so371147wrt.3;
-        Thu, 16 Dec 2021 13:14:14 -0800 (PST)
-X-Gm-Message-State: AOAM530PkeRe7zhgh9Vlocxcwd5jIJhdtIs1chKw1wQHdBotE+eFAsKN
-        E6INXH95RVH0wUcvICfb+SJeGRVPxAR2uuHG9HY=
-X-Google-Smtp-Source: ABdhPJx5ftEfPH4qvIzikYkTAI2QfNEBmismxp18qt3xtWOd9p6RwUc2SZYuv+4lj5MKuQ7wJcPfZffT71zk71LPRZ8=
-X-Received: by 2002:a05:6000:1aca:: with SMTP id i10mr10867640wry.407.1639689253768;
- Thu, 16 Dec 2021 13:14:13 -0800 (PST)
+        Thu, 16 Dec 2021 16:19:03 -0500
+X-Greylist: delayed 2558 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Dec 2021 13:19:03 PST
+Received: from wp441.webpack.hosteurope.de (wp441.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:85d2::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BCAC061574;
+        Thu, 16 Dec 2021 13:19:03 -0800 (PST)
+Received: from [2a03:7846:b79f:101:21c:c4ff:fe1f:fd93] (helo=valdese.nms.ulrich-teichert.org); authenticated
+        by wp441.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1mxxUE-0005iT-R9; Thu, 16 Dec 2021 21:36:22 +0100
+Received: from valdese.nms.ulrich-teichert.org (localhost [127.0.0.1])
+        by valdese.nms.ulrich-teichert.org (8.15.2/8.15.2/Debian-8+deb9u1) with ESMTPS id 1BGKaM5K003166
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 16 Dec 2021 21:36:22 +0100
+Received: (from ut@localhost)
+        by valdese.nms.ulrich-teichert.org (8.15.2/8.15.2/Submit) id 1BGKaKGI003165;
+        Thu, 16 Dec 2021 21:36:20 +0100
+Message-Id: <202112162036.1BGKaKGI003165@valdese.nms.ulrich-teichert.org>
+Subject: Re: [PATCH] serial: 8250: Move alpha-specific quirk out of the core
+To:     lukas@wunner.de (Lukas Wunner)
+Date:   Thu, 16 Dec 2021 21:36:20 +0100 (CET)
+Cc:     gregkh@linuxfoundation.org (Greg Kroah-Hartman),
+        jirislaby@kernel.org (Jiri Slaby), linux-serial@vger.kernel.org,
+        rmk+kernel@armlinux.org.uk (Russell King),
+        krypton@ulrich-teichert.org (Ulrich Teichert),
+        torvalds@linux-foundation.org (Linus Torvalds),
+        rth@twiddle.net (Richard Henderson),
+        ink@jurassic.park.msu.ru (Ivan Kokshaysky),
+        mattst88@gmail.com (Matt Turner), linux-alpha@vger.kernel.org,
+        LinoSanfilippo@gmx.de (Lino Sanfilippo),
+        p.rosenberger@kunbus.com (Philipp Rosenberger)
+In-Reply-To: <af967f273724aff4cff3c49470110a48f790794e.1639676574.git.lukas@wunner.de>
+From:   Ulrich Teichert <krypton@ulrich-teichert.org>
+X-Mailer: ELM [version 2.5 PL8]
 MIME-Version: 1.0
-References: <20211215220538.4180616-1-Mr.Bossman075@gmail.com>
- <CAK8P3a29tzgd_4WncippZBEJra9n0bQTysBkPBp_WA0sb28gTg@mail.gmail.com> <1360c4fe-4a09-a8a1-3224-7f1d4af59f6f@benettiengineering.com>
-In-Reply-To: <1360c4fe-4a09-a8a1-3224-7f1d4af59f6f@benettiengineering.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 16 Dec 2021 22:13:57 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1oZK1qMRBE3D8otCTY6Lg4jMXxVpAZHQzLTA8woA3_UQ@mail.gmail.com>
-Message-ID: <CAK8P3a1oZK1qMRBE3D8otCTY6Lg4jMXxVpAZHQzLTA8woA3_UQ@mail.gmail.com>
-Subject: Re: [RESEND in plain-test] Re: [PATCH v5 0/9] Add initial support for
- the i.MXRTxxxx SoC family starting from i.IMXRT1050 SoC.
-To:     Giulio Benetti <giulio.benetti@benettiengineering.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Jesse Taube <mr.bossman075@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Stefan Agner <stefan@agner.ch>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Abel Vesa <abel.vesa@nxp.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Vladimir Murzin <vladimir.murzin@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:jLcfKWuFEKdB88gRT6zG+WNsy+2D4zMGcg9vmzSiKMpG4GXwiHA
- TZ3Mod5cZQg9ulqi6UikNcrt3jaz1VE+NWg4wqwrTHPpjw0c6kkKEO11y3p2tcAj8fbzPRZ
- yRH+Z+gDtqDy16EgfNJc1Cz7xLy9taRKNvTbR14ZrJrk8+/Dc3TNL+kTIEarR5LENeKDMuE
- k7Gl/EGFBNgEmg3ndaWxQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Z/D4V6ISYL4=:swO45RG2EqZcuUukJekSUQ
- ZCPRAjKX7GuMlkxZdBlPUxtXKnqYmJYkIYAjnemcueOrpTKtEh0xwApd+O4q1XrMsx/vTYU+j
- WUeAf59gRSlIn/J4O0o6iW1QAwuKDH+K4NOD/alhj7/g2UZxs9QEeW/kx6CDpOT8RUNneiP7X
- maTFLoumWOXvRhRgPQxC109YEtPGQ7ABThgDaxTeJ7AjqQV2GA45Gtb5Of2rzEN8yOHkp9WJC
- EFyn59AUyJx82p+arn6cbwNUaRMKoHxy+Mfjoc43jAsjLC5a5mxw8DL986mtlNKt2BfUaZHyb
- Yf6WEOZClGTDYG9gtO4XudZw9vOcDTiw5SfHKZhYmd5PpW3hsaAxdINlqnCxgZ5h+ybYD1lQ7
- V+BWjLzfxDAyT+OcZuHrau+R3L2M+t3RsGZyzCRVoEFP21ubA1R5B1HTbPCZJzaxSrD5eWOcO
- XbIUfV6Aq7Nrp6ffXVGw0HKB3QuP/ldQfsihvjSiZdVmufpGK4RT7d4pxHw13WBkSpRdJBLJY
- onG6zFCoUt25pWYVpv9TfWPd0RTDIbdYWJ+E/ko0Xl7e++cjBOT+3MEApGSOX6DGFFE0bOlWr
- r3VrGLRnNyG2G9PvObId3SMOcCnUZiOImcnO8N+xJJ9NMGPIEwmQlE4LZupP4G7YYvs1oZlup
- z8/4vax5s1BpCj4G40rYaGM2eb2A1lJrb5UL0IQBATLkRqyVPQcXLsQ4r/YPoGmMTk0JTAR2N
- QraYHtKXw8kEDmD1CHoOzFjZ7Yi106LGkBKKalTUCiGI7aAMMFrZNkH+boqUlMwJKS7vQxKOE
- wPzvxJ8K7Nu+Gd8MdMPoKN7tyUassekAK+XRq8GzHmAdGfFcTs=
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;ut@ulrich-teichert.org;1639689543;e2e54a13;
+X-HE-SMSGID: 1mxxUE-0005iT-R9
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 6:33 PM Giulio Benetti
-<giulio.benetti@benettiengineering.com> wrote:
-> On 16/12/21 09:26, Arnd Bergmann wrote:
-> > On Wed, Dec 15, 2021 at 11:05 PM Jesse Taube <mr.bossman075@gmail.com> wrote:
+Hi Lukas,
 
-> > As a more general comment, it's always nice to see newly added SoC
-> > platforms, especially when they are this well implemented and done
-> > by hobbyists. However, I do think you are being overly optimistic
-> > as to how useful this is going to be to other people: interest in NOMMU
-> > ARM platforms has dropped a lot over the past 5 years, and as far as I
-> > can tell, it is only being kept alive for existing stm32 customers
-> > as the economics do not favor Linux on Cortex-M for new products
-> > compare to Linux on Cortex-A or some RTOS on Cortex-M.
-> >
-> > The existing users will inevitably stop updating their kernels at some
-> > point, and then it's most likely just you and Vladimir Murzin that care.
->
->
-> About this will you accept support for the other SoCs in the family?
-> We would like to add in the near future:
-> - i.MXRT1020(uboot support is already upstreamed)
-> - i.MXRT1024(almost equal to 1020)
-> - i.MXRT1060(almost equal to 1050)
-> - i.MXRT1064(almost equal to 1060)
-> And
-> - i.MXRT1160/70 new family with faster core clock(1Ghz) and a cortex M4
->
-> We need to add missing lcd(uboot upstreamed), usb(uboot upstreamed),
-> ethernet(wip) supports for i.MXRT10xx family.
+> struct uart_8250_port contains mcr_mask and mcr_force members whose
+> sole purpose is to work around an alpha-specific quirk.  This code
+> doesn't belong in the core where it is executed by everyone else,
+> so move it to a proper ->set_mctrl callback which is used on alpha only.
+> 
+> The alpha-specific quirk was introduced in January 1995:
+> https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/diff/drivers/char/serial.c?h=1.1.83
+> 
+> The members in struct uart_8250_port were added in 2002:
+> https://git.kernel.org/history/history/c/4524aad27854
+> 
+> The quirk applies to non-PCI alphas and arch/alpha/Kconfig specifies
+> "select FORCE_PCI if !ALPHA_JENSEN".  So apparently the only affected
+> machine is the EISA-based Jensen that Linus was working on back then:
+> https://lore.kernel.org/all/CAHk-=wj1JWZ3sCrGz16nxEj7=0O+srMg6Ah3iPTDXSPKEws_SA@mail.gmail.com/
+> 
+> Up until now the quirk is not applied unless CONFIG_PCI is disabled.
+> If users forget to do that, the serial ports aren't usable on Jensen
+> and the machine may not boot in the first place.  Avoid by confining
+> the quirk to CONFIG_ALPHA_JENSEN instead.
 
-Sure, anything you want to work on supporting can be added to the kernel,
-the important bit is that it's well written and can be maintained going forward.
+Wouldn't that mean that you can't use a generic Alpha kernel on the Jensen
+anymore? CONFIG_ALPHA_JENSEN is only set if you specifically select the
+Jensen as target, not when you build a generic kernel. That would be a step
+back in my opinion, as the Debian generic kernel from debian-ports did
+as least boot up on real hardware and the serial console worked just fine
+[granted, the EISA cards were not detected, even after support for it
+got enabled, but that's another case of worms].
 
-My best guess is that we'll end up ripping out all NOMMU support in
-a few years, when we get to a point when both of these things happen:
+Unfortunately I still can't boot my Jensen with a self-build kernel (that
+it's the only Alpha without netboot makes it only harder), so
+I can't even test your patch, but my plan is to get it booting over
+my xmas vacation :-)
 
-- the number of actual users that still update their kernels becomes
-  really low
-
-- There is some treewide refactoring that isn't easily supportable without an
-   MMU unless someone puts extra work into it.
-
-At the moment, we still support NOMMU kernels on a bunch of architectures
-(Arm, riscv/k210, sh/j2, m68k/coldfire, xtensa and h8300). Out of these,
-Arm is by far the most active, and if Arm NOMMU support was to go away
-for some reason, the others would likely follow.
-
-> This is to organize with Jesse also about buying evaluation boards and
-> timing.
->
-> We’ve meant this porting also as an exercise to deal with Linux deeper
-> for us and for the other newbies.
->
-> We’ve been also asked about a possible support for s32s(quad cortex-R52)
-> on initial emails but it has no mmu too.
-> While I’m seeing that some cortex-R is landing inside Linux.
-> Would it be interesting anyway?
-
-I brought that up during the initial review, but I think this is even
-less interesting
-than Cortex-M support from the perspective of potential use cases. While
-Cortex-M MCUs have some advantages over larger SoCs in terms of
-power consumption and cost, this is generally not true for running Linux
-on Cortex-R. The Cortex-R and Cortex-A cores are closely related, so
-they tend have similar power/performance/area characteristics, but
-the lack of an MMU makes the Cortex-R much less useful. If there was
-an advantage to running with the MMU disabled, you could actually do that
-on a Cortex-A as well, but clearly nobody does that either.
-
-Vladimir has put some work into making Cortex-R work in the kernel, and
-he may have some other thoughts on this question.
-
-          Arnd
+CU,
+Uli
+-- 
+Dipl. Inf. Ulrich Teichert|e-mail: Ulrich.Teichert@gmx.de | Listening to:
+Stormweg 24               |Eat Lipstick: Dirty Little Secret, The Baboon Show:
+24539 Neumuenster, Germany|Work Work Work, The Bellrays: Bad Reaction
