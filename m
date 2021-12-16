@@ -2,109 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A9AC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 14:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5145DC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 15:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237913AbhLPOyA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 09:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235059AbhLPOx7 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 09:53:59 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87DCC06173E;
-        Thu, 16 Dec 2021 06:53:59 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 26B483F6;
-        Thu, 16 Dec 2021 15:53:58 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1639666438;
-        bh=LCgyCIFjvDLvFwIifCwiILneQWUk+R/rzgaJ8vk99YA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NX8xNu/ODaRhOLdINyRjNY++zmkC2MaVZSmiGrc+W4+5vm5pHll34mmpFmJnfBM2G
-         P+20i2SsvDjRpg1N930Lx3N+2H5QKmU7/v8RQkLzOHaJ5sJpS/xx3rugBTOILkWi/T
-         3Hm8DZnSgSzoDkfhhSSj5GAKFymov1HRFXzbGSN0=
-Date:   Thu, 16 Dec 2021 16:53:56 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-sh@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp
-Subject: Re: [PATCH 3/3] serial: sh-sci: Use devm_clk_get_optional()
-Message-ID: <YbtTBN2OrKPOfXmR@pendragon.ideasonboard.com>
-References: <cover.1639663832.git.geert+renesas@glider.be>
- <bce27288cb570952dd96b441e1af8768ad8b4870.1639663832.git.geert+renesas@glider.be>
+        id S237539AbhLPPGC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 10:06:02 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:56274 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235111AbhLPPGC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Dec 2021 10:06:02 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowABHTJzEVbthx_SgAw--.56887S2;
+        Thu, 16 Dec 2021 23:05:40 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: Re: Re: [PATCH v3] serial: pch_uart: potential dereference of null pointer
+Date:   Thu, 16 Dec 2021 23:05:39 +0800
+Message-Id: <20211216150539.423387-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <bce27288cb570952dd96b441e1af8768ad8b4870.1639663832.git.geert+renesas@glider.be>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowABHTJzEVbthx_SgAw--.56887S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKF1kXF18uryrCF1UuF13XFb_yoWfXwb_Gr
+        97C34Du3yxXas29F4DJF15Ja42v3yfXrWYva9Yqa13XryUXr18W34Utrn5Zw4UAFZ2krsI
+        9F9ayayay342vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_XrWl
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI
+        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU1uWlUUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
+On Thu, Dec 16, 2021 at 10:36:35PM +0800, Greg KH wrote:
+>> The return value of dma_alloc_coherent() needs to be checked.
+>> To avoid dereference of null pointer in case of the failure of alloc.
+>> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Thank you for the patch.
+>A blank line is always needed before the signed-off-by line.
 
-On Thu, Dec 16, 2021 at 03:17:34PM +0100, Geert Uytterhoeven wrote:
-> The sh-sci driver supports up to four input clocks, of which only the
-> first one is mandatory.
-> 
-> Replace devm_clk_get() and custom error checking by
-> devm_clk_get_optional(), to simplify the code and to catch all real
-> errors.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>> ---
+>> Changelog:
+>> 
+>> v2 -> v3
+>> 
+>> *Change 1. Remove dev_err.
+>> *Change 2. Change the return type of pch_request_dma to int.
+>> *Change 3. Return -ENOMEM when dma_alloc_coherent() failed and 0 the
+>> others.
+>> *Change 4. Check return value of dma_alloc_coherent().
+>
+> I see v3 here, not v4.  Where is v4?
+>
+> And how did you test this change?
+>
+> thanks,
+>
+> greg k-h
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Sorry, I just have v3, maybe that is my fault. But I don't know why you think there is v4.
 
-> ---
->  drivers/tty/serial/sh-sci.c | 15 +++++++--------
->  1 file changed, 7 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 5f6d85b8e3dd4173..bb3adf0a109324ca 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -2779,11 +2779,11 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
->  		clk_names[SCI_SCK] = "hsck";
->  
->  	for (i = 0; i < SCI_NUM_CLKS; i++) {
-> -		clk = devm_clk_get(dev, clk_names[i]);
-> -		if (PTR_ERR(clk) == -EPROBE_DEFER)
-> -			return -EPROBE_DEFER;
-> +		clk = devm_clk_get_optional(dev, clk_names[i]);
-> +		if (IS_ERR(clk))
-> +			return PTR_ERR(clk);
->  
-> -		if (IS_ERR(clk) && i == SCI_FCK) {
-> +		if (!clk && i == SCI_FCK) {
->  			/*
->  			 * Not all SH platforms declare a clock lookup entry
->  			 * for SCI devices, in which case we need to get the
-> @@ -2796,13 +2796,12 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
->  						     clk_names[i]);
->  		}
->  
-> -		if (IS_ERR(clk))
-> -			dev_dbg(dev, "failed to get %s (%ld)\n", clk_names[i],
-> -				PTR_ERR(clk));
-> +		if (!clk)
-> +			dev_dbg(dev, "failed to get %s\n", clk_names[i]);
->  		else
->  			dev_dbg(dev, "clk %s is %pC rate %lu\n", clk_names[i],
->  				clk, clk_get_rate(clk));
-> -		sci_port->clks[i] = IS_ERR(clk) ? NULL : clk;
-> +		sci_port->clks[i] = clk;
->  	}
->  	return 0;
->  }
+And I have no idea about the "test this change"? Please give me more detail. 
 
--- 
-Regards,
+Sincerely thanks,
 
-Laurent Pinchart
+jiasheng jiang
+
