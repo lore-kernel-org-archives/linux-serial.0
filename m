@@ -2,144 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A67C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 14:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3DB5C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 14:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229471AbhLPOP2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 09:15:28 -0500
-Received: from smtp21.cstnet.cn ([159.226.251.21]:49698 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229612AbhLPOP2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 09:15:28 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowAAnvqbgSbthnnSfAw--.52579S2;
-        Thu, 16 Dec 2021 22:14:56 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v3] serial: pch_uart: potential dereference of null pointer
-Date:   Thu, 16 Dec 2021 22:14:54 +0800
-Message-Id: <20211216141454.423333-1-jiasheng@iscas.ac.cn>
+        id S234947AbhLPORm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 09:17:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234976AbhLPORk (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Dec 2021 09:17:40 -0500
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F513C06173F
+        for <linux-serial@vger.kernel.org>; Thu, 16 Dec 2021 06:17:40 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:d13f:527c:5504:a743])
+        by michel.telenet-ops.be with bizsmtp
+        id X2He2600G250X30062HeX9; Thu, 16 Dec 2021 15:17:38 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mxrZh-005QZh-VV; Thu, 16 Dec 2021 15:17:37 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mxrZh-009yny-JS; Thu, 16 Dec 2021 15:17:37 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-sh@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 1/3] serial: sh-sci: Drop support for "sci_ick" clock
+Date:   Thu, 16 Dec 2021 15:17:32 +0100
+Message-Id: <b4103e44d6ac46b6c1c264e2aeac80b39941fe74.1639663832.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1639663832.git.geert+renesas@glider.be>
+References: <cover.1639663832.git.geert+renesas@glider.be>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowAAnvqbgSbthnnSfAw--.52579S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAw4UuF4fXF4fWF48Jw1DZFb_yoW5GF4xpa
-        1jyrZ8A3yYq3Z3KF18Ar47Xr4avwn3CFy7KrW7KwnIyr9rtr1UCF15t3s0vrn5JrWxKryF
-        vw4qyF45uF48taDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkv14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Xryl
-        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
-        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
-        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU6WlgUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The return value of dma_alloc_coherent() needs to be checked.
-To avoid dereference of null pointer in case of the failure of alloc.
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Since commit 1b463bd51042927e ("ARM: dts: r8a7794: Rename the serial
+port clock to fck") in v4.6, all upstream DTS files call the SCIF
+functional clock "fck".
+
+Hence the time is ripe to drop backward-compatibility with old DTBs that
+use the old "sci_ick" name.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-Changelog:
-
-v2 -> v3
-
-*Change 1. Remove dev_err.
-*Change 2. Change the return type of pch_request_dma to int.
-*Change 3. Return -ENOMEM when dma_alloc_coherent() failed and 0 the
-others.
-*Change 4. Check return value of dma_alloc_coherent().
+Note that such old DTBs have stopped working anyway since commit
+58256143cff7c2e0 ("clk: renesas: Remove R-Car Gen2 legacy DT clock
+support") in v5.5.
 ---
- drivers/tty/serial/pch_uart.c | 25 +++++++++++++++++++------
- 1 file changed, 19 insertions(+), 6 deletions(-)
+ drivers/tty/serial/sh-sci.c | 11 -----------
+ 1 file changed, 11 deletions(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index f0351e6f0ef6..cfad5592010c 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -698,7 +698,7 @@ static bool filter(struct dma_chan *chan, void *slave)
- 	}
- }
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 88005d2fc2a00b0b..686ca1777222b1d4 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2784,17 +2784,6 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
+ 			return -EPROBE_DEFER;
  
--static void pch_request_dma(struct uart_port *port)
-+static int pch_request_dma(struct uart_port *port)
- {
- 	dma_cap_mask_t mask;
- 	struct dma_chan *chan;
-@@ -723,7 +723,7 @@ static void pch_request_dma(struct uart_port *port)
- 	if (!chan) {
- 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Tx)\n",
- 			__func__);
--		return;
-+		return 0;
- 	}
- 	priv->chan_tx = chan;
- 
-@@ -739,13 +739,20 @@ static void pch_request_dma(struct uart_port *port)
- 			__func__);
- 		dma_release_channel(priv->chan_tx);
- 		priv->chan_tx = NULL;
--		return;
-+		return 0;
- 	}
- 
- 	/* Get Consistent memory for DMA */
- 	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
- 				    &priv->rx_buf_dma, GFP_KERNEL);
-+	if (!priv->rx_buf_virt) {
-+		dma_release_channel(priv->chan_tx);
-+		priv->chan_tx = NULL;
-+		return -ENOMEM;
-+	}
-+
- 	priv->chan_rx = chan;
-+	return 0;
- }
- 
- static void pch_dma_rx_complete(void *arg)
-@@ -1321,8 +1328,11 @@ static int pch_uart_startup(struct uart_port *port)
- 	if (ret < 0)
- 		return ret;
- 
--	if (priv->use_dma)
--		pch_request_dma(port);
-+	if (priv->use_dma) {
-+		ret = pch_request_dma(port);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	priv->start_rx = 1;
- 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_RX_INT |
-@@ -1469,6 +1479,7 @@ static int pch_uart_verify_port(struct uart_port *port,
- 				struct serial_struct *serinfo)
- {
- 	struct eg20t_port *priv;
-+	int ret;
- 
- 	priv = container_of(port, struct eg20t_port, port);
- 	if (serinfo->flags & UPF_LOW_LATENCY) {
-@@ -1483,7 +1494,9 @@ static int pch_uart_verify_port(struct uart_port *port,
- 		return -EOPNOTSUPP;
- #endif
- 		if (!priv->use_dma) {
--			pch_request_dma(port);
-+			ret = pch_request_dma(port);
-+			if (ret)
-+				return ret;
- 			if (priv->chan_rx)
- 				priv->use_dma = 1;
- 		}
+ 		if (IS_ERR(clk) && i == SCI_FCK) {
+-			/*
+-			 * "fck" used to be called "sci_ick", and we need to
+-			 * maintain DT backward compatibility.
+-			 */
+-			clk = devm_clk_get(dev, "sci_ick");
+-			if (PTR_ERR(clk) == -EPROBE_DEFER)
+-				return -EPROBE_DEFER;
+-
+-			if (!IS_ERR(clk))
+-				goto found;
+-
+ 			/*
+ 			 * Not all SH platforms declare a clock lookup entry
+ 			 * for SCI devices, in which case we need to get the
 -- 
 2.25.1
 
