@@ -2,76 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4166C2BA80
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 14:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA2CC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 14:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237835AbhLPORn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 09:17:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237844AbhLPORl (ORCPT
+        id S238050AbhLPOgp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 09:36:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40224 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238034AbhLPOgj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 09:17:41 -0500
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CF2C061759
-        for <linux-serial@vger.kernel.org>; Thu, 16 Dec 2021 06:17:40 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:d13f:527c:5504:a743])
-        by albert.telenet-ops.be with bizsmtp
-        id X2He2600V250X30062HeVJ; Thu, 16 Dec 2021 15:17:39 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mxrZi-005QZg-BF; Thu, 16 Dec 2021 15:17:38 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mxrZh-009ynu-IY; Thu, 16 Dec 2021 15:17:37 +0100
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-sh@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 0/3] serial: sh-sci: Clock handling improvements
-Date:   Thu, 16 Dec 2021 15:17:31 +0100
-Message-Id: <cover.1639663832.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+        Thu, 16 Dec 2021 09:36:39 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD9961E0E;
+        Thu, 16 Dec 2021 14:36:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5326C36AE0;
+        Thu, 16 Dec 2021 14:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1639665398;
+        bh=L9sfP4SdpwWSAs6EQJ9rviv6zfDFP9fcD8eOiGef6ww=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ANoQmZeNu3SOTZUrL+236qumwQ/gLPKXCWCHCWhM1hPS2o+UYZtPWT+Yqtx0CssGz
+         SSuKC96qtj7EHrGDzWLoHC2y6Inwz/OauHSkSXWT1jQJVXAPj9ot9aeYfsX6iOoFvQ
+         9R41R4Cw8a/Hbzr7jI1wGxxGhVl9Y4HmCVrTzQzM=
+Date:   Thu, 16 Dec 2021 15:36:35 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] serial: pch_uart: potential dereference of null
+ pointer
+Message-ID: <YbtO81mPksp3JVkk@kroah.com>
+References: <20211216141454.423333-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211216141454.423333-1-jiasheng@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-	Hi Greg, Jiri,
+On Thu, Dec 16, 2021 at 10:14:54PM +0800, Jiasheng Jiang wrote:
+> The return value of dma_alloc_coherent() needs to be checked.
+> To avoid dereference of null pointer in case of the failure of alloc.
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-This patch series contains a legacy cleanup and two small improvements
-for the Renesas (H)SCI(F) serial driver.
+A blank line is always needed before the signed-off-by line.
 
-This been tested on a various of Renesas (SuperH and ARM) SoCs.
+> ---
+> Changelog:
+> 
+> v2 -> v3
+> 
+> *Change 1. Remove dev_err.
+> *Change 2. Change the return type of pch_request_dma to int.
+> *Change 3. Return -ENOMEM when dma_alloc_coherent() failed and 0 the
+> others.
+> *Change 4. Check return value of dma_alloc_coherent().
 
-Thanks!
+I see v3 here, not v4.  Where is v4?
 
-Geert Uytterhoeven (3):
-  serial: sh-sci: Drop support for "sci_ick" clock
-  serial: sh-sci: Use dev_err_probe()
-  serial: sh-sci: Use devm_clk_get_optional()
+And how did you test this change?
 
- drivers/tty/serial/sh-sci.c | 37 +++++++++++--------------------------
- 1 file changed, 11 insertions(+), 26 deletions(-)
+thanks,
 
--- 
-2.25.1
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
+greg k-h
