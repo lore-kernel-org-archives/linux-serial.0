@@ -2,86 +2,66 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9365CC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 15:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DC0C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 15:41:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235254AbhLPPYk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 10:24:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33206 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbhLPPYj (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 10:24:39 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66CAE61E24;
-        Thu, 16 Dec 2021 15:24:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B47BC36AE4;
-        Thu, 16 Dec 2021 15:24:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1639668278;
-        bh=ev+/ApSEEBzT/7SKV33Zoy3rD+RW1vJUeBArUO5NNBs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Lfh7Vgx1Wmp4GbwvSAXicP9SFnLIcX+kDCXZQo1IQR3+R6IIa9Ypn2KgQk08aiFnB
-         DuvRMT3GrSD+8cof4gZFAUVnsycWOvDpnXduvOd1jZs2N3LRAJvnuYUkSXIKod30Vk
-         vtLHN2MtfBIMorwb78zGYDRrrSAFhHZOqQfWgvSo=
-Date:   Thu, 16 Dec 2021 16:24:36 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH v3] serial: pch_uart: potential dereference of null
- pointer
-Message-ID: <YbtaNI/P6oxxWyXk@kroah.com>
-References: <20211216150539.423387-1-jiasheng@iscas.ac.cn>
+        id S235184AbhLPPlm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 10:41:42 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:56034 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232607AbhLPPlm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Dec 2021 10:41:42 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowADHz1saXrthvu1IAw--.262S2;
+        Thu, 16 Dec 2021 23:41:14 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: Re: Re: Re: [PATCH v3] serial: pch_uart: potential dereference of null pointer
+Date:   Thu, 16 Dec 2021 23:41:13 +0800
+Message-Id: <20211216154113.423442-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211216150539.423387-1-jiasheng@iscas.ac.cn>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowADHz1saXrthvu1IAw--.262S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrWry5CF4xXw18Xr4DAw4Utwb_yoWxXFg_WF
+        9IgrsrG395Wa97Ary3JFsrta43tFs3uryYqr45X34SqrZ5XFy5Jwn8tr95Jr4xGFsYyF4v
+        yFWvvrW2vw15ZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW5WwCF
+        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU8rc3UUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 11:05:39PM +0800, Jiasheng Jiang wrote:
-> On Thu, Dec 16, 2021 at 10:36:35PM +0800, Greg KH wrote:
-> >> The return value of dma_alloc_coherent() needs to be checked.
-> >> To avoid dereference of null pointer in case of the failure of alloc.
-> >> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> 
-> >A blank line is always needed before the signed-off-by line.
-> 
-> >> ---
-> >> Changelog:
-> >> 
-> >> v2 -> v3
-> >> 
-> >> *Change 1. Remove dev_err.
-> >> *Change 2. Change the return type of pch_request_dma to int.
-> >> *Change 3. Return -ENOMEM when dma_alloc_coherent() failed and 0 the
-> >> others.
-> >> *Change 4. Check return value of dma_alloc_coherent().
-> >
-> > I see v3 here, not v4.  Where is v4?
-> >
-> > And how did you test this change?
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> Sorry, I just have v3, maybe that is my fault. But I don't know why you think there is v4.
+On Thu, Dec 16, 2021 at 11:24:36PM +0800, Greg KH wrote:
+> Did you run the kernel before your change and then after your change to
+> ensure that the failure you saw before your change is now properly
+> fixed?
+>
+> How did you test this?
 
-You say "change 4".  Am I confused?
+Thank you for your answer. But I haven't run it yet.
+And in fact I don't know how to trigger the alloc failure.
+I just find the other place like eni_init_one() in `drivers/atm/eni.c`
+check the return value of the dma_alloc_coherent().
+So that's possible to alloc failure.
+Therefore, in order to avoid the dereference of the null pointer, it might
+be better to deal with it.
 
-> And I have no idea about the "test this change"? Please give me more detail. 
+Sincerely thanks,
 
-Did you run the kernel before your change and then after your change to
-ensure that the failure you saw before your change is now properly
-fixed?
+jiasheng jiang
 
-How did you test this?
-
-thanks,
-
-greg k-h
