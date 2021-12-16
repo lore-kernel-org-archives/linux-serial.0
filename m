@@ -2,76 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CCBC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Dec 2021 23:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A9EC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 04:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232112AbhLOXhj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Dec 2021 18:37:39 -0500
-Received: from relay11.mail.gandi.net ([217.70.178.231]:44695 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232096AbhLOXhi (ORCPT
+        id S233541AbhLPEfl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Dec 2021 23:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233525AbhLPEfj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Dec 2021 18:37:38 -0500
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 9BA64100003;
-        Wed, 15 Dec 2021 23:37:36 +0000 (UTC)
-Date:   Thu, 16 Dec 2021 00:37:36 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Richard Genoud <richard.genoud@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: atmel: Use platform_get_irq() to get the
- interrupt
-Message-ID: <Ybp8QMyoW+MxTgmJ@piout.net>
-References: <20211215224832.1985402-1-robh@kernel.org>
+        Wed, 15 Dec 2021 23:35:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A813C061574;
+        Wed, 15 Dec 2021 20:35:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 525F661B97;
+        Thu, 16 Dec 2021 04:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5ABAC36AE3;
+        Thu, 16 Dec 2021 04:35:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639629336;
+        bh=y9QOFaHTSntjEd1BcEK7/c1Zltf72qo8zEU0NPs5vVg=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=gfyhz1hDgi7s41XdwKJJvPdJiT3I/+kzGCkoFWphA+s/PSWz1E/1L5kwF0rb9XBvp
+         24Q3+h3bU1o3lTWb6Y8K4N9RCsOGS4RIV+PX/yVfbxaUeMC5n5Yei/1oAVg6CIL2qO
+         rCmObBbNzrzH4ZzfzVxldVZzI6LAj3IvjnTLJ3d+H7ySqQEr2SrA2HTk/MCpnXGmXD
+         Dxc2VT/Ni12LHvBY4vS5vpNAcpozAUMj2zk1F6/tMlu+8IDmdQXxbJN0ZTFPSjtQq4
+         T3NLD3RAPiEKpanDRkp8fBOkcdX8OSFhbJ9ddUjaxSxKn5ynQVrkGE6GFXAcVV37W0
+         Z680YFEL7o2ig==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211215224832.1985402-1-robh@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211116150119.2171-5-kernel@esmil.dk>
+References: <20211116150119.2171-1-kernel@esmil.dk> <20211116150119.2171-5-kernel@esmil.dk>
+Subject: Re: [PATCH v4 04/16] dt-bindings: clock: starfive: Add JH7100 clock definitions
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Rob Herring <robh@kernel.org>
+To:     Emil Renner Berthing <kernel@esmil.dk>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
+Date:   Wed, 15 Dec 2021 20:35:35 -0800
+User-Agent: alot/0.9.1
+Message-Id: <20211216043536.A5ABAC36AE3@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Rob,
-
-On 15/12/2021 16:48:31-0600, Rob Herring wrote:
-> Accessing platform device resources directly has long been deprecated for
-> DT as IRQ resources may not be available at device creation time. Drivers
-> continuing to use static IRQ resources is blocking removing the static setup
-> from the DT core code.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+Quoting Emil Renner Berthing (2021-11-16 07:01:07)
+> From: Geert Uytterhoeven <geert@linux-m68k.org>
+>=20
+> Add all clock outputs for the StarFive JH7100 clock generator.
+>=20
+> Based on work by Ahmad Fatoum for Barebox, with "JH7100_" prefixes added
+> to all definitions.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+> Acked-by: Rob Herring <robh@kernel.org>
 > ---
->  drivers/tty/serial/atmel_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 2c99a47a2535..9e57bfe523cf 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2479,7 +2479,7 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
->  	port->fifosize		= 1;
->  	port->dev		= &pdev->dev;
->  	port->mapbase		= mpdev->resource[0].start;
 
-Shouldn't you fix that one at the same time?
-
-> -	port->irq		= mpdev->resource[1].start;
-> +	port->irq		= platform_get_irq(mpdev, 0);
->  	port->rs485_config	= atmel_config_rs485;
->  	port->iso7816_config	= atmel_config_iso7816;
->  	port->membase		= NULL;
-> -- 
-> 2.32.0
-> 
-
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Acked-by: Stephen Boyd <sboyd@kernel.org>
