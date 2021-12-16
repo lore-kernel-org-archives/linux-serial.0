@@ -2,87 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FD1C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 13:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A67C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 14:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237386AbhLPNPS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 08:15:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237396AbhLPNPR (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 08:15:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8660C06173E;
-        Thu, 16 Dec 2021 05:15:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 563EB61DD7;
-        Thu, 16 Dec 2021 13:15:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 630D9C36AE0;
-        Thu, 16 Dec 2021 13:15:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1639660516;
-        bh=J9PKFrc+fybZ1tY7fMQZtcBddbuRGRoJPDdp+qbRjm4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dVCHWw84RJcwj2KSl9Ty9Xq6sOC3IAVQOan9MapGvPvcOSOBjFrgt9Gguio1pghF8
-         hF9gTdIkGE85PrbLtM4rOhFSLIplIbT+kkCFCJbXRZ1ajIy9CCk77fb1ysZbkEiQW7
-         JAxjbZP7XM0ur7RYHLyOonXCPQRmwCYg/OHJaH98=
-Date:   Thu, 16 Dec 2021 14:15:14 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] serial: pch_uart: potential dereference of null
- pointer
-Message-ID: <Ybs74r4fjDudyJ4C@kroah.com>
-References: <20211216125121.399938-1-jiasheng@iscas.ac.cn>
+        id S229471AbhLPOP2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 09:15:28 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:49698 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229612AbhLPOP2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Dec 2021 09:15:28 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowAAnvqbgSbthnnSfAw--.52579S2;
+        Thu, 16 Dec 2021 22:14:56 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v3] serial: pch_uart: potential dereference of null pointer
+Date:   Thu, 16 Dec 2021 22:14:54 +0800
+Message-Id: <20211216141454.423333-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211216125121.399938-1-jiasheng@iscas.ac.cn>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowAAnvqbgSbthnnSfAw--.52579S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxAw4UuF4fXF4fWF48Jw1DZFb_yoW5GF4xpa
+        1jyrZ8A3yYq3Z3KF18Ar47Xr4avwn3CFy7KrW7KwnIyr9rtr1UCF15t3s0vrn5JrWxKryF
+        vw4qyF45uF48taDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkv14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Xryl
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU6WlgUUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 08:51:21PM +0800, Jiasheng Jiang wrote:
-> The return value of dma_alloc_coherent() needs to be checked.
-> To avoid dereference of null pointer in case of the failure of alloc.
-> 
-> Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
+The return value of dma_alloc_coherent() needs to be checked.
+To avoid dereference of null pointer in case of the failure of alloc.
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changelog:
 
-That is not the commit that caused the problem :(
+v2 -> v3
 
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
-> Changelog:
-> 
-> v1 -> v2
-> 
-> *Change 1. Add the dev_err when dma_alloc_coherent failed.
-> ---
->  drivers/tty/serial/pch_uart.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-> index f0351e6f0ef6..d19ed7da24fa 100644
-> --- a/drivers/tty/serial/pch_uart.c
-> +++ b/drivers/tty/serial/pch_uart.c
-> @@ -745,6 +745,14 @@ static void pch_request_dma(struct uart_port *port)
->  	/* Get Consistent memory for DMA */
->  	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
->  				    &priv->rx_buf_dma, GFP_KERNEL);
-> +	if (!priv->rx_buf_virt) {
-> +		dev_err(priv->port.dev, "%s:dma_alloc_coherent FAILS(Rx)\n",
-> +			__func__);
-> +		dma_release_channel(priv->chan_tx);
-> +		priv->chan_tx = NULL;
-> +		return;
+*Change 1. Remove dev_err.
+*Change 2. Change the return type of pch_request_dma to int.
+*Change 3. Return -ENOMEM when dma_alloc_coherent() failed and 0 the
+others.
+*Change 4. Check return value of dma_alloc_coherent().
+---
+ drivers/tty/serial/pch_uart.c | 25 +++++++++++++++++++------
+ 1 file changed, 19 insertions(+), 6 deletions(-)
 
-You seemed to have ignored my previous review comments on this change
-for some reason :(
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index f0351e6f0ef6..cfad5592010c 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -698,7 +698,7 @@ static bool filter(struct dma_chan *chan, void *slave)
+ 	}
+ }
+ 
+-static void pch_request_dma(struct uart_port *port)
++static int pch_request_dma(struct uart_port *port)
+ {
+ 	dma_cap_mask_t mask;
+ 	struct dma_chan *chan;
+@@ -723,7 +723,7 @@ static void pch_request_dma(struct uart_port *port)
+ 	if (!chan) {
+ 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Tx)\n",
+ 			__func__);
+-		return;
++		return 0;
+ 	}
+ 	priv->chan_tx = chan;
+ 
+@@ -739,13 +739,20 @@ static void pch_request_dma(struct uart_port *port)
+ 			__func__);
+ 		dma_release_channel(priv->chan_tx);
+ 		priv->chan_tx = NULL;
+-		return;
++		return 0;
+ 	}
+ 
+ 	/* Get Consistent memory for DMA */
+ 	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
+ 				    &priv->rx_buf_dma, GFP_KERNEL);
++	if (!priv->rx_buf_virt) {
++		dma_release_channel(priv->chan_tx);
++		priv->chan_tx = NULL;
++		return -ENOMEM;
++	}
++
+ 	priv->chan_rx = chan;
++	return 0;
+ }
+ 
+ static void pch_dma_rx_complete(void *arg)
+@@ -1321,8 +1328,11 @@ static int pch_uart_startup(struct uart_port *port)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (priv->use_dma)
+-		pch_request_dma(port);
++	if (priv->use_dma) {
++		ret = pch_request_dma(port);
++		if (ret)
++			return ret;
++	}
+ 
+ 	priv->start_rx = 1;
+ 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_RX_INT |
+@@ -1469,6 +1479,7 @@ static int pch_uart_verify_port(struct uart_port *port,
+ 				struct serial_struct *serinfo)
+ {
+ 	struct eg20t_port *priv;
++	int ret;
+ 
+ 	priv = container_of(port, struct eg20t_port, port);
+ 	if (serinfo->flags & UPF_LOW_LATENCY) {
+@@ -1483,7 +1494,9 @@ static int pch_uart_verify_port(struct uart_port *port,
+ 		return -EOPNOTSUPP;
+ #endif
+ 		if (!priv->use_dma) {
+-			pch_request_dma(port);
++			ret = pch_request_dma(port);
++			if (ret)
++				return ret;
+ 			if (priv->chan_rx)
+ 				priv->use_dma = 1;
+ 		}
+-- 
+2.25.1
 
-This is not correct.
-
-greg k-h
