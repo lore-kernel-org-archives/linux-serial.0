@@ -2,69 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA2CC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 14:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C197C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 14:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238050AbhLPOgp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 09:36:45 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40224 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238034AbhLPOgj (ORCPT
+        id S237981AbhLPOwI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 09:52:08 -0500
+Received: from perceval.ideasonboard.com ([213.167.242.64]:38720 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237955AbhLPOwH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 09:36:39 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD9961E0E;
-        Thu, 16 Dec 2021 14:36:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5326C36AE0;
-        Thu, 16 Dec 2021 14:36:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1639665398;
-        bh=L9sfP4SdpwWSAs6EQJ9rviv6zfDFP9fcD8eOiGef6ww=;
+        Thu, 16 Dec 2021 09:52:07 -0500
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 6E9493F6;
+        Thu, 16 Dec 2021 15:52:05 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1639666325;
+        bh=7tR2zj9LiJsFgIWk69oL/8FuB0C4Ixxh7BTB5Pvw2KU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ANoQmZeNu3SOTZUrL+236qumwQ/gLPKXCWCHCWhM1hPS2o+UYZtPWT+Yqtx0CssGz
-         SSuKC96qtj7EHrGDzWLoHC2y6Inwz/OauHSkSXWT1jQJVXAPj9ot9aeYfsX6iOoFvQ
-         9R41R4Cw8a/Hbzr7jI1wGxxGhVl9Y4HmCVrTzQzM=
-Date:   Thu, 16 Dec 2021 15:36:35 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] serial: pch_uart: potential dereference of null
- pointer
-Message-ID: <YbtO81mPksp3JVkk@kroah.com>
-References: <20211216141454.423333-1-jiasheng@iscas.ac.cn>
+        b=Nn8iln8MGdfagy0tOiEfSGNIr3Wjd0cMOz4jEo0ARxrZHESssG9kag7Xuip5HqkMx
+         681UaVi7rPfOoFCszTKB0O0V8yNEU643hH7eo5nOkgFyQPJLRSrVv8OExzcq00g73I
+         wZ9OYjJ1+x3p7igoHLJUDbXJcWqQ5rm5YyzySF3Y=
+Date:   Thu, 16 Dec 2021 16:52:03 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-sh@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp
+Subject: Re: [PATCH 2/3] serial: sh-sci: Use dev_err_probe()
+Message-ID: <YbtSk+K6Ald6aq4u@pendragon.ideasonboard.com>
+References: <cover.1639663832.git.geert+renesas@glider.be>
+ <5c4dd8df1f8d0d14786f26ee80b77f3eb8e06cd5.1639663832.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211216141454.423333-1-jiasheng@iscas.ac.cn>
+In-Reply-To: <5c4dd8df1f8d0d14786f26ee80b77f3eb8e06cd5.1639663832.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 10:14:54PM +0800, Jiasheng Jiang wrote:
-> The return value of dma_alloc_coherent() needs to be checked.
-> To avoid dereference of null pointer in case of the failure of alloc.
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Hi Geert,
 
-A blank line is always needed before the signed-off-by line.
+Thank you for the patch.
+
+On Thu, Dec 16, 2021 at 03:17:33PM +0100, Geert Uytterhoeven wrote:
+> Use the dev_err_probe() helper to streamline error handling.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
 > ---
-> Changelog:
+>  drivers/tty/serial/sh-sci.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
 > 
-> v2 -> v3
-> 
-> *Change 1. Remove dev_err.
-> *Change 2. Change the return type of pch_request_dma to int.
-> *Change 3. Return -ENOMEM when dma_alloc_coherent() failed and 0 the
-> others.
-> *Change 4. Check return value of dma_alloc_coherent().
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 686ca1777222b1d4..5f6d85b8e3dd4173 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -2790,15 +2790,12 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
+>  			 * global "peripheral_clk" clock.
+>  			 */
+>  			clk = devm_clk_get(dev, "peripheral_clk");
+> -			if (!IS_ERR(clk))
+> -				goto found;
+> -
+> -			dev_err(dev, "failed to get %s (%ld)\n", clk_names[i],
+> -				PTR_ERR(clk));
+> -			return PTR_ERR(clk);
+> +			if (IS_ERR(clk))
+> +				return dev_err_probe(dev, PTR_ERR(clk),
+> +						     "failed to get %s\n",
+> +						     clk_names[i]);
+>  		}
+>  
+> -found:
+>  		if (IS_ERR(clk))
+>  			dev_dbg(dev, "failed to get %s (%ld)\n", clk_names[i],
+>  				PTR_ERR(clk));
 
-I see v3 here, not v4.  Where is v4?
+-- 
+Regards,
 
-And how did you test this change?
-
-thanks,
-
-greg k-h
+Laurent Pinchart
