@@ -2,76 +2,74 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7021C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 09:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56271C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 10:18:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235500AbhLPJoa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 04:44:30 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:34984 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232987AbhLPJo3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 04:44:29 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowADX31tpCrth2UZAAw--.30274S2;
-        Thu, 16 Dec 2021 17:44:10 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] serial: pch_uart: potential dereference of null pointer
-Date:   Thu, 16 Dec 2021 17:44:08 +0800
-Message-Id: <20211216094408.352500-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S233295AbhLPKSe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 05:18:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59646 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231246AbhLPKSd (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Dec 2021 05:18:33 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3930761D2B;
+        Thu, 16 Dec 2021 10:18:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1662FC36AE5;
+        Thu, 16 Dec 2021 10:18:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1639649912;
+        bh=4DQoS4PQDS6oHlnDMop0XUh7Wj7wp1o/oZdSSaTVXuE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OzijCiPnUUGWWAliOoQuoOP34NpkiliucsyUHsYffy4/QXfE/OTwlIPvsijGqr1mh
+         d4ao8VSXcNVhdoIPOBUWQ0SlwO079wR3QqnWAUXRVSRNwuD/52HCxJMR163d+vbgqW
+         z/xeg4bGBjMZUVAoAVFXnOtg8bZEF9fxocgC2Hqg=
+Date:   Thu, 16 Dec 2021 11:18:29 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: pch_uart: potential dereference of null pointer
+Message-ID: <YbsSdWsQE3BkgmtC@kroah.com>
+References: <20211216094408.352500-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowADX31tpCrth2UZAAw--.30274S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKry5XFW8Gr4xJw4ftrWDJwb_yoWfurg_Cw
-        n7XwnxAr1j9FZYyFnrJry5CryavayxZFn5uFnag3s3XFWUXFs7Jryqqr9xJw47Gr4DJrZx
-        JwnrGryayr4DujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GFWl
-        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
-        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI
-        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU0VyxDUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211216094408.352500-1-jiasheng@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The return value of dma_alloc_coherent() needs to be checked.
-To avoid dereference of null pointer in case of the failure of alloc.
+On Thu, Dec 16, 2021 at 05:44:08PM +0800, Jiasheng Jiang wrote:
+> The return value of dma_alloc_coherent() needs to be checked.
+> To avoid dereference of null pointer in case of the failure of alloc.
+> 
+> Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  drivers/tty/serial/pch_uart.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+> index f0351e6f0ef6..2ee1c4d6f177 100644
+> --- a/drivers/tty/serial/pch_uart.c
+> +++ b/drivers/tty/serial/pch_uart.c
+> @@ -745,6 +745,12 @@ static void pch_request_dma(struct uart_port *port)
+>  	/* Get Consistent memory for DMA */
+>  	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
+>  				    &priv->rx_buf_dma, GFP_KERNEL);
+> +	if (!priv->rx_buf_virt) {
+> +		dma_release_channel(priv->chan_tx);
+> +		priv->chan_tx = NULL;
+> +		return;
 
-Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/tty/serial/pch_uart.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+You are not returning an error, what happens when this buffer is later
+attempted to be used?
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index f0351e6f0ef6..2ee1c4d6f177 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -745,6 +745,12 @@ static void pch_request_dma(struct uart_port *port)
- 	/* Get Consistent memory for DMA */
- 	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
- 				    &priv->rx_buf_dma, GFP_KERNEL);
-+	if (!priv->rx_buf_virt) {
-+		dma_release_channel(priv->chan_tx);
-+		priv->chan_tx = NULL;
-+		return;
-+	}
-+
- 	priv->chan_rx = chan;
- }
- 
--- 
-2.25.1
+How did you test this change?
 
+thanks,
+
+greg k-h
