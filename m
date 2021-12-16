@@ -2,93 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 498F3C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 15:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9365CC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 15:24:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238457AbhLPPXH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 10:23:07 -0500
-Received: from www.zeus03.de ([194.117.254.33]:49468 "EHLO mail.zeus03.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232630AbhLPPXH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 10:23:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=bqT/2v0Y0gGJNljxFf/7hjqDQDdF
-        UhJP2wubjAG1znU=; b=N8OaIImovB7kO1H352IiJ9kQr4ZbmTX2DRM0NNjXZpu4
-        l2f0ofVyy1C8PtciUnjcyA70ubxybXAYQsycweYNsnMtlpaQXyhw8YNC+jpLuVy2
-        Up/eHGF00TGYBZcNmIo2palVY8RKlge5S4C1SlSZpkAHUV3Rwg+CR4q/V9jlqmI=
-Received: (qmail 3753951 invoked from network); 16 Dec 2021 16:23:05 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 16 Dec 2021 16:23:05 +0100
-X-UD-Smtp-Session: l3s3148p1@e065/0TT+JkgAQnoAGshAMNCcCooTOTk
-Date:   Thu, 16 Dec 2021 16:23:03 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-sh@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp
-Subject: Re: [PATCH 3/3] serial: sh-sci: Use devm_clk_get_optional()
-Message-ID: <YbtZ18XzusXJgKio@kunai>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-sh@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp
-References: <cover.1639663832.git.geert+renesas@glider.be>
- <bce27288cb570952dd96b441e1af8768ad8b4870.1639663832.git.geert+renesas@glider.be>
+        id S235254AbhLPPYk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 10:24:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33206 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229539AbhLPPYj (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Dec 2021 10:24:39 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66CAE61E24;
+        Thu, 16 Dec 2021 15:24:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B47BC36AE4;
+        Thu, 16 Dec 2021 15:24:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1639668278;
+        bh=ev+/ApSEEBzT/7SKV33Zoy3rD+RW1vJUeBArUO5NNBs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Lfh7Vgx1Wmp4GbwvSAXicP9SFnLIcX+kDCXZQo1IQR3+R6IIa9Ypn2KgQk08aiFnB
+         DuvRMT3GrSD+8cof4gZFAUVnsycWOvDpnXduvOd1jZs2N3LRAJvnuYUkSXIKod30Vk
+         vtLHN2MtfBIMorwb78zGYDRrrSAFhHZOqQfWgvSo=
+Date:   Thu, 16 Dec 2021 16:24:36 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH v3] serial: pch_uart: potential dereference of null
+ pointer
+Message-ID: <YbtaNI/P6oxxWyXk@kroah.com>
+References: <20211216150539.423387-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="l877d+C3upxS7ffu"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bce27288cb570952dd96b441e1af8768ad8b4870.1639663832.git.geert+renesas@glider.be>
+In-Reply-To: <20211216150539.423387-1-jiasheng@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, Dec 16, 2021 at 11:05:39PM +0800, Jiasheng Jiang wrote:
+> On Thu, Dec 16, 2021 at 10:36:35PM +0800, Greg KH wrote:
+> >> The return value of dma_alloc_coherent() needs to be checked.
+> >> To avoid dereference of null pointer in case of the failure of alloc.
+> >> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> 
+> >A blank line is always needed before the signed-off-by line.
+> 
+> >> ---
+> >> Changelog:
+> >> 
+> >> v2 -> v3
+> >> 
+> >> *Change 1. Remove dev_err.
+> >> *Change 2. Change the return type of pch_request_dma to int.
+> >> *Change 3. Return -ENOMEM when dma_alloc_coherent() failed and 0 the
+> >> others.
+> >> *Change 4. Check return value of dma_alloc_coherent().
+> >
+> > I see v3 here, not v4.  Where is v4?
+> >
+> > And how did you test this change?
+> >
+> > thanks,
+> >
+> > greg k-h
+> 
+> Sorry, I just have v3, maybe that is my fault. But I don't know why you think there is v4.
 
---l877d+C3upxS7ffu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You say "change 4".  Am I confused?
 
-On Thu, Dec 16, 2021 at 03:17:34PM +0100, Geert Uytterhoeven wrote:
-> The sh-sci driver supports up to four input clocks, of which only the
-> first one is mandatory.
->=20
-> Replace devm_clk_get() and custom error checking by
-> devm_clk_get_optional(), to simplify the code and to catch all real
-> errors.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> And I have no idea about the "test this change"? Please give me more detail. 
 
-Yeah, much better. Great cleanup!
+Did you run the kernel before your change and then after your change to
+ensure that the failure you saw before your change is now properly
+fixed?
 
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+How did you test this?
 
+thanks,
 
---l877d+C3upxS7ffu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmG7WdcACgkQFA3kzBSg
-KbZLwA/+LG8gt9+7ltg5w67QhoWEvIbrEHHqOdA541WSHy3PQWTR9/d/H2KiiUur
-d2/TMyEBje29THcS+9JZR+OECHDufb/g2Va+W37znt8DdK4rta7f5zNo39amBzLo
-sn1DKAhztZKMUdL1dPQoZY1zSJsBD/kpSiidrBmHTxoJo1UAUJNLjE+DyhnBh8iQ
-WEUV2rnRLPpgOmBuHr3omaZxibm0QI2z9yZ89Ou4tVWfx4nL34oweRe1lKwvC3Bw
-7ck1K6xO38eTFinGCU7RQCEO2ppg/18UhVp2o1qEiXWUQ+HffyfKJrv2I6YH100y
-LGDobSGxY4PUXGv6m3H/MdNtwHpJan38UG+XlfZxNwJRjamOAA1rErV+Qk7qwZx/
-pVTInh1Z5EXP8l3OXclHZXhS522jt9s8Rk/xxwBDeBiybJHceIHdAIGYTLovItlu
-YtZflOBEa96fx3MfNCqjavefYKe+KEBgWvmwK7XV6/FHnCTw+43TWWFbrGB2tL1R
-GVLMnvIBESp6lSyv6wnjRn9fF5iSHxxOktjiM0AZo8CaYSIJFf+pcq/Kc/0+xi0q
-favIg8rDaB8im7DXvis9NKLTCmjT0ywCTuutdiKz3x7TMdi7WeokwOaev9Nt4JN9
-k5TJL00vg+2tdxUe2RkhvQFjZxXUrKOozt+qW9aszm9hwGckUcw=
-=qfKt
------END PGP SIGNATURE-----
-
---l877d+C3upxS7ffu--
+greg k-h
