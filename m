@@ -2,203 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABAFC433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 18:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 082A2C43219
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 20:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240733AbhLPStk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 13:49:40 -0500
-Received: from inva020.nxp.com ([92.121.34.13]:60438 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236298AbhLPSt2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 13:49:28 -0500
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B19771A3125;
-        Thu, 16 Dec 2021 19:49:26 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A40461A3124;
-        Thu, 16 Dec 2021 19:49:26 +0100 (CET)
-Received: from fsr-ub1664-175.ea.freescale.net (fsr-ub1664-175.ea.freescale.net [10.171.82.40])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 2D16C202AD;
-        Thu, 16 Dec 2021 19:49:25 +0100 (CET)
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Estevam <festevam@gmail.com>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Abel Vesa <abel.vesa@nxp.com>, Jacky Bai <ping.bai@nxp.com>
-Subject: [RESEND v4 05/10] arm64: dts: freescale: Add the imx8dxl connectivity subsys dtsi
-Date:   Thu, 16 Dec 2021 20:48:09 +0200
-Message-Id: <1639680494-23183-6-git-send-email-abel.vesa@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1639680494-23183-1-git-send-email-abel.vesa@nxp.com>
-References: <1639680494-23183-1-git-send-email-abel.vesa@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S241435AbhLPUbr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 15:31:47 -0500
+Received: from mail-ot1-f44.google.com ([209.85.210.44]:46826 "EHLO
+        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236123AbhLPUbr (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Dec 2021 15:31:47 -0500
+Received: by mail-ot1-f44.google.com with SMTP id x3-20020a05683000c300b0057a5318c517so282985oto.13;
+        Thu, 16 Dec 2021 12:31:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/WZk6rTknr9ohPbMfgyEB9lTmn2kskX3wnXdJpxoO54=;
+        b=xxDciDiEjcMe8H0Qqc3ZRcX3iRQvIYBqjSdJMgEJXfQKSK9Bh15tLHWEDSgl/HCnsO
+         I1YfQYTtKZxxq/Inq3LEr8QSY9tZI4GqlxbeEDXF+VNm0j2cVWHYh2kA/Jgnshe+jqho
+         zEe2J6zp2QV546JTofpV9vsXkcnqYVX5z4CGMG+f8H/S7er8v0wstXxBoHLMhEYJzKLf
+         f83mxEOny7CDjhjndETGnMpX9T/ftj/tyqIuI+ipbOZBykUytfAEYu6eLlc2KuMq2Yfh
+         TgXdZY8BSpENfFYD3eznYnMejvEPiW9EXQmFagXkNBmklyB1HHB3sOC4eh25+ooME83O
+         M9ew==
+X-Gm-Message-State: AOAM5334PaleF3liw6iTMRm4n0N8NlXHYz7Q/T7d40BwmTQhZr1l4Non
+        Etmnh99UQyBfGXM7RnlYwg==
+X-Google-Smtp-Source: ABdhPJxolUuSHrXvVWwD1DwilZGwq7k1Tjchu9lac4l0lol5CTbTY9vjTqv4KL+RF7m1rNgxNg36Gg==
+X-Received: by 2002:a05:6830:1617:: with SMTP id g23mr13541257otr.117.1639686706300;
+        Thu, 16 Dec 2021 12:31:46 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id d12sm1196566otq.67.2021.12.16.12.31.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Dec 2021 12:31:45 -0800 (PST)
+Received: (nullmailer pid 705688 invoked by uid 1000);
+        Thu, 16 Dec 2021 20:31:44 -0000
+Date:   Thu, 16 Dec 2021 14:31:44 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     nobuhiro1.iwamatsu@toshiba.co.jp, abel.vesa@nxp.com,
+        ulf.hansson@linaro.org, stefan@agner.ch, sboyd@kernel.org,
+        soc@kernel.org, linux-serial@vger.kernel.org,
+        adrian.hunter@intel.com, aisheng.dong@nxp.com,
+        linux@armlinux.org.uk, shawnguo@kernel.org,
+        giulio.benetti@benettiengineering.com,
+        linux-kernel@vger.kernel.org, s.hauer@pengutronix.de,
+        gregkh@linuxfoundation.org, kernel@pengutronix.de,
+        robh+dt@kernel.org, mturquette@baylibre.com,
+        linux-mmc@vger.kernel.org, Mr.Bossman075@gmail.com, olof@lixom.net,
+        linus.walleij@linaro.org, jirislaby@kernel.org,
+        devicetree@vger.kernel.org, festevam@gmail.com,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-imx@nxp.com, linux-arm-kernel@lists.infradead.org,
+        arnd@arndb.de
+Subject: Re: [PATCH v5 6/9] dt-bindings: serial: fsl-lpuart: add i.MXRT1050
+ compatible
+Message-ID: <YbuiMIfmBGIc/vao@robh.at.kernel.org>
+References: <20211215220538.4180616-1-Mr.Bossman075@gmail.com>
+ <20211215220538.4180616-7-Mr.Bossman075@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211215220538.4180616-7-Mr.Bossman075@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jacky Bai <ping.bai@nxp.com>
+On Wed, 15 Dec 2021 17:05:35 -0500, Jesse Taube wrote:
+> From: Jesse Taube <mr.bossman075@gmail.com>
+> 
+> Add i.MXRT1050 documentation for compatible string.
+> 
+> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> ---
+> V1->V2:
+> * Nothing done
+> V2->V3:
+> * Rename imxrt to imxrt1050
+> V3->V4:
+> * Nothing done
+> V4->V5:
+> * Change commit description to just 1050
+> ---
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-On i.MX8DXL, the Connectivity subsystem includes below peripherals:
-1x ENET with AVB support, 1x ENET with TSN support, 2x USB OTG,
-1x eMMC, 2x SD, 1x NAND.
-
-Signed-off-by: Jacky Bai <ping.bai@nxp.com>
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
----
- .../boot/dts/freescale/imx8dxl-ss-conn.dtsi   | 137 ++++++++++++++++++
- 1 file changed, 137 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi
-
-diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi b/arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi
-new file mode 100644
-index 000000000000..b0059296a03f
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi
-@@ -0,0 +1,137 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright 2019-2021 NXP
-+ */
-+
-+/delete-node/ &enet1_lpcg;
-+/delete-node/ &fec2;
-+
-+&conn_subsys {
-+	conn_enet0_root_clk: clock-conn-enet0-root {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <250000000>;
-+		clock-output-names = "conn_enet0_root_clk";
-+	};
-+
-+	eqos: ethernet@5b050000 {
-+		compatible = "nxp,imx8dxl-dwmac-eqos", "snps,dwmac-5.10a";
-+		reg = <0x5b050000 0x10000>;
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_SPI 163 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 162 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "eth_wake_irq", "macirq";
-+		clocks = <&eqos_lpcg IMX_LPCG_CLK_2>,
-+			 <&eqos_lpcg IMX_LPCG_CLK_4>,
-+			 <&eqos_lpcg IMX_LPCG_CLK_0>,
-+			 <&eqos_lpcg IMX_LPCG_CLK_3>,
-+			 <&eqos_lpcg IMX_LPCG_CLK_1>;
-+		clock-names = "stmmaceth", "pclk", "ptp_ref", "tx", "mem";
-+		assigned-clocks = <&clk IMX_SC_R_ENET_1 IMX_SC_PM_CLK_PER>;
-+		assigned-clock-rates = <125000000>;
-+		power-domains = <&pd IMX_SC_R_ENET_1>;
-+		clk_csr = <0>;
-+		status = "disabled";
-+	};
-+
-+	usbotg2: usb@5b0e0000 {
-+		compatible = "fsl,imx8dxl-usb", "fsl,imx7ulp-usb";
-+		reg = <0x5b0e0000 0x200>;
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_SPI 166 IRQ_TYPE_LEVEL_HIGH>;
-+		fsl,usbphy = <&usbphy2>;
-+		fsl,usbmisc = <&usbmisc2 0>;
-+		/*
-+		 * usbotg1 and usbotg2 share one clcok
-+		 * scfw disable clock access and keep it always on
-+		 * in case other core (M4) use one of these.
-+		 */
-+		clocks = <&clk_dummy>;
-+		ahb-burst-config = <0x0>;
-+		tx-burst-size-dword = <0x10>;
-+		rx-burst-size-dword = <0x10>;
-+		#stream-id-cells = <1>;
-+		power-domains = <&pd IMX_SC_R_USB_1>;
-+		status = "disabled";
-+	};
-+
-+	usbmisc2: usbmisc@5b0e0200 {
-+		#index-cells = <1>;
-+		compatible = "fsl,imx8dxl-usbmisc", "fsl,imx7ulp-usbmisc";
-+		reg = <0x5b0e0200 0x200>;
-+	};
-+
-+	usbphy2: usbphy@0x5b110000 {
-+		compatible = "fsl,imx8dxl-usbphy", "fsl,imx7ulp-usbphy";
-+		reg = <0x5b110000 0x1000>;
-+		clocks = <&usb2_2_lpcg IMX_LPCG_CLK_7>;
-+		status = "disabled";
-+	};
-+
-+	eqos_lpcg: clock-controller@5b240000 {
-+		compatible = "fsl,imx8qxp-lpcg";
-+		reg = <0x5b240000 0x10000>;
-+		#clock-cells = <1>;
-+		clocks = <&conn_enet0_root_clk>,
-+			 <&conn_axi_clk>,
-+			 <&conn_axi_clk>,
-+			 <&clk IMX_SC_R_ENET_1 IMX_SC_PM_CLK_PER>,
-+			 <&conn_ipg_clk>;
-+		clock-indices = <IMX_LPCG_CLK_0>,
-+				<IMX_LPCG_CLK_2>,
-+				<IMX_LPCG_CLK_4>,
-+				<IMX_LPCG_CLK_5>,
-+				<IMX_LPCG_CLK_6>;
-+		clock-output-names = "eqos_ptp",
-+				     "eqos_mem_clk",
-+				     "eqos_aclk",
-+				     "eqos_clk",
-+				     "eqos_csr_clk";
-+		power-domains = <&pd IMX_SC_R_ENET_1>;
-+	};
-+
-+	usb2_2_lpcg: clock-controller@5b280000 {
-+		compatible = "fsl,imx8qxp-lpcg";
-+		reg = <0x5b280000 0x10000>;
-+		#clock-cells = <1>;
-+
-+		clock-indices = <IMX_LPCG_CLK_7>;
-+		clocks = <&conn_ipg_clk>;
-+		clock-output-names = "usboh3_2_phy_ipg_clk";
-+	};
-+
-+};
-+
-+&enet0_lpcg {
-+	clocks = <&conn_enet0_root_clk>,
-+		 <&conn_enet0_root_clk>,
-+		 <&conn_axi_clk>,
-+		 <&clk IMX_SC_R_ENET_0 IMX_SC_C_TXCLK>,
-+		 <&conn_ipg_clk>,
-+		 <&conn_ipg_clk>;
-+};
-+
-+&fec1 {
-+	compatible = "fsl,imx8dxl-fec", "fsl,imx8qm-fec";
-+	interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
-+		     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>,
-+		     <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>,
-+		     <GIC_SPI 161 IRQ_TYPE_LEVEL_HIGH>;
-+	assigned-clocks = <&clk IMX_SC_R_ENET_0 IMX_SC_C_CLKDIV>;
-+	assigned-clock-rates = <125000000>;
-+};
-+
-+&usdhc1 {
-+	compatible = "fsl,imx8dxl-usdhc", "fsl,imx8qxp-usdhc";
-+	interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&usdhc2 {
-+	compatible = "fsl,imx8dxl-usdhc", "fsl,imx8qxp-usdhc";
-+	interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
-+&usdhc3 {
-+	compatible = "fsl,imx8dxl-usdhc", "fsl,imx8qxp-usdhc";
-+	interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
-+};
--- 
-2.31.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
