@@ -2,72 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D6BC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Dec 2021 15:10:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D7DC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Dec 2021 16:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238027AbhLQPKf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Dec 2021 10:10:35 -0500
-Received: from mga17.intel.com ([192.55.52.151]:45226 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237997AbhLQPKe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Dec 2021 10:10:34 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10200"; a="220450116"
-X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
-   d="scan'208";a="220450116"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2021 07:10:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
-   d="scan'208";a="754582910"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Dec 2021 07:10:32 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id C6467410; Fri, 17 Dec 2021 17:10:39 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        id S239413AbhLQQy7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Dec 2021 11:54:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233478AbhLQQy7 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 17 Dec 2021 11:54:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B990C061574;
+        Fri, 17 Dec 2021 08:54:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC2CF62305;
+        Fri, 17 Dec 2021 16:54:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89721C36AE7;
+        Fri, 17 Dec 2021 16:54:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1639760098;
+        bh=35R/DOnfqARo0hvx3JTyLxO4xZ9BgeHF7T8etQNvDHU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hWMpmgB68DIatvPYkqYjULgyZgpZm/WMp4eE8rqINzZ9/bAyqsTC1Jl9h7QmBDiEk
+         Bx5OBzIg5HSwgc9C4DkLm/LrO2pg18GadbSWqiO8QSR5tfTr6PfiY9NXHhXoqBgT2T
+         grrlMhwcyRuarrxfW0fDVXPEpigZiFUYtU2L3ZBg=
+Date:   Fri, 17 Dec 2021 17:54:55 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Zhiyong Tao <zhiyong.tao@mediatek.com>,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jirislaby@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v1 1/1] serial: 8520_mtk: Prepare for platform_get_irq_optional() changes
-Date:   Fri, 17 Dec 2021 17:10:34 +0200
-Message-Id: <20211217151034.62046-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+Subject: Re: [PATCH v1 1/1] serial: 8520_mtk: Prepare for
+ platform_get_irq_optional() changes
+Message-ID: <YbzA3y5jp5K5zL/+@kroah.com>
+References: <20211217151034.62046-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211217151034.62046-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The platform_get_irq_optional() is going to be changed in a way
-that the result of it:
-   = 0 means no IRQ is provided
-   < 0 means the error which needs to be propagated to the upper layers
-   > 0 valid vIRQ is allocated
+On Fri, Dec 17, 2021 at 05:10:34PM +0200, Andy Shevchenko wrote:
+> The platform_get_irq_optional() is going to be changed in a way
+> that the result of it:
+>    = 0 means no IRQ is provided
+>    < 0 means the error which needs to be propagated to the upper layers
+>    > 0 valid vIRQ is allocated
 
-In this case, drop check for 0. Note, the 0 is not valid vIRQ and
-platform_get_irq_optional() issues a big WARN() in such case,
+What about 0 being a valid irq?
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_mtk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> In this case, drop check for 0. Note, the 0 is not valid vIRQ and
+> platform_get_irq_optional() issues a big WARN() in such case,
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index fb65dc601b23..8d3e16d7bf63 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -641,7 +641,7 @@ static int __maybe_unused mtk8250_resume(struct device *dev)
- 	struct mtk8250_data *data = dev_get_drvdata(dev);
- 	int irq = data->rx_wakeup_irq;
- 
--	if (irq >= 0)
-+	if (irq > 0)
- 		disable_irq_wake(irq);
- 	pinctrl_pm_select_default_state(dev);
- 
--- 
-2.34.1
+But it still is a valid irq, so why did you just break things?  Yes, a
+warning will happen, but the driver and platform will still work.
 
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index fb65dc601b23..8d3e16d7bf63 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -641,7 +641,7 @@ static int __maybe_unused mtk8250_resume(struct device *dev)
+>  	struct mtk8250_data *data = dev_get_drvdata(dev);
+>  	int irq = data->rx_wakeup_irq;
+>  
+> -	if (irq >= 0)
+> +	if (irq > 0)
+>  		disable_irq_wake(irq);
+
+Why change this now?  What does this solve at this point in time?
+
+thanks,
+
+greg k-h
