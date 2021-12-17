@@ -2,107 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3E82C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Dec 2021 17:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A15EC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Dec 2021 18:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239525AbhLQRXD convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Dec 2021 12:23:03 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:57571 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239847AbhLQRXD (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Dec 2021 12:23:03 -0500
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id DAD12200008;
-        Fri, 17 Dec 2021 17:23:00 +0000 (UTC)
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vladimir Vid <vladimir.vid@sartura.hr>,
-        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v7 0/6] serial: mvebu-uart: Support for higher baudrates
-In-Reply-To: <20211103214209.azo2z3z4gy7aj5hu@pali>
-References: <20210930095838.28145-1-pali@kernel.org>
- <20211103214209.azo2z3z4gy7aj5hu@pali>
-Date:   Fri, 17 Dec 2021 18:23:00 +0100
-Message-ID: <87ee6bm9hn.fsf@BL-laptop>
+        id S236322AbhLQSMG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Dec 2021 13:12:06 -0500
+Received: from mga12.intel.com ([192.55.52.136]:62049 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230432AbhLQSMF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 17 Dec 2021 13:12:05 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10201"; a="219821298"
+X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; 
+   d="scan'208";a="219821298"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2021 10:10:26 -0800
+X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; 
+   d="scan'208";a="605965790"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2021 10:10:24 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1myHfd-007YU0-SR;
+        Fri, 17 Dec 2021 20:09:29 +0200
+Date:   Fri, 17 Dec 2021 20:09:29 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v1 1/1] serial: 8520_mtk: Prepare for
+ platform_get_irq_optional() changes
+Message-ID: <YbzSWas9OfeZzY3o@smile.fi.intel.com>
+References: <20211217151034.62046-1-andriy.shevchenko@linux.intel.com>
+ <YbzA3y5jp5K5zL/+@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbzA3y5jp5K5zL/+@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Pali,
+On Fri, Dec 17, 2021 at 05:54:55PM +0100, Greg Kroah-Hartman wrote:
+> On Fri, Dec 17, 2021 at 05:10:34PM +0200, Andy Shevchenko wrote:
+> > The platform_get_irq_optional() is going to be changed in a way
+> > that the result of it:
+> >    = 0 means no IRQ is provided
+> >    < 0 means the error which needs to be propagated to the upper layers
+> >    > 0 valid vIRQ is allocated
+> 
+> What about 0 being a valid irq?
 
-> On Thursday 30 September 2021 11:58:32 Pali Rohár wrote:
->> This patch series add support for baudrates higher than 230400 on
->> Marvell Armada 37xx boards.
->
-> Stephen, Gregory, are there any issues with this patch series?
+For this driver it can't be possible. The driver is instantiated via DT only
+and OF APIs never return 0 for IRQ. If it's the case, it's a regression in the
+OF APIs.
 
-I am not found of these changes but let's apply it as I didn't take time
-to do a better review.
+I can elaborate in the commit message.
 
-However I can't apply the dt part if the driver is not merged.
+> > In this case, drop check for 0. Note, the 0 is not valid vIRQ and
+> > platform_get_irq_optional() issues a big WARN() in such case,
+> 
+> But it still is a valid irq, so why did you just break things?  Yes, a
+> warning will happen, but the driver and platform will still work.
 
-Gregory
+In general yes, but not in this case. See above.
 
-> If not, could you take them?
->
->> Changes in v7:
->> * fixed lint errors in yaml binding file
->> 
->> Changes in v6:
->> * fixed yaml binding file and dts files
->> 
->> Changes in v5:
->> * fixed yaml binding file
->> 
->> Changes in v4:
->> * converted armada3700-uart-clock documentation to YAML
->> * split documentation changes into two commits:
->>   - first which adds clock documentation
->>   - second which updates UART documentation
->> 
->> Changes in v3:
->> v3 is rebased on top of Linus master branch and all already applied patches
->> were dropped. There are no changes in patches itself since v2.
->> 
->> Pali Rohár (6):
->>   math64: New DIV_U64_ROUND_CLOSEST helper
->>   serial: mvebu-uart: implement UART clock driver for configuring UART
->>     base clock
->>   dt-bindings: mvebu-uart: document DT bindings for
->>     marvell,armada-3700-uart-clock
->>   dt-bindings: mvebu-uart: update information about UART clock
->>   arm64: dts: marvell: armada-37xx: add device node for UART clock and
->>     use it
->>   serial: mvebu-uart: implement support for baudrates higher than 230400
->> 
->>  .../clock/marvell,armada-3700-uart-clock.yaml |  59 ++
->>  .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
->>  arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  14 +-
->>  drivers/tty/serial/Kconfig                    |   1 +
->>  drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
->>  include/linux/math64.h                        |  13 +
->>  6 files changed, 667 insertions(+), 21 deletions(-)
->>  create mode 100644 Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-clock.yaml
->> 
->> -- 
->> 2.20.1
->> 
+...
+
+> > -	if (irq >= 0)
+> > +	if (irq > 0)
+> >  		disable_irq_wake(irq);
+> 
+> Why change this now?  What does this solve at this point in time?
+
+As explained in the commit message, it's a preparation patch to fix the logic
+behind platform_get_irq_optional().
 
 -- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+With Best Regards,
+Andy Shevchenko
+
+
