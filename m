@@ -2,78 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A47DC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Dec 2021 21:58:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4B0C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Dec 2021 01:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237313AbhLPV6m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Dec 2021 16:58:42 -0500
-Received: from outpost1.zedat.fu-berlin.de ([130.133.4.66]:53055 "EHLO
-        outpost1.zedat.fu-berlin.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234459AbhLPV6m (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Dec 2021 16:58:42 -0500
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.94)
-          with esmtps (TLS1.2)
-          tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1mxylo-001skq-DA; Thu, 16 Dec 2021 22:58:36 +0100
-Received: from p5b13a809.dip0.t-ipconnect.de ([91.19.168.9] helo=[192.168.178.81])
-          by inpost2.zedat.fu-berlin.de (Exim 4.94)
-          with esmtpsa (TLS1.2)
-          tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1mxylm-0048uL-M8; Thu, 16 Dec 2021 22:58:36 +0100
-Message-ID: <d372fa08-b935-f13a-e003-805a4b09aa57@physik.fu-berlin.de>
-Date:   Thu, 16 Dec 2021 22:58:33 +0100
+        id S231822AbhLQBcB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Dec 2021 20:32:01 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:49962 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229543AbhLQBcB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Dec 2021 20:32:01 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowACHjp5z6LthmT62Aw--.11913S2;
+        Fri, 17 Dec 2021 09:31:36 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: Re: Re: Re: Re: [PATCH v3] serial: pch_uart: potential dereference of null pointer
+Date:   Fri, 17 Dec 2021 09:31:29 +0800
+Message-Id: <20211217013129.423510-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] serial: 8250: Move alpha-specific quirk out of the core
-Content-Language: en-US
-To:     Ulrich Teichert <krypton@ulrich-teichert.org>,
-        Lukas Wunner <lukas@wunner.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>
-References: <202112162036.1BGKaKGI003165@valdese.nms.ulrich-teichert.org>
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-In-Reply-To: <202112162036.1BGKaKGI003165@valdese.nms.ulrich-teichert.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-Originating-IP: 91.19.168.9
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowACHjp5z6LthmT62Aw--.11913S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYe7AC8VAFwI0_Jr0_Gr1l1xkIjI8I6I8E
+        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
+        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8I
+        cVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2js
+        IEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE
+        5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeV
+        CFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l
+        c2xSY4AK67AK6w4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
+        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r12
+        6r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
+        kF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE
+        14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa
+        7VUbYFAPUUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Ulrich!
+On Fri, Dec 17, 2021 at 00:14:28AM +0800, Greg KH wrote:
+>> Thank you for your answer. But I haven't run it yet.
+>> And in fact I don't know how to trigger the alloc failure.
+>
+> Then perhaps this change is not needed?
 
-On 12/16/21 21:36, Ulrich Teichert wrote:
-> Wouldn't that mean that you can't use a generic Alpha kernel on the Jensen
-> anymore? CONFIG_ALPHA_JENSEN is only set if you specifically select the
-> Jensen as target, not when you build a generic kernel. That would be a step
-> back in my opinion, as the Debian generic kernel from debian-ports did
-> as least boot up on real hardware and the serial console worked just fine
-> [granted, the EISA cards were not detected, even after support for it
-> got enabled, but that's another case of worms].
+Er, I mean I have not got the technique to create the sitution that
+the alloc would fail.
+But it is universally accepted that the alloc would fail when the system
+is under an extreme memory pressure.
+If you insist to recurrent the bug, I will try my best to do it,
+which I think it is needless.
 
-If you could figure out what kernel option we might be missing for the Jensen
-machine to get EISA working, please let me know. I only have newer Alphas myself,
-so I am relying on your debugging help here.
-
-Adrian
-
--- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer - glaubitz@debian.org
-`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+Sincerely thanks,
+jiasheng jiang
 
