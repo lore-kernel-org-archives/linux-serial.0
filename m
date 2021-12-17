@@ -2,87 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D7DC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Dec 2021 16:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86C8C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Dec 2021 16:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239413AbhLQQy7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Dec 2021 11:54:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49854 "EHLO
+        id S239526AbhLQQ7f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Dec 2021 11:59:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233478AbhLQQy7 (ORCPT
+        with ESMTP id S239499AbhLQQ7b (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Dec 2021 11:54:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B990C061574;
-        Fri, 17 Dec 2021 08:54:59 -0800 (PST)
+        Fri, 17 Dec 2021 11:59:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4598CC061401;
+        Fri, 17 Dec 2021 08:59:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC2CF62305;
-        Fri, 17 Dec 2021 16:54:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89721C36AE7;
-        Fri, 17 Dec 2021 16:54:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 100C0B828D4;
+        Fri, 17 Dec 2021 16:59:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5371CC36AE7;
+        Fri, 17 Dec 2021 16:59:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1639760098;
-        bh=35R/DOnfqARo0hvx3JTyLxO4xZ9BgeHF7T8etQNvDHU=;
+        s=korg; t=1639760368;
+        bh=cePM4fZOqSweG5iqCi/Kt1W2jaOm1RFO9qvsPI2XcWA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hWMpmgB68DIatvPYkqYjULgyZgpZm/WMp4eE8rqINzZ9/bAyqsTC1Jl9h7QmBDiEk
-         Bx5OBzIg5HSwgc9C4DkLm/LrO2pg18GadbSWqiO8QSR5tfTr6PfiY9NXHhXoqBgT2T
-         grrlMhwcyRuarrxfW0fDVXPEpigZiFUYtU2L3ZBg=
-Date:   Fri, 17 Dec 2021 17:54:55 +0100
+        b=VdZLuFsU9lyrlY2yPcKsrCzQOkO3cluzqCdatXRPcVQvtZGafITBtMUxliJiU8Gqo
+         Lf5VrpbIkhBHvetwzqccD+La9h6uoEj06/aYzXqUDTlcLCTxRMu/3Sg73FpaFikqFt
+         LRgdgZUIXp6faqaTVM67qeGT8+M2E9cjZZY8QG+E=
+Date:   Fri, 17 Dec 2021 17:59:26 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v1 1/1] serial: 8520_mtk: Prepare for
- platform_get_irq_optional() changes
-Message-ID: <YbzA3y5jp5K5zL/+@kroah.com>
-References: <20211217151034.62046-1-andriy.shevchenko@linux.intel.com>
+To:     Abel Vesa <abel.vesa@nxp.com>
+Cc:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [RESEND v4 10/10] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL
+ compatible
+Message-ID: <YbzB7mspRBonT9jJ@kroah.com>
+References: <1639680494-23183-1-git-send-email-abel.vesa@nxp.com>
+ <1639680494-23183-11-git-send-email-abel.vesa@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211217151034.62046-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <1639680494-23183-11-git-send-email-abel.vesa@nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 05:10:34PM +0200, Andy Shevchenko wrote:
-> The platform_get_irq_optional() is going to be changed in a way
-> that the result of it:
->    = 0 means no IRQ is provided
->    < 0 means the error which needs to be propagated to the upper layers
->    > 0 valid vIRQ is allocated
-
-What about 0 being a valid irq?
-
-> In this case, drop check for 0. Note, the 0 is not valid vIRQ and
-> platform_get_irq_optional() issues a big WARN() in such case,
-
-But it still is a valid irq, so why did you just break things?  Yes, a
-warning will happen, but the driver and platform will still work.
-
+On Thu, Dec 16, 2021 at 08:48:14PM +0200, Abel Vesa wrote:
+> Add i.MX8DXL lpuart compatible to the bindings documentation.
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 > ---
->  drivers/tty/serial/8250/8250_mtk.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> index fb65dc601b23..8d3e16d7bf63 100644
-> --- a/drivers/tty/serial/8250/8250_mtk.c
-> +++ b/drivers/tty/serial/8250/8250_mtk.c
-> @@ -641,7 +641,7 @@ static int __maybe_unused mtk8250_resume(struct device *dev)
->  	struct mtk8250_data *data = dev_get_drvdata(dev);
->  	int irq = data->rx_wakeup_irq;
->  
-> -	if (irq >= 0)
-> +	if (irq > 0)
->  		disable_irq_wake(irq);
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> index fa23c60a01d0..ee37aa125c86 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> @@ -29,6 +29,10 @@ properties:
+>        - items:
+>            - const: fsl,imx8qm-lpuart
+>            - const: fsl,imx8qxp-lpuart
+> +      - items:
+> +          - const: fsl,imx8dxl-lpuart
+> +          - const: fsl,imx8qxp-lpuart
+> +          - const: fsl,imx7ulp-lpuart
 
-Why change this now?  What does this solve at this point in time?
+Why is "- items:" listed twice here?
 
 thanks,
 
