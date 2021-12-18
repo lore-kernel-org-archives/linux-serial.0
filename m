@@ -2,117 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0342C433F5
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Dec 2021 09:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD03C433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Dec 2021 09:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230322AbhLRJGD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Dec 2021 04:06:03 -0500
-Received: from bmailout1.hostsharing.net ([83.223.95.100]:60679 "EHLO
-        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbhLRJGD (ORCPT
+        id S229890AbhLRJ6q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Dec 2021 04:58:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231450AbhLRJ6q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Dec 2021 04:06:03 -0500
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        Sat, 18 Dec 2021 04:58:46 -0500
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB6CC06173F
+        for <linux-serial@vger.kernel.org>; Sat, 18 Dec 2021 01:58:45 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 3C8C0300097C6;
-        Sat, 18 Dec 2021 10:06:01 +0100 (CET)
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 9C207100D940E;
+        Sat, 18 Dec 2021 10:58:40 +0100 (CET)
 Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 2DC602E6705; Sat, 18 Dec 2021 10:06:01 +0100 (CET)
-Date:   Sat, 18 Dec 2021 10:06:01 +0100
+        id 6BFF52E66F1; Sat, 18 Dec 2021 10:58:40 +0100 (CET)
+Message-Id: <9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de>
 From:   Lukas Wunner <lukas@wunner.de>
-To:     Ulrich Teichert <krypton@ulrich-teichert.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+Date:   Sat, 18 Dec 2021 10:58:56 +0100
+Subject: [PATCH] serial: Fix incorrect rs485 polarity on uart open
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     "Su Bao Cheng" <baocheng.su@siemens.com>, baocheng_su@163.com,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Chao Zeng <chao.zeng@siemens.com>,
         linux-serial@vger.kernel.org,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
         Lino Sanfilippo <LinoSanfilippo@gmx.de>,
         Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Subject: Re: [PATCH] serial: 8250: Move alpha-specific quirk out of the core
-Message-ID: <20211218090601.GA1016@wunner.de>
-References: <af967f273724aff4cff3c49470110a48f790794e.1639676574.git.lukas@wunner.de>
- <202112162036.1BGKaKGI003165@valdese.nms.ulrich-teichert.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202112162036.1BGKaKGI003165@valdese.nms.ulrich-teichert.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Rafael Gago Castano <rgc@hms.se>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 09:36:20PM +0100, Ulrich Teichert wrote:
-> > struct uart_8250_port contains mcr_mask and mcr_force members whose
-> > sole purpose is to work around an alpha-specific quirk.  This code
-> > doesn't belong in the core where it is executed by everyone else,
-> > so move it to a proper ->set_mctrl callback which is used on alpha only.
-[...]
-> > The quirk applies to non-PCI alphas and arch/alpha/Kconfig specifies
-> > "select FORCE_PCI if !ALPHA_JENSEN".  So apparently the only affected
-> > machine is the EISA-based Jensen that Linus was working on back then:
-[...]
-> > Up until now the quirk is not applied unless CONFIG_PCI is disabled.
-> > If users forget to do that, the serial ports aren't usable on Jensen
-> > and the machine may not boot in the first place.  Avoid by confining
-> > the quirk to CONFIG_ALPHA_JENSEN instead.
-> 
-> Wouldn't that mean that you can't use a generic Alpha kernel on the Jensen
-> anymore? CONFIG_ALPHA_JENSEN is only set if you specifically select the
-> Jensen as target, not when you build a generic kernel. That would be a step
-> back in my opinion, as the Debian generic kernel from debian-ports did
-> as least boot up on real hardware and the serial console worked just fine
+Commit a6845e1e1b78 ("serial: core: Consider rs485 settings to drive
+RTS") sought to deassert RTS when opening an rs485-enabled uart port.
+That way, the transceiver does not occupy the bus until it transmits
+data.
 
-The generic Alpha kernel has CONFIG_PCI=y, so the quirk is not applied,
-both with and without the present patch.
+Unfortunately, the commit mixed up the logic and *asserted* RTS instead
+of *deasserting* it:
 
-You should be able to trigger the lockup that the quirk seeks to avoid
-by closing the tty of either of the serial ports.  E.g., if you're using
-the serial console, "cat" something to the other serial port's tty.
-That will clear TIOCM_OUT2 in serial8250_do_shutdown() and should thus
-provoke the lockup.  Alternatively, compile and run the little program
-below on the Jensen.  (Pass a serial port tty as argument.)
+The commit amended uart_port_dtr_rts(), which raises DTR and RTS when
+opening an rs232 port.  "Raising" actually means lowering the signal
+that's coming out of the uart, because an rs232 transceiver not only
+changes a signal's voltage level, it also *inverts* the signal.  See
+the simplified schematic in the MAX232 datasheet for an example:
+https://www.ti.com/lit/ds/symlink/max232.pdf
 
-Should you not be able to reproduce the lockup, then the quirk wouldn't
-be necessary anymore and could be removed.
+So, to raise RTS on an rs232 port, TIOCM_RTS is *set* in port->mctrl
+and that results in the signal being driven low.
 
-Thanks!
+In contrast to rs232, the signal level for rs485 Transmit Enable is the
+identity, not the inversion:  If the transceiver expects a "high" RTS
+signal for Transmit Enable, the signal coming out of the uart must also
+be high, so TIOCM_RTS must be *cleared* in port->mctrl.
 
-Lukas
+The commit did the exact opposite, but it's easy to see why given the
+confusing semantics of rs232 and rs485.  Fix it.
 
--- >8 --
+Fixes: a6845e1e1b78 ("serial: core: Consider rs485 settings to drive RTS")
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: stable@vger.kernel.org # v4.14+
+Cc: Rafael Gago Castano <rgc@hms.se>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Su Bao Cheng <baocheng.su@siemens.com>
+---
+ drivers/tty/serial/serial_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-#include <unistd.h>
-#include <termios.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 29f4781..259f28e 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -162,7 +162,7 @@ static void uart_port_dtr_rts(struct uart_port *uport, int raise)
+ 	int RTS_after_send = !!(uport->rs485.flags & SER_RS485_RTS_AFTER_SEND);
+ 
+ 	if (raise) {
+-		if (rs485_on && !RTS_after_send) {
++		if (rs485_on && RTS_after_send) {
+ 			uart_set_mctrl(uport, TIOCM_DTR);
+ 			uart_clear_mctrl(uport, TIOCM_RTS);
+ 		} else {
+@@ -171,7 +171,7 @@ static void uart_port_dtr_rts(struct uart_port *uport, int raise)
+ 	} else {
+ 		unsigned int clear = TIOCM_DTR;
+ 
+-		clear |= (!rs485_on || !RTS_after_send) ? TIOCM_RTS : 0;
++		clear |= (!rs485_on || RTS_after_send) ? TIOCM_RTS : 0;
+ 		uart_clear_mctrl(uport, clear);
+ 	}
+ }
+-- 
+2.33.0
 
-#define TIOCM_OUT1	0x2000
-#define TIOCM_OUT2	0x4000
-
-int main(int argc, char* argv[]) {
-	int fd, ret, flags;
-
-	if (argc < 2)
-		return 1;
-
-	fd = open(argv[1], O_RDWR);
-	if (fd < 0)
-		return 2;
-
-	ret = ioctl(fd, TIOCMGET, &flags);
-	if (ret < 0)
-		goto close;
-
-	flags &= ~(TIOCM_OUT1 | TIOCM_OUT2);
-	ret = ioctl(fd, TIOCMSET, &flags);
-
-close:
-	close(fd);
-
-	return ret;
-}
