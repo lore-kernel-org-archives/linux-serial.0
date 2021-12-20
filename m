@@ -2,181 +2,223 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45493C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 17:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E04C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 22:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239917AbhLTRC2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Dec 2021 12:02:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:56164 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239883AbhLTRC1 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Dec 2021 12:02:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640019746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IMU+crRbPmjYFM4aE3gKGGI6VKsFtp6amlEI5UhnTVM=;
-        b=bP60ZKz7FHCAqoze12WXkNqUW8EfBM4GU0xUrBQhU7Zi6nB6Vem1XXhxR+wEMD6dS8p61R
-        IlCgiQ/iFzXbI1KBgwEYf9dmaZpRKvR3wyDiVL2foxoDjT3e3beslqJQ3ix4aw4T47BZ/H
-        lpz3DaFnG7JElLqpzzLtZeYffZ/kkZY=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-515-CKBWsYwAMJylVBe4EzI_NA-1; Mon, 20 Dec 2021 12:02:25 -0500
-X-MC-Unique: CKBWsYwAMJylVBe4EzI_NA-1
-Received: by mail-ed1-f72.google.com with SMTP id dm10-20020a05640222ca00b003f808b5aa18so8120150edb.4
-        for <linux-serial@vger.kernel.org>; Mon, 20 Dec 2021 09:02:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IMU+crRbPmjYFM4aE3gKGGI6VKsFtp6amlEI5UhnTVM=;
-        b=YVZZ15EaNDnO4xjnJQVwAsDJ/mhsJlP1SNma2kfXghxJGkvMekRJn2t+MuY2pP+i1y
-         NaJeZDNS2kjd+cvl6Urr8BswwBl+4QsMtq8Yeu50DIim7ZMoVQnMiTETcJEdjaojT9/c
-         zQNskZPnT7CEGKTdOgbRqq7jmO6vWI044EESO7MW4go4Ak6Qz/Cbow6GXWR/nz4uVpPk
-         ev6yEmBQoSD1qbl/ZC1ppSUA9CtZ1R89uiX7uNoIXX7yIxyiF3rUgvGYhVnP70iG8abJ
-         SYBw4pVzKzXZ/LasGmn/0iYhBZqJWt3Wmj1ytrWAEybGPv/A8Ngy1DAzzOGE0e/Xg9N/
-         gYBQ==
-X-Gm-Message-State: AOAM5324OCi5sJaafPCGbAYBCnGp0KQ6UjtvX4bpLwLQJPSXVC4FE1rW
-        Ku25Uey3ZdlYdhgGlRsx1FhK1EYXH34WrzEDkJUQ/gDF28Aq7YRV+oPwmPsO75bBe116znCNxsR
-        Jfgr5dA5mRHd69b2wjbrcakDDbMN6Z+kEUFq1jJYG
-X-Received: by 2002:a05:6402:d05:: with SMTP id eb5mr17171222edb.360.1640019743124;
-        Mon, 20 Dec 2021 09:02:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw3uewW7dW2JUgtnmE5hrswtZYTJhzi+M3Hljl0JXA6W2KOd/ltCxASxmEBtTAIgQ7/+1mGgrxoW1uwmM7YFrg=
-X-Received: by 2002:a05:6402:d05:: with SMTP id eb5mr17171189edb.360.1640019742880;
- Mon, 20 Dec 2021 09:02:22 -0800 (PST)
+        id S230378AbhLTWV1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Dec 2021 17:21:27 -0500
+Received: from mga18.intel.com ([134.134.136.126]:2844 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230391AbhLTWV1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 20 Dec 2021 17:21:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640038887; x=1671574887;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OO1CIGv2vCQpr7qbodB94VI0aaR0M5+35o3BtyGLTGY=;
+  b=QCvwRI09EnMWJ5EEVQ3IFjUWKPnzgZbHQhuTCCJ/qKw2OADd8RI5DEPe
+   q1JgpIFBw1YVSdHDLCpW9oB3Futi9FgA8SwtA7Ypc9aqwaqslvXTauNU0
+   g24AbD5j83FMWf8ricO7Y5batuu0aEK62tTe6PQ3lDTBsi0pmjdgRRTZm
+   E42de5ukXtUJ1nyi489Js7X7aM4AKW/bBefTuNTAcrAbtl4DLN+hA9JuM
+   71xouP6Q7FKNkfZSdFG9dhs0vN+JikpxPq9hcnbGO60wo0ry5MPvM6tsb
+   tqn18OEV7Axq73POOZPlfFBnt+lD0WbrQ2MhkawdV+VdyU3LJD/X1k3Bq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="227133480"
+X-IronPort-AV: E=Sophos;i="5.88,221,1635231600"; 
+   d="scan'208";a="227133480"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 14:21:26 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,221,1635231600"; 
+   d="scan'208";a="507848681"
+Received: from lkp-server02.sh.intel.com (HELO 9f38c0981d9f) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 20 Dec 2021 14:21:25 -0800
+Received: from kbuild by 9f38c0981d9f with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mzR24-0008Jl-Oa; Mon, 20 Dec 2021 22:21:24 +0000
+Date:   Tue, 21 Dec 2021 06:20:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-next] BUILD SUCCESS
+ 35eaa42c4a1017c08d0572008db375becb621744
+Message-ID: <61c101c3.j3vjWMZjJCY9PKh5%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20211104171734.137707-1-wander@redhat.com> <YcClBlhwp4arGWtw@kroah.com>
-In-Reply-To: <YcClBlhwp4arGWtw@kroah.com>
-From:   Wander Costa <wcosta@redhat.com>
-Date:   Mon, 20 Dec 2021 14:02:11 -0300
-Message-ID: <CAAq0SUmVmyALNYUbM5dy3D0=Bp=ukNoNdodc1yxYQjm1SnBgAQ@mail.gmail.com>
-Subject: Re: [PATCH v2] tty: serial: Use fifo in 8250 console driver
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Wander Lairson Costa <wander@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 12:45 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Nov 04, 2021 at 02:17:31PM -0300, wander@redhat.com wrote:
-> > From: Wander Lairson Costa <wander@redhat.com>
-> >
-> > Note: I am using a small test app + driver located at [0] for the
-> > problem description. serco is a driver whose write function dispatches
-> > to the serial controller. sertest is a user-mode app that writes n bytes
-> > to the serial console using the serco driver.
-> >
-> > Recently I got a report of a soft lockup while loading a bunch a
-> > scsi_debug devices (> 500).
-> >
-> > While investigating it, I noticed that the serial console throughput
-> > (called by the printk code) is way below the configured speed of 115200
-> > bps in a HP Proliant DL380 Gen9 server. I was expecting something above
-> > 10KB/s, but I got 2.5KB/s. I then built a simple driver [0] to isolate
-> > the console from the printk code. Here it is:
-> >
-> > $ time ./sertest -n 2500 /tmp/serco
-> >
-> > real    0m0.997s
-> > user    0m0.000s
-> > sys     0m0.997s
-> >
-> > With the help of the function tracer, I then noticed the serial
-> > controller was taking around 410us seconds to dispatch one single byte:
-> >
-> > $ trace-cmd record -p function_graph -g serial8250_console_write \
-> >    ./sertest -n 1 /tmp/serco
-> >
-> > $ trace-cmd report
-> >
-> >             |  serial8250_console_write() {
-> >  0.384 us   |    _raw_spin_lock_irqsave();
-> >  1.836 us   |    io_serial_in();
-> >  1.667 us   |    io_serial_out();
-> >             |    uart_console_write() {
-> >             |      serial8250_console_putchar() {
-> >             |        wait_for_xmitr() {
-> >  1.870 us   |          io_serial_in();
-> >  2.238 us   |        }
-> >  1.737 us   |        io_serial_out();
-> >  4.318 us   |      }
-> >  4.675 us   |    }
-> >             |    wait_for_xmitr() {
-> >  1.635 us   |      io_serial_in();
-> >             |      __const_udelay() {
-> >  1.125 us   |        delay_tsc();
-> >  1.429 us   |      }
-> > ...
-> > ...
-> > ...
-> >  1.683 us   |      io_serial_in();
-> >             |      __const_udelay() {
-> >  1.248 us   |        delay_tsc();
-> >  1.486 us   |      }
-> >  1.671 us   |      io_serial_in();
-> >  411.342 us |    }
-> >
-> > In another machine, I measured a throughput of 11.5KB/s, with the serial
-> > controller taking between 80-90us to send each byte. That matches the
-> > expected throughput for a configuration of 115200 bps.
-> >
-> > This patch changes the serial8250_console_write to use the 16550 fifo
-> > if available. In my artificial benchmark I could get a throughput
-> > increase up to 100% in some cases, but in the real case described at the
-> > beginning the gain was of about 25%.
-> >
-> > [0] https://github.com/walac/serial-console-test
-> >
-> > Signed-off-by: Wander Lairson Costa <wander@redhat.com>
-> > ---
-> >  drivers/tty/serial/8250/8250.h      |  3 ++
-> >  drivers/tty/serial/8250/8250_port.c | 63 +++++++++++++++++++++++++----
-> >  2 files changed, 59 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> > index 6473361525d1..c711bf118cc1 100644
-> > --- a/drivers/tty/serial/8250/8250.h
-> > +++ b/drivers/tty/serial/8250/8250.h
-> > @@ -83,6 +83,9 @@ struct serial8250_config {
-> >  #define UART_CAP_MINI        BIT(17) /* Mini UART on BCM283X family lacks:
-> >                                        * STOP PARITY EPAR SPAR WLEN5 WLEN6
-> >                                        */
-> > +#define UART_CAP_CWFIFO BIT(18) /* Use the UART Fifo in
-> > +                              * serial8250_console_write
-> > +                              */
->
-> Why do you need a new bit?  Why can't you just do this change for all
-> devices that have a fifo?  Why would you _not_ want to do this for all
-> devices that have a fifo?
->
-The v1 patch [1] didn't have this extra bit. Andy suggested [2] to add
-it so we only enabled this new code on tested controllers as a
-precaution.
-If it doesn't make sense to you, feel free to consider the v1 patch [1].
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+branch HEAD: 35eaa42c4a1017c08d0572008db375becb621744  Merge 5.16-rc6 into tty-next
 
-[1] https://lore.kernel.org/all/20211029201402.428284-1-wander@redhat.com/
-[2] https://lore.kernel.org/all/CAHp75Vf6DjNcPWpE4Dh3SuzUMJbFQjq1UNCkrCa60uw35SpqKg@mail.gmail.com/
+elapsed time: 729m
 
-> thanks,
->
-> greg k-h
->
+configs tested: 152
+configs skipped: 3
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+powerpc                       maple_defconfig
+arm                       imx_v4_v5_defconfig
+sh                           se7712_defconfig
+arm                        vexpress_defconfig
+mips                       bmips_be_defconfig
+mips                             allmodconfig
+mips                     cu1830-neo_defconfig
+sparc                       sparc32_defconfig
+xtensa                  nommu_kc705_defconfig
+powerpc                 mpc8313_rdb_defconfig
+powerpc                     sequoia_defconfig
+arm                        cerfcube_defconfig
+h8300                    h8300h-sim_defconfig
+xtensa                              defconfig
+arm                       spear13xx_defconfig
+powerpc                      ep88xc_defconfig
+powerpc                 xes_mpc85xx_defconfig
+arm                          iop32x_defconfig
+arm                         s3c2410_defconfig
+powerpc                      chrp32_defconfig
+csky                                defconfig
+parisc                           allyesconfig
+powerpc                 mpc85xx_cds_defconfig
+powerpc                       ebony_defconfig
+sh                          sdk7780_defconfig
+m68k                        mvme16x_defconfig
+powerpc                     kilauea_defconfig
+powerpc                 mpc832x_mds_defconfig
+riscv             nommu_k210_sdcard_defconfig
+powerpc                 canyonlands_defconfig
+powerpc                      ppc44x_defconfig
+powerpc                           allnoconfig
+powerpc                     tqm8541_defconfig
+m68k                             alldefconfig
+sh                          urquell_defconfig
+sh                             shx3_defconfig
+openrisc                  or1klitex_defconfig
+powerpc                     tqm5200_defconfig
+arm                           omap1_defconfig
+arm                     davinci_all_defconfig
+sh                          rsk7269_defconfig
+arm                            mmp2_defconfig
+h8300                            alldefconfig
+arm                         hackkit_defconfig
+powerpc                 mpc832x_rdb_defconfig
+sh                             sh03_defconfig
+parisc                generic-64bit_defconfig
+powerpc                       eiger_defconfig
+sh                            hp6xx_defconfig
+sh                           se7750_defconfig
+arm                         lubbock_defconfig
+alpha                               defconfig
+powerpc                   currituck_defconfig
+arm                          exynos_defconfig
+sh                     magicpanelr2_defconfig
+arm                        clps711x_defconfig
+arm                             rpc_defconfig
+m68k                        m5272c3_defconfig
+mips                            e55_defconfig
+mips                           ci20_defconfig
+sh                           se7705_defconfig
+mips                      pic32mzda_defconfig
+arm                       versatile_defconfig
+arm                        neponset_defconfig
+nios2                         3c120_defconfig
+powerpc                 mpc834x_itx_defconfig
+um                             i386_defconfig
+powerpc                      pmac32_defconfig
+arm                  randconfig-c002-20211220
+ia64                             allmodconfig
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                                defconfig
+m68k                             allmodconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+h8300                            allyesconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+x86_64               randconfig-a001-20211220
+x86_64               randconfig-a003-20211220
+x86_64               randconfig-a006-20211220
+x86_64               randconfig-a004-20211220
+x86_64               randconfig-a002-20211220
+x86_64               randconfig-a005-20211220
+i386                 randconfig-a004-20211220
+i386                 randconfig-a002-20211220
+i386                 randconfig-a003-20211220
+i386                 randconfig-a005-20211220
+i386                 randconfig-a006-20211220
+i386                 randconfig-a001-20211220
+i386                 randconfig-a013-20211219
+i386                 randconfig-a011-20211219
+i386                 randconfig-a016-20211219
+i386                 randconfig-a015-20211219
+i386                 randconfig-a014-20211219
+i386                 randconfig-a012-20211219
+arc                  randconfig-r043-20211220
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                           x86_64_defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+
+clang tested configs:
+x86_64               randconfig-a015-20211220
+x86_64               randconfig-a014-20211220
+x86_64               randconfig-a012-20211220
+x86_64               randconfig-a011-20211220
+x86_64               randconfig-a016-20211220
+x86_64               randconfig-a013-20211220
+i386                 randconfig-a012-20211220
+i386                 randconfig-a011-20211220
+i386                 randconfig-a014-20211220
+i386                 randconfig-a013-20211220
+i386                 randconfig-a015-20211220
+i386                 randconfig-a016-20211220
+s390                 randconfig-r044-20211220
+hexagon              randconfig-r041-20211220
+hexagon              randconfig-r045-20211220
+riscv                randconfig-r042-20211220
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
