@@ -2,138 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6855EC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 10:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064EAC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 10:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbhLTKZy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Dec 2021 05:25:54 -0500
-Received: from mail.djicorp.com ([202.66.152.220]:61205 "EHLO mail.djicorp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231250AbhLTKZy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Dec 2021 05:25:54 -0500
-IronPort-SDR: K0X66Yie50VdUrKYFUJUFAOZTRZBZuXAeIQiiQgRyCl0VzWZnkWLb3bNZVQT0VZrN0fnbe9Ea3
- 73t7jMKalsew==
-X-IronPort-AV: E=Sophos;i="5.88,220,1635177600"; 
-   d="scan'208";a="13139988"
-From:   wigin zeng <wigin.zeng@dji.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        First Light <xiaoguang.chen@dji.com>
-Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiDnrZTlpI06IFtQQVRD?=
- =?utf-8?Q?H]_serial:_8250:_add_lock_for_dma_rx?=
-Thread-Topic: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiBbUEFUQ0hdIHNlcmlh?=
- =?utf-8?Q?l:_8250:_add_lock_for_dma_rx?=
-Thread-Index: AQHX7M8cgUf9QibCHEeycmxSNUOEd6wpP9YAgACLx/D//4YHgIAAiJFw//+PM4CAEXtykP//udeAABInGiD//4DlgP//eQnw
-Date:   Mon, 20 Dec 2021 10:25:51 +0000
-Message-ID: <b9cdf44fe8064c6bb14d5e7aaec3d33a@MAIL-MBX-cwP12.dji.com>
-References: <20211209073339.21694-1-wigin.zeng@dji.com>
- <YbGygPtkz6ihyW51@kroah.com>
- <674707a0388c4a3a9bb25676c61e1737@MAIL-MBX-cwP12.dji.com>
- <YbHBb2uB9JRP0tWc@kroah.com>
- <f2150f8a7b7242b48227e30e5550da0b@MAIL-MBX-cwP12.dji.com>
- <YbHVXwdCUCvmZrbS@kroah.com>
- <62dd5f2fedbb4332a4d04dea4970a347@MAIL-MBX-cwP12.dji.com>
- <YcBEy9zi2G7UYErE@kroah.com>
- <c35df81a176f418eb90e18563170de67@MAIL-MBX-cwP12.dji.com>
- <YcBT/Vf41PWUYdxT@kroah.com>
-In-Reply-To: <YcBT/Vf41PWUYdxT@kroah.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [58.34.188.114]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S231274AbhLTK2V (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Dec 2021 05:28:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231272AbhLTK2U (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 20 Dec 2021 05:28:20 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49BFC061574
+        for <linux-serial@vger.kernel.org>; Mon, 20 Dec 2021 02:28:20 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id s139so15030966oie.13
+        for <linux-serial@vger.kernel.org>; Mon, 20 Dec 2021 02:28:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=L4Sw67BXpIx21OZ/G/pQTCNTjSKUb09oaSZld1KnM60=;
+        b=wc4jConf2OyeQ5jgnUR8S55Kdd7aN73I/SDTcr37sMq7QH1MkC+Yq/9MVRpd4661HX
+         2LIG+VhT3VNMC7Pk+04MoTAxamrok6ffsbp7fYGsmcWMljKvDwqCKkcRjAi8n2y9HWqg
+         YsNR+DDAdompWe1+Y5WHRvLmdmXE9wDYMw51M/fPwgW+uZd10DY5mH4H7ikf0OCDNBvv
+         kremqXx8AB5QFabeF25for/DsWbViQfkOeFUsRKWBK7DHq2QLZMzBCOT0UUceCfJTJpA
+         UuoT2HxozkknP4jf8xZEyMOCyqltfd/+1u3L4gbRoWNQWoOJkOpzZfV5TXchc8EYWgHt
+         m5OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=L4Sw67BXpIx21OZ/G/pQTCNTjSKUb09oaSZld1KnM60=;
+        b=qbBurHcV7kFLnUp6SVa4xKsTU2thbC1JfOy6bW3X/51+v3Inn7nrjQX6H+TgkulXuK
+         GZUYKnJd9WPeawA04DFffxYJaOiqlfwnAZwe7DEDeky5J3Y2cFh7f1CGWRcAXTtYeb9Z
+         YoR0KmVVWzrc1uZoFOmZ5LImY+fss1hMyuYznLwNkFP1vM4jHxggn7qp0a4oVf0LFgWM
+         1DXr6GtqowYoud1pBg802bgV5U4TiX8Vs1dCO8YDn8MMs3L0NpPam7r+fy8m8rkig4Mg
+         C3ZZBDHHGas5/3jAdDdjcwE8vjJGaetoNiH7ite1iXyhBoxpNw3J0C1HYx77fLMTGLC3
+         DTWg==
+X-Gm-Message-State: AOAM531TzU01VbQ2RTmGwOZmbHE24a2iEeq0z8141O9vkP2u/v+iDVPK
+        kIEabS04vrbSs329KWxHuMkCBQ==
+X-Google-Smtp-Source: ABdhPJxM7qO+4A2xJGs0I+14CmJKtx1V0TJOtS9RMiaqVDw4lLLizmC2YIlgoVc5+2YSj6Smi0rxqw==
+X-Received: by 2002:aca:230b:: with SMTP id e11mr17073975oie.22.1639996100050;
+        Mon, 20 Dec 2021 02:28:20 -0800 (PST)
+Received: from [192.168.86.166] ([136.62.4.88])
+        by smtp.gmail.com with ESMTPSA id 9sm3263578oij.16.2021.12.20.02.28.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Dec 2021 02:28:19 -0800 (PST)
+Subject: Re: [PATCH 0/3] serial: sh-sci: Clock handling improvements
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Magnus Damm <magnus.damm@gmail.com>
+References: <cover.1639663832.git.geert+renesas@glider.be>
+ <7cbec488-01d1-1ee2-006a-a3835d42a0a7@landley.net>
+ <CAMuHMdUYu4hOjZMHy+bPrLpJ6=3tja0kJ7WwJ5TFhHivvi0DNQ@mail.gmail.com>
+From:   Rob Landley <rob@landley.net>
+Message-ID: <ffd9ed49-69eb-0508-d2fa-5585a1421d78@landley.net>
+Date:   Mon, 20 Dec 2021 04:29:24 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <CAMuHMdUYu4hOjZMHy+bPrLpJ6=3tja0kJ7WwJ5TFhHivvi0DNQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-T24gTW9uLCBEZWMgMjAsIDIwMjEgYXQgMDk6NDQ6MDRBTSArMDAwMCwgd2lnaW4gemVuZyB3cm90
-ZToNCj4gPiA+VGhhdCBtYWtlcyBubyBzZW5zZSwgYXMgd2hhdCBvcmRlcnMgdGhlIGRhdGEgY29t
-aW5nIGluPyAgVGhlIDIgYnl0ZXMgY291bGQgYmUgYWRkZWQgdG8gdGhlIHR0eSBidWZmZXIgYmVm
-b3JlIHRoZSA1MTIgYnl0ZXMsIG9yIHRoZSBvdGhlciB3YXkgYXJvdW5kLg0KPg0KPiA+ID5XaGF0
-IGhhcmR3YXJlIGFyZSB5b3UgdXNpbmcgdGhhdCBpcyBtaXhpbmcgZG1hIGFuZCBpcnEgZGF0YSBs
-aWtlIHRoaXM/DQo+ID4gPlRoYXQgZmVlbHMgdmVyeSB3cm9uZy4NCj4NCj4gPkl0IGlzIG5vdCBu
-b3JtYWwgY2FzZSwgbm9ybWFsbHksIHRoZSBpbnB1dCBzaXplIHNob3VsZCBzbWFsbGVyIHRoYW4g
-RE1BIGJsb2NrIHNpemUgYW5kIERNQSBjb21wbGV0ZSB0aGUgd2hvbGUgY29weS4NCj4gPkhvd2V2
-ZXIsIHRoZXJlIGFyZSBzb21lIGFibm9ybWFsIHNpdHVhdGlvbnMuIFRoZSBleHRlcm5hbCBpbnB1
-dCBpcyB1bmV4cGVjdGVkbHkgbGFyZ2VyIHRoYW4gdGhlIGRhdGEgbGVuZ3RoIG9mIHRoZSBETUEg
-Y29uZmlndXJhdGlvbi4gVGhpcyBzaXR1YXRpb24gaW4gbXkgZXhhbXBsZSB3aWxsIGFwcGVhciwg
-YW5kIGl0IG1heSBjYXVzZSB0aGUga2VybmVsIHRvIHBhbmljLg0KDQo+WW91IGRpZCBub3QgYW5z
-d2VyIG15IHF1ZXN0aW9uIGFib3V0IGhhcmR3YXJlIHR5cGUgOigNCg0KPkFuZCBhZ2FpbiwgaG93
-IGlzIHRoaXMgaGFwcGVuaW5nPyAgSWYgeW91IHVzZSBETUEsIGFsbCBkYXRhIHNob3VsZCBiZSBj
-b21pbmcgdGhyb3VnaCBETUEgYW5kIG5vdCB0aGUgaXJxLiAgT3RoZXJ3aXNlIGNyYXp5IHN0dWZm
-IGxpa2UgdGhpcyB3aWxsIGhhcHBlbiBpbiBhbnkgdHlwZSBvZiBkcml2ZXIsIHlvdXIgaGFyZHdh
-cmUgY2FuIG5vdCBtaXggdGhpcyB0eXBlIG9mIHN0dWZmIHVwLg0KDQpPbiBvdXIgcGxhdGZvcm0s
-IFVBUlQgY29ubmVjdGVkIHRvIGEgTUNVIHdoaWNoIHdpbGwgc2VuZCBkYXRhIG9mIHZhcmlhYmxl
-IGxlbmd0aCBmcm9tIHRpbWUgdG8gdGltZS4gVGhlcmUgaXMgbm8gZGVmaW5pdGlvbiBvZiBhIG1h
-eGltdW0gdHJhbnNtaXNzaW9uIGxlbmd0aC4NCldlIGNvbmZpZ3VyZWQgRE1BIGJsb2NrIHNpemUg
-aXMgNDA5NmJ5dGVzLCBob3dldmVyLCB0aGVyZSBhcmUgbW9yZSB0aGFuIDQxMDAgYnl0ZXMgaW5w
-dXQsIERNQSBqdXN0IGhhbmRsZWQgNDA5NmJ5dGVzIGFuZCBsZWZ0IGJ5dGVzIGluIEZJRk8gY2Fu
-bm90IHRyaWdnZXIgbmV4dCBETUEgDQpUcmFuc2ZlciBkb25lIGludGVycnVwdChsZWZ0IGJ5dGVz
-IG51bWJlciA8IERNQSBibG9jayBzaXplICksIHNvIHRoZXNlIGRhdGEgc2hvdWxkIGJlIHByb2Nl
-c3NlZCBieSBVQVJUIElSUS4NCg0KSW4gb3RoZXIgd29yZCwgaWYgdGhlIGV4dGVybmFsIHVzZSBV
-QVJUICJ2dWxuZXJhYmlsaXR5IiB0byBhdHRhY2sgdGhlIHN5c3RlbSwgd2UgbmVlZCB0byBlbnN1
-cmUgdGhhdCB0aGUgc3lzdGVtIG5vdCBjcmFzaCBhdCBsZWFzdCwgcmlnaHQ/DQoNCj5Ib3cgY2Fu
-IGZsb3cgY29udHJvbCBoYW5kbGUgdGhpcyBhdCBhbGw/ICBGbG93IGNvbnRyb2wgaXMgYXQgdGhl
-IHNlcmlhbCBkYXRhIHN0cmVhbSBsZXZlbC4gIFRoaXMgaXMgY29uZnVzaW5nIHRoZSBQQ0kgZGF0
-YSBzdHJlYW0gb3JkZXIuDQoNCkkganVzdCB0aGluayBtb3JlIGxvZ2ljIGlzIG5lZWRlZCB0byBj
-b250cm9sIHRoZSBvcmRlciBvZiBkYXRhIHByb2Nlc3NpbmcgYnkgRE1BIGFuZCBVQVJUIElSUSB0
-byBrZWVwIHRoZSBpbnRlZ3JpdHkgb2Ygc2VyaWFsIGRhdGEuIA0KQnV0IHRoZSBzcGVjaWZpYyBk
-ZXNpZ24sIEkgaGF2ZW4ndCBjb25zaWRlcmVkIHlldCwgdGhlIGZpcnN0IGdvYWwgaXMgdGhlIGtl
-ZXAgdGhlIHN5c3RlbSBhbGl2ZS4NCg0KQlJzDQpXZWlqdW4NCiANCi0tLS0t6YKu5Lu25Y6f5Lu2
-LS0tLS0NCuWPkeS7tuS6ujogR3JlZyBLSCBbbWFpbHRvOmdyZWdraEBsaW51eGZvdW5kYXRpb24u
-b3JnXSANCuWPkemAgeaXtumXtDogMjAyMeW5tDEy5pyIMjDml6UgMTc6NTkNCuaUtuS7tuS6ujog
-d2lnaW4gemVuZyA8d2lnaW4uemVuZ0BkamkuY29tPg0K5oqE6YCBOiBqaXJpc2xhYnlAa2VybmVs
-Lm9yZzsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2Vy
-bmVsLm9yZzsgRmlyc3QgTGlnaHQgPHhpYW9ndWFuZy5jaGVuQGRqaS5jb20+DQrkuLvpopg6IFJl
-OiDnrZTlpI06IOetlOWkjTog562U5aSNOiDnrZTlpI06IFtQQVRDSF0gc2VyaWFsOiA4MjUwOiBh
-ZGQgbG9jayBmb3IgZG1hIHJ4DQoNCuOAkEVYVEVSTkFMIEVNQUlM44CRIERPIE5PVCBDTElDSyBh
-bnkgbGlua3Mgb3IgYXR0YWNobWVudHMgdW5sZXNzIHlvdSBjYW4gbWFrZSBzdXJlIGJvdGggdGhl
-IHNlbmRlciBhbmQgdGhlIGNvbnRlbnQgYXJlIHRydXN0d29ydGh5Lg0KDQoNCuOAkOWklumDqOmC
-ruS7tuaPkOmGkuOAkeS7peS4i+mCruS7tuadpea6kOS6juWFrOWPuOWklumDqO+8jOivt+WLv+eC
-ueWHu+mTvuaOpeaIlumZhOS7tu+8jOmZpOmdnuaCqOehruiupOmCruS7tuWPkeS7tuS6uuWSjOWG
-heWuueWPr+S/oeOAgg0KDQoNCg0KT24gTW9uLCBEZWMgMjAsIDIwMjEgYXQgMDk6NDQ6MDRBTSAr
-MDAwMCwgd2lnaW4gemVuZyB3cm90ZToNCj4gPlRoYXQgbWFrZXMgbm8gc2Vuc2UsIGFzIHdoYXQg
-b3JkZXJzIHRoZSBkYXRhIGNvbWluZyBpbj8gIFRoZSAyIGJ5dGVzIGNvdWxkIGJlIGFkZGVkIHRv
-IHRoZSB0dHkgYnVmZmVyIGJlZm9yZSB0aGUgNTEyIGJ5dGVzLCBvciB0aGUgb3RoZXIgd2F5IGFy
-b3VuZC4NCj4NCj4gPldoYXQgaGFyZHdhcmUgYXJlIHlvdSB1c2luZyB0aGF0IGlzIG1peGluZyBk
-bWEgYW5kIGlycSBkYXRhIGxpa2UgdGhpcz8NCj4gPlRoYXQgZmVlbHMgdmVyeSB3cm9uZy4NCj4N
-Cj4gSXQgaXMgbm90IG5vcm1hbCBjYXNlLCBub3JtYWxseSwgdGhlIGlucHV0IHNpemUgc2hvdWxk
-IHNtYWxsZXIgdGhhbiBETUEgYmxvY2sgc2l6ZSBhbmQgRE1BIGNvbXBsZXRlIHRoZSB3aG9sZSBj
-b3B5Lg0KPiBIb3dldmVyLCB0aGVyZSBhcmUgc29tZSBhYm5vcm1hbCBzaXR1YXRpb25zLiBUaGUg
-ZXh0ZXJuYWwgaW5wdXQgaXMgdW5leHBlY3RlZGx5IGxhcmdlciB0aGFuIHRoZSBkYXRhIGxlbmd0
-aCBvZiB0aGUgRE1BIGNvbmZpZ3VyYXRpb24uIFRoaXMgc2l0dWF0aW9uIGluIG15IGV4YW1wbGUg
-d2lsbCBhcHBlYXIsIGFuZCBpdCBtYXkgY2F1c2UgdGhlIGtlcm5lbCB0byBwYW5pYy4NCg0KWW91
-IGRpZCBub3QgYW5zd2VyIG15IHF1ZXN0aW9uIGFib3V0IGhhcmR3YXJlIHR5cGUgOigNCg0KQW5k
-IGFnYWluLCBob3cgaXMgdGhpcyBoYXBwZW5pbmc/ICBJZiB5b3UgdXNlIERNQSwgYWxsIGRhdGEg
-c2hvdWxkIGJlIGNvbWluZyB0aHJvdWdoIERNQSBhbmQgbm90IHRoZSBpcnEuICBPdGhlcndpc2Ug
-Y3Jhenkgc3R1ZmYgbGlrZSB0aGlzIHdpbGwgaGFwcGVuIGluIGFueSB0eXBlIG9mIGRyaXZlciwg
-eW91ciBoYXJkd2FyZSBjYW4gbm90IG1peCB0aGlzIHR5cGUgb2Ygc3R1ZmYgdXAuDQoNCj4gPklm
-IHRoZXkgYXJlIHJ1bm5pbmcgb24gZGlmZmVyZW50IGNvcmVzLCB0aGVuIHlvdSB3aWxsIGhhdmUg
-ZGF0YSBjb3JydXB0aW9uIGlzc3VlcyBubyBtYXR0ZXIgaWYgeW91IGhhdmUgYSBsb2NrIG9yIG5v
-dCwgc28gdGhpcyBpcyBub3QgdGhlIGNvcnJlY3Qgc29sdXRpb24gZm9yIHRoaXMgaGFyZHdhcmUg
-Y29uZmlndXJhdGlvbiBwcm9ibGVtLg0KPg0KPiBUaGUgcHVycG9zZSBvZiBhZGRpbmcgbG9jayBp
-cyB0byBlbnN1cmUgdGhhdCB0aGUga2VybmVsIHdpbGwgbm90IHBhbmljIA0KPiBpbiB0aGlzIGV4
-dHJlbWUgY2FzZSwgSWYgeW91IHdhbnQgdG8gZW5zdXJlIHRoZSBpbnRlZ3JpdHkgb2YgdGhlIA0K
-PiBzZXJpYWwgcG9ydCBkYXRhLCB5b3UgbmVlZCB0byBhZGQgbW9yZSBmbG93IGNvbnRyb2wgbG9n
-aWMNCg0KSG93IGNhbiBmbG93IGNvbnRyb2wgaGFuZGxlIHRoaXMgYXQgYWxsPyAgRmxvdyBjb250
-cm9sIGlzIGF0IHRoZSBzZXJpYWwgZGF0YSBzdHJlYW0gbGV2ZWwuICBUaGlzIGlzIGNvbmZ1c2lu
-ZyB0aGUgUENJIGRhdGEgc3RyZWFtIG9yZGVyLg0KDQp0aGFua3MsDQoNCmdyZWcgay1oDQpUaGlz
-IGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0byBtYXkgY29udGFpbiBwcml2YXRlLCBj
-b25maWRlbnRpYWwsIGFuZCBwcml2aWxlZ2VkIG1hdGVyaWFsIGZvciB0aGUgc29sZSB1c2Ugb2Yg
-dGhlIGludGVuZGVkIHJlY2lwaWVudC4gQW55IHJldmlldywgY29weWluZywgb3IgZGlzdHJpYnV0
-aW9uIG9mIHRoaXMgZW1haWwgKG9yIGFueSBhdHRhY2htZW50cyB0aGVyZXRvKSBieSBvdGhlcnMg
-aXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lw
-aWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBpbW1lZGlhdGVseSBhbmQgcGVybWFuZW50
-bHkgZGVsZXRlIHRoZSBvcmlnaW5hbCBhbmQgYW55IGNvcGllcyBvZiB0aGlzIGVtYWlsIGFuZCBh
-bnkgYXR0YWNobWVudHMgdGhlcmV0by4NCg0K5q2k55S15a2Q6YKu5Lu25Y+K6ZmE5Lu25omA5YyF
-5ZCr5YaF5a655YW35pyJ5py65a+G5oCn77yM5LiU5LuF6ZmQ5LqO5o6l5pS25Lq65L2/55So44CC
-5pyq57uP5YWB6K6477yM56aB5q2i56ys5LiJ5Lq66ZiF6K+744CB5aSN5Yi25oiW5Lyg5pKt6K+l
-55S15a2Q6YKu5Lu25Lit55qE5Lu75L2V5L+h5oGv44CC5aaC5p6c5oKo5LiN5bGe5LqO5Lul5LiK
-55S15a2Q6YKu5Lu255qE55uu5qCH5o6l5pS26ICF77yM6K+35oKo56uL5Y2z6YCa55+l5Y+R6YCB
-5Lq65bm25Yig6Zmk5Y6f55S15a2Q6YKu5Lu25Y+K5YW255u45YWz55qE6ZmE5Lu244CCDQo=
+On 12/19/21 4:53 AM, Geert Uytterhoeven wrote:
+>> By the way, did you ever figure out how to get the first serial port to work on
+>> qemu so qemu-system-sh4 doesn't have to "-serial null -serial mon:stdio" to get
+>> a serial console?
+> 
+> Nope, same as last time you asked ;-)
+
+Well it had been a couple years, you never know...
+
+> However, upon a fresh look at linux/arch/sh/boards/mach-r2d/setup.c,
+> I noticed something I missed before: the SCI port is not available
+> as a UART, as it is used to talk SPI to an RTC.
+
+/* Single Epson RTC-9701JE attached on CS0 */
+
+Huh. That does explain the CONFIG_RTC_DRV_R9701=y in rts7751r2d*_defconfig.
+(And also SPI SPI_SH_SCI MFD_SM501 RTC_CLASS and RTC_DRV_SH RTC_HCTOSYS which
+I've never gotten connected to QEMU.)
+
+> So that means qemu
+> has the hardware description wrong?
+
+It would be nice if qemu-system-sh4 grew an RTC. Looks like Sato-san and Magnus
+Damm are the qemu-system-sh4 maintainers? (cc'd)
+
+Thanks,
+
+Rob
