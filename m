@@ -2,104 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96128C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 15:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 853EBC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 15:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240014AbhLTPa3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Dec 2021 10:30:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240180AbhLTP3n (ORCPT
+        id S235630AbhLTPfS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Dec 2021 10:35:18 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60748 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234992AbhLTPfS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Dec 2021 10:29:43 -0500
-Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A90FC061D76
-        for <linux-serial@vger.kernel.org>; Mon, 20 Dec 2021 07:21:30 -0800 (PST)
-Received: by mail-vk1-xa2f.google.com with SMTP id s1so6339089vks.9
-        for <linux-serial@vger.kernel.org>; Mon, 20 Dec 2021 07:21:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7hAp0PfmGB2pMZBztL7AeQzwUtbDOof2ro2NrJ2jvCs=;
-        b=M+kLpz7Y9EgeUAfkXzReP8pE7rXZLW0/U1Va9YBYOrr7qJWrE06Wt5wA5hc2AkOOnS
-         aEDjRMxFcoAKhXyQ0hR+pii4XM1Qyy4qa6yardk03OgJtjRzJlGGldw1Tt8qc4QXUCSk
-         oiv/kFWlK2pooudkx3ErmtmvhmKbq5pe0zZYVhaln/r8Glw1kOgRvA6+Cwj8KnSStIP7
-         cAewagXibrjGcVn/NhdqnxGhI06M4Cvje+W3sF2NjE2w7w0GculzSfbnOzMfpVmaO5vM
-         FOWEzfqQuAAZbKtQo337v2aowvdwYGBjyT4AHdeZAzIn38m+sN5zT02UNAw8PQI20ExE
-         SYUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7hAp0PfmGB2pMZBztL7AeQzwUtbDOof2ro2NrJ2jvCs=;
-        b=0E2Fgb53Cf94VNr/lRZkfwsUNH5RAg6DpWnGpVctVhZv06EF3ciD/YAcsfXELauU00
-         cBioD5edGQLOwBElJMCkr9SbRcPYUX2DOfWPpksOMGJ81hnjH0XR135TtgDU/5WO93ah
-         YUOVLsPREN6CfA2xJoqdzamqFRWYZt3r79DlHYAA/YgwOzIrxsApQ8DTmEI5RimwxszA
-         JMTPTsXzA7P0iMz6w9n/dXbq6mYsuxY2RGhrqCpTvjOKJI4aTGeoNf7ahICczxVpWiBr
-         8TPALlMJuYbNPfEJVlqH6+5KO3iK6gucTtS04p6MjaY9Ds3cnYS3xa/QnUDVt2/wLvGS
-         ykaQ==
-X-Gm-Message-State: AOAM533Jt7DXo0MaWe70oDOpLhSiTzmUNLdl7hPKBuXxHpuU1bOut/+g
-        buY2x+YDhJamtt3n4JiSg+PgfmrHmedBFNtMgoi51w==
-X-Google-Smtp-Source: ABdhPJyTNBpocGV7qtoeL6omBq4tJSpIoSxwQjpiDZ4N44pUz6MFxLuf0bHfL20uGAilVIycAEo0wvXpTET3t9N+9K0=
-X-Received: by 2002:a05:6122:c9b:: with SMTP id ba27mr5956186vkb.14.1640013688504;
- Mon, 20 Dec 2021 07:21:28 -0800 (PST)
+        Mon, 20 Dec 2021 10:35:18 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 595A2B80EEE;
+        Mon, 20 Dec 2021 15:35:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 439A0C36AE8;
+        Mon, 20 Dec 2021 15:35:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1640014515;
+        bh=SOzeN0WwnW9H1fyfGCy8xSJMHoba/7/d6z4gmjyyVAI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FuWHV4csDxjfV+sevtASLOn0z4jC3I23F4ZysylQ8RHqMhcJ3Ln/DpUaHqBrBjvWw
+         N60WkVQRjcoQADpm9oIZp0ixGkmbcy8RgcONi6LYPND0lNSPKBXSC2Fl0AI1qwljb0
+         2tKkvQYIfGqeSbJwmNwqJul7iiru9vRGBzYtpqZM=
+Date:   Mon, 20 Dec 2021 16:35:12 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Abel Vesa <abel.vesa@nxp.com>
+Cc:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [RESEND v4 10/10] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL
+ compatible
+Message-ID: <YcCisM3BqM984k/1@kroah.com>
+References: <1639680494-23183-1-git-send-email-abel.vesa@nxp.com>
+ <1639680494-23183-11-git-send-email-abel.vesa@nxp.com>
+ <YbzB7mspRBonT9jJ@kroah.com>
+ <Yb5ZlnEm3EYCD9h8@ryzen>
 MIME-Version: 1.0
-References: <20211204195757.8600-1-semen.protsenko@linaro.org>
- <20211204195757.8600-4-semen.protsenko@linaro.org> <ab15a97b-9351-4d50-f392-21cbfdec1289@canonical.com>
-In-Reply-To: <ab15a97b-9351-4d50-f392-21cbfdec1289@canonical.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Mon, 20 Dec 2021 17:21:16 +0200
-Message-ID: <CAPLW+4m0vYZUujki6D4KHV3TjBCZvnO-cZuoOatefQpfTEV3Yw@mail.gmail.com>
-Subject: Re: [PATCH v3 3/5] tty: serial: samsung: Remove USI initialization
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
-        Youngmin Nam <youngmin.nam@samsung.com>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yb5ZlnEm3EYCD9h8@ryzen>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 13 Dec 2021 at 13:35, Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> On 04/12/2021 20:57, Sam Protsenko wrote:
-> > USI control is now extracted to the dedicated USI driver. Remove USI
-> > related code from serial driver to avoid conflicts and code duplication.
-> >
-> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > ---
-> > Changes in v3:
-> >   - Spell check fixes in commit message
-> >
-> > Changes in v2:
-> >   - (none)
-> >
-> >  drivers/tty/serial/samsung_tty.c | 36 ++++----------------------------
-> >  include/linux/serial_s3c.h       |  9 --------
-> >  2 files changed, 4 insertions(+), 41 deletions(-)
-> >
->
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->
-> Greg,
-> If you are fine with the changes, please take the serial driver changes
-> via your tree.
->
+On Sat, Dec 18, 2021 at 11:58:46PM +0200, Abel Vesa wrote:
+> On 21-12-17 17:59:26, Greg Kroah-Hartman wrote:
+> > On Thu, Dec 16, 2021 at 08:48:14PM +0200, Abel Vesa wrote:
+> > > Add i.MX8DXL lpuart compatible to the bindings documentation.
+> > > 
+> > > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > > index fa23c60a01d0..ee37aa125c86 100644
+> > > --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > > +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > > @@ -29,6 +29,10 @@ properties:
+> > >        - items:
+> > >            - const: fsl,imx8qm-lpuart
+> > >            - const: fsl,imx8qxp-lpuart
+> > > +      - items:
+> > > +          - const: fsl,imx8dxl-lpuart
+> > > +          - const: fsl,imx8qxp-lpuart
+> > > +          - const: fsl,imx7ulp-lpuart
+> > 
+> > Why is "- items:" listed twice here?
+> 
+> There are actually 3 "- items:" and there is a "oneOf:" 
+> that encloses all of these.
+> 
+> Unfortunately, there are special cases within the driver
+> that forces the devicetree nodes to have a different list of
+> compatibles for almost each SoC.
 
-Hi Greg,
+Ah.  Can you resend it as it is long-gone from my queue now.
 
-If it's ok with you, can you please apply patches 3, 4 and 5 from this
-series? If it's possible, would be nice to see those in v5.17.
+thanks,
 
-Thanks!
-
-> Best regards,
-> Krzysztof
+greg k-h
