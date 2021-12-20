@@ -2,102 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F79C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 15:51:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08EE1C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 15:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233906AbhLTPvK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Dec 2021 10:51:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
+        id S233697AbhLTPzG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Dec 2021 10:55:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234029AbhLTPvJ (ORCPT
+        with ESMTP id S231790AbhLTPzF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Dec 2021 10:51:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E32EC06173E;
-        Mon, 20 Dec 2021 07:51:09 -0800 (PST)
+        Mon, 20 Dec 2021 10:55:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4544FC061574;
+        Mon, 20 Dec 2021 07:55:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27777B80ED8;
-        Mon, 20 Dec 2021 15:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C320C36AE5;
-        Mon, 20 Dec 2021 15:51:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D61E5611DF;
+        Mon, 20 Dec 2021 15:55:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B207DC36AE7;
+        Mon, 20 Dec 2021 15:55:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1640015466;
-        bh=pLgGyDKK1/5N+m3LhSIJ3nO1D7WaH6YeiBnPxQs+i4s=;
+        s=korg; t=1640015704;
+        bh=dUn/siHCed+00iFm6+pbfrfR17i6Fgn0zXZ5qKc0C9g=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n0FdS++29ApJD3dEbBUpEFZxgpoQwuizmrDRznJCnx4esGDCjnOJDH84T2tnRXV37
-         RJXTDlvuzuPAuCr59fkq5NGLebkwp8/dabi9BR1pjhZTyUoLFd8WxTzc6B//Uxtas+
-         RwpXdg0ZnHOOhfEsND7SBkPNLeR8w2+CKZVSPpZk=
-Date:   Mon, 20 Dec 2021 16:51:04 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hammer Hsieh <hammerh0314@gmail.com>
-Cc:     robh+dt@kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jirislaby@kernel.org, p.zabel@pengutronix.de, wells.lu@sunplus.com,
-        Hammer Hsieh <hammer.hsieh@sunplus.com>
-Subject: Re: [PATCH v5 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-Message-ID: <YcCmaJkeKy+R0mhF@kroah.com>
-References: <1639379407-28607-1-git-send-email-hammer.hsieh@sunplus.com>
- <1639379407-28607-3-git-send-email-hammer.hsieh@sunplus.com>
+        b=SPqciD3W7ys3TkAP7vRIEcOvkw/yVFTld83zJs9H67NGf+/y92yA4sRT6n5/ex7vk
+         OOC2FYgA/dVG65wUoL0/mLtPiHF0yX1gl295zBN6vPBD9+rPqbPVImHIkb4IEmAn2Q
+         I27qoKpzCP8WgIaJ1uHV05gnX/eFWbFkw45cU+F4=
+Date:   Mon, 20 Dec 2021 16:55:01 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sam Protsenko <semen.protsenko@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Chanho Park <chanho61.park@samsung.com>,
+        David Virag <virag.david003@gmail.com>,
+        Youngmin Nam <youngmin.nam@samsung.com>,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH v3 3/5] tty: serial: samsung: Remove USI initialization
+Message-ID: <YcCnVfp2DWuVlXIw@kroah.com>
+References: <20211204195757.8600-1-semen.protsenko@linaro.org>
+ <20211204195757.8600-4-semen.protsenko@linaro.org>
+ <ab15a97b-9351-4d50-f392-21cbfdec1289@canonical.com>
+ <CAPLW+4m0vYZUujki6D4KHV3TjBCZvnO-cZuoOatefQpfTEV3Yw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1639379407-28607-3-git-send-email-hammer.hsieh@sunplus.com>
+In-Reply-To: <CAPLW+4m0vYZUujki6D4KHV3TjBCZvnO-cZuoOatefQpfTEV3Yw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 03:10:07PM +0800, Hammer Hsieh wrote:
-> +/* Register offsets */
-> +#define SUP_UART_DATA			0x00
-> +#define SUP_UART_LSR			0x04
-> +#define SUP_UART_MSR			0x08
-> +#define SUP_UART_LCR			0x0C
-> +#define SUP_UART_MCR			0x10
-> +#define SUP_UART_DIV_L			0x14
-> +#define SUP_UART_DIV_H			0x18
-> +#define SUP_UART_ISC			0x1C
-> +#define SUP_UART_TX_RESIDUE		0x20
-> +#define SUP_UART_RX_RESIDUE		0x24
-> +
-> +/* Line Status Register bits */
-> +#define SUP_UART_LSR_TXE		BIT(6) /* tx empty */
-> +#define SUP_UART_LSR_BC			BIT(5) /* break condition status */
-> +#define SUP_UART_LSR_FE			BIT(4) /* frame error status */
-> +#define SUP_UART_LSR_OE			BIT(3) /* overrun error status */
-> +#define SUP_UART_LSR_PE			BIT(2) /* parity error status */
-> +#define SUP_UART_LSR_RX			BIT(1) /* 1: receive fifo not empty */
-> +#define SUP_UART_LSR_TX			BIT(0) /* 1: transmit fifo is not full */
-> +#define SUP_UART_LSR_TX_NOT_FULL	1
-> +#define SUP_UART_LSR_BRK_ERROR_BITS	GENMASK(5, 2)
-> +
-> +/* Line Control Register bits */
-> +#define SUP_UART_LCR_BC			BIT(5) /* break condition select */
-> +#define SUP_UART_LCR_PR			BIT(4) /* parity bit polarity select */
-> +#define SUP_UART_LCR_PE			BIT(3) /* parity bit enable */
-> +#define SUP_UART_LCR_ST			BIT(2) /* stop bits select */
-> +#define SUP_UART_LCR_WL5		0x00 /*  word length 5 */
-> +#define SUP_UART_LCR_WL6		0x01 /*  word length 6 */
-> +#define SUP_UART_LCR_WL7		0x02 /*  word length 7 */
-> +#define SUP_UART_LCR_WL8		0x03 /*  word length 8 (default) */
-> +
-> +/* Modem Control Register bits */
-> +#define SUP_UART_MCR_LB			BIT(4) /* Loopback mode */
-> +#define SUP_UART_MCR_RI			BIT(3) /* ring indicator */
-> +#define SUP_UART_MCR_DCD		BIT(2) /* data carrier detect */
-> +#define SUP_UART_MCR_RTS		BIT(1) /* request to send */
-> +#define SUP_UART_MCR_DTS		BIT(0) /* data terminal ready */
-> +
-> +/* Interrupt Status/Control Register bits */
-> +#define SUP_UART_ISC_RXM		BIT(5) /* RX interrupt enable */
-> +#define SUP_UART_ISC_TXM		BIT(4) /* TX interrupt enable */
-> +#define SUP_UART_ISC_RX			BIT(1) /* RX interrupt status */
-> +#define SUP_UART_ISC_TX			BIT(0) /* TX interrupt status */
-> +
-> +#define SUP_DUMMY_READ			BIT(16) /* drop bytes received on a !CREAD port */
-> +#define SUP_UART_NR			5
+On Mon, Dec 20, 2021 at 05:21:16PM +0200, Sam Protsenko wrote:
+> On Mon, 13 Dec 2021 at 13:35, Krzysztof Kozlowski
+> <krzysztof.kozlowski@canonical.com> wrote:
+> >
+> > On 04/12/2021 20:57, Sam Protsenko wrote:
+> > > USI control is now extracted to the dedicated USI driver. Remove USI
+> > > related code from serial driver to avoid conflicts and code duplication.
+> > >
+> > > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > > ---
+> > > Changes in v3:
+> > >   - Spell check fixes in commit message
+> > >
+> > > Changes in v2:
+> > >   - (none)
+> > >
+> > >  drivers/tty/serial/samsung_tty.c | 36 ++++----------------------------
+> > >  include/linux/serial_s3c.h       |  9 --------
+> > >  2 files changed, 4 insertions(+), 41 deletions(-)
+> > >
+> >
+> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> >
+> > Greg,
+> > If you are fine with the changes, please take the serial driver changes
+> > via your tree.
+> >
+> 
+> Hi Greg,
+> 
+> If it's ok with you, can you please apply patches 3, 4 and 5 from this
+> series? If it's possible, would be nice to see those in v5.17.
 
-Aren't most of these defines already in the kernel header files?  Why
-create them again?
+All now queued up, thanks.
 
+greg k-h
