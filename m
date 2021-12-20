@@ -2,57 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25EBCC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 15:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 677E6C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 15:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237144AbhLTPil (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Dec 2021 10:38:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39882 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231846AbhLTPil (ORCPT
+        id S236281AbhLTPke (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Dec 2021 10:40:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35464 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231987AbhLTPke (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Dec 2021 10:38:41 -0500
+        Mon, 20 Dec 2021 10:40:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC956611F2;
-        Mon, 20 Dec 2021 15:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AA2FC36AE8;
-        Mon, 20 Dec 2021 15:38:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1637AB80EF4;
+        Mon, 20 Dec 2021 15:40:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43A54C36AE7;
+        Mon, 20 Dec 2021 15:40:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1640014720;
-        bh=jZvynrgI+mxHpvVo0uaXVLOSajCtjusjJQ30p1o6rAM=;
+        s=korg; t=1640014831;
+        bh=Xoihq8kvKvktAGd2hXqEi3P1s3byYn9KFsMfwXpRhXM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=c0R3MBQJsWmThAFc34m5Ge23P+ocG1gjNawN98lNlawF4MCecQILD8vMBnDbOb8vd
-         gnGkGTJ/lTYaZgN1SrnL8nE8QUqGuwf0Md5KTdhU42JIJ84HYgw8FWBDIX7ThFDkjd
-         qOSUzOTmBEpXDB7d1M23LgDgQVv4OGSgRdI3S7qk=
-Date:   Mon, 20 Dec 2021 16:38:37 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "xianwei.zhao" <xianwei.zhao@amlogic.com>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH] dt-bindings: serial: amlogic, meson-uart: support S4
-Message-ID: <YcCjfZzH4j0w0r4c@kroah.com>
-References: <20211210065239.21687-1-xianwei.zhao@amlogic.com>
+        b=X5UGZpjRt9y92DXCtQ5ldWCj+StRaSayDxNFEc4ZzfG/hZn0Xg+oFuoklfwN4mHyI
+         zBfCZ1zT4MoCkLtrpgCy9zq6pbRjokXsb3jJHrevBsxEAxBPr7SBGEM6YbS4+MBJi0
+         bTpzGXgU3U6k291aNziTnxE0p/xt9fXK+DKnH0fk=
+Date:   Mon, 20 Dec 2021 16:40:29 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: timbuart: Check for null res pointer
+Message-ID: <YcCj7cj4JlCwoyhH@kroah.com>
+References: <20211220082127.883885-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211210065239.21687-1-xianwei.zhao@amlogic.com>
+In-Reply-To: <20211220082127.883885-1-jiasheng@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 02:52:39PM +0800, xianwei.zhao wrote:
-> Add serial bindings support menson S4 SoC family.
+On Mon, Dec 20, 2021 at 04:21:27PM +0800, Jiasheng Jiang wrote:
+> The return value of platform_get_resource() needs to be checked.
+> To avoid use of error pointer in case that there is no suitable
+> resource.
 > 
-> Signed-off-by: xianwei.zhao <xianwei.zhao@amlogic.com>
+> Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
 
-Please use your real name.  I doubt you sign documents with a "." in
-your name :(
+No it does not.  I thought I said that already.
 
+I am going to just add your emails to a "ignore filter" for a while.
+Your changes are not correct, and when asked about them, you just send
+another version of the patch, which is not how to have a conversation
+about a review.
+
+good luck,
+
+greg k-h
