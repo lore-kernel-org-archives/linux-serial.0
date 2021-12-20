@@ -2,81 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CA3C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 08:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A07B8C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 08:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234821AbhLTIVt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Dec 2021 03:21:49 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:60536 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231147AbhLTIVt (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Dec 2021 03:21:49 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowABnb1sJPcBhlmTuAw--.19839S2;
-        Mon, 20 Dec 2021 16:21:29 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] tty: timbuart: Check for null res pointer
-Date:   Mon, 20 Dec 2021 16:21:27 +0800
-Message-Id: <20211220082127.883885-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S238085AbhLTIyk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Dec 2021 03:54:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238060AbhLTIyj (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 20 Dec 2021 03:54:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88968C061574;
+        Mon, 20 Dec 2021 00:54:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2052660EED;
+        Mon, 20 Dec 2021 08:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF850C36AE8;
+        Mon, 20 Dec 2021 08:54:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1639990478;
+        bh=w9Ckuk8ZRZpMruE//Ln5jMCz28zvDkic5YFOBHHk3Us=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MNpoVb+Iqqm4QiOc9s+MO/KIKnV0HBvtU0MHsVQYPfxDngN/0ofP9lP5Q++bJrIRS
+         f/eotD7ioGdfO/ym0/EBBt3fATUCmfMV/nnYiE/3PyVe1ZqOkvsaISGLgpJIPf5g4N
+         PuGx76aNwWqg644Eoi/6GIV9C4c3vY1YRYQukjnU=
+Date:   Mon, 20 Dec 2021 09:54:35 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     wigin zeng <wigin.zeng@dji.com>
+Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        First Light <xiaoguang.chen@dji.com>
+Subject: Re: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlA==?= =?utf-8?B?5aSNOg==?=
+ [PATCH] serial: 8250: add lock for dma rx
+Message-ID: <YcBEy9zi2G7UYErE@kroah.com>
+References: <20211209073339.21694-1-wigin.zeng@dji.com>
+ <YbGygPtkz6ihyW51@kroah.com>
+ <674707a0388c4a3a9bb25676c61e1737@MAIL-MBX-cwP12.dji.com>
+ <YbHBb2uB9JRP0tWc@kroah.com>
+ <f2150f8a7b7242b48227e30e5550da0b@MAIL-MBX-cwP12.dji.com>
+ <YbHVXwdCUCvmZrbS@kroah.com>
+ <62dd5f2fedbb4332a4d04dea4970a347@MAIL-MBX-cwP12.dji.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowABnb1sJPcBhlmTuAw--.19839S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7JFyDuw18GFy3CF4fGr4fAFb_yoWkXFX_Aa
-        n29w1UGrWxuFnYkF45Jw13CFya9a9ruFs5Xw10qF9a9398XwsrAryjqrs7Aw15Ww15ZFZr
-        JrsrCr4xAw15ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8ZwCF
-        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr
-        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF
-        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUrGYLUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62dd5f2fedbb4332a4d04dea4970a347@MAIL-MBX-cwP12.dji.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The return value of platform_get_resource() needs to be checked.
-To avoid use of error pointer in case that there is no suitable
-resource.
+On Mon, Dec 20, 2021 at 05:27:24AM +0000, wigin zeng wrote:
+> Sorry for late response.
+> 
+> > >> What issue exactly?
+> > The interval of UART input packages is very small(1ms~ 10ms), and some package size larger than configured DMA transfer size.
+> >What do you mean exactly by "package size"?  Isn't it up to the DMA transfer to do the whole copy?
+>  
+> The attachment is an example for the race condition issue. E.g: 514bytes input stream from UART, 512bytes should be copied by DMA(block size set as 512), left 2bytes should be copied by serial interrupt handler.
 
-Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/tty/serial/timbuart.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+That makes no sense, as what orders the data coming in?  The 2 bytes
+could be added to the tty buffer before the 512 bytes, or the other way
+around.
 
-diff --git a/drivers/tty/serial/timbuart.c b/drivers/tty/serial/timbuart.c
-index 08941eabe7b1..262154d2f40f 100644
---- a/drivers/tty/serial/timbuart.c
-+++ b/drivers/tty/serial/timbuart.c
-@@ -312,9 +312,14 @@ static const char *timbuart_type(struct uart_port *port)
-  */
- static void timbuart_release_port(struct uart_port *port)
- {
-+	struct resource *res;
-+	int size;
- 	struct platform_device *pdev = to_platform_device(port->dev);
--	int size =
--		resource_size(platform_get_resource(pdev, IORESOURCE_MEM, 0));
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		size = 0;
-+	else
-+		size = resource_size(res);
- 
- 	if (port->flags & UPF_IOREMAP) {
- 		iounmap(port->membase);
--- 
-2.25.1
+What hardware are you using that is mixing dma and irq data like this?
+That feels very wrong.
 
+> >Again, what changed recently to cause this to start happening?  Why is this only showing up now?  What is unique about your system that causes this and prevents it from happening on any other system?
+> I think it is a corner case and exist in previous kernel version, we just reproduced it in pressure test.
+> Our system running multi cores and enabled RT feature, DMA interrupt thread and serial interrupt thread are running on different cores in parallel.
+
+If they are running on different cores, then you will have data
+corruption issues no matter if you have a lock or not, so this is not
+the correct solution for this hardware configuration problem.
+
+thanks,
+
+greg k-h
