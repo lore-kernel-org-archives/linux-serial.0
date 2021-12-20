@@ -2,43 +2,33 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A07B8C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 08:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE38C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Dec 2021 09:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238085AbhLTIyk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Dec 2021 03:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238060AbhLTIyj (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Dec 2021 03:54:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88968C061574;
-        Mon, 20 Dec 2021 00:54:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2052660EED;
-        Mon, 20 Dec 2021 08:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF850C36AE8;
-        Mon, 20 Dec 2021 08:54:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1639990478;
-        bh=w9Ckuk8ZRZpMruE//Ln5jMCz28zvDkic5YFOBHHk3Us=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MNpoVb+Iqqm4QiOc9s+MO/KIKnV0HBvtU0MHsVQYPfxDngN/0ofP9lP5Q++bJrIRS
-         f/eotD7ioGdfO/ym0/EBBt3fATUCmfMV/nnYiE/3PyVe1ZqOkvsaISGLgpJIPf5g4N
-         PuGx76aNwWqg644Eoi/6GIV9C4c3vY1YRYQukjnU=
-Date:   Mon, 20 Dec 2021 09:54:35 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     wigin zeng <wigin.zeng@dji.com>
-Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        id S229887AbhLTJvR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Dec 2021 04:51:17 -0500
+Received: from mail.djicorp.com ([14.21.64.4]:51935 "EHLO mail.djicorp.com"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229831AbhLTJvQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 20 Dec 2021 04:51:16 -0500
+X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Mon, 20 Dec 2021 04:51:15 EST
+IronPort-SDR: HH+t+sgVPi0c9RaNSjt/vox119lRxO8qkuSJ/v+gBmLI/t9kSJupKrwECbdApjH/bywq8QoDdP
+ HOl1DmkNFc9w==
+X-IronPort-AV: E=Sophos;i="5.88,220,1635177600"; 
+   d="scan'208";a="12184666"
+From:   wigin zeng <wigin.zeng@dji.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
         "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         First Light <xiaoguang.chen@dji.com>
-Subject: Re: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlA==?= =?utf-8?B?5aSNOg==?=
- [PATCH] serial: 8250: add lock for dma rx
-Message-ID: <YcBEy9zi2G7UYErE@kroah.com>
+Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiBbUEFUQ0hdIHNlcmlh?=
+ =?utf-8?Q?l:_8250:_add_lock_for_dma_rx?=
+Thread-Topic: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENIXSBzZXJpYWw6IDgyNTA6?=
+ =?utf-8?Q?_add_lock_for_dma_rx?=
+Thread-Index: AQHX7M8cgUf9QibCHEeycmxSNUOEd6wpP9YAgACLx/D//4YHgIAAiJFw//+PM4CAEXtykP//udeAABInGiA=
+Date:   Mon, 20 Dec 2021 09:44:04 +0000
+Message-ID: <c35df81a176f418eb90e18563170de67@MAIL-MBX-cwP12.dji.com>
 References: <20211209073339.21694-1-wigin.zeng@dji.com>
  <YbGygPtkz6ihyW51@kroah.com>
  <674707a0388c4a3a9bb25676c61e1737@MAIL-MBX-cwP12.dji.com>
@@ -46,38 +36,87 @@ References: <20211209073339.21694-1-wigin.zeng@dji.com>
  <f2150f8a7b7242b48227e30e5550da0b@MAIL-MBX-cwP12.dji.com>
  <YbHVXwdCUCvmZrbS@kroah.com>
  <62dd5f2fedbb4332a4d04dea4970a347@MAIL-MBX-cwP12.dji.com>
+ <YcBEy9zi2G7UYErE@kroah.com>
+In-Reply-To: <YcBEy9zi2G7UYErE@kroah.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [58.34.188.114]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62dd5f2fedbb4332a4d04dea4970a347@MAIL-MBX-cwP12.dji.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 05:27:24AM +0000, wigin zeng wrote:
-> Sorry for late response.
-> 
-> > >> What issue exactly?
-> > The interval of UART input packages is very small(1ms~ 10ms), and some package size larger than configured DMA transfer size.
-> >What do you mean exactly by "package size"?  Isn't it up to the DMA transfer to do the whole copy?
->  
-> The attachment is an example for the race condition issue. E.g: 514bytes input stream from UART, 512bytes should be copied by DMA(block size set as 512), left 2bytes should be copied by serial interrupt handler.
-
-That makes no sense, as what orders the data coming in?  The 2 bytes
-could be added to the tty buffer before the 512 bytes, or the other way
-around.
-
-What hardware are you using that is mixing dma and irq data like this?
-That feels very wrong.
-
-> >Again, what changed recently to cause this to start happening?  Why is this only showing up now?  What is unique about your system that causes this and prevents it from happening on any other system?
-> I think it is a corner case and exist in previous kernel version, we just reproduced it in pressure test.
-> Our system running multi cores and enabled RT feature, DMA interrupt thread and serial interrupt thread are running on different cores in parallel.
-
-If they are running on different cores, then you will have data
-corruption issues no matter if you have a lock or not, so this is not
-the correct solution for this hardware configuration problem.
-
-thanks,
-
-greg k-h
+PlRoYXQgbWFrZXMgbm8gc2Vuc2UsIGFzIHdoYXQgb3JkZXJzIHRoZSBkYXRhIGNvbWluZyBpbj8g
+IFRoZSAyIGJ5dGVzIGNvdWxkIGJlIGFkZGVkIHRvIHRoZSB0dHkgYnVmZmVyIGJlZm9yZSB0aGUg
+NTEyIGJ5dGVzLCBvciB0aGUgb3RoZXIgd2F5IGFyb3VuZC4NCg0KPldoYXQgaGFyZHdhcmUgYXJl
+IHlvdSB1c2luZyB0aGF0IGlzIG1peGluZyBkbWEgYW5kIGlycSBkYXRhIGxpa2UgdGhpcz8NCj5U
+aGF0IGZlZWxzIHZlcnkgd3JvbmcuDQoNCkl0IGlzIG5vdCBub3JtYWwgY2FzZSwgbm9ybWFsbHks
+IHRoZSBpbnB1dCBzaXplIHNob3VsZCBzbWFsbGVyIHRoYW4gRE1BIGJsb2NrIHNpemUgYW5kIERN
+QSBjb21wbGV0ZSB0aGUgd2hvbGUgY29weS4NCkhvd2V2ZXIsIHRoZXJlIGFyZSBzb21lIGFibm9y
+bWFsIHNpdHVhdGlvbnMuIFRoZSBleHRlcm5hbCBpbnB1dCBpcyB1bmV4cGVjdGVkbHkgbGFyZ2Vy
+IHRoYW4gdGhlIGRhdGEgbGVuZ3RoIG9mIHRoZSBETUEgY29uZmlndXJhdGlvbi4gVGhpcyBzaXR1
+YXRpb24gaW4gbXkgZXhhbXBsZSB3aWxsIGFwcGVhciwgYW5kIGl0IG1heSBjYXVzZSB0aGUga2Vy
+bmVsIHRvIHBhbmljLg0KDQo+SWYgdGhleSBhcmUgcnVubmluZyBvbiBkaWZmZXJlbnQgY29yZXMs
+IHRoZW4geW91IHdpbGwgaGF2ZSBkYXRhIGNvcnJ1cHRpb24gaXNzdWVzIG5vIG1hdHRlciBpZiB5
+b3UgaGF2ZSBhIGxvY2sgb3Igbm90LCBzbyB0aGlzIGlzIG5vdCB0aGUgY29ycmVjdCBzb2x1dGlv
+biBmb3IgdGhpcyBoYXJkd2FyZSBjb25maWd1cmF0aW9uIHByb2JsZW0uDQoNClRoZSBwdXJwb3Nl
+IG9mIGFkZGluZyBsb2NrIGlzIHRvIGVuc3VyZSB0aGF0IHRoZSBrZXJuZWwgd2lsbCBub3QgcGFu
+aWMgaW4gdGhpcyBleHRyZW1lIGNhc2UsIElmIHlvdSB3YW50IHRvIGVuc3VyZSB0aGUgaW50ZWdy
+aXR5IG9mIHRoZSBzZXJpYWwgcG9ydCBkYXRhLCB5b3UgbmVlZCB0byBhZGQgbW9yZSBmbG93IGNv
+bnRyb2wgbG9naWMNCg0KQlJzDQpXZWlqdW4NCi0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7
+tuS6ujogR3JlZyBLSCBbbWFpbHRvOmdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnXSANCuWPkemA
+geaXtumXtDogMjAyMeW5tDEy5pyIMjDml6UgMTY6NTUNCuaUtuS7tuS6ujogd2lnaW4gemVuZyA8
+d2lnaW4uemVuZ0BkamkuY29tPg0K5oqE6YCBOiBqaXJpc2xhYnlAa2VybmVsLm9yZzsgbGludXgt
+c2VyaWFsQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgRmly
+c3QgTGlnaHQgPHhpYW9ndWFuZy5jaGVuQGRqaS5jb20+DQrkuLvpopg6IFJlOiDnrZTlpI06IOet
+lOWkjTog562U5aSNOiBbUEFUQ0hdIHNlcmlhbDogODI1MDogYWRkIGxvY2sgZm9yIGRtYSByeA0K
+DQrjgJBFWFRFUk5BTCBFTUFJTOOAkSBETyBOT1QgQ0xJQ0sgYW55IGxpbmtzIG9yIGF0dGFjaG1l
+bnRzIHVubGVzcyB5b3UgY2FuIG1ha2Ugc3VyZSBib3RoIHRoZSBzZW5kZXIgYW5kIHRoZSBjb250
+ZW50IGFyZSB0cnVzdHdvcnRoeS4NCg0KDQrjgJDlpJbpg6jpgq7ku7bmj5DphpLjgJHku6XkuIvp
+gq7ku7bmnaXmupDkuo7lhazlj7jlpJbpg6jvvIzor7fli7/ngrnlh7vpk77mjqXmiJbpmYTku7bv
+vIzpmaTpnZ7mgqjnoa7orqTpgq7ku7blj5Hku7bkurrlkozlhoXlrrnlj6/kv6HjgIINCg0KDQoN
+Ck9uIE1vbiwgRGVjIDIwLCAyMDIxIGF0IDA1OjI3OjI0QU0gKzAwMDAsIHdpZ2luIHplbmcgd3Jv
+dGU6DQo+IFNvcnJ5IGZvciBsYXRlIHJlc3BvbnNlLg0KPg0KPiA+ID4+IFdoYXQgaXNzdWUgZXhh
+Y3RseT8NCj4gPiBUaGUgaW50ZXJ2YWwgb2YgVUFSVCBpbnB1dCBwYWNrYWdlcyBpcyB2ZXJ5IHNt
+YWxsKDFtc34gMTBtcyksIGFuZCBzb21lIHBhY2thZ2Ugc2l6ZSBsYXJnZXIgdGhhbiBjb25maWd1
+cmVkIERNQSB0cmFuc2ZlciBzaXplLg0KPiA+V2hhdCBkbyB5b3UgbWVhbiBleGFjdGx5IGJ5ICJw
+YWNrYWdlIHNpemUiPyAgSXNuJ3QgaXQgdXAgdG8gdGhlIERNQSB0cmFuc2ZlciB0byBkbyB0aGUg
+d2hvbGUgY29weT8NCj4NCj4gVGhlIGF0dGFjaG1lbnQgaXMgYW4gZXhhbXBsZSBmb3IgdGhlIHJh
+Y2UgY29uZGl0aW9uIGlzc3VlLiBFLmc6IDUxNGJ5dGVzIGlucHV0IHN0cmVhbSBmcm9tIFVBUlQs
+IDUxMmJ5dGVzIHNob3VsZCBiZSBjb3BpZWQgYnkgRE1BKGJsb2NrIHNpemUgc2V0IGFzIDUxMiks
+IGxlZnQgMmJ5dGVzIHNob3VsZCBiZSBjb3BpZWQgYnkgc2VyaWFsIGludGVycnVwdCBoYW5kbGVy
+Lg0KDQpUaGF0IG1ha2VzIG5vIHNlbnNlLCBhcyB3aGF0IG9yZGVycyB0aGUgZGF0YSBjb21pbmcg
+aW4/ICBUaGUgMiBieXRlcyBjb3VsZCBiZSBhZGRlZCB0byB0aGUgdHR5IGJ1ZmZlciBiZWZvcmUg
+dGhlIDUxMiBieXRlcywgb3IgdGhlIG90aGVyIHdheSBhcm91bmQuDQoNCldoYXQgaGFyZHdhcmUg
+YXJlIHlvdSB1c2luZyB0aGF0IGlzIG1peGluZyBkbWEgYW5kIGlycSBkYXRhIGxpa2UgdGhpcz8N
+ClRoYXQgZmVlbHMgdmVyeSB3cm9uZy4NCg0KPiA+QWdhaW4sIHdoYXQgY2hhbmdlZCByZWNlbnRs
+eSB0byBjYXVzZSB0aGlzIHRvIHN0YXJ0IGhhcHBlbmluZz8gIFdoeSBpcyB0aGlzIG9ubHkgc2hv
+d2luZyB1cCBub3c/ICBXaGF0IGlzIHVuaXF1ZSBhYm91dCB5b3VyIHN5c3RlbSB0aGF0IGNhdXNl
+cyB0aGlzIGFuZCBwcmV2ZW50cyBpdCBmcm9tIGhhcHBlbmluZyBvbiBhbnkgb3RoZXIgc3lzdGVt
+Pw0KPiBJIHRoaW5rIGl0IGlzIGEgY29ybmVyIGNhc2UgYW5kIGV4aXN0IGluIHByZXZpb3VzIGtl
+cm5lbCB2ZXJzaW9uLCB3ZSBqdXN0IHJlcHJvZHVjZWQgaXQgaW4gcHJlc3N1cmUgdGVzdC4NCj4g
+T3VyIHN5c3RlbSBydW5uaW5nIG11bHRpIGNvcmVzIGFuZCBlbmFibGVkIFJUIGZlYXR1cmUsIERN
+QSBpbnRlcnJ1cHQgdGhyZWFkIGFuZCBzZXJpYWwgaW50ZXJydXB0IHRocmVhZCBhcmUgcnVubmlu
+ZyBvbiBkaWZmZXJlbnQgY29yZXMgaW4gcGFyYWxsZWwuDQoNCklmIHRoZXkgYXJlIHJ1bm5pbmcg
+b24gZGlmZmVyZW50IGNvcmVzLCB0aGVuIHlvdSB3aWxsIGhhdmUgZGF0YSBjb3JydXB0aW9uIGlz
+c3VlcyBubyBtYXR0ZXIgaWYgeW91IGhhdmUgYSBsb2NrIG9yIG5vdCwgc28gdGhpcyBpcyBub3Qg
+dGhlIGNvcnJlY3Qgc29sdXRpb24gZm9yIHRoaXMgaGFyZHdhcmUgY29uZmlndXJhdGlvbiBwcm9i
+bGVtLg0KDQp0aGFua3MsDQoNCmdyZWcgay1oDQpUaGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVu
+dHMgdGhlcmV0byBtYXkgY29udGFpbiBwcml2YXRlLCBjb25maWRlbnRpYWwsIGFuZCBwcml2aWxl
+Z2VkIG1hdGVyaWFsIGZvciB0aGUgc29sZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudC4g
+QW55IHJldmlldywgY29weWluZywgb3IgZGlzdHJpYnV0aW9uIG9mIHRoaXMgZW1haWwgKG9yIGFu
+eSBhdHRhY2htZW50cyB0aGVyZXRvKSBieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4g
+SWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhl
+IHNlbmRlciBpbW1lZGlhdGVseSBhbmQgcGVybWFuZW50bHkgZGVsZXRlIHRoZSBvcmlnaW5hbCBh
+bmQgYW55IGNvcGllcyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0by4N
+Cg0K5q2k55S15a2Q6YKu5Lu25Y+K6ZmE5Lu25omA5YyF5ZCr5YaF5a655YW35pyJ5py65a+G5oCn
+77yM5LiU5LuF6ZmQ5LqO5o6l5pS25Lq65L2/55So44CC5pyq57uP5YWB6K6477yM56aB5q2i56ys
+5LiJ5Lq66ZiF6K+744CB5aSN5Yi25oiW5Lyg5pKt6K+l55S15a2Q6YKu5Lu25Lit55qE5Lu75L2V
+5L+h5oGv44CC5aaC5p6c5oKo5LiN5bGe5LqO5Lul5LiK55S15a2Q6YKu5Lu255qE55uu5qCH5o6l
+5pS26ICF77yM6K+35oKo56uL5Y2z6YCa55+l5Y+R6YCB5Lq65bm25Yig6Zmk5Y6f55S15a2Q6YKu
+5Lu25Y+K5YW255u45YWz55qE6ZmE5Lu244CCDQo=
