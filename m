@@ -2,153 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 182D6C4321E
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 09:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BCABC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 10:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236903AbhLUJtQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Dec 2021 04:49:16 -0500
-Received: from relmlor1.renesas.com ([210.160.252.171]:6254 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236910AbhLUJs5 (ORCPT
+        id S231712AbhLUKGU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Dec 2021 05:06:20 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35440 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230018AbhLUKGU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Dec 2021 04:48:57 -0500
-X-IronPort-AV: E=Sophos;i="5.88,223,1635174000"; 
-   d="scan'208";a="104225128"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 21 Dec 2021 18:48:53 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 5CB394006199;
-        Tue, 21 Dec 2021 18:48:49 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        dmaengine@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Subject: [PATCH 16/16] arm64: dts: renesas: Add initial device tree for RZ/V2L SMARC EVK
-Date:   Tue, 21 Dec 2021 09:47:17 +0000
-Message-Id: <20211221094717.16187-17-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Tue, 21 Dec 2021 05:06:20 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 895BFB815A6
+        for <linux-serial@vger.kernel.org>; Tue, 21 Dec 2021 10:06:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B36FDC36AE2;
+        Tue, 21 Dec 2021 10:06:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1640081178;
+        bh=WJfezBOTBIhblpb34cSk/pZZXYr8CRn0iJO4bHfe/DQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a68bVWi8xfmUFLEtUALwSgeTV50bNTwwLifvSaJ71YnsAB4CSGXlAS9J3CbP/RlcW
+         qziCdH2EqD7hY5faeFmdK+2vt671JyrGXPst4SVaaEiDFq31DiJ6wb2ZFuBJpTYqWp
+         Tzwzjn9LAlMi9NgbRFFUfAoyhqut83cx1y+X4Heo=
+Date:   Tue, 21 Dec 2021 11:06:15 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Mathieu Peyrega <mathieu.peyrega@gmail.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        giometti@linux.it
+Subject: Re: [PATCH] Allow PPS on CTS pin and non-RS232 UARTs
+Message-ID: <YcGnF8KC0lJ180Vc@kroah.com>
+References: <bc2d427e30e24978be5800c41f921b9d782570e7.camel@gmail.com>
+ <YaoXfxwSeVVWUWUJ@kroah.com>
+ <14a35918ecc95199066ea78c7814cf71bcd9e52e.camel@gmail.com>
+ <YcCkk8ck91Nt4F0R@kroah.com>
+ <9d5477e0046927fe95badb63e53af7251c5667a5.camel@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9d5477e0046927fe95badb63e53af7251c5667a5.camel@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+On Tue, Dec 21, 2021 at 10:36:39AM +0100, Mathieu Peyrega wrote:
+> Le lundi 20 décembre 2021 à 16:43 +0100, Greg KH a écrit :
+> > On Sat, Dec 04, 2021 at 04:57:56PM +0100, Mathieu Peyrega wrote:
+> > > Le vendredi 03 décembre 2021 à 14:11 +0100, Greg KH a écrit :
+> > > > On Thu, Dec 02, 2021 at 11:56:10AM +0100, Mathieu Peyrega wrote:
+> > > > > 
+> > I don't fully understand the point. Isn't the existing pps_ldisc
+> > > module
+> > > already affecting the whole system ? (with it's builtin fixed
+> > > "options"). How different tunable options such as the proposal make
+> > > things fundamentally different ? Still I agree that per device
+> > > settings
+> > > would be better.
+> > 
+> > Per device settings are required, this would prevent multiple devices
+> > working in the same system, one using the existing line discipline
+> > functionality, and one with your new changes.
+> 
+> Is this per device settings requierement valid also for a new line
+> discipline module or is it acceptable if a new "module level settable"
+> linee discipline module has also a global behaviour (as current one)
+> ?If per tty device setting is requiered pointers/doc on possible
+> exemples/mecanismes to achieve this are welcome.
 
-Add basic support for RZ/V2L SMARC EVK (based on R9A07G054L2):
-- memory
-- External input clock
-- CPG
-- Pin controller
-- SCIF
-- GbEthernet
-- Audio Clock
+If you make this a new line discipline, that is fine, as you can set
+each tty device to have their own discipline.
 
-It shares the same carrier board with RZ/G2L with the same pin mapping.
-Delete the gpio-hog nodes from pinctrl as this will be added later when
-the functionality has been tested.
+But do not have options for that line discipline, on a module-basis,
+that way will not work (think about multiple devices all using the same
+line discipline.)
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- arch/arm64/boot/dts/renesas/Makefile          |  1 +
- .../boot/dts/renesas/r9a07g054l2-smarc.dts    | 25 +++++++++++++++++++
- .../dts/renesas/rzg2l-smarc-pinfunction.dtsi  |  2 +-
- .../boot/dts/renesas/rzg2l-smarc-som.dtsi     |  2 +-
- arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi  |  2 +-
- 5 files changed, 29 insertions(+), 3 deletions(-)
- create mode 100644 arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts
+> > Try this as a new line discipline, should be much easier and simpler
+> > overall for everyone.
+> 
+> I have been working a little on this already, was waiting for list
+> comments/answers to proceed further.
+> Is there a prefered name as the module is mostly a clone of the pps-
+> ldisc current one one with first patch changes ? I went for ppsex-ldisc 
+> for now.
+> Is it Ok to share & modify the C structures of pps-ldisc (especially
+> tty_ldisc_ops as per initially proposed patch) or should a full new set
+> also be added ?
 
-diff --git a/arch/arm64/boot/dts/renesas/Makefile b/arch/arm64/boot/dts/renesas/Makefile
-index 8e696a38c560..2daba38d1161 100644
---- a/arch/arm64/boot/dts/renesas/Makefile
-+++ b/arch/arm64/boot/dts/renesas/Makefile
-@@ -77,3 +77,4 @@ dtb-$(CONFIG_ARCH_R8A77965) += r8a779m5-salvator-xs.dtb
- 
- dtb-$(CONFIG_ARCH_R9A07G044) += r9a07g044l2-smarc.dtb
- dtb-$(CONFIG_ARCH_R9A07G044) += r9a07g044c2-smarc.dtb
-+dtb-$(CONFIG_ARCH_R9A07G054) += r9a07g054l2-smarc.dtb
-diff --git a/arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts b/arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts
-new file mode 100644
-index 000000000000..39ef55bfe0c3
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dts
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/*
-+ * Device Tree Source for the RZ/G2L SMARC EVK board
-+ *
-+ * Copyright (C) 2021 Renesas Electronics Corp.
-+ */
-+
-+/dts-v1/;
-+#include "r9a07g054l2.dtsi"
-+#include "rzg2l-smarc-som.dtsi"
-+#include "rzg2l-smarc-pinfunction.dtsi"
-+#include "rzg2l-smarc.dtsi"
-+
-+/ {
-+	model = "Renesas SMARC EVK based on r9a07g054l2";
-+	compatible = "renesas,smarc-evk", "renesas,r9a07g054l2", "renesas,r9a07g054";
-+};
-+
-+&pinctrl {
-+	/delete-node/ can0-stb;
-+	/delete-node/ can1-stb;
-+	/delete-node/ gpio-sd0-pwr-en-hog;
-+	/delete-node/ sd0-dev-sel-hog;
-+	/delete-node/ sd1-pwr-en-hog;
-+};
-diff --git a/arch/arm64/boot/dts/renesas/rzg2l-smarc-pinfunction.dtsi b/arch/arm64/boot/dts/renesas/rzg2l-smarc-pinfunction.dtsi
-index 71d83e447670..2ef217445f72 100644
---- a/arch/arm64/boot/dts/renesas/rzg2l-smarc-pinfunction.dtsi
-+++ b/arch/arm64/boot/dts/renesas/rzg2l-smarc-pinfunction.dtsi
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- /*
-- * Device Tree Source for the RZ/G2L SMARC pincontrol parts
-+ * Device Tree Source for the RZ/{G2L,V2L} SMARC pincontrol parts
-  *
-  * Copyright (C) 2021 Renesas Electronics Corp.
-  */
-diff --git a/arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi b/arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi
-index 41fdae7ba66b..879375c0395e 100644
---- a/arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi
-+++ b/arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- /*
-- * Device Tree Source for the RZ/G2L SMARC SOM common parts
-+ * Device Tree Source for the RZ/{G2L,V2L} SMARC SOM common parts
-  *
-  * Copyright (C) 2021 Renesas Electronics Corp.
-  */
-diff --git a/arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi b/arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi
-index 46abb29718cc..78034f36156d 100644
---- a/arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi
-+++ b/arch/arm64/boot/dts/renesas/rzg2l-smarc.dtsi
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- /*
-- * Device Tree Source for the RZ/G2L SMARC EVK common parts
-+ * Device Tree Source for the RZ/{G2L,V2L} SMARC EVK common parts
-  *
-  * Copyright (C) 2021 Renesas Electronics Corp.
-  */
--- 
-2.17.1
+I do not know, let's see what you think would work and post that and we
+can go from there.
 
+thanks,
+
+greg k-h
