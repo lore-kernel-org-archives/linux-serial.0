@@ -2,183 +2,160 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A83C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 08:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BED2C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 08:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235432AbhLUIMT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Dec 2021 03:12:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44208 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231443AbhLUIMT (ORCPT
+        id S235427AbhLUIOL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Dec 2021 03:14:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235408AbhLUIOL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Dec 2021 03:12:19 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1BC0B80EA6;
-        Tue, 21 Dec 2021 08:12:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19C24C36AEB;
-        Tue, 21 Dec 2021 08:12:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1640074336;
-        bh=TdfYcRlfsgL3yFUwru7scWBZTMMLfASaigC1YnhqZeg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cEeDfQWIfaFpD8VRqWf6X7ffskduveTV6Ycp21Uuoc/9Z6UvRG3k102kvFpopeVvj
-         IsrbCJ0Ap+YYytSoaahWqA9OTLOoi71B9gZIGdHPdCD3NcWL4QBqdtsn3guBDeV55a
-         IkgZx21vDwgVKZRZwW0FB/8v/siK6Jd5fAKjszzM=
-Date:   Tue, 21 Dec 2021 09:12:13 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Wander Costa <wcosta@redhat.com>
-Cc:     Wander Lairson Costa <wander@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] tty: serial: Use fifo in 8250 console driver
-Message-ID: <YcGMXf7sxb/ESvFS@kroah.com>
-References: <20211104171734.137707-1-wander@redhat.com>
- <YcClBlhwp4arGWtw@kroah.com>
- <CAAq0SUmVmyALNYUbM5dy3D0=Bp=ukNoNdodc1yxYQjm1SnBgAQ@mail.gmail.com>
+        Tue, 21 Dec 2021 03:14:11 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09012C06173F;
+        Tue, 21 Dec 2021 00:14:11 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id v13so11047097pfi.3;
+        Tue, 21 Dec 2021 00:14:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KfWp3EC1FzqgOl2C4TeIv3DanfwzS2Q8LVhv9Iqo4TE=;
+        b=nc1katz4p2W9VXbj0pMPJd8OENjc4Hpl62crQFmbR8P4Cs7rEzHnvcw5IM/Pzav+oX
+         grljk9embKuYCbngIdXGEqOneqd8mu+JGnefW3135Ofui5iMbcxfrpz8TKeBZFQg2Lel
+         OQPVw9Ay1oAntv9YW02dQHnF1hdXi5a5W5vPNhRI9wPKLS/0Bve6gTcZZCMKZeF3S5de
+         fyKvwZXQFHOxBtJ1tWuDP2taarbkWZKLUArIE38xFZMgZUu7WrA5Ms2tfaeZoRStqO1R
+         vIi12wrK8LUzwGAX8DiLhABNBdj4pLb8l4+y2L1/e3W0eitcOupVIdKfeHbHSEUDKT/D
+         F7nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KfWp3EC1FzqgOl2C4TeIv3DanfwzS2Q8LVhv9Iqo4TE=;
+        b=0SqSb19uEyEMaOGzgo/Bf+5uZb/kdduhi+MfFJoskhSRI/ZlfEq8QT60vFtYqoCRav
+         Xoze6bqGbJVV4EiKb0SiljGoX3BHWM51rWCRflyS1dc6a4/YGRGM11Tyu8VlDdVRC6gv
+         1tV26xPTZ3Jasgp9oTAcxAGh4J5adtixGiuMfZOK8dARyszq3o2ZRtYgxmCbKwuVj7rL
+         LrWJwSF7jeP2pfMcnQf1PAEzcn8kdjc0P0HUEEFOwmL8JQuUlMWwyc7JXqQWObBH2JB9
+         NecA+RCGbtoDNwSe1prZg46qYgXXegLp8NshjzEHGrJOBCuxvXqpTrFKNq8C7vRKAAOW
+         +S8A==
+X-Gm-Message-State: AOAM533NTMzBybddZmCAVO395QHxXXPJteB8WnFTL99i6kK8oKr7fdA4
+        So5pn5le364sNuJB0ir2FQ7CTBHudrJihy4YjN0=
+X-Google-Smtp-Source: ABdhPJyfjZs1i63+vVnbWIogeffAkybtFZr5MWXqBu8A8DgLYraxD4dYQq79sGPc8LpnZCTZIQbyf4kuj0AhNLeaLWk=
+X-Received: by 2002:a63:1858:: with SMTP id 24mr1960142pgy.338.1640074450574;
+ Tue, 21 Dec 2021 00:14:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAq0SUmVmyALNYUbM5dy3D0=Bp=ukNoNdodc1yxYQjm1SnBgAQ@mail.gmail.com>
+References: <1639379407-28607-1-git-send-email-hammer.hsieh@sunplus.com>
+ <1639379407-28607-3-git-send-email-hammer.hsieh@sunplus.com> <YcCmaJkeKy+R0mhF@kroah.com>
+In-Reply-To: <YcCmaJkeKy+R0mhF@kroah.com>
+From:   hammer hsieh <hammerh0314@gmail.com>
+Date:   Tue, 21 Dec 2021 16:14:16 +0800
+Message-ID: <CAOX-t54j9=7eLMAx4n-ngiNdM=Ab=YcK-zdxRW88e41cPS=46Q@mail.gmail.com>
+Subject: Re: [PATCH v5 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh+dt@kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jirislaby@kernel.org, p.zabel@pengutronix.de, wells.lu@sunplus.com,
+        Hammer Hsieh <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 02:02:11PM -0300, Wander Costa wrote:
-> On Mon, Dec 20, 2021 at 12:45 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Thu, Nov 04, 2021 at 02:17:31PM -0300, wander@redhat.com wrote:
-> > > From: Wander Lairson Costa <wander@redhat.com>
-> > >
-> > > Note: I am using a small test app + driver located at [0] for the
-> > > problem description. serco is a driver whose write function dispatches
-> > > to the serial controller. sertest is a user-mode app that writes n bytes
-> > > to the serial console using the serco driver.
-> > >
-> > > Recently I got a report of a soft lockup while loading a bunch a
-> > > scsi_debug devices (> 500).
-> > >
-> > > While investigating it, I noticed that the serial console throughput
-> > > (called by the printk code) is way below the configured speed of 115200
-> > > bps in a HP Proliant DL380 Gen9 server. I was expecting something above
-> > > 10KB/s, but I got 2.5KB/s. I then built a simple driver [0] to isolate
-> > > the console from the printk code. Here it is:
-> > >
-> > > $ time ./sertest -n 2500 /tmp/serco
-> > >
-> > > real    0m0.997s
-> > > user    0m0.000s
-> > > sys     0m0.997s
-> > >
-> > > With the help of the function tracer, I then noticed the serial
-> > > controller was taking around 410us seconds to dispatch one single byte:
-> > >
-> > > $ trace-cmd record -p function_graph -g serial8250_console_write \
-> > >    ./sertest -n 1 /tmp/serco
-> > >
-> > > $ trace-cmd report
-> > >
-> > >             |  serial8250_console_write() {
-> > >  0.384 us   |    _raw_spin_lock_irqsave();
-> > >  1.836 us   |    io_serial_in();
-> > >  1.667 us   |    io_serial_out();
-> > >             |    uart_console_write() {
-> > >             |      serial8250_console_putchar() {
-> > >             |        wait_for_xmitr() {
-> > >  1.870 us   |          io_serial_in();
-> > >  2.238 us   |        }
-> > >  1.737 us   |        io_serial_out();
-> > >  4.318 us   |      }
-> > >  4.675 us   |    }
-> > >             |    wait_for_xmitr() {
-> > >  1.635 us   |      io_serial_in();
-> > >             |      __const_udelay() {
-> > >  1.125 us   |        delay_tsc();
-> > >  1.429 us   |      }
-> > > ...
-> > > ...
-> > > ...
-> > >  1.683 us   |      io_serial_in();
-> > >             |      __const_udelay() {
-> > >  1.248 us   |        delay_tsc();
-> > >  1.486 us   |      }
-> > >  1.671 us   |      io_serial_in();
-> > >  411.342 us |    }
-> > >
-> > > In another machine, I measured a throughput of 11.5KB/s, with the serial
-> > > controller taking between 80-90us to send each byte. That matches the
-> > > expected throughput for a configuration of 115200 bps.
-> > >
-> > > This patch changes the serial8250_console_write to use the 16550 fifo
-> > > if available. In my artificial benchmark I could get a throughput
-> > > increase up to 100% in some cases, but in the real case described at the
-> > > beginning the gain was of about 25%.
-> > >
-> > > [0] https://github.com/walac/serial-console-test
-> > >
-> > > Signed-off-by: Wander Lairson Costa <wander@redhat.com>
-> > > ---
-> > >  drivers/tty/serial/8250/8250.h      |  3 ++
-> > >  drivers/tty/serial/8250/8250_port.c | 63 +++++++++++++++++++++++++----
-> > >  2 files changed, 59 insertions(+), 7 deletions(-)
-> > >
-> > > diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> > > index 6473361525d1..c711bf118cc1 100644
-> > > --- a/drivers/tty/serial/8250/8250.h
-> > > +++ b/drivers/tty/serial/8250/8250.h
-> > > @@ -83,6 +83,9 @@ struct serial8250_config {
-> > >  #define UART_CAP_MINI        BIT(17) /* Mini UART on BCM283X family lacks:
-> > >                                        * STOP PARITY EPAR SPAR WLEN5 WLEN6
-> > >                                        */
-> > > +#define UART_CAP_CWFIFO BIT(18) /* Use the UART Fifo in
-> > > +                              * serial8250_console_write
-> > > +                              */
-> >
-> > Why do you need a new bit?  Why can't you just do this change for all
-> > devices that have a fifo?  Why would you _not_ want to do this for all
-> > devices that have a fifo?
-> >
-> The v1 patch [1] didn't have this extra bit. Andy suggested [2] to add
-> it so we only enabled this new code on tested controllers as a
-> precaution.
-> If it doesn't make sense to you, feel free to consider the v1 patch [1].
-> 
-> [1] https://lore.kernel.org/all/20211029201402.428284-1-wander@redhat.com/
-> [2] https://lore.kernel.org/all/CAHp75Vf6DjNcPWpE4Dh3SuzUMJbFQjq1UNCkrCa60uw35SpqKg@mail.gmail.com/
+Greg KH <gregkh@linuxfoundation.org> =E6=96=BC 2021=E5=B9=B412=E6=9C=8820=
+=E6=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=8811:51=E5=AF=AB=E9=81=93=EF=
+=BC=9A
+>
+> On Mon, Dec 13, 2021 at 03:10:07PM +0800, Hammer Hsieh wrote:
+> > +/* Register offsets */
+> > +#define SUP_UART_DATA                        0x00
+> > +#define SUP_UART_LSR                 0x04
+> > +#define SUP_UART_MSR                 0x08
+> > +#define SUP_UART_LCR                 0x0C
+> > +#define SUP_UART_MCR                 0x10
+> > +#define SUP_UART_DIV_L                       0x14
+> > +#define SUP_UART_DIV_H                       0x18
+> > +#define SUP_UART_ISC                 0x1C
+> > +#define SUP_UART_TX_RESIDUE          0x20
+> > +#define SUP_UART_RX_RESIDUE          0x24
+> > +
+> > +/* Line Status Register bits */
+> > +#define SUP_UART_LSR_TXE             BIT(6) /* tx empty */
+> > +#define SUP_UART_LSR_BC                      BIT(5) /* break condition=
+ status */
+> > +#define SUP_UART_LSR_FE                      BIT(4) /* frame error sta=
+tus */
+> > +#define SUP_UART_LSR_OE                      BIT(3) /* overrun error s=
+tatus */
+> > +#define SUP_UART_LSR_PE                      BIT(2) /* parity error st=
+atus */
+> > +#define SUP_UART_LSR_RX                      BIT(1) /* 1: receive fifo=
+ not empty */
+> > +#define SUP_UART_LSR_TX                      BIT(0) /* 1: transmit fif=
+o is not full */
+> > +#define SUP_UART_LSR_TX_NOT_FULL     1
+> > +#define SUP_UART_LSR_BRK_ERROR_BITS  GENMASK(5, 2)
+> > +
+> > +/* Line Control Register bits */
+> > +#define SUP_UART_LCR_BC                      BIT(5) /* break condition=
+ select */
+> > +#define SUP_UART_LCR_PR                      BIT(4) /* parity bit pola=
+rity select */
+> > +#define SUP_UART_LCR_PE                      BIT(3) /* parity bit enab=
+le */
+> > +#define SUP_UART_LCR_ST                      BIT(2) /* stop bits selec=
+t */
+> > +#define SUP_UART_LCR_WL5             0x00 /*  word length 5 */
+> > +#define SUP_UART_LCR_WL6             0x01 /*  word length 6 */
+> > +#define SUP_UART_LCR_WL7             0x02 /*  word length 7 */
+> > +#define SUP_UART_LCR_WL8             0x03 /*  word length 8 (default) =
+*/
+> > +
+> > +/* Modem Control Register bits */
+> > +#define SUP_UART_MCR_LB                      BIT(4) /* Loopback mode *=
+/
+> > +#define SUP_UART_MCR_RI                      BIT(3) /* ring indicator =
+*/
+> > +#define SUP_UART_MCR_DCD             BIT(2) /* data carrier detect */
+> > +#define SUP_UART_MCR_RTS             BIT(1) /* request to send */
+> > +#define SUP_UART_MCR_DTS             BIT(0) /* data terminal ready */
+> > +
+> > +/* Interrupt Status/Control Register bits */
+> > +#define SUP_UART_ISC_RXM             BIT(5) /* RX interrupt enable */
+> > +#define SUP_UART_ISC_TXM             BIT(4) /* TX interrupt enable */
+> > +#define SUP_UART_ISC_RX                      BIT(1) /* RX interrupt st=
+atus */
+> > +#define SUP_UART_ISC_TX                      BIT(0) /* TX interrupt st=
+atus */
+> > +
+> > +#define SUP_DUMMY_READ                       BIT(16) /* drop bytes rec=
+eived on a !CREAD port */
+> > +#define SUP_UART_NR                  5
+>
+> Aren't most of these defines already in the kernel header files?  Why
+> create them again?
+>
 
-I do like [1] better, but can you fix up the checkpatch issues and
-resend it:
+If for reduce code.
+I can add #include<linux/serial_reg.h>
+And remove some overlap define name.
 
-CHECK: Alignment should match open parenthesis
-#116: FILE: drivers/tty/serial/8250/8250_port.c:3342:
-+static void serial8250_console_fifo_write(struct uart_8250_port *up,
-+	        const char *s, unsigned int count)
+#define SUP_UART_LCR_PR -> UART_LCR_EPAR
+#define SUP_UART_LCR_PE -> UART_LCR_PARITY
+#define SUP_UART_LCR_ST -> UART_LCR_STOP
+#define SUP_UART_LCR_WL5 -> UART_LCR_WLEN5
+#define SUP_UART_LCR_WL6 -> UART_LCR_WLEN6
+#define SUP_UART_LCR_WL7 -> UART_LCR_WLEN7
+#define SUP_UART_LCR_WL8 -> UART_LCR_WLEN8
 
-CHECK: Logical continuations should be on the previous line
-#156: FILE: drivers/tty/serial/8250/8250_port.c:3412:
-+	use_fifo = (up->capabilities & UART_CAP_FIFO)
-+	        && port->fifosize > 1
+#define SUP_UART_MCR_LB -> UART_MCR_LOOP
+#define SUP_UART_MCR_RI -> UART_MCR_OUT2 ?
+#define SUP_UART_MCR_DCD -> UART_MCR_OUT1 ?
+#define SUP_UART_MCR_RTS -> UART_MCR_RTS
+#define SUP_UART_MCR_DTS -> UART_MCR_DTR
 
-CHECK: Logical continuations should be on the previous line
-#157: FILE: drivers/tty/serial/8250/8250_port.c:3413:
-+	        && port->fifosize > 1
-+	        && (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
-
-CHECK: Logical continuations should be on the previous line
-#163: FILE: drivers/tty/serial/8250/8250_port.c:3419:
-+	         */
-+	        && !(up->port.flags & UPF_CONS_FLOW);
-
-
-
-thanks,
-
-greg k-h
+But the rest define didn't match internal #include<linux/serial_reg.h>
+, those define still need to keep.
+Some use SUP_xxxx specific define.
+Some use internal #include<linux/serial_reg.h>, it is strange.
