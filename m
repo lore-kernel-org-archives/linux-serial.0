@@ -2,89 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBEFC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 13:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0C9C43219
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 14:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233952AbhLUNnx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Dec 2021 08:43:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44916 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231856AbhLUNnx (ORCPT
+        id S238518AbhLUOgN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Dec 2021 09:36:13 -0500
+Received: from mail-qv1-f54.google.com ([209.85.219.54]:39554 "EHLO
+        mail-qv1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234548AbhLUOgM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Dec 2021 08:43:53 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF662615B2;
-        Tue, 21 Dec 2021 13:43:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F10EC36AE2;
-        Tue, 21 Dec 2021 13:43:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640094232;
-        bh=ehLmWQXyI8uzgpYhZKSqd8ALWcLfPwPXFxgjvq0UdX8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=h3ehuZm1uPnmDtm/afvooY6h4aInNCxvMyurJuymnEHc3dAGsGLC3/r+qILJmXDvt
-         d2VondbSGDzp7TPC5yxIKe/9M+khhS2mt2pJ7X/FBZCIK5l/7AYA4e0usxK1pibZuF
-         7uuapTxgxIlt4SNropZLKT3WEOHZPwr6v8e5Hh8BVx1Ss6J8DLrjPO+dDfFbsm3ITF
-         07btAq0/2bNoRqIXK6l7Cn1WSccfvmrTPFN98AgNQNM1aXn3N7AeIHOtDApgx56IBY
-         dVLSvMWgLyeCMaxBbb7rd9WlO/F9P/dGSwbn4moWg1TSat46uJMfN5TsdXvnbm9lqN
-         wVfwMwFzizo5g==
-Received: by mail-ed1-f52.google.com with SMTP id z5so52275961edd.3;
-        Tue, 21 Dec 2021 05:43:52 -0800 (PST)
-X-Gm-Message-State: AOAM532bmGPYRKQxRa+j2ZMhpytq6Yplk/nZUx6mOIfAYI6CJ2KnIFzP
-        6d04/5iGfNBkfiqfek4gMC130Gb7QRpsULRQyw==
-X-Google-Smtp-Source: ABdhPJzf6sF2sHY8OvqcAy5pdhOq+pNWj0G56N/8xyadU2QrWNbAtQsnLyAdk734lgyH7OEUuq1QSCjMOJesv6Pcyf4=
-X-Received: by 2002:a17:907:94c2:: with SMTP id dn2mr2730772ejc.325.1640094230472;
- Tue, 21 Dec 2021 05:43:50 -0800 (PST)
-MIME-Version: 1.0
-References: <1640085372-1972-1-git-send-email-abel.vesa@nxp.com>
-In-Reply-To: <1640085372-1972-1-git-send-email-abel.vesa@nxp.com>
+        Tue, 21 Dec 2021 09:36:12 -0500
+Received: by mail-qv1-f54.google.com with SMTP id g15so11243446qvi.6;
+        Tue, 21 Dec 2021 06:36:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=DAgxIL5+LfBMOUij7dixBA2kzok+uhqjW0YOVP3FJ64=;
+        b=iPqQbnlc5nFOllfSKi7vz2BQst5cYpXBWvcKH2KEQVbvvGNBfbr+wC0BXMaOBbw9Um
+         UyMfW2guV3g5SFzi4Xf8nar2CaS3crpjp1IAAL2FrmF8xwLnkLJf2zWmPna5MELV7PHz
+         +k3RCGkJFLhPc8wlQR4x6PV1EhNEiHrdiTvZVqhT4MVUNtxpnE1vXzfOarVFA+dPiCzO
+         i7S7qLgTTGh27JYGlwvzSlJH7xghu5w7FGKHGuJg/EYubAwu5Hv2O8wC4pka/djP58Mx
+         MpiEp9q9Vdopi3DLSDpOTJpIKwqmbrn77WJ7KQthDW5NZFZqKQgo37laEXnZ1zewMoC0
+         KK/g==
+X-Gm-Message-State: AOAM532vTVHO4fFFcIHdRgKp7fQgXmfW6zSPkvmefcyczcjVjfgxpT6A
+        QOoZ4Mm9inVrPILzKNq7hA==
+X-Google-Smtp-Source: ABdhPJylBXG4muz9ukCyJcRPgG5j/wh/YvvIRKT8d1OTxRKfi+lOHWdekpwKJ6hBomGZ8F/6CfNqsA==
+X-Received: by 2002:a05:6214:76a:: with SMTP id f10mr2246866qvz.80.1640097371373;
+        Tue, 21 Dec 2021 06:36:11 -0800 (PST)
+Received: from robh.at.kernel.org ([24.55.105.145])
+        by smtp.gmail.com with ESMTPSA id u7sm14864481qkp.17.2021.12.21.06.36.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Dec 2021 06:36:10 -0800 (PST)
+Received: (nullmailer pid 1365872 invoked by uid 1000);
+        Tue, 21 Dec 2021 14:36:08 -0000
 From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 21 Dec 2021 09:43:39 -0400
-X-Gmail-Original-Message-ID: <CAL_Jsq+XNNVbUiJeqPvDrz_oZoV1PTxRcE9O5ovEAHQZ37cn9g@mail.gmail.com>
-Message-ID: <CAL_Jsq+XNNVbUiJeqPvDrz_oZoV1PTxRcE9O5ovEAHQZ37cn9g@mail.gmail.com>
-Subject: Re: [RESEND] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL compatible
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>, dmaengine@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-clk@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20211221094717.16187-12-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20211221094717.16187-12-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH 11/16] dt-bindings: pinctrl: renesas: Document RZ/V2L pinctrl
+Date:   Tue, 21 Dec 2021 10:36:08 -0400
+Message-Id: <1640097368.261963.1365871.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 7:16 AM Abel Vesa <abel.vesa@nxp.com> wrote:
->
-> Add i.MX8DXL lpuart compatible to the bindings documentation.
->
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+On Tue, 21 Dec 2021 09:47:12 +0000, Lad Prabhakar wrote:
+> From: Biju Das <biju.das.jz@bp.renesas.com>
+> 
+> Document Renesas RZ/V2L pinctrl bindings. The RZ/V2L is package- and
+> pin-compatible with the RZ/G2L. No driver changes are required as RZ/G2L
+> compatible string "renesas,r9a07g044-pinctrl" will be used as a fallback.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > ---
->
-> This is a resend of the following, but as a separate patch.
->
-> https://lore.kernel.org/linux-arm-kernel/YcCisM3BqM984k%2F1@kroah.com/
->
->  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-> index 6e04e3848261..1f482e166467 100644
-> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-> @@ -30,6 +30,10 @@ properties:
->        - items:
->            - const: fsl,imx8qm-lpuart
->            - const: fsl,imx8qxp-lpuart
-> +      - items:
-> +          - const: fsl,imx8dxl-lpuart
-> +          - const: fsl,imx8qxp-lpuart
-> +          - const: fsl,imx7ulp-lpuart
+>  .../bindings/pinctrl/renesas,rzg2l-pinctrl.yaml   | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
+> 
 
-It doesn't really make sense that imx8qm and imx8dxl are backwards
-compatible with imx8qxp, but only imx8qm is backwards compatible to
-imx7ulp. Ir only makes sense if some feature/quirk specific to
-fsl,imx7ulp-lpuart is gone in imx8qm.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Rob
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml:26:13: [warning] wrong indentation: expected 14 but found 12 (indentation)
+
+dtschema/dtc warnings/errors:
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1571555
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
