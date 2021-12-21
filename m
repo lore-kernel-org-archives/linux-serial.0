@@ -2,101 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0C9C43219
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 14:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B01FC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 18:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238518AbhLUOgN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Dec 2021 09:36:13 -0500
-Received: from mail-qv1-f54.google.com ([209.85.219.54]:39554 "EHLO
-        mail-qv1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234548AbhLUOgM (ORCPT
+        id S241465AbhLUSmA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Dec 2021 13:42:00 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:36050 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241443AbhLUSl7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Dec 2021 09:36:12 -0500
-Received: by mail-qv1-f54.google.com with SMTP id g15so11243446qvi.6;
-        Tue, 21 Dec 2021 06:36:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=DAgxIL5+LfBMOUij7dixBA2kzok+uhqjW0YOVP3FJ64=;
-        b=iPqQbnlc5nFOllfSKi7vz2BQst5cYpXBWvcKH2KEQVbvvGNBfbr+wC0BXMaOBbw9Um
-         UyMfW2guV3g5SFzi4Xf8nar2CaS3crpjp1IAAL2FrmF8xwLnkLJf2zWmPna5MELV7PHz
-         +k3RCGkJFLhPc8wlQR4x6PV1EhNEiHrdiTvZVqhT4MVUNtxpnE1vXzfOarVFA+dPiCzO
-         i7S7qLgTTGh27JYGlwvzSlJH7xghu5w7FGKHGuJg/EYubAwu5Hv2O8wC4pka/djP58Mx
-         MpiEp9q9Vdopi3DLSDpOTJpIKwqmbrn77WJ7KQthDW5NZFZqKQgo37laEXnZ1zewMoC0
-         KK/g==
-X-Gm-Message-State: AOAM532vTVHO4fFFcIHdRgKp7fQgXmfW6zSPkvmefcyczcjVjfgxpT6A
-        QOoZ4Mm9inVrPILzKNq7hA==
-X-Google-Smtp-Source: ABdhPJylBXG4muz9ukCyJcRPgG5j/wh/YvvIRKT8d1OTxRKfi+lOHWdekpwKJ6hBomGZ8F/6CfNqsA==
-X-Received: by 2002:a05:6214:76a:: with SMTP id f10mr2246866qvz.80.1640097371373;
-        Tue, 21 Dec 2021 06:36:11 -0800 (PST)
-Received: from robh.at.kernel.org ([24.55.105.145])
-        by smtp.gmail.com with ESMTPSA id u7sm14864481qkp.17.2021.12.21.06.36.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Dec 2021 06:36:10 -0800 (PST)
-Received: (nullmailer pid 1365872 invoked by uid 1000);
-        Tue, 21 Dec 2021 14:36:08 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>, dmaengine@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-clk@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20211221094717.16187-12-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20211221094717.16187-12-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH 11/16] dt-bindings: pinctrl: renesas: Document RZ/V2L pinctrl
-Date:   Tue, 21 Dec 2021 10:36:08 -0400
-Message-Id: <1640097368.261963.1365871.nullmailer@robh.at.kernel.org>
+        Tue, 21 Dec 2021 13:41:59 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id B6D7D1F42F50
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
+        t=1640112117; bh=Cj5O9TiD4i4HSRN+fjhO1sKRr/R9ttPdi5PW9xYEaLY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Qpks0xHoub/2hdHjXqHjJNQq5L42GE3pxdVulYANco8hCdF8szEEvxnu7xNATxXsQ
+         56qmKX11QMw3gl9zd+ld6/+i4hSGwEkOWtilV+G8E8RfuflE/J4xHuRE6AUmD0nR4j
+         m9yAkotM01pqH3wNIV8qrUTPqiEsJxBRgX0iXjW/BbExNSjbQR5VWuuYoPnbJYFgUA
+         Rmgljyg6Om943/Wri0tD2Ccx5MtOfRmMCDY105oWEcyzkZx1nDBAcY7n7yQGudTdzk
+         MOrxY5KFIBmk40a0p7cmNCiVRoJBvapNLqYFe49dMdPC3rXskxd4c0JjaMqi0YNL7W
+         QdzLNXn+VIUaQ==
+Date:   Tue, 21 Dec 2021 23:41:51 +0500
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, kernel@collabora.com
+Cc:     usama.anjum@collabora.com
+Subject: [PATCH] serial: lantiq: store and compare return status correctly
+Message-ID: <YcIf7+oSWWn34ND6@debian-BULLSEYE-live-builder-AMD64>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 21 Dec 2021 09:47:12 +0000, Lad Prabhakar wrote:
-> From: Biju Das <biju.das.jz@bp.renesas.com>
-> 
-> Document Renesas RZ/V2L pinctrl bindings. The RZ/V2L is package- and
-> pin-compatible with the RZ/G2L. No driver changes are required as RZ/G2L
-> compatible string "renesas,r9a07g044-pinctrl" will be used as a fallback.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  .../bindings/pinctrl/renesas,rzg2l-pinctrl.yaml   | 15 +++++++++++----
->  1 file changed, 11 insertions(+), 4 deletions(-)
-> 
+platform_get_irq() returns signed status. It should be stored and
+compared as signed value before storing to unsigned variable. Implicit
+conversion from signed to unsigned and then comparison with less than
+zero is wrong as unsigned value can never be less than zero.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Fixes: f087f01ca2 ("serial: lantiq: Use platform_get_irq() to get the interrupt")
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+---
+ drivers/tty/serial/lantiq.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml:26:13: [warning] wrong indentation: expected 14 but found 12 (indentation)
-
-dtschema/dtc warnings/errors:
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1571555
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index bb059418cb82..3e324d3f0a6d 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -727,16 +727,20 @@ static int fetch_irq_lantiq(struct device *dev, struct ltq_uart_port *ltq_port)
+ {
+ 	struct uart_port *port = &ltq_port->port;
+ 	struct platform_device *pdev = to_platform_device(dev);
+-
+-	ltq_port->tx_irq = platform_get_irq(pdev, 0);
+-	if (ltq_port->tx_irq < 0)
+-		return ltq_port->tx_irq;
+-	ltq_port->rx_irq = platform_get_irq(pdev, 1);
+-	if (ltq_port->rx_irq < 0)
+-		return ltq_port->rx_irq;
+-	ltq_port->err_irq = platform_get_irq(pdev, 2);
+-	if (ltq_port->err_irq < 0)
+-		return ltq_port->err_irq;
++	int irq;
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++	ltq_port->tx_irq = irq;
++	irq = platform_get_irq(pdev, 1);
++	if (irq < 0)
++		return irq;
++	ltq_port->rx_irq = irq;
++	irq = platform_get_irq(pdev, 2);
++	if (irq < 0)
++		return irq;
++	ltq_port->err_irq = irq;
+ 
+ 	port->irq = ltq_port->tx_irq;
+ 
+-- 
+2.30.2
 
