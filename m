@@ -2,141 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C16C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 08:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2820EC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Dec 2021 09:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234307AbhLUIVw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Dec 2021 03:21:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234212AbhLUIVw (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Dec 2021 03:21:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F72C061574;
-        Tue, 21 Dec 2021 00:21:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECF84B81052;
-        Tue, 21 Dec 2021 08:21:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A6B9C36AE2;
-        Tue, 21 Dec 2021 08:21:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1640074909;
-        bh=Jxf9DAuQuO8xcW9OS1qw9tIRuUDJLr4jTwE07F5oW3I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pLsMkpeqS042L4Zkt3ekHaBqPpaK5FmkGMqeTXG0iNCvfdFCZIphWV8RojvYRu0xs
-         bT8sMSjzk34oqeAhN6CkIljtWfLwgFWAK1uP9mPErmCGbuohuzbWuLozoBVyAnDiGq
-         q8yqUoLJPhMteIC2UDunN1dp5mPn8dwd7H6LQq5s=
-Date:   Tue, 21 Dec 2021 09:21:47 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     hammer hsieh <hammerh0314@gmail.com>
-Cc:     robh+dt@kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jirislaby@kernel.org, p.zabel@pengutronix.de, wells.lu@sunplus.com,
-        Hammer Hsieh <hammer.hsieh@sunplus.com>
-Subject: Re: [PATCH v5 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-Message-ID: <YcGOmzKSHOoycZNC@kroah.com>
-References: <1639379407-28607-1-git-send-email-hammer.hsieh@sunplus.com>
- <1639379407-28607-3-git-send-email-hammer.hsieh@sunplus.com>
- <YcCmaJkeKy+R0mhF@kroah.com>
- <CAOX-t54j9=7eLMAx4n-ngiNdM=Ab=YcK-zdxRW88e41cPS=46Q@mail.gmail.com>
+        id S235260AbhLUJVw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Dec 2021 04:21:52 -0500
+Received: from mga06.intel.com ([134.134.136.31]:40593 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232251AbhLUJVw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Dec 2021 04:21:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640078512; x=1671614512;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EcAr+1T0bDdPV/q5mtDqXbiWJfCtWkjgWp9jufwOmCY=;
+  b=PSxmEhCtNqFgmy6qAD8UEVynjEvIbg7g00+ufpBUscZQLMW3tSsMz3nL
+   wuytAvVVqqmehp2zpIUNN7ZiL7Pca6K0efc4VxttrbIoJvNuj1AGiwpya
+   4ezBeld9HVqSD4ajHTKHk9fCps+xwjPUYU+Xyylkyn/RdXSrCDd8jKYkT
+   phs24TIpiFtr05BPC1/d2mn3foRzsKi5yUcU5X+X7ISJMLiQy/kPEMaaU
+   KKwiVx8mt5FoJ6N4vdPN87MIMI6wqmpXPtKUYkjdyEgQHCMcYIjV9Lqee
+   smXf5c79wNdIbpcNXV/SBjI6olxW28dc8LpZHZU01sKgfp1+p2lA9VSf5
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="301128594"
+X-IronPort-AV: E=Sophos;i="5.88,223,1635231600"; 
+   d="scan'208";a="301128594"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 01:21:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,223,1635231600"; 
+   d="scan'208";a="757708390"
+Received: from lkp-server02.sh.intel.com (HELO 9f38c0981d9f) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 21 Dec 2021 01:21:50 -0800
+Received: from kbuild by 9f38c0981d9f with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mzbLB-0008uk-Qo; Tue, 21 Dec 2021 09:21:49 +0000
+Date:   Tue, 21 Dec 2021 17:21:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 712fe4c849829352dd45dc14e027d61500931f85
+Message-ID: <61c19ca3.5TKYvnq2omhh3NjZ%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOX-t54j9=7eLMAx4n-ngiNdM=Ab=YcK-zdxRW88e41cPS=46Q@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 04:14:16PM +0800, hammer hsieh wrote:
-> Greg KH <gregkh@linuxfoundation.org> 於 2021年12月20日 週一 下午11:51寫道：
-> >
-> > On Mon, Dec 13, 2021 at 03:10:07PM +0800, Hammer Hsieh wrote:
-> > > +/* Register offsets */
-> > > +#define SUP_UART_DATA                        0x00
-> > > +#define SUP_UART_LSR                 0x04
-> > > +#define SUP_UART_MSR                 0x08
-> > > +#define SUP_UART_LCR                 0x0C
-> > > +#define SUP_UART_MCR                 0x10
-> > > +#define SUP_UART_DIV_L                       0x14
-> > > +#define SUP_UART_DIV_H                       0x18
-> > > +#define SUP_UART_ISC                 0x1C
-> > > +#define SUP_UART_TX_RESIDUE          0x20
-> > > +#define SUP_UART_RX_RESIDUE          0x24
-> > > +
-> > > +/* Line Status Register bits */
-> > > +#define SUP_UART_LSR_TXE             BIT(6) /* tx empty */
-> > > +#define SUP_UART_LSR_BC                      BIT(5) /* break condition status */
-> > > +#define SUP_UART_LSR_FE                      BIT(4) /* frame error status */
-> > > +#define SUP_UART_LSR_OE                      BIT(3) /* overrun error status */
-> > > +#define SUP_UART_LSR_PE                      BIT(2) /* parity error status */
-> > > +#define SUP_UART_LSR_RX                      BIT(1) /* 1: receive fifo not empty */
-> > > +#define SUP_UART_LSR_TX                      BIT(0) /* 1: transmit fifo is not full */
-> > > +#define SUP_UART_LSR_TX_NOT_FULL     1
-> > > +#define SUP_UART_LSR_BRK_ERROR_BITS  GENMASK(5, 2)
-> > > +
-> > > +/* Line Control Register bits */
-> > > +#define SUP_UART_LCR_BC                      BIT(5) /* break condition select */
-> > > +#define SUP_UART_LCR_PR                      BIT(4) /* parity bit polarity select */
-> > > +#define SUP_UART_LCR_PE                      BIT(3) /* parity bit enable */
-> > > +#define SUP_UART_LCR_ST                      BIT(2) /* stop bits select */
-> > > +#define SUP_UART_LCR_WL5             0x00 /*  word length 5 */
-> > > +#define SUP_UART_LCR_WL6             0x01 /*  word length 6 */
-> > > +#define SUP_UART_LCR_WL7             0x02 /*  word length 7 */
-> > > +#define SUP_UART_LCR_WL8             0x03 /*  word length 8 (default) */
-> > > +
-> > > +/* Modem Control Register bits */
-> > > +#define SUP_UART_MCR_LB                      BIT(4) /* Loopback mode */
-> > > +#define SUP_UART_MCR_RI                      BIT(3) /* ring indicator */
-> > > +#define SUP_UART_MCR_DCD             BIT(2) /* data carrier detect */
-> > > +#define SUP_UART_MCR_RTS             BIT(1) /* request to send */
-> > > +#define SUP_UART_MCR_DTS             BIT(0) /* data terminal ready */
-> > > +
-> > > +/* Interrupt Status/Control Register bits */
-> > > +#define SUP_UART_ISC_RXM             BIT(5) /* RX interrupt enable */
-> > > +#define SUP_UART_ISC_TXM             BIT(4) /* TX interrupt enable */
-> > > +#define SUP_UART_ISC_RX                      BIT(1) /* RX interrupt status */
-> > > +#define SUP_UART_ISC_TX                      BIT(0) /* TX interrupt status */
-> > > +
-> > > +#define SUP_DUMMY_READ                       BIT(16) /* drop bytes received on a !CREAD port */
-> > > +#define SUP_UART_NR                  5
-> >
-> > Aren't most of these defines already in the kernel header files?  Why
-> > create them again?
-> >
-> 
-> If for reduce code.
-> I can add #include<linux/serial_reg.h>
-> And remove some overlap define name.
-> 
-> #define SUP_UART_LCR_PR -> UART_LCR_EPAR
-> #define SUP_UART_LCR_PE -> UART_LCR_PARITY
-> #define SUP_UART_LCR_ST -> UART_LCR_STOP
-> #define SUP_UART_LCR_WL5 -> UART_LCR_WLEN5
-> #define SUP_UART_LCR_WL6 -> UART_LCR_WLEN6
-> #define SUP_UART_LCR_WL7 -> UART_LCR_WLEN7
-> #define SUP_UART_LCR_WL8 -> UART_LCR_WLEN8
-> 
-> #define SUP_UART_MCR_LB -> UART_MCR_LOOP
-> #define SUP_UART_MCR_RI -> UART_MCR_OUT2 ?
-> #define SUP_UART_MCR_DCD -> UART_MCR_OUT1 ?
-> #define SUP_UART_MCR_RTS -> UART_MCR_RTS
-> #define SUP_UART_MCR_DTS -> UART_MCR_DTR
-> 
-> But the rest define didn't match internal #include<linux/serial_reg.h>
-> , those define still need to keep.
-> Some use SUP_xxxx specific define.
-> Some use internal #include<linux/serial_reg.h>, it is strange.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 712fe4c849829352dd45dc14e027d61500931f85  serial: sh-sci: Remove BREAK/FRAME/PARITY/OVERRUN printouts
 
-Do not duplicate defines that we already have for the same hardware
-type.
+elapsed time: 728m
 
-And again, why is this not a normal serial driver for the existing UART
-types as this hardware is obviously an 8250 variant?
+configs tested: 90
+configs skipped: 3
 
-thanks,
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-greg k-h
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+powerpc                       maple_defconfig
+arm                       imx_v4_v5_defconfig
+sh                           se7712_defconfig
+arm                        vexpress_defconfig
+mips                       bmips_be_defconfig
+powerpc                     tqm8541_defconfig
+m68k                             alldefconfig
+sh                          urquell_defconfig
+sh                             shx3_defconfig
+powerpc                 mpc85xx_cds_defconfig
+arm                     davinci_all_defconfig
+sh                          rsk7269_defconfig
+arm                            mmp2_defconfig
+h8300                            alldefconfig
+sh                           se7750_defconfig
+arm                         lubbock_defconfig
+powerpc                   currituck_defconfig
+arm                          exynos_defconfig
+sh                     magicpanelr2_defconfig
+arm                  randconfig-c002-20211220
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nds32                             allnoconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a001-20211220
+x86_64               randconfig-a003-20211220
+x86_64               randconfig-a005-20211220
+x86_64               randconfig-a006-20211220
+x86_64               randconfig-a004-20211220
+x86_64               randconfig-a002-20211220
+i386                 randconfig-a006-20211220
+i386                 randconfig-a004-20211220
+i386                 randconfig-a002-20211220
+i386                 randconfig-a003-20211220
+i386                 randconfig-a005-20211220
+i386                 randconfig-a001-20211220
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+
+clang tested configs:
+hexagon              randconfig-r045-20211220
+riscv                randconfig-r042-20211220
+s390                 randconfig-r044-20211220
+hexagon              randconfig-r041-20211220
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
