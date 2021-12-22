@@ -2,76 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF9BEC433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 13:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFE2C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 18:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245420AbhLVNid (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Dec 2021 08:38:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245362AbhLVNic (ORCPT
+        id S235549AbhLVSMi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Dec 2021 13:12:38 -0500
+Received: from mail-qt1-f176.google.com ([209.85.160.176]:34811 "EHLO
+        mail-qt1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234101AbhLVSMi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Dec 2021 08:38:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D11C061574;
-        Wed, 22 Dec 2021 05:38:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A06261A7B;
-        Wed, 22 Dec 2021 13:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9B98C36AEA;
-        Wed, 22 Dec 2021 13:38:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640180311;
-        bh=5DRhYUbBXiJ7M7p8JdRlsqvrCcTJ6dGdQO5vT+3KwiE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=A1QSrelHfst2XLGXRImhOffXCTvv+hZ0jsbAZYZHh2ztxieBPL4PLuGmYk1w9quIX
-         ZqYqRLy5HPZ/MajHE37ogY169zDJZhgoN36hdpXps+ckqk7FzW6igy0YizgsaozzDq
-         Mnm4XlOgwo2k6vkdLZBdxtqaYrrW3QwmDe3qH+YL5IK1HR6z7vuUpeciYES20v+VN5
-         9JHoXdDspwXDUV8J0LrqzE4ppFKl16ceKQXG5+u2Ljm/SerMdmNLmoZOvjt+ps6RGI
-         xVP6mOXD1MioXtSj7OoXDzp7ul40EMSY23bVaDf4p5Uxr8+mv7/EXvFxoUop7umBQ0
-         OLZD/lDFCdGqQ==
-Received: by mail-ed1-f53.google.com with SMTP id o20so8735519eds.10;
-        Wed, 22 Dec 2021 05:38:31 -0800 (PST)
-X-Gm-Message-State: AOAM530AUf73sHmmkR4tCSlnfGVaEC2yVFnKkUfSIwtHQSjyHnJ7sZ+q
-        9VKznyqUFOr/L6p7pd9KIruNHycMyDCDKcAoBg==
-X-Google-Smtp-Source: ABdhPJx5GMhyXgG4DfxVbs9VtEOzLbnLOldQWIWCEc2JgQ8YaX/GDXDTB5A3Ig5tKW7CD8Ze5gLa8nBWgao4tqjmK1E=
-X-Received: by 2002:a17:906:7945:: with SMTP id l5mr2464870ejo.82.1640180310127;
- Wed, 22 Dec 2021 05:38:30 -0800 (PST)
-MIME-Version: 1.0
-References: <YcIf7+oSWWn34ND6@debian-BULLSEYE-live-builder-AMD64>
-In-Reply-To: <YcIf7+oSWWn34ND6@debian-BULLSEYE-live-builder-AMD64>
+        Wed, 22 Dec 2021 13:12:38 -0500
+Received: by mail-qt1-f176.google.com with SMTP id o17so2721907qtk.1;
+        Wed, 22 Dec 2021 10:12:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pIn5Bic5ZbGSB9APhGUz4jy4pv35Qb3TTEOzVa4bkls=;
+        b=sIF/loD38IeiiP16ZdJ/A577BPJkckjXp5jo2wXM1fI57/11gY9WoOmxo5h8f7086P
+         chRX6N/E/G90RCe8AB4B0agtz2o5NDbl4tb2oxvSC14MLePFTZNCDlxL13wU6UomqMna
+         EjKP/6NXLQpjr89ZIMqZx60NDNaahXXg+MTJjWu5HZllaDGiswP5+pWVHjW9BkUZCMl1
+         tUT0b0SXWHfDNDsx8os7BM3ecgA1Kdch72qE/hBBZ+PmBrlFPwnVB9yKg3d4whDYUoxE
+         kgw2GDTmepFPajvStwjQ0M/sbQR4ps6XSHvPZFU3W5wEx7cbofnM6HvP1DzywuDiAvC4
+         grWA==
+X-Gm-Message-State: AOAM530RUFGvjwmjr+uQlQUsxKfhmII+1GuidS4lykv8dTsQCVfi1a3x
+        vPeT95tKLr3y8xgPr4Q6857wjG20UEfK
+X-Google-Smtp-Source: ABdhPJw1fD7Aoe6vRDXEtZ30TjpD5hboLxAiT0qLvoQmynw9JfTHn6lnO3BOUX1Xo5oq8dXrcpLOLw==
+X-Received: by 2002:ac8:5404:: with SMTP id b4mr3044585qtq.657.1640196757473;
+        Wed, 22 Dec 2021 10:12:37 -0800 (PST)
+Received: from robh.at.kernel.org ([24.55.105.145])
+        by smtp.gmail.com with ESMTPSA id e7sm2317876qtx.72.2021.12.22.10.12.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Dec 2021 10:12:36 -0800 (PST)
+Received: (nullmailer pid 2437831 invoked by uid 1000);
+        Wed, 22 Dec 2021 18:12:35 -0000
+Date:   Wed, 22 Dec 2021 14:12:35 -0400
 From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 22 Dec 2021 09:38:18 -0400
-X-Gmail-Original-Message-ID: <CAL_JsqKMmufq64R+xO+dae1ffAc4zZBoD5Y0XxbHWjH0qOBwRw@mail.gmail.com>
-Message-ID: <CAL_JsqKMmufq64R+xO+dae1ffAc4zZBoD5Y0XxbHWjH0qOBwRw@mail.gmail.com>
-Subject: Re: [PATCH] serial: lantiq: store and compare return status correctly
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
+To:     Xianwei Zhao <xianwei.zhao@amlogic.com>
+Cc:     kelvin.zhang@amlogic.com, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-amlogic@lists.infradead.org,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH V2] dt-bindings: serial: amlogic, meson-uart: support S4
+Message-ID: <YcNqk/tHBttSTENO@robh.at.kernel.org>
+References: <20211221030146.522-1-xianwei.zhao@amlogic.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211221030146.522-1-xianwei.zhao@amlogic.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 2:42 PM Muhammad Usama Anjum
-<usama.anjum@collabora.com> wrote:
->
-> platform_get_irq() returns signed status. It should be stored and
-> compared as signed value before storing to unsigned variable. Implicit
-> conversion from signed to unsigned and then comparison with less than
-> zero is wrong as unsigned value can never be less than zero.
->
-> Fixes: f087f01ca2 ("serial: lantiq: Use platform_get_irq() to get the interrupt")
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+On Tue, 21 Dec 2021 11:01:45 +0800, Xianwei Zhao wrote:
+> Add serial bindings support menson S4 SoC family.
+> 
+> Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
 > ---
->  drivers/tty/serial/lantiq.c | 24 ++++++++++++++----------
->  1 file changed, 14 insertions(+), 10 deletions(-)
-
-Thanks for fixing this.
+> V1 -> V2 : update author name
+> ---
+>  .../devicetree/bindings/serial/amlogic,meson-uart.yaml          | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
 Acked-by: Rob Herring <robh@kernel.org>
