@@ -2,89 +2,78 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18581C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 03:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0324CC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 08:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242122AbhLVDgc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Dec 2021 22:36:32 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:59384 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229997AbhLVDgc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Dec 2021 22:36:32 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowADnyRYlncJhLv+ABA--.46045S2;
-        Wed, 22 Dec 2021 11:36:05 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        liviu.dudau@arm.com, sudeep.holla@arm.com,
-        lorenzo.pieralisi@arm.com
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] serial: mps2-uart: Check for error irq
-Date:   Wed, 22 Dec 2021 11:36:04 +0800
-Message-Id: <20211222033604.1049339-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S243230AbhLVITq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Dec 2021 03:19:46 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:19988 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243228AbhLVITq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 22 Dec 2021 03:19:46 -0500
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Wed, 22 Dec
+ 2021 16:19:41 +0800
+Message-ID: <92993ded-c15b-ce2e-6fb6-f4ee846cbcf1@amlogic.com>
+Date:   Wed, 22 Dec 2021 16:19:41 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowADnyRYlncJhLv+ABA--.46045S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Wr4fXr48WF4DurW3Gr15Arb_yoW8Jry3p3
-        WktrWDury8GFWrtwnrZF4DAF45uwsYqa47W34ag34a9wn5JFnxW34fCr9IkF1kZr4UJFWS
-        yrs8JF4F9a48Xr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
-        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8
-        GwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r
-        1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij
-        64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr
-        0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
-        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjQBMtUUUU
-        U==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH 0/3] the UART driver compatible with the Amlogic Meson S4
+ SoC
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20211221071634.25980-1-yu.tu@amlogic.com>
+ <YcGCs1LYqXNnQwsF@kroah.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <YcGCs1LYqXNnQwsF@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-I find that platform_get_irq() will not always succeed.
-It will return error irq in case there is no suitable irq.
-Therefore, it might be better to check it if order to avoid the use of
-error irq.
+Hi Greg K-H,
+	Thank you very much for your reply.I'll amend it as you suggest.
 
-Fixes: 041f031def33 ("serial: mps2-uart: add MPS2 UART driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/tty/serial/mps2-uart.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
-index 587b42f754cb..117d9896051f 100644
---- a/drivers/tty/serial/mps2-uart.c
-+++ b/drivers/tty/serial/mps2-uart.c
-@@ -585,10 +585,20 @@ static int mps2_init_port(struct platform_device *pdev,
- 
- 	if (mps_port->flags & UART_PORT_COMBINED_IRQ) {
- 		mps_port->port.irq = platform_get_irq(pdev, 0);
-+		if (mps_port->port.irq < 0)
-+			return mps_port->port.irq;
- 	} else {
- 		mps_port->rx_irq = platform_get_irq(pdev, 0);
-+		if (mps_port->rx_irq < 0)
-+			return mps_port->rx_irq;
-+
- 		mps_port->tx_irq = platform_get_irq(pdev, 1);
-+		if (mps_port->tx_irq < 0)
-+			return mps_port->tx_irq;
-+
- 		mps_port->port.irq = platform_get_irq(pdev, 2);
-+		if (mps_port->port.irq < 0)
-+			return mps_port->port.irq;
- 	}
- 
- 	return ret;
--- 
-2.25.1
-
+On 2021/12/21 15:30, Greg Kroah-Hartman wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> On Tue, Dec 21, 2021 at 03:16:31PM +0800, Yu Tu wrote:
+>> The UART driver compatible with the Amlogic Meson S4 SoC on-chip, change the
+>> UART interrupt interface function while adding IRQF_SHARED flag. And add clear
+>> AML_UART_TX_EN bit in meson_uart_shutdown funtion.
+>>
+>> Yu Tu (3):
+>>    tty: serial: meson: modify request_irq and free_irq
+>>    tty: serial: meson: meson_uart_shutdown omit clear AML_UART_TX_EN bit
+>>    tty: serial: meson: add UART driver compatible with S4 SoC on-chip
+>>
+>> Link:https://patchwork.kernel.org/project/linux-amlogic/patch/20211206100200.31914-1-xianwei.zhao@amlogic.com/
+> 
+> What is this link for?
+> 
+> And why patchwork?
+> 
+> Please just use lore.kernel.org links for mailing list threads.
+> 
+> thanks,
+> 
+> greg k-h
+> 
+I will change the address you suggested as follows,
+Link: 
+https://lore.kernel.org/linux-amlogic/20211206100200.31914-1-xianwei.zhao@amlogic.com/
