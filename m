@@ -2,27 +2,26 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0324CC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 08:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A291C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 08:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243230AbhLVITq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Dec 2021 03:19:46 -0500
-Received: from mail-sh.amlogic.com ([58.32.228.43]:19988 "EHLO
+        id S243433AbhLVIo0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Dec 2021 03:44:26 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:9185 "EHLO
         mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243228AbhLVITq (ORCPT
+        with ESMTP id S243435AbhLVIo0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Dec 2021 03:19:46 -0500
+        Wed, 22 Dec 2021 03:44:26 -0500
 Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
  (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Wed, 22 Dec
- 2021 16:19:41 +0800
-Message-ID: <92993ded-c15b-ce2e-6fb6-f4ee846cbcf1@amlogic.com>
-Date:   Wed, 22 Dec 2021 16:19:41 +0800
+ 2021 16:44:23 +0800
+Message-ID: <81e31307-609a-bab4-0241-33d574b7ef44@amlogic.com>
+Date:   Wed, 22 Dec 2021 16:44:22 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
-Subject: Re: [PATCH 0/3] the UART driver compatible with the Amlogic Meson S4
- SoC
+Subject: Re: [PATCH 1/3] tty: serial: meson: modify request_irq and free_irq
 Content-Language: en-US
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 CC:     <linux-serial@vger.kernel.org>,
@@ -34,9 +33,9 @@ CC:     <linux-serial@vger.kernel.org>,
         Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 References: <20211221071634.25980-1-yu.tu@amlogic.com>
- <YcGCs1LYqXNnQwsF@kroah.com>
+ <20211221071634.25980-2-yu.tu@amlogic.com> <YcGCj2jGpzl+sKcT@kroah.com>
 From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <YcGCs1LYqXNnQwsF@kroah.com>
+In-Reply-To: <YcGCj2jGpzl+sKcT@kroah.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.18.29.173]
@@ -46,34 +45,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg K-H,
-	Thank you very much for your reply.I'll amend it as you suggest.
+
 
 On 2021/12/21 15:30, Greg Kroah-Hartman wrote:
 > [ EXTERNAL EMAIL ]
 > 
-> On Tue, Dec 21, 2021 at 03:16:31PM +0800, Yu Tu wrote:
->> The UART driver compatible with the Amlogic Meson S4 SoC on-chip, change the
->> UART interrupt interface function while adding IRQF_SHARED flag. And add clear
->> AML_UART_TX_EN bit in meson_uart_shutdown funtion.
+> On Tue, Dec 21, 2021 at 03:16:32PM +0800, Yu Tu wrote:
+>> Change request_irq to devm_request_irq and free_irq to devm_free_irq.
+>> It's better to change the code this way.
+> 
+> Why?  What did this fix up?  You still are manually requesting and
+> freeing the irq.  What bug did you fix?
+> 
+I think this is exactly what you said. It's not necessary.
 >>
->> Yu Tu (3):
->>    tty: serial: meson: modify request_irq and free_irq
->>    tty: serial: meson: meson_uart_shutdown omit clear AML_UART_TX_EN bit
->>    tty: serial: meson: add UART driver compatible with S4 SoC on-chip
->>
->> Link:https://patchwork.kernel.org/project/linux-amlogic/patch/20211206100200.31914-1-xianwei.zhao@amlogic.com/
+>> The IRQF_SHARED interrupt flag was added because an interrupt error was
+>> detected when the serial port was opened twice in a row on the project.
 > 
-> What is this link for?
+> That is a different change.  Make that a different patch.
 > 
-> And why patchwork?
-> 
-> Please just use lore.kernel.org links for mailing list threads.
-> 
+The main purpose of this change is that I found some users in the actual 
+project with the following usages:
+(1)open(/dev/ttyAML0);
+(2)open(/dev/ttyAML0);
+The open function calls the meson_uart_startup function. If this is the 
+case, an interrupt error is reported.So So the IRQF_SHARED flag was added.
+
+I'm going to do this for now, remove free_irq and request_irq 
+function,then add devm_request_irq in meson_uart_probe function.
+This solves the above problem without adding IRQF_SHARED.
 > thanks,
 > 
 > greg k-h
 > 
-I will change the address you suggested as follows,
-Link: 
-https://lore.kernel.org/linux-amlogic/20211206100200.31914-1-xianwei.zhao@amlogic.com/
+
