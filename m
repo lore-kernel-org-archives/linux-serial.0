@@ -2,26 +2,27 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A291C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 08:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3261DC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 09:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243433AbhLVIo0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Dec 2021 03:44:26 -0500
-Received: from mail-sh.amlogic.com ([58.32.228.43]:9185 "EHLO
+        id S243514AbhLVJBD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Dec 2021 04:01:03 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:42666 "EHLO
         mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243435AbhLVIo0 (ORCPT
+        with ESMTP id S236068AbhLVJBC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Dec 2021 03:44:26 -0500
+        Wed, 22 Dec 2021 04:01:02 -0500
 Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
  (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Wed, 22 Dec
- 2021 16:44:23 +0800
-Message-ID: <81e31307-609a-bab4-0241-33d574b7ef44@amlogic.com>
-Date:   Wed, 22 Dec 2021 16:44:22 +0800
+ 2021 17:01:00 +0800
+Message-ID: <04a4768a-5136-8b6e-baa2-b6ac21afe14f@amlogic.com>
+Date:   Wed, 22 Dec 2021 17:01:00 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
-Subject: Re: [PATCH 1/3] tty: serial: meson: modify request_irq and free_irq
+Subject: Re: [PATCH 2/3] tty: serial: meson: meson_uart_shutdown omit clear
+ AML_UART_TX_EN bit
 Content-Language: en-US
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 CC:     <linux-serial@vger.kernel.org>,
@@ -33,9 +34,9 @@ CC:     <linux-serial@vger.kernel.org>,
         Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 References: <20211221071634.25980-1-yu.tu@amlogic.com>
- <20211221071634.25980-2-yu.tu@amlogic.com> <YcGCj2jGpzl+sKcT@kroah.com>
+ <20211221071634.25980-3-yu.tu@amlogic.com> <YcGC8hlOEbzH8rc8@kroah.com>
 From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <YcGCj2jGpzl+sKcT@kroah.com>
+In-Reply-To: <YcGC8hlOEbzH8rc8@kroah.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.18.29.173]
@@ -47,35 +48,25 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 
-On 2021/12/21 15:30, Greg Kroah-Hartman wrote:
+On 2021/12/21 15:32, Greg Kroah-Hartman wrote:
 > [ EXTERNAL EMAIL ]
 > 
-> On Tue, Dec 21, 2021 at 03:16:32PM +0800, Yu Tu wrote:
->> Change request_irq to devm_request_irq and free_irq to devm_free_irq.
->> It's better to change the code this way.
-> 
-> Why?  What did this fix up?  You still are manually requesting and
-> freeing the irq.  What bug did you fix?
-> 
-I think this is exactly what you said. It's not necessary.
+> On Tue, Dec 21, 2021 at 03:16:33PM +0800, Yu Tu wrote:
+>> The meson_uart_shutdown function should have the opposite operation to
+>> the meson_uart_startup function, so the shutdown of AML_UART_TX_EN is
+>> logically missing.
 >>
->> The IRQF_SHARED interrupt flag was added because an interrupt error was
->> detected when the serial port was opened twice in a row on the project.
+>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
 > 
-> That is a different change.  Make that a different patch.
+> What commit does this fix?  Should it go to stable kernels?  Please put
+> that in here if needed.
 > 
-The main purpose of this change is that I found some users in the actual 
-project with the following usages:
-(1)open(/dev/ttyAML0);
-(2)open(/dev/ttyAML0);
-The open function calls the meson_uart_startup function. If this is the 
-case, an interrupt error is reported.So So the IRQF_SHARED flag was added.
-
-I'm going to do this for now, remove free_irq and request_irq 
-function,then add devm_request_irq in meson_uart_probe function.
-This solves the above problem without adding IRQF_SHARED.
+It has not yet been revealed that this is a bug. The reason I changed it 
+was because I thought it was an improvement and it might be a hidden 
+bug.The AML_UART_TX_EN bit is conspicuously missing when comparing the 
+meson_uart_shutdown and meson_uart_startup functions.So I think it's 
+best to add.
 > thanks,
 > 
 > greg k-h
 > 
-
