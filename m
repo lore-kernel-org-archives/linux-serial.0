@@ -2,96 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 125D0C43219
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 02:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18581C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Dec 2021 03:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232803AbhLVCCf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Dec 2021 21:02:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230185AbhLVCCe (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Dec 2021 21:02:34 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20635C061574;
-        Tue, 21 Dec 2021 18:02:34 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id b13so2329306edd.8;
-        Tue, 21 Dec 2021 18:02:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0pvJ0VJBvj9qiKz1E6D8UeM5hFtVE1+1j1opSDSflxo=;
-        b=hso3Yd7IWueqzl2mIgrOpP66XETFw/Qq6TD71x/nVKTezClSMd/aVDBCarWi1F3D3i
-         nEwOP1sxgBDEslD6aKDTAFIN/JhQpIdVH2xWXv8G0WxGtpGnQGIGwrEhQDUExRVE6pOm
-         7vQPP7Mry2+W5V2toB26R8UJyxWHJS5EKR/F8jiNQv3D0VzsjLQ/DYikkdfEwhC8oeiV
-         hBHZdkKcZJXCo7o4bQZ/5I3rhrbCZ/J/hDqbFn0jiD/ukhw9tTS8VrVtRqwqH0NixuYr
-         NZbvBwT3kPOxYXnF6YYJlfe7shMMAhQI87TWQC41zrPRxXMyCblQgvhC2Cz5yuUH3MDO
-         uBsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0pvJ0VJBvj9qiKz1E6D8UeM5hFtVE1+1j1opSDSflxo=;
-        b=Xsxr4pEDLSK6M2+s97MGNGNkOip6fn3t81VuM7+aJWdS9UWdnuOkHvL1jLTpeg29xm
-         4VkCf7zMyAHfmUiXwL/i3kuGZiXmC/VSMqsA0v5l6I9EB2fhkTAgl//hbWOkoV60WXJK
-         OrEY0IXC1ISC6yc2CTlqjSxM3ZlCT3INBd1l4MaO512pv+QcDUqpAKXM6wKp1T+7OmtK
-         iCi/vc49hEUXAFTgYC2bPbHnOztoErxa5lQVpBBn+lUdwKTWoWWiUP1GldUU2Ru/B6DL
-         22H5ID/QnBQwvOXzeS9ZPqGfNLAUfrzTuqovbUbiiEb2Tfk0GfWGN1KmTtQFxbErO6Ls
-         FqBQ==
-X-Gm-Message-State: AOAM530D/RSBfOv4NU7yOv7/Kbzk5FE8DNmf4rqPLQl6+j0AbI1A/pPz
-        UTFW2rbXR54IhqV3wmQPpHGwfeYRDKkoEgmIBV4=
-X-Google-Smtp-Source: ABdhPJzLpnG/UsK725GwrFFKPbmxb8uA6enGbrXJVIDRT1VOpS7WXzeYwddNf5loslL9Xzc0bUG2deH5QOcNKv1rmo8=
-X-Received: by 2002:a17:907:7205:: with SMTP id dr5mr791523ejc.696.1640138552651;
- Tue, 21 Dec 2021 18:02:32 -0800 (PST)
+        id S242122AbhLVDgc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Dec 2021 22:36:32 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:59384 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229997AbhLVDgc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Dec 2021 22:36:32 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowADnyRYlncJhLv+ABA--.46045S2;
+        Wed, 22 Dec 2021 11:36:05 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        liviu.dudau@arm.com, sudeep.holla@arm.com,
+        lorenzo.pieralisi@arm.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] serial: mps2-uart: Check for error irq
+Date:   Wed, 22 Dec 2021 11:36:04 +0800
+Message-Id: <20211222033604.1049339-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211222015244.2464671-1-Mr.Bossman075@gmail.com> <20211222015244.2464671-6-Mr.Bossman075@gmail.com>
-In-Reply-To: <20211222015244.2464671-6-Mr.Bossman075@gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Tue, 21 Dec 2021 23:02:21 -0300
-Message-ID: <CAOMZO5DV7WKU_dO3KRERpcoManFZs1MbdL54BtSmtMnVY5ujrg@mail.gmail.com>
-Subject: Re: [PATCH v6 5/7] clk: imx: Add initial support for i.MXRT1050 clock driver
-To:     Jesse Taube <mr.bossman075@gmail.com>
-Cc:     NXP Linux Team <linux-imx@nxp.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Stefan Agner <stefan@agner.ch>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Abel Vesa <abel.vesa@nxp.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Giulio Benetti <giulio.benetti@benettiengineering.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowADnyRYlncJhLv+ABA--.46045S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Wr4fXr48WF4DurW3Gr15Arb_yoW8Jry3p3
+        WktrWDury8GFWrtwnrZF4DAF45uwsYqa47W34ag34a9wn5JFnxW34fCr9IkF1kZr4UJFWS
+        yrs8JF4F9a48Xr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8
+        GwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r
+        1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij
+        64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr
+        0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjQBMtUUUU
+        U==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 10:52 PM Jesse Taube <mr.bossman075@gmail.com> wrote:
+I find that platform_get_irq() will not always succeed.
+It will return error irq in case there is no suitable irq.
+Therefore, it might be better to check it if order to avoid the use of
+error irq.
 
+Fixes: 041f031def33 ("serial: mps2-uart: add MPS2 UART driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/tty/serial/mps2-uart.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-> +static struct platform_driver imxrt1050_clk_driver = {
-> +       .probe = imxrt1050_clocks_probe,
-> +       .driver = {
-> +               .name = "imxrt1050-ccm",
-> +               .of_match_table = of_match_ptr(imxrt1050_clk_of_match),
+diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+index 587b42f754cb..117d9896051f 100644
+--- a/drivers/tty/serial/mps2-uart.c
++++ b/drivers/tty/serial/mps2-uart.c
+@@ -585,10 +585,20 @@ static int mps2_init_port(struct platform_device *pdev,
+ 
+ 	if (mps_port->flags & UART_PORT_COMBINED_IRQ) {
+ 		mps_port->port.irq = platform_get_irq(pdev, 0);
++		if (mps_port->port.irq < 0)
++			return mps_port->port.irq;
+ 	} else {
+ 		mps_port->rx_irq = platform_get_irq(pdev, 0);
++		if (mps_port->rx_irq < 0)
++			return mps_port->rx_irq;
++
+ 		mps_port->tx_irq = platform_get_irq(pdev, 1);
++		if (mps_port->tx_irq < 0)
++			return mps_port->tx_irq;
++
+ 		mps_port->port.irq = platform_get_irq(pdev, 2);
++		if (mps_port->port.irq < 0)
++			return mps_port->port.irq;
+ 	}
+ 
+ 	return ret;
+-- 
+2.25.1
 
-No need for of_match_ptr() here.
