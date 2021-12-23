@@ -2,81 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E46C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Dec 2021 12:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64787C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Dec 2021 12:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348084AbhLWMDU (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Dec 2021 07:03:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236028AbhLWMDU (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Dec 2021 07:03:20 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EAF3C061401;
-        Thu, 23 Dec 2021 04:03:19 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id z29so20503072edl.7;
-        Thu, 23 Dec 2021 04:03:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/GULw6FpLgoVlSnPti+ASNXJR3k8hiP6XA2nY3KteHQ=;
-        b=N0obOTd94WL0PqDdM11HZUyqeo33DClomzuVoQVrjO6cAe824T7KEamF3JEXKrPKjU
-         7BO2LwgBs9+GQFyMj+qyoOSt/Ndra1lDWqacqRrnrk+6dNaPeB6OZh/7JcEPgxzyaYe4
-         TpovwDkmL+ggyuVekFrELpMK4S9ZDsujggY92AMPo0lVUqcj+ppRR3nVFn/ch97Gevuq
-         kdyCXrM4eako++Qwe2O6AayIHrPhSQLNflyj4z/652v/GwjUp0XLCImuRGPaPr+7UeJr
-         Kdl6ziWDide8xkstTnW2FYBSK5+WUc5S060JIhzkC+zX/zid8n9mIKfmphoX93TnT6jw
-         YgZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/GULw6FpLgoVlSnPti+ASNXJR3k8hiP6XA2nY3KteHQ=;
-        b=KHRgN9Pw9QQnz00zZbGCRRjI1yK2J209/BagUf3D5cD+BCzFmWsrKxg9g1xXi3x20W
-         QarbBw1Z52wv7LXVFpP/OBcm4HsFuw9L2njwkVs/d3RKUSMLyQ1u/9NWLilVgQxUIyqE
-         b6q2235V1fZmAXGFo72CAmMZVWuPMO6yIJT2Ize+IkVcZ42S122wW/GgCbvATltH2p97
-         HQy4a/G0+SSgHDaDDsEoITN1slxdNn8UfObIybXOKg/VOHbmbMfM5uPGgUvXWn2HRgqJ
-         OJ8mFVL48MrJDMGTvJI3OG+5S0CE3Vk5EwjAuJkopyBQ/ypDf1fayr2yaPHmM44ynG6z
-         +qlA==
-X-Gm-Message-State: AOAM532Q97UP32vud2zq4P6vKs6Zzp2wh9e3f9xR13xK1w+q+vJg2PQE
-        Jka7B6PgtH4Ufmp5qw7mN00UHk/G4JvCY1CzAiw=
-X-Google-Smtp-Source: ABdhPJyoXAPaldSqemyvBcuc738haFkWTxhVZ84xqbJcoS3bgpZM3v+9+z2bQ9s0rBKw862ski0mtmUctakKJdyZHTs=
-X-Received: by 2002:a17:906:3ed0:: with SMTP id d16mr1559891ejj.636.1640260998058;
- Thu, 23 Dec 2021 04:03:18 -0800 (PST)
+        id S234271AbhLWMOo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Dec 2021 07:14:44 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:44752 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S243398AbhLWMOo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 23 Dec 2021 07:14:44 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowABngJIbaMRhmsZnBA--.30430S2;
+        Thu, 23 Dec 2021 20:14:19 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, liviu.dudau@arm.com, sudeep.holla@arm.com,
+        lorenzo.pieralisi@arm.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v3] serial: mps2-uart: Check for error irq
+Date:   Thu, 23 Dec 2021 20:14:18 +0800
+Message-Id: <20211223121418.1330239-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211223114038.1306663-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20211223114038.1306663-1-jiasheng@iscas.ac.cn>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 23 Dec 2021 14:01:19 +0200
-Message-ID: <CAHp75VeESBiu7jpPd8EOZprqQ+eURQ8aLp1387QwRbq=i-jsLA@mail.gmail.com>
-Subject: Re: [PATCH v2] serial: mps2-uart: Check for error irq
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowABngJIbaMRhmsZnBA--.30430S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7KFWUZr13KFWxZF1DGF48JFb_yoW8Gw1fpF
+        1ktFZ8ArW8Ga4SgasrXr1UJF43C3yvva9rX342934293WrJFnxC34rCFnIvF1kZrWDJr4f
+        Zrs8tF4ruF10va7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxa
+        n2IY04v7MxkIecxEwVAFwVW5JwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF
+        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
+        VjvjDU0xZFpf9x0JUQqXdUUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 1:40 PM Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
->
-> On Thursday, December 23, 2021, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > Check the types.
->
-> That's right.
-> I correct previous version, using error variable to check.
+Because of the possible failure of the platform_get_irq(), it should be
+better to check it to avoid the use of error irq.
 
-Below (tags and code) everything is fine, now you need to prepare the
-correct commit message and send a v3.
+Fixes: 041f031def33 ("serial: mps2-uart: add MPS2 UART driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changelog:
 
+v2 -> v3
+
+*Change 1. Using error variable to check.
+*Change 2. Add new commit message.
+---
+ drivers/tty/serial/mps2-uart.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+index 587b42f754cb..24a52300d8d9 100644
+--- a/drivers/tty/serial/mps2-uart.c
++++ b/drivers/tty/serial/mps2-uart.c
+@@ -584,11 +584,29 @@ static int mps2_init_port(struct platform_device *pdev,
+ 
+ 
+ 	if (mps_port->flags & UART_PORT_COMBINED_IRQ) {
+-		mps_port->port.irq = platform_get_irq(pdev, 0);
++		ret = platform_get_irq(pdev, 0);
++		if (ret < 0)
++			return ret;
++
++		mps_port->port.irq = ret;
+ 	} else {
+-		mps_port->rx_irq = platform_get_irq(pdev, 0);
+-		mps_port->tx_irq = platform_get_irq(pdev, 1);
+-		mps_port->port.irq = platform_get_irq(pdev, 2);
++		ret = platform_get_irq(pdev, 0);
++		if (ret < 0)
++			return ret;
++
++		mps_port->rx_irq = ret;
++
++		ret = platform_get_irq(pdev, 1);
++		if (ret < 0)
++			return ret;
++
++		mps_port->tx_irq = ret;
++
++		ret = platform_get_irq(pdev, 2);
++		if (ret < 0)
++			return ret;
++
++		mps_port->port.irq = ret;
+ 	}
+ 
+ 	return ret;
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
