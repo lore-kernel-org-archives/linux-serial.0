@@ -2,80 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB118C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Dec 2021 10:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77986C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Dec 2021 11:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347665AbhLWKTl (ORCPT
+        id S1347977AbhLWLlH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Dec 2021 05:19:41 -0500
-Received: from mga18.intel.com ([134.134.136.126]:16214 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347698AbhLWKTi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Dec 2021 05:19:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640254778; x=1671790778;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=nv7xPFaZ6HRYosw5sp5zKlPzEvyg5zTh0M+tiD0roxw=;
-  b=DAPIRTlHmDTqC0ogwMqAnoF9F1HmbgEwncpUqYrJ/jHQ09qVOCCguyoM
-   BpIaCOXkyq9h9t1w+MSy2zVLHAtvmMGLPw0tFLoQbWtxbpr9LN/l3BylP
-   snn36Hgu5v5cj34nfsZjw+QgNmmmAPznKQEVdIDBT/D51oxNk95ENNTrk
-   +T8zcEADlFUZz1gEMHFu49QOWoOFzgfLI1WxOyHatiAZhLWbCgizmEeh2
-   QKyb6Z1hUAMdWyLeTu1wai7aWMNCK/oLx20Q1D1PrC2NBr0PU0PJAC5dF
-   Z6wJfzctUeExTEMu7Cowck8Q/aFgg721LzF+kocs0fiZw8q8gL1UJ1jgR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10206"; a="227644985"
-X-IronPort-AV: E=Sophos;i="5.88,229,1635231600"; 
-   d="scan'208";a="227644985"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Dec 2021 02:19:38 -0800
-X-IronPort-AV: E=Sophos;i="5.88,229,1635231600"; 
-   d="scan'208";a="466956255"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Dec 2021 02:19:36 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n0LAq-001BCm-AK;
-        Thu, 23 Dec 2021 12:18:12 +0200
-Date:   Thu, 23 Dec 2021 12:18:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: 8250_exar: derive nr_ports from ID for
- Acces I/O cards
-Message-ID: <YcRM5NN/rEsU7PEa@smile.fi.intel.com>
-References: <20211222194413.75069-1-andriy.shevchenko@linux.intel.com>
- <6c60d8c1-ff64-8e93-79f1-1a3dd352d7a2@linux.intel.com>
+        Thu, 23 Dec 2021 06:41:07 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:39632 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229623AbhLWLlG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 23 Dec 2021 06:41:06 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowABHTVk3YMRh1DJnBA--.40873S2;
+        Thu, 23 Dec 2021 19:40:40 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, liviu.dudau@arm.com, sudeep.holla@arm.com,
+        lorenzo.pieralisi@arm.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v2] serial: mps2-uart: Check for error irq
+Date:   Thu, 23 Dec 2021 19:40:38 +0800
+Message-Id: <20211223114038.1306663-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <6c60d8c1-ff64-8e93-79f1-1a3dd352d7a2@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-CM-TRANSID: rQCowABHTVk3YMRh1DJnBA--.40873S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7CFW7Jr1rCr43GF1kZw4DCFg_yoW8Xr1kpF
+        4ktFZ8JrW8GayfWasrXF1UJa13C3yvqa9rJa42934293WrJFnrC34rGFnIvF1kZrWDJr4f
+        Xa15tF48uF10vaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxa
+        n2IY04v7MxkIecxEwVAFwVW8KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUbeT5PUUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 12:05:11PM +0200, Ilpo Järvinen wrote:
-> On Wed, 22 Dec 2021, Andy Shevchenko wrote:
+On Thursday, December 23, 2021, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> Check the types.
 
-...
+That's right.
+I correct previous version, using error variable to check.
 
-> > -	nr_ports = board->num_ports ? board->num_ports : pcidev->device & 0x0f;
-> > +	if (pcidev->vendor == PCI_VENDOR_ID_ACCESSIO)
-> > +		nr = BIT(((pcidev->device & 0x38) >> 3) - 1);
-> 
-> Shouldn't this be nr_ports = ...
+Fixes: 041f031def33 ("serial: mps2-uart: add MPS2 UART driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changelog:
 
-Yeah, sorry for that. By some reason I have no such config option enabled and
-my builds haven't failed.
+v1 -> v2
 
+*Change 1.USing error variable to check.
+---
+ drivers/tty/serial/mps2-uart.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+index 587b42f754cb..24a52300d8d9 100644
+--- a/drivers/tty/serial/mps2-uart.c
++++ b/drivers/tty/serial/mps2-uart.c
+@@ -584,11 +584,29 @@ static int mps2_init_port(struct platform_device *pdev,
+ 
+ 
+ 	if (mps_port->flags & UART_PORT_COMBINED_IRQ) {
+-		mps_port->port.irq = platform_get_irq(pdev, 0);
++		ret = platform_get_irq(pdev, 0);
++		if (ret < 0)
++			return ret;
++
++		mps_port->port.irq = ret;
+ 	} else {
+-		mps_port->rx_irq = platform_get_irq(pdev, 0);
+-		mps_port->tx_irq = platform_get_irq(pdev, 1);
+-		mps_port->port.irq = platform_get_irq(pdev, 2);
++		ret = platform_get_irq(pdev, 0);
++		if (ret < 0)
++			return ret;
++
++		mps_port->rx_irq = ret;
++
++		ret = platform_get_irq(pdev, 1);
++		if (ret < 0)
++			return ret;
++
++		mps_port->tx_irq = ret;
++
++		ret = platform_get_irq(pdev, 2);
++		if (ret < 0)
++			return ret;
++
++		mps_port->port.irq = ret;
+ 	}
+ 
+ 	return ret;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
